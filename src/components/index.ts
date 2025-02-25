@@ -1,1 +1,1 @@
-export { PreloadedFonts } from './PreloadFonts';
+export { PreloadedFonts } from "./PreloadFonts";

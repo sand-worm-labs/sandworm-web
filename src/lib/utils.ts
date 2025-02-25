@@ -1,5 +1,5 @@
 export const cx = (...classNames: unknown[]) =>
-  classNames.filter(Boolean).join(' ');
+  classNames.filter(Boolean).join(" ");
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const myLoader = ({ src }: any) => {
@@ -8,4 +8,4 @@ export const myLoader = ({ src }: any) => {
 
 // display numbers with comma (form string)
 export const displayNumbers = (num: number): string =>
-  num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");

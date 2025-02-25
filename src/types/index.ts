@@ -1,6 +1,6 @@
-import type { NextPage } from 'next';
-import type { AppProps } from 'next/app';
-import type { ReactNode } from 'react';
+import type { NextPage } from "next";
+import type { AppProps } from "next/app";
+import type { ReactNode } from "react";
 
 export type NextPageWithLayout = NextPage & {
   getLayout?: () => ReactNode;
@@ -32,3 +32,29 @@ export interface CurrentUserProps {
     isAdmin: boolean;
   } | null;
 }
+
+export type Author = {
+  id: string;
+  username: string;
+};
+
+export interface Parameter {
+  name: string;
+  type: string;
+  description: string;
+  required: boolean;
+}
+
+export type Query = {
+  id: string;
+  name: string;
+  description: string;
+  query: string;
+  author: Author;
+  createdAt: string;
+  updatedAt: string;
+  visibility: "public" | "private" | "shared";
+  tags: string[];
+  parameters: Parameter[];
+  saves: number;
+};

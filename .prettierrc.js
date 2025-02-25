@@ -3,7 +3,7 @@
 
 module.exports = {
   trailingComma: 'es5',
-  singleQuote: true,
+  doubleQuote:true,
   printWidth: 80,
   tabWidth: 2,
   useTabs: false,

@@ -1,11 +1,11 @@
 /* eslint-disable simple-import-sort/imports */
 
-'use client';
+"use client";
 
-import Link from 'next/link';
-import type { FC } from 'react';
+import Link from "next/link";
+import type { FC } from "react";
 
-import type { CurrentUserProps } from '@/types';
+import type { CurrentUserProps } from "@/types";
 
 const Header: FC<CurrentUserProps> = () => {
   return (

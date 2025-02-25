@@ -10,8 +10,8 @@
 
 // export default log;
 
-import type { Logger } from 'winston';
-import winston from 'winston';
+import type { Logger } from "winston";
+import winston from "winston";
 
 const logger: Logger = winston.createLogger({
   format: winston.format.combine(
@@ -21,11 +21,11 @@ const logger: Logger = winston.createLogger({
   transports: [
     new winston.transports.Console(),
     new winston.transports.File({
-      filename: 'application-log/combined.log',
+      filename: "application-log/combined.log",
     }),
     new winston.transports.File({
-      filename: 'application-log/error.log',
-      level: 'error',
+      filename: "application-log/error.log",
+      level: "error",
     }),
   ],
 });
