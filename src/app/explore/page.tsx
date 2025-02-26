@@ -10,8 +10,7 @@ const page = () => {
       <Head>
         <title>Explore</title>
       </Head>
-      <div className="container mx-auto">
-        <h1>Dashboard</h1>
+      <div className="container mx-auto pt-10">
         <QueryList />
       </div>
     </div>

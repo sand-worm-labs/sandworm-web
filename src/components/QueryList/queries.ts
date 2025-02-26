@@ -43,7 +43,7 @@ export const queries: Query[] = [
     saves: 85,
   },
   {
-    id: "query_67890",
+    id: "query_67891",
     name: "Most Active Sui Wallets",
     description: "Finds wallets with the highest transaction count",
     query:
@@ -60,7 +60,7 @@ export const queries: Query[] = [
     saves: 85,
   },
   {
-    id: "query_67890",
+    id: "query_67894",
     name: "Most Active Wallets",
     description: "Finds wallets with the highest transaction count",
     query:

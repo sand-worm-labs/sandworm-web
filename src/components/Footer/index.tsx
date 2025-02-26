@@ -1,6 +1,6 @@
 const MainFooter = () => {
   return (
-    <footer className="bg-gray-900 px-8 py-8 flex justify-end text-violet-50">
+    <footer className="bg-[#080109] mt-16 px-8 py-8 flex justify-end text-violet-50">
       <a
         className="inline-flex gap-2 items-center no-underline text-var(--text-color) py-2 px-4 rounded-md transition ease-in-out duration-200 will-change-background-color focus:outline-gray-200 active:outline-gray-200"
         href="https://github.com/AnwarHossainSR/latest-next-js-boilerplate"

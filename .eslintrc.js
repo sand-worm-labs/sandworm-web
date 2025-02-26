@@ -65,7 +65,7 @@ module.exports = {
       },
     ],
     "jsx-a11y/label-has-associated-control": "off",
-    "no-console": "warn",
+    "no-console": "off",
     "no-underscore-dangle": "off",
     "no-use-before-define": "error",
     "react/jsx-filename-extension": [1, { extensions: [".ts", ".tsx"] }],
@@ -89,7 +89,12 @@ module.exports = {
     // TypeScript needs this to resolve nextjs absolute imports
     "import/resolver": {
       typescript: {
-        project: ".",
+        alwaysTryTypes: true,
+        project: "./tsconfig.json",
+      },
+      node: {
+        extensions: [".js", ".jsx", ".ts", ".tsx"],
+        moduleDirectory: ["node_modules", "node_modules/.pnpm", "src/"],
       },
     },
     react: {
