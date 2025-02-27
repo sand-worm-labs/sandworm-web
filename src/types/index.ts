@@ -58,3 +58,7 @@ export type Query = {
   parameters: Parameter[];
   saves: number;
 };
+
+export type APIResponse<T = object> =
+  | { success: true; data: T }
+  | { success: false; error: string };
