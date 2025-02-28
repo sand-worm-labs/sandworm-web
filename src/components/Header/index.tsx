@@ -11,7 +11,7 @@ import SearchBar from "../SearchBar.tsx";
 
 const Header: FC<CurrentUserProps> = () => {
   return (
-    <header className="px-8 py-2 flex justify-between border-b border-[#E2E8F0]">
+    <header className="px-8 py-4 flex justify-between items-center ">
       <Link href="/" className="flex items-center ">
         <SandwormLogo />
         <span className="ml-3 font-bold text-sm">SandWorm</span>

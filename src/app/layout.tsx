@@ -1,8 +1,7 @@
 import "@/styles/globals.css";
 
-import { Plus_Jakarta_Sans as PlusJakartaSans } from "next/font/google";
+import { DM_Mono as DMMono } from "next/font/google";
 
-import MainFooter from "@/components/Footer";
 import { QueryProvider } from "@/providers/query";
 import type { ChildrenProps } from "@/types";
 import Header from "@/components/Header";
@@ -15,24 +14,22 @@ export const metadata = {
   title: "Sand Word",
 };
 
-const plusJakartaSans = PlusJakartaSans({
+const dmMono = DMMono({
   subsets: ["latin"],
   display: "swap",
   adjustFontFallback: false,
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["300", "400", "500"],
 });
 
 export default async function RootLayout({ children }: ChildrenProps) {
   return (
     <html lang="en">
       <body
-        className={`${plusJakartaSans.className} h-full flex flex-col justify-between`}
+        className={`${dmMono.className} h-full flex flex-col justify-between`}
       >
-        <Header />
-        <section className="flex-1 bg-[#F8FAFC]">
+        <section className="flex-1 bg-background">
           <QueryProvider>{children}</QueryProvider>
         </section>
-        <MainFooter />
       </body>
     </html>
   );

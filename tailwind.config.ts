@@ -23,10 +23,10 @@ const config: Config = {
           main: "#324BC3",
         },
         text: {
-          primary: "#00",
+          primary: "#FFF",
           secondary: "#0C0F19",
         },
-        background: "hsl(var(--background))",
+        background: "#000",
         foreground: "hsl(var(--foreground))",
         card: {
           DEFAULT: "hsl(var(--card))",

@@ -4,6 +4,10 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --background: 255, 0, 0;
+}
+
 *,
 *::before,
 *::after {
@@ -113,6 +117,38 @@ h6 {
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+  }
+}
+
+.worm {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(1.2);
+  width: 200px;
+  margin-left: -50px;
+
+  path {
+    stroke-dasharray: 203px, 345px;
+    stroke-dashoffset: 0;
+    fill: none;
+    stroke: #d35933;
+    stroke-width: 13;
+    stroke-linecap: round;
+    stroke-miterlimit: 10;
+    animation: worm 1s linear infinite;
+  }
+}
+
+@keyframes worm {
+  0% {
+    stroke-dashoffset: 0px;
+    transform: translateX(119px);
+  }
+  100% {
+    stroke-dashoffset: -136px;
+    transform: translateX(0);
   }
 }
 

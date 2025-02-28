@@ -3,6 +3,7 @@
 import Head from "next/head";
 
 import QueryList from "@/components/QueryList";
+import Header from "@/components/Header";
 
 const page = () => {
   return (
@@ -10,6 +11,7 @@ const page = () => {
       <Head>
         <title>Explore</title>
       </Head>
+      <Header />
       <div className="container mx-auto pt-10">
         <QueryList />
       </div>

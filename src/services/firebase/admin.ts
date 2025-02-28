@@ -21,6 +21,7 @@ export const firebaseApp =
     },
     "firebase-admin-app"
   );
+console.log("auth");
 export const auth = getAuth(firebaseApp);
 
 async function getSession() {

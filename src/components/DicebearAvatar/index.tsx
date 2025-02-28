@@ -1,7 +1,7 @@
 "use client";
 
 import { createAvatar } from "@dicebear/core";
-import { lorelei } from "@dicebear/collection";
+import { pixelArt } from "@dicebear/collection";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 
@@ -19,7 +19,7 @@ export function DicebearAvatar({
   const [avatarSvg, setAvatarSvg] = useState<string>("");
 
   useEffect(() => {
-    const avatar = createAvatar(lorelei, {
+    const avatar = createAvatar(pixelArt, {
       seed,
       size,
       backgroundColor: ["b6e3f4", "c0aede", "d1d4f9"],
