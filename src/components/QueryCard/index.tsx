@@ -2,9 +2,10 @@
 
 import { FaRegStar, FaCodeBranch } from "react-icons/fa";
 import Link from "next/link";
-import { DicebearAvatar } from "../DicebearAvatar";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+
+import { DicebearAvatar } from "../DicebearAvatar";
 
 const QueryCard = ({ query }: { query: any }) => {
   return (

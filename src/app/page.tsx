@@ -1,9 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
+import { FaDiscord } from "react-icons/fa";
 
 import MainLayout from "@/layouts/MainLayout/MainLayout";
-
-import { FaDiscord } from "react-icons/fa";
 import { SandwormLogo } from "@/components/Assets/SandwormLogo";
 
 export default function Home() {

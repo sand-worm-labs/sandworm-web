@@ -4,7 +4,7 @@ import { DM_Mono as DMMono } from "next/font/google";
 
 import { QueryProvider } from "@/providers/query";
 import type { ChildrenProps } from "@/types";
-import Header from "@/components/Header";
+import MainFooter from "@/components/Footer";
 
 export const metadata = {
   description:
@@ -30,6 +30,7 @@ export default async function RootLayout({ children }: ChildrenProps) {
         <section className="flex-1 bg-background">
           <QueryProvider>{children}</QueryProvider>
         </section>
+        <MainFooter />
       </body>
     </html>
   );

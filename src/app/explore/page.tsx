@@ -1,22 +1,29 @@
-"use client";
-
 import Head from "next/head";
-
-import QueryList from "@/components/QueryList";
 import Header from "@/components/Header";
+import TabsSection from "@/components/TabsSection";
+import { getCurrentUser } from "@/services/firebase/admin";
 
-const page = () => {
+export default async function Explore() {
+  const user = await getCurrentUser();
+
+  const currentUser = user
+    ? {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+      }
+    : null;
+
   return (
-    <div>
+    <div className="dark text-white min-h-screen">
       <Head>
         <title>Explore</title>
       </Head>
-      <Header />
-      <div className="container mx-auto pt-10">
-        <QueryList />
+      <Header currentUser={currentUser} />
+      <div className="pt-10">
+        <TabsSection />
       </div>
     </div>
   );
-};
-
-export default page;
+}
