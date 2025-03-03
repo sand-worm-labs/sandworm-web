@@ -1,6 +1,6 @@
-import { getCurrentUser } from "@/services/firebase/admin";
-
 import { NextResponse } from "next/server";
+
+import { getCurrentUser } from "@/services/firebase/admin";
 
 export async function GET() {
   const user = await getCurrentUser();

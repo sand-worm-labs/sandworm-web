@@ -1,4 +1,5 @@
 import Head from "next/head";
+
 import Header from "@/components/Header";
 import TabsSection from "@/components/TabsSection";
 import { getCurrentUser } from "@/services/firebase/admin";
