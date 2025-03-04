@@ -141,6 +141,56 @@ h6 {
   }
 }
 
+.hero {
+  background-image: url("/img/hero.png");
+  background-position-y: 17rem;
+  background-position-x: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.line-bg {
+  position: relative;
+  background-color: black;
+}
+
+.grid-overlay {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.1) 1.5px, transparent 1.5px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1.5px, transparent 1.5px);
+  background-size: 100px 100px;
+  z-index: 0;
+  filter: blur(0.7px);
+}
+
+.grid-overlay::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, rgba(0, 0, 0, 0) 30%, black 90%);
+  pointer-events: none;
+}
+
+.text-effect {
+  color: transparent;
+  -webkit-text-stroke: 0.5px rgba(255, 255, 255, 0.1);
+  text-wrap: nowrap;
+}
+
+.text-effect2 {
+  background: linear-gradient(#ff7f4f, #b54324);
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  color: white;
+}
+
 @keyframes worm {
   0% {
     stroke-dashoffset: 0px;

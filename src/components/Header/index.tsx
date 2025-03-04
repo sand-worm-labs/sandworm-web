@@ -2,24 +2,14 @@
 
 import Link from "next/link";
 import type { FC } from "react";
-import { useRouter } from "next/navigation";
 
 import type { CurrentUserProps } from "@/types";
-import { signOut } from "@/services/firebase/auth";
 
 import { SandwormLogo } from "../Assets/SandwormLogo";
-import { DicebearAvatar } from "../DicebearAvatar";
 import SearchBar from "../SearchBar.tsx";
+import { ProfileMenu } from "../ProfileMenu";
 
 const Header: FC<CurrentUserProps> = ({ currentUser }) => {
-  const router = useRouter();
-
-  const handleSignOut = async () => {
-    const isOk = await signOut();
-
-    if (isOk) router.push("/sign-in");
-  };
-
   return (
     <header className="px-8 py-4 flex justify-between items-center ">
       <Link href="/" className="flex items-center ">
@@ -28,13 +18,7 @@ const Header: FC<CurrentUserProps> = ({ currentUser }) => {
       </Link>
       <SearchBar />
       {currentUser ? (
-        <div className="flex items-center space-x-3">
-          <p>{currentUser.displayName}</p>
-          <DicebearAvatar size={40} seed="hello" />
-          <button type="button" onClick={handleSignOut}>
-            Sign Out
-          </button>
-        </div>
+        <ProfileMenu currentUser={currentUser} />
       ) : (
         <Link
           href="/sign-in"

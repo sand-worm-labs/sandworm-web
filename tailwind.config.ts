@@ -28,6 +28,7 @@ const config: Config = {
         },
         background: "#000",
         foreground: "hsl(var(--foreground))",
+        customgray: "#18181B",
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",

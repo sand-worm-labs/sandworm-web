@@ -59,6 +59,13 @@ export type Query = {
   saves: number;
 };
 
+export interface IFeatures {
+  id: number;
+  name: string;
+  desc: string;
+  bgText: string;
+}
+
 export type APIResponse<T = object> =
   | { success: true; data: T }
   | { success: false; error: string };
