@@ -1,35 +1,53 @@
 import React from "react";
 import Image from "next/image";
-import { ArrowLeft } from "@/components/Assets/ArrowLeft";
+import Link from "next/link";
 
 export const SectionHero = () => {
   return (
-    <section className="p-8 flex flex-col h-full items-center py-24 pt-8 text-center pb-64 min-h-[100vh] hero">
-      <Image
-        width={350}
-        height={300}
-        alt="arrows top"
-        className="mb-14"
-        src="/img/arrowtop.png"
-      />
-
-      <p className="text-xl font-medium">Welcome to</p>
-      <div className="flex items-center space-x-6 ">
-        {" "}
-        <ArrowLeft />{" "}
-        <h1 className="text-[6.5rem] font-medium uppercase tracking-wider leading-[1.3] ">
-          Sandw0rm
-        </h1>
-        <div className=" rotate-180 ml-[-1rem] ">
-          <ArrowLeft />
-        </div>
+    <section className="p-8 flex flex-col h-full items-center py-16 pt-0 text-center pb-64 min-h-[90vh] relative">
+      <div className="relative h-[180px] w-[370px]  overflow-hidden">
+        <Image
+          alt="arrows top"
+          className="absolute object-contain"
+          src="/img/arrowtop.png"
+          fill
+        />
       </div>
 
-      <p className="text-[#DBDBDBCC] mt-3  max-w-[45rem]">
-        The simplest way to analyze and explore the Sui blockchain with a
-        SQL-like query language, high-performance engine, and community-driven
-        insights.
-      </p>
+      <div className="absolute left border border-dashed top-[4rem] left-[6rem] border-[hsla(0, 100%, 100%, 0.14)] bottom-[4rem] hero-line" />
+      <div className="absolute right border border-dashed bottom-[4rem] top-[4rem] right-[6rem] border-[hsla(0, 100%, 100%, 0.14)]  hero-line" />
+
+      <div className="flex items-center space-x-6 relative ">
+        <div className="text-[3.6rem] uppercase  font-[900] hero-title relative py-6 w-full">
+          <h1 className="mx-auto tracking-wide leading-[1.3]">
+            Open Analytics for Sui Blockchain
+          </h1>
+        </div>
+      </div>
+      <div className="text-[#DBDBDBCC] py-10  text-lg hero-desc relative w-full mx-auto">
+        <p className=" max-w-[55rem] mx-auto ">
+          {" "}
+          The simplest way to analyze and explore the Sui blockchain with a
+          SQL-like query language, high-performance engine, and community-driven
+          insights.
+        </p>
+      </div>
+      <div className="hero-btn relative w-full flex justify-center ">
+        <div className="justify-center  flex space-x-5 hero-btn-inner py-12 px-8">
+          <Link
+            href="/"
+            className="inline-block font-medium bg-white rounded py-3 px-6 text-black text-[0.9rem] "
+          >
+            Get Started
+          </Link>
+          <Link
+            href="/"
+            className="inline-block font-medium rounded py-3 px-6  border-borderLight border text-[0.9rem] "
+          >
+            Explore Queries
+          </Link>
+        </div>
+      </div>
     </section>
   );
 };

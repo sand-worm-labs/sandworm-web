@@ -1,15 +1,16 @@
 import type { FC } from "react";
+
 import type { IFeatures } from "@/types";
 
 export const FeatureCard: FC<IFeatures> = ({ id, bgText, desc }) => {
   return (
-    <div className="border border-[#FFFFFF50] p-5 py-8 relative overflow-hidden">
-      <span className="absolute inset-0 flex items-center justify-center text-[6rem] font-bold uppercase tracking-wide text-gray-600 left-[4rem] text-effect ">
+    <div className="border-2 border-borderLight p-5 py-8 relative overflow-hidden pad hover:bg-[#ffffff10] hover:border-borderHover bg-gradient-custom rounded ">
+      <span className="absolute inset-0 flex items-end justify-center text-[5rem]  uppercase tracking-wide  left-[4rem] mb-6 text-effect ">
         {bgText}
       </span>
-      <div className="relative">
-        <h2 className="font-medium text-2xl min-h-[14rem]">{id}.</h2>
-        <p className="text-sm text-[#DBDBDB]">{desc}</p>
+      <div className="relative min-h-[16rem]">
+        <h2 className="font-medium text-2xl">{id}.</h2>
+        <p className="text-sm text-[#DBDBDB] mt-2">{desc}</p>
       </div>
     </div>
   );

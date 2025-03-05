@@ -1,6 +1,6 @@
 const loading = () => {
   return (
-    <div className="items-center justify-center flex">
+    <div className="items-center justify-center flex fixed top-0 bottom-0 w-full left-0 z-10 h-screen">
       <svg
         className="worm"
         x="0px"

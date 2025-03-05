@@ -2,19 +2,20 @@
 
 import { useState } from "react";
 import type { FC } from "react";
+import { ChevronDown } from "lucide-react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown } from "lucide-react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-
-import { DicebearAvatar } from "../DicebearAvatar";
 import { signOut } from "@/services/firebase/auth";
 import type { CurrentUserProps } from "@/types";
+
+import { DicebearAvatar } from "../DicebearAvatar";
 
 export const ProfileMenu: FC<CurrentUserProps> = ({ currentUser }) => {
   const router = useRouter();

@@ -25,10 +25,13 @@ const config: Config = {
         text: {
           primary: "#FFF",
           secondary: "#0C0F19",
+          gray: "#888888",
         },
         background: "#000",
         foreground: "hsl(var(--foreground))",
         customgray: "#18181B",
+        borderLight: "hsla(0, 100%, 100%, 0.14)",
+        borderHover: "rgba(255, 255, 255, 0.15)",
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",

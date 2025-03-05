@@ -40,6 +40,7 @@
     "dotenv": "^16.4.7",
     "firebase": "^11.3.1",
     "firebase-admin": "^13.1.0",
+    "gsap": "3.12.2",
     "lucide-react": "^0.476.0",
     "next": "15.1.6",
     "react": "^19.0.0",
@@ -48,10 +49,12 @@
     "react-hot-toast": "^2.4.1",
     "react-icons": "^5.5.0",
     "react-syntax-highlighter": "^15.6.1",
+    "react-use": "17.4.0",
     "server-only": "^0.0.1",
     "tailwind-merge": "^3.0.2",
     "tailwindcss": "^3.4.14",
     "tailwindcss-animate": "^1.0.7",
+    "typesaurus": "^10.7.0",
     "winston": "^3.14.1"
   },
   "devDependencies": {

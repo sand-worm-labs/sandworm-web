@@ -2,7 +2,6 @@
 
 Web App for sandworm
 
-
 ## ⚡️ Stack
 
 - [`Next.js`](https://nextjs.org/)
