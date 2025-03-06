@@ -3,11 +3,12 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { TerminalFrame } from "./SectionWorkFlow/TerminalFrame";
 import Image from "next/image";
 import Link from "next/link";
 import { MdOutlineArrowForwardIos } from "react-icons/md";
 import { FaCheck } from "react-icons/fa";
+
+import { TerminalFrame } from "./SectionWorkFlow/TerminalFrame";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -62,7 +63,7 @@ const StickySections = () => {
               <div className="mt-12 flex space-x-5">
                 <Link
                   href="/"
-                  className="inline-block font-medium bg-white rounded py-2.5 px-5 text-black text-[0.9rem] "
+                  className="inline-block font-medium bg-orange-600 rounded py-2.5 px-5 text-white text-[0.9rem] "
                 >
                   Get Started
                 </Link>
