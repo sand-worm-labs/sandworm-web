@@ -2,12 +2,10 @@
 
 import Link from "next/link";
 
-import SignInForm from "./SignInForm";
-import SocialLogin from "./SocialLogin";
-import ConnectWallet from "./ConnectWallet";
 import { SandwormLogo } from "../Assets/SandwormLogo";
+import SignUpForm from "./SignUpForm";
 
-export default function SignIn() {
+export default function SignUp() {
   return (
     <div className="flex min-h-screen items-center justify-center p-6 line-bg relative">
       <Link
@@ -20,16 +18,14 @@ export default function SignIn() {
       <div className="grid-overlay" />
 
       <div className="w-full max-w-md rounded-lg border border-[#ffffff30] p-6 content">
-        <h2 className="text-2xl font-bold text-center text-white">Sign In</h2>
+        <h2 className="text-2xl font-bold text-center text-white">Sign Up</h2>
 
-        <SignInForm />
-        <SocialLogin />
-        <ConnectWallet />
+        <SignUpForm />
 
         <p className="mt-4 text-center text-sm text-gray-400">
-          Don&apos;t have an account?{" "}
+          Already have an account?{" "}
           <Link href="/sign-up" className="text-orange-500 hover:underline">
-            Sign up
+            Sign in
           </Link>
         </p>
       </div>

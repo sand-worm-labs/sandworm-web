@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -54,16 +55,10 @@ const StickySections = () => {
           <section className="h-screen flex justify-center items-center">
             <div className="lg:pr-10">
               <h3 className="text-3xl mb-3 mt-12 font-medium">Write Queries</h3>
-              <p className="text-lg text-[#999999]">
-                Use our SQL-like language to interact with on-chain data
+              <p className="text-lg text-[#999999] mb-3">
+                Publish useful queries to the community for open discovery.
               </p>
-              <ul>
-                <li>Use an SQL-like language designed for on-chain data</li>
-                <li>Filter and sort transactions without the headache</li>
-                <li>
-                  Pull Sui real-time or historical data in just a few clicks
-                </li>
-              </ul>
+
               <div className="mt-12 flex space-x-5">
                 <Link
                   href="/"
@@ -80,22 +75,38 @@ const StickySections = () => {
                   <MdOutlineArrowForwardIos />
                 </Link>
               </div>
+              <ul className=" text-sm mt-12">
+                <li className="mb-4 flex items-center space-x-3">
+                  <span className="rounded-full  mr-3  bg-[#ffffff20] p-1">
+                    <FaCheck className="text-orange-600 text-[0.65rem]" />
+                  </span>{" "}
+                  Use an SQL-like language designed for on-chain data
+                </li>
+                <li className="mb-4 flex items-center space-x-3">
+                  <span className="rounded-full  mr-3  bg-[#ffffff20] p-1">
+                    <FaCheck className="text-orange-600 text-[0.65rem]" />
+                  </span>{" "}
+                  Filter and sort transactions without the headache
+                </li>
+                <li className="mb-4 flex items-center space-x-3">
+                  <span className="rounded-full  mr-3  bg-[#ffffff20] p-1">
+                    <FaCheck className="text-orange-600 text-[0.65rem] " />
+                  </span>{" "}
+                  Pull Sui real-time or historical data{" "}
+                </li>
+              </ul>
             </div>
           </section>
           <section className="h-screen flex justify-center items-center">
             <div className="lg:pr-10">
               <h3 className="text-3xl mb-3 mt-12 font-medium">
                 {" "}
-                Run & Visualize
+                Share & Collaborate
               </h3>
-              <p className="text-lg text-[#999999]">
-                Get real-time insights through our high-performance engine.
+              <p className="text-lg text-[#999999] mb-3">
+                Publish useful queries to the community for open discovery.
               </p>
-              <ul>
-                <li>Use an SQL-like language designed for on-chain data</li>
-                <li>Filter and sort transactions without the headache</li>
-                <li>Pull Sui real-time or historical data</li>
-              </ul>
+
               <div className="mt-12 flex space-x-5">
                 <Link
                   href="/"
@@ -112,6 +123,26 @@ const StickySections = () => {
                   <MdOutlineArrowForwardIos />
                 </Link>
               </div>
+              <ul className=" text-sm mt-12">
+                <li className="mb-4 flex items-center space-x-3">
+                  <span className="rounded-full  mr-3  bg-[#ffffff20] p-1">
+                    <FaCheck className="text-orange-600 text-[0.65rem]" />
+                  </span>{" "}
+                  Use an SQL-like language designed for on-chain data
+                </li>
+                <li className="mb-4 flex items-center space-x-3">
+                  <span className="rounded-full  mr-3  bg-[#ffffff20] p-1">
+                    <FaCheck className="text-orange-600 text-[0.65rem]" />
+                  </span>{" "}
+                  Filter and sort transactions without the headache
+                </li>
+                <li className="mb-4 flex items-center space-x-3">
+                  <span className="rounded-full  mr-3  bg-[#ffffff20] p-1">
+                    <FaCheck className="text-orange-600 text-[0.65rem] " />
+                  </span>{" "}
+                  Pull Sui real-time or historical data{" "}
+                </li>
+              </ul>
             </div>
           </section>
           <section className="h-screen flex justify-center items-center">
