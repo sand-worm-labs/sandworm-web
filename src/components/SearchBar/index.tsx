@@ -9,15 +9,15 @@ export default function SearchBar() {
   return (
     <div className="relative w-full max-w-md">
       <Search
-        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-        size={20}
+        className="absolute left-3 top-1/2 -translate-y-1/2 text-text-gray"
+        size={16}
       />
       <Input
         type="text"
         placeholder="Search Queries"
         value={query}
         onChange={e => setQuery(e.target.value)}
-        className="pl-10 pr-4 py-1.5 w-full rounded-lg border border-[#ffffff60] focus:border-gray-500 focus:ring focus:ring-gray-300 text-sm"
+        className="pl-10 pr-4 py-1.5 w-[90%] rounded-lg border border-[#ffffff60] focus:border-gray-500 focus:ring focus:ring-gray-300 md:text-[0.85rem]  bg-[#1A1A1A] border-none"
       />
     </div>
   );

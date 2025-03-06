@@ -11,23 +11,23 @@ export default function TabsSection() {
 
   return (
     <Tabs value={tab} onValueChange={setTab} className="w-full">
-      <TabsList className="flex border-b border-gray-700">
+      <TabsList className="flex border-b border-borderLight">
         <TabsTrigger
           value="all"
-          className={`px-4 py-2 flex items-center space-x-2 ${tab === "all" ? "border-b-2 border-orange-500" : ""}`}
+          className={`px-4 py-2 flex items-center space-x-2 ${tab === "all" ? "border-b-2 border-brand-orange" : ""}`}
         >
           <HiOutlineCommandLine className="text-xl" />
           <span>All Queries</span>
         </TabsTrigger>
         <TabsTrigger
           value="forked"
-          className={`px-4 py-2 ${tab === "forked" ? "border-b-2 border-orange-500" : ""}`}
+          className={`px-4 py-2 ${tab === "forked" ? "border-b-2 border-brand-orange" : ""}`}
         >
           Forked
         </TabsTrigger>
         <TabsTrigger
           value="starred"
-          className={`px-4 py-2 ${tab === "starred" ? "border-b-2 border-orange-500" : ""}`}
+          className={`px-4 py-2 ${tab === "starred" ? "border-b-2 border-brand-orange" : ""}`}
         >
           Starred
         </TabsTrigger>

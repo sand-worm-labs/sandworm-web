@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 import defaultTheme from "tailwindcss/defaultTheme";
 import tailwindcssAnimate from "tailwindcss-animate";
+import { orange } from "tailwindcss/colors";
 
 const config: Config = {
   darkMode: ["class"],
@@ -21,6 +22,7 @@ const config: Config = {
         brand: {
           accent: "#5AD769",
           main: "#324BC3",
+          orange: "#FF7F4F",
         },
         text: {
           primary: "#FFF",
@@ -32,6 +34,7 @@ const config: Config = {
         customgray: "#18181B",
         borderLight: "hsla(0, 100%, 100%, 0.14)",
         borderHover: "rgba(255, 255, 255, 0.15)",
+        btnHover: "hsla(0, 0%, 100%, 0.09)",
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",

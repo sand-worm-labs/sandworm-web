@@ -8,10 +8,10 @@ export const SectionFeatures = () => {
     <section className="line-bg mt-8">
       <div className="grid-overlay" />
 
-      <div className="container mx-auto py-16 pt-5 content ">
-        <div className="grid grid-cols-3 gap-12 pl-[6rem] z-[3] ">
+      <div className="container mx-auto py-16 pt-5 content px-5 ">
+        <div className="grid lg:grid-cols-3 gap-12 lg:pl-[6rem] z-[3] ">
           <div className="text-4xl font-medium leading-[1.6] flex items-center">
-            <p className="ml-[-6rem]">
+            <p className="lg:ml-[-6rem]">
               What's in <br />
               <span className="text-effect2"> Sandworm?</span>
             </p>

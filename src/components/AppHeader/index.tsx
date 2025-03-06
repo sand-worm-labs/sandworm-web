@@ -6,15 +6,15 @@ import type { FC } from "react";
 import type { CurrentUserProps } from "@/types";
 
 import { SandwormLogo } from "../Assets/SandwormLogo";
-import SearchBar from "../SearchBar.tsx";
+import SearchBar from "../SearchBar";
 import { ProfileMenu } from "../ProfileMenu";
 
-const Header: FC<CurrentUserProps> = ({ currentUser }) => {
+const AppHeader: FC<CurrentUserProps> = ({ currentUser }) => {
   return (
-    <header className="px-8 py-4 flex justify-between items-center ">
+    <header className="px-8 py-3 flex justify-between items-center ">
       <Link href="/" className="flex items-center ">
         <SandwormLogo />
-        <span className="ml-3 font-bold text-sm">SandWorm</span>
+        <span className="ml-3 font-medium text-xl uppercase ">SandW0rm.</span>
       </Link>
       <SearchBar />
       {currentUser ? (
@@ -22,7 +22,7 @@ const Header: FC<CurrentUserProps> = ({ currentUser }) => {
       ) : (
         <Link
           href="/sign-in"
-          className="bg-orange-500 px-4 py-2 text-white rounded-md"
+          className="border py-1.5 bg-white text-black rounded px-4 text-[0.9rem] font-medium"
         >
           Sign In
         </Link>
@@ -31,4 +31,4 @@ const Header: FC<CurrentUserProps> = ({ currentUser }) => {
   );
 };
 
-export default Header;
+export default AppHeader;

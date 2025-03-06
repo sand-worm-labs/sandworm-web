@@ -129,6 +129,22 @@ h6 {
   }
 }
 
+/* Resets */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  background-color: black !important;
+  color: white !important;
+  -webkit-text-fill-color: white !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
 .dm-sans {
   font-family: "DM Sans", sans-serif;
   font-optical-sizing: auto;
@@ -302,4 +318,43 @@ h6 {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/*  */
+.content-container {
+  display: flex;
+}
+.content-container > * {
+  width: 50%;
+}
+
+.right-content {
+  padding-right: 15px;
+}
+
+.left-content {
+  height: 80vh;
+  position: relative;
+}
+
+/* .left-content > * {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  opacity: 0;
+  visibility: hidden;
+} */
+
+@media screen and (max-width: 800px) {
+  .left-content {
+    display: none;
+  }
+  .right-content {
+    padding-left: 15px;
+  }
+}
+
+.header-section {
+  text-align: center;
+  padding: 1rem 6rem;
 }

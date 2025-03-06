@@ -4,7 +4,6 @@ import Head from "next/head";
 
 import { DicebearAvatar } from "@/components/DicebearAvatar";
 import QueryList from "@/components/QueryList";
-import Header from "@/components/Header";
 
 const page = () => {
   return (
@@ -12,7 +11,6 @@ const page = () => {
       <Head>
         <title>Creators</title>
       </Head>
-      <Header />
       <div className="grid lg:grid-cols-[27%,73%] p-5">
         <div className="h-[15rem] py-10 w-full flex items-center justify-center mt-28 ">
           <div>
