@@ -63,7 +63,8 @@
     "tailwindcss": "^3.4.14",
     "tailwindcss-animate": "^1.0.7",
     "typesaurus": "^10.7.0",
-    "winston": "^3.14.1"
+    "winston": "^3.14.1",
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.5.0",
