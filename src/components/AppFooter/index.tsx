@@ -3,7 +3,7 @@ import { FaGithub, FaDiscord, FaTwitter } from "react-icons/fa";
 
 const AppFooter = () => {
   return (
-    <footer className=" p-4 text-sm text-text-gray border-t border-borderLight mt-16">
+    <footer className=" p-4 text-sm text-text-gray border-t border-borderLight ">
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex space-x-4">
           <span>© 2025 Sandworm</span>
