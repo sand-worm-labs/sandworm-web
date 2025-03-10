@@ -17,8 +17,8 @@ import {
 
 export default function DataExplorer() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  /*   const { databases, isLoading, currentConnection } = useDuckStore();
-   */ const [searchTerm, setSearchTerm] = useState("");
+
+  const [searchTerm, setSearchTerm] = useState("");
   const isLoading = false;
   const databases = [];
 

@@ -1,3 +1,5 @@
+"use client";
+
 import AppSidebar from "@/components/AppSidebar";
 import DataExplorer from "@/components/Explorer/DataExplorer";
 import {
@@ -5,6 +7,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import WorkspaceTabs from "@/components/WorkSpace";
 
 export default function WorkSpace() {
   return (
@@ -12,7 +15,11 @@ export default function WorkSpace() {
       <AppSidebar />
       <div className="h-[calc(100vh-4.8rem)] w-full overflow-auto border-t">
         <ResizablePanelGroup direction="horizontal">
-          <ResizablePanel className="overflow-scroll" defaultSize={25}>
+          <ResizablePanel
+            className="overflow-scroll"
+            defaultSize={25}
+            minSize={20}
+          >
             <DataExplorer />
           </ResizablePanel>
           <ResizableHandle withHandle />
@@ -21,7 +28,7 @@ export default function WorkSpace() {
             defaultSize={75}
             minSize={40}
           >
-            <div>WorkSpace Tab</div>
+            <WorkspaceTabs />
           </ResizablePanel>
         </ResizablePanelGroup>
       </div>
