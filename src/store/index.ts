@@ -2,35 +2,6 @@ import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import { toast } from "sonner";
 
-const MANUAL_BUNDLES: duckdb.DuckDBBundles = {
-  mvp: {
-    mainModule: duckdb_wasm,
-    mainWorker: mvp_worker,
-  },
-  eh: {
-    mainModule: duckdb_wasm_eh,
-    mainWorker: eh_worker,
-  },
-};
-
-//
-// TYPES
-//
-
-declare global {
-  interface Window {
-    env?: {
-      DUCK_UI_EXTERNAL_CONNECTION_NAME: string;
-      DUCK_UI_EXTERNAL_HOST: string;
-      DUCK_UI_EXTERNAL_PORT: string;
-      DUCK_UI_EXTERNAL_USER: string;
-      DUCK_UI_EXTERNAL_PASS: string;
-      DUCK_UI_EXTERNAL_DATABASE_NAME: string;
-      DUCK_UI_ALLOW_UNSIGNED_EXTENSIONS: boolean;
-    };
-  }
-}
-
 export interface CurrentConnection {
   environment: "APP" | "ENV" | "BUILT_IN";
   id: string;
@@ -105,10 +76,9 @@ export interface EditorTab {
   result?: QueryResult | null;
 }
 
-export interface DuckStoreState {
+export interface SandwormStoreState {
   // Database state
-  db: duckdb.AsyncDuckDB | null;
-  connection: duckdb.AsyncDuckDBConnection | null;
+
   isInitialized: boolean;
   currentDatabase: string;
   currentConnection: CurrentConnection | null;
@@ -169,20 +139,6 @@ export interface DuckStoreState {
   setCurrentConnection: (connectionId: string) => Promise<void>;
   getConnection: (connectionId: string) => ConnectionProvider | undefined;
 }
-
-//
-// HELPER FUNCTIONS
-//
-
-// Validate a DuckDB connection.
-const validateConnection = (
-  connection: duckdb.AsyncDuckDBConnection | null
-): duckdb.AsyncDuckDBConnection => {
-  if (!connection || typeof connection.query !== "function") {
-    throw new Error("Database connection is not valid");
-  }
-  return connection;
-};
 
 // Converts a raw result (from an external HTTP endpoint) into a QueryResult.
 const rawResultToJSON = (rawResult: any): QueryResult => {
@@ -294,47 +250,6 @@ const executeExternalQuery = async (
   return rawResultToJSON(rawResult);
 };
 
-/**
- * Initializes a new DuckDB WASM connection.
- */
-const initializeWasmConnection = async (): Promise<{
-  db: duckdb.AsyncDuckDB;
-  connection: duckdb.AsyncDuckDBConnection;
-}> => {
-  const bundle = await duckdb.selectBundle(MANUAL_BUNDLES);
-  const worker = new Worker(bundle.mainWorker!);
-  const logger = new duckdb.VoidLogger();
-
-  // Check if unsigned extensions are allowed from environment
-  const allowUnsignedExtensions =
-    window.env?.DUCK_UI_ALLOW_UNSIGNED_EXTENSIONS || false;
-
-  // Create database with configuration
-  const db = new duckdb.AsyncDuckDB(logger, worker);
-
-  await db.instantiate(bundle.mainModule);
-
-  const dbConfig: duckdb.DuckDBConfig = {
-    allowUnsignedExtensions,
-  };
-
-  await db.open(dbConfig);
-
-  const connection = await db.connect();
-  // Validate immediately
-  validateConnection(connection);
-
-  // Install and load extensions
-  await Promise.all([
-    connection.query(`INSTALL excel`),
-    connection.query(`LOAD excel`),
-  ]);
-  return { db, connection };
-};
-
-/**
- * Tests an external connection by executing a basic query.
- */
 const testExternalConnection = async (
   connection: ConnectionProvider
 ): Promise<void> => {
@@ -382,60 +297,11 @@ const updateHistory = (
   return newHistory.slice(0, 15);
 };
 
-/**
- * Fetches databases and tables for an external connection. TODO
- */
-
-/**
- * Fetches databases and tables using the WASM connection.
- */
-const fetchWasmDatabases = async (
-  connection: duckdb.AsyncDuckDBConnection
-): Promise<DatabaseInfo[]> => {
-  const dbListResult = await connection.query(`PRAGMA database_list`);
-  return Promise.all(
-    dbListResult.toArray().map(async (db: any) => {
-      const dbName = db.name.toString();
-      const tablesResult = await connection.query(
-        `SELECT table_name FROM information_schema.tables WHERE table_catalog = '${dbName}'`
-      );
-      const tables: TableInfo[] = await Promise.all(
-        tablesResult.toArray().map(async (tbl: any) => {
-          const tableName = tbl.table_name.toString();
-          const columnsResult = await connection.query(
-            `DESCRIBE "${dbName}"."${tableName}"`
-          );
-          const columns: ColumnInfo[] = columnsResult
-            .toArray()
-            .map((col: any) => ({
-              name: col.column_name.toString(),
-              type: col.column_type.toString(),
-              nullable: col.null === "YES",
-            }));
-          const countResult = await connection.query(
-            `SELECT COUNT(*) as count FROM "${dbName}"."${tableName}"`
-          );
-          // Assumes countResult.toArray() returns a 2D array where the first element is the count.
-          const countValue = Number(countResult.toArray()[0][0]);
-          return {
-            name: tableName,
-            schema: dbName,
-            columns,
-            rowCount: countValue,
-            createdAt: new Date().toISOString(),
-          };
-        })
-      );
-      return { name: dbName, tables };
-    })
-  );
-};
-
 //
 // STORE DEFINITION
 //
 
-export const useDuckStore = create<DuckStoreState>()(
+export const useSandwormStore = create<SandwormStoreState>()(
   devtools(
     persist(
       (set, get) => ({
@@ -465,87 +331,7 @@ export const useDuckStore = create<DuckStoreState>()(
           connections: [],
         },
 
-        // Initialize DuckDB using WASM or External.
-        initialize: async () => {
-          const initialConnections: ConnectionProvider[] = [];
-
-          // Extract environment variables if available
-          const envVars: Window["env"] = window.env || {
-            DUCK_UI_EXTERNAL_CONNECTION_NAME: "",
-            DUCK_UI_EXTERNAL_HOST: "",
-            DUCK_UI_EXTERNAL_PORT: "",
-            DUCK_UI_EXTERNAL_USER: "",
-            DUCK_UI_EXTERNAL_PASS: "",
-            DUCK_UI_EXTERNAL_DATABASE_NAME: "",
-            DUCK_UI_ALLOW_UNSIGNED_EXTENSIONS: false,
-          };
-          const {
-            DUCK_UI_EXTERNAL_CONNECTION_NAME: externalConnectionName = "",
-            DUCK_UI_EXTERNAL_HOST: externalHost = "",
-            DUCK_UI_EXTERNAL_PORT: externalPort = "",
-            DUCK_UI_EXTERNAL_USER: externalUser = "",
-            DUCK_UI_EXTERNAL_PASS: externalPass = "",
-            DUCK_UI_EXTERNAL_DATABASE_NAME: externalDatabaseName = "",
-            DUCK_UI_ALLOW_UNSIGNED_EXTENSIONS: allowUnsignedExtensions = false,
-          } = envVars;
-
-          // Log config for debugging
-          console.log("DuckDB Config:", {
-            allowUnsignedExtensions,
-            hasExternalConnection: Boolean(
-              externalConnectionName && externalHost && externalPort
-            ),
-          });
-
-          const wasmConnection: ConnectionProvider = {
-            environment: "APP",
-            id: "WASM",
-            name: "WASM",
-            scope: "WASM",
-          };
-
-          initialConnections.push(wasmConnection);
-
-          if (externalConnectionName && externalHost && externalPort) {
-            initialConnections.push({
-              environment: "ENV",
-              id: externalConnectionName,
-              name: externalConnectionName,
-              scope: "External",
-              host: externalHost,
-              port: Number(externalPort),
-              user: externalUser,
-              password: externalPass,
-              database: externalDatabaseName,
-              authMode: "password", // Assuming password auth
-            });
-          }
-
-          set({
-            connectionList: { connections: initialConnections },
-          });
-
-          if (initialConnections.length > 0) {
-            // Initialize WASM and set "memory" as default
-            const { db, connection } = await initializeWasmConnection();
-            set({
-              db,
-              connection,
-              isInitialized: true,
-              currentDatabase: "memory",
-            });
-            await Promise.all([
-              connection.query(`SET enable_http_metadata_cache=true`),
-              connection.query(`INSTALL arrow`),
-              connection.query(`INSTALL parquet`),
-            ]);
-
-            // Then automatically connect to the first connection.
-            await get().setCurrentConnection(initialConnections[0].id);
-          } else {
-            set({ isLoading: false, isInitialized: true }); // Set as initialized if no connections are configured.
-          }
-        },
+        initialize: async () => {},
 
         // Execute a query with proper error handling.
         executeQuery: async (query, tabId?) => {
@@ -628,7 +414,7 @@ export const useDuckStore = create<DuckStoreState>()(
               await db.dropFile(fileName);
             } catch {}
             await db.registerFileBuffer(fileName, buffer);
-            if (fileType === "duckdb") {
+            if (fileType === "sandworm") {
               await connection.query(
                 `ATTACH DATABASE '${fileName}' AS ${tableName}`
               );
@@ -738,7 +524,7 @@ export const useDuckStore = create<DuckStoreState>()(
         createTab: (type = "sql", content = "", title) => {
           const newTab: EditorTab = {
             id: crypto.randomUUID(),
-            title: typeof title === "string" ? title : "Untitled Query",
+            title: typeof title === "string" ? title : "New Query",
             type,
             content,
           };
@@ -1016,7 +802,7 @@ export const useDuckStore = create<DuckStoreState>()(
         },
       }),
       {
-        name: "duck-ui-storage",
+        name: "sandworm-storage",
         // Persist only selected parts of the state.
         partialize: state => ({
           queryHistory: state.queryHistory,

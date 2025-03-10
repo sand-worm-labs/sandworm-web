@@ -11,7 +11,7 @@ import { ProfileMenu } from "../ProfileMenu";
 
 const AppHeader: FC<CurrentUserProps> = ({ currentUser }) => {
   return (
-    <header className="px-8 py-3 flex justify-between items-center ">
+    <header className="px-8 py-2 flex justify-between items-center ">
       <Link href="/" className="flex items-center ">
         <SandwormLogo />
         <span className="ml-3 font-medium text-xl uppercase ">SandW0rm.</span>
