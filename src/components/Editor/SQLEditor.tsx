@@ -11,13 +11,15 @@ interface SQLEditorProps {
   initialValue?: string;
   tabId: string;
   executeQueryFn: (query: string, tabId: string) => Promise<void>;
+  updateTabQuery: (tabId: string, query: string) => void;
   height?: string;
 }
 
 export default function SQLEditor({
-  initialValue = "SELECT * FROM users;",
+  initialValue,
   tabId,
   executeQueryFn,
+  updateTabQuery,
   height = "400px",
 }: SQLEditorProps) {
   const [value, setValue] = useState(initialValue);
@@ -151,10 +153,11 @@ export default function SQLEditor({
     });
   };
 
-  // Handle value changes
   const handleChange = (newValue: string | undefined) => {
     if (newValue !== undefined) {
+      console.log("yo");
       setValue(newValue);
+      updateTabQuery(tabId, newValue);
     }
   };
 

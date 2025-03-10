@@ -1,5 +1,4 @@
 import { CSS } from "@dnd-kit/utilities";
-
 import { X, Home, Terminal, GripVertical } from "lucide-react";
 import { useSortable } from "@dnd-kit/sortable";
 

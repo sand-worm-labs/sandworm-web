@@ -7,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { MdOutlineArrowForwardIos } from "react-icons/md";
 import { FaCheck } from "react-icons/fa";
+
 import { TerminalFrame } from "./TerminalFrame";
 
 gsap.registerPlugin(ScrollTrigger);

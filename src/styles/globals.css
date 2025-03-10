@@ -15,6 +15,13 @@
     calc(100% - var(--ui-notch-amount) + 2px) 100%,
     0 100%
   );
+  --ui-notch-path-bl: polygon(
+    0 0,
+    100% 0,
+    100% 100%,
+    var(--ui-notch-amount) 100%,
+    0 calc(100% - var(--ui-notch-amount))
+  );
 }
 
 *,
@@ -279,6 +286,10 @@ select:-webkit-autofill:focus {
 /*  */
 .pad {
   clip-path: var(--ui-notch-path);
+}
+
+.pad.left {
+  clip-path: var(--ui-notch-path-bl);
 }
 
 .pad__body {

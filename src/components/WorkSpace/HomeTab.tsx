@@ -101,10 +101,11 @@ const HomeTab = () => {
 
   const handleNewAction = (type: string, query?: string) => {
     if (type === "sql") {
-      createTab("sql", query);
+      createTab("New Query", "sql", query);
     }
     if (type === "examples") {
       createTab(
+        "Sandworm Explore",
         "sql",
         `
 -- Welcome to Sandworm Explore 🦆
@@ -115,8 +116,7 @@ FROM sui.transactions
 WHERE timestamp >= NOW() - INTERVAL '24 HOURS'  
 ORDER BY timestamp DESC;  
 
-`,
-        "Sanworm Explore"
+`
       );
     }
   };

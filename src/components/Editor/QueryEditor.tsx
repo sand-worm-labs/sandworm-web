@@ -23,7 +23,7 @@ interface SqlEditorProps {
 }
 
 const QueryEditor: React.FC<SqlEditorProps> = ({ tabId, title, className }) => {
-  const { tabs, executeQuery, isExecuting, updateTabTitle } =
+  const { tabs, executeQuery, isExecuting, updateTabTitle, updateTabQuery } =
     useSandwormStore();
 
   const currentTab = tabs.find(tab => tab.id === tabId);
@@ -159,9 +159,10 @@ const QueryEditor: React.FC<SqlEditorProps> = ({ tabId, title, className }) => {
 
       <div className="flex-1 relative">
         <SQLEditor
-          initialContent={currentContent}
+          initialValue={currentContent}
           tabId={tabId}
           executeQueryFn={executeQuery}
+          updateTabQuery={updateTabQuery}
           theme="light"
         />
       </div>
