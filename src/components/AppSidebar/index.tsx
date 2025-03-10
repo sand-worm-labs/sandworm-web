@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useEffect, useRef } from "react";
 import {
   SquareTerminal,
@@ -12,9 +13,12 @@ import {
   BookText,
   ExternalLink,
 } from "lucide-react";
+import { toast } from "sonner";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { toast } from "sonner";
 import {
   CommandDialog,
   CommandEmpty,
@@ -31,31 +35,30 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
-import { SandwormLogo } from "../Assets/SandwormLogo";
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 const AppSidebar = () => {
   const router = useRouter();
+  const pathname = usePathname();
   const [isExpanded, setIsExpanded] = useState(false);
   const [open, setOpen] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const theme = "dark";
 
   const toggleTheme = () => {
-    console.log("hello");
+    console.log("theme changed");
   };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
-        setOpen(open => !open);
+        setOpen(prevOpen => !prevOpen);
       }
+
       // Toogle sidebar when pressing Cmd/Ctrl + B
       if (e.key === "b" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
-        setIsExpanded(isExpanded => !isExpanded);
+        setIsExpanded(prevIsExpanded => !prevIsExpanded);
       }
     };
     document.addEventListener("keydown", handleKeyDown);
@@ -112,7 +115,7 @@ const AppSidebar = () => {
               href={item.to}
               target={item.isNewWindow ? "_blank" : "_self"}
               className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                router.pathname === item.to
+                pathname === item.to
                   ? "bg-[#ffe814] text-black"
                   : "hover:bg-[#ffe814]/20"
               }`}
@@ -135,7 +138,7 @@ const AppSidebar = () => {
                 href={item.to}
                 target={item.isNewWindow ? "_blank" : "_self"}
                 className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  router.pathname === item.to
+                  pathname === item.to
                     ? "bg-secondary text-secondary-foreground"
                     : "hover:bg-secondary/80"
                 }`}

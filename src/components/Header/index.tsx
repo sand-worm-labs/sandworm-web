@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+
 import { SandwormLogo } from "../Assets/SandwormLogo";
 
 const navLinks = [

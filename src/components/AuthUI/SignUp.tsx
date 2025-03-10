@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import { SandwormLogo } from "../Assets/SandwormLogo";
+
 import SignUpForm from "./SignUpForm";
 
 export default function SignUp() {

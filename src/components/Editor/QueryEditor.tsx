@@ -1,8 +1,9 @@
-import React, { useRef, useEffect, useState, useCallback } from "react";
+import React, { useState } from "react";
 import { Play, Loader2, Lightbulb, Command, Edit } from "lucide-react";
+import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-
 import {
   Tooltip,
   TooltipContent,
@@ -10,10 +11,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
-import SQLEditor from "./SQLEditor";
 import { useSandwormStore } from "@/store";
+
+import SQLEditor from "./SQLEditor";
 
 interface SqlEditorProps {
   tabId: string;
@@ -22,8 +23,6 @@ interface SqlEditorProps {
 }
 
 const QueryEditor: React.FC<SqlEditorProps> = ({ tabId, title, className }) => {
-  const editorRef = useRef<HTMLDivElement>(null);
-
   const { tabs, executeQuery, isExecuting, updateTabTitle } =
     useSandwormStore();
 
@@ -36,54 +35,11 @@ const QueryEditor: React.FC<SqlEditorProps> = ({ tabId, title, className }) => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [currentTitle, setCurrentTitle] = useState(title);
 
-  // Stable callback for query execution
-  const stableExecuteCallback = useCallback(
-    async (query: string, queryTabId: string) => {
-      await executeQuery(query, queryTabId);
-    },
-    [executeQuery] // Add executeQuery as a dependency
-  );
-
-  /*   // Editor initialization effect
-  useEffect(() => {
-    if (!editorRef.current) return;
-
-    // Initialize editor with stable configuration
-    editorInstanceRef.current = createEditor(
-      editorRef.current,
-      monacoConfig,
-      currentContent,
-      tabId,
-      stableExecuteCallback
-    );
-
-    // Cleanup function
-    return () => {
-      if (editorInstanceRef.current) {
-        editorInstanceRef.current.dispose();
-        editorInstanceRef.current = null;
-      }
-    };
-  }, [tabId, stableExecuteCallback]); // Keep stableExecuteCallback */
-
-  // Content sync effect
-  /* useEffect(() => {
-    const editor = editorInstanceRef.current?.editor;
-    if (editor && currentContent !== editor.getValue()) {
-      const position = editor.getPosition();
-      editor.setValue(currentContent);
-      if (position) {
-        editor.setPosition(position);
-      }
-    }
-  }, [currentContent]); // Only depend on currentContent */
-
   const handleExecuteQuery = async () => {
-    const editor = editorInstanceRef.current?.editor;
+    const editor = "";
     if (!editor || isExecuting) return;
 
-    const query = editor.getValue().trim();
-    if (!query) return;
+    const query = editor;
 
     try {
       await executeQuery(query, tabId);
@@ -135,7 +91,7 @@ const QueryEditor: React.FC<SqlEditorProps> = ({ tabId, title, className }) => {
             />
           ) : (
             <div className="flex items-center gap-2">
-              <span className="text-lg font-medium truncate text-sm">
+              <span className=" font-medium truncate text-sm">
                 {currentTitle}
               </span>
               <Button
@@ -203,8 +159,8 @@ const QueryEditor: React.FC<SqlEditorProps> = ({ tabId, title, className }) => {
 
       <div className="flex-1 relative">
         <SQLEditor
-          initialContent="SELECT * FROM users WHERE id = 1;"
-          tabId="tab-1"
+          initialContent={currentContent}
+          tabId={tabId}
           executeQueryFn={executeQuery}
           theme="light"
         />

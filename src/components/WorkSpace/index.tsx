@@ -1,9 +1,7 @@
 // src/components/workspace/WorkspaceTabs.tsx
 import { useMemo, useEffect } from "react";
-import { Tabs, TabsList, TabsContent } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Plus, XSquareIcon } from "lucide-react";
+import type { DragEndEvent } from "@dnd-kit/core";
 import {
   DndContext,
   closestCenter,
@@ -11,13 +9,16 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  DragEndEvent,
 } from "@dnd-kit/core";
 import {
   SortableContext,
   sortableKeyboardCoordinates,
   horizontalListSortingStrategy,
 } from "@dnd-kit/sortable";
+
+import { Tabs, TabsList, TabsContent } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -26,6 +27,7 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { useSandwormStore } from "@/store";
+
 import HomeTab from "./HomeTab";
 import SortableTab from "./SortableTab";
 import { QueryTab } from "./QueryTab";
@@ -138,11 +140,15 @@ export default function WorkspaceTabs() {
               value={tab.id}
               className="h-full m-0 outline-none data-[state=active]:flex-1"
             >
-              {tab.type === "home" ? (
-                <HomeTab />
-              ) : tab.type === "sql" ? (
-                <QueryTab tabId={tab.id} />
-              ) : null}
+              {(() => {
+                if (tab.type === "home") {
+                  return <HomeTab />;
+                }
+                if (tab.type === "sql") {
+                  return <QueryTab tabId={tab.id} />;
+                }
+                return null;
+              })()}
             </TabsContent>
           ))}
         </div>

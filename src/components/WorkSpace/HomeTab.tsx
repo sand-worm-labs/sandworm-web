@@ -1,13 +1,4 @@
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardFooter,
-} from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Github,
   Terminal,
@@ -18,6 +9,16 @@ import {
   TestTubeDiagonal,
 } from "lucide-react";
 import { motion } from "framer-motion";
+
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardFooter,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSandwormStore } from "@/store";
 
@@ -124,6 +125,73 @@ ORDER BY timestamp DESC;
     return query.length > length ? `${query.slice(0, length)}...` : query;
   };
 
+  const renderContent = () => {
+    if (loading) {
+      return (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[1, 2, 3].map(i => (
+            <Card key={i} className="space-y-2">
+              <CardHeader>
+                <Skeleton className="h-4 w-[250px]" />
+                <Skeleton className="h-4 w-[200px]" />
+              </CardHeader>
+              <CardFooter>
+                <Skeleton className="h-4 w-[150px]" />
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      );
+    }
+
+    if (error) {
+      return (
+        <Card className="p-4 text-center text-muted-foreground">{error}</Card>
+      );
+    }
+
+    if (recentItems.length === 0) {
+      return (
+        <Card className="p-4 text-center text-muted-foreground">
+          No recent queries found
+        </Card>
+      );
+    }
+
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {recentItems.map((item, index) => (
+          <motion.div
+            key={item}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.05 }}
+          >
+            <Card
+              className="hover:bg-accent/50 cursor-pointer transition-colors"
+              onClick={() => handleNewAction("sql", item.cleaned_query)}
+            >
+              <CardHeader>
+                <CardTitle className="text-sm font-medium flex items-center space-x-2">
+                  <Database className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-muted-foreground">
+                    {item.query_kind || "Query"}
+                  </span>
+                </CardTitle>
+                <CardDescription className="text-xs font-mono text-muted-foreground truncate">
+                  {truncateQuery(item.cleaned_query)}
+                </CardDescription>
+              </CardHeader>
+              <CardFooter className="text-xs text-muted-foreground">
+                {formatDate(item.latest_event_time)}
+              </CardFooter>
+            </Card>
+          </motion.div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="p-6 space-y-8 max-w-7xl mx-auto truncate">
       <motion.div
@@ -143,7 +211,7 @@ ORDER BY timestamp DESC;
       >
         {quickStartActions.map((action, index) => (
           <motion.div
-            key={index}
+            key={action.title}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: index * 0.1 }}
@@ -185,67 +253,14 @@ ORDER BY timestamp DESC;
         </TabsList>
 
         <TabsContent value="recent" className="space-y-4">
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[1, 2, 3].map(i => (
-                <Card key={i} className="space-y-2">
-                  <CardHeader>
-                    <Skeleton className="h-4 w-[250px]" />
-                    <Skeleton className="h-4 w-[200px]" />
-                  </CardHeader>
-                  <CardFooter>
-                    <Skeleton className="h-4 w-[150px]" />
-                  </CardFooter>
-                </Card>
-              ))}
-            </div>
-          ) : error ? (
-            <Card className="p-4 text-center text-muted-foreground">
-              {error}
-            </Card>
-          ) : recentItems.length === 0 ? (
-            <Card className="p-4 text-center text-muted-foreground">
-              No recent queries found
-            </Card>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {recentItems.map((item, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                >
-                  <Card
-                    className="hover:bg-accent/50 cursor-pointer transition-colors"
-                    onClick={() => handleNewAction("sql", item.cleaned_query)}
-                  >
-                    <CardHeader>
-                      <CardTitle className="text-sm font-medium flex items-center space-x-2">
-                        <Database className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-muted-foreground">
-                          {item.query_kind || "Query"}
-                        </span>
-                      </CardTitle>
-                      <CardDescription className="text-xs font-mono text-muted-foreground truncate">
-                        {truncateQuery(item.cleaned_query)}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardFooter className="text-xs text-muted-foreground">
-                      {formatDate(item.latest_event_time)}
-                    </CardFooter>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          )}
+          {renderContent()}
         </TabsContent>
 
         <TabsContent value="resources" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {resourceCards.map((card, index) => (
               <motion.div
-                key={index}
+                key={card.title}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}

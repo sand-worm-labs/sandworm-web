@@ -1,17 +1,16 @@
 // src/components/workspace/SqlTab.tsx
-import React, { useState } from "react";
+import React from "react";
+import { FileX2 } from "lucide-react";
 
 import {
   ResizablePanel,
   ResizablePanelGroup,
   ResizableHandle,
 } from "@/components/ui/resizable";
-
-import { FileX2 } from "lucide-react";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { useSandwormStore } from "@/store";
+
 import { Skeleton } from "../ui/skeleton";
-/* import QueryEditor from "../Editor/QueryEditor";
- */ import { useSandwormStore } from "@/store";
 import QueryEditor from "../Editor/QueryEditor";
 
 interface QueryTabProps {
@@ -21,19 +20,6 @@ interface QueryTabProps {
 export const QueryTab: React.FC<QueryTabProps> = ({ tabId }) => {
   const { tabs, isExecuting } = useSandwormStore();
   const currentTab = tabs.find(tab => tab.id === tabId);
-  const [results, setResults] = useState<any[]>([]);
-
-  const executeQuery = async (query: string, tabId: string) => {
-    try {
-      // Your logic for executing the query
-      console.log(`Executing query in tab ${tabId}: ${query}`);
-      // Mock results for demonstration
-      setResults([{ id: 1, name: "Test Result" }]);
-    } catch (error) {
-      console.error("Error executing query:", error);
-      throw error;
-    }
-  };
 
   const renderResults = () => {
     if (!currentTab || currentTab.type !== "sql") {
@@ -48,24 +34,25 @@ export const QueryTab: React.FC<QueryTabProps> = ({ tabId }) => {
           {/* Table Skeleton */}
           <div className="space-y-4">
             {/* Skeleton Header */}
+            {/* eslint-disable react/no-array-index-key */}
             <div className="flex space-x-4">
               {Array.from({ length: 15 }).map((_, index) => (
                 <Skeleton key={`header-${index}`} className="h-4 w-32" />
               ))}
             </div>
-
             {/* Skeleton Rows */}
             <div className="space-y-2">
               {Array.from({ length: 22 }).map((_, rowIndex) => (
                 <Skeleton key={`row-${rowIndex}`} className="flex space-x-4">
-                  {Array.from({ length: 5 }).map((_, colIndex) => (
+                  {Array.from({ length: 5 }).map((__, cellIndex) => (
                     <div
-                      key={`cell-${rowIndex}-${colIndex}`}
+                      key={`cell-${rowIndex}-${cellIndex}`}
                       className="h-5 w-24 rounded-md animate-pulse"
                     />
                   ))}
                 </Skeleton>
               ))}
+              {/* eslint-enable react/no-array-index-key */}
             </div>
           </div>
         </div>
@@ -98,7 +85,6 @@ export const QueryTab: React.FC<QueryTabProps> = ({ tabId }) => {
       );
     }
 
-    // Show results table
     return <div className="h-full">Result Table</div>;
   };
 
@@ -111,13 +97,6 @@ export const QueryTab: React.FC<QueryTabProps> = ({ tabId }) => {
       <ResizablePanelGroup direction="vertical">
         <ResizablePanel defaultSize={50} minSize={25}>
           <QueryEditor tabId={tabId} title={currentTab.title} />
-
-          {/*     <SQLEditor
-            initialContent="SELECT * FROM users WHERE id = 1;"
-            tabId="tab-1"
-            executeQueryFn={executeQuery}
-            theme="light"
-          /> */}
         </ResizablePanel>
         <ResizableHandle withHandle />
         <ResizablePanel defaultSize={50} minSize={25}>

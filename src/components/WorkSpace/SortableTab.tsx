@@ -1,10 +1,10 @@
 import { CSS } from "@dnd-kit/utilities";
-/* import { useSortable } from "@dnd-kit/sortable"; */
-import { TabsTrigger } from "@/components/ui/tabs";
-import { X, Home, Terminal, GripVertical } from "lucide-react";
-import { cn } from "@/lib/utils";
 
+import { X, Home, Terminal, GripVertical } from "lucide-react";
 import { useSortable } from "@dnd-kit/sortable";
+
+import { TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 import { useSandwormStore } from "@/store";
 
 interface Tab {
@@ -53,6 +53,17 @@ function SortableTab({ tab, isActive }: SortableTabProps) {
     }
   };
 
+  const getTabIcon = (type: string) => {
+    switch (type) {
+      case "home":
+        return <Home className="h-4 w-4" />;
+      case "sql":
+        return <Terminal className="h-4 w-4" />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <div
       ref={setNodeRef}
@@ -62,13 +73,19 @@ function SortableTab({ tab, isActive }: SortableTabProps) {
         isDragging ? "opacity-50" : "",
         isActive ? "z-10" : "z-0"
       )}
+      role="button"
+      tabIndex={0}
+      onClick={handleMiddleClick}
       onAuxClick={handleMiddleClick}
       onKeyDown={handleKeyDown}
+      onMouseDown={e => e.preventDefault()}
     >
       {tab.type === "sql" && (
         <div
           className="absolute left-0 top-0 h-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-grab active:cursor-grabbing z-50"
+          // eslint-disable-next-line react/jsx-props-no-spreading
           {...attributes}
+          // eslint-disable-next-line react/jsx-props-no-spreading
           {...listeners}
         >
           <GripVertical className="h-4 w-4 mt-2 ml-1 text-secondary" />
@@ -81,32 +98,27 @@ function SortableTab({ tab, isActive }: SortableTabProps) {
           "flex h-8 items-center rounded-sm px-3 relative w-full",
           "data-[state=active]:bg-white data-[state=active]:text-black",
           "transition-colors duration-200",
-          "hover:bg-[#ffe814]/40",
+          "hover:bg-[#ea580b]/20",
           tab.id === "home" ? "cursor-default" : "cursor-pointer",
-          tab.type === "sql" ? "pl-7" : "pl-3", // Add padding for drag handle
+          tab.type === "sql" ? "pl-7" : "pl-3",
           isExecuting ? "pointer-events-none opacity-50" : ""
         )}
       >
         <div className="flex items-center space-x-2 overflow-hidden w-full">
-          <div className="flex-shrink-0">
-            {tab.type === "home" ? (
-              <Home className="h-4 w-4" />
-            ) : tab.type === "sql" ? (
-              <Terminal className="h-4 w-4" />
-            ) : null}
-          </div>
+          <div className="flex-shrink-0">{getTabIcon(tab.type)}</div>
           <span className="truncate text-xs">{tab.title}</span>
           {tab.type === "sql" && (
             <div className="ml-auto flex items-center space-x-1 text-xs text-gray-500">
-              <span
+              <button
+                type="button"
                 className="cursor-pointer hover:bg-red-500/10 p-1 rounded transition-colors"
                 onClick={e => {
                   e.stopPropagation();
                   closeTab(tab.id);
                 }}
               >
-                <X className="h-8 w-8 text-red-500 hover:text-red-500 transition-colors" />
-              </span>
+                <X className="h-6 w-6 text-red-500 hover:text-red-500 transition-colors" />
+              </button>
             </div>
           )}
         </div>
