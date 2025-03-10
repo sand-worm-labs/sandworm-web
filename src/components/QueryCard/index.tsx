@@ -6,8 +6,18 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 import { DicebearAvatar } from "../DicebearAvatar";
+import { useSandwormStore } from "@/store";
+import { useRouter } from "next/navigation";
 
 const QueryCard = ({ query }: { query: any }) => {
+  const { createTab } = useSandwormStore();
+  const router = useRouter();
+
+  const openQueryInTab = (queryData: any) => {
+    createTab(queryData.name, "sql", queryData.query);
+    router.push("/workspace");
+  };
+
   return (
     <div className="shadow-sm rounded-xl p-4 px-8   flex flex-col justify-between">
       <div className="flex justify-between">
@@ -39,7 +49,10 @@ const QueryCard = ({ query }: { query: any }) => {
           </div>
         </div>
       </div>
-      <div className="border border-[#ffffff30] py-2 px-6 h-[10rem] mt-2 text-sm">
+      <div
+        className="border border-[#ffffff30] py-2 px-6 h-[10rem] mt-2 text-sm"
+        onClick={() => openQueryInTab(query)}
+      >
         <SyntaxHighlighter
           language="sql"
           style={{ ...atomDark, backgroundColor: "#000" }}

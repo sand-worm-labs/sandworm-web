@@ -43,7 +43,7 @@ export const SectionWorkflow = () => {
     });
 
     return () => {
-      ST.kill(); // Clean up on unmount
+      ST.kill();
     };
   }, []);
 
@@ -111,7 +111,7 @@ export const SectionWorkflow = () => {
               <div className="mt-12 flex space-x-5">
                 <Link
                   href="/"
-                  className="inline-block font-medium bg-white rounded py-2.5 px-5 text-black text-[0.9rem] "
+                  className="inline-block font-medium  rounded py-2.5 px-5  text-[0.9rem] bg-orange-600 text-white "
                 >
                   Get Started
                 </Link>
@@ -159,7 +159,7 @@ export const SectionWorkflow = () => {
               <div className="mt-12 flex space-x-5">
                 <Link
                   href="/"
-                  className="inline-block font-medium bg-white rounded py-2.5 px-5 text-black text-[0.9rem] "
+                  className="inline-block font-medium rounded py-2.5 px-5 text-white text-[0.9rem] bg-orange-600 "
                 >
                   Get Started
                 </Link>

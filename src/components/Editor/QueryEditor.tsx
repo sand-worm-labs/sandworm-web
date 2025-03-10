@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { useSandwormStore } from "@/store";
 
 import SQLEditor from "./SQLEditor";
+import SaveModal from "../WorkSpace/SaveModal";
 
 interface SqlEditorProps {
   tabId: string;
@@ -34,6 +35,7 @@ const QueryEditor: React.FC<SqlEditorProps> = ({ tabId, title, className }) => {
 
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [currentTitle, setCurrentTitle] = useState(title);
+  const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
 
   const handleExecuteQuery = async () => {
     const editor = "";
@@ -154,6 +156,13 @@ const QueryEditor: React.FC<SqlEditorProps> = ({ tabId, title, className }) => {
             )}
             {isExecuting ? "Running..." : "Run Query"}
           </Button>
+          <Button
+            onClick={() => setIsSaveModalOpen(true)}
+            variant="outline"
+            className="flex items-center gap-2 min-w-[100px]"
+          >
+            Save
+          </Button>
         </div>
       </div>
 
@@ -166,6 +175,12 @@ const QueryEditor: React.FC<SqlEditorProps> = ({ tabId, title, className }) => {
           theme="light"
         />
       </div>
+
+      <SaveModal
+        open={isSaveModalOpen}
+        setOpen={setIsSaveModalOpen}
+        title={currentTitle}
+      />
     </div>
   );
 };
