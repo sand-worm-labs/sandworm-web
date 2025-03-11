@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { Play, Loader2, Lightbulb, Command, Edit } from "lucide-react";
+import {
+  Play,
+  Loader2,
+  Lightbulb,
+  Command,
+  Edit,
+  Star,
+  GitFork,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -140,6 +148,23 @@ const QueryEditor: React.FC<SqlEditorProps> = ({ tabId, title, className }) => {
                     </div>
                   </div>
                 </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            <TooltipProvider>
+              <Tooltip delayDuration={200}>
+                <TooltipTrigger className="hover:bg-muted/50 p-2 rounded-md transition-colors">
+                  <GitFork className="h-5 w-5 text-gray-500 hover:text-gray-700 transition-colors" />
+                </TooltipTrigger>
+                <TooltipContent side="bottom">Fork this Query</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <TooltipProvider>
+              <Tooltip delayDuration={200}>
+                <TooltipTrigger className="hover:bg-muted/50 p-2 rounded-md transition-colors">
+                  <Star className="h-5 w-5 text-yellow-400 hover:text-yellow-500 transition-colors" />
+                </TooltipTrigger>
+                <TooltipContent side="bottom">Star this Query</TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </div>

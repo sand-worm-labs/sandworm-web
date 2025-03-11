@@ -1,14 +1,32 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+
+import { signInWithEmail } from "@/services/firebase/auth";
 
 export default function SignInForm() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const router = useRouter();
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Email:", email, "Password:", password);
+    setLoading(true);
+    setError("");
+
+    const isOk = await signInWithEmail(formData.email, formData.password);
+    if (isOk) router.push("/workspace");
+    if (!isOk) {
+      setError("Invalid email or password.");
+    }
+
+    setLoading(false);
   };
 
   return (
@@ -17,10 +35,11 @@ export default function SignInForm() {
         <label className="block text-sm font-medium text-gray-300">Email</label>
         <input
           type="email"
-          className="mt-1 w-full rounded-md  bg-[#1A1A1A] p-2 text-white focus:border-orange-500 focus:ring-orange-500"
+          name="email"
+          className="mt-1 w-full rounded-md bg-[#1A1A1A] p-2 text-white focus:border-orange-500 focus:ring-orange-500"
           placeholder="Enter your email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
+          value={formData.email}
+          onChange={handleChange}
         />
       </div>
 
@@ -30,18 +49,22 @@ export default function SignInForm() {
         </label>
         <input
           type="password"
-          className="mt-1 w-full rounded-md  bg-[#1A1A1A]  p-2 text-white focus:border-orange-500 focus:ring-orange-500"
+          name="password"
+          className="mt-1 w-full rounded-md bg-[#1A1A1A] p-2 text-white focus:border-orange-500 focus:ring-orange-500"
           placeholder="Enter your password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
+          value={formData.password}
+          onChange={handleChange}
         />
       </div>
+
+      {error && <p className="text-red-500 text-sm">{error}</p>}
 
       <button
         type="submit"
         className="w-full rounded-md bg-orange-600 px-4 py-2 text-white font-medium disabled:bg-orange-300"
+        disabled={loading}
       >
-        Sign In
+        {loading ? "Signing In..." : "Sign In"}
       </button>
     </form>
   );
