@@ -124,6 +124,51 @@ export interface SandwormStoreState {
   exportParquet: (query: string) => Promise<Blob>;
 }
 
+// Create a mock WASM query result
+const createMockWasmResult = () => {
+  const mockData = [
+    {
+      block_date: "2024-08-26T00:00:00Z",
+      checkpoint_commitments: [],
+      digest: "5zNK7NRujRr8r8HZUXKRrohth7uLDRFcW3abBiSsb5i7",
+      timestamp: "2024-08-26T22:26:46Z",
+      total_computation_cost: 0,
+      total_gas_cost: 1338125222440,
+      total_storage_cost: 6531590791600,
+      total_storage_rebate: 6380271342720,
+    },
+    // You can add more rows here if needed
+  ];
+
+  // Define schema that matches your data
+  const schema = {
+    fields: [
+      { name: "block_date", type: { toString: () => "Date64<MILLISECOND>" } },
+      { name: "checkpoint_commitments", type: { toString: () => "List" } },
+      { name: "digest", type: { toString: () => "String" } },
+      { name: "timestamp", type: { toString: () => "Timestamp<MICROSECOND>" } },
+      { name: "total_computation_cost", type: { toString: () => "Int64" } },
+      { name: "total_gas_cost", type: { toString: () => "Int64" } },
+      { name: "total_storage_cost", type: { toString: () => "Int64" } },
+      { name: "total_storage_rebate", type: { toString: () => "Int64" } },
+    ],
+  };
+
+  // Create array-like structure with toArray method
+  const rows = mockData.map(row => ({
+    toJSON: () => ({ ...row }),
+  }));
+
+  return {
+    schema,
+    toArray: () => rows,
+    numRows: rows.length,
+  };
+};
+
+// Create the mock and test it
+const mockResult = createMockWasmResult();
+
 // Converts a WASM query result into a QueryResult.
 const resultToJSON = (result: any): QueryResult => {
   const data = result.toArray().map((row: any) => {
@@ -230,7 +275,7 @@ export const useSandwormStore = create<SandwormStoreState>()(
         executeQuery: async (query, tabId?) => {
           try {
             set({ isExecuting: true, error: null });
-            const queryResult = resultToJSON("result");
+            const queryResult = resultToJSON(mockResult);
 
             console.log(query + tabId);
 

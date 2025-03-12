@@ -12,6 +12,7 @@ interface SQLEditorProps {
   tabId: string;
   executeQueryFn: (query: string, tabId: string) => Promise<void>;
   updateTabQuery: (tabId: string, query: string) => void;
+  onRunQuery?: () => Promise<void>; // Add this prop
   height?: string;
 }
 
@@ -20,7 +21,8 @@ export default function SQLEditor({
   tabId,
   executeQueryFn,
   updateTabQuery,
-  height = "400px",
+  onRunQuery,
+  height = "450px",
 }: SQLEditorProps) {
   const [value, setValue] = useState(initialValue);
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
@@ -50,8 +52,14 @@ export default function SQLEditor({
     }
 
     try {
-      await executeQueryFn(query, tabId);
-      toast.success("Query executed successfully");
+      if (onRunQuery) {
+        // If parent wants to handle the execution
+        await onRunQuery();
+      } else {
+        // Otherwise use the default behavior
+        await executeQueryFn(query, tabId);
+        toast.success("Query executed successfully");
+      }
     } catch (err) {
       toast.error(
         `Query execution failed: ${err instanceof Error ? err.message : "Unknown error"}`

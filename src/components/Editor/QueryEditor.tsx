@@ -22,8 +22,9 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useSandwormStore } from "@/store";
 
-import SQLEditor from "./SQLEditor";
 import SaveModal from "../WorkSpace/SaveModal";
+
+import SQLEditor from "./SQLEditor";
 
 interface SqlEditorProps {
   tabId: string;
@@ -46,13 +47,22 @@ const QueryEditor: React.FC<SqlEditorProps> = ({ tabId, title, className }) => {
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
 
   const handleExecuteQuery = async () => {
-    const editor = "";
-    if (!editor || isExecuting) return;
+    // Remove this empty editor reference
+    // const editor = "";
+    // if (!editor || isExecuting) return;
 
-    const query = editor;
+    if (isExecuting) return;
 
     try {
+      // Get the current content directly from the tab
+      const query = currentContent;
+      if (!query.trim()) {
+        toast.error("Please enter a query to execute");
+        return;
+      }
+
       await executeQuery(query, tabId);
+      toast.success("Query executed successfully");
     } catch (error) {
       console.error("Query execution failed:", error);
       toast.error("Query execution failed");
@@ -81,7 +91,7 @@ const QueryEditor: React.FC<SqlEditorProps> = ({ tabId, title, className }) => {
 
   return (
     <div className={cn("flex flex-col h-full", className)}>
-      <div className="flex items-center justify-between px-4 py-2 border-b">
+      <div className="flex items-center justify-between px-4 py-2.5 border-b min-h-[3rem]">
         <div className="flex items-center gap-2">
           {isEditingTitle ? (
             <Input
@@ -154,7 +164,7 @@ const QueryEditor: React.FC<SqlEditorProps> = ({ tabId, title, className }) => {
             <TooltipProvider>
               <Tooltip delayDuration={200}>
                 <TooltipTrigger className="hover:bg-muted/50 p-2 rounded-md transition-colors">
-                  <GitFork className="h-5 w-5 text-gray-500 hover:text-gray-700 transition-colors" />
+                  <GitFork className="h-5 w-5 transition-colors" />
                 </TooltipTrigger>
                 <TooltipContent side="bottom">Fork this Query</TooltipContent>
               </Tooltip>
@@ -162,7 +172,7 @@ const QueryEditor: React.FC<SqlEditorProps> = ({ tabId, title, className }) => {
             <TooltipProvider>
               <Tooltip delayDuration={200}>
                 <TooltipTrigger className="hover:bg-muted/50 p-2 rounded-md transition-colors">
-                  <Star className="h-5 w-5 text-yellow-400 hover:text-yellow-500 transition-colors" />
+                  <Star className="h-5 w-5 transition-colors" />
                 </TooltipTrigger>
                 <TooltipContent side="bottom">Star this Query</TooltipContent>
               </Tooltip>
@@ -172,7 +182,7 @@ const QueryEditor: React.FC<SqlEditorProps> = ({ tabId, title, className }) => {
             onClick={handleExecuteQuery}
             disabled={isExecuting}
             variant="outline"
-            className="flex items-center gap-2 min-w-[100px]"
+            className="flex items-center gap-2 min-w-[100px] bg-orange-600"
           >
             {isExecuting ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -197,6 +207,7 @@ const QueryEditor: React.FC<SqlEditorProps> = ({ tabId, title, className }) => {
           tabId={tabId}
           executeQueryFn={executeQuery}
           updateTabQuery={updateTabQuery}
+          onRunQuery={handleExecuteQuery}
           theme="light"
         />
       </div>
