@@ -4,10 +4,11 @@ import { FaRegStar, FaCodeBranch } from "react-icons/fa";
 import Link from "next/link";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { useRouter } from "next/navigation";
+
+import { useSandwormStore } from "@/store";
 
 import { DicebearAvatar } from "../DicebearAvatar";
-import { useSandwormStore } from "@/store";
-import { useRouter } from "next/navigation";
 
 const QueryCard = ({ query }: { query: any }) => {
   const { createTab } = useSandwormStore();

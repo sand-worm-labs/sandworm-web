@@ -72,12 +72,11 @@ function SortableTab({ tab, isActive }: SortableTabProps) {
         isDragging ? "opacity-50" : "",
         isActive ? "z-10" : "z-0"
       )}
-      role="button"
-      tabIndex={0}
       onClick={handleMiddleClick}
       onAuxClick={handleMiddleClick}
       onKeyDown={handleKeyDown}
       onMouseDown={e => e.preventDefault()}
+      role="presentation"
     >
       {tab.type === "sql" && (
         <div

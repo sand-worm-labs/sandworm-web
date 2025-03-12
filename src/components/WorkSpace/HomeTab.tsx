@@ -193,7 +193,7 @@ ORDER BY timestamp DESC;
   };
 
   return (
-    <div className="p-6 space-y-8 max-w-7xl mx-auto truncate">
+    <div className="p-6 space-y-8 max-w-7xl mx-auto ">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -218,17 +218,17 @@ ORDER BY timestamp DESC;
           >
             <Button
               variant="outline"
-              className="h-auto p-4 flex flex-col items-start space-y-2 hover:bg-accent hover:text-accent-foreground group w-full truncate"
+              className="h-auto p-4 flex flex-col items-start space-y-2 hover:bg-accent hover:text-accent-foreground group w-full "
               onClick={() => handleNewAction(action.action)}
             >
-              <div className="flex items-center space-x-2 text-primary">
+              <div className="flex items-center space-x-2 text-primary text-wrap">
                 <div className="p-2 rounded-full bg-primary/10 group-hover:bg-primary/20 ">
                   {action.icon}
                 </div>
                 <p className="font-semibold text-base">{action.title}</p>
               </div>
               <p className="text-sm text-muted-foreground text-left">
-                {action.description}
+                {action.description} dd
               </p>
             </Button>
           </motion.div>

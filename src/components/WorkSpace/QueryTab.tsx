@@ -1,4 +1,3 @@
-// src/components/workspace/SqlTab.tsx
 import React from "react";
 import { FileX2 } from "lucide-react";
 
@@ -12,6 +11,7 @@ import { useSandwormStore } from "@/store";
 
 import { Skeleton } from "../ui/skeleton";
 import QueryEditor from "../Editor/QueryEditor";
+import QueryResultsView from "./QueryResult";
 
 interface QueryTabProps {
   tabId: string;
@@ -85,7 +85,16 @@ export const QueryTab: React.FC<QueryTabProps> = ({ tabId }) => {
       );
     }
 
-    return <div className="h-full">Result Table</div>;
+    return (
+      <div className="h-full">
+        {currentTab.result && (
+          <QueryResultsView
+            result={currentTab.result}
+            query={currentTab.content as string}
+          />
+        )}
+      </div>
+    );
   };
 
   if (!currentTab || currentTab.type !== "sql") {
@@ -94,12 +103,17 @@ export const QueryTab: React.FC<QueryTabProps> = ({ tabId }) => {
 
   return (
     <div className="h-full">
-      <ResizablePanelGroup direction="vertical">
-        <ResizablePanel defaultSize={50} minSize={25}>
+      <ResizablePanelGroup direction="vertical" className="relative">
+        <ResizablePanel defaultSize={50} minSize={25} className="relative">
           <QueryEditor tabId={tabId} title={currentTab.title} />
         </ResizablePanel>
+
         <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={50} minSize={25}>
+        <ResizablePanel
+          defaultSize={50}
+          minSize={25}
+          className="relative overflow-visible"
+        >
           {renderResults()}
         </ResizablePanel>
       </ResizablePanelGroup>

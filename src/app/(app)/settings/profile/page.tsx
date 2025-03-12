@@ -1,7 +1,8 @@
 "use client";
 
-import { DicebearAvatar } from "@/components/DicebearAvatar";
 import { useState } from "react";
+
+import { DicebearAvatar } from "@/components/DicebearAvatar";
 
 export default function ProfileSettings() {
   const [formData, setFormData] = useState({

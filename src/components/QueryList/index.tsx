@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useInView } from "react-intersection-observer";
+
 import QueryCard from "../QueryCard";
+
 import { queries } from "./queries";
 
 const QueryList: React.FC = () => {

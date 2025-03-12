@@ -126,7 +126,8 @@ export default function WorkspaceTabs() {
                   onClick={closeAllTabs}
                   className="text-red-600"
                 >
-                  Close All Tabs <XSquareIcon className="ml-4 h-4 w-4" />
+                  Close All Tabs{" "}
+                  <XSquareIcon className="ml-4 h-4 w-4 text-red-600" />
                 </ContextMenuItem>
               </ContextMenuContent>
             </ContextMenu>
