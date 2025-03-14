@@ -2,13 +2,8 @@ import type { Typesaurus } from "typesaurus";
 import { schema } from "typesaurus";
 
 import type { Employee } from "./users";
-import type { Organization } from "./organization";
 
-export const db = schema($ => ({
-  organizations: $.collection<Organization>().sub({
-    employees: $.collection<Employee>(),
-  }),
-}));
+export const db = schema($ => ({}));
 
 export type Schema = Typesaurus.Schema<typeof db>;
 
