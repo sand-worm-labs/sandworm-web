@@ -1,24 +1,8 @@
 import type { Typesaurus } from "typesaurus";
 import { schema } from "typesaurus";
 
-export interface Organization {
-  name: string;
-  walletAddress: string;
-  recoveryAddress?: string;
-}
-
-export interface Employee {
-  name: string;
-  title: string;
-  employmentType: string;
-  walletAddress: string;
-  additionalWallets: string[];
-  email: string;
-  status: boolean;
-  estimatedSalary: number;
-  employerNotes: string;
-  organizationId: string;
-}
+import type { Employee } from "./users";
+import type { Organization } from "./organization";
 
 export const db = schema($ => ({
   organizations: $.collection<Organization>().sub({
