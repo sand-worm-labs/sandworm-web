@@ -3,19 +3,24 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 import type { APIResponse } from "@/types";
-import { auth, createSessionCookie } from "@/services/firebase/admin";
+import { admin } from "@/services/firebase";
+import { createSessionCookie } from "@/services/firebase/admin";
+import { UserService } from "@/services/firebase/db/users";
 
 export async function POST(request: NextRequest) {
+  const auth = admin.auth();
   try {
     const { idToken } = (await request.json()) as { idToken: string };
     const expiresIn = 60 * 60 * 24 * 5 * 1000; // 5 days
 
+    console.log(idToken);
     // Verify token and get user info
-    const decodedToken = await auth.verifyIdToken(idToken);
-    const { uid, email, name, picture } = decodedToken;
+    const decodedToken = await auth.createUser({ uid: idToken });
+    const { uid, email } = decodedToken;
 
-    console.log("New User:", uid, email, name, picture);
+    console.log("New User:", uid, email);
 
+    await UserService.create(uid, email || "", "test");
     // TODO: Optionally create the user in the DB if needed
     // await checkOrCreateUser({ uid, email, name, picture });
 
