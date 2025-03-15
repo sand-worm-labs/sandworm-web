@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
 
-import { signInWithGoogle, signInWithGitHub } from "@/services/firebase/auth";
+import { signInWithGoogle, signInWithGitHub } from "@/services/auth";
 
 export default function SocialLogin() {
   const router = useRouter();
