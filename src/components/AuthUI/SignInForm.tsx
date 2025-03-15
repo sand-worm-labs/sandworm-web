@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { signInWithEmail } from "@/services/firebase/auth";
+import { signInWithEmail } from "@/services/auth";
 
 export default function SignInForm() {
   const router = useRouter();

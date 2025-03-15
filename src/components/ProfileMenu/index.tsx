@@ -12,7 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { signOut } from "@/services/firebase/auth";
+import { signOut } from "@/services/auth";
 import type { CurrentUserProps } from "@/types";
 
 import { DicebearAvatar } from "../DicebearAvatar";

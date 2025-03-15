@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { signUpWithEmail } from "@/services/firebase/auth";
+import { signUpWithEmail } from "@/services/auth";
 
 export default function SignUpForm() {
   const router = useRouter();
