@@ -1,28 +1,9 @@
-import "server-only";
-
 import { cookies } from "next/headers";
-import { initializeApp, getApps, cert } from "firebase-admin/app";
 import type { SessionCookieOptions } from "firebase-admin/auth";
-import { getAuth } from "firebase-admin/auth";
 
-const serviceAccount = process.env.FIREBASE_ADMIN_SERVICE_ACCOUNT;
+import { admin } from "@/services/firebase";
 
-if (!serviceAccount) {
-  throw new Error(
-    "FIREBASE_ADMIN_SERVICE_ACCOUNT environment variable is not defined."
-  );
-}
-
-export const firebaseApp =
-  getApps().find(it => it.name === "firebase-admin-app") ||
-  initializeApp(
-    {
-      credential: cert(serviceAccount),
-    },
-    "firebase-admin-app"
-  );
-console.log("auth");
-export const auth = getAuth(firebaseApp);
+const auth = admin.auth();
 
 async function getSession() {
   try {
