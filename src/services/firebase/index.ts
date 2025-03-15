@@ -1,6 +1,7 @@
 import * as admin from "firebase-admin";
+import { getFirestore } from "firebase-admin/firestore";
+import { getAuth } from "firebase-admin/auth";
 
-console.log(process.env);
 if (process.env.NODE_ENV === "test") {
   // We won't be using firebase for testing for now. At some point,
   // we might want to run tests against the Staging firebase instance.
@@ -33,3 +34,9 @@ if (!admin.apps.length && process.env.NODE_ENV === "development") {
 }
 
 export { admin };
+
+export const app = admin.apps[0];
+
+export const auth = getAuth();
+
+export const db = getFirestore();
