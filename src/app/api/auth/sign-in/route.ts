@@ -3,15 +3,17 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 import type { APIResponse } from "@/types";
-import { auth, createSessionCookie } from "@/services/firebase/admin";
+import { admin } from "@/services/firebase";
+import { createSessionCookie } from "@/services/firebase/admin";
 
 export async function POST(request: NextRequest) {
+  console.log(process.env.NODE_ENV);
   try {
     const { idToken } = (await request.json()) as { idToken: string };
     const expiresIn = 60 * 60 * 24 * 5 * 1000; // 5 days
-
+    console.log(idToken);
     // Verify token and get user info
-    const decodedToken = await auth.verifyIdToken(idToken);
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
     const { uid, email, name, picture } = decodedToken;
 
     console.log(uid, email, name, picture);
