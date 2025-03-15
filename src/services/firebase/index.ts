@@ -1,4 +1,6 @@
 import * as admin from "firebase-admin";
+import { getFirestore } from "firebase-admin/firestore";
+import { getAuth } from "firebase-admin/auth";
 
 if (process.env.NODE_ENV === "test") {
   // We won't be using firebase for testing for now. At some point,
@@ -32,3 +34,9 @@ if (!admin.apps.length && process.env.NODE_ENV === "development") {
 }
 
 export { admin };
+
+export const app = admin.apps[0];
+
+export const auth = getAuth();
+
+export const db = getFirestore();
