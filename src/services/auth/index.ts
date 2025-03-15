@@ -5,10 +5,13 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
 } from "firebase/auth";
+import NextAuth from "next-auth";
+import GithubProvider from "next-auth/providers/github";
+import GoogleProvider from "next-auth/providers/google";
+import { FirestoreAdapter } from "@auth/firebase-adapter";
 
 import type { APIResponse } from "@/types";
-
-import { auth } from "../client";
+import { db } from "@/services/firebase";
 
 export async function signInWithGoogle() {
   const provider = new GoogleAuthProvider();
@@ -94,18 +97,16 @@ export async function signInWithEmail(email: string, password: string) {
   }
 }
 
-export async function signOut() {
-  try {
-    await auth.signOut();
-
-    const response = await fetch("/api/auth/sign-out", {
-      headers: { "Content-Type": "application/json" },
-    });
-
-    const resBody = (await response.json()) as APIResponse<string>;
-    return response.ok && resBody.success;
-  } catch (error) {
-    console.error("Error signing out:", error);
-    return false;
-  }
-}
+export const { handlers, signIn, signOut, auth } = NextAuth({
+  providers: [
+    GithubProvider({
+      clientId: process.env.GITHUB_ID as string,
+      clientSecret: process.env.GITHUB_SECRET as string,
+    }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+    }),
+  ],
+  adapter: FirestoreAdapter(db),
+});
