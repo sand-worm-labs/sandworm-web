@@ -1,41 +1,9 @@
-import "server-only";
-
 import { cookies } from "next/headers";
-import * as admin from "firebase-admin";
 import type { SessionCookieOptions } from "firebase-admin/auth";
 
-if (process.env.NODE_ENV === "test") {
-  throw new Error(
-    `This will connect to the production Firestore. 
-     Make sure db/firebase.ts is updated before testing against Firebase.`
-  );
-}
+import { admin } from "@/services/firebase";
 
-if (!admin.apps.length) {
-  if (
-    process.env.NODE_ENV === "development" &&
-    process.env.FIRESTORE_EMULATOR_HOST
-  ) {
-    console.log("Using Firebase **emulator** DB");
-    admin.initializeApp({
-      projectId: "sandworm-8aa45",
-      storageBucket: "sandworm-8aa45.appspot.com",
-    });
-    // seedDatabase();
-  } else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-    console.log("Using Firebase live DB");
-    admin.initializeApp({
-      credential: admin.credential.applicationDefault(),
-      storageBucket: "sandworm-8aa45.appspot.com",
-    });
-  } else {
-    admin.initializeApp({
-      storageBucket: "sandworm-8aa45.appspot.com",
-    });
-  }
-}
-
-export const auth = admin.auth();
+const auth = admin.auth();
 
 async function getSession() {
   try {
