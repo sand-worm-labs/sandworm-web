@@ -1,9 +1,9 @@
 import "@/services/firebase";
 
-// import { QueryService } from "@/services/firebase/db/QueryService";
+import { QueryService } from "@/services/firebase/db/QueryService";
 
 beforeEach(async () => {
-  // await QueryService.deleteAll();
+  await QueryService.deleteAll();
 });
 
 afterAll(async () => {
