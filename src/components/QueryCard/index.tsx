@@ -55,11 +55,7 @@ const QueryCard = ({ query }: { query: any }) => {
         className="border border-[#ffffff30] py-2 px-6 h-[10rem] mt-2 text-sm"
         onClick={() => openQueryInTab(query)}
       >
-        <SyntaxHighlighter
-          language="sql"
-          style={{ ...atomDark, backgroundColor: "#000" }}
-          wrapLines
-        >
+        <SyntaxHighlighter language="sql" style={{ ...atomDark }} wrapLines>
           {query.query}
         </SyntaxHighlighter>
       </button>

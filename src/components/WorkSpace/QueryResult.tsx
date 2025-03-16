@@ -5,21 +5,36 @@ import React, {
   useMemo,
   useEffect,
 } from "react";
-import {
-  flexRender,
-  useReactTable,
-  getCoreRowModel,
-  getSortedRowModel,
-  getFilteredRowModel,
+import type {
   ColumnDef,
   SortingState,
   RowData,
   VisibilityState,
   Row,
   ColumnFiltersState,
+} from "@tanstack/react-table";
+import {
+  flexRender,
+  useReactTable,
+  getCoreRowModel,
+  getSortedRowModel,
+  getFilteredRowModel,
   getPaginationRowModel,
 } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
+import {
+  ArrowDown,
+  ArrowUp,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  Columns,
+  RefreshCw,
+  Loader2, // Import Loader2 for loading state
+} from "lucide-react";
+import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -34,18 +49,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
-  ArrowDown,
-  ArrowUp,
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-  Columns,
-  RefreshCw,
-  Loader2, // Import Loader2 for loading state
-} from "lucide-react";
-import { toast } from "sonner";
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -53,6 +56,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"; // Import Select components
 import { Label } from "@/components/ui/label";
+
 import DownloadDialog from "./DownloadDialog";
 import { SimpleFilter } from "./SimpleFilter";
 
@@ -75,7 +79,7 @@ export interface TableResult<T extends RowData> {
   columnTypes?: string[];
   data?: T[];
   message?: string;
-  query_id?: string;
+  queryId?: string;
 }
 
 export interface TableProps<T extends RowData> {
@@ -124,31 +128,7 @@ function QueryResultsTable<T extends RowData>({
   const resizeTimeout = useRef<NodeJS.Timeout | null>(null);
   const observerRef = useRef<IntersectionObserver | null>(null); // Add observer ref
 
-  const { columns, data, message, query_id } = result;
-
-  // Error handling
-  if (message) {
-    useEffect(() => {
-      toast.error(`Error: ${message}`);
-    }, [message]); // Display toast on message change
-
-    return (
-      <div className="w-full mt-4 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
-        <p className="text-sm text-red-600 dark:text-red-400">{message}</p>
-        <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
-          Query ID: {query_id || "Unknown"}
-        </p>
-      </div>
-    );
-  }
-
-  if (!data || !columns) {
-    return (
-      <div className="w-full mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg animate-pulse">
-        <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/3"></div>
-      </div>
-    );
-  }
+  const { columns, data, message, queryId } = result;
 
   // Handle column resize
   const handleColumnResize = useCallback((size: number, columnId: string) => {
@@ -166,7 +146,7 @@ function QueryResultsTable<T extends RowData>({
 
   // Update your memoizedColumns definition
   const memoizedColumns = useMemo<ColumnDef<T>[]>(() => {
-    const baseColumns = columns.map(col => ({
+    const baseColumns = columns?.map(col => ({
       id: col,
       accessorKey: col,
       header: col,
@@ -273,11 +253,11 @@ function QueryResultsTable<T extends RowData>({
       let maxWidth = headerWidth;
 
       const sampleRows = rows.slice(0, 200);
-      for (const row of sampleRows) {
+      sampleRows.forEach(row => {
         const value = row.getValue(columnId);
         const width = context.measureText(String(value ?? "")).width + 24;
         maxWidth = Math.max(maxWidth, width);
-      }
+      });
 
       const finalSize = Math.max(maxWidth, MIN_COLUMN_SIZE);
       sizeCache.current[columnId] = finalSize;
@@ -301,7 +281,9 @@ function QueryResultsTable<T extends RowData>({
       observerRef.current.disconnect();
     }
 
-    if (!onLoadMore || !loadMoreRef.current || isLoading) return;
+    if (!onLoadMore || !loadMoreRef.current || isLoading) {
+      return () => {};
+    }
 
     const observer = new IntersectionObserver(
       entries => {
@@ -352,6 +334,31 @@ function QueryResultsTable<T extends RowData>({
       ))}
     </tr>
   );
+
+  useEffect(() => {
+    if (message) {
+      toast.error(`Error: ${message}`);
+    }
+  }, [message]);
+
+  if (message) {
+    return (
+      <div className="w-full mt-4 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
+        <p className="text-sm text-red-600 dark:text-red-400">{message}</p>
+        <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
+          Query ID: {queryId || "Unknown"}
+        </p>
+      </div>
+    );
+  }
+
+  if (!data || !columns) {
+    return (
+      <div className="w-full mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg animate-pulse">
+        <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/3" />
+      </div>
+    );
+  }
 
   const paddingTop = virtualRows.length > 0 ? virtualRows[0].start || 0 : 0;
   const paddingBottom =
@@ -581,7 +588,8 @@ function QueryResultsTable<T extends RowData>({
                       </div>
 
                       {header.column.getCanResize() && (
-                        <div
+                        <button
+                          type="button"
                           onMouseDown={header.getResizeHandler()}
                           onTouchStart={header.getResizeHandler()}
                           onDoubleClick={() => {
