@@ -1,7 +1,7 @@
 "use server";
 import "@/services/firebase";
 import NextAuth from "next-auth";
-import Providers from `next-auth/providers`;
+import Providers from "next-auth/providers";
 import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 import { FirestoreAdapter } from "@auth/firebase-adapter";
@@ -52,14 +52,15 @@ export const {
       })
       const user = await res.json()
 
-      // If no error and we have user data, return it
-      if (res.ok && user) {
-        return user
-      }
-      // Return null if user data could not be retrieved
-      return null
-      }
-    })
+
+        // If no error and we have user data, return it
+        if (res.ok && user) {
+          return user;
+        }
+        // Return null if user data could not be retrieved
+        return null;
+      },
+    }),
   ],
   adapter: FirestoreAdapter(db),
 });
