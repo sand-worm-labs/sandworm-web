@@ -24,7 +24,9 @@ export interface QueryUpdates {
 }
 
 export type QueryDoc = Schema["querys"]["Doc"];
+export type QueryUpdateDoc = Schema["querys"]["sub"]["updates"]["Doc"];
 export type QueryResult = Result<Query>;
+export type QueryUpdatesResult = Result<QueryUpdates>;
 
 export class QueryService {
   static async findAllUserQuery(
@@ -162,6 +164,39 @@ export class QueryService {
         message: "Error updating query.",
         code: "DB_UPDATE_ERROR",
         details: error,
+      };
+    }
+  }
+
+  static async getQueryUpdates(
+    queryId: string
+  ): Promise<ServiceResult<QueryUpdates[]>> {
+    try {
+      const queryDoc = await db.querys.get(db.querys.id(queryId));
+      if (!queryDoc) {
+        return {
+          success: false,
+          message: "Query not found.",
+          code: "NOT_FOUND",
+        };
+      }
+
+      const updatesSnapshot = await db
+        .querys(db.querys.id(queryId))
+        .updates.all();
+
+      return {
+        success: true,
+        data: updatesSnapshot.map((update: QueryUpdateDoc) =>
+          toResult<QueryUpdatesResult>(update)
+        ),
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: "Error retrieving query updates.",
+        code: "DB_FETCH_ERROR",
+        details: error instanceof Error ? error.message : String(error),
       };
     }
   }
