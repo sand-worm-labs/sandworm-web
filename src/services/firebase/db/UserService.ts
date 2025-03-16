@@ -95,8 +95,8 @@ export class UserService {
    * @returns Promise<string> The hashed password.
    */
   static async hashPassword(password: string): Promise<string> {
-    const salt = await process.env.BCRYPT_SALT;
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const salt = process.env.BCRYPT_SALT || "test";
+    const hashedPassword = bcrypt.hash(password, salt);
     return hashedPassword;
   }
 
@@ -224,6 +224,36 @@ export class UserService {
         message: "Error deleting user.",
         code: "DB_DELETE_ERROR",
         details: error,
+      };
+    }
+  }
+
+  static async deleteAll(): Promise<ServiceResult<boolean>> {
+    try {
+      const queries = await db.users.all();
+
+      if (queries.length === 0) {
+        return {
+          success: true,
+          data: true,
+        };
+      }
+
+      // Batch delete for better performance
+      await Promise.allSettled(
+        queries.map(user => db.users.remove(user.ref.id))
+      );
+
+      return {
+        success: true,
+        data: true,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: "Failed to delete queries.",
+        code: "DB_DELETE_ERROR",
+        details: error instanceof Error ? error.message : error,
       };
     }
   }

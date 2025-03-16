@@ -168,6 +168,12 @@ export class QueryService {
     }
   }
 
+  /**
+   * Retrieves all query updates for a given query.
+   * @param queryId The query ID to retrieve updates for.
+   * @returns A ServiceResult containing an array of QueryUpdates if successful, otherwise
+   * an error message and code.
+   */
   static async getQueryUpdates(
     queryId: string
   ): Promise<ServiceResult<QueryUpdates[]>> {
