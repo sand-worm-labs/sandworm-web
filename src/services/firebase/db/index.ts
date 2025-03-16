@@ -1,10 +1,26 @@
 import type { Typesaurus } from "typesaurus";
 import { schema } from "typesaurus";
 
-import type { User } from "./users";
+import type { User } from "./UserService";
+import type { Query, QueryUpdates } from "./QueryService";
+import type { SupportedChain } from "./SupportedEntitiesService";
+
+export type ServiceResult<T> =
+  | { success: true; data: T }
+  | {
+      success: false;
+      error?: string;
+      message: string;
+      code: string;
+      details?: any;
+    };
 
 export const db = schema($ => ({
   users: $.collection<User>(),
+  querys: $.collection<Query>().sub({
+    updates: $.collection<QueryUpdates>(),
+  }),
+  chainSupports: $.collection<SupportedChain>(),
 }));
 
 export type Schema = Typesaurus.Schema<typeof db>;
