@@ -3,10 +3,7 @@ import { schema } from "typesaurus";
 
 import type { User } from "./UserService";
 import type { Query, QueryUpdates } from "./QueryService";
-import type {
-  SupportedChainEntity,
-  SupportedChain,
-} from "./SupportedEntitiesService";
+import type { SupportedChain } from "./SupportedEntitiesService";
 
 export type ServiceResult<T> =
   | { success: true; data: T }
