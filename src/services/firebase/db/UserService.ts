@@ -1,4 +1,5 @@
 import type { Typesaurus } from "typesaurus";
+import bcrypt from "bcrypt";
 
 import type { Result, Schema, ServiceResult } from "@/services/firebase/db";
 import { db, toResult } from "@/services/firebase/db";
@@ -25,6 +26,7 @@ export interface Wallet {
 export interface User {
   username: string;
   email: string;
+  password: string;
   socialLinks?: SocialLinks;
   status?: Status;
   wallets?: Wallet[];
@@ -69,6 +71,36 @@ export class UserService {
   }
 
   /**
+   * Verifies a given password against a stored hashed password.
+   * @param password The password input provided by the user.
+   * @param hashedPassword The stored password (hashed) for comparison.
+   * @returns A promise that resolves to a verification result message.
+   */
+  static async verify(
+    password: string,
+    hashedPassword: string
+  ): Promise<boolean> {
+    // Comparing the hashed password
+    const passwordMatched = await bcrypt.compare(password, hashedPassword);
+
+    if (passwordMatched) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Hashes a password using bcrypt.
+   * @param password The password to hash.
+   * @returns Promise<string> The hashed password.
+   */
+  static async hashPassword(password: string): Promise<string> {
+    const salt = await process.env.BCRYPT_SALT;
+    const hashedPassword = await bcrypt.hash(password, salt);
+    return hashedPassword;
+  }
+
+  /**
    * Creates a new user.
    * @param username The user's username.
    * @param email The user's email.
@@ -76,7 +108,8 @@ export class UserService {
    */
   static async create(
     username: string,
-    email: string
+    email: string,
+    password: string
   ): Promise<ServiceResult<UserResult>> {
     try {
       const ref = await db.users.add($ => ({
@@ -86,6 +119,7 @@ export class UserService {
         updatedAt: $.serverDate(),
         stars: 0,
         forks: 0,
+        password,
       }));
 
       const userSnapshot = await db.users.get(ref.id);
