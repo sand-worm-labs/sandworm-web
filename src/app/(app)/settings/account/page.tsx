@@ -1,18 +1,16 @@
 "use client";
 
 import { useState } from "react";
-/* import { changePassword, linkGitHub, unlinkGitHub } from "@/services/auth"; */
 
 export default function AccountSettings() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
+  const [message] = useState("");
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    /*  const success = await changePassword(password); */
-    /*  setMessage(success ? "Password updated!" : "Failed to update password."); */
+
     setLoading(false);
   };
 
