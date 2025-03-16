@@ -1,58 +1,140 @@
 import "@/services/firebase";
+import * as admin from "firebase-admin";
 
-// import { QueryService } from "@/services/firebase/db/QueryService";
+import { QueryService } from "@/services/firebase/db/QueryService";
 
-beforeEach(async () => {
-  // await QueryService.deleteAll();
-});
+jest.setTimeout(100000);
 
-afterAll(async () => {
-  // await QueryService.deleteAll();
-});
-
-describe("QueryService (Real DB)", () => {
-  it("adds a query", async () => {
-    expect(true).toBe(true);
+describe("QueryService", () => {
+  beforeAll(async () => {
+    await QueryService.deleteAll();
   });
-  // it("should create a query in Firestore", async () => {
-  //   const result = await QueryService.create(
-  //     "Test Query",
-  //     "A test query",
-  //     "12345",
-  //     false,
-  //     "SELECT * FROM test",
-  //     []
-  //   );
-  //   expect(result.success).toBe(true);
-  //   if (result.success) {
-  //     expect(result.data).toBeDefined();
-  //   }
-  //   // Verify in Firestore
-  //   const queries = await QueryService.findAllUserQuery("12345");
-  //   expect(queries.success).toBe(true);
-  //   if (queries.success) {
-  //     expect(queries.data.length).toBe(1);
-  //   }
-  // });
-  // it("should return error if no queries exist", async () => {
-  //   const result = await QueryService.findAllUserQuery("nonexistent-user");
-  //   expect(result.success).toBe(false);
-  //   if (!result.success) {
-  //     expect(result.message).toBe("No queries found for this user.");
-  //   }
-  // });
-  // it("should handle database errors gracefully", async () => {
-  //   const result = await QueryService.create(
-  //     "Failing Query",
-  //     "Database should fail",
-  //     "12345",
-  //     false,
-  //     "SELECT * FROM fail",
-  //     []
-  //   );
-  //   expect(result.success).toBe(false);
-  //   if (!result.success) {
-  //     expect(result.error).toBeDefined();
-  //   }
-  // });
+
+  afterAll(async () => {
+    await admin.app().delete();
+  });
+
+  it("should create a query in Firestore", async () => {
+    const result = await QueryService.create(
+      "Test Query",
+      "A test query",
+      "12345",
+      false,
+      "SELECT * FROM test",
+      []
+    );
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data).toBeDefined();
+    }
+
+    const queries = await QueryService.findAllUserQuery("12345");
+    expect(queries.success).toBe(true);
+    if (queries.success) {
+      expect(queries.data.length).toBe(1);
+    }
+  });
+
+  it("should retrieve all queries for a user", async () => {
+    const queries = await QueryService.findAllUserQuery("12345");
+    expect(queries.success).toBe(true);
+    if (queries.success) {
+      expect(queries.data.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("should update an existing query", async () => {
+    const createResult = await QueryService.create(
+      "Update Test",
+      "Original description",
+      "12345",
+      false,
+      "SELECT 1",
+      []
+    );
+
+    expect(createResult.success).toBe(true);
+    if (!createResult.success) return;
+
+    const updatedResult = await QueryService.update(
+      createResult.data.id,
+      "Updated Query",
+      "Updated description",
+      "12345",
+      false,
+      "SELECT 2",
+      []
+    );
+
+    expect(updatedResult.success).toBe(true);
+    if (updatedResult.success) {
+      expect(updatedResult.data.title).toBe("Updated Query");
+      expect(updatedResult.data.description).toBe("Updated description");
+    }
+  });
+
+  it("should get query updates on existing query", async () => {
+    const createResult = await QueryService.create(
+      "Update Test",
+      "Original description",
+      "12345",
+      false,
+      "SELECT 1",
+      []
+    );
+
+    expect(createResult.success).toBe(true);
+    if (!createResult.success) return;
+
+    await QueryService.update(
+      createResult.data.id,
+      "Updated Query",
+      "Updated description",
+      "12345",
+      false,
+      "SELECT 2",
+      []
+    );
+
+    await QueryService.update(
+      createResult.data.id,
+      "Updated Query",
+      "Updated description",
+      "12345",
+      false,
+      "SELECT * FROM (2 + 4)",
+      []
+    );
+
+    await QueryService.update(
+      createResult.data.id,
+      "Updated Query",
+      "Updated description",
+      "12345",
+      false,
+      "SELECT * FROM (2 + 4) WHERE 1 = 1",
+      []
+    );
+
+    const queryUpates = await QueryService.getQueryUpdates(
+      createResult.data.id
+    );
+
+    expect(queryUpates.success).toBe(true);
+    if (queryUpates.success) {
+      expect(queryUpates.data.length).toBe(4);
+    }
+  });
+
+  it("should delete all queries", async () => {
+    const deleteResult = await QueryService.deleteAll();
+    expect(deleteResult.success).toBe(true);
+
+    const queries = await QueryService.findAllUserQuery("12345");
+    expect(queries.success).toBe(false);
+    if (!queries.success) {
+      expect(queries.code).toBe("NOT_FOUND");
+    }
+  });
 });
