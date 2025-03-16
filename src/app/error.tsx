@@ -7,7 +7,7 @@ interface ErrorStateProps {
   reset: () => void;
 }
 
-const Error: React.FC<ErrorStateProps> = ({ error, reset }) => {
+const ErrorPage: React.FC<ErrorStateProps> = ({ error, reset }) => {
   return (
     <EmptyState
       title="Uh No!! There was a problem."
@@ -19,4 +19,4 @@ const Error: React.FC<ErrorStateProps> = ({ error, reset }) => {
   );
 };
 
-export default Error;
+export default ErrorPage;

@@ -1,4 +1,5 @@
 import MainFooter from "@/components/Footer";
+
 import MainHeader from "@/components/Header";
 
 export default function PublicLayout({

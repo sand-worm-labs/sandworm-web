@@ -50,7 +50,8 @@ const QueryCard = ({ query }: { query: any }) => {
           </div>
         </div>
       </div>
-      <div
+      <button
+        type="button"
         className="border border-[#ffffff30] py-2 px-6 h-[10rem] mt-2 text-sm"
         onClick={() => openQueryInTab(query)}
       >
@@ -61,7 +62,7 @@ const QueryCard = ({ query }: { query: any }) => {
         >
           {query.query}
         </SyntaxHighlighter>
-      </div>
+      </button>
     </div>
   );
 };
