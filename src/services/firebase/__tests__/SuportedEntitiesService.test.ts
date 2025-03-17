@@ -20,7 +20,7 @@ describe("SupportedChainService", () => {
   });
 
   it("should create a new supported chain", async () => {
-    const result = await SupportedChainService.create("Ethereum");
+    const result = await SupportedChainService.create("Ethereum", "ETH");
 
     expect(result.success).toBe(true);
     if (result.success) {
@@ -67,9 +67,9 @@ describe("SupportedChainService", () => {
   });
 
   it("should retrieve all supported chains", async () => {
-    await SupportedChainService.create("Ethereum");
-    await SupportedChainService.create("Bitcoin");
-    await SupportedChainService.create("Litecoin");
+    await SupportedChainService.create("Ethereum", "ETH");
+    await SupportedChainService.create("Bitcoin", "BTC");
+    await SupportedChainService.create("Litecoin", "LTC");
 
     const result = await SupportedChainService.getAll();
 
@@ -130,7 +130,7 @@ describe("SupportedChainService", () => {
 
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.message).toBe("Error adding chain entity.");
+      expect(result.message).toBe("Invalid table name.");
       expect(result.code).toBe("DB_UPDATE_ERROR");
     }
   });
