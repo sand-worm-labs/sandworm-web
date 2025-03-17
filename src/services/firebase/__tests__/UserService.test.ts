@@ -149,7 +149,7 @@ describe("UserService", () => {
 
       expect(updateResult.success).toBe(false);
       if (!updateResult.success) {
-        expect(updateResult.code).toBe("INVALID_USERNAME");
+        expect(updateResult.code).toBe("MISSING_USERNAME");
       }
     }
   });

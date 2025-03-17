@@ -95,8 +95,7 @@ export class UserService {
    * @returns Promise<string> The hashed password.
    */
   static async hashPassword(password: string): Promise<string> {
-    const salt = process.env.BCRYPT_SALT || "test";
-    const hashedPassword = bcrypt.hash(password, salt);
+    const hashedPassword = bcrypt.hash(password, 10);
     return hashedPassword;
   }
 
@@ -111,6 +110,13 @@ export class UserService {
     email: string,
     password: string
   ): Promise<ServiceResult<UserResult>> {
+    if (!username || !email || !password) {
+      return {
+        success: false,
+        message: "Missing required fields.",
+        code: "MISSING_FIELDS",
+      };
+    }
     try {
       const ref = await db.users.add($ => ({
         username,
@@ -158,6 +164,19 @@ export class UserService {
     email: string
   ): Promise<ServiceResult<UserResult>> {
     try {
+      const validations = {
+        id: !id && { message: "Missing ID.", code: "MISSING_ID" },
+        username: !username && {
+          message: "Missing Username.",
+          code: "MISSING_USERNAME",
+        },
+        email: !email && { message: "Missing Email.", code: "MISSING_EMAIL" },
+      };
+
+      const error = Object.values(validations).find(Boolean);
+      if (error) {
+        return { success: false, message: error.message, code: error.code };
+      }
       const foundUser = await db.users.get(db.users.id(id));
       if (!foundUser) {
         return {
@@ -228,30 +247,36 @@ export class UserService {
     }
   }
 
+  /**
+   * Deletes all users from the database.
+   * @returns ServiceResult<boolean> True if all users were successfully deleted, false otherwise.
+   */
   static async deleteAll(): Promise<ServiceResult<boolean>> {
     try {
-      const queries = await db.users.all();
+      // Retrieve all user documents
+      const users = await db.users.all();
 
-      if (queries.length === 0) {
+      // If no users exist, return success
+      if (users.length === 0) {
         return {
           success: true,
           data: true,
         };
       }
 
-      // Batch delete for better performance
-      await Promise.allSettled(
-        queries.map(user => db.users.remove(user.ref.id))
-      );
+      // Batch delete users for better performance
+      await Promise.allSettled(users.map(user => db.users.remove(user.ref.id)));
 
+      // Return success if batch delete is successful
       return {
         success: true,
         data: true,
       };
     } catch (error) {
+      // Return failure result with error details if an exception occurs
       return {
         success: false,
-        message: "Failed to delete queries.",
+        message: "Failed to delete users.",
         code: "DB_DELETE_ERROR",
         details: error instanceof Error ? error.message : error,
       };
