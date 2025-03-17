@@ -36,13 +36,28 @@ import {
 } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
 
-const AppSidebar = () => {
+type ViewType = "dataExplorer" | "savedQueries";
+
+interface AppSidebarProps {
+  currentView: ViewType;
+  setCurrentView: (view: ViewType) => void;
+}
+
+const AppSidebar = ({ currentView, setCurrentView }: AppSidebarProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const [isExpanded, setIsExpanded] = useState(false);
   const [open, setOpen] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const theme = "dark";
+  const viewOptions = [
+    {
+      id: "dataExplorer" as const,
+      label: "Data Explorer",
+      icon: SquareTerminal,
+    },
+    { id: "savedQueries" as const, label: "Saved Queries", icon: LineChart },
+  ];
 
   const toggleTheme = () => {
     console.log("theme changed");
@@ -108,21 +123,21 @@ const AppSidebar = () => {
       <div className="p-3" />
 
       <ScrollArea className="flex-grow">
-        <nav className="space-y-1 p-2">
-          {navItems.map(item => (
-            <Link
-              key={item.to}
-              href={item.to}
-              target={item.isNewWindow ? "_blank" : "_self"}
+        <nav className="space-y-3 p-2">
+          {viewOptions.map(item => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => setCurrentView(item.id)}
               className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                pathname === item.to
-                  ? "bg-[#ffe814] text-black"
+                currentView === item.id
+                  ? "bg-orange-600"
                   : "hover:bg-[#ffe814]/20"
               }`}
             >
               <item.icon className={`h-5 w-5 ${isExpanded ? "mr-2" : ""}`} />
               {isExpanded && <span>{item.label}</span>}
-            </Link>
+            </button>
           ))}
         </nav>
       </ScrollArea>
