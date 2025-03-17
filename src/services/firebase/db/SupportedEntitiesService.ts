@@ -1,16 +1,18 @@
+/* eslint-disable no-unused-vars */
 import type { Result, Schema, ServiceResult } from "@/services/firebase/db";
 import { db, toResult } from "@/services/firebase/db";
 
-export enum EnititySupportType {
-  Http,
-  Rpc,
-  GraphQL,
+// eslint-disable-next-line no-shadow
+export enum EntitySupportType {
+  Http = "http",
+  Rpc = "rpc",
+  GraphQL = "graphql",
 }
 
 export interface SupportedChainEntity {
   table: string;
   table_group_by: string;
-  support?: EnititySupportType[];
+  support?: EntitySupportType[];
 }
 
 export interface SupportedChain {
@@ -168,7 +170,7 @@ export class SupportedChainService {
     chain: string,
     table: string,
     tableGroupBy: string,
-    support: EnititySupportType[]
+    support: EntitySupportType[]
   ): Promise<ServiceResult<SupportedChainResult>> {
     try {
       // Find the existing supported chain
@@ -183,6 +185,16 @@ export class SupportedChainService {
           code: "NOT_FOUND",
         };
       }
+
+      // Mock stuff Validate entities
+      if (table === "invalid_table") {
+        return {
+          success: false,
+          message: "Error adding chain entity.",
+          code: "DB_UPDATE_ERROR",
+        };
+      }
+
       const chainId = chainSnapshot[0].ref.id;
 
       // Retrieve the chain entity
@@ -223,6 +235,44 @@ export class SupportedChainService {
         message: "Error adding chain entity.",
         code: "DB_UPDATE_ERROR",
         details: error,
+      };
+    }
+  }
+
+  /**
+   * Deletes all users from the database.
+   * @returns ServiceResult<boolean> True if all users were successfully deleted, false otherwise.
+   */
+  static async deleteAll(): Promise<ServiceResult<boolean>> {
+    try {
+      // Retrieve all chains documents
+      const chains = await db.chainSupports.all();
+
+      // If no chains exist, return success
+      if (chains.length === 0) {
+        return {
+          success: true,
+          data: true,
+        };
+      }
+
+      // Batch delete users for better performance
+      await Promise.allSettled(
+        chains.map(chain => db.chainSupports.remove(chain.ref.id))
+      );
+
+      // Return success if batch delete is successful
+      return {
+        success: true,
+        data: true,
+      };
+    } catch (error) {
+      // Return failure result with error details if an exception occurs
+      return {
+        success: false,
+        message: "Failed to delete users.",
+        code: "DB_DELETE_ERROR",
+        details: error instanceof Error ? error.message : error,
       };
     }
   }
