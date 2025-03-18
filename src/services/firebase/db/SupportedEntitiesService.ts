@@ -30,8 +30,16 @@ export class SupportedChainService {
     shortCode: string
   ): Promise<ServiceResult<SupportedChainResult>> {
     try {
+      if (!chain || !shortCode)
+        return DataResult.failure("Invalid chain data", "VALIDATION_ERROR");
+
+      const lowerCaseChain = chain.toLowerCase();
+      const foundChain =
+        await SupportedChainService.findByChain(lowerCaseChain);
+      if (foundChain.success) return DataResult.success(foundChain.data);
+
       const ref = await db.chainSupports.add({
-        chain,
+        chain: lowerCaseChain,
         shortCode,
         chainEntities: [],
       });
