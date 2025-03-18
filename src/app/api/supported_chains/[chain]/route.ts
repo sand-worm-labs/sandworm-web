@@ -10,12 +10,16 @@ export type Chain = {
 };
 
 // eslint-disable-next-line no-unused-vars
-export async function GET({
-  params,
-}: {
-  params: Promise<{ chain_shortcode: string }>;
-}): Promise<Response> {
-  console.log(params);
+export async function GET(
+  request: Request,
+  {
+    params,
+  }: {
+    params: { chain: string };
+  }
+): Promise<Response> {
+  const { chain } = await params;
+  console.log(chain);
   //   const result = await SupportedChainService.getAll();
   //   if (!result.success) {
   //     return new Response(JSON.stringify(result), { status: 500 });
@@ -24,11 +28,15 @@ export async function GET({
   return new Response(JSON.stringify([]));
 }
 
-export async function POST({
-  params,
-}: {
-  params: Promise<{ chain_shortcode: string }>;
-}): Promise<Response> {
-  console.log(params);
+export async function POST(
+  request: Request,
+  {
+    params,
+  }: {
+    params: { chain: string };
+  }
+): Promise<Response> {
+  const { chain } = await params;
+  console.log(chain);
   return new Response(JSON.stringify([]));
 }
