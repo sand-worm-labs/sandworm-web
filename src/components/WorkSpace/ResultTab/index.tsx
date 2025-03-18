@@ -327,7 +327,7 @@ function QueryResultsTable<T extends RowData>({
         <td
           key={cell.id}
           style={{ width: cell.column.getSize() }}
-          className="p-2 border dark:border-gray-700 truncate"
+          className="p-2 border border-borderLight truncate"
         >
           {renderCell(cell)}
         </td>
@@ -551,7 +551,7 @@ function QueryResultsTable<T extends RowData>({
               ))}
             </colgroup>
 
-            <thead className="sticky top-0 z-1 bg-gray-50 dark:bg-gray-800">
+            <thead className="sticky top-0 z-1 ">
               {table.getHeaderGroups().map(headerGroup => (
                 <tr key={headerGroup.id}>
                   {headerGroup.headers.map(header => (
@@ -559,10 +559,10 @@ function QueryResultsTable<T extends RowData>({
                       key={header.id}
                       style={{ width: header.getSize() }}
                       className={`
-                          relative p-2 text-left font-medium text-gray-600 dark:text-gray-200
-                          border-b dark:border-gray-700 text-xs select-none
-                          ${header.column.getCanSort() ? "cursor-pointer" : ""}
-                      `}
+                            relative p-2 text-left font-medium text-white border-borderLight
+                            border-b  text-xs select-none bg-muted
+                            ${header.column.getCanSort() ? "cursor-pointer" : ""}
+                        `}
                       onClick={
                         header.column.getCanSort()
                           ? header.column.getToggleSortingHandler()
@@ -597,17 +597,17 @@ function QueryResultsTable<T extends RowData>({
                             handleColumnResize(newSize, header.column.id);
                           }}
                           className={`
-                          absolute right-0 top-0 h-full w-1
-                          cursor-col-resize select-none touch-none
-                          bg-gray-300 dark:bg-gray-600
-                          hover:bg-primary/50
-                           ${
-                             header.column.getIsResizing()
-                               ? "bg-primary w-1"
-                               : ""
-                           }
-                           transition-colors
-                       `}
+                            absolute right-0 top-0 h-full w-1
+                            cursor-col-resize select-none touch-none
+                            bg-gray-300 dark:bg-gray-600
+                            hover:bg-primary/50
+                             ${
+                               header.column.getIsResizing()
+                                 ? "bg-primary w-1"
+                                 : ""
+                             }
+                             transition-colors
+                         `}
                         />
                       )}
                     </th>
@@ -663,7 +663,7 @@ function QueryResultsTable<T extends RowData>({
       </div>
 
       {/* Footer with stats */}
-      <div className="p-2 border-t dark:border-gray-700">
+      <div className="p-2 border-t border-borderLight">
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>
             {table.getFilteredRowModel().rows.length.toLocaleString()} of{" "}

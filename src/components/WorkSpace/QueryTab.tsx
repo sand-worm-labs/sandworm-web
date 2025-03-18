@@ -11,7 +11,7 @@ import { useSandwormStore } from "@/store";
 
 import { Skeleton } from "../ui/skeleton";
 import QueryEditor from "../Editor/QueryEditor";
-import QueryResultsView from "./QueryResult";
+import QueryResultsTable from "./ResultTab/index";
 
 interface QueryTabProps {
   tabId: string;

@@ -16,6 +16,7 @@ import {
 import { toast } from "sonner";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { GiBackwardTime } from "react-icons/gi";
 
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -36,7 +37,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
 
-type ViewType = "dataExplorer" | "savedQueries";
+type ViewType = "dataExplorer" | "savedQueries" | "ChangeLog";
 
 interface AppSidebarProps {
   currentView: ViewType;
@@ -57,6 +58,11 @@ const AppSidebar = ({ currentView, setCurrentView }: AppSidebarProps) => {
       icon: SquareTerminal,
     },
     { id: "savedQueries" as const, label: "Saved Queries", icon: LineChart },
+    {
+      id: "ChangeLog" as const,
+      label: "ChangeLog",
+      icon: GiBackwardTime,
+    },
   ];
 
   const toggleTheme = () => {
