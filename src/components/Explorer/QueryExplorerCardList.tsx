@@ -1,5 +1,7 @@
 import React from "react";
+
 import { AiOutlineCode } from "react-icons/ai";
+
 import { Input } from "../ui/input";
 
 interface IQuery {
@@ -25,7 +27,7 @@ export const QueryExplorerCardList: React.FC<IQueryExplorerCardListProps> = ({
         {query.map(item => (
           <li
             key={item.id}
-            className="p-4 py-1.5   rounded transition-colors mb-3 cursor-pointer "
+            className="p-4 py-1.5 rounded transition-colors mb-3 cursor-pointer"
           >
             <div className="flex items-center">
               <div className="flex-shrink-0 p-2 rounded-lg">
