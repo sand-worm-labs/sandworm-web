@@ -36,7 +36,10 @@ export class SupportedChainService {
       const lowerCaseChain = chain.toLowerCase();
       const foundChain =
         await SupportedChainService.findByChain(lowerCaseChain);
-      if (foundChain.success) return DataResult.success(foundChain.data);
+
+      if (foundChain.success) {
+        return DataResult.success(foundChain.data);
+      }
 
       const ref = await db.chainSupports.add({
         chain: lowerCaseChain,
