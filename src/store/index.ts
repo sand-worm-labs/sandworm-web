@@ -126,19 +126,18 @@ export interface SandwormStoreState {
 
 // Create a mock WASM query result
 const createMockWasmResult = () => {
-  const mockData = [
-    {
-      block_date: "2024-08-26T00:00:00Z",
-      checkpoint_commitments: [],
-      digest: "5zNK7NRujRr8r8HZUXKRrohth7uLDRFcW3abBiSsb5i7",
-      timestamp: "2024-08-26T22:26:46Z",
-      total_computation_cost: 0,
-      total_gas_cost: 1338125222440,
-      total_storage_cost: 6531590791600,
-      total_storage_rebate: 6380271342720,
-    },
-    // You can add more rows here if needed
-  ];
+  const mockEntry = {
+    block_date: "2024-08-26T00:00:00Z",
+    checkpoint_commitments: [],
+    digest: "5zNK7NRujRr8r8HZUXKRrohth7uLDRFcW3abBiSsb5i7",
+    timestamp: "2024-08-26T22:26:46Z",
+    total_computation_cost: 0,
+    total_gas_cost: 1338125222440,
+    total_storage_cost: 6531590791600,
+    total_storage_rebate: 6380271342720,
+  };
+
+  const mockData = Array.from({ length: 80 }, () => ({ ...mockEntry }));
 
   // Define schema that matches your data
   const schema = {
@@ -154,7 +153,6 @@ const createMockWasmResult = () => {
     ],
   };
 
-  // Create array-like structure with toArray method
   const rows = mockData.map(row => ({
     toJSON: () => ({ ...row }),
   }));
