@@ -1,5 +1,7 @@
 /* eslint-disable no-shadow */
 /* eslint-disable no-unused-vars */
+import type { Typesaurus } from "typesaurus";
+
 import type { Result, Schema, ServiceResult } from "@/services/firebase/db";
 import { DataResult, db, toResult } from "@/services/firebase/db";
 
@@ -9,10 +11,17 @@ export enum EntitySupportType {
   GraphQL = "graphql",
 }
 
+export interface EntityColumn {
+  name: string;
+  type: string;
+  nullable: boolean;
+}
+
 export interface SupportedChainEntity {
   table: string;
   table_group_by: string;
   support?: EntitySupportType[];
+  columns?: EntityColumn[];
 }
 
 export interface SupportedChain {
@@ -136,6 +145,7 @@ export class SupportedChainService {
         table,
         table_group_by: tableGroupBy,
         support,
+        columns: [],
       });
       await db.chainSupports.update(chainId, {
         chainEntities: existingChain.chainEntities,

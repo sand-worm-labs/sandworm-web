@@ -1,7 +1,7 @@
 import type { Typesaurus } from "typesaurus";
 
 import type { Result, Schema, ServiceResult } from "@/services/firebase/db";
-import { db, toResult } from "@/services/firebase/db";
+import { db, toResult, DataResult } from "@/services/firebase/db";
 
 export interface Query {
   title: string;
@@ -38,24 +38,21 @@ export class QueryService {
       );
 
       if (queries.length === 0) {
-        return {
-          success: false,
-          message: "No queries found for the user.",
-          code: "NOT_FOUND",
-        };
+        return DataResult.failure(
+          "No queries found for the user.",
+          "NOT_FOUND"
+        );
       }
 
-      return {
-        success: true,
-        data: queries.map((query: QueryDoc) => toResult<QueryResult>(query)),
-      };
+      return DataResult.success(
+        queries.map((query: QueryDoc) => toResult<QueryResult>(query))
+      );
     } catch (error) {
-      return {
-        success: false,
-        message: "Failed to retrieve user queries.",
-        code: "DB_QUERY_ERROR",
-        details: error,
-      };
+      return DataResult.failure(
+        "Failed to retrieve user queries.",
+        "DB_QUERY_ERROR",
+        error
+      );
     }
   }
 
@@ -90,24 +87,19 @@ export class QueryService {
 
       const querySnapshot = await db.querys.get(ref.id);
       if (!querySnapshot) {
-        return {
-          success: false,
-          message: "Failed to retrieve created query.",
-          code: "DB_RETRIEVAL_ERROR",
-        };
+        return DataResult.failure(
+          "Failed to retrieve created query.",
+          "DB_RETRIEVAL_ERROR"
+        );
       }
 
-      return {
-        success: true,
-        data: toResult<Query>(querySnapshot),
-      };
+      return DataResult.success(toResult<Query>(querySnapshot));
     } catch (error) {
-      return {
-        success: false,
-        message: "Error creating query.",
-        code: "DB_INSERT_ERROR",
-        details: error,
-      };
+      return DataResult.failure(
+        "Error creating query.",
+        "DB_INSERT_ERROR",
+        error
+      );
     }
   }
 
@@ -123,11 +115,7 @@ export class QueryService {
     try {
       const foundQuery = await db.querys.get(db.querys.id(queryId));
       if (!foundQuery) {
-        return {
-          success: false,
-          message: "Query not found.",
-          code: "NOT_FOUND",
-        };
+        return DataResult.failure("Query not found.", "NOT_FOUND");
       }
 
       await foundQuery.update($ => ({
@@ -147,63 +135,46 @@ export class QueryService {
 
       const querySnapshot = await db.querys.get(db.querys.id(queryId));
       if (!querySnapshot) {
-        return {
-          success: false,
-          message: "Failed to retrieve updated query.",
-          code: "DB_RETRIEVAL_ERROR",
-        };
+        return DataResult.failure(
+          "Failed to retrieve updated query.",
+          "DB_RETRIEVAL_ERROR"
+        );
       }
 
-      return {
-        success: true,
-        data: toResult<Query>(querySnapshot),
-      };
+      return DataResult.success(toResult<Query>(querySnapshot));
     } catch (error) {
-      return {
-        success: false,
-        message: "Error updating query.",
-        code: "DB_UPDATE_ERROR",
-        details: error,
-      };
+      return DataResult.failure(
+        "Error updating query.",
+        "DB_UPDATE_ERROR",
+        error
+      );
     }
   }
 
-  /**
-   * Retrieves all query updates for a given query.
-   * @param queryId The query ID to retrieve updates for.
-   * @returns A ServiceResult containing an array of QueryUpdates if successful, otherwise
-   * an error message and code.
-   */
   static async getQueryUpdates(
     queryId: string
   ): Promise<ServiceResult<QueryUpdates[]>> {
     try {
       const queryDoc = await db.querys.get(db.querys.id(queryId));
       if (!queryDoc) {
-        return {
-          success: false,
-          message: "Query not found.",
-          code: "NOT_FOUND",
-        };
+        return DataResult.failure("Query not found.", "NOT_FOUND");
       }
 
       const updatesSnapshot = await db
         .querys(db.querys.id(queryId))
         .updates.all();
 
-      return {
-        success: true,
-        data: updatesSnapshot.map((update: QueryUpdateDoc) =>
+      return DataResult.success(
+        updatesSnapshot.map((update: QueryUpdateDoc) =>
           toResult<QueryUpdatesResult>(update)
-        ),
-      };
+        )
+      );
     } catch (error) {
-      return {
-        success: false,
-        message: "Error retrieving query updates.",
-        code: "DB_FETCH_ERROR",
-        details: error instanceof Error ? error.message : String(error),
-      };
+      return DataResult.failure(
+        "Error retrieving query updates.",
+        "DB_FETCH_ERROR",
+        error
+      );
     }
   }
 
@@ -212,28 +183,20 @@ export class QueryService {
       const queries = await db.querys.all();
 
       if (queries.length === 0) {
-        return {
-          success: true,
-          data: true,
-        };
+        return DataResult.success(true);
       }
 
-      // Batch delete for better performance
       await Promise.allSettled(
         queries.map(query => db.querys.remove(query.ref.id))
       );
 
-      return {
-        success: true,
-        data: true,
-      };
+      return DataResult.success(true);
     } catch (error) {
-      return {
-        success: false,
-        message: "Failed to delete queries.",
-        code: "DB_DELETE_ERROR",
-        details: error instanceof Error ? error.message : error,
-      };
+      return DataResult.failure(
+        "Failed to delete queries.",
+        "DB_DELETE_ERROR",
+        error
+      );
     }
   }
 }
