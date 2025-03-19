@@ -1,6 +1,7 @@
 import React from "react";
-import { CardHeader, CardTitle, Card, CardContent } from "../ui/card";
 import { SquareTerminal, Plus } from "lucide-react";
+
+import { CardHeader, CardTitle, Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
 import { QueryExplorerCardList } from "../Explorer/QueryExplorerCardList";
 

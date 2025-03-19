@@ -1,12 +1,13 @@
 "use server";
-import "@/services/firebase";
+
 import NextAuth from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 import { FirestoreAdapter } from "@auth/firebase-adapter";
 
-import type { APIResponse } from "@/types";
 import { db } from "@/services/firebase";
+import type { APIResponse } from "@/types";
+
 import { UserService } from "../firebase/db/UserService";
 
 export const {
@@ -43,7 +44,7 @@ export const {
         // e.g. return { id: 1, name: 'J Smith', email: 'jsmith@example.com' }
         // You can also use the `req` object to obtain additional parameters
         // (i.e., the request IP address)
-        //UserService.findUser()
+        // UserService.findUser()
         const res = await fetch("/your/endpoint", {
           method: "POST",
           body: JSON.stringify(credentials),

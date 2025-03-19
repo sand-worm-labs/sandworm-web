@@ -11,6 +11,7 @@ import { useSandwormStore } from "@/store";
 
 import { Skeleton } from "../ui/skeleton";
 import QueryEditor from "../Editor/QueryEditor";
+
 import QueryResultsTable from "./ResultTab/index";
 
 interface QueryTabProps {
@@ -88,7 +89,7 @@ export const QueryTab: React.FC<QueryTabProps> = ({ tabId }) => {
     return (
       <div className="h-full">
         {currentTab.result && (
-          <QueryResultsView
+          <QueryResultsTable
             result={currentTab.result}
             query={currentTab.content as string}
           />

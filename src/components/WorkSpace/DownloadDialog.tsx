@@ -1,4 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { Download, AlertCircle } from "lucide-react";
+import Papa from "papaparse";
+import { toast } from "sonner";
+
 import {
   Dialog,
   DialogContent,
@@ -9,9 +13,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Download, AlertCircle } from "lucide-react";
-import Papa from "papaparse";
-import { toast } from "sonner";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useSandwormStore } from "@/store";
@@ -106,7 +107,7 @@ const DownloadDialog: React.FC<DownloadDialogProps> = ({
     const dm = decimals < 0 ? 0 : decimals;
     const sizes = ["B", "KB", "MB", "GB", "TB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+    return `${parseFloat((bytes / k ** i).toFixed(dm))} ${sizes[i]}`;
   };
 
   const processInChunks = async (
@@ -196,12 +197,14 @@ const DownloadDialog: React.FC<DownloadDialogProps> = ({
         message:
           "Warning: The export size is over 100MB. This might take a while and could impact browser performance.",
       };
-    } else if (sizeInMB >= 50) {
+    }
+    if (sizeInMB >= 50) {
       return {
         message:
           "Warning: The export size is over 50MB. This might take a while.",
       };
-    } else if (sizeInMB >= 20) {
+    }
+    if (sizeInMB >= 20) {
       return {
         message: "The export size is over 20MB.",
       };
