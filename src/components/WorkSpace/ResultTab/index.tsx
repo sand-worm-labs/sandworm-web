@@ -10,7 +10,6 @@ import type {
   SortingState,
   RowData,
   VisibilityState,
-  Row,
   ColumnFiltersState,
 } from "@tanstack/react-table";
 import {
@@ -21,52 +20,17 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
 } from "@tanstack/react-table";
-import { useVirtualizer } from "@tanstack/react-virtual";
-import {
-  ArrowDown,
-  ArrowUp,
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-  Columns,
-  RefreshCw,
-  Loader2, // Import Loader2 for loading state
-} from "lucide-react";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-  DropdownMenuCheckboxItem,
-} from "@/components/ui/dropdown-menu";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"; // Import Select components
-import { Label } from "@/components/ui/label";
-
-import DownloadDialog from "./DownloadDialog";
-import { SimpleFilter } from "./SimpleFilter";
+import { TableFooter } from "./TableFooter";
+import { TableControls } from "./TableControl";
+import { TableContent } from "./TableContent";
+import { IndexCell } from "./IndexCell";
 
 // Constants
 const DEFAULT_COLUMN_SIZE = 150;
 const MIN_COLUMN_SIZE = 50;
-const OVERSCAN_COUNT = 5;
-const ROW_HEIGHT = 35;
-const DEFAULT_PAGE_SIZE = 50; // Changed to 50
-const PAGE_SIZE_OPTIONS = [50, 100, 200, 400]; // Available page size options
+const DEFAULT_PAGE_SIZE = 50;
 
 // Types
 export interface TableMeta {
@@ -114,19 +78,18 @@ function QueryResultsTable<T extends RowData>({
   );
   const [columnSizing, setColumnSizing] = useState<Record<string, number>>({});
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [globalFilter, setGlobalFilter] = useState(""); // Use globalFilter
+  const [globalFilter, setGlobalFilter] = useState("");
   const [, setFilterValue] = useState("");
   const [pagination, setPagination] = useState({
     pageIndex: 0,
-    pageSize: DEFAULT_PAGE_SIZE, // Use default page size
+    pageSize: DEFAULT_PAGE_SIZE,
   });
 
   // Refs
   const sizeCache = useRef<Record<string, number>>({});
-  const tableContainerRef = useRef<HTMLDivElement>(null);
   const loadMoreRef = useRef<HTMLTableRowElement>(null);
   const resizeTimeout = useRef<NodeJS.Timeout | null>(null);
-  const observerRef = useRef<IntersectionObserver | null>(null); // Add observer ref
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
   const { columns, data, message, queryId } = result;
 
@@ -166,9 +129,7 @@ function QueryResultsTable<T extends RowData>({
         minSize: 50,
         maxSize: 70,
         enableResizing: false, // Disable resizing of index column.  Consider making this configurable
-        cell: info => (
-          <span className="font-mono tabular-nums">{info.row.index + 1}</span>
-        ),
+        cell: info => <IndexCell index={info.row.index} />, // Use the new IndexCell component
       },
       ...baseColumns,
     ];
@@ -224,20 +185,6 @@ function QueryResultsTable<T extends RowData>({
 
   // Virtual scrolling setup
   const { rows } = table.getRowModel();
-  const rowVirtualizer = useVirtualizer({
-    count: rows.length,
-    getScrollElement: () => tableContainerRef.current,
-    estimateSize: useCallback(() => ROW_HEIGHT, []),
-    overscan: OVERSCAN_COUNT,
-  });
-
-  const virtualRows = virtualScrolling
-    ? rowVirtualizer.getVirtualItems()
-    : rows.map((_, index) => ({
-        index,
-        start: index * ROW_HEIGHT,
-        size: ROW_HEIGHT,
-      }));
 
   // Column auto-sizing
   const calculateAutoSize = useCallback(
@@ -318,23 +265,6 @@ function QueryResultsTable<T extends RowData>({
     return flexRender(cell.column.columnDef.cell, cell.getContext());
   }, []);
 
-  const TableRow = ({ row }: { row: Row<T> }) => (
-    <tr
-      key={row.id}
-      className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors text-xs"
-    >
-      {row.getVisibleCells().map(cell => (
-        <td
-          key={cell.id}
-          style={{ width: cell.column.getSize() }}
-          className="p-2 border border-borderLight truncate"
-        >
-          {renderCell(cell)}
-        </td>
-      ))}
-    </tr>
-  );
-
   useEffect(() => {
     if (message) {
       toast.error(`Error: ${message}`);
@@ -360,317 +290,28 @@ function QueryResultsTable<T extends RowData>({
     );
   }
 
-  const paddingTop = virtualRows.length > 0 ? virtualRows[0].start || 0 : 0;
-  const paddingBottom =
-    virtualRows.length > 0
-      ? rowVirtualizer.getTotalSize() -
-        (virtualRows[virtualRows.length - 1].start || 0) -
-        virtualRows[virtualRows.length - 1].size
-      : 0;
-
   return (
     <div className={`w-full h-full flex min-h-[200px] flex-col ${className}`}>
-      {/* Controls */}
-      <div className="flex items-center justify-between p-2 border-b dark:border-gray-700">
-        <div className="flex items-center space-x-2 flex-1">
-          {/* Simple Filter */}
-          <div className="flex-1">
-            <SimpleFilter
-              onFilterChange={handleFilterChange}
-              className="w-full"
-            />
-          </div>
-
-          {/* Column visibility */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="h-8">
-                <Columns className="h-4 w-4 mr-2" />
-                Columns
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <div className="max-h-64 overflow-auto">
-                {table
-                  .getAllColumns()
-                  .filter(col => col.id !== "__index")
-                  .map(column => (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      checked={column.getIsVisible()}
-                      onCheckedChange={value =>
-                        column.toggleVisibility(!!value)
-                      }
-                      className="text-sm"
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  ))}
-              </div>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <DownloadDialog data={data || []} query={query} />
-
-          {onRefresh && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onRefresh}
-              disabled={isLoading}
-              className="h-8"
-            >
-              {isLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" /> // Show loader when refreshing
-              ) : (
-                <RefreshCw className="h-4 w-4" />
-              )}
-            </Button>
-          )}
-        </div>
-
-        {/* Pagination controls */}
-        <div className="flex items-center space-x-2">
-          {/* First Page Button */}
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  onClick={() => table.setPageIndex(0)}
-                  disabled={!table.getCanPreviousPage()}
-                  variant="outline"
-                  size="icon"
-                  className="h-8 w-8 p-0"
-                >
-                  <ChevronsLeft size={14} />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>First Page</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
-          {/* Previous Page Button */}
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  onClick={() => table.previousPage()}
-                  disabled={!table.getCanPreviousPage()}
-                  variant="outline"
-                  size="icon"
-                  className="h-8 w-8 p-0"
-                >
-                  <ChevronLeft size={14} />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Previous Page</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
-          {/* Page Number Display */}
-          <span className="text-gray-600 dark:text-gray-300 min-w-[100px] text-center text-xs">
-            Page {table.getState().pagination.pageIndex + 1} of{" "}
-            {table.getPageCount()}
-          </span>
-
-          {/* Next Page Button */}
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  onClick={() => table.nextPage()}
-                  disabled={!table.getCanNextPage()}
-                  variant="outline"
-                  size="icon"
-                  className="h-8 w-8 p-0"
-                >
-                  <ChevronRight size={14} />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Next Page</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
-          {/* Last Page Button */}
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-                  disabled={!table.getCanNextPage()}
-                  variant="outline"
-                  size="icon"
-                  className="h-8 w-8 p-0"
-                >
-                  <ChevronsRight size={14} />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Last Page</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
-          {/* Page Size Selector */}
-          <div className="flex items-center space-x-2">
-            <Label htmlFor="page-size" className="text-xs text-gray-500">
-              Rows:
-            </Label>
-            <Select onValueChange={value => table.setPageSize(Number(value))}>
-              <SelectTrigger className="w-[70px] h-8 text-xs">
-                <SelectValue
-                  placeholder={String(table.getState().pagination.pageSize)}
-                />
-              </SelectTrigger>
-              <SelectContent>
-                {PAGE_SIZE_OPTIONS.map(size => (
-                  <SelectItem key={size} value={String(size)}>
-                    {size}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </div>
-
-      {/* Table content */}
-      <div
-        ref={tableContainerRef}
-        className="relative flex-1 overflow-auto w-full"
-      >
-        <div
-          style={{
-            height: `${rowVirtualizer.getTotalSize()}px`,
-            width: "100%",
-            position: "relative",
-          }}
-        >
-          <table className="w-full table-fixed">
-            <colgroup>
-              {table.getAllColumns().map(column => (
-                <col key={column.id} style={{ width: column.getSize() }} />
-              ))}
-            </colgroup>
-
-            <thead className="sticky top-0 z-1 ">
-              {table.getHeaderGroups().map(headerGroup => (
-                <tr key={headerGroup.id}>
-                  {headerGroup.headers.map(header => (
-                    <th
-                      key={header.id}
-                      style={{ width: header.getSize() }}
-                      className={`
-                            relative p-2 text-left font-medium text-white border-borderLight
-                            border-b  text-xs select-none bg-muted
-                            ${header.column.getCanSort() ? "cursor-pointer" : ""}
-                        `}
-                      onClick={
-                        header.column.getCanSort()
-                          ? header.column.getToggleSortingHandler()
-                          : undefined
-                      }
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="truncate">
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                        </span>
-                        {header.column.getIsSorted() && (
-                          <span className="text-primary">
-                            {header.column.getIsSorted() === "asc" ? (
-                              <ArrowUp className="h-3.5 w-3.5" />
-                            ) : (
-                              <ArrowDown className="h-3.5 w-3.5" />
-                            )}
-                          </span>
-                        )}
-                      </div>
-
-                      {header.column.getCanResize() && (
-                        <button
-                          type="button"
-                          onMouseDown={header.getResizeHandler()}
-                          onTouchStart={header.getResizeHandler()}
-                          onDoubleClick={() => {
-                            const newSize = calculateAutoSize(header.column.id);
-                            handleColumnResize(newSize, header.column.id);
-                          }}
-                          className={`
-                            absolute right-0 top-0 h-full w-1
-                            cursor-col-resize select-none touch-none
-                            bg-gray-300 dark:bg-gray-600
-                            hover:bg-primary/50
-                             ${
-                               header.column.getIsResizing()
-                                 ? "bg-primary w-1"
-                                 : ""
-                             }
-                             transition-colors
-                         `}
-                        />
-                      )}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-
-            <tbody>
-              {paddingTop > 0 && (
-                <tr>
-                  <td
-                    style={{ height: `${paddingTop}px` }}
-                    colSpan={memoizedColumns.length}
-                  />
-                </tr>
-              )}
-
-              {virtualRows.map(virtualRow => {
-                const row = rows[virtualRow.index];
-                return <TableRow key={row.id} row={row} />;
-              })}
-              {paddingBottom > 0 && (
-                <tr>
-                  <td
-                    style={{ height: `${paddingBottom}px` }}
-                    colSpan={memoizedColumns.length}
-                  />
-                </tr>
-              )}
-              {onLoadMore && (
-                <tr ref={loadMoreRef}>
-                  <td
-                    colSpan={memoizedColumns.length}
-                    className="text-center p-4"
-                  >
-                    {isLoading ? (
-                      <div className="flex items-center justify-center gap-2">
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        <span>Loading more...</span>
-                      </div>
-                    ) : (
-                      <span className="text-gray-500 dark:text-gray-400">
-                        Scroll to load more
-                      </span>
-                    )}
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Footer with stats */}
-      <div className="p-2 border-t border-borderLight">
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <span>
-            {table.getFilteredRowModel().rows.length.toLocaleString()} of{" "}
-            {table.getPreFilteredRowModel().rows.length.toLocaleString()} rows
-          </span>
-        </div>
-      </div>
+      <TableControls
+        table={table}
+        data={data}
+        query={query}
+        isLoading={isLoading}
+        onRefresh={onRefresh}
+        onFilterChange={handleFilterChange}
+      />
+      <TableContent
+        table={table}
+        memoizedColumns={memoizedColumns}
+        renderCell={renderCell}
+        onLoadMore={onLoadMore}
+        isLoading={isLoading}
+        virtualScrolling={virtualScrolling}
+        calculateAutoSize={calculateAutoSize}
+        handleColumnResize={handleColumnResize}
+        globalFilter={globalFilter}
+      />
+      <TableFooter table={table} />
     </div>
   );
 }
