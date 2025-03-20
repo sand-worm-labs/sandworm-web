@@ -38,7 +38,7 @@ module.exports = {
     "@typescript-eslint/consistent-type-imports": "error",
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/no-use-before-define": ["error"],
-    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+    "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
     "consistent-return": "error",
     "import/extensions": "off",
     "@typescript-eslint/no-explicit-any": "off",
@@ -78,6 +78,7 @@ module.exports = {
     // 'simple-import-sort/imports': 'error',
     "sort-keys": "off",
     "no-unused-vars": "error",
+    "no-plusplus": ["error", { allowForLoopAfterthoughts: true }],
     "react/function-component-definition": [
       2,
       {
