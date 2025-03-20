@@ -13,7 +13,7 @@ export default function FieldExplorer() {
   const chainData = explorerMockData.find(
     chain => chain.chain.id === namespace
   );
-  const entity = chainData?.tables.find(table => table.id === id);
+  const entity = chainData?.entities.find(table => table.id === id);
 
   if (!entity) return <p>Invalid Entity</p>;
 
