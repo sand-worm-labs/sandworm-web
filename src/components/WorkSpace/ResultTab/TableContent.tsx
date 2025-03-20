@@ -156,9 +156,9 @@ export const TableContent = <T,>({
                           handleColumnResize(newSize, header.column.id);
                         }}
                         className={`
-                          absolute right-0 top-0 h-full w-1
+                          absolute right-[-1px] top-0 h-full w-[2px]
                           cursor-col-resize select-none touch-none
-                          bg-gray-300 dark:bg-gray-600
+                          bg-borderLight
                           hover:bg-primary/50
                           ${header.column.getIsResizing() ? "bg-primary w-1" : ""}
                           transition-colors

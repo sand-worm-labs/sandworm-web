@@ -2,11 +2,10 @@
 
 import React, { useState } from "react";
 import { Database, EllipsisVertical, FileUp, Plus } from "lucide-react";
+import { useSearchParams, useRouter } from "next/navigation";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-/* import FileImporter from "./FileImporter"; */
-/* import TreeNode, { TreeNodeData } from "./TreeNode"; */
 import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
@@ -16,62 +15,54 @@ import {
   DropdownMenuPortal,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { explorerMockData } from "@/_mockdata/explorer";
+import { ChainExplorer } from "./ChainExplorer";
+import { EntitiesExplorer } from "./EntitiesExplorer";
+import FieldExplorer from "./FieldExplorer";
+
+type ViewType = "chains" | "entities" | "fields";
 
 export default function DataExplorer() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-
+  const [currentView, setCurrentView] = useState<ViewType>("chains");
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedChain, setSelectedChain] = useState<IChain | null>(null);
+  const searchParams = useSearchParams();
+
   const isLoading = false;
-  const databases = [];
+
+  const namespace = searchParams.get("namespace");
+  const entityId = searchParams.get("id");
+
+  const selectedEntity = selectedChain?.entities.find(e => e.id === entityId);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
-  /*   const buildTreeData = () => {
-    const treeData: TreeNodeData[] = databases.map((db) => ({
-      name: db.name,
-      type: "database",
-      children: db.tables.map((table) => ({
-        name: table.name,
-        type: "table",
-      })),
-    }));
-    return treeData;
-  };
-  const treeData = buildTreeData(); */
 
-  /*   if (databases.length === 0 && currentConnection?.scope === "External") {
-    return (
-      <Card className="h-full overflow-hidden border-none">
-        <CardHeader className="p-4 border-b">
-          <div className="flex items-center gap-2">
-            <Database className="h-5 w-5 text-primary" />
-            <CardTitle className="text-lg font-semibold">
-              External Connection
-            </CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent className="p-4 mt-12">
-          <div className="flex flex-col items-center justify-center gap-4 text-center">
-            <div className="flex flex-col items-center gap-2">
-              <p className="text-muted-foreground text-sm">
-                You are connected to an external server. The data explorer is
-                disabled for external connections. The external connection is
-                yet in alpha stage and will be improved in future updates.
-              </p>
-              <p>You can still work normally with the query editor.</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  } */
+  const panelComponents: Record<ViewType, React.ReactNode> = {
+    chains: (
+      <ChainExplorer
+        chains={explorerMockData}
+        setCurrentView={setCurrentView}
+        setSelectedChain={setSelectedChain}
+      />
+    ),
+    entities: selectedChain ? (
+      <EntitiesExplorer
+        chain={selectedChain}
+        setCurrentView={setCurrentView}
+        selectedChain={selectedChain}
+      />
+    ) : null,
+    fields: selectedEntity ? <FieldExplorer entity={selectedEntity} /> : null,
+  };
 
   return (
     <Card className="h-full overflow-hidden border-none dark">
       {isLoading && (
         <div className="flex items-center justify-center h-full">
-          <p className="text-muted-foreground">Loading databases...</p>
+          <p className="text-muted-foreground">Loading chains...</p>
         </div>
       )}
 
@@ -97,17 +88,11 @@ export default function DataExplorer() {
               </DropdownMenuContent>
             </DropdownMenuPortal>
           </DropdownMenu>
-
-          {/*    <FileImporter
-            isSheetOpen={isSheetOpen}
-            setIsSheetOpen={setIsSheetOpen}
-            context={"notEmpty"}
-          /> */}
         </div>
       </CardHeader>
 
       <CardContent className="p-2 h-[calc(100%-60px)] overflow-y-auto">
-        {databases.length > 0 ? (
+        {explorerMockData.length > 0 ? (
           <div className="space-y-2">
             <Input
               type="text"
@@ -119,21 +104,11 @@ export default function DataExplorer() {
             />
             <div className="flex items-center justify-between px-2">
               <p className="text-muted-foreground text-xs">
-                {databases.length}{" "}
-                {databases.length > 1 ? "databases" : "database"}
+                {explorerMockData.length}{" "}
+                {explorerMockData.length > 1 ? "chains" : "chaiin"}
               </p>
             </div>
-            <ul className="ml-2">
-              {/*  {treeData.map((node, index) => (
-                <TreeNode
-                  key={index}
-                  node={node}
-                  level={0}
-                  searchTerm={searchTerm}
-                  refreshData={() => {}}
-                />
-              ))} */}
-            </ul>
+            <ul className="ml-2">{panelComponents[currentView]}</ul>
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center h-full gap-4 text-center">
