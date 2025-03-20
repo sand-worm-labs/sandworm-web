@@ -20,42 +20,19 @@ import { ChainExplorer } from "./ChainExplorer";
 import { EntitiesExplorer } from "./EntitiesExplorer";
 import FieldExplorer from "./FieldExplorer";
 
-type ViewType = "chains" | "entities" | "fields";
-
 export default function DataExplorer() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const [currentView, setCurrentView] = useState<ViewType>("chains");
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedChain, setSelectedChain] = useState<IChain | null>(null);
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   const isLoading = false;
 
-  const namespace = searchParams.get("namespace");
-  const entityId = searchParams.get("id");
-
-  const selectedEntity = selectedChain?.entities.find(e => e.id === entityId);
+  const namespace = searchParams.get("namespace"); // Chain (e.g., solana)
+  const id = searchParams.get("id"); // Entity (e.g., solana.transactions)
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
-  };
-
-  const panelComponents: Record<ViewType, React.ReactNode> = {
-    chains: (
-      <ChainExplorer
-        chains={explorerMockData}
-        setCurrentView={setCurrentView}
-        setSelectedChain={setSelectedChain}
-      />
-    ),
-    entities: selectedChain ? (
-      <EntitiesExplorer
-        chain={selectedChain}
-        setCurrentView={setCurrentView}
-        selectedChain={selectedChain}
-      />
-    ) : null,
-    fields: selectedEntity ? <FieldExplorer entity={selectedEntity} /> : null,
   };
 
   return (
@@ -108,7 +85,15 @@ export default function DataExplorer() {
                 {explorerMockData.length > 1 ? "chains" : "chaiin"}
               </p>
             </div>
-            <ul className="ml-2">{panelComponents[currentView]}</ul>
+            <ul className="ml-2">
+              {!namespace ? (
+                <ChainExplorer chains={explorerMockData} />
+              ) : !id ? (
+                <EntitiesExplorer namespace={namespace} />
+              ) : (
+                <FieldExplorer namespace={namespace} id={id} />
+              )}
+            </ul>
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center h-full gap-4 text-center">

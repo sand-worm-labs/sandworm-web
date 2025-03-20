@@ -1,61 +1,37 @@
 import React from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-interface IEntity {
-  id: string;
-  name: string;
-}
-
-interface IChain {
+interface EntitiesExplorerProps {
   chain: {
     id: string;
     name: string;
+    entities: { id: string; name: string }[];
   };
-  entities: IEntity[];
-}
-
-interface EntitiesExplorerProps {
-  selectedChain: IChain;
-  setCurrentView: (view: "chains" | "entities") => void;
 }
 
 export const EntitiesExplorer: React.FC<EntitiesExplorerProps> = ({
-  selectedChain,
-  setCurrentView,
+  chain,
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const namespace = searchParams.get("namespace");
+  const selectedEntity = searchParams.get("namespace");
 
-  const handleSelectEntity = (tableId: string) => {
-    router.push(`?namespace=${namespace}&id=${tableId}`);
-  };
-
-  console.log(selectedChain);
+  console.log(selectedEntity, selectedEntity, chain);
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex items-center mb-2">
-        <button
-          onClick={() => {
-            router.push("?");
-            setCurrentView("chains"); // Go back to ChainExplorer
-          }}
-          className="text-primary hover:underline text-sm mr-2"
-        >
-          ← Back
-        </button>
-        <h3 className="font-medium">{selectedChain.chain.name} Tables</h3>
-      </div>
-
-      {selectedChain.entities.map(entity => (
+    <div className="flex flex-col gap-2 p-4 border rounded-md w-64">
+      {chain.entities.map(table => (
         <button
           type="button"
-          key={entity.id}
-          onClick={() => handleSelectEntity(entity.id)}
-          className="p-3 bg-secondary rounded-md hover:bg-primary/10 text-left"
+          key={table.id}
+          onClick={() => router.push(`?namespace=${chain}&id=${table.id}`)}
+          className={`p-2 rounded-md text-left ${
+            selectedEntity === table.id
+              ? "bg-green-500 text-white"
+              : "bg-gray-200 hover:bg-gray-300"
+          }`}
         >
-          {entity.name}
+          {table.name}
         </button>
       ))}
     </div>

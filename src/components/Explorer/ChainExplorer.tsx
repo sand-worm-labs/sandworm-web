@@ -2,36 +2,30 @@ import React from "react";
 import { useRouter } from "next/navigation";
 
 interface IChain {
-  chain: {
-    id: string;
-    name: string;
-  };
-  entities: { id: string; name: string }[];
+  id: string;
+  name: string;
+  onSelect: (id: string) => void;
 }
 
 export const ChainExplorer: React.FC<{
   chains: IChain[];
-  setCurrentView: (view: "chains" | "entities") => void;
-  setSelectedChain: (chain: IChain) => void;
-}> = ({ chains, setCurrentView, setSelectedChain }) => {
+}> = ({ chains }) => {
   const router = useRouter();
 
-  const handleSelectChain = (chain: IChain) => {
-    router.push(`?namespace=${chain.chain.id}`);
-    setSelectedChain(chain); // Store the selected chain
-    setCurrentView("entities"); // Switch to EntitiesExplorer
+  const handleSelectChain = (chain: string) => {
+    router.push(`?namespace=${chain.id}`);
   };
 
   return (
     <div className="flex flex-col gap-2 p-4 border rounded-md w-64">
-      {chains.map(({ chain }) => (
+      {chains.map(chain => (
         <button
           type="button"
           key={chain.id}
           className="cursor-pointer p-3 bg-secondary rounded-md hover:bg-primary/10"
-          onClick={() => handleSelectChain({ chain, entities: [] })}
+          onClick={() => handleSelectChain(chain.chain.id)}
         >
-          {chain.name} ({chain.id.toUpperCase()})
+          {chain.chain.name} ({chain.chain.id.toUpperCase()})
         </button>
       ))}
     </div>
