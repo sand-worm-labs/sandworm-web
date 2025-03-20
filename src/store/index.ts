@@ -118,7 +118,6 @@ export interface SandwormStoreState {
   updateTabTitle: (tabId: string, title: string) => void;
   moveTab: (oldIndex: number, newIndex: number) => void;
   closeAllTabs: () => void;
-  deleteTable: (tableName: string, database?: string) => Promise<void>;
   clearHistory: () => void;
   cleanup: () => Promise<void>;
   exportParquet: (query: string) => Promise<Blob>;
@@ -357,7 +356,6 @@ export const useSandwormStore = create<SandwormStoreState>()(
         },
 
         updateTabQuery: (tabId, query) => {
-          console.log("hmmm1");
           set(state => ({
             tabs: state.tabs.map(tab =>
               tab.id === tabId && tab.type === "sql"
@@ -385,7 +383,6 @@ export const useSandwormStore = create<SandwormStoreState>()(
         },
 
         closeAllTabs: () => {
-          // Close all tabs except the home tab.
           try {
             set(state => ({
               tabs: state.tabs.filter(tab => tab.type === "home"),
@@ -394,32 +391,6 @@ export const useSandwormStore = create<SandwormStoreState>()(
             toast.success("All tabs closed successfully!");
           } catch (error: any) {
             toast.error(`Failed to close tabs: ${error.message}`);
-          }
-        },
-
-        deleteTable: async (tableName, database = "memory") => {
-          try {
-            const { connection, currentConnection } = get();
-            if (currentConnection?.scope === "External") {
-              throw new Error(
-                "Table deletion is not supported for external connections."
-              );
-            }
-            const wasmConnection = validateConnection(connection);
-            set({ isLoading: true });
-            await wasmConnection.query(
-              `DROP TABLE IF EXISTS "${database}"."${tableName}"`
-            );
-            await get().fetchDatabasesAndTablesInfo();
-            set({ isLoading: false });
-          } catch (error) {
-            set({
-              isLoading: false,
-              error: `Failed to delete table: ${
-                error instanceof Error ? error.message : "Unknown error"
-              }`,
-            });
-            throw error;
           }
         },
 
@@ -481,7 +452,6 @@ export const useSandwormStore = create<SandwormStoreState>()(
       }),
       {
         name: "sandworm-storage",
-        // Persist only selected parts of the state.
         partialize: state => ({
           queryHistory: state.queryHistory,
           databases: state.databases,

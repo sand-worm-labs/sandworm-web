@@ -20,7 +20,6 @@ import { useSandwormStore } from "@/store";
 interface DownloadDialogProps {
   data: any[];
   query?: string;
-  filename?: string;
   maxRows?: number;
 }
 
@@ -190,6 +189,9 @@ const DownloadDialog: React.FC<DownloadDialogProps> = ({
       case "MB":
         sizeInMB = sizeNum;
         break;
+      default:
+        console.warn(`Unexpected unit: ${unit}. Defaulting to MB.`);
+        sizeInMB = sizeNum;
     }
 
     if (sizeInMB >= 100) {

@@ -46,7 +46,7 @@ const resourceCards = [
     action: "Star on GitHub",
   },
   {
-    title: "Sanworm Docs",
+    title: "Sandworm Docs",
     description: "Explore Sandworm documentation and learn more.",
     Icon: BookOpen,
     link: "#",
