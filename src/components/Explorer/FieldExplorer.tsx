@@ -1,7 +1,8 @@
 "use client";
 
-import { explorerMockData } from "@/_mockdata/explorer";
 import { useSearchParams } from "next/navigation";
+
+import { explorerMockData } from "@/_mockdata/explorer";
 
 export default function FieldExplorer() {
   const searchParams = useSearchParams();
