@@ -14,20 +14,20 @@ export default function TabsSection() {
       <TabsList className="flex border-b border-borderLight">
         <TabsTrigger
           value="all"
-          className={`px-4 py-2 flex items-center space-x-2 ${tab === "all" ? "border-b-2 border-brand-orange" : ""}`}
+          className={`px-4 py-2 flex items-center space-x-2 ${tab === "all" ? "border-b-2 border-primary" : ""}`}
         >
           <HiOutlineCommandLine className="text-xl" />
           <span>All Queries</span>
         </TabsTrigger>
         <TabsTrigger
           value="forked"
-          className={`px-4 py-2 ${tab === "forked" ? "border-b-2 border-brand-orange" : ""}`}
+          className={`px-4 py-2 ${tab === "forked" ? "border-b-2 border-primary" : ""}`}
         >
           Forked
         </TabsTrigger>
         <TabsTrigger
           value="starred"
-          className={`px-4 py-2 ${tab === "starred" ? "border-b-2 border-brand-orange" : ""}`}
+          className={`px-4 py-2 ${tab === "starred" ? "border-b-2 border-primary" : ""}`}
         >
           Starred
         </TabsTrigger>

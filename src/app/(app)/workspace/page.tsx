@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 import AppSidebar from "@/components/AppSidebar";
 import DataExplorer from "@/components/Explorer/DataExplorer";
@@ -21,32 +21,61 @@ interface PanelComponents {
 
 export default function WorkSpace() {
   const [currentView, setCurrentView] = useState<ViewType>("dataExplorer");
+  const [isMobile, setIsMobile] = useState<boolean>(false);
 
   const panelComponents: PanelComponents = {
     dataExplorer: <DataExplorer />,
     savedQueries: <SavedQueries />,
   };
 
+  const handleResize = useCallback(() => {
+    setIsMobile(window.innerWidth < 768);
+  }, []);
+
+  useEffect(() => {
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [handleResize]);
+
   return (
-    <div className="flex w-full h-[calc(100vh-4.8rem)] overflow-hidden">
+    <div className="flex w-full h-[calc(100vh-3.4rem)] overflow-hidden  md:flex-row">
       <AppSidebar currentView={currentView} setCurrentView={setCurrentView} />
-      <div className="h-[calc(100vh-4.8rem)] w-full overflow-auto border-t">
-        <ResizablePanelGroup direction="horizontal">
+
+      <div className="flex-1 h-full overflow-auto border-t">
+        <ResizablePanelGroup direction={isMobile ? "vertical" : "horizontal"}>
+          {isMobile && (
+            <ResizablePanel
+              className="overflow-auto"
+              defaultSize={50}
+              minSize={40}
+            >
+              <WorkspaceTabs />
+            </ResizablePanel>
+          )}
+
+          <ResizableHandle withHandle />
+
           <ResizablePanel
-            className="overflow-scroll"
-            defaultSize={25}
-            minSize={20}
+            className="overflow-auto"
+            defaultSize={isMobile ? 50 : 25}
+            minSize={isMobile ? 40 : 20}
           >
             {panelComponents[currentView]}
           </ResizablePanel>
-          <ResizableHandle withHandle />
-          <ResizablePanel
-            className="overflow-scroll"
-            defaultSize={75}
-            minSize={40}
-          >
-            <WorkspaceTabs />
-          </ResizablePanel>
+
+          {!isMobile && (
+            <>
+              <ResizableHandle withHandle />
+              <ResizablePanel
+                className="overflow-auto"
+                defaultSize={70}
+                minSize={40}
+              >
+                <WorkspaceTabs />
+              </ResizablePanel>
+            </>
+          )}
         </ResizablePanelGroup>
       </div>
     </div>
