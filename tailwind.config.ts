@@ -34,6 +34,8 @@ const config: Config = {
         borderLight: "hsla(0, 100%, 100%, 0.14)",
         borderHover: "rgba(255, 255, 255, 0.15)",
         btnHover: "hsla(0, 0%, 100%, 0.09)",
+        "dark-translucent": "#ffffff20",
+        "dark-gray": "#1A1A1A",
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
@@ -43,7 +45,7 @@ const config: Config = {
           foreground: "hsl(var(--popover-foreground))",
         },
         primary: {
-          DEFAULT: "hsl(var(--primary))",
+          DEFAULT: "#ea580b",
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {

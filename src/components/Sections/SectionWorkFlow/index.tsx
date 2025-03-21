@@ -78,19 +78,19 @@ export const SectionWorkflow = () => {
               </div>
               <ul className=" text-sm mt-12">
                 <li className="mb-4 flex items-center space-x-3">
-                  <span className="rounded-full  mr-3  bg-[#ffffff20] p-1">
+                  <span className="rounded-full  mr-3  bg-dark-translucent p-1">
                     <FaCheck className="text-orange-600 text-[0.65rem]" />
                   </span>{" "}
                   Use an SQL-like language designed for on-chain data
                 </li>
                 <li className="mb-4 flex items-center space-x-3">
-                  <span className="rounded-full  mr-3  bg-[#ffffff20] p-1">
+                  <span className="rounded-full  mr-3  bg-dark-translucent p-1">
                     <FaCheck className="text-orange-600 text-[0.65rem]" />
                   </span>{" "}
                   Filter and sort transactions without the headache
                 </li>
                 <li className="mb-4 flex items-center space-x-3">
-                  <span className="rounded-full  mr-3  bg-[#ffffff20] p-1">
+                  <span className="rounded-full  mr-3  bg-dark-translucent p-1">
                     <FaCheck className="text-orange-600 text-[0.65rem] " />
                   </span>{" "}
                   Pull Sui real-time or historical data{" "}
@@ -126,19 +126,19 @@ export const SectionWorkflow = () => {
               </div>
               <ul className=" text-sm mt-12">
                 <li className="mb-4 flex items-center space-x-3">
-                  <span className="rounded-full  mr-3  bg-[#ffffff20] p-1">
+                  <span className="rounded-full  mr-3   bg-dark-translucent p-1">
                     <FaCheck className="text-orange-600 text-[0.65rem]" />
                   </span>{" "}
                   Use an SQL-like language designed for on-chain data
                 </li>
                 <li className="mb-4 flex items-center space-x-3">
-                  <span className="rounded-full  mr-3  bg-[#ffffff20] p-1">
+                  <span className="rounded-full  mr-3   bg-dark-translucent p-1">
                     <FaCheck className="text-orange-600 text-[0.65rem]" />
                   </span>{" "}
                   Filter and sort transactions without the headache
                 </li>
                 <li className="mb-4 flex items-center space-x-3">
-                  <span className="rounded-full  mr-3  bg-[#ffffff20] p-1">
+                  <span className="rounded-full  mr-3   bg-dark-translucent p-1">
                     <FaCheck className="text-orange-600 text-[0.65rem] " />
                   </span>{" "}
                   Pull Sui real-time or historical data{" "}
@@ -174,19 +174,19 @@ export const SectionWorkflow = () => {
               </div>
               <ul className=" text-sm mt-12">
                 <li className="mb-4 flex items-center space-x-3">
-                  <span className="rounded-full  mr-3  bg-[#ffffff20] p-1">
+                  <span className="rounded-full  mr-3   bg-dark-translucent p-1">
                     <FaCheck className="text-orange-600 text-[0.65rem]" />
                   </span>{" "}
                   Use an SQL-like language designed for on-chain data
                 </li>
                 <li className="mb-4 flex items-center space-x-3">
-                  <span className="rounded-full  mr-3  bg-[#ffffff20] p-1">
+                  <span className="rounded-full  mr-3   bg-dark-translucent p-1">
                     <FaCheck className="text-orange-600 text-[0.65rem]" />
                   </span>{" "}
                   Filter and sort transactions without the headache
                 </li>
                 <li className="mb-4 flex items-center space-x-3">
-                  <span className="rounded-full  mr-3  bg-[#ffffff20] p-1">
+                  <span className="rounded-full  mr-3   bg-dark-translucent p-1">
                     <FaCheck className="text-orange-600 text-[0.65rem] " />
                   </span>{" "}
                   Pull Sui real-time or historical data{" "}

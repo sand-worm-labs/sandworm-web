@@ -23,7 +23,7 @@ export default function AccountSettings() {
         <input
           type="password"
           placeholder="New Password"
-          className="w-full rounded-md bg-[#1A1A1A] p-2 text-white"
+          className="w-full rounded-md bg-dark-gray p-2 text-white"
           value={password}
           onChange={e => setPassword(e.target.value)}
         />

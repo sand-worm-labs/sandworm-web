@@ -115,7 +115,6 @@ SELECT tx_id, sender, recipient, amount, timestamp
 FROM sui.transactions  
 WHERE timestamp >= NOW() - INTERVAL '24 HOURS'  
 ORDER BY timestamp DESC;  
-
 `
       );
     }
@@ -152,23 +151,23 @@ ORDER BY timestamp DESC;
 
     if (recentItems.length === 0) {
       return (
-        <Card className="p-4 text-center text-muted-foreground">
+        <Card className="p-4 text-center text-muted-foreground rounded-none min-h-32 flex items-center justify-center flex-col bg-transparent border-borderLight">
           No recent queries found
         </Card>
       );
     }
 
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 ">
         {recentItems.map((item, index) => (
           <motion.div
-            key={item}
+            key={`${item.id}${index}`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05 }}
           >
             <Card
-              className="hover:bg-accent/50 cursor-pointer transition-colors"
+              className="hover:bg-accent/50 cursor-pointer transition-colors rounded-none"
               onClick={() => handleNewAction("sql", item.cleaned_query)}
             >
               <CardHeader>
@@ -216,37 +215,36 @@ ORDER BY timestamp DESC;
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: index * 0.1 }}
           >
-            <Button
-              variant="outline"
-              className="h-auto p-4 flex flex-col items-start space-y-2 hover:bg-accent hover:text-accent-foreground group w-full "
+            <button
+              type="button"
+              className="h-auto p-4 flex flex-col items-start space-y-2 hover:bg-accent hover:text-accent-foreground group w-full overflow-hidden border-borderLight border "
               onClick={() => handleNewAction(action.action)}
             >
-              <div className="flex items-center space-x-2 text-primary text-wrap">
+              <div className="flex items-center space-x-2 text-white break-words">
                 <div className="p-2 rounded-full bg-primary/10 group-hover:bg-primary/20 ">
                   {action.icon}
                 </div>
                 <p className="font-semibold text-base">{action.title}</p>
               </div>
-              <p className="text-sm text-muted-foreground text-left">
-                {action.description} dd
+              <p className="text-sm text-muted-foreground text-left ">
+                {action.description}
               </p>
-            </Button>
+            </button>
           </motion.div>
         ))}
       </motion.div>
 
-      <Tabs defaultValue="recent" className="space-y-4">
-        <TabsList className="w-full justify-start">
+      <Tabs defaultValue="recent" className=" pt-3">
+        <TabsList className="w-full justify-start px-0 pb-8">
           <TabsTrigger
             value="recent"
-            className="flex items-center gap-2 data-[state=active]:text-primary"
+            className="flex items-start gap-2 data-[state=active]:border-primary data-[state=active]:border-b"
           >
             Recent Queries
-            {loading && <Loader2 className="w-3 h-3 animate-spin" />}
           </TabsTrigger>
           <TabsTrigger
             value="resources"
-            className="data-[state=active]:text-primary"
+            className="data-[state=active]:border-primary data-[state=active]:border-b"
           >
             Resources
           </TabsTrigger>
@@ -296,7 +294,6 @@ ORDER BY timestamp DESC;
           </div>
         </TabsContent>
       </Tabs>
-      <p className="text-muted-foreground text-center text-xs">Sandworm</p>
     </div>
   );
 };

@@ -40,3 +40,4 @@ next-env.d.ts
 
 sandword-firebase.json
 serviceKey.json
+yarn.lock

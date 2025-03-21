@@ -36,7 +36,7 @@ export default function SignInForm() {
         <input
           type="email"
           name="email"
-          className="mt-1 w-full rounded-md bg-[#1A1A1A] p-2 text-white focus:border-orange-500 focus:ring-orange-500"
+          className="mt-1 w-full rounded-md bg-dark-gray p-2 text-white focus:border-orange-500 focus:ring-orange-500"
           placeholder="Enter your email"
           value={formData.email}
           onChange={handleChange}
@@ -50,7 +50,7 @@ export default function SignInForm() {
         <input
           type="password"
           name="password"
-          className="mt-1 w-full rounded-md bg-[#1A1A1A] p-2 text-white focus:border-orange-500 focus:ring-orange-500"
+          className="mt-1 w-full rounded-md bg-dark-gray p-2 text-white focus:border-orange-500 focus:ring-orange-500"
           placeholder="Enter your password"
           value={formData.password}
           onChange={handleChange}

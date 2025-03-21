@@ -26,8 +26,8 @@ export default function SettingsLayout({
               href={tab.href}
               className={`block px-4 py-1.5 rounded-md text-sm ${
                 pathname === tab.href
-                  ? "text-orange-600 bg-[#ffffff15]"
-                  : "text-text-gray hover:bg-[#ffffff15]"
+                  ? "text-orange-600 bg-dark-translucent"
+                  : "text-text-gray hover:bg-dark-translucent"
               }`}
             >
               {tab.name}

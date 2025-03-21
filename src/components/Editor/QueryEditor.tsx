@@ -47,14 +47,9 @@ const QueryEditor: React.FC<SqlEditorProps> = ({ tabId, title, className }) => {
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
 
   const handleExecuteQuery = async () => {
-    // Remove this empty editor reference
-    // const editor = "";
-    // if (!editor || isExecuting) return;
-
     if (isExecuting) return;
 
     try {
-      // Get the current content directly from the tab
       const query = currentContent;
       if (!query.trim()) {
         toast.error("Please enter a query to execute");
@@ -130,40 +125,6 @@ const QueryEditor: React.FC<SqlEditorProps> = ({ tabId, title, className }) => {
             <TooltipProvider>
               <Tooltip delayDuration={200}>
                 <TooltipTrigger className="hover:bg-muted/50 p-2 rounded-md transition-colors">
-                  <Lightbulb className="h-5 w-5 text-yellow-500/70 hover:text-yellow-500 transition-colors" />
-                </TooltipTrigger>
-                <TooltipContent
-                  side="bottom"
-                  className="w-72 p-0"
-                  sideOffset={5}
-                >
-                  <div className="bg-card px-3 py-2 rounded-t-sm border-b">
-                    <h4 className="font-medium flex items-center gap-2">
-                      <Command className="h-4 w-4" />
-                      SQL Editor Shortcuts
-                    </h4>
-                  </div>
-                  <div className="p-3 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">Run Query</span>
-                      <Badge variant="secondary" className="font-mono text-xs">
-                        Ctrl + Enter
-                      </Badge>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">Run Selected</span>
-                      <Badge variant="secondary" className="font-mono text-xs">
-                        Ctrl + Shift + Enter
-                      </Badge>
-                    </div>
-                  </div>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-
-            <TooltipProvider>
-              <Tooltip delayDuration={200}>
-                <TooltipTrigger className="hover:bg-muted/50 p-2 rounded-md transition-colors">
                   <GitFork className="h-5 w-5 transition-colors" />
                 </TooltipTrigger>
                 <TooltipContent side="bottom">Fork this Query</TooltipContent>
@@ -182,7 +143,7 @@ const QueryEditor: React.FC<SqlEditorProps> = ({ tabId, title, className }) => {
             onClick={handleExecuteQuery}
             disabled={isExecuting}
             variant="outline"
-            className="flex items-center gap-2 min-w-[100px] bg-orange-600"
+            className="flex items-center gap-2 min-w-[100px] bg-primary"
           >
             {isExecuting ? (
               <Loader2 className="h-4 w-4 animate-spin" />

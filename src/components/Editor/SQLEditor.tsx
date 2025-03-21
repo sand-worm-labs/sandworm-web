@@ -180,7 +180,7 @@ export default function SQLEditor({
   }, []);
 
   return (
-    <div className=" rounded-md overflow-hidden">
+    <div className=" rounded-md overflow-hidden relative">
       <Editor
         height={height}
         defaultLanguage="sql"

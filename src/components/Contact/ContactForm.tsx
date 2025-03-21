@@ -6,16 +6,16 @@ export const ContactForm = () => {
       <input
         type="text"
         placeholder="Your Name"
-        className="mt-1 w-full rounded-md bg-[#1A1A1A] p-2 text-white focus:border-orange-500 focus:ring-orange-500 px-3"
+        className="mt-1 w-full rounded-md bg-dark-gray p-2 text-white focus:border-orange-500 focus:ring-orange-500 px-3"
       />
       <input
         type="email"
         placeholder="Your Email"
-        className="mt-1 w-full rounded-md bg-[#1A1A1A] p-2 text-white focus:border-orange-500 focus:ring-orange-500 px-3"
+        className="mt-1 w-full rounded-md bg-dark-gray p-2 text-white focus:border-orange-500 focus:ring-orange-500 px-3"
       />
       <textarea
         placeholder="Your Message"
-        className="mt-1 w-full rounded-md bg-[#1A1A1A] p-2 text-white focus:border-orange-500 focus:ring-orange-500 px-3"
+        className="mt-1 w-full rounded-md bg-dark-gray p-2 text-white focus:border-orange-500 focus:ring-orange-500 px-3"
       />
       <button
         type="button"
