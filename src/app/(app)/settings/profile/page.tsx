@@ -47,14 +47,14 @@ export default function ProfileSettings() {
           type="text"
           name="username"
           placeholder="Username"
-          className="w-full rounded-md bg-[#1A1A1A] p-2 text-white"
+          className="w-full rounded-md bg-dark-gray p-2 text-white"
           value={formData.username}
           onChange={handleChange}
         />
         <textarea
           name="bio"
           placeholder="Bio"
-          className="w-full rounded-md bg-[#1A1A1A] p-2 text-white"
+          className="w-full rounded-md bg-dark-gray p-2 text-white"
           value={formData.bio}
           onChange={handleChange}
         />
@@ -62,7 +62,7 @@ export default function ProfileSettings() {
           type="text"
           name="github"
           placeholder="GitHub Profile"
-          className="w-full rounded-md bg-[#1A1A1A] p-2 text-white"
+          className="w-full rounded-md bg-dark-gray p-2 text-white"
           value={formData.github}
           onChange={handleChange}
         />
@@ -70,7 +70,7 @@ export default function ProfileSettings() {
           type="text"
           name="discord"
           placeholder="Discord Username"
-          className="w-full rounded-md bg-[#1A1A1A] p-2 text-white"
+          className="w-full rounded-md bg-dark-gray p-2 text-white"
           value={formData.discord}
           onChange={handleChange}
         />
@@ -78,7 +78,7 @@ export default function ProfileSettings() {
           type="text"
           name="telegram"
           placeholder="Telegram Handle"
-          className="w-full rounded-md bg-[#1A1A1A] p-2 text-white"
+          className="w-full rounded-md bg-dark-gray p-2 text-white"
           value={formData.telegram}
           onChange={handleChange}
         />

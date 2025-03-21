@@ -5,6 +5,7 @@
 @tailwind utilities;
 
 :root {
+  --primary: "#ea580b";
   --background: 255, 0, 0;
   --ui-notch-amount: 1.5rem;
   --ui-notch-hypotenuse: 2.25rem;
@@ -88,7 +89,6 @@ h6 {
     --card-foreground: 0 0% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
     --primary-foreground: 0 0% 98%;
     --secondary: 0 0% 96.1%;
     --secondary-foreground: 0 0% 9%;
@@ -115,7 +115,6 @@ h6 {
     --card-foreground: 0 0% 98%;
     --popover: 0 0% 3.9%;
     --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
     --primary-foreground: 0 0% 9%;
     --secondary: 0 0% 14.9%;
     --secondary-foreground: 0 0% 98%;
@@ -172,7 +171,7 @@ select:-webkit-autofill:focus {
     stroke-dasharray: 203px, 345px;
     stroke-dashoffset: 0;
     fill: none;
-    stroke: #d35933;
+    stroke: #ea580b;
     stroke-width: 13;
     stroke-linecap: round;
     stroke-miterlimit: 10;
