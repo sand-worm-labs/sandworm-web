@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+
 import AppFooter from ".";
 
 export default function FooterWrapper() {

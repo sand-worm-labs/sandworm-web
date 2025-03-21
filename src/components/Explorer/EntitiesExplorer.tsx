@@ -1,37 +1,34 @@
 import React from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import type { ExplorerTable } from "@/_mockdata/explorer";
 
 interface EntitiesExplorerProps {
-  chain: {
-    id: string;
-    name: string;
-    entities: { id: string; name: string }[];
-  };
+  entities: ExplorerTable[];
 }
 
 export const EntitiesExplorer: React.FC<EntitiesExplorerProps> = ({
-  chain,
+  entities,
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const selectedEntity = searchParams.get("namespace");
+  const selectedEntity = searchParams.get("id");
 
-  console.log(selectedEntity, selectedEntity, chain);
+  console.log(selectedEntity, selectedEntity, entities);
 
   return (
     <div className="flex flex-col gap-2 p-4 border rounded-md w-64">
-      {chain.entities.map(table => (
+      {entities.map(entity => (
         <button
           type="button"
-          key={table.id}
-          onClick={() => router.push(`?namespace=${chain}&id=${table.id}`)}
+          key={entity.id}
+          onClick={() => router.push(`?id=${entity.id}`)}
           className={`p-2 rounded-md text-left ${
-            selectedEntity === table.id
+            selectedEntity === entity.id
               ? "bg-green-500 text-white"
               : "bg-gray-200 hover:bg-gray-300"
           }`}
         >
-          {table.name}
+          {entity.name}
         </button>
       ))}
     </div>

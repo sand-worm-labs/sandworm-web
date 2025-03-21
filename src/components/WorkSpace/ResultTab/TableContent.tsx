@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useCallback } from "react";
 import { type Table, type ColumnDef, flexRender } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { ArrowUp, ArrowDown, Loader2 } from "lucide-react";
+
 import { TableRow } from "./TableRow";
 
 const OVERSCAN_COUNT = 5;

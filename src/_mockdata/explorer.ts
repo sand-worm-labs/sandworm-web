@@ -1,6 +1,8 @@
-export type Blockchain = {
+export type Chain = {
   id: string;
   name: string;
+  shortCode: string;
+  logo?: string;
 };
 
 export type TableType = "transactions" | "blocks" | "accounts";
@@ -8,7 +10,7 @@ export type TableType = "transactions" | "blocks" | "accounts";
 export interface TableField {
   name: string;
   type: "number" | "string" | "timestamp" | "boolean";
-  sortable?: boolean; // Can be sorted?
+  sortable?: boolean;
   filterable?: boolean;
 }
 
@@ -19,12 +21,18 @@ export interface ExplorerTable {
 }
 
 export interface DataExplorer {
-  chain: Blockchain;
+  chainId: string;
   entities: ExplorerTable[];
 }
+
+export const chains: Chain[] = [
+  { id: "sol", name: "Solana", shortCode: "SOL", logo: "/logos/solana.png" },
+  { id: "sui", name: "Sui", shortCode: "SUI", logo: "/logos/sui.png" },
+];
+
 export const explorerMockData: DataExplorer[] = [
   {
-    chain: { id: "sol", name: "Solana" },
+    chainId: "sol",
     entities: [
       {
         id: "sol.transactions",
@@ -49,7 +57,7 @@ export const explorerMockData: DataExplorer[] = [
     ],
   },
   {
-    chain: { id: "sui", name: "Sui" },
+    chainId: "sui",
     entities: [
       {
         id: "sui.transactions",
