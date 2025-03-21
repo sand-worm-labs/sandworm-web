@@ -77,43 +77,11 @@ export async function signInWithGitHub() {
 export async function signUpWithEmail(email: string, password: string) {
   console.log("signUpWithEmail", email, password);
   return true;
-  // try {
-  //   const userCreds = await createUserWithEmailAndPassword(
-  //     auth,
-  //     email,
-  //     password
-  //   );
-  //   const idToken = await userCreds.user.getIdToken();
-  //   const response = await fetch("/api/auth/sign-up", {
-  //     method: "POST",
-  //     headers: { "Content-Type": "application/json" },
-  //     body: JSON.stringify({ idToken }),
-  //   });
-  //   const resBody = (await response.json()) as APIResponse<string>;
-  //   return response.ok && resBody.success;
-  // } catch (error) {
-  //   console.error("Error signing up with email:", error);
-  //   return false;
-  // }
 }
 
 export async function signInWithEmail(email: string, password: string) {
   console.log("signInWithEmail", email, password);
   return true;
-  // try {
-  //   const userCreds = await signInWithEmailAndPassword(auth, email, password);
-  //   const idToken = await userCreds.user.getIdToken();
-  //   const response = await fetch("/api/auth/sign-in", {
-  //     method: "POST",
-  //     headers: { "Content-Type": "application/json" },
-  //     body: JSON.stringify({ idToken }),
-  //   });
-  //   const resBody = (await response.json()) as APIResponse<string>;
-  //   return response.ok && resBody.success;
-  // } catch (error) {
-  //   console.error("Error signing in with email:", error);
-  //   return false;
-  // }
 }
 
 export async function signOut() {

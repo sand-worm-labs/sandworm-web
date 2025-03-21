@@ -1,8 +1,6 @@
 import type { Table } from "@tanstack/react-table";
+import { Columns, RefreshCw, Loader2 } from "lucide-react";
 
-import DownloadDialog from "../DownloadDialog";
-import { TablePagination } from "./TablePagination";
-import { SimpleFilter } from "../SimpleFilter";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,7 +9,10 @@ import {
   DropdownMenuCheckboxItem,
 } from "@/components/ui/dropdown-menu";
 
-import { Columns, RefreshCw, Loader2 } from "lucide-react";
+import DownloadDialog from "../DownloadDialog";
+import { SimpleFilter } from "../SimpleFilter";
+
+import { TablePagination } from "./TablePagination";
 
 // Table Controls Component
 interface ITableControlsProps<T> {
