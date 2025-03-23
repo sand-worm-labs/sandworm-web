@@ -35,6 +35,11 @@ export const TableContent = <T,>({
   const loadMoreRef = useRef<HTMLTableRowElement>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
 
+  console.log(
+    "Table rows",
+    table.getRowModel().rows.map(row => row.original)
+  );
+
   // Virtual scrolling setup
   const { rows } = table.getRowModel();
   const rowVirtualizer = useVirtualizer({

@@ -8,6 +8,7 @@ interface EntitiesExplorerProps {
 
 export const EntitiesExplorer: React.FC<EntitiesExplorerProps> = ({
   entities,
+  onSelect,
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -16,17 +17,13 @@ export const EntitiesExplorer: React.FC<EntitiesExplorerProps> = ({
   console.log(selectedEntity, selectedEntity, entities);
 
   return (
-    <div className="flex flex-col gap-2 p-4 border rounded-md w-64">
+    <div className="flex flex-col p-4 border  gap-2  w-full">
       {entities.map(entity => (
         <button
           type="button"
           key={entity.id}
-          onClick={() => router.push(`?id=${entity.id}`)}
-          className={`p-2 rounded-md text-left ${
-            selectedEntity === entity.id
-              ? "bg-green-500 text-white"
-              : "bg-gray-200 hover:bg-gray-300"
-          }`}
+          onClick={onSelect}
+          className={`p-2 rounded-md text-left  hover:bg-primary/10 text-sm`}
         >
           {entity.name}
         </button>
