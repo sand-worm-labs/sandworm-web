@@ -59,6 +59,11 @@ export interface QueryResult {
   error?: string;
 }
 
+interface DumpFile {
+  url: string;
+  name: string;
+}
+
 export interface QueryHistoryItem {
   id: string;
   query: string;
@@ -77,8 +82,6 @@ export interface EditorTab {
 }
 
 export interface SandwormStoreState {
-  // Database state
-
   isInitialized: boolean;
   currentDatabase: string;
   currentConnection: CurrentConnection | null;
@@ -122,6 +125,76 @@ export interface SandwormStoreState {
   cleanup: () => Promise<void>;
   exportParquet: (query: string) => Promise<Blob>;
 }
+
+const queryHasResults = (result: Record<string, object[]>): boolean => {
+  return !!(
+    (result.transaction && result.transaction.length > 0) ||
+    (result.log && result.log.length > 0) ||
+    (result.account && result.account.length > 0) ||
+    (result.block && result.block.length > 0)
+  );
+};
+
+const formatApiResultToQueryResult = (
+  result: Record<string, object[]>
+): QueryResult => {
+  console.log(result);
+
+  // Combine all result arrays (transaction, log, account, block)
+  const allData: object[] = [];
+  Object.keys(result).forEach(key => {
+    if (Array.isArray(result[key]) && result[key].length > 0) {
+      allData.push(...result[key]);
+    }
+  });
+
+  if (allData.length === 0) {
+    return {
+      columns: [],
+      columnTypes: [],
+      data: [],
+      rowCount: 0,
+    };
+  }
+
+  // Extract columns from the first object
+  const columns = Object.keys(allData[0]);
+
+  // Determine column types
+  const columnTypes = columns.map(col => {
+    const value = allData[0][col];
+    return Array.isArray(value) &&
+      value.length === 1 &&
+      typeof value[0] === "number"
+      ? "number"
+      : typeof value === "number"
+        ? "number"
+        : typeof value === "boolean"
+          ? "boolean"
+          : "string";
+  });
+
+  // Create data as an array of objects
+  const data = allData.map(item => {
+    const row: Record<string, unknown> = {};
+    columns.forEach(col => {
+      row[col] =
+        Array.isArray(item[col]) && item[col].length === 1
+          ? item[col][0]
+          : (item[col] ?? null);
+    });
+    return row;
+  });
+
+  console.log("data rows", data);
+
+  return {
+    columns,
+    columnTypes,
+    data,
+    rowCount: data.length,
+  };
+};
 
 // Create a mock WASM query result
 const createMockWasmResult = () => {
@@ -272,9 +345,58 @@ export const useSandwormStore = create<SandwormStoreState>()(
         executeQuery: async (query, tabId?) => {
           try {
             set({ isExecuting: true, error: null });
-            const queryResult = resultToJSON(mockResult);
+            const API_URL =
+              "https://eql-api-606667184456.us-central1.run.app/run";
 
-            console.log(query + tabId);
+            let queryResult: QueryResult | undefined = undefined;
+
+            try {
+              const res = await fetch(
+                `${API_URL}?query=${query.replace(/\s/g, "+")}`
+              );
+              const resContentType = res.headers.get("Content-Type");
+
+              if (resContentType?.includes("application/json")) {
+                const { result, error } = (await res.json()) as ApiResponse;
+
+                if (error) {
+                  console.log("unexpected error:", error);
+                } else if (queryHasResults(result)) {
+                  console.log("Query has results");
+                  queryResult = formatApiResultToQueryResult(result);
+                } else {
+                  console.log("No results found");
+                  queryResult = {
+                    columns: [],
+                    columnTypes: [],
+                    data: [],
+                    rowCount: 0,
+                    error: "No results",
+                  };
+                }
+              }
+            } catch (fetchError) {
+              console.error("Fetch error:", fetchError);
+              queryResult = {
+                columns: [],
+                columnTypes: [],
+                data: [],
+                rowCount: 0,
+                error:
+                  fetchError instanceof Error
+                    ? fetchError.message
+                    : "Unknown fetch error",
+              };
+            }
+
+            if (!queryResult) {
+              console.warn(
+                "queryResult is undefined, using mockResult as fallback."
+              );
+              queryResult = resultToJSON(mockResult);
+            }
+
+            console.log("Query executed:", query, tabId);
 
             // Update query history and update tab result if applicable.
             set(state => ({
@@ -287,6 +409,7 @@ export const useSandwormStore = create<SandwormStoreState>()(
 
             return tabId ? undefined : queryResult;
           } catch (error) {
+            console.error("Unexpected error:", error);
             const errorMessage =
               error instanceof Error ? error.message : "Unknown error";
             const errorResult: QueryResult = {
@@ -296,6 +419,7 @@ export const useSandwormStore = create<SandwormStoreState>()(
               rowCount: 0,
               error: errorMessage,
             };
+
             set(state => ({
               queryHistory: updateHistory(
                 state.queryHistory,

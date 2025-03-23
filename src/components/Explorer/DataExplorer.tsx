@@ -20,6 +20,7 @@ import type { Chain, DataExplorer } from "@/_mockdata/explorer";
 
 import { ChainExplorer } from "./ChainExplorer";
 import { EntitiesExplorer } from "./EntitiesExplorer";
+import FieldExplorer from "./FieldExplorer";
 
 export default function DataExplorer() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -27,11 +28,16 @@ export default function DataExplorer() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const selectedChain = searchParams.get("namespace");
+  const selectedEntity = searchParams.get("id");
 
   const isLoading = false;
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
+  };
+
+  const handleSelectEntity = (entityId: string) => {
+    router.push(`?namespace=${selectedChain}&id=${entityId}`);
   };
 
   const handleSelectChain = (chainId: string) => {
@@ -93,9 +99,12 @@ export default function DataExplorer() {
               </p>
             </div>
             <ul className="ml-2">
-              {selectedChain ? (
+              {selectedEntity ? (
+                <FieldExplorer />
+              ) : selectedChain ? (
                 <EntitiesExplorer
                   entities={selectedChainData?.entities || []}
+                  onSelect={handleSelectEntity}
                 />
               ) : (
                 <ChainExplorer chains={chains} onSelect={handleSelectChain} />
