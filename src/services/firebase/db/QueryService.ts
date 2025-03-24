@@ -165,7 +165,7 @@ export class QueryService {
         .updates.all();
 
       return DataResult.success(
-        updatesSnapshot.map((update: QueryUpdateDoc) =>
+        updatesSnapshot.map((updates: QueryUpdateDoc) =>
           toResult<QueryUpdatesResult>(update)
         )
       );

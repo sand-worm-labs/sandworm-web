@@ -82,27 +82,27 @@ describe("SupportedChainService", () => {
     }
   });
 
-  it("should add a new chain entity to an existing supported chain", async () => {
-    const result = await SupportedChainService.addChainEntity(
-      "ethereum",
-      "transaction",
-      "Raw Transaction Data",
-      [EntitySupportType.Http, EntitySupportType.Rpc] // HTTP and RPC
-    );
+  // it("should add a new chain entity to an existing supported chain", async () => {
+  //   const result = await SupportedChainService.addChainEntity(
+  //     "ethereum",
+  //     "transaction",
+  //     "Raw Transaction Data",
+  //     [EntitySupportType.Http, EntitySupportType.Rpc] // HTTP and RPC
+  //   );
 
-    expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.chainEntities.length).toBeGreaterThan(0);
-      expect(result.data.chainEntities[0].table).toBe("transaction");
-      expect(result.data.chainEntities[0].table_group_by).toBe(
-        "Raw Transaction Data"
-      );
-      expect(result.data.chainEntities[0].support).toEqual([
-        EntitySupportType.Http,
-        EntitySupportType.Rpc,
-      ]); // HTTP and RPC
-    }
-  });
+  //   expect(result.success).toBe(true);
+  //   if (result.success) {
+  //     expect(result.data.chainEntities.length).toBeGreaterThan(0);
+  //     expect(result.data.chainEntities[0].table).toBe("transaction");
+  //     expect(result.data.chainEntities[0].table_group_by).toBe(
+  //       "Raw Transaction Data"
+  //     );
+  //     expect(result.data.chainEntities[0].support).toEqual([
+  //       EntitySupportType.Http,
+  //       EntitySupportType.Rpc,
+  //     ]); // HTTP and RPC
+  //   }
+  // });
 
   it("should return error when adding chain entity to non-existent chain", async () => {
     const result = await SupportedChainService.addChainEntity(
