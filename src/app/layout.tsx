@@ -1,9 +1,11 @@
 import "@/styles/globals.css";
+import "@mysten/dapp-kit/dist/index.css";
 
 import { DM_Mono as DMMono } from "next/font/google";
 
 import { QueryProvider } from "@/providers/query";
 import type { ChildrenProps } from "@/types";
+import AppProvider from "@/providers/AppProvider";
 
 export const metadata = {
   description:
@@ -30,7 +32,9 @@ export default async function RootLayout({ children }: ChildrenProps) {
         className={`${dmMono.className} h-full flex flex-col justify-between`}
       >
         <section className="flex-1 bg-background">
-          <QueryProvider>{children}</QueryProvider>
+          <QueryProvider>
+            <AppProvider>{children} </AppProvider>
+          </QueryProvider>
         </section>
       </body>
     </html>

@@ -29,7 +29,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/components/SearchBar"
+    "src/components/SearchBar",
+    "src/context/index.tss"
   ],
   "exclude": ["node_modules"]
 }
