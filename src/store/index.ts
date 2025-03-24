@@ -2,30 +2,14 @@ import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import { toast } from "sonner";
 
+import { formatApiResultToQueryResult, queryHasResults } from "@/helpers";
+
 export interface CurrentConnection {
-  environment: "APP" | "ENV" | "BUILT_IN";
-  id: string;
-  name: string;
-  scope: "WASM" | "External";
-  host?: string;
-  port?: number;
-  user?: string;
-  password?: string;
-  database?: string;
-  authMode?: "none" | "password" | "api_key";
+  executionMethod: "JSON_RPC" | "GRAPHQL" | "HTTP ";
 }
 
 export interface ConnectionProvider {
-  environment: "APP" | "ENV" | "BUILT_IN";
-  id: string;
-  name: string;
-  scope: "WASM" | "External";
-  host?: string;
-  port?: number;
-  user?: string;
-  password?: string;
-  database?: string;
-  authMode?: "none" | "password" | "api_key";
+  executionMethod: "JSON_RPC" | "GRAPHQL" | "HTTP ";
 }
 
 export interface ConnectionList {
@@ -59,11 +43,6 @@ export interface QueryResult {
   error?: string;
 }
 
-interface DumpFile {
-  url: string;
-  name: string;
-}
-
 export interface QueryHistoryItem {
   id: string;
   query: string;
@@ -86,28 +65,14 @@ export interface SandwormStoreState {
   currentDatabase: string;
   currentConnection: CurrentConnection | null;
   connectionList: ConnectionList;
-
-  // Data Explorer State
   databases: DatabaseInfo[];
-
-  // Query management
   queryHistory: QueryHistoryItem[];
   isExecuting: boolean;
-
-  // Tab Management
   tabs: EditorTab[];
   activeTabId: string | null;
-
-  // UI state
   isLoading: boolean;
   error: string | null;
-
-  // Data Explorer State (renamed to fix typo)
   isLoadingDbTablesFetch: boolean;
-
-  isLoadingExternalConnection: boolean;
-
-  // Actions
   initialize: () => Promise<void>;
   executeQuery: (query: string, tabId?: string) => Promise<QueryResult | void>;
   createTab: (
@@ -126,77 +91,6 @@ export interface SandwormStoreState {
   exportParquet: (query: string) => Promise<Blob>;
 }
 
-const queryHasResults = (result: Record<string, object[]>): boolean => {
-  return !!(
-    (result.transaction && result.transaction.length > 0) ||
-    (result.log && result.log.length > 0) ||
-    (result.account && result.account.length > 0) ||
-    (result.block && result.block.length > 0)
-  );
-};
-
-const formatApiResultToQueryResult = (
-  result: Record<string, object[]>
-): QueryResult => {
-  console.log(result);
-
-  // Combine all result arrays (transaction, log, account, block)
-  const allData: object[] = [];
-  Object.keys(result).forEach(key => {
-    if (Array.isArray(result[key]) && result[key].length > 0) {
-      allData.push(...result[key]);
-    }
-  });
-
-  if (allData.length === 0) {
-    return {
-      columns: [],
-      columnTypes: [],
-      data: [],
-      rowCount: 0,
-    };
-  }
-
-  // Extract columns from the first object
-  const columns = Object.keys(allData[0]);
-
-  // Determine column types
-  const columnTypes = columns.map(col => {
-    const value = allData[0][col];
-    return Array.isArray(value) &&
-      value.length === 1 &&
-      typeof value[0] === "number"
-      ? "number"
-      : typeof value === "number"
-        ? "number"
-        : typeof value === "boolean"
-          ? "boolean"
-          : "string";
-  });
-
-  // Create data as an array of objects
-  const data = allData.map(item => {
-    const row: Record<string, unknown> = {};
-    columns.forEach(col => {
-      row[col] =
-        Array.isArray(item[col]) && item[col].length === 1
-          ? item[col][0]
-          : (item[col] ?? null);
-    });
-    return row;
-  });
-
-  console.log("data rows", data);
-
-  return {
-    columns,
-    columnTypes,
-    data,
-    rowCount: data.length,
-  };
-};
-
-// Create a mock WASM query result
 const createMockWasmResult = () => {
   const mockEntry = {
     block_date: "2024-08-26T00:00:00Z",
@@ -277,15 +171,8 @@ const resultToJSON = (result: any): QueryResult => {
 };
 
 /**
- * Executes a query against an external connection.
- * @param query The query string.
- * @param connection The external connection details.
- */
-
-/**
  * Helper to update query history.
  */
-
 const updateHistory = (
   currentHistory: QueryHistoryItem[],
   query: string,
@@ -308,12 +195,10 @@ const updateHistory = (
 //
 // STORE DEFINITION
 //
-
 export const useSandwormStore = create<SandwormStoreState>()(
   devtools(
     persist(
       (set, get) => ({
-        // Initial state
         db: null,
         connection: null,
         isInitialized: false,
@@ -348,7 +233,7 @@ export const useSandwormStore = create<SandwormStoreState>()(
             const API_URL =
               "https://eql-api-606667184456.us-central1.run.app/run";
 
-            let queryResult: QueryResult | undefined = undefined;
+            let queryResult: QueryResult | undefined;
 
             try {
               const res = await fetch(
@@ -407,7 +292,7 @@ export const useSandwormStore = create<SandwormStoreState>()(
               isExecuting: false,
             }));
 
-            return tabId ? undefined : queryResult;
+            return queryResult;
           } catch (error) {
             console.error("Unexpected error:", error);
             const errorMessage =
