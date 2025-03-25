@@ -9,6 +9,7 @@ export type Chain = {
   short_code: string;
 };
 
+// eslint-disable-next-line no-unused-vars
 export async function GET(_request: Request): Promise<Response> {
   const result = await SupportedChainService.getAll();
 
