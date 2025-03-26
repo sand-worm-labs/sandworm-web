@@ -1,24 +1,27 @@
 "use client";
 
 import Link from "next/link";
-import type { FC } from "react";
-
-import type { CurrentUserProps } from "@/types";
+import { FC } from "react";
+import { useSession } from "next-auth/react";
 
 import { SandwormLogo } from "../Assets/SandwormLogo";
 import SearchBar from "../SearchBar";
 import { ProfileMenu } from "../ProfileMenu";
 
-const AppHeader: FC<CurrentUserProps> = ({ currentUser }) => {
+const AppHeader: FC = () => {
+  const { data: session } = useSession();
+
+  console.log(session);
+
   return (
-    <header className="px-8 py-2 flex justify-between items-center ">
-      <Link href="/" className="flex items-center ">
+    <header className="px-8 py-2 flex justify-between items-center">
+      <Link href="/" className="flex items-center">
         <SandwormLogo />
-        <span className="ml-3 font-medium text-xl uppercase ">SandW0rm.</span>
+        <span className="ml-3 font-medium text-xl uppercase">SandW0rm.</span>
       </Link>
       <SearchBar />
-      {currentUser ? (
-        <ProfileMenu currentUser={currentUser} />
+      {session?.user ? (
+        <ProfileMenu currentUser={session.user} />
       ) : (
         <Link
           href="/sign-in"
