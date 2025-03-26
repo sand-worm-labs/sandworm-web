@@ -41,3 +41,6 @@ next-env.d.ts
 sandword-firebase.json
 serviceKey.json
 yarn.lock
+firebase-debug.log
+firestore-debug.log
+
