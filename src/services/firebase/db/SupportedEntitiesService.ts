@@ -27,6 +27,7 @@ export interface SupportedChainEntity {
 export interface SupportedChain {
   chain: string;
   shortCode: string;
+  chainEntities?: SupportedChainEntity[];
 }
 
 export type SupportedChainDoc = Schema["chainSupports"]["Doc"];
@@ -138,7 +139,7 @@ export class SupportedChainService {
       if (table === "invalid_table")
         return DataResult.failure("Invalid table name.", "DB_UPDATE_ERROR");
       const chainId = chainSnapshot[0].ref.id;
-      await db.chainSupports(chainId).enttities.add({
+      await db.chainSupports(chainId).entities.add({
         table,
         table_group_by: tableGroupBy,
         support,
@@ -159,46 +160,6 @@ export class SupportedChainService {
       if (!updatedChainSnapshot)
         return DataResult.failure("Invalid table name", "DB_RETRIEVAL_ERROR");
       return DataResult.success(toResult<SupportedChain>(updatedChainSnapshot));
-    } catch (error) {
-      return DataResult.failure(
-        "Error adding chain entity.",
-        "DB_UPDATE_ERROR",
-        error
-      );
-    }
-  }
-
-  static async addChainEntityFields(
-    chain: string,
-    table: string,
-    fields: EntityField[]
-  ): Promise<ServiceResult<SupportedChainResult>> {
-    try {
-      const chainSnapshot = await db.chainSupports.query($ => [
-        $.field("chain").eq(chain),
-      ]);
-
-      if (!chainSnapshot.length)
-        return DataResult.failure("Chain not found.", "NOT_FOUND");
-      const existingChain = toResult<SupportedChain>(chainSnapshot[0]);
-      // await db.chainSupports.update(chainSnapshot[0].ref.id, {
-      //   chain,
-      // });
-      // const chainId = chainSnapshot[0].ref.id;
-      // const existingChain = toResult<SupportedChain>(chainSnapshot[0]);
-      // existingChain.chainEntities.push({
-      //   table,
-      //   table_group_by: tableGroupBy,
-      //   support,
-      //   fields: [],
-      // });
-      // await db.chainSupports.update(chainId, {
-      //   chainEntities: existingChain.chainEntities,
-      // });
-      // const updatedChainSnapshot = await db.chainSupports.get(chainId);
-      // if (!updatedChainSnapshot)
-      //   return DataResult.failure("Invalid table name", "DB_RETRIEVAL_ERROR");
-      // return DataResult.success(toResult<SupportedChain>(updatedChainSnapshot));
     } catch (error) {
       return DataResult.failure(
         "Error adding chain entity.",

@@ -12,7 +12,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { signOut } from "@/services/auth";
 import type { CurrentUserProps } from "@/types";
 
 import { DicebearAvatar } from "../DicebearAvatar";
@@ -21,10 +20,7 @@ export const ProfileMenu: FC<CurrentUserProps> = ({ currentUser }) => {
   const router = useRouter();
   const [open, setOpen] = useState(false);
 
-  const handleSignOut = async () => {
-    const isOk = await signOut();
-    if (isOk) router.push("/");
-  };
+  const handleSignOut = async () => {};
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>

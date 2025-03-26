@@ -3,8 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { signInWithEmail } from "@/services/auth";
-
 export default function SignInForm() {
   const router = useRouter();
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -19,12 +17,6 @@ export default function SignInForm() {
     e.preventDefault();
     setLoading(true);
     setError("");
-
-    const isOk = await signInWithEmail(formData.email, formData.password);
-    if (isOk) router.push("/workspace");
-    if (!isOk) {
-      setError("Invalid email or password.");
-    }
 
     setLoading(false);
   };
