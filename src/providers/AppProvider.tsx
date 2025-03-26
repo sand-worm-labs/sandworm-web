@@ -7,6 +7,7 @@ import {
 } from "@mysten/dapp-kit";
 
 import { getFullnodeUrl } from "@mysten/sui/client";
+import { SessionProvider } from "next-auth/react";
 
 import { darkTheme } from "@/styles/themes";
 
@@ -21,8 +22,10 @@ export default function AppProvider({
   children: React.ReactNode;
 }) {
   return (
-    <SuiClientProvider networks={networkConfig} defaultNetwork="localnet">
-      <WalletProvider theme={darkTheme}>{children}</WalletProvider>
-    </SuiClientProvider>
+    <SessionProvider>
+      <SuiClientProvider networks={networkConfig} defaultNetwork="localnet">
+        <WalletProvider theme={darkTheme}>{children}</WalletProvider>
+      </SuiClientProvider>
+    </SessionProvider>
   );
 }
