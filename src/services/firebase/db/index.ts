@@ -3,7 +3,10 @@ import { schema } from "typesaurus";
 
 import type { User } from "./UserService";
 import type { Query, QueryUpdates } from "./QueryService";
-import type { SupportedChain } from "./SupportedEntitiesService";
+import type {
+  SupportedChainEntity,
+  SupportedChain,
+} from "./SupportedEntitiesService";
 
 export type ServiceResult<T> =
   | { success: true; data: T }
@@ -46,7 +49,9 @@ export const db = schema($ => ({
   querys: $.collection<Query>().sub({
     updates: $.collection<QueryUpdates>(),
   }),
-  chainSupports: $.collection<SupportedChain>(),
+  chainSupports: $.collection<SupportedChain>().sub({
+    entities: $.collection<SupportedChainEntity>(),
+  }),
 }));
 
 export type Schema = Typesaurus.Schema<typeof db>;
