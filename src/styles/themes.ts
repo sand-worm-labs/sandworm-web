@@ -12,10 +12,10 @@ export const darkTheme: ThemeVars = {
     modalPrimary: "black",
     modalSecondary: "#111",
     iconButton: "transparent",
-    iconButtonHover: "#F0F1F2",
+    iconButtonHover: "#ffffff10",
     dropdownMenu: "#FFFFFF",
     dropdownMenuSeparator: "#F3F6F8",
-    walletItemSelected: "white",
+    walletItemSelected: "#ffffff20",
     walletItemHover: "#3C424226",
   },
   borderColors: {
