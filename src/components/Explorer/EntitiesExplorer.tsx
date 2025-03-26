@@ -4,6 +4,7 @@ import type { ExplorerTable } from "@/_mockdata/explorer";
 
 interface EntitiesExplorerProps {
   entities: ExplorerTable[];
+  onSelect: (entityId: string) => void;
 }
 
 export const EntitiesExplorer: React.FC<EntitiesExplorerProps> = ({
@@ -22,7 +23,7 @@ export const EntitiesExplorer: React.FC<EntitiesExplorerProps> = ({
         <button
           type="button"
           key={entity.id}
-          onClick={onSelect}
+          onClick={() => onSelect(entity.id)}
           className={`p-2 rounded-md text-left  hover:bg-primary/10 text-sm`}
         >
           {entity.name}
