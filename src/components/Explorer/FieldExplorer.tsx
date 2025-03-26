@@ -1,7 +1,6 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-
 import { explorerMockData } from "@/_mockdata/explorer";
 
 export default function FieldExplorer() {
@@ -11,9 +10,8 @@ export default function FieldExplorer() {
 
   if (!namespace || !id) return <p>Invalid selection</p>;
 
-  const chainData = explorerMockData.find(
-    chain => chain.chain.id === namespace
-  );
+  const chainData = explorerMockData.find(chain => chain.chainId === namespace);
+
   const entity = chainData?.entities.find(table => table.id === id);
 
   if (!entity) return <p>Invalid Entity</p>;
