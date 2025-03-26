@@ -70,7 +70,7 @@
     "lucide-react": "^0.476.0",
     "monaco-editor": "^0.52.2",
     "next": "15.1.6",
-    "next-auth": "^4.24.11",
+    "next-auth": "5.0.0-beta.25",
     "option-t": "^52.1.0",
     "papaparse": "^5.5.2",
     "punycode": "^2.3.1",
