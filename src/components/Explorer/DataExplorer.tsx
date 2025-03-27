@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { explorerMockData, chains } from "@/_mockdata/explorer";
 import type { Chain, DataExplorer } from "@/_mockdata/explorer";
+import Breadcrumbs from "./BreadCrumbs";
 
 import { ChainExplorer } from "./ChainExplorer";
 import { EntitiesExplorer } from "./EntitiesExplorer";
@@ -81,9 +82,10 @@ export default function DataExplorer() {
         </div>
       </CardHeader>
 
-      <CardContent className="p-2 h-[calc(100%-60px)] overflow-y-auto">
+      <CardContent className="p-2 px-0 h-[calc(100%-60px)] overflow-y-auto">
         {explorerMockData.length > 0 ? (
           <div className="space-y-2">
+            <Breadcrumbs />
             <Input
               type="text"
               placeholder="Search..."
@@ -92,12 +94,7 @@ export default function DataExplorer() {
               className="m-auto w-[calc(100%-2rem)] focus:ring-0
               "
             />
-            <div className="flex items-center justify-between px-2">
-              <p className="text-muted-foreground text-xs">
-                {explorerMockData.length}{" "}
-                {explorerMockData.length > 1 ? "chains" : "chaiin"}
-              </p>
-            </div>
+            <div className="flex items-center justify-between px-2"></div>
             <ul className="ml-2">
               {selectedEntity ? (
                 <FieldExplorer />

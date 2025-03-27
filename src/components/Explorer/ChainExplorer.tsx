@@ -1,4 +1,5 @@
 import React from "react";
+import { Sheet } from "lucide-react";
 
 interface Chain {
   id: string;
@@ -20,10 +21,11 @@ export const ChainExplorer: React.FC<ChainExplorerProps> = ({
         <button
           type="button"
           key={chain.id}
-          className="cursor-pointer py-2 px-2 rounded-md hover:bg-primary/10 text-sm text-left"
+          className="cursor-pointer py-2 px-2 rounded-md hover:bg-primary/10 text-sm text-left flex items-center space-x-2 lowercase font-medium"
           onClick={() => onSelect(chain.id)}
         >
-          {chain.name}
+          <Sheet size={15} />
+          <span> {chain.name}</span>
         </button>
       ))}
     </div>
