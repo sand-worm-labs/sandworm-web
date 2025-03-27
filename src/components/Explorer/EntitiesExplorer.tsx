@@ -1,6 +1,6 @@
 import React from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import type { ExplorerTable } from "@/_mockdata/explorer";
+import { Sheet } from "lucide-react";
 
 interface EntitiesExplorerProps {
   entities: ExplorerTable[];
@@ -11,12 +11,6 @@ export const EntitiesExplorer: React.FC<EntitiesExplorerProps> = ({
   entities,
   onSelect,
 }) => {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const selectedEntity = searchParams.get("id");
-
-  console.log(selectedEntity, selectedEntity, entities);
-
   return (
     <div className="flex flex-col p-4 border  gap-2  w-full">
       {entities.map(entity => (
@@ -24,9 +18,10 @@ export const EntitiesExplorer: React.FC<EntitiesExplorerProps> = ({
           type="button"
           key={entity.id}
           onClick={() => onSelect(entity.id)}
-          className={`p-2 rounded-md text-left  hover:bg-primary/10 text-sm`}
+          className="cursor-pointer py-2 px-2 rounded-md hover:bg-primary/10 text-sm text-left flex items-center space-x-2 lowercase font-medium"
         >
-          {entity.name}
+          <Sheet size={15} />
+          <span> {entity.name}</span>
         </button>
       ))}
     </div>

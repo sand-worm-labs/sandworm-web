@@ -1,59 +1,51 @@
 "use client";
 
-import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
+import { explorerMockData } from "@/_mockdata/explorer";
 
-export default function Breadcrumbs() {
+export default function FieldExplorer() {
   const searchParams = useSearchParams();
-  const pathname = usePathname();
   const router = useRouter();
 
   const namespace = searchParams.get("namespace");
   const id = searchParams.get("id");
 
-  if (!namespace) return null; // Hide if no namespace exists
+  const chainData = namespace
+    ? explorerMockData.find(chain => chain.chainId === namespace)
+    : null;
+  const entity = chainData?.entities.find(table => table.id === id);
 
-  // Generate paths for breadcrumbs
-  const handleNavigate = (newParams: Record<string, string | null>) => {
-    const newSearchParams = new URLSearchParams(searchParams.toString());
-
-    Object.entries(newParams).forEach(([key, value]) => {
-      if (value === null) {
-        newSearchParams.delete(key);
-      } else {
-        newSearchParams.set(key, value);
-      }
-    });
-
-    router.push(`${pathname}?${newSearchParams.toString()}`);
+  const handleNavigate = (params: { namespace?: string; id?: string }) => {
+    const newParams = new URLSearchParams();
+    if (params.namespace) newParams.set("namespace", params.namespace);
+    if (params.id) newParams.set("id", params.id);
+    router.push(`/workspace?${newParams.toString()}`);
   };
 
   return (
-    <nav className="py-3 px-4 border-b ">
-      <ul className="flex items-center space-x-2 text-sm capitalize">
-        <li>
-          <button
-            onClick={() => handleNavigate({ namespace: null, id: null })}
-            className=" hover:text-primary"
+    <nav className="py-3 px-4 border-b text-sm capitalize font-medium">
+      <span className="cursor-pointer" onClick={() => handleNavigate({})}>
+        Workspace
+      </span>
+      {namespace && (
+        <>
+          {" / "}
+          <span
+            className=" cursor-pointer"
+            onClick={() => handleNavigate({ namespace })}
           >
-            Workspace
-          </button>
-          <span> /</span>
-        </li>
-        <li>
-          <button
-            onClick={() => handleNavigate({ id: null })}
-            className=" hover:text-primary capitalize"
-          >
-            {namespace}
-          </button>
-          {id && <span> /</span>}
-        </li>
-        {id && (
-          <li className="hover:text-primary cursor-pointer">
-            {id.replace(`${namespace}.`, "")}
-          </li>
-        )}
-      </ul>
+            {namespace.charAt(0).toUpperCase() + namespace.slice(1)}
+          </span>
+        </>
+      )}
+      {id && (
+        <>
+          {" / "}
+          <span className="cursor-pointer">
+            {entity?.name || "Invalid Entity"}
+          </span>
+        </>
+      )}
     </nav>
   );
 }
