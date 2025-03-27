@@ -17,12 +17,18 @@ export default function FieldExplorer() {
   if (!entity) return <p>Invalid Entity</p>;
 
   return (
-    <div className="p-4">
-      <h2 className="text-lg font-semibold mb-4">Fields for {entity.name}</h2>
+    <div className="flex flex-col gap-1 p-4 border w-full">
+      <h2 className="text-sm font-medium mb-4">{chainData?.chainId} </h2>
       <ul className="space-y-2">
         {entity.fields.map(field => (
-          <li key={field.name} className="p-3 bg-secondary rounded-md">
+          <li
+            key={field.name}
+            className="cursor-pointer py-1.5 px-2 rounded-md hover:bg-primary/10 text-[0.8rem] font-medium text-left flex justify-between "
+          >
             {field.name}
+            <span className="bg-dark-translucent px-1 py-0.5 rounded">
+              {field.type}
+            </span>
           </li>
         ))}
       </ul>
