@@ -188,6 +188,9 @@ importers:
       react-use:
         specifier: 17.4.0
         version: 17.4.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      recommended:
+        specifier: 'link: plugin:cypress/recommended'
+        version: 'link: plugin:cypress/recommended'
       server-only:
         specifier: ^0.0.1
         version: 0.0.1
