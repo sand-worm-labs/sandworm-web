@@ -44,3 +44,8 @@ yarn.lock
 firebase-debug.log
 firestore-debug.log
 
+cypress/videos/
+cypress/screenshots/
+cypress/downloads/
+
+

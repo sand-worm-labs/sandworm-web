@@ -83,6 +83,7 @@
     "react-resizable-panels": "^2.1.7",
     "react-syntax-highlighter": "^15.6.1",
     "react-use": "17.4.0",
+    "recommended": "link: plugin:cypress/recommended",
     "server-only": "^0.0.1",
     "sonner": "^2.0.1",
     "sql-formatter": "^15.4.9",
