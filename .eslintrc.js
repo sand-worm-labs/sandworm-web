@@ -3,6 +3,7 @@ module.exports = {
     browser: true,
     es2020: true,
     node: true,
+    "cypress/globals": true,
   },
   extends: [
     "airbnb",
@@ -15,6 +16,7 @@ module.exports = {
     "plugin:@next/next/recommended",
     "prettier",
     "plugin:prettier/recommended",
+    "plugin:cypress/recommended",
   ],
   parser: "@typescript-eslint/parser",
   parserOptions: {
@@ -30,6 +32,15 @@ module.exports = {
     "react",
     "simple-import-sort",
     "prettier",
+    "cypress",
+  ],
+  overrides: [
+    {
+      files: ["cypress/**/*.cy.{js,ts}"],
+      rules: {
+        "no-unused-expressions": "off",
+      },
+    },
   ],
   root: true,
   rules: {
