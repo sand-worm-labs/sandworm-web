@@ -1,6 +1,7 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
+
 import { explorerMockData } from "@/_mockdata/explorer";
 
 export default function FieldExplorer() {
@@ -24,18 +25,23 @@ export default function FieldExplorer() {
 
   return (
     <nav className="py-3 px-4 border-b text-sm capitalize font-medium">
-      <span className="cursor-pointer" onClick={() => handleNavigate({})}>
+      <button
+        type="button"
+        className="cursor-pointer"
+        onClick={() => handleNavigate({})}
+      >
         Workspace
-      </span>
+      </button>
       {namespace && (
         <>
           {" / "}
-          <span
+          <button
+            type="button"
             className=" cursor-pointer"
             onClick={() => handleNavigate({ namespace })}
           >
             {namespace.charAt(0).toUpperCase() + namespace.slice(1)}
-          </span>
+          </button>
         </>
       )}
       {id && (
