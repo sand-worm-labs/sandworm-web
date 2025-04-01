@@ -1,7 +1,7 @@
 import "@/services/firebase";
 import * as admin from "firebase-admin";
 
-import { UserService } from "@/services/firebase/db/UserService";
+import { UserService } from "@/services/firebase/db/users/UserService";
 
 jest.setTimeout(100000);
 
@@ -63,9 +63,7 @@ describe("UserService", () => {
 
       // Update the user
       const updatedResult = await UserService.update(
-        createResult.data.id,
-        "updatedUser",
-        "updated@example.com"
+        createResult.data.id, { username: "updatedUser", email: "updated@example.com" },
       );
 
       expect(updatedResult.success).toBe(true);
@@ -127,9 +125,7 @@ describe("UserService", () => {
 
       // Try to update the user to an invalid username (empty)
       const updateResult = await UserService.update(
-        createResult.data.id,
-        "",
-        "valid@example.com"
+        createResult.data.id, { username: ""  , email: "valid@example.com" },
       );
 
       expect(updateResult.success).toBe(false);
