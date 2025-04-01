@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+
 import { CircleGeometry } from "@/components/Assets/CircleGeometry";
 
 export const SectionHero = () => {

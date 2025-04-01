@@ -1,4 +1,5 @@
 import type { Adapter } from "next-auth/adapters";
+
 import {
   UserService,
   AccountService,

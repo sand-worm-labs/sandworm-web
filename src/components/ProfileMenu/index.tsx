@@ -5,6 +5,7 @@ import type { FC } from "react";
 import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
+import Image from "next/image";
 
 import {
   DropdownMenu,
@@ -15,7 +16,6 @@ import {
 import type { CurrentUserProps } from "@/types";
 
 import { DicebearAvatar } from "../DicebearAvatar";
-import Image from "next/image";
 
 export const ProfileMenu: FC<CurrentUserProps> = ({ currentUser }) => {
   const [open, setOpen] = useState(false);
