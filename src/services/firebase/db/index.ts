@@ -1,7 +1,7 @@
 import type { Typesaurus } from "typesaurus";
 import { schema } from "typesaurus";
 
-import type { User } from "./UserService";
+import type { User } from "./users/UserService";
 import type { Query, QueryUpdates } from "./QueryService";
 import type {
   SupportedChainEntity,
@@ -99,4 +99,8 @@ export type Result<T> = {
 
 export function toResult<U>(doc: Document | SubDocument | null): Result<U> {
   return { id: doc?.ref?.id as string, ...(doc?.data as U), exist: !!doc };
+}
+
+export function toResults<U>(docs: Document[] | SubDocument[]): Result<U>[] {
+  return docs.map(doc => toResult<U>(doc));
 }
