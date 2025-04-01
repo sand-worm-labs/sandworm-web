@@ -13,6 +13,7 @@ import { Skeleton } from "../ui/skeleton";
 import QueryEditor from "../Editor/QueryEditor";
 
 import QueryResultsTable from "./ResultTab/index";
+import { ResultToolbar } from "./ResultTab/ResultToolbar";
 
 interface QueryTabProps {
   tabId: string;
@@ -27,35 +28,22 @@ export const QueryTab: React.FC<QueryTabProps> = ({ tabId }) => {
       return null;
     }
 
-    // Show skeleton loader while executing query
-
     if (isExecuting) {
       return (
-        <div className="h-full p-4">
-          {/* Table Skeleton */}
-          <div className="space-y-4">
-            {/* Skeleton Header */}
-            {/* eslint-disable react/no-array-index-key */}
-            <div className="flex space-x-4">
-              {Array.from({ length: 15 }).map((_, index) => (
-                <Skeleton key={`header-${index}`} className="h-4 w-32" />
-              ))}
-            </div>
-            {/* Skeleton Rows */}
-            <div className="space-y-2">
-              {Array.from({ length: 22 }).map((_, rowIndex) => (
-                <Skeleton key={`row-${rowIndex}`} className="flex space-x-4">
-                  {Array.from({ length: 5 }).map((__, cellIndex) => (
-                    <div
-                      key={`cell-${rowIndex}-${cellIndex}`}
-                      className="h-5 w-24 rounded-md animate-pulse"
-                    />
-                  ))}
-                </Skeleton>
-              ))}
-              {/* eslint-enable react/no-array-index-key */}
-            </div>
-          </div>
+        <div className="h-full p-4 flex items-center justify-center">
+          <svg
+            className="worm"
+            x="0px"
+            y="0px"
+            viewBox="0 0 316 40"
+            enableBackground="new 0 0 316 40"
+            xmlSpace="preserve"
+          >
+            <path
+              d="M6.5,6.5c30,0,30,26.9,60,26.9c30,0,30-26.9,60-26.9c30,0,30,26.9,60,26.9c30,0,30-26.9,60-26.9
+c30,0,30,26.9,60,26.9"
+            />
+          </svg>
         </div>
       );
     }
@@ -89,10 +77,13 @@ export const QueryTab: React.FC<QueryTabProps> = ({ tabId }) => {
     return (
       <div className="h-full">
         {currentTab.result && (
-          <QueryResultsTable
-            result={currentTab.result}
-            query={currentTab.content as string}
-          />
+          <>
+            <ResultToolbar />
+            <QueryResultsTable
+              result={currentTab.result}
+              query={currentTab.content as string}
+            />
+          </>
         )}
       </div>
     );
@@ -105,13 +96,13 @@ export const QueryTab: React.FC<QueryTabProps> = ({ tabId }) => {
   return (
     <div className="h-full">
       <ResizablePanelGroup direction="vertical" className="relative">
-        <ResizablePanel defaultSize={50} minSize={25} className="relative">
+        <ResizablePanel defaultSize={40} minSize={25} className="relative">
           <QueryEditor tabId={tabId} title={currentTab.title} />
         </ResizablePanel>
 
         <ResizableHandle withHandle />
         <ResizablePanel
-          defaultSize={50}
+          defaultSize={60}
           minSize={25}
           className="relative overflow-visible"
         >

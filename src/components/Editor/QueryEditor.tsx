@@ -19,7 +19,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { useSandwormStore } from "@/store";
 
 import SaveModal from "../WorkSpace/SaveModal";

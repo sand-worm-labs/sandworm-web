@@ -11,12 +11,14 @@ import {
 } from "@/components/ui/resizable";
 import WorkspaceTabs from "@/components/WorkSpace";
 import { SavedQueries } from "@/components/WorkSpace/SavedQueries";
+import { QueryHistory } from "@/components/Explorer/QueryHistory";
 
-type ViewType = "dataExplorer" | "savedQueries";
+type ViewType = "dataExplorer" | "savedQueries" | "ChangeLog";
 
 interface PanelComponents {
   dataExplorer: React.ReactNode;
   savedQueries: React.ReactNode;
+  ChangeLog: React.ReactNode;
 }
 
 export default function WorkSpace() {
@@ -26,6 +28,7 @@ export default function WorkSpace() {
   const panelComponents: PanelComponents = {
     dataExplorer: <DataExplorer />,
     savedQueries: <SavedQueries />,
+    ChangeLog: <QueryHistory />,
   };
 
   const handleResize = useCallback(() => {
