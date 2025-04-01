@@ -15,6 +15,7 @@ import {
 import type { CurrentUserProps } from "@/types";
 
 import { DicebearAvatar } from "../DicebearAvatar";
+import Image from "next/image";
 
 export const ProfileMenu: FC<CurrentUserProps> = ({ currentUser }) => {
   const [open, setOpen] = useState(false);
@@ -31,10 +32,20 @@ export const ProfileMenu: FC<CurrentUserProps> = ({ currentUser }) => {
           className="flex items-center space-x-2 px-3 py-2 hover:bg-customgray rounded"
         >
           <span className="text-sm font-medium pr-2">{currentUser?.name}</span>
-          <DicebearAvatar
-            size={30}
-            seed={currentUser?.displayName || "sandworm"}
-          />
+          {currentUser?.image ? (
+            <Image
+              src={currentUser.image}
+              width={20}
+              height={20}
+              alt={`${currentUser.name} image`}
+            />
+          ) : (
+            <DicebearAvatar
+              size={30}
+              seed={currentUser?.displayName || "sandworm"}
+            />
+          )}
+
           <ChevronDown className="w-4 h-4" />
         </button>
       </DropdownMenuTrigger>
