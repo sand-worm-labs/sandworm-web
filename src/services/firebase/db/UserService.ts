@@ -1,8 +1,5 @@
-import type { Typesaurus } from "typesaurus";
-import bcrypt from "bcrypt";
-
 import type { Result, Schema, ServiceResult } from "@/services/firebase/db";
-import { db, toResult } from "@/services/firebase/db";
+import { DataResult, db, toResult } from "@/services/firebase/db";
 
 export interface SocialLinks {
   telegram: string;
@@ -32,254 +29,125 @@ export interface User {
   wallets?: Wallet[];
   stars: number;
   forks: number;
-  createdAt: Typesaurus.ServerDate;
-  updatedAt: Typesaurus.ServerDate;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export type UserDoc = Schema["users"]["Doc"];
 export type UserResult = Result<User>;
 
 export class UserService {
-  /**
-   * Finds a user by their ID.
-   * @param id The user ID.
-   * @returns ServiceResult<UserResult> The found user or an error message.
-   */
   static async findUserById(id: string): Promise<ServiceResult<UserResult>> {
     try {
       const userSnapshot = await db.users.get(db.users.id(id));
-      if (!userSnapshot) {
-        return {
-          success: false,
-          message: "User not found.",
-          code: "NOT_FOUND",
-        };
-      }
-
-      return {
-        success: true,
-        data: toResult<User>(userSnapshot),
-      };
+      if (!userSnapshot)
+        return DataResult.failure("User not found.", "NOT_FOUND");
+      return DataResult.success(toResult<User>(userSnapshot));
     } catch (error) {
-      return {
-        success: false,
-        message: "Failed to retrieve user.",
-        code: "DB_QUERY_ERROR",
-        details: error,
-      };
+      return DataResult.failure(
+        "Failed to retrieve user.",
+        "DB_QUERY_ERROR",
+        error
+      );
     }
   }
 
-  /**
-   * Verifies a given password against a stored hashed password.
-   * @param password The password input provided by the user.
-   * @param hashedPassword The stored password (hashed) for comparison.
-   * @returns A promise that resolves to a verification result message.
-   */
-  static async verify(
-    password: string,
-    hashedPassword: string
-  ): Promise<boolean> {
-    // Comparing the hashed password
-    const passwordMatched = await bcrypt.compare(password, hashedPassword);
-
-    if (passwordMatched) {
-      return true;
-    }
-    return false;
-  }
-
-  /**
-   * Hashes a password using bcrypt.
-   * @param password The password to hash.
-   * @returns Promise<string> The hashed password.
-   */
-  static async hashPassword(password: string): Promise<string> {
-    const hashedPassword = bcrypt.hash(password, 10);
-    return hashedPassword;
-  }
-
-  /**
-   * Creates a new user.
-   * @param username The user's username.
-   * @param email The user's email.
-   * @returns ServiceResult<UserResult> The created user or an error message.
-   */
   static async create(
     username: string,
     email: string,
     password: string
   ): Promise<ServiceResult<UserResult>> {
     if (!username || !email || !password) {
-      return {
-        success: false,
-        message: "Missing required fields.",
-        code: "MISSING_FIELDS",
-      };
+      return DataResult.failure("Missing required fields.", "MISSING_FIELDS");
     }
     try {
-      const ref = await db.users.add($ => ({
+      const ref = await db.users.add(() => ({
         username,
         email,
-        createdAt: $.serverDate(),
-        updatedAt: $.serverDate(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
         stars: 0,
         forks: 0,
         password,
       }));
 
       const userSnapshot = await db.users.get(ref.id);
-      if (!userSnapshot) {
-        return {
-          success: false,
-          message: "Failed to retrieve created user.",
-          code: "DB_RETRIEVAL_ERROR",
-        };
-      }
-
-      return {
-        success: true,
-        data: toResult<User>(userSnapshot),
-      };
+      if (!userSnapshot)
+        return DataResult.failure(
+          "Failed to retrieve created user.",
+          "DB_RETRIEVAL_ERROR"
+        );
+      return DataResult.success(toResult<User>(userSnapshot));
     } catch (error) {
-      return {
-        success: false,
-        message: "Error creating user.",
-        code: "DB_INSERT_ERROR",
-        details: error,
-      };
+      return DataResult.failure(
+        "Error creating user.",
+        "DB_INSERT_ERROR",
+        error
+      );
     }
   }
 
-  /**
-   * Updates an existing user.
-   * @param id The user ID to update.
-   * @param username The new username.
-   * @param email The new email.
-   * @returns ServiceResult<UserResult> The updated user or an error message.
-   */
   static async update(
     id: string,
     username: string,
     email: string
   ): Promise<ServiceResult<UserResult>> {
     try {
-      const validations = {
-        id: !id && { message: "Missing ID.", code: "MISSING_ID" },
-        username: !username && {
-          message: "Missing Username.",
-          code: "MISSING_USERNAME",
-        },
-        email: !email && { message: "Missing Email.", code: "MISSING_EMAIL" },
-      };
-
-      const error = Object.values(validations).find(Boolean);
-      if (error) {
-        return { success: false, message: error.message, code: error.code };
-      }
+      if (!id || !username || !email)
+        return DataResult.failure("Missing required fields.", "MISSING_FIELDS");
       const foundUser = await db.users.get(db.users.id(id));
-      if (!foundUser) {
-        return {
-          success: false,
-          message: "User not found.",
-          code: "NOT_FOUND",
-        };
-      }
+      if (!foundUser) return DataResult.failure("User not found.", "NOT_FOUND");
 
-      await foundUser.update($ => ({
+      await foundUser.update({
         username,
         email,
-        updatedAt: $.serverDate(),
-      }));
+        updatedAt: new Date(),
+      });
 
       const userSnapshot = await db.users.get(db.users.id(id));
-      if (!userSnapshot) {
-        return {
-          success: false,
-          message: "Failed to retrieve updated user.",
-          code: "DB_RETRIEVAL_ERROR",
-        };
-      }
-
-      return {
-        success: true,
-        data: toResult<User>(userSnapshot),
-      };
+      if (!userSnapshot)
+        return DataResult.failure(
+          "Failed to retrieve updated user.",
+          "DB_RETRIEVAL_ERROR"
+        );
+      return DataResult.success(toResult<User>(userSnapshot));
     } catch (error) {
-      return {
-        success: false,
-        message: "Error updating user.",
-        code: "DB_UPDATE_ERROR",
-        details: error,
-      };
+      return DataResult.failure(
+        "Error updating user.",
+        "DB_UPDATE_ERROR",
+        error
+      );
     }
   }
 
-  /**
-   * Deletes a user by their ID.
-   * @param uid The user ID to delete.
-   * @returns ServiceResult<boolean> True if the deletion was successful, false otherwise.
-   */
   static async delete(uid: string): Promise<ServiceResult<boolean>> {
     try {
       const userSnapshot = await db.users.get(db.users.id(uid));
-      if (!userSnapshot) {
-        return {
-          success: false,
-          message: "User not found.",
-          code: "NOT_FOUND",
-        };
-      }
-
+      if (!userSnapshot)
+        return DataResult.failure("User not found.", "NOT_FOUND");
       await db.users.remove(db.users.id(uid));
-
-      return {
-        success: true,
-        data: true,
-      };
+      return DataResult.success(true);
     } catch (error) {
-      return {
-        success: false,
-        message: "Error deleting user.",
-        code: "DB_DELETE_ERROR",
-        details: error,
-      };
+      return DataResult.failure(
+        "Error deleting user.",
+        "DB_DELETE_ERROR",
+        error
+      );
     }
   }
 
-  /**
-   * Deletes all users from the database.
-   * @returns ServiceResult<boolean> True if all users were successfully deleted, false otherwise.
-   */
   static async deleteAll(): Promise<ServiceResult<boolean>> {
     try {
-      // Retrieve all user documents
       const users = await db.users.all();
-
-      // If no users exist, return success
-      if (users.length === 0) {
-        return {
-          success: true,
-          data: true,
-        };
-      }
-
-      // Batch delete users for better performance
+      if (!users.length) return DataResult.success(true);
       await Promise.allSettled(users.map(user => db.users.remove(user.ref.id)));
-
-      // Return success if batch delete is successful
-      return {
-        success: true,
-        data: true,
-      };
+      return DataResult.success(true);
     } catch (error) {
-      // Return failure result with error details if an exception occurs
-      return {
-        success: false,
-        message: "Failed to delete users.",
-        code: "DB_DELETE_ERROR",
-        details: error instanceof Error ? error.message : error,
-      };
+      return DataResult.failure(
+        "Failed to delete users.",
+        "DB_DELETE_ERROR",
+        error
+      );
     }
   }
 }
