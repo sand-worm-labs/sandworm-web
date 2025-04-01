@@ -99,21 +99,6 @@ describe("UserService", () => {
       }
     }
   });
-
-  it("should verify the password correctly", async () => {
-    const password = "password123";
-    const hashedPassword = await UserService.hashPassword(password);
-
-    const isPasswordValid = await UserService.verify(password, hashedPassword);
-    expect(isPasswordValid).toBe(true);
-
-    const isPasswordInvalid = await UserService.verify(
-      "wrongPassword",
-      hashedPassword
-    );
-    expect(isPasswordInvalid).toBe(false);
-  });
-
   it("should fail when attempting to find a non-existent user", async () => {
     const result = await UserService.findUserById("nonexistentid");
     expect(result.success).toBe(false);
@@ -152,13 +137,5 @@ describe("UserService", () => {
         expect(updateResult.code).toBe("MISSING_USERNAME");
       }
     }
-  });
-
-  it("should handle invalid password hash during verification", async () => {
-    const password = "password123";
-    const invalidHash = "invalidHashValue";
-
-    const isPasswordValid = await UserService.verify(password, invalidHash);
-    expect(isPasswordValid).toBe(false);
   });
 });

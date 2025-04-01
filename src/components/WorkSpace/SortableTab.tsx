@@ -64,7 +64,8 @@ function SortableTab({ tab, isActive }: SortableTabProps) {
   };
 
   return (
-    <div
+    <button
+      type="button"
       ref={setNodeRef}
       style={style}
       className={cn(
@@ -76,7 +77,6 @@ function SortableTab({ tab, isActive }: SortableTabProps) {
       onAuxClick={handleMiddleClick}
       onKeyDown={handleKeyDown}
       onMouseDown={e => e.preventDefault()}
-      role="presentation"
     >
       {tab.type === "sql" && (
         <div
@@ -107,8 +107,7 @@ function SortableTab({ tab, isActive }: SortableTabProps) {
           <span className="truncate text-xs">{tab.title}</span>
           {tab.type === "sql" && (
             <div className="ml-auto flex items-center space-x-1 text-xs text-gray-500">
-              <button
-                type="button"
+              <span
                 className="cursor-pointer hover:bg-red-500/10 p-1 rounded transition-colors"
                 onClick={e => {
                   e.stopPropagation();
@@ -116,12 +115,12 @@ function SortableTab({ tab, isActive }: SortableTabProps) {
                 }}
               >
                 <X className="h-6 w-6 text-red-500 hover:text-red-500 transition-colors" />
-              </button>
+              </span>
             </div>
           )}
         </div>
       </TabsTrigger>
-    </div>
+    </button>
   );
 }
 

@@ -1,6 +1,8 @@
 import NextAuth from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
+import { FirebaseAdapter } from "@next-auth/firebase-adapter";
+import { db } from "@/services/firebase";
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
   secret: process.env.NEXTAUTH_SECRET,
@@ -14,9 +16,9 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     }),
   ],
+  adapter: FirebaseAdapter(db),
   callbacks: {
     async redirect({ url, baseUrl }) {
-      // Redirect to /workspace after successful login
       return baseUrl + "/workspace";
     },
     async session({ session, token }) {
@@ -34,7 +36,6 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       return session;
     },
     async jwt({ token, user, account, profile }) {
-      // Debug logging
       console.log("JWT callback:", {
         token,
         user,

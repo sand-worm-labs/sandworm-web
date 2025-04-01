@@ -60,7 +60,7 @@ export default function DataExplorer() {
       <CardHeader className="p-4 border-b">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Database className="h-5 w-5 text-primary" />
+            <Database className="h-5 w-5" />
             <CardTitle className=" font-semibold">Data Explorer</CardTitle>
           </div>
 
@@ -94,8 +94,8 @@ export default function DataExplorer() {
               className="m-auto w-[calc(100%-2rem)] focus:ring-0
               "
             />
-            <div className="flex items-center justify-between px-2"></div>
-            <ul className="ml-2">
+            <div className="flex items-center justify-between px-3"></div>
+            <ul className="px-3">
               {selectedEntity ? (
                 <FieldExplorer />
               ) : selectedChain ? (

@@ -42,7 +42,7 @@ export const SectionHero = () => {
           <div className="justify-center  flex space-x-5 hero-btn-inner py-12 lg:px-8">
             <Link
               href="/workspace"
-              className="inline-block font-medium bg-white rounded py-3 lg:px-6 px-3 text-black text-[0.9rem] "
+              className="inline-block font-medium bg-white rounded py-3 lg:px-6 px-3 text-black text-[0.9rem] hover:bg-white/85"
             >
               Get Started
             </Link>
