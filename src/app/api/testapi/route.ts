@@ -1,8 +1,9 @@
 // This is a temporary file created to simulate functions on the API.
 // This is not to replace tests needed to be run, just a simulation.
 
-import { UserService } from "@/services/firebase/db/UserService";
 import { NextResponse } from "next/server";
+
+import { UserService } from "@/services/firebase/db/UserService";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);

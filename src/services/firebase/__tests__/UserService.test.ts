@@ -62,9 +62,10 @@ describe("UserService", () => {
       expect(createResult.success).toBe(true);
 
       // Update the user
-      const updatedResult = await UserService.update(
-        createResult.data.id, { username: "updatedUser", email: "updated@example.com" },
-      );
+      const updatedResult = await UserService.update(createResult.data.id, {
+        username: "updatedUser",
+        email: "updated@example.com",
+      });
 
       expect(updatedResult.success).toBe(true);
       if (updatedResult.success) {
@@ -124,9 +125,10 @@ describe("UserService", () => {
       expect(createResult.success).toBe(true);
 
       // Try to update the user to an invalid username (empty)
-      const updateResult = await UserService.update(
-        createResult.data.id, { username: ""  , email: "valid@example.com" },
-      );
+      const updateResult = await UserService.update(createResult.data.id, {
+        username: "",
+        email: "valid@example.com",
+      });
 
       expect(updateResult.success).toBe(false);
       if (!updateResult.success) {
