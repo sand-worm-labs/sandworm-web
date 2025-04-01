@@ -1,7 +1,5 @@
 /* eslint-disable no-shadow */
 /* eslint-disable no-unused-vars */
-import type { Typesaurus } from "typesaurus";
-
 import type { Result, Schema, ServiceResult } from "@/services/firebase/db";
 import { DataResult, db, toResult } from "@/services/firebase/db";
 
@@ -11,23 +9,16 @@ export enum EntitySupportType {
   GraphQL = "graphql",
 }
 
-export interface EntityField {
-  name: string;
-  type: string;
-  nullable: boolean;
-}
-
 export interface SupportedChainEntity {
   table: string;
   table_group_by: string;
   support?: EntitySupportType[];
-  fields?: EntityField[];
 }
 
 export interface SupportedChain {
   chain: string;
   shortCode: string;
-  chainEntities?: SupportedChainEntity[];
+  chainEntities: SupportedChainEntity[];
 }
 
 export type SupportedChainDoc = Schema["chainSupports"]["Doc"];
@@ -45,14 +36,12 @@ export class SupportedChainService {
       const lowerCaseChain = chain.toLowerCase();
       const foundChain =
         await SupportedChainService.findByChain(lowerCaseChain);
-
-      if (foundChain.success) {
-        return DataResult.success(foundChain.data);
-      }
+      if (foundChain.success) return DataResult.success(foundChain.data);
 
       const ref = await db.chainSupports.add({
         chain: lowerCaseChain,
         shortCode,
+        chainEntities: [],
       });
       const chainSnapshot = await db.chainSupports.get(ref.id);
       if (!chainSnapshot)
@@ -143,7 +132,6 @@ export class SupportedChainService {
         table,
         table_group_by: tableGroupBy,
         support,
-        fields: [],
       });
       const existingChain = toResult<SupportedChain>(chainSnapshot[0]);
 
@@ -168,6 +156,46 @@ export class SupportedChainService {
       );
     }
   }
+
+  // static async addChainEntityFields(
+  //   chain: string,
+  //   table: string,
+  //   fields: EntityField[]
+  // ): Promise<ServiceResult<SupportedChainResult>> {
+  //   try {
+  //     const chainSnapshot = await db.chainSupports.query($ => [
+  //       $.field("chain").eq(chain),
+  //     ]);
+
+  //     if (!chainSnapshot.length)
+  //       return DataResult.failure("Chain not found.", "NOT_FOUND");
+  //     const existingChain = toResult<SupportedChain>(chainSnapshot[0]);
+  //     // await db.chainSupports.update(chainSnapshot[0].ref.id, {
+  //     //   chain,
+  //     // });
+  //     // const chainId = chainSnapshot[0].ref.id;
+  //     // const existingChain = toResult<SupportedChain>(chainSnapshot[0]);
+  //     // existingChain.chainEntities.push({
+  //     //   table,
+  //     //   table_group_by: tableGroupBy,
+  //     //   support,
+  //     //   fields: [],
+  //     // });
+  //     // await db.chainSupports.update(chainId, {
+  //     //   chainEntities: existingChain.chainEntities,
+  //     // });
+  //     // const updatedChainSnapshot = await db.chainSupports.get(chainId);
+  //     // if (!updatedChainSnapshot)
+  //     //   return DataResult.failure("Invalid table name", "DB_RETRIEVAL_ERROR");
+  //     // return DataResult.success(toResult<SupportedChain>(updatedChainSnapshot));
+  //   } catch (error) {
+  //     return DataResult.failure(
+  //       "Error adding chain entity.",
+  //       "DB_UPDATE_ERROR",
+  //       error
+  //     );
+  //   }
+  // }
 
   static async deleteAll(): Promise<ServiceResult<boolean>> {
     try {
