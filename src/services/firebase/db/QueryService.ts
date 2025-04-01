@@ -1,4 +1,4 @@
-import { Typesaurus } from "typesaurus";
+import type { Typesaurus } from "typesaurus";
 
 import type { Result, Schema, ServiceResult } from "@/services/firebase/db";
 import { db, toResult, DataResult } from "@/services/firebase/db";
@@ -32,21 +32,38 @@ export class QueryService {
   static async findAll(): Promise<ServiceResult<QueryResult[]>> {
     try {
       const queries = await db.querys.all();
-        return queries.length === 0
-          ? DataResult.failure("No queries found.", "NOT_FOUND")
-          : DataResult.success(queries.map((query: QueryDoc) => toResult<QueryResult>(query)));
-      } catch (error) {
-        return DataResult.failure("Failed to retrieve queries.", "DB_QUERY_ERROR", error);
+      return queries.length === 0
+        ? DataResult.failure("No queries found.", "NOT_FOUND")
+        : DataResult.success(
+            queries.map((query: QueryDoc) => toResult<QueryResult>(query))
+          );
+    } catch (error) {
+      return DataResult.failure(
+        "Failed to retrieve queries.",
+        "DB_QUERY_ERROR",
+        error
+      );
     }
   }
-  static async findAllUserQuery(uid: string): Promise<ServiceResult<QueryResult[]>> {
+
+  static async findAllUserQuery(
+    uid: string
+  ): Promise<ServiceResult<QueryResult[]>> {
     try {
-      const queries = await db.querys.query($ => $.field("creator").eq(String(uid)));
+      const queries = await db.querys.query($ =>
+        $.field("creator").eq(String(uid))
+      );
       return queries.length === 0
         ? DataResult.failure("No queries found for the user.", "NOT_FOUND")
-        : DataResult.success(queries.map((query: QueryDoc) => toResult<QueryResult>(query)));
+        : DataResult.success(
+            queries.map((query: QueryDoc) => toResult<QueryResult>(query))
+          );
     } catch (error) {
-      return DataResult.failure("Failed to retrieve user queries.", "DB_QUERY_ERROR", error);
+      return DataResult.failure(
+        "Failed to retrieve user queries.",
+        "DB_QUERY_ERROR",
+        error
+      );
     }
   }
 
@@ -82,9 +99,16 @@ export class QueryService {
       const querySnapshot = await db.querys.get(ref.id);
       return querySnapshot
         ? DataResult.success(toResult<Query>(querySnapshot))
-        : DataResult.failure("Failed to retrieve created query.", "DB_RETRIEVAL_ERROR");
+        : DataResult.failure(
+            "Failed to retrieve created query.",
+            "DB_RETRIEVAL_ERROR"
+          );
     } catch (error) {
-      return DataResult.failure("Error creating query.", "DB_INSERT_ERROR", error);
+      return DataResult.failure(
+        "Error creating query.",
+        "DB_INSERT_ERROR",
+        error
+      );
     }
   }
 
@@ -99,7 +123,8 @@ export class QueryService {
   ): Promise<ServiceResult<QueryResult>> {
     try {
       const foundQuery = await db.querys.get(db.querys.id(queryId));
-      if (!foundQuery) return DataResult.failure("Query not found.", "NOT_FOUND");
+      if (!foundQuery)
+        return DataResult.failure("Query not found.", "NOT_FOUND");
 
       await foundQuery.update($ => ({
         title,
@@ -119,70 +144,113 @@ export class QueryService {
       const querySnapshot = await db.querys.get(db.querys.id(queryId));
       return querySnapshot
         ? DataResult.success(toResult<Query>(querySnapshot))
-        : DataResult.failure("Failed to retrieve updated query.", "DB_RETRIEVAL_ERROR");
+        : DataResult.failure(
+            "Failed to retrieve updated query.",
+            "DB_RETRIEVAL_ERROR"
+          );
     } catch (error) {
-      return DataResult.failure("Error updating query.", "DB_UPDATE_ERROR", error);
+      return DataResult.failure(
+        "Error updating query.",
+        "DB_UPDATE_ERROR",
+        error
+      );
     }
   }
 
-  static async like(queryId: string, uid: string): Promise<ServiceResult<QueryResult>> {
-      try {
-        const foundQuery = await db.querys.get(db.querys.id(queryId));
-        if (!foundQuery) return DataResult.failure("Query not found.", "NOT_FOUND");
-        if(foundQuery.data.stared_by.includes(uid))  return DataResult.failure("Query already liked.", "NOT_FOUND");
-        await foundQuery.update($ => ({
-          stared_by: [...foundQuery.data.stared_by, uid],
-        }));
-        const querySnapshot = await db.querys.get(db.querys.id(queryId));
-        return querySnapshot
-          ? DataResult.success(toResult<Query>(querySnapshot))
-          : DataResult.failure("Failed to retrieve updated query.", "DB_RETRIEVAL_ERROR");
-      }
-      catch (error) {
-        return DataResult.failure("Error liking query.", "DB_UPDATE_ERROR", error);
-    }
-  }
-
-  static async unlike(queryId: string, uid: string): Promise<ServiceResult<QueryResult>> {
+  static async like(
+    queryId: string,
+    uid: string
+  ): Promise<ServiceResult<QueryResult>> {
     try {
       const foundQuery = await db.querys.get(db.querys.id(queryId));
-      if (!foundQuery) return DataResult.failure("Query not found.", "NOT_FOUND");
-      if(foundQuery.data.stared_by.includes(uid))  return DataResult.failure("Query already liked.", "NOT_FOUND");
+      if (!foundQuery)
+        return DataResult.failure("Query not found.", "NOT_FOUND");
+      if (foundQuery.data.stared_by.includes(uid))
+        return DataResult.failure("Query already liked.", "NOT_FOUND");
       await foundQuery.update($ => ({
         stared_by: [...foundQuery.data.stared_by, uid],
       }));
       const querySnapshot = await db.querys.get(db.querys.id(queryId));
       return querySnapshot
         ? DataResult.success(toResult<Query>(querySnapshot))
-        : DataResult.failure("Failed to retrieve updated query.", "DB_RETRIEVAL_ERROR");
+        : DataResult.failure(
+            "Failed to retrieve updated query.",
+            "DB_RETRIEVAL_ERROR"
+          );
+    } catch (error) {
+      return DataResult.failure(
+        "Error liking query.",
+        "DB_UPDATE_ERROR",
+        error
+      );
     }
-    catch (error) {
-      return DataResult.failure("Error liking query.", "DB_UPDATE_ERROR", error);
   }
-}
 
+  static async unlike(
+    queryId: string,
+    uid: string
+  ): Promise<ServiceResult<QueryResult>> {
+    try {
+      const foundQuery = await db.querys.get(db.querys.id(queryId));
+      if (!foundQuery)
+        return DataResult.failure("Query not found.", "NOT_FOUND");
+      if (foundQuery.data.stared_by.includes(uid))
+        return DataResult.failure("Query already liked.", "NOT_FOUND");
+      await foundQuery.update($ => ({
+        stared_by: [...foundQuery.data.stared_by, uid],
+      }));
+      const querySnapshot = await db.querys.get(db.querys.id(queryId));
+      return querySnapshot
+        ? DataResult.success(toResult<Query>(querySnapshot))
+        : DataResult.failure(
+            "Failed to retrieve updated query.",
+            "DB_RETRIEVAL_ERROR"
+          );
+    } catch (error) {
+      return DataResult.failure(
+        "Error liking query.",
+        "DB_UPDATE_ERROR",
+        error
+      );
+    }
+  }
 
-  static async getQueryUpdates(queryId: string): Promise<ServiceResult<QueryUpdates[]>> {
+  static async getQueryUpdates(
+    queryId: string
+  ): Promise<ServiceResult<QueryUpdates[]>> {
     try {
       const queryDoc = await db.querys.get(db.querys.id(queryId));
       if (!queryDoc) return DataResult.failure("Query not found.", "NOT_FOUND");
 
-      const updatesSnapshot: QueryUpdateDoc[] = await db.querys(db.querys.id(queryId)).updates.all();
-      const data: QueryUpdates[] = updatesSnapshot.map(q => q.data as QueryUpdates);
+      const updatesSnapshot: QueryUpdateDoc[] = await db
+        .querys(db.querys.id(queryId))
+        .updates.all();
+      const data: QueryUpdates[] = updatesSnapshot.map(
+        q => q.data as QueryUpdates
+      );
       return DataResult.success(data);
     } catch (error) {
-      return DataResult.failure("Error retrieving query updates.", "DB_FETCH_ERROR", error);
+      return DataResult.failure(
+        "Error retrieving query updates.",
+        "DB_FETCH_ERROR",
+        error
+      );
     }
   }
 
   static async delete(queryId: string): Promise<ServiceResult<boolean>> {
     try {
       const foundQuery = await db.querys.get(db.querys.id(queryId));
-      if (!foundQuery) return DataResult.failure("Query not found.", "NOT_FOUND");
+      if (!foundQuery)
+        return DataResult.failure("Query not found.", "NOT_FOUND");
       await db.querys.remove(db.querys.id(queryId));
       return DataResult.success(true);
     } catch (error) {
-      return DataResult.failure("Failed to delete query.", "DB_DELETE_ERROR", error);   
+      return DataResult.failure(
+        "Failed to delete query.",
+        "DB_DELETE_ERROR",
+        error
+      );
     }
   }
 
@@ -191,10 +259,16 @@ export class QueryService {
       const queries = await db.querys.all();
       if (queries.length === 0) return DataResult.success(true);
 
-      await Promise.allSettled(queries.map(query => db.querys.remove(query.ref.id)));
+      await Promise.allSettled(
+        queries.map(query => db.querys.remove(query.ref.id))
+      );
       return DataResult.success(true);
     } catch (error) {
-      return DataResult.failure("Failed to delete queries.", "DB_DELETE_ERROR", error);
+      return DataResult.failure(
+        "Failed to delete queries.",
+        "DB_DELETE_ERROR",
+        error
+      );
     }
   }
 }

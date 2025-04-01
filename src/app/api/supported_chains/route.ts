@@ -12,7 +12,8 @@ export type Chain = {
 // eslint-disable-next-line no-unused-vars
 export async function GET(_request: Request): Promise<Response> {
   const result = await SupportedChainService.getAll();
-  if (!result.success) return new Response(JSON.stringify(result), { status: 500 });
+  if (!result.success)
+    return new Response(JSON.stringify(result), { status: 500 });
   return new Response(JSON.stringify(result.data));
 }
 
@@ -23,7 +24,9 @@ export async function POST(request: Request): Promise<Response> {
     chains.some(chain => !chain.name || !chain.short_code)
   ) {
     return new Response(
-      JSON.stringify( DataResult.failure("Invalid chain data", "VALIDATION_ERROR", chains))
+      JSON.stringify(
+        DataResult.failure("Invalid chain data", "VALIDATION_ERROR", chains)
+      )
     );
   }
 
