@@ -97,6 +97,9 @@ export class UserService {
   ): Promise<ServiceResult<UserResult>> {
     try {
       if (!id) return DataResult.failure("Missing user ID.", "MISSING_FIELDS");
+      if (!userData.username || userData.username.trim() === "") {
+        return DataResult.failure("Username cannot be empty.", "MISSING_USERNAME");
+      }
 
       const foundUser = await db.users.get(db.users.id(id));
       if (!foundUser) return DataResult.failure("User not found.", "NOT_FOUND");
