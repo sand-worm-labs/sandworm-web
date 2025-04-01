@@ -8,6 +8,32 @@ import type {
   SupportedChain,
 } from "./SupportedEntitiesService";
 
+export interface Account {
+  userId: string;
+  type: string;
+  provider: string;
+  providerAccountId: string;
+  refresh_token?: string;
+  access_token?: string;
+  expires_at?: number;
+  token_type?: string;
+  scope?: string;
+  id_token?: string;
+  session_state?: string;
+}
+
+export interface Session {
+  userId: string;
+  expires: Date;
+  sessionToken: string;
+}
+
+export interface VerificationToken {
+  identifier: string;
+  token: string;
+  expires: Date;
+}
+
 export type ServiceResult<T> =
   | { success: true; data: T }
   | {
@@ -46,6 +72,9 @@ export function createFailureResult<T>(
 
 export const db = schema($ => ({
   users: $.collection<User>(),
+  accounts: $.collection<Account>(),
+  sessions: $.collection<Session>(),
+  verificationTokens: $.collection<VerificationToken>(),
   querys: $.collection<Query>().sub({
     updates: $.collection<QueryUpdates>(),
   }),

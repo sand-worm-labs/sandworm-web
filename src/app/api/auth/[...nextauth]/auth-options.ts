@@ -1,8 +1,8 @@
 import NextAuth from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
-import { FirebaseAdapter } from "@next-auth/firebase-adapter";
-import { db } from "@/services/firebase";
+
+import { FirebaseAuthAdapter } from "@/services/auth/adapter";
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
   secret: process.env.NEXTAUTH_SECRET,
@@ -16,24 +16,27 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     }),
   ],
-  adapter: FirebaseAdapter(db),
+  adapter: FirebaseAuthAdapter(),
   callbacks: {
-    async redirect({ url, baseUrl }) {
-      return baseUrl + "/workspace";
+    async redirect({ baseUrl }) {
+      return `${baseUrl}/workspace`;
     },
-    async session({ session, token }) {
-      // Always add user ID from token
-      if (token.sub) {
-        session.user.id = token.sub;
-      }
+    async session({ session }) {
+      // Create a new session object with the user ID
+      console.log("hbsession", session, session.sessionToken);
+      const newSession = {
+        ...session,
+        userId: session.sessionToken.sub,
+      };
+
+      console.log("new session", newSession);
 
       // Debug logging
       console.log("Session callback:", {
-        sessionUser: session.user,
-        token,
+        sessionUser: newSession.user,
       });
 
-      return session;
+      return newSession;
     },
     async jwt({ token, user, account, profile }) {
       console.log("JWT callback:", {
@@ -43,12 +46,13 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         profile,
       });
 
-      // Add any additional token properties if needed
-      if (user) {
-        token.id = user.id;
-      }
+      // Create a new token object with additional properties
+      const newToken = {
+        ...token,
+        ...(user && { id: user.id }),
+      };
 
-      return token;
+      return newToken;
     },
     async signIn({ user, account, profile }) {
       console.log("Sign-in attempt:", {
