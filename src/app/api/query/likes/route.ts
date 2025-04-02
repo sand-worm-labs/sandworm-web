@@ -15,14 +15,16 @@ export async function PATCH(request: Request) {
       JSON.stringify(DataResult.failure("Missing query ID.", "MISSING_FIELDS")),
       { status: 400 }
     );
-    
+
   if (like) {
     const result = await QueryService.star(queryId, uid);
-    if (!result.success) return new Response(JSON.stringify(result), { status: 500 });
+    if (!result.success)
+      return new Response(JSON.stringify(result), { status: 500 });
     return new Response(JSON.stringify(result.data));
   }
 
   const result = await QueryService.unStar(queryId, uid);
-  if (!result.success) return new Response(JSON.stringify(result), { status: 500 });
+  if (!result.success)
+    return new Response(JSON.stringify(result), { status: 500 });
   return new Response(JSON.stringify(result.data));
 }

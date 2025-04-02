@@ -1,11 +1,11 @@
 import { useState } from "react";
-
 import ReactPaginate from "react-paginate";
 
-import QueryCard from "../QueryCard";
-import { queries } from "./queries";
+import type { Query } from "@/types";
 
-const QueryList: React.FC = () => {
+import QueryCard from "../QueryCard";
+
+const QueryList: React.FC<{ queries: Query[] }> = ({ queries }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const itemsPerPage = 10;
 

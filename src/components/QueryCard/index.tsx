@@ -3,8 +3,8 @@
 import { FaRegStar, FaCodeBranch } from "react-icons/fa";
 import Link from "next/link";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useRouter } from "next/navigation";
+import { twilight } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 import { useSandwormStore } from "@/store";
 
@@ -52,10 +52,27 @@ const QueryCard = ({ query }: { query: any }) => {
       </div>
       <button
         type="button"
-        className="border border-[#ffffff30] py-2 px-6 h-[10rem] mt-2 text-sm"
+        className="  mt-2 text-sm"
         onClick={() => openQueryInTab(query)}
       >
-        <SyntaxHighlighter language="sql" style={{ ...atomDark }} wrapLines>
+        <SyntaxHighlighter
+          language="sql"
+          style={{
+            ...twilight,
+          }}
+          customStyle={{
+            margin: 0,
+            background: "#ffffff10",
+            borderRadius: 0,
+            borderWidth: 1,
+            borderColor: "#ffffff25",
+          }}
+          wrapLines
+          wrapLongLines
+          showInlineLineNumbers
+          showLineNumbers
+          className="h-[10rem] rounded-none my-0"
+        >
           {query.query}
         </SyntaxHighlighter>
       </button>

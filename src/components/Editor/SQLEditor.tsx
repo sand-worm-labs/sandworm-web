@@ -12,7 +12,7 @@ interface SQLEditorProps {
   tabId: string;
   executeQueryFn: (query: string, tabId: string) => Promise<void>;
   updateTabQuery: (tabId: string, query: string) => void;
-  onRunQuery?: () => Promise<void>; // Add this prop
+  onRunQuery?: () => Promise<void>;
   height?: string;
 }
 
