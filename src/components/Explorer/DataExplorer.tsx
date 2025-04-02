@@ -61,7 +61,7 @@ export default function DataExplorer() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Database className="h-5 w-5" />
-            <CardTitle className=" font-semibold">Data Explorer</CardTitle>
+            <CardTitle className=" font-medium">Data Explorer</CardTitle>
           </div>
 
           <DropdownMenu>
