@@ -9,7 +9,6 @@ import {
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { useSandwormStore } from "@/store";
 
-import { Skeleton } from "../ui/skeleton";
 import QueryEditor from "../Editor/QueryEditor";
 
 import QueryResultsTable from "./ResultTab/index";

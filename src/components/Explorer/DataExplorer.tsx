@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Database, EllipsisVertical, FileUp, Plus } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { explorerMockData, chains } from "@/_mockdata/explorer";
-import type { Chain, DataExplorer } from "@/_mockdata/explorer";
+import type { DataExplorers } from "@/_mockdata/explorer";
 
 import Breadcrumbs from "./BreadCrumbs";
 import { ChainExplorer } from "./ChainExplorer";
@@ -24,7 +24,7 @@ import { EntitiesExplorer } from "./EntitiesExplorer";
 import FieldExplorer from "./FieldExplorer";
 
 export default function DataExplorer() {
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [, setIsSheetOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -45,9 +45,26 @@ export default function DataExplorer() {
     router.push(`?namespace=${chainId}`);
   };
 
-  const selectedChainData: DataExplorer | undefined = explorerMockData.find(
+  const selectedChainData: DataExplorers | undefined = explorerMockData.find(
     chain => chain.chainId === selectedChain
   );
+
+  const renderExplorer = () => {
+    if (selectedEntity) {
+      return <FieldExplorer />;
+    }
+
+    if (selectedChain) {
+      return (
+        <EntitiesExplorer
+          entities={selectedChainData?.entities || []}
+          onSelect={handleSelectEntity}
+        />
+      );
+    }
+
+    return <ChainExplorer chains={chains} onSelect={handleSelectChain} />;
+  };
 
   return (
     <Card className="h-full overflow-hidden border-none dark">
@@ -95,18 +112,7 @@ export default function DataExplorer() {
               "
             />
             <div className="flex items-center justify-between px-3" />
-            <ul className="px-3">
-              {selectedEntity ? (
-                <FieldExplorer />
-              ) : selectedChain ? (
-                <EntitiesExplorer
-                  entities={selectedChainData?.entities || []}
-                  onSelect={handleSelectEntity}
-                />
-              ) : (
-                <ChainExplorer chains={chains} onSelect={handleSelectChain} />
-              )}
-            </ul>
+            <ul className="px-3">{renderExplorer()}</ul>
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center h-full gap-4 text-center">

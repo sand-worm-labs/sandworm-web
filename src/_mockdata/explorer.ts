@@ -20,7 +20,7 @@ export interface ExplorerTable {
   fields: TableField[];
 }
 
-export interface DataExplorer {
+export interface DataExplorers {
   chainId: string;
   entities: ExplorerTable[];
 }
@@ -30,7 +30,7 @@ export const chains: Chain[] = [
   { id: "sui", name: "Sui", shortCode: "SUI", logo: "/logos/sui.png" },
 ];
 
-export const explorerMockData: DataExplorer[] = [
+export const explorerMockData: DataExplorers[] = [
   {
     chainId: "sol",
     entities: [

@@ -59,6 +59,11 @@ export interface TableProps<T extends RowData> {
   query?: string;
 }
 
+// Define a render function outside the component
+const renderIndexCell = (index: number) => {
+  return <IndexCell index={index} />;
+};
+
 function QueryResultsTable<T extends RowData>({
   result,
   onLoadMore,
@@ -129,7 +134,7 @@ function QueryResultsTable<T extends RowData>({
         minSize: 50,
         maxSize: 70,
         enableResizing: false, // Disable resizing of index column.  Consider making this configurable
-        cell: info => <IndexCell index={info.row.index} />, // Use the new IndexCell component
+        cell: ({ row }) => renderIndexCell(row.index),
       },
       ...baseColumns,
     ];

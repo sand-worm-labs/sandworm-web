@@ -1,7 +1,6 @@
 import "@/services/firebase";
 import * as admin from "firebase-admin";
-import { expect } from '@jest/globals';
-
+import { expect } from "@jest/globals";
 
 import {
   EntitySupportType,

@@ -1,6 +1,6 @@
 import "@/services/firebase";
 import * as admin from "firebase-admin";
-import { expect } from '@jest/globals';
+import { expect } from "@jest/globals";
 
 import { QueryService } from "@/services/firebase/db/QueryService";
 
@@ -8,7 +8,7 @@ jest.setTimeout(100000);
 
 describe("QueryService", () => {
   beforeAll(async () => {
-    //await QueryService.deleteAll();
+    // await QueryService.deleteAll();
   });
 
   afterAll(async () => {

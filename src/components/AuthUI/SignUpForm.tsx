@@ -1,13 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-
-import { signUpWithEmail } from "@/services/auth";
 
 export default function SignUpForm() {
-  const router = useRouter();
-
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -35,10 +30,7 @@ export default function SignUpForm() {
     }
 
     setIsLoading(true);
-    const isOk = await signUpWithEmail(email.trim(), password.trim());
-    if (isOk) router.push("/workspace");
 
-    if (!isOk) setError("Failed to create an account. Please try again.");
     setIsLoading(false);
   };
 

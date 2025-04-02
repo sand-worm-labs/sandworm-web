@@ -62,6 +62,15 @@ const DownloadDialog: React.FC<DownloadDialogProps> = ({
   const [open, setOpen] = useState(false);
   const exportParquet = useSandwormStore(state => state.exportParquet);
 
+  const formatBytes = (bytes: number, decimals = 2) => {
+    if (!bytes || bytes === 0) return "0 B";
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ["B", "KB", "MB", "GB", "TB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return `${parseFloat((bytes / k ** i).toFixed(dm))} ${sizes[i]}`;
+  };
+
   const estimateSize = useCallback(async () => {
     if (data.length === 0) {
       setEstimatedSize("0 B");
@@ -100,26 +109,17 @@ const DownloadDialog: React.FC<DownloadDialogProps> = ({
     estimateSize();
   }, [estimateSize]);
 
-  const formatBytes = (bytes: number, decimals = 2) => {
-    if (!bytes || bytes === 0) return "0 B";
-    const k = 1024;
-    const dm = decimals < 0 ? 0 : decimals;
-    const sizes = ["B", "KB", "MB", "GB", "TB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return `${parseFloat((bytes / k ** i).toFixed(dm))} ${sizes[i]}`;
-  };
-
   const processInChunks = async (
-    data: any[],
+    items: any[],
     format: ExportFormat,
     chunkSize: number
   ): Promise<Blob> => {
-    const chunks = Math.ceil(data.length / chunkSize);
+    const chunks = Math.ceil(items.length / chunkSize);
     let result = "";
 
     for (let i = 0; i < chunks; i++) {
       const chunk = serializeBigInt(
-        data.slice(i * chunkSize, (i + 1) * chunkSize)
+        items.slice(i * chunkSize, (i + 1) * chunkSize)
       );
 
       switch (format) {

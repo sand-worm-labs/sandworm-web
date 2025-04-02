@@ -1,8 +1,9 @@
 import "@/services/firebase";
 import * as admin from "firebase-admin";
+import { expect } from "@jest/globals";
 
 import { SessionService } from "@/services/firebase/db/users/SessionService"; // Adjust the import path accordingly
-import { expect } from '@jest/globals';
+
 import { UserService } from "../db/users";
 
 jest.setTimeout(100000);
@@ -41,22 +42,26 @@ describe("SessionService", () => {
     const createdUser = await UserService.create(
       "TestUser",
       "test@example",
-      "LALA USER" 
+      "LALA USER"
     );
-    if(createdUser.success){
-        const createResult = await SessionService.createSession(
+    if (createdUser.success) {
+      const createResult = await SessionService.createSession(
         createdUser.data.id,
         exampleSession.sessionToken,
         exampleSession.expires
-        );
+      );
 
-        expect(createResult.success).toBe(true);
-        const result = await SessionService.getSessionAndUser(exampleSession.sessionToken);
-        expect(result.success).toBe(true);
-        if (result.success) {
-        expect(result.data.session.sessionToken).toBe(exampleSession.sessionToken);
+      expect(createResult.success).toBe(true);
+      const result = await SessionService.getSessionAndUser(
+        exampleSession.sessionToken
+      );
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.session.sessionToken).toBe(
+          exampleSession.sessionToken
+        );
         expect(result.data.session.userId).toBe(createdUser.data.id);
-        }
+      }
     }
     expect(createdUser.success).toBe(true);
   });
@@ -95,10 +100,14 @@ describe("SessionService", () => {
 
     expect(createResult.success).toBe(true);
 
-    const deleteResult = await SessionService.deleteSession(exampleSession.sessionToken);
+    const deleteResult = await SessionService.deleteSession(
+      exampleSession.sessionToken
+    );
     expect(deleteResult.success).toBe(true);
 
-    const getResult = await SessionService.getSessionAndUser(exampleSession.sessionToken);
+    const getResult = await SessionService.getSessionAndUser(
+      exampleSession.sessionToken
+    );
     expect(getResult.success).toBe(false);
     if (!getResult.success) {
       expect(getResult.code).toBe("NOT_FOUND");

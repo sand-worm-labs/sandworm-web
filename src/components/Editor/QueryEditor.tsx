@@ -1,13 +1,5 @@
 import React, { useState } from "react";
-import {
-  Play,
-  Loader2,
-  Lightbulb,
-  Command,
-  Edit,
-  Star,
-  GitFork,
-} from "lucide-react";
+import { Play, Loader2, Edit, Star, GitFork } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";

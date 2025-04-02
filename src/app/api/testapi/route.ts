@@ -3,7 +3,7 @@
 
 import { NextResponse } from "next/server";
 
-import { UserService } from "@/services/firebase/db/UserService";
+import { UserService } from "@/services/firebase/db/users";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);

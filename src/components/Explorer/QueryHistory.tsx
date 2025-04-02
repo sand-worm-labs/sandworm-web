@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Database, RotateCcw } from "lucide-react";
+
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 
 interface VersionEntry {
@@ -9,7 +10,7 @@ interface VersionEntry {
 }
 
 export const QueryHistory: React.FC = () => {
-  const [versions, setVersions] = useState<VersionEntry[]>([
+  const [versions] = useState<VersionEntry[]>([
     {
       id: 1,
       timestamp: "2025-04-02 14:30",
