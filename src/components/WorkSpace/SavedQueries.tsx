@@ -21,8 +21,8 @@ export const SavedQueries = () => {
       <CardHeader className="p-4 border-b ">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 py-2">
-            <SquareTerminal className="h-5 w-5 text-primary" />
-            <CardTitle className=" font-semibold">Query Explorer</CardTitle>
+            <SquareTerminal className="h-5 w-5" />
+            <CardTitle className=" font-medium">Query Explorer</CardTitle>
           </div>
         </div>
       </CardHeader>

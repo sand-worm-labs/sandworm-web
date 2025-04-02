@@ -25,7 +25,7 @@ const QueryCard = ({ query }: { query: any }) => {
         <div className="flex">
           <DicebearAvatar seed={query.author.id} size={30} />
           <div className="ml-3">
-            <div className="text-[0.9rem]">
+            <div className="text-[0.8rem] font-medium">
               <Link
                 href={`/creators/${query.author.id} `}
                 className="hover:underline"
