@@ -157,7 +157,7 @@ export class QueryService {
     }
   }
 
-  static async like(
+  static async star(
     queryId: string,
     uid: string
   ): Promise<ServiceResult<QueryResult>> {
@@ -186,7 +186,7 @@ export class QueryService {
     }
   }
 
-  static async unlike(
+  static async unStar(
     queryId: string,
     uid: string
   ): Promise<ServiceResult<QueryResult>> {
@@ -194,10 +194,10 @@ export class QueryService {
       const foundQuery = await db.querys.get(db.querys.id(queryId));
       if (!foundQuery)
         return DataResult.failure("Query not found.", "NOT_FOUND");
-      if (foundQuery.data.stared_by.includes(uid))
-        return DataResult.failure("Query already liked.", "NOT_FOUND");
+      if (!foundQuery.data.stared_by.includes(uid))
+        return DataResult.failure("Query already unliked.", "NOT_FOUND");
       await foundQuery.update($ => ({
-        stared_by: [...foundQuery.data.stared_by, uid],
+        stared_by: foundQuery.data.stared_by.filter(userId => userId !== uid),
       }));
       const querySnapshot = await db.querys.get(db.querys.id(queryId));
       return querySnapshot
