@@ -15,6 +15,10 @@ export const SavedQueries = () => {
       id: "query_12335",
       name: "Most Active Wallets",
     },
+    {
+      id: "query_12335",
+      name: "Most Active Wallets",
+    },
   ];
   return (
     <Card className="h-full overflow-hidden border-none dark">
@@ -27,7 +31,7 @@ export const SavedQueries = () => {
         </div>
       </CardHeader>
 
-      <CardContent className="p-2 h-[calc(100%-60px)] overflow-y-auto">
+      <CardContent className=" p-0 h-[calc(100%-60px)] overflow-y-auto">
         {queries.length > 0 ? (
           <QueryExplorerCardList query={queries} />
         ) : (

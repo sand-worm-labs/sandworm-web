@@ -135,10 +135,8 @@ const AppSidebar = ({ currentView, setCurrentView }: AppSidebarProps) => {
               key={item.id}
               type="button"
               onClick={() => setCurrentView(item.id)}
-              className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                currentView === item.id
-                  ? "bg-orange-600"
-                  : "hover:bg-[#ffe814]/20"
+              className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors w-full ${
+                currentView === item.id ? "bg-orange-600" : "hover:bg-white/15"
               }`}
             >
               <item.icon className={`h-5 w-5 ${isExpanded ? "mr-2" : ""}`} />
@@ -190,14 +188,6 @@ const AppSidebar = ({ currentView, setCurrentView }: AppSidebarProps) => {
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-
-          <Button variant="ghost" size="icon" onClick={toggleTheme}>
-            {theme === "dark" ? (
-              <Sun className="h-5 w-5" />
-            ) : (
-              <Moon className="h-5 w-5" />
-            )}
-          </Button>
         </div>
       </div>
 
