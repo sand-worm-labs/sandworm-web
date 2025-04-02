@@ -3,7 +3,8 @@ import "@/services/firebase";
 
 import { QueryService } from "@/services/firebase/db/QueryService";
 
-export async function GET(request: Request) {
+// eslint-disable-next-line no-unused-vars
+export async function GET(_request: Request) {
   const result = await QueryService.findAll();
   if (!result.success)
     return new Response(JSON.stringify(result), { status: 500 });
