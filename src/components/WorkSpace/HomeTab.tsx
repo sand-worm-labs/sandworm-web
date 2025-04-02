@@ -5,7 +5,6 @@ import {
   BookOpen,
   Database,
   ExternalLink,
-  Loader2,
   TestTubeDiagonal,
 } from "lucide-react";
 import { motion } from "framer-motion";
@@ -159,7 +158,7 @@ GET balance FROM account cx.eth  ON eth
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 ">
         {recentItems.map((item, index) => (
           <motion.div
-            key={`${item.id}${index}`}
+            key={`${item.id}-${Math.random()}`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05 }}

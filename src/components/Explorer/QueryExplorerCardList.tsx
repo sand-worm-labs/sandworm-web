@@ -1,8 +1,8 @@
 import React from "react";
 import { AiOutlineCode } from "react-icons/ai";
+import { Search } from "lucide-react";
 
 import { Input } from "../ui/input";
-import { Search } from "lucide-react";
 
 interface IQuery {
   id: string;
