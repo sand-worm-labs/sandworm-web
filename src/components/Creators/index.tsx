@@ -4,8 +4,11 @@ import Head from "next/head";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { DicebearAvatar } from "../DicebearAvatar";
 import QueryList from "../QueryList";
-import { FaRegStar } from "react-icons/fa";
+import { FaRegStar, FaTelegramPlane } from "react-icons/fa";
 import { HiOutlineCommandLine } from "react-icons/hi2";
+import { FaXTwitter, FaDiscord } from "react-icons/fa6";
+
+import Link from "next/link";
 
 export const Creators = () => {
   const [tab, setTab] = useState("all");
@@ -22,6 +25,17 @@ export const Creators = () => {
             <div className="mt-8 text-center">
               <h3 className="font-bold text-3xl">Bruno Mars</h3>
               <p className="mt-1 text-xs">Joined 2023</p>
+            </div>
+            <div className="flex space-x-5 items-center my-4 justify-center text-[#ffffffaa]">
+              <Link href={"/"}>
+                <FaXTwitter size={20} />
+              </Link>
+              <Link href={"/"}>
+                <FaTelegramPlane size={20} />
+              </Link>
+              <Link href={"/"}>
+                <FaDiscord size={20} />
+              </Link>
             </div>
             <div className="grid grid-cols-2 w-full text-center mt-6">
               <div className="border border-[#ffffff40] p-4 py-3">
