@@ -1,6 +1,7 @@
 import React from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 import { Database } from "lucide-react";
+
+import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 
 export const QueryHistory = () => {
   return (

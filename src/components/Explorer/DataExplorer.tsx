@@ -17,8 +17,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { explorerMockData, chains } from "@/_mockdata/explorer";
 import type { Chain, DataExplorer } from "@/_mockdata/explorer";
-import Breadcrumbs from "./BreadCrumbs";
 
+import Breadcrumbs from "./BreadCrumbs";
 import { ChainExplorer } from "./ChainExplorer";
 import { EntitiesExplorer } from "./EntitiesExplorer";
 import FieldExplorer from "./FieldExplorer";
@@ -94,7 +94,7 @@ export default function DataExplorer() {
               className="m-auto w-[calc(100%-2rem)] focus:ring-0
               "
             />
-            <div className="flex items-center justify-between px-3"></div>
+            <div className="flex items-center justify-between px-3" />
             <ul className="px-3">
               {selectedEntity ? (
                 <FieldExplorer />

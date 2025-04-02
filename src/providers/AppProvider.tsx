@@ -5,7 +5,6 @@ import {
   SuiClientProvider,
   WalletProvider,
 } from "@mysten/dapp-kit";
-
 import { getFullnodeUrl } from "@mysten/sui/client";
 import { SessionProvider } from "next-auth/react";
 
