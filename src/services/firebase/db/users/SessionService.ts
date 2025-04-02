@@ -6,6 +6,7 @@ import {
   db,
   toResult,
 } from "@/services/firebase/db";
+
 import { UserService } from "./UserService";
 
 export class SessionService {
@@ -47,15 +48,11 @@ export class SessionService {
         $.field("sessionToken").eq(sessionToken)
       );
 
-      console.log("sessionsnap", sessionsSnap);
-
       if (sessionsSnap.length === 0)
         return DataResult.failure("Session not found.", "NOT_FOUND");
 
       const sessionDoc = sessionsSnap[0];
       const session = sessionDoc.data;
-
-      console.log("session", session);
 
       if (new Date(session.expires) < new Date()) {
         await db.sessions.remove(sessionDoc.ref.id);
@@ -63,8 +60,6 @@ export class SessionService {
       }
 
       const userResult = await UserService.findUserById(session.userId);
-
-      console.log("user result", userResult);
 
       if (!userResult.success)
         return DataResult.failure("User not found.", "NOT_FOUND");
@@ -146,6 +141,23 @@ export class SessionService {
         "DB_DELETE_ERROR",
         error
       );
+    }
+  }
+
+  static async cleanExpiredSessions(): Promise<void> {
+    try {
+      const now = new Date();
+      const expiredSessions = await db.sessions.query($ =>
+        $.field("expires").lt(now)
+      );
+
+      const deletePromises = expiredSessions.map(session =>
+        db.sessions.remove(session.ref.id)
+      );
+
+      await Promise.all(deletePromises);
+    } catch (error) {
+      console.error("Failed to clean expired sessions:", error);
     }
   }
 }

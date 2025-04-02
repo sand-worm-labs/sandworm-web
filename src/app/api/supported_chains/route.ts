@@ -12,11 +12,8 @@ export type Chain = {
 // eslint-disable-next-line no-unused-vars
 export async function GET(_request: Request): Promise<Response> {
   const result = await SupportedChainService.getAll();
-
-  if (!result.success) {
+  if (!result.success)
     return new Response(JSON.stringify(result), { status: 500 });
-  }
-
   return new Response(JSON.stringify(result.data));
 }
 
