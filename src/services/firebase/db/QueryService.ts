@@ -12,7 +12,7 @@ export interface Query {
   tags: string[];
   stared_by: string[];
   forked_from: string;
-  forks: string[];
+  forked_by: string[];
   forked: boolean;
   createdAt: Typesaurus.ServerDate;
   updatedAt: Typesaurus.ServerDate;
@@ -73,7 +73,9 @@ export class QueryService {
     creator: string,
     privateQuery: boolean,
     query: string,
-    tags: string[]
+    tags: string[],
+    forkedFrom?: string,
+    forked?: boolean
   ): Promise<ServiceResult<QueryResult>> {
     try {
       const ref = await db.querys.add($ => ({
@@ -84,11 +86,11 @@ export class QueryService {
         query,
         tags,
         stared_by: [],
-        forked_from: "",
-        forks: [],
+        forked_from: forkedFrom || "",
+        forked_by: [],
         createdAt: $.serverDate(),
         updatedAt: $.serverDate(),
-        forked: false,
+        forked: forked || false,
       }));
 
       await db.querys(ref.id).updates.add($ => ({
@@ -167,7 +169,7 @@ export class QueryService {
         return DataResult.failure("Query not found.", "NOT_FOUND");
       if (foundQuery.data.stared_by.includes(uid))
         return DataResult.failure("Query already liked.", "NOT_FOUND");
-      await foundQuery.update($ => ({
+      await foundQuery.update(() => ({
         stared_by: [...foundQuery.data.stared_by, uid],
       }));
       const querySnapshot = await db.querys.get(db.querys.id(queryId));
@@ -196,7 +198,7 @@ export class QueryService {
         return DataResult.failure("Query not found.", "NOT_FOUND");
       if (!foundQuery.data.stared_by.includes(uid))
         return DataResult.failure("Query already unliked.", "NOT_FOUND");
-      await foundQuery.update($ => ({
+      await foundQuery.update(() => ({
         stared_by: foundQuery.data.stared_by.filter(userId => userId !== uid),
       }));
       const querySnapshot = await db.querys.get(db.querys.id(queryId));
@@ -209,6 +211,51 @@ export class QueryService {
     } catch (error) {
       return DataResult.failure(
         "Error liking query.",
+        "DB_UPDATE_ERROR",
+        error
+      );
+    }
+  }
+
+  static async fork(
+    queryId: string,
+    uid: string
+  ): Promise<ServiceResult<QueryResult>> {
+    try {
+      const foundQuery = await db.querys.get(db.querys.id(queryId));
+      if (!foundQuery)
+        return DataResult.failure("Query not found.", "NOT_FOUND");
+      if (foundQuery.data.forked_by.includes(uid))
+        return DataResult.failure("Query already forked.", "NOT_FOUND");
+      if (uid === foundQuery.data.creator)
+        return DataResult.failure(
+          "You cannot fork your own query.",
+          "NOT_FOUND"
+        );
+
+      if (foundQuery.data.forked)
+        return DataResult.failure("Query already forked.", "NOT_FOUND");
+
+      if (foundQuery.data.forked_by.includes(uid))
+        return DataResult.failure("Query already forked.", "NOT_FOUND");
+
+      await foundQuery.update(() => ({
+        forked_by: [...foundQuery.data.forked_by, uid],
+      }));
+      const forkedQuery = await this.create(
+        foundQuery.data.title,
+        foundQuery.data.description,
+        uid,
+        foundQuery.data.private,
+        foundQuery.data.query,
+        foundQuery.data.tags,
+        queryId,
+        true
+      );
+      return forkedQuery;
+    } catch (error) {
+      return DataResult.failure(
+        "Error Forking query.",
         "DB_UPDATE_ERROR",
         error
       );
