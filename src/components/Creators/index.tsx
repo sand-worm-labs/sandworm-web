@@ -1,19 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
 import Head from "next/head";
 
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { DicebearAvatar } from "../DicebearAvatar";
 import QueryList from "../QueryList";
+import { FaRegStar } from "react-icons/fa";
+import { HiOutlineCommandLine } from "react-icons/hi2";
 
 export const Creators = () => {
+  const [tab, setTab] = useState("all");
+
   return (
     <div>
       <Head>
         <title>Creators</title>
       </Head>
-      <div className="grid lg:grid-cols-[27%,73%] p-5">
-        <div className="h-[15rem] py-10 w-full flex items-center justify-center mt-28">
+      <div className="grid lg:grid-cols-[27%,73%] p-5 border-t">
+        <div className="h-[15rem] py-10 w-full flex items-center justify-center mt-32">
           <div>
-            <DicebearAvatar size={200} seed="creator" />
+            <DicebearAvatar size={250} seed="creator" className="border-2" />
             <div className="mt-8 text-center">
               <h3 className="font-bold text-3xl">Bruno Mars</h3>
               <p className="mt-1 text-xs">Joined 2023</p>
@@ -31,8 +36,32 @@ export const Creators = () => {
           </div>
         </div>
 
-        <div className="container mx-auto px-12 py-6">
-          <QueryList />
+        <div className="container mx-auto px-12 dark mt-5">
+          <Tabs value={tab} onValueChange={setTab} className="w-full">
+            <TabsList className="flex border-b border-borderLight">
+              <TabsTrigger
+                value="all"
+                className={`px-4 py-2 flex items-center space-x-2 ${tab === "all" ? "border-b-2 border-primary" : ""}`}
+              >
+                <HiOutlineCommandLine size={18} />
+                <span>All Queries</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="starred"
+                className={`px-4 py-2 flex items-center space-x-2 ${tab === "starred" ? "border-b-2 border-primary" : ""}`}
+              >
+                <FaRegStar size={16} /> <span>Starred</span>
+              </TabsTrigger>
+            </TabsList>
+            <div className="container mx-auto pt-2">
+              <TabsContent value="all">
+                <QueryList />
+              </TabsContent>
+              <TabsContent value="starred">
+                <QueryList />
+              </TabsContent>
+            </div>
+          </Tabs>
         </div>
       </div>
     </div>
