@@ -41,7 +41,7 @@ export const QueryHistory: React.FC = () => {
         </div>
       </CardHeader>
       <CardContent className="p-0">
-        <div className="max-h-64 overflow-y-auto">
+        <div className=" overflow-y-auto">
           {versions.map(version => (
             <div
               key={version.id}
@@ -69,7 +69,6 @@ export const QueryHistory: React.FC = () => {
             </div>
           ))}
         </div>
-        \
       </CardContent>
     </Card>
   );
