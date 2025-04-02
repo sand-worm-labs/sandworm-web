@@ -110,11 +110,9 @@ const HomeTab = () => {
         `
 -- Welcome to Sandworm Explore 🦆
 -- You can run the following queries to get a grasp of it.
--- Fetch latest transactions on SUI
-SELECT tx_id, sender, recipient, amount, timestamp  
-FROM sui.transactions  
-WHERE timestamp >= NOW() - INTERVAL '24 HOURS'  
-ORDER BY timestamp DESC;  
+-- Fetch balance of an account on SUI
+-- replace the value of the account
+GET balance FROM account cx.eth  ON eth
 `
       );
     }
