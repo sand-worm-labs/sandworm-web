@@ -8,7 +8,7 @@ jest.setTimeout(100000);
 
 describe("QueryService", () => {
   beforeAll(async () => {
-    await QueryService.deleteAll();
+    //await QueryService.deleteAll();
   });
 
   afterAll(async () => {

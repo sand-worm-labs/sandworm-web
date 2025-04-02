@@ -51,9 +51,7 @@ describe("SessionService", () => {
         );
 
         expect(createResult.success).toBe(true);
-        console.log(createResult);
         const result = await SessionService.getSessionAndUser(exampleSession.sessionToken);
-        console.log(result);
         expect(result.success).toBe(true);
         if (result.success) {
         expect(result.data.session.sessionToken).toBe(exampleSession.sessionToken);
