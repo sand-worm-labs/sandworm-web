@@ -1,6 +1,7 @@
 import React from "react";
-import type { ExplorerTable } from "@/_mockdata/explorer";
 import { Sheet } from "lucide-react";
+
+import type { ExplorerTable } from "@/_mockdata/explorer";
 
 interface EntitiesExplorerProps {
   entities: ExplorerTable[];

@@ -6,8 +6,7 @@ import {
   db,
   toResult,
 } from "@/services/firebase/db";
-
-import { UserService } from "../UserService";
+import { UserService } from "./UserService";
 
 export class SessionService {
   static async createSession(
