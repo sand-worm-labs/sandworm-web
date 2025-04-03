@@ -21,6 +21,14 @@ export async function PATCH(request: Request) {
     uid,
     like,
   }: { queryId: string; uid: string; like: boolean } = await request.json();
+
+  if (session.user?.id !== uid) {
+    return new Response(
+      JSON.stringify(DataResult.failure("Invalid User", "UNAUTHORIZED")),
+      { status: 401 }
+    );
+  }
+
   if (!queryId || !uid)
     return new Response(
       JSON.stringify(DataResult.failure("Missing query ID.", "MISSING_FIELDS")),

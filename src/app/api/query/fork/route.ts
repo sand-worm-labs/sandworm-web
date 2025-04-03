@@ -23,6 +23,13 @@ export async function POST(request: Request) {
     uid: string;
     queryId: string;
   } = await request.json();
+
+  if (session.user?.id !== uid) {
+    return new Response(
+      JSON.stringify(DataResult.failure("Invalid User", "UNAUTHORIZED")),
+      { status: 401 }
+    );
+  }
   const result = await QueryService.fork(queryId, uid);
   if (!result.success)
     return new Response(JSON.stringify(result), { status: 500 });
