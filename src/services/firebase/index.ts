@@ -2,6 +2,8 @@ import * as admin from "firebase-admin";
 import { getFirestore } from "firebase-admin/firestore";
 import { getAuth } from "firebase-admin/auth";
 
+import seedDatabase from "../localDb/seed";
+
 if (process.env.NODE_ENV === "test") {
   console.log("initialize");
   admin.initializeApp({
@@ -18,8 +20,7 @@ if (!admin.apps.length && process.env.NODE_ENV === "development") {
       projectId: "sandworm-8aa45",
       storageBucket: "sandworm-8aa45.appspot.com",
     });
-
-    // seedDatabase();
+    seedDatabase().then(() => console.log("seeded database"));
   } else {
     console.log("initialize 2");
 
