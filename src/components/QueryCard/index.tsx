@@ -73,7 +73,7 @@ const QueryCard = ({ query }: { query: any }) => {
           showLineNumbers
           className="h-[10rem] rounded-none my-0"
         >
-          {query.query}
+          {`${query.query}\n\n\n\n\n\n\n\n\n`}
         </SyntaxHighlighter>
       </button>
     </div>

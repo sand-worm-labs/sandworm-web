@@ -132,7 +132,7 @@ function QueryResultsTable<T extends RowData>({
         size: 70,
         minSize: 50,
         maxSize: 70,
-        enableResizing: false, // Disable resizing of index column.  Consider making this configurable
+        enableResizing: false,
         cell: ({ row }) => renderIndexCell(row.index),
       },
       ...baseColumns,
@@ -147,7 +147,7 @@ function QueryResultsTable<T extends RowData>({
       sorting,
       columnVisibility,
       columnFilters,
-      globalFilter, // Use globalFilter state
+      globalFilter,
       pagination,
       columnSizing,
     },
@@ -159,7 +159,7 @@ function QueryResultsTable<T extends RowData>({
     },
     onColumnVisibilityChange: setColumnVisibility,
     onColumnFiltersChange: setColumnFilters,
-    onGlobalFilterChange: setGlobalFilter, // Use setGlobalFilter
+    onGlobalFilterChange: setGlobalFilter,
     onPaginationChange: updater => {
       const newPagination =
         typeof updater === "function" ? updater(pagination) : updater;
