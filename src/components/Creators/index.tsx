@@ -4,10 +4,10 @@ import { FaRegStar, FaTelegramPlane } from "react-icons/fa";
 import { HiOutlineCommandLine } from "react-icons/hi2";
 import { FaXTwitter, FaDiscord } from "react-icons/fa6";
 import Link from "next/link";
-import { queries } from "../QueryList/queries";
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
+import { queries } from "../QueryList/queries";
 import QueryList from "../QueryList";
 import { DicebearAvatar } from "../DicebearAvatar";
 
