@@ -23,6 +23,7 @@ export async function POST(request: Request) {
       { status: 401 }
     );
   }
+
   const {
     title,
     description,
@@ -38,6 +39,13 @@ export async function POST(request: Request) {
     query: string;
     tags: string[];
   } = await request.json();
+
+  if (session.user?.id !== creator) {
+    return new Response(
+      JSON.stringify(DataResult.failure("Invalid User", "UNAUTHORIZED")),
+      { status: 401 }
+    );
+  }
 
   const result = await QueryService.create(
     title,
@@ -80,6 +88,12 @@ export async function PATCH(request: Request) {
     query: string;
     tags: string[];
   } = await request.json();
+  if (session.user?.id !== creator) {
+    return new Response(
+      JSON.stringify(DataResult.failure("Invalid User", "UNAUTHORIZED")),
+      { status: 401 }
+    );
+  }
   const result = await QueryService.update(
     id,
     title,
@@ -105,6 +119,7 @@ export async function DELETE(request: Request) {
   }
 
   const { id }: { id: string } = await request.json();
+  // let user = await QueryService.
   const result = await QueryService.delete(id);
   if (!result.success)
     return new Response(JSON.stringify(result), { status: 500 });
