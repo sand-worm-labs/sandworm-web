@@ -43,12 +43,10 @@ const auth = getAuth();
 
 const db = getFirestore();
 
-// if (process.env.NODE_ENV === "test") {
 console.log("🔥 Using Firestore Emulator for testing...");
 db.settings({
   host: "localhost:8080",
   ssl: false,
 });
-// }
 
 export { admin, auth, db, app };

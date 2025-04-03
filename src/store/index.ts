@@ -317,6 +317,8 @@ export const useSandwormStore = create<SandwormStoreState>()(
               isExecuting: false,
               error: errorMessage,
             }));
+
+            return errorResult;
           }
         },
 
