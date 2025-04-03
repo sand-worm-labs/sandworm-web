@@ -4,22 +4,9 @@ import { SquareTerminal, Plus } from "lucide-react";
 import { CardHeader, CardTitle, Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
 import { QueryExplorerCardList } from "../Explorer/QueryExplorerCardList";
+import { queries } from "../QueryList/queries";
 
 export const SavedQueries = () => {
-  const queries = [
-    {
-      id: "query_12345",
-      name: "Top 10 Sui Tokens",
-    },
-    {
-      id: "query_12335",
-      name: "Most Active Wallets",
-    },
-    {
-      id: "query_12335",
-      name: "Most Active Wallets",
-    },
-  ];
   return (
     <Card className="h-full overflow-hidden border-none dark">
       <CardHeader className="p-4 border-b ">

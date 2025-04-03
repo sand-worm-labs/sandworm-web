@@ -1,6 +1,8 @@
 import React from "react";
 import { AiOutlineCode } from "react-icons/ai";
 import { Search } from "lucide-react";
+import { MdKeyboardDoubleArrowRight } from "react-icons/md";
+import { useSandwormStore } from "@/store";
 
 import { Input } from "../ui/input";
 
@@ -16,6 +18,12 @@ interface IQueryExplorerCardListProps {
 export const QueryExplorerCardList: React.FC<IQueryExplorerCardListProps> = ({
   query,
 }) => {
+  const { createTab } = useSandwormStore();
+  const openQueryInTab = (queryData: any) => {
+    console.log(queryData);
+    createTab(queryData.name, "sql", queryData.query);
+  };
+
   return (
     <div className=" py-4">
       <div className="relative w-full px-3">
@@ -33,12 +41,17 @@ export const QueryExplorerCardList: React.FC<IQueryExplorerCardListProps> = ({
         {query.map(item => (
           <button
             key={item.id}
-            className="cursor-pointer p-3 border-b  hover:bg-white/10 text-sm text-left flex items-center space-x-3 lowercase font-medium py-5  first:border-t "
+            className="cursor-pointer p-3 border-b  hover:bg-white/10 text-sm text-left flex items-center justify-between lowercase font-medium py-5  first:border-t "
             type="button"
+            onClick={() => openQueryInTab(item)}
           >
-            <AiOutlineCode size={18} />
+            <span className="flex space-x-2 items-center">
+              <AiOutlineCode size={18} />
 
-            <span className="text-sm capitalize ">{item.name}</span>
+              <span className="text-sm capitalize ">{item.name}</span>
+            </span>
+
+            <MdKeyboardDoubleArrowRight />
           </button>
         ))}
       </ul>

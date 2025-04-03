@@ -9,6 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { ShareDialogue } from "./ShareDialogue";
 
 const options = ["JSON", "Area Chart", "Bar Chart", "Counter", "Table"];
 
@@ -52,7 +53,7 @@ export const ResultToolbar = () => {
           ))}
         </div>
       </div>
-      <Button variant="outline">Share</Button>
+      <ShareDialogue url="ddd" />
     </div>
   );
 };

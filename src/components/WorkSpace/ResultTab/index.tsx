@@ -26,6 +26,7 @@ import { TableFooter } from "./TableFooter";
 import { TableControls } from "./TableControl";
 import { TableContent } from "./TableContent";
 import { IndexCell } from "./IndexCell";
+import { QueryResultJson } from "./QueryResultJson";
 
 // Constants
 const DEFAULT_COLUMN_SIZE = 150;
@@ -296,7 +297,9 @@ function QueryResultsTable<T extends RowData>({
 
   return (
     <div className={`w-full h-full flex min-h-[200px] flex-col ${className}`}>
-      <TableControls
+      <QueryResultJson result={result} />
+
+      {/*     <TableControls
         table={table}
         data={data}
         query={query}
@@ -315,7 +318,7 @@ function QueryResultsTable<T extends RowData>({
         handleColumnResize={handleColumnResize}
         globalFilter={globalFilter}
       />
-      <TableFooter table={table} />
+      <TableFooter table={table} /> */}
     </div>
   );
 }
