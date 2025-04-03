@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import "@/services/firebase";
 import { expect } from "@jest/globals";
 
