@@ -117,6 +117,19 @@ const DownloadDialog: React.FC<DownloadDialogProps> = ({
     const chunks = Math.ceil(items.length / chunkSize);
     let result = "";
 
+    const getContentType = (fmt: ExportFormat): string => {
+      switch (fmt) {
+        case "csv":
+          return "text/csv";
+        case "json":
+          return "application/json";
+        case "parquet":
+          return "application/parquet";
+        default:
+          return "text/plain";
+      }
+    };
+
     for (let i = 0; i < chunks; i++) {
       const chunk = serializeBigInt(
         items.slice(i * chunkSize, (i + 1) * chunkSize)
@@ -144,24 +157,18 @@ const DownloadDialog: React.FC<DownloadDialogProps> = ({
       }
 
       setProgress(((i + 1) / chunks) * 100);
-      // Allow UI to update
-      await new Promise(resolve => setTimeout(resolve, 0));
+
+      // Use requestAnimationFrame instead of await for UI updates
+      if (i < chunks - 1) {
+        return new Promise(resolve => {
+          requestAnimationFrame(() => {
+            processInChunks(items, format, chunkSize).then(resolve);
+          });
+        });
+      }
     }
 
     return new Blob([result], { type: getContentType(format) });
-  };
-
-  const getContentType = (format: ExportFormat): string => {
-    switch (format) {
-      case "csv":
-        return "text/csv";
-      case "json":
-        return "application/json";
-      case "parquet":
-        return "application/parquet";
-      default:
-        return "text/plain";
-    }
   };
 
   type SizeWarning = {
