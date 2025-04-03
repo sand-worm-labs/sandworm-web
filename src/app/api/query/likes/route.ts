@@ -4,7 +4,18 @@ import "@/services/firebase";
 import { QueryService } from "@/services/firebase/db/QueryService";
 import { DataResult } from "@/services/firebase/db";
 
+import { auth } from "../../auth/[...nextauth]/auth-options";
+
 export async function PATCH(request: Request) {
+  const session = await auth();
+
+  if (!session) {
+    return new Response(
+      JSON.stringify(DataResult.failure("Unauthorized", "UNAUTHORIZED")),
+      { status: 401 }
+    );
+  }
+
   const {
     queryId,
     uid,

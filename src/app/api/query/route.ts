@@ -2,6 +2,9 @@ import "server-only";
 import "@/services/firebase";
 
 import { QueryService } from "@/services/firebase/db/QueryService";
+import { DataResult } from "@/services/firebase/db";
+
+import { auth } from "../auth/[...nextauth]/auth-options";
 
 // eslint-disable-next-line no-unused-vars
 export async function GET(_request: Request) {
@@ -12,6 +15,14 @@ export async function GET(_request: Request) {
 }
 
 export async function POST(request: Request) {
+  const session = await auth();
+
+  if (!session) {
+    return new Response(
+      JSON.stringify(DataResult.failure("Unauthorized", "UNAUTHORIZED")),
+      { status: 401 }
+    );
+  }
   const {
     title,
     description,
@@ -43,6 +54,15 @@ export async function POST(request: Request) {
 }
 
 export async function PATCH(request: Request) {
+  const session = await auth();
+
+  if (!session) {
+    return new Response(
+      JSON.stringify(DataResult.failure("Unauthorized", "UNAUTHORIZED")),
+      { status: 401 }
+    );
+  }
+
   const {
     id,
     title,
@@ -75,6 +95,15 @@ export async function PATCH(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+  const session = await auth();
+
+  if (!session) {
+    return new Response(
+      JSON.stringify(DataResult.failure("Unauthorized", "UNAUTHORIZED")),
+      { status: 401 }
+    );
+  }
+
   const { id }: { id: string } = await request.json();
   const result = await QueryService.delete(id);
   if (!result.success)
