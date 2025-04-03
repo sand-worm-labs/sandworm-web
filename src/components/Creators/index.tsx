@@ -4,6 +4,7 @@ import { FaRegStar, FaTelegramPlane } from "react-icons/fa";
 import { HiOutlineCommandLine } from "react-icons/hi2";
 import { FaXTwitter, FaDiscord } from "react-icons/fa6";
 import Link from "next/link";
+import { queries } from "../QueryList/queries";
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
@@ -69,10 +70,10 @@ export const Creators = () => {
             </TabsList>
             <div className="container mx-auto pt-2">
               <TabsContent value="all">
-                <QueryList />
+                <QueryList queries={queries} />
               </TabsContent>
               <TabsContent value="starred">
-                <QueryList />
+                <QueryList queries={queries} />
               </TabsContent>
             </div>
           </Tabs>
