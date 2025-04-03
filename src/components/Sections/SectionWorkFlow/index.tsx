@@ -12,7 +12,7 @@ import { TerminalFrame } from "./TerminalFrame";
 
 gsap.registerPlugin(ScrollTrigger);
 
-export const SectionWorkflow = () => {
+export const SectionWorkFlow = () => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const leftContentRef = useRef<HTMLDivElement | null>(null);
 

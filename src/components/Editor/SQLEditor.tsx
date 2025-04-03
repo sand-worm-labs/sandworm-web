@@ -10,7 +10,6 @@ import type { editor } from "monaco-editor";
 interface SQLEditorProps {
   initialValue?: string;
   tabId: string;
-  executeQueryFn: (query: string, tabId: string) => Promise<void>;
   updateTabQuery: (tabId: string, query: string) => void;
   onRunQuery?: () => Promise<void>;
   height?: string;
@@ -19,27 +18,12 @@ interface SQLEditorProps {
 export default function SQLEditor({
   initialValue,
   tabId,
-  executeQueryFn,
   updateTabQuery,
   onRunQuery,
   height = "450px",
 }: SQLEditorProps) {
   const [value, setValue] = useState(initialValue);
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
-
-  // Execute only the selected text
-  const executeSelectedQuery = async (selectedText: string) => {
-    if (!selectedText.trim()) return;
-
-    try {
-      await executeQueryFn(selectedText.trim(), tabId);
-      toast.success("Selected query executed successfully");
-    } catch (err) {
-      toast.error(
-        `Query execution failed: ${err instanceof Error ? err.message : "Unknown error"}`
-      );
-    }
-  };
 
   // Execute the full query
   const executeQuery = async () => {
@@ -53,11 +37,8 @@ export default function SQLEditor({
 
     try {
       if (onRunQuery) {
-        // If parent wants to handle the execution
         await onRunQuery();
       } else {
-        // Otherwise use the default behavior
-        await executeQueryFn(query, tabId);
         toast.success("Query executed successfully");
       }
     } catch (err) {
@@ -129,25 +110,6 @@ export default function SQLEditor({
 
     codeEditor.addCommand(monaco.KeyMod.Alt || monaco.KeyCode.KeyF, () => {
       formatQuery();
-    });
-
-    // Add context menu action
-    codeEditor.addAction({
-      id: "execute-selection",
-      label: "Execute Selected Query",
-      keybindings: [
-        monaco.KeyMod.CtrlCmd || monaco.KeyMod.Shift || monaco.KeyCode.Enter,
-      ],
-      contextMenuGroupId: "navigation",
-      run: ed => {
-        const selection = ed.getSelection();
-        if (selection && !selection.isEmpty()) {
-          const selectedText = ed.getModel()?.getValueInRange(selection);
-          if (selectedText?.trim()) {
-            executeSelectedQuery(selectedText);
-          }
-        }
-      },
     });
 
     codeEditor.addAction({

@@ -28,7 +28,6 @@ export const QueryHistory: React.FC = () => {
 
   const handleRestore = (query: string): void => {
     console.log(`Restoring query: ${query}`);
-    alert(`Query restored: ${query}`);
   };
 
   return (
