@@ -1,5 +1,4 @@
 import "@/services/firebase";
-import * as admin from "firebase-admin";
 import { expect } from "@jest/globals";
 
 import { SessionService } from "@/services/firebase/db/users/SessionService"; // Adjust the import path accordingly
