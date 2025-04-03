@@ -157,10 +157,8 @@ const QueryEditor: React.FC<SqlEditorProps> = ({ tabId, title, className }) => {
         <SQLEditor
           initialValue={currentContent}
           tabId={tabId}
-          executeQueryFn={executeQuery}
           updateTabQuery={updateTabQuery}
           onRunQuery={handleExecuteQuery}
-          theme="light"
         />
       </div>
 
