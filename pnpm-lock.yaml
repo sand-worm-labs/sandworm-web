@@ -237,6 +237,9 @@ importers:
       '@commitlint/config-conventional':
         specifier: ^19.5.0
         version: 19.7.1
+      '@jest/globals':
+        specifier: ^29.7.0
+        version: 29.7.0
       '@testing-library/jest-dom':
         specifier: ^6.6.3
         version: 6.6.3

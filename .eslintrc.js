@@ -81,7 +81,7 @@ module.exports = {
     "no-underscore-dangle": "off",
     "no-use-before-define": "error",
     "react/jsx-filename-extension": [1, { extensions: [".ts", ".tsx"] }],
-    "react/jsx-props-no-spreading": ["warn", { custom: "ignore" }],
+    "react/jsx-props-no-spreading": ["off", { custom: "ignore" }],
     "react/no-unescaped-entities": "off",
     "react/prop-types": "off",
     "react/react-in-jsx-scope": "off",
