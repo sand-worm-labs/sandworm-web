@@ -26,6 +26,7 @@ import { TableFooter } from "./TableFooter";
 import { TableControls } from "./TableControl";
 import { TableContent } from "./TableContent";
 import { IndexCell } from "./IndexCell";
+import { QueryResultJson } from "./QueryResultJson";
 
 // Constants
 const DEFAULT_COLUMN_SIZE = 150;
@@ -48,6 +49,7 @@ export interface TableResult<T extends RowData> {
 
 export interface TableProps<T extends RowData> {
   result: TableResult<T>;
+  viewMode: string;
   onLoadMore?: () => void;
   onRefresh?: () => void;
   isLoading?: boolean;
@@ -59,13 +61,13 @@ export interface TableProps<T extends RowData> {
   query?: string;
 }
 
-// Define a render function outside the component
 const renderIndexCell = (index: number) => {
   return <IndexCell index={index} />;
 };
 
 function QueryResultsTable<T extends RowData>({
   result,
+  viewMode,
   onLoadMore,
   onRefresh,
   isLoading = false,
@@ -133,7 +135,7 @@ function QueryResultsTable<T extends RowData>({
         size: 70,
         minSize: 50,
         maxSize: 70,
-        enableResizing: false, // Disable resizing of index column.  Consider making this configurable
+        enableResizing: false,
         cell: ({ row }) => renderIndexCell(row.index),
       },
       ...baseColumns,
@@ -148,7 +150,7 @@ function QueryResultsTable<T extends RowData>({
       sorting,
       columnVisibility,
       columnFilters,
-      globalFilter, // Use globalFilter state
+      globalFilter,
       pagination,
       columnSizing,
     },
@@ -160,7 +162,7 @@ function QueryResultsTable<T extends RowData>({
     },
     onColumnVisibilityChange: setColumnVisibility,
     onColumnFiltersChange: setColumnFilters,
-    onGlobalFilterChange: setGlobalFilter, // Use setGlobalFilter
+    onGlobalFilterChange: setGlobalFilter,
     onPaginationChange: updater => {
       const newPagination =
         typeof updater === "function" ? updater(pagination) : updater;
@@ -295,9 +297,39 @@ function QueryResultsTable<T extends RowData>({
     );
   }
 
+  useEffect(() => {
+    console.log("view", viewMode);
+  }, [viewMode]);
   return (
     <div className={`w-full h-full flex min-h-[200px] flex-col ${className}`}>
-      <TableControls
+      {viewMode === "JSON" ? (
+        <QueryResultJson result={result} />
+      ) : (
+        <>
+          <TableControls
+            table={table}
+            data={data}
+            query={query}
+            isLoading={isLoading}
+            onRefresh={onRefresh}
+            onFilterChange={handleFilterChange}
+          />
+          <TableContent
+            table={table}
+            memoizedColumns={memoizedColumns}
+            renderCell={renderCell}
+            onLoadMore={onLoadMore}
+            isLoading={isLoading}
+            virtualScrolling={virtualScrolling}
+            calculateAutoSize={calculateAutoSize}
+            handleColumnResize={handleColumnResize}
+            globalFilter={globalFilter}
+          />
+          <TableFooter table={table} />
+        </>
+      )}
+
+      {/*     <TableControls
         table={table}
         data={data}
         query={query}
@@ -316,7 +348,7 @@ function QueryResultsTable<T extends RowData>({
         handleColumnResize={handleColumnResize}
         globalFilter={globalFilter}
       />
-      <TableFooter table={table} />
+      <TableFooter table={table} /> */}
     </div>
   );
 }
