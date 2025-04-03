@@ -3,10 +3,9 @@ import type { Query } from "@/types";
 export const queries: Query[] = [
   {
     id: "query_12345",
-    name: "Top 10 Sui Tokens",
+    name: "Balance of an Address on EVM",
     description: "Fetches the top 10 token holders for a given token",
-    query:
-      "SELECT * FROM holders WHERE token = $TOKEN ORDER BY balance DESC LIMIT 10;",
+    query: "GET balance FROM account ceeriil.eth  ON eth",
     author: {
       id: "user_67890",
       username: "blockchain_analyst",

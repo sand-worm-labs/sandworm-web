@@ -1,6 +1,4 @@
 import { useState } from "react";
-
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -9,20 +7,33 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { ShareDialogue } from "./ShareDialogue";
 
-const options = ["JSON", "Area Chart", "Bar Chart", "Counter", "Table"];
+const options = ["Table", "JSON", "Area Chart", "Bar Chart", "Counter"];
 
-export const ResultToolbar = () => {
-  const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
+export const ResultToolbar = ({
+  viewMode,
+  setViewMode,
+}: {
+  viewMode: string;
+  setViewMode: (mode: string) => void;
+}) => {
+  const [selectedOptions, setSelectedOptions] = useState<string[]>(["Table"]);
+
+  const updateOptions = (updatedOptions: string[]) => {
+    setSelectedOptions(updatedOptions);
+    setViewMode(updatedOptions.includes("Table") ? "Table" : updatedOptions[0]);
+  };
 
   const handleSelect = (value: string) => {
-    if (!selectedOptions.includes(value)) {
-      setSelectedOptions([...selectedOptions, value]);
-    }
+    if (!selectedOptions.includes(value))
+      updateOptions([...selectedOptions, value]);
   };
 
   const removeOption = (value: string) => {
-    setSelectedOptions(selectedOptions.filter(item => item !== value));
+    if (value === "Table") return;
+    const updatedOptions = selectedOptions.filter(option => option !== value);
+    updateOptions(updatedOptions.length ? updatedOptions : ["Table"]);
   };
 
   return (
@@ -40,19 +51,33 @@ export const ResultToolbar = () => {
             ))}
           </SelectContent>
         </Select>
-        <div className="flex flex-wrap gap-3 ">
+
+        <div className="flex flex-wrap gap-3">
           {selectedOptions.map(option => (
             <Badge
               key={option}
-              className="cursor-pointer bg-white py-2 px-5"
-              onClick={() => removeOption(option)}
+              className={`cursor-pointer py-2 px-5 flex items-center gap-2 hover:text-white ${
+                viewMode === option ? "bg-orange-700 text-white" : "bg-white"
+              }`}
+              onClick={() => setViewMode(option)}
             >
-              {option} ✕
+              {option}
+              {option !== "Table" && (
+                <button
+                  onClick={e => {
+                    e.stopPropagation();
+                    removeOption(option);
+                  }}
+                  className="text-xs"
+                >
+                  ✕
+                </button>
+              )}
             </Badge>
           ))}
         </div>
       </div>
-      <Button variant="outline">Share</Button>
+      <ShareDialogue url="ddd" />
     </div>
   );
 };

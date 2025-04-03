@@ -75,8 +75,6 @@ export default function SQLEditor({
     monaco: Monaco
   ) => {
     editorRef.current = codeEditor;
-
-    // Register SQL format provider
     monaco.languages.registerDocumentFormattingEditProvider("sql", {
       provideDocumentFormattingEdits: model => {
         try {

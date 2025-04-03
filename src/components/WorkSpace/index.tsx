@@ -1,4 +1,3 @@
-// src/components/workspace/WorkspaceTabs.tsx
 import { useMemo, useEffect } from "react";
 import { Plus, XSquareIcon } from "lucide-react";
 import type { DragEndEvent } from "@dnd-kit/core";
@@ -83,7 +82,7 @@ export default function WorkspaceTabs() {
         onValueChange={setActiveTab}
         className="flex flex-col h-full"
       >
-        <div className="flex-shrink-0 flex items-center border-b bg-muted">
+        <div className="flex-shrink-0 flex items-center border-b-0 bg-muted">
           <Button
             variant="ghost"
             className="rounded-none hover:bg-gray-100 dark:hover:bg-gray-800 h-8 px-2 sticky left-0 z-10"
@@ -104,7 +103,7 @@ export default function WorkspaceTabs() {
                     strategy={horizontalListSortingStrategy}
                   >
                     <div className="flex">
-                      <TabsList className="inline-flex h-8  items-center justify-start rounded-none w-full bg-transparent">
+                      <TabsList className="inline-flex h-8  items-center justify-start rounded-none w-full bg-transparent ">
                         {sortedTabs.map(tab => (
                           <SortableTab
                             key={tab.id}

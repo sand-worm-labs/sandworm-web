@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { FileX2 } from "lucide-react";
 
 import {
@@ -20,6 +20,7 @@ interface QueryTabProps {
 
 export const QueryTab: React.FC<QueryTabProps> = ({ tabId }) => {
   const { tabs, isExecuting } = useSandwormStore();
+  const [viewMode, setViewMode] = useState<string>("Table");
   const currentTab = tabs.find(tab => tab.id === tabId);
 
   const renderResults = () => {
@@ -77,9 +78,10 @@ c30,0,30,26.9,60,26.9"
       <div className="h-full">
         {currentTab.result && (
           <>
-            <ResultToolbar />
+            <ResultToolbar viewMode={viewMode} setViewMode={setViewMode} />
             <QueryResultsTable
               result={currentTab.result}
+              viewMode={viewMode}
               query={currentTab.content as string}
             />
           </>

@@ -7,6 +7,7 @@ import Link from "next/link";
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
+import { queries } from "../QueryList/queries";
 import QueryList from "../QueryList";
 import { DicebearAvatar } from "../DicebearAvatar";
 
@@ -69,10 +70,10 @@ export const Creators = () => {
             </TabsList>
             <div className="container mx-auto pt-2">
               <TabsContent value="all">
-                <QueryList />
+                <QueryList queries={queries} />
               </TabsContent>
               <TabsContent value="starred">
-                <QueryList />
+                <QueryList queries={queries} />
               </TabsContent>
             </div>
           </Tabs>
