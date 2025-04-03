@@ -1,4 +1,3 @@
-// src/components/workspace/WorkspaceTabs.tsx
 import { useMemo, useEffect } from "react";
 import { Plus, XSquareIcon } from "lucide-react";
 import type { DragEndEvent } from "@dnd-kit/core";
