@@ -59,7 +59,6 @@ export interface TableProps<T extends RowData> {
   query?: string;
 }
 
-// Define a render function outside the component
 const renderIndexCell = (index: number) => {
   return <IndexCell index={index} />;
 };

@@ -64,8 +64,8 @@ function SortableTab({ tab, isActive }: SortableTabProps) {
   };
 
   return (
-    <button
-      type="button"
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions
+    <div
       ref={setNodeRef}
       style={style}
       className={cn(
@@ -93,8 +93,8 @@ function SortableTab({ tab, isActive }: SortableTabProps) {
         disabled={isExecuting}
         value={tab.id}
         className={cn(
-          "flex h-8 items-center rounded-none px-3 relative w-full border-r border-[#ffffff20]",
-          "data-[state=active]:bg-white data-[state=active]:text-black",
+          "flex h-8 items-center rounded-none px-3 relative w-full border-r border-[#ffffff20] ",
+          "data-[state=active]:bg-black data-[state=active]:text-white",
           "transition-colors duration-200",
           "hover:bg-[#ea580b]/20",
           tab.id === "home" ? "cursor-default" : "cursor-pointer",
@@ -106,19 +106,27 @@ function SortableTab({ tab, isActive }: SortableTabProps) {
           <div className="flex-shrink-0">{getTabIcon(tab.type)}</div>
           <span className="truncate text-xs">{tab.title}</span>
           {tab.type === "sql" && (
+            // eslint-disable-next-line jsx-a11y/no-static-element-interactions
             <span
               className="cursor-pointer hover:bg-red-500/10 p-1 rounded transition-colors w-full flex items-center space-x-1 text-xs text-gray-500"
               onClick={e => {
                 e.stopPropagation();
                 closeTab(tab.id);
               }}
+              onKeyDown={e => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  closeTab(tab.id);
+                }
+              }}
+              aria-label="Close tab"
             >
               <X className="h-4 w-4 text-red-500 hover:text-red-500 transition-colors" />
             </span>
           )}
         </div>
       </TabsTrigger>
-    </button>
+    </div>
   );
 }
 
