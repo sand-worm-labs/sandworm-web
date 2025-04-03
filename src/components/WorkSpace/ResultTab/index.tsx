@@ -49,6 +49,7 @@ export interface TableResult<T extends RowData> {
 
 export interface TableProps<T extends RowData> {
   result: TableResult<T>;
+  viewMode: string;
   onLoadMore?: () => void;
   onRefresh?: () => void;
   isLoading?: boolean;
@@ -66,6 +67,7 @@ const renderIndexCell = (index: number) => {
 
 function QueryResultsTable<T extends RowData>({
   result,
+  viewMode,
   onLoadMore,
   onRefresh,
   isLoading = false,
@@ -295,9 +297,37 @@ function QueryResultsTable<T extends RowData>({
     );
   }
 
+  useEffect(() => {
+    console.log("view", viewMode);
+  }, [viewMode]);
   return (
     <div className={`w-full h-full flex min-h-[200px] flex-col ${className}`}>
-      <QueryResultJson result={result} />
+      {viewMode === "JSON" ? (
+        <QueryResultJson result={result} />
+      ) : (
+        <>
+          <TableControls
+            table={table}
+            data={data}
+            query={query}
+            isLoading={isLoading}
+            onRefresh={onRefresh}
+            onFilterChange={handleFilterChange}
+          />
+          <TableContent
+            table={table}
+            memoizedColumns={memoizedColumns}
+            renderCell={renderCell}
+            onLoadMore={onLoadMore}
+            isLoading={isLoading}
+            virtualScrolling={virtualScrolling}
+            calculateAutoSize={calculateAutoSize}
+            handleColumnResize={handleColumnResize}
+            globalFilter={globalFilter}
+          />
+          <TableFooter table={table} />
+        </>
+      )}
 
       {/*     <TableControls
         table={table}
