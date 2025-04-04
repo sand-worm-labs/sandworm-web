@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 import "server-only";
 
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -289,6 +290,52 @@ async function seedDatabase() {
   if (validQueries.length === 0) {
     console.error("No valid queries created. Cannot proceed.");
   }
+
+  const data = await Promise.all(
+    validQueries.map(async query => {
+      const minStars = 5;
+      const maxStars = 8;
+
+      const starCount =
+        Math.floor(Math.random() * (maxStars - minStars + 1)) + minStars;
+
+      const selectedUsers = [...validUsers]
+        .sort(() => 0.5 - Math.random())
+        .slice(0, starCount)
+        .map(user => user.id);
+
+      await QueryService.star(query.id, query.creator);
+
+      return { selectedUsers, query: query.id };
+    })
+  );
+
+  for (const { selectedUsers, query } of data) {
+    for (const user of selectedUsers) {
+      QueryService.star(query, user).then();
+    }
+  }
+
+  const totalForks = 10;
+
+  const shuffledQueries = [...validQueries].sort(() => 0.5 - Math.random());
+  const queriesToFork = shuffledQueries.slice(0, totalForks);
+
+  for (const query of queriesToFork) {
+    // Filter out the creator from valid users
+    const eligibleUsers = validUsers.filter(user => user.id !== query.creator);
+
+    // Random user that is not the creator
+    const user =
+      eligibleUsers[Math.floor(Math.random() * eligibleUsers.length)];
+
+    // Fork the query
+    QueryService.fork(query.id, user.id).then();
+  }
+
+  // const randomUser = users[Math.floor(Math.random() * users.length)];
+  // console.log("Random user:", randomUser);
+  console.log("Database seeded successfully.");
 }
 
 export default seedDatabase;
