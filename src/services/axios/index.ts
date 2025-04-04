@@ -2,33 +2,32 @@ import type { AxiosRequestConfig } from "axios";
 import axios from "axios";
 import { getCsrfToken } from "next-auth/react"; // Example DELETE request
 
-class AuthAxiosService {
+export class AxiosService {
   private axiosInstance;
 
-  constructor(baseURL: string) {
+  constructor(baseURL: string, isAuth: boolean) {
     this.axiosInstance = axios.create({
       baseURL,
       headers: {
         "Content-Type": "application/json",
       },
     });
-
-    //     // Request interceptor to include token from NextAuth session
-    //     this.axiosInstance.interceptors.request.use(
-    //       async (config: AxiosRequestConfig) => {
-    //         const session = await getSession(); // Retrieve session info from NextAuth
-
-    //         // Check if session and token exist, then add to the headers
-    //         if (session) {
-    //           config.headers.Authorization = `Bearer ${session.}`;
-    //         }
-
-    //         return config; // Return the modified config to continue the request
-    //       },
-    //       error => {
-    //         return Promise.reject(error); // Handle any errors in the request
-    //       }
-    //     );
+    if (isAuth) {
+      //     // Request interceptor to include token from NextAuth session
+      //     this.axiosInstance.interceptors.request.use(
+      //       async (config: AxiosRequestConfig) => {
+      //         const session = await getSession(); // Retrieve session info from NextAuth
+      //         // Check if session and token exist, then add to the headers
+      //         if (session) {
+      //           config.headers.Authorization = `Bearer ${session.}`;
+      //         }
+      //         return config; // Return the modified config to continue the request
+      //       },
+      //       error => {
+      //         return Promise.reject(error); // Handle any errors in the request
+      //       }
+      //     );
+    }
   }
 
   public async get<T>(
@@ -45,6 +44,15 @@ class AuthAxiosService {
     config: AxiosRequestConfig = {}
   ): Promise<T> {
     const response = await this.axiosInstance.post(url, data, config);
+    return response.data;
+  }
+
+  public async patch<T>(
+    url: string,
+    data: any,
+    config: AxiosRequestConfig = {}
+  ): Promise<T> {
+    const response = await this.axiosInstance.patch(url, data, config);
     return response.data;
   }
 
@@ -65,5 +73,3 @@ class AuthAxiosService {
     return response.data;
   }
 }
-
-export default AuthAxiosService;
