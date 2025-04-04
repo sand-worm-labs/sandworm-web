@@ -89,9 +89,9 @@ export default function SaveModal({ open, setOpen, title }: SaveModalProps) {
           </div>
           <Button
             onClick={handleSave}
-            className="w-full bg-orange-600 text-white  font-medium py-4"
+            className="w-full bg-white text-black  font-medium py-5 text-base "
           >
-            Save
+            Save Query
           </Button>
         </div>
       </DialogContent>
