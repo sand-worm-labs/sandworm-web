@@ -10,6 +10,8 @@ export interface Query {
   private: boolean;
   query: string;
   tags: string[];
+  stars: number;
+  forks: number;
   stared_by: string[];
   forked_from: string;
   forked_by: string[];
@@ -29,9 +31,98 @@ export type QueryResult = Result<Query>;
 export type QueryUpdatesResult = Result<QueryUpdates>;
 
 export class QueryService {
-  static async findAll(): Promise<ServiceResult<QueryResult[]>> {
+  static async findAll(
+    lastId?: string,
+    limit?: number
+  ): Promise<ServiceResult<QueryResult[]>> {
     try {
-      const queries = await db.querys.all();
+      let queries: QueryDoc[] = [];
+      if (lastId) {
+        const query = await db.querys.get(db.querys.id(lastId));
+        if (!query) return DataResult.failure("Query not found.", "NOT_FOUND");
+        queries = await db.querys.query($ => [
+          $.field("private").eq(false),
+          $.field($.docId()).order($.startAfter(query.ref.id)),
+          $.limit(limit || 10),
+        ]);
+      } else {
+        queries = await db.querys.query($ => [
+          $.field("private").eq(false),
+          $.limit(limit || 10),
+        ]);
+      }
+      return queries.length === 0
+        ? DataResult.failure("No queries found.", "NOT_FOUND")
+        : DataResult.success(
+            queries.map((query: QueryDoc) => toResult<QueryResult>(query))
+          );
+    } catch (error) {
+      return DataResult.failure(
+        "Failed to retrieve queries.",
+        "DB_QUERY_ERROR",
+        error
+      );
+    }
+  }
+
+  static async getByMostStars(
+    lastId?: string,
+    limit?: number
+  ): Promise<ServiceResult<QueryResult[]>> {
+    try {
+      let queries: QueryDoc[] = [];
+      if (lastId) {
+        const query = await db.querys.get(db.querys.id(lastId));
+        if (!query) return DataResult.failure("Query not found.", "NOT_FOUND");
+        queries = await db.querys.query($ => [
+          $.field("stars").order("desc"),
+          $.field("private").eq(false),
+          $.field($.docId()).order($.startAfter(query.ref.id)),
+          $.limit(limit || 10),
+        ]);
+      } else {
+        queries = await db.querys.query($ => [
+          $.field("stars").order("desc"),
+          $.field("private").eq(false),
+          $.limit(limit || 10),
+        ]);
+      }
+      return queries.length === 0
+        ? DataResult.failure("No queries found.", "NOT_FOUND")
+        : DataResult.success(
+            queries.map((query: QueryDoc) => toResult<QueryResult>(query))
+          );
+    } catch (error) {
+      return DataResult.failure(
+        "Failed to retrieve queries.",
+        "DB_QUERY_ERROR",
+        error
+      );
+    }
+  }
+
+  static async getByMostForks(
+    lastId?: string,
+    limit?: number
+  ): Promise<ServiceResult<QueryResult[]>> {
+    try {
+      let queries: QueryDoc[] = [];
+      if (lastId) {
+        const query = await db.querys.get(db.querys.id(lastId));
+        if (!query) return DataResult.failure("Query not found.", "NOT_FOUND");
+        queries = await db.querys.query($ => [
+          $.field("private").eq(false),
+          $.field("forks").order("desc"),
+          $.field($.docId()).order($.startAfter(query.ref.id)),
+          $.limit(limit || 10),
+        ]);
+      } else {
+        queries = await db.querys.query($ => [
+          $.field("private").eq(false),
+          $.field("forks").order("desc"),
+          $.limit(limit || 10),
+        ]);
+      }
       return queries.length === 0
         ? DataResult.failure("No queries found.", "NOT_FOUND")
         : DataResult.success(
@@ -47,12 +138,28 @@ export class QueryService {
   }
 
   static async findAllUserQuery(
-    uid: string
+    uid: string,
+    lastId?: string,
+    limit?: number
   ): Promise<ServiceResult<QueryResult[]>> {
     try {
-      const queries = await db.querys.query($ =>
-        $.field("creator").eq(String(uid))
-      );
+      let queries: QueryDoc[] = [];
+      if (lastId) {
+        const query = await db.querys.get(db.querys.id(lastId));
+        if (!query) return DataResult.failure("Query not found.", "NOT_FOUND");
+        queries = await db.querys.query($ => [
+          $.field("private").eq(false),
+          $.field($.docId()).order($.startAfter(query.ref.id)),
+          $.field("creator").eq(String(uid)),
+          $.limit(limit || 10),
+        ]);
+      } else {
+        queries = await db.querys.query($ => [
+          $.field("private").eq(false),
+          $.field("creator").eq(String(uid)),
+          $.limit(limit || 10),
+        ]);
+      }
       return queries.length === 0
         ? DataResult.failure("No queries found for the user.", "NOT_FOUND")
         : DataResult.success(
@@ -91,6 +198,8 @@ export class QueryService {
         createdAt: $.serverDate(),
         updatedAt: $.serverDate(),
         forked: forked || false,
+        stars: 0,
+        forks: 0,
       }));
 
       await db.querys(ref.id).updates.add($ => ({
@@ -172,6 +281,9 @@ export class QueryService {
       if (foundQuery.data.stared_by.includes(uid))
         return DataResult.failure("Query already liked.", "NOT_FOUND");
       await foundQuery.update($ => $.field("stared_by").set($.arrayUnion(uid)));
+      await foundQuery.update($ =>
+        $.field("stars").set(foundQuery.data.stars + 1)
+      );
       await user.update($ => $.field("stars").set(user.data.stars + 1));
       const querySnapshot = await db.querys.get(db.querys.id(queryId));
       return querySnapshot
@@ -203,6 +315,9 @@ export class QueryService {
         return DataResult.failure("Query already unliked.", "NOT_FOUND");
       await foundQuery.update($ =>
         $.field("stared_by").set($.arrayRemove(uid))
+      );
+      await foundQuery.update($ =>
+        $.field("stars").set(foundQuery.data.stars - 1)
       );
       if (user.data.stars > 0) {
         await user.update($ => $.field("stars").set(user.data.stars - 1));
@@ -248,7 +363,10 @@ export class QueryService {
         return DataResult.failure("Query already forked.", "NOT_FOUND");
 
       await foundQuery.update($ => $.field("forked_by").set($.arrayUnion(uid)));
-      user.update($ => $.field("forks").set(user.data.forks + 1));
+      await foundQuery.update($ =>
+        $.field("forks").set(foundQuery.data.stars + 1)
+      );
+      await user.update($ => $.field("forks").set(user.data.forks + 1));
       const forkedQuery = await this.create(
         foundQuery.data.title,
         foundQuery.data.description,
