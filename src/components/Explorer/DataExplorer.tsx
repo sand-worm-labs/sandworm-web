@@ -21,8 +21,8 @@ import type { DataExplorers } from "@/_mockdata/explorer";
 import Breadcrumbs from "./BreadCrumbs";
 import { ChainExplorer } from "./ChainExplorer";
 import { EntitiesExplorer } from "./EntitiesExplorer";
-import FieldExplorer from "./FieldExplorer";
 import { useChainStore } from "@/store/chains";
+import { FieldExplorer } from "./FieldExplorer";
 
 export default function DataExplorer() {
   const [, setIsSheetOpen] = useState(false);
@@ -31,20 +31,16 @@ export default function DataExplorer() {
   const searchParams = useSearchParams();
   const selectedChain = searchParams.get("namespace");
   const selectedEntity = searchParams.get("id");
-  const {
-    data: chains,
-    entityData,
-    loading,
-    fetchChainData,
-    fetchEntityData,
-  } = useChainStore();
+
+  const { chains, entityData, loading, fetchChainData, fetchEntityData } =
+    useChainStore();
 
   useEffect(() => {
     if (!chains) fetchChainData();
   }, [chains, fetchChainData]);
 
   useEffect(() => {
-    if (selectedChain) fetchEntityData(selectedChain);
+    if (selectedChain) fetchEntityData(selectedChain.toLowerCase());
   }, [selectedChain, fetchEntityData]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,19 +55,15 @@ export default function DataExplorer() {
     router.push(`?namespace=${chainId}`);
   };
 
-  const selectedChainData: DataExplorers | undefined = explorerMockData.find(
-    chain => chain.chainId === selectedChain
-  );
-
   const renderExplorer = () => {
     if (selectedEntity) {
-      return <FieldExplorer />;
+      return <FieldExplorer entities={entityData || []} />;
     }
 
     if (selectedChain) {
       return (
         <EntitiesExplorer
-          entities={selectedChainData?.entities || []}
+          entities={entityData || []}
           onSelect={handleSelectEntity}
         />
       );
