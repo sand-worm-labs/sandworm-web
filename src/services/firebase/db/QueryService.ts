@@ -171,12 +171,8 @@ export class QueryService {
         return DataResult.failure("Query not found.", "NOT_FOUND");
       if (foundQuery.data.stared_by.includes(uid))
         return DataResult.failure("Query already liked.", "NOT_FOUND");
-      await foundQuery.update(() => ({
-        stared_by: [...foundQuery.data.stared_by, uid],
-      }));
-      user.update(() => ({
-        stars: user.data.stars + 1,
-      }));
+      await foundQuery.update($ => $.field("stared_by").set($.arrayUnion(uid)));
+      await user.update($ => $.field("stars").set(user.data.stars + 1));
       const querySnapshot = await db.querys.get(db.querys.id(queryId));
       return querySnapshot
         ? DataResult.success(toResult<Query>(querySnapshot))
@@ -205,13 +201,11 @@ export class QueryService {
         return DataResult.failure("Query not found.", "NOT_FOUND");
       if (!foundQuery.data.stared_by.includes(uid))
         return DataResult.failure("Query already unliked.", "NOT_FOUND");
-      await foundQuery.update(() => ({
-        stared_by: foundQuery.data.stared_by.filter(userId => userId !== uid),
-      }));
+      await foundQuery.update($ =>
+        $.field("stared_by").set($.arrayRemove(uid))
+      );
       if (user.data.stars > 0) {
-        user.update(() => ({
-          stars: user.data.stars - 1,
-        }));
+        await user.update($ => $.field("stars").set(user.data.stars - 1));
       }
       const querySnapshot = await db.querys.get(db.querys.id(queryId));
       return querySnapshot
@@ -253,12 +247,8 @@ export class QueryService {
       if (foundQuery.data.forked_by.includes(uid))
         return DataResult.failure("Query already forked.", "NOT_FOUND");
 
-      await foundQuery.update(() => ({
-        forked_by: [...foundQuery.data.forked_by, uid],
-      }));
-      user.update(() => ({
-        forks: user.data.forks + 1,
-      }));
+      await foundQuery.update($ => $.field("forked_by").set($.arrayUnion(uid)));
+      user.update($ => $.field("forks").set(user.data.forks + 1));
       const forkedQuery = await this.create(
         foundQuery.data.title,
         foundQuery.data.description,
