@@ -195,8 +195,10 @@ GET balance FROM account cx.eth  ON eth
         animate={{ opacity: 1, y: 0 }}
         className="space-y-2"
       >
-        <h1 className="text-3xl font-bold tracking-tight">Welcome</h1>
-        <p className="text-muted-foreground">Let's get busy...</p>
+        <h1 className="text-3xl font-medium  tracking-tight">SANDW0RM.</h1>
+        <p className="text-muted-foreground text-sm">
+          The Easiest Way to Explore & Analyse Blockchain Data
+        </p>
       </motion.div>
 
       <motion.div
