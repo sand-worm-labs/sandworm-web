@@ -1,38 +1,41 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
+import type { Entity } from "@/_mockdata/explorer";
 
-import { explorerMockData } from "@/_mockdata/explorer";
+interface FieldExplorerProps {
+  entities: Entity[];
+}
 
-export default function FieldExplorer() {
+export const FieldExplorer = ({ entities }: FieldExplorerProps) => {
   const searchParams = useSearchParams();
   const namespace = searchParams.get("namespace");
   const id = searchParams.get("id");
 
   if (!namespace || !id) return <p>Invalid selection</p>;
 
-  const chainData = explorerMockData.find(chain => chain.chainId === namespace);
+  const entity = entities.find(entity => entity.name === id);
 
-  const entity = chainData?.entities.find(table => table.id === id);
+  console.log(entity, entities, "entities");
 
   if (!entity) return <p>Invalid Entity</p>;
 
   return (
     <div className="flex flex-col gap-1 p-4 border w-full">
-      <h2 className="text-sm font-medium mb-4">{chainData?.chainId} </h2>
+      <h2 className="text-sm font-medium mb-4">{entity.id}</h2>
       <ul className="space-y-2">
-        {entity.fields.map(field => (
+        {Object.entries(entity.fields).map(([name, type]) => (
           <li
-            key={field.name}
-            className="cursor-pointer py-1.5 px-2 rounded-md hover:bg-primary/10 text-[0.8rem] font-medium text-left flex justify-between "
+            key={name}
+            className="cursor-pointer py-1.5 px-2 rounded-md hover:bg-primary/10 text-[0.8rem] font-medium text-left flex justify-between"
           >
-            {field.name}
+            {name}
             <span className="bg-dark-translucent px-1 py-0.5 rounded">
-              {field.type}
+              {type}
             </span>
           </li>
         ))}
       </ul>
     </div>
   );
-}
+};
