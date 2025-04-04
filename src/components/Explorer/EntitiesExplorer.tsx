@@ -17,7 +17,7 @@ export const EntitiesExplorer: React.FC<EntitiesExplorerProps> = ({
       {entities.map(entity => (
         <button
           type="button"
-          key={entity.id}
+          key={entity.name}
           onClick={() => onSelect(entity.name)}
           className="cursor-pointer py-2 px-2 rounded-md hover:bg-primary/10 text-sm text-left flex items-center space-x-2 lowercase font-medium"
         >
