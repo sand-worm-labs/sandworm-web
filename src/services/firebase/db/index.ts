@@ -3,10 +3,6 @@ import { schema } from "typesaurus";
 
 import type { User } from "./users/UserService";
 import type { Query, QueryUpdates } from "./QueryService";
-import type {
-  SupportedChainEntity,
-  SupportedChain,
-} from "./SupportedEntitiesService";
 
 export interface Account {
   userId: string;
@@ -77,9 +73,6 @@ export const db = schema($ => ({
   verificationTokens: $.collection<VerificationToken>(),
   querys: $.collection<Query>().sub({
     updates: $.collection<QueryUpdates>(),
-  }),
-  chainSupports: $.collection<SupportedChain>().sub({
-    entities: $.collection<SupportedChainEntity>(),
   }),
 }));
 
