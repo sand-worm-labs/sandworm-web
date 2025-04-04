@@ -164,6 +164,8 @@ export class QueryService {
     uid: string
   ): Promise<ServiceResult<QueryResult>> {
     try {
+      const user = await db.users.get(db.users.id(uid));
+      if (!user) return DataResult.failure("User not found.", "NOT_FOUND");
       const foundQuery = await db.querys.get(db.querys.id(queryId));
       if (!foundQuery)
         return DataResult.failure("Query not found.", "NOT_FOUND");
@@ -171,6 +173,9 @@ export class QueryService {
         return DataResult.failure("Query already liked.", "NOT_FOUND");
       await foundQuery.update(() => ({
         stared_by: [...foundQuery.data.stared_by, uid],
+      }));
+      user.update(() => ({
+        stars: user.data.stars + 1,
       }));
       const querySnapshot = await db.querys.get(db.querys.id(queryId));
       return querySnapshot
@@ -193,6 +198,8 @@ export class QueryService {
     uid: string
   ): Promise<ServiceResult<QueryResult>> {
     try {
+      const user = await db.users.get(db.users.id(uid));
+      if (!user) return DataResult.failure("User not found.", "NOT_FOUND");
       const foundQuery = await db.querys.get(db.querys.id(queryId));
       if (!foundQuery)
         return DataResult.failure("Query not found.", "NOT_FOUND");
@@ -201,6 +208,11 @@ export class QueryService {
       await foundQuery.update(() => ({
         stared_by: foundQuery.data.stared_by.filter(userId => userId !== uid),
       }));
+      if (user.data.stars > 0) {
+        user.update(() => ({
+          stars: user.data.stars - 1,
+        }));
+      }
       const querySnapshot = await db.querys.get(db.querys.id(queryId));
       return querySnapshot
         ? DataResult.success(toResult<Query>(querySnapshot))
@@ -222,6 +234,8 @@ export class QueryService {
     uid: string
   ): Promise<ServiceResult<QueryResult>> {
     try {
+      const user = await db.users.get(db.users.id(uid));
+      if (!user) return DataResult.failure("User not found.", "NOT_FOUND");
       const foundQuery = await db.querys.get(db.querys.id(queryId));
       if (!foundQuery)
         return DataResult.failure("Query not found.", "NOT_FOUND");
@@ -241,6 +255,9 @@ export class QueryService {
 
       await foundQuery.update(() => ({
         forked_by: [...foundQuery.data.forked_by, uid],
+      }));
+      user.update(() => ({
+        forks: user.data.forks + 1,
       }));
       const forkedQuery = await this.create(
         foundQuery.data.title,
