@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Database, EllipsisVertical, FileUp, Plus } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -15,13 +15,14 @@ import {
   DropdownMenuPortal,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { explorerMockData, chains } from "@/_mockdata/explorer";
+import { explorerMockData } from "@/_mockdata/explorer";
 import type { DataExplorers } from "@/_mockdata/explorer";
 
 import Breadcrumbs from "./BreadCrumbs";
 import { ChainExplorer } from "./ChainExplorer";
 import { EntitiesExplorer } from "./EntitiesExplorer";
-import FieldExplorer from "./FieldExplorer";
+import { useChainStore } from "@/store/chains";
+import { FieldExplorer } from "./FieldExplorer";
 
 export default function DataExplorer() {
   const [, setIsSheetOpen] = useState(false);
@@ -31,7 +32,16 @@ export default function DataExplorer() {
   const selectedChain = searchParams.get("namespace");
   const selectedEntity = searchParams.get("id");
 
-  const isLoading = false;
+  const { chains, entityData, loading, fetchChainData, fetchEntityData } =
+    useChainStore();
+
+  useEffect(() => {
+    if (!chains) fetchChainData();
+  }, [chains, fetchChainData]);
+
+  useEffect(() => {
+    if (selectedChain) fetchEntityData(selectedChain.toLowerCase());
+  }, [selectedChain, fetchEntityData]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -45,19 +55,15 @@ export default function DataExplorer() {
     router.push(`?namespace=${chainId}`);
   };
 
-  const selectedChainData: DataExplorers | undefined = explorerMockData.find(
-    chain => chain.chainId === selectedChain
-  );
-
   const renderExplorer = () => {
     if (selectedEntity) {
-      return <FieldExplorer />;
+      return <FieldExplorer entities={entityData || []} />;
     }
 
     if (selectedChain) {
       return (
         <EntitiesExplorer
-          entities={selectedChainData?.entities || []}
+          entities={entityData || []}
           onSelect={handleSelectEntity}
         />
       );
@@ -68,7 +74,7 @@ export default function DataExplorer() {
 
   return (
     <Card className="h-full overflow-hidden border-none dark">
-      {isLoading && (
+      {loading && (
         <div className="flex items-center justify-center h-full">
           <p className="text-muted-foreground">Loading chains...</p>
         </div>
@@ -100,7 +106,7 @@ export default function DataExplorer() {
       </CardHeader>
 
       <CardContent className="p-2 px-0 h-[calc(100%-60px)] overflow-y-auto">
-        {explorerMockData.length > 0 ? (
+        {chains && chains.length > 0 ? (
           <div className="space-y-2">
             <Breadcrumbs />
             <Input
