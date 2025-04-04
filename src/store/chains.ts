@@ -2,8 +2,8 @@ import { create } from "zustand";
 import axios from "axios";
 
 interface ChainStoreState {
-  data: any | null;
-  entityData: any | null;
+  chains: any[] | null;
+  entityData: any[] | null;
   loading: boolean;
   error: string | null;
   fetchChainData: () => Promise<void>;
@@ -11,7 +11,7 @@ interface ChainStoreState {
 }
 
 export const useChainStore = create<ChainStoreState>(set => ({
-  data: null,
+  chains: null,
   entityData: null,
   loading: false,
   error: null,
@@ -22,7 +22,7 @@ export const useChainStore = create<ChainStoreState>(set => ({
       const response = await axios.get(
         "https://raw.githubusercontent.com/sand-worm-sql/chain_registry/main/data/chain/index.json"
       );
-      set({ data: response.data, loading: false });
+      set({ chains: response.data, loading: false });
     } catch (error) {
       set({ error: "Failed to fetch chains", loading: false });
     }
@@ -37,7 +37,7 @@ export const useChainStore = create<ChainStoreState>(set => ({
       set({ entityData: response.data, loading: false });
     } catch (error) {
       set({
-        error: `Failed to fetch entity data for ${chainName}`,
+        error: `Failed to fetch entities for ${chainName}`,
         loading: false,
       });
     }
