@@ -28,6 +28,7 @@ export async function GET(request: Request) {
 
   if (!result.success)
     return new Response(JSON.stringify(result), { status: 500 });
+  // result.data;
   return new Response(JSON.stringify(result.data));
 }
 
