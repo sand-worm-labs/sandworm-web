@@ -7,8 +7,23 @@ import { DataResult } from "@/services/firebase/db";
 import { auth } from "../auth/[...nextauth]/auth-options";
 
 // eslint-disable-next-line no-unused-vars
-export async function GET(_request: Request) {
-  const result = await QueryService.findAll();
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+
+  const type = searchParams.get("type"); // "forks" or "stars"
+  const page = parseInt(searchParams.get("page") || "1", 10);
+  const limit = parseInt(searchParams.get("limit") || "10", 10);
+
+  let result: any = [];
+
+  if (type === "forks") {
+    result = await QueryService.getByMostForks(page, limit);
+  } else if (type === "stars") {
+    result = await QueryService.getByMostStars(page, limit);
+  } else {
+    result = await QueryService.findAll(page, limit);
+  }
+
   if (!result.success)
     return new Response(JSON.stringify(result), { status: 500 });
   return new Response(JSON.stringify(result.data));
