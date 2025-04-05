@@ -59,7 +59,7 @@ const AppSidebar = ({ currentView, setCurrentView }: AppSidebarProps) => {
       icon: Database,
     },
     {
-      id: "savedQueries" as const,
+      id: "queryExplorer" as const,
       label: "Saved Queries",
       icon: SquareTerminal,
     },
