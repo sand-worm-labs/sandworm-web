@@ -35,6 +35,7 @@ export class AxiosService {
     config: AxiosRequestConfig = {}
   ): Promise<T> {
     const response = await this.axiosInstance.get(url, config);
+    console.log("response", response);
     return response.data;
   }
 
