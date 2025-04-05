@@ -242,6 +242,31 @@ const queries = [
    JOIN courses ON enrollments.course_id = courses.id 
    WHERE enrollments.completed = true 
    ORDER BY students.name ASC;`,
+  `SELECT id, name, email FROM users WHERE active = true ORDER BY created_at DESC LIMIT 10;`,
+  `SELECT orders.id, users.name, orders.total_price 
+   FROM orders 
+   JOIN users ON orders.user_id = users.id 
+   WHERE orders.status = 'completed' 
+   ORDER BY orders.created_at DESC LIMIT 20;`,
+  `SELECT products.id, products.name, categories.name AS category_name 
+   FROM products 
+   JOIN categories ON products.category_id = categories.id 
+   WHERE products.stock > 0 
+   ORDER BY products.name ASC;`,
+  `SELECT employees.id, employees.name, departments.name AS department, roles.name AS role 
+   FROM employees 
+   JOIN departments ON employees.department_id = departments.id 
+   JOIN roles ON employees.role_id = roles.id 
+   WHERE employees.status = 'active';`,
+  `SELECT customers.id, customers.name, SUM(orders.total_price) AS total_spent 
+   FROM customers 
+   JOIN orders ON customers.id = orders.customer_id 
+   GROUP BY customers.id, customers.name 
+   ORDER BY total_spent DESC LIMIT 5;`,
+  `SELECT books.id, books.title, authors.name AS author, publishers.name AS publisher 
+   FROM books 
+   JOIN authors ON books.author_id = authors.id 
+   JOIN publishers ON books.publisher_id = publishers.id;`,
 ];
 
 async function seedDatabase() {
@@ -315,22 +340,31 @@ async function seedDatabase() {
       QueryService.star(query, user).then();
     }
   }
-
-  const totalForks = 10;
-
-  const shuffledQueries = [...validQueries].sort(() => 0.5 - Math.random());
-  const queriesToFork = shuffledQueries.slice(0, totalForks);
+  const queriesToFork = [...validQueries]
+    .sort(() => 0.5 - Math.random())
+    .slice(0, 30);
 
   for (const query of queriesToFork) {
-    // Filter out the creator from valid users
+    // Exclude the creator from eligible users
     const eligibleUsers = validUsers.filter(user => user.id !== query.creator);
 
-    // Random user that is not the creator
-    const user =
-      eligibleUsers[Math.floor(Math.random() * eligibleUsers.length)];
+    const forksToCreate = Math.floor(Math.random() * 4); // 0 to 4 inclusive
 
-    // Fork the query
-    QueryService.fork(query.id, user.id).then();
+    // Shuffle eligible users and pick first `forksToCreate`
+    const selectedUsers = [...eligibleUsers]
+      .sort(() => 0.5 - Math.random())
+      .slice(0, forksToCreate);
+
+    for (const user of selectedUsers) {
+      try {
+        QueryService.fork(query.id, user.id).then();
+      } catch (err) {
+        console.error(
+          `Failed to fork query ${query.id} by user ${user.id}:`,
+          err
+        );
+      }
+    }
   }
 
   // const randomUser = users[Math.floor(Math.random() * users.length)];
