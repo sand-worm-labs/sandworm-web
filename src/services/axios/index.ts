@@ -1,6 +1,6 @@
 import type { AxiosRequestConfig } from "axios";
 import axios from "axios";
-import { getCsrfToken } from "next-auth/react"; // Example DELETE request
+import { getSession, getCsrfToken } from "next-auth/react";
 
 export class AxiosService {
   private axiosInstance;
@@ -12,21 +12,37 @@ export class AxiosService {
         "Content-Type": "application/json",
       },
     });
+
     if (isAuth) {
-      //     // Request interceptor to include token from NextAuth session
-      //     this.axiosInstance.interceptors.request.use(
-      //       async (config: AxiosRequestConfig) => {
-      //         const session = await getSession(); // Retrieve session info from NextAuth
-      //         // Check if session and token exist, then add to the headers
-      //         if (session) {
-      //           config.headers.Authorization = `Bearer ${session.}`;
-      //         }
-      //         return config; // Return the modified config to continue the request
-      //       },
-      //       error => {
-      //         return Promise.reject(error); // Handle any errors in the request
-      //       }
-      //     );
+      // Request interceptor to include token from NextAuth session
+      this.axiosInstance.interceptors.request.use(
+        async (config: AxiosRequestConfig) => {
+          const session = await getSession(); // Retrieve session info from NextAuth
+
+          // Check if session exists, then add the token to the headers
+          if (session?.user) {
+            console.log("Session:", session, "there is a session");
+            config.headers = {
+              ...config.headers,
+              Authorization: `Bearer ${session.sessionToken}`,
+            };
+          }
+
+          // Add CSRF token if needed
+          const csrfToken = await getCsrfToken();
+          if (csrfToken) {
+            config.headers = {
+              ...config.headers,
+              "X-CSRF-Token": csrfToken,
+            };
+          }
+
+          return config;
+        },
+        error => {
+          return Promise.reject(error);
+        }
+      );
     }
   }
 
@@ -35,7 +51,6 @@ export class AxiosService {
     config: AxiosRequestConfig = {}
   ): Promise<T> {
     const response = await this.axiosInstance.get(url, config);
-    console.log("response", response);
     return response.data;
   }
 

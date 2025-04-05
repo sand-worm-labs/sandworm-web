@@ -1,24 +1,29 @@
 import Head from "next/head";
+import { notFound } from "next/navigation";
 
 import { AxiosService } from "@/services/axios";
-import type { Query } from "@/types";
-
 import { TabsSection } from "@/components/TabsSection";
+import type { QueryResponse } from "@/types";
 
 const axios = new AxiosService(process.env.NEXT_PUBLIC_API_URL!, false);
 
-async function getQueries(): Promise<Query[]> {
-  try {
-    const queries = await axios.get<Query[]>("/api/query");
-    return queries;
-  } catch (err) {
-    console.error("failed to fetch queries:", err);
-    return [];
-  }
+interface ExplorePageProps {
+  searchParams: {
+    page?: string;
+  };
 }
 
-export default async function Explore() {
-  const queries = await getQueries();
+async function getQueries(page: string = "1"): Promise<QueryResponse> {
+  const queries = await axios.get<QueryResponse>(
+    `/api/query/?page=${page}&limit=100`
+  );
+  if (!queries) notFound();
+  return queries;
+}
+
+export default async function Explore({ searchParams }: ExplorePageProps) {
+  const page = searchParams.page ?? "1";
+  const queries = await getQueries(page);
 
   return (
     <div className="dark text-white min-h-screen">
