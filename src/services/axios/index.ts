@@ -1,6 +1,6 @@
 import type { AxiosRequestConfig } from "axios";
 import axios from "axios";
-import { getSession } from "next-auth/react";
+import { getSession, getCsrfToken } from "next-auth/react";
 
 export class AxiosService {
   private axiosInstance;
@@ -21,9 +21,10 @@ export class AxiosService {
 
           // Check if session exists, then add the token to the headers
           if (session?.user) {
+            console.log("Session:", session, "there is a session");
             config.headers = {
               ...config.headers,
-              Authorization: `Bearer ${session.accessToken}`,
+              Authorization: `Bearer ${session.sessionToken}`,
             };
           }
 

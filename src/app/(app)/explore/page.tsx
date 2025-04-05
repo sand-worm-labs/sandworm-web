@@ -25,8 +25,6 @@ export default async function Explore({ searchParams }: ExplorePageProps) {
   const page = searchParams.page ?? "1";
   const queries = await getQueries(page);
 
-  console.log(queries, "queries");
-
   return (
     <div className="dark text-white min-h-screen">
       <Head>
