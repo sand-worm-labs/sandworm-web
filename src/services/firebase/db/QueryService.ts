@@ -281,10 +281,8 @@ export class QueryService {
       if (foundQuery.data.stared_by.includes(uid))
         return DataResult.failure("Query already liked.", "NOT_FOUND");
       await foundQuery.update($ => $.field("stared_by").set($.arrayUnion(uid)));
-      await foundQuery.update($ =>
-        $.field("stars").set(foundQuery.data.stars + 1)
-      );
-      await user.update($ => $.field("stars").set(user.data.stars + 1));
+      await foundQuery.update($ => $.field("stars").set($.increment(1)));
+      await user.update($ => $.field("stars").set($.increment(1)));
       const querySnapshot = await db.querys.get(db.querys.id(queryId));
       return querySnapshot
         ? DataResult.success(toResult<Query>(querySnapshot))
@@ -316,11 +314,9 @@ export class QueryService {
       await foundQuery.update($ =>
         $.field("stared_by").set($.arrayRemove(uid))
       );
-      await foundQuery.update($ =>
-        $.field("stars").set(foundQuery.data.stars - 1)
-      );
+      await foundQuery.update($ => $.field("stars").set($.increment(-1)));
       if (user.data.stars > 0) {
-        await user.update($ => $.field("stars").set(user.data.stars - 1));
+        await user.update($ => $.field("stars").set($.increment(-1)));
       }
       const querySnapshot = await db.querys.get(db.querys.id(queryId));
       return querySnapshot
@@ -363,10 +359,8 @@ export class QueryService {
         return DataResult.failure("Query already forked.", "NOT_FOUND");
 
       await foundQuery.update($ => $.field("forked_by").set($.arrayUnion(uid)));
-      await foundQuery.update($ =>
-        $.field("forks").set(foundQuery.data.stars + 1)
-      );
-      await user.update($ => $.field("forks").set(user.data.forks + 1));
+      await foundQuery.update($ => $.field("forks").set($.increment(1)));
+      await user.update($ => $.field("forks").set($.increment(1)));
       const forkedQuery = await this.create(
         foundQuery.data.title,
         foundQuery.data.description,
