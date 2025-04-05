@@ -1,6 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
+
 import type { Entity } from "@/_mockdata/explorer";
 
 interface FieldExplorerProps {

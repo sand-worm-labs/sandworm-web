@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 import {
   Select,
   SelectContent,
@@ -7,6 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+
 import { ShareDialogue } from "./ShareDialogue";
 
 const options = ["Table", "JSON", "Area Chart", "Bar Chart", "Counter"];

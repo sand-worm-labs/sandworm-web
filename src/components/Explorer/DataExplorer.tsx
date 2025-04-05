@@ -17,11 +17,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { explorerMockData } from "@/_mockdata/explorer";
 import type { DataExplorers } from "@/_mockdata/explorer";
+import { useChainStore } from "@/store/chains";
 
 import Breadcrumbs from "./BreadCrumbs";
 import { ChainExplorer } from "./ChainExplorer";
 import { EntitiesExplorer } from "./EntitiesExplorer";
-import { useChainStore } from "@/store/chains";
 import { FieldExplorer } from "./FieldExplorer";
 
 export default function DataExplorer() {
