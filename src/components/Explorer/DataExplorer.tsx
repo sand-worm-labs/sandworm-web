@@ -67,7 +67,7 @@ export default function DataExplorer() {
       );
     }
 
-    return <ChainExplorer chains={chains} onSelect={handleSelectChain} />;
+    return <ChainExplorer chains={chains || []} onSelect={handleSelectChain} />;
   };
 
   return (
