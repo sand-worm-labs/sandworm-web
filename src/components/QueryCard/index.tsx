@@ -6,11 +6,13 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { useRouter } from "next/navigation";
 import { twilight } from "react-syntax-highlighter/dist/esm/styles/prism";
 
+import type { Query } from "@/types";
+
 import { useSandwormStore } from "@/store";
 
 import { DicebearAvatar } from "../DicebearAvatar";
 
-const QueryCard = ({ query }: { query: any }) => {
+const QueryCard = ({ query }: { query: Query }) => {
   const { createTab } = useSandwormStore();
   const router = useRouter();
 
@@ -23,16 +25,16 @@ const QueryCard = ({ query }: { query: any }) => {
     <div className="shadow-sm rounded-xl p-4 px-8   flex flex-col justify-between">
       <div className="flex justify-between">
         <div className="flex">
-          <DicebearAvatar seed={query.author.id} size={30} />
+          <DicebearAvatar seed={query.creator} size={30} />
           <div className="ml-3">
             <div className="text-[0.8rem] font-medium">
               <Link
-                href={`/creators/${query.author.id} `}
+                href={`/creators/${query.creator} `}
                 className="hover:underline"
               >
-                {query.author.id}
+                {query.creator}
               </Link>{" "}
-              / {query.name}{" "}
+              / {query.title}{" "}
             </div>
             <p className="text-xs text-[#ffffff90]">
               created {new Date(query.updatedAt).toLocaleDateString("en-US")}
@@ -42,17 +44,17 @@ const QueryCard = ({ query }: { query: any }) => {
         <div className="flex space-x-4">
           <div className="flex items-center font-medium text-[#ffffff90] space-x-1">
             <FaCodeBranch className="text-sm" />
-            <span className="text-xs">3 Forks</span>
+            <span className="text-xs">{query.forked_by.length || 0} Forks</span>
           </div>
           <div className="flex items-center font-medium text-[#ffffff90] space-x-1">
             <FaRegStar className="text-sm" />
-            <span className="text-xs">3 Stars</span>
+            <span className="text-xs">{query.stared_by.length || 0} Stars</span>
           </div>
         </div>
       </div>
       <button
         type="button"
-        className="  mt-2 text-sm"
+        className="  mt-2 text-sm "
         onClick={() => openQueryInTab(query)}
       >
         <SyntaxHighlighter
@@ -66,6 +68,7 @@ const QueryCard = ({ query }: { query: any }) => {
             borderRadius: 0,
             borderWidth: 1,
             borderColor: "#ffffff25",
+            overflow: "hidden",
           }}
           wrapLines
           wrapLongLines

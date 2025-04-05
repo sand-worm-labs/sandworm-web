@@ -10,14 +10,15 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import WorkspaceTabs from "@/components/WorkSpace";
-import { SavedQueries } from "@/components/WorkSpace/SavedQueries";
-import { QueryHistory } from "@/components/Explorer/QueryHistory";
 
-type ViewType = "dataExplorer" | "savedQueries" | "ChangeLog";
+import { QueryHistory } from "@/components/Explorer/QueryHistory";
+import { QueryExplorer } from "@/components/Explorer/QueryExplorer";
+
+type ViewType = "dataExplorer" | "queryExplorer" | "ChangeLog";
 
 interface PanelComponents {
   dataExplorer: React.ReactNode;
-  savedQueries: React.ReactNode;
+  queryExplorer: React.ReactNode;
   ChangeLog: React.ReactNode;
 }
 
@@ -27,7 +28,7 @@ export default function WorkSpace() {
 
   const panelComponents: PanelComponents = {
     dataExplorer: <DataExplorer />,
-    savedQueries: <SavedQueries />,
+    queryExplorer: <QueryExplorer />,
     ChangeLog: <QueryHistory />,
   };
 

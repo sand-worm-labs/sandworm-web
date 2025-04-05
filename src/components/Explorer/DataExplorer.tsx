@@ -15,14 +15,12 @@ import {
   DropdownMenuPortal,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { explorerMockData } from "@/_mockdata/explorer";
-import type { DataExplorers } from "@/_mockdata/explorer";
-import { useChainStore } from "@/store/chains";
 
-import Breadcrumbs from "./BreadCrumbs";
 import { ChainExplorer } from "./ChainExplorer";
 import { EntitiesExplorer } from "./EntitiesExplorer";
 import { FieldExplorer } from "./FieldExplorer";
+import { Breadcrumbs } from "./BreadCrumbs";
+import { useChainStore } from "@/store/chains";
 
 export default function DataExplorer() {
   const [, setIsSheetOpen] = useState(false);
@@ -69,7 +67,7 @@ export default function DataExplorer() {
       );
     }
 
-    return <ChainExplorer chains={chains} onSelect={handleSelectChain} />;
+    return <ChainExplorer chains={chains || []} onSelect={handleSelectChain} />;
   };
 
   return (
@@ -108,7 +106,7 @@ export default function DataExplorer() {
       <CardContent className="p-2 px-0 h-[calc(100%-60px)] overflow-y-auto">
         {chains && chains.length > 0 ? (
           <div className="space-y-2">
-            <Breadcrumbs />
+            <Breadcrumbs entities={entityData || []} />
             <Input
               type="text"
               placeholder="Search..."
@@ -118,7 +116,7 @@ export default function DataExplorer() {
               "
             />
             <div className="flex items-center justify-between px-3" />
-            <ul className="px-3">{renderExplorer()}</ul>
+            <ul className="">{renderExplorer()}</ul>
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center h-full gap-4 text-center">
