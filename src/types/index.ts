@@ -61,6 +61,19 @@ export interface Query {
   updatedAt: Typesaurus.ServerDate;
 }
 
+export interface QueryPagination {
+  total_records: number;
+  current_page: number;
+  total_pages: number;
+  next_page: number | null;
+  prev_page?: number | null;
+}
+
+export interface QueryResponse {
+  page_items: Query[];
+  pagination: QueryPagination;
+}
+
 export interface IFeatures {
   id: number;
   name: string;
