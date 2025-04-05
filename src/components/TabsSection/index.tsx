@@ -8,9 +8,13 @@ import { VscRepoForked } from "react-icons/vsc";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import QueryList from "@/components/QueryList";
 
-import { queries } from "../QueryList/queries";
+import type { Query } from "@/services/firebase/db/QueryService";
 
-export default function TabsSection() {
+interface TabSectionProps {
+  queries: Query[];
+}
+
+export const TabsSection: React.FC<TabSectionProps> = ({ queries }) => {
   const [tab, setTab] = useState("all");
 
   return (
@@ -50,4 +54,4 @@ export default function TabsSection() {
       </div>
     </Tabs>
   );
-}
+};
