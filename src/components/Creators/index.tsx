@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import Head from "next/head";
 import { FaRegStar, FaTelegramPlane } from "react-icons/fa";
@@ -7,12 +9,16 @@ import Link from "next/link";
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
-import { queries } from "../QueryList/queries";
 import QueryList from "../QueryList";
 import { DicebearAvatar } from "../DicebearAvatar";
 
-export const Creators = () => {
+interface CreatorsProps {
+  queries: any;
+}
+
+export const Creators: React.FC<CreatorsProps> = ({ queries }) => {
   const [tab, setTab] = useState("all");
+  console.log(queries, "queries");
 
   return (
     <div>
@@ -70,10 +76,10 @@ export const Creators = () => {
             </TabsList>
             <div className="container mx-auto pt-2">
               <TabsContent value="all">
-                <QueryList queries={queries} />
+                <QueryList queries={queries.page_items} />
               </TabsContent>
               <TabsContent value="starred">
-                <QueryList queries={queries} />
+                <QueryList queries={queries.page_items} />
               </TabsContent>
             </div>
           </Tabs>

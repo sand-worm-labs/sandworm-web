@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 
 import { AxiosService } from "@/services/axios";
 import { TabsSection } from "@/components/TabsSection";
-import type { Query } from "@/types";
+import type { QueryResponse } from "@/types";
 
 const axios = new AxiosService(process.env.NEXT_PUBLIC_API_URL!, false);
 
@@ -13,8 +13,8 @@ interface ExplorePageProps {
   };
 }
 
-async function getQueries(page: string = "1"): Promise<Query[]> {
-  const queries = await axios.get<Query[]>(
+async function getQueries(page: string = "1"): Promise<QueryResponse> {
+  const queries = await axios.get<QueryResponse>(
     `/api/query/?page=${page}&limit=100`
   );
   if (!queries) notFound();
