@@ -21,24 +21,10 @@ export const SectionWorkFlow = () => {
       return undefined;
     }
 
-    function getCurrentSection({ progress }: ScrollTrigger) {
-      console.log("Progress:", progress);
-
-      if (progress < 1 / 3) {
-        console.log("In the first section");
-      } else if (progress < 2 / 3) {
-        console.log("In the second section");
-      } else {
-        console.log("In the third section");
-      }
-    }
-
-    // Create ScrollTrigger instance
     const ST = ScrollTrigger.create({
       trigger: containerRef.current,
       start: "top top",
       end: "bottom bottom",
-      onUpdate: getCurrentSection,
       pin: leftContentRef.current,
     });
 
