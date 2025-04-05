@@ -84,6 +84,17 @@ export type SubSchemaKeys = keyof SubSchemas;
 export type Document = Schema[SchemaKeys]["Doc"];
 export type SubDocument = SubSchemas[SubSchemaKeys]["Doc"];
 
+export type PaginatedResult<T> = {
+  page_items: T[];
+  pagination: {
+    total_records?: number;
+    current_page?: number;
+    total_pages?: number;
+    next_page?: number;
+    prev_page?: number;
+  };
+};
+
 export type Result<T> = {
   id: string;
 } & T & {
@@ -97,3 +108,41 @@ export function toResult<U>(doc: Document | SubDocument | null): Result<U> {
 export function toResults<U>(docs: Document[] | SubDocument[]): Result<U>[] {
   return docs.map(doc => toResult<U>(doc));
 }
+
+export type PaginatedQueryResult<T> = ServiceResult<PaginatedResult<T>>;
+
+export function toPaginatedResult<T>(
+  pageItems: T[],
+  totalRecords: number,
+  currentPage: number,
+  totalPages: number,
+  nextPage?: number,
+  prevPage?: number
+): PaginatedQueryResult<T> {
+  return DataResult.success<PaginatedResult<T>>({
+    page_items: pageItems,
+    pagination: {
+      total_records: totalRecords,
+      current_page: currentPage,
+      total_pages: totalPages,
+      next_page: nextPage,
+      prev_page: prevPage,
+    },
+  });
+}
+
+export const getPaginationDetails = (
+  queriesLength: number,
+  limit: number,
+  page: number
+) => {
+  const totalRecords = queriesLength;
+  const totalPages = Math.ceil(totalRecords / limit);
+  return {
+    totalRecords,
+    totalPages,
+    currentPage: page,
+    nextPage: page < totalPages ? page + 1 : undefined,
+    prevPage: page > 1 ? page - 1 : undefined,
+  };
+};
