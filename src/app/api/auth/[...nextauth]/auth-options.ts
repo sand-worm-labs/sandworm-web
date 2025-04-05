@@ -17,16 +17,20 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     }),
   ],
   adapter: FirebaseAuthAdapter(),
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
     async redirect({ baseUrl }) {
       return `${baseUrl}/workspace`;
     },
-    async session({ session }) {
+    async session({ session, token }) {
       // Create a new session object with the user ID
       console.log("hbsession", session, session.sessionToken);
+      console.log("token", token);
       const newSession = {
         ...session,
-        userId: session.sessionToken.sub,
+        userId: token?.sub ?? null,
       };
 
       console.log("new session", newSession);
