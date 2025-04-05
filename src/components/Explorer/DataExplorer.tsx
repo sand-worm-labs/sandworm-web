@@ -18,9 +18,9 @@ import {
 
 import { ChainExplorer } from "./ChainExplorer";
 import { EntitiesExplorer } from "./EntitiesExplorer";
-import { useChainStore } from "@/store/chains";
 import { FieldExplorer } from "./FieldExplorer";
 import { Breadcrumbs } from "./BreadCrumbs";
+import { useChainStore } from "@/store/chains";
 
 export default function DataExplorer() {
   const [, setIsSheetOpen] = useState(false);

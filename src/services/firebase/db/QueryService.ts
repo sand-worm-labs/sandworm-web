@@ -1,7 +1,18 @@
 import type { Typesaurus } from "typesaurus";
 
-import type { Result, Schema, ServiceResult } from "@/services/firebase/db";
-import { db, toResult, DataResult } from "@/services/firebase/db";
+import type {
+  PaginatedQueryResult,
+  Result,
+  Schema,
+  ServiceResult,
+} from "@/services/firebase/db";
+import {
+  toPaginatedResult,
+  db,
+  toResult,
+  DataResult,
+  getPaginationDetails,
+} from "@/services/firebase/db";
 
 export interface Query {
   title: string;
@@ -10,12 +21,19 @@ export interface Query {
   private: boolean;
   query: string;
   tags: string[];
+  stars: number;
+  forks: number;
   stared_by: string[];
   forked_from: string;
   forked_by: string[];
   forked: boolean;
   createdAt: Typesaurus.ServerDate;
   updatedAt: Typesaurus.ServerDate;
+}
+
+export interface QueryWithUsername extends Query {
+  id: string;
+  username: string;
 }
 
 export interface QueryUpdates {
@@ -29,14 +47,59 @@ export type QueryResult = Result<Query>;
 export type QueryUpdatesResult = Result<QueryUpdates>;
 
 export class QueryService {
-  static async findAll(): Promise<ServiceResult<QueryResult[]>> {
+  // Helper function for common query handling, pagination, and username addition
+  static async getPaginatedQueries(
+    queryType: "all" | "stars" | "forks" | "user_query",
+    limit: number,
+    page: number,
+    uid?: string
+  ): Promise<PaginatedQueryResult<QueryWithUsername>> {
     try {
-      const queries = await db.querys.all();
-      return queries.length === 0
-        ? DataResult.failure("No queries found.", "NOT_FOUND")
-        : DataResult.success(
-            queries.map((query: QueryDoc) => toResult<QueryResult>(query))
-          );
+      const queryBuilder = ($: any) => {
+        const base = [$.field("private").eq(false)];
+        switch (queryType) {
+          case "user_query":
+            base.push($.field("creator").eq(uid || ""));
+            break;
+          case "stars":
+            base.push($.field("stars").order("desc"));
+            break;
+          case "forks":
+            base.push($.field("forks").order("desc"));
+            break;
+          case "all":
+          default:
+            break;
+        }
+        return base;
+      };
+
+      let queries: QueryDoc[] = await db.querys.query(queryBuilder);
+
+      // Get pagination details
+      const { totalRecords, totalPages, currentPage, nextPage, prevPage } =
+        getPaginationDetails(queries.length, limit, page);
+
+      // Paginate the results
+      queries = this.paginate(queries, limit, page);
+
+      if (queries.length === 0)
+        return DataResult.failure("No queries found.", "NOT_FOUND");
+
+      // Add username to each query
+      const queriesWithUsername = await Promise.all(
+        queries.map(this.addUsernameToQuery)
+      );
+      const data = toPaginatedResult(
+        queriesWithUsername,
+        totalRecords,
+        currentPage,
+        totalPages,
+        nextPage,
+        prevPage
+      );
+
+      return data;
     } catch (error) {
       return DataResult.failure(
         "Failed to retrieve queries.",
@@ -46,25 +109,33 @@ export class QueryService {
     }
   }
 
+  static async findAll(
+    page = 1,
+    limit = 10
+  ): Promise<PaginatedQueryResult<QueryWithUsername>> {
+    return this.getPaginatedQueries("all", limit, page);
+  }
+
+  static async getByMostStars(
+    page = 1,
+    limit = 10
+  ): Promise<PaginatedQueryResult<QueryWithUsername>> {
+    return this.getPaginatedQueries("stars", limit, page);
+  }
+
+  static async getByMostForks(
+    page = 1,
+    limit = 10
+  ): Promise<PaginatedQueryResult<QueryWithUsername>> {
+    return this.getPaginatedQueries("forks", limit, page);
+  }
+
   static async findAllUserQuery(
-    uid: string
-  ): Promise<ServiceResult<QueryResult[]>> {
-    try {
-      const queries = await db.querys.query($ =>
-        $.field("creator").eq(String(uid))
-      );
-      return queries.length === 0
-        ? DataResult.failure("No queries found for the user.", "NOT_FOUND")
-        : DataResult.success(
-            queries.map((query: QueryDoc) => toResult<QueryResult>(query))
-          );
-    } catch (error) {
-      return DataResult.failure(
-        "Failed to retrieve user queries.",
-        "DB_QUERY_ERROR",
-        error
-      );
-    }
+    uid: string,
+    page = 1,
+    limit = 10
+  ): Promise<PaginatedQueryResult<QueryWithUsername>> {
+    return this.getPaginatedQueries("user_query", limit, page, uid);
   }
 
   static async create(
@@ -91,6 +162,8 @@ export class QueryService {
         createdAt: $.serverDate(),
         updatedAt: $.serverDate(),
         forked: forked || false,
+        stars: 0,
+        forks: 0,
       }));
 
       await db.querys(ref.id).updates.add($ => ({
@@ -172,7 +245,8 @@ export class QueryService {
       if (foundQuery.data.stared_by.includes(uid))
         return DataResult.failure("Query already liked.", "NOT_FOUND");
       await foundQuery.update($ => $.field("stared_by").set($.arrayUnion(uid)));
-      await user.update($ => $.field("stars").set(user.data.stars + 1));
+      await foundQuery.update($ => $.field("stars").set($.increment(1)));
+      await user.update($ => $.field("stars").set($.increment(1)));
       const querySnapshot = await db.querys.get(db.querys.id(queryId));
       return querySnapshot
         ? DataResult.success(toResult<Query>(querySnapshot))
@@ -204,8 +278,9 @@ export class QueryService {
       await foundQuery.update($ =>
         $.field("stared_by").set($.arrayRemove(uid))
       );
+      await foundQuery.update($ => $.field("stars").set($.increment(-1)));
       if (user.data.stars > 0) {
-        await user.update($ => $.field("stars").set(user.data.stars - 1));
+        await user.update($ => $.field("stars").set($.increment(-1)));
       }
       const querySnapshot = await db.querys.get(db.querys.id(queryId));
       return querySnapshot
@@ -248,7 +323,8 @@ export class QueryService {
         return DataResult.failure("Query already forked.", "NOT_FOUND");
 
       await foundQuery.update($ => $.field("forked_by").set($.arrayUnion(uid)));
-      user.update($ => $.field("forks").set(user.data.forks + 1));
+      await foundQuery.update($ => $.field("forks").set($.increment(1)));
+      await user.update($ => $.field("forks").set($.increment(1)));
       const forkedQuery = await this.create(
         foundQuery.data.title,
         foundQuery.data.description,
@@ -324,5 +400,29 @@ export class QueryService {
         error
       );
     }
+  }
+
+  static async addUsernameToQuery(query: QueryDoc): Promise<QueryWithUsername> {
+    try {
+      const user = await db.users.get(db.users.id(query.data.creator));
+      return {
+        id: query.ref.id,
+        ...(query.data as Query),
+        username: user?.data.username || "",
+      };
+    } catch (error) {
+      throw new Error("Failed to retrieve username for query creator.");
+    }
+  }
+
+  static paginate<T>(array: T[], pageSize: number, pageNumber: number): T[] {
+    if (pageNumber < 1) {
+      throw new Error("Page number must be greater than or equal to 1");
+    }
+
+    const startIndex = (pageNumber - 1) * pageSize;
+    const endIndex = pageNumber * pageSize;
+
+    return array.slice(startIndex, endIndex);
   }
 }
