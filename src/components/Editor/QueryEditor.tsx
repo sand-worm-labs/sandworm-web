@@ -134,7 +134,7 @@ const QueryEditor: React.FC<SqlEditorProps> = ({ tabId, title, className }) => {
             onClick={handleExecuteQuery}
             disabled={isExecuting}
             variant="outline"
-            className="flex items-center gap-2 min-w-[100px] bg-primary"
+            className="flex items-center gap-2 min-w-[100px] bg-orange-700 text-[0.8rem] font-medium h-[2rem]"
           >
             {isExecuting ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -146,7 +146,7 @@ const QueryEditor: React.FC<SqlEditorProps> = ({ tabId, title, className }) => {
           <Button
             onClick={() => setIsSaveModalOpen(true)}
             variant="outline"
-            className="flex items-center gap-2 min-w-[100px]"
+            className="flex items-center gap-2 min-w-[100px] text-[0.8rem] font-medium  h-[2rem]"
           >
             Save
           </Button>

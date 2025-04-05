@@ -4,7 +4,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 
 import { explorerMockData } from "@/_mockdata/explorer";
 
-export default function FieldExplorer() {
+export const Breadcrumbs = ({ entities }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -47,11 +47,9 @@ export default function FieldExplorer() {
       {id && (
         <>
           {" / "}
-          <span className="cursor-pointer">
-            {entity?.name || "Invalid Entity"}
-          </span>
+          <span className="cursor-pointer">{entity?.name || "NA"}</span>
         </>
       )}
     </nav>
   );
-}
+};

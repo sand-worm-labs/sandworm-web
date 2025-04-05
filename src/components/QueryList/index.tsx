@@ -21,9 +21,13 @@ const QueryList: React.FC<{ queries: Query[] }> = ({ queries }) => {
   return (
     <div className="mb-16">
       <div className="grid grid-cols-1 gap-4 mb-8">
-        {currentItems.map(query => (
-          <QueryCard key={query.id} query={query} />
-        ))}
+        {currentItems.length === 0 ? (
+          <div>No query yet</div>
+        ) : (
+          currentItems.map(query => (
+            <QueryCard key={query.title} query={query} />
+          ))
+        )}
       </div>
 
       <ReactPaginate

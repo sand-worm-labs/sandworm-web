@@ -1,5 +1,5 @@
 import React from "react";
-import { Sheet } from "lucide-react";
+import { CiViewTable } from "react-icons/ci";
 import Image from "next/image";
 
 interface Chain {
@@ -18,16 +18,16 @@ export const ChainExplorer: React.FC<ChainExplorerProps> = ({
 }) => {
   console.log(chains);
   return (
-    <div className="flex flex-col gap-2 p-4 border w-full">
+    <div className="flex flex-col  w-full border-t">
       {chains.map(chain => (
         <button
           type="button"
           key={chain.id}
-          className="cursor-pointer py-2 px-2 rounded-md hover:bg-primary/10 text-sm text-left flex items-center lowercase font-medium justify-between"
+          className="cursor-pointer py-4 px-3 rounded-none hover:bg-white/15 text-sm text-left flex items-center lowercase font-medium justify-between border-b last:border-b-0 transition-colors "
           onClick={() => onSelect(chain.name)}
         >
           <span className="flex space-x-2 items-center ">
-            <Sheet size={15} />
+            <CiViewTable size={15} />
             <span> {chain.name}</span>
           </span>
 

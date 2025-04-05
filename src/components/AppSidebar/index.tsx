@@ -12,6 +12,7 @@ import {
   LineChart,
   BookText,
   ExternalLink,
+  Database,
 } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -55,9 +56,13 @@ const AppSidebar = ({ currentView, setCurrentView }: AppSidebarProps) => {
     {
       id: "dataExplorer" as const,
       label: "Data Explorer",
+      icon: Database,
+    },
+    {
+      id: "queryExplorer" as const,
+      label: "Saved Queries",
       icon: SquareTerminal,
     },
-    { id: "savedQueries" as const, label: "Saved Queries", icon: LineChart },
     {
       id: "ChangeLog" as const,
       label: "ChangeLog",
@@ -136,7 +141,9 @@ const AppSidebar = ({ currentView, setCurrentView }: AppSidebarProps) => {
               type="button"
               onClick={() => setCurrentView(item.id)}
               className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors w-full ${
-                currentView === item.id ? "bg-orange-600" : "hover:bg-white/15"
+                currentView === item.id
+                  ? " border-l-4 border-orange-600 rounded-none"
+                  : "hover:bg-white/15"
               }`}
             >
               <item.icon className={`h-5 w-5 ${isExpanded ? "mr-2" : ""}`} />
@@ -149,8 +156,6 @@ const AppSidebar = ({ currentView, setCurrentView }: AppSidebarProps) => {
       <div className="w-full">
         <ScrollArea className="flex-grow">
           <nav className="space-y-1 p-2">
-            {/*             <QueryHistory isExpanded={isExpanded} />
-             */}{" "}
             {bottomNavLinks.map(item => (
               <Link
                 key={item.to}
