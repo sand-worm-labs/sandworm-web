@@ -11,19 +11,17 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
 
   const type = searchParams.get("type"); // "forks" or "stars"
-  const lastId = searchParams.get("lastid") || "";
-  const limit = searchParams.get("limit")
-    ? parseInt(searchParams.get("limit") || "10", 10)
-    : 0;
+  const page = parseInt(searchParams.get("page") || "1", 10);
+  const limit = parseInt(searchParams.get("limit") || "10", 10);
 
   let result: any = [];
 
   if (type === "forks") {
-    result = await QueryService.getByMostForks(lastId, limit);
+    result = await QueryService.getByMostForks(page, limit);
   } else if (type === "stars") {
-    result = await QueryService.getByMostStars(lastId, limit);
+    result = await QueryService.getByMostStars(page, limit);
   } else {
-    result = await QueryService.findAll(lastId, limit);
+    result = await QueryService.findAll(page, limit);
   }
 
   if (!result.success)
