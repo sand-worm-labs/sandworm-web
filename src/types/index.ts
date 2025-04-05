@@ -1,6 +1,7 @@
 import type { NextPage } from "next";
 import type { AppProps } from "next/app";
 import type { ReactNode } from "react";
+import type { Typesaurus } from "typesaurus";
 
 export type NextPageWithLayout = NextPage & {
   getLayout?: () => ReactNode;
@@ -45,19 +46,20 @@ export interface Parameter {
   required: boolean;
 }
 
-export type Query = {
-  id: string;
-  name: string;
+export interface Query {
+  title: string;
   description: string;
+  creator: string;
+  private: boolean;
   query: string;
-  author: Author;
-  createdAt: string;
-  updatedAt: string;
-  visibility: "public" | "private" | "shared";
   tags: string[];
-  parameters: Parameter[];
-  saves: number;
-};
+  stared_by: string[];
+  forked_from: string;
+  forked_by: string[];
+  forked: boolean;
+  createdAt: Typesaurus.ServerDate;
+  updatedAt: Typesaurus.ServerDate;
+}
 
 export interface IFeatures {
   id: number;
