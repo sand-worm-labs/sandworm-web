@@ -7,11 +7,10 @@ import { VscRepoForked } from "react-icons/vsc";
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import QueryList from "@/components/QueryList";
-
-import type { Query } from "@/services/firebase/db/QueryService";
+import type { QueryResponse } from "@/types";
 
 interface TabSectionProps {
-  queries: Query[];
+  queries: QueryResponse;
 }
 
 export const TabsSection: React.FC<TabSectionProps> = ({ queries }) => {
@@ -43,13 +42,13 @@ export const TabsSection: React.FC<TabSectionProps> = ({ queries }) => {
       </TabsList>
       <div className="container mx-auto pt-6">
         <TabsContent value="all">
-          <QueryList queries={queries} />
+          <QueryList queries={queries.page_items} />
         </TabsContent>
         <TabsContent value="forked">
-          <QueryList queries={queries} />
+          <QueryList queries={queries.page_items} />
         </TabsContent>
         <TabsContent value="starred">
-          <QueryList queries={queries} />
+          <QueryList queries={queries.page_items} />
         </TabsContent>
       </div>
     </Tabs>

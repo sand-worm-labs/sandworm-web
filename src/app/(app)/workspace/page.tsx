@@ -10,7 +10,6 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import WorkspaceTabs from "@/components/WorkSpace";
-
 import { QueryHistory } from "@/components/Explorer/QueryHistory";
 import { QueryExplorer } from "@/components/Explorer/QueryExplorer";
 

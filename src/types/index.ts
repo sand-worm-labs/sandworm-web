@@ -59,6 +59,21 @@ export interface Query {
   forked: boolean;
   createdAt: Typesaurus.ServerDate;
   updatedAt: Typesaurus.ServerDate;
+  username?: string;
+  image?: string;
+}
+
+export interface QueryPagination {
+  total_records: number;
+  current_page: number;
+  total_pages: number;
+  next_page: number | null;
+  prev_page?: number | null;
+}
+
+export interface QueryResponse {
+  page_items: Query[];
+  pagination: QueryPagination;
 }
 
 export interface IFeatures {
@@ -71,3 +86,39 @@ export interface IFeatures {
 export type APIResponse<T = object> =
   | { success: true; data: T }
   | { success: false; error: string };
+
+/* @user -- */
+export interface SocialLinks {
+  telegram: string;
+  twitter: string;
+  github: string;
+  discord: string;
+  email: string;
+  instagram: string;
+}
+
+export interface Status {
+  text: string;
+  timestamp: number;
+}
+
+export interface Wallet {
+  chain: string;
+  address: string;
+}
+
+export interface User {
+  id: string;
+  username: string;
+  email: string;
+  socialLinks?: SocialLinks;
+  status?: Status;
+  wallets?: Wallet[];
+  stars: number;
+  forks: number;
+  createdAt: Date;
+  updatedAt: Date;
+  name?: string;
+  emailVerified?: Date;
+  image?: string;
+}

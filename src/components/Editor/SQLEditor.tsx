@@ -149,7 +149,6 @@ export default function SQLEditor({
 
   const handleChange = (newValue: string | undefined) => {
     if (newValue !== undefined) {
-      console.log("yo");
       setValue(newValue);
       updateTabQuery(tabId, newValue);
     }
