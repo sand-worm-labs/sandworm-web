@@ -21,6 +21,7 @@ export interface Query {
 }
 
 export interface QueryWithUsername extends Query {
+  id: string;
   username: string;
 }
 
@@ -36,25 +37,13 @@ export type QueryUpdatesResult = Result<QueryUpdates>;
 
 export class QueryService {
   static async findAll(
-    lastId?: string,
-    limit?: number
+    page = 1,
+    limit = 10
   ): Promise<ServiceResult<QueryWithUsername[]>> {
     try {
       let queries: QueryDoc[] = [];
-      if (lastId) {
-        const query = await db.querys.get(db.querys.id(lastId));
-        if (!query) return DataResult.failure("Query not found.", "NOT_FOUND");
-        queries = await db.querys.query($ => [
-          $.field("private").eq(false),
-          $.field($.docId()).order($.startAfter(query.ref.id)),
-          $.limit(limit || 10),
-        ]);
-      } else {
-        queries = await db.querys.query($ => [
-          $.field("private").eq(false),
-          $.limit(limit || 10),
-        ]);
-      }
+      queries = await db.querys.query($ => [$.field("private").eq(false)]);
+      queries = this.paginate(queries, limit, page);
       if (queries.length === 0)
         return DataResult.failure("No queries found.", "NOT_FOUND");
       const data = await Promise.all(queries.map(this.addUsernameToQuery));
@@ -69,27 +58,17 @@ export class QueryService {
   }
 
   static async getByMostStars(
-    lastId?: string,
-    limit?: number
+    page = 1,
+    limit = 10
   ): Promise<ServiceResult<QueryWithUsername[]>> {
     try {
       let queries: QueryDoc[] = [];
-      if (lastId) {
-        const query = await db.querys.get(db.querys.id(lastId));
-        if (!query) return DataResult.failure("Query not found.", "NOT_FOUND");
-        queries = await db.querys.query($ => [
-          $.field("stars").order("desc"),
-          $.field("private").eq(false),
-          $.field($.docId()).order($.startAfter(query.ref.id)),
-          $.limit(limit || 10),
-        ]);
-      } else {
-        queries = await db.querys.query($ => [
-          $.field("stars").order("desc"),
-          $.field("private").eq(false),
-          $.limit(limit || 10),
-        ]);
-      }
+      queries = await db.querys.query($ => [
+        $.field("stars").order("desc"),
+        $.field("private").eq(false),
+      ]);
+      queries = this.paginate(queries, limit, page);
+
       if (queries.length === 0)
         return DataResult.failure("No queries found.", "NOT_FOUND");
       const data = await Promise.all(queries.map(this.addUsernameToQuery));
@@ -104,27 +83,16 @@ export class QueryService {
   }
 
   static async getByMostForks(
-    lastId?: string,
-    limit?: number
+    page = 1,
+    limit = 10
   ): Promise<ServiceResult<QueryWithUsername[]>> {
     try {
       let queries: QueryDoc[] = [];
-      if (lastId) {
-        const query = await db.querys.get(db.querys.id(lastId));
-        if (!query) return DataResult.failure("Query not found.", "NOT_FOUND");
-        queries = await db.querys.query($ => [
-          $.field("private").eq(false),
-          $.field("forks").order("desc"),
-          $.field($.docId()).order($.startAfter(query.ref.id)),
-          $.limit(limit || 10),
-        ]);
-      } else {
-        queries = await db.querys.query($ => [
-          $.field("private").eq(false),
-          $.field("forks").order("desc"),
-          $.limit(limit || 10),
-        ]);
-      }
+      queries = await db.querys.query($ => [
+        $.field("private").eq(false),
+        $.field("forks").order("desc"),
+      ]);
+      queries = this.paginate(queries, limit, page);
       if (queries.length === 0)
         return DataResult.failure("No queries found.", "NOT_FOUND");
       const data = await Promise.all(queries.map(this.addUsernameToQuery));
@@ -140,27 +108,17 @@ export class QueryService {
 
   static async findAllUserQuery(
     uid: string,
-    lastId?: string,
-    limit?: number
+    page = 1,
+    limit = 10
   ): Promise<ServiceResult<QueryResult[]>> {
     try {
       let queries: QueryDoc[] = [];
-      if (lastId) {
-        const query = await db.querys.get(db.querys.id(lastId));
-        if (!query) return DataResult.failure("Query not found.", "NOT_FOUND");
-        queries = await db.querys.query($ => [
-          $.field("private").eq(false),
-          $.field($.docId()).order($.startAfter(query.ref.id)),
-          $.field("creator").eq(String(uid)),
-          $.limit(limit || 10),
-        ]);
-      } else {
-        queries = await db.querys.query($ => [
-          $.field("private").eq(false),
-          $.field("creator").eq(String(uid)),
-          $.limit(limit || 10),
-        ]);
-      }
+      queries = await db.querys.query($ => [
+        $.field("private").eq(false),
+        $.field("creator").eq(String(uid)),
+      ]);
+      queries = this.paginate(queries, limit, page);
+
       return queries.length === 0
         ? DataResult.failure("No queries found for the user.", "NOT_FOUND")
         : DataResult.success(
@@ -443,11 +401,23 @@ export class QueryService {
     try {
       const user = await db.users.get(db.users.id(query.data.creator));
       return {
+        id: query.ref.id,
         ...(query.data as Query),
         username: user?.data.username || "",
       };
     } catch (error) {
       throw new Error("Failed to retrieve username for query creator.");
     }
+  }
+
+  static paginate<T>(array: T[], pageSize: number, pageNumber: number): T[] {
+    if (pageNumber < 1) {
+      throw new Error("Page number must be greater than or equal to 1");
+    }
+
+    const startIndex = (pageNumber - 1) * pageSize;
+    const endIndex = pageNumber * pageSize;
+
+    return array.slice(startIndex, endIndex);
   }
 }
