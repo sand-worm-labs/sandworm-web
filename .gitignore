@@ -45,6 +45,7 @@ serviceKey.json
 yarn.lock
 firebase-debug.log
 firestore-debug.log
+pnpm-lock.yaml
 
 cypress/videos/
 cypress/screenshots/
