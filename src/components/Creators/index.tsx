@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Head from "next/head";
 import { FaRegStar, FaTelegramPlane } from "react-icons/fa";
 import { HiOutlineCommandLine } from "react-icons/hi2";
@@ -11,53 +11,13 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 import QueryList from "../QueryList";
 import { DicebearAvatar } from "../DicebearAvatar";
-import { AxiosService } from "@/services/axios";
 
 interface CreatorsProps {
   queries: any;
 }
 
-interface User {
-  // Define your user type here based on the expected response
-  id: string;
-  // Add other properties as needed
-  name?: string;
-  email?: string;
-  // ...other user properties
-}
-
 export const Creators: React.FC<CreatorsProps> = ({ queries }) => {
   const [tab, setTab] = useState("all");
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    // Create an instance of your AxiosService
-    // Adjust baseURL if needed - I'm assuming your API is at the root
-    const axiosService = new AxiosService("http://localhost:3000", true);
-
-    const fetchUser = async () => {
-      try {
-        console.log("Fetching user data...");
-        const userData = await axiosService.get<User>(
-          "/api/query/user?uid=lmjGhhMChrzjHfILYtD7"
-        );
-
-        console.log("User data received:", userData);
-        setUser(userData);
-        setLoading(false);
-      } catch (err) {
-        console.error("Error fetching user:", err);
-        setError("Failed to fetch user data");
-        setLoading(false);
-      }
-    };
-
-    fetchUser();
-
-    // No dependency array needed if you just want to fetch once on mount
-  }, []);
 
   return (
     <div>
