@@ -3,10 +3,11 @@ import { SquareTerminal, Plus } from "lucide-react";
 
 import { CardHeader, CardTitle, Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
-import { QueryExplorerCardList } from "../Explorer/QueryExplorerCardList";
 import { queries } from "../QueryList/queries";
 
-export const SavedQueries = () => {
+import { QueryExplorerCardList } from "./QueryExplorerCardList";
+
+export const QueryExplorer = () => {
   return (
     <Card className="h-full overflow-hidden border-none dark">
       <CardHeader className="p-4 border-b ">
