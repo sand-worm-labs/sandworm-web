@@ -6,22 +6,25 @@ import { AxiosService } from "@/services/axios";
 const axios = new AxiosService(process.env.NEXT_PUBLIC_API_URL!, false);
 
 interface ExplorePageProps {
-  searchParams: {
-    page?: string;
+  params: {
+    id: string;
   };
 }
 
-async function getQueries(page: string = "1"): Promise<QueryResponse> {
-  const queries = await axios.get<QueryResponse>(
-    `/api/query/?page=${page}&limit=100`
-  );
+async function getUserQueries(uid: string): Promise<QueryResponse> {
+  const queries = await axios.get<QueryResponse>(`/api/query/user?uid=${uid}`);
   if (!queries) notFound();
   return queries;
 }
 
-export default async function CreatorsPage({ searchParams }: ExplorePageProps) {
-  const page = searchParams.page ?? "1";
-  const queries = await getQueries(page);
+export default async function CreatorsPage({ params }: ExplorePageProps) {
+  const { id } = params;
+
+  if (!id) {
+    console.log(id, "uii");
+  }
+
+  const queries = await getUserQueries(id);
 
   return <Creators queries={queries} />;
 }
