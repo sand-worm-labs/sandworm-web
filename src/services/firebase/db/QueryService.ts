@@ -34,6 +34,7 @@ export interface Query {
 export interface QueryWithUsername extends Query {
   id: string;
   username: string;
+  image: string;
 }
 
 export interface QueryUpdates {
@@ -409,6 +410,7 @@ export class QueryService {
         id: query.ref.id,
         ...(query.data as Query),
         username: user?.data.username || "",
+        image: user?.data.image || "",
       };
     } catch (error) {
       throw new Error("Failed to retrieve username for query creator.");

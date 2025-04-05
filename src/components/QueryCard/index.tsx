@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { useRouter } from "next/navigation";
 import { twilight } from "react-syntax-highlighter/dist/esm/styles/prism";
+import Image from "next/image";
 
 import type { Query } from "@/types";
 import { useSandwormStore } from "@/store";
@@ -16,7 +17,7 @@ const QueryCard = ({ query }: { query: Query }) => {
   const router = useRouter();
 
   const openQueryInTab = (queryData: any) => {
-    createTab(queryData.name, "sql", queryData.query);
+    createTab(queryData.title, "sql", queryData.query);
     router.push("/workspace");
   };
 
@@ -24,7 +25,25 @@ const QueryCard = ({ query }: { query: Query }) => {
     <div className="shadow-sm rounded-xl p-4 px-8   flex flex-col justify-between">
       <div className="flex justify-between">
         <div className="flex">
-          <DicebearAvatar seed={query.creator} size={30} />
+          {query.image ? (
+            <div className="relative">
+              <Image
+                alt="user avatar"
+                src={query.image}
+                width={25}
+                height={25}
+                unoptimized
+                className="rounded-full border-2"
+              />
+            </div>
+          ) : (
+            <DicebearAvatar
+              size={20}
+              seed={query.creator}
+              className="border-2"
+            />
+          )}
+
           <div className="ml-3">
             <div className="text-[0.8rem] font-medium">
               <Link
@@ -33,7 +52,14 @@ const QueryCard = ({ query }: { query: Query }) => {
               >
                 {query.username}
               </Link>{" "}
-              / {query.title}{" "}
+              /{" "}
+              <button
+                type="button"
+                className="hover:underline"
+                onClick={() => openQueryInTab(query)}
+              >
+                {query.title}
+              </button>
             </div>
             <p className="text-xs text-[#ffffff90]">
               created {new Date(query.updatedAt).toLocaleDateString("en-US")}

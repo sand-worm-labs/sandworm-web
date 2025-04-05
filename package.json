@@ -66,6 +66,7 @@
     "config": "^3.3.12",
     "crypto": "^1.0.1",
     "date-fns": "^4.1.0",
+    "dayjs": "^1.11.13",
     "dotenv": "^16.4.7",
     "eslint-plugin-cypress": "^4.2.0",
     "firebase": "^11.3.1",
