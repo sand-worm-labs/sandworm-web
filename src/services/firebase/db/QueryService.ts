@@ -20,6 +20,10 @@ export interface Query {
   updatedAt: Typesaurus.ServerDate;
 }
 
+export interface QueryWithUsername extends Query {
+  username: string;
+}
+
 export interface QueryUpdates {
   query: string;
   createdAt: Typesaurus.ServerDate;
@@ -34,7 +38,7 @@ export class QueryService {
   static async findAll(
     lastId?: string,
     limit?: number
-  ): Promise<ServiceResult<QueryResult[]>> {
+  ): Promise<ServiceResult<QueryWithUsername[]>> {
     try {
       let queries: QueryDoc[] = [];
       if (lastId) {
@@ -51,11 +55,10 @@ export class QueryService {
           $.limit(limit || 10),
         ]);
       }
-      return queries.length === 0
-        ? DataResult.failure("No queries found.", "NOT_FOUND")
-        : DataResult.success(
-            queries.map((query: QueryDoc) => toResult<QueryResult>(query))
-          );
+      if (queries.length === 0)
+        return DataResult.failure("No queries found.", "NOT_FOUND");
+      const data = await Promise.all(queries.map(this.addUsernameToQuery));
+      return DataResult.success(data);
     } catch (error) {
       return DataResult.failure(
         "Failed to retrieve queries.",
@@ -68,7 +71,7 @@ export class QueryService {
   static async getByMostStars(
     lastId?: string,
     limit?: number
-  ): Promise<ServiceResult<QueryResult[]>> {
+  ): Promise<ServiceResult<QueryWithUsername[]>> {
     try {
       let queries: QueryDoc[] = [];
       if (lastId) {
@@ -87,11 +90,10 @@ export class QueryService {
           $.limit(limit || 10),
         ]);
       }
-      return queries.length === 0
-        ? DataResult.failure("No queries found.", "NOT_FOUND")
-        : DataResult.success(
-            queries.map((query: QueryDoc) => toResult<QueryResult>(query))
-          );
+      if (queries.length === 0)
+        return DataResult.failure("No queries found.", "NOT_FOUND");
+      const data = await Promise.all(queries.map(this.addUsernameToQuery));
+      return DataResult.success(data);
     } catch (error) {
       return DataResult.failure(
         "Failed to retrieve queries.",
@@ -104,7 +106,7 @@ export class QueryService {
   static async getByMostForks(
     lastId?: string,
     limit?: number
-  ): Promise<ServiceResult<QueryResult[]>> {
+  ): Promise<ServiceResult<QueryWithUsername[]>> {
     try {
       let queries: QueryDoc[] = [];
       if (lastId) {
@@ -123,11 +125,10 @@ export class QueryService {
           $.limit(limit || 10),
         ]);
       }
-      return queries.length === 0
-        ? DataResult.failure("No queries found.", "NOT_FOUND")
-        : DataResult.success(
-            queries.map((query: QueryDoc) => toResult<QueryResult>(query))
-          );
+      if (queries.length === 0)
+        return DataResult.failure("No queries found.", "NOT_FOUND");
+      const data = await Promise.all(queries.map(this.addUsernameToQuery));
+      return DataResult.success(data);
     } catch (error) {
       return DataResult.failure(
         "Failed to retrieve queries.",
@@ -435,6 +436,18 @@ export class QueryService {
         "DB_DELETE_ERROR",
         error
       );
+    }
+  }
+
+  static async addUsernameToQuery(query: QueryDoc): Promise<QueryWithUsername> {
+    try {
+      const user = await db.users.get(db.users.id(query.data.creator));
+      return {
+        ...(query.data as Query),
+        username: user?.data.username || "",
+      };
+    } catch (error) {
+      throw new Error("Failed to retrieve username for query creator.");
     }
   }
 }
