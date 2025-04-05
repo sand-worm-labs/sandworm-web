@@ -46,6 +46,8 @@ yarn.lock
 firebase-debug.log
 firestore-debug.log
 pnpm-lock.yaml
+ui-debug.log
+*.log
 
 cypress/videos/
 cypress/screenshots/
