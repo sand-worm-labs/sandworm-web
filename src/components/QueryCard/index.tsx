@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import { twilight } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 import type { Query } from "@/types";
-
 import { useSandwormStore } from "@/store";
 
 import { DicebearAvatar } from "../DicebearAvatar";
@@ -32,7 +31,7 @@ const QueryCard = ({ query }: { query: Query }) => {
                 href={`/creators/${query.creator} `}
                 className="hover:underline"
               >
-                {query.creator}
+                {query.username}
               </Link>{" "}
               / {query.title}{" "}
             </div>

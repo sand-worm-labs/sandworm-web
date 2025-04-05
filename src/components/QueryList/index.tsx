@@ -11,7 +11,10 @@ const QueryList: React.FC<{ queries: Query[] }> = ({ queries }) => {
 
   const pageCount = Math.ceil(queries.length / itemsPerPage);
   const offset = currentPage * itemsPerPage;
-  const currentItems = queries.slice(offset, offset + itemsPerPage);
+
+  const currentItems = Array.isArray(queries)
+    ? queries.slice(offset, offset + itemsPerPage)
+    : [];
 
   const handlePageChange = ({ selected }: { selected: number }) => {
     setCurrentPage(selected);
@@ -24,9 +27,7 @@ const QueryList: React.FC<{ queries: Query[] }> = ({ queries }) => {
         {currentItems.length === 0 ? (
           <div>No query yet</div>
         ) : (
-          currentItems.map(query => (
-            <QueryCard key={query.title} query={query} />
-          ))
+          currentItems.map(query => <QueryCard key={query.id} query={query} />)
         )}
       </div>
 
