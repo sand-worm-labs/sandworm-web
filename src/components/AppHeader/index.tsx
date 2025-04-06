@@ -19,7 +19,7 @@ const AppHeader: FC = () => {
       </Link>
       <SearchBar />
       {session?.user ? (
-        <ProfileMenu currentUser={session.user} />
+        <ProfileMenu currentUser={{ ...session.user}} />
       ) : (
         <Link
           href="/sign-in"
