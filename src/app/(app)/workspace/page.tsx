@@ -12,13 +12,19 @@ import {
 import WorkspaceTabs from "@/components/WorkSpace";
 import { QueryHistory } from "@/components/Explorer/QueryHistory";
 import { QueryExplorer } from "@/components/Explorer/QueryExplorer";
+import { SettingsPanel } from "@/components/WorkSpace/SettingsPanel";
 
-type ViewType = "dataExplorer" | "queryExplorer" | "ChangeLog";
+type ViewType =
+  | "dataExplorer"
+  | "queryExplorer"
+  | "ChangeLog"
+  | "settingsPanel";
 
 interface PanelComponents {
   dataExplorer: React.ReactNode;
   queryExplorer: React.ReactNode;
   ChangeLog: React.ReactNode;
+  settingsPanel: React.ReactNode;
 }
 
 export default function WorkSpace() {
@@ -29,6 +35,7 @@ export default function WorkSpace() {
     dataExplorer: <DataExplorer />,
     queryExplorer: <QueryExplorer />,
     ChangeLog: <QueryHistory />,
+    settingsPanel: <SettingsPanel />,
   };
 
   const handleResize = useCallback(() => {
