@@ -21,11 +21,17 @@ export type IToken = {
 };
 
 export interface CurrentUserProps {
-  currentUser?: {
-    email: string | null | undefined;
-    name?: string;
-    image?: string;
-  };
+  currentUser?: Partial<{
+    createdAt: string;
+    updatedAt: string;
+    displayName: string;
+    id: string;
+    name: string;
+    email: string;
+    image: string;
+    password: string;
+    isAdmin: boolean;
+  }> | null;
 }
 
 export type Author = {

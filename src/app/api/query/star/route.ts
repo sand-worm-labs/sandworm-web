@@ -21,22 +21,14 @@ export async function GET(request: Request) {
     return new Response(JSON.stringify(userResult), { status: 404 });
   }
 
-  const queryResult = await QueryService.findAllUserQuery(uid);
+  const staredResult = await QueryService.findAllUserStaredQuery(uid);
 
   const { totalRecords, totalPages, currentPage, nextPage, prevPage } = getPaginationDetails(0, 10, 1);
   const emptyResult = toPaginatedResult([], totalRecords, currentPage, totalPages, nextPage, prevPage);
 
-  const queries = queryResult.success
-  ? queryResult.data
-  : emptyResult.success
-  ? emptyResult.data
-  : null;
 
   return new Response(
-    JSON.stringify({
-      user: userResult.data,
-      queries
-    }),
+    JSON.stringify(staredResult.success ? staredResult.data :[]),
     { status: 200 }
   );
 }
