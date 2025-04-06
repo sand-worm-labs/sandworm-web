@@ -48,7 +48,7 @@ export const ProfileMenu: FC<CurrentUserProps> = ({ currentUser }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48 dark">
         <DropdownMenuItem asChild>
-          <Link href="/creators/hello">Profile</Link>
+          <Link href={`/creators/${currentUser?.id}`}>Profile</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/settings">Settings</Link>

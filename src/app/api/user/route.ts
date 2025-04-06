@@ -1,7 +1,15 @@
 import "server-only";
 import "@/services/firebase";
 
-// eslint-disable-next-line no-unused-vars
-export async function GET(_request: Request) {
-  return new Response("Hello, Next.js!");
+import { UserService } from "@/services/firebase/db/users";
+
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  const uid = params.id;
+  const result = await UserService.findUserById(uid || "");
+  if (!result.success)
+    return new Response(JSON.stringify(result), { status: 500 });
+  return new Response(JSON.stringify(result.data));
 }
