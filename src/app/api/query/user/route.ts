@@ -2,7 +2,7 @@ import "server-only";
 import "@/services/firebase";
 
 import { QueryService } from "@/services/firebase/db/QueryService";
-import { DataResult } from "@/services/firebase/db";
+import { DataResult, getPaginationDetails, toPaginatedResult } from "@/services/firebase/db";
 import { UserService } from "@/services/firebase/db/users";
 
 export async function GET(request: Request) {
@@ -23,10 +23,19 @@ export async function GET(request: Request) {
 
   const queryResult = await QueryService.findAllUserQuery(uid);
 
+  const { totalRecords, totalPages, currentPage, nextPage, prevPage } = getPaginationDetails(0, 10, 1);
+  const emptyResult = toPaginatedResult([], totalRecords, currentPage, totalPages, nextPage, prevPage);
+
+  const queries = queryResult.success
+  ? queryResult.data
+  : emptyResult.success
+  ? emptyResult.data
+  : null;
+
   return new Response(
     JSON.stringify({
       user: userResult.data,
-      queries: queryResult.success ? queryResult.data : [], // might need to return error in case of failed query
+      queries
     }),
     { status: 200 }
   );
