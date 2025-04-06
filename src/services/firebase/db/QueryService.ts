@@ -60,7 +60,7 @@ export class QueryService {
         const base = [$.field("private").eq(false)];
         switch (queryType) {
           case "user_stared":
-            base.push($.field("stared_by").arrayContains(uid || ""));
+            base.push($.field("stared_by").contains(uid || ""));
             break;
           case "user_query":
             base.push($.field("creator").eq(uid || ""));
