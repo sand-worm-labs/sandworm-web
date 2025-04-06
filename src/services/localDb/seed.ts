@@ -1,5 +1,4 @@
-/* eslint-disable no-restricted-syntax */
-import "server-only";
+
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { faker } from "@faker-js/faker";

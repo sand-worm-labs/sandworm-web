@@ -25,7 +25,7 @@ export interface CurrentUserProps {
     createdAt: string;
     updatedAt: string;
     displayName: string;
-    uid: string;
+    id: string;
     name: string;
     email: string;
     image: string;

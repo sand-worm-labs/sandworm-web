@@ -50,7 +50,7 @@ export type QueryUpdatesResult = Result<QueryUpdates>;
 export class QueryService {
   // Helper function for common query handling, pagination, and username addition
   static async getPaginatedQueries(
-    queryType: "all" | "stars" | "forks" | "user_query",
+    queryType: "all" | "stars" | "forks" | "user_query" |"user_stared",
     limit: number,
     page: number,
     uid?: string
@@ -59,6 +59,9 @@ export class QueryService {
       const queryBuilder = ($: any) => {
         const base = [$.field("private").eq(false)];
         switch (queryType) {
+          case "user_stared":
+            base.push($.field("stared_by").arrayContains(uid || ""));
+            break;
           case "user_query":
             base.push($.field("creator").eq(uid || ""));
             break;
@@ -137,6 +140,14 @@ export class QueryService {
     limit = 10
   ): Promise<PaginatedQueryResult<QueryWithUsername>> {
     return this.getPaginatedQueries("user_query", limit, page, uid);
+  }
+
+  static async findAllUserStaredQuery(
+    uid: string,
+    page = 1,
+    limit = 10
+  ): Promise<PaginatedQueryResult<QueryWithUsername>> {
+    return this.getPaginatedQueries("user_stared", limit, page, uid);
   }
 
   static async create(
