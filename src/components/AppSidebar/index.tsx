@@ -13,6 +13,7 @@ import {
   BookText,
   ExternalLink,
   Database,
+  Settings,
 } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -180,7 +181,7 @@ const AppSidebar = ({ currentView, setCurrentView }: AppSidebarProps) => {
                   size="icon"
                   onClick={() => setOpen(true)}
                 >
-                  <Search className="h-5 w-5" />
+                  <Settings className="h-6 w-6" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
