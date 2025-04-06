@@ -4,33 +4,19 @@ import { useState, useEffect, useRef } from "react";
 import {
   SquareTerminal,
   Github,
-  Sun,
-  Moon,
-  Search,
   ChevronRight,
   ChevronLeft,
   LineChart,
   BookText,
-  ExternalLink,
   Database,
   Settings,
 } from "lucide-react";
-import { toast } from "sonner";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { GiBackwardTime } from "react-icons/gi";
 
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  CommandDialog,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
-} from "@/components/ui/command";
 import {
   Tooltip,
   TooltipContent,
@@ -39,7 +25,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
 
-type ViewType = "dataExplorer" | "savedQueries" | "ChangeLog";
+type ViewType = "dataExplorer" | "savedQueries" | "ChangeLog" | "settingsPanel";
 
 interface AppSidebarProps {
   currentView: ViewType;
@@ -86,11 +72,6 @@ const AppSidebar = ({ currentView, setCurrentView }: AppSidebarProps) => {
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
-
-  const navItems = [
-    { to: "/", label: "Home", icon: SquareTerminal, isNewWindow: false },
-    { to: "/explore", label: "Explore", icon: LineChart, isNewWindow: false },
-  ];
 
   const bottomNavLinks = [
     {
@@ -179,7 +160,7 @@ const AppSidebar = ({ currentView, setCurrentView }: AppSidebarProps) => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => setOpen(true)}
+                  onClick={() => setCurrentView("settingsPanel")}
                 >
                   <Settings className="h-6 w-6" />
                 </Button>
@@ -202,77 +183,6 @@ const AppSidebar = ({ currentView, setCurrentView }: AppSidebarProps) => {
           <ChevronRight className="h-4 w-4" />
         </Button>
       )}
-
-      <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder="Type a command or search..." />
-        <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup heading="Navigation">
-            {navItems.map(item => (
-              <CommandItem
-                key={item.to}
-                onSelect={() => {
-                  if (item.isNewWindow) {
-                    window.open(item.to, "_blank");
-                    setOpen(false);
-                    return;
-                  }
-                  router.push(item.to);
-
-                  setOpen(false);
-                }}
-              >
-                <item.icon className="mr-2 h-4 w-4" />
-                {item.label}
-              </CommandItem>
-            ))}
-          </CommandGroup>
-          <CommandGroup>
-            {bottomNavLinks.map(item => (
-              <CommandItem
-                key={item.to}
-                onSelect={() => {
-                  if (item.isNewWindow) {
-                    window.open(item.to, "_blank");
-                    setOpen(false);
-                    return;
-                  }
-                  router.push(item.to);
-                  setOpen(false);
-                }}
-              >
-                <item.icon className="mr-2 h-4 w-4" />
-                {item.label}
-                {item.isNewWindow && (
-                  <ExternalLink
-                    className="p-1 
-                  "
-                  />
-                )}
-              </CommandItem>
-            ))}
-            <CommandSeparator />
-          </CommandGroup>
-          <CommandGroup heading="Actions">
-            <CommandItem
-              onSelect={() => {
-                toggleTheme();
-                toast.info(
-                  `Theme changed to ${theme === "dark" ? "light" : "dark"}`
-                );
-                setOpen(false);
-              }}
-            >
-              {theme === "dark" ? (
-                <Sun className="mr-2 h-4 w-4" />
-              ) : (
-                <Moon className="mr-2 h-4 w-4" />
-              )}
-              {theme === "dark" ? "Light Theme" : "Dark Theme"}
-            </CommandItem>
-          </CommandGroup>
-        </CommandList>
-      </CommandDialog>
     </div>
   );
 };
