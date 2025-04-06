@@ -14,19 +14,20 @@ import { Button } from "@/components/ui/button";
 const sharePlatforms = [
   {
     name: "Twitter",
-    url: (link: string) => `https://twitter.com/intent/tweet?url=${link}`,
+    getUrl: (link: string) =>
+      `https://twitter.com/intent/tweet?url=${encodeURIComponent(link)}`,
     Icon: Twitter,
   },
   {
     name: "Facebook",
-    url: (link: string) =>
-      `https://www.facebook.com/sharer/sharer.php?u=${link}`,
+    getUrl: (link: string) =>
+      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(link)}`,
     Icon: Facebook,
   },
   {
     name: "LinkedIn",
-    url: (link: string) =>
-      `https://www.linkedin.com/sharing/share-offsite/?url=${link}`,
+    getUrl: (link: string) =>
+      `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(link)}`,
     Icon: Linkedin,
   },
 ];
@@ -73,12 +74,12 @@ export const ShareDialogue = ({ url }: ShareDialogueProps) => {
         </p>
 
         <div className="flex justify-center gap-3 my-4">
-          {sharePlatforms.map(({ name, url, Icon }) => (
+          {sharePlatforms.map(({ name, getUrl, Icon }) => (
             <Button
               key={name}
               variant="outline"
               size="icon"
-              onClick={() => window.open(url(url), "_blank")}
+              onClick={() => window.open(getUrl(url), "_blank")}
               aria-label={`Share on ${name}`}
             >
               <Icon className="w-5 h-5" />

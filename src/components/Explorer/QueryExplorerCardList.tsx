@@ -2,18 +2,14 @@ import React, { useState } from "react";
 import { AiOutlineCode } from "react-icons/ai";
 import { Search } from "lucide-react";
 import { MdKeyboardDoubleArrowRight } from "react-icons/md";
+import type { Query } from "@/types";
 
 import { useSandwormStore } from "@/store";
 
 import { Input } from "../ui/input";
 
-interface IQuery {
-  id: string;
-  name: string;
-}
-
 interface IQueryExplorerCardListProps {
-  query: IQuery[];
+  query: Query[];
 }
 
 export const QueryExplorerCardList: React.FC<IQueryExplorerCardListProps> = ({

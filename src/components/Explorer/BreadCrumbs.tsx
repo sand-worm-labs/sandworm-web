@@ -2,19 +2,19 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 
-import { explorerMockData } from "@/_mockdata/explorer";
+import type { IChainEntity } from "@/types";
 
-export const Breadcrumbs = ({ entities }) => {
+interface IBreadCrumbsProps {
+  entities: IChainEntity[];
+}
+
+export const Breadcrumbs: React.FC<IBreadCrumbsProps> = ({ entities }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const chain = searchParams.get("namespace");
+  const entity = searchParams.get("id");
 
-  const namespace = searchParams.get("namespace");
-  const id = searchParams.get("id");
-
-  const chainData = namespace
-    ? explorerMockData.find(chain => chain.chainId === namespace)
-    : null;
-  const entity = chainData?.entities.find(table => table.id === id);
+  const activeEntity = entities.find(e => e.name === entity);
 
   const handleNavigate = (params: { namespace?: string; id?: string }) => {
     const newParams = new URLSearchParams();
@@ -32,22 +32,22 @@ export const Breadcrumbs = ({ entities }) => {
       >
         Workspace
       </button>
-      {namespace && (
+      {chain && (
         <>
           {" / "}
           <button
             type="button"
             className=" cursor-pointer"
-            onClick={() => handleNavigate({ namespace })}
+            onClick={() => handleNavigate({ namespace: chain })}
           >
-            {namespace.charAt(0).toUpperCase() + namespace.slice(1)}
+            {chain.charAt(0).toUpperCase() + chain.slice(1)}
           </button>
         </>
       )}
-      {id && (
+      {entity && (
         <>
           {" / "}
-          <span className="cursor-pointer">{entity?.name || "NA"}</span>
+          <span className="cursor-pointer">{activeEntity?.name || "NA"}</span>
         </>
       )}
     </nav>
