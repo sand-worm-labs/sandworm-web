@@ -40,10 +40,7 @@ export const ProfileMenu: FC<CurrentUserProps> = ({ currentUser }) => {
               alt={`${currentUser.name} image`}
             />
           ) : (
-            <DicebearAvatar
-              size={30}
-              seed={currentUser?.displayName || "sandworm"}
-            />
+            <DicebearAvatar size={30} seed={currentUser?.name || "sandworm"} />
           )}
 
           <ChevronDown className="w-4 h-4" />

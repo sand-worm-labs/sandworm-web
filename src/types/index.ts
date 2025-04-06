@@ -21,17 +21,11 @@ export type IToken = {
 };
 
 export interface CurrentUserProps {
-  currentUser?: Partial<{
-    createdAt: string;
-    updatedAt: string;
-    displayName: string;
-    uid: string;
-    name: string;
-    email: string;
-    image: string;
-    password: string;
-    isAdmin: boolean;
-  }> | null;
+  currentUser?: {
+    email: string | null | undefined;
+    name?: string;
+    image?: string;
+  };
 }
 
 export type Author = {
@@ -121,4 +115,13 @@ export interface User {
   name?: string;
   emailVerified?: Date;
   image?: string;
+}
+
+export type FieldType = "string" | "integer" | "bigint";
+
+export interface IChainEntity {
+  name: string;
+  description: string;
+  live_preview: string;
+  fields: Record<string, FieldType>;
 }

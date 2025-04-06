@@ -1,32 +1,31 @@
 import Link from "next/link";
-import { FaGithub, FaDiscord, FaTwitter } from "react-icons/fa";
+
+import { footerLinks } from "@/data/footerLinks";
+import { socialLinks } from "@/data/socialLinks";
 
 const AppFooter = () => {
   return (
-    <footer className=" p-4 text-sm text-text-gray border-t border-borderLight ">
+    <footer className="p-4 text-sm text-text-gray border-t border-borderLight">
       <div className="container mx-auto flex justify-between items-center">
-        <div className="flex space-x-4">
+        <div className="flex space-x-4 items-center">
           <span>© 2025 Sandworm</span>
-          <Link href="/" className="hover:text-white">
-            Docs
-          </Link>
-          <Link href="/" className="hover:text-white">
-            CLI
-          </Link>
-          <Link href="/" className="hover:text-white">
-            Terms & Conditions
-          </Link>
+          {footerLinks.map(({ label, href }) => (
+            <Link key={label} href={href} className="hover:text-white">
+              {label}
+            </Link>
+          ))}
         </div>
         <div className="flex space-x-4">
-          <Link href="/" className="hover:text-white">
-            <FaGithub size={18} />
-          </Link>
-          <Link href="/" className="hover:text-white">
-            <FaDiscord size={18} />
-          </Link>
-          <Link href="/" className="hover:text-white">
-            <FaTwitter size={18} />
-          </Link>
+          {socialLinks.map(({ name, icon: Icon, href }) => (
+            <Link
+              key={name}
+              href={href}
+              className="hover:text-white"
+              aria-label={name}
+            >
+              <Icon size={18} />
+            </Link>
+          ))}
         </div>
       </div>
     </footer>

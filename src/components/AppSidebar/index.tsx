@@ -70,10 +70,6 @@ const AppSidebar = ({ currentView, setCurrentView }: AppSidebarProps) => {
     },
   ];
 
-  const toggleTheme = () => {
-    console.log("theme changed");
-  };
-
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
@@ -81,7 +77,6 @@ const AppSidebar = ({ currentView, setCurrentView }: AppSidebarProps) => {
         setOpen(prevOpen => !prevOpen);
       }
 
-      // Toogle sidebar when pressing Cmd/Ctrl + B
       if (e.key === "b" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         setIsExpanded(prevIsExpanded => !prevIsExpanded);
