@@ -15,7 +15,7 @@ interface ExplorePageProps {
 
 async function getQueries(page: string = "1"): Promise<QueryResponse> {
   const queries = await axios.get<QueryResponse>(
-    `/api/query/?page=${page}&limit=100`
+    `/api/query/?page=${page}&limit=10`
   );
   if (!queries) notFound();
   return queries;

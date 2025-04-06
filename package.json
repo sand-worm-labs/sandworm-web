@@ -15,8 +15,6 @@
     "prettier": "prettier --write .",
     "lint": "yarn eslint && yarn prettier",
     "format": "next lint --fix && prettier '**/*.{json,yaml}' --write --ignore-path .gitignore",
-    "postbuild": "next-sitemap && yarn prisma generate",
-    "postinstall": "yarn prisma generate",
     "firebase": "firebase emulators:start",
     "commit": "git-cz"
   },
