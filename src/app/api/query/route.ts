@@ -55,7 +55,7 @@ export async function POST(request: Request) {
     tags: string[];
   } = await request.json();
 
-  if (session.user?.id !== creator) {
+  if (session.userId !== creator) {
     return new Response(
       JSON.stringify(DataResult.failure("Invalid User", "UNAUTHORIZED")),
       { status: 401 }

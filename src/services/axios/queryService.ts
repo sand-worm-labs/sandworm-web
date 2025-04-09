@@ -8,8 +8,21 @@ export interface PatchQueryPayload {
   isPublic?: boolean;
 }
 
+export interface CreateQueryPayload {
+  title: string;
+  description: string;
+  creator: string;
+  privateQuery: boolean;
+  query: string;
+  tags: string[];
+}
+
 export const fetchUserQuery = async (uid: string) => {
   return await api.get(`/api/query/user?uid=${uid}`);
+};
+
+export const createQuery = async (data: CreateQueryPayload) => {
+  return await api.post(`/api/query`, data);
 };
 
 export const patchUserQuery = async (uid: string, data: PatchQueryPayload) => {
