@@ -24,21 +24,20 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     async redirect({ baseUrl }) {
       return `${baseUrl}/workspace`;
     },
-    async session({ session, token }) {
-      const newSession = {
-        ...session,
-        userId: token?.sub ?? null,
-      };
 
-      return newSession;
-    },
     async jwt({ token, user, account, profile }) {
       const newToken = {
         ...token,
         ...(user && { id: user.id }),
       };
 
+      console.log("JWT token:", newToken);
+
       return newToken;
+    },
+    async session({ session, token }) {
+      session.user.id = token?.id ?? null;
+      return session;
     },
     async signIn({ user, account, profile }) {
       if (!user.email) {

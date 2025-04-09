@@ -19,6 +19,7 @@ import { DicebearAvatar } from "../DicebearAvatar";
 
 export const ProfileMenu: FC<CurrentUserProps> = ({ currentUser }) => {
   const [open, setOpen] = useState(false);
+  console.log("Current user in ProfileMenu:", currentUser);
 
   const handleSignOut = async () => {
     await signOut({ callbackUrl: "/" });
@@ -32,6 +33,7 @@ export const ProfileMenu: FC<CurrentUserProps> = ({ currentUser }) => {
           className="flex items-center space-x-2 px-3 py-2 hover:bg-customgray rounded"
         >
           <span className="text-sm font-medium pr-2">{currentUser?.name}</span>
+          <span>{currentUser?.id}</span>
           {currentUser?.image ? (
             <Image
               src={currentUser.image}
