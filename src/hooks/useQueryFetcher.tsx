@@ -9,15 +9,15 @@ export const UserQueryFetcher = () => {
   const fetchUserQueries = useUserQueries(s => s.fetchUserQueries);
 
   useEffect(() => {
-    if (session.userId) {
+    if (session?.user?.id) {
       console.log(
         "Fetching user queries for user ID:",
-        session.userId,
+        session.user.id,
         session
       );
-      fetchUserQueries(session.userId);
+      fetchUserQueries(session.user.id);
     }
-  }, [session?.userId]);
+  }, [session?.user?.id]);
 
   return null;
 };
