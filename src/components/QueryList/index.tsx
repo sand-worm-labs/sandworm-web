@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import type { Query, QueryPagination } from "@/types";
 
 import QueryCard from "../QueryCard";
+import { SquareTerminal } from "lucide-react";
 
 interface IQueryListProps {
   queries: Query[];
@@ -28,7 +29,10 @@ const QueryList: React.FC<IQueryListProps> = ({ queries, pagination }) => {
     <div className="mb-16">
       <div className="grid grid-cols-1 gap-4 mb-8">
         {queries.length === 0 ? (
-          <div>No query yet</div>
+          <div className="py-6 flex flex-col items-center justify-center">
+            <SquareTerminal size={40} />
+            <p className="text-text-gray mt-2"> No query yet</p>
+          </div>
         ) : (
           queries.map(query => <QueryCard key={query.id} query={query} />)
         )}

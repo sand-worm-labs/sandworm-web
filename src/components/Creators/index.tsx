@@ -21,7 +21,7 @@ export const Creators: React.FC<CreatorsProps> = ({ queries, user }) => {
       <Head>
         <title>Creators</title>
       </Head>
-      <div className="grid lg:grid-cols-[27%,73%] p-5 border-t">
+      <div className="grid lg:grid-cols-[27%,73%] p-5 border-t min-h-[85vh]">
         <CreatorInfo user={user} />
         <CreatorTabs tab={tab} setTab={setTab} queries={queries} />
       </div>

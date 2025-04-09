@@ -39,13 +39,13 @@ export const QueryExplorer = () => {
 
   useEffect(() => {
     const loadQueries = async () => {
-      if (!session?.userId) {
+      if (!session?.user?.id) {
         console.log("User not logged in");
         return;
       }
 
       try {
-        const uid = session?.userId;
+        const uid = session?.user.id;
         const data = await fetchUserQuery(uid);
         setQueries(data?.queries?.page_items || []);
       } catch (err) {

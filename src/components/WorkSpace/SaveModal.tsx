@@ -38,7 +38,7 @@ export default function SaveModal({
   const { data: session } = useSession();
 
   const handleSave = async () => {
-    if (!session?.userId) {
+    if (!session?.user?.id) {
       toast.error("You need to login first to save a query 👀");
       console.log("User not logged in");
       return;
