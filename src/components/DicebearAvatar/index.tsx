@@ -14,7 +14,7 @@ interface DicebearAvatarProps {
 export function DicebearAvatar({
   seed,
   size = 80,
-  className = "",
+  className,
 }: DicebearAvatarProps) {
   const [avatarSvg, setAvatarSvg] = useState<string>("");
 

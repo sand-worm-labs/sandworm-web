@@ -11,8 +11,6 @@ import { ProfileMenu } from "../ProfileMenu";
 const AppHeader: FC = () => {
   const { data: session } = useSession();
 
-  console.log(session);
-
   return (
     <header className="px-8 py-2 flex justify-between items-center">
       <Link href="/" className="flex items-center">
@@ -21,7 +19,7 @@ const AppHeader: FC = () => {
       </Link>
       <SearchBar />
       {session?.user ? (
-        <ProfileMenu currentUser={{ ...session.user}} />
+        <ProfileMenu currentUser={{ ...session.user }} />
       ) : (
         <Link
           href="/sign-in"

@@ -1,40 +1,48 @@
-import { useState } from "react";
-import ReactPaginate from "react-paginate";
+"use client";
 
-import type { Query } from "@/types";
+import ReactPaginate from "react-paginate";
+import { useRouter, useSearchParams } from "next/navigation";
+
+import type { Query, QueryPagination } from "@/types";
 
 import QueryCard from "../QueryCard";
+import { SquareTerminal } from "lucide-react";
 
-const QueryList: React.FC<{ queries: Query[] }> = ({ queries }) => {
-  const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 10;
+interface IQueryListProps {
+  queries: Query[];
+  pagination: QueryPagination;
+}
 
-  const pageCount = Math.ceil(queries.length / itemsPerPage);
-  const offset = currentPage * itemsPerPage;
-
-  const currentItems = Array.isArray(queries)
-    ? queries.slice(offset, offset + itemsPerPage)
-    : [];
+const QueryList: React.FC<IQueryListProps> = ({ queries, pagination }) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   const handlePageChange = ({ selected }: { selected: number }) => {
-    setCurrentPage(selected);
+    const newPage = selected + 1;
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", newPage.toString());
+    router.push(`/explore?${params.toString()}`);
     window.scrollTo(0, 0);
   };
 
   return (
     <div className="mb-16">
       <div className="grid grid-cols-1 gap-4 mb-8">
-        {currentItems.length === 0 ? (
-          <div>No query yet</div>
+        {queries.length === 0 ? (
+          <div className="py-6 flex flex-col items-center justify-center">
+            <SquareTerminal size={40} />
+            <p className="text-text-gray mt-2"> No query yet</p>
+          </div>
         ) : (
-          currentItems.map(query => <QueryCard key={query.id} query={query} />)
+          queries.map(query => <QueryCard key={query.id} query={query} />)
         )}
       </div>
 
       <ReactPaginate
         previousLabel="< Previous"
         nextLabel="Next >"
-        pageCount={pageCount}
+        pageCount={pagination.total_pages}
+        forcePage={(pagination.current_page ?? 1) - 1}
         onPageChange={handlePageChange}
         containerClassName="flex justify-center items-center gap-2 text-sm"
         pageClassName="px-3 py-1 rounded hover:bg-gray-100 hover:text-black"
