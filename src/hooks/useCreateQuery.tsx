@@ -10,7 +10,7 @@ export const useCreateQuery = () => {
 
   const handleCreate = useCallback(
     async (payload: Omit<CreateQueryPayload, "creator">) => {
-      if (!session?.userId) {
+      if (!session?.user?.id) {
         setError("You must be logged in to save queries.");
         return null;
       }
@@ -25,11 +25,11 @@ export const useCreateQuery = () => {
             ...payload,
           },
           session,
-          session.userId
+          session.user?.id
         );
         const response = await createQuery({
           ...payload,
-          creator: session.userId,
+          creator: session.user?.id,
         });
         console.log("Create query response:", response);
         return response;
@@ -41,7 +41,7 @@ export const useCreateQuery = () => {
         setLoading(false);
       }
     },
-    [session?.userId]
+    [session?.user?.id]
   );
 
   return {
