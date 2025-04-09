@@ -8,6 +8,7 @@ import { Button } from "../ui/button";
 
 import { QueryExplorerCardList } from "./QueryExplorerCardList";
 import { fetchUserQuery } from "@/services/axios/queryService";
+import { useSession } from "next-auth/react";
 
 const LoadingState = () => (
   <div className="flex flex-col items-center justify-center h-full gap-4 text-center text-muted-foreground">
@@ -34,11 +35,17 @@ const EmptyState = () => (
 export const QueryExplorer = () => {
   const [queries, setQueries] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const { data: session } = useSession();
 
   useEffect(() => {
     const loadQueries = async () => {
+      if (!session?.userId) {
+        console.log("User not logged in");
+        return;
+      }
+
       try {
-        const uid = "lmjGhhMChrzjHfILYtD7";
+        const uid = session?.userId;
         const data = await fetchUserQuery(uid);
         setQueries(data?.queries?.page_items || []);
       } catch (err) {

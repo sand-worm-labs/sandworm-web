@@ -25,32 +25,14 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       return `${baseUrl}/workspace`;
     },
     async session({ session, token }) {
-      // Create a new session object with the user ID
-      console.log("hbsession", session, session.sessionToken);
-      console.log("token", token);
       const newSession = {
         ...session,
         userId: token?.sub ?? null,
       };
 
-      console.log("new session", newSession);
-
-      // Debug logging
-      console.log("Session callback:", {
-        sessionUser: newSession.user,
-      });
-
       return newSession;
     },
     async jwt({ token, user, account, profile }) {
-      console.log("JWT callback:", {
-        token,
-        user,
-        account,
-        profile,
-      });
-
-      // Create a new token object with additional properties
       const newToken = {
         ...token,
         ...(user && { id: user.id }),
@@ -59,13 +41,6 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       return newToken;
     },
     async signIn({ user, account, profile }) {
-      console.log("Sign-in attempt:", {
-        user,
-        account,
-        profile,
-      });
-
-      // Add any additional sign-in validation
       if (!user.email) {
         console.error("Sign-in failed: No email");
         return false;
