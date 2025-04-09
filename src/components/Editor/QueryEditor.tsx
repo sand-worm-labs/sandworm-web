@@ -166,6 +166,7 @@ const QueryEditor: React.FC<SqlEditorProps> = ({ tabId, title, className }) => {
         open={isSaveModalOpen}
         setOpen={setIsSaveModalOpen}
         title={currentTitle}
+        content={currentContent}
       />
     </div>
   );

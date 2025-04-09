@@ -42,13 +42,22 @@ export const TabsSection: React.FC<TabSectionProps> = ({ queries }) => {
       </TabsList>
       <div className="container mx-auto pt-6">
         <TabsContent value="all">
-          <QueryList queries={queries.page_items} />
+          <QueryList
+            queries={queries.page_items}
+            pagination={queries.pagination}
+          />
         </TabsContent>
         <TabsContent value="forked">
-          <QueryList queries={queries.page_items} />
+          <QueryList
+            queries={queries.page_items}
+            pagination={queries.pagination}
+          />
         </TabsContent>
         <TabsContent value="starred">
-          <QueryList queries={queries.page_items} />
+          <QueryList
+            queries={queries.page_items}
+            pagination={queries.pagination}
+          />
         </TabsContent>
       </div>
     </Tabs>

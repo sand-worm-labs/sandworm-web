@@ -47,6 +47,7 @@ export interface Parameter {
 }
 
 export interface Query {
+  id?: string;
   title: string;
   description: string;
   creator: string;
@@ -121,4 +122,13 @@ export interface User {
   name?: string;
   emailVerified?: Date;
   image?: string;
+}
+
+export type FieldType = "string" | "integer" | "bigint";
+
+export interface IChainEntity {
+  name: string;
+  description: string;
+  live_preview: string;
+  fields: Record<string, FieldType>;
 }

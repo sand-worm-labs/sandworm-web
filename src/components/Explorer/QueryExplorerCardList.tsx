@@ -3,17 +3,13 @@ import { AiOutlineCode } from "react-icons/ai";
 import { Search } from "lucide-react";
 import { MdKeyboardDoubleArrowRight } from "react-icons/md";
 
+import type { Query } from "@/types";
 import { useSandwormStore } from "@/store";
 
 import { Input } from "../ui/input";
 
-interface IQuery {
-  id: string;
-  name: string;
-}
-
 interface IQueryExplorerCardListProps {
-  query: IQuery[];
+  query: Query[];
 }
 
 export const QueryExplorerCardList: React.FC<IQueryExplorerCardListProps> = ({
@@ -27,7 +23,7 @@ export const QueryExplorerCardList: React.FC<IQueryExplorerCardListProps> = ({
   };
 
   const filteredQueries = query.filter(item =>
-    item.name.toLowerCase().includes(search.toLowerCase())
+    item.title.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -57,7 +53,7 @@ export const QueryExplorerCardList: React.FC<IQueryExplorerCardListProps> = ({
             >
               <span className="flex space-x-2 items-center">
                 <AiOutlineCode size={18} />
-                <span className="text-sm capitalize">{item.name}</span>
+                <span className="text-sm capitalize">{item.title}</span>
               </span>
               <MdKeyboardDoubleArrowRight />
             </button>

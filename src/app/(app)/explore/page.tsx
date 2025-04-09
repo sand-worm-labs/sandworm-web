@@ -13,25 +13,36 @@ interface ExplorePageProps {
   };
 }
 
-async function getQueries(page: string = "1"): Promise<QueryResponse> {
-  const queries = await axios.get<QueryResponse>(
-    `/api/query/?page=${page}&limit=100`
-  );
-  if (!queries) notFound();
-  return queries;
+async function getQueries(page: string = "1") {
+  try {
+    const queries = await axios.get<QueryResponse>(
+      `/api/query/?page=${page}&limit=10`
+    );
+    return { data: queries, hasError: false };
+  } catch (error) {
+    console.error("Failed to fetch queries:", error);
+    return { data: null, hasError: true };
+  }
 }
 
 export default async function Explore({ searchParams }: ExplorePageProps) {
   const page = searchParams.page ?? "1";
-  const queries = await getQueries(page);
+  const { data: queries, hasError } = await getQueries(page);
 
   return (
     <div className="dark text-white min-h-screen">
       <Head>
         <title>Explore</title>
       </Head>
+
       <div className="pt-10">
-        <TabsSection queries={queries} />
+        {hasError || !queries ? (
+          <div className="text-center text-red-400 font-semibold text-lg">
+            Something went wrong fetching queries. Try another page 😔
+          </div>
+        ) : (
+          <TabsSection queries={queries} />
+        )}
       </div>
     </div>
   );

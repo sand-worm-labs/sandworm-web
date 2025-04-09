@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useCreateQuery } from "@/hooks/useCreateQuery";
+import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 
 import {
   Dialog,
@@ -18,21 +21,42 @@ interface SaveModalProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   title: string;
+  content: string;
 }
 
-export default function SaveModal({ open, setOpen, title }: SaveModalProps) {
+export default function SaveModal({
+  open,
+  setOpen,
+  title,
+  content,
+}: SaveModalProps) {
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
 
-  const handleSave = () => {
-    console.log({
+  const { create, loading, error } = useCreateQuery();
+  const { data: session } = useSession();
+
+  const handleSave = async () => {
+    if (!session?.user?.id) {
+      toast.error("You need to login first to save a query 👀");
+      console.log("User not logged in");
+      return;
+    }
+
+    const res = await create({
       title,
       description,
+      query: content,
+      privateQuery: isPrivate,
       tags: tags.split(",").map(tag => tag.trim()),
-      isPrivate,
     });
-    setOpen(false);
+
+    if (res) {
+      toast.success("Query saved successfully! 🔥");
+      console.log("Query saved successfully:", res);
+      setOpen(false);
+    }
   };
 
   return (
@@ -89,9 +113,10 @@ export default function SaveModal({ open, setOpen, title }: SaveModalProps) {
           </div>
           <Button
             onClick={handleSave}
-            className="w-full bg-white text-black  font-medium py-5 text-base "
+            disabled={loading}
+            className="w-full bg-white text-black font-medium py-5 text-base"
           >
-            Save Query
+            {loading ? "Saving..." : "Save Query"}
           </Button>
         </div>
       </DialogContent>

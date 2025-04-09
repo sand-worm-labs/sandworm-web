@@ -1,14 +1,14 @@
 import React from "react";
 import { Sheet } from "lucide-react";
 
-import type { ExplorerTable } from "@/_mockdata/explorer";
+import type { IChainEntity } from "@/types";
 
-interface EntitiesExplorerProps {
-  entities: ExplorerTable[];
+interface IEntitiesExplorerProps {
+  entities: IChainEntity[];
   onSelect: (entityId: string) => void;
 }
 
-export const EntitiesExplorer: React.FC<EntitiesExplorerProps> = ({
+export const EntitiesExplorer: React.FC<IEntitiesExplorerProps> = ({
   entities,
   onSelect,
 }) => {

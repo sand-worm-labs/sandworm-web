@@ -2,30 +2,28 @@
 
 import { useSearchParams } from "next/navigation";
 
-import type { Entity } from "@/_mockdata/explorer";
+import type { IChainEntity } from "@/types";
 
 interface FieldExplorerProps {
-  entities: Entity[];
+  entities: IChainEntity[];
 }
 
 export const FieldExplorer = ({ entities }: FieldExplorerProps) => {
   const searchParams = useSearchParams();
-  const namespace = searchParams.get("namespace");
-  const id = searchParams.get("id");
+  const chain = searchParams.get("namespace");
+  const entity = searchParams.get("id");
 
-  if (!namespace || !id) return <p>Invalid selection</p>;
+  const activeEntity = entities.find(e => e.name === entity);
 
-  const entity = entities.find(entity => entity.name === id);
+  if (!chain || !entity) return <p>Invalid selection</p>;
 
-  console.log(entity, entities, "entities");
-
-  if (!entity) return <p>Invalid Entity</p>;
+  if (!activeEntity) return <p>Entity not found</p>;
 
   return (
     <div className="flex flex-col gap-1 p-4 border w-full">
-      <h2 className="text-sm font-medium mb-4">{entity.id}</h2>
+      <h2 className="text-sm font-medium mb-4">{activeEntity.name}</h2>
       <ul className="space-y-2">
-        {Object.entries(entity.fields).map(([name, type]) => (
+        {Object.entries(activeEntity.fields).map(([name, type]) => (
           <li
             key={name}
             className="cursor-pointer py-1.5 px-2 rounded-md hover:bg-primary/10 text-[0.8rem] font-medium text-left flex justify-between"
