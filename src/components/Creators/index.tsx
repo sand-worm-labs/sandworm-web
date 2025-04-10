@@ -11,10 +11,17 @@ import { CreatorTabs } from "./CreatorTabs";
 interface CreatorsProps {
   queries: QueryResponse;
   user: User;
+  starredQueries: QueryResponse;
+  defaultTab?: string;
 }
 
-export const Creators: React.FC<CreatorsProps> = ({ queries, user }) => {
-  const [tab, setTab] = useState("all");
+export const Creators: React.FC<CreatorsProps> = ({
+  queries,
+  user,
+  defaultTab,
+  starredQueries,
+}) => {
+  const [tab, setTab] = useState(defaultTab || "all");
 
   return (
     <div>
@@ -23,7 +30,12 @@ export const Creators: React.FC<CreatorsProps> = ({ queries, user }) => {
       </Head>
       <div className="grid lg:grid-cols-[27%,73%] p-5 border-t min-h-[85vh]">
         <CreatorInfo user={user} />
-        <CreatorTabs tab={tab} setTab={setTab} queries={queries} />
+        <CreatorTabs
+          tab={tab}
+          setTab={setTab}
+          queries={queries}
+          starredQueries={starredQueries}
+        />
       </div>
     </div>
   );

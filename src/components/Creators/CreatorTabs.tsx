@@ -8,9 +8,15 @@ interface CreatorTabsProps {
   tab: string;
   setTab: (value: string) => void;
   queries: QueryResponse;
+  starredQueries: QueryResponse;
 }
 
-export const CreatorTabs = ({ tab, setTab, queries }: CreatorTabsProps) => {
+export const CreatorTabs = ({
+  tab,
+  setTab,
+  queries,
+  starredQueries,
+}: CreatorTabsProps) => {
   return (
     <div className="container mx-auto px-12 dark mt-5">
       <Tabs value={tab} onValueChange={setTab} className="w-full">
@@ -39,8 +45,8 @@ export const CreatorTabs = ({ tab, setTab, queries }: CreatorTabsProps) => {
           </TabsContent>
           <TabsContent value="starred">
             <QueryList
-              queries={queries.page_items}
-              pagination={queries.pagination}
+              queries={starredQueries.page_items}
+              pagination={starredQueries.pagination}
             />
           </TabsContent>
         </div>
