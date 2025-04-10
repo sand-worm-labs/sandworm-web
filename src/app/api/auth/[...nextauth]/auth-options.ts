@@ -25,7 +25,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       return `${baseUrl}/workspace`;
     },
 
-    async jwt({ token, user, account, profile }) {
+    async jwt({ token, user }) {
       const newToken = {
         ...token,
         ...(user && { id: user.id }),
@@ -39,7 +39,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       session.user.id = token?.id ?? null;
       return session;
     },
-    async signIn({ user, account, profile }) {
+    async signIn({ user }) {
       if (!user.email) {
         console.error("Sign-in failed: No email");
         return false;

@@ -19,7 +19,7 @@ export const QueryExplorerCardList: React.FC<IQueryExplorerCardListProps> = ({
   const [search, setSearch] = useState("");
 
   const openQueryInTab = (queryData: any) => {
-    createTab(queryData.name, "sql", queryData.query);
+    createTab(queryData.title, "sql", queryData.query, queryData.id);
   };
 
   const filteredQueries = query.filter(item =>
