@@ -7,9 +7,8 @@ import { AxiosService } from "@/services/axios";
 const axios = new AxiosService(process.env.NEXT_PUBLIC_API_URL!, false);
 
 interface ExplorePageProps {
-  params: {
-    id: string;
-  };
+  params: { id: string };
+  searchParams?: { tab?: string };
 }
 
 interface UserQueryResponse {
@@ -25,14 +24,33 @@ async function getUserQueries(uid: string): Promise<UserQueryResponse> {
   return response;
 }
 
-export default async function CreatorsPage({ params }: ExplorePageProps) {
+async function getUserStarredQueries(uid: string): Promise<QueryResponse> {
+  const response = await axios.get<QueryResponse>(`/api/query/star?uid=${uid}`);
+  return response;
+}
+
+export default async function CreatorsPage({
+  params,
+  searchParams,
+}: ExplorePageProps) {
   const { id } = params;
+  const tab = searchParams?.tab || "all";
 
   if (!id) {
     notFound();
   }
 
-  const { user, queries } = await getUserQueries(id);
+  const [{ user, queries }, starred] = await Promise.all([
+    getUserQueries(id),
+    getUserStarredQueries(id),
+  ]);
 
-  return <Creators user={user} queries={queries} />;
+  return (
+    <Creators
+      user={user}
+      queries={queries}
+      starredQueries={starred}
+      defaultTab={tab}
+    />
+  );
 }
