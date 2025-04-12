@@ -1,5 +1,8 @@
 "use client";
 
+import { Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
+
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -8,8 +11,6 @@ import {
   TooltipProvider,
 } from "@/components/ui/tooltip";
 import { useSandwormStore } from "@/store";
-import { Plus } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 export const CreateQueryButton = () => {
   const router = useRouter();

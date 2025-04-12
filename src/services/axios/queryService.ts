@@ -1,5 +1,6 @@
-import { AxiosService } from ".";
 import type { User, QueryResponse } from "@/types";
+
+import { AxiosService } from ".";
 
 const API_BASE_URL = "http://localhost:3000";
 const api = new AxiosService(API_BASE_URL, true);
