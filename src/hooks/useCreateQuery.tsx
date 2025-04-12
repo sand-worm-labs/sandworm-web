@@ -1,6 +1,8 @@
 import { useState, useCallback } from "react";
 import { useSession } from "next-auth/react";
-import { createQuery, CreateQueryPayload } from "@/services/axios/queryService";
+
+import type { CreateQueryPayload } from "@/services/axios/queryService";
+import { createQuery } from "@/services/axios/queryService";
 
 export const useCreateQuery = () => {
   const { data: session } = useSession();

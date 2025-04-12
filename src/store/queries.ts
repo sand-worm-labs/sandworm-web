@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import axios from "axios";
+
 import type { Query } from "@/types";
 
 interface UserQueryStore {
