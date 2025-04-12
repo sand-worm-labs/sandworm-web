@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
+
 import { useUserQueries } from "@/store/queries";
 
 export const UserQueryFetcher = () => {

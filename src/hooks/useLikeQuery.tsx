@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { useSession } from "next-auth/react";
+
 import { likeQuery, unlikeQuery } from "@/services/axios/queryService";
 
 export const useQueryLike = (queryId: string) => {

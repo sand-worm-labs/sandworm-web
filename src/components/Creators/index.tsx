@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Head from "next/head";
 
 import type { User, QueryResponse } from "@/types";
@@ -21,7 +22,19 @@ export const Creators: React.FC<CreatorsProps> = ({
   defaultTab,
   starredQueries,
 }) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [tab, setTab] = useState(defaultTab || "all");
+
+  useEffect(() => {
+    const current = searchParams?.get("tab");
+    if (current !== tab) {
+      const params = new URLSearchParams(searchParams?.toString() || "");
+      params.set("tab", tab);
+      router.replace(`?${params.toString()}`);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [tab]);
 
   return (
     <div>

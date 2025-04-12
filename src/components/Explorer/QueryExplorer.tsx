@@ -2,13 +2,14 @@
 
 import React, { useEffect, useState } from "react";
 import { SquareTerminal, Plus, Loader2 } from "lucide-react";
+import { useSession } from "next-auth/react";
+
+import { fetchUserQuery } from "@/services/axios/queryService";
 
 import { CardHeader, CardTitle, CardContent, Card } from "../ui/card";
 import { Button } from "../ui/button";
 
 import { QueryExplorerCardList } from "./QueryExplorerCardList";
-import { fetchUserQuery } from "@/services/axios/queryService";
-import { useSession } from "next-auth/react";
 
 const LoadingState = () => (
   <div className="flex flex-col items-center justify-center h-full gap-4 text-center text-muted-foreground">
