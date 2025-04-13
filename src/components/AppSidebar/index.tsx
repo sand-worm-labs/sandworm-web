@@ -6,13 +6,12 @@ import {
   Github,
   ChevronRight,
   ChevronLeft,
-  LineChart,
   BookText,
   Database,
   Settings,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { GiBackwardTime } from "react-icons/gi";
 
 import { Button } from "@/components/ui/button";
@@ -33,12 +32,10 @@ interface AppSidebarProps {
 }
 
 const AppSidebar = ({ currentView, setCurrentView }: AppSidebarProps) => {
-  const router = useRouter();
   const pathname = usePathname();
   const [isExpanded, setIsExpanded] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [, setOpen] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
-  const theme = "dark";
   const viewOptions = [
     {
       id: "dataExplorer" as const,
