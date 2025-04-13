@@ -8,8 +8,6 @@ import { SandwormLogo } from "../Assets/SandwormLogo";
 import SearchBar from "../SearchBar";
 import { ProfileMenu } from "../ProfileMenu";
 
-import { CreateQueryButton } from "./CreateQueryButton";
-
 const AppHeader: FC = () => {
   const { data: session } = useSession();
 
