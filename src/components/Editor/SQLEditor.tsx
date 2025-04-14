@@ -13,6 +13,7 @@ interface SQLEditorProps {
   updateTabQuery: (tabId: string, query: string) => void;
   onRunQuery?: () => Promise<void>;
   height?: string;
+  readonly?: boolean;
 }
 
 export default function SQLEditor({
@@ -21,11 +22,11 @@ export default function SQLEditor({
   updateTabQuery,
   onRunQuery,
   height = "450px",
+  readonly = false,
 }: SQLEditorProps) {
   const [value, setValue] = useState(initialValue);
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 
-  // Execute the full query
   const executeQuery = async () => {
     if (!editorRef.current) return;
 
@@ -50,7 +51,7 @@ export default function SQLEditor({
 
   // Format the SQL query
   const formatQuery = () => {
-    if (!editorRef.current) return;
+    if (!editorRef.current || readonly) return;
 
     try {
       const currentValue = editorRef.current.getValue();
@@ -148,6 +149,7 @@ export default function SQLEditor({
   };
 
   const handleChange = (newValue: string | undefined) => {
+    if (readonly) return;
     if (newValue !== undefined) {
       setValue(newValue);
       updateTabQuery(tabId, newValue);
@@ -175,6 +177,7 @@ export default function SQLEditor({
         onMount={handleEditorDidMount}
         options={{
           minimap: { enabled: false },
+          readOnly: readonly,
           automaticLayout: true,
           tabSize: 2,
           fontSize: 14,
