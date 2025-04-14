@@ -32,7 +32,7 @@ export const useChainStore = create<ChainStoreState>(set => ({
     set({ loading: true, error: null });
     try {
       const response = await axios.get(
-        `https://raw.githubusercontent.com/sand-worm-sql/chain_registry/main/data/entities/${chainName}/rpc.json`
+        `https://raw.githubusercontent.com/sand-worm-sql/chain_registry/main/data/entities/${chainName}/raw.json`
       );
       set({ entityData: response.data, loading: false });
     } catch (error) {
