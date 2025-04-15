@@ -78,7 +78,8 @@ export interface SandwormStoreState {
   createTab: (
     title?: string,
     type?: EditorTabType,
-    content?: EditorTab["content"]
+    content?: EditorTab["content"],
+    id?: string
   ) => void;
   closeTab: (tabId: string) => void;
   setActiveTab: (tabId: string) => void;
@@ -105,7 +106,6 @@ const createMockWasmResult = () => {
 
   const mockData = Array.from({ length: 80 }, () => ({ ...mockEntry }));
 
-  // Define schema that matches your data
   const schema = {
     fields: [
       { name: "block_date", type: { toString: () => "Date64<MILLISECOND>" } },
@@ -323,17 +323,32 @@ export const useSandwormStore = create<SandwormStoreState>()(
         },
 
         // Tab management actions.
-        createTab: (title, type = "sql", content = "") => {
-          const newTab: EditorTab = {
-            id: crypto.randomUUID(),
-            title: typeof title === "string" ? title : "New Query",
-            type,
-            content,
-          };
-          set(state => ({
-            tabs: [...state.tabs, newTab],
-            activeTabId: newTab.id,
-          }));
+        createTab: (
+          title: string,
+          type: EditorTab["type"] = "sql",
+          content = "",
+          id?: string
+        ) => {
+          const tabId = id ?? crypto.randomUUID();
+
+          set(state => {
+            const existingTab = state.tabs.find(tab => tab.id === tabId);
+            if (existingTab) {
+              return { ...state, activeTabId: tabId };
+            }
+
+            const newTab: EditorTab = {
+              title: typeof title === "string" ? title : "New Query",
+              type,
+              content,
+              id: tabId,
+            };
+
+            return {
+              tabs: [...state.tabs, newTab],
+              activeTabId: tabId,
+            };
+          });
         },
 
         closeTab: tabId => {
