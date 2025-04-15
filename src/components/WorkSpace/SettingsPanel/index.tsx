@@ -1,4 +1,6 @@
 import * as React from "react";
+import { Settings } from "lucide-react";
+
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,7 +13,6 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle, CardContent, CardHeader } from "@/components/ui/card";
-import { Settings } from "lucide-react";
 
 const chains = ["Sui", "Ethereum", "Polygon", "Arbitrum"];
 const themes = ["Twilight", "VS Code", "Dracula", "Monokai", "Solarized Dark"];

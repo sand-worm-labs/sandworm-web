@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useCreateQuery } from "@/hooks/useCreateQuery";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 
+import { useCreateQuery } from "@/hooks/useCreateQuery";
 import {
   Dialog,
   DialogContent,
