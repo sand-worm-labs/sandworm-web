@@ -20,7 +20,7 @@ const QueryCard = ({ query }: { query: Query }) => {
 
   const openQueryInTab = (queryData: any) => {
     createTab(queryData.title, "sql", queryData.query, queryData.id);
-    router.push("/workspace");
+    router.push("/workspace/" + queryData.id);
   };
 
   return (

@@ -22,7 +22,7 @@ export default function SQLEditor({
   updateTabQuery,
   onRunQuery,
   height = "450px",
-  readonly = false,
+  readonly = true,
 }: SQLEditorProps) {
   const [value, setValue] = useState(initialValue);
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
