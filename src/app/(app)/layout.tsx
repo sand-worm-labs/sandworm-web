@@ -1,3 +1,5 @@
+import { Toaster } from "sonner";
+
 import FooterWrapper from "@/components/AppFooter/FooterWrapper";
 import AppHeader from "@/components/AppHeader";
 
@@ -11,6 +13,7 @@ export default async function AppLayout({
       <AppHeader />
       <main>{children}</main>
       <FooterWrapper />
+      <Toaster />
     </>
   );
 }

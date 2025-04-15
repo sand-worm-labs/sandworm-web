@@ -1,6 +1,6 @@
 "use client";
 
-import { FaRegStar, FaCodeBranch } from "react-icons/fa";
+import { FaRegStar, FaStar, FaCodeBranch } from "react-icons/fa";
 import Link from "next/link";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { useRouter } from "next/navigation";
@@ -9,16 +9,18 @@ import Image from "next/image";
 
 import type { Query } from "@/types";
 import { useSandwormStore } from "@/store";
+import { useQueryLike } from "@/hooks/useLikeQuery";
 
 import { DicebearAvatar } from "../DicebearAvatar";
 
 const QueryCard = ({ query }: { query: Query }) => {
   const { createTab } = useSandwormStore();
+  const { liked, toggleLike, loading } = useQueryLike(query.id);
   const router = useRouter();
 
   const openQueryInTab = (queryData: any) => {
-    createTab(queryData.title, "sql", queryData.query);
-    router.push("/workspace");
+    createTab(queryData.title, "sql", queryData.query, queryData.id);
+    router.push("/workspace/" + queryData.id);
   };
 
   return (
@@ -72,8 +74,21 @@ const QueryCard = ({ query }: { query: Query }) => {
             <span className="text-xs">{query.forked_by.length || 0} Forks</span>
           </div>
           <div className="flex items-center font-medium text-[#ffffff90] space-x-1">
-            <FaRegStar className="text-sm" />
-            <span className="text-xs">{query.stared_by.length || 0} Stars</span>
+            <button
+              type="button"
+              className="text-[#ffffff90] hover:text-white"
+              onClick={toggleLike}
+              disabled={loading}
+            >
+              {liked ? (
+                <FaStar className="text-sm" />
+              ) : (
+                <FaRegStar className="text-sm" />
+              )}
+            </button>
+            <span className="text-xs">
+              {query.stared_by.length + (liked ? 1 : 0)} Stars
+            </span>
           </div>
         </div>
       </div>
