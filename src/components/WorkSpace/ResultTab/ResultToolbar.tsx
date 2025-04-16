@@ -49,7 +49,7 @@ export const ResultToolbar = ({
     <div className="flex items-center justify-between p-3 border-b">
       <div className="flex items-center gap-3">
         <Select onValueChange={handleSelect}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-[180px] text-sm ">
             <SelectValue placeholder="Select an option" />
           </SelectTrigger>
           <SelectContent className="dark">
@@ -66,7 +66,9 @@ export const ResultToolbar = ({
             <Badge
               key={option}
               className={`cursor-pointer py-2 px-5 flex items-center gap-2 hover:text-white ${
-                viewMode === option ? "bg-orange-700 text-white" : "bg-white"
+                viewMode === option
+                  ? "bg-orange-700 text-white"
+                  : "bg-[#ffffff]/20 text-white"
               }`}
               onClick={() => setViewMode(option)}
             >
