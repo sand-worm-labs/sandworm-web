@@ -27,6 +27,7 @@ import { TableControls } from "./TableControl";
 import { TableContent } from "./TableContent";
 import { IndexCell } from "./IndexCell";
 import { QueryResultJson } from "./QueryResultJson";
+import { PieChart } from "./Charts/PieChart";
 
 // Constants
 const DEFAULT_COLUMN_SIZE = 150;
@@ -228,9 +229,7 @@ function QueryResultsTable<T extends RowData>({
     [setGlobalFilter]
   );
 
-  // Load more effect (Corrected)
   useEffect(() => {
-    // Disconnect previous observer if it exists
     if (observerRef.current) {
       observerRef.current.disconnect();
     }
@@ -262,12 +261,10 @@ function QueryResultsTable<T extends RowData>({
     table.getState().pagination.pageSize,
   ]);
 
-  // Effects
   useEffect(() => {
     table.setPageSize(DEFAULT_PAGE_SIZE);
   }, [table]);
 
-  // Render methods
   const renderCell = useCallback((cell: any) => {
     return flexRender(cell.column.columnDef.cell, cell.getContext());
   }, []);
@@ -300,55 +297,42 @@ function QueryResultsTable<T extends RowData>({
   useEffect(() => {
     console.log("view", viewMode);
   }, [viewMode]);
+
+  const viewRenderers: Record<string, any | (() => any)> = {
+    JSON: <QueryResultJson result={result} />,
+    Table: (
+      <>
+        <TableControls
+          table={table}
+          data={data}
+          query={query}
+          isLoading={isLoading}
+          onRefresh={onRefresh}
+          onFilterChange={handleFilterChange}
+        />
+        <TableContent
+          table={table}
+          memoizedColumns={memoizedColumns}
+          renderCell={renderCell}
+          onLoadMore={onLoadMore}
+          isLoading={isLoading}
+          virtualScrolling={virtualScrolling}
+          calculateAutoSize={calculateAutoSize}
+          handleColumnResize={handleColumnResize}
+          globalFilter={globalFilter}
+        />
+        <TableFooter table={table} />
+      </>
+    ),
+    "Area Chart": <div>Area Chart coming soon 🫣</div>,
+    "Bar Chart": <div>Bar Chart loading... 🛠️</div>,
+    "Pie Chart": <PieChart result={result} />,
+    Counter: <div>Counter Mode. Just vibes 🔢</div>,
+  };
+
   return (
     <div className={`w-full h-full flex min-h-[200px] flex-col ${className}`}>
-      {viewMode === "JSON" ? (
-        <QueryResultJson result={result} />
-      ) : (
-        <>
-          <TableControls
-            table={table}
-            data={data}
-            query={query}
-            isLoading={isLoading}
-            onRefresh={onRefresh}
-            onFilterChange={handleFilterChange}
-          />
-          <TableContent
-            table={table}
-            memoizedColumns={memoizedColumns}
-            renderCell={renderCell}
-            onLoadMore={onLoadMore}
-            isLoading={isLoading}
-            virtualScrolling={virtualScrolling}
-            calculateAutoSize={calculateAutoSize}
-            handleColumnResize={handleColumnResize}
-            globalFilter={globalFilter}
-          />
-          <TableFooter table={table} />
-        </>
-      )}
-
-      {/*     <TableControls
-        table={table}
-        data={data}
-        query={query}
-        isLoading={isLoading}
-        onRefresh={onRefresh}
-        onFilterChange={handleFilterChange}
-      />
-      <TableContent
-        table={table}
-        memoizedColumns={memoizedColumns}
-        renderCell={renderCell}
-        onLoadMore={onLoadMore}
-        isLoading={isLoading}
-        virtualScrolling={virtualScrolling}
-        calculateAutoSize={calculateAutoSize}
-        handleColumnResize={handleColumnResize}
-        globalFilter={globalFilter}
-      />
-      <TableFooter table={table} /> */}
+      {viewRenderers[viewMode] || <div>Unknown view mode: {viewMode}</div>}
     </div>
   );
 }

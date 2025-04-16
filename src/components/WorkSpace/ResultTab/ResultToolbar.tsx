@@ -11,7 +11,14 @@ import { Badge } from "@/components/ui/badge";
 
 import { ShareDialogue } from "./ShareDialogue";
 
-const options = ["Table", "JSON", "Area Chart", "Bar Chart", "Counter"];
+const options = [
+  "Table",
+  "JSON",
+  "Area Chart",
+  "Bar Chart",
+  "Pie Chart",
+  "Counter",
+];
 
 export const ResultToolbar = ({
   viewMode,
