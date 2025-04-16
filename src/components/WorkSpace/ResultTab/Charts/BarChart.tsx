@@ -2,14 +2,15 @@ import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import { useMemo } from "react";
 
-export interface PieChartProps {
+export interface BarChartProps {
   result: {
     data: { chain: string; balance: string }[];
   };
   title: string;
 }
 
-export const PieChart: React.FC<PieChartProps> = ({ result, title }) => {
+export const BarChart: React.FC<BarChartProps> = ({ result, title }) => {
+  console.log("bar", result);
   const parsedData = useMemo(() => {
     if (!result?.data?.length) return [];
 
@@ -21,61 +22,60 @@ export const PieChart: React.FC<PieChartProps> = ({ result, title }) => {
 
   const chartOptions: Highcharts.Options = {
     chart: {
-      type: "pie",
+      type: "column",
       backgroundColor: "transparent",
+      style: {
+        padding: "0.8rem",
+      },
     },
     title: {
       text: title,
       style: {
         color: "#fff",
-        fontWeight: "Medium",
-        fontSize: "16px",
         fontFamily: "'DM Mono', monospace",
+        fontSize: "16px",
       },
-      align: "left",
+      align: "center",
+    },
+    xAxis: {
+      categories: parsedData.map(item => item.name),
+      labels: {
+        style: {
+          color: "#fff",
+          fontFamily: "'DM Mono', monospace",
+        },
+      },
+    },
+    yAxis: {
+      gridLineColor: "#ffffff30",
+      gridLineWidth: 1,
+      title: {
+        text: "Balance (ETH)",
+        style: {
+          color: "#fff",
+          fontFamily: "'DM Mono', monospace",
+        },
+      },
+      labels: {
+        style: {
+          color: "#fff",
+        },
+      },
     },
     tooltip: {
-      pointFormat: "<b>{point.y} ETH</b><br/>{point.percentage:.1f}%",
+      pointFormat: "<b>{point.y} ETH</b>",
       backgroundColor: "#1a1a1a",
       style: {
         color: "#fff",
         fontFamily: "'DM Mono', monospace",
       },
     },
-    accessibility: { enabled: false },
-    plotOptions: {
-      pie: {
-        innerSize: "60%",
-        dataLabels: {
-          enabled: true,
-          format: "{point.name}: {point.percentage:.1f}%",
-          distance: -40,
-          style: {
-            color: "white",
-            fontSize: "12px",
-            fontWeight: "bold",
-            fontFamily: "'DM Mono', monospace",
-          },
-        },
-      },
-    },
-    legend: {
-      layout: "vertical",
-      align: "right",
-      verticalAlign: "middle",
-      itemStyle: {
-        color: "#fff",
-        fontFamily: "'DM Mono', monospace",
-      },
-      itemHoverStyle: {
-        color: "#a3e635",
-      },
-    },
     series: [
       {
         name: "Balance",
-        type: "pie",
+        type: "column",
         data: parsedData,
+        color: "#ffebb4",
       },
     ],
   };
