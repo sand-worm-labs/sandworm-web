@@ -331,7 +331,7 @@ function QueryResultsTable<T extends RowData>({
     "Area Chart": <AreaChart result={result} title={title} />,
     "Bar Chart": <BarChart result={result} title={title} />,
     "Pie Chart": <PieChart result={result} title={title} />,
-    Counter: <div>Counter Mode. Just vibes 🔢</div>,
+    Counter: <div>Counter Mode. On the way 🔢</div>,
   };
 
   return (
