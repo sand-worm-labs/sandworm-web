@@ -57,7 +57,7 @@ export const ShareDialogue = ({ url }: ShareDialogueProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" aria-label="Open share modal">
+        <Button variant="outline" size="sm" aria-label="Open share modal">
           Share Query
         </Button>
       </DialogTrigger>
