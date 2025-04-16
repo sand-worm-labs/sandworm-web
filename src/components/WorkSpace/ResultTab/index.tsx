@@ -28,6 +28,8 @@ import { TableContent } from "./TableContent";
 import { IndexCell } from "./IndexCell";
 import { QueryResultJson } from "./QueryResultJson";
 import { PieChart } from "./Charts/PieChart";
+import { AreaChart } from "./Charts/AreaChart";
+import { BarChart } from "./Charts/BarChart";
 
 // Constants
 const DEFAULT_COLUMN_SIZE = 150;
@@ -60,6 +62,7 @@ export interface TableProps<T extends RowData> {
   onSortingChange?: (sorting: SortingState) => void;
   className?: string;
   query?: string;
+  title?: string;
 }
 
 const renderIndexCell = (index: number) => {
@@ -78,6 +81,7 @@ function QueryResultsTable<T extends RowData>({
   onSortingChange,
   className,
   query,
+  title,
 }: TableProps<T>) {
   // State
   const [sorting, setSorting] = useState<SortingState>(defaultSorting);
@@ -295,7 +299,7 @@ function QueryResultsTable<T extends RowData>({
   }
 
   useEffect(() => {
-    console.log("view", viewMode);
+    console.log("result", result);
   }, [viewMode]);
 
   const viewRenderers: Record<string, any | (() => any)> = {
@@ -324,9 +328,9 @@ function QueryResultsTable<T extends RowData>({
         <TableFooter table={table} />
       </>
     ),
-    "Area Chart": <div>Area Chart coming soon 🫣</div>,
-    "Bar Chart": <div>Bar Chart loading... 🛠️</div>,
-    "Pie Chart": <PieChart result={result} />,
+    "Area Chart": <AreaChart result={result} title={title} />,
+    "Bar Chart": <BarChart result={result} title={title} />,
+    "Pie Chart": <PieChart result={result} title={title} />,
     Counter: <div>Counter Mode. Just vibes 🔢</div>,
   };
 
