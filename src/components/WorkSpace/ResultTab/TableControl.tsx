@@ -14,7 +14,6 @@ import { SimpleFilter } from "../SimpleFilter";
 
 import { TablePagination } from "./TablePagination";
 
-// Table Controls Component
 interface ITableControlsProps<T> {
   table: Table<T>;
   data: any[];
