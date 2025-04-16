@@ -132,3 +132,11 @@ export interface IChainEntity {
   live_preview: string;
   fields: Record<string, FieldType>;
 }
+
+export interface ChartProps {
+  result: {
+    columns: string[];
+    data: Record<string, any>[];
+  };
+  title: string;
+}

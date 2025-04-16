@@ -6,7 +6,6 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import DownloadDialog from "../../DownloadDialog";
-import { result } from "node_modules/cypress/types/lodash";
 
 interface ChartControlProps {
   columns: string[];
