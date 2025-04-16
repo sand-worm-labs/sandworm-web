@@ -1,4 +1,6 @@
-import { useState } from "react";
+"use client";
+
+import { useState, useEffect } from "react";
 
 import {
   Select,
@@ -10,6 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 
 import { ShareDialogue } from "./ShareDialogue";
+import { usePathname } from "next/navigation";
 
 const options = [
   "Table",
@@ -28,31 +31,44 @@ export const ResultToolbar = ({
   setViewMode: (mode: string) => void;
 }) => {
   const [selectedOptions, setSelectedOptions] = useState<string[]>(["Table"]);
+  const pathname = usePathname();
+  const [shareUrl, setShareUrl] = useState<string>("");
 
-  const updateOptions = (updatedOptions: string[]) => {
-    setSelectedOptions(updatedOptions);
-    setViewMode(updatedOptions.includes("Table") ? "Table" : updatedOptions[0]);
-  };
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setShareUrl(`${window.location.origin}${pathname}`);
+    }
+  }, [pathname]);
 
   const handleSelect = (value: string) => {
-    if (!selectedOptions.includes(value))
-      updateOptions([...selectedOptions, value]);
+    if (selectedOptions.includes(value)) {
+      setViewMode(value);
+    } else {
+      const updated = [...selectedOptions, value];
+      setSelectedOptions(updated);
+      setViewMode(value);
+    }
   };
 
   const removeOption = (value: string) => {
     if (value === "Table") return;
     const updatedOptions = selectedOptions.filter(option => option !== value);
-    updateOptions(updatedOptions.length ? updatedOptions : ["Table"]);
+    setSelectedOptions(updatedOptions.length ? updatedOptions : ["Table"]);
+
+    if (viewMode === value) {
+      const fallback = updatedOptions.length ? updatedOptions[0] : "Table";
+      setViewMode(fallback);
+    }
   };
 
   return (
-    <div className="flex items-center justify-between p-3 border-b">
+    <div className="flex items-center justify-between p-2 border-b">
       <div className="flex items-center gap-3">
         <Select onValueChange={handleSelect}>
-          <SelectTrigger className="w-[180px] text-sm ">
-            <SelectValue placeholder="Select an option" />
+          <SelectTrigger className="w-[140px] h-8 text-xs">
+            <SelectValue placeholder="Select a view" />
           </SelectTrigger>
-          <SelectContent className="dark">
+          <SelectContent className="dark text-sm">
             {options.map(option => (
               <SelectItem key={option} value={option}>
                 {option}
@@ -61,11 +77,11 @@ export const ResultToolbar = ({
           </SelectContent>
         </Select>
 
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap gap-2">
           {selectedOptions.map(option => (
             <Badge
               key={option}
-              className={`cursor-pointer py-2 px-5 flex items-center gap-2 hover:text-white ${
+              className={`cursor-pointer px-3 py-1 text-xs rounded-full flex items-center gap-2 hover:text-white ${
                 viewMode === option
                   ? "bg-orange-700 text-white"
                   : "bg-[#ffffff]/20 text-white"
@@ -75,11 +91,12 @@ export const ResultToolbar = ({
               {option}
               {option !== "Table" && (
                 <button
+                  type="button"
                   onClick={e => {
                     e.stopPropagation();
                     removeOption(option);
                   }}
-                  className="text-xs"
+                  className="text-[10px]"
                 >
                   ✕
                 </button>
@@ -88,7 +105,7 @@ export const ResultToolbar = ({
           ))}
         </div>
       </div>
-      <ShareDialogue url="ddd" />
+      <ShareDialogue url={shareUrl} />
     </div>
   );
 };

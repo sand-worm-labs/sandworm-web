@@ -97,8 +97,10 @@ export const ShareDialogue = ({ url }: ShareDialogueProps) => {
           )}
         </div>
 
-        <div className="flex items-center justify-between border p-2 rounded-md">
-          <span className="truncate text-sm text-gray-200">{url}</span>
+        <div className="flex items-center justify-between border p-2 rounded-md overflow-hidden">
+          <span className="truncate text-sm text-gray-200 max-w-[85%]">
+            {url}
+          </span>
           <Button
             size="icon"
             variant="ghost"
