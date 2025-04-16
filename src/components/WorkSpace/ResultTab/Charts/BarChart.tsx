@@ -120,6 +120,7 @@ export const BarChart: React.FC<BarChartProps> = ({ result, title }) => {
           setXAxis(newX);
           setYAxis(newY);
         }}
+        data={result.data}
       />
       <HighchartsReact highcharts={Highcharts} options={chartOptions} />
     </div>

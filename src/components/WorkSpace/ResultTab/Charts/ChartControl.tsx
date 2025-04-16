@@ -5,14 +5,15 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import DownloadDialog from "../../DownloadDialog";
+import { result } from "node_modules/cypress/types/lodash";
 
 interface ChartControlProps {
   columns: string[];
   selectedXAxis: string;
   selectedYAxis: string;
   onChange: (config: { xAxis: string; yAxis: string }) => void;
+  data: any[];
 }
 
 export const ChartControl: React.FC<ChartControlProps> = ({
@@ -20,51 +21,54 @@ export const ChartControl: React.FC<ChartControlProps> = ({
   selectedXAxis,
   selectedYAxis,
   onChange,
+  data,
 }) => {
-  const [xAxis, setXAxis] = useState(selectedXAxis);
-  const [yAxis, setYAxis] = useState(selectedYAxis);
-
-  const handleApply = () => {
-    onChange({ xAxis, yAxis });
-  };
-
   return (
-    <div className="flex flex-wrap items-center gap-4 p-2 border-b border-white/10 bg-background/80 backdrop-blur-md rounded-t-md">
-      <div className="flex items-center gap-2">
-        <span className="text-sm text-muted-foreground">X-Axis</span>
-        <Select value={xAxis} onValueChange={setXAxis}>
-          <SelectTrigger className="w-[160px]">
-            <SelectValue placeholder="Select X" />
-          </SelectTrigger>
-          <SelectContent>
-            {columns.map(col => (
-              <SelectItem key={col} value={col}>
-                {col}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+    <div className="flex justify-between p-2 border-b border-borderLight px-4 items-center dark">
+      <div className="flex flex-wrap items-center   gap-4">
+        <div className="flex items-center gap-1">
+          <span className="text-xs text-muted-foreground">X-Axis: </span>
+          <Select
+            value={selectedXAxis}
+            onValueChange={val =>
+              onChange({ xAxis: val, yAxis: selectedYAxis })
+            }
+          >
+            <SelectTrigger className="w-[120px] h-8 text-xs">
+              <SelectValue placeholder="Select X" />
+            </SelectTrigger>
+            <SelectContent>
+              {columns.map(col => (
+                <SelectItem key={col} value={col} className="text-xs">
+                  {col}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
-      <div className="flex items-center gap-2">
-        <span className="text-sm text-muted-foreground">Y-Axis</span>
-        <Select value={yAxis} onValueChange={setYAxis}>
-          <SelectTrigger className="w-[160px]">
-            <SelectValue placeholder="Select Y" />
-          </SelectTrigger>
-          <SelectContent>
-            {columns?.map(col => (
-              <SelectItem key={col} value={col}>
-                {col}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex items-center gap-1">
+          <span className="text-xs text-muted-foreground">Y-Axis: </span>
+          <Select
+            value={selectedYAxis}
+            onValueChange={val =>
+              onChange({ xAxis: selectedXAxis, yAxis: val })
+            }
+          >
+            <SelectTrigger className="w-[120px] h-8 text-xs">
+              <SelectValue placeholder="Select Y" />
+            </SelectTrigger>
+            <SelectContent>
+              {columns.map(col => (
+                <SelectItem key={col} value={col} className="text-xs">
+                  {col}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
-
-      <Button size="sm" variant="default" onClick={handleApply}>
-        Apply
-      </Button>
+      <DownloadDialog data={data} />
     </div>
   );
 };
