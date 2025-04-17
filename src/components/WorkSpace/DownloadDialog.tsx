@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback } from "react";
+"use client";
+
+import React, { useState, useEffect } from "react";
 import { Download, AlertCircle } from "lucide-react";
-import Papa from "papaparse";
 import { toast } from "sonner";
 
 import {
@@ -16,6 +17,15 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useSandwormStore } from "@/store";
+import type { ExportFormat } from "@/types";
+import {
+  formatBytes,
+  estimateExportSize,
+  getSizeWarning,
+  processInChunks,
+} from "@/lib/export";
+
+const CHUNK_SIZE = 10000;
 
 interface DownloadDialogProps {
   data: any[];
@@ -23,203 +33,28 @@ interface DownloadDialogProps {
   maxRows?: number;
 }
 
-type ExportFormat = "csv" | "json" | "parquet" | "clipboard";
-
-const CHUNK_SIZE = 10000; // Number of rows to process at once
-
-// Helper function to safely serialize BigInt values
-const serializeBigInt = (obj: any): any => {
-  if (obj === null || obj === undefined) {
-    return obj;
-  }
-
-  if (typeof obj === "bigint") {
-    return obj.toString();
-  }
-
-  if (Array.isArray(obj)) {
-    return obj.map(serializeBigInt);
-  }
-
-  if (typeof obj === "object") {
-    return Object.fromEntries(
-      Object.entries(obj).map(([key, value]) => [key, serializeBigInt(value)])
-    );
-  }
-
-  return obj;
-};
-
 const DownloadDialog: React.FC<DownloadDialogProps> = ({
   data,
   query,
-  maxRows = 1000000,
+  maxRows = 1_000_000,
 }) => {
   const [downloadOption, setDownloadOption] = useState<ExportFormat>("csv");
   const [estimatedSize, setEstimatedSize] = useState<string>("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [open, setOpen] = useState(false);
+
   const exportParquet = useSandwormStore(state => state.exportParquet);
 
-  const formatBytes = (bytes: number, decimals = 2) => {
-    if (!bytes || bytes === 0) return "0 B";
-    const k = 1024;
-    const dm = decimals < 0 ? 0 : decimals;
-    const sizes = ["B", "KB", "MB", "GB", "TB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return `${parseFloat((bytes / k ** i).toFixed(dm))} ${sizes[i]}`;
-  };
-
-  const estimateSize = useCallback(async () => {
-    if (data.length === 0) {
-      setEstimatedSize("0 B");
-      return;
-    }
-
-    const sampleSize = Math.min(100, data.length);
-    const sample = serializeBigInt(data.slice(0, sampleSize));
-    let size: number;
-
-    switch (downloadOption) {
-      case "csv":
-        size =
-          new Blob([Papa.unparse(sample)]).size * (data.length / sampleSize);
-        break;
-      case "json":
-        size =
-          new Blob([JSON.stringify(sample)]).size * (data.length / sampleSize);
-        break;
-      case "parquet":
-        size =
-          new Blob([JSON.stringify(sample)]).size * (data.length / sampleSize);
-        break;
-      case "clipboard":
-        size =
-          new Blob([JSON.stringify(sample)]).size * (data.length / sampleSize);
-        break;
-      default:
-        size = 0;
-    }
-
-    setEstimatedSize(formatBytes(size));
-  }, [data, downloadOption]);
-
   useEffect(() => {
-    estimateSize();
-  }, [estimateSize]);
-
-  const processInChunks = async (
-    items: any[],
-    format: ExportFormat,
-    chunkSize: number
-  ): Promise<Blob> => {
-    const chunks = Math.ceil(items.length / chunkSize);
-    let result = "";
-
-    const getContentType = (fmt: ExportFormat): string => {
-      switch (fmt) {
-        case "csv":
-          return "text/csv";
-        case "json":
-          return "application/json";
-        case "parquet":
-          return "application/parquet";
-        default:
-          return "text/plain";
-      }
-    };
-
-    for (let i = 0; i < chunks; i++) {
-      const chunk = serializeBigInt(
-        items.slice(i * chunkSize, (i + 1) * chunkSize)
-      );
-
-      switch (format) {
-        case "csv":
-          result +=
-            i === 0
-              ? Papa.unparse(chunk)
-              : Papa.unparse(chunk, { header: false });
-          break;
-        case "json":
-        case "clipboard":
-          result +=
-            (i === 0 ? "[" : "") +
-            chunk.map((item: any) => JSON.stringify(item)).join(",") +
-            (i === chunks - 1 ? "]" : "");
-          break;
-        case "parquet":
-          result += "";
-          break;
-        default:
-          throw new Error(`Unsupported format: ${format}`);
-      }
-
-      setProgress(((i + 1) / chunks) * 100);
-
-      // Use requestAnimationFrame instead of await for UI updates
-      if (i < chunks - 1) {
-        return new Promise(resolve => {
-          requestAnimationFrame(() => {
-            processInChunks(items, format, chunkSize).then(resolve);
-          });
-        });
-      }
+    if (data.length > 0) {
+      const estSize = estimateExportSize(data, downloadOption);
+      const formattedSize = isNaN(estSize) ? "Unknown" : formatBytes(estSize);
+      setEstimatedSize(formattedSize);
+    } else {
+      setEstimatedSize("0 B");
     }
-
-    return new Blob([result], { type: getContentType(format) });
-  };
-
-  type SizeWarning = {
-    message: string;
-  } | null;
-
-  const getSizeWarning = useCallback((): SizeWarning => {
-    if (!estimatedSize) return null;
-
-    const [size, unit] = estimatedSize.split(" ");
-    const sizeNum = parseFloat(size);
-
-    // Convert everything to MB for comparison
-    let sizeInMB = sizeNum;
-    switch (unit) {
-      case "GB":
-        sizeInMB = sizeNum * 1024;
-        break;
-      case "KB":
-        sizeInMB = sizeNum / 1024;
-        break;
-      case "B":
-        sizeInMB = sizeNum / (1024 * 1024);
-        break;
-      case "MB":
-        sizeInMB = sizeNum;
-        break;
-      default:
-        console.warn(`Unexpected unit: ${unit}. Defaulting to MB.`);
-        sizeInMB = sizeNum;
-    }
-
-    if (sizeInMB >= 100) {
-      return {
-        message:
-          "Warning: The export size is over 100MB. This might take a while and could impact browser performance.",
-      };
-    }
-    if (sizeInMB >= 50) {
-      return {
-        message:
-          "Warning: The export size is over 50MB. This might take a while.",
-      };
-    }
-    if (sizeInMB >= 20) {
-      return {
-        message: "The export size is over 20MB.",
-      };
-    }
-    return null;
-  }, [estimatedSize]);
+  }, [data, downloadOption]);
 
   const handleDownload = async () => {
     try {
@@ -237,11 +72,16 @@ const DownloadDialog: React.FC<DownloadDialogProps> = ({
         if (!query) throw new Error("No query provided to export parquet");
         blob = await exportParquet(query);
       } else {
-        blob = await processInChunks(data, downloadOption, CHUNK_SIZE);
+        blob = await processInChunks(
+          data,
+          downloadOption,
+          CHUNK_SIZE,
+          setProgress
+        );
       }
 
       const now = new Date().toISOString().split(".")[0].replace(/[:]/g, "-");
-      const exportFilename = `sandoword_${now}`;
+      const exportFilename = `sandworm_${now}`;
 
       if (downloadOption === "clipboard") {
         const text = await blob.text();
@@ -274,6 +114,8 @@ const DownloadDialog: React.FC<DownloadDialogProps> = ({
     }
   };
 
+  const sizeWarning = getSizeWarning(estimatedSize);
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -281,15 +123,16 @@ const DownloadDialog: React.FC<DownloadDialogProps> = ({
           <Download className="h-4 w-4" />
         </Button>
       </DialogTrigger>
+
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Export Data</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
-          {getSizeWarning() && (
+          {sizeWarning && (
             <Alert variant="default">
-              <AlertDescription>{getSizeWarning()?.message}</AlertDescription>
+              <AlertDescription>{sizeWarning.message}</AlertDescription>
             </Alert>
           )}
 
@@ -297,22 +140,12 @@ const DownloadDialog: React.FC<DownloadDialogProps> = ({
             value={downloadOption}
             onValueChange={value => setDownloadOption(value as ExportFormat)}
           >
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="csv" id="csv" />
-              <Label htmlFor="csv">CSV</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="json" id="json" />
-              <Label htmlFor="json">JSON</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="parquet" id="parquet" />
-              <Label htmlFor="parquet">Parquet</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="clipboard" id="clipboard" />
-              <Label htmlFor="clipboard">Copy to Clipboard</Label>
-            </div>
+            {["csv", "json", "parquet", "clipboard"].map(format => (
+              <div className="flex items-center space-x-2" key={format}>
+                <RadioGroupItem value={format} id={format} />
+                <Label htmlFor={format}>{format.toUpperCase()}</Label>
+              </div>
+            ))}
           </RadioGroup>
 
           <div className="text-sm text-gray-500">

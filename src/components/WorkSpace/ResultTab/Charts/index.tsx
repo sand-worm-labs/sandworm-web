@@ -2,9 +2,11 @@
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import { useMemo, useState, useEffect } from "react";
-import { ChartControl } from "./ChartControl";
+
 import { getDefaultAxis, sanitizeChartData } from "@/lib/charts";
 import type { ChartProps } from "@/types";
+
+import { ChartControl } from "./ChartControl";
 
 interface ChartComponentProps extends ChartProps {
   getChartOptions: (

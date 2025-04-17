@@ -50,7 +50,7 @@ export type QueryUpdatesResult = Result<QueryUpdates>;
 export class QueryService {
   // Helper function for common query handling, pagination, and username addition
   static async getPaginatedQueries(
-    queryType: "all" | "stars" | "forks" | "user_query" |"user_stared",
+    queryType: "all" | "stars" | "forks" | "user_query" | "user_stared",
     limit: number,
     page: number,
     uid?: string
