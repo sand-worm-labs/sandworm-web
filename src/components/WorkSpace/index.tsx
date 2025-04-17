@@ -30,17 +30,13 @@ import { useSandwormStore } from "@/store";
 import HomeTab from "./HomeTab";
 import SortableTab from "./SortableTab";
 import { QueryTab } from "./QueryTab";
+import type { Query } from "@/types";
 
 export default function WorkspaceTabs({
   initialQuery,
   currentUserId,
 }: {
-  initialQuery?: {
-    id: string;
-    title: string;
-    content: string;
-    owner_id: string;
-  };
+  initialQuery?: Query;
   currentUserId: string;
 }) {
   const {
@@ -55,20 +51,15 @@ export default function WorkspaceTabs({
   } = useSandwormStore();
 
   useEffect(() => {
-    if (!initialQuery || !isInitialized) return;
+    if (!initialQuery) return;
 
     const tabExists = tabs.some(tab => tab.id === initialQuery.id);
-    const isReadonly = initialQuery.owner_id !== currentUserId;
+    const isReadonly = initialQuery.creator !== currentUserId;
 
     if (!tabExists) {
-      createTab(
-        initialQuery.title,
-        "sql",
-        initialQuery.content,
-        initialQuery.id
-      );
+      console.log("Creating new tab:", initialQuery);
+      createTab(initialQuery.title, "sql", initialQuery.query, initialQuery.id);
 
-      // Optional: patch in readonly directly
       useSandwormStore.setState(state => ({
         tabs: state.tabs.map(tab =>
           tab.id === initialQuery.id ? { ...tab, readonly: isReadonly } : tab
@@ -78,14 +69,7 @@ export default function WorkspaceTabs({
     } else {
       setActiveTab(initialQuery.id);
     }
-  }, [
-    initialQuery,
-    isInitialized,
-    tabs,
-    createTab,
-    setActiveTab,
-    currentUserId,
-  ]);
+  }, [initialQuery?.id, currentUserId, createTab, setActiveTab, tabs]);
 
   useEffect(() => {
     if (!isInitialized) {

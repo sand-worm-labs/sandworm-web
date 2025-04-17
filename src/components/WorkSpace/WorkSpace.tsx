@@ -67,7 +67,7 @@ export default function WorkSpace({ initialQuery }: WorkSpaceProps) {
               defaultSize={50}
               minSize={40}
             >
-              <WorkspaceTabs />
+              <WorkspaceTabs initialQuery={initialQuery} />
             </ResizablePanel>
           )}
 

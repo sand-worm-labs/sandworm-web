@@ -334,15 +334,18 @@ export const useSandwormStore = create<SandwormStoreState>()(
 
           set(state => {
             const existingTab = state.tabs.find(tab => tab.id === tabId);
+
             if (existingTab) {
               return { ...state, activeTabId: tabId };
             }
 
             const newTab: EditorTab = {
-              title: typeof title === "string" ? title : "New Query",
+              id: tabId,
+              title: title?.trim() || "Untitled Query",
               type,
               content,
-              id: tabId,
+              createdAt: Date.now(),
+              readonly: Boolean(id),
             };
 
             return {
@@ -483,6 +486,7 @@ export const useSandwormStore = create<SandwormStoreState>()(
           queryHistory: state.queryHistory,
           databases: state.databases,
           tabs: state.tabs.map(tab => ({ ...tab, result: undefined })),
+          activeTabId: state.activeTabId,
           currentDatabase: state.currentDatabase,
           currentConnection: state.currentConnection,
           connectionList: state.connectionList,
