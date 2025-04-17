@@ -140,3 +140,5 @@ export interface ChartProps {
   };
   title: string;
 }
+
+export type ExportFormat = "csv" | "json" | "parquet" | "clipboard";

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 import {
   Select,
@@ -12,7 +13,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 
 import { ShareDialogue } from "./ShareDialogue";
-import { usePathname } from "next/navigation";
 
 const options = [
   "Table",

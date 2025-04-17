@@ -1,4 +1,4 @@
-import Highcharts from "highcharts";
+import type Highcharts from "highcharts";
 
 interface ParsedChartData {
   name: string;
@@ -15,6 +15,9 @@ export const getBarChartOptions = (
     chart: {
       type: "column",
       backgroundColor: "transparent",
+      style: {
+        padding: "0.8rem",
+      },
     },
     title: {
       text: title,
