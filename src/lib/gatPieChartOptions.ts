@@ -10,16 +10,18 @@ export const getPieChartOptions = (
     chart: {
       type: "pie",
       backgroundColor: "transparent",
+      style: {
+        padding: "0.8rem",
+      },
     },
     title: {
       text: title,
       style: {
         color: "#fff",
-        fontWeight: "Medium",
         fontSize: "16px",
         fontFamily: "'DM Mono', monospace",
       },
-      align: "left",
+      align: "center",
     },
     tooltip: {
       pointFormat: "<b>{point.y}</b><br/>{point.percentage:.1f}%",

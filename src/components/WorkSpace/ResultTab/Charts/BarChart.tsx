@@ -1,6 +1,7 @@
 import { getBarChartOptions } from "@/lib/getBarChartOptions";
-import { Chart } from ".";
 import type { ChartProps } from "@/types";
+
+import { Chart } from ".";
 
 export const BarChart: React.FC<ChartProps> = ({ result, title }) => {
   return (

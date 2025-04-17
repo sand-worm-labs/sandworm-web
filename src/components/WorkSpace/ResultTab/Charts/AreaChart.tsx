@@ -1,6 +1,7 @@
 import { getAreaChartOptions } from "@/lib/getAreaChartOptions";
-import { Chart } from ".";
 import type { ChartProps } from "@/types";
+
+import { Chart } from ".";
 
 export const AreaChart: React.FC<ChartProps> = ({ result, title }) => {
   return (
