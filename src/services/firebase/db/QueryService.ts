@@ -199,6 +199,23 @@ export class QueryService {
     }
   }
 
+  static async findOne(queryId: string): Promise<ServiceResult<QueryResult>> {
+    try {
+      const foundQuery = await db.querys.get(db.querys.id(queryId));
+
+      if (!foundQuery)
+        return DataResult.failure("Query not found.", "NOT_FOUND");
+
+      return DataResult.success(toResult<Query>(foundQuery));
+    } catch (error) {
+      return DataResult.failure(
+        "Error fetching query.",
+        "DB_RETRIEVAL_ERROR",
+        error
+      );
+    }
+  }
+
   static async update(
     queryId: string,
     title: string,
