@@ -3,12 +3,6 @@ import { fetchQueryById } from "@/services/axios/queryService";
 import { notFound } from "next/navigation";
 import { auth } from "@/services/auth";
 
-import type { Query } from "@/types";
-
-interface PageProps {
-  params: { id: string };
-}
-
 export default async function WorkspacePage({
   params,
 }: {
