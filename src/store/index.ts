@@ -58,6 +58,7 @@ export interface EditorTab {
   type: EditorTabType;
   content: string | { database?: string; table?: string };
   result?: QueryResult | null;
+  readonly?: boolean;
 }
 
 export interface SandwormStoreState {
