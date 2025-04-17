@@ -8,18 +8,15 @@ import { twilight } from "react-syntax-highlighter/dist/esm/styles/prism";
 import Image from "next/image";
 
 import type { Query } from "@/types";
-import { useSandwormStore } from "@/store";
 import { useQueryLike } from "@/hooks/useLikeQuery";
 
 import { DicebearAvatar } from "../DicebearAvatar";
 
 const QueryCard = ({ query }: { query: Query }) => {
-  const { createTab } = useSandwormStore();
   const { liked, toggleLike, loading } = useQueryLike(query.id);
   const router = useRouter();
 
   const openQueryInTab = (queryData: any) => {
-    createTab(queryData.title, "sql", queryData.query, queryData.id);
     router.push(`/workspace/${queryData.id}`);
   };
 
