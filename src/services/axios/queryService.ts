@@ -1,9 +1,9 @@
 import type { User, QueryResponse } from "@/types";
-
 import { AxiosService } from ".";
 
 const API_BASE_URL = "http://localhost:3000";
 const api = new AxiosService(API_BASE_URL, true);
+export const publicApi = new AxiosService(API_BASE_URL, false);
 
 export interface PatchQueryPayload {
   title?: string;
@@ -24,40 +24,46 @@ export interface CreateQueryPayload {
   tags: string[];
 }
 
-export const fetchUserQuery = async (uid: string) => {
-  return await api.get(`/api/query/user?uid=${uid}`);
+export const fetchUserQuery = (uid: string) => {
+  return api.get(`/api/query/user?uid=${uid}`);
 };
 
-export const createQuery = async (data: CreateQueryPayload) => {
-  return await api.post(`/api/query`, data);
+export const fetchQueryUpdate = (id: string) => {
+  return api.get(`/api/query/updates?id=${id}`);
 };
 
-export const patchUserQuery = async (uid: string, data: PatchQueryPayload) => {
-  return await api.patch(`/api/query/user?uid=${uid}`, data);
+export const createQuery = (data: CreateQueryPayload) => {
+  return api.post(`/api/query`, data);
 };
 
-export const likeQuery = async (queryId: string, uid: string) => {
-  return await api.patch(`/api/query/likes`, {
+export const patchUserQuery = (uid: string, data: PatchQueryPayload) => {
+  return api.patch(`/api/query/user?uid=${uid}`, data);
+};
+
+export const likeQuery = (queryId: string, uid: string) => {
+  return api.patch(`/api/query/likes`, {
     queryId,
     uid,
     like: true,
   });
 };
 
-export const unlikeQuery = async (queryId: string, uid: string) => {
-  return await api.patch(`/api/query/likes`, {
+export const unlikeQuery = (queryId: string, uid: string) => {
+  return api.patch(`/api/query/likes`, {
     queryId,
     uid,
     like: false,
   });
 };
 
-export const getUserQueries = async (
-  uid: string
-): Promise<UserQueryResponse> => {
-  return await api.get(`/api/query/user?uid=${uid}`);
+export const getUserQueries = (uid: string): Promise<UserQueryResponse> => {
+  return api.get(`/api/query/user?uid=${uid}`);
 };
 
-export const fetchUserStarredQueries = async (uid: string) => {
-  return await api.get(`/api/query/star?uid=${uid}`);
+export const fetchUserStarredQueries = (uid: string) => {
+  return api.get(`/api/query/star?uid=${uid}`);
+};
+
+export const fetchQueryById = async (id: string) => {
+  return publicApi.get(`/api/query/${id}`);
 };

@@ -82,6 +82,7 @@ c30,0,30,26.9,60,26.9"
             <QueryResultsTable
               result={currentTab.result}
               viewMode={viewMode}
+              title={currentTab.title}
               query={currentTab.content as string}
             />
           </>

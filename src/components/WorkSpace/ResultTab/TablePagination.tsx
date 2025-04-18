@@ -40,7 +40,6 @@ export const TablePagination = <T,>({ table }: ITablePaginationProps<T>) => {
         </Tooltip>
       </TooltipProvider>
 
-      {/* Previous Page Button */}
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -58,13 +57,11 @@ export const TablePagination = <T,>({ table }: ITablePaginationProps<T>) => {
         </Tooltip>
       </TooltipProvider>
 
-      {/* Page Number Display */}
       <span className="text-gray-600 dark:text-gray-300 min-w-[100px] text-center text-xs">
         Page {table.getState().pagination.pageIndex + 1} of{" "}
         {table.getPageCount()}
       </span>
 
-      {/* Next Page Button */}
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -82,7 +79,6 @@ export const TablePagination = <T,>({ table }: ITablePaginationProps<T>) => {
         </Tooltip>
       </TooltipProvider>
 
-      {/* Last Page Button */}
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -100,7 +96,6 @@ export const TablePagination = <T,>({ table }: ITablePaginationProps<T>) => {
         </Tooltip>
       </TooltipProvider>
 
-      {/* Page Size Selector */}
       <TablePageSizeSelector table={table} />
     </div>
   );

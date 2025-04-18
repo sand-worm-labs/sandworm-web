@@ -1,25 +1,19 @@
-import NextAuth from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
+import type { NextAuthConfig } from "next-auth";
 
-import { FirebaseAuthAdapter } from "@/services/auth/adapter";
-
-export const { auth, handlers, signIn, signOut } = NextAuth({
+const authConfig = {
   secret: process.env.NEXTAUTH_SECRET,
   providers: [
     GitHubProvider({
-      clientId: process.env.GITHUB_ID as string,
-      clientSecret: process.env.GITHUB_SECRET as string,
+      clientId: process.env.GITHUB_ID!,
+      clientSecret: process.env.GITHUB_SECRET!,
     }),
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID as string,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
-  adapter: FirebaseAuthAdapter(),
-  session: {
-    strategy: "jwt",
-  },
   callbacks: {
     async redirect({ baseUrl }) {
       return `${baseUrl}/workspace`;
@@ -32,19 +26,19 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       };
 
       console.log("JWT token:", newToken);
-
       return newToken;
     },
+
     async session({ session, token }) {
       session.user.id = token?.id ?? null;
       return session;
     },
+
     async signIn({ user }) {
       if (!user.email) {
         console.error("Sign-in failed: No email");
         return false;
       }
-
       return true;
     },
   },
@@ -57,4 +51,6 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     },
   },
   debug: process.env.NODE_ENV === "development",
-});
+} satisfies NextAuthConfig;
+
+export default authConfig;
