@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Copy, Facebook, Link, Linkedin, Twitter, X } from "lucide-react";
+import { Copy, Facebook, Linkedin, Twitter, X } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -57,7 +57,7 @@ export const ShareDialogue = ({ url }: ShareDialogueProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" aria-label="Open share modal">
+        <Button variant="outline" size="sm" aria-label="Open share modal">
           Share Query
         </Button>
       </DialogTrigger>
@@ -97,8 +97,10 @@ export const ShareDialogue = ({ url }: ShareDialogueProps) => {
           )}
         </div>
 
-        <div className="flex items-center justify-between border p-2 rounded-md">
-          <span className="truncate text-sm text-gray-200">{url}</span>
+        <div className="flex items-center justify-between border p-2 rounded-md overflow-hidden">
+          <span className="truncate text-sm text-gray-200 max-w-[85%]">
+            {url}
+          </span>
           <Button
             size="icon"
             variant="ghost"

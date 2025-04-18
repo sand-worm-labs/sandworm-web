@@ -31,7 +31,18 @@ import HomeTab from "./HomeTab";
 import SortableTab from "./SortableTab";
 import { QueryTab } from "./QueryTab";
 
-export default function WorkspaceTabs() {
+export default function WorkspaceTabs({
+  initialQuery,
+  currentUserId,
+}: {
+  initialQuery?: {
+    id: string;
+    title: string;
+    content: string;
+    owner_id: string;
+  };
+  currentUserId: string;
+}) {
   const {
     tabs,
     activeTabId,
@@ -42,6 +53,39 @@ export default function WorkspaceTabs() {
     initialize,
     isInitialized,
   } = useSandwormStore();
+
+  useEffect(() => {
+    if (!initialQuery || !isInitialized) return;
+
+    const tabExists = tabs.some(tab => tab.id === initialQuery.id);
+    const isReadonly = initialQuery.owner_id !== currentUserId;
+
+    if (!tabExists) {
+      createTab(
+        initialQuery.title,
+        "sql",
+        initialQuery.content,
+        initialQuery.id
+      );
+
+      // Optional: patch in readonly directly
+      useSandwormStore.setState(state => ({
+        tabs: state.tabs.map(tab =>
+          tab.id === initialQuery.id ? { ...tab, readonly: isReadonly } : tab
+        ),
+        activeTabId: initialQuery.id,
+      }));
+    } else {
+      setActiveTab(initialQuery.id);
+    }
+  }, [
+    initialQuery,
+    isInitialized,
+    tabs,
+    createTab,
+    setActiveTab,
+    currentUserId,
+  ]);
 
   useEffect(() => {
     if (!isInitialized) {

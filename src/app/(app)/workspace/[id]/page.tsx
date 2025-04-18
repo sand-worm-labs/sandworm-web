@@ -1,93 +1,28 @@
-"use client";
+import WorkSpace from "@/components/WorkSpace/WorkSpace";
+import { fetchQueryById } from "@/services/axios/queryService";
+import { notFound } from "next/navigation";
+import { auth } from "@/services/auth";
 
-import { useState, useEffect, useCallback } from "react";
+import type { Query } from "@/types";
 
-import AppSidebar from "@/components/AppSidebar";
-import DataExplorer from "@/components/Explorer/DataExplorer";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
-import WorkspaceTabs from "@/components/WorkSpace";
-import { QueryHistory } from "@/components/Explorer/QueryHistory";
-import { QueryExplorer } from "@/components/Explorer/QueryExplorer";
-import { SettingsPanel } from "@/components/WorkSpace/SettingsPanel";
-
-type ViewType =
-  | "dataExplorer"
-  | "queryExplorer"
-  | "ChangeLog"
-  | "settingsPanel";
-
-interface PanelComponents {
-  dataExplorer: React.ReactNode;
-  queryExplorer: React.ReactNode;
-  ChangeLog: React.ReactNode;
-  settingsPanel: React.ReactNode;
+interface PageProps {
+  params: { id: string };
 }
 
-export default function WorkSpace() {
-  const [currentView, setCurrentView] = useState<ViewType>("dataExplorer");
-  const [isMobile, setIsMobile] = useState<boolean>(false);
+export default async function WorkspacePage({
+  params,
+}: {
+  params: { id: string };
+}) {
+  const session = await auth();
+  const queryRes = await fetchQueryById(params.id).catch(() => null);
 
-  const panelComponents: PanelComponents = {
-    dataExplorer: <DataExplorer />,
-    queryExplorer: <QueryExplorer />,
-    ChangeLog: <QueryHistory />,
-    settingsPanel: <SettingsPanel />,
-  };
+  console.log("Query response:", queryRes);
 
-  const handleResize = useCallback(() => {
-    setIsMobile(window.innerWidth < 768);
-  }, []);
+  if (!queryRes) return notFound();
 
-  useEffect(() => {
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [handleResize]);
+  const query = queryRes;
+  const currentUserId = session?.user?.id || "";
 
-  return (
-    <div className="flex w-full h-[calc(100vh-3.4rem)] overflow-hidden  md:flex-row">
-      <AppSidebar currentView={currentView} setCurrentView={setCurrentView} />
-
-      <div className="flex-1 h-full overflow-auto border-t">
-        <ResizablePanelGroup direction={isMobile ? "vertical" : "horizontal"}>
-          {isMobile && (
-            <ResizablePanel
-              className="overflow-auto"
-              defaultSize={50}
-              minSize={40}
-            >
-              <WorkspaceTabs />
-            </ResizablePanel>
-          )}
-
-          <ResizableHandle withHandle />
-
-          <ResizablePanel
-            className="overflow-auto"
-            defaultSize={isMobile ? 50 : 25}
-            minSize={isMobile ? 40 : 20}
-          >
-            {panelComponents[currentView]}
-          </ResizablePanel>
-
-          {!isMobile && (
-            <>
-              <ResizableHandle withHandle />
-              <ResizablePanel
-                className="overflow-auto"
-                defaultSize={70}
-                minSize={40}
-              >
-                <WorkspaceTabs />
-              </ResizablePanel>
-            </>
-          )}
-        </ResizablePanelGroup>
-      </div>
-    </div>
-  );
+  return <WorkSpace initialQuery={query} currentUserId={currentUserId} />;
 }
