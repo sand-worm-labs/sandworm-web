@@ -16,25 +16,6 @@ export interface ConnectionList {
   connections: ConnectionProvider[];
 }
 
-export interface ColumnInfo {
-  name: string;
-  type: string;
-  nullable: boolean;
-}
-
-export interface TableInfo {
-  name: string;
-  schema: string;
-  columns: ColumnInfo[];
-  rowCount: number;
-  createdAt: string;
-}
-
-export interface DatabaseInfo {
-  name: string;
-  tables: TableInfo[];
-}
-
 export interface QueryResult {
   columns: string[];
   columnTypes: string[];
@@ -61,19 +42,34 @@ export interface EditorTab {
   readonly?: boolean;
 }
 
+const chainRpcMap = {
+  Sui: "https://rpc.sui.io",
+  Ethereum: "https://mainnet.infura.io/v3/YOUR_KEY",
+  Polygon: "https://polygon-rpc.com",
+  Arbitrum: "https://arb1.arbitrum.io/rpc",
+};
+
+export interface SandwormSettings {
+  selectedChain: string;
+  rpcUrl: string;
+  editorTheme: string;
+  shortcutsEnabled: boolean;
+  betaFeatures: boolean;
+  defaultChain: string;
+}
+
 export interface SandwormStoreState {
   isInitialized: boolean;
   currentDatabase: string;
   currentConnection: CurrentConnection | null;
   connectionList: ConnectionList;
-  databases: DatabaseInfo[];
   queryHistory: QueryHistoryItem[];
   isExecuting: boolean;
   tabs: EditorTab[];
   activeTabId: string | null;
   isLoading: boolean;
   error: string | null;
-  isLoadingDbTablesFetch: boolean;
+  settings: SandwormSettings;
   initialize: () => Promise<void>;
   executeQuery: (query: string, tabId?: string) => Promise<QueryResult | void>;
   createTab: (
@@ -91,6 +87,14 @@ export interface SandwormStoreState {
   clearHistory: () => void;
   cleanup: () => Promise<void>;
   exportParquet: (query: string) => Promise<Blob>;
+
+  // 🔧 Settings Action
+  setSelectedChain: (chain: string) => void;
+  setRpcUrl: (url: string) => void;
+  setEditorTheme: (theme: string) => void;
+  setShortcutsEnabled: (enabled: boolean) => void;
+  setBetaFeatures: (enabled: boolean) => void;
+  setDefaultChain: (chain: string) => void;
 }
 
 const createMockWasmResult = () => {
@@ -224,10 +228,17 @@ export const useSandwormStore = create<SandwormStoreState>()(
         connectionList: {
           connections: [],
         },
+        settings: {
+          selectedChain: "Sui",
+          rpcUrl: chainRpcMap["Sui"],
+          editorTheme: "Twilight",
+          shortcutsEnabled: true,
+          betaFeatures: false,
+          defaultChain: "Sui",
+        },
 
         initialize: async () => {},
 
-        // Execute a query with proper error handling.
         executeQuery: async (query, tabId?) => {
           try {
             set({ isExecuting: true, error: null });
@@ -463,7 +474,6 @@ export const useSandwormStore = create<SandwormStoreState>()(
         cleanup: async () => {
           set({
             isInitialized: false,
-            databases: [],
             currentDatabase: "memory",
             error: null,
             queryHistory: [],
@@ -479,17 +489,53 @@ export const useSandwormStore = create<SandwormStoreState>()(
             currentConnection: null,
           });
         },
+
+        // ⚡ settings actions
+        setSelectedChain: chain => {
+          const currentRpc = get().settings.rpcUrl;
+          const previousChain = get().settings.selectedChain;
+          const previousRpc = chainRpcMap[previousChain];
+          const defaultRpc = chainRpcMap[chain];
+
+          set(state => ({
+            settings: {
+              ...state.settings,
+              selectedChain: chain,
+              rpcUrl: currentRpc === previousRpc ? defaultRpc : currentRpc,
+            },
+          }));
+        },
+        setRpcUrl: url =>
+          set(state => ({
+            settings: { ...state.settings, rpcUrl: url },
+          })),
+        setEditorTheme: theme =>
+          set(state => ({
+            settings: { ...state.settings, editorTheme: theme },
+          })),
+        setShortcutsEnabled: enabled =>
+          set(state => ({
+            settings: { ...state.settings, shortcutsEnabled: enabled },
+          })),
+        setBetaFeatures: enabled =>
+          set(state => ({
+            settings: { ...state.settings, betaFeatures: enabled },
+          })),
+        setDefaultChain: chain =>
+          set(state => ({
+            settings: { ...state.settings, defaultChain: chain },
+          })),
       }),
       {
         name: "sandworm-storage",
         partialize: state => ({
           queryHistory: state.queryHistory,
-          databases: state.databases,
           tabs: state.tabs.map(tab => ({ ...tab, result: undefined })),
           activeTabId: state.activeTabId,
           currentDatabase: state.currentDatabase,
           currentConnection: state.currentConnection,
           connectionList: state.connectionList,
+          settings: state.settings,
         }),
       }
     )

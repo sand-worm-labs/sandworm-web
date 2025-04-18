@@ -23,7 +23,12 @@ interface SqlEditorProps {
   className?: string;
 }
 
-const QueryEditor: React.FC<SqlEditorProps> = ({ tabId, title, className }) => {
+const QueryEditor: React.FC<SqlEditorProps> = ({
+  tabId,
+  title,
+  className,
+  selectedTab,
+}) => {
   const { tabs, executeQuery, isExecuting, updateTabTitle, updateTabQuery } =
     useSandwormStore();
 
@@ -159,6 +164,7 @@ const QueryEditor: React.FC<SqlEditorProps> = ({ tabId, title, className }) => {
           tabId={tabId}
           updateTabQuery={updateTabQuery}
           onRunQuery={handleExecuteQuery}
+          readonly={selectedTab.readonly}
         />
       </div>
 

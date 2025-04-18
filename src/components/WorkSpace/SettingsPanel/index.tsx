@@ -13,17 +13,28 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle, CardContent, CardHeader } from "@/components/ui/card";
+import { useSandwormStore } from "@/store";
 
 const chains = ["Sui", "Ethereum", "Polygon", "Arbitrum"];
 const themes = ["Twilight", "VS Code", "Dracula", "Monokai", "Solarized Dark"];
 
 export const SettingsPanel: React.FC = () => {
-  const [selectedChain, setSelectedChain] = React.useState<string>("Sui");
-  const [rpcUrl, setRpcUrl] = React.useState<string>("");
-  const [editorTheme, setEditorTheme] = React.useState<string>("Twilight");
-  const [shortcutsEnabled, setShortcutsEnabled] = React.useState<boolean>(true);
-  const [betaFeatures, setBetaFeatures] = React.useState<boolean>(false);
-  const [defaultChain, setDefaultChain] = React.useState<string>("Sui");
+  const {
+    settings: {
+      selectedChain,
+      rpcUrl,
+      editorTheme,
+      shortcutsEnabled,
+      betaFeatures,
+      defaultChain,
+    },
+    setSelectedChain,
+    setRpcUrl,
+    setEditorTheme,
+    setShortcutsEnabled,
+    setBetaFeatures,
+    setDefaultChain,
+  } = useSandwormStore();
 
   const handleSave = () => {
     const settings = {
@@ -48,8 +59,7 @@ export const SettingsPanel: React.FC = () => {
         </div>
       </CardHeader>
 
-      <CardContent className=" p-0 h-[calc(100%-60px)] overflow-y-auto px-4 ">
-        <p className="my-3 text-sm font-medium">Customise your setup</p>
+      <CardContent className=" py-4 h-[calc(100%-60px)] overflow-y-auto px-4 ">
         <div className="flex flex-col space-y-4">
           <div className="grid gap-2">
             <Label htmlFor="chain">Chain</Label>
@@ -133,7 +143,11 @@ export const SettingsPanel: React.FC = () => {
           </div>
 
           <div className="pt-4 flex justify-end">
-            <Button onClick={handleSave} variant="default">
+            <Button
+              onClick={handleSave}
+              variant="secondary"
+              className="text-white"
+            >
               Save
             </Button>
           </div>
