@@ -1,5 +1,4 @@
 import Head from "next/head";
-import { notFound } from "next/navigation";
 
 import { AxiosService } from "@/services/axios";
 import { TabsSection } from "@/components/TabsSection";

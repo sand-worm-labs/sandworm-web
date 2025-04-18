@@ -28,6 +28,8 @@ import {
 import { useSandwormStore } from "@/store";
 
 import HomeTab from "./HomeTab";
+import { useRouter, usePathname, useParams } from "next/navigation";
+
 import SortableTab from "./SortableTab";
 import { QueryTab } from "./QueryTab";
 import type { Query } from "@/types";
@@ -36,7 +38,7 @@ export default function WorkspaceTabs({
   initialQuery,
   currentUserId,
 }: {
-  initialQuery?: Query;
+  initialQuery: Query;
   currentUserId: string;
 }) {
   const {
@@ -49,8 +51,20 @@ export default function WorkspaceTabs({
     initialize,
     isInitialized,
   } = useSandwormStore();
+  const router = useRouter();
+  const pathname = usePathname();
+  const params = useParams();
+  const urlTabId = Array.isArray(params?.id) ? params.id[0] : params?.id;
 
   useEffect(() => {
+    if (!initialQuery && urlTabId) {
+      const tab = tabs.find(t => t.id === urlTabId);
+      if (tab) {
+        setActiveTab(tab.id);
+      }
+      return;
+    }
+
     if (!initialQuery) return;
 
     const tabExists = tabs.some(tab => tab.id === initialQuery.id);
@@ -69,7 +83,14 @@ export default function WorkspaceTabs({
     } else {
       setActiveTab(initialQuery.id);
     }
-  }, [initialQuery?.id, currentUserId, createTab, setActiveTab, tabs]);
+  }, [
+    initialQuery?.id,
+    currentUserId,
+    createTab,
+    setActiveTab,
+    tabs,
+    urlTabId,
+  ]);
 
   useEffect(() => {
     if (!isInitialized) {
@@ -99,6 +120,16 @@ export default function WorkspaceTabs({
     return homeTab ? [homeTab, ...otherTabs] : otherTabs;
   }, [tabs]);
 
+  const handleTabChange = (tabId: string) => {
+    setActiveTab(tabId);
+
+    const basePath = "/workspace";
+    const currentTabId = pathname.split("/")[2];
+    if (tabId !== currentTabId) {
+      router.push(`${basePath}/${tabId}`);
+    }
+  };
+
   const addNewCodeTab = () => {
     createTab("New Query", "sql", "");
   };
@@ -107,7 +138,7 @@ export default function WorkspaceTabs({
     <div className="flex flex-col h-full dark">
       <Tabs
         value={activeTabId || undefined}
-        onValueChange={setActiveTab}
+        onValueChange={handleTabChange}
         className="flex flex-col h-full"
       >
         <div className="flex-shrink-0 flex items-center border-b-0 bg-muted">
