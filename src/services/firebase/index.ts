@@ -1,4 +1,4 @@
-import  admin from "firebase-admin";
+import admin from "firebase-admin";
 import { getFirestore } from "firebase-admin/firestore";
 import { getAuth } from "firebase-admin/auth";
 
@@ -23,7 +23,6 @@ if (!admin.apps.length && process.env.NODE_ENV === "development") {
     seedDatabase().then(() => console.log("seeded database"));
   } else {
     // console.log("initialize 2");
-
     // admin.initializeApp({
     //    projectId: "sandworm-8aa45",
     //   storageBucket: "sandworm-8aa45.appspot.com",

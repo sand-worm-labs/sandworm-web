@@ -4,7 +4,7 @@ import "@/services/firebase";
 import { QueryService } from "@/services/firebase/db/QueryService";
 import { DataResult } from "@/services/firebase/db";
 
-import { auth } from "../auth/[...nextauth]/auth-options";
+import { auth } from "@/services/auth";
 
 // eslint-disable-next-line no-unused-vars
 export async function GET(request: Request) {

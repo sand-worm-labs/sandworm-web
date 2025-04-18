@@ -50,7 +50,7 @@ export type QueryUpdatesResult = Result<QueryUpdates>;
 export class QueryService {
   // Helper function for common query handling, pagination, and username addition
   static async getPaginatedQueries(
-    queryType: "all" | "stars" | "forks" | "user_query" |"user_stared",
+    queryType: "all" | "stars" | "forks" | "user_query" | "user_stared",
     limit: number,
     page: number,
     uid?: string
@@ -194,6 +194,23 @@ export class QueryService {
       return DataResult.failure(
         "Error creating query.",
         "DB_INSERT_ERROR",
+        error
+      );
+    }
+  }
+
+  static async findOne(queryId: string): Promise<ServiceResult<QueryResult>> {
+    try {
+      const foundQuery = await db.querys.get(db.querys.id(queryId));
+
+      if (!foundQuery)
+        return DataResult.failure("Query not found.", "NOT_FOUND");
+
+      return DataResult.success(toResult<Query>(foundQuery));
+    } catch (error) {
+      return DataResult.failure(
+        "Error fetching query.",
+        "DB_RETRIEVAL_ERROR",
         error
       );
     }
