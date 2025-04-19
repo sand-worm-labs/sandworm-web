@@ -16,7 +16,7 @@ import { Card, CardTitle, CardContent, CardHeader } from "@/components/ui/card";
 import { useSandwormStore } from "@/store";
 
 const chains = ["Sui", "Ethereum", "Polygon", "Arbitrum"];
-const themes = ["Twilight", "VS Code", "Dracula", "Monokai", "Solarized Dark"];
+const themes = ["sandworm", "vs-dark", "vs-light", "monokai"];
 
 export const SettingsPanel: React.FC = () => {
   const {
