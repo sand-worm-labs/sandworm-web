@@ -86,7 +86,7 @@ export default function WorkSpace({ initialQuery }: WorkSpaceProps) {
               <ResizableHandle withHandle />
               <ResizablePanel
                 className="overflow-auto"
-                defaultSize={70}
+                defaultSize={75}
                 minSize={40}
               >
                 <WorkspaceTabs initialQuery={initialQuery} />
