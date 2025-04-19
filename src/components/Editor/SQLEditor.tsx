@@ -14,6 +14,7 @@ interface SQLEditorProps {
   onRunQuery?: () => Promise<void>;
   height?: string;
   readonly?: boolean;
+  theme: "sandworm" | "vs-dark" | "vs-light" | "monokai";
 }
 
 export default function SQLEditor({
@@ -23,6 +24,7 @@ export default function SQLEditor({
   onRunQuery,
   height = "450px",
   readonly = false,
+  theme,
 }: SQLEditorProps) {
   const [value, setValue] = useState(initialValue);
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
@@ -76,7 +78,7 @@ export default function SQLEditor({
   ) => {
     editorRef.current = codeEditor;
 
-    monaco.editor.defineTheme("twilight", {
+    monaco.editor.defineTheme("sandworm", {
       base: "vs-dark",
       inherit: true,
       rules: [
@@ -100,7 +102,28 @@ export default function SQLEditor({
       },
     });
 
-    monaco.editor.setTheme("twilight");
+    monaco.editor.defineTheme("monokai", {
+      base: "vs-dark",
+      inherit: true,
+      rules: [
+        { token: "", foreground: "F8F8F2", background: "272822" },
+        { token: "keyword", foreground: "F92672" },
+        { token: "number", foreground: "AE81FF" },
+        { token: "string", foreground: "E6DB74" },
+        { token: "comment", foreground: "75715E", fontStyle: "italic" },
+        { token: "variable", foreground: "FD971F" },
+      ],
+      colors: {
+        "editor.background": "#272822",
+        "editor.foreground": "#F8F8F2",
+        "editorCursor.foreground": "#F8F8F0",
+        "editor.lineHighlightBackground": "#3E3D32",
+        "editor.selectionBackground": "#49483E",
+        "editorWhitespace.foreground": "#3B3A32",
+      },
+    });
+
+    monaco.editor.setTheme(theme || "sandworm");
 
     monaco.languages.registerDocumentFormattingEditProvider("sql", {
       provideDocumentFormattingEdits: model => {
@@ -172,7 +195,7 @@ export default function SQLEditor({
         height={height}
         defaultLanguage="sql"
         defaultValue={initialValue}
-        theme="vs-dark"
+        theme={theme || "sandworm"}
         onChange={handleChange}
         onMount={handleEditorDidMount}
         options={{
