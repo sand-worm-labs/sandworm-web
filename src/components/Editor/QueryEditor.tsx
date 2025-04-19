@@ -16,11 +16,18 @@ import { useSandwormStore } from "@/store";
 import SaveModal from "../WorkSpace/SaveModal";
 
 import SQLEditor from "./SQLEditor";
+import { FaCodeBranch, FaRegStar } from "react-icons/fa";
 
 interface SqlEditorProps {
   tabId: string;
   title: string;
   className?: string;
+  selectedTab: {
+    id: string;
+    type: string;
+    content: string | null;
+    readonly: boolean;
+  };
 }
 
 const QueryEditor: React.FC<SqlEditorProps> = ({
@@ -123,16 +130,16 @@ const QueryEditor: React.FC<SqlEditorProps> = ({
           <div className="flex gap-2 text-sm text-muted-foreground">
             <TooltipProvider>
               <Tooltip delayDuration={200}>
-                <TooltipTrigger className="hover:bg-muted/50 p-2 rounded-md transition-colors">
-                  <GitFork className="h-5 w-5 transition-colors" />
+                <TooltipTrigger className="hover:bg-muted/50 p-2 rounded-md transition-colors border-white/20 border">
+                  <FaCodeBranch className="h-4 w-4 transition-colors" />
                 </TooltipTrigger>
                 <TooltipContent side="bottom">Fork this Query</TooltipContent>
               </Tooltip>
             </TooltipProvider>
             <TooltipProvider>
               <Tooltip delayDuration={200}>
-                <TooltipTrigger className="hover:bg-muted/50 p-2 rounded-md transition-colors">
-                  <Star className="h-5 w-5 transition-colors" />
+                <TooltipTrigger className="hover:bg-muted/50 p-2 rounded-md transition-colors border-white/20 border">
+                  <FaRegStar className="h-4 w-4 transition-colors" />
                 </TooltipTrigger>
                 <TooltipContent side="bottom">Star this Query</TooltipContent>
               </Tooltip>
@@ -141,8 +148,8 @@ const QueryEditor: React.FC<SqlEditorProps> = ({
           <Button
             onClick={handleExecuteQuery}
             disabled={isExecuting}
-            variant="outline"
-            className="flex items-center gap-2 min-w-[100px] bg-orange-700 text-[0.8rem] font-medium h-[2rem]"
+            variant="default"
+            className="flex items-center gap-2 min-w-[100px] bg-orange-700 text-[0.8rem] font-medium h-[2rem] text-white"
           >
             {isExecuting ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -151,13 +158,15 @@ const QueryEditor: React.FC<SqlEditorProps> = ({
             )}
             {isExecuting ? "Running..." : "Run Query"}
           </Button>
-          <Button
-            onClick={() => setIsSaveModalOpen(true)}
-            variant="outline"
-            className="flex items-center gap-2 min-w-[100px] text-[0.8rem] font-medium  h-[2rem]"
-          >
-            Save
-          </Button>
+          {!selectedTab.readonly && (
+            <Button
+              onClick={() => setIsSaveModalOpen(true)}
+              variant="outline"
+              className="flex items-center gap-2 min-w-[100px] text-[0.8rem] font-medium  h-[2.2rem]"
+            >
+              Save
+            </Button>
+          )}
         </div>
       </div>
 

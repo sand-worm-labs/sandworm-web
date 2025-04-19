@@ -1,5 +1,4 @@
 import { isValidSuiAddress } from "@mysten/sui/utils";
-import { isAddress } from "ethers";
 
 interface QueryResult {
   columns: string[];
