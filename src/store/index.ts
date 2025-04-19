@@ -33,6 +33,8 @@ export interface QueryHistoryItem {
 
 export type EditorTabType = "sql" | "home";
 
+export type Theme = "sandworm" | "vs-dark" | "vs-light" | "monokai";
+
 export interface EditorTab {
   id: string;
   title: string;
@@ -91,7 +93,7 @@ export interface SandwormStoreState {
   // 🔧 Settings Action
   setSelectedChain: (chain: string) => void;
   setRpcUrl: (url: string) => void;
-  setEditorTheme: (theme: string) => void;
+  setEditorTheme: (theme: Theme) => void;
   setShortcutsEnabled: (enabled: boolean) => void;
   setBetaFeatures: (enabled: boolean) => void;
   setDefaultChain: (chain: string) => void;

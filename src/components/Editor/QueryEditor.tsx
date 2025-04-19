@@ -31,6 +31,9 @@ const QueryEditor: React.FC<SqlEditorProps> = ({
 }) => {
   const { tabs, executeQuery, isExecuting, updateTabTitle, updateTabQuery } =
     useSandwormStore();
+  const editorTheme = useSandwormStore(
+    state => state.settings.editorTheme
+  )?.toLowerCase();
 
   const currentTab = tabs.find(tab => tab.id === tabId);
   const currentContent =
@@ -165,6 +168,7 @@ const QueryEditor: React.FC<SqlEditorProps> = ({
           updateTabQuery={updateTabQuery}
           onRunQuery={handleExecuteQuery}
           readonly={selectedTab.readonly}
+          theme={editorTheme}
         />
       </div>
 
