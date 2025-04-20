@@ -17,6 +17,7 @@ import SaveModal from "../WorkSpace/SaveModal";
 
 import SQLEditor from "./SQLEditor";
 import { FaCodeBranch, FaRegStar } from "react-icons/fa";
+import { useForkQuery } from "@/hooks/useForkQuery";
 
 interface SqlEditorProps {
   tabId: string;
@@ -41,6 +42,7 @@ const QueryEditor: React.FC<SqlEditorProps> = ({
   const editorTheme = useSandwormStore(
     state => state.settings.editorTheme
   )?.toLowerCase();
+  const { handleFork, loading } = useForkQuery(selectedTab?.id ?? "");
 
   const currentTab = tabs.find(tab => tab.id === tabId);
   const currentContent =
@@ -130,7 +132,11 @@ const QueryEditor: React.FC<SqlEditorProps> = ({
           <div className="flex gap-2 text-sm text-muted-foreground">
             <TooltipProvider>
               <Tooltip delayDuration={200}>
-                <TooltipTrigger className="hover:bg-muted/50 p-2 rounded-md transition-colors border-white/20 border">
+                <TooltipTrigger
+                  className="hover:bg-muted/50 p-2 rounded-md transition-colors border-white/20 border"
+                  onClick={handleFork}
+                  disabled={loading}
+                >
                   <FaCodeBranch className="h-4 w-4 transition-colors" />
                 </TooltipTrigger>
                 <TooltipContent side="bottom">Fork this Query</TooltipContent>

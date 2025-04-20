@@ -40,6 +40,13 @@ export const patchUserQuery = (uid: string, data: PatchQueryPayload) => {
   return api.patch(`/api/query/user?uid=${uid}`, data);
 };
 
+export const forkQuery = (queryId: string, uid: string) => {
+  return api.post(`/api/query/fork`, {
+    uid,
+    queryId,
+  });
+};
+
 export const likeQuery = (queryId: string, uid: string) => {
   return api.patch(`/api/query/likes`, {
     queryId,
