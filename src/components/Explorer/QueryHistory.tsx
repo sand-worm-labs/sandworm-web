@@ -1,7 +1,10 @@
-import React, { useState } from "react";
-import { Database, RotateCcw } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Database } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
+import { fetchQueryUpdate } from "@/services/axios/queryService";
+import { QueryCard } from "./QueryHistory/QueryCard";
 
 interface VersionEntry {
   id: number;
@@ -9,65 +12,73 @@ interface VersionEntry {
   query: string;
 }
 
-export const QueryHistory: React.FC = () => {
-  const [versions] = useState<VersionEntry[]>([
-    {
-      id: 1,
-      timestamp: "2025-04-02 14:30",
-      query:
-        'SELECT * FROM users WHERE status = "active FROM users WHERE status = "active',
-    },
-    { id: 2, timestamp: "2025-04-02 14:15", query: "SELECT * FROM users" },
-    {
-      id: 3,
-      timestamp: "2025-04-02 13:45",
-      query: "SELECT id, name FROM users",
-    },
-    { id: 4, timestamp: "2025-04-02 13:20", query: "SELECT id FROM users " },
-  ]);
+interface QueryHistoryProps {
+  queryId?: string;
+  isOwner?: boolean;
+}
 
-  const handleRestore = (query: string): void => {
-    console.log(`Restoring query: ${query}`);
-  };
+export const LoadingState = () => {
+  return <div>Loading...</div>;
+};
+
+export const QueryError = () => {
+  return <div>Error loading query history.</div>;
+};
+
+export const QueryHistory: React.FC<QueryHistoryProps> = ({
+  queryId,
+  isOwner = true,
+}) => {
+  const { data: session } = useSession();
+  const [versions, setVersions] = useState<VersionEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadQueries = async () => {
+      if (!session?.user?.id || !queryId) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const data = await fetchQueryUpdate(queryId);
+        console.log("hmmm", data);
+        setVersions(data);
+      } catch (err) {
+        console.error("Error fetching query versions:", err);
+        setVersions([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadQueries();
+  }, [session?.user?.id, queryId]);
+
+  if (!isOwner) return <QueryError />;
 
   return (
     <Card className="h-full overflow-hidden border-none dark">
       <CardHeader className="p-4 border-b">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 py-2">
-            <Database className="h-5 w-5" />
-            <CardTitle className="font-semibold">Version History</CardTitle>
-          </div>
+        <div className="flex items-center gap-2 py-2">
+          <Database className="h-5 w-5" />
+          <CardTitle className="font-semibold">Version History</CardTitle>
         </div>
       </CardHeader>
+
       <CardContent className="p-0">
-        <div className=" overflow-y-auto">
-          {versions.map(version => (
-            <div
-              key={version.id}
-              className="p-3 border-b last:border-b-0  transition-colors"
-            >
-              <div className="flex justify-between items-center mb-1">
-                <span className="text-xs text-gray-500">
-                  {version.timestamp}
-                </span>
-                <button
-                  type="button"
-                  className="p-1 hover:bg-white/15 rounded-full"
-                  onClick={() => handleRestore(version.query)}
-                  title="Restore this version"
-                >
-                  <RotateCcw size={14} className="text-orange-500" />
-                </button>
-              </div>
-              <div
-                className="text-xs font-mono p-2 rounded overflow-hidden text-ellipsis whitespace-nowrap"
-                title={version.query}
-              >
-                {version.query}
-              </div>
+        <div className="overflow-y-auto max-h-[400px]">
+          {loading && <LoadingState />}
+          {!loading && versions.length === 0 && (
+            <div className="p-4 text-sm text-muted-foreground">
+              No version history found.
             </div>
-          ))}
+          )}
+          {!loading &&
+            versions.length > 0 &&
+            versions.map(version => (
+              <QueryCard key={version.query} version={version} />
+            ))}
         </div>
       </CardContent>
     </Card>
