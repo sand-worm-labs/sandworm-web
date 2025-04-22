@@ -12,7 +12,7 @@ import { useQueryLike } from "@/hooks/useLikeQuery";
 
 import { DicebearAvatar } from "../DicebearAvatar";
 
-const QueryCard = ({ query }: { query: Query }) => {
+export const QueryCard = ({ query }: { query: Query }) => {
   const { liked, toggleLike, loading } = useQueryLike(query.id);
   const router = useRouter();
 
@@ -119,5 +119,3 @@ const QueryCard = ({ query }: { query: Query }) => {
     </div>
   );
 };
-
-export default QueryCard;

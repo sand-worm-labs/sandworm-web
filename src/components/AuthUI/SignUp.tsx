@@ -6,7 +6,7 @@ import { SandwormLogo } from "../Assets/SandwormLogo";
 
 import SignUpForm from "./SignUpForm";
 
-export default function SignUp() {
+export const SignUp = () => {
   return (
     <div className="flex min-h-screen items-center justify-center p-6 line-bg relative">
       <Link
@@ -32,4 +32,4 @@ export default function SignUp() {
       </div>
     </div>
   );
-}
+};

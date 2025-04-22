@@ -14,6 +14,7 @@ import {
   sortableKeyboardCoordinates,
   horizontalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import { useRouter, usePathname, useParams } from "next/navigation";
 
 import { Tabs, TabsList, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -26,21 +27,19 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { useSandwormStore } from "@/store";
-
-import HomeTab from "./HomeTab";
-import { useRouter, usePathname, useParams } from "next/navigation";
-
-import SortableTab from "./SortableTab";
-import { QueryTab } from "./QueryTab";
 import type { Query } from "@/types";
 
-export default function WorkspaceTabs({
+import HomeTab from "./HomeTab";
+import SortableTab from "./SortableTab";
+import { QueryTab } from "./QueryTab";
+
+export const WorkspaceTabs = ({
   initialQuery,
   currentUserId,
 }: {
   initialQuery: Query;
   currentUserId: string;
-}) {
+}) => {
   const {
     tabs,
     activeTabId,
@@ -214,4 +213,4 @@ export default function WorkspaceTabs({
       </Tabs>
     </div>
   );
-}
+};

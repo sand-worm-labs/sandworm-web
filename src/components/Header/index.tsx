@@ -11,7 +11,7 @@ const navLinks = [
   { name: "Blog", href: "/blog" },
 ];
 
-const MainHeader = () => {
+export const MainHeader = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -79,5 +79,3 @@ const MainHeader = () => {
     </header>
   );
 };
-
-export default MainHeader;

@@ -3,7 +3,6 @@ import "@/services/firebase";
 
 import { QueryService } from "@/services/firebase/db/QueryService";
 import { DataResult } from "@/services/firebase/db";
-
 import { auth } from "@/services/auth";
 
 export async function POST(request: Request) {

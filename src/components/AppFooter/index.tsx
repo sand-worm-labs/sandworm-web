@@ -3,7 +3,7 @@ import Link from "next/link";
 import { footerLinks } from "@/data/footerLinks";
 import { socialLinks } from "@/data/socialLinks";
 
-const AppFooter = () => {
+export const AppFooter = () => {
   return (
     <footer className="p-4 text-sm text-text-gray border-t border-borderLight">
       <div className="container mx-auto flex justify-between items-center">
@@ -31,5 +31,3 @@ const AppFooter = () => {
     </footer>
   );
 };
-
-export default AppFooter;

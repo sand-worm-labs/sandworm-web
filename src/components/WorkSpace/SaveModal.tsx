@@ -24,12 +24,12 @@ interface SaveModalProps {
   content: string;
 }
 
-export default function SaveModal({
+export const SaveModal = ({
   open,
   setOpen,
   title,
   content,
-}: SaveModalProps) {
+}: SaveModalProps) => {
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
@@ -122,4 +122,4 @@ export default function SaveModal({
       </DialogContent>
     </Dialog>
   );
-}
+};
