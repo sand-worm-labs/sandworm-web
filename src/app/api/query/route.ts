@@ -6,7 +6,6 @@ import { DataResult } from "@/services/firebase/db";
 
 import { auth } from "@/services/auth";
 
-// eslint-disable-next-line no-unused-vars
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
 

@@ -41,7 +41,7 @@ export default function WorkSpace({ initialQuery }: WorkSpaceProps) {
   const panelComponents: PanelComponents = {
     dataExplorer: <DataExplorer />,
     queryExplorer: <QueryExplorer />,
-    ChangeLog: <QueryHistory />,
+    ChangeLog: <QueryHistory queryId={initialQuery.id} />,
     settingsPanel: <SettingsPanel />,
   };
 
