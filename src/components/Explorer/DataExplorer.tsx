@@ -22,7 +22,7 @@ import { EntitiesExplorer } from "./EntitiesExplorer";
 import { FieldExplorer } from "./FieldExplorer";
 import { Breadcrumbs } from "./BreadCrumbs";
 
-export default function DataExplorer() {
+export const DataExplorer = () => {
   const [, setIsSheetOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
@@ -140,4 +140,4 @@ export default function DataExplorer() {
       </CardContent>
     </Card>
   );
-}
+};

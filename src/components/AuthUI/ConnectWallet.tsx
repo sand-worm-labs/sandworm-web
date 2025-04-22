@@ -2,7 +2,7 @@
 
 import { ConnectModal } from "@mysten/dapp-kit";
 
-export default function ConnectWallet() {
+export const ConnectWallet = () => {
   return (
     <ConnectModal
       trigger={
@@ -15,4 +15,4 @@ export default function ConnectWallet() {
       }
     />
   );
-}
+};

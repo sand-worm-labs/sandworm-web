@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-export default function SignInForm() {
+export const SignInForm = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -58,4 +58,4 @@ export default function SignInForm() {
       </button>
     </form>
   );
-}
+};

@@ -2,9 +2,9 @@
 
 import { usePathname } from "next/navigation";
 
-import AppFooter from ".";
+import { AppFooter } from ".";
 
-export default function FooterWrapper() {
+export const FooterWrapper = () => {
   const pathname = usePathname();
   const hideFooterOnPath = "/workspace";
 
@@ -13,4 +13,4 @@ export default function FooterWrapper() {
   }
 
   return <AppFooter />;
-}
+};

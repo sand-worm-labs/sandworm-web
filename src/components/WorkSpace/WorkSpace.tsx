@@ -13,7 +13,7 @@ import WorkspaceTabs from "@/components/WorkSpace";
 import { QueryHistory } from "@/components/Explorer/QueryHistory";
 import { QueryExplorer } from "@/components/Explorer/QueryExplorer";
 import { SettingsPanel } from "@/components/WorkSpace/SettingsPanel";
-import { Query } from "@/types/query";
+import type { Query } from "@/types/query";
 
 type ViewType =
   | "dataExplorer"
@@ -32,7 +32,7 @@ interface WorkSpaceProps {
   initialQuery?: Query;
 }
 
-export default function WorkSpace({ initialQuery }: WorkSpaceProps) {
+export const WorkSpace = ({ initialQuery }: WorkSpaceProps) => {
   const [currentView, setCurrentView] = useState<ViewType>("dataExplorer");
   const [isMobile, setIsMobile] = useState<boolean>(false);
 
@@ -97,4 +97,4 @@ export default function WorkSpace({ initialQuery }: WorkSpaceProps) {
       </div>
     </div>
   );
-}
+};

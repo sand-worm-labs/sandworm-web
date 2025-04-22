@@ -1,4 +1,5 @@
 import Head from "next/head";
+
 import { AxiosService } from "@/services/axios";
 import { TabsSection } from "@/components/TabsSection";
 import type { QueryResponse } from "@/types";

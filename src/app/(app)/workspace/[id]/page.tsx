@@ -1,6 +1,7 @@
+import { notFound } from "next/navigation";
+
 import WorkSpace from "@/components/WorkSpace/WorkSpace";
 import { fetchQueryById } from "@/services/axios/queryService";
-import { notFound } from "next/navigation";
 import { auth } from "@/services/auth";
 
 export default async function WorkspacePage({

@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Database } from "lucide-react";
 import { useSession } from "next-auth/react";
 
-import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 import { fetchQueryUpdate } from "@/services/axios/queryService";
+
+import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
+
 import { QueryCard } from "./QueryHistory/QueryCard";
 
 interface VersionEntry {

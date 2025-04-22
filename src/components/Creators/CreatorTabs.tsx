@@ -4,7 +4,7 @@ import { FaRegStar } from "react-icons/fa";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { QueryResponse } from "@/types";
 
-import QueryList from "../QueryList";
+import { QueryList } from "../QueryList";
 
 interface CreatorTabsProps {
   tab: string;

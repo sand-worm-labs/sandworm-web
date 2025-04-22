@@ -17,7 +17,7 @@ interface SQLEditorProps {
   theme: "sandworm" | "vs-dark" | "vs-light" | "monokai";
 }
 
-export default function SQLEditor({
+export const SQLEditor = ({
   initialValue,
   tabId,
   updateTabQuery,
@@ -25,7 +25,7 @@ export default function SQLEditor({
   height = "450px",
   readonly = false,
   theme,
-}: SQLEditorProps) {
+}: SQLEditorProps) => {
   const [value, setValue] = useState(initialValue);
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 
@@ -216,4 +216,4 @@ export default function SQLEditor({
       />
     </div>
   );
-}
+};

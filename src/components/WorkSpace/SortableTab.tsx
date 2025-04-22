@@ -18,7 +18,7 @@ interface SortableTabProps {
   isActive: boolean;
 }
 
-function SortableTab({ tab, isActive }: SortableTabProps) {
+export const SortableTab = ({ tab, isActive }: SortableTabProps) => {
   const {
     attributes,
     listeners,
@@ -128,6 +128,4 @@ function SortableTab({ tab, isActive }: SortableTabProps) {
       </TabsTrigger>
     </div>
   );
-}
-
-export default SortableTab;
+};

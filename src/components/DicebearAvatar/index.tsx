@@ -11,11 +11,11 @@ interface DicebearAvatarProps {
   className?: string;
 }
 
-export function DicebearAvatar({
+export const DicebearAvatar = ({
   seed,
   size = 80,
   className,
-}: DicebearAvatarProps) {
+}: DicebearAvatarProps) => {
   const [avatarSvg, setAvatarSvg] = useState<string>("");
 
   useEffect(() => {
@@ -44,4 +44,4 @@ export function DicebearAvatar({
       )}
     </div>
   );
-}
+};

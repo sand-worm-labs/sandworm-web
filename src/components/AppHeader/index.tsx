@@ -5,10 +5,10 @@ import type { FC } from "react";
 import { useSession } from "next-auth/react";
 
 import { SandwormLogo } from "../Assets/SandwormLogo";
-import SearchBar from "../SearchBar";
 import { ProfileMenu } from "../ProfileMenu";
+import { SearchBar } from "../SearchBar";
 
-const AppHeader: FC = () => {
+export const AppHeader: FC = () => {
   const { data: session } = useSession();
 
   return (
@@ -31,5 +31,3 @@ const AppHeader: FC = () => {
     </header>
   );
 };
-
-export default AppHeader;
