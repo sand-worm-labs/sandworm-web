@@ -29,7 +29,7 @@ export const fetchUserQuery = (uid: string) => {
 };
 
 export const fetchQueryUpdate = (id: string) => {
-  return api.get(`/api/query/updates?id=${id}`);
+  return api.get(`/api/query/updates?queryId=${id}`);
 };
 
 export const createQuery = (data: CreateQueryPayload) => {
