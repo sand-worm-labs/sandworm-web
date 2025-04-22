@@ -4,11 +4,11 @@ import { useSearchParams } from "next/navigation";
 
 import type { IChainEntity } from "@/types";
 
-interface FieldExplorerProps {
+interface IFieldDetailsPanelProps {
   entities: IChainEntity[];
 }
 
-export const FieldExplorer = ({ entities }: FieldExplorerProps) => {
+export const FieldDetailsPanel = ({ entities }: IFieldDetailsPanelProps) => {
   const searchParams = useSearchParams();
   const chain = searchParams.get("namespace");
   const entity = searchParams.get("id");

@@ -38,11 +38,13 @@ export async function GET(request: Request) {
     prevPage
   );
 
-  const queries = queryResult.success
-    ? queryResult.data
-    : emptyResult.success
-      ? emptyResult.data
-      : null;
+  let queries = null;
+
+  if (queryResult.success) {
+    queries = queryResult.data;
+  } else if (emptyResult.success) {
+    queries = emptyResult.data;
+  }
 
   return new Response(
     JSON.stringify({

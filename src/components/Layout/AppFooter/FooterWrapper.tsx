@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 
-import { AppFooter } from ".";
+import { AppFooter } from "@/components/Layout/AppFooter";
 
 export const FooterWrapper = () => {
   const pathname = usePathname();

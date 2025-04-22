@@ -4,7 +4,7 @@ import Link from "next/link";
 import { FaGithub, FaDiscord } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 
-import { ContactForm } from "./ContactForm";
+import { ContactForm } from "@/components";
 
 export const Contact = () => {
   return (

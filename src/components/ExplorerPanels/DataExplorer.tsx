@@ -16,11 +16,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useChainStore } from "@/store/chains";
-
-import { ChainExplorer } from "./ChainExplorer";
-import { EntitiesExplorer } from "./EntitiesExplorer";
-import { FieldExplorer } from "./FieldExplorer";
-import { Breadcrumbs } from "./BreadCrumbs";
+import {
+  ChainListPanel,
+  ExplorerBreadCrumbs,
+  EntityListPanel,
+  FieldDetailsPanel,
+} from "@/components/ExplorerPanels";
 
 export const DataExplorer = () => {
   const [, setIsSheetOpen] = useState(false);
@@ -55,19 +56,21 @@ export const DataExplorer = () => {
 
   const renderExplorer = () => {
     if (selectedEntity) {
-      return <FieldExplorer entities={entityData || []} />;
+      return <FieldDetailsPanel entities={entityData || []} />;
     }
 
     if (selectedChain) {
       return (
-        <EntitiesExplorer
+        <EntityListPanel
           entities={entityData || []}
           onSelect={handleSelectEntity}
         />
       );
     }
 
-    return <ChainExplorer chains={chains || []} onSelect={handleSelectChain} />;
+    return (
+      <ChainListPanel chains={chains || []} onSelect={handleSelectChain} />
+    );
   };
 
   return (
@@ -106,7 +109,7 @@ export const DataExplorer = () => {
       <CardContent className="p-2 px-0 h-[calc(100%-60px)] overflow-y-auto">
         {chains && chains.length > 0 ? (
           <div className="space-y-2">
-            <Breadcrumbs entities={entityData || []} />
+            <ExplorerBreadCrumbs entities={entityData || []} />
             <Input
               type="text"
               placeholder="Search..."
