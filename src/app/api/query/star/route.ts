@@ -29,6 +29,7 @@ export async function GET(request: Request) {
 
   const { totalRecords, totalPages, currentPage, nextPage, prevPage } =
     getPaginationDetails(0, 10, 1);
+
   const emptyResult = toPaginatedResult(
     [],
     totalRecords,

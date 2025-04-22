@@ -10,7 +10,7 @@ import Image from "next/image";
 import type { Query } from "@/types";
 import { useQueryLike } from "@/hooks/useLikeQuery";
 
-import { DicebearAvatar } from "../DicebearAvatar";
+import { DicebearAvatar } from "../../DicebearAvatar";
 
 export const QueryCard = ({ query }: { query: Query }) => {
   const { liked, toggleLike, loading } = useQueryLike(query.id);

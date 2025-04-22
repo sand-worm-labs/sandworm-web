@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { format } from "sql-formatter";
 import type { editor } from "monaco-editor";
 
-interface SQLEditorProps {
+interface QueryCodeEditorProps {
   initialValue?: string;
   tabId: string;
   updateTabQuery: (tabId: string, query: string) => void;
@@ -17,7 +17,7 @@ interface SQLEditorProps {
   theme: "sandworm" | "vs-dark" | "vs-light" | "monokai";
 }
 
-export const SQLEditor = ({
+export const QueryCodeEditor = ({
   initialValue,
   tabId,
   updateTabQuery,
@@ -25,7 +25,7 @@ export const SQLEditor = ({
   height = "450px",
   readonly = false,
   theme,
-}: SQLEditorProps) => {
+}: QueryCodeEditorProps) => {
   const [value, setValue] = useState(initialValue);
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 

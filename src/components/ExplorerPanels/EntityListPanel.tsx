@@ -3,12 +3,12 @@ import { Sheet } from "lucide-react";
 
 import type { IChainEntity } from "@/types";
 
-interface IEntitiesExplorerProps {
+interface IEntityListPanelProps {
   entities: IChainEntity[];
   onSelect: (entityId: string) => void;
 }
 
-export const EntitiesExplorer: React.FC<IEntitiesExplorerProps> = ({
+export const EntityListPanel: React.FC<IEntityListPanelProps> = ({
   entities,
   onSelect,
 }) => {

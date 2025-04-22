@@ -4,11 +4,13 @@ import { useSearchParams, useRouter } from "next/navigation";
 
 import type { IChainEntity } from "@/types";
 
-interface IBreadCrumbsProps {
+interface IExplorerBreadCrumbsProps {
   entities: IChainEntity[];
 }
 
-export const Breadcrumbs: React.FC<IBreadCrumbsProps> = ({ entities }) => {
+export const ExplorerBreadCrumbs: React.FC<IExplorerBreadCrumbsProps> = ({
+  entities,
+}) => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const chain = searchParams.get("namespace");

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 
-import { SandwormLogo } from "../Assets/SandwormLogo";
+import { SandwormLogo } from "@/components/Assets";
 
 const navLinks = [
   { name: "Explore", href: "/explore" },
