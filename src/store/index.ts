@@ -232,7 +232,7 @@ export const useSandwormStore = create<SandwormStoreState>()(
         },
         settings: {
           selectedChain: "Sui",
-          rpcUrl: chainRpcMap["Sui"],
+          rpcUrl: chainRpcMap.Sui,
           editorTheme: "Twilight",
           shortcutsEnabled: true,
           betaFeatures: false,

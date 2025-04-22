@@ -60,7 +60,7 @@ const resourceCards = [
   },
 ];
 
-const HomeTab = () => {
+export const HomeTab = () => {
   const { createTab, queryHistory, error } = useSandwormStore();
   const [recentItems, setRecentItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -296,5 +296,3 @@ GET balance FROM account cx.eth  ON eth
     </div>
   );
 };
-
-export default HomeTab;

@@ -4,7 +4,7 @@ import { FaXTwitter } from "react-icons/fa6";
 
 import { SandwormLogo } from "../Assets/SandwormLogo";
 
-const MainFooter = () => {
+export const MainFooter = () => {
   return (
     <footer className=" p-4 px-5 lg:text-sm text-base text-text-gray border-t border-borderLight mt-16">
       <div className="container mx-auto grid lg:grid-cols-3 pt-5 pb-8 gap-y-12">
@@ -69,5 +69,3 @@ const MainFooter = () => {
     </footer>
   );
 };
-
-export default MainFooter;

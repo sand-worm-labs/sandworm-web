@@ -47,6 +47,6 @@ console.log("🔥 Using Firestore Emulator for testing...");
 db.settings({
   host: "localhost:8080",
   ssl: false,
-}); 
+});
 
 export { admin, auth, db, app };

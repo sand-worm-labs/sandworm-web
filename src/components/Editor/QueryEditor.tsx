@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { Play, Loader2, Edit, Star, GitFork } from "lucide-react";
+import { Play, Loader2, Edit } from "lucide-react";
 import { toast } from "sonner";
+import { FaCodeBranch, FaRegStar } from "react-icons/fa";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -12,12 +13,11 @@ import {
 } from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
 import { useSandwormStore } from "@/store";
-
-import SaveModal from "../WorkSpace/SaveModal";
-
-import SQLEditor from "./SQLEditor";
-import { FaCodeBranch, FaRegStar } from "react-icons/fa";
 import { useForkQuery } from "@/hooks/useForkQuery";
+
+import { SaveModal } from "../WorkSpace/SaveModal";
+
+import { SQLEditor } from "./SQLEditor";
 
 interface SqlEditorProps {
   tabId: string;
@@ -31,7 +31,7 @@ interface SqlEditorProps {
   };
 }
 
-const QueryEditor: React.FC<SqlEditorProps> = ({
+export const QueryEditor: React.FC<SqlEditorProps> = ({
   tabId,
   title,
   className,
@@ -196,5 +196,3 @@ const QueryEditor: React.FC<SqlEditorProps> = ({
     </div>
   );
 };
-
-export default QueryEditor;

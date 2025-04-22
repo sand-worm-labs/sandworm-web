@@ -3,7 +3,7 @@ import { Search } from "lucide-react";
 
 import { Input } from "../ui/input";
 
-export default function SearchBar() {
+export const SearchBar = () => {
   const [query, setQuery] = useState<string>("");
 
   return (
@@ -21,4 +21,4 @@ export default function SearchBar() {
       />
     </div>
   );
-}
+};

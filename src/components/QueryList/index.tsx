@@ -13,7 +13,10 @@ interface IQueryListProps {
   pagination: QueryPagination;
 }
 
-const QueryList: React.FC<IQueryListProps> = ({ queries, pagination }) => {
+export const QueryList: React.FC<IQueryListProps> = ({
+  queries,
+  pagination,
+}) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -63,5 +66,3 @@ const QueryList: React.FC<IQueryListProps> = ({ queries, pagination }) => {
     </div>
   );
 };
-
-export default QueryList;

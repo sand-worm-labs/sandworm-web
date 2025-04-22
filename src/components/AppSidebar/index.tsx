@@ -31,7 +31,10 @@ interface AppSidebarProps {
   setCurrentView: (view: ViewType) => void;
 }
 
-const AppSidebar = ({ currentView, setCurrentView }: AppSidebarProps) => {
+export const AppSidebar = ({
+  currentView,
+  setCurrentView,
+}: AppSidebarProps) => {
   const pathname = usePathname();
   const [isExpanded, setIsExpanded] = useState(false);
   const [, setOpen] = useState(false);
@@ -183,5 +186,3 @@ const AppSidebar = ({ currentView, setCurrentView }: AppSidebarProps) => {
     </div>
   );
 };
-
-export default AppSidebar;
