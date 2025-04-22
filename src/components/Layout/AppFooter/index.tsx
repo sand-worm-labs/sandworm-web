@@ -1,7 +1,6 @@
 import Link from "next/link";
 
-import { footerLinks } from "@/data/footerLinks";
-import { socialLinks } from "@/data/socialLinks";
+import { footerLinks, socialLinks } from "@/data";
 
 export const AppFooter = () => {
   return (

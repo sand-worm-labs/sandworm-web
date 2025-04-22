@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { CurrentUserProps } from "@/types";
 
-import { CreateQueryButton } from "../CreateQueryButton";
+import { CreateQueryButton } from "../Queries/CreateQueryButton";
 import { DicebearAvatar } from "../DicebearAvatar";
 
 export const ProfileMenu: FC<CurrentUserProps> = ({ currentUser }) => {

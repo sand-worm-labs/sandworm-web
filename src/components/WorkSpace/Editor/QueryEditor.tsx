@@ -4,7 +4,6 @@ import { toast } from "sonner";
 import { FaCodeBranch, FaRegStar } from "react-icons/fa";
 
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import {
   Tooltip,
   TooltipContent,
@@ -12,12 +11,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import { useSandwormStore } from "@/store";
-import { useForkQuery } from "@/hooks/useForkQuery";
-
-import { SaveModal } from "../WorkSpace/SaveModal";
-
-import { SQLEditor } from "./SQLEditor";
+import { useForkQuery } from "@/hooks";
+import { SaveModal } from "@/components/WorkSpace";
+import { QueryCodeEditor } from "@/components/WorkSpace/Editor";
 
 interface SqlEditorProps {
   tabId: string;
@@ -177,7 +175,7 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
       </div>
 
       <div className="flex-1 relative">
-        <SQLEditor
+        <QueryCodeEditor
           initialValue={currentContent}
           tabId={tabId}
           updateTabQuery={updateTabQuery}

@@ -7,7 +7,7 @@ import { FaRegStar } from "react-icons/fa";
 import { VscRepoForked } from "react-icons/vsc";
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import QueryList from "@/components/QueryList";
+import { QueryList } from "@/components/Queries/QueryList";
 import type { QueryResponse } from "@/types";
 
 interface TabSectionProps {

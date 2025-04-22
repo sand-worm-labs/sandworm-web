@@ -5,18 +5,16 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Head from "next/head";
 
 import type { User, QueryResponse } from "@/types";
+import { CreatorInfo, CreatorTabs } from "@/components/Creators";
 
-import { CreatorInfo } from "./CreatorInfo";
-import { CreatorTabs } from "./CreatorTabs";
-
-interface CreatorsProps {
+interface ICreatorProps {
   queries: QueryResponse;
   user: User;
   starredQueries: QueryResponse;
   defaultTab?: string;
 }
 
-export const Creators: React.FC<CreatorsProps> = ({
+export const Creator: React.FC<ICreatorProps> = ({
   queries,
   user,
   defaultTab,

@@ -7,12 +7,12 @@ interface Chain {
   name: string;
 }
 
-interface ChainExplorerProps {
+interface IChainListPanelProps {
   chains: Chain[];
   onSelect: (id: string) => void;
 }
 
-export const ChainExplorer: React.FC<ChainExplorerProps> = ({
+export const ChainListPanel: React.FC<IChainListPanelProps> = ({
   chains,
   onSelect,
 }) => {

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 
-import { Creators } from "@/components/Creators";
+import { Creators } from "@/components/Creators/Creator";
 import type { QueryResponse, User } from "@/types";
 import { AxiosService } from "@/services/axios";
 

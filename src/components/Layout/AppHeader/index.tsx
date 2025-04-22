@@ -4,9 +4,10 @@ import Link from "next/link";
 import type { FC } from "react";
 import { useSession } from "next-auth/react";
 
-import { SandwormLogo } from "../Assets/SandwormLogo";
-import { ProfileMenu } from "../ProfileMenu";
-import { SearchBar } from "../SearchBar";
+import { SandwormLogo } from "@/components/Assets";
+
+import { ProfileMenu } from "../../ProfileMenu";
+import { SearchBar } from "../../SearchBar";
 
 export const AppHeader: FC = () => {
   const { data: session } = useSession();

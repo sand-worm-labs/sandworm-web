@@ -1,6 +1,4 @@
-import { notFound } from "next/navigation";
-
-import WorkSpace from "@/components/WorkSpace/WorkSpace";
+import { WorkSpace } from "@/components/WorkSpace/WorkSpace";
 import { fetchQueryById } from "@/services/axios/queryService";
 import { auth } from "@/services/auth";
 
