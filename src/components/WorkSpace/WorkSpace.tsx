@@ -36,8 +36,6 @@ export const WorkSpace = ({ initialQuery }: WorkSpaceProps) => {
   const [currentView, setCurrentView] = useState<ViewType>("dataExplorer");
   const [isMobile, setIsMobile] = useState<boolean>(false);
 
-  console.log("WorkSpace initialQuery:", initialQuery);
-
   const panelComponents: PanelComponents = {
     dataExplorer: <DataExplorer />,
     queryExplorer: <QueryExplorer />,

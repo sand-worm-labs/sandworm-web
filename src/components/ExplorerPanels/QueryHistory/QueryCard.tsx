@@ -7,10 +7,6 @@ interface VersionEntry {
 }
 
 export const QueryCard: React.FC<{ version: VersionEntry }> = ({ version }) => {
-  const handleRestore = (query: string) => {
-    console.log("Restoring query:", query);
-  };
-
   return (
     <div className="p-3 border-b transition-colors">
       <div className="flex justify-between items-center mb-1">
@@ -18,7 +14,6 @@ export const QueryCard: React.FC<{ version: VersionEntry }> = ({ version }) => {
         <button
           type="button"
           className="p-1 hover:bg-white/15 rounded-full"
-          onClick={() => handleRestore(version.query)}
           title="Restore this version"
         >
           <RotateCcw size={14} className="text-orange-500" />

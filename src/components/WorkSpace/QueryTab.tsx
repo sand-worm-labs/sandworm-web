@@ -9,9 +9,9 @@ import {
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { useSandwormStore } from "@/store";
 
-import QueryEditor from "./Editor/QueryEditor";
 import QueryResultsTable from "./ResultTab/index";
 import { ResultToolbar } from "./ResultTab/ResultToolbar";
+import { QueryEditor } from "./Editor/QueryEditor";
 
 interface QueryTabProps {
   tabId: string;

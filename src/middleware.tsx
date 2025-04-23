@@ -2,9 +2,6 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 export default async function middleware(req: NextRequest) {
-  // const accessToken = req.cookies.get('accessToken')?.value;
-  // console.log('accessToken', accessToken);
-
   const authUser = true;
 
   if (!authUser)

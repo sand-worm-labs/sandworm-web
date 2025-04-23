@@ -29,8 +29,8 @@ import {
 import { useSandwormStore } from "@/store";
 import type { Query } from "@/types";
 
-import HomeTab from "./HomeTab";
-import SortableTab from "./SortableTab";
+import { HomeTab } from "./HomeTab";
+import { SortableTab } from "./SortableTab";
 import { QueryTab } from "./QueryTab";
 
 export const WorkspaceTabs = ({
@@ -70,7 +70,6 @@ export const WorkspaceTabs = ({
     const isReadonly = initialQuery.creator !== currentUserId;
 
     if (!tabExists) {
-      console.log("Creating new tab:", initialQuery);
       createTab(initialQuery.title, "sql", initialQuery.query, initialQuery.id);
 
       useSandwormStore.setState(state => ({

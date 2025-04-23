@@ -21,19 +21,10 @@ export const useCreateQuery = () => {
       setError(null);
 
       try {
-        console.log(
-          "Creating query with payload:",
-          {
-            ...payload,
-          },
-          session,
-          session.user?.id
-        );
         const response = await createQuery({
           ...payload,
           creator: session.user?.id,
         });
-        console.log("Create query response:", response);
         return response;
       } catch (err: any) {
         console.error("Create query error:", err);

@@ -6,7 +6,7 @@ import { SquareTerminal } from "lucide-react";
 
 import type { Query, QueryPagination } from "@/types";
 
-import QueryCard from "../QueryCard";
+import { QueryCard } from "../QueryCard";
 
 interface IQueryListProps {
   queries: Query[];
