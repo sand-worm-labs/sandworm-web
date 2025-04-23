@@ -25,7 +25,6 @@ const authConfig = {
         ...(user && { id: user.id }),
       };
 
-      console.log("JWT token:", newToken);
       return newToken;
     },
 

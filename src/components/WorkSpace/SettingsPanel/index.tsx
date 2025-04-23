@@ -36,18 +36,6 @@ export const SettingsPanel: React.FC = () => {
     setDefaultChain,
   } = useSandwormStore();
 
-  const handleSave = () => {
-    const settings = {
-      selectedChain,
-      rpcUrl,
-      editorTheme,
-      shortcutsEnabled,
-      betaFeatures,
-      defaultChain,
-    };
-    console.log("Saved settings:", settings);
-  };
-
   return (
     <Card className="h-full overflow-hidden border-none dark">
       <CardHeader className="p-4 border-b ">

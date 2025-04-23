@@ -44,7 +44,6 @@ export const QueryHistory: React.FC<QueryHistoryProps> = ({
 
       try {
         const data = await fetchQueryUpdate(queryId);
-        console.log("hmmm", data);
         setVersions(data);
       } catch (err) {
         console.error("Error fetching query versions:", err);

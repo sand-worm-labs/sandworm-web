@@ -21,7 +21,6 @@ export default function ProfileSettings() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Profile Data:", formData);
   };
 
   return (

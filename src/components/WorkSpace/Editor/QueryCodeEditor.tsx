@@ -181,7 +181,6 @@ export const QueryCodeEditor = ({
 
   useEffect(() => {
     return () => {
-      console.log(value);
       if (editorRef.current) {
         editorRef.current.dispose();
         editorRef.current = null;

@@ -40,7 +40,6 @@ export const SaveModal = ({
   const handleSave = async () => {
     if (!session?.user?.id) {
       toast.error("You need to login first to save a query 👀");
-      console.log("User not logged in");
       return;
     }
 
@@ -54,7 +53,6 @@ export const SaveModal = ({
 
     if (res) {
       toast.success("Query saved successfully! 🔥");
-      console.log("Query saved successfully:", res);
       setOpen(false);
     }
   };

@@ -21,8 +21,6 @@ export const queryHasResults = (result: Record<string, object[]>): boolean => {
 export const formatApiResultToQueryResult = (
   result: Record<string, object[]>
 ): QueryResult => {
-  console.log(result);
-
   const allData: Array<Record<string, unknown>> = [];
   Object.keys(result).forEach(key => {
     if (Array.isArray(result[key]) && result[key].length > 0) {
@@ -69,8 +67,6 @@ export const formatApiResultToQueryResult = (
     });
     return row;
   });
-
-  console.log("data rows", data);
 
   return {
     columns,
