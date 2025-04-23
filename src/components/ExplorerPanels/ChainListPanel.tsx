@@ -16,7 +16,6 @@ export const ChainListPanel: React.FC<IChainListPanelProps> = ({
   chains,
   onSelect,
 }) => {
-  console.log(chains);
   return (
     <div className="flex flex-col  w-full border-t">
       {chains.map(chain => (

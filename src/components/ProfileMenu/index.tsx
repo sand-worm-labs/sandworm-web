@@ -20,7 +20,6 @@ import { DicebearAvatar } from "../DicebearAvatar";
 
 export const ProfileMenu: FC<CurrentUserProps> = ({ currentUser }) => {
   const [open, setOpen] = useState(false);
-  console.log("Current user in ProfileMenu:", currentUser);
 
   const handleSignOut = async () => {
     await signOut({ callbackUrl: "/" });

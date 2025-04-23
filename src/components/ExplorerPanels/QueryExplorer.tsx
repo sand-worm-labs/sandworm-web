@@ -10,6 +10,7 @@ import { CardHeader, CardTitle, CardContent, Card } from "../ui/card";
 import { Button } from "../ui/button";
 
 import { QueryExplorerCardList } from "./QueryExplorerCardList";
+import { QueryResponse } from "@/types";
 
 const LoadingState = () => (
   <div className="flex flex-col items-center justify-center h-full gap-4 text-center text-muted-foreground">
@@ -34,14 +35,13 @@ const EmptyState = () => (
 );
 
 export const QueryExplorer = () => {
-  const [queries, setQueries] = useState<any[]>([]);
+  const [queries, setQueries] = useState<QueryResponse[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const { data: session } = useSession();
 
   useEffect(() => {
     const loadQueries = async () => {
       if (!session?.user?.id) {
-        console.log("User not logged in");
         return;
       }
 

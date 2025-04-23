@@ -23,8 +23,6 @@ export function FirebaseAuthAdapter(): Adapter {
 
       const userData = result.data;
 
-      console.log("User created:", userData);
-
       return {
         id: userData.id,
         name: userData.name || userData.username,
