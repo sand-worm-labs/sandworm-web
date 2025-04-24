@@ -5,7 +5,7 @@ import { useMemo, useState, useEffect } from "react";
 import { getDefaultAxis, sanitizeChartData } from "@/lib/charts";
 import type { ChartProps } from "@/types";
 
-import { ChartControl } from ".";
+import { ChartControl } from "@/components/WorkSpace/ResultTab/Charts/ChartControl";
 
 interface ChartComponentProps extends ChartProps {
   getChartOptions: (
@@ -65,6 +65,7 @@ export const Chart: React.FC<ChartComponentProps> = ({
             setXAxis(newX);
             setYAxis(newY);
           }}
+          data={result.data}
         />
       </div>
     );

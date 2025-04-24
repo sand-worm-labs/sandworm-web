@@ -16,17 +16,13 @@ import { useSandwormStore } from "@/store";
 import { useForkQuery } from "@/hooks";
 import { SaveModal } from "@/components/WorkSpace";
 import { QueryCodeEditor } from "@/components/WorkSpace/Editor";
+import type { EditorTab } from "@/store";
 
 interface SqlEditorProps {
   tabId: string;
   title: string;
   className?: string;
-  selectedTab: {
-    id: string;
-    type: string;
-    content: string | null;
-    readonly: boolean;
-  };
+  selectedTab: EditorTab;
 }
 
 export const QueryEditor: React.FC<SqlEditorProps> = ({
@@ -187,7 +183,7 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
 
       <SaveModal
         open={isSaveModalOpen}
-        setOpen={setIsSaveModalOpen}
+        setOpenAction={setIsSaveModalOpen}
         title={currentTitle}
         content={currentContent}
       />

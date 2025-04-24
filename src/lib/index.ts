@@ -2,8 +2,7 @@
 
 // for example if you were using Sanity as your CMS you might want to add:
 // sanity.ts -> methods to interact with Sanity CMS
-import { getDateCompare } from "./date";
 import { fetcher } from "./fetcher";
-import { timeAgo } from "./date";
+import { timeAgo, getDateCompare } from "./date";
 
 export { fetcher, getDateCompare, timeAgo };
