@@ -8,9 +8,11 @@ import { SandwormLogo } from "@/components/Assets";
 
 import { ProfileMenu } from "../../ProfileMenu";
 import { SearchBar } from "../../SearchBar";
+import { useModalStore } from "@/store/auth";
 
 export const AppHeader: FC = () => {
   const { data: session } = useSession();
+  const openSignIn = useModalStore(state => state.openSignIn);
 
   return (
     <header className="px-8 py-2 flex justify-between items-center">
@@ -22,12 +24,12 @@ export const AppHeader: FC = () => {
       {session?.user ? (
         <ProfileMenu currentUser={{ ...session.user }} />
       ) : (
-        <Link
-          href="/sign-in"
+        <button
           className="border py-1.5 bg-white text-black rounded px-4 text-[0.9rem] font-medium hover:bg-white/85"
+          onClick={openSignIn}
         >
           Sign In
-        </Link>
+        </button>
       )}
     </header>
   );
