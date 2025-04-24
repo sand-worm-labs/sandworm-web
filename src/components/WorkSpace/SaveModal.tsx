@@ -34,7 +34,7 @@ export const SaveModal = ({
   const [tags, setTags] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
 
-  const { create, loading, error } = useCreateQuery();
+  const { create, loading } = useCreateQuery();
   const { data: session } = useSession();
 
   const handleSave = async () => {
@@ -110,7 +110,6 @@ export const SaveModal = ({
             <Label htmlFor="private">Make Private</Label>
           </div>
           <Button
-            onClick={handleSave}
             disabled={loading}
             className="w-full bg-white text-black font-medium py-5 text-base"
           >
