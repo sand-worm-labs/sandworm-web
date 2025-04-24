@@ -26,6 +26,7 @@ export const AppHeader: FC = () => {
       ) : (
         <button
           className="border py-1.5 bg-white text-black rounded px-4 text-[0.9rem] font-medium hover:bg-white/85"
+          type="button"
           onClick={openSignIn}
         >
           Sign In
