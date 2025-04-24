@@ -33,7 +33,7 @@ interface DownloadDialogProps {
   maxRows?: number;
 }
 
-const DownloadDialog: React.FC<DownloadDialogProps> = ({
+export const DownloadDialog: React.FC<DownloadDialogProps> = ({
   data,
   query,
   maxRows = 1_000_000,
@@ -181,5 +181,3 @@ const DownloadDialog: React.FC<DownloadDialogProps> = ({
     </Dialog>
   );
 };
-
-export default DownloadDialog;

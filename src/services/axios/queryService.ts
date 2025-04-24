@@ -1,4 +1,5 @@
-import type { User, QueryResponse } from "@/types";
+import type { User, QueryResponse, Query } from "@/types";
+
 import { AxiosService } from ".";
 
 const API_BASE_URL = "http://localhost:3000";
@@ -24,12 +25,19 @@ export interface CreateQueryPayload {
   tags: string[];
 }
 
-export const fetchUserQuery = (uid: string) => {
+export interface QueryServiceResponse {
+  queries: {
+    page_items: Query[];
+  };
+  user: User;
+}
+
+export const fetchUserQuery = (uid: string): Promise<QueryServiceResponse> => {
   return api.get(`/api/query/user?uid=${uid}`);
 };
 
 export const fetchQueryUpdate = (id: string) => {
-  return api.get(`/api/query/updates?id=${id}`);
+  return api.get(`/api/query/updates?queryId=${id}`);
 };
 
 export const createQuery = (data: CreateQueryPayload) => {
@@ -38,6 +46,13 @@ export const createQuery = (data: CreateQueryPayload) => {
 
 export const patchUserQuery = (uid: string, data: PatchQueryPayload) => {
   return api.patch(`/api/query/user?uid=${uid}`, data);
+};
+
+export const forkQuery = (queryId: string, uid: string) => {
+  return api.post(`/api/query/fork`, {
+    uid,
+    queryId,
+  });
 };
 
 export const likeQuery = (queryId: string, uid: string) => {

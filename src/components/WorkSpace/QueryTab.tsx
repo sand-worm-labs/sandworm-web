@@ -9,10 +9,9 @@ import {
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { useSandwormStore } from "@/store";
 
-import QueryEditor from "../Editor/QueryEditor";
-
 import QueryResultsTable from "./ResultTab/index";
 import { ResultToolbar } from "./ResultTab/ResultToolbar";
+import { QueryEditor } from "./Editor/QueryEditor";
 
 interface QueryTabProps {
   tabId: string;
@@ -99,7 +98,11 @@ c30,0,30,26.9,60,26.9"
     <div className="h-full">
       <ResizablePanelGroup direction="vertical" className="relative">
         <ResizablePanel defaultSize={40} minSize={25} className="relative">
-          <QueryEditor tabId={tabId} title={currentTab.title} />
+          <QueryEditor
+            tabId={tabId}
+            title={currentTab.title}
+            selectedTab={currentTab}
+          />
         </ResizablePanel>
 
         <ResizableHandle withHandle />

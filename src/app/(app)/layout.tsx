@@ -1,7 +1,8 @@
 import { Toaster } from "sonner";
 
-import FooterWrapper from "@/components/AppFooter/FooterWrapper";
-import AppHeader from "@/components/AppHeader";
+import { FooterWrapper } from "@/components/Layout/AppFooter/FooterWrapper";
+import { AppHeader } from "@/components/Layout/AppHeader";
+import { SignInModal } from "@/components/AuthUI/SignInModal";
 
 export default async function AppLayout({
   children,
@@ -13,6 +14,7 @@ export default async function AppLayout({
       <AppHeader />
       <main>{children}</main>
       <FooterWrapper />
+      <SignInModal />
       <Toaster />
     </>
   );

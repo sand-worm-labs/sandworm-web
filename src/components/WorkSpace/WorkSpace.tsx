@@ -2,18 +2,18 @@
 
 import { useState, useEffect, useCallback } from "react";
 
-import AppSidebar from "@/components/AppSidebar";
-import DataExplorer from "@/components/Explorer/DataExplorer";
+import { AppSidebar } from "@/components/Layout/AppSidebar";
+import { DataExplorer } from "@/components/ExplorerPanels/DataExplorer";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import WorkspaceTabs from "@/components/WorkSpace";
-import { QueryHistory } from "@/components/Explorer/QueryHistory";
-import { QueryExplorer } from "@/components/Explorer/QueryExplorer";
+import { WorkspaceTabs } from "@/components/WorkSpace/WorkspaceTabs";
+import { QueryHistory } from "@/components/ExplorerPanels/QueryHistory";
+import { QueryExplorer } from "@/components/ExplorerPanels/QueryExplorer";
 import { SettingsPanel } from "@/components/WorkSpace/SettingsPanel";
-import { Query } from "@/types/query";
+import type { Query } from "@/types";
 
 type ViewType =
   | "dataExplorer"
@@ -32,16 +32,14 @@ interface WorkSpaceProps {
   initialQuery?: Query;
 }
 
-export default function WorkSpace({ initialQuery }: WorkSpaceProps) {
+export const WorkSpace = ({ initialQuery }: WorkSpaceProps) => {
   const [currentView, setCurrentView] = useState<ViewType>("dataExplorer");
   const [isMobile, setIsMobile] = useState<boolean>(false);
-
-  console.log("WorkSpace initialQuery:", initialQuery);
 
   const panelComponents: PanelComponents = {
     dataExplorer: <DataExplorer />,
     queryExplorer: <QueryExplorer />,
-    ChangeLog: <QueryHistory />,
+    ChangeLog: <QueryHistory queryId={initialQuery?.id} />,
     settingsPanel: <SettingsPanel />,
   };
 
@@ -67,7 +65,7 @@ export default function WorkSpace({ initialQuery }: WorkSpaceProps) {
               defaultSize={50}
               minSize={40}
             >
-              <WorkspaceTabs />
+              <WorkspaceTabs initialQuery={initialQuery} />
             </ResizablePanel>
           )}
 
@@ -86,7 +84,7 @@ export default function WorkSpace({ initialQuery }: WorkSpaceProps) {
               <ResizableHandle withHandle />
               <ResizablePanel
                 className="overflow-auto"
-                defaultSize={70}
+                defaultSize={75}
                 minSize={40}
               >
                 <WorkspaceTabs initialQuery={initialQuery} />
@@ -97,4 +95,4 @@ export default function WorkSpace({ initialQuery }: WorkSpaceProps) {
       </div>
     </div>
   );
-}
+};

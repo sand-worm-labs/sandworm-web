@@ -1,7 +1,7 @@
 import { getPieChartOptions } from "@/lib/gatPieChartOptions";
 import type { ChartProps } from "@/types";
 
-import { Chart } from ".";
+import { Chart } from "./Chart";
 
 export const PieChart: React.FC<ChartProps> = ({ result, title }) => {
   return (

@@ -13,7 +13,7 @@ interface ButtonProps {
   isLoading?: boolean;
 }
 
-const Button: React.FC<ButtonProps> = ({
+export const Button: React.FC<ButtonProps> = ({
   label,
   onClick,
   disabled,
@@ -58,5 +58,3 @@ const Button: React.FC<ButtonProps> = ({
     </button>
   );
 };
-
-export default Button;

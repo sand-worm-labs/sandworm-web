@@ -2,16 +2,16 @@
 
 import { useState, useEffect, useCallback } from "react";
 
-import AppSidebar from "@/components/AppSidebar";
-import DataExplorer from "@/components/Explorer/DataExplorer";
+import { AppSidebar } from "@/components/Layout/AppSidebar";
+import { DataExplorer } from "@/components/ExplorerPanels/DataExplorer";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import WorkspaceTabs from "@/components/WorkSpace";
-import { QueryHistory } from "@/components/Explorer/QueryHistory";
-import { QueryExplorer } from "@/components/Explorer/QueryExplorer";
+import { WorkspaceTabs } from "@/components/WorkSpace/WorkspaceTabs";
+import { QueryHistory } from "@/components/ExplorerPanels/QueryHistory";
+import { QueryExplorer } from "@/components/ExplorerPanels/QueryExplorer";
 import { SettingsPanel } from "@/components/WorkSpace/SettingsPanel";
 
 type ViewType =

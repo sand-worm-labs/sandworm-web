@@ -3,7 +3,6 @@ import "@/services/firebase";
 
 import { QueryService } from "@/services/firebase/db/QueryService";
 import { DataResult } from "@/services/firebase/db";
-
 import { auth } from "@/services/auth";
 
 export async function POST(request: Request) {
@@ -25,11 +24,13 @@ export async function POST(request: Request) {
   } = await request.json();
 
   if (session.user?.id !== uid) {
+    console.warn("User mismatch", session.user?.id, uid);
     return new Response(
       JSON.stringify(DataResult.failure("Invalid User", "UNAUTHORIZED")),
       { status: 401 }
     );
   }
+
   const result = await QueryService.fork(queryId, uid);
   if (!result.success)
     return new Response(JSON.stringify(result), { status: 500 });

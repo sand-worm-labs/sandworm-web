@@ -9,7 +9,7 @@ import {
   DropdownMenuCheckboxItem,
 } from "@/components/ui/dropdown-menu";
 
-import DownloadDialog from "../DownloadDialog";
+import { DownloadDialog } from "../DownloadDialog";
 import { SimpleFilter } from "../SimpleFilter";
 
 import { TablePagination } from "./TablePagination";

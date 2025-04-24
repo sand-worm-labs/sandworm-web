@@ -19,28 +19,27 @@ import { Checkbox } from "@/components/ui/checkbox";
 
 interface SaveModalProps {
   open: boolean;
-  setOpen: (open: boolean) => void;
+  setOpenAction: (open: boolean) => void;
   title: string;
   content: string;
 }
 
-export default function SaveModal({
+export const SaveModal = ({
   open,
-  setOpen,
+  setOpenAction,
   title,
   content,
-}: SaveModalProps) {
+}: SaveModalProps) => {
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
 
-  const { create, loading, error } = useCreateQuery();
+  const { create, loading } = useCreateQuery();
   const { data: session } = useSession();
 
   const handleSave = async () => {
     if (!session?.user?.id) {
       toast.error("You need to login first to save a query 👀");
-      console.log("User not logged in");
       return;
     }
 
@@ -54,13 +53,12 @@ export default function SaveModal({
 
     if (res) {
       toast.success("Query saved successfully! 🔥");
-      console.log("Query saved successfully:", res);
-      setOpen(false);
+      setOpenAction(false);
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={setOpenAction}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Save Query</DialogTitle>
@@ -112,8 +110,8 @@ export default function SaveModal({
             <Label htmlFor="private">Make Private</Label>
           </div>
           <Button
-            onClick={handleSave}
             disabled={loading}
+            onClick={handleSave}
             className="w-full bg-white text-black font-medium py-5 text-base"
           >
             {loading ? "Saving..." : "Save Query"}
@@ -122,4 +120,4 @@ export default function SaveModal({
       </DialogContent>
     </Dialog>
   );
-}
+};
