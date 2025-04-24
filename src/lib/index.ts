@@ -4,7 +4,6 @@
 // sanity.ts -> methods to interact with Sanity CMS
 import { getDateCompare } from "./date";
 import { fetcher } from "./fetcher";
-import { logError, logInfo } from "./logger";
 import { timeAgo } from "./date";
 
-export { fetcher, getDateCompare, logError, logInfo, timeAgo };
+export { fetcher, getDateCompare, timeAgo };

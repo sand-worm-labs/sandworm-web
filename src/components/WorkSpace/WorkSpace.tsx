@@ -2,18 +2,18 @@
 
 import { useState, useEffect, useCallback } from "react";
 
-import AppSidebar from "@/components/Layout/AppSidebar";
-import DataExplorer from "@/components/ExplorerPanels/DataExplorer";
+import { AppSidebar } from "@/components/Layout/AppSidebar";
+import { DataExplorer } from "@/components/ExplorerPanels/DataExplorer";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import WorkspaceTabs from "@/components/WorkSpace/WorkspaceTabs";
+import { WorkspaceTabs } from "@/components/WorkSpace/WorkspaceTabs";
 import { QueryHistory } from "@/components/ExplorerPanels/QueryHistory";
 import { QueryExplorer } from "@/components/ExplorerPanels/QueryExplorer";
 import { SettingsPanel } from "@/components/WorkSpace/SettingsPanel";
-import type { Query } from "@/types/query";
+import type { Query } from "@/types";
 
 type ViewType =
   | "dataExplorer"
@@ -39,7 +39,7 @@ export const WorkSpace = ({ initialQuery }: WorkSpaceProps) => {
   const panelComponents: PanelComponents = {
     dataExplorer: <DataExplorer />,
     queryExplorer: <QueryExplorer />,
-    ChangeLog: <QueryHistory queryId={initialQuery.id} />,
+    ChangeLog: <QueryHistory queryId={initialQuery?.id} />,
     settingsPanel: <SettingsPanel />,
   };
 
