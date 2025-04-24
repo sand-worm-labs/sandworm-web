@@ -2,9 +2,8 @@
 
 import { useRouter } from "next/navigation";
 
-import { Button } from "../ui/button";
-
-import Heading from "./Heading";
+import { Button } from "@/components/ui/button";
+import { Heading } from "@/components/EmptyState/Heading";
 
 interface EmptyStateProps {
   title?: string;
@@ -14,7 +13,7 @@ interface EmptyStateProps {
   reset?: () => void;
 }
 
-const EmptyState: React.FC<EmptyStateProps> = ({
+export const EmptyState: React.FC<EmptyStateProps> = ({
   title = "No exact matches",
   subtitle = "Try changing or removing some of your filters.",
   label = "Remove all filters",
@@ -57,5 +56,3 @@ const EmptyState: React.FC<EmptyStateProps> = ({
     </div>
   );
 };
-
-export default EmptyState;

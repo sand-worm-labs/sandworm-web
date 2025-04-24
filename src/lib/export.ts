@@ -77,6 +77,8 @@ export const getSizeWarning = (estimatedSize: string | null): string | null => {
     case "B":
       sizeInMB = sizeNum / (1024 * 1024);
       break;
+    default:
+      sizeInMB = sizeNum;
   }
 
   if (sizeInMB >= 100) {
@@ -145,6 +147,7 @@ export const processInChunks = async (
     }
 
     if (i < chunks - 1) {
+      // eslint-disable-next-line no-await-in-loop
       await new Promise(requestAnimationFrame);
     }
   }

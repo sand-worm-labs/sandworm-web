@@ -5,7 +5,7 @@ import { FaGithub } from "react-icons/fa";
 import { signIn } from "next-auth/react";
 import { useTransition } from "react";
 
-export default function SocialLogin() {
+export const SocialLogin = () => {
   const [, startTransition] = useTransition();
 
   const handleGoogleSignIn = async () => {
@@ -21,7 +21,7 @@ export default function SocialLogin() {
   };
 
   return (
-    <div className="mt-6 flex space-x-3">
+    <div className="mt-3 flex space-x-3">
       <button
         type="button"
         onClick={handleGoogleSignIn}
@@ -41,4 +41,4 @@ export default function SocialLogin() {
       </button>
     </div>
   );
-}
+};

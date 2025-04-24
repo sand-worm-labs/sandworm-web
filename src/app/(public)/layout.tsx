@@ -1,5 +1,5 @@
-import MainFooter from "@/components/Footer";
-import MainHeader from "@/components/Header";
+import { MainFooter } from "@/components/Layout/Footer";
+import { MainHeader } from "@/components/Layout/Header";
 
 export default function PublicLayout({
   children,

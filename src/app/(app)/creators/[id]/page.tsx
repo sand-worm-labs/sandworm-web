@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 
-import { Creators } from "@/components/Creators";
+import { Creator } from "@/components/Creators/Creator";
 import type { QueryResponse, User } from "@/types";
 import { AxiosService } from "@/services/axios";
 
@@ -46,7 +46,7 @@ export default async function CreatorsPage({
   ]);
 
   return (
-    <Creators
+    <Creator
       user={user}
       queries={queries}
       starredQueries={starred}

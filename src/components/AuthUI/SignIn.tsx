@@ -4,11 +4,11 @@ import Link from "next/link";
 
 import { SandwormLogo } from "../Assets/SandwormLogo";
 
-import SignInForm from "./SignInForm";
-import SocialLogin from "./SocialLogin";
-import ConnectWallet from "./ConnectWallet";
+import { SignInForm } from "./SignInForm";
+import { SocialLogin } from "./SocialLogin";
+import { ConnectWallet } from "./ConnectWallet";
 
-export default function SignIn() {
+export const SignIn = () => {
   return (
     <div className="flex min-h-screen items-center justify-center p-6 line-bg relative">
       <Link
@@ -36,4 +36,4 @@ export default function SignIn() {
       </div>
     </div>
   );
-}
+};

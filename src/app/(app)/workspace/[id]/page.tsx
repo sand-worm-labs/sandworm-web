@@ -1,13 +1,6 @@
-import WorkSpace from "@/components/WorkSpace/WorkSpace";
+import { WorkSpace } from "@/components/WorkSpace/WorkSpace";
 import { fetchQueryById } from "@/services/axios/queryService";
-import { notFound } from "next/navigation";
 import { auth } from "@/services/auth";
-
-import type { Query } from "@/types";
-
-interface PageProps {
-  params: { id: string };
-}
 
 export default async function WorkspacePage({
   params,
@@ -15,14 +8,20 @@ export default async function WorkspacePage({
   params: { id: string };
 }) {
   const session = await auth();
-  const queryRes = await fetchQueryById(params.id).catch(() => null);
-
-  console.log("Query response:", queryRes);
-
-  if (!queryRes) return notFound();
-
-  const query = queryRes;
   const currentUserId = session?.user?.id || "";
 
-  return <WorkSpace initialQuery={query} currentUserId={currentUserId} />;
+  let initialQuery = null;
+
+  try {
+    initialQuery = await fetchQueryById(params.id);
+  } catch (err) {
+    console.warn("Query fetch failed, might be local tab:", err);
+  }
+
+  return (
+    <WorkSpace
+      initialQuery={initialQuery || undefined}
+      currentUserId={currentUserId}
+    />
+  );
 }
