@@ -19,13 +19,13 @@ interface SimpleFilterProps {
   width?: string;
 }
 
-export function SimpleFilter({
+export const SimpleFilter = ({
   onFilterChange,
   className,
   placeholder = "Search all columns...",
   debounceMs = 500,
   width = "w-[200px]",
-}: SimpleFilterProps) {
+}: SimpleFilterProps) => {
   const [filterText, setFilterText] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -145,4 +145,4 @@ export function SimpleFilter({
       )}
     </div>
   );
-}
+};

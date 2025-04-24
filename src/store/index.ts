@@ -16,25 +16,6 @@ export interface ConnectionList {
   connections: ConnectionProvider[];
 }
 
-export interface ColumnInfo {
-  name: string;
-  type: string;
-  nullable: boolean;
-}
-
-export interface TableInfo {
-  name: string;
-  schema: string;
-  columns: ColumnInfo[];
-  rowCount: number;
-  createdAt: string;
-}
-
-export interface DatabaseInfo {
-  name: string;
-  tables: TableInfo[];
-}
-
 export interface QueryResult {
   columns: string[];
   columnTypes: string[];
@@ -52,13 +33,32 @@ export interface QueryHistoryItem {
 
 export type EditorTabType = "sql" | "home";
 
+export type Theme = "sandworm" | "vs-dark" | "vs-light" | "monokai";
+
 export interface EditorTab {
   id: string;
   title: string;
   type: EditorTabType;
   content: string | { database?: string; table?: string };
+  createdAt?: number;
   result?: QueryResult | null;
   readonly?: boolean;
+}
+
+const chainRpcMap: Record<string, string> = {
+  Sui: "https://rpc.sui.io",
+  Ethereum: "https://mainnet.infura.io/v3/YOUR_KEY",
+  Polygon: "https://polygon-rpc.com",
+  Arbitrum: "https://arb1.arbitrum.io/rpc",
+};
+
+export interface SandwormSettings {
+  selectedChain: string;
+  rpcUrl: string;
+  editorTheme: "sandworm" | "vs-dark" | "vs-light" | "monokai";
+  shortcutsEnabled: boolean;
+  betaFeatures: boolean;
+  defaultChain: string;
 }
 
 export interface SandwormStoreState {
@@ -66,21 +66,20 @@ export interface SandwormStoreState {
   currentDatabase: string;
   currentConnection: CurrentConnection | null;
   connectionList: ConnectionList;
-  databases: DatabaseInfo[];
   queryHistory: QueryHistoryItem[];
   isExecuting: boolean;
   tabs: EditorTab[];
   activeTabId: string | null;
   isLoading: boolean;
   error: string | null;
-  isLoadingDbTablesFetch: boolean;
+  settings: SandwormSettings;
   initialize: () => Promise<void>;
   executeQuery: (query: string, tabId?: string) => Promise<QueryResult | void>;
   createTab: (
     title?: string,
+    id?: string,
     type?: EditorTabType,
-    content?: EditorTab["content"],
-    id?: string
+    content?: EditorTab["content"]
   ) => void;
   closeTab: (tabId: string) => void;
   setActiveTab: (tabId: string) => void;
@@ -91,6 +90,14 @@ export interface SandwormStoreState {
   clearHistory: () => void;
   cleanup: () => Promise<void>;
   exportParquet: (query: string) => Promise<Blob>;
+
+  // 🔧 Settings Action
+  setSelectedChain: (chain: string) => void;
+  setRpcUrl: (url: string) => void;
+  setEditorTheme: (theme: Theme) => void;
+  setShortcutsEnabled: (enabled: boolean) => void;
+  setBetaFeatures: (enabled: boolean) => void;
+  setDefaultChain: (chain: string) => void;
 }
 
 const createMockWasmResult = () => {
@@ -209,8 +216,8 @@ export const useSandwormStore = create<SandwormStoreState>()(
         isExecuting: false,
         tabs: [
           {
-            id: "home",
             title: "Home",
+            id: "home",
             type: "home",
             content: "",
           },
@@ -224,10 +231,17 @@ export const useSandwormStore = create<SandwormStoreState>()(
         connectionList: {
           connections: [],
         },
+        settings: {
+          selectedChain: "Sui",
+          rpcUrl: chainRpcMap.Sui,
+          editorTheme: "sandworm",
+          shortcutsEnabled: true,
+          betaFeatures: false,
+          defaultChain: "Sui",
+        },
 
         initialize: async () => {},
 
-        // Execute a query with proper error handling.
         executeQuery: async (query, tabId?) => {
           try {
             set({ isExecuting: true, error: null });
@@ -243,7 +257,7 @@ export const useSandwormStore = create<SandwormStoreState>()(
               const resContentType = res.headers.get("Content-Type");
 
               if (resContentType?.includes("application/json")) {
-                const { result, error } = (await res.json()) as ApiResponse;
+                const { result, error } = await res.json();
 
                 if (error) {
                   console.log("unexpected error:", error);
@@ -325,24 +339,27 @@ export const useSandwormStore = create<SandwormStoreState>()(
 
         // Tab management actions.
         createTab: (
-          title: string,
+          title?: string,
+          id?: string,
           type: EditorTab["type"] = "sql",
-          content = "",
-          id?: string
+          content = ""
         ) => {
           const tabId = id ?? crypto.randomUUID();
 
           set(state => {
             const existingTab = state.tabs.find(tab => tab.id === tabId);
+
             if (existingTab) {
               return { ...state, activeTabId: tabId };
             }
 
             const newTab: EditorTab = {
-              title: typeof title === "string" ? title : "New Query",
+              id: tabId,
+              title: title?.trim() || "Untitled Query",
               type,
               content,
-              id: tabId,
+              createdAt: Date.now(),
+              readonly: Boolean(id),
             };
 
             return {
@@ -427,26 +444,15 @@ export const useSandwormStore = create<SandwormStoreState>()(
 
         exportParquet: async (query: string) => {
           try {
-            const { connection, db, currentConnection } = get();
-            if (currentConnection?.scope === "External") {
-              throw new Error(
-                "Exporting to parquet is not supported for external connections."
-              );
-            }
-            if (!connection || !db) {
-              throw new Error("Database not initialized");
-            }
             const now = new Date()
               .toISOString()
               .split(".")[0]
               .replace(/[:]/g, "-");
             const fileName = `result-${now}.parquet`;
-            await connection.query(
-              `COPY (${query}) TO '${fileName}' (FORMAT 'parquet')`
-            );
-            const parquetBuffer = await db.copyFileToBuffer(fileName);
-            await db.dropFile(fileName);
-            return new Blob([parquetBuffer], { type: "application/parquet" });
+            console.log(fileName, query);
+
+            console.error("Parquet export functionality not implemented");
+            throw new Error("Parquet export functionality not implemented");
           } catch (error) {
             console.error("Failed to export to parquet:", error);
             throw new Error(
@@ -460,7 +466,6 @@ export const useSandwormStore = create<SandwormStoreState>()(
         cleanup: async () => {
           set({
             isInitialized: false,
-            databases: [],
             currentDatabase: "memory",
             error: null,
             queryHistory: [],
@@ -476,16 +481,53 @@ export const useSandwormStore = create<SandwormStoreState>()(
             currentConnection: null,
           });
         },
+
+        // ⚡ settings actions
+        setSelectedChain: chain => {
+          const currentRpc = get().settings.rpcUrl;
+          const previousChain = get().settings.selectedChain;
+          const previousRpc = chainRpcMap[previousChain];
+          const defaultRpc = chainRpcMap[chain];
+
+          set(state => ({
+            settings: {
+              ...state.settings,
+              selectedChain: chain,
+              rpcUrl: currentRpc === previousRpc ? defaultRpc : currentRpc,
+            },
+          }));
+        },
+        setRpcUrl: url =>
+          set(state => ({
+            settings: { ...state.settings, rpcUrl: url },
+          })),
+        setEditorTheme: theme =>
+          set(state => ({
+            settings: { ...state.settings, editorTheme: theme },
+          })),
+        setShortcutsEnabled: enabled =>
+          set(state => ({
+            settings: { ...state.settings, shortcutsEnabled: enabled },
+          })),
+        setBetaFeatures: enabled =>
+          set(state => ({
+            settings: { ...state.settings, betaFeatures: enabled },
+          })),
+        setDefaultChain: chain =>
+          set(state => ({
+            settings: { ...state.settings, defaultChain: chain },
+          })),
       }),
       {
         name: "sandworm-storage",
         partialize: state => ({
           queryHistory: state.queryHistory,
-          databases: state.databases,
           tabs: state.tabs.map(tab => ({ ...tab, result: undefined })),
+          activeTabId: state.activeTabId,
           currentDatabase: state.currentDatabase,
           currentConnection: state.currentConnection,
           connectionList: state.connectionList,
+          settings: state.settings,
         }),
       }
     )

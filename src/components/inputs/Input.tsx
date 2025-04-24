@@ -18,7 +18,7 @@ interface InputProps {
   errors: FieldErrors;
 }
 
-const Input: React.FC<InputProps> = ({
+export const Input: React.FC<InputProps> = ({
   id,
   label,
   type = "text",
@@ -90,5 +90,3 @@ const Input: React.FC<InputProps> = ({
     </div>
   );
 };
-
-export default Input;

@@ -139,6 +139,7 @@ export interface ChartProps {
     data: Record<string, any>[];
   };
   title: string;
+  chartType: string;
 }
 
 export type ExportFormat = "csv" | "json" | "parquet" | "clipboard";

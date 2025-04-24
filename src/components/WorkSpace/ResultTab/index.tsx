@@ -298,10 +298,6 @@ function QueryResultsTable<T extends RowData>({
     );
   }
 
-  useEffect(() => {
-    console.log("result", result);
-  }, [viewMode]);
-
   const viewRenderers: Record<string, any | (() => any)> = {
     JSON: <QueryResultJson result={result} />,
     Table: (

@@ -6,9 +6,8 @@ import { FaTelegramPlane } from "react-icons/fa";
 import Image from "next/image";
 
 import type { User } from "@/types";
-import { timeAgo } from "@/lib/date";
-
-import { DicebearAvatar } from "../DicebearAvatar";
+import { timeAgo } from "@/lib";
+import { DicebearAvatar } from "@/components";
 
 interface CreatorInfoProps {
   user: User;

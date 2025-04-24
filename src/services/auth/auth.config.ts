@@ -25,12 +25,11 @@ const authConfig = {
         ...(user && { id: user.id }),
       };
 
-      console.log("JWT token:", newToken);
       return newToken;
     },
 
     async session({ session, token }) {
-      session.user.id = token?.id ?? null;
+      session.user.id = token?.id ?? "";
       return session;
     },
 
