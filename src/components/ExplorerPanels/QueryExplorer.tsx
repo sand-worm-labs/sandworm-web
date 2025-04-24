@@ -5,12 +5,12 @@ import { SquareTerminal, Plus, Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 
 import { fetchUserQuery } from "@/services/axios/queryService";
+import type { QueryResponse } from "@/types";
 
 import { CardHeader, CardTitle, CardContent, Card } from "../ui/card";
 import { Button } from "../ui/button";
 
 import { QueryExplorerCardList } from "./QueryExplorerCardList";
-import { QueryResponse } from "@/types";
 
 const LoadingState = () => (
   <div className="flex flex-col items-center justify-center h-full gap-4 text-center text-muted-foreground">
@@ -48,6 +48,7 @@ export const QueryExplorer = () => {
       try {
         const uid = session?.user.id;
         const data = await fetchUserQuery(uid);
+        console.log("Fetched queries:", data);
         setQueries(data?.queries?.page_items || []);
       } catch (err) {
         console.error("Error fetching queries:", err);

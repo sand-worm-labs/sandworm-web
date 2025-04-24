@@ -9,7 +9,7 @@ import type { Query, QueryPagination } from "@/types";
 import { QueryCard } from "../QueryCard";
 
 interface IQueryListProps {
-  queries: Query[];
+  queries: Query[] | null;
   pagination: QueryPagination;
 }
 

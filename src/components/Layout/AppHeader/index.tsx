@@ -5,10 +5,10 @@ import type { FC } from "react";
 import { useSession } from "next-auth/react";
 
 import { SandwormLogo } from "@/components/Assets";
+import { useModalStore } from "@/store/auth";
 
 import { ProfileMenu } from "../../ProfileMenu";
 import { SearchBar } from "../../SearchBar";
-import { useModalStore } from "@/store/auth";
 
 export const AppHeader: FC = () => {
   const { data: session } = useSession();

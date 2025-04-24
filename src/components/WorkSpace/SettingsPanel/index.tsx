@@ -139,11 +139,7 @@ export const SettingsPanel: React.FC = () => {
           </div>
 
           <div className="pt-4 flex justify-end">
-            <Button
-              onClick={handleSave}
-              variant="secondary"
-              className="text-white"
-            >
+            <Button variant="secondary" className="text-white">
               Save
             </Button>
           </div>

@@ -24,7 +24,11 @@ import {
 } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
 
-type ViewType = "dataExplorer" | "savedQueries" | "ChangeLog" | "settingsPanel";
+type ViewType =
+  | "dataExplorer"
+  | "queryExplorer"
+  | "ChangeLog"
+  | "settingsPanel";
 
 interface AppSidebarProps {
   currentView: ViewType;

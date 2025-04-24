@@ -11,9 +11,9 @@ import { QueryList } from "@/components/Queries/QueryList";
 import type { QueryResponse } from "@/types";
 
 interface TabSectionProps {
-  queries: QueryResponse;
-  forkedQueries: QueryResponse;
-  starredQueries: QueryResponse;
+  queries: QueryResponse | null;
+  starredQueries: QueryResponse | null;
+  forkedQueries: QueryResponse | null;
   defaultTab?: string;
 }
 
@@ -63,22 +63,34 @@ export const TabsSection: React.FC<TabSectionProps> = ({
       </TabsList>
       <div className="container mx-auto pt-6">
         <TabsContent value="all">
-          <QueryList
-            queries={queries.page_items}
-            pagination={queries.pagination}
-          />
+          {queries ? (
+            <QueryList
+              queries={queries.page_items}
+              pagination={queries.pagination}
+            />
+          ) : (
+            <div className="text-center py-8">No queries available</div>
+          )}
         </TabsContent>
         <TabsContent value="forked">
-          <QueryList
-            queries={forkedQueries.page_items}
-            pagination={forkedQueries.pagination}
-          />
+          {forkedQueries ? (
+            <QueryList
+              queries={forkedQueries.page_items}
+              pagination={forkedQueries.pagination}
+            />
+          ) : (
+            <div className="text-center py-8">No forked queries available</div>
+          )}
         </TabsContent>
         <TabsContent value="starred">
-          <QueryList
-            queries={starredQueries.page_items}
-            pagination={starredQueries.pagination}
-          />
+          {starredQueries ? (
+            <QueryList
+              queries={starredQueries.page_items}
+              pagination={starredQueries.pagination}
+            />
+          ) : (
+            <div className="text-center py-8">No starred queries available</div>
+          )}
         </TabsContent>
       </div>
     </Tabs>

@@ -70,7 +70,7 @@ export const WorkspaceTabs = ({
     const isReadonly = initialQuery.creator !== currentUserId;
 
     if (!tabExists) {
-      createTab(initialQuery.title, "sql", initialQuery.query, initialQuery.id);
+      createTab(initialQuery.title, initialQuery.id, "sql", initialQuery.query);
 
       useSandwormStore.setState(state => ({
         tabs: state.tabs.map(tab =>

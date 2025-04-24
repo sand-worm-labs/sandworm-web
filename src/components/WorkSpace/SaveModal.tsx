@@ -19,14 +19,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 
 interface SaveModalProps {
   open: boolean;
-  setOpen: (open: boolean) => void;
+  setOpenAction: (open: boolean) => void;
   title: string;
   content: string;
 }
 
 export const SaveModal = ({
   open,
-  setOpen,
+  setOpenAction,
   title,
   content,
 }: SaveModalProps) => {
@@ -53,12 +53,12 @@ export const SaveModal = ({
 
     if (res) {
       toast.success("Query saved successfully! 🔥");
-      setOpen(false);
+      setOpenAction(false);
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={setOpenAction}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Save Query</DialogTitle>
@@ -111,6 +111,7 @@ export const SaveModal = ({
           </div>
           <Button
             disabled={loading}
+            onClick={handleSave}
             className="w-full bg-white text-black font-medium py-5 text-base"
           >
             {loading ? "Saving..." : "Save Query"}

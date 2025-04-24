@@ -10,7 +10,7 @@ import type { editor } from "monaco-editor";
 interface QueryCodeEditorProps {
   initialValue?: string;
   tabId: string;
-  updateTabQuery: (tabId: string, query: string) => void;
+  updateTabQueryAction: (tabId: string, query: string) => void;
   onRunQuery?: () => Promise<void>;
   height?: string;
   readonly?: boolean;
@@ -20,13 +20,13 @@ interface QueryCodeEditorProps {
 export const QueryCodeEditor = ({
   initialValue,
   tabId,
-  updateTabQuery,
+  updateTabQueryAction,
   onRunQuery,
   height = "450px",
   readonly = false,
   theme,
 }: QueryCodeEditorProps) => {
-  const [value, setValue] = useState(initialValue);
+  const [, setValue] = useState(initialValue);
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 
   const executeQuery = async () => {
@@ -175,7 +175,7 @@ export const QueryCodeEditor = ({
     if (readonly) return;
     if (newValue !== undefined) {
       setValue(newValue);
-      updateTabQuery(tabId, newValue);
+      updateTabQueryAction(tabId, newValue);
     }
   };
 

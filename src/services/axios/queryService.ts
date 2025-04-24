@@ -1,4 +1,4 @@
-import type { User, QueryResponse } from "@/types";
+import type { User, QueryResponse, Query } from "@/types";
 
 import { AxiosService } from ".";
 
@@ -25,7 +25,14 @@ export interface CreateQueryPayload {
   tags: string[];
 }
 
-export const fetchUserQuery = (uid: string) => {
+export interface QueryServiceResponse {
+  queries: {
+    page_items: Query[];
+  };
+  user: User;
+}
+
+export const fetchUserQuery = (uid: string): Promise<QueryServiceResponse> => {
   return api.get(`/api/query/user?uid=${uid}`);
 };
 
