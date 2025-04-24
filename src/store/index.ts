@@ -40,11 +40,12 @@ export interface EditorTab {
   title: string;
   type: EditorTabType;
   content: string | { database?: string; table?: string };
+  createdAt?: number;
   result?: QueryResult | null;
   readonly?: boolean;
 }
 
-const chainRpcMap = {
+const chainRpcMap: Record<string, string> = {
   Sui: "https://rpc.sui.io",
   Ethereum: "https://mainnet.infura.io/v3/YOUR_KEY",
   Polygon: "https://polygon-rpc.com",
@@ -54,7 +55,7 @@ const chainRpcMap = {
 export interface SandwormSettings {
   selectedChain: string;
   rpcUrl: string;
-  editorTheme: string;
+  editorTheme: "sandworm" | "vs-dark" | "vs-light" | "monokai";
   shortcutsEnabled: boolean;
   betaFeatures: boolean;
   defaultChain: string;
@@ -76,9 +77,9 @@ export interface SandwormStoreState {
   executeQuery: (query: string, tabId?: string) => Promise<QueryResult | void>;
   createTab: (
     title?: string,
+    id?: string,
     type?: EditorTabType,
-    content?: EditorTab["content"],
-    id?: string
+    content?: EditorTab["content"]
   ) => void;
   closeTab: (tabId: string) => void;
   setActiveTab: (tabId: string) => void;
@@ -215,8 +216,8 @@ export const useSandwormStore = create<SandwormStoreState>()(
         isExecuting: false,
         tabs: [
           {
-            id: "home",
             title: "Home",
+            id: "home",
             type: "home",
             content: "",
           },
@@ -233,7 +234,7 @@ export const useSandwormStore = create<SandwormStoreState>()(
         settings: {
           selectedChain: "Sui",
           rpcUrl: chainRpcMap.Sui,
-          editorTheme: "Twilight",
+          editorTheme: "sandworm",
           shortcutsEnabled: true,
           betaFeatures: false,
           defaultChain: "Sui",
@@ -256,7 +257,7 @@ export const useSandwormStore = create<SandwormStoreState>()(
               const resContentType = res.headers.get("Content-Type");
 
               if (resContentType?.includes("application/json")) {
-                const { result, error } = (await res.json()) as ApiResponse;
+                const { result, error } = await res.json();
 
                 if (error) {
                   console.log("unexpected error:", error);
@@ -338,10 +339,10 @@ export const useSandwormStore = create<SandwormStoreState>()(
 
         // Tab management actions.
         createTab: (
-          title: string,
+          title?: string,
+          id?: string,
           type: EditorTab["type"] = "sql",
-          content = "",
-          id?: string
+          content = ""
         ) => {
           const tabId = id ?? crypto.randomUUID();
 
@@ -443,26 +444,15 @@ export const useSandwormStore = create<SandwormStoreState>()(
 
         exportParquet: async (query: string) => {
           try {
-            const { connection, db, currentConnection } = get();
-            if (currentConnection?.scope === "External") {
-              throw new Error(
-                "Exporting to parquet is not supported for external connections."
-              );
-            }
-            if (!connection || !db) {
-              throw new Error("Database not initialized");
-            }
             const now = new Date()
               .toISOString()
               .split(".")[0]
               .replace(/[:]/g, "-");
             const fileName = `result-${now}.parquet`;
-            await connection.query(
-              `COPY (${query}) TO '${fileName}' (FORMAT 'parquet')`
-            );
-            const parquetBuffer = await db.copyFileToBuffer(fileName);
-            await db.dropFile(fileName);
-            return new Blob([parquetBuffer], { type: "application/parquet" });
+            console.log(fileName, query);
+
+            console.error("Parquet export functionality not implemented");
+            throw new Error("Parquet export functionality not implemented");
           } catch (error) {
             console.error("Failed to export to parquet:", error);
             throw new Error(

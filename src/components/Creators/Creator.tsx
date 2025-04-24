@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Head from "next/head";
 
 import type { User, QueryResponse } from "@/types";
+
 import { CreatorInfo } from "./CreatorInfo";
 import { CreatorTabs } from "./CreatorTabs";
 

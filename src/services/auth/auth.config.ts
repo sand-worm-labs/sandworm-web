@@ -29,7 +29,7 @@ const authConfig = {
     },
 
     async session({ session, token }) {
-      session.user.id = token?.id ?? null;
+      session.user.id = token?.id ?? "";
       return session;
     },
 
