@@ -327,42 +327,40 @@ async function seedDatabase() {
         .map(user => user.id);
 
       await QueryService.star(query.id, query.creator);
-
       return { selectedUsers, query: query.id };
     })
   );
 
-  for (const { selectedUsers, query } of data) {
-    for (const user of selectedUsers) {
-      QueryService.star(query, user).then();
-    }
-  }
+  await Promise.all(
+    data.flatMap(({ selectedUsers, query }) =>
+      selectedUsers.map(user => QueryService.star(query, user))
+    )
+  );
+
   const queriesToFork = [...validQueries]
     .sort(() => 0.5 - Math.random())
     .slice(0, 30);
 
-  for (const query of queriesToFork) {
-    // Exclude the creator from eligible users
-    const eligibleUsers = validUsers.filter(user => user.id !== query.creator);
+  await Promise.all(
+    queriesToFork.flatMap(query => {
+      const eligibleUsers = validUsers.filter(
+        user => user.id !== query.creator
+      );
+      const forksToCreate = Math.floor(Math.random() * 4);
+      const selectedUsers = [...eligibleUsers]
+        .sort(() => 0.5 - Math.random())
+        .slice(0, forksToCreate);
 
-    const forksToCreate = Math.floor(Math.random() * 4); // 0 to 4 inclusive
-
-    // Shuffle eligible users and pick first `forksToCreate`
-    const selectedUsers = [...eligibleUsers]
-      .sort(() => 0.5 - Math.random())
-      .slice(0, forksToCreate);
-
-    for (const user of selectedUsers) {
-      try {
-        QueryService.fork(query.id, user.id).then();
-      } catch (err) {
-        console.error(
-          `Failed to fork query ${query.id} by user ${user.id}:`,
-          err
-        );
-      }
-    }
-  }
+      return selectedUsers.map(user =>
+        QueryService.fork(query.id, user.id).catch(err =>
+          console.error(
+            `Failed to fork query ${query.id} by user ${user.id}:`,
+            err
+          )
+        )
+      );
+    })
+  );
 
   // const randomUser = users[Math.floor(Math.random() * users.length)];
   // console.log("Random user:", randomUser);
