@@ -7,10 +7,10 @@ import type { QueryResponse } from "@/types";
 const axios = new AxiosService(process.env.NEXT_PUBLIC_API_URL!, false);
 
 interface ExplorePageProps {
-  searchParams: {
+  searchParams: Promise<{
     tab?: "all" | "starred" | "forked";
     page?: string;
-  };
+  }>;
 }
 
 async function getQueries(page = "1") {

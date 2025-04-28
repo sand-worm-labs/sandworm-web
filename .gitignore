@@ -47,6 +47,8 @@ firebase-debug.log
 firestore-debug.log
 pnpm-lock.yaml
 ui-debug.log
+firebase-debug.log
+
 *.log
 
 cypress/videos/
