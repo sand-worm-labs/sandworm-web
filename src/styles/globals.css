@@ -338,8 +338,10 @@ select:-webkit-autofill:focus {
 .content-container {
   display: flex;
 }
-.content-container > * {
-  width: 50%;
+@media (min-width: 900px) {
+  .content-container > * {
+    width: 50%;
+  }
 }
 
 .right-content {
