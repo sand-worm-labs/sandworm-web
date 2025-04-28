@@ -49,7 +49,9 @@ export const DownloadDialog: React.FC<DownloadDialogProps> = ({
   useEffect(() => {
     if (data.length > 0) {
       const estSize = estimateExportSize(data, downloadOption);
-      const formattedSize = isNaN(estSize) ? "Unknown" : formatBytes(estSize);
+      const formattedSize = Number.isNaN(estSize)
+        ? "Unknown"
+        : formatBytes(estSize);
       setEstimatedSize(formattedSize);
     } else {
       setEstimatedSize("0 B");

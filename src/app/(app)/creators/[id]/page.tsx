@@ -34,7 +34,7 @@ export default async function CreatorsPage({
   searchParams,
 }: ExplorePageProps) {
   const { id } = params;
-  const tab = searchParams?.tab || "all";
+  const tab = (await searchParams)?.tab || "all";
 
   if (!id) {
     notFound();
