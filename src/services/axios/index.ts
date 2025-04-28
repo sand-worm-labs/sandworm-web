@@ -28,7 +28,7 @@ export class AxiosService {
           if (session?.user) {
             console.log("Session:", session, "there is a session");
             newConfig.headers = {
-              ...config.headers,
+              ...newConfig.headers,
               Authorization: `Bearer ${session.sessionToken}`,
             };
           }
@@ -37,12 +37,12 @@ export class AxiosService {
           const csrfToken = await getCsrfToken();
           if (csrfToken) {
             newConfig.headers = {
-              ...config.headers,
+              ...newConfig.headers,
               "X-CSRF-Token": csrfToken,
             };
           }
 
-          return config;
+          return newConfig;
         },
         error => {
           return Promise.reject(error);
