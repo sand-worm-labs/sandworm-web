@@ -50,8 +50,8 @@ async function getForkedQueries(page = "1") {
 }
 
 export default async function Explore({ searchParams }: ExplorePageProps) {
-  const page = searchParams.page ?? "1";
-  const defaultTab = searchParams.tab ?? "all";
+  const page = (await searchParams).page ?? "1";
+  const defaultTab = (await searchParams).tab ?? "all";
 
   const [
     { data: allQueries, hasError: allError },

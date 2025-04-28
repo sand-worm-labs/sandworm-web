@@ -25,14 +25,14 @@ export const SectionHero = () => {
         <div className="absolute right  bottom-[-5rem] top-[4rem] right-[6rem]   hero-line  border-dashed hero-line" />
 
         <div className="flex items-center space-x-6 relative mt-20 lg:mt-0 w-full ">
-          <div className="lg:text-[3.6rem] text-4xl uppercase  font-[900] hero-title relative py-6 w-full">
-            <h1 className="mx-auto tracking-wide leading-[1.3]">
+          <div className="lg:text-[3.5rem] text-4xl uppercase  font-[900] hero-title relative py-6 w-full">
+            <h1 className="mx-auto tracking-wide leading-[1.3] px-3 lg:px-0">
               Open Analytics for Sui Blockchain
             </h1>
           </div>
         </div>
-        <div className="text-[#DBDBDBCC] py-10  text-lg hero-desc relative w-full mx-auto">
-          <p className=" max-w-[55rem] mx-auto ">
+        <div className="text-[#DBDBDBCC] lg:py-10 py-6 lg:text-lg  hero-desc relative w-full mx-auto">
+          <p className=" max-w-[55rem] mx-auto px-3 ">
             {" "}
             The simplest way to analyze and explore the Sui blockchain with a
             SQL-like query language, high-performance engine, and

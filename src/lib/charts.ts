@@ -20,7 +20,7 @@ export function getDefaultAxis(
 
   const sample = data[0];
   const numericCols = columns.filter(
-    col => typeof sample[col] === "number" || !isNaN(Number(sample[col]))
+    col => typeof sample[col] === "number" || !Number.isNaN(Number(sample[col]))
   );
 
   switch (chartType) {
@@ -54,7 +54,7 @@ export function validateChart(
 
   const sample = data[0];
   const numericCols = columns.filter(
-    col => typeof sample[col] === "number" || !any(Number(sample[col]))
+    col => typeof sample[col] === "number" || !Number.isNaN(Number(sample[col]))
   );
 
   switch (chartType) {
@@ -102,12 +102,13 @@ export function sanitizeChartData(
       const xIsAddress = typeof xRaw === "string" && isValidSuiAddress(xRaw);
 
       const isClearlyNumber =
-        typeof xRaw === "number" || (!xIsAddress && !isNaN(Number(xRaw)));
+        typeof xRaw === "number" ||
+        (!xIsAddress && !Number.isNaN(Number(xRaw)));
 
       const x = isClearlyNumber ? Number(xRaw) : xRaw;
       const y = Number(yRaw);
 
-      if (isNaN(y)) return null;
+      if (Number.isNaN(y)) return null;
       return { x, y };
     })
     .filter(Boolean) as { x: any; y: number }[];
