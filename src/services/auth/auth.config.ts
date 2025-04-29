@@ -22,15 +22,20 @@ const authConfig = {
     async jwt({ token, user }) {
       const newToken = {
         ...token,
-        ...(user && { id: user.id }),
+        ...(user && { id: user.id as string }),
       };
 
       return newToken;
     },
 
     async session({ session, token }) {
-      session.user.id = token?.id ?? "";
-      return session;
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: token.id as string,
+        },
+      };
     },
 
     async signIn({ user }) {
