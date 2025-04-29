@@ -20,10 +20,15 @@ export class AxiosService {
           const session = await getSession(); // Retrieve session info from NextAuth
 
           // Check if session exists, then add the token to the headers
+          const newConfig = { ...config };
+
+          // Create a new headers object
+          newConfig.headers = { ...config.headers };
+
           if (session?.user) {
             console.log("Session:", session, "there is a session");
-            config.headers = {
-              ...config.headers,
+            newConfig.headers = {
+              ...newConfig.headers,
               Authorization: `Bearer ${session.sessionToken}`,
             };
           }
@@ -31,13 +36,13 @@ export class AxiosService {
           // Add CSRF token if needed
           const csrfToken = await getCsrfToken();
           if (csrfToken) {
-            config.headers = {
-              ...config.headers,
+            newConfig.headers = {
+              ...newConfig.headers,
               "X-CSRF-Token": csrfToken,
             };
           }
 
-          return config;
+          return newConfig;
         },
         error => {
           return Promise.reject(error);

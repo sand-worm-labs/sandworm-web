@@ -4,49 +4,51 @@ import { getAuth } from "firebase-admin/auth";
 
 import seedDatabase from "../localDb/seed";
 
-if (process.env.NODE_ENV === "test") {
-  console.log("initialize");
-  admin.initializeApp({
-    projectId: "sandworm-8aa45",
-    storageBucket: "sandworm-8aa45.appspot.com",
-  });
-}
+async function initializeFirebase() {
+  if (admin.apps.length) return;
 
-if (!admin.apps.length && process.env.NODE_ENV === "development") {
-  if (process.env.FIRESTORE_EMULATOR_HOST) {
-    console.log("using Firebase **emulator** DB");
-
+  if (
+    process.env.NODE_ENV === "development" &&
+    !process.env.GOOGLE_APPLICATION_CREDENTIALS
+  ) {
+    console.log("🔥 Firebase: dev env");
     admin.initializeApp({
       projectId: "sandworm-8aa45",
       storageBucket: "sandworm-8aa45.appspot.com",
     });
-    seedDatabase().then(() => console.log("seeded database"));
-  } else {
-    // console.log("initialize 2");
-    // admin.initializeApp({
-    //    projectId: "sandworm-8aa45",
-    //   storageBucket: "sandworm-8aa45.appspot.com",
-    // });
+
+    if (process.env.FIRESTORE_EMULATOR_HOST) {
+      console.log("🧪 Using Firestore emulator");
+      seedDatabase().then(() => console.log("🌱 Seeded DB"));
+    }
+    return;
   }
-} else if (!admin.apps.length && process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-  console.log("using Firebase live DB");
-  console.log("initialize 3");
-  admin.initializeApp({
-    credential: admin.credential.applicationDefault(),
-    storageBucket: "sandworm-8aa45.appspot.com",
-  });
+
+  if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+    const serviceAccount = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+    if (!serviceAccount) {
+      throw new Error("❌ Firebase service account not found");
+    }
+
+    console.log("🔥 Firebase: prod env with service account", serviceAccount);
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+      storageBucket: "sandworm-8aa45.appspot.com",
+    });
+    return;
+  }
+
+  throw new Error("❌ Firebase init failed: No credentials or env match");
 }
 
+initializeFirebase().catch(console.error);
+
 const app = admin.apps[0];
-
 const auth = getAuth();
-
 const db = getFirestore();
 
-console.log("🔥 Using Firestore Emulator for testing...");
-db.settings({
-  host: "localhost:8080",
-  ssl: false,
-});
+if (process.env.FIRESTORE_EMULATOR_HOST) {
+  db.settings({ host: "localhost:8080", ssl: false });
+}
 
 export { admin, auth, db, app };

@@ -39,8 +39,13 @@ export async function GET(request: Request) {
     prevPage
   );
 
-  return new Response(
-    JSON.stringify(staredResult.success ? staredResult.data : []),
-    { status: 200 }
-  );
+  let starredQueries = null;
+
+  if (staredResult.success) {
+    starredQueries = staredResult.data;
+  } else if (emptyResult.success) {
+    starredQueries = emptyResult.data;
+  }
+
+  return new Response(JSON.stringify(starredQueries), { status: 200 });
 }
