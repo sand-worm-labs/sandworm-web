@@ -1,52 +1,47 @@
 import admin from "firebase-admin";
 import { getFirestore } from "firebase-admin/firestore";
 import { getAuth } from "firebase-admin/auth";
-
 import seedDatabase from "../localDb/seed";
 
-if (process.env.NODE_ENV === "test") {
-  console.log("initialize");
-  admin.initializeApp({
-    projectId: "sandworm-8aa45",
-    storageBucket: "sandworm-8aa45.appspot.com",
-  });
-}
+const baseConfig = {
+  projectId: "sandworm-8aa45",
+  storageBucket: "sandworm-8aa45.appspot.com",
+};
 
-if (!admin.apps.length && process.env.NODE_ENV === "development") {
-  if (process.env.FIRESTORE_EMULATOR_HOST) {
-    console.log("using Firebase **emulator** DB");
-
+if (!admin.apps.length) {
+  if (process.env.NODE_ENV === "test") {
+    console.log("🔥 Initializing Firebase for tests");
+    admin.initializeApp(baseConfig);
+  } else if (process.env.NODE_ENV === "development") {
+    if (process.env.FIRESTORE_EMULATOR_HOST) {
+      console.log("🔥 Using Firebase emulator DB");
+      admin.initializeApp(baseConfig);
+      seedDatabase().then(() => console.log("🌱 Seeded database"));
+    } else {
+      console.log("🔥 Initializing Firebase for dev (non-emulator)");
+      admin.initializeApp(baseConfig);
+    }
+  } else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+    console.log("🔥 Using Firebase live DB");
     admin.initializeApp({
-      projectId: "sandworm-8aa45",
-      storageBucket: "sandworm-8aa45.appspot.com",
+      credential: admin.credential.applicationDefault(),
+      storageBucket: baseConfig.storageBucket,
     });
-    seedDatabase().then(() => console.log("seeded database"));
   } else {
-    // console.log("initialize 2");
-    // admin.initializeApp({
-    //    projectId: "sandworm-8aa45",
-    //   storageBucket: "sandworm-8aa45.appspot.com",
-    // });
+    console.error("❌ Firebase failed to initialize: missing credentials");
   }
-} else if (!admin.apps.length && process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-  console.log("using Firebase live DB");
-  console.log("initialize 3");
-  admin.initializeApp({
-    credential: admin.credential.applicationDefault(),
-    storageBucket: "sandworm-8aa45.appspot.com",
-  });
 }
 
 const app = admin.apps[0];
-
 const auth = getAuth();
-
 const db = getFirestore();
 
-console.log("🔥 Using Firestore Emulator for testing...");
-db.settings({
-  host: "localhost:8080",
-  ssl: false,
-});
+if (process.env.FIRESTORE_EMULATOR_HOST) {
+  console.log("🔥 Using Firestore Emulator for testing...");
+  db.settings({
+    host: "localhost:8080",
+    ssl: false,
+  });
+}
 
 export { admin, auth, db, app };
