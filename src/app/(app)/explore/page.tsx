@@ -7,10 +7,10 @@ import type { QueryResponse } from "@/types";
 const axios = new AxiosService(process.env.NEXT_PUBLIC_API_URL!, false);
 
 interface ExplorePageProps {
-  searchParams: {
+  searchParams: Promise<{
     tab?: "all" | "starred" | "forked";
     page?: string;
-  };
+  }>;
 }
 
 async function getQueries(page = "1") {
@@ -50,8 +50,8 @@ async function getForkedQueries(page = "1") {
 }
 
 export default async function Explore({ searchParams }: ExplorePageProps) {
-  const page = searchParams.page ?? "1";
-  const defaultTab = searchParams.tab ?? "all";
+  const page = (await searchParams).page ?? "1";
+  const defaultTab = (await searchParams).tab ?? "all";
 
   const [
     { data: allQueries, hasError: allError },

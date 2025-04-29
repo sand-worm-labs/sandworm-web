@@ -37,8 +37,8 @@ export const SectionWorkFlow = () => {
     <div className="container mx-auto mt-16">
       <h2 className="text-center text-4xl mb-8">How SandWorm Works</h2>
 
-      <div ref={containerRef} className="content-container flex">
-        <div className="right-content w-2/3 p-4 pb-[6rem]">
+      <div ref={containerRef} className="content-container flex ">
+        <div className="right-content lg:w-2/3 p-4 pb-[6rem]">
           <section className="h-screen flex justify-center items-center">
             <div className="lg:pr-10">
               <h3 className="text-3xl mb-3 mt-12 font-medium">Write Queries</h3>

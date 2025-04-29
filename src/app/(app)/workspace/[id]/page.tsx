@@ -5,15 +5,15 @@ import { auth } from "@/services/auth";
 export default async function WorkspacePage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const session = await auth();
   const currentUserId = session?.user?.id || "";
-
+  const { id } = await params;
   let initialQuery = null;
 
   try {
-    initialQuery = await fetchQueryById(params.id);
+    initialQuery = await fetchQueryById(id);
   } catch (err) {
     console.warn("Query fetch failed, might be local tab:", err);
   }

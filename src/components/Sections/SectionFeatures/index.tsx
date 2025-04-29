@@ -5,7 +5,7 @@ import { Features } from "./Features";
 
 export const SectionFeatures = () => {
   return (
-    <section className="line-bg mt-8">
+    <section className="line-bg ">
       <div className="grid-overlay" />
 
       <div className="container mx-auto py-16 pt-5 content px-5 ">
