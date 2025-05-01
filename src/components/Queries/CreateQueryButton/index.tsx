@@ -17,7 +17,7 @@ export const CreateQueryButton = () => {
   const createTab = useSandwormStore(state => state.createTab);
 
   const handleCreate = () => {
-    createTab("New Query", "sql", "");
+    createTab("New Query", undefined, "sql", "");
     router.push("/workspace");
   };
 
