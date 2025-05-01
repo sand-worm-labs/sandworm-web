@@ -129,7 +129,7 @@ export const WorkspaceTabs = ({
   };
 
   const addNewCodeTab = () => {
-    createTab("New Query", "sql", "");
+    createTab("New Query", undefined, "sql", "");
   };
 
   return (
