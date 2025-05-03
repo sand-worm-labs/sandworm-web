@@ -33,6 +33,7 @@ export const SaveModal = ({
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
+  console.log("currentcont", content);
 
   const { create, loading } = useCreateQuery();
   const { data: session } = useSession();
