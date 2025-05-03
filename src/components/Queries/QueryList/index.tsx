@@ -2,10 +2,10 @@
 
 import ReactPaginate from "react-paginate";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { SquareTerminal } from "lucide-react";
 
 import type { Query, QueryPagination } from "@/types";
-
 import { QueryCard } from "../QueryCard";
 
 interface IQueryListProps {
@@ -19,6 +19,8 @@ export const QueryList: React.FC<IQueryListProps> = ({
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { data: session } = useSession();
+  const userId = session?.user?.id ?? "";
 
   const handlePageChange = ({ selected }: { selected: number }) => {
     const newPage = selected + 1;
@@ -32,16 +34,21 @@ export const QueryList: React.FC<IQueryListProps> = ({
     return (
       <div className="py-6 flex flex-col items-center justify-center">
         <SquareTerminal size={40} />
-        <p className="text-text-gray mt-2"> No query yet</p>
+        <p className="text-text-gray mt-2">No query yet</p>
       </div>
     );
   }
 
+  const queriesWithLikeStatus = queries.map(query => ({
+    ...query,
+    liked: query.stared_by.includes(userId),
+  }));
+
   return (
     <div className="mb-16">
       <div className="grid grid-cols-1 gap-4 mb-8">
-        {queries.map(query => (
-          <QueryCard key={query.id} query={query} />
+        {queriesWithLikeStatus.map(query => (
+          <QueryCard key={query.id} query={query} liked={query.liked} />
         ))}
       </div>
 
@@ -54,7 +61,7 @@ export const QueryList: React.FC<IQueryListProps> = ({
         containerClassName="flex justify-center items-center gap-2 text-sm"
         pageClassName="px-3 py-1 rounded hover:bg-gray-100 hover:text-black"
         previousClassName="px-3 py-1 rounded hover:bg-gray-100 hover:text-black"
-        nextClassName="px-3 py-1 rounded hover:bg-gray-100  hover:text-black"
+        nextClassName="px-3 py-1 rounded hover:bg-gray-100 hover:text-black"
         previousLinkClassName="text-orange-500"
         nextLinkClassName="text-orange-500"
         breakClassName="px-3 py-1"
