@@ -6,15 +6,19 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { useRouter } from "next/navigation";
 import { twilight } from "react-syntax-highlighter/dist/esm/styles/prism";
 import Image from "next/image";
+import { useSession } from "next-auth/react";
 
 import type { Query } from "@/types";
 import { useQueryLike } from "@/hooks/useLikeQuery";
+import { useModalStore } from "@/store/auth";
 
 import { DicebearAvatar } from "../../DicebearAvatar";
 
 export const QueryCard = ({ query }: { query: Query }) => {
   const { liked, toggleLike, loading } = useQueryLike(query.id);
+  const { data: session } = useSession();
   const router = useRouter();
+  const openSignIn = useModalStore(state => state.openSignIn);
 
   const openQueryInTab = (queryData: any) => {
     router.push(`/workspace/${queryData.id}`);
@@ -74,7 +78,13 @@ export const QueryCard = ({ query }: { query: Query }) => {
             <button
               type="button"
               className="text-[#ffffff90] hover:text-white"
-              onClick={toggleLike}
+              onClick={() => {
+                if (!session?.user?.id) {
+                  openSignIn();
+                  return;
+                }
+                toggleLike();
+              }}
               disabled={loading}
             >
               {liked ? (
