@@ -68,6 +68,8 @@ If you want to use the Firebase emulator for local development:
    ```
    By default, the app is set up to work with a live Firebase instance. Update your `.env.local` file if you want to switch between live and emulator.
 
+If you get could not spawn java version or java path error. You need to install java and set to path for the emulator to run
+
 ---
 
 ## 📂 Repository Structure
