@@ -216,6 +216,65 @@ export class QueryService {
     }
   }
 
+  static async search(
+    term: string,
+    page = 1,
+    limit = 10
+  ): Promise<PaginatedQueryResult<QueryWithUsername>> {
+    try {
+      const lowerTerm = term.toLowerCase();
+
+      console.log("🔍 Search term:", term);
+
+      // Step 1: Fetch all public queries
+      const queries: QueryDoc[] = await db.querys.query($ => [
+        $.field("private").eq(false),
+      ]);
+
+      console.log("📦 Total public queries:", queries.length);
+
+      // Step 2: Filter by title, description, or username
+      const filtered = await Promise.all(
+        queries
+          .filter(doc => {
+            const q = doc.data;
+            return (
+              q.title.toLowerCase().includes(lowerTerm) ||
+              q.description.toLowerCase().includes(lowerTerm)
+            );
+          })
+          .map(this.addUsernameToQuery) // enrich during filtering
+      );
+
+      console.log("🔎 Filtered queries:", filtered.length);
+
+      // Step 3: Paginate
+      const { totalRecords, totalPages, currentPage, nextPage, prevPage } =
+        getPaginationDetails(filtered.length, limit, page);
+
+      const paginated = this.paginate(filtered, limit, page);
+
+      if (paginated.length === 0)
+        return DataResult.failure("No queries found.", "NOT_FOUND");
+
+      return toPaginatedResult(
+        paginated,
+        totalRecords,
+        currentPage,
+        totalPages,
+        nextPage,
+        prevPage
+      );
+    } catch (error) {
+      console.error("❌ DB search failed:", error);
+      return DataResult.failure(
+        "Failed to search queries.",
+        "DB_QUERY_ERROR",
+        error
+      );
+    }
+  }
+
   static async update(
     queryId: string,
     title: string,

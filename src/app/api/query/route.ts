@@ -11,10 +11,13 @@ export async function GET(request: Request) {
   const type = searchParams.get("type"); // "forks" or "stars"
   const page = parseInt(searchParams.get("page") || "1", 10);
   const limit = parseInt(searchParams.get("limit") || "10", 10);
+  const search = searchParams.get("search");
 
   let result: any = [];
 
-  if (type === "forks") {
+  if (search) {
+    result = await QueryService.search(search, page, limit);
+  } else if (type === "forks") {
     result = await QueryService.getByMostForks(page, limit);
   } else if (type === "stars") {
     result = await QueryService.getByMostStars(page, limit);
