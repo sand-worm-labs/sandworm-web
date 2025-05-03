@@ -1,6 +1,6 @@
 # SandWorm WebApp
 
-This repo is the frontend interface for SandWorm, a blockchain data indexer for the Sui network with extension for solana and evm chain. This repository contains the web-based UI, including the **landing page**, **public gists**, and the **integrated IDE** for querying blockchain data with SandWorm's SQL-like query language (WQL).
+This repo is the frontend interface for SandWorm, a blockchain data indexer for the Sui network with support extension for solana and evm chain. This repository contains the web-based UI, including the **landing page**, **public gists**, and the **integrated IDE** for querying blockchain data with SandWorm's SQL-like query language (WQL).
 
 ## 🚀 Features
 
