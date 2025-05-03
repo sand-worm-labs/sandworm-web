@@ -4,7 +4,7 @@ This repo is the frontend interface for SandWorm, a blockchain data indexer for 
 
 ## 🚀 Features
 
-- **Landing Page** – Introduces SandWorm and its capabilities, TOC's, turtorials.
+- **Landing Page** – Introduces SandWorm and its capabilities, TOC's, tutorial.
 - **Public Gists** – View and share useful queries with the community.
 - **IDE** – An interactive environment to write, test, and execute WQL queries. (/Workspace)
 
