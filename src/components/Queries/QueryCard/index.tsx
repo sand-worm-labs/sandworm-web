@@ -2,43 +2,50 @@
 
 import { FaRegStar, FaStar, FaCodeBranch } from "react-icons/fa";
 import Link from "next/link";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { useRouter } from "next/navigation";
-import { twilight } from "react-syntax-highlighter/dist/esm/styles/prism";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { twilight } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 import type { Query } from "@/types";
 import { useQueryLike } from "@/hooks/useLikeQuery";
 import { useModalStore } from "@/store/auth";
-
 import { DicebearAvatar } from "../../DicebearAvatar";
 
-export const QueryCard = ({ query }: { query: Query }) => {
-  const { liked, toggleLike, loading } = useQueryLike(query.id);
+interface QueryCardProps {
+  query: Query;
+  liked: boolean;
+}
+
+export const QueryCard = ({ query, liked }: QueryCardProps) => {
   const { data: session } = useSession();
   const router = useRouter();
   const openSignIn = useModalStore(state => state.openSignIn);
+  const { toggleLike, loading } = useQueryLike(query.id, liked);
 
-  const openQueryInTab = (queryData: any) => {
-    router.push(`/workspace/${queryData.id}`);
+  const handleQueryClick = () => {
+    router.push(`/workspace/${query.id}`);
+  };
+
+  const handleLikeClick = () => {
+    if (!session?.user?.id) return openSignIn();
+    toggleLike();
   };
 
   return (
-    <div className="shadow-sm rounded-xl p-4 px-8   flex flex-col justify-between">
-      <div className="flex justify-between">
-        <div className="flex">
+    <div className="shadow-sm rounded-xl p-4 px-8 flex flex-col justify-between">
+      <div className="flex justify-between items-start">
+        <div className="flex items-start">
           {query.image ? (
-            <div className="relative">
-              <Image
-                alt="user avatar"
-                src={query.image}
-                width={25}
-                height={25}
-                unoptimized
-                className="rounded-full border-2"
-              />
-            </div>
+            <Image
+              alt="user avatar"
+              src={query.image}
+              width={25}
+              height={25}
+              unoptimized
+              className="rounded-full border-2"
+            />
           ) : (
             <DicebearAvatar
               size={20}
@@ -47,45 +54,35 @@ export const QueryCard = ({ query }: { query: Query }) => {
             />
           )}
 
-          <div className="ml-3">
-            <div className="text-[0.8rem] font-medium">
-              <Link
-                href={`/creators/${query.creator} `}
-                className="hover:underline"
-              >
-                {query.username}
-              </Link>{" "}
-              /{" "}
-              <button
-                type="button"
-                className="hover:underline"
-                onClick={() => openQueryInTab(query)}
-              >
-                {query.title}
-              </button>
-            </div>
+          <div className="ml-3 text-sm">
+            <Link
+              href={`/creators/${query.creator}`}
+              className="hover:underline font-medium"
+            >
+              {query.username}
+            </Link>
+            <span className="mx-1">/</span>
+            <button className="hover:underline" onClick={handleQueryClick}>
+              {query.title}
+            </button>
             <p className="text-xs text-[#ffffff90]">
               created {new Date(query.updatedAt).toLocaleDateString("en-US")}
             </p>
           </div>
         </div>
-        <div className="flex space-x-4">
-          <div className="flex items-center font-medium text-[#ffffff90] space-x-1">
+
+        <div className="flex gap-4 items-center text-[#ffffff90] text-xs">
+          <div className="flex items-center gap-1">
             <FaCodeBranch className="text-sm" />
-            <span className="text-xs">{query.forked_by.length || 0} Forks</span>
+            <span>{query.forked_by.length || 0} Forks</span>
           </div>
-          <div className="flex items-center font-medium text-[#ffffff90] space-x-1">
+
+          <div className="flex items-center gap-1">
             <button
               type="button"
-              className="text-[#ffffff90] hover:text-white"
-              onClick={() => {
-                if (!session?.user?.id) {
-                  openSignIn();
-                  return;
-                }
-                toggleLike();
-              }}
+              onClick={handleLikeClick}
               disabled={loading}
+              className="hover:text-white"
             >
               {liked ? (
                 <FaStar className="text-sm" />
@@ -93,22 +90,15 @@ export const QueryCard = ({ query }: { query: Query }) => {
                 <FaRegStar className="text-sm" />
               )}
             </button>
-            <span className="text-xs">
-              {query.stared_by.length + (liked ? 1 : 0)} Stars
-            </span>
+            <span>{query.stared_by.length + (liked ? 1 : 0)} Stars</span>
           </div>
         </div>
       </div>
-      <button
-        type="button"
-        className="  mt-2 text-sm "
-        onClick={() => openQueryInTab(query)}
-      >
+
+      <button type="button" onClick={handleQueryClick} className="mt-2 text-sm">
         <SyntaxHighlighter
           language="sql"
-          style={{
-            ...twilight,
-          }}
+          style={twilight}
           customStyle={{
             margin: 0,
             background: "#ffffff10",
@@ -121,9 +111,9 @@ export const QueryCard = ({ query }: { query: Query }) => {
           wrapLongLines
           showInlineLineNumbers
           showLineNumbers
-          className="h-[10rem] rounded-none my-0"
+          className="h-[10rem] rounded-none"
         >
-          {`${query.query}\n\n\n\n\n\n\n\n\n`}
+          {query.query + "\n\n\n\n\n\n\n\n\n"}
         </SyntaxHighlighter>
       </button>
     </div>
