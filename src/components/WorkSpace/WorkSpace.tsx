@@ -30,9 +30,10 @@ interface PanelComponents {
 
 interface WorkSpaceProps {
   initialQuery?: Query;
+  currentUserId: string;
 }
 
-export const WorkSpace = ({ initialQuery }: WorkSpaceProps) => {
+export const WorkSpace = ({ initialQuery, currentUserId }: WorkSpaceProps) => {
   const [currentView, setCurrentView] = useState<ViewType>("dataExplorer");
   const [isMobile, setIsMobile] = useState<boolean>(false);
 
@@ -65,7 +66,10 @@ export const WorkSpace = ({ initialQuery }: WorkSpaceProps) => {
               defaultSize={50}
               minSize={40}
             >
-              <WorkspaceTabs initialQuery={initialQuery} />
+              <WorkspaceTabs
+                initialQuery={initialQuery}
+                currentUserId={currentUserId}
+              />
             </ResizablePanel>
           )}
 
@@ -87,7 +91,10 @@ export const WorkSpace = ({ initialQuery }: WorkSpaceProps) => {
                 defaultSize={75}
                 minSize={40}
               >
-                <WorkspaceTabs initialQuery={initialQuery} />
+                <WorkspaceTabs
+                  initialQuery={initialQuery}
+                  currentUserId={currentUserId}
+                />
               </ResizablePanel>
             </>
           )}
