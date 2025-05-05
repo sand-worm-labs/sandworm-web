@@ -34,27 +34,29 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
   };
 
   return (
-    <div className="shadow-sm rounded-xl p-4 px-8 flex flex-col justify-between">
-      <div className="flex justify-between items-start">
+    <div className="shadow-sm rounded-xl p-4 md:px-8 px-5 flex flex-col justify-between">
+      <div className="flex justify-between items-start flex-col">
         <div className="flex items-start">
-          {query.image ? (
-            <Image
-              alt="user avatar"
-              src={query.image}
-              width={25}
-              height={25}
-              unoptimized
-              className="rounded-full border-2"
-            />
-          ) : (
-            <DicebearAvatar
-              size={20}
-              seed={query.creator}
-              className="border-2"
-            />
-          )}
+          <div className="hidden md:block">
+            {query.image ? (
+              <Image
+                alt="user avatar"
+                src={query.image}
+                width={25}
+                height={25}
+                unoptimized
+                className="rounded-full border-2"
+              />
+            ) : (
+              <DicebearAvatar
+                size={20}
+                seed={query.creator}
+                className="border-2"
+              />
+            )}
+          </div>
 
-          <div className="ml-3 text-sm">
+          <div className="md:ml-3 md:text-sm text-[13px]">
             <Link
               href={`/creators/${query.creator}`}
               className="hover:underline font-medium"
@@ -62,16 +64,20 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
               {query.username}
             </Link>
             <span className="mx-1">/</span>
-            <button className="hover:underline" onClick={handleQueryClick}>
+            <Link
+              href={`/workspace/${query.id}`}
+              className="hover:underline"
+              onClick={handleQueryClick}
+            >
               {query.title}
-            </button>
-            <p className="text-xs text-[#ffffff90]">
+            </Link>
+            <p className="text-xs text-[#ffffff90] capitalize">
               created {new Date(query.updatedAt).toLocaleDateString("en-US")}
             </p>
           </div>
         </div>
 
-        <div className="flex gap-4 items-center text-[#ffffff90] text-xs">
+        <div className="flex  gap-4 items-center text-[#ffffff90] text-xs mt-3 md:mt-0">
           <div className="flex items-center gap-1">
             <FaCodeBranch className="text-sm" />
             <span>{query.forked_by.length || 0} Forks</span>
@@ -105,7 +111,7 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
             borderRadius: 0,
             borderWidth: 1,
             borderColor: "#ffffff25",
-            overflow: "hidden",
+            overflowY: "hidden",
           }}
           wrapLines
           wrapLongLines

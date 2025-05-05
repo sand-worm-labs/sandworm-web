@@ -20,6 +20,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSandwormStore } from "@/store";
+import { ExamplesModal } from "./ExampleModal";
 
 const quickStartActions = [
   {
@@ -64,6 +65,7 @@ export const HomeTab = () => {
   const { createTab, queryHistory, error } = useSandwormStore();
   const [recentItems, setRecentItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [showExamplesModal, setShowExamplesModal] = useState<boolean>(false);
 
   const getUsersRecentItems = async () => {
     setLoading(true);
@@ -100,20 +102,9 @@ export const HomeTab = () => {
 
   const handleNewAction = (type: string, query?: string) => {
     if (type === "sql") {
-      createTab("New Query", "sql", query);
-    }
-    if (type === "examples") {
-      createTab(
-        "Sandworm Explore",
-        "sql",
-        `
--- Welcome to Sandworm Explore 🦆
--- You can run the following queries to get a grasp of it.
--- Fetch balance of an account on SUI
--- replace the value of the account
-GET balance FROM account cx.eth  ON eth
-`
-      );
+      createTab("New Query", undefined, "sql", query);
+    } else if (type === "examples") {
+      setShowExamplesModal(true);
     }
   };
 
@@ -248,6 +239,12 @@ GET balance FROM account cx.eth  ON eth
             Resources
           </TabsTrigger>
         </TabsList>
+
+        <ExamplesModal
+          createTab={createTab}
+          isOpen={showExamplesModal}
+          onClose={() => setShowExamplesModal(false)}
+        />
 
         <TabsContent value="recent" className="space-y-4">
           {renderContent()}

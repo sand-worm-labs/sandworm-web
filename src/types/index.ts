@@ -47,7 +47,7 @@ export interface Parameter {
 }
 
 export interface Query {
-  id?: string;
+  id: string;
   title: string;
   description: string;
   creator: string;

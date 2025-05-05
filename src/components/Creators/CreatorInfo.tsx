@@ -15,7 +15,7 @@ interface CreatorInfoProps {
 
 export const CreatorInfo = ({ user }: CreatorInfoProps) => {
   return (
-    <div className="h-[15rem] py-10 w-full flex items-center justify-center mt-32">
+    <div className="min-h-[15rem] py-10 w-full flex  justify-center md:mt-16 mt-8">
       <div>
         {user.image ? (
           <Image

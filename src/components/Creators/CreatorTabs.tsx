@@ -19,7 +19,7 @@ export const CreatorTabs = ({
   starredQueries,
 }: CreatorTabsProps) => {
   return (
-    <div className="container mx-auto px-12 dark mt-5">
+    <div className="container mx-auto md:px-12 dark mt-5">
       <Tabs value={tab} onValueChange={setTab} className="w-full">
         <TabsList className="flex border-b border-borderLight">
           <TabsTrigger

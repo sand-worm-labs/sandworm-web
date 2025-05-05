@@ -1,6 +1,6 @@
 "use client";
 
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useModalStore } from "@/store/auth";
 
 import { SocialLogin } from "./SocialLogin";
@@ -11,7 +11,10 @@ export const SignInModal = () => {
   return (
     <Dialog open={signInOpen} onOpenChange={closeSignIn}>
       <DialogContent className="sm:max-w-md bg-[#000] border-[#ffffff30] text-white">
-        <h2 className="text-xl font-medium mt-4 text-center">Sign In</h2>
+        <DialogTitle>
+          <h2 className="text-xl font-medium mt-4 text-center">Sign In</h2>
+        </DialogTitle>
+
         <SocialLogin />
 
         <p className="mt-4 text-center text-sm text-gray-400">

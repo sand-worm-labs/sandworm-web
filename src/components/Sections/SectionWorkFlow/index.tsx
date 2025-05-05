@@ -11,6 +11,7 @@ const workflowSteps = [
     title: "Write Queries",
     description: "Compose powerful WQL queries using familiar SQL syntax.",
     url: "/workspace",
+    learnMoreUrl: "https://sandwormdocs.vercel.app/sql-syntax/intro",
     imageUrl: "/img/queries.png",
     bullets: [
       "Use an SQL-like language designed for on-chain data",
@@ -21,6 +22,7 @@ const workflowSteps = [
   {
     title: "Execute and Analyze",
     url: "/workspace",
+    learnMoreUrl: "https://sandwormdocs.vercel.app/",
     description:
       "Visualize and explore on-chain data with blazing-fast responses.",
     imageUrl: "/img/queries.png",
@@ -33,6 +35,7 @@ const workflowSteps = [
   {
     title: "Share & Collaborate",
     url: "/explore",
+    learnMoreUrl: "https://sandwormdocs.vercel.app/",
     imageUrl: "/img/sample.png",
     description: "Publish useful queries to the community for open discovery.",
     bullets: [
@@ -45,12 +48,12 @@ const workflowSteps = [
 
 export const SectionWorkFlow = () => {
   return (
-    <div className="container mx-auto mt-16 px-4">
+    <div className="container mx-auto mt-16 px-6">
       <h2 className="text-center text-4xl mb-16">How SandWorm Works</h2>
 
       <div className="w-full  space-y-16">
         {workflowSteps.map((step, index) => (
-          <div className="w-full grid grid-cols-2 pb-12  ">
+          <div className="w-full grid md:grid-cols-2 pb-12  ">
             <div key={index} className="lg:pr-10 mt-12">
               <h3 className="text-3xl mb-3 font-medium">{step.title}</h3>
               <p className="text-lg text-[#999999] mb-6">{step.description}</p>
@@ -58,13 +61,14 @@ export const SectionWorkFlow = () => {
               <div className="flex space-x-4 mb-8">
                 <Link
                   href={step.url}
-                  className="inline-block font-medium bg-orange-600 rounded py-2.5 px-5 text-white text-[0.9rem]"
+                  className="inline-block font-medium bg-orange-600 rounded py-2.5 px-5 text-white text-[0.9rem] transition duration-200 ease-in-out hover:opacity-90  hover:brightness-90"
                 >
                   Get Started
                 </Link>
                 <Link
-                  href="/"
-                  className="font-medium rounded py-2.5 px-5 border border-borderLight text-[0.9rem] flex items-center space-x-2"
+                  href={step.learnMoreUrl}
+                  target="blank_"
+                  className="font-medium rounded py-2.5 px-5 border border-borderLight text-[0.9rem] flex items-center space-x-2  hover:bg-btnHover"
                 >
                   <span>Learn More</span>
                   <MdOutlineArrowForwardIos />
@@ -77,12 +81,12 @@ export const SectionWorkFlow = () => {
                     <span className="rounded-full bg-dark-translucent p-1">
                       <FaCheck className="text-orange-600 text-[0.65rem]" />
                     </span>
-                    <span>{item}</span>
+                    <span className="text-[#999999]">{item}</span>
                   </li>
                 ))}
               </ul>
             </div>
-            <div className="w-[90%] pt-[1rem] flex justify-center">
+            <div className="md:w-[90%] pt-[1rem] flex justify-center mt-6 md:mt-0">
               <TerminalFrame>
                 <Image
                   src={step.imageUrl}
@@ -95,8 +99,6 @@ export const SectionWorkFlow = () => {
             </div>
           </div>
         ))}
-
-        {/* Right: Terminal Image */}
       </div>
     </div>
   );

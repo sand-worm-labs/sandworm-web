@@ -4,6 +4,7 @@ import ReactPaginate from "react-paginate";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { SquareTerminal } from "lucide-react";
+import { useIsMobile } from "@/hooks/useMobile";
 
 import type { Query, QueryPagination } from "@/types";
 import { QueryCard } from "../QueryCard";
@@ -21,6 +22,7 @@ export const QueryList: React.FC<IQueryListProps> = ({
   const searchParams = useSearchParams();
   const { data: session } = useSession();
   const userId = session?.user?.id ?? "";
+  const isMobile = useIsMobile();
 
   const handlePageChange = ({ selected }: { selected: number }) => {
     const newPage = selected + 1;
@@ -69,6 +71,8 @@ export const QueryList: React.FC<IQueryListProps> = ({
         activeClassName="bg-white text-black"
         activeLinkClassName="text-black hover:text-black"
         disabledClassName="text-gray-300 cursor-not-allowed"
+        pageRangeDisplayed={isMobile ? 2 : 3}
+        marginPagesDisplayed={isMobile ? 1 : 2}
       />
     </div>
   );
