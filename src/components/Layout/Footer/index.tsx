@@ -18,10 +18,18 @@ export const MainFooter = () => {
         </div>
         <div className="flex space-y-4 flex-col ">
           <span className="text-white font-medium mb-1">Resources</span>
-          <Link href="/#" className="hover:text-white">
+          <Link
+            href="https://sandwormdocs.vercel.app/"
+            className="hover:text-white"
+            target="blank_"
+          >
             Docs
           </Link>
-          <Link href="/#" className="hover:text-white">
+          <Link
+            href="https://sandwormdocs.vercel.app/blog"
+            className="hover:text-white"
+            target="blank_"
+          >
             Blog
           </Link>
           <Link
@@ -49,6 +57,7 @@ export const MainFooter = () => {
           <div className="flex space-x-6">
             <Link
               href="https://github.com/sand-worm-sql"
+              target="blank_"
               className="hover:text-white"
             >
               <FaGithub size={20} />
@@ -60,7 +69,11 @@ export const MainFooter = () => {
             >
               <FaDiscord size={20} />
             </Link>
-            <Link href="/" className="hover:text-white">
+            <Link
+              href="https://x.com/sandwormlabs"
+              className="hover:text-white"
+              target="blank_"
+            >
               <FaXTwitter size={20} />
             </Link>
           </div>

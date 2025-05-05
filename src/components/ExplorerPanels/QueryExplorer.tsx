@@ -5,7 +5,7 @@ import { SquareTerminal, Plus, Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 
 import { fetchUserQuery } from "@/services/axios/queryService";
-import type { QueryResponse } from "@/types";
+import type { Query } from "@/types";
 
 import { CardHeader, CardTitle, CardContent, Card } from "../ui/card";
 import { Button } from "../ui/button";
@@ -35,7 +35,7 @@ const EmptyState = () => (
 );
 
 export const QueryExplorer = () => {
-  const [queries, setQueries] = useState<QueryResponse[]>([]);
+  const [queries, setQueries] = useState<Query[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const { data: session } = useSession();
 
