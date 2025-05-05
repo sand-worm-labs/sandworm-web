@@ -13,6 +13,7 @@ import { useQueryLike } from "@/hooks/useLikeQuery";
 import { useModalStore } from "@/store/auth";
 import { DicebearAvatar } from "../../DicebearAvatar";
 import { useState } from "react";
+import { useForkQuery } from "@/hooks";
 
 interface QueryCardProps {
   query: Query;
@@ -24,15 +25,23 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
   const router = useRouter();
   const openSignIn = useModalStore(state => state.openSignIn);
   const { toggleLike, loading } = useQueryLike(query.id, liked);
+  const { handleFork, loading: loadingfork } = useForkQuery(query.id);
+
   const [showFullDesc, setShowFullDesc] = useState<boolean>(false);
 
   const handleQueryClick = () => {
     router.push(`/workspace/${query.id}`);
   };
 
+  //we open signin modal if user attempt to like or fork query when not logged in
   const handleLikeClick = () => {
     if (!session?.user?.id) return openSignIn();
     toggleLike();
+  };
+
+  const handleForkClick = () => {
+    if (!session?.user?.id) return openSignIn();
+    handleFork();
   };
 
   //we truncate long ass description and check if we should even do that
@@ -100,7 +109,14 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
 
         <div className="flex  gap-4 items-center text-[#ffffff90] text-xs mt-3 md:mt-0">
           <div className="flex items-center gap-1">
-            <FaCodeBranch className="text-sm" />
+            <button
+              type="button"
+              onClick={handleForkClick}
+              disabled={loadingfork}
+              className="hover:text-white"
+            >
+              <FaCodeBranch className="text-sm" />
+            </button>
             <span>{query.forked_by.length || 0} Forks</span>
           </div>
 
@@ -117,6 +133,7 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
                 <FaRegStar className="text-sm" />
               )}
             </button>
+            {/* this is likely wrong cause it wont reflect the right numbers when user unlike */}
             <span>{query.stared_by.length + (liked ? 1 : 0)} Stars</span>
           </div>
         </div>
