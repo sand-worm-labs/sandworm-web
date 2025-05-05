@@ -45,7 +45,7 @@ export const SectionHero = () => {
               href="/workspace"
               className="inline-block font-medium bg-white rounded py-3 lg:px-6 px-3 text-black text-[0.9rem] hover:bg-white/85"
             >
-              Get Started
+              Go to Workspace
             </Link>
             <Link
               href="/explore"
