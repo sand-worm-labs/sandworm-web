@@ -9,7 +9,12 @@ export const AppFooter = () => {
         <div className="flex space-x-4 items-center">
           <span>© 2025 Sandworm</span>
           {footerLinks.map(({ label, href }) => (
-            <Link key={label} href={href} className="hover:text-white">
+            <Link
+              key={label}
+              href={href}
+              target="blank_"
+              className="hover:text-white"
+            >
               {label}
             </Link>
           ))}
@@ -19,6 +24,7 @@ export const AppFooter = () => {
             <Link
               key={name}
               href={href}
+              target="blank_"
               className="hover:text-white"
               aria-label={name}
             >

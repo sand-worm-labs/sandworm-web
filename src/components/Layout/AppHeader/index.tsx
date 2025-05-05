@@ -29,7 +29,7 @@ export const AppHeader: FC = () => {
           SandW0rm.
         </span>
       </Link>
-      <div className="hidden md:block">
+      <div className="hidden md:block ">
         <SearchBar />
       </div>
 
