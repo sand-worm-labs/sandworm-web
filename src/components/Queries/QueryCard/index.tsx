@@ -12,6 +12,7 @@ import type { Query } from "@/types";
 import { useQueryLike } from "@/hooks/useLikeQuery";
 import { useModalStore } from "@/store/auth";
 import { DicebearAvatar } from "../../DicebearAvatar";
+import { useState } from "react";
 
 interface QueryCardProps {
   query: Query;
@@ -23,6 +24,7 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
   const router = useRouter();
   const openSignIn = useModalStore(state => state.openSignIn);
   const { toggleLike, loading } = useQueryLike(query.id, liked);
+  const [showFullDesc, setShowFullDesc] = useState<boolean>(false);
 
   const handleQueryClick = () => {
     router.push(`/workspace/${query.id}`);
@@ -33,9 +35,13 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
     toggleLike();
   };
 
+  //we truncate long ass description and check if we should even do that
+  const truncatedDescription = query.description?.slice(0, 100) || "";
+  const shouldTruncate = query.description?.length > 100;
+
   return (
     <div className="shadow-sm rounded-xl p-4 md:px-8 px-5 flex flex-col justify-between">
-      <div className="flex justify-between items-start flex-col">
+      <div className="flex justify-between items-start flex-col md:flex-row">
         <div className="flex items-start">
           <div className="hidden md:block">
             {query.image ? (
@@ -74,6 +80,21 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
             <p className="text-xs text-[#ffffff90] capitalize">
               created {new Date(query.updatedAt).toLocaleDateString("en-US")}
             </p>
+            {query.description && (
+              <p className="text-xs mt-1 text-white">
+                {showFullDesc || !shouldTruncate
+                  ? query.description
+                  : `${truncatedDescription}... `}
+                {shouldTruncate && (
+                  <button
+                    onClick={() => setShowFullDesc(!showFullDesc)}
+                    className="text-orange-400 ml-1 hover:underline"
+                  >
+                    {showFullDesc ? "Show less" : "Read more"}
+                  </button>
+                )}
+              </p>
+            )}
           </div>
         </div>
 
@@ -122,6 +143,20 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
           {query.query + "\n\n\n\n\n\n\n\n\n"}
         </SyntaxHighlighter>
       </button>
+
+      {/* Future update should make this a button so users can search other queries with same tags */}
+      {query.tags && query.tags.length > 0 && (
+        <div className="flex justify-end flex-wrap gap-2 mt-2 text-xs text-orange-300">
+          {query.tags.map(tag => (
+            <span
+              key={tag}
+              className="bg-[#1a1a1a] border border-[#333] px-2 py-0.5 rounded-full"
+            >
+              #{tag}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
