@@ -21,17 +21,13 @@ export type IToken = {
 };
 
 export interface CurrentUserProps {
-  currentUser?: Partial<{
-    createdAt: string;
-    updatedAt: string;
-    displayName: string;
-    id: string;
-    name: string;
-    email: string;
-    image: string;
-    password: string;
-    isAdmin: boolean;
-  }> | null;
+  currentUser?: {
+    id?: string | null;
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+    [key: string]: any;
+  } | null;
 }
 
 export type Author = {
@@ -47,7 +43,7 @@ export interface Parameter {
 }
 
 export interface Query {
-  id?: string;
+  id: string;
   title: string;
   description: string;
   creator: string;
