@@ -18,8 +18,9 @@ export const SectionOnboard = () => {
               about Sandworm updates.
             </p>
             <Link
-              className="border py-3 border-white rounded-full px-12 text-xl  mt-10 font-medium flex items-center"
+              className="border py-3 border-white rounded-full px-12 text-xl  mt-10 font-medium flex items-center hover:bg-btnHover"
               href="https://discord.gg/pftQtpcjK2"
+              target="_blank"
             >
               <FaDiscord />
               <span className="ml-3">Join</span>

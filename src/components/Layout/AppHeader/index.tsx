@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import type { FC } from "react";
+import { useState, type FC } from "react";
 import { useSession } from "next-auth/react";
 
 import { SandwormLogo } from "@/components/Assets";
@@ -9,18 +9,30 @@ import { useModalStore } from "@/store/auth";
 
 import { ProfileMenu } from "../../ProfileMenu";
 import { SearchBar } from "../../SearchBar";
+import { Menu, X } from "lucide-react";
 
 export const AppHeader: FC = () => {
   const { data: session } = useSession();
   const openSignIn = useModalStore(state => state.openSignIn);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <header className="px-8 py-2 flex justify-between items-center">
+      <div className="md:hidden">
+        <button onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">
+          {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
+      </div>
       <Link href="/" className="flex items-center">
         <SandwormLogo />
-        <span className="ml-3 font-medium text-xl uppercase">SandW0rm.</span>
+        <span className="ml-3 font-medium text-xl uppercase hidden md:inline-block">
+          SandW0rm.
+        </span>
       </Link>
-      <SearchBar />
+      <div className="hidden md:block ">
+        <SearchBar />
+      </div>
+
       {session?.user ? (
         <ProfileMenu currentUser={{ ...session.user }} />
       ) : (

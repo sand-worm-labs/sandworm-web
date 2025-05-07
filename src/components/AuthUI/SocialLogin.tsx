@@ -25,7 +25,7 @@ export const SocialLogin = () => {
       <button
         type="button"
         onClick={handleGoogleSignIn}
-        className="flex w-1/2 items-center justify-center space-x-2 rounded-md border border-[#ffffff50]  px-4 py-2 text-white hover:bg-gray-600"
+        className="flex w-1/2 items-center justify-center space-x-2 rounded-none border border-[#ffffff50]  px-4 py-2 text-white  hover:bg-btnHover"
       >
         <FcGoogle size={20} />
         <span>Google</span>
@@ -34,7 +34,7 @@ export const SocialLogin = () => {
       <button
         type="button"
         onClick={handleGithubSignIn}
-        className="flex w-1/2 items-center justify-center space-x-2 rounded-md border border-[#ffffff50]  px-4 py-2 text-white hover:bg-gray-600"
+        className="flex w-1/2 items-center justify-center space-x-2 border border-[#ffffff50] rounded-none px-4 py-2 text-white  hover:bg-btnHover"
       >
         <FaGithub size={20} />
         <span>GitHub</span>

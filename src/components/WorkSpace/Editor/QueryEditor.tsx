@@ -174,7 +174,7 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
         <QueryCodeEditor
           initialValue={currentContent}
           tabId={tabId}
-          updateTabQuery={updateTabQuery}
+          updateTabQueryAction={updateTabQuery}
           onRunQuery={handleExecuteQuery}
           readonly={selectedTab.readonly}
           theme={editorTheme}
