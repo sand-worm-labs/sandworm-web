@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { AiOutlineCode } from "react-icons/ai";
 import { Search } from "lucide-react";
 import { MdKeyboardDoubleArrowRight } from "react-icons/md";
+import { useRouter } from "next/navigation";
 
 import type { Query } from "@/types";
 import { useSandwormStore } from "@/store";
@@ -16,10 +17,11 @@ export const QueryExplorerCardList: React.FC<IQueryExplorerCardListProps> = ({
   query,
 }) => {
   const { createTab } = useSandwormStore();
+  const router = useRouter();
   const [search, setSearch] = useState("");
 
   const openQueryInTab = (queryData: any) => {
-    createTab(queryData.title, "sql", queryData.query, queryData.id);
+    router.push(`/workspace/${queryData.id}`);
   };
 
   const filteredQueries = query.filter(item =>

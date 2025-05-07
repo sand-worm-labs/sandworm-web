@@ -3,27 +3,22 @@ import { useSession } from "next-auth/react";
 
 import { likeQuery, unlikeQuery } from "@/services/axios/queryService";
 
-export const useQueryLike = (queryId: string) => {
+export const useQueryLike = (queryId: string, initiallyLiked: boolean) => {
   const { data: session } = useSession();
   const uid = session?.user?.id;
 
-  const [liked, setLiked] = useState(false);
+  const [liked, setLiked] = useState(initiallyLiked);
   const [loading, setLoading] = useState(false);
 
   const toggleLike = useCallback(async () => {
     if (!uid || !queryId || loading) return;
 
     const nextLiked = !liked;
-
-    setLoading(true);
     setLiked(nextLiked);
+    setLoading(true);
 
     try {
-      if (nextLiked) {
-        await likeQuery(queryId, uid);
-      } else {
-        await unlikeQuery(queryId, uid);
-      }
+      await (nextLiked ? likeQuery(queryId, uid) : unlikeQuery(queryId, uid));
     } catch (err) {
       console.error("Like toggle failed:", err);
       setLiked(!nextLiked);

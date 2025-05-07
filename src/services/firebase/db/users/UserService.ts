@@ -97,7 +97,9 @@ export class UserService {
   ): Promise<ServiceResult<UserResult>> {
     try {
       if (!id) return DataResult.failure("Missing user ID.", "MISSING_FIELDS");
-      if (!userData.username || userData.username.trim() === "") {
+
+      // Only validate username if it's being updated
+      if (userData.username !== undefined && userData.username.trim() === "") {
         return DataResult.failure(
           "Username cannot be empty.",
           "MISSING_USERNAME"
