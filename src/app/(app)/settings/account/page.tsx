@@ -18,7 +18,6 @@ export default function AccountSettings() {
     <div className="max-w-lg">
       <h2 className="text-xl font-semibold text-white">Account Settings</h2>
 
-      {/* Password Change */}
       <form onSubmit={handlePasswordChange} className="mt-4 space-y-4">
         <input
           type="password"
@@ -38,7 +37,6 @@ export default function AccountSettings() {
 
       {message && <p className="mt-2 text-green-500">{message}</p>}
 
-      {/* Linked Accounts */}
       <div className="mt-6">
         <h3 className="text-lg font-semibold text-white">Linked Accounts</h3>
         <div className="mt-2">

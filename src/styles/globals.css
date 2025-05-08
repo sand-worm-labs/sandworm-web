@@ -179,6 +179,12 @@ select:-webkit-autofill:focus {
   }
 }
 
+@media (max-width: 672px) {
+  .worm {
+    width: 100px;
+  }
+}
+
 .hero {
   background-image: url("/img/hero.png");
   background-position-y: 17rem;
