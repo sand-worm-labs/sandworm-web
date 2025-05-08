@@ -42,23 +42,23 @@ export const TabsSection: React.FC<TabSectionProps> = ({
       <TabsList className="flex border-b border-borderLight">
         <TabsTrigger
           value="all"
-          className={`px-4 py-2 flex items-center space-x-2 ${tab === "all" ? "border-b-2 border-primary" : ""}`}
+          className={`md:px-4 px-2 py-2 flex md:items-center space-x-2 ${tab === "all" ? "border-b-2 border-primary" : ""}`}
         >
           <HiOutlineCommandLine size={18} />
-          <span>All Queries</span>
+          <span className="text-sm">All Queries</span>
         </TabsTrigger>
         <TabsTrigger
           value="forked"
-          className={`px-4 py-2 flex items-center space-x-2 ${tab === "forked" ? "border-b-2 border-primary" : ""}`}
+          className={`md:px-4 px-2 py-2 flex md:items-center space-x-2 ${tab === "forked" ? "border-b-2 border-primary" : ""}`}
         >
           <VscRepoForked size={16} />
-          <span> Forked</span>
+          <span className="text-sm"> Forked</span>
         </TabsTrigger>
         <TabsTrigger
           value="starred"
-          className={`px-4 py-2 flex items-center space-x-2 ${tab === "starred" ? "border-b-2 border-primary" : ""}`}
+          className={`md:px-4 px-2 py-2 flex md:items-center space-x-2 ${tab === "starred" ? "border-b-2 border-primary" : ""}`}
         >
-          <FaRegStar size={16} /> <span>Starred</span>
+          <FaRegStar size={16} /> <span className="text-sm">Starred</span>
         </TabsTrigger>
       </TabsList>
       <div className="container mx-auto pt-6">

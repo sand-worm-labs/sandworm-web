@@ -41,7 +41,7 @@ export const Creator: React.FC<ICreatorProps> = ({
       <Head>
         <title>Creators</title>
       </Head>
-      <div className="grid lg:grid-cols-[27%,73%] p-5 border-t min-h-[85vh]">
+      <div className="grid lg:grid-cols-[27%,73%]  border-t min-h-[85vh]">
         <CreatorInfo user={user} />
         <CreatorTabs
           tab={tab}

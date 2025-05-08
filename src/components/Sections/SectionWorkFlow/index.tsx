@@ -49,14 +49,20 @@ const workflowSteps = [
 export const SectionWorkFlow = () => {
   return (
     <div className="container mx-auto mt-16 px-6">
-      <h2 className="text-center text-4xl mb-16">How SandWorm Works</h2>
+      <h2 className="text-center md:text-4xl text-3xl md:mb-16">
+        How SandWorm Works
+      </h2>
 
-      <div className="w-full  space-y-16">
+      <div className="w-full  md:space-y-16 space-y-8">
         {workflowSteps.map(step => (
           <div className="w-full grid md:grid-cols-2 pb-12" key={step.title}>
             <div className="lg:pr-10 mt-12">
-              <h3 className="text-3xl mb-3 font-medium">{step.title}</h3>
-              <p className="text-lg text-[#999999] mb-6">{step.description}</p>
+              <h3 className="md:text-3xl text-xl mb-3 font-medium">
+                {step.title}
+              </h3>
+              <p className="md:text-lg  text-[#999999] mb-6">
+                {step.description}
+              </p>
 
               <div className="flex space-x-4 mb-8">
                 <Link

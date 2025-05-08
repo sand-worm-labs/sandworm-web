@@ -20,8 +20,8 @@ export const CreatorTabs = ({
 }: CreatorTabsProps) => {
   return (
     <div className="container mx-auto md:px-12 dark mt-5">
-      <Tabs value={tab} onValueChange={setTab} className="w-full">
-        <TabsList className="flex border-b border-borderLight">
+      <Tabs value={tab} onValueChange={setTab} className="w-full ">
+        <TabsList className=" border-b border-borderLight flex justify-center md:justify-start">
           <TabsTrigger
             value="all"
             className={`px-4 py-2 flex items-center space-x-2 ${tab === "all" ? "border-b-2 border-primary" : ""}`}
