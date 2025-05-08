@@ -6,6 +6,7 @@ import Editor from "@monaco-editor/react";
 import { toast } from "sonner";
 import { format } from "sql-formatter";
 import type { editor } from "monaco-editor";
+import { sandwormTheme } from "./themes";
 
 interface QueryCodeEditorProps {
   initialValue?: string;
