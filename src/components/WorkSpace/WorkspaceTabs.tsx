@@ -173,14 +173,17 @@ export const WorkspaceTabs = ({
                   </SortableContext>
                 </DndContext>
               </ContextMenuTrigger>
-              <ContextMenuContent>
-                <ContextMenuItem onClick={addNewCodeTab}>
+              <ContextMenuContent className=" dark rounded-none border">
+                <ContextMenuItem
+                  onClick={addNewCodeTab}
+                  className="cursor-pointer"
+                >
                   New Query Tab <Plus className="ml-4 h-4 w-4" />
                 </ContextMenuItem>
                 <ContextMenuSeparator />
                 <ContextMenuItem
                   onClick={closeAllTabs}
-                  className="text-red-600"
+                  className="text-red-600 cursor-pointer"
                 >
                   Close All Tabs{" "}
                   <XSquareIcon className="ml-4 h-4 w-4 text-red-600" />

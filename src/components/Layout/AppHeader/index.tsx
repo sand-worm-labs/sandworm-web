@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, type FC } from "react";
 import { useSession } from "next-auth/react";
+import { Badge } from "@/components/ui/badge";
 
 import { SandwormLogo } from "@/components/Assets";
 import { useModalStore } from "@/store/auth";
@@ -28,6 +29,7 @@ export const AppHeader: FC = () => {
         <span className="ml-3 font-medium text-xl uppercase hidden md:inline-block">
           SandW0rm.
         </span>
+        <Badge className="bg-white/15 rounded-lg ml-2">beta</Badge>
       </Link>
       <div className="hidden md:block ">
         <SearchBar />
