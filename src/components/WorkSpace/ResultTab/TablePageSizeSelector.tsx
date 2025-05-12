@@ -29,7 +29,7 @@ export const TablePageSizeSelector = <T,>({
             placeholder={String(table.getState().pagination.pageSize)}
           />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="dark">
           {PAGE_SIZE_OPTIONS.map(size => (
             <SelectItem key={size} value={String(size)}>
               {size}
