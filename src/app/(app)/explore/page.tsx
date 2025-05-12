@@ -81,7 +81,6 @@ export default async function Explore({ searchParams }: ExplorePageProps) {
               alt="no data"
             />
             <p className="mt-4">
-              {" "}
               Something went wrong fetching queries. Try again
             </p>
           </div>
