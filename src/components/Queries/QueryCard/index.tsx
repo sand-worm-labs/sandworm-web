@@ -7,13 +7,14 @@ import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { twilight } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { useState } from "react";
 
 import type { Query } from "@/types";
 import { useQueryLike } from "@/hooks/useLikeQuery";
 import { useModalStore } from "@/store/auth";
-import { DicebearAvatar } from "../../DicebearAvatar";
-import { useState } from "react";
 import { useForkQuery } from "@/hooks";
+
+import { DicebearAvatar } from "../../DicebearAvatar";
 
 interface QueryCardProps {
   query: Query;
@@ -33,7 +34,7 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
     router.push(`/workspace/${query.id}`);
   };
 
-  //we open signin modal if user attempt to like or fork query when not logged in
+  // we open signin modal if user attempt to like or fork query when not logged in
   const handleLikeClick = () => {
     if (!session?.user?.id) return openSignIn();
     toggleLike();
@@ -44,7 +45,7 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
     handleFork();
   };
 
-  //we truncate long ass description and check if we should even do that
+  // we truncate long ass description and check if we should even do that
   const truncatedDescription = query.description?.slice(0, 100) || "";
   const shouldTruncate = query.description?.length > 100;
 
@@ -157,7 +158,7 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
           showLineNumbers
           className="h-[10rem] rounded-none"
         >
-          {query.query + "\n\n\n\n\n\n\n\n\n"}
+          {`${query.query}\n\n\n\n\n\n\n\n\n`}
         </SyntaxHighlighter>
       </button>
 

@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { redirect } from "next/navigation";
 import Image from "next/image";
+
 import { DicebearAvatar } from "@/components";
 
 const tabs = [

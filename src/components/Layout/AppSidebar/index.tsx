@@ -9,6 +9,8 @@ import {
   Database,
   Settings,
 } from "lucide-react";
+import Link from "next/link";
+
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -17,7 +19,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import Link from "next/link";
 
 type ViewType =
   | "dataExplorer"

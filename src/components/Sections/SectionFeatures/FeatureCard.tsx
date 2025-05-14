@@ -1,7 +1,9 @@
 "use client";
+
 import type { FC } from "react";
-import type { IFeatures } from "@/types";
 import { useState } from "react";
+
+import type { IFeatures } from "@/types";
 
 export const FeatureCard: FC<IFeatures> = ({ id, bgText, desc }) => {
   const [isHovered, setIsHovered] = useState(false);
