@@ -43,6 +43,7 @@ export interface EditorTab {
   createdAt?: number;
   result?: QueryResult | null;
   readonly?: boolean;
+  saved?: boolean;
 }
 
 const chainRpcMap: Record<string, string> = {
@@ -85,6 +86,7 @@ export interface SandwormStoreState {
   setActiveTab: (tabId: string) => void;
   updateTabQuery: (tabId: string, query: string) => void;
   updateTabTitle: (tabId: string, title: string) => void;
+  replaceTabId: (oldtabId: string, newtabId: string) => void;
   moveTab: (oldIndex: number, newIndex: number) => void;
   closeAllTabs: () => void;
   clearHistory: () => void;
@@ -139,10 +141,10 @@ const createMockWasmResult = () => {
 };
 
 // Create the mock and test it
-const mockResult = createMockWasmResult();
+export const mockResult = createMockWasmResult();
 
 // Converts a WASM query result into a QueryResult.
-const resultToJSON = (result: any): QueryResult => {
+export const resultToJSON = (result: any): QueryResult => {
   const data = result.toArray().map((row: any) => {
     const jsonRow = row.toJSON();
     result.schema.fields.forEach((field: any) => {
@@ -340,7 +342,6 @@ export const useSandwormStore = create<SandwormStoreState>()(
           }
         },
 
-        // Tab management actions.
         createTab: (
           title?: string,
           id?: string,
@@ -426,6 +427,24 @@ export const useSandwormStore = create<SandwormStoreState>()(
             const [movedTab] = newTabs.splice(oldIndex, 1);
             newTabs.splice(newIndex, 0, movedTab);
             return { tabs: newTabs };
+          });
+        },
+
+        replaceTabId: (oldId: string, newId: string) => {
+          set(state => {
+            const tab = state.tabs.find(t => t.id === oldId);
+            if (!tab) return state;
+
+            const updatedTab = { ...tab, id: newId };
+
+            const updatedTabs = state.tabs
+              .filter(t => t.id !== oldId)
+              .concat(updatedTab);
+
+            return {
+              tabs: updatedTabs,
+              activeTabId: newId,
+            };
           });
         },
 

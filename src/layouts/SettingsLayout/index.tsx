@@ -62,7 +62,7 @@ export default function SettingsLayout({
               <li key={tab.href}>
                 <Link
                   href={tab.href}
-                  className={`border-l border-red-400 inline-block min-w-40 px-12 py-1.5 rounded-none text-sm mb-4  ${
+                  className={`border-l-4 border-red-400 inline-block min-w-40 px-12 py-1.5 rounded-none text-sm mb-4  ${
                     pathname === tab.href
                       ? " bg-dark-translucent "
                       : "text-text-gray hover:bg-dark-translucent"

@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -17,8 +16,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import { Database } from "lucide-react";
-
+import { CodeSquareIcon } from "lucide-react";
 interface ExampleQuery {
   title: string;
   description: string;
@@ -82,7 +80,7 @@ export const ExamplesModal: React.FC<ExamplesModalProps> = ({
               >
                 <CardHeader>
                   <CardTitle className="text-sm flex items-center gap-2">
-                    <Database className="w-4 h-4 text-muted-foreground" />
+                    <CodeSquareIcon className="w-4 h-4 text-muted-foreground" />
                     {item.title}
                   </CardTitle>
                   <CardDescription className="text-xs font-mono text-muted-foreground truncate">
