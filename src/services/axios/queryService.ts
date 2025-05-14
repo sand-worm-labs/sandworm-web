@@ -40,8 +40,8 @@ export const fetchQueryUpdate = (id: string) => {
   return api.get(`/api/query/updates?queryId=${id}`);
 };
 
-export const createQuery = (data: CreateQueryPayload) => {
-  return api.post(`/api/query`, data);
+export const createQuery = (data: CreateQueryPayload): Promise<Query> => {
+  return api.post<Query>(`/api/query`, data);
 };
 
 export const patchUserQuery = (uid: string, data: PatchQueryPayload) => {
