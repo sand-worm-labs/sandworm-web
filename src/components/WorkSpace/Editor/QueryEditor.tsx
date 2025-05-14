@@ -149,20 +149,20 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
             onClick={handleExecuteQuery}
             disabled={isExecuting}
             variant="default"
-            className="flex items-center gap-2 min-w-[100px] bg-orange-700 text-[0.8rem] font-medium h-[2rem] text-white"
+            className="flex items-center gap-2 min-w-[100px] bg-orange-700 text-sm font-medium h-[2rem] text-white rounded-sm"
           >
             {isExecuting ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <Play className="h-4 w-4" />
             )}
-            {isExecuting ? "Running..." : "Run Query"}
+            {isExecuting ? "Running..." : "Run"}
           </Button>
           {!selectedTab.readonly && (
             <Button
               onClick={() => setIsSaveModalOpen(true)}
               variant="outline"
-              className="flex items-center gap-2 min-w-[100px] text-[0.8rem] font-medium  h-[2.2rem]"
+              className="flex items-center gap-2 min-w-[100px] text-sm font-medium  h-[2.2rem] rounded-sm"
             >
               Save
             </Button>
