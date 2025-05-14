@@ -1,9 +1,9 @@
 import Head from "next/head";
+import Image from "next/image";
 
 import { AxiosService } from "@/services/axios";
 import { TabsSection } from "@/components/TabsSection";
 import type { QueryResponse } from "@/types";
-import Image from "next/image";
 
 const axios = new AxiosService(process.env.NEXT_PUBLIC_API_URL!, false);
 
