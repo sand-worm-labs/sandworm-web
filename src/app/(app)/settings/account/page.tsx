@@ -1,5 +1,6 @@
 "use client";
 
+import { ConnectWallet } from "@/components/AuthUI/ConnectWallet";
 import { useState } from "react";
 
 export default function AccountSettings() {
@@ -15,44 +16,40 @@ export default function AccountSettings() {
   };
 
   return (
-    <div className="max-w-lg">
-      <h2 className="text-xl font-semibold text-white">Account Settings</h2>
+    <div>
+      <div className="border-b">
+        <h2 className="text-xl font-medium text-white mb-2 ">Link Wallet</h2>
+      </div>
 
-      <form onSubmit={handlePasswordChange} className="mt-4 space-y-4">
-        <input
-          type="password"
-          placeholder="New Password"
-          className="w-full rounded-md bg-dark-gray p-2 text-white"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-        />
-        <button
-          type="submit"
-          className="w-full bg-orange-600 py-2 rounded-md text-white"
-          disabled={loading}
+      <div>
+        <p className="text-sm mt-3 max-w-[45rem]">
+          Linking your wallet isn’t required, but it may be essential for
+          claiming rewards or proving on-chain ownership of your contributions
+          in the future
+        </p>
+        <ConnectWallet />
+      </div>
+
+      <div className="border-b mt-12">
+        <h2
+          className="text-xl font-medium  mb-2 
+        text-orange-600"
         >
-          {loading ? "Updating..." : "Change Password"}
+          Delete Account
+        </h2>
+      </div>
+
+      <div>
+        <p className="text-sm mt-3 max-w-[45rem]">
+          This will permanently delete your Sandworm account, including your
+          saved queries and workspace data. This action cannot be undone.
+        </p>
+        <button
+          type="button"
+          className="mt-4 flex  items-center justify-center space-x-2 rounded-md border border-white/20 bg-white/10 px-4 py-1.5 text-orange-600 hover:bg-white/15 text-sm  "
+        >
+          <span>Delete your account</span>
         </button>
-      </form>
-
-      {message && <p className="mt-2 text-green-500">{message}</p>}
-
-      <div className="mt-6">
-        <h3 className="text-lg font-semibold text-white">Linked Accounts</h3>
-        <div className="mt-2">
-          <button
-            type="button"
-            className="w-full bg-gray-700 py-2 rounded-md text-white"
-          >
-            Link GitHub
-          </button>
-          <button
-            type="button"
-            className="w-full bg-red-500 py-2 rounded-md text-white mt-2"
-          >
-            Unlink GitHub
-          </button>
-        </div>
       </div>
     </div>
   );

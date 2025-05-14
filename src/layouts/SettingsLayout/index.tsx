@@ -6,10 +6,11 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 
 import { DicebearAvatar } from "@/components";
+import { UserRound, Settings } from "lucide-react";
 
 const tabs = [
-  { name: "Profile", href: "/settings/profile" },
-  { name: "Account", href: "/settings/account" },
+  { name: "Profile", href: "/settings/profile", icon: <UserRound size={16} /> },
+  { name: "Account", href: "/settings/account", icon: <Settings size={16} /> },
 ];
 
 export default function SettingsLayout({
@@ -23,32 +24,32 @@ export default function SettingsLayout({
   if (status === "loading") return null;
 
   return (
-    <div className=" w-full border-l-[8px]">
+    <div className=" w-full border-t">
       {session && (
-        <div className="container mx-auto py-12 flex justify-between items-center px-6">
-          <div className="flex space-x-3 ">
+        <div className="container mx-auto py-6 flex justify-between items-center px-6">
+          <div className="flex space-x-3 items-center">
             {session?.user?.image ? (
               <Image
                 src={session?.user.image}
-                width={50}
-                height={50}
+                width={60}
+                height={60}
                 alt={`${session?.user.name} image`}
                 className="rounded-full border"
               />
             ) : (
               <DicebearAvatar
-                size={50}
+                size={60}
                 seed={session?.user?.name || "sandworm"}
               />
             )}
             <div>
-              <p className="font-medium">{session?.user.name}</p>
-              <span className="mt-1 text-text-gray">Personal Account</span>
+              <p className="font-bold">{session?.user.name}</p>
+              <span className=" text-text-gray text-sm">Personal Account</span>
             </div>
           </div>
           <Link
             href="/explore"
-            className="inline-block font-medium rounded py-1.5 lg:px-6  border-borderLight border text-sm px-3 bg-white/15  hover:bg-btnHover"
+            className="inline-block font-semibold rounded py-1.5 lg:px-4  border-borderLight border text-xs px-3 bg-white/15  hover:bg-btnHover"
           >
             Go to Public Profile
           </Link>
@@ -62,24 +63,22 @@ export default function SettingsLayout({
               <li key={tab.href}>
                 <Link
                   href={tab.href}
-                  className={`border-l-4 border-red-400 inline-block min-w-40 px-12 py-1.5 rounded-none text-sm mb-4  ${
+                  className={`border-l-4  px-12 py-2 rounded-none text-xs font-semibold mb-2 flex space-x-2  items-center  ${
                     pathname === tab.href
-                      ? " bg-dark-translucent "
+                      ? " bg-dark-translucent border-orange-600  "
                       : "text-text-gray hover:bg-dark-translucent"
                   }`}
                 >
-                  {tab.name}
+                  {tab.icon}
+                  <span> {tab.name}</span>
                 </Link>
               </li>
             ))}
           </ul>
         </div>
 
-        <main className="flex-1 p-6 line-bg">
-          <div className="grid-overlay" />
-          <div className="content border-t-8 border-l-8 h-20 ml-4">
-            {children}
-          </div>
+        <main className="flex-1 p-6  line-bg">
+          <div className=" border-t-8 border-l-8 h-20 ml-4">{children}</div>
         </main>
       </div>
     </div>
