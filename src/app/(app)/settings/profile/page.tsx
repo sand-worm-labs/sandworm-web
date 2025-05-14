@@ -3,10 +3,13 @@
 import { useState } from "react";
 
 import { DicebearAvatar } from "@/components/DicebearAvatar";
+import { Button } from "@/components/ui/button";
+import { useSession } from "next-auth/react";
+import Image from "next/image";
 
 export default function ProfileSettings() {
   const [formData, setFormData] = useState({
-    username: "",
+    username: "ceeriil",
     bio: "",
     github: "",
     discord: "",
@@ -18,69 +21,106 @@ export default function ProfileSettings() {
   ) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
+  const { data: session, status } = useSession();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
   };
 
-  return (
-    <div className="border border-borderLight px-6 py-8 rounded-md mt-12 ">
-      <h2 className="text-xl font-medium text-white uppercase">
-        Profile Settings
-      </h2>
+  if (!session) {
+    return null;
+  }
 
-      {/* Profile Picture */}
-      <div className="mt-10 flex justify-between items-center">
-        <DicebearAvatar seed="profile" />
-        <button
-          type="submit"
-          className=" bg-orange-600 py-2 px-5 text-sm font-medium rounded-md text-white"
-        >
-          Save Changes
-        </button>
+  return (
+    <div>
+      <div className="border-b">
+        <h2 className="text-xl font-medium text-white mb-2 ">Public Profile</h2>
       </div>
 
-      {/* Profile Form */}
-      <form onSubmit={handleSubmit} className="mt-4 space-y-4">
-        <input
-          type="text"
-          name="username"
-          placeholder="Username"
-          className="w-full rounded-md bg-dark-gray p-2 text-white"
-          value={formData.username}
-          onChange={handleChange}
-        />
-        <textarea
-          name="bio"
-          placeholder="Bio"
-          className="w-full rounded-md bg-dark-gray p-2 text-white"
-          value={formData.bio}
-          onChange={handleChange}
-        />
-        <input
-          type="text"
-          name="github"
-          placeholder="GitHub Profile"
-          className="w-full rounded-md bg-dark-gray p-2 text-white"
-          value={formData.github}
-          onChange={handleChange}
-        />
-        <input
-          type="text"
-          name="discord"
-          placeholder="Discord Username"
-          className="w-full rounded-md bg-dark-gray p-2 text-white"
-          value={formData.discord}
-          onChange={handleChange}
-        />
-        <input
-          type="text"
-          name="telegram"
-          placeholder="Telegram Handle"
-          className="w-full rounded-md bg-dark-gray p-2 text-white"
-          value={formData.telegram}
-          onChange={handleChange}
-        />
+      <form onSubmit={handleSubmit} className="mt-4 space-y-4 flex space-x-6">
+        <div className="flex flex-col space-y-4 items-start">
+          <div>
+            <label className="mb-1 inline-block font-medium">Name</label>
+            <input
+              type="text"
+              name="username"
+              placeholder="Username"
+              className="w-full rounded-md bg-dark-gray p-2 text-white text-sm max-w-[30rem] block"
+              value={formData.username}
+              onChange={handleChange}
+            />
+            <span className="text-xs text-text-gray mt-1">
+              Your public name on Sandworm. It’ll appear on your profile, shared
+              queries, and contributions across the platform.
+            </span>
+          </div>
+
+          <div>
+            <label className="mb-1 inline-block font-medium">Bio</label>
+            <textarea
+              name="bio"
+              placeholder="Bio"
+              className="w-full rounded-md bg-dark-gray p-2 text-white text-sm min-h-[6rem] max-w-[30rem] block placeholder:text-text-gray "
+              value={formData.bio}
+              onChange={handleChange}
+            />
+            <span className="text-xs text-text-gray">
+              Optional but helpful. Share a bit about yourself, your interests,
+              focus areas, or what you’re exploring on-chain.
+            </span>
+          </div>
+
+          <div className="w-full">
+            <label className="mb-2 inline-block font-medium">
+              Social Accounts
+            </label>
+            <input
+              type="text"
+              name="github"
+              placeholder="GitHub Profile"
+              className="w-full rounded-md bg-dark-gray p-2 text-white text-xs mb-3 placeholder:text-text-gray max-w-[30rem] block"
+              value={formData.github}
+              onChange={handleChange}
+            />
+            <input
+              type="text"
+              name="discord"
+              placeholder="Discord Username"
+              className="w-full rounded-md bg-dark-gray p-2 text-white text-xs mb-3 placeholder:text-text-gray max-w-[30rem] block"
+              value={formData.discord}
+              onChange={handleChange}
+            />
+            <input
+              type="text"
+              name="telegram"
+              placeholder="Telegram Handle"
+              className="w-full rounded-md bg-dark-gray p-2 text-white text-xs mb-3 placeholder:text-text-gray max-w-[30rem] block"
+              value={formData.telegram}
+              onChange={handleChange}
+            />
+          </div>
+
+          <button className="text-sm " type="button">
+            Update Profile
+          </button>
+        </div>
+
+        <div>
+          {session?.user?.image ? (
+            <Image
+              src={session?.user.image}
+              width={300}
+              height={300}
+              alt={`${session?.user.name} image`}
+              className="rounded-full border"
+            />
+          ) : (
+            <DicebearAvatar
+              size={300}
+              seed={session?.user?.name || "sandworm"}
+            />
+          )}
+        </div>
       </form>
     </div>
   );

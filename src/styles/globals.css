@@ -203,6 +203,9 @@ select:-webkit-autofill:focus {
   }
 }
 
+label {
+  font-family: inherit;
+}
 @media (max-width: 672px) {
   .worm {
     width: 100px;
