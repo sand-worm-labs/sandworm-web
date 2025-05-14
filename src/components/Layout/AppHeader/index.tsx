@@ -3,14 +3,14 @@
 import Link from "next/link";
 import { useState, type FC } from "react";
 import { useSession } from "next-auth/react";
-import { Badge } from "@/components/ui/badge";
+import { Menu, X } from "lucide-react";
 
+import { Badge } from "@/components/ui/badge";
 import { SandwormLogo } from "@/components/Assets";
 import { useModalStore } from "@/store/auth";
 
 import { ProfileMenu } from "../../ProfileMenu";
 import { SearchBar } from "../../SearchBar";
-import { Menu, X } from "lucide-react";
 
 export const AppHeader: FC = () => {
   const { data: session } = useSession();

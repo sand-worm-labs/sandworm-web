@@ -4,9 +4,10 @@ import ReactPaginate from "react-paginate";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { useIsMobile } from "@/hooks/useMobile";
 
+import { useIsMobile } from "@/hooks/useMobile";
 import type { Query, QueryPagination } from "@/types";
+
 import { QueryCard } from "../QueryCard";
 
 interface IQueryListProps {

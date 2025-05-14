@@ -176,7 +176,7 @@ select:-webkit-autofill:focus {
 }
 
 .dm-sans {
-  font-family: "DM Sans", sans-serif;
+  font-family: "DM Sans", monospace, sans-serif;
   font-optical-sizing: auto;
   font-weight: 900;
   font-style: normal;

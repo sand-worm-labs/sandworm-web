@@ -1,5 +1,8 @@
 "use client";
 
+import { motion } from "framer-motion";
+import { CodeSquareIcon } from "lucide-react";
+
 import {
   Dialog,
   DialogContent,
@@ -15,8 +18,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { motion } from "framer-motion";
-import { CodeSquareIcon } from "lucide-react";
+
 interface ExampleQuery {
   title: string;
   description: string;
