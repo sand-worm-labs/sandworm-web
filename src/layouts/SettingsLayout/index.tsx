@@ -21,39 +21,40 @@ export default function SettingsLayout({
   const pathname = usePathname();
 
   if (status === "loading") return null;
-  if (!session) {
-    redirect("/");
-  }
-
-  const user = session.user;
 
   return (
-    <section className=" w-full border-t">
-      <div className="container mx-auto py-12 flex justify-between items-center px-6">
-        <div className="flex space-x-3 ">
-          {user?.image ? (
-            <Image
-              src={user.image}
-              width={50}
-              height={50}
-              alt={`${user.name} image`}
-              className="rounded-full border"
-            />
-          ) : (
-            <DicebearAvatar size={50} seed={user?.name || "sandworm"} />
-          )}
-          <div>
-            <p className="font-medium">{user.name}</p>
-            <span className="mt-1 text-text-gray">Personal Account</span>
+    <div className=" w-full border-l-[8px]">
+      {session && (
+        <div className="container mx-auto py-12 flex justify-between items-center px-6">
+          <div className="flex space-x-3 ">
+            {session?.user?.image ? (
+              <Image
+                src={session?.user.image}
+                width={50}
+                height={50}
+                alt={`${session?.user.name} image`}
+                className="rounded-full border"
+              />
+            ) : (
+              <DicebearAvatar
+                size={50}
+                seed={session?.user?.name || "sandworm"}
+              />
+            )}
+            <div>
+              <p className="font-medium">{session?.user.name}</p>
+              <span className="mt-1 text-text-gray">Personal Account</span>
+            </div>
           </div>
+          <Link
+            href="/explore"
+            className="inline-block font-medium rounded py-1.5 lg:px-6  border-borderLight border text-sm px-3 bg-white/15  hover:bg-btnHover"
+          >
+            Go to Public Profile
+          </Link>
         </div>
-        <Link
-          href="/explore"
-          className="inline-block font-medium rounded py-1.5 lg:px-6  border-borderLight border text-sm px-3 bg-white/15  hover:bg-btnHover"
-        >
-          Go to Public Profile
-        </Link>
-      </div>
+      )}
+
       <div className="flex min-h-screen container mx-auto ">
         <div className=" p-6 border-r border-borderLight my-12 w-[35rem]">
           <ul className="mt-4  flex flex-col w-full ">
@@ -61,7 +62,7 @@ export default function SettingsLayout({
               <li key={tab.href}>
                 <Link
                   href={tab.href}
-                  className={`border-t-8 border-red-400 inline-block min-w-40 px-12 py-1.5 rounded-none text-sm mb-4  ${
+                  className={`border-l border-red-400 inline-block min-w-40 px-12 py-1.5 rounded-none text-sm mb-4  ${
                     pathname === tab.href
                       ? " bg-dark-translucent "
                       : "text-text-gray hover:bg-dark-translucent"
@@ -81,6 +82,6 @@ export default function SettingsLayout({
           </div>
         </main>
       </div>
-    </section>
+    </div>
   );
 }

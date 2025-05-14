@@ -49,6 +49,7 @@ body {
   accent-color: theme("colors.brand.accent");
 }
 
+/* scrollbar */
 ::-webkit-scrollbar {
   height: 8px;
   width: 8px;

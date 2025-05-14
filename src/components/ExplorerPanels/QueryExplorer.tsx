@@ -19,6 +19,16 @@ const LoadingState = () => (
   </div>
 );
 
+const UnauthenticatedState = () => (
+  <div className="flex flex-col items-center justify-center h-full gap-4 text-center text-muted-foreground">
+    <SquareTerminal className="h-8 w-8" />
+    <p className="text-sm px-4 max-w-sm">
+      Sign in to access your saved queries and keep your work synced
+    </p>
+    <Button variant="outline">Sign In</Button>
+  </div>
+);
+
 const EmptyState = () => (
   <div className="flex flex-col items-center justify-center h-full gap-4 text-center">
     <div className="flex flex-col items-center gap-2">
@@ -73,9 +83,13 @@ export const QueryExplorer = () => {
       </CardHeader>
 
       <CardContent className="p-0 h-[calc(100%-60px)] overflow-y-auto">
-        {loading && <LoadingState />}
-        {!loading && queries.length === 0 && <EmptyState />}
-        {!loading && queries.length > 0 && (
+        {!session?.user?.id ? (
+          <UnauthenticatedState />
+        ) : loading ? (
+          <LoadingState />
+        ) : queries.length === 0 ? (
+          <EmptyState />
+        ) : (
           <QueryExplorerCardList query={queries} />
         )}
       </CardContent>
