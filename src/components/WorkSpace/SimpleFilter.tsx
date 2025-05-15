@@ -27,7 +27,7 @@ export const SimpleFilter = ({
   width = "w-[200px]",
 }: SimpleFilterProps) => {
   const [filterText, setFilterText] = useState("");
-  const [isFocused, setIsFocused] = useState(false);
+  const [, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 

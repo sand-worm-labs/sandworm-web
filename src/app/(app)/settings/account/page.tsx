@@ -1,20 +1,8 @@
 "use client";
 
 import { ConnectWallet } from "@/components/AuthUI/ConnectWallet";
-import { useState } from "react";
 
 export default function AccountSettings() {
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [message] = useState("");
-
-  const handlePasswordChange = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    setLoading(false);
-  };
-
   return (
     <div>
       <div className="border-b">

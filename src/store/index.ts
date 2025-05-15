@@ -9,7 +9,7 @@ export interface CurrentConnection {
 }
 
 export interface ConnectionProvider {
-  executionMethod: "JSON_RPC" | "GRAPHQL" | "HTTP ";
+  executionMethod: "rpc" | "index";
 }
 
 export interface ConnectionList {
@@ -246,19 +246,22 @@ export const useSandwormStore = create<SandwormStoreState>()(
         executeQuery: async (query, tabId?) => {
           try {
             set({ isExecuting: true, error: null });
-            const API_URL =
-              "https://eql-api-606667184456.us-central1.run.app/run";
+            /*             const API_URL =
+              "https:/sui-api-606667184456.us-central1.run.app/run"; */
+            const API_URL = "https://node.sandwormlabs.xyz/run?";
 
             let queryResult: QueryResult;
 
             try {
               const res = await fetch(
-                `${API_URL}?query=${query.replace(/\s/g, "+")}`
+                `${API_URL}type_param=rpc&query=${query.replace(/\s/g, "+")}`
               );
               const resContentType = res.headers.get("Content-Type");
 
               if (resContentType?.includes("application/json")) {
-                const { result, error } = await res.json();
+                const { data, error, type } = await res.json();
+
+                console.log("response", data, type);
 
                 if (error) {
                   console.error("API returned error:", error);
@@ -269,8 +272,8 @@ export const useSandwormStore = create<SandwormStoreState>()(
                     rowCount: 0,
                     error,
                   };
-                } else if (queryHasResults(result)) {
-                  queryResult = formatApiResultToQueryResult(result);
+                } else if (queryHasResults(data[0].result)) {
+                  queryResult = formatApiResultToQueryResult(data[0].result);
                 } else {
                   queryResult = {
                     columns: [],
@@ -304,7 +307,7 @@ export const useSandwormStore = create<SandwormStoreState>()(
               queryHistory: updateHistory(
                 state.queryHistory,
                 query,
-                queryResult.error || null
+                queryResult.error || undefined
               ),
               tabs: state.tabs.map(tab =>
                 tab.id === tabId ? { ...tab, result: queryResult } : tab
