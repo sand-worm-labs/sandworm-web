@@ -25,7 +25,12 @@ async function initializeFirebase() {
   }
 
   if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-    const serviceAccount = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+    const decoded = Buffer.from(
+      process.env.GOOGLE_APPLICATION_CREDENTIALS,
+      "base64"
+    ).toString("utf-8");
+    const serviceAccount = JSON.parse(decoded);
+
     if (!serviceAccount) {
       throw new Error("❌ Firebase service account not found");
     }
@@ -47,7 +52,10 @@ const app = admin.apps[0];
 const auth = getAuth();
 const db = getFirestore();
 
-if (process.env.FIRESTORE_EMULATOR_HOST) {
+if (
+  process.env.FIRESTORE_EMULATOR_HOST &&
+  process.env.NODE_ENV !== "production"
+) {
   db.settings({ host: "localhost:8080", ssl: false });
 }
 

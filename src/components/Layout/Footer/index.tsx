@@ -33,7 +33,7 @@ export const MainFooter = () => {
             Blog
           </Link>
           <Link
-            href="https://github.com/sand-worm-sql/wql"
+            href="https://github.com/sand-worm-labs"
             target="blank_"
             className="hover:text-white"
           >
