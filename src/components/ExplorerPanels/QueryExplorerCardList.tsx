@@ -52,7 +52,8 @@ export const QueryExplorerCardList: React.FC<IQueryExplorerCardListProps> = ({
         {filteredQueries.length > 0 ? (
           filteredQueries.map(item => (
             <li key={item.id} className="border-b first:border-t">
-              <div
+              <button
+                type="button"
                 className="cursor-pointer p-3 hover:bg-white/10 text-sm flex items-center justify-between lowercase font-medium py-5"
                 onClick={() => openQueryInTab(item)}
               >
@@ -61,19 +62,9 @@ export const QueryExplorerCardList: React.FC<IQueryExplorerCardListProps> = ({
                   <span className="text-sm capitalize">{item.title}</span>
                 </span>
                 <div className="flex items-center space-x-2">
-                  <button
-                    type="button"
-                    onClick={e => {
-                      e.stopPropagation();
-                      setActiveDeleteId(item.id);
-                    }}
-                    className="text-red-500 hover:text-red-600"
-                  >
-                    <Trash2 size={18} />
-                  </button>
                   <MdKeyboardDoubleArrowRight />
                 </div>
-              </div>
+              </button>
               <DeleteQueryModal
                 open={activeDeleteId === item.id}
                 onOpenChange={open =>
@@ -81,6 +72,16 @@ export const QueryExplorerCardList: React.FC<IQueryExplorerCardListProps> = ({
                 }
                 onDelete={() => handleDelete(item.id)}
               />
+              <button
+                type="button"
+                onClick={e => {
+                  e.stopPropagation();
+                  setActiveDeleteId(item.id);
+                }}
+                className="text-red-500 hover:text-red-600"
+              >
+                <Trash2 size={18} />
+              </button>
             </li>
           ))
         ) : (

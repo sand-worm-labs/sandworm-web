@@ -1,6 +1,5 @@
 "use client";
 
-import { usePathname } from "next/navigation";
 import { GiBackwardTime } from "react-icons/gi";
 import {
   SquareTerminal,
@@ -35,8 +34,6 @@ export const AppSidebar = ({
   currentView,
   setCurrentView,
 }: AppSidebarProps) => {
-  const pathname = usePathname();
-
   const viewOptions = [
     { id: "dataExplorer" as const, label: "Data Explorer", icon: Database },
     {
@@ -69,7 +66,8 @@ export const AppSidebar = ({
           {viewOptions.map(item => (
             <Tooltip key={item.id}>
               <TooltipTrigger asChild>
-                <span
+                <button
+                  type="button"
                   className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors w-full mb-5 ${
                     currentView === item.id
                       ? " border-l-4 border-orange-600 rounded-none"
@@ -78,7 +76,7 @@ export const AppSidebar = ({
                   onClick={() => setCurrentView(item.id)}
                 >
                   <item.icon className="h-5 w-5" />
-                </span>
+                </button>
               </TooltipTrigger>
               <TooltipContent side="right">
                 <span className="text-sm">{item.label}</span>

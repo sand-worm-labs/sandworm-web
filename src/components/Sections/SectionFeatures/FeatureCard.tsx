@@ -30,20 +30,3 @@ export const FeatureCard: FC<IFeatures> = ({ id, bgText, desc }) => {
     </div>
   );
 };
-
-const style = document.createElement("style");
-style.textContent = `
-  @keyframes marquee {
-    0% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(-50%);
-    }
-  }
-  
-  .animate-marquee {
-    animation: marquee 15s linear infinite;
-  }
-`;
-document.head.appendChild(style);

@@ -20,7 +20,11 @@ export const AppHeader: FC = () => {
   return (
     <header className="px-8 py-2 flex justify-between items-center">
       <div className="md:hidden">
-        <button onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">
+        <button
+          type="button"
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Toggle menu"
+        >
           {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>

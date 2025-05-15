@@ -83,8 +83,8 @@ export const SectionWorkFlow = () => {
               </div>
 
               <ul className="text-sm space-y-3">
-                {step.bullets.map((item, i) => (
-                  <li key={i} className="flex items-center space-x-3">
+                {step.bullets.map(item => (
+                  <li key={item} className="flex items-center space-x-3">
                     <span className="rounded-full bg-dark-translucent p-1">
                       <FaCheck className="text-orange-600 text-[0.65rem]" />
                     </span>

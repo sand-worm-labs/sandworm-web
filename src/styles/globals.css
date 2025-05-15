@@ -428,6 +428,19 @@ svg {
   shape-rendering: crispEdges;
 }
 
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 15s linear infinite;
+}
+
 @media screen and (max-width: 800px) {
   .left-content {
     display: none;

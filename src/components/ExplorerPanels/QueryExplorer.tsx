@@ -44,6 +44,21 @@ const EmptyState = () => (
   </div>
 );
 
+const QueryExplorerContent = ({
+  session,
+  loading,
+  queries,
+}: {
+  session: any;
+  loading: boolean;
+  queries: Query[];
+}) => {
+  if (!session?.user?.id) return <UnauthenticatedState />;
+  if (loading) return <LoadingState />;
+  if (queries.length === 0) return <EmptyState />;
+  return <QueryExplorerCardList query={queries} />;
+};
+
 export const QueryExplorer = () => {
   const [queries, setQueries] = useState<Query[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -83,15 +98,11 @@ export const QueryExplorer = () => {
       </CardHeader>
 
       <CardContent className="p-0 h-[calc(100%-60px)] overflow-y-auto">
-        {!session?.user?.id ? (
-          <UnauthenticatedState />
-        ) : loading ? (
-          <LoadingState />
-        ) : queries.length === 0 ? (
-          <EmptyState />
-        ) : (
-          <QueryExplorerCardList query={queries} />
-        )}
+        <QueryExplorerContent
+          session={session}
+          loading={loading}
+          queries={queries}
+        />
       </CardContent>
     </Card>
   );

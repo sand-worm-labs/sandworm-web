@@ -35,7 +35,6 @@ export const SaveModal = ({
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
-  console.log("currentcont", content);
 
   const { create, loading } = useCreateQuery();
   const { data: session } = useSession();
@@ -111,7 +110,7 @@ export const SaveModal = ({
             <Checkbox
               id="private"
               checked={isPrivate}
-              onCheckedChange={setIsPrivate}
+              onCheckedChange={checked => setIsPrivate(checked === true)}
             />
             <Label htmlFor="private">Make Private</Label>
           </div>

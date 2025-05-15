@@ -3,7 +3,6 @@
 import { useState } from "react";
 
 import { DicebearAvatar } from "@/components/DicebearAvatar";
-import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 
@@ -21,7 +20,7 @@ export default function ProfileSettings() {
   ) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
