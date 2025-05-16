@@ -9,19 +9,19 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown, Play, Loader2 } from "lucide-react";
 import { useState } from "react";
 
-type ExecutionType = "rpc" | "indexer";
+type ExecutionType = "rpc" | "indexed";
 
 export const ExecuteButton = ({
   isExecuting,
-  onExecute,
+  handleExecute,
 }: {
   isExecuting: boolean;
-  onExecute: (type: ExecutionType) => void;
+  handleExecute: (type: ExecutionType) => void;
 }) => {
   const [executionType, setExecutionType] = useState<ExecutionType>("rpc");
 
   const handleClick = () => {
-    onExecute(executionType);
+    handleExecute(executionType);
   };
 
   return (
@@ -58,7 +58,7 @@ export const ExecuteButton = ({
             RPC
           </DropdownMenuItem>
 
-          <DropdownMenuItem onClick={() => setExecutionType("indexer")}>
+          <DropdownMenuItem onClick={() => setExecutionType("indexed")}>
             Indexer
           </DropdownMenuItem>
         </DropdownMenuContent>

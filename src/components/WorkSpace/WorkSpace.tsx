@@ -76,7 +76,7 @@ export const WorkSpace = ({ initialQuery, currentUserId }: WorkSpaceProps) => {
           <ResizableHandle withHandle />
 
           <ResizablePanel
-            className="overflow-auto"
+            className="overflow-auto hidden md:block"
             defaultSize={isMobile ? 50 : 25}
             minSize={isMobile ? 40 : 20}
           >

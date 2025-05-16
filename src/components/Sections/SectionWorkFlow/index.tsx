@@ -6,6 +6,7 @@ import { MdOutlineArrowForwardIos } from "react-icons/md";
 import { FaCheck } from "react-icons/fa";
 
 import { TerminalFrame } from "./TerminalFrame";
+import { ExecutionResultPreview } from "./ExecutionResultPreview";
 
 const workflowSteps = [
   {
@@ -14,6 +15,7 @@ const workflowSteps = [
     url: "/workspace",
     learnMoreUrl: "https://sandwormdocs.vercel.app/sql-syntax/intro",
     imageUrl: "/img/queries.png",
+
     bullets: [
       "Use an SQL-like language designed for on-chain data",
       "Filter and sort transactions without the headache",
@@ -27,6 +29,7 @@ const workflowSteps = [
     description:
       "Visualize and explore on-chain data with blazing-fast responses.",
     imageUrl: "/img/queries.png",
+    preview: <ExecutionResultPreview />,
     bullets: [
       "Real-time query execution with instant feedback",
       "No indexers or setup required",
@@ -95,13 +98,17 @@ export const SectionWorkFlow = () => {
             </div>
             <div className="md:w-[90%] pt-[1rem] flex justify-center mt-6 md:mt-0">
               <TerminalFrame>
-                <Image
-                  src={step.imageUrl}
-                  width={800}
-                  height={512}
-                  alt="Workflow Example"
-                  className="w-full object-cover border border-gray-800"
-                />
+                {step.preview ? (
+                  step.preview
+                ) : (
+                  <Image
+                    src={step.imageUrl}
+                    width={800}
+                    height={512}
+                    alt="Workflow Example"
+                    className="w-full object-cover border border-gray-800"
+                  />
+                )}
               </TerminalFrame>
             </div>
           </div>
