@@ -5,7 +5,11 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    domains: ["avatars.githubusercontent.com", "raw.githubusercontent.com"],
+    domains: [
+      "avatars.githubusercontent.com",
+      "raw.githubusercontent.com",
+      "lh3.googleusercontent.com",
+    ],
     remotePatterns: [
       {
         protocol: "https",
