@@ -9,7 +9,7 @@ export interface CurrentConnection {
 }
 
 export interface ConnectionProvider {
-  executionMethod: "rpc" | "index";
+  executionMethod: "rpc" | "indexed";
 }
 
 export interface ConnectionList {
@@ -78,7 +78,7 @@ export interface SandwormStoreState {
   executeQuery: (
     query: string,
     tabId?: string,
-    executionMethod?: ConnectionProvider
+    provider?: ConnectionProvider
   ) => Promise<QueryResult | void>;
   createTab: (
     title?: string,
@@ -245,9 +245,11 @@ export const useSandwormStore = create<SandwormStoreState>()(
         },
 
         initialize: async () => {},
-        executeQuery: async (query, tabId?, executionMethod) => {
+        executeQuery: async (query, tabId?, provider) => {
           try {
             set({ isExecuting: true, error: null });
+            const executionType = provider?.executionMethod ?? "rpc";
+
             /*             const API_URL =
               "https:/sui-api-606667184456.us-central1.run.app/run"; */
             const API_URL = "https://node.sandwormlabs.xyz/run?";
@@ -256,7 +258,7 @@ export const useSandwormStore = create<SandwormStoreState>()(
 
             try {
               const res = await fetch(
-                `${API_URL}type_param=rpc&query=${query.replace(/\s/g, "+")}`
+                `${API_URL}type_param=${executionType}&query=${query.replace(/\s/g, "+")}`
               );
               const resContentType = res.headers.get("Content-Type");
 

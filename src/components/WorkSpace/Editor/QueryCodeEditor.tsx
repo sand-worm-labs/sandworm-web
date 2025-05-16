@@ -7,11 +7,13 @@ import { toast } from "sonner";
 import { format } from "sql-formatter";
 import type { editor } from "monaco-editor";
 
+type ExecutionType = "rpc" | "indexer";
+
 interface QueryCodeEditorProps {
   initialValue?: string;
   tabId: string;
   updateTabQueryAction: (tabId: string, query: string) => void;
-  onRunQuery?: () => Promise<void>;
+  onRunQuery?: (type: ExecutionType) => Promise<void>;
   height?: string;
   readonly?: boolean;
   theme: "sandworm" | "vs-dark" | "vs-light" | "monokai";
@@ -40,7 +42,7 @@ export const QueryCodeEditor = ({
 
     try {
       if (onRunQuery) {
-        await onRunQuery();
+        await onRunQuery("rpc");
       } else {
         toast.success("Query executed successfully");
       }
