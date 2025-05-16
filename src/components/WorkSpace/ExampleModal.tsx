@@ -64,9 +64,6 @@ export const ExamplesModal: React.FC<ExamplesModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogTrigger asChild>
-        <Button variant="outline">Browse Examples</Button>
-      </DialogTrigger>
       <DialogContent className="max-w-3xl dark">
         <DialogHeader>
           <DialogTitle>Explore Example Queries</DialogTitle>

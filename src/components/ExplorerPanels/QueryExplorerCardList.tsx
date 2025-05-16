@@ -8,6 +8,7 @@ import type { Query } from "@/types";
 
 import { Input } from "../ui/input";
 import { DeleteQueryModal } from "../WorkSpace/DeleteQueryModal";
+import { useDeleteQuery } from "@/hooks/useDeleteQuery";
 
 interface IQueryExplorerCardListProps {
   query: Query[];
@@ -19,13 +20,15 @@ export const QueryExplorerCardList: React.FC<IQueryExplorerCardListProps> = ({
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [activeDeleteId, setActiveDeleteId] = useState<string | null>(null);
+  const { handleDelete, loading: deleteLoading } = useDeleteQuery();
 
   const openQueryInTab = (queryData: any) => {
     router.push(`/workspace/${queryData.id}`);
   };
 
-  const handleDelete = (id: string) => {
-    console.log("delete query with id", id);
+  const handleDeleteClick = (id: string) => {
+    setActiveDeleteId(id);
+    handleDelete(id);
   };
 
   const filteredQueries = query.filter(item =>
@@ -51,15 +54,20 @@ export const QueryExplorerCardList: React.FC<IQueryExplorerCardListProps> = ({
       <ul className="flex flex-col w-full my-4">
         {filteredQueries.length > 0 ? (
           filteredQueries.map(item => (
-            <li key={item.id} className="border-b first:border-t">
+            <li
+              key={item.id}
+              className="border-b first:border-t flex  p-3 py-5 "
+            >
               <button
                 type="button"
-                className="cursor-pointer p-3 hover:bg-white/10 text-sm flex items-center justify-between lowercase font-medium py-5"
+                className="cursor-pointer hover:bg-white/10 text-sm flex items-center justify-between lowercase font-medium text-left  "
                 onClick={() => openQueryInTab(item)}
               >
                 <span className="flex space-x-2 items-center">
                   <AiOutlineCode size={18} />
-                  <span className="text-sm capitalize">{item.title}</span>
+                  <span className="text-sm capitalize ml-1.5">
+                    {item.title}
+                  </span>
                 </span>
                 <div className="flex items-center space-x-2">
                   <MdKeyboardDoubleArrowRight />
@@ -70,7 +78,7 @@ export const QueryExplorerCardList: React.FC<IQueryExplorerCardListProps> = ({
                 onOpenChange={open =>
                   !open ? setActiveDeleteId(null) : setActiveDeleteId(item.id)
                 }
-                onDelete={() => handleDelete(item.id)}
+                onDelete={() => handleDeleteClick(item.id)}
               />
               <button
                 type="button"
