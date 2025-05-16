@@ -2,7 +2,10 @@ import type { User, QueryResponse, Query } from "@/types";
 
 import { AxiosService } from ".";
 
-const API_BASE_URL = "http://localhost:3000";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+if (!API_BASE_URL) {
+  throw new Error("NEXT_PUBLIC_API_URL environment variable is not defined");
+}
 const api = new AxiosService(API_BASE_URL, true);
 export const publicApi = new AxiosService(API_BASE_URL, false);
 
