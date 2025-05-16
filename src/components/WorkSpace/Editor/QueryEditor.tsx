@@ -17,6 +17,7 @@ import { useForkQuery } from "@/hooks";
 import { SaveModal } from "@/components/WorkSpace";
 import { QueryCodeEditor } from "@/components/WorkSpace/Editor";
 import type { EditorTab } from "@/store";
+import { ExecuteButton } from "./ExecuteButton";
 
 interface SqlEditorProps {
   tabId: string;
@@ -145,7 +146,7 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
               </Tooltip>
             </TooltipProvider>
           </div>
-          <Button
+          {/*   <Button
             onClick={handleExecuteQuery}
             disabled={isExecuting}
             variant="default"
@@ -157,7 +158,11 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
               <Play className="h-4 w-4" />
             )}
             {isExecuting ? "Running..." : "Run"}
-          </Button>
+          </Button> */}
+          <ExecuteButton
+            handleExecute={handleExecuteQuery}
+            isExecuting={isExecuting}
+          />
           {!selectedTab.readonly && (
             <Button
               onClick={() => setIsSaveModalOpen(true)}
