@@ -47,6 +47,10 @@ export const createQuery = (data: CreateQueryPayload): Promise<Query> => {
   return api.post<Query>(`/api/query`, data);
 };
 
+export const deleteUserQuery = (id: string) => {
+  return api.delete(`/api/query?id=${id}`);
+};
+
 export const patchUserQuery = (uid: string, data: PatchQueryPayload) => {
   return api.patch(`/api/query/user?uid=${uid}`, data);
 };

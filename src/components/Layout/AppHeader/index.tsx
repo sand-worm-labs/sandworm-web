@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, type FC } from "react";
 import { useSession } from "next-auth/react";
-import { Menu, X, Search } from "lucide-react";
+import { X, Search } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { SandwormLogo } from "@/components/Assets";

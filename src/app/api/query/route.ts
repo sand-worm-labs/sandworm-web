@@ -124,6 +124,7 @@ export async function PATCH(request: Request) {
   return new Response(JSON.stringify(result.data));
 }
 
+//need to review this cause now anybdy can delete: URGENT
 export async function DELETE(request: Request) {
   const session = await auth();
 
@@ -134,10 +135,22 @@ export async function DELETE(request: Request) {
     );
   }
 
-  const { id }: { id: string } = await request.json();
-  // let user = await QueryService.
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get("id");
+
+  if (!id) {
+    return new Response(
+      JSON.stringify(DataResult.failure("No ID provided", "400")),
+      {
+        status: 400,
+      }
+    );
+  }
+
   const result = await QueryService.delete(id);
+
   if (!result.success)
     return new Response(JSON.stringify(result), { status: 500 });
+
   return new Response(JSON.stringify({ success: true, data: result.data }));
 }

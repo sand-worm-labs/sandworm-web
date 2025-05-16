@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Play, Loader2, Edit } from "lucide-react";
+import { Edit } from "lucide-react";
 import { toast } from "sonner";
 import { FaCodeBranch, FaRegStar } from "react-icons/fa";
 
