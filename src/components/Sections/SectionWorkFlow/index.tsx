@@ -13,7 +13,7 @@ const workflowSteps = [
     title: "Write Queries",
     description: "Compose powerful WQL queries using familiar SQL syntax.",
     url: "/workspace",
-    learnMoreUrl: "https://sandwormdocs.vercel.app/sql-syntax/intro",
+    learnMoreUrl: "https://docs.sandwormlabs.xyz",
     imageUrl: "/img/queries.png",
 
     bullets: [
@@ -25,7 +25,7 @@ const workflowSteps = [
   {
     title: "Execute and Analyze",
     url: "/workspace",
-    learnMoreUrl: "https://sandwormdocs.vercel.app/",
+    learnMoreUrl: "https://docs.sandwormlabs.xyz",
     description:
       "Visualize and explore on-chain data with blazing-fast responses.",
     imageUrl: "/img/queries.png",
@@ -39,7 +39,7 @@ const workflowSteps = [
   {
     title: "Share & Collaborate",
     url: "/explore",
-    learnMoreUrl: "https://sandwormdocs.vercel.app/",
+    learnMoreUrl: "https://docs.sandwormlabs.xyz",
     imageUrl: "/img/sample.png",
     description: "Publish useful queries to the community for open discovery.",
     bullets: [
