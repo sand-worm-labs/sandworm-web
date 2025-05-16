@@ -75,7 +75,11 @@ export interface SandwormStoreState {
   error: string | null;
   settings: SandwormSettings;
   initialize: () => Promise<void>;
-  executeQuery: (query: string, tabId?: string) => Promise<QueryResult | void>;
+  executeQuery: (
+    query: string,
+    tabId?: string,
+    executionMethod?: ConnectionProvider
+  ) => Promise<QueryResult | void>;
   createTab: (
     title?: string,
     id?: string,
@@ -202,9 +206,7 @@ const updateHistory = (
   return newHistory.slice(0, 15);
 };
 
-//
-// STORE DEFINITION
-//
+// Main store
 export const useSandwormStore = create<SandwormStoreState>()(
   devtools(
     persist(
@@ -243,7 +245,7 @@ export const useSandwormStore = create<SandwormStoreState>()(
         },
 
         initialize: async () => {},
-        executeQuery: async (query, tabId?) => {
+        executeQuery: async (query, tabId?, executionMethod) => {
           try {
             set({ isExecuting: true, error: null });
             /*             const API_URL =
