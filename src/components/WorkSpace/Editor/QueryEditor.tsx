@@ -49,7 +49,7 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
   const [currentTitle, setCurrentTitle] = useState(title);
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
 
-  const handleExecuteQuery = async () => {
+  const handleExecuteQuery = async (executionType: "rpc" | "indexed") => {
     if (isExecuting) return;
 
     try {
@@ -59,7 +59,7 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
         return;
       }
 
-      await executeQuery(query, tabId);
+      await executeQuery(query, tabId, { executionMethod: executionType });
       toast.success("Query executed successfully");
     } catch (error) {
       console.error("Query execution failed:", error);
@@ -146,19 +146,7 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
               </Tooltip>
             </TooltipProvider>
           </div>
-          {/*   <Button
-            onClick={handleExecuteQuery}
-            disabled={isExecuting}
-            variant="default"
-            className="flex items-center gap-2 min-w-[100px] bg-orange-700 text-sm font-medium h-[2rem] text-white rounded-sm"
-          >
-            {isExecuting ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Play className="h-4 w-4" />
-            )}
-            {isExecuting ? "Running..." : "Run"}
-          </Button> */}
+
           <ExecuteButton
             handleExecute={handleExecuteQuery}
             isExecuting={isExecuting}
