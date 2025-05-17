@@ -1,10 +1,11 @@
 "use client";
 
+import Link from "next/link";
+
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useModalStore } from "@/store/auth";
 
 import { SocialLogin } from "./SocialLogin";
-import Link from "next/link";
 
 export const SignInModal = () => {
   const { signInOpen, closeSignIn } = useModalStore();
