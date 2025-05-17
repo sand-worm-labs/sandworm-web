@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { Search } from "lucide-react";
-
 import { Input } from "../ui/input";
 
 interface SearchBarProps {
@@ -11,9 +10,9 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
   const [query, setQuery] = useState("");
   const [cachedQueries, setCachedQueries] = useState<string[]>([]);
   const [isActive, setIsActive] = useState(false);
+  const [highlightIndex, setHighlightIndex] = useState<number>(-1);
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
-  // simple cache add, max 5 items, no dupes
   const addToCache = (q: string) => {
     setCachedQueries(prev => {
       const filtered = prev.filter(item => item !== q);
@@ -22,14 +21,34 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && query.trim()) {
+    if (e.key === "ArrowDown") {
       e.preventDefault();
-      addToCache(query.trim());
-      onSearch(query.trim());
+      setIsActive(true);
+      setHighlightIndex(prev => (prev + 1) % cachedQueries.length);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setIsActive(true);
+      setHighlightIndex(prev =>
+        prev <= 0 ? cachedQueries.length - 1 : prev - 1
+      );
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      const finalQuery =
+        highlightIndex >= 0 ? cachedQueries[highlightIndex] : query.trim();
+      if (finalQuery) {
+        addToCache(finalQuery);
+        setQuery(finalQuery);
+        onSearch(finalQuery);
+        setIsActive(false);
+        setHighlightIndex(-1);
+      }
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      setIsActive(false);
+      setHighlightIndex(-1);
     }
   };
 
-  // Handle clicks outside the search component
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -37,14 +56,12 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
         !searchContainerRef.current.contains(event.target as Node)
       ) {
         setIsActive(false);
+        setHighlightIndex(-1);
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
@@ -61,7 +78,10 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
           type="text"
           placeholder="Search Queries"
           value={query}
-          onChange={e => setQuery(e.target.value)}
+          onChange={e => {
+            setQuery(e.target.value);
+            setHighlightIndex(-1);
+          }}
           onKeyDown={handleKeyDown}
           onFocus={() => setIsActive(true)}
           className="
@@ -70,7 +90,7 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
             pr-24
             py-1
             rounded-md
-           bg-[#1A1A1A] 
+            bg-[#1A1A1A] 
             border
             border-[#ffffff60]
             text-white
@@ -92,11 +112,17 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
           {cachedQueries.map((item, i) => (
             <li
               key={i}
-              className="px-4 py-2 cursor-pointer hover:bg-white/10 hover:text-white text-sm text-text-gray"
+              className={`px-4 py-2 cursor-pointer text-sm ${
+                highlightIndex === i
+                  ? "bg-white/10 text-white"
+                  : "text-text-gray hover:bg-white/10 hover:text-white"
+              }`}
+              onMouseEnter={() => setHighlightIndex(i)}
               onClick={() => {
                 setQuery(item);
                 onSearch(item);
                 setIsActive(false);
+                setHighlightIndex(-1);
               }}
             >
               {item}
