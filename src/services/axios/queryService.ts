@@ -2,7 +2,10 @@ import type { User, QueryResponse, Query } from "@/types";
 
 import { AxiosService } from ".";
 
-const API_BASE_URL = "http://localhost:3000";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+if (!API_BASE_URL) {
+  throw new Error("NEXT_PUBLIC_API_URL environment variable is not defined");
+}
 const api = new AxiosService(API_BASE_URL, true);
 export const publicApi = new AxiosService(API_BASE_URL, false);
 
@@ -40,8 +43,12 @@ export const fetchQueryUpdate = (id: string) => {
   return api.get(`/api/query/updates?queryId=${id}`);
 };
 
-export const createQuery = (data: CreateQueryPayload) => {
-  return api.post(`/api/query`, data);
+export const createQuery = (data: CreateQueryPayload): Promise<Query> => {
+  return api.post<Query>(`/api/query`, data);
+};
+
+export const deleteUserQuery = (id: string) => {
+  return api.delete(`/api/query?id=${id}`);
 };
 
 export const patchUserQuery = (uid: string, data: PatchQueryPayload) => {

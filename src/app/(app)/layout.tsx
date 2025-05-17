@@ -18,7 +18,7 @@ export default async function AppLayout({
         position="bottom-right"
         toastOptions={{
           className:
-            "bg-black text-white border border-neutral-700 shadow-xl rounded-none",
+            "bg-black text-white border border-neutral-700 shadow-xl rounded-none dm-sans ",
         }}
       />
     </>

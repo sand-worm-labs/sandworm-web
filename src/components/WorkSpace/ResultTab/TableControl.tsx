@@ -54,7 +54,7 @@ export const TableControls = <T,>({
               Columns
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
+          <DropdownMenuContent align="end" className=" dark">
             <div className="max-h-64 overflow-auto">
               {table
                 .getAllColumns()
@@ -92,7 +92,6 @@ export const TableControls = <T,>({
         )}
       </div>
 
-      {/* Pagination controls */}
       <TablePagination table={table} />
     </div>
   );

@@ -49,6 +49,30 @@ body {
   accent-color: theme("colors.brand.accent");
 }
 
+/* scrollbar */
+::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.scroll-container {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
 img,
 picture,
 video,
@@ -152,7 +176,7 @@ select:-webkit-autofill:focus {
 }
 
 .dm-sans {
-  font-family: "DM Sans", sans-serif;
+  font-family: "DM Sans", monospace, sans-serif;
   font-optical-sizing: auto;
   font-weight: 900;
   font-style: normal;
@@ -176,6 +200,15 @@ select:-webkit-autofill:focus {
     stroke-linecap: round;
     stroke-miterlimit: 10;
     animation: worm 1s linear infinite;
+  }
+}
+
+label {
+  font-family: inherit;
+}
+@media (max-width: 672px) {
+  .worm {
+    width: 100px;
   }
 }
 
@@ -393,6 +426,19 @@ select:-webkit-autofill:focus {
 }
 svg {
   shape-rendering: crispEdges;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 15s linear infinite;
 }
 
 @media screen and (max-width: 800px) {

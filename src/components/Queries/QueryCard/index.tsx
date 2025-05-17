@@ -7,13 +7,14 @@ import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { twilight } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { useState } from "react";
 
 import type { Query } from "@/types";
 import { useQueryLike } from "@/hooks/useLikeQuery";
 import { useModalStore } from "@/store/auth";
-import { DicebearAvatar } from "../../DicebearAvatar";
-import { useState } from "react";
 import { useForkQuery } from "@/hooks";
+
+import { DicebearAvatar } from "../../DicebearAvatar";
 
 interface QueryCardProps {
   query: Query;
@@ -33,18 +34,18 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
     router.push(`/workspace/${query.id}`);
   };
 
-  //we open signin modal if user attempt to like or fork query when not logged in
+  // we open signin modal if user attempt to like or fork query when not logged in
   const handleLikeClick = () => {
     if (!session?.user?.id) return openSignIn();
-    toggleLike();
+    return toggleLike();
   };
 
   const handleForkClick = () => {
     if (!session?.user?.id) return openSignIn();
-    handleFork();
+    return handleFork();
   };
 
-  //we truncate long ass description and check if we should even do that
+  // we truncate long ass description and check if we should even do that
   const truncatedDescription = query.description?.slice(0, 100) || "";
   const shouldTruncate = query.description?.length > 100;
 
@@ -96,6 +97,7 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
                   : `${truncatedDescription}... `}
                 {shouldTruncate && (
                   <button
+                    type="button"
                     onClick={() => setShowFullDesc(!showFullDesc)}
                     className="text-orange-400 ml-1 hover:underline"
                   >
@@ -157,16 +159,17 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
           showLineNumbers
           className="h-[10rem] rounded-none"
         >
-          {query.query + "\n\n\n\n\n\n\n\n\n"}
+          {`${query.query}\n\n\n\n\n\n\n\n\n`}
         </SyntaxHighlighter>
       </button>
 
       {/* Future update should make this a button so users can search other queries with same tags */}
       {query.tags && query.tags.length > 0 && (
         <div className="flex justify-end flex-wrap gap-2 mt-2 text-xs text-orange-300">
-          {query.tags.map(tag => (
+          {query.tags.map((tag, index) => (
             <span
-              key={tag}
+              // eslint-disable-next-line react/no-array-index-key
+              key={index}
               className="bg-[#1a1a1a] border border-[#333] px-2 py-0.5 rounded-full"
             >
               #{tag}

@@ -22,6 +22,7 @@ interface SaveModalProps {
   setOpenAction: (open: boolean) => void;
   title: string;
   content: string;
+  tabId: string;
 }
 
 export const SaveModal = ({
@@ -29,11 +30,11 @@ export const SaveModal = ({
   setOpenAction,
   title,
   content,
+  tabId,
 }: SaveModalProps) => {
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
-  console.log("currentcont", content);
 
   const { create, loading } = useCreateQuery();
   const { data: session } = useSession();
@@ -44,13 +45,16 @@ export const SaveModal = ({
       return;
     }
 
-    const res = await create({
-      title,
-      description,
-      query: content,
-      privateQuery: isPrivate,
-      tags: tags.split(",").map(tag => tag.trim()),
-    });
+    const res = await create(
+      {
+        title,
+        description,
+        query: content,
+        privateQuery: isPrivate,
+        tags: tags.split(",").map(tag => tag.trim()),
+      },
+      tabId
+    );
 
     if (res) {
       toast.success("Query saved successfully! 🔥");
@@ -106,7 +110,7 @@ export const SaveModal = ({
             <Checkbox
               id="private"
               checked={isPrivate}
-              onCheckedChange={setIsPrivate}
+              onCheckedChange={checked => setIsPrivate(checked === true)}
             />
             <Label htmlFor="private">Make Private</Label>
           </div>

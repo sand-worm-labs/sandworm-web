@@ -1,5 +1,7 @@
-import { client } from ".";
 import { QueryService } from "../firebase/db/QueryService";
+
+import { client } from ".";
+
 const syncQueries = async () => {
   try {
     const allQueries = await QueryService.findAll(1, 1000);

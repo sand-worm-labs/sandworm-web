@@ -1,14 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { motion } from "framer-motion";
+import { CodeSquareIcon } from "lucide-react";
+
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardDescription,
@@ -16,8 +16,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { motion } from "framer-motion";
-import { Database } from "lucide-react";
 
 interface ExampleQuery {
   title: string;
@@ -33,19 +31,22 @@ interface ExamplesModalProps {
 
 const exampleQueries: ExampleQuery[] = [
   {
-    title: "SUI Account Balance",
-    description: "Get balance of an account on SUI",
-    query: `GET balance FROM account cx.eth ON sui`,
+    title: "Account Data on Sui Mainnet",
+    description: "Fetch all details from specific accounts on Sui mainnet",
+    query: `SELECT * FROM account 0xac5bceec1b789ff840d7d4e6ce4ce61c90d190a7f8c4f4ddf0bff6ee2413c33c, test.sui ON sui_mainnet`,
   },
   {
-    title: "Recent Transactions",
-    description: "Fetch recent transactions for a wallet",
-    query: `GET transactions FROM wallet 0xabc123 ON eth LIMIT 10`,
+    title: "User Balance & Transactions on Sui",
+    description:
+      "Get user’s balance and recent transactions on the Sui network.",
+    query: `SELECT balance, transaction_id FROM account 0xac5bceec1b789ff840d7d4e6ce4ce61c90d190a7f8c4f4ddf0bff6ee2413c33c ON sui_mainnet`,
   },
   {
-    title: "NFT Ownership",
-    description: "Show NFTs owned by an address",
-    query: `GET nfts FROM owner 0xabc123 ON polygon`,
+    title: "Vitalik.eth Balance Across EVM Chains",
+    description:
+      "Fetch balance for vitalik.eth across Ethereum Mainnet and Base",
+    query: `SELECT  balance, chain FROM account vitalik.eth ON eth, base
+`,
   },
 ];
 
@@ -54,16 +55,13 @@ export const ExamplesModal: React.FC<ExamplesModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const handleSelect = (query: string) => {
-    createTab("Example Query", undefined, "sql", query);
+  const handleSelect = (query: string, title: string) => {
+    createTab(title, undefined, "sql", query);
     onClose();
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogTrigger asChild>
-        <Button variant="outline">Browse Examples</Button>
-      </DialogTrigger>
       <DialogContent className="max-w-3xl dark">
         <DialogHeader>
           <DialogTitle>Explore Example Queries</DialogTitle>
@@ -77,12 +75,12 @@ export const ExamplesModal: React.FC<ExamplesModalProps> = ({
               transition={{ delay: index * 0.05 }}
             >
               <Card
-                onClick={() => handleSelect(item.query)}
+                onClick={() => handleSelect(item.query, item.title)}
                 className="cursor-pointer hover:bg-accent transition-all rounded-none"
               >
                 <CardHeader>
                   <CardTitle className="text-sm flex items-center gap-2">
-                    <Database className="w-4 h-4 text-muted-foreground" />
+                    <CodeSquareIcon className="w-4 h-4 text-muted-foreground" />
                     {item.title}
                   </CardTitle>
                   <CardDescription className="text-xs font-mono text-muted-foreground truncate">
