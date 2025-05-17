@@ -1,3 +1,6 @@
+import { ChevronDown, Play, Loader2 } from "lucide-react";
+import { useState } from "react";
+
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -6,8 +9,6 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, Play, Loader2 } from "lucide-react";
-import { useState } from "react";
 
 type ExecutionType = "rpc" | "indexed";
 

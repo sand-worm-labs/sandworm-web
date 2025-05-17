@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Search } from "lucide-react";
+
 import { Input } from "../ui/input";
 
 /* we are currently using custom search with client side caching. this needs to be replaced with proper search in future probably typesense. once we scale we need more advance and performant search. TODO: cache response and rate limiting to reduce backend overload */
@@ -51,9 +52,8 @@ export const SearchBar = () => {
       setIsActive(false);
       setHighlightIndex(-1);
 
-      // Grab current tab or default
       const tab = searchParams.get("tab") || "all";
-      const page = "1"; // reset page on new search
+      const page = "1";
 
       const baseUrl = `/explore?tab=${tab}&page=${page}`;
       const searchUrl = finalQuery
@@ -83,12 +83,12 @@ export const SearchBar = () => {
 
   return (
     <div
-      className="relative w-full max-w-md min-w-[25rem] mx-auto"
+      className="relative w-full max-w-md min-w-[23rem] mx-auto"
       ref={searchContainerRef}
     >
       <Search
         size={16}
-        className="absolute left-4 top-1/2 -translate-y-1/2 text-text-gray"
+        className="absolute left-4 top-1/2 z-10 -translate-y-1/2 text-text-gray"
       />
       <div className="relative">
         <Input
@@ -101,7 +101,7 @@ export const SearchBar = () => {
           }}
           onKeyDown={handleKeyDown}
           onFocus={() => setIsActive(true)}
-          className="w-full pl-12 pr-24 py-1 rounded-md bg-[#1A1A1A] border border-[#ffffff60] text-white placeholder-[#8b949e] focus:outline-none focus:ring focus:ring-gray-300 transition text-sm md:text-sm"
+          className="w-full pl-10 pr-16 py-1 rounded-md bg-[#1A1A1A] border border-[#ffffff60] text-white placeholder-[#8b949e] focus:outline-none focus:ring focus:ring-gray-300 transition text-sm md:text-sm"
         />
         <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-text-gray select-none font-medium">
           Press <kbd className="bg-black/90 px-1 rounded">Enter</kbd>

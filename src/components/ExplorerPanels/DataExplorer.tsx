@@ -40,6 +40,7 @@ export const DataExplorer = () => {
 
   useEffect(() => {
     if (selectedChain) fetchEntityData(selectedChain.toLowerCase());
+    console.log(entityData);
   }, [selectedChain, fetchEntityData]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,13 +57,17 @@ export const DataExplorer = () => {
 
   const renderExplorer = () => {
     if (selectedEntity) {
-      return <FieldDetailsPanel entities={entityData || []} />;
+      return (
+        <FieldDetailsPanel
+          entities={entityData || { raw: [], project: [], decoded: [] }}
+        />
+      );
     }
 
     if (selectedChain) {
       return (
         <EntityListPanel
-          entities={entityData || []}
+          entities={entityData || { raw: [], project: [], decoded: [] }}
           onSelect={handleSelectEntity}
         />
       );
@@ -109,7 +114,9 @@ export const DataExplorer = () => {
       <CardContent className="p-2 px-0 h-[calc(100%-60px)] overflow-y-auto">
         {chains && chains.length > 0 ? (
           <div className="space-y-2">
-            <ExplorerBreadCrumbs entities={entityData || []} />
+            <ExplorerBreadCrumbs
+              entities={entityData || { raw: [], project: [], decoded: [] }}
+            />
             <Input
               type="text"
               placeholder="Search..."
