@@ -4,9 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
+import { UserRound, Settings } from "lucide-react";
 
 import { DicebearAvatar } from "@/components";
-import { UserRound, Settings } from "lucide-react";
 
 const tabs = [
   { name: "Profile", href: "/settings/profile", icon: <UserRound size={16} /> },

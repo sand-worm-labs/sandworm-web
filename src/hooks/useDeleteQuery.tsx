@@ -1,6 +1,7 @@
-import { deleteUserQuery } from "@/services/axios/queryService";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
+
+import { deleteUserQuery } from "@/services/axios/queryService";
 
 export const useDeleteQuery = () => {
   const [loading, setLoading] = useState(false);

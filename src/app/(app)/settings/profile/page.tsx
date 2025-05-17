@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-
-import { DicebearAvatar } from "@/components/DicebearAvatar";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
+
+import { DicebearAvatar } from "@/components/DicebearAvatar";
 
 export default function ProfileSettings() {
   const [formData, setFormData] = useState({

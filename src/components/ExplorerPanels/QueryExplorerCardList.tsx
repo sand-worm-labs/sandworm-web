@@ -5,10 +5,10 @@ import { MdKeyboardDoubleArrowRight } from "react-icons/md";
 import { useRouter } from "next/navigation";
 
 import type { Query } from "@/types";
+import { useDeleteQuery } from "@/hooks/useDeleteQuery";
 
 import { Input } from "../ui/input";
 import { DeleteQueryModal } from "../WorkSpace/DeleteQueryModal";
-import { useDeleteQuery } from "@/hooks/useDeleteQuery";
 
 interface IQueryExplorerCardListProps {
   query: Query[];
@@ -20,7 +20,7 @@ export const QueryExplorerCardList: React.FC<IQueryExplorerCardListProps> = ({
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [activeDeleteId, setActiveDeleteId] = useState<string | null>(null);
-  const { handleDelete, loading: deleteLoading } = useDeleteQuery();
+  const { handleDelete } = useDeleteQuery();
 
   const openQueryInTab = (queryData: any) => {
     router.push(`/workspace/${queryData.id}`);

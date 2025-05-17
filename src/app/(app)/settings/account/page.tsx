@@ -34,7 +34,8 @@ export default function AccountSettings() {
         </p>
         <button
           type="button"
-          className="mt-4 flex  items-center justify-center space-x-2 rounded-md border border-white/20 bg-white/10 px-4 py-1.5 text-orange-600 hover:bg-white/15 text-sm  "
+          disabled
+          className="mt-4 flex  items-center justify-center space-x-2 rounded-md border border-white/20 bg-white/10 px-4 py-1.5 text-orange-600 hover:bg-white/15 text-sm cursor-not-allowed opacity-80 "
         >
           <span>Delete your account</span>
         </button>

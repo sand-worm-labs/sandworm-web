@@ -4,8 +4,8 @@ export const Features: IFeatures[] = [
   {
     id: 1,
     name: "Analytics",
-    desc: "Designed for deep insights into the Sui blockchain, with Ethereum support and more chains in the future.",
-    bgText: "SUI DATA",
+    desc: "Designed for deep insights into the Sui and EVM blockchains and more chains in the future.",
+    bgText: "DATA",
   },
   {
     id: 2,

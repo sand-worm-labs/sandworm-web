@@ -129,6 +129,12 @@ export interface IChainEntity {
   fields: Record<string, FieldType>;
 }
 
+export interface IChainEntitySet {
+  raw: IChainEntity[];
+  decoded: IChainEntity[];
+  project: IChainEntity[];
+}
+
 export interface ChartProps {
   result: {
     columns: string[];
