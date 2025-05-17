@@ -11,13 +11,15 @@ interface ExplorePageProps {
   searchParams: Promise<{
     tab?: "all" | "starred" | "forked";
     page?: string;
+    search?: string;
   }>;
 }
 
-async function getQueries(page = "1") {
+async function getQueries(page = "1", search = "") {
   try {
+    const searchParam = search ? `&search=${encodeURIComponent(search)}` : "";
     const data = await axios.get<QueryResponse>(
-      `/api/query/?page=${page}&limit=10`
+      `/api/query/?page=${page}&limit=10${searchParam}`
     );
     return { data, hasError: false };
   } catch (error) {
@@ -52,6 +54,7 @@ async function getForkedQueries(page = "1") {
 
 export default async function Explore({ searchParams }: ExplorePageProps) {
   const page = (await searchParams).page ?? "1";
+  const search = (await searchParams).search ?? "";
   const defaultTab = (await searchParams).tab ?? "all";
 
   const [
@@ -59,7 +62,7 @@ export default async function Explore({ searchParams }: ExplorePageProps) {
     { data: starredQueries, hasError: starredError },
     { data: forkedQueries, hasError: forkedError },
   ] = await Promise.all([
-    getQueries(page),
+    getQueries(page, search),
     getStarredQueries(page),
     getForkedQueries(page),
   ]);

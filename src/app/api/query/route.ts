@@ -124,7 +124,7 @@ export async function PATCH(request: Request) {
   return new Response(JSON.stringify(result.data));
 }
 
-//need to review this cause now anybdy can delete: URGENT
+//  need to review this cause now anybdy can delete: URGENT
 export async function DELETE(request: Request) {
   const session = await auth();
 
