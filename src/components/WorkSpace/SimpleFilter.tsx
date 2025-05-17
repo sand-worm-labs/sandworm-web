@@ -27,7 +27,7 @@ export const SimpleFilter = ({
   width = "w-[200px]",
 }: SimpleFilterProps) => {
   const [filterText, setFilterText] = useState("");
-  const [isFocused, setIsFocused] = useState(false);
+  const [, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
@@ -101,19 +101,7 @@ export const SimpleFilter = ({
         onKeyDown={handleKeyDown}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
-        className={cn(
-          "h-8",
-          "pl-7 pr-7",
-          "text-sm",
-          "bg-transparent",
-          "border-0",
-          "ring-0",
-          "focus-visible:ring-0",
-          "focus-visible:ring-offset-0",
-          "placeholder:text-muted-foreground/50",
-          isFocused ? "placeholder:text-muted-foreground/70" : "",
-          "transition-colors duration-200"
-        )}
+        className="pl-10 pr-4 py-1 h-8 w-[22rem] rounded border border-[#ffffff60] focus:border-gray-500 focus:ring focus:ring-gray-300 md:text-[0.85rem]  bg-[#1A1A1A] border-none"
       />
 
       {filterText && (

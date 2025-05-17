@@ -4,15 +4,18 @@ import Image from "next/image";
 import Link from "next/link";
 import { MdOutlineArrowForwardIos } from "react-icons/md";
 import { FaCheck } from "react-icons/fa";
+
 import { TerminalFrame } from "./TerminalFrame";
+import { ExecutionResultPreview } from "./ExecutionResultPreview";
 
 const workflowSteps = [
   {
     title: "Write Queries",
     description: "Compose powerful WQL queries using familiar SQL syntax.",
     url: "/workspace",
-    learnMoreUrl: "https://sandwormdocs.vercel.app/sql-syntax/intro",
+    learnMoreUrl: "https://docs.sandwormlabs.xyz",
     imageUrl: "/img/queries.png",
+
     bullets: [
       "Use an SQL-like language designed for on-chain data",
       "Filter and sort transactions without the headache",
@@ -22,10 +25,11 @@ const workflowSteps = [
   {
     title: "Execute and Analyze",
     url: "/workspace",
-    learnMoreUrl: "https://sandwormdocs.vercel.app/",
+    learnMoreUrl: "https://docs.sandwormlabs.xyz",
     description:
       "Visualize and explore on-chain data with blazing-fast responses.",
     imageUrl: "/img/queries.png",
+    preview: <ExecutionResultPreview />,
     bullets: [
       "Real-time query execution with instant feedback",
       "No indexers or setup required",
@@ -35,7 +39,7 @@ const workflowSteps = [
   {
     title: "Share & Collaborate",
     url: "/explore",
-    learnMoreUrl: "https://sandwormdocs.vercel.app/",
+    learnMoreUrl: "https://docs.sandwormlabs.xyz",
     imageUrl: "/img/sample.png",
     description: "Publish useful queries to the community for open discovery.",
     bullets: [
@@ -49,14 +53,20 @@ const workflowSteps = [
 export const SectionWorkFlow = () => {
   return (
     <div className="container mx-auto mt-16 px-6">
-      <h2 className="text-center text-4xl mb-16">How SandWorm Works</h2>
+      <h2 className="text-center md:text-4xl text-3xl md:mb-16">
+        How SandWorm Works
+      </h2>
 
-      <div className="w-full  space-y-16">
+      <div className="w-full  md:space-y-16 space-y-8">
         {workflowSteps.map(step => (
           <div className="w-full grid md:grid-cols-2 pb-12" key={step.title}>
             <div className="lg:pr-10 mt-12">
-              <h3 className="text-3xl mb-3 font-medium">{step.title}</h3>
-              <p className="text-lg text-[#999999] mb-6">{step.description}</p>
+              <h3 className="md:text-3xl text-xl mb-3 font-medium">
+                {step.title}
+              </h3>
+              <p className="md:text-lg  text-[#999999] mb-6">
+                {step.description}
+              </p>
 
               <div className="flex space-x-4 mb-8">
                 <Link
@@ -76,8 +86,8 @@ export const SectionWorkFlow = () => {
               </div>
 
               <ul className="text-sm space-y-3">
-                {step.bullets.map((item, i) => (
-                  <li key={i} className="flex items-center space-x-3">
+                {step.bullets.map(item => (
+                  <li key={item} className="flex items-center space-x-3">
                     <span className="rounded-full bg-dark-translucent p-1">
                       <FaCheck className="text-orange-600 text-[0.65rem]" />
                     </span>
@@ -88,13 +98,17 @@ export const SectionWorkFlow = () => {
             </div>
             <div className="md:w-[90%] pt-[1rem] flex justify-center mt-6 md:mt-0">
               <TerminalFrame>
-                <Image
-                  src={step.imageUrl}
-                  width={800}
-                  height={512}
-                  alt="Workflow Example"
-                  className="w-full object-cover border border-gray-800"
-                />
+                {step.preview ? (
+                  step.preview
+                ) : (
+                  <Image
+                    src={step.imageUrl}
+                    width={800}
+                    height={512}
+                    alt="Workflow Example"
+                    className="w-full object-cover border border-gray-800"
+                  />
+                )}
               </TerminalFrame>
             </div>
           </div>

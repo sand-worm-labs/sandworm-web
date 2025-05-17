@@ -9,9 +9,8 @@ import AppProvider from "@/providers/AppProvider";
 
 export const metadata = {
   description:
-    "A highly opinionated and complete starter for Next.js projects ready to production. Includes Typescript, Styled Components, Prettier, ESLint, Husky, SEO, and more.",
-  keywords:
-    "next, starter, typescript, tailwind css, prettier, eslint, husky, seo",
+    "Explore, query, and visualize blockchain data on Sui, EVM, and other chains with Sandworm, your open-source, SQL-powered data IDE for Web3",
+  keywords: "data, web3, blockchain, analytics, sui, base, etherium, indexer",
   title: "Sand Worm",
   icons: {
     icon: "/logo.svg",

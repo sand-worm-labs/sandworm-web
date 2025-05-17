@@ -12,7 +12,7 @@ const backfillAlgolia = async () => {
     }
 
     const algoliaFormatted = allQueries.map(doc => {
-      const data = doc.data;
+      const { data } = doc;
 
       return {
         objectID: doc.ref.id,

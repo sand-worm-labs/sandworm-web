@@ -9,7 +9,7 @@ export interface CurrentConnection {
 }
 
 export interface ConnectionProvider {
-  executionMethod: "JSON_RPC" | "GRAPHQL" | "HTTP ";
+  executionMethod: "rpc" | "indexed";
 }
 
 export interface ConnectionList {
@@ -43,6 +43,7 @@ export interface EditorTab {
   createdAt?: number;
   result?: QueryResult | null;
   readonly?: boolean;
+  saved?: boolean;
 }
 
 const chainRpcMap: Record<string, string> = {
@@ -74,7 +75,11 @@ export interface SandwormStoreState {
   error: string | null;
   settings: SandwormSettings;
   initialize: () => Promise<void>;
-  executeQuery: (query: string, tabId?: string) => Promise<QueryResult | void>;
+  executeQuery: (
+    query: string,
+    tabId?: string,
+    provider?: ConnectionProvider
+  ) => Promise<QueryResult | void>;
   createTab: (
     title?: string,
     id?: string,
@@ -85,6 +90,7 @@ export interface SandwormStoreState {
   setActiveTab: (tabId: string) => void;
   updateTabQuery: (tabId: string, query: string) => void;
   updateTabTitle: (tabId: string, title: string) => void;
+  replaceTabId: (oldtabId: string, newtabId: string) => void;
   moveTab: (oldIndex: number, newIndex: number) => void;
   closeAllTabs: () => void;
   clearHistory: () => void;
@@ -139,10 +145,10 @@ const createMockWasmResult = () => {
 };
 
 // Create the mock and test it
-const mockResult = createMockWasmResult();
+export const mockResult = createMockWasmResult();
 
 // Converts a WASM query result into a QueryResult.
-const resultToJSON = (result: any): QueryResult => {
+export const resultToJSON = (result: any): QueryResult => {
   const data = result.toArray().map((row: any) => {
     const jsonRow = row.toJSON();
     result.schema.fields.forEach((field: any) => {
@@ -200,9 +206,7 @@ const updateHistory = (
   return newHistory.slice(0, 15);
 };
 
-//
-// STORE DEFINITION
-//
+// Main store
 export const useSandwormStore = create<SandwormStoreState>()(
   devtools(
     persist(
@@ -241,31 +245,40 @@ export const useSandwormStore = create<SandwormStoreState>()(
         },
 
         initialize: async () => {},
-
-        executeQuery: async (query, tabId?) => {
+        executeQuery: async (query, tabId?, provider) => {
           try {
             set({ isExecuting: true, error: null });
-            const API_URL =
-              "https://eql-api-606667184456.us-central1.run.app/run";
+            const executionType = provider?.executionMethod ?? "rpc";
 
-            let queryResult: QueryResult | undefined;
+            /*             const API_URL =
+              "https:/sui-api-606667184456.us-central1.run.app/run"; */
+            const API_URL = "https://node.sandwormlabs.xyz/run?";
+
+            let queryResult: QueryResult;
 
             try {
               const res = await fetch(
-                `${API_URL}?query=${query.replace(/\s/g, "+")}`
+                `${API_URL}type_param=${executionType}&query=${query.replace(/\s/g, "+")}`
               );
               const resContentType = res.headers.get("Content-Type");
 
               if (resContentType?.includes("application/json")) {
-                const { result, error } = await res.json();
+                const { data, error, type } = await res.json();
+
+                console.log("response", data, type);
 
                 if (error) {
-                  console.log("unexpected error:", error);
-                } else if (queryHasResults(result)) {
-                  console.log("Query has results");
-                  queryResult = formatApiResultToQueryResult(result);
+                  console.error("API returned error:", error);
+                  queryResult = {
+                    columns: [],
+                    columnTypes: [],
+                    data: [],
+                    rowCount: 0,
+                    error,
+                  };
+                } else if (queryHasResults(data[0].result)) {
+                  queryResult = formatApiResultToQueryResult(data[0].result);
                 } else {
-                  console.log("No results found");
                   queryResult = {
                     columns: [],
                     columnTypes: [],
@@ -274,6 +287,11 @@ export const useSandwormStore = create<SandwormStoreState>()(
                     error: "No results",
                   };
                 }
+              } else {
+                const text = await res.text();
+                throw new Error(
+                  `Unexpected content type: ${resContentType}. Body: ${text}`
+                );
               }
             } catch (fetchError) {
               console.error("Fetch error:", fetchError);
@@ -289,18 +307,12 @@ export const useSandwormStore = create<SandwormStoreState>()(
               };
             }
 
-            if (!queryResult) {
-              console.warn(
-                "queryResult is undefined, using mockResult as fallback."
-              );
-              queryResult = resultToJSON(mockResult);
-            }
-
-            console.log("Query executed:", query, tabId);
-
-            // Update query history and update tab result if applicable.
             set(state => ({
-              queryHistory: updateHistory(state.queryHistory, query),
+              queryHistory: updateHistory(
+                state.queryHistory,
+                query,
+                queryResult.error || undefined
+              ),
               tabs: state.tabs.map(tab =>
                 tab.id === tabId ? { ...tab, result: queryResult } : tab
               ),
@@ -309,7 +321,7 @@ export const useSandwormStore = create<SandwormStoreState>()(
 
             return queryResult;
           } catch (error) {
-            console.error("Unexpected error:", error);
+            console.error("Unexpected wrapper error:", error);
             const errorMessage =
               error instanceof Error ? error.message : "Unknown error";
             const errorResult: QueryResult = {
@@ -337,7 +349,6 @@ export const useSandwormStore = create<SandwormStoreState>()(
           }
         },
 
-        // Tab management actions.
         createTab: (
           title?: string,
           id?: string,
@@ -423,6 +434,24 @@ export const useSandwormStore = create<SandwormStoreState>()(
             const [movedTab] = newTabs.splice(oldIndex, 1);
             newTabs.splice(newIndex, 0, movedTab);
             return { tabs: newTabs };
+          });
+        },
+
+        replaceTabId: (oldId: string, newId: string) => {
+          set(state => {
+            const tab = state.tabs.find(t => t.id === oldId);
+            if (!tab) return state;
+
+            const updatedTab = { ...tab, id: newId };
+
+            const updatedTabs = state.tabs
+              .filter(t => t.id !== oldId)
+              .concat(updatedTab);
+
+            return {
+              tabs: updatedTabs,
+              activeTabId: newId,
+            };
           });
         },
 

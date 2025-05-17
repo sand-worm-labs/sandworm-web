@@ -57,7 +57,7 @@ export const SettingsPanel: React.FC = () => {
               <SelectTrigger id="chain">
                 <SelectValue placeholder="Select chain" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="dark">
                 {chains.map(chain => (
                   <SelectItem key={chain} value={chain}>
                     {chain}
@@ -87,7 +87,7 @@ export const SettingsPanel: React.FC = () => {
               <SelectTrigger id="theme">
                 <SelectValue placeholder="Select theme" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="dark">
                 {themes.map(theme => (
                   <SelectItem key={theme} value={theme}>
                     {theme}
@@ -105,7 +105,7 @@ export const SettingsPanel: React.FC = () => {
               <SelectTrigger id="default-chain">
                 <SelectValue placeholder="Default Chain" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="dark">
                 {chains.map(chain => (
                   <SelectItem key={chain} value={chain}>
                     {chain}

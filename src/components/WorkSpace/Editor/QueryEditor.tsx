@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Play, Loader2, Edit } from "lucide-react";
+import { Edit } from "lucide-react";
 import { toast } from "sonner";
 import { FaCodeBranch, FaRegStar } from "react-icons/fa";
 
@@ -17,6 +17,7 @@ import { useForkQuery } from "@/hooks";
 import { SaveModal } from "@/components/WorkSpace";
 import { QueryCodeEditor } from "@/components/WorkSpace/Editor";
 import type { EditorTab } from "@/store";
+import { ExecuteButton } from "./ExecuteButton";
 
 interface SqlEditorProps {
   tabId: string;
@@ -48,7 +49,7 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
   const [currentTitle, setCurrentTitle] = useState(title);
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
 
-  const handleExecuteQuery = async () => {
+  const handleExecuteQuery = async (executionType: "rpc" | "indexed") => {
     if (isExecuting) return;
 
     try {
@@ -58,7 +59,7 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
         return;
       }
 
-      await executeQuery(query, tabId);
+      await executeQuery(query, tabId, { executionMethod: executionType });
       toast.success("Query executed successfully");
     } catch (error) {
       console.error("Query execution failed:", error);
@@ -145,24 +146,16 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
               </Tooltip>
             </TooltipProvider>
           </div>
-          <Button
-            onClick={handleExecuteQuery}
-            disabled={isExecuting}
-            variant="default"
-            className="flex items-center gap-2 min-w-[100px] bg-orange-700 text-[0.8rem] font-medium h-[2rem] text-white"
-          >
-            {isExecuting ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Play className="h-4 w-4" />
-            )}
-            {isExecuting ? "Running..." : "Run Query"}
-          </Button>
+
+          <ExecuteButton
+            handleExecute={handleExecuteQuery}
+            isExecuting={isExecuting}
+          />
           {!selectedTab.readonly && (
             <Button
               onClick={() => setIsSaveModalOpen(true)}
               variant="outline"
-              className="flex items-center gap-2 min-w-[100px] text-[0.8rem] font-medium  h-[2.2rem]"
+              className="flex items-center gap-2 min-w-[100px] text-sm font-medium  h-[2.2rem] rounded-sm"
             >
               Save
             </Button>
@@ -186,6 +179,7 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
         setOpenAction={setIsSaveModalOpen}
         title={currentTitle}
         content={currentContent}
+        tabId={tabId}
       />
     </div>
   );

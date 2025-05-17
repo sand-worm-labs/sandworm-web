@@ -7,8 +7,12 @@ import { SandwormLogo } from "@/components/Assets";
 
 const navLinks = [
   { name: "Explore", href: "/explore" },
-  { name: "Docs", href: "/docs" },
-  { name: "Blog", href: "/blog" },
+  { name: "Docs", href: "https://docs.sandwormlabs.xyz", isExternal: true },
+  {
+    name: "Blog",
+    href: "https://docs.sandwormlabs.xyz/blog",
+    isExternal: true,
+  },
 ];
 
 export const MainHeader = () => {
@@ -29,6 +33,9 @@ export const MainHeader = () => {
               <li key={link.name}>
                 <Link
                   href={link.href}
+                  {...(link.isExternal
+                    ? { target: "_blank", rel: "noopener noreferrer" }
+                    : {})}
                   className="text-[#999999] hover:text-white"
                 >
                   {link.name}
@@ -40,7 +47,7 @@ export const MainHeader = () => {
 
         <Link
           className="hidden md:flex border py-1.5 bg-white text-black rounded px-4 text-[0.9rem] font-medium"
-          href="/explore"
+          href="/workspace"
         >
           <span>Launch App</span>
         </Link>
@@ -61,6 +68,9 @@ export const MainHeader = () => {
             <Link
               key={link.name}
               href={link.href}
+              {...(link.isExternal
+                ? { target: "_blank", rel: "noopener noreferrer" }
+                : {})}
               className="text-[#999999] hover:text-white text-[0.9rem]"
               onClick={() => setIsOpen(false)}
             >

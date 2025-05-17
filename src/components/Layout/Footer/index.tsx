@@ -19,21 +19,21 @@ export const MainFooter = () => {
         <div className="flex space-y-4 flex-col ">
           <span className="text-white font-medium mb-1">Resources</span>
           <Link
-            href="https://sandwormdocs.vercel.app/"
+            href="https://docs.sandwormlabs.xyz"
             className="hover:text-white"
             target="blank_"
           >
             Docs
           </Link>
           <Link
-            href="https://sandwormdocs.vercel.app/blog"
+            href="https://docs.sandwormlabs.xyz/blog"
             className="hover:text-white"
             target="blank_"
           >
             Blog
           </Link>
           <Link
-            href="https://github.com/sand-worm-sql/wql"
+            href="https://github.com/sand-worm-labs"
             target="blank_"
             className="hover:text-white"
           >
@@ -56,7 +56,7 @@ export const MainFooter = () => {
         <div>
           <div className="flex space-x-6">
             <Link
-              href="https://github.com/sand-worm-sql"
+              href="https://github.com/sand-worm-labs"
               target="blank_"
               className="hover:text-white"
             >
