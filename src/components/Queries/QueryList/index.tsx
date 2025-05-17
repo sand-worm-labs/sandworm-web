@@ -36,8 +36,8 @@ export const QueryList: React.FC<IQueryListProps> = ({
   if (!queries || queries.length === 0) {
     return (
       <div className="py-6 flex flex-col items-center justify-center">
-        <Image src="/img/nodata.svg" width={400} height={400} alt="no data" />
-        <p className="mt-4 text-lg">
+        <Image src="/img/nodata.svg" width={300} height={300} alt="no data" />
+        <p className="mt-4 text-sm font-medium">
           Looks like there’s nothing to show right now.
         </p>
       </div>
