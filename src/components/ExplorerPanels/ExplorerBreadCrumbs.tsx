@@ -2,10 +2,10 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 
-import type { IChainEntity } from "@/types";
+import type { IChainEntitySet } from "@/types";
 
 interface IExplorerBreadCrumbsProps {
-  entities: IChainEntity[];
+  entities: IChainEntitySet;
 }
 
 export const ExplorerBreadCrumbs: React.FC<IExplorerBreadCrumbsProps> = ({
@@ -15,13 +15,27 @@ export const ExplorerBreadCrumbs: React.FC<IExplorerBreadCrumbsProps> = ({
   const router = useRouter();
   const chain = searchParams.get("namespace");
   const entity = searchParams.get("id");
+  const type = searchParams.get("type") ?? "raw";
 
-  const activeEntity = entities.find(e => e.name === entity);
+  console.log(entities);
 
-  const handleNavigate = (params: { namespace?: string; id?: string }) => {
+  /*   const activeEntity = entities.raw.find(e => e.name === entity); */
+
+  const activeEntity = entities?.[type as keyof typeof entities]?.find(
+    (e: any) => e.name === entity
+  );
+
+  console.log(activeEntity);
+
+  const handleNavigate = (params: {
+    namespace?: string;
+    id?: string;
+    type?: "raw" | "decoded" | "project";
+  }) => {
     const newParams = new URLSearchParams();
     if (params.namespace) newParams.set("namespace", params.namespace);
     if (params.id) newParams.set("id", params.id);
+    if (params.type) newParams.set("type", params.type);
     router.push(`/workspace?${newParams.toString()}`);
   };
 

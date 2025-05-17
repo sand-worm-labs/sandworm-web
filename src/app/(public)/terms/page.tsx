@@ -24,9 +24,9 @@ export default function Terms() {
           <p>
             <strong>Sandworm</strong> is an open-source analytics tool that
             enables users to query blockchain data (including
-            <strong> Sui</strong> and potentially other blockchains) using an
-            SQL-like language. It also provides a<strong> public gist</strong>{" "}
-            for sharing and discovering queries.
+            <strong> Sui, EVM</strong>,and potentially other blockchains) using
+            an SQL-like language. It also provides a
+            <strong> public gist</strong> for sharing and discovering queries.
           </p>
 
           <h2 className="text-2xl font-medium mt-6 mb-4 text-white">
