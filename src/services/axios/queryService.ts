@@ -12,6 +12,7 @@ export const publicApi = new AxiosService(API_BASE_URL, false);
 export interface PatchQueryPayload {
   title?: string;
   isPublic?: boolean;
+  query?: string;
 }
 
 interface UserQueryResponse {
@@ -51,8 +52,8 @@ export const deleteUserQuery = (id: string) => {
   return api.delete(`/api/query?id=${id}`);
 };
 
-export const patchUserQuery = (uid: string, data: PatchQueryPayload) => {
-  return api.patch(`/api/query/user?uid=${uid}`, data);
+export const patchUserQuery = (data: CreateQueryPayload) => {
+  return api.patch("/api/query", data);
 };
 
 export const forkQuery = (queryId: string, uid: string) => {
