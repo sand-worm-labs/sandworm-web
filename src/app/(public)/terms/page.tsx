@@ -24,8 +24,8 @@ export default function Terms() {
           <p>
             <strong>Sandworm</strong> is an open-source analytics tool that
             enables users to query blockchain data (including
-            <strong> Sui, EVM</strong>,and potentially other blockchains) using
-            an SQL-like language. It also provides a
+            <strong> Sui, EVM chains</strong>,and potentially other blockchains)
+            using an SQL-like language. It also provides a
             <strong> public gist</strong> for sharing and discovering queries.
           </p>
 

@@ -49,6 +49,7 @@ export interface EditorTab {
 const chainRpcMap: Record<string, string> = {
   Sui: "https://rpc.sui.io",
   Ethereum: "https://mainnet.infura.io/v3/YOUR_KEY",
+  Base: "https://base-mainnet.infura.io/v3/YOUR_PROJECT_ID",
   Polygon: "https://polygon-rpc.com",
   Arbitrum: "https://arb1.arbitrum.io/rpc",
 };

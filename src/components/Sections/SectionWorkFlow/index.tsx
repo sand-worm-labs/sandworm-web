@@ -19,7 +19,7 @@ const workflowSteps = [
     bullets: [
       "Use an SQL-like language designed for on-chain data",
       "Filter and sort transactions without the headache",
-      "Pull Sui real-time or historical data",
+      "Pull real-time or historical data",
     ],
   },
   {
@@ -33,7 +33,7 @@ const workflowSteps = [
     bullets: [
       "Real-time query execution with instant feedback",
       "No indexers or setup required",
-      "Works out of the box with Sui data",
+      "Works out of the box with blockchain data",
     ],
   },
   {

@@ -9,6 +9,7 @@ import { VscRepoForked } from "react-icons/vsc";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { QueryList } from "@/components/Queries/QueryList";
 import type { QueryResponse } from "@/types";
+import { EmptyQueryState } from "../EmptyState/EmptyQueryState";
 
 interface TabSectionProps {
   queries: QueryResponse | null;
@@ -69,9 +70,10 @@ export const TabsSection: React.FC<TabSectionProps> = ({
               pagination={queries.pagination}
             />
           ) : (
-            <div className="text-center py-8">No queries available</div>
+            <EmptyQueryState message="No queries available." />
           )}
         </TabsContent>
+
         <TabsContent value="forked">
           {forkedQueries ? (
             <QueryList
@@ -79,9 +81,10 @@ export const TabsSection: React.FC<TabSectionProps> = ({
               pagination={forkedQueries.pagination}
             />
           ) : (
-            <div className="text-center py-8">No forked queries available</div>
+            <EmptyQueryState message="No forked queries found." />
           )}
         </TabsContent>
+
         <TabsContent value="starred">
           {starredQueries ? (
             <QueryList
@@ -89,7 +92,7 @@ export const TabsSection: React.FC<TabSectionProps> = ({
               pagination={starredQueries.pagination}
             />
           ) : (
-            <div className="text-center py-8">No starred queries available</div>
+            <EmptyQueryState message="No starred queries yet." />
           )}
         </TabsContent>
       </div>
