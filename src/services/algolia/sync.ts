@@ -7,7 +7,6 @@ const syncQueries = async () => {
     const allQueries = await QueryService.findAll(1, 1000);
 
     if (!allQueries.success || allQueries.data.page_items.length === 0) {
-      console.log("🫠 No queries to sync.");
       return;
     }
 

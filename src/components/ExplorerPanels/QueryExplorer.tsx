@@ -82,7 +82,6 @@ export const QueryExplorer = () => {
       try {
         const uid = session?.user.id;
         const data = await fetchUserQuery(uid);
-        console.log("Fetched queries:", data);
         setQueries(data?.queries?.page_items || []);
       } catch (err) {
         console.error("Error fetching queries:", err);

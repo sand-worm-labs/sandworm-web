@@ -224,14 +224,9 @@ export class QueryService {
     try {
       const lowerTerm = term.toLowerCase();
 
-      console.log("🔍 Search term:", term);
-
-      // Step 1: Fetch all public queries
       const queries: QueryDoc[] = await db.querys.query($ => [
         $.field("private").eq(false),
       ]);
-
-      console.log("📦 Total public queries:", queries.length);
 
       // Step 2: Filter by title, description, or username
       const filtered = await Promise.all(
@@ -245,8 +240,6 @@ export class QueryService {
           })
           .map(this.addUsernameToQuery) // enrich during filtering
       );
-
-      console.log("🔎 Filtered queries:", filtered.length);
 
       // Step 3: Paginate
       const { totalRecords, totalPages, currentPage, nextPage, prevPage } =
