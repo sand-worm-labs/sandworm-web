@@ -260,7 +260,7 @@ export const HomeTab = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
               >
-                <Card className="hover:bg-accent/50 transition-colors">
+                <Card className="hover:bg-accent/50 transition-colors rounded-none">
                   <CardHeader>
                     <CardTitle className="text-sm font-medium flex items-center space-x-2">
                       <div className="p-2 rounded-full bg-primary/10">
