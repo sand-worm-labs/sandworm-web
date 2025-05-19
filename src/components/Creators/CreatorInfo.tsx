@@ -16,7 +16,7 @@ interface CreatorInfoProps {
 export const CreatorInfo = ({ user }: CreatorInfoProps) => {
   return (
     <div className="min-h-[15rem] py-10 w-full flex  justify-center md:mt-16 mt-4">
-      <div>
+      <div className="flex flex-col items-center">
         {user.image ? (
           <Image
             alt="user avatar"
@@ -31,7 +31,7 @@ export const CreatorInfo = ({ user }: CreatorInfoProps) => {
         )}
 
         <div className="mt-8 text-center">
-          <h3 className="font-bold text-3xl">{user.username}</h3>
+          <h3 className="font-bold md:text-3xl text-2xl">{user.username}</h3>
           <p className="mt-1 text-xs">Joined {timeAgo(user.createdAt)}</p>
         </div>
         <div className="flex space-x-5 items-center my-4 justify-center text-[#ffffffaa]">
