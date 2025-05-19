@@ -16,6 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useSaveQuery } from "@/hooks/useSaveQuery";
 
 interface SaveModalProps {
   open: boolean;
@@ -25,6 +26,11 @@ interface SaveModalProps {
   tabId: string;
 }
 
+export const isFirebaseId = (id: string) => {
+  // Local tab IDs are UUIDs with dashes, Firebase IDs are short & no dashes. This check is janky but it works
+  return !id.includes("-");
+};
+
 export const SaveModal = ({
   open,
   setOpenAction,
@@ -32,11 +38,13 @@ export const SaveModal = ({
   content,
   tabId,
 }: SaveModalProps) => {
+  console.log("tb", tabId);
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
 
   const { create, loading } = useCreateQuery();
+  const { save, loading: saving } = useSaveQuery();
   const { data: session } = useSession();
 
   const handleSave = async () => {
@@ -45,19 +53,28 @@ export const SaveModal = ({
       return;
     }
 
-    const res = await create(
-      {
-        title,
-        description,
-        query: content,
-        privateQuery: isPrivate,
-        tags: tags.split(",").map(tag => tag.trim()),
-      },
-      tabId
-    );
+    const payload = {
+      title,
+      description,
+      query: content,
+      privateQuery: isPrivate,
+      tags: tags.split(",").map(tag => tag.trim()),
+      creator: session.user.id,
+      id: tabId,
+    };
+
+    let res = null;
+
+    // Behold: the unholy check. Future me, I'm sorry. I was sleepy
+    if (isFirebaseId(tabId)) {
+      console.log("savinmg");
+      res = await save(payload);
+    } else {
+      res = await create(payload, tabId);
+    }
 
     if (res) {
-      toast.success("Query saved successfully! 🔥");
+      toast.success("Query saved successfully!");
       setOpenAction(false);
     }
   };
@@ -119,7 +136,7 @@ export const SaveModal = ({
             onClick={handleSave}
             className="w-full bg-white text-black font-medium py-5 text-base"
           >
-            {loading ? "Saving..." : "Save Query"}
+            {loading || saving ? "Saving..." : "Save Query"}
           </Button>
         </div>
       </DialogContent>

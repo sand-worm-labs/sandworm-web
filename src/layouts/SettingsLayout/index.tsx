@@ -26,7 +26,7 @@ export default function SettingsLayout({
   return (
     <div className=" w-full border-t">
       {session && (
-        <div className="container mx-auto py-6 flex justify-between items-center px-6">
+        <div className="container mx-auto py-6 flex justify-between md:items-center px-6 flex-col md:flex-row  space-y-4 items-start">
           <div className="flex space-x-3 items-center">
             {session?.user?.image ? (
               <Image
@@ -56,7 +56,7 @@ export default function SettingsLayout({
         </div>
       )}
 
-      <div className="flex min-h-screen container mx-auto ">
+      <div className="flex min-h-screen container mx-auto md:flex-row flex-col ">
         <div className=" p-6 border-r border-borderLight my-12 w-[35rem]">
           <ul className="mt-4  flex flex-col w-full ">
             {tabs.map(tab => (
@@ -76,6 +76,8 @@ export default function SettingsLayout({
             ))}
           </ul>
         </div>
+
+        <hr className="md:hidden" />
 
         <main className="flex-1 p-6  line-bg">
           <div className=" border-t-8 border-l-8 h-20 ml-4">{children}</div>
