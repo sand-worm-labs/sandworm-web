@@ -208,7 +208,7 @@ export const HomeTab = () => {
           >
             <button
               type="button"
-              className="h-auto p-4 flex flex-col items-start space-y-2 hover:bg-accent hover:text-accent-foreground group w-full overflow-hidden border-borderLight border "
+              className="h-full p-4 flex flex-col items-start space-y-2 hover:bg-accent hover:text-accent-foreground group w-full overflow-hidden border-borderLight border "
               onClick={() => handleNewAction(action.action)}
             >
               <div className="flex items-center space-x-2 text-white break-words">

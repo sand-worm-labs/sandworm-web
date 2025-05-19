@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 
 import { fetchUserQuery } from "@/services/axios/queryService";
 import type { Query } from "@/types";
+import { useModalStore } from "@/store/auth";
 
 import { CardHeader, CardTitle, CardContent, Card } from "../ui/card";
 import { Button } from "../ui/button";
@@ -19,13 +20,19 @@ const LoadingState = () => (
   </div>
 );
 
-const UnauthenticatedState = () => (
+const UnauthenticatedState = ({
+  handleSignIn,
+}: {
+  handleSignIn: React.MouseEventHandler<HTMLButtonElement>;
+}) => (
   <div className="flex flex-col items-center justify-center h-full gap-4 text-center text-muted-foreground">
     <SquareTerminal className="h-8 w-8" />
     <p className="text-sm px-4 max-w-sm">
       Sign in to access your saved queries and keep your work synced
     </p>
-    <Button variant="outline">Sign In</Button>
+    <Button variant="outline" onClick={handleSignIn}>
+      Sign In
+    </Button>
   </div>
 );
 
@@ -53,7 +60,9 @@ const QueryExplorerContent = ({
   loading: boolean;
   queries: Query[];
 }) => {
-  if (!session?.user?.id) return <UnauthenticatedState />;
+  const openSignIn = useModalStore(state => state.openSignIn);
+  if (!session?.user?.id)
+    return <UnauthenticatedState handleSignIn={openSignIn} />;
   if (loading) return <LoadingState />;
   if (queries.length === 0) return <EmptyState />;
   return <QueryExplorerCardList query={queries} />;
