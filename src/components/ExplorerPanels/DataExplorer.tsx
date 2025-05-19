@@ -1,20 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Database, EllipsisVertical, FileUp, Plus } from "lucide-react";
+import { Database } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuPortal,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import { useChainStore } from "@/store/chains";
 import {
   ChainListPanel,
@@ -24,7 +16,6 @@ import {
 } from "@/components/ExplorerPanels";
 
 export const DataExplorer = () => {
-  const [, setIsSheetOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -92,22 +83,6 @@ export const DataExplorer = () => {
             <Database className="h-5 w-5" />
             <CardTitle className=" font-medium">Data Explorer</CardTitle>
           </div>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger className="cursor-pointer p-2 border hover:bg-secondary rounded-md focus:outline-none">
-              <EllipsisVertical className="h-5 w-5" />
-            </DropdownMenuTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuContent>
-                <DropdownMenuGroup>
-                  <DropdownMenuItem onClick={() => setIsSheetOpen(true)}>
-                    <FileUp className="h-4 w-4" />
-                    Import Data
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-              </DropdownMenuContent>
-            </DropdownMenuPortal>
-          </DropdownMenu>
         </div>
       </CardHeader>
 
@@ -137,14 +112,6 @@ export const DataExplorer = () => {
                 UI and query it like any other table.
               </p>
             </div>
-            <Button
-              variant="outline"
-              className="gap-2"
-              onClick={() => setIsSheetOpen(true)}
-            >
-              <Plus className="h-4 w-4" />
-              Import Data
-            </Button>
           </div>
         )}
       </CardContent>

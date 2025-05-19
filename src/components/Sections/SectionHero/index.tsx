@@ -8,12 +8,14 @@ export const SectionHero = () => {
   return (
     <section className="  py-16 pt-0 text-center pb-64 ">
       <div className="container mx-auto  relative flex flex-col h-full items-center">
-        <div className="relative h-[180px] w-[370px]  overflow-hidden hidden lg:block">
+        <div className="relative  overflow-hidden hidden lg:block">
           <Image
             alt="arrows top"
-            className="absolute object-contain"
+            className=" object-contain"
             src="/img/arrowtop.png"
-            fill
+            width={370}
+            height={180}
+            priority
           />
         </div>
 
