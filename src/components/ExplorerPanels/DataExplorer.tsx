@@ -30,7 +30,6 @@ export const DataExplorer = () => {
 
   useEffect(() => {
     if (selectedChain) fetchEntityData(selectedChain.toLowerCase());
-    console.log(entityData);
   }, [selectedChain, fetchEntityData]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
