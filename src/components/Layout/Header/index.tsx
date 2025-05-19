@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { SandwormLogo } from "@/components/Assets";
+import { Badge } from "@/components/ui/badge";
 
 const navLinks = [
   { name: "Explore", href: "/explore" },
@@ -27,6 +28,7 @@ export const MainHeader = () => {
             <span className="ml-3 font-medium text-xl uppercase">
               Sandw0rm.
             </span>
+            <Badge className="bg-white/15 rounded-lg ml-2">beta</Badge>
           </Link>
           <ul className="hidden md:flex ml-10 text-[0.9rem] items-center space-x-8">
             {navLinks.map(link => (

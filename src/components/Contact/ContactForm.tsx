@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { toast } from "sonner";
 import { Send } from "lucide-react";
+import { toast } from "sonner";
 
 export const ContactForm = () => {
   const [formData, setFormData] = useState({
