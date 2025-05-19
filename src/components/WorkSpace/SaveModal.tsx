@@ -38,7 +38,6 @@ export const SaveModal = ({
   content,
   tabId,
 }: SaveModalProps) => {
-  console.log("tb", tabId);
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
@@ -49,7 +48,7 @@ export const SaveModal = ({
 
   const handleSave = async () => {
     if (!session?.user?.id) {
-      toast.error("You need to login first to save a query 👀");
+      toast.error("You need to login first to save a query");
       return;
     }
 
@@ -67,7 +66,6 @@ export const SaveModal = ({
 
     // Behold: the unholy check. Future me, I'm sorry. I was sleepy
     if (isFirebaseId(tabId)) {
-      console.log("savinmg");
       res = await save(payload);
     } else {
       res = await create(payload, tabId);

@@ -17,15 +17,9 @@ export const ExplorerBreadCrumbs: React.FC<IExplorerBreadCrumbsProps> = ({
   const entity = searchParams.get("id");
   const type = searchParams.get("type") ?? "raw";
 
-  console.log(entities);
-
-  /*   const activeEntity = entities.raw.find(e => e.name === entity); */
-
   const activeEntity = entities?.[type as keyof typeof entities]?.find(
     (e: any) => e.name === entity
   );
-
-  console.log(activeEntity);
 
   const handleNavigate = (params: {
     namespace?: string;
