@@ -29,6 +29,7 @@ export const CreateQueryButton = () => {
             onClick={handleCreate}
             variant="ghost"
             size="icon"
+            className="border p-0.5 mr-2 py-0 hover:bg-white/10 hover:text-white h-7"
             aria-label="Create a new query"
           >
             <Plus className="w-5 h-5" />

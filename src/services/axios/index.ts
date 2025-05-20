@@ -26,7 +26,6 @@ export class AxiosService {
           newConfig.headers = { ...config.headers };
 
           if (session?.user) {
-            console.log("Session:", session, "there is a session");
             newConfig.headers = {
               ...newConfig.headers,
               Authorization: `Bearer ${session.sessionToken}`,

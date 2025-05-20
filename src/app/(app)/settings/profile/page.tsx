@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-
-import { DicebearAvatar } from "@/components/DicebearAvatar";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
+
+import { DicebearAvatar } from "@/components/DicebearAvatar";
 
 export default function ProfileSettings() {
   const [formData, setFormData] = useState({
@@ -36,7 +36,10 @@ export default function ProfileSettings() {
         <h2 className="text-xl font-medium text-white mb-2 ">Public Profile</h2>
       </div>
 
-      <form onSubmit={handleSubmit} className="mt-4 space-y-4 flex space-x-6">
+      <form
+        onSubmit={handleSubmit}
+        className="mt-4 space-y-4 flex space-x-6 flex-col-reverse md:flex-row"
+      >
         <div className="flex flex-col space-y-4 items-start">
           <div>
             <label className="mb-1 inline-block font-medium">Name</label>
@@ -99,7 +102,10 @@ export default function ProfileSettings() {
             />
           </div>
 
-          <button className="text-sm " type="button">
+          <button
+            className="text-xs font-medium bg-orange-700 py-2 px-4 rounded hover:bg-orange-800 "
+            type="button"
+          >
             Update Profile
           </button>
         </div>

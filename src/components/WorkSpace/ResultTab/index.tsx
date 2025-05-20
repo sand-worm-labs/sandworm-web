@@ -327,7 +327,11 @@ function QueryResultsTable<T extends RowData>({
     "Area Chart": <AreaChart result={result} title={title} />,
     "Bar Chart": <BarChart result={result} title={title} />,
     "Pie Chart": <PieChart result={result} title={title} />,
-    Counter: <div>Counter Mode. On the way 🔢</div>,
+    Counter: (
+      <div className="flex items-center justify-center text-center h-full font-medium text-sm">
+        Counter Mode isn’t available yet. Coming soon.
+      </div>
+    ),
   };
 
   return (
