@@ -3,7 +3,11 @@ import axios from "axios";
 
 interface ChainStoreState {
   chains: any[] | null;
-  entityData: any[] | null;
+  entityData: {
+    raw: any;
+    decoded: any;
+    project: any;
+  } | null;
   loading: boolean;
   error: string | null;
   fetchChainData: () => Promise<void>;
@@ -30,14 +34,28 @@ export const useChainStore = create<ChainStoreState>(set => ({
 
   fetchEntityData: async (chainName: string) => {
     set({ loading: true, error: null });
+
+    const baseUrl = `https://raw.githubusercontent.com/sand-worm-sql/chain_registry/main/data/entities/${chainName}`;
+
+    const files = ["raw.json", "decoded.json", "projects.json"];
+
     try {
-      const response = await axios.get(
-        `https://raw.githubusercontent.com/sand-worm-sql/chain_registry/main/data/entities/${chainName}/raw.json`
+      const results = await Promise.allSettled(
+        files.map(file => axios.get(`${baseUrl}/${file}`))
       );
-      set({ entityData: response.data, loading: false });
+
+      const [rawRes, decodedRes, projectRes] = results;
+
+      const entityData = {
+        raw: rawRes.status === "fulfilled" ? rawRes.value.data : [],
+        decoded: decodedRes.status === "fulfilled" ? decodedRes.value.data : [],
+        project: projectRes.status === "fulfilled" ? projectRes.value.data : [],
+      };
+
+      set({ entityData, loading: false });
     } catch (error) {
       set({
-        error: `Failed to fetch entities for ${chainName}`,
+        error: `Something unexpected happened while fetching entity data for ${chainName}`,
         loading: false,
       });
     }

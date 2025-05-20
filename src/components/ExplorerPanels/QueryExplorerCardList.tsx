@@ -5,10 +5,10 @@ import { MdKeyboardDoubleArrowRight } from "react-icons/md";
 import { useRouter } from "next/navigation";
 
 import type { Query } from "@/types";
+import { useDeleteQuery } from "@/hooks/useDeleteQuery";
 
 import { Input } from "../ui/input";
 import { DeleteQueryModal } from "../WorkSpace/DeleteQueryModal";
-import { useDeleteQuery } from "@/hooks/useDeleteQuery";
 
 interface IQueryExplorerCardListProps {
   query: Query[];
@@ -20,7 +20,7 @@ export const QueryExplorerCardList: React.FC<IQueryExplorerCardListProps> = ({
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [activeDeleteId, setActiveDeleteId] = useState<string | null>(null);
-  const { handleDelete, loading: deleteLoading } = useDeleteQuery();
+  const { handleDelete } = useDeleteQuery();
 
   const openQueryInTab = (queryData: any) => {
     router.push(`/workspace/${queryData.id}`);
@@ -54,16 +54,13 @@ export const QueryExplorerCardList: React.FC<IQueryExplorerCardListProps> = ({
       <ul className="flex flex-col w-full my-4">
         {filteredQueries.length > 0 ? (
           filteredQueries.map(item => (
-            <li
-              key={item.id}
-              className="border-b first:border-t flex  p-3 py-5 "
-            >
+            <li key={item.id} className="border-b first:border-t flex  ">
               <button
                 type="button"
-                className="cursor-pointer hover:bg-white/10 text-sm flex items-center justify-between lowercase font-medium text-left  "
+                className="cursor-pointer hover:bg-white/10 text-sm flex flex-1 items-center justify-between lowercase font-medium text-left py-5 pl-3 "
                 onClick={() => openQueryInTab(item)}
               >
-                <span className="flex space-x-2 items-center">
+                <span className="flex flex-1 space-x-2 items-center">
                   <AiOutlineCode size={18} />
                   <span className="text-sm capitalize ml-1.5">
                     {item.title}
@@ -86,7 +83,7 @@ export const QueryExplorerCardList: React.FC<IQueryExplorerCardListProps> = ({
                   e.stopPropagation();
                   setActiveDeleteId(item.id);
                 }}
-                className="text-red-500 hover:text-red-600"
+                className="text-red-500 hover:text-red-600 px-3 pr-3"
               >
                 <Trash2 size={18} />
               </button>

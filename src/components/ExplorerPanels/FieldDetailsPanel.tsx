@@ -2,10 +2,10 @@
 
 import { useSearchParams } from "next/navigation";
 
-import type { IChainEntity } from "@/types";
+import type { IChainEntitySet } from "@/types";
 
 interface IFieldDetailsPanelProps {
-  entities: IChainEntity[];
+  entities: IChainEntitySet;
 }
 
 export const FieldDetailsPanel = ({ entities }: IFieldDetailsPanelProps) => {
@@ -13,7 +13,7 @@ export const FieldDetailsPanel = ({ entities }: IFieldDetailsPanelProps) => {
   const chain = searchParams.get("namespace");
   const entity = searchParams.get("id");
 
-  const activeEntity = entities.find(e => e.name === entity);
+  const activeEntity = entities.raw.find(e => e.name === entity);
 
   if (!chain || !entity) return <p>Invalid selection</p>;
 
