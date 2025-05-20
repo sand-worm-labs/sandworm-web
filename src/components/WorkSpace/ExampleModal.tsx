@@ -48,6 +48,36 @@ const exampleQueries: ExampleQuery[] = [
     query: `SELECT  balance, chain FROM account vitalik.eth ON eth, base
 `,
   },
+  {
+    title: "Get Logs on EVM Chains",
+    description:
+      "Fetch balance for vitalik.eth across Ethereum Mainnet and Base",
+    query: `SELECT * FROM log WHERE block 4638657:4638758, address 0xdAC17F958D2ee523a2206206994597C13D831ec7, topic0 0xcb8241adb0c3fdb35b70c24ce35c5eb0c17af7431c99f827d44a445ca624176a ON eth
+SELECT * FROM log WHERE event_signature Confirmation(address,uint256), block 4638757 ON eth
+`,
+  },
+  {
+    title: "Inspect Transactions on Base",
+    description:
+      "View transaction details like sender, receiver, value, gas price, and status for specific tx hashes on the Base network.",
+    query: `SELECT 
+    from, 
+    to,
+    value,
+    gas_price,
+    status 
+  FROM tx 
+    0x6f93d4add2ef6cdfbb9f25b9895830d719dd8edf6637b639d5c33e808ded4247,
+    0xa9e39789f09753e7afa0838c52e3dd332627f1b18eec07e1652ede6f5a958fa1
+  ON base`,
+  },
+  {
+    title: "Track USDT Transfers on EVM",
+    description:
+      "Get log events for USDT on Ethereum Mainnet across specific blocks. Includes a `Confirmation(address,uint256)` event sample.",
+    query: `SELECT * FROM log WHERE block 4638657:4638758, address 0xdAC17F958D2ee523a2206206994597C13D831ec7, topic0 0xcb8241adb0c3fdb35b70c24ce35c5eb0c17af7431c99f827d44a445ca624176a ON eth
+  SELECT * FROM log WHERE event_signature Confirmation(address,uint256), block 4638757 ON eth`,
+  },
 ];
 
 export const ExamplesModal: React.FC<ExamplesModalProps> = ({
