@@ -28,7 +28,7 @@ export const SortableTab = ({ tab, isActive }: SortableTabProps) => {
     isDragging,
   } = useSortable({
     id: tab.id,
-    disabled: tab.id === "home",
+    disabled: tab.type === "home",
   });
 
   const { isExecuting, closeTab } = useSandwormStore();

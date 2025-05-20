@@ -17,6 +17,7 @@ import { useForkQuery } from "@/hooks";
 import { SaveModal } from "@/components/WorkSpace";
 import { QueryCodeEditor } from "@/components/WorkSpace/Editor";
 import type { EditorTab } from "@/store";
+
 import { ExecuteButton } from "./ExecuteButton";
 
 interface SqlEditorProps {

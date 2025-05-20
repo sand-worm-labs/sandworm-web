@@ -1,6 +1,6 @@
 # Roadmap
 
-This document outlines the necessary features for Sandworm IDE and workspace. The primary goal of this IDE is to allow users to query data from Sui and other blockchains and visualize results efficiently.
+This document outlines the necessary features for Sandworm IDE and workspace. The primary goal of this IDE is to allow users to query data from Sui, Base, EVM Chains and other blockchains and visualize results efficiently.
 
 ## Core Features
 

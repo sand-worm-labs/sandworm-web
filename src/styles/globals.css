@@ -221,11 +221,12 @@ label {
 }
 
 .hero-line {
-  border-color: hsla(0, 100%, 100%, 0.1);
+  border-color: hsla(0, 100%, 100%, 0.25);
   border-width: 1px;
   border-style: dashed;
   border-right-width: 0px;
   border-left-width: 1px;
+  animation: fadeScaleTopToBottom 0.6s ease-in-out forwards;
 }
 
 .hero-btn-inner {
@@ -239,7 +240,9 @@ label {
   position: absolute;
   top: 0;
   bottom: -6rem;
-  border-left: 1px dashed hsla(0, 100%, 100%, 0.1);
+  animation: fadeScaleTopToBottom 0.6s ease-in-out forwards;
+  border-left: 1px dashed hsla(0, 100%, 100%, 0.25);
+  opacity: 0.1;
 }
 
 .hero-btn-inner::before {
@@ -258,7 +261,8 @@ label {
   position: absolute;
   left: -1rem;
   right: -1rem;
-  border-top: 1px dashed hsla(0, 100%, 100%, 0.1);
+  border-top: 1px dashed hsla(0, 100%, 100%, 0.25);
+  animation: fadeScaleLeftToRight 0.6s ease-in-out forwards;
 }
 
 .hero-desc::before,
@@ -439,6 +443,40 @@ svg {
 
 .animate-marquee {
   animation: marquee 15s linear infinite;
+}
+
+@keyframes fadeScaleLeftToRight {
+  0% {
+    opacity: 1;
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  100% {
+    opacity: 0.5;
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+}
+
+@keyframes fadeScaleTopToBottom {
+  0% {
+    opacity: 1;
+    transform: scaleY(0);
+    transform-origin: top;
+  }
+  100% {
+    opacity: 0.5;
+    transform: scaleY(1);
+    transform-origin: top;
+  }
+}
+
+.top-to-bottom {
+  animation: fadeScaleTopToBottom 1s ease-in-out forwards;
+}
+
+.line-left-to-right {
+  animation: fadeScaleLeftToRight 1s ease-in-out forwards;
 }
 
 @media screen and (max-width: 800px) {

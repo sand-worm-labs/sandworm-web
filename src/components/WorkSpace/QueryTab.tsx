@@ -69,6 +69,29 @@ c30,0,30,26.9,60,26.9"
             <AlertTitle>Query Error</AlertTitle>
             <AlertDescription>{currentTab.result.error}</AlertDescription>
           </Alert>
+          <div className="mt-3 text-xs text-text-gray space-y-1 text-center">
+            <p>
+              Not sure what went wrong? You can check out our{" "}
+              <a
+                href="https://docs.sandwormlabs.xyz/faq"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-orange-600 underline underline-offset-2 hover:text-orange-700"
+              >
+                FAQ
+              </a>{" "}
+              or review our{" "}
+              <a
+                href="https://docs.sandwormlabs.xyz/sql-syntax/itro"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-orange-600 underline underline-offset-2 hover:text-orange-700"
+              >
+                SQL syntax guide
+              </a>{" "}
+              to troubleshoot.
+            </p>
+          </div>
         </div>
       );
     }

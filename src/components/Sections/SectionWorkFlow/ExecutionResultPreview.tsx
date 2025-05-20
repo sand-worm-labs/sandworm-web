@@ -17,6 +17,7 @@ export const ExecutionResultPreview: FC = () => {
         {["Address", "Tx Count", "Amount", "Status", "Date"].map(
           (header, i) => (
             <div
+              // eslint-disable-next-line react/no-array-index-key
               key={i}
               className="px-4 py-2 text-xs font-medium uppercase text-[#BBB] bg-[#141418] border-b border-[#222]"
             >
@@ -27,6 +28,7 @@ export const ExecutionResultPreview: FC = () => {
         {fakeData.map((row, i) =>
           row.map((cell, j) => (
             <div
+              // eslint-disable-next-line react/no-array-index-key
               key={`${i}-${j}`}
               className={clsx(
                 "px-4 py-2.5 text-xs text-[#E0E0E0] border-b border-[#222] transition-all duration-200 cursor-pointer group border-l flex items-center justify-center text-center ",
