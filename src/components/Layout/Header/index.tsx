@@ -59,13 +59,26 @@ export const MainHeader = () => {
           className="md:hidden flex flex-col space-y-1 cursor-pointer"
           onClick={() => setIsOpen(!isOpen)}
         >
-          <div className="w-6 h-0.5 bg-white" />
-          <div className="w-6 h-0.5 bg-white" />
+          <div
+            className={`w-6 h-0.5 bg-white transition-transform duration-300 ease-in-out ${
+              isOpen ? "rotate-45 translate-y-1.5" : ""
+            }`}
+          />
+          <div
+            className={`w-6 h-0.5 bg-white transition-opacity duration-300 ease-in-out ${
+              isOpen ? "opacity-0" : ""
+            }`}
+          />
+          <div
+            className={`w-6 h-0.5 bg-white transition-transform duration-300 ease-in-out ${
+              isOpen ? "-rotate-45 -translate-y-1.5" : ""
+            }`}
+          />
         </button>
       </div>
 
       {isOpen && (
-        <div className="md:hidden flex flex-col items-center space-y-4 py-4 bg-black border-t border-borderLight h-full">
+        <div className="md:hidden flex flex-col items-center space-y-4 py-4 bg-black border-t border-borderLight h-[90vh] fixed w-full z-10 bottom-0">
           {navLinks.map(link => (
             <Link
               key={link.name}
