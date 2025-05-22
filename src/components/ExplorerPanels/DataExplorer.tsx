@@ -95,7 +95,7 @@ export const DataExplorer = () => {
               placeholder="Search..."
               value={searchTerm}
               onChange={handleSearch}
-              className="m-auto w-[calc(100%-2rem)] focus:ring-0
+              className="m-auto w-[calc(100%-2rem)] focus:ring-0 hidden
               "
             />
             <div className="flex items-center justify-between px-3" />
