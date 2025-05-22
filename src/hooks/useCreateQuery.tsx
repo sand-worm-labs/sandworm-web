@@ -5,11 +5,13 @@ import toast from "react-hot-toast";
 import type { CreateQueryPayload } from "@/services/axios/queryService";
 import { createQuery } from "@/services/axios/queryService";
 import { useSandwormStore } from "@/store";
+import { useQueryStore } from "@/store/queries";
 
 export const useCreateQuery = () => {
   const { data: session } = useSession();
   const { replaceTabId, closeTab, createTab, setActiveTab } =
     useSandwormStore();
+  const { loadQueries } = useQueryStore();
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -30,12 +32,19 @@ export const useCreateQuery = () => {
           creator: session.user?.id,
         });
 
+        await loadQueries(session.user.id); // hmm
+
         /* After saving, we replace the local tab ID with the Firebase one, close the old tab, and open a fresh one with the saved data */
         if (response?.id) {
           closeTab(tabId);
           replaceTabId(tabId, response.id);
           createTab(response.title, response.id, "sql", response.query);
-          setActiveTab(response.id);
+          useSandwormStore.setState(state => ({
+            tabs: state.tabs.map(tab =>
+              tab.id === response.id ? { ...tab, readonly: false } : tab
+            ),
+            activeTabId: response.id,
+          }));
         } else {
           toast.error("Something went wrong while saving.");
         }

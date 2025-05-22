@@ -1,28 +1,30 @@
+import { fetchUserQuery } from "@/services/axios/queryService";
 import { create } from "zustand";
-import axios from "axios";
-
 import type { Query } from "@/types";
 
-interface UserQueryStore {
+interface QueryStore {
   queries: Query[];
-  isLoading: boolean;
-  error: string | null;
-  fetchUserQueries: (userId: string) => Promise<void>;
+  loading: boolean;
+  loadQueries: (uid: string) => Promise<void>;
   clearQueries: () => void;
 }
 
-export const useUserQueries = create<UserQueryStore>(set => ({
+export const useQueryStore = create<QueryStore>(set => ({
   queries: [],
-  isLoading: false,
-  error: null,
-  fetchUserQueries: async (userId: string) => {
-    set({ isLoading: true, error: null });
+  loading: false,
+
+  loadQueries: async uid => {
+    set({ loading: true });
     try {
-      const res = await axios.get(`/api/query/user?uid=${userId}`);
-      set({ queries: res.data, isLoading: false });
-    } catch (err: any) {
-      set({ error: err.message ?? "Failed to fetch", isLoading: false });
+      const res = await fetchUserQuery(uid);
+      set({ queries: res?.queries?.page_items || [] });
+    } catch (err) {
+      console.error("Failed to fetch queries:", err);
+      set({ queries: [] });
+    } finally {
+      set({ loading: false });
     }
   },
+
   clearQueries: () => set({ queries: [] }),
 }));

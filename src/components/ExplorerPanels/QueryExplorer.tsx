@@ -12,6 +12,7 @@ import { CardHeader, CardTitle, CardContent, Card } from "../ui/card";
 import { Button } from "../ui/button";
 
 import { QueryExplorerCardList } from "./QueryExplorerCardList";
+import { useQueryStore } from "@/store/queries";
 
 const LoadingState = () => (
   <div className="flex flex-col items-center justify-center h-full gap-4 text-center text-muted-foreground">
@@ -69,30 +70,14 @@ const QueryExplorerContent = ({
 };
 
 export const QueryExplorer = () => {
-  const [queries, setQueries] = useState<Query[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
   const { data: session } = useSession();
+  const { queries, loadQueries, loading } = useQueryStore();
 
   useEffect(() => {
-    const loadQueries = async () => {
-      if (!session?.user?.id) {
-        return;
-      }
-
-      try {
-        const uid = session?.user.id;
-        const data = await fetchUserQuery(uid);
-        setQueries(data?.queries?.page_items || []);
-      } catch (err) {
-        console.error("Error fetching queries:", err);
-        setQueries([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadQueries();
-  }, []);
+    if (session?.user?.id) {
+      loadQueries(session.user.id);
+    }
+  }, [session?.user?.id]);
 
   return (
     <Card className="h-full overflow-hidden border-none dark">
