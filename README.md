@@ -1,6 +1,6 @@
 # SandWorm WebApp
 
-This repo is the frontend interface for SandWorm, a blockchain data indexer for the Sui network with support extension for solana and evm chain. This repository contains the web-based UI, including the **landing page**, **public gists**, and the **integrated IDE** for querying blockchain data with SandWorm's SQL-like query language (WQL).
+This repo is the frontend interface for SandWorm, a multi-chain blockchain data explorer and query IDE. We currently support Sui, Base, Ethereum, and other EVM-compatible networks and actively expanding to additional ecosystems beyond EVM. This repository contains the web-based UI, including the **landing page**, **public gists**, and the **integrated IDE** for querying blockchain data with SandWorm's SQL-like query language (WQL).
 
 ## 🚀 Features
 
@@ -9,6 +9,13 @@ This repo is the frontend interface for SandWorm, a blockchain data indexer for 
 - **IDE** – An interactive environment to write, test, and execute WQL queries. (/Workspace)
 
 ---
+
+## Roadmap Overview
+
+This repo includes two roadmaps:
+
+- [Main App Roadmap](ROADMAP.md): Auth, landing page, navigation, settings, etc.
+- [Workspace Roadmap](<src/app/(app)/workspace/ROADMAP.md>): Query editor, tab management, execution engine, etc.
 
 ## 📖 Getting Started
 

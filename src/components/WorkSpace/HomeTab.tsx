@@ -42,7 +42,7 @@ const resourceCards = [
   {
     title: "Star us on GitHub!",
     description: "Support our project by starring it on GitHub.",
-    link: "https://github.com/sand-worm-sql",
+    link: "https://github.com/sand-worm-labs",
     Icon: Github,
     action: "Star on GitHub",
   },
@@ -50,14 +50,14 @@ const resourceCards = [
     title: "Sandworm Docs",
     description: "Explore Sandworm documentation and learn more.",
     Icon: BookOpen,
-    link: "#",
+    link: "https://docs.sandwormlabs.xyz/",
     action: "Read Docs",
   },
   {
     title: "CLI Documentation",
     Icon: ExternalLink,
     description: "Learn how to make the most of Sandworm CLI.",
-    link: "#",
+    link: "https://github.com/sand-worm-labs/wql",
     action: "Learn More",
   },
 ];
