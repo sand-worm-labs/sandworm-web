@@ -98,17 +98,17 @@ For IDE-specific functionality, see [`workspace/ROADMAP.md`](./workspace/ROADMAP
 | Real-time collaboration in IDE     | 🔮     | Live editing with peers     |
 | Commenting / annotation on queries | 🔮     | Social + team usage         |
 | Saved filters or views in Explore  | 🔮     | Power user features         |
-| Query reactions / like button      | 🔮     | LFG 🤝                      |
+| Query reactions / like button      | ✅     | LFG 🤝                      |
 | Profile badges / reputation        | 🔮     | Based on forks, stars, etc. |
 
-| Feature                                    | Status | Notes                                    |
-| ------------------------------------------ | ------ | ---------------------------------------- |
-| Dashboard page (charts, usage analytics)   | 🔮     | For query insights and visual fun        |
-| Leaderboard for top creators               | 🔮     | Based on forks, stars, engagement        |
-| Rewards system (badges, points, mintables) | 🔮     | Encourage usage, can be off-chain or NFT |
-| Rate limiting (API abuse protection)       | ⚠️     | Protect infra, prevent spam queries      |
-| Security review checklist                  | 🚧     | OAuth scopes, XSS, DB rules etc          |
-| Design/UX revamp                           | 🔮     | Will revisit once we get a designer      |
+| Feature                                    | Status | Notes                                                            |
+| ------------------------------------------ | ------ | ---------------------------------------------------------------- |
+| Dashboard page (charts, usage analytics)   | 🔮     | For query insights and visual fun                                |
+| Leaderboard for top creators               | 🔮     | Based on forks, stars, engagement                                |
+| Rewards system (badges, points, mintables) | 🔮     | Encourage usage, can be off-chain or NFT                         |
+| Rate limiting (API abuse protection)       | ⚠️     | Protect infra, prevent spam queries                              |
+| Security review checklist                  | 🚧     | OAuth scopes, XSS, Wallet auth flow and signatures, DB rules etc |
+| Design/UX revamp                           | 🔮     | Will revisit once we get a designer                              |
 
 ---
 
