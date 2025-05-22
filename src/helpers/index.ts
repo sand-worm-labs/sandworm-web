@@ -1,14 +1,27 @@
 import type { QueryResult } from "@/store";
 
 /* @check if query has result */
-export const queryHasResults = (result: Record<string, object[]>): boolean => {
-  return !!(
-    (result.transaction && result.transaction.length > 0) ||
-    (result.log && result.log.length > 0) ||
-    (result.account && result.account.length > 0) ||
-    (result.block && result.block.length > 0) ||
-    (result.object && result.object.length > 0) ||
-    (result.coin && result.coin.length > 0)
+export const queryHasResults = (
+  result: Record<string, unknown> | unknown[]
+): boolean => {
+  // Case 1: If result is a plain array (e.g. from 'indexed')
+  if (Array.isArray(result)) {
+    return result.length > 0;
+  }
+
+  // Case 2: If result is an object with known keys
+  const knownKeys = [
+    "transaction",
+    "log",
+    "account",
+    "block",
+    "object",
+    "coin",
+  ];
+  return knownKeys.some(
+    key =>
+      Array.isArray((result as Record<string, unknown>)[key]) &&
+      ((result as Record<string, unknown>)[key] as unknown[]).length > 0
   );
 };
 
@@ -21,14 +34,21 @@ export const queryHasResults = (result: Record<string, object[]>): boolean => {
  * - Returns the columns, column types, data, and row count.
  */
 export const formatApiResultToQueryResult = (
-  result: Record<string, object[]>
+  result: Record<string, object[]> | object[]
 ): QueryResult => {
-  const allData: Array<Record<string, unknown>> = [];
-  Object.keys(result).forEach(key => {
-    if (Array.isArray(result[key]) && result[key].length > 0) {
-      allData.push(...(result[key] as Record<string, unknown>[]));
-    }
-  });
+  let allData: Array<Record<string, unknown>> = [];
+
+  // If it's a flat array (indexed result)
+  if (Array.isArray(result)) {
+    allData = result as Record<string, unknown>[];
+  } else {
+    // Otherwise, loop through the known keys and concat the arrays
+    Object.keys(result).forEach(key => {
+      if (Array.isArray(result[key]) && result[key].length > 0) {
+        allData.push(...(result[key] as Record<string, unknown>[]));
+      }
+    });
+  }
 
   if (allData.length === 0) {
     return {
@@ -38,6 +58,7 @@ export const formatApiResultToQueryResult = (
       rowCount: 0,
     };
   }
+
   const columns = Object.keys(allData[0]);
 
   const columnTypes = columns.map(col => {
