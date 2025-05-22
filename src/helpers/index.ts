@@ -6,7 +6,9 @@ export const queryHasResults = (result: Record<string, object[]>): boolean => {
     (result.transaction && result.transaction.length > 0) ||
     (result.log && result.log.length > 0) ||
     (result.account && result.account.length > 0) ||
-    (result.block && result.block.length > 0)
+    (result.block && result.block.length > 0) ||
+    (result.object && result.object.length > 0) ||
+    (result.coin && result.coin.length > 0)
   );
 };
 

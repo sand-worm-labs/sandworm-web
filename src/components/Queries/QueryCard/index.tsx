@@ -164,19 +164,28 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
       </button>
 
       {/* Future update should make this a button so users can search other queries with same tags */}
-      {query.tags && query.tags.length > 0 && (
-        <div className="flex justify-end flex-wrap gap-2 mt-2 text-xs text-orange-300">
-          {query.tags.map((tag, index) => (
-            <span
-              // eslint-disable-next-line react/no-array-index-key
-              key={index}
-              className="bg-[#1a1a1a] border border-[#333] px-2 py-0.5 rounded-full"
-            >
-              #{tag}
+      <div className="flex items-center justify-between mt-2">
+        <div>
+          {query.forked_from?.trim() && (
+            <span className="bg-[#1f1f1f] border border-orange-300 text-orange-200 px-2 rounded-full text-[11px] inline-block">
+              Forked Query
             </span>
-          ))}
+          )}
         </div>
-      )}
+
+        {query.tags && query.tags.length > 0 && (
+          <div className="flex flex-wrap gap-2 text-xs text-orange-300 justify-end">
+            {query.tags.map((tag, index) => (
+              <span
+                key={index}
+                className="bg-[#1a1a1a] border border-[#333] px-2 py-0.5 rounded-full"
+              >
+                #{tag}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
