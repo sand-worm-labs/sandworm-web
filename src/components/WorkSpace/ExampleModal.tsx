@@ -39,7 +39,7 @@ const exampleQueries: ExampleQuery[] = [
     title: "User Balance & Transactions on Sui",
     description:
       "Get user’s balance and recent transactions on the Sui network.",
-    query: `SELECT balance, transaction_id FROM account 0xac5bceec1b789ff840d7d4e6ce4ce61c90d190a7f8c4f4ddf0bff6ee2413c33c ON sui_mainnet`,
+    query: `SELECT sui_balance FROM account 0xac5bceec1b789ff840d7d4e6ce4ce61c90d190a7f8c4f4ddf0bff6ee2413c33c ON sui_mainnet`,
   },
   {
     title: "Vitalik.eth Balance Across EVM Chains",
@@ -57,19 +57,10 @@ SELECT * FROM log WHERE event_signature Confirmation(address,uint256), block 463
 `,
   },
   {
-    title: "Inspect Transactions on Base",
+    title: "Select block on Base",
     description:
       "View transaction details like sender, receiver, value, gas price, and status for specific tx hashes on the Base network.",
-    query: `SELECT 
-    from, 
-    to,
-    value,
-    gas_price,
-    status 
-  FROM tx 
-    0x6f93d4add2ef6cdfbb9f25b9895830d719dd8edf6637b639d5c33e808ded4247,
-    0xa9e39789f09753e7afa0838c52e3dd332627f1b18eec07e1652ede6f5a958fa1
-  ON base`,
+    query: `SELECT * FROM block 1000:1050 ON base`,
   },
   {
     title: "Track USDT Transfers on EVM",

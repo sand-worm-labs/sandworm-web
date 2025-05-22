@@ -41,6 +41,7 @@ export const SaveModal = ({
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
+  const [formTitle, setFormTitle] = useState(title);
 
   const { create, loading } = useCreateQuery();
   const { save, loading: saving } = useSaveQuery();
@@ -53,7 +54,7 @@ export const SaveModal = ({
     }
 
     const payload = {
-      title,
+      title: formTitle,
       description,
       query: content,
       privateQuery: isPrivate,
@@ -91,7 +92,11 @@ export const SaveModal = ({
             >
               Title
             </Label>
-            <Input id="title" value={title} readOnly />
+            <Input
+              id="title"
+              value={formTitle}
+              onChange={e => setFormTitle(e.target.value)}
+            />
           </div>
           <div>
             <Label

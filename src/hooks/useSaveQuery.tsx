@@ -1,14 +1,15 @@
 import { useState, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
-
 import {
   patchUserQuery,
   type CreateQueryPayload,
 } from "@/services/axios/queryService";
+import { useQueryStore } from "@/store/queries";
 
 export const useSaveQuery = () => {
   const { data: session } = useSession();
+  const { loadQueries } = useQueryStore();
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -30,6 +31,7 @@ export const useSaveQuery = () => {
 
       try {
         const response = await patchUserQuery(data);
+        await loadQueries(session.user.id); // sneaky ik
         toast.success("Query saved! 💾");
         return response;
       } catch (err: any) {
