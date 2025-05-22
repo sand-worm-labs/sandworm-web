@@ -46,13 +46,13 @@ export const AppSidebar = ({
 
   const bottomNavLinks = [
     {
-      to: "https://github.com/sand-worm-sql",
+      to: "https://github.com/sand-worm-labs",
       label: "GitHub",
       icon: Github,
       isNewWindow: true,
     },
     {
-      to: "/",
+      to: "https://docs.sandwormlabs.xyz/",
       label: "Documentation",
       icon: BookText,
       isNewWindow: true,

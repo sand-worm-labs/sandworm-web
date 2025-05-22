@@ -250,9 +250,6 @@ export const useSandwormStore = create<SandwormStoreState>()(
           try {
             set({ isExecuting: true, error: null });
             const executionType = provider?.executionMethod ?? "rpc";
-
-            /*             const API_URL =
-              "https:/sui-api-606667184456.us-central1.run.app/run"; */
             const API_URL = "https://node.sandwormlabs.xyz/run?";
 
             let queryResult: QueryResult;
@@ -277,16 +274,23 @@ export const useSandwormStore = create<SandwormStoreState>()(
                     rowCount: 0,
                     error,
                   };
-                } else if (queryHasResults(data[0].result)) {
-                  queryResult = formatApiResultToQueryResult(data[0].result);
                 } else {
-                  queryResult = {
-                    columns: [],
-                    columnTypes: [],
-                    data: [],
-                    rowCount: 0,
-                    error: "No results",
-                  };
+                  const resultData =
+                    executionType === "indexed"
+                      ? data[0]?.result?.indexed
+                      : data[0]?.result;
+
+                  if (queryHasResults(resultData)) {
+                    queryResult = formatApiResultToQueryResult(resultData);
+                  } else {
+                    queryResult = {
+                      columns: [],
+                      columnTypes: [],
+                      data: [],
+                      rowCount: 0,
+                      error: "No results",
+                    };
+                  }
                 }
               } else {
                 const text = await res.text();

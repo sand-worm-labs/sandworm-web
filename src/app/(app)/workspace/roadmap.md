@@ -1,90 +1,125 @@
-# Roadmap
+# 🛠️ Sandworm Workspace Roadmap
 
-This document outlines the necessary features for Sandworm IDE and workspace. The primary goal of this IDE is to allow users to query data from Sui, Base, EVM Chains and other blockchains and visualize results efficiently.
+This document outlines the necessary features for the **Sandworm IDE and Workspace**. The primary goal is to allow users to query data from **Sui, Base, EVM Chains**, and other blockchains, and **visualize results efficiently**.
 
-## Core Features
+---
+
+## 🧪 Emoji Legend
+
+| Status                        | Emoji | Description                              |
+| ----------------------------- | ----- | ---------------------------------------- |
+| Done                          | ✅    | Completed features                       |
+| In Progress                   | 🚧    | Currently being worked on                |
+| Not Done / Pending            | ⏳    | Yet to be started or waiting             |
+| Done but Needs Improvement    | ⚠️    | Implemented but requires fixes or polish |
+| Blocked / Waiting on External | 🛑    | Cannot proceed due to dependencies       |
+| Planned / Future              | 🔮    | Planned for future implementation        |
+
+---
+
+## 🎯 Core Features
 
 ### 1. Query Execution
 
-- Users can write and execute SQL-like queries.
-- Display query results in a structured table format.
-- Show query execution time and any errors encountered.
-- Execute queries using a custom SQL-like language written in Rust/WASM.
-- Connect the frontend IDE to the Rust/WASM backend for executing queries and fetching results.
+- Users can write and execute SQL-like queries. ✅
+- Display query results in a structured table format. ✅
+- Show query execution time and any errors encountered. 🚧
+- Execute queries using a custom SQL-like language written in Rust/WASM. ✅
+- Connect frontend IDE to the Rust/WASM backend for executing queries. ✅
+- Support custom RPC per chain for query execution. 🔮
+- Enable query execution as **live RPC** or **indexer** (power mode). 🔮
+
+---
 
 ### 2. Query Management
 
-- **Public Queries**: Users can browse and open public queries in a read-only mode.
-- **Forking Queries**: Users must fork a public query to modify it.
-- **Private Queries**: Users can create and manage their own queries.
-- **Autosaving Drafts**: Queries should be saved temporarily in local storage to prevent loss.
-- **Query Execution Status**: Indicate whether a query is running, completed, or failed.
+- **Public Queries**: Users can browse and open public queries (read-only). ✅
+- **Forking Queries**: Users must fork a public query to modify it. ⚠️
+- **Private Queries**: Users can create/manage their own queries. ✅
+- **Autosaving Drafts** (local storage). ✅
+- **Query Execution Status**: Indicate running/completed/failed states. ✅
+- **Templates**: Provide ready-to-use query templates (per chain or use case). 🔮
+- **Experimental Mode Toggle**: Allow users to try beta features on query engine. 🔮
+
+---
 
 ### 3. Tab Management
 
-- Multiple queries can be opened in different tabs.
-- Tabs should persist across sessions using local storage.
-- Ability to close, rename, and reorder tabs.
-- Warn users before closing tabs with unsaved changes.
+- Multiple queries openable in tabs. ✅
+- Tab state persists across sessions (local storage). ✅
+- Rename, reorder, and close tabs. ✅
+- Warn before closing unsaved tabs. 🔮
+
+---
 
 ### 4. Version History
 
-- Maintain a history of edits without saving every version to the database.
-- Users can revert to previous versions within a session.
-- Local history resets when users click "Clear History."
-- Option to manually save versions for future reference.
+- Keep local history of query edits. ✅
+- Allow reverting within session. 🔮
+- Clear history manually. ⏳
+- Optionally save versions manually. ✅
+
+---
 
 ### 5. User Experience Enhancements
 
-- Syntax highlighting for the editor.
-- Autocomplete for table names, columns, and functions.
-- Dark and light mode support.
-- Keyboard shortcuts for running queries, switching tabs, and saving.
-- Display execution logs for debugging queries.
-- User-friendly error messages when queries fail.
+- Syntax highlighting. ✅
+- Autocomplete for tables/columns/functions. ⏳
+- Dark and light theme toggle. ⏳
+- Workspace settings (themes, default chain, custom RPC). 🔮
+- Keyboard shortcuts (run query, switch tab, save). ⏳
+- Execution logs for debugging. ⚠️
+- Friendly error messages. ✅
+- Set default chain in settings. 🔮
+- Toggle experimental features. 🔮
+- Enable/disable advanced mode (e.g., indexer mode). 🔮
+
+---
 
 ### 6. Navigation & Search
 
-- Search bar to find saved or public queries.
-- Quick access to recent queries.
-- Left panel for database schema and dataset exploration.
-- Bookmark favorite queries for quick access.
+- Search bar for saved/public queries. ✅
+- Quick access to recent queries. ✅
+- Left panel for schema/dataset exploration. ✅
+- Bookmark favorite queries. ✅
+- Search across all templates and starred queries. 🔮
+
+---
 
 ### 7. Data Visualization
 
-- Support for basic charting (bar, line, pie) for numerical query results.
-- Export query results as CSV or JSON.
-- Option to copy results to clipboard.
+- Support bar, line, and pie charts. ✅
+- Export results as CSV or JSON. ✅
+- Copy results to clipboard. ✅
+- Add visualizations directly to dashboard (for power users). 🔮
+- Advanced visualisation features (custom config, filters, drill-down). 🔮
+
+---
 
 ### 8. Permissions & Collaboration
 
-- Query sharing with view or edit permissions.
-- Comments and notes on queries.
-- Real-time collaboration (optional, future enhancement).
-- Role-based access for managing queries (Admin, Editor, Viewer).
+- Share queries with view/edit roles. ✅
+- Commenting and notes on queries. 🔮
+- Real-time collab (Google Docs style). 🔮
+- Role-based access (Admin, Editor, Viewer). 🔮
 
-## Backend & Integration
+---
 
-- **Execution Engine**: The SQL-like language written in Rust/WASM will be responsible for query execution.
-- **API Integration**: The frontend must send queries to the Rust/WASM backend and handle responses.
-- **Error Handling**: Display meaningful messages if execution fails.
-- **Performance Optimization**: Ensure queries execute efficiently and return results quickly.
+### 9. AI Assistant (Future Enhancements)
 
-## Folder Structure
+- AI chat for help and query generation. 🔮
+- Prompt-based query generation from natural language. 🔮
+- Auto-run generated queries and visualize results. 🔮
+- Debug broken queries with AI assistance. 🔮
 
-- `/queries`: Publicly available queries.
-- `/workspace`: The main editor where users can write and run queries.
+---
+
+## 📁 Folder Structure
+
+- `/queries`: Public query templates.
+- `/workspace`: Main editor interface.
 - `/queries/{queryId}`: Read-only mode for public queries.
-- `/workspace/{queryId}`: Editable workspace for saved queries.
-
-## Next Steps
-
-1. Implement tab persistence.
-2. Add local storage for unsaved queries.
-3. Connect the frontend to the Rust/WASM query execution engine.
-4. Build query execution logic and display results.
-5. Develop UI for managing queries.
-6. Optimize performance and error handling.
+- `/workspace/{queryId}`: Editable saved queries.
 
 ---
 
