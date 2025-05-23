@@ -33,6 +33,7 @@ export const useChainStore = create<ChainStoreState>(set => ({
   },
 
   fetchEntityData: async (chainName: string) => {
+    console.log("fetchEntityData", chainName);
     set({ loading: true, error: null });
 
     const baseUrl = `https://raw.githubusercontent.com/sand-worm-sql/chain_registry/main/data/entities/${chainName}`;

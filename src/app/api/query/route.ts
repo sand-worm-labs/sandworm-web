@@ -25,6 +25,8 @@ export async function GET(request: Request) {
     result = await QueryService.findAll(page, limit);
   }
 
+  console.log(result);
+
   if (!result.success)
     return new Response(JSON.stringify(result), { status: 500 });
   return new Response(JSON.stringify(result.data));
