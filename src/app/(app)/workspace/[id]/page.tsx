@@ -1,6 +1,7 @@
 import { WorkSpace } from "@/components/WorkSpace/WorkSpace";
 import { fetchQueryById } from "@/services/axios/queryService";
 import { auth } from "@/services/auth";
+import type { Query } from "@/types";
 
 export default async function WorkspacePage({
   params,
@@ -10,18 +11,15 @@ export default async function WorkspacePage({
   const session = await auth();
   const currentUserId = session?.user?.id || "";
   const { id } = await params;
-  let initialQuery = null;
+  let initialQuery: Query | undefined;
 
   try {
-    initialQuery = await fetchQueryById(id);
+    initialQuery = (await fetchQueryById(id)) as Query;
   } catch (err) {
     console.warn("Query fetch failed, might be local tab:", err);
   }
 
   return (
-    <WorkSpace
-      initialQuery={initialQuery || undefined}
-      currentUserId={currentUserId}
-    />
+    <WorkSpace initialQuery={initialQuery} currentUserId={currentUserId} />
   );
 }

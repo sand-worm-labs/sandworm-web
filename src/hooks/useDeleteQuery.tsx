@@ -1,9 +1,9 @@
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
+import { useSession } from "next-auth/react";
 
 import { deleteUserQuery } from "@/services/axios/queryService";
 import { useQueryStore } from "@/store/queries";
-import { useSession } from "next-auth/react";
 
 export const useDeleteQuery = () => {
   const [loading, setLoading] = useState(false);
