@@ -72,7 +72,7 @@ SELECT * FROM log WHERE event_signature Confirmation(address,uint256), block 463
     title: "Select block on Base",
     description:
       "View transaction details like sender, receiver, value, gas price, and status for specific tx hashes on the Base network.",
-    query: `SELECT * FROM block 1000:1050 ON base`,
+    query: `SELECT * FROM block 1000 ON base`,
     executionType: "rpc",
   },
 
