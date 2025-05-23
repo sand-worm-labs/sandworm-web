@@ -1,5 +1,6 @@
-import { fetchUserQuery } from "@/services/axios/queryService";
 import { create } from "zustand";
+
+import { fetchUserQuery } from "@/services/axios/queryService";
 import type { Query } from "@/types";
 
 interface QueryStore {

@@ -9,8 +9,7 @@ import { useQueryStore } from "@/store/queries";
 
 export const useCreateQuery = () => {
   const { data: session } = useSession();
-  const { replaceTabId, closeTab, createTab, setActiveTab } =
-    useSandwormStore();
+  const { replaceTabId, closeTab, createTab } = useSandwormStore();
   const { loadQueries } = useQueryStore();
 
   const [loading, setLoading] = useState(false);

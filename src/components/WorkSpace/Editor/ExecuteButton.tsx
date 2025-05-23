@@ -1,5 +1,4 @@
 import { ChevronDown, Play, Loader2 } from "lucide-react";
-import { useState } from "react";
 
 import {
   DropdownMenu,
@@ -15,12 +14,14 @@ type ExecutionType = "rpc" | "indexed";
 export const ExecuteButton = ({
   isExecuting,
   handleExecute,
+  executionType,
+  setExecutionType,
 }: {
   isExecuting: boolean;
   handleExecute: (type: ExecutionType) => void;
+  executionType: ExecutionType;
+  setExecutionType: (type: ExecutionType) => void;
 }) => {
-  const [executionType, setExecutionType] = useState<ExecutionType>("rpc");
-
   const handleClick = () => {
     handleExecute(executionType);
   };

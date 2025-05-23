@@ -1,18 +1,17 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { SquareTerminal, Plus, Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 
-import { fetchUserQuery } from "@/services/axios/queryService";
 import type { Query } from "@/types";
 import { useModalStore } from "@/store/auth";
+import { useQueryStore } from "@/store/queries";
 
 import { CardHeader, CardTitle, CardContent, Card } from "../ui/card";
 import { Button } from "../ui/button";
 
 import { QueryExplorerCardList } from "./QueryExplorerCardList";
-import { useQueryStore } from "@/store/queries";
 
 const LoadingState = () => (
   <div className="flex flex-col items-center justify-center h-full gap-4 text-center text-muted-foreground">
