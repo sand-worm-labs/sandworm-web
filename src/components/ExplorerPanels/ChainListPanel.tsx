@@ -5,6 +5,7 @@ import Image from "next/image";
 interface Chain {
   id: string;
   name: string;
+  short_code: string;
 }
 
 interface IChainListPanelProps {
@@ -23,11 +24,11 @@ export const ChainListPanel: React.FC<IChainListPanelProps> = ({
           type="button"
           key={chain.name}
           className="cursor-pointer py-4 px-3 rounded-none hover:bg-white/15 text-sm text-left flex items-center lowercase font-medium justify-between border-b last:border-b-0 transition-colors "
-          onClick={() => onSelect(chain.name)}
+          onClick={() => onSelect(chain.short_code)}
         >
           <span className="flex space-x-2 items-center ">
             <CiViewTable size={15} />
-            <span> {chain.name}</span>
+            <span> {chain.short_code}</span>
           </span>
 
           <Image
