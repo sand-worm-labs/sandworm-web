@@ -37,7 +37,7 @@ export const WorkspaceTabs = ({
   initialQuery,
   currentUserId,
 }: {
-  initialQuery: Query;
+  initialQuery: Query | undefined;
   currentUserId: string;
 }) => {
   const {
@@ -119,12 +119,13 @@ export const WorkspaceTabs = ({
   }, [tabs]);
 
   const handleTabChange = (tabId: string) => {
-    setActiveTab(tabId);
-
     const basePath = "/workspace";
     const currentTabId = pathname.split("/")[2];
+
     if (tabId !== currentTabId) {
       router.push(`${basePath}/${tabId}`);
+    } else {
+      setActiveTab(tabId); // only set manually if the tab matches current
     }
   };
 

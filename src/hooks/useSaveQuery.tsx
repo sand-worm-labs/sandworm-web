@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
+
 import {
   patchUserQuery,
   type CreateQueryPayload,

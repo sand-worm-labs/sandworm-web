@@ -33,11 +33,15 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
   className,
   selectedTab,
 }) => {
-  const { tabs, executeQuery, isExecuting, updateTabTitle, updateTabQuery } =
-    useSandwormStore();
-  const editorTheme = useSandwormStore(
-    state => state.settings.editorTheme
-  )?.toLowerCase();
+  const {
+    tabs,
+    executeQuery,
+    isExecuting,
+    updateTabTitle,
+    updateTabQuery,
+    setExecutionType,
+  } = useSandwormStore();
+  const editorTheme = useSandwormStore(state => state.settings.editorTheme);
   const { handleFork, loading } = useForkQuery(selectedTab?.id ?? "");
 
   const currentTab = tabs.find(tab => tab.id === tabId);
@@ -45,12 +49,13 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
     currentTab?.type === "sql" && typeof currentTab.content === "string"
       ? currentTab.content
       : "";
+  const executionType = currentTab?.executionType ?? "rpc";
 
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [currentTitle, setCurrentTitle] = useState(title);
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
 
-  const handleExecuteQuery = async (executionType: "rpc" | "indexed") => {
+  const handleExecuteQuery = async () => {
     if (isExecuting) return;
 
     try {
@@ -66,6 +71,10 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
       console.error("Query execution failed:", error);
       toast.error("Query execution failed");
     }
+  };
+
+  const handleSetExecutionType = (type: "rpc" | "indexed") => {
+    setExecutionType(tabId, type);
   };
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -151,6 +160,8 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
           <ExecuteButton
             handleExecute={handleExecuteQuery}
             isExecuting={isExecuting}
+            executionType={executionType}
+            setExecutionType={handleSetExecutionType}
           />
           {!selectedTab.readonly && (
             <Button
