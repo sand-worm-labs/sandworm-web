@@ -7,6 +7,7 @@ import {
   BookText,
   Database,
   Settings,
+  Bug,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -46,9 +47,9 @@ export const AppSidebar = ({
 
   const bottomNavLinks = [
     {
-      to: "https://github.com/sand-worm-labs",
-      label: "GitHub",
-      icon: Github,
+      to: "https://docs.google.com/forms/d/e/1FAIpQLSeX0V7N3sk5LMx4BtP8IXtL11aaJm_LIODQTYqiDr-kD1OXLw/viewform?usp=sharing&ouid=116485828440881365016",
+      label: "Submit Feedback",
+      icon: Bug,
       isNewWindow: true,
     },
     {

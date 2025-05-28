@@ -4,6 +4,7 @@ import { getAuth } from "firebase-admin/auth";
 
 import seedDatabase from "../localDb/seed";
 
+// might reduce the amount of conditions we have to check for. this is currently shit
 async function initializeFirebase() {
   if (admin.apps.length) return;
 
@@ -35,7 +36,7 @@ async function initializeFirebase() {
       throw new Error("❌ Firebase service account not found");
     }
 
-    console.log("🔥 Firebase: prod env with service account", serviceAccount);
+    console.log("🔥 Firebase: prod env with service account");
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
       storageBucket: "sandworm-8aa45.appspot.com",
