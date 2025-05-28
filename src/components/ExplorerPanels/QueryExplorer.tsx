@@ -61,10 +61,14 @@ const QueryExplorerContent = ({
   queries: Query[];
 }) => {
   const openSignIn = useModalStore(state => state.openSignIn);
+
   if (!session?.user?.id)
     return <UnauthenticatedState handleSignIn={openSignIn} />;
+
   if (loading) return <LoadingState />;
+
   if (queries.length === 0) return <EmptyState />;
+
   return <QueryExplorerCardList query={queries} />;
 };
 

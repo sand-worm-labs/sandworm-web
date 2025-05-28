@@ -117,7 +117,6 @@ export class QueryService {
     page = 1,
     limit = 10
   ): Promise<PaginatedQueryResult<QueryWithUsername>> {
-    console.log("findall is alive", page, limit);
     return this.getPaginatedQueries("all", limit, page);
   }
 
@@ -125,7 +124,6 @@ export class QueryService {
     page = 1,
     limit = 10
   ): Promise<PaginatedQueryResult<QueryWithUsername>> {
-    console.log("getByMostStar", page, limit);
     return this.getPaginatedQueries("stars", limit, page);
   }
 
@@ -133,7 +131,6 @@ export class QueryService {
     page = 1,
     limit = 10
   ): Promise<PaginatedQueryResult<QueryWithUsername>> {
-    console.log("getByMostForks", page, limit);
     return this.getPaginatedQueries("forks", limit, page);
   }
 
