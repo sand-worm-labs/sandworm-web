@@ -3,9 +3,11 @@ import { Sheet } from "lucide-react";
 
 import type { IChainEntitySet } from "@/types";
 
+type EntityType = "raw" | "project" | "decoded";
+
 interface IEntityListPanelProps {
   entities: IChainEntitySet;
-  onSelect: (entityId: string) => void;
+  onSelect: (entityId: string, type: EntityType) => void;
 }
 
 export const EntityListPanel: React.FC<IEntityListPanelProps> = ({
@@ -19,7 +21,7 @@ export const EntityListPanel: React.FC<IEntityListPanelProps> = ({
         <button
           type="button"
           key={entity.name}
-          onClick={() => onSelect(entity.name)}
+          onClick={() => onSelect(entity.name, "raw")}
           className="cursor-pointer py-2 px-2 rounded-md hover:bg-primary/10 text-sm text-left flex items-center space-x-2 lowercase font-medium"
         >
           <Sheet size={15} />
@@ -31,7 +33,7 @@ export const EntityListPanel: React.FC<IEntityListPanelProps> = ({
         <button
           type="button"
           key={entity.name}
-          onClick={() => onSelect(entity.name)}
+          onClick={() => onSelect(entity.name, "project")}
           className="cursor-pointer py-2 px-2 rounded-md hover:bg-primary/10 text-sm text-left flex items-center space-x-2 lowercase font-medium"
         >
           <Sheet size={15} />
@@ -43,7 +45,7 @@ export const EntityListPanel: React.FC<IEntityListPanelProps> = ({
         <button
           type="button"
           key={entity.name}
-          onClick={() => onSelect(entity.name)}
+          onClick={() => onSelect(entity.name, "decoded")}
           className="cursor-pointer py-2 px-2 rounded-md hover:bg-primary/10 text-sm text-left flex items-center space-x-2 lowercase font-medium"
         >
           <Sheet size={15} />

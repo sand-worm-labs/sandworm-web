@@ -140,7 +140,7 @@ export interface ChartProps {
     columns: string[];
     data: Record<string, any>[];
   };
-  title: string;
+  title: string | undefined;
   chartType: string;
 }
 
