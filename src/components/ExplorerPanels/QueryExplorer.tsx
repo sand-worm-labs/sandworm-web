@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { SquareTerminal, Plus, Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 
-import { fetchUserQuery } from "@/services/axios/queryService";
 import type { Query } from "@/types";
 import { useModalStore } from "@/store/auth";
+import { useQueryStore } from "@/store/queries";
 
 import { CardHeader, CardTitle, CardContent, Card } from "../ui/card";
 import { Button } from "../ui/button";
@@ -61,38 +61,26 @@ const QueryExplorerContent = ({
   queries: Query[];
 }) => {
   const openSignIn = useModalStore(state => state.openSignIn);
+
   if (!session?.user?.id)
     return <UnauthenticatedState handleSignIn={openSignIn} />;
+
   if (loading) return <LoadingState />;
+
   if (queries.length === 0) return <EmptyState />;
+
   return <QueryExplorerCardList query={queries} />;
 };
 
 export const QueryExplorer = () => {
-  const [queries, setQueries] = useState<Query[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
   const { data: session } = useSession();
+  const { queries, loadQueries, loading } = useQueryStore();
 
   useEffect(() => {
-    const loadQueries = async () => {
-      if (!session?.user?.id) {
-        return;
-      }
-
-      try {
-        const uid = session?.user.id;
-        const data = await fetchUserQuery(uid);
-        setQueries(data?.queries?.page_items || []);
-      } catch (err) {
-        console.error("Error fetching queries:", err);
-        setQueries([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadQueries();
-  }, []);
+    if (session?.user?.id) {
+      loadQueries(session.user.id);
+    }
+  }, [session?.user?.id]);
 
   return (
     <Card className="h-full overflow-hidden border-none dark">

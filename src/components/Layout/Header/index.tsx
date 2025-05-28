@@ -78,7 +78,7 @@ export const MainHeader = () => {
       </div>
 
       {isOpen && (
-        <div className="md:hidden flex flex-col items-center space-y-4 py-4 bg-black border-t border-borderLight h-[90vh] fixed w-full z-10 bottom-0">
+        <div className="md:hidden flex flex-col items-center space-y-4 py-4 bg-black border-t border-borderLight bottom-0">
           {navLinks.map(link => (
             <Link
               key={link.name}
