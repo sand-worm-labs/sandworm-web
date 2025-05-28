@@ -4,6 +4,7 @@ import { getAuth } from "firebase-admin/auth";
 
 import seedDatabase from "../localDb/seed";
 
+// might reduce the amount of conditions we have to check for. this is currently shit
 async function initializeFirebase() {
   if (admin.apps.length) return;
 
