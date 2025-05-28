@@ -36,7 +36,7 @@ async function initializeFirebase() {
       throw new Error("❌ Firebase service account not found");
     }
 
-    console.log("🔥 Firebase: prod env with service account", serviceAccount);
+    console.log("🔥 Firebase: prod env with service account");
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
       storageBucket: "sandworm-8aa45.appspot.com",
