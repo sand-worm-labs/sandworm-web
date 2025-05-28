@@ -177,6 +177,7 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
           <div className="flex flex-wrap gap-2 text-xs text-orange-300 justify-end">
             {query.tags.map((tag, index) => (
               <span
+                // eslint-disable-next-line react/no-array-index-key
                 key={index}
                 className="bg-[#1a1a1a] border border-[#333] px-2 py-0.5 rounded-full"
               >

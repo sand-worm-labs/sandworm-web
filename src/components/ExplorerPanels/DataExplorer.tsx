@@ -14,6 +14,8 @@ import {
   FieldDetailsPanel,
 } from "@/components/ExplorerPanels";
 
+type EntityType = "raw" | "project" | "decoded";
+
 export const DataExplorer = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
@@ -36,8 +38,8 @@ export const DataExplorer = () => {
     setSearchTerm(e.target.value);
   };
 
-  const handleSelectEntity = (entityId: string) => {
-    router.push(`?namespace=${selectedChain}&id=${entityId}`);
+  const handleSelectEntity = (entityId: string, type: EntityType) => {
+    router.push(`?namespace=${selectedChain}&id=${entityId}&type=${type}`);
   };
 
   const handleSelectChain = (chainId: string) => {
@@ -95,7 +97,7 @@ export const DataExplorer = () => {
               placeholder="Search..."
               value={searchTerm}
               onChange={handleSearch}
-              className="m-auto w-[calc(100%-2rem)] focus:ring-0
+              className="m-auto w-[calc(100%-2rem)] focus:ring-0 hidden
               "
             />
             <div className="flex items-center justify-between px-3" />

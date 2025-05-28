@@ -175,7 +175,7 @@ export const SectionWorkFlow = () => {
                   <span className="rounded-full  mr-3   bg-dark-translucent p-1">
                     <FaCheck className="text-orange-600 text-[0.65rem] " />
                   </span>{" "}
-                  Pull Sui real-time or historical data{" "}
+                  Pull real-time or historical data{" "}
                 </li>
               </ul>
             </div>

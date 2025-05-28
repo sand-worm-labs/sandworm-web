@@ -1,11 +1,15 @@
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
+import { useSession } from "next-auth/react";
 
 import { deleteUserQuery } from "@/services/axios/queryService";
+import { useQueryStore } from "@/store/queries";
 
 export const useDeleteQuery = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const { loadQueries } = useQueryStore();
+  const { data: session } = useSession();
 
   const handleDelete = useCallback(
     async (id: string) => {
@@ -15,7 +19,13 @@ export const useDeleteQuery = () => {
       setSuccess(false);
 
       try {
+        if (!session?.user?.id) {
+          toast.error("You need to login first to save this query 🤨");
+          return;
+        }
+
         await deleteUserQuery(id);
+        await loadQueries(session.user.id); // hmm
         toast.success("Query deleted successfully");
         setSuccess(true);
       } catch (err) {

@@ -33,6 +33,8 @@ export interface QueryHistoryItem {
 
 export type EditorTabType = "sql" | "home";
 
+export type ExecutionMethodType = "rpc" | "indexed";
+
 export type Theme = "sandworm" | "vs-dark" | "vs-light" | "monokai";
 
 export interface EditorTab {
@@ -40,6 +42,7 @@ export interface EditorTab {
   title: string;
   type: EditorTabType;
   content: string | { database?: string; table?: string };
+  executionType?: ExecutionMethodType;
   createdAt?: number;
   result?: QueryResult | null;
   readonly?: boolean;
@@ -81,11 +84,13 @@ export interface SandwormStoreState {
     tabId?: string,
     provider?: ConnectionProvider
   ) => Promise<QueryResult | void>;
+  setExecutionType: (tabId: string, executionType: ExecutionMethodType) => void;
   createTab: (
     title?: string,
     id?: string,
     type?: EditorTabType,
-    content?: EditorTab["content"]
+    content?: EditorTab["content"],
+    executionType?: ExecutionMethodType
   ) => void;
   closeTab: (tabId: string) => void;
   setActiveTab: (tabId: string) => void;
@@ -246,7 +251,7 @@ export const useSandwormStore = create<SandwormStoreState>()(
         },
 
         initialize: async () => {},
-        executeQuery: async (query, tabId?, provider) => {
+        executeQuery: async (query, tabId?, provider?) => {
           try {
             set({ isExecuting: true, error: null });
             const executionType = provider?.executionMethod ?? "rpc";
@@ -353,12 +358,23 @@ export const useSandwormStore = create<SandwormStoreState>()(
             return errorResult;
           }
         },
+        setExecutionType: (
+          tabId: string,
+          executionType: ExecutionMethodType
+        ) => {
+          set(state => ({
+            tabs: state.tabs.map(tab =>
+              tab.id === tabId ? { ...tab, executionType } : tab
+            ),
+          }));
+        },
 
         createTab: (
           title?: string,
           id?: string,
           type: EditorTab["type"] = "sql",
-          content = ""
+          content = "",
+          executionType: ExecutionMethodType = "rpc"
         ) => {
           const tabId = id ?? crypto.randomUUID();
 
@@ -374,6 +390,7 @@ export const useSandwormStore = create<SandwormStoreState>()(
               title: title?.trim() || "Untitled Query",
               type,
               content,
+              executionType,
               createdAt: Date.now(),
               readonly: Boolean(id),
             };

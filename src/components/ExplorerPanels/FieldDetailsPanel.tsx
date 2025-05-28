@@ -12,8 +12,11 @@ export const FieldDetailsPanel = ({ entities }: IFieldDetailsPanelProps) => {
   const searchParams = useSearchParams();
   const chain = searchParams.get("namespace");
   const entity = searchParams.get("id");
+  const typeparams = searchParams.get("type") ?? "raw";
 
-  const activeEntity = entities.raw.find(e => e.name === entity);
+  const activeEntity = entities?.[typeparams as keyof typeof entities]?.find(
+    (e: any) => e.name === entity
+  );
 
   if (!chain || !entity) return <p>Invalid selection</p>;
 

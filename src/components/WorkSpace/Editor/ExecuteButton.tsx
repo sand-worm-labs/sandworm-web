@@ -1,5 +1,4 @@
 import { ChevronDown, Play, Loader2 } from "lucide-react";
-import { useState } from "react";
 
 import {
   DropdownMenu,
@@ -15,29 +14,33 @@ type ExecutionType = "rpc" | "indexed";
 export const ExecuteButton = ({
   isExecuting,
   handleExecute,
+  executionType,
+  setExecutionType,
 }: {
   isExecuting: boolean;
   handleExecute: (type: ExecutionType) => void;
+  executionType: ExecutionType;
+  setExecutionType: (type: ExecutionType) => void;
 }) => {
-  const [executionType, setExecutionType] = useState<ExecutionType>("rpc");
-
   const handleClick = () => {
     handleExecute(executionType);
   };
+
+  const executionLabel = executionType === "rpc" ? "RPC" : "Indexer";
 
   return (
     <div className="flex items-center dark">
       <Button
         onClick={handleClick}
         disabled={isExecuting}
-        className="bg-orange-700 text-white h-[2rem] pl-2 pr-2 rounded-sm text-sm flex items-center gap-2 rounded-r-none"
+        className="bg-orange-700 text-white h-[2rem] pl-2 pr-2 rounded-sm text-xs flex items-center gap-2 rounded-r-none"
       >
         {isExecuting ? (
           <Loader2 className="w-4 h-4 animate-spin" />
         ) : (
           <Play className="w-4 h-4" />
         )}
-        {isExecuting ? "Running..." : "Run"}
+        {isExecuting ? "Running..." : `Run (${executionLabel})`}
       </Button>
 
       <DropdownMenu>
@@ -55,11 +58,17 @@ export const ExecuteButton = ({
             Execution method
           </DropdownMenuLabel>
 
-          <DropdownMenuItem onClick={() => setExecutionType("rpc")}>
+          <DropdownMenuItem
+            onClick={() => setExecutionType("rpc")}
+            className={executionType === "rpc" ? "font-bold" : ""}
+          >
             RPC
           </DropdownMenuItem>
 
-          <DropdownMenuItem onClick={() => setExecutionType("indexed")}>
+          <DropdownMenuItem
+            onClick={() => setExecutionType("indexed")}
+            className={executionType === "indexed" ? "font-bold" : ""}
+          >
             Indexer
           </DropdownMenuItem>
         </DropdownMenuContent>

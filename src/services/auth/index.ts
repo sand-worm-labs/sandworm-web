@@ -1,4 +1,5 @@
 import NextAuth from "next-auth";
+import "@/services/firebase";
 
 import authConfig from "./auth.config";
 import { FirebaseAuthAdapter } from "./adapter";
