@@ -14,7 +14,7 @@ export const TableRow = <T,>({
   return (
     <tr
       key={row.id}
-      className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors text-xs"
+      className="hover:bg-gray-50 dark:hover:bg-white/10 transition-colors text-xs"
     >
       {row.getVisibleCells().map(cell => (
         <td

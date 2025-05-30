@@ -14,7 +14,8 @@ import {
   sortableKeyboardCoordinates,
   horizontalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { useRouter, usePathname, useParams } from "next/navigation";
+import { usePathname, useParams } from "next/navigation";
+import { useRouter } from "@bprogress/next/app";
 
 import { Tabs, TabsList, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -123,7 +124,7 @@ export const WorkspaceTabs = ({
     const currentTabId = pathname.split("/")[2];
 
     if (tabId !== currentTabId) {
-      router.push(`${basePath}/${tabId}`);
+      router.push(`${basePath}/${tabId}`, { showProgress: true });
     } else {
       setActiveTab(tabId); // only set manually if the tab matches current
     }
