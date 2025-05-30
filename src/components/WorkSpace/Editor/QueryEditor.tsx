@@ -147,14 +147,10 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
                 <TooltipContent side="bottom">Fork this Query</TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            <TooltipProvider>
-              <Tooltip delayDuration={200}>
-                <TooltipTrigger className="hover:bg-muted/50 p-2 rounded-md transition-colors border-white/20 border">
-                  <FaRegStar className="h-4 w-4 transition-colors" />
-                </TooltipTrigger>
-                <TooltipContent side="bottom">Star this Query</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+
+            {/*   @TODO: Add "Star this Query" tooltip here once like count logic is available.
+  This component already exists in /explore, but bringing it here means we also need to fetch and show like counts for proper UX.
+  No need to put it here if it's half baked — users need feedback if they’re gonna star something. */}
           </div>
 
           <ExecuteButton
