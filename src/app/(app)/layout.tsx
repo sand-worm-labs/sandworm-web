@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { FooterWrapper } from "@/components/Layout/AppFooter/FooterWrapper";
 import { AppHeader } from "@/components/Layout/AppHeader";
 import { SignInModal } from "@/components/AuthUI/SignInModal";
+
 import { ProgressProvider } from "@bprogress/next/app";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
