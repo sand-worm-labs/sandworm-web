@@ -86,7 +86,9 @@ export const QueryCodeEditor = ({
       rules: [
         { token: "", foreground: "f8f8f2", background: "141414" },
         { token: "keyword", foreground: "cda869", fontStyle: "bold" },
-        { token: "string", foreground: "8f9d6a" },
+        { token: "string", foreground: "919e6b" },
+        { token: "quote", foreground: "919e6b" },
+
         { token: "comment", foreground: "5f5a60", fontStyle: "italic" },
         { token: "number", foreground: "cf6a4c" },
         { token: "operator", foreground: "f9ee98" },
