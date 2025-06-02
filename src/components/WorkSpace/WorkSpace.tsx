@@ -59,7 +59,7 @@ export const WorkSpace = ({ initialQuery, currentUserId }: WorkSpaceProps) => {
       <AppSidebar currentView={currentView} setCurrentView={setCurrentView} />
 
       <div className="flex-1 h-full overflow-auto border-t">
-        <ResizablePanelGroup direction={isMobile ? "vertical" : "horizontal"}>
+        <ResizablePanelGroup direction="horizontal">
           {isMobile && (
             <ResizablePanel
               className="overflow-auto"
@@ -73,10 +73,8 @@ export const WorkSpace = ({ initialQuery, currentUserId }: WorkSpaceProps) => {
             </ResizablePanel>
           )}
 
-          <ResizableHandle withHandle />
-
           <ResizablePanel
-            className="overflow-auto hidden md:block"
+            className="overflow-scroll hidden md:block"
             defaultSize={isMobile ? 50 : 25}
             minSize={isMobile ? 40 : 20}
           >
