@@ -21,6 +21,7 @@ import type { EditorTab } from "@/store";
 
 import { ExecuteButton } from "./ExecuteButton";
 import { useModalStore } from "@/store/auth";
+import { CommandMenu } from "../CommandModal";
 
 interface SqlEditorProps {
   tabId: string;
@@ -142,6 +143,7 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
             </div>
           )}
         </div>
+        <CommandMenu />
         <div className="flex items-center gap-4">
           <div className="flex gap-2 text-sm text-muted-foreground">
             <TooltipProvider>
