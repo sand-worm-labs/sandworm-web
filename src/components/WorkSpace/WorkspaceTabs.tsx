@@ -131,7 +131,8 @@ export const WorkspaceTabs = ({
   };
 
   const addNewCodeTab = () => {
-    createTab("New Query", undefined, "sql", "");
+    const tabId = createTab("New Query");
+    router.push(`/workspace/${tabId}`, { showProgress: true });
   };
 
   return (
