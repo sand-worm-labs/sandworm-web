@@ -14,7 +14,8 @@ import {
   sortableKeyboardCoordinates,
   horizontalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { useRouter, usePathname, useParams } from "next/navigation";
+import { usePathname, useParams } from "next/navigation";
+import { useRouter } from "@bprogress/next/app";
 
 import { Tabs, TabsList, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -123,14 +124,15 @@ export const WorkspaceTabs = ({
     const currentTabId = pathname.split("/")[2];
 
     if (tabId !== currentTabId) {
-      router.push(`${basePath}/${tabId}`);
+      router.push(`${basePath}/${tabId}`, { showProgress: true });
     } else {
       setActiveTab(tabId); // only set manually if the tab matches current
     }
   };
 
   const addNewCodeTab = () => {
-    createTab("New Query", undefined, "sql", "");
+    const tabId = createTab("New Query");
+    router.push(`/workspace/${tabId}`, { showProgress: true });
   };
 
   return (
@@ -143,7 +145,7 @@ export const WorkspaceTabs = ({
         <div className="flex-shrink-0 flex items-center border-b-0 bg-muted">
           <Button
             variant="ghost"
-            className="rounded-none hover:bg-gray-100 dark:hover:bg-gray-800 h-8 px-2 sticky left-0 z-10"
+            className="rounded-none hover:bg-gray-100 hover:bg-black/20 h-8 px-2 sticky left-0 z-10"
             onClick={addNewCodeTab}
           >
             <Plus className="h-4 w-4" />

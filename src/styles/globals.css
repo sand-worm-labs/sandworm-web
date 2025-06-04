@@ -341,7 +341,7 @@ label {
   bottom: 5px;
   content: "";
   display: block;
-  height: 4px; /* bigger to compensate transform */
+  height: 4px;
   position: absolute;
   right: -6px;
   top: auto;
@@ -349,6 +349,11 @@ label {
   width: var(--ui-notch-hypotenuse);
   z-index: 100;
   background-color: theme("colors.borderLight");
+}
+
+/* @HACK Temporarily overriding Monaco's .mtk26 red to match string color */
+.vs-dark .mtk26 {
+  color: #919e6b !important;
 }
 
 @keyframes worm {

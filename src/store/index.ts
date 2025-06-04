@@ -375,7 +375,7 @@ export const useSandwormStore = create<SandwormStoreState>()(
           type: EditorTab["type"] = "sql",
           content = "",
           executionType: ExecutionMethodType = "rpc"
-        ) => {
+        ): string => {
           const tabId = id ?? crypto.randomUUID();
 
           set(state => {
@@ -400,6 +400,8 @@ export const useSandwormStore = create<SandwormStoreState>()(
               activeTabId: tabId,
             };
           });
+
+          return tabId;
         },
 
         closeTab: tabId => {

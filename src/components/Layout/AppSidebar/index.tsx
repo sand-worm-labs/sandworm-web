@@ -3,7 +3,6 @@
 import { GiBackwardTime } from "react-icons/gi";
 import {
   SquareTerminal,
-  Github,
   BookText,
   Database,
   Settings,
