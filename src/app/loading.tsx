@@ -16,7 +16,7 @@ c30,0,30,26.9,60,26.9"
       </svg>
 
       {/* some browsers be tweaking so fallback to text */}
-      <p className="text-center text-gray-600 dark:text-gray-400 text-sm font-mono animate-pulse">
+      <p className="text-center text-gray-600 dark:text-gray-200 text-sm font-mono animate-pulse mt-20">
         Loading Sandworm...
       </p>
     </div>
