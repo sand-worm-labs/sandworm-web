@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Edit } from "lucide-react";
 import { toast } from "sonner";
-import { FaCodeBranch, FaRegStar } from "react-icons/fa";
+import { FaCodeBranch } from "react-icons/fa";
+import { useSession } from "next-auth/react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +20,8 @@ import { QueryCodeEditor } from "@/components/WorkSpace/Editor";
 import type { EditorTab } from "@/store";
 
 import { ExecuteButton } from "./ExecuteButton";
+import { useModalStore } from "@/store/auth";
+import { CommandMenu } from "../CommandModal";
 
 interface SqlEditorProps {
   tabId: string;
@@ -42,7 +45,9 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
     setExecutionType,
   } = useSandwormStore();
   const editorTheme = useSandwormStore(state => state.settings.editorTheme);
+  const { data: session } = useSession();
   const { handleFork, loading } = useForkQuery(selectedTab?.id ?? "");
+  const openSignIn = useModalStore(state => state.openSignIn);
 
   const currentTab = tabs.find(tab => tab.id === tabId);
   const currentContent =
@@ -93,6 +98,11 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
     }
   };
 
+  const handleForkClick = () => {
+    if (!session?.user?.id) return openSignIn();
+    return handleFork();
+  };
+
   const handleTitleEdit = () => {
     setIsEditingTitle(true);
   };
@@ -133,13 +143,14 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
             </div>
           )}
         </div>
+        <CommandMenu />
         <div className="flex items-center gap-4">
           <div className="flex gap-2 text-sm text-muted-foreground">
             <TooltipProvider>
               <Tooltip delayDuration={200}>
                 <TooltipTrigger
                   className="hover:bg-muted/50 p-2 rounded-md transition-colors border-white/20 border"
-                  onClick={handleFork}
+                  onClick={handleForkClick}
                   disabled={loading}
                 >
                   <FaCodeBranch className="h-4 w-4 transition-colors" />
@@ -147,14 +158,10 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
                 <TooltipContent side="bottom">Fork this Query</TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            <TooltipProvider>
-              <Tooltip delayDuration={200}>
-                <TooltipTrigger className="hover:bg-muted/50 p-2 rounded-md transition-colors border-white/20 border">
-                  <FaRegStar className="h-4 w-4 transition-colors" />
-                </TooltipTrigger>
-                <TooltipContent side="bottom">Star this Query</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+
+            {/*   @TODO: Add "Star this Query" tooltip here once like count logic is available.
+  This component already exists in /explore, but bringing it here means we also need to fetch and show like counts for proper UX.
+  No need to put it here if it's half baked — users need feedback if they’re gonna star something. */}
           </div>
 
           <ExecuteButton

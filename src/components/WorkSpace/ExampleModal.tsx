@@ -16,6 +16,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useRouter } from "@bprogress/next/app";
 
 interface ExampleQuery {
   title: string;
@@ -99,12 +100,16 @@ export const ExamplesModal: React.FC<ExamplesModalProps> = ({
   isOpen,
   onClose,
 }) => {
+  const router = useRouter();
+
   const handleSelect = (
     query: string,
     title: string,
     executionMethod: "rpc" | "indexed"
   ) => {
-    createTab(title, undefined, "sql", query, executionMethod);
+    const tabId = createTab(title, undefined, "sql", query, executionMethod);
+    router.push(`/workspace/${tabId}`, { showProgress: true });
+
     onClose();
   };
 
