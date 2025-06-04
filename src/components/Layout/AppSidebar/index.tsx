@@ -7,6 +7,7 @@ import {
   Database,
   Settings,
   Bug,
+  Bot,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -23,6 +24,7 @@ type ViewType =
   | "dataExplorer"
   | "queryExplorer"
   | "ChangeLog"
+  | "wormbot"
   | "settingsPanel";
 
 interface AppSidebarProps {
@@ -42,6 +44,11 @@ export const AppSidebar = ({
       icon: SquareTerminal,
     },
     { id: "ChangeLog" as const, label: "ChangeLog", icon: GiBackwardTime },
+    {
+      id: "wormbot" as const,
+      label: "Worm AI",
+      icon: Bot,
+    },
   ];
 
   const bottomNavLinks = [

@@ -13,12 +13,14 @@ import { WorkspaceTabs } from "@/components/WorkSpace/WorkspaceTabs";
 import { QueryHistory } from "@/components/ExplorerPanels/QueryHistory";
 import { QueryExplorer } from "@/components/ExplorerPanels/QueryExplorer";
 import { SettingsPanel } from "@/components/WorkSpace/SettingsPanel";
+import { WormAiPanel } from "@/components/WorkSpace/WormAIPanel";
 import type { Query } from "@/types";
 
 type ViewType =
   | "dataExplorer"
   | "queryExplorer"
   | "ChangeLog"
+  | "wormbot"
   | "settingsPanel";
 
 interface PanelComponents {
@@ -26,6 +28,7 @@ interface PanelComponents {
   queryExplorer: React.ReactNode;
   ChangeLog: React.ReactNode;
   settingsPanel: React.ReactNode;
+  wormbot: React.ReactNode;
 }
 
 interface WorkSpaceProps {
@@ -42,6 +45,7 @@ export const WorkSpace = ({ initialQuery, currentUserId }: WorkSpaceProps) => {
     queryExplorer: <QueryExplorer />,
     ChangeLog: <QueryHistory queryId={initialQuery?.id} />,
     settingsPanel: <SettingsPanel />,
+    wormbot: <WormAiPanel />,
   };
 
   const handleResize = useCallback(() => {
