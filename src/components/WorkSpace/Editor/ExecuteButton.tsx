@@ -16,11 +16,13 @@ export const ExecuteButton = ({
   handleExecute,
   executionType,
   setExecutionType,
+  cancelQuery,
 }: {
   isExecuting: boolean;
   handleExecute: (type: ExecutionType) => void;
   executionType: ExecutionType;
   setExecutionType: (type: ExecutionType) => void;
+  cancelQuery: () => void;
 }) => {
   const handleClick = () => {
     handleExecute(executionType);
@@ -73,6 +75,16 @@ export const ExecuteButton = ({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      {isExecuting === true && (
+        <Button
+          onClick={() => cancelQuery()}
+          variant="secondary"
+          className="flex ml-2 items-center gap-2 min-w-[100px] text-xs h-[2rem] rounded-sm"
+        >
+          Cancel
+        </Button>
+      )}
     </div>
   );
 };

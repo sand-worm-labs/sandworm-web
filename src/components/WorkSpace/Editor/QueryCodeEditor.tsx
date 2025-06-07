@@ -154,7 +154,7 @@ export const QueryCodeEditor = ({
 
     // Add keyboard shortcuts
     codeEditor.addCommand(
-      monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter,
+      monaco.KeyMod.CtrlCmd || monaco.KeyCode.Enter,
       async () => {
         executeQuery();
       }

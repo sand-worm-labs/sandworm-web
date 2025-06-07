@@ -85,7 +85,7 @@ export const ShareDialogue = ({ url }: ShareDialogueProps) => {
               <Icon className="w-5 h-5" />
             </Button>
           ))}
-          {navigator.share && (
+          {typeof navigator.share === "function" && (
             <Button
               variant="outline"
               size="icon"
