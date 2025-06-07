@@ -18,6 +18,7 @@ export const DicebearAvatar = ({
 }: DicebearAvatarProps) => {
   const [avatarSvg, setAvatarSvg] = useState<string>("");
 
+  /* hmm remove this useEffect */
   useEffect(() => {
     const avatar = createAvatar(pixelArt, {
       seed,
