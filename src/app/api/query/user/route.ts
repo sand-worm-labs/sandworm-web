@@ -54,3 +54,20 @@ export async function GET(request: Request) {
     { status: 200 }
   );
 }
+
+export async function PATCH(request: Request) {
+  const url = new URL(request.url);
+  const uid = url.searchParams.get("uid");
+
+  if (!uid) {
+    return new Response(
+      JSON.stringify(DataResult.failure("Missing UID", "BAD_REQUEST")),
+      { status: 400 }
+    );
+  }
+
+  const userResult = await UserService.findUserById(uid);
+  if (!userResult.success) {
+    return new Response(JSON.stringify(userResult), { status: 404 });
+  }
+}
