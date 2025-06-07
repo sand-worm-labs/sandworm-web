@@ -1,8 +1,8 @@
+// sandworm main store. handle most state management for workspace
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import { toast } from "sonner";
-
-import { formatApiResultToQueryResult, queryHasResults } from "@/helpers";
+import { runQuery } from "@/helpers/queryclient";
 
 export interface CurrentConnection {
   executionMethod: "JSON_RPC" | "GRAPHQL" | "HTTP ";
@@ -66,6 +66,8 @@ export interface SandwormSettings {
   defaultChain: string;
 }
 
+let currentController: AbortController | null = null;
+
 export interface SandwormStoreState {
   isInitialized: boolean;
   currentDatabase: string;
@@ -84,6 +86,7 @@ export interface SandwormStoreState {
     tabId?: string,
     provider?: ConnectionProvider
   ) => Promise<QueryResult | void>;
+  cancelQueryExecution: () => void;
   setExecutionType: (tabId: string, executionType: ExecutionMethodType) => void;
   createTab: (
     title?: string,
@@ -252,69 +255,28 @@ export const useSandwormStore = create<SandwormStoreState>()(
 
         initialize: async () => {},
         executeQuery: async (query, tabId?, provider?) => {
+          if (currentController) currentController.abort();
+
+          const controller = new AbortController();
+          const { signal } = controller;
+          currentController = controller;
+
+          const executionType = provider?.executionMethod ?? "rpc";
+          const API_URL = "https://node.sandwormlabs.xyz/run?";
+          set({ isExecuting: true, error: null });
+
           try {
-            set({ isExecuting: true, error: null });
-            const executionType = provider?.executionMethod ?? "rpc";
-            const API_URL = "https://node.sandwormlabs.xyz/run?";
+            const queryResult = await runQuery(
+              API_URL,
+              query,
+              executionType,
+              signal
+            );
 
-            let queryResult: QueryResult;
-
-            try {
-              const res = await fetch(
-                `${API_URL}type_param=${executionType}&query=${query.replace(/\s/g, "+")}`
-              );
-              const resContentType = res.headers.get("Content-Type");
-
-              if (resContentType?.includes("application/json")) {
-                const { data, error, type } = await res.json();
-
-                console.log("response", data, type);
-
-                if (error) {
-                  console.error("API returned error:", error);
-                  queryResult = {
-                    columns: [],
-                    columnTypes: [],
-                    data: [],
-                    rowCount: 0,
-                    error,
-                  };
-                } else {
-                  const resultData =
-                    executionType === "indexed"
-                      ? data[0]?.result?.indexed
-                      : data[0]?.result;
-
-                  if (queryHasResults(resultData)) {
-                    queryResult = formatApiResultToQueryResult(resultData);
-                  } else {
-                    queryResult = {
-                      columns: [],
-                      columnTypes: [],
-                      data: [],
-                      rowCount: 0,
-                      error: "No results",
-                    };
-                  }
-                }
-              } else {
-                const text = await res.text();
-                throw new Error(
-                  `Unexpected content type: ${resContentType}. Body: ${text}`
-                );
-              }
-            } catch (fetchError) {
-              console.error("Fetch error:", fetchError);
-              queryResult = {
-                columns: [],
-                columnTypes: [],
-                data: [],
-                rowCount: 0,
-                error:
-                  fetchError instanceof Error
-                    ? fetchError.message
-                    : "Unknown fetch error",
-              };
+            if (queryResult.error === "QueryAborted") {
+              console.warn("Skipped logging aborted query");
+              set({ isExecuting: false });
+              return queryResult;
             }
 
             set(state => ({
@@ -334,6 +296,20 @@ export const useSandwormStore = create<SandwormStoreState>()(
             console.error("Unexpected wrapper error:", error);
             const errorMessage =
               error instanceof Error ? error.message : "Unknown error";
+
+            // if the query was aborted, skip the state update
+            if (errorMessage === "QueryAborted") {
+              console.warn("Query was aborted. Skipping state update.");
+              set({ isExecuting: false });
+              return {
+                columns: [],
+                columnTypes: [],
+                data: [],
+                rowCount: 0,
+                error: "QueryAborted",
+              };
+            }
+
             const errorResult: QueryResult = {
               columns: [],
               columnTypes: [],
@@ -358,6 +334,14 @@ export const useSandwormStore = create<SandwormStoreState>()(
             return errorResult;
           }
         },
+
+        cancelQueryExecution: () => {
+          if (currentController) {
+            currentController.abort();
+            currentController = null;
+          }
+        },
+
         setExecutionType: (
           tabId: string,
           executionType: ExecutionMethodType
@@ -550,22 +534,27 @@ export const useSandwormStore = create<SandwormStoreState>()(
             },
           }));
         },
+
         setRpcUrl: url =>
           set(state => ({
             settings: { ...state.settings, rpcUrl: url },
           })),
+
         setEditorTheme: theme =>
           set(state => ({
             settings: { ...state.settings, editorTheme: theme },
           })),
+
         setShortcutsEnabled: enabled =>
           set(state => ({
             settings: { ...state.settings, shortcutsEnabled: enabled },
           })),
+
         setBetaFeatures: enabled =>
           set(state => ({
             settings: { ...state.settings, betaFeatures: enabled },
           })),
+
         setDefaultChain: chain =>
           set(state => ({
             settings: { ...state.settings, defaultChain: chain },

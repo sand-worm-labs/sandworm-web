@@ -33,6 +33,7 @@ interface DownloadDialogProps {
   maxRows?: number;
 }
 
+// entire component need to be refactored
 export const DownloadDialog: React.FC<DownloadDialogProps> = ({
   data,
   query,

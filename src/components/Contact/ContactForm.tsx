@@ -13,6 +13,7 @@ export const ContactForm = () => {
 
   const [loading, setLoading] = useState(false);
 
+  /* could be a hook */
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {

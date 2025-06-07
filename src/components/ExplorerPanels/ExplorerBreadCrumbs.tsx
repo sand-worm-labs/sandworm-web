@@ -21,6 +21,7 @@ export const ExplorerBreadCrumbs: React.FC<IExplorerBreadCrumbsProps> = ({
     (e: any) => e.name === entity
   );
 
+  // TODO: could be a hook or a util function
   const handleNavigate = (params: {
     namespace?: string;
     id?: string;

@@ -26,6 +26,7 @@ export const QueryExplorerCardList: React.FC<IQueryExplorerCardListProps> = ({
     router.push(`/workspace/${queryData.id}`);
   };
 
+  // todo: HOOOKSSSS!
   const handleDeleteClick = (id: string) => {
     setActiveDeleteId(id);
     handleDelete(id);
