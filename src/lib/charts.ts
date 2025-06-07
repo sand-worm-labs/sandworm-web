@@ -89,6 +89,7 @@ export function validateChart(
   }
 }
 
+// wtf is this?
 export function sanitizeChartData(
   result: QueryResult,
   xKey: string,

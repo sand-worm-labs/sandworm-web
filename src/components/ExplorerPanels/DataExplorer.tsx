@@ -26,6 +26,7 @@ export const DataExplorer = () => {
   const { chains, entityData, loading, fetchChainData, fetchEntityData } =
     useChainStore();
 
+  /* Persist these to zustand. Would be better if the selected exploer state remains the same when you refresh the page or switch tabs */
   useEffect(() => {
     if (!chains) fetchChainData();
   }, [chains, fetchChainData]);
