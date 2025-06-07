@@ -14,10 +14,10 @@ interface ExamplePromptsProps {
 export function ExamplePrompts({ onPromptSelect }: ExamplePromptsProps) {
   return (
     <div className="flex w-full flex-wrap items-center justify-center gap-2 md:gap-4">
-      {examplePrompts.map((prompt, index) => (
+      {examplePrompts.map(prompt => (
         <button
           type="button"
-          key={index}
+          key={prompt}
           className={clsx([
             "!shrink-0 !rounded-full !px-3 !py-1 !text-xs !flex !items-center !gap-2 hover:cursor-pointer",
             "relative isolate inline-flex items-center justify-center gap-x-2 rounded-md border text-base/6 font-medium",

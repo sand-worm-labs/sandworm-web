@@ -56,6 +56,8 @@ export const WorkspaceTabs = ({
   const params = useParams();
   const urlTabId = Array.isArray(params?.id) ? params.id[0] : params?.id;
 
+  // this is a bit messy need to clean this up
+  // this function is called when the page is loaded and when the initial query is set. we need to ensure we handle initial query in a better way. initial query is loaded from the url and fetched from the database. Some queries are stored locally in the browser and our approach have to handle both cases. Also taking note of if the query is readonly or not. Queries stored locally are all writable however  the once we fetch from the data base are readonly when it not the authenticated user viewing them
   useEffect(() => {
     if (!initialQuery && urlTabId) {
       const tab = tabs.find(t => t.id === urlTabId);

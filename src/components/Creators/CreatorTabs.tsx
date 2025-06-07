@@ -11,7 +11,7 @@ interface CreatorTabsProps {
   queries: QueryResponse;
   starredQueries: QueryResponse;
 }
-
+// can make this a lot cleaner
 export const CreatorTabs = ({
   tab,
   setTab,
