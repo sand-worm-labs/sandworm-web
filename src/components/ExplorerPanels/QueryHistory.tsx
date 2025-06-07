@@ -35,6 +35,7 @@ export const QueryHistory: React.FC<QueryHistoryProps> = ({
   const [versions, setVersions] = useState<VersionEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // TODO: could be a hook or a util function
   useEffect(() => {
     const loadQueries = async () => {
       if (!session?.user?.id || !queryId) {

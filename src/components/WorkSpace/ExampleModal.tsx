@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { CodeSquareIcon } from "lucide-react";
+import { useRouter } from "@bprogress/next/app";
 
 import {
   Dialog,
@@ -16,7 +17,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useRouter } from "@bprogress/next/app";
 
 interface ExampleQuery {
   title: string;

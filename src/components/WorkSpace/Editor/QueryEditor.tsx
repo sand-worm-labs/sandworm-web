@@ -18,10 +18,9 @@ import { useForkQuery } from "@/hooks";
 import { SaveModal } from "@/components/WorkSpace";
 import { QueryCodeEditor } from "@/components/WorkSpace/Editor";
 import type { EditorTab } from "@/store";
+import { useModalStore } from "@/store/auth";
 
 import { ExecuteButton } from "./ExecuteButton";
-import { useModalStore } from "@/store/auth";
-import { CommandMenu } from "../CommandModal";
 
 interface SqlEditorProps {
   tabId: string;
@@ -43,6 +42,7 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
     updateTabTitle,
     updateTabQuery,
     setExecutionType,
+    cancelQueryExecution,
   } = useSandwormStore();
   const editorTheme = useSandwormStore(state => state.settings.editorTheme);
   const { data: session } = useSession();
@@ -142,8 +142,7 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
               </Button>
             </div>
           )}
-        </div>
-        <CommandMenu />
+        </div>{" "}
         <div className="flex items-center gap-4">
           <div className="flex gap-2 text-sm text-muted-foreground">
             <TooltipProvider>
@@ -169,6 +168,7 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
             isExecuting={isExecuting}
             executionType={executionType}
             setExecutionType={handleSetExecutionType}
+            cancelQuery={cancelQueryExecution}
           />
           {!selectedTab.readonly && (
             <Button
