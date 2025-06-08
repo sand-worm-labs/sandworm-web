@@ -6,6 +6,7 @@ import { DM_Mono as DMMono } from "next/font/google";
 import { QueryProvider } from "@/providers/query";
 import type { ChildrenProps } from "@/types";
 import AppProvider from "@/providers/AppProvider";
+import Script from "next/script";
 
 export const metadata = {
   description:
@@ -24,9 +25,22 @@ const dmMono = DMMono({
   weight: ["300", "400", "500"],
 });
 
+const GTAG_ID = process.env.NEXT_PUBLIC_GTAG_ID;
+
 export default async function RootLayout({ children }: ChildrenProps) {
   return (
     <html lang="en">
+      <Script
+        strategy="afterInteractive"
+        src={`https://www.googletagmanager.com/gtag/js?id=${GTAG_ID}`}
+      />
+      <Script id="google-analytics" strategy="afterInteractive">
+        {`window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C3SMFQWHE8')`}
+      </Script>
       <body
         className={`${dmMono.className} h-full flex flex-col justify-between`}
       >

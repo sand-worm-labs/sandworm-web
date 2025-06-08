@@ -109,7 +109,7 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
 
   return (
     <div className={cn("flex flex-col h-full", className)}>
-      <div className="flex items-center justify-between px-4 py-2.5 border-b min-h-[3rem]">
+      <div className="flex items-center justify-between px-4 py-2.5 border-b min-h-[3rem] overflow-x-auto overflow-y-hidden">
         <div className="flex items-center gap-2">
           {isEditingTitle ? (
             <Input
@@ -142,9 +142,9 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
               </Button>
             </div>
           )}
-        </div>{" "}
-        <div className="flex items-center gap-4">
-          <div className="flex gap-2 text-sm text-muted-foreground">
+        </div>
+        <div className="flex items-center gap-4 ">
+          <div className="flex gap-2 text-sm text-muted-foreground ">
             <TooltipProvider>
               <Tooltip delayDuration={200}>
                 <TooltipTrigger
