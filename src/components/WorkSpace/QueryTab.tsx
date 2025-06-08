@@ -53,7 +53,7 @@ c30,0,30,26.9,60,26.9"
         <div className="h-full flex items-center justify-center">
           <div className="flex flex-col items-center">
             <FileX2 size={48} className="text-muted-foreground mb-4" />
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground text-center">
               There's no data yet! Run a query to get started.
             </p>
           </div>
