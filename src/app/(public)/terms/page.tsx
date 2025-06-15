@@ -1,5 +1,10 @@
 import React from "react";
 
+export const metadata = {
+  title: "Terms & Conditions – Sandworm",
+  description: "Read the terms and conditions for using the Sandworm Web App",
+};
+
 export default function Terms() {
   return (
     <div className="bg-black text-text-gray min-h-screen p-8">

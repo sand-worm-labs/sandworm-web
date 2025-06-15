@@ -25,7 +25,7 @@ const dmMono = DMMono({
   weight: ["300", "400", "500"],
 });
 
-const GTAG_ID = process.env.NEXT_PUBLIC_GTAG_ID;
+const GTAG_ID = "G-GQB5QS1LHQ";
 
 export default async function RootLayout({ children }: ChildrenProps) {
   return (
@@ -39,7 +39,7 @@ export default async function RootLayout({ children }: ChildrenProps) {
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
 
-  gtag('config', 'G-C3SMFQWHE8')`}
+  gtag('config', "G-GQB5QS1LHQ")`}
       </Script>
       <body
         className={`${dmMono.className} h-full flex flex-col justify-between`}
