@@ -15,6 +15,12 @@ interface ExplorePageProps {
   }>;
 }
 
+export const metadata = {
+  title: "Explore Queries – Sandworm",
+  description:
+    "Browse public onchain queries from the community. Discover insights across Sui, Base, Etherium, Optimism and more.",
+};
+
 async function getQueries(page = "1", search = "") {
   try {
     const searchParam = search ? `&search=${encodeURIComponent(search)}` : "";

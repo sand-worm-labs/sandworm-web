@@ -3,6 +3,12 @@ import { fetchQueryById } from "@/services/axios/queryService";
 import { auth } from "@/services/auth";
 import type { Query } from "@/types";
 
+export const metadata = {
+  title: "Query Editor – Sandworm",
+  description:
+    "View and edit your saved WQL query. Fork, test, and visualize results in real time.",
+};
+
 export default async function WorkspacePage({
   params,
 }: {
