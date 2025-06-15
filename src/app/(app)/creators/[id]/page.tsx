@@ -16,6 +16,12 @@ interface UserQueryResponse {
   queries: QueryResponse;
 }
 
+export const metadata = {
+  title: "Creator Profile – Sandworm",
+  description:
+    "Explore queries and activity from this Sandworm creator. Follow their onchain data explorations.",
+};
+
 async function getUserQueries(uid: string): Promise<UserQueryResponse> {
   const response = await axios.get<UserQueryResponse>(
     `/api/query/user?uid=${uid}`
