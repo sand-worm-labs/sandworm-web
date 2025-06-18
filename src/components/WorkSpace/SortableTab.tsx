@@ -5,6 +5,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { useSandwormStore } from "@/store";
+import { useHotkeys } from "react-hotkeys-hook";
 
 interface Tab {
   id: string;
@@ -45,6 +46,17 @@ export const SortableTab = ({ tab, isActive }: SortableTabProps) => {
       closeTab(tab.id);
     }
   };
+
+  useHotkeys(
+    "ctrl+alt+w",
+    e => {
+      if (tab.id !== "home" && isActive) {
+        e.preventDefault();
+        closeTab(tab.id);
+      }
+    },
+    [isActive, tab.id]
+  );
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Delete" && tab.id !== "home") {
