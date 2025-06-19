@@ -24,6 +24,7 @@
     "*.{js,jsx,ts,tsx}": "eslint --cache --fix --cache-location ./node_modules/.cache/.eslintcache"
   },
   "dependencies": {
+    "@ai-sdk/google": "^1.2.19",
     "@auth/firebase-adapter": "^2.8.0",
     "@bprogress/next": "^3.2.12",
     "@dicebear/collection": "^9.2.2",
@@ -113,6 +114,7 @@
     "tailwindcss-animate": "^1.0.7",
     "typesaurus": "^10.7.0",
     "winston": "^3.14.1",
+    "zod": "^3.25.67",
     "zustand": "^5.0.3"
   },
   "devDependencies": {
