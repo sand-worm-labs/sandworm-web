@@ -8,18 +8,18 @@ const examplePrompts: string[] = [
 ];
 
 interface ExamplePromptsProps {
-  onPromptSelect: (prompt: string) => void;
+  onPromptSelect?: (prompt: string) => void;
 }
 
 export function ExamplePrompts({ onPromptSelect }: ExamplePromptsProps) {
   return (
-    <div className="flex w-full flex-wrap items-center justify-center gap-2 md:gap-4">
+    <div className="flex w-full flex-wrap items-center justify-center gap-2 md:gap-4 dark">
       {examplePrompts.map((prompt, index) => (
         <button
           type="button"
           key={index}
           className={clsx([
-            "!shrink-0 !rounded-full !px-3 !py-1 !text-xs !flex !items-center !gap-2 hover:cursor-pointer",
+            "!shrink-0 !rounded-full !px-3 !py-1 !text-xs !flex !items-center !gap-2 hover:cursor-pointer text-white",
             // Base
             "relative isolate inline-flex items-center justify-center gap-x-2 rounded-md border text-base/6 font-medium",
             // Focus
@@ -29,7 +29,7 @@ export function ExamplePrompts({ onPromptSelect }: ExamplePromptsProps) {
             // Icon
             "*[data-slot=icon]:-mx-0.5 *[data-slot=icon]:my-0.5 *[data-slot=icon]:size-5 *[data-slot=icon]:shrink-0 *[data-slot=icon]:text-(--btn-icon) sm:*[data-slot=icon]:my-1 sm:*[data-slot=icon]:size-4 forced-colors:[--btn-icon:ButtonText] forced-colors:hover:[--btn-icon:ButtonText]",
             // Base
-            "border-zinc-950/10 text-zinc-950 hover:bg-zinc-950/[2.5%] active:bg-zinc-950/[2.5%]",
+            "border-zinc-950/10 text-white hover:bg-zinc-950/[2.5%] active:bg-zinc-950/[2.5%]",
             // Dark mode
             "dark:border-white/15 dark:text-white dark:[--btn-bg:transparent] dark:hover:bg-white/5 dark:active:bg-white/5",
             // Icon
