@@ -8,6 +8,7 @@ import { BotIcon, UserIcon } from "./icons";
 import { Markdown } from "./markdown";
 import { PreviewAttachment } from "./preview-attachment";
 import { Weather } from "./weather";
+import QueryResultsTable from "../WorkSpace/ResultTab/index";
 
 export const Message = ({
   chatId,
@@ -64,21 +65,37 @@ export const Message = ({
                 const { result } = toolInvocation;
 
                 return (
-                  <div key={toolCallId}>
+                  <div key={toolCallId} className="dark">
                     {toolName === "getWeather" ? (
                       <Weather weatherAtLocation={result} />
+                    ) : result?.columns &&
+                      result?.data &&
+                      Array.isArray(result.data) &&
+                      Array.isArray(result.columns) ? (
+                      <div className="max-w-[900px] max-h-[300px] border rounded-xl border-white/20 overflow-x-hidden">
+                        <QueryResultsTable
+                          result={result}
+                          title="AI Query Result"
+                          query="Generated via Worm AI Tool"
+                          viewMode="Table"
+                        />
+                      </div>
                     ) : (
-                      <div>{JSON.stringify(result, null, 2)}</div>
+                      <div className="rounded-md bg-zinc-900 p-4 text-sm font-mono text-white whitespace-pre-wrap">
+                        {JSON.stringify(result, null, 2)}
+                      </div>
                     )}
                   </div>
                 );
-              } else {
-                return (
-                  <div key={toolCallId} className="skeleton">
-                    {toolName === "getWeather" ? <Weather /> : null}
-                  </div>
-                );
               }
+
+              // Show loading skeleton while tool is executing
+              return (
+                <div
+                  key={toolCallId}
+                  className="skeleton h-[80px] rounded-md bg-zinc-800"
+                />
+              );
             })}
           </div>
         )}
