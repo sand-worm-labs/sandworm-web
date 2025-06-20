@@ -1,6 +1,6 @@
 "use client";
 
-import { Attachment, Message } from "ai";
+import type { Attachment, Message } from "ai";
 import { useChat } from "ai/react";
 import { useState } from "react";
 

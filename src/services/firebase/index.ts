@@ -4,9 +4,12 @@ import { getAuth } from "firebase-admin/auth";
 
 import seedDatabase from "../localDb/seed";
 
-// WTF!! might reduce the amount of conditions we have to check for. this is currently shit
-async function initializeFirebase() {
-  if (admin.apps.length) return;
+let db, auth;
+
+function initAdminApp() {
+  if (admin.apps.length) {
+    return admin.apps[0];
+  }
 
   if (
     process.env.NODE_ENV === "development" &&
@@ -18,11 +21,7 @@ async function initializeFirebase() {
       storageBucket: "sandworm-8aa45.appspot.com",
     });
 
-    if (process.env.FIRESTORE_EMULATOR_HOST) {
-      console.log("🧪 Using Firestore emulator");
-      seedDatabase().then(() => console.log("🌱 Seeded DB"));
-    }
-    return;
+    return admin.apps[0];
   }
 
   if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
@@ -30,6 +29,7 @@ async function initializeFirebase() {
       process.env.GOOGLE_APPLICATION_CREDENTIALS,
       "base64"
     ).toString("utf-8");
+
     const serviceAccount = JSON.parse(decoded);
 
     if (!serviceAccount) {
@@ -41,23 +41,35 @@ async function initializeFirebase() {
       credential: admin.credential.cert(serviceAccount),
       storageBucket: "sandworm-8aa45.appspot.com",
     });
-    return;
+
+    return admin.apps[0];
   }
 
   throw new Error("❌ Firebase init failed: No credentials or env match");
 }
 
-initializeFirebase().catch(console.error);
+const app = initAdminApp();
 
-const app = admin.apps[0];
-const auth = getAuth();
-const db = getFirestore();
+// Firestore + Emulator config
+db = getFirestore();
 
 if (
   process.env.FIRESTORE_EMULATOR_HOST &&
   process.env.NODE_ENV !== "production"
 ) {
-  db.settings({ host: "localhost:8080", ssl: false });
+  console.log("🧪 Firestore emulator enabled");
+  try {
+    db.settings({ host: "localhost:8080", ssl: false });
+  } catch (e: any) {
+    if (!e.message.includes("settings()")) {
+      console.error("🔥 Firestore emulator settings error:", e);
+    }
+  }
+
+  // Seed DB once after emulator is up
+  seedDatabase().then(() => console.log("🌱 Seeded DB"));
 }
+
+auth = getAuth();
 
 export { admin, auth, db, app };
