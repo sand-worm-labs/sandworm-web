@@ -8,6 +8,7 @@ export interface SocialLinks {
   discord: string;
   email: string;
   instagram: string;
+  warpcast: string;
 }
 
 export interface Status {
