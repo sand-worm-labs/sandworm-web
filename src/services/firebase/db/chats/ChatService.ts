@@ -92,10 +92,8 @@ export class ChatService {
     id: string;
   }): Promise<ServiceResult<ChatResult[]>> {
     try {
-      const chats = await db.chats
-        .where("userId", "==", id)
-        .order("createdAt", "desc")
-        .get();
+      const chats = await db.chats.query($ => [$.field("userId").eq(id)]);
+
       return DataResult.success(toResults<Chat>(chats));
     } catch (error) {
       return DataResult.failure(
