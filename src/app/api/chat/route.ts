@@ -5,6 +5,7 @@ import { z } from "zod";
 import { geminiProModel } from "@/ai";
 import { ChatService } from "@/services/firebase/db/chats/ChatService";
 import { auth } from "@/services/auth";
+import { runPredefinedQuery } from "@/helpers";
 
 export async function POST(request: Request) {
   console.log("📩 Request received at /api/chat");
@@ -43,9 +44,11 @@ export async function POST(request: Request) {
 
   let result;
   try {
+    // Hardcoding actions and SQL query for now to test node integration and demo functionality. Will refactor for dynamic input and scalability later temporary code.
     result = await streamText({
       model: geminiProModel,
-      system: `You are Worm AI — a smart assistant that helps users explore onchain data. Answer clearly and concisely. Today's date is ${new Date().toLocaleDateString()}.`,
+      system: `You are Worm AI — a smart assistant that helps users explore onchain data.
+If someone asks if vitalik is broke after you give an answer, joke that he's not broke, he is pre-rich. Answer clearly and concisely. Today's date is ${new Date().toLocaleDateString()}.`,
       messages: coreMessages,
       tools: {
         getWeather: {
@@ -62,7 +65,94 @@ export async function POST(request: Request) {
             return weatherData;
           },
         },
+        trackCetusAttackerActivity: {
+          description:
+            "Tracks the swap and liquidity activity of a suspicious wallet on Cetus DEX. Useful for analyzing attacker behavior, identifying backruns, or tracing fund flows.",
+          parameters: z.object({}),
+          execute: async () => {
+            const query = `SELECT
+  'swap' AS action,
+  pool,
+  amount_in,
+  amount_out,
+  atob,
+  fee_amount,
+  NULL AS liquidity_removed,
+  NULL AS amountA,
+  NULL AS amountB,
+  "txDigest",
+  "eventSeq",
+  "timestampMs"
+FROM
+  sui.cetus_swap
+WHERE
+  sender = '0xe28b50cef1d633ea43d3296a3f6b67ff0312a5f1a99f0af753c85b8b5de8ff06'
+
+UNION ALL
+
+SELECT
+  'remove_liquidity' AS action,
+  pool,
+  NULL AS amount_in,
+  NULL AS amount_out,
+  NULL AS atob,
+  NULL AS fee_amount,
+  liquidity AS liquidity_removed,
+  "amountA",
+  "amountB",
+  "txDigest",
+  "eventSeq",
+  "timestampMs"
+FROM
+  sui.cetus_remove_liquidity
+WHERE
+  sender = '0xe28b50cef1d633ea43d3296a3f6b67ff0312a5f1a99f0af753c85b8b5de8ff06'
+
+ORDER BY
+  "timestampMs" DESC;
+            `;
+
+            try {
+              const result = await runPredefinedQuery({
+                query,
+                provider: {
+                  executionMethod: "indexed",
+                },
+              });
+              return result;
+            } catch (err) {
+              return {
+                error: "Failed to fetch Cetus attacker activity.",
+                details: err instanceof Error ? err.message : String(err),
+              };
+            }
+          },
+        },
+
+        runVitalikBalanceQuery: {
+          description:
+            "Returns the ETH and BASE chain balances for vitalik.eth",
+          parameters: z.object({}),
+          execute: async () => {
+            const query = `
+              SELECT balance, chain
+              FROM account vitalik.eth
+              ON eth, base
+            `;
+
+            try {
+              const result = await runPredefinedQuery({ query });
+              return result;
+            } catch (err) {
+              return {
+                error: "Failed to query vitalik.eth balances",
+                details: err instanceof Error ? err.message : String(err),
+              };
+            }
+          },
+        },
       },
+
       onFinish: async ({ responseMessages }) => {
         console.log("💾 onFinish triggered for chat:", id);
         if (session?.user?.id) {

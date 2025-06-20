@@ -16,7 +16,7 @@ const NonMemoizedMarkdown = ({ children }: { children: string }) => {
         </pre>
       ) : (
         <code
-          className={`${className} text-sm bg-zinc-100 dark:bg-zinc-800 py-0.5 px-1 rounded-md`}
+          className={`${className} text-sm bg-zinc-800 py-0.5 px-1 rounded-md`}
           {...props}
         >
           {children}
@@ -74,5 +74,5 @@ const NonMemoizedMarkdown = ({ children }: { children: string }) => {
 
 export const Markdown = memo(
   NonMemoizedMarkdown,
-  (prevProps, nextProps) => prevProps.children === nextProps.children,
+  (prevProps, nextProps) => prevProps.children === nextProps.children
 );

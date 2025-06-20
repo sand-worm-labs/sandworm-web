@@ -8,6 +8,7 @@ import type { User } from "next-auth";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import useSWR from "swr";
+import { PencilIcon, SquarePenIcon, Edit3Icon } from "lucide-react";
 
 import type { Chat } from "@/services/firebase/db";
 import { fetcher, getTitleFromChat } from "@/lib/utils";
@@ -116,7 +117,8 @@ export const History = ({ user }: { user: User | undefined }) => {
           <div className="text-sm flex flex-row items-center justify-between">
             <div className="flex flex-row gap-2">
               <div className="dark:text-zinc-400 text-zinc-500">
-                {history === undefined ? "loading" : history.data.length} chats
+                {history === undefined ? "loading" : history?.data?.length}{" "}
+                chats
               </div>
             </div>
           </div>
@@ -124,17 +126,21 @@ export const History = ({ user }: { user: User | undefined }) => {
           <div className="mt-10 flex flex-col">
             {user && (
               <Button
-                className="font-normal text-sm flex flex-row justify-between text-white"
+                variant="ghost"
+                className="w-full text-left font-normal text-sm flex items-start gap-2 px-2 py-2 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-md transition"
                 asChild
               >
-                <Link href="/">
-                  <div>Start a new chat</div>
-                  <PencilEditIcon size={14} />
+                <Link href="/chat">
+                  <SquarePenIcon size={16} className="text-zinc-500 shrink-0" />
+                  <span className="text-zinc-800 dark:text-zinc-200">
+                    Start a new chat
+                  </span>
                 </Link>
               </Button>
             )}
 
             <div className="flex flex-col overflow-y-scroll p-1 h-[calc(100dvh-124px)]">
+              <p className="text-zinc-500 text-sm px-2 mb-1 mt-6">chats</p>
               {!user ? (
                 <div className="text-zinc-500 h-dvh w-full flex flex-row justify-center items-center text-sm gap-2">
                   <InfoIcon />

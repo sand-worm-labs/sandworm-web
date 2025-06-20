@@ -1,4 +1,5 @@
 import type { QueryResult } from "@/store";
+import { runQuery } from "./queryclient";
 
 /* @check if query has result */
 export const queryHasResults = (
@@ -98,3 +99,25 @@ export const formatApiResultToQueryResult = (
     rowCount: data.length,
   };
 };
+
+export async function runPredefinedQuery({
+  query,
+  signal,
+  provider,
+}: {
+  query: string;
+  signal?: AbortSignal;
+  provider?: { executionMethod?: string };
+}) {
+  const executionType = provider?.executionMethod ?? "rpc";
+  const API_URL = "https://node.sandwormlabs.xyz/run?";
+
+  try {
+    const result = await runQuery(API_URL, query, executionType, signal);
+    return result;
+  } catch (error) {
+    return {
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
+}

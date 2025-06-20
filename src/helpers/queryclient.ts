@@ -25,6 +25,7 @@ export async function runQuery(
   signal: AbortSignal
 ): Promise<QueryResult> {
   try {
+    console.log("Running query:", query, "Execution type:", executionType);
     const formattedQuery = query.replace(/\s/g, "+");
     const res = await fetch(
       `${apiUrl}type_param=${executionType}&query=${formattedQuery}`,
