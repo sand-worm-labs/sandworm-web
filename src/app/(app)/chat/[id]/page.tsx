@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { Chat as PreviewChat } from "@/components/Chats/chat";
 import { getChatById } from "@/db/queries";
 import type { Chat } from "@/services/firebase/db";
-import { CoreMessage } from "ai";
+import type { CoreMessage } from "ai";
 import { auth } from "@/services/auth";
 import { convertToUIMessages } from "@/lib/utils";
 
