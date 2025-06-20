@@ -54,3 +54,32 @@ export async function GET(request: Request) {
     { status: 200 }
   );
 }
+
+export async function PATCH(request: Request) {
+  const {
+    uid,
+  }: {
+    uid: string;
+    social?: string[];
+    status?: string;
+  } = await request.json();
+
+  if (!uid) {
+    return new Response(
+      JSON.stringify(DataResult.failure("Missing UID", "BAD_REQUEST")),
+      { status: 400 }
+    );
+  }
+
+  const userResult = await UserService.findUserById(uid);
+  if (!userResult.success) {
+    return new Response(JSON.stringify(userResult), { status: 404 });
+  }
+
+  // UserService.update(userResult.data.id, {
+  //   name: userResult.data.name || "",
+  //   username: userResult.data.username || "",
+  //   status:
+
+  // });
+}
