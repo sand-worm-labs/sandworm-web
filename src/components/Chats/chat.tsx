@@ -10,6 +10,8 @@ import { useScrollToBottom } from "@/components/Chats/use-scroll-to-bottom";
 import { MultimodalInput } from "./multimodal-input";
 import { Overview } from "./overview";
 import { ExamplePrompts } from "../Ai/example-prompts";
+import { History } from "./history";
+import { useSession } from "next-auth/react";
 
 export function Chat({
   id,
@@ -18,6 +20,8 @@ export function Chat({
   id: string;
   initialMessages: Array<Message>;
 }) {
+  const { data: session } = useSession();
+
   const { messages, handleSubmit, input, setInput, append, isLoading, stop } =
     useChat({
       id,
@@ -36,6 +40,7 @@ export function Chat({
 
   return (
     <div className="flex flex-row justify-center pb-4 md:pb-8 h-dvh bg-background">
+      <History user={session?.user} />
       <div className="flex flex-col justify-between items-center gap-4">
         <div
           ref={messagesContainerRef}

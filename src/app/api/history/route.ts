@@ -9,5 +9,7 @@ export async function GET() {
   }
 
   const chats = await ChatService.getChatsByUserId({ id: session.user.id! });
+
+  console.log("Fetched chats:", chats);
   return Response.json(chats);
 }
