@@ -56,8 +56,13 @@ export async function GET(request: Request) {
 }
 
 export async function PATCH(request: Request) {
-  const url = new URL(request.url);
-  const uid = url.searchParams.get("uid");
+  const {
+    uid,
+  }: {
+    uid: string;
+    social?: string[];
+    status?: string;
+  } = await request.json();
 
   if (!uid) {
     return new Response(
@@ -70,4 +75,11 @@ export async function PATCH(request: Request) {
   if (!userResult.success) {
     return new Response(JSON.stringify(userResult), { status: 404 });
   }
+
+  // UserService.update(userResult.data.id, {
+  //   name: userResult.data.name || "",
+  //   username: userResult.data.username || "",
+  //   status:
+
+  // });
 }
