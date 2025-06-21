@@ -16,7 +16,6 @@ export async function POST(request: Request) {
     const body = await request.json();
     id = body.id;
     messages = body.messages;
-    console.log("✅ Parsed request body:", { id, messages });
   } catch (err) {
     console.error("❌ Failed to parse request body:", err);
     return new Response("Invalid request body", { status: 400 });
@@ -48,7 +47,12 @@ export async function POST(request: Request) {
     result = await streamText({
       model: geminiProModel,
       system: `You are Worm AI — a smart assistant that helps users explore onchain data.
-If someone asks if vitalik is broke after you give an answer, joke that he's not broke, he is pre-rich. Answer clearly and concisely. Today's date is ${new Date().toLocaleDateString()}.`,
+
+      Answer clearly and concisely. If the user asks a direct question like "is Vitalik broke?" or makes a comment implying financial status after a balance query, respond with a light-hearted joke: "He's not broke, he's pre-rich."
+      
+      Only make this joke if the user explicitly asks about being broke. Do not include jokes in regular balance responses.
+      
+      Today's date is ${new Date().toLocaleDateString()}.`,
       messages: coreMessages,
       tools: {
         getWeather: {
@@ -130,8 +134,10 @@ ORDER BY
         },
 
         runVitalikBalanceQuery: {
-          description:
-            "Returns the ETH and BASE chain balances for vitalik.eth",
+          description: `
+          Visualizes the ETH and BASE chain balances of vitalik.eth as a bar chart.
+          Use this when the user asks to "show as chart", "bar chart", "graph it", or "visualize Vitalik's balance".
+            `.trim(),
           parameters: z.object({}),
           execute: async () => {
             const query = `
@@ -141,11 +147,35 @@ ORDER BY
             `;
 
             try {
+              console.log("🔍 Running vitalik.eth balance query:", query);
               const result = await runPredefinedQuery({ query });
               return result;
             } catch (err) {
               return {
                 error: "Failed to query vitalik.eth balances",
+                details: err instanceof Error ? err.message : String(err),
+              };
+            }
+          },
+        },
+        runVitalikBalanceChartQuery: {
+          description:
+            "Fetches ETH and BASE balances for vitalik.eth chart visualization in bar chart",
+          parameters: z.object({}),
+          execute: async () => {
+            const query = `
+              SELECT balance, chain
+              FROM account vitalik.eth
+              ON eth, base
+            `;
+
+            try {
+              console.log("🔍 Running vitalik.eth chart balance query:", query);
+              const result = await runPredefinedQuery({ query });
+              return result; // ✅ Just the raw result
+            } catch (err) {
+              return {
+                error: "Failed to fetch vitalik.eth balances",
                 details: err instanceof Error ? err.message : String(err),
               };
             }
