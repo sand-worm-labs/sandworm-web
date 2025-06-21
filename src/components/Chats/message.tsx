@@ -9,6 +9,8 @@ import { Markdown } from "./markdown";
 import { PreviewAttachment } from "./preview-attachment";
 import { Weather } from "./weather";
 import QueryResultsTable from "../WorkSpace/ResultTab/index";
+import { Chart } from "../WorkSpace/ResultTab/Charts/Chart";
+import { BarChart } from "../WorkSpace/ResultTab/Charts/BarChart";
 
 export const Message = ({
   chatId,
@@ -27,18 +29,12 @@ export const Message = ({
 
   return (
     <motion.div
-      className={`flex w-full md:max-w-3xl px-4  pt-12 md:px-0 gap-4 mb-6  ${
+      className={`flex w-full md:max-w-3xl px-4 pt-12 md:px-0 gap-4 mb-6 ${
         isUser ? "justify-end" : "justify-start"
       }`}
       initial={{ y: 5, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
     >
-      {/*   {!isUser && (
-        <div className="size-6 border rounded-sm p-1 flex justify-center items-center shrink-0 text-zinc-500">
-          <BotIcon />
-        </div>
-      )}
- */}
       <div
         className={`flex flex-col gap-2 max-w-[80%] ${
           isUser ? "items-end text-right" : "items-start text-left"
@@ -48,7 +44,7 @@ export const Message = ({
         {content && typeof content === "string" && (
           <div
             className={`rounded-xl px-4 py-2 text-sm whitespace-pre-wrap ${
-              isUser ? "bg-[#303030] text-white" : " text-white"
+              isUser ? "bg-[#303030] text-white" : "text-white"
             }`}
           >
             <Markdown>{content}</Markdown>
@@ -68,11 +64,21 @@ export const Message = ({
                   <div key={toolCallId} className="dark">
                     {toolName === "getWeather" ? (
                       <Weather weatherAtLocation={result} />
+                    ) : toolName === " runVitalikBalanceChartQuery" &&
+                      Array.isArray(result?.data) ? (
+                      <div className="max-w-[900px] max-h-[500px] border rounded-xl border-white/20 bg-zinc-950 p-4 overflow-auto">
+                        <BarChart
+                          result={result}
+                          title={result.title ?? "Chart"}
+                          xKey={result.xKey}
+                          yKey={result.yKey}
+                        />
+                      </div>
                     ) : result?.columns &&
                       result?.data &&
                       Array.isArray(result.data) &&
                       Array.isArray(result.columns) ? (
-                      <div className="max-w-[900px] max-h-[300px] border rounded-xl border-white/20 overflow-x-hidden">
+                      <div className="max-w-[900px] max-h-[300px] border rounded-xl border-white/20 overflow-x-auto">
                         <QueryResultsTable
                           result={result}
                           title="AI Query Result"
@@ -93,8 +99,11 @@ export const Message = ({
               return (
                 <div
                   key={toolCallId}
-                  className="skeleton h-[80px] rounded-md bg-zinc-800"
-                />
+                  className="w-full max-w-[900px] h-[120px] rounded-xl overflow-hidden bg-zinc-800 relative animate-pulse min-w-[250px]"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-zinc-800 via-zinc-700 to-zinc-800 opacity-40 animate-[pulse_1.5s_infinite] min-w-[250px]" />
+                  <div className="p-4 text-white text-sm font-mono"></div>
+                </div>
               );
             })}
           </div>
@@ -109,13 +118,6 @@ export const Message = ({
           </div>
         )}
       </div>
-
-      {/* User icon */}
-      {/*     {isUser && (
-        <div className="size-6 border rounded-sm p-1 flex justify-center items-center shrink-0 text-zinc-500">
-          <UserIcon />
-        </div>
-      )} */}
     </motion.div>
   );
 };
