@@ -3,15 +3,15 @@
 import type { Attachment, Message } from "ai";
 import { useChat } from "ai/react";
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 
 import { Message as PreviewMessage } from "@/components/Chats/message";
 import { useScrollToBottom } from "@/components/Chats/use-scroll-to-bottom";
 
 import { MultimodalInput } from "./multimodal-input";
 import { Overview } from "./overview";
-import { ExamplePrompts } from "../Ai/example-prompts";
+import { ExamplePrompts } from "./example-prompts";
 import { History } from "./history";
-import { useSession } from "next-auth/react";
 
 export function Chat({
   id,
