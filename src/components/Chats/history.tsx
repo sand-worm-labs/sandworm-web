@@ -8,18 +8,11 @@ import type { User } from "next-auth";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import useSWR from "swr";
-import { PencilIcon, SquarePenIcon, Edit3Icon } from "lucide-react";
+import { SquarePenIcon } from "lucide-react";
 
 import type { Chat } from "@/services/firebase/db";
 import { fetcher, getTitleFromChat } from "@/lib/utils";
 
-import {
-  InfoIcon,
-  MenuIcon,
-  MoreHorizontalIcon,
-  PencilEditIcon,
-  TrashIcon,
-} from "./icons";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,6 +37,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from "../ui/sheet";
+
+import { InfoIcon, MenuIcon, MoreHorizontalIcon, TrashIcon } from "./icons";
 
 export const History = ({ user }: { user: User | undefined }) => {
   const { id } = useParams();
@@ -191,7 +186,7 @@ export const History = ({ user }: { user: User | undefined }) => {
                       </Link>
                     </Button>
 
-                    <DropdownMenu modal={true}>
+                    <DropdownMenu modal>
                       <DropdownMenuTrigger asChild>
                         <Button
                           className="p-0 h-fit font-normal text-zinc-500 transition-none hover:bg-zinc-200 dark:hover:bg-zinc-700"

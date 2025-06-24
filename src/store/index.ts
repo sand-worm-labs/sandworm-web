@@ -2,6 +2,7 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import { toast } from "sonner";
+
 import { runQuery } from "@/helpers/queryclient";
 
 export interface CurrentConnection {

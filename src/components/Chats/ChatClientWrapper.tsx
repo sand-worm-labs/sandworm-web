@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Chat as PreviewChat } from "./chat";
-import type { Chat } from "@/services/firebase/db";
 import type { CoreMessage } from "ai";
+
+import type { Chat } from "@/services/firebase/db";
 import { convertToUIMessages } from "@/lib/utils";
+
+import { Chat as PreviewChat } from "./chat";
 
 export function ClientChatWrapper({
   id,

@@ -1,5 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import type { CoreMessage, CoreToolMessage, Message, ToolInvocation } from "ai";
+import { generateId } from "ai";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -7,14 +9,6 @@ export function cn(...inputs: ClassValue[]) {
 
 // eslint-disable-next-line no-bitwise
 export const keyCombo = (mod: number, key: number) => mod | key;
-
-import {
-  CoreMessage,
-  CoreToolMessage,
-  generateId,
-  Message,
-  ToolInvocation,
-} from "ai";
 
 interface ApplicationError extends Error {
   info: string;
@@ -98,7 +92,7 @@ export function convertToUIMessages(
     }
 
     let textContent = "";
-    let toolInvocations: Array<ToolInvocation> = [];
+    const toolInvocations: Array<ToolInvocation> = [];
 
     if (typeof message.content === "string") {
       textContent = message.content;
