@@ -4,12 +4,10 @@ import type { Attachment, ToolInvocation } from "ai";
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 
-import { BotIcon, UserIcon } from "./icons";
 import { Markdown } from "./markdown";
 import { PreviewAttachment } from "./preview-attachment";
 import { Weather } from "./weather";
 import QueryResultsTable from "../WorkSpace/ResultTab/index";
-import { Chart } from "../WorkSpace/ResultTab/Charts/Chart";
 import { BarChart } from "../WorkSpace/ResultTab/Charts/BarChart";
 
 export const Message = ({
