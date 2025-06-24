@@ -8,7 +8,7 @@ const examplePrompts: string[] = [
 ];
 
 interface ExamplePromptsProps {
-  onPromptSelect?: (prompt: string) => void;
+  onPromptSelect: (prompt: string) => void;
 }
 
 export function ExamplePrompts({ onPromptSelect }: ExamplePromptsProps) {

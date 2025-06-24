@@ -117,13 +117,13 @@ ORDER BY
             `;
 
             try {
-              const result = await runPredefinedQuery({
+              const queryResult = await runPredefinedQuery({
                 query,
                 provider: {
                   executionMethod: "indexed",
                 },
               });
-              return result;
+              return queryResult;
             } catch (err) {
               return {
                 error: "Failed to fetch Cetus attacker activity.",
@@ -148,8 +148,8 @@ ORDER BY
 
             try {
               console.log("🔍 Running vitalik.eth balance query:", query);
-              const result = await runPredefinedQuery({ query });
-              return result;
+              const queryResult = await runPredefinedQuery({ query });
+              return queryResult;
             } catch (err) {
               return {
                 error: "Failed to query vitalik.eth balances",
@@ -171,8 +171,8 @@ ORDER BY
 
             try {
               console.log("🔍 Running vitalik.eth chart balance query:", query);
-              const result = await runPredefinedQuery({ query });
-              return result; // ✅ Just the raw result
+              const queryResult = await runPredefinedQuery({ query });
+              return queryResult;
             } catch (err) {
               return {
                 error: "Failed to fetch vitalik.eth balances",
