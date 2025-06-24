@@ -4,11 +4,12 @@ import type { Attachment, ToolInvocation } from "ai";
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 
+import QueryResultsTable from "../WorkSpace/ResultTab/index";
+import { BarChart } from "../WorkSpace/ResultTab/Charts/BarChart";
+
 import { Markdown } from "./markdown";
 import { PreviewAttachment } from "./preview-attachment";
 import { Weather } from "./weather";
-import QueryResultsTable from "../WorkSpace/ResultTab/index";
-import { BarChart } from "../WorkSpace/ResultTab/Charts/BarChart";
 
 export const Message = ({
   chatId,
@@ -100,7 +101,7 @@ export const Message = ({
                   className="w-full max-w-[900px] h-[120px] rounded-xl overflow-hidden bg-zinc-800 relative animate-pulse min-w-[250px]"
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-zinc-800 via-zinc-700 to-zinc-800 opacity-40 animate-[pulse_1.5s_infinite] min-w-[250px]" />
-                  <div className="p-4 text-white text-sm font-mono"></div>
+                  <div className="p-4 text-white text-sm font-mono" />
                 </div>
               );
             })}

@@ -1,10 +1,10 @@
 import clsx from "clsx";
 import { ArrowUpRightIcon } from "lucide-react";
 
-const examplePrompts: string[] = [
-  "What is Eliza?",
-  "What is an agent?",
-  "How to create an agent",
+const examplePrompts = [
+  { id: "eliza", prompt: "What is Eliza?" },
+  { id: "agent", prompt: "What is an agent?" },
+  { id: "create-agent", prompt: "How to create an agent" },
 ];
 
 interface ExamplePromptsProps {
@@ -14,10 +14,10 @@ interface ExamplePromptsProps {
 export function ExamplePrompts({ onPromptSelect }: ExamplePromptsProps) {
   return (
     <div className="flex w-full flex-wrap items-center justify-center gap-2 md:gap-4 dark">
-      {examplePrompts.map((prompt, index) => (
+      {examplePrompts.map(({ id, prompt }) => (
         <button
           type="button"
-          key={index}
+          key={id}
           className={clsx([
             "!shrink-0 !rounded-full !px-3 !py-1 !text-xs !flex !items-center !gap-2 hover:cursor-pointer text-white",
             // Base

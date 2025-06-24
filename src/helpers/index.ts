@@ -1,4 +1,5 @@
 import type { QueryResult } from "@/store";
+
 import { runQuery } from "./queryclient";
 
 /* @check if query has result */

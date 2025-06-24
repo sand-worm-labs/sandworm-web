@@ -4,7 +4,8 @@ import { getAuth } from "firebase-admin/auth";
 
 import seedDatabase from "../localDb/seed";
 
-let db, auth;
+let db;
+let auth;
 
 function initAdminApp() {
   if (admin.apps.length) {

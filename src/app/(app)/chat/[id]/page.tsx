@@ -36,8 +36,9 @@ export default async function Page({ params }: { params: any }) {
  */
 
 // app/chat/[id]/page.tsx (still a server component)
-import { ClientChatWrapper } from "@/components/Chats/ChatClientWrapper";
 import { notFound } from "next/navigation";
+
+import { ClientChatWrapper } from "@/components/Chats/ChatClientWrapper";
 import { auth } from "@/services/auth";
 
 export default async function Page({ params }: { params: { id: string } }) {
