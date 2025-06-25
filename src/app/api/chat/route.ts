@@ -6,6 +6,7 @@ import { geminiProModel } from "@/ai";
 import { ChatService } from "@/services/firebase/db/chats/ChatService";
 import { auth } from "@/services/auth";
 import { runPredefinedQuery } from "@/helpers";
+import { generateWormQLFromNaturalLanguage } from "@/ai/action";
 
 export async function POST(request: Request) {
   console.log("📩 Request received at /api/chat");
@@ -130,6 +131,19 @@ ORDER BY
                 details: err instanceof Error ? err.message : String(err),
               };
             }
+          },
+        },
+
+        generateWormQL: {
+          description: "Generate a WormQL query based on user intent",
+          parameters: z.object({
+            prompt: z
+              .string()
+              .describe("User question or instruction in natural language"),
+          }),
+          execute: async ({ prompt }) => {
+            const result = await generateWormQLFromNaturalLanguage({ prompt });
+            return result;
           },
         },
 
