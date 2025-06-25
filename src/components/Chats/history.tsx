@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import useSWR from "swr";
 import { SquarePenIcon } from "lucide-react";
 
-import type { Chat } from "@/services/firebase/db";
+import type { Chat } from "@/types";
 import { fetcher, getTitleFromChat } from "@/lib/utils";
 
 import {
@@ -74,7 +74,7 @@ export const History = ({ user }: { user: User | undefined }) => {
       success: () => {
         mutate(history => {
           if (history) {
-            return history.filter(h => h.id !== id);
+            return history.data.filter(h => h.id !== id);
           }
         });
         return "Chat deleted successfully";
