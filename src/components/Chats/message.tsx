@@ -12,19 +12,64 @@ import { PreviewAttachment } from "./preview-attachment";
 import { Weather } from "./weather";
 
 export const Message = ({
-  chatId,
   role,
   content,
   toolInvocations,
   attachments,
 }: {
-  chatId: string;
   role: string;
   content: string | ReactNode;
   toolInvocations: Array<ToolInvocation> | undefined;
   attachments?: Array<Attachment>;
 }) => {
   const isUser = role === "user";
+
+  // early return works in this case but might want to make this cleaner
+  const renderToolResult = (toolName: string, result: any) => {
+    if (toolName === "getWeather") {
+      return <Weather weatherAtLocation={result} />;
+    }
+
+    if (
+      toolName === " runVitalikBalanceChartQuery" &&
+      Array.isArray(result?.data)
+    ) {
+      return (
+        <div className="max-w-[900px] max-h-[500px] border rounded-xl border-white/20 bg-zinc-950 p-4 overflow-auto">
+          <BarChart
+            result={result}
+            title={result.title ?? "Chart"}
+            xKey={result.xKey}
+            yKey={result.yKey}
+          />
+        </div>
+      );
+    }
+
+    if (
+      result?.columns &&
+      result?.data &&
+      Array.isArray(result.data) &&
+      Array.isArray(result.columns)
+    ) {
+      return (
+        <div className="max-w-[900px] max-h-[300px] border rounded-xl border-white/20 overflow-x-auto">
+          <QueryResultsTable
+            result={result}
+            title="AI Query Result"
+            query="Generated via Worm AI Tool"
+            viewMode="Table"
+          />
+        </div>
+      );
+    }
+
+    return (
+      <div className="rounded-md bg-zinc-900 p-4 text-sm font-mono text-white whitespace-pre-wrap">
+        {JSON.stringify(result, null, 2)}
+      </div>
+    );
+  };
 
   return (
     <motion.div
@@ -61,35 +106,7 @@ export const Message = ({
 
                 return (
                   <div key={toolCallId} className="dark">
-                    {toolName === "getWeather" ? (
-                      <Weather weatherAtLocation={result} />
-                    ) : toolName === " runVitalikBalanceChartQuery" &&
-                      Array.isArray(result?.data) ? (
-                      <div className="max-w-[900px] max-h-[500px] border rounded-xl border-white/20 bg-zinc-950 p-4 overflow-auto">
-                        <BarChart
-                          result={result}
-                          title={result.title ?? "Chart"}
-                          xKey={result.xKey}
-                          yKey={result.yKey}
-                        />
-                      </div>
-                    ) : result?.columns &&
-                      result?.data &&
-                      Array.isArray(result.data) &&
-                      Array.isArray(result.columns) ? (
-                      <div className="max-w-[900px] max-h-[300px] border rounded-xl border-white/20 overflow-x-auto">
-                        <QueryResultsTable
-                          result={result}
-                          title="AI Query Result"
-                          query="Generated via Worm AI Tool"
-                          viewMode="Table"
-                        />
-                      </div>
-                    ) : (
-                      <div className="rounded-md bg-zinc-900 p-4 text-sm font-mono text-white whitespace-pre-wrap">
-                        {JSON.stringify(result, null, 2)}
-                      </div>
-                    )}
+                    {renderToolResult(toolName, result)}
                   </div>
                 );
               }
