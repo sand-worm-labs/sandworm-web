@@ -2,6 +2,7 @@ import type { NextPage } from "next";
 import type { AppProps } from "next/app";
 import type { ReactNode } from "react";
 import type { Typesaurus } from "typesaurus";
+import type { Message } from "ai";
 
 export type NextPageWithLayout = NextPage & {
   getLayout?: () => ReactNode;
@@ -145,3 +146,10 @@ export interface ChartProps {
 }
 
 export type ExportFormat = "csv" | "json" | "parquet" | "clipboard";
+
+export interface Chat {
+  id: string;
+  userId: string;
+  createdAt: Date;
+  messages: Message[];
+}

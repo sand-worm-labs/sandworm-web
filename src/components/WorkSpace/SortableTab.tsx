@@ -1,6 +1,7 @@
 import { CSS } from "@dnd-kit/utilities";
 import { X, Home, Terminal, GripVertical } from "lucide-react";
 import { useSortable } from "@dnd-kit/sortable";
+import { useHotkeys } from "react-hotkeys-hook";
 
 import { TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
@@ -45,6 +46,17 @@ export const SortableTab = ({ tab, isActive }: SortableTabProps) => {
       closeTab(tab.id);
     }
   };
+
+  useHotkeys(
+    "ctrl+alt+w",
+    e => {
+      if (tab.id !== "home" && isActive) {
+        e.preventDefault();
+        closeTab(tab.id);
+      }
+    },
+    [isActive, tab.id]
+  );
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Delete" && tab.id !== "home") {
