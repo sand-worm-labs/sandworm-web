@@ -4,6 +4,7 @@ import { devtools, persist } from "zustand/middleware";
 import { toast } from "sonner";
 
 import { runQuery } from "@/helpers/queryclient";
+import { generateUUID } from "@/lib/utils";
 
 export interface CurrentConnection {
   executionMethod: "JSON_RPC" | "GRAPHQL" | "HTTP ";
@@ -361,7 +362,7 @@ export const useSandwormStore = create<SandwormStoreState>()(
           content = "",
           executionType: ExecutionMethodType = "rpc"
         ): string => {
-          const tabId = id ?? crypto.randomUUID();
+          const tabId = id ?? crypto?.randomUUID?.() ?? generateUUID();
 
           set(state => {
             const existingTab = state.tabs.find(tab => tab.id === tabId);
