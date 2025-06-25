@@ -10,6 +10,7 @@ import { BarChart } from "../WorkSpace/ResultTab/Charts/BarChart";
 import { Markdown } from "./markdown";
 import { PreviewAttachment } from "./preview-attachment";
 import { Weather } from "./weather";
+import { WormQLPreview } from "./CodePreview";
 
 export const Message = ({
   role,
@@ -28,6 +29,10 @@ export const Message = ({
   const renderToolResult = (toolName: string, result: any) => {
     if (toolName === "getWeather") {
       return <Weather weatherAtLocation={result} />;
+    }
+
+    if (toolName === "generateWormQL") {
+      return <WormQLPreview query={result.query} />;
     }
 
     if (
