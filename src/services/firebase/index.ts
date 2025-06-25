@@ -4,9 +4,6 @@ import { getAuth } from "firebase-admin/auth";
 
 import seedDatabase from "../localDb/seed";
 
-let db;
-let auth;
-
 function initAdminApp() {
   if (admin.apps.length) {
     return admin.apps[0];
@@ -52,7 +49,7 @@ function initAdminApp() {
 const app = initAdminApp();
 
 // Firestore + Emulator config
-db = getFirestore();
+const db = getFirestore();
 
 if (
   process.env.FIRESTORE_EMULATOR_HOST &&
@@ -71,6 +68,6 @@ if (
   seedDatabase().then(() => console.log("🌱 Seeded DB"));
 }
 
-auth = getAuth();
+const auth = getAuth();
 
 export { admin, auth, db, app };

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { CoreMessage } from "ai";
 
-import type { Chat } from "@/services/firebase/db";
+import type { Chat } from "@/types";
 import { convertToUIMessages } from "@/lib/utils";
 
 import { Chat as PreviewChat } from "./chat";
@@ -34,7 +34,7 @@ export function ClientChatWrapper({
         const chatData: Chat = await res.json();
 
         if (chatData.userId !== userId) {
-          router.replace("/unauthorized"); // or show custom message
+          router.replace("/unauthorized");
           return;
         }
 
@@ -52,6 +52,7 @@ export function ClientChatWrapper({
     loadChat();
   }, [id, userId]);
 
+  // need a better looking loading state
   if (!chat) return <div className="p-4">Loading chat...</div>;
 
   return <PreviewChat id={chat.id} initialMessages={chat.messages} />;

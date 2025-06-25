@@ -1,4 +1,4 @@
-import { formatApiResultToQueryResult, queryHasResults } from ".";
+import { formatApiResultToQueryResult, queryHasResults } from "./formatters";
 
 export interface QueryResult {
   columns: string[];
