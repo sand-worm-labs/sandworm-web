@@ -2,11 +2,11 @@ import "@/styles/globals.css";
 import "@mysten/dapp-kit/dist/index.css";
 
 import { DM_Mono as DMMono } from "next/font/google";
+import Script from "next/script";
 
 import { QueryProvider } from "@/providers/query";
 import type { ChildrenProps } from "@/types";
 import AppProvider from "@/providers/AppProvider";
-import Script from "next/script";
 
 export const metadata = {
   description:

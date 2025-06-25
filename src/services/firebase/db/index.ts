@@ -1,5 +1,6 @@
 import type { Typesaurus } from "typesaurus";
 import { schema } from "typesaurus";
+import type { Message } from "ai";
 
 import type { User } from "./users/UserService";
 import type { Query, QueryUpdates } from "./QueryService";
@@ -22,6 +23,13 @@ export interface Session {
   userId: string;
   expires: Date;
   sessionToken: string;
+}
+
+export interface Chat {
+  id?: string; // Optional for creation, required for updates
+  userId: string;
+  createdAt: Date;
+  messages: Message[];
 }
 
 export interface VerificationToken {
@@ -68,6 +76,7 @@ export function createFailureResult<T>(
 
 export const db = schema($ => ({
   users: $.collection<User>(),
+  chats: $.collection<Chat>(),
   accounts: $.collection<Account>(),
   sessions: $.collection<Session>(),
   verificationTokens: $.collection<VerificationToken>(),

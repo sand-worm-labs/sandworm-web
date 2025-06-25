@@ -38,7 +38,7 @@ export const ChartControl: React.FC<ChartControlProps> = ({
               <SelectValue placeholder="Select X" />
             </SelectTrigger>
             <SelectContent>
-              {columns.map(col => (
+              {columns?.map(col => (
                 <SelectItem key={col} value={col} className="text-xs">
                   {col}
                 </SelectItem>
@@ -59,7 +59,7 @@ export const ChartControl: React.FC<ChartControlProps> = ({
               <SelectValue placeholder="Select Y" />
             </SelectTrigger>
             <SelectContent>
-              {columns.map(col => (
+              {columns?.map(col => (
                 <SelectItem key={col} value={col} className="text-xs">
                   {col}
                 </SelectItem>
