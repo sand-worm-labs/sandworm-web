@@ -3,6 +3,8 @@ import { twMerge } from "tailwind-merge";
 import type { CoreMessage, CoreToolMessage, Message, ToolInvocation } from "ai";
 import { generateId } from "ai";
 
+import type { Chat } from "@/services/firebase/db";
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -41,8 +43,8 @@ export function getLocalStorage(key: string) {
 
 export function generateUUID(): string {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
-    const r = (Math.random() * 16) | 0;
-    const v = c === "x" ? r : (r & 0x3) | 0x8;
+    const r = Math.floor(Math.random() * 16);
+    const v = c === "x" ? r : (r % 4) + 8;
     return v.toString(16);
   });
 }
@@ -97,7 +99,7 @@ export function convertToUIMessages(
     if (typeof message.content === "string") {
       textContent = message.content;
     } else if (Array.isArray(message.content)) {
-      for (const content of message.content) {
+      message.content.forEach(content => {
         if (content.type === "text") {
           textContent += content.text;
         } else if (content.type === "tool-call") {
@@ -108,7 +110,7 @@ export function convertToUIMessages(
             args: content.args,
           });
         }
-      }
+      });
     }
 
     chatMessages.push({
