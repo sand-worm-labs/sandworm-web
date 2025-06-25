@@ -51,7 +51,7 @@ export const Chart: React.FC<ChartComponentProps> = ({
 
   if (!xAxis || !yAxis) {
     return (
-      <div className="p-4 border border-red-400 bg-red-50 rounded-lg text-red-700 font-mono">
+      <div className="p-4 border border-red-400 bg-black rounded-lg text-red-700 font-mono">
         <p className="text-sm">
           Missing or invalid X or Y axis. Please select X and Y columns
           manually.

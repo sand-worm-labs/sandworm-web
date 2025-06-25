@@ -7,6 +7,8 @@ import { toast } from "sonner";
 import { format } from "sql-formatter";
 import type { editor } from "monaco-editor";
 
+import { keyCombo } from "@/lib/utils";
+
 type ExecutionType = "rpc" | "indexer";
 
 interface QueryCodeEditorProps {
@@ -154,20 +156,21 @@ export const QueryCodeEditor = ({
 
     // Add keyboard shortcuts
     codeEditor.addCommand(
-      monaco.KeyMod.CtrlCmd || monaco.KeyCode.Enter,
+      keyCombo(monaco.KeyMod.CtrlCmd, monaco.KeyCode.Enter),
       async () => {
         executeQuery();
       }
     );
 
-    codeEditor.addCommand(monaco.KeyMod.Alt || monaco.KeyCode.KeyF, () => {
-      formatQuery();
-    });
+    codeEditor.addCommand(
+      keyCombo(monaco.KeyMod.Alt, monaco.KeyCode.KeyF),
+      formatQuery
+    );
 
     codeEditor.addAction({
       id: "format-sql",
       label: "Format SQL",
-      keybindings: [monaco.KeyMod.Alt || monaco.KeyCode.KeyF],
+      keybindings: [keyCombo(monaco.KeyMod.Alt, monaco.KeyCode.KeyF)],
       contextMenuGroupId: "modification",
       run: () => {
         formatQuery();
