@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 
-import { WormIcon } from "../Ai/icons";
+import { WormIcon } from "../Assets/worm-icon";
 
-import { MessageIcon, VercelIcon } from "./icons";
+import { MessageIcon } from "./icons";
 
 export const Overview = () => {
   return (

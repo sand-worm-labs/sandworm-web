@@ -40,6 +40,10 @@ import {
 
 import { InfoIcon, MenuIcon, MoreHorizontalIcon, TrashIcon } from "./icons";
 
+type HistoryResponse = {
+  data: Chat[];
+};
+
 export const History = ({ user }: { user: User | undefined }) => {
   const { id } = useParams();
   const pathname = usePathname();
@@ -49,8 +53,8 @@ export const History = ({ user }: { user: User | undefined }) => {
     data: history,
     isLoading,
     mutate,
-  } = useSWR<Array<Chat>>(user ? "/api/history" : null, fetcher, {
-    fallbackData: [],
+  } = useSWR<HistoryResponse>(user ? "/api/history" : null, fetcher, {
+    fallbackData: { data: [] },
   });
 
   useEffect(() => {
@@ -104,7 +108,7 @@ export const History = ({ user }: { user: User | undefined }) => {
             <VisuallyHidden.Root>
               <SheetTitle className="text-left">History</SheetTitle>
               <SheetDescription className="text-left">
-                {history === undefined ? "loading" : history.length} chats
+                {history === undefined ? "loading" : history.data.length} chats
               </SheetDescription>
             </VisuallyHidden.Root>
           </SheetHeader>
@@ -143,7 +147,7 @@ export const History = ({ user }: { user: User | undefined }) => {
                 </div>
               ) : null}
 
-              {!isLoading && history?.length === 0 && user ? (
+              {!isLoading && history?.data.length === 0 && user ? (
                 <div className="text-zinc-500 h-dvh w-full flex flex-row justify-center items-center text-sm gap-2">
                   <InfoIcon />
                   <div>No chats found</div>
@@ -224,7 +228,7 @@ export const History = ({ user }: { user: User | undefined }) => {
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
               This action cannot be undone. This will permanently delete your
-              chat and remove it from our servers.
+              chat and remove it fr om our servers.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
