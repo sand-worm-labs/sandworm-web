@@ -27,7 +27,7 @@ export async function GET(
       headers: { "Content-Type": "application/json" },
     });
   } catch (error: any) {
-    console.error("🔥 Error in getChatById route:", error);
+    console.error("Error in getChatById route:", error);
     return new Response(JSON.stringify({ error: "Internal Server Error" }), {
       status: 500,
     });
