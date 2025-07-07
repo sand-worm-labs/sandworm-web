@@ -7,7 +7,6 @@ import {
   Database,
   Settings,
   Bug,
-  Bot,
   Keyboard,
 } from "lucide-react";
 import Link from "next/link";
@@ -50,11 +49,6 @@ export const AppSidebar = ({
       icon: SquareTerminal,
     },
     { id: "ChangeLog" as const, label: "ChangeLog", icon: GiBackwardTime },
-    {
-      id: "wormbot" as const,
-      label: "Worm AI",
-      icon: Bot,
-    },
   ];
 
   const bottomNavLinks = [

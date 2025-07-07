@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/badge";
 
 const navLinks = [
   { name: "Explore", href: "/explore" },
-  { name: "Worm AI", href: "/chat" },
   { name: "Docs", href: "https://docs.sandwormlabs.xyz", isExternal: true },
   {
     name: "Blog",
