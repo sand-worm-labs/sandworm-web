@@ -72,10 +72,11 @@ export const History = ({ user }: { user: User | undefined }) => {
     toast.promise(deletePromise, {
       loading: "Deleting chat...",
       success: () => {
-        mutate(history => {
-          if (history) {
-            return history.data.filter(h => h.id !== id);
+        mutate(prev => {
+          if (prev) {
+            return { data: prev.data.filter(h => h.id !== id) };
           }
+          return undefined;
         });
         return "Chat deleted successfully";
       },

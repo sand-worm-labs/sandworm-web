@@ -1,5 +1,6 @@
 import { generateObject } from "ai";
 import { z } from "zod";
+
 import { geminiFlashModel } from ".";
 
 // we are simulating using vercel ai to generate a WormQL query from natural language input. This will later be update to use eliza's AI model
