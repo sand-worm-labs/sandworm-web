@@ -142,8 +142,10 @@ ORDER BY
               .describe("User question or instruction in natural language"),
           }),
           execute: async ({ prompt }) => {
-            const result = await generateWormQLFromNaturalLanguage({ prompt });
-            return result;
+            const queryResult = await generateWormQLFromNaturalLanguage({
+              prompt,
+            });
+            return queryResult;
           },
         },
 

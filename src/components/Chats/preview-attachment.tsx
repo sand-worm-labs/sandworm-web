@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import type { Attachment } from "ai";
 
 import { LoaderIcon } from "./icons";
