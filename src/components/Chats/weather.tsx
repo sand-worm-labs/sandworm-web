@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 interface WeatherAtLocation {
   latitude: number;
   longitude: number;
-  generationtime_ms: number;
+  generationtime_ms: number | string;
   utc_offset_seconds: number;
   timezone: string;
   timezone_abbreviation: string;
@@ -45,7 +45,7 @@ interface WeatherAtLocation {
 const SAMPLE = {
   latitude: 37.763283,
   longitude: -122.41286,
-  generationtime_ms: 0.027894973754882812,
+  generationtime_ms: 0.0278949737548828,
   utc_offset_seconds: 0,
   timezone: "GMT",
   timezone_abbreviation: "GMT",
