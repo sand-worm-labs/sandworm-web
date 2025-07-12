@@ -1,3 +1,4 @@
+"use client";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import { useMemo, useState, useEffect } from "react";
