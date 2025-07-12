@@ -1,6 +1,8 @@
 "use client";
 
 import { FaXTwitter, FaDiscord } from "react-icons/fa6";
+import { SiFarcaster } from "react-icons/si";
+
 import Link from "next/link";
 import { FaTelegramPlane } from "react-icons/fa";
 import Image from "next/image";
@@ -43,6 +45,9 @@ export const CreatorInfo = ({ user }: CreatorInfoProps) => {
           </Link>
           <Link href="/">
             <FaDiscord size={20} />
+          </Link>
+          <Link href="/">
+            <SiFarcaster size={20} />
           </Link>
         </div>
         <div className="grid grid-cols-2 w-full text-center mt-6">
