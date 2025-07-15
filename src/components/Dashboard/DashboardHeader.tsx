@@ -1,7 +1,9 @@
-import { Button } from "@/components/ui/button";
-import { Star, Pencil } from "lucide-react";
-import { DicebearAvatar } from "../DicebearAvatar";
+import { Star } from "lucide-react";
 import Link from "next/link";
+
+import { Button } from "@/components/ui/button";
+
+import { DicebearAvatar } from "../DicebearAvatar";
 
 export const DashboardHeader = () => {
   const board = {
@@ -10,7 +12,7 @@ export const DashboardHeader = () => {
     isOwner: true,
     user: {
       name: "Si",
-      avatarUrl: "si.eth", // use ENS name or random string seed
+      avatarUrl: "si.eth",
     },
   };
 

@@ -1,10 +1,11 @@
 "use client";
+
+import React from "react";
+
 import { ResearchDescription } from "@/components/Dashboard/DashboardDescriptin";
 import { DashboardHeader } from "@/components/Dashboard/DashboardHeader";
 import { CounterCard } from "@/components/WorkSpace/ResultTab/Charts/Counter";
 import { PieChart } from "@/components/WorkSpace/ResultTab/Charts/PieChart";
-
-import React from "react";
 
 export default function Dashboard() {
   const gmxPieChartData = {
