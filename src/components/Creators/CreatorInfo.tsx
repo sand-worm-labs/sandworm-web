@@ -2,7 +2,6 @@
 
 import { FaXTwitter, FaDiscord } from "react-icons/fa6";
 import { SiFarcaster } from "react-icons/si";
-
 import Link from "next/link";
 import { FaTelegramPlane } from "react-icons/fa";
 import Image from "next/image";
