@@ -7,7 +7,6 @@ import Script from "next/script";
 import { QueryProvider } from "@/providers/query";
 import type { ChildrenProps } from "@/types";
 import AppProvider from "@/providers/AppProvider";
-import { BannerAlert } from "@/components/BannerAlert";
 
 export const metadata = {
   description:
@@ -45,10 +44,10 @@ export default async function RootLayout({ children }: ChildrenProps) {
       <body
         className={`${dmMono.className} h-full flex flex-col justify-between`}
       >
-        <BannerAlert
+        {/*      <BannerAlert
           id="wql-downtime"
           message="Sandworm’s WQL is momentarily offline for upgrades. We’re working to restore access as soon as possible. Thanks for bearing with us."
-        />
+        /> */}
         <section className="flex-1 bg-background">
           <QueryProvider>
             <AppProvider>{children} </AppProvider>

@@ -12,6 +12,7 @@ import { MultimodalInput } from "./multimodal-input";
 import { Overview } from "./overview";
 import { ExamplePrompts } from "./example-prompts";
 import { History } from "./history";
+import { toast } from "sonner";
 
 export function Chat({
   id,
@@ -22,16 +23,15 @@ export function Chat({
 }) {
   const { data: session } = useSession();
 
-  const { messages, handleSubmit, input, setInput, append, isLoading, stop } =
-    useChat({
-      id,
-      body: { id },
-      initialMessages,
-      maxSteps: 10,
-      onFinish: () => {
-        window.history.replaceState({}, "", `/chat/${id}`);
-      },
-    });
+  const { messages, input, setInput, append, isLoading, stop } = useChat({
+    id,
+    body: { id },
+    initialMessages,
+    maxSteps: 10,
+    onFinish: () => {
+      window.history.replaceState({}, "", `/chat/${id}`);
+    },
+  });
 
   const [messagesContainerRef, messagesEndRef] =
     useScrollToBottom<HTMLDivElement>();
@@ -73,7 +73,11 @@ export function Chat({
           <MultimodalInput
             input={input}
             setInput={setInput}
-            handleSubmit={handleSubmit}
+            handleSubmit={() => {
+              toast.info(
+                "Sandworm WormAI is in active dev — check back later for updates!"
+              );
+            }}
             isLoading={isLoading}
             stop={stop}
             attachments={attachments}

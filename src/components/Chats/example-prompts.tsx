@@ -2,9 +2,9 @@ import clsx from "clsx";
 import { ArrowUpRightIcon } from "lucide-react";
 
 const examplePrompts = [
-  { id: "eliza", prompt: "What is Eliza?" },
-  { id: "agent", prompt: "What is an agent?" },
-  { id: "create-agent", prompt: "How to create an agent" },
+  { id: "eliza", prompt: "What's Vitalik's wallet holding rn?" },
+  { id: "agent", prompt: "Most active token on Base today?" },
+  { id: "create-agent", prompt: "How do I track airdrops to new wallets?" },
 ];
 
 interface ExamplePromptsProps {
@@ -23,7 +23,7 @@ export function ExamplePrompts({ onPromptSelect }: ExamplePromptsProps) {
             // Base
             "relative isolate inline-flex items-center justify-center gap-x-2 rounded-md border text-base/6 font-medium",
             // Focus
-            "focus:outline-none focus:outline-2 focus:outline-offset-2 focus:outline-indigo-500",
+            "focus:outline-none focus:outline-2 focus:outline-offset-2 focus:outline-orange-600",
             // Disabled
             "disabled:opacity-50 disabled:pointer-events-none",
             // Icon
