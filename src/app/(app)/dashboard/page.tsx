@@ -9,17 +9,35 @@ import { PieChart } from "@/components/WorkSpace/ResultTab/Charts/PieChart";
 
 export default function Dashboard() {
   const gmxPieChartData = {
+    columnTypes: ["string", "number"],
     columns: ["destination", "amount"],
     data: [
-      ["Bridged to Ethereum", 9600000],
-      ["Swapped to ETH", 32000000],
-      ["Returned via Bounty", 2000000],
-      ["Still on Arbitrum", 2000000],
-      ["Unknown", 300000],
+      {
+        destination: "Bridged to Ethereum",
+        amount: 9600000,
+      },
+      {
+        destination: "Swapped to ETH",
+        amount: 32000000,
+      },
+      {
+        destination: "Returned via Bounty",
+        amount: 2000000,
+      },
+      {
+        destination: "Still on Arbitrum",
+        amount: 2000000,
+      },
+      {
+        destination: "Unknown",
+        amount: 300000,
+      },
     ],
+    rowCount: 5,
   };
+
   return (
-    <div className="container mx-auto  mt-12">
+    <div className="container mx-auto  mt-12 pb-20">
       <DashboardHeader />
       <ResearchDescription />
       <div className="grid grid-cols-[55%,45%] gap-4 mt-8">
