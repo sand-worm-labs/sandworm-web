@@ -18,7 +18,6 @@ export const DashboardHeader = () => {
 
   return (
     <header className="w-full flex items-center justify-between px-4 py-3 bg-black text-white border-b border-white/10 container mx-auto mt-12">
-      {/* Left Side */}
       <div className="flex items-center gap-3">
         {board.user.avatarUrl ? (
           <DicebearAvatar seed={board.user.avatarUrl} size={25} />
