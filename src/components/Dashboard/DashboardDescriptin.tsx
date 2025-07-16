@@ -58,9 +58,9 @@ This report focuses on:
             </Badge>
           </div>
           <div className="flex flex-wrap gap-2 mt-2">
-            {info.tags.map((tag, i) => (
+            {info.tags.map(tag => (
               <Badge
-                key={i}
+                key={info.title}
                 variant="outline"
                 className="bg-white/5 text-white border-white/10 text-xs"
               >
