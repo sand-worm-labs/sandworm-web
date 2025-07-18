@@ -14,6 +14,7 @@ export const getPieChartOptions = (
         padding: "0.8rem",
       },
     },
+    colors: ["#FFF", "#194390", "#5C93CC", "#86C1E2", "#00C4B4"],
     title: {
       text: title,
       style: {
@@ -36,7 +37,7 @@ export const getPieChartOptions = (
       pie: {
         innerSize: "60%",
         dataLabels: {
-          enabled: true,
+          enabled: false,
           format: "{point.name}: {point.percentage:.1f}%",
           distance: -40,
           style: {

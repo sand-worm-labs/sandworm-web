@@ -29,6 +29,19 @@ This report focuses on:
     `,
   };
 
+  const degeninfo = {
+    title: "Uniswap Degen Activity",
+    image: "/img/degen.png",
+    type: "Token Analysis",
+    chain: "Base",
+    tags: ["DeFi", "Transaction", "Wallet"],
+    description: `
+      This dashboard shows the summary of DEGEN Uniswap activity such as transaction count (buy and sell), top wallet interactions, Uniswap burn events, and liquidity activity on Base. It harnesses Sandworm's forensic tools to monitor real-time transaction data, identify dominant wallets, track burn activities, and analyze liquidity contributions, with Degen priced at $0.015 as of July 2025.
+
+      To explain this dashboard better, use Worm AI.
+    `,
+  };
+
   return (
     <section className="w-full px-4 py-6 border-b border-white/10 bg-black text-white">
       <div className="flex items-start gap-10">
