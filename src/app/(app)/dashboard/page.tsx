@@ -6,6 +6,7 @@ import { ResearchDescription } from "@/components/Dashboard/DashboardDescriptin"
 import { DashboardHeader } from "@/components/Dashboard/DashboardHeader";
 import { CounterCard } from "@/components/WorkSpace/ResultTab/Charts/Counter";
 import { PieChart } from "@/components/WorkSpace/ResultTab/Charts/PieChart";
+import QueryResultsTable from "@/components/WorkSpace/ResultTab";
 
 export default function Dashboard() {
   const gmxPieChartData = {
@@ -37,7 +38,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="container mx-auto  mt-12 pb-20">
+    <div className="container mx-auto  mt-12 pb-20 dark">
       <DashboardHeader />
       <ResearchDescription />
       <div className="grid grid-cols-[55%,45%] gap-4 mt-8">
@@ -70,9 +71,22 @@ export default function Dashboard() {
             description="Swapped by attacker post‑bridging"
           />
         </div>
-        <PieChart
+        <div className="border border-[#1a1a1a] rounded-md p-4 bg-[#0d0d0d]">
+          <PieChart
+            chartType="pie"
+            showControls={false}
+            result={gmxPieChartData}
+            title="Funds Distribution Post‑GMX Exploit"
+          />
+        </div>
+      </div>
+      <div className="mt-8 border border-[#1a1a1a] rounded-md p-4 bg-[#0d0d0d]">
+        <QueryResultsTable
           result={gmxPieChartData}
-          title="Funds Distribution Post‑GMX Exploit"
+          title="AI Query Result"
+          query="Generated via Worm AI Tool"
+          viewMode="Table"
+          showControls={false}
         />
       </div>
     </div>

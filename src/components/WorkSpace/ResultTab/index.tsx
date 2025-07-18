@@ -63,6 +63,7 @@ export interface TableProps<T extends RowData> {
   className?: string;
   query?: string;
   title?: string;
+  showControls?: boolean;
 }
 
 const renderIndexCell = (index: number) => {
@@ -82,6 +83,7 @@ function QueryResultsTable<T extends RowData>({
   className,
   query,
   title,
+  showControls = true,
 }: TableProps<T>) {
   // State
   const [sorting, setSorting] = useState<SortingState>(defaultSorting);
@@ -302,14 +304,17 @@ function QueryResultsTable<T extends RowData>({
     JSON: <QueryResultJson result={result} />,
     Table: (
       <>
-        <TableControls
-          table={table}
-          data={data}
-          query={query}
-          isLoading={isLoading}
-          onRefresh={onRefresh}
-          onFilterChange={handleFilterChange}
-        />
+        {showControls && (
+          <TableControls
+            table={table}
+            data={data}
+            query={query}
+            isLoading={isLoading}
+            onRefresh={onRefresh}
+            onFilterChange={handleFilterChange}
+          />
+        )}
+
         <TableContent
           table={table}
           memoizedColumns={memoizedColumns}

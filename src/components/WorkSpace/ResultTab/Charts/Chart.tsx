@@ -15,6 +15,7 @@ interface ChartComponentProps extends ChartProps {
     yAxis: string,
     title?: string
   ) => Highcharts.Options;
+  showControls?: boolean;
 }
 
 export const Chart: React.FC<ChartComponentProps> = ({
@@ -22,6 +23,7 @@ export const Chart: React.FC<ChartComponentProps> = ({
   result,
   title,
   getChartOptions,
+  showControls = true,
 }) => {
   const defaultAxis = useMemo(
     () => getDefaultAxis(result, chartType),
@@ -58,32 +60,36 @@ export const Chart: React.FC<ChartComponentProps> = ({
           Missing or invalid X or Y axis. Please select X and Y columns
           manually.
         </p>
+        {showControls && (
+          <ChartControl
+            columns={result.columns}
+            selectedXAxis={xAxis ?? ""}
+            selectedYAxis={yAxis ?? ""}
+            onChange={({ xAxis: newX, yAxis: newY }) => {
+              setXAxis(newX);
+              setYAxis(newY);
+            }}
+            data={result.data}
+          />
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="overflow-auto max-w-full max-h-[400px]">
+      {showControls && (
         <ChartControl
           columns={result.columns}
-          selectedXAxis={xAxis ?? ""}
-          selectedYAxis={yAxis ?? ""}
+          selectedXAxis={xAxis}
+          selectedYAxis={yAxis}
           onChange={({ xAxis: newX, yAxis: newY }) => {
             setXAxis(newX);
             setYAxis(newY);
           }}
           data={result.data}
         />
-      </div>
-    );
-  }
-
-  return (
-    <div className="overflow-scroll max-w-full max-h-[400px]">
-      <ChartControl
-        columns={result.columns}
-        selectedXAxis={xAxis}
-        selectedYAxis={yAxis}
-        onChange={({ xAxis: newX, yAxis: newY }) => {
-          setXAxis(newX);
-          setYAxis(newY);
-        }}
-        data={result.data}
-      />
+      )}
       <HighchartsReact highcharts={Highcharts} options={chartOptions} />
     </div>
   );
