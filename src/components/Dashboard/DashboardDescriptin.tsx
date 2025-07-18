@@ -36,9 +36,7 @@ This report focuses on:
     chain: "Base",
     tags: ["DeFi", "Transaction", "Wallet"],
     description: `
-      This dashboard shows the summary of DEGEN Uniswap activity such as transaction count (buy and sell), top wallet interactions, Uniswap burn events, and liquidity activity on Base. It harnesses Sandworm's forensic tools to monitor real-time transaction data, identify dominant wallets, track burn activities, and analyze liquidity contributions, with Degen priced at $0.015 as of July 2025.
-
-      To explain this dashboard better, use Worm AI.
+      This dashboard shows the summary of DEGEN Uniswap activity such as transaction count (buy and sell), top wallet interactions, Uniswap burn events, and liquidity activity on Base. It harnesses Sandworm's forensic tools to monitor real-time transaction data, identify dominant wallets, track burn activities, and analyze liquidity contributions, with Degen priced at approximately $0.004 as of July 2025.
     `,
   };
 
@@ -47,8 +45,8 @@ This report focuses on:
       <div className="flex items-start gap-10">
         <div className="min-w-[300px] min-h-[300px]">
           <Image
-            src={info.image}
-            alt={info.title}
+            src={degeninfo.image}
+            alt={degeninfo.title}
             width={300}
             height={300}
             className="rounded-lg border border-white/10 object-cover"
@@ -56,24 +54,26 @@ This report focuses on:
         </div>
         <div className="flex-1 border max-h-[300px] overflow-y-auto p-4 bg-white/5 rounded-lg">
           <div className="flex items-center gap-3 flex-wrap">
-            <h2 className="text-2xl font-bold tracking-tight">{info.title}</h2>
+            <h2 className="text-2xl font-bold tracking-tight">
+              {degeninfo.title}
+            </h2>
             <Badge
               variant="outline"
               className="bg-red-600 text-white border-red-500"
             >
-              {info.type}
+              {degeninfo.type}
             </Badge>
             <Badge
               variant="outline"
               className="bg-blue-600 text-white border-blue-500"
             >
-              {info.chain}
+              {degeninfo.chain}
             </Badge>
           </div>
           <div className="flex flex-wrap gap-2 mt-2">
-            {info.tags.map(tag => (
+            {degeninfo.tags.map(tag => (
               <Badge
-                key={info.title}
+                key={degeninfo.tags.indexOf(tag)}
                 variant="outline"
                 className="bg-white/5 text-white border-white/10 text-xs"
               >
@@ -82,7 +82,7 @@ This report focuses on:
             ))}
           </div>
           <p className="text-sm text-white/80 mt-4 leading-relaxed whitespace-pre-wrap">
-            {info.description.trim()}
+            {degeninfo.description.trim()}
           </p>
         </div>
       </div>
