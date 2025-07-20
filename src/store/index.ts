@@ -247,8 +247,8 @@ export const useSandwormStore = create<SandwormStoreState>()(
           connections: [],
         },
         settings: {
-          selectedChain: "Sui",
-          rpcUrl: chainRpcMap.Sui,
+          selectedChain: "Base",
+          rpcUrl: chainRpcMap.Base,
           editorTheme: "sandworm",
           shortcutsEnabled: true,
           betaFeatures: false,

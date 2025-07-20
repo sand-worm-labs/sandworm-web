@@ -1,7 +1,9 @@
-import { Button } from "@/components/ui/button";
-import { Star, Pencil } from "lucide-react";
-import { DicebearAvatar } from "../DicebearAvatar";
+import { Star } from "lucide-react";
 import Link from "next/link";
+
+import { Button } from "@/components/ui/button";
+
+import { DicebearAvatar } from "../DicebearAvatar";
 
 export const DashboardHeader = () => {
   const board = {
@@ -10,13 +12,12 @@ export const DashboardHeader = () => {
     isOwner: true,
     user: {
       name: "Si",
-      avatarUrl: "si.eth", // use ENS name or random string seed
+      avatarUrl: "si.eth",
     },
   };
 
   return (
     <header className="w-full flex items-center justify-between px-4 py-3 bg-black text-white border-b border-white/10 container mx-auto mt-12">
-      {/* Left Side */}
       <div className="flex items-center gap-3">
         {board.user.avatarUrl ? (
           <DicebearAvatar seed={board.user.avatarUrl} size={25} />
