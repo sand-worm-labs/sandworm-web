@@ -23,15 +23,16 @@ export function Chat({
 }) {
   const { data: session } = useSession();
 
-  const { messages, input, setInput, append, isLoading, stop } = useChat({
-    id,
-    body: { id },
-    initialMessages,
-    maxSteps: 10,
-    onFinish: () => {
-      window.history.replaceState({}, "", `/chat/${id}`);
-    },
-  });
+  const { messages, input, setInput, append, isLoading, stop, handleSubmit } =
+    useChat({
+      id,
+      body: { id },
+      initialMessages,
+      maxSteps: 10,
+      onFinish: () => {
+        window.history.replaceState({}, "", `/chat/${id}`);
+      },
+    });
 
   const [messagesContainerRef, messagesEndRef] =
     useScrollToBottom<HTMLDivElement>();
@@ -73,11 +74,7 @@ export function Chat({
           <MultimodalInput
             input={input}
             setInput={setInput}
-            handleSubmit={() => {
-              toast.info(
-                "Sandworm WormAI is in active dev — check back later for updates!"
-              );
-            }}
+            handleSubmit={handleSubmit}
             isLoading={isLoading}
             stop={stop}
             attachments={attachments}

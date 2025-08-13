@@ -174,6 +174,32 @@ ORDER BY
             }
           },
         },
+
+        runJessieBalanceQuery: {
+          description: `
+         show the ETH  balances of jessie.eth 
+      
+            `.trim(),
+          parameters: z.object({}),
+          execute: async () => {
+            const query = `
+              SELECT balance, chain
+              FROM account jessie.eth
+              ON eth
+            `;
+
+            try {
+              console.log("🔍 Running vitalik.eth balance query:", query);
+              const queryResult = await runPredefinedQuery({ query });
+              return queryResult;
+            } catch (err) {
+              return {
+                error: "Failed to query vitalik.eth balances",
+                details: err instanceof Error ? err.message : String(err),
+              };
+            }
+          },
+        },
         runVitalikBalanceChartQuery: {
           description:
             "Fetches ETH and BASE balances for vitalik.eth chart visualization in bar chart",
