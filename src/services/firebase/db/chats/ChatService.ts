@@ -4,6 +4,7 @@ import type { ServiceResult, Result, Schema } from "@/services/firebase/db";
 import { db, DataResult, toResult, toResults } from "@/services/firebase/db";
 
 export interface Chat {
+  id?: string;
   userId: string;
   createdAt: Date;
   messages: Message[];

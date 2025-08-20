@@ -12,7 +12,6 @@ import { MultimodalInput } from "./multimodal-input";
 import { Overview } from "./overview";
 import { ExamplePrompts } from "./example-prompts";
 import { History } from "./history";
-import { toast } from "sonner";
 
 export function Chat({
   id,
@@ -23,16 +22,24 @@ export function Chat({
 }) {
   const { data: session } = useSession();
 
+  console.log("initialMessages", initialMessages, id);
+
   const { messages, input, setInput, append, isLoading, stop, handleSubmit } =
     useChat({
       id,
       body: { id },
       initialMessages,
       maxSteps: 10,
-      onFinish: () => {
+      onFinish: m => {
+        console.log("✅ onFinish message the SDK saw:", m);
         window.history.replaceState({}, "", `/chat/${id}`);
       },
+      onResponse: res => {
+        console.log("🔎 content-type:", res.headers.get("content-type"));
+      },
     });
+
+  console.log("messages", messages);
 
   const [messagesContainerRef, messagesEndRef] =
     useScrollToBottom<HTMLDivElement>();
