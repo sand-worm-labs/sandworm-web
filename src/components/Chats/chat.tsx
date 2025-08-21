@@ -22,24 +22,20 @@ export function Chat({
 }) {
   const { data: session } = useSession();
 
-  console.log("initialMessages", initialMessages, id);
-
   const { messages, input, setInput, append, isLoading, stop, handleSubmit } =
     useChat({
       id,
       body: { id },
       initialMessages,
-      maxSteps: 10,
-      onFinish: m => {
-        console.log("✅ onFinish message the SDK saw:", m);
+      api: "/api/chat",
+      streamMode: "text",
+      onFinish: () => {
         window.history.replaceState({}, "", `/chat/${id}`);
       },
-      onResponse: res => {
-        console.log("🔎 content-type:", res.headers.get("content-type"));
+      onError: error => {
+        console.error("🔴 [FRONTEND] useChat onError:", error);
       },
     });
-
-  console.log("messages", messages);
 
   const [messagesContainerRef, messagesEndRef] =
     useScrollToBottom<HTMLDivElement>();
@@ -59,11 +55,9 @@ export function Chat({
           {messages.map(message => (
             <PreviewMessage
               key={message.id}
-              chatId={id}
               role={message.role}
               content={message.content}
               attachments={message.experimental_attachments}
-              toolInvocations={message.toolInvocations}
             />
           ))}
 
