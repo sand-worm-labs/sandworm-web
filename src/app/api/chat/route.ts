@@ -63,35 +63,22 @@ User query: {query}
 `;
 
 // ---- Zod Schema ----
-const OutputSchema = z
-  .object({
-    needs_clarification: z
-      .boolean()
-      .describe("Whether clarification is required"),
-    sql: z.string().optional().describe("SQL query if enough info provided"),
-    missing: z
-      .array(z.string())
-      .optional()
-      .describe("Missing fields if clarification needed"),
-    question: z
-      .string()
-      .optional()
-      .describe("Follow-up question if clarification needed"),
-  })
-  .describe("Structured response for SQL generation");
+const OutputSchema = z.object({
+  needs_clarification: z.boolean(),
+  sql: z.string().optional(),
+  missing: z.array(z.string()).optional(),
+  question: z.string().optional(),
+});
 
 export async function POST(request: NextRequest) {
-  console.log("📩 Request received at /api/chat");
-
+  // Parse request body
   let id: string;
   let rawMessages: Array<VercelChatMessage>;
-
   try {
     const body = await request.json();
     id = body.id;
     rawMessages = body.messages;
-  } catch (err) {
-    console.error("❌ Failed to parse request body:", err);
+  } catch {
     return new Response("Invalid request body", { status: 400 });
   }
 
@@ -99,12 +86,11 @@ export async function POST(request: NextRequest) {
   let session;
   try {
     session = await auth();
-    console.log("✅ Auth session:", session?.user?.id);
-  } catch (err) {
-    console.error("❌ Auth check failed:", err);
+  } catch {
     return new Response("Failed to authenticate", { status: 500 });
   }
 
+  // Grab last user message
   const lastUserMessage =
     rawMessages?.filter(m => m.role === "user").pop()?.content || "";
 
@@ -120,7 +106,6 @@ export async function POST(request: NextRequest) {
   });
 
   const prompt = PromptTemplate.fromTemplate(SYSTEM_TEMPLATE);
-
   const chain = prompt.pipe(functionCallingModel);
 
   try {
@@ -129,40 +114,30 @@ export async function POST(request: NextRequest) {
       query: lastUserMessage,
     });
 
-    console.log("🧠 Model structured output:", result);
+    const responseContent = JSON.stringify(result);
 
-    // Save chat
+    // Save chat in DB
     if (session?.user?.id) {
-      try {
-        await ChatService.saveChat({
-          id,
-          messages: [
-            ...rawMessages,
-            {
-              id,
-              role: "assistant",
-              content: JSON.stringify(result),
-            },
-          ],
-          userId: session.user.id,
-        });
-        console.log("✅ Chat saved successfully");
-      } catch (err) {
-        console.error("❌ Failed to save chat:", err);
-      }
+      const newMessage: VercelChatMessage = {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        content: responseContent,
+      };
+
+      await ChatService.saveChat({
+        id,
+        messages: [...rawMessages, newMessage],
+        userId: session.user.id,
+      });
     }
 
-    return Response.json({
-      messages: [
-        {
-          id: crypto.randomUUID(),
-          role: "assistant",
-          content: JSON.stringify(result),
-        },
-      ],
+    // Return plain text response for useChat
+    return new Response(responseContent, {
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8",
+      },
     });
-  } catch (err) {
-    console.error("❌ Error during SQL generation:", err);
+  } catch {
     return new Response("AI generation failed", { status: 500 });
   }
 }
@@ -178,13 +153,16 @@ export async function DELETE(request: Request) {
   if (!session?.user) return new Response("Unauthorized", { status: 401 });
 
   try {
-    const chat = await ChatService.getChatById({ id });
-    if (chat.userId !== session.user.id) {
+    const chatResult = await ChatService.getChatById({ id });
+    if (!chatResult.success) {
+      return new Response("Not Found", { status: 404 });
+    }
+    if (chatResult.data.userId !== session.user.id) {
       return new Response("Unauthorized", { status: 401 });
     }
     await ChatService.deleteChatById({ id });
     return new Response("Chat deleted", { status: 200 });
-  } catch (error) {
+  } catch {
     return new Response("An error occurred while processing your request", {
       status: 500,
     });
