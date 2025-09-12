@@ -12,7 +12,6 @@ import { MultimodalInput } from "./multimodal-input";
 import { Overview } from "./overview";
 import { ExamplePrompts } from "./example-prompts";
 import { History } from "./history";
-import { toast } from "sonner";
 
 export function Chat({
   id,
@@ -23,15 +22,20 @@ export function Chat({
 }) {
   const { data: session } = useSession();
 
-  const { messages, input, setInput, append, isLoading, stop } = useChat({
-    id,
-    body: { id },
-    initialMessages,
-    maxSteps: 10,
-    onFinish: () => {
-      window.history.replaceState({}, "", `/chat/${id}`);
-    },
-  });
+  const { messages, input, setInput, append, isLoading, stop, handleSubmit } =
+    useChat({
+      id,
+      body: { id },
+      initialMessages,
+      api: "/api/chat",
+      streamMode: "text",
+      onFinish: () => {
+        window.history.replaceState({}, "", `/chat/${id}`);
+      },
+      onError: error => {
+        console.error("🔴 [FRONTEND] useChat onError:", error);
+      },
+    });
 
   const [messagesContainerRef, messagesEndRef] =
     useScrollToBottom<HTMLDivElement>();
@@ -51,11 +55,9 @@ export function Chat({
           {messages.map(message => (
             <PreviewMessage
               key={message.id}
-              chatId={id}
               role={message.role}
               content={message.content}
               attachments={message.experimental_attachments}
-              toolInvocations={message.toolInvocations}
             />
           ))}
 
@@ -73,11 +75,7 @@ export function Chat({
           <MultimodalInput
             input={input}
             setInput={setInput}
-            handleSubmit={() => {
-              toast.info(
-                "Sandworm WormAI is in active dev — check back later for updates!"
-              );
-            }}
+            handleSubmit={handleSubmit}
             isLoading={isLoading}
             stop={stop}
             attachments={attachments}
