@@ -3,7 +3,15 @@ import type { ChartProps } from "@/types";
 
 import { Chart } from "./Chart";
 
-export const BarChart: React.FC<ChartProps> = ({ result, title }) => {
+interface BarChartProps extends ChartProps {
+  showControls?: boolean;
+}
+
+export const BarChart: React.FC<BarChartProps> = ({
+  result,
+  title,
+  showControls = true,
+}) => {
   console.log("BarChart result:", result);
   return (
     <Chart
@@ -11,6 +19,7 @@ export const BarChart: React.FC<ChartProps> = ({ result, title }) => {
       result={result}
       title={title}
       getChartOptions={getBarChartOptions}
+      showControls={showControls}
     />
   );
 };

@@ -7,7 +7,7 @@ import { DicebearAvatar } from "../DicebearAvatar";
 
 export const DashboardHeader = () => {
   const board = {
-    boardTitle: "GTMX Exploit",
+    boardTitle: "Uniswap Degen Activity",
     isStarred: true,
     isOwner: true,
     user: {
