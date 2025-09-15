@@ -1,6 +1,8 @@
 import { type NextRequest } from "next/server";
 import { type Message as VercelChatMessage } from "ai";
-import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
+
+import { ChatAnthropic } from "@langchain/anthropic";
+
 import { PromptTemplate } from "@langchain/core/prompts";
 import { z } from "zod";
 
@@ -42,22 +44,20 @@ TABLE base.uniswap_swap (
 `;
 
 const SYSTEM_TEMPLATE = `
-You are a SQL generator for analytics.
-You ONLY produce SQL for the provided schema.
+You are a WQL expert for blockchain analytics. Translate NL to WQL using schema: {schema}. Use AST format if needed.
 
-Schema:
-{schema}
+Rules:
+- Use defaults for missing details: chain="base", metric="amount_usd", date=today (current date), time_range="latest".
+- Infer table_name from intent (e.g., "burn" → uniswap_burn, "swap" → uniswap_swap).
+- Be forgiving of messy language; assume valid schema matches.
+- Never invent tables/fields.
 
-Defaults:
-- chain: "base"
-- time_range: "latest"
-- entity: none unless specified by user
+Few-Shot: NL: "Total DEX volume for token X last 30 days" → WQL: SELECT SUM(volume) FROM dex_trades WHERE token='X' AND date > NOW() - 30d GROUP BY day;
 
-If enough info is available (including defaults), output only JSON in this format:
-{{"needs_clarification": false, "sql": "<SQL>"}}
+Output format:
+If WQL can be generated: {{"needs_clarification": false, "wql": "<WQL>"}}
 
-If more info is truly required, output:
-{{"needs_clarification": true, "missing": ["field1"], "question": "short follow-up"}}
+If truly ambiguous: {{"needs_clarification": true, "missing": ["field1"], "question": "short follow-up"}}
 
 User query: {query}
 `;
@@ -65,7 +65,7 @@ User query: {query}
 // ---- Zod Schema ----
 const OutputSchema = z.object({
   needs_clarification: z.boolean(),
-  sql: z.string().optional(),
+  wql: z.string().optional(),
   missing: z.array(z.string()).optional(),
   question: z.string().optional(),
 });
@@ -95,8 +95,8 @@ export async function POST(request: NextRequest) {
     rawMessages?.filter(m => m.role === "user").pop()?.content || "";
 
   // Setup LLM with structured output
-  const model = new ChatGoogleGenerativeAI({
-    model: "gemini-2.0-flash-001",
+  const model = new ChatAnthropic({
+    model: "claude-3-5-sonnet-20240620",
     temperature: 0,
     streaming: false,
   });

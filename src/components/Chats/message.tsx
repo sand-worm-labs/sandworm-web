@@ -18,6 +18,8 @@ export const Message = ({
 }) => {
   const isUser = role === "user";
 
+  console.log("🟢 [FRONTEND] Message:", { role, content, attachments });
+
   return (
     <motion.div
       className={`flex w-full md:max-w-3xl px-4 pt-12 md:px-0 gap-4 mb-6 ${
@@ -31,7 +33,6 @@ export const Message = ({
           isUser ? "items-end text-right" : "items-start text-left"
         }`}
       >
-        {/* Message bubble */}
         {content && typeof content === "string" && (
           <div
             className={`rounded-xl px-4 py-2 text-sm whitespace-pre-wrap ${
