@@ -1,5 +1,6 @@
-import { WorkspaceSidebar } from "@/components/Layout/WorkSpaceSidebar";
 import type { ReactNode } from "react";
+
+import { WorkspaceSidebar } from "@/components/Layout/WorkSpaceSidebar";
 
 interface WorkspaceLayoutProps {
   children: ReactNode;

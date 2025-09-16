@@ -3,15 +3,9 @@
 import type { Attachment, Message } from "ai";
 import { useChat } from "ai/react";
 import { useState } from "react";
-import { useSession } from "next-auth/react";
-
-import { Message as PreviewMessage } from "@/components/Chats/message";
-import { useScrollToBottom } from "@/components/Chats/use-scroll-to-bottom";
 
 import { MultimodalInput } from "./multimodal-input";
-import { Overview } from "./overview";
 import { ExamplePrompts } from "./example-prompts";
-import { History } from "./history";
 
 export function Chat({
   id,
@@ -20,8 +14,6 @@ export function Chat({
   id: string;
   initialMessages: Array<Message>;
 }) {
-  const { data: session } = useSession();
-
   const { messages, input, setInput, append, isLoading, stop, handleSubmit } =
     useChat({
       id,
@@ -37,35 +29,11 @@ export function Chat({
       },
     });
 
-  const [messagesContainerRef, messagesEndRef] =
-    useScrollToBottom<HTMLDivElement>();
-
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
 
   return (
     <div className="flex flex-row justify-center pb-4 md:pb-8 h-dvh bg-background">
-      {/*       <History user={session?.user} />
-       */}{" "}
       <div className="flex flex-col mt-32 items-center gap-4">
-        {/*    <div
-          ref={messagesContainerRef}
-          className="flex flex-col gap-4 h-full w-dvw items-center overflow-y-scroll"
-        >
-          {messages.map(message => (
-            <PreviewMessage
-              key={message.id}
-              role={message.role}
-              content={message.content}
-              attachments={message.experimental_attachments}
-            />
-          ))}
-
-          <div
-            ref={messagesEndRef}
-            className="shrink-0 min-w-[24px] min-h-[24px]"
-          />
-        </div> */}
-
         <h1 className="text-3xl xl:text-4xl font-medium text-center tracking-tighter text-pretty">
           What do you want to explore onchain today?
         </h1>
@@ -83,7 +51,7 @@ export function Chat({
             append={append}
           />
         </form>
-        <ExamplePrompts />
+        <ExamplePrompts onPromptSelect={() => {}} />
       </div>
     </div>
   );

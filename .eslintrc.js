@@ -67,6 +67,12 @@ module.exports = {
         ],
       },
     ],
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        devDependencies: ["**/*.test.ts", "**/*.spec.ts"],
+      },
+    ],
     "import/prefer-default-export": "off",
     "jsx-a11y/anchor-is-valid": [
       "error",

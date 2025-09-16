@@ -2,7 +2,6 @@ import React from "react";
 import Image from "next/image";
 
 import { CircleGeometry } from "@/components/Assets/CircleGeometry";
-
 import { MultimodalInputView } from "@/components/Chats/MultimodalInputView";
 
 export const SectionHero = () => {

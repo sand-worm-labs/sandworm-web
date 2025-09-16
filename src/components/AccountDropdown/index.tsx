@@ -1,6 +1,14 @@
 "use client";
 
 import React from "react";
+import {
+  ChevronDown,
+  CreditCard,
+  Users,
+  ArrowUpRight,
+  UserPlus,
+} from "lucide-react";
+
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -10,13 +18,6 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import {
-  ChevronDown,
-  CreditCard,
-  Users,
-  ArrowUpRight,
-  UserPlus,
-} from "lucide-react";
 
 export const AccountDropdown = () => {
   const user = {

@@ -19,7 +19,6 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useSandwormStore } from "@/store";
 import type { ExportFormat } from "@/types";
 import {
-  formatBytes,
   estimateExportSize,
   getSizeWarning,
   processInChunks,
@@ -50,10 +49,7 @@ export const DownloadDialog: React.FC<DownloadDialogProps> = ({
   useEffect(() => {
     if (data.length > 0) {
       const estSize = estimateExportSize(data, downloadOption);
-      const formattedSize = Number.isNaN(estSize)
-        ? "Unknown"
-        : formatBytes(estSize);
-      setEstimatedSize(formattedSize);
+      setEstimatedSize(estSize);
     } else {
       setEstimatedSize("0 B");
     }
@@ -135,7 +131,7 @@ export const DownloadDialog: React.FC<DownloadDialogProps> = ({
         <div className="space-y-4">
           {sizeWarning && (
             <Alert variant="default">
-              <AlertDescription>{sizeWarning.message}</AlertDescription>
+              <AlertDescription>{sizeWarning}</AlertDescription>
             </Alert>
           )}
 
