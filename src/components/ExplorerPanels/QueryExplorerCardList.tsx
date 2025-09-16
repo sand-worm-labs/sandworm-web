@@ -8,7 +8,7 @@ import type { Query } from "@/types";
 import { useDeleteQuery } from "@/hooks/useDeleteQuery";
 
 import { Input } from "../ui/input";
-import { DeleteQueryModal } from "../WorkSpace/DeleteQueryModal";
+import { DeleteQueryModal } from "../Console/DeleteQueryModal";
 
 interface IQueryExplorerCardListProps {
   query: Query[];

@@ -6,7 +6,7 @@ import { useMemo, useState, useEffect } from "react";
 
 import { getDefaultAxis, sanitizeChartData } from "@/lib/charts";
 import type { ChartProps } from "@/types";
-import { ChartControl } from "@/components/WorkSpace/ResultTab/Charts/ChartControl";
+import { ChartControl } from "@/components/Console/ResultTab/Charts/ChartControl";
 
 interface ChartComponentProps extends ChartProps {
   getChartOptions: (

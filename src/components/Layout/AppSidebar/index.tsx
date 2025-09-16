@@ -20,7 +20,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { CommandMenu } from "@/components/WorkSpace/CommandModal";
+import { CommandMenu } from "@/components/Console/CommandModal";
 import { Dialog } from "@/components/ui/dialog";
 
 type ViewType =
