@@ -1,4 +1,4 @@
-import { WorkSpace } from "@/components/WorkSpace/WorkSpace";
+import { WorkSpace } from "@/components/Console/WorkSpace";
 import { auth } from "@/services/auth";
 
 export const metadata = {

@@ -1,4 +1,4 @@
-import { WorkSpace } from "@/components/WorkSpace/WorkSpace";
+import { WorkSpace } from "@/components/Console/WorkSpace";
 import { fetchQueryById } from "@/services/axios/queryService";
 import { auth } from "@/services/auth";
 import type { Query } from "@/types";

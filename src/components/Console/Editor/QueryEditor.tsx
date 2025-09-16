@@ -15,8 +15,8 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useSandwormStore } from "@/store";
 import { useForkQuery } from "@/hooks";
-import { SaveModal } from "@/components/WorkSpace";
-import { QueryCodeEditor } from "@/components/WorkSpace/Editor";
+import { SaveModal } from "@/components/Console";
+import { QueryCodeEditor } from "@/components/Console/Editor";
 import type { EditorTab } from "@/store";
 import { useModalStore } from "@/store/auth";
 
