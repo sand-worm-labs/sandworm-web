@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@ai-sdk/google": "^0.0.51",
+    "cypress": "^14.2.1",
     "@auth/firebase-adapter": "^2.8.0",
     "@bprogress/next": "^3.2.12",
     "@dicebear/collection": "^9.2.2",
@@ -145,7 +146,6 @@
     "@typescript-eslint/eslint-plugin": "7.12.0",
     "autoprefixer": "^10.4.20",
     "commitizen": "^4.3.1",
-    "cypress": "^14.2.1",
     "cz-conventional-changelog": "^3.3.0",
     "drizzle-kit": "^0.31.4",
     "eslint": "^8.57.0",

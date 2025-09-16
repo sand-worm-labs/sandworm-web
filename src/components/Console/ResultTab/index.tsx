@@ -123,7 +123,7 @@ function QueryResultsTable<T extends RowData>({
 
   // Update your memoizedColumns definition
   const memoizedColumns = useMemo<ColumnDef<T>[]>(() => {
-    const baseColumns = columns?.map(col => ({
+    const baseColumns = (columns ?? []).map(col => ({
       id: col,
       accessorKey: col,
       header: col,
@@ -300,6 +300,13 @@ function QueryResultsTable<T extends RowData>({
     );
   }
 
+  const chartResult = useMemo(() => {
+    return {
+      columns: columns ?? [],
+      data: (data as Record<string, any>[]) ?? [],
+    };
+  }, [columns, data]);
+
   const viewRenderers: Record<string, any | (() => any)> = {
     JSON: <QueryResultJson result={result} />,
     Table: (
@@ -329,9 +336,15 @@ function QueryResultsTable<T extends RowData>({
         <TableFooter table={table} />
       </>
     ),
-    "Area Chart": <AreaChart result={result} title={title} />,
-    "Bar Chart": <BarChart result={result} title={title} />,
-    "Pie Chart": <PieChart result={result} title={title} />,
+    "Area Chart": (
+      <AreaChart chartType="area" result={chartResult} title={title} />
+    ),
+    "Bar Chart": (
+      <BarChart chartType="bar" result={chartResult} title={title} />
+    ),
+    "Pie Chart": (
+      <PieChart chartType="pie" result={chartResult} title={title} />
+    ),
     Counter: (
       <div className="flex items-center justify-center text-center h-full font-medium text-sm">
         Counter Mode isn’t available yet. Coming soon.

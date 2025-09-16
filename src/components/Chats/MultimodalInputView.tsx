@@ -1,11 +1,13 @@
 "use client";
 
 import React, { forwardRef } from "react";
+import type { Attachment } from "ai";
+
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
+
 import { ArrowUpIcon, StopIcon } from "./icons";
 import { PreviewAttachment } from "./preview-attachment";
-import type { Attachment } from "ai";
 
 interface MultimodalInputUIProps {
   input: string;

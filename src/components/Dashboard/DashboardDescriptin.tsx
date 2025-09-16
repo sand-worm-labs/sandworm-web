@@ -3,32 +3,6 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 
 export const ResearchDescription = () => {
-  const info = {
-    title: "GMX V1 Exploit",
-    image: "/img/gmx.png",
-    type: "Exploit Report",
-    chain: "Arbitrum",
-    tags: ["DeFi", "Re-entrancy", "Bridge", "Multichain Risk"],
-    description: `
-      In July 2025, GMX V1 on Arbitrum was exploited for approximately $42 million, 
-due to a re-entrancy vulnerability in its GLP redemption logic. The attacker 
-manipulated unstake functions to repeatedly extract funds before balances updated, 
-then bridged a portion to Ethereum using CCTP.
-
-While this incident was isolated to GMX V1, it’s part of a broader pattern: 
-over $2.3 billion was lost to exploits across all chains in the first half of 2025 alone — 
-with bridges, liquidity protocols, and DeFi incentives consistently targeted.
-
-This report focuses on:
-      • How the GMX exploit was executed  
-      • Onchain fund flows and wallet activity  
-      • Cross-chain laundering paths  
-      • The ongoing pattern of vulnerabilities in legacy V1 protocols
-
-      Sandworm provides a forensic lens on the mechanics of this attack.
-    `,
-  };
-
   const degeninfo = {
     title: "Uniswap Degen Activity",
     image: "/img/degen.png",
