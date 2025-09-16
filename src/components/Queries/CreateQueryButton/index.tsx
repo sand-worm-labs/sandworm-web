@@ -18,7 +18,7 @@ export const CreateQueryButton = () => {
 
   const handleCreate = () => {
     createTab("New Query", undefined, "sql", "");
-    router.push("/workspace");
+    router.push("/console");
   };
 
   return (

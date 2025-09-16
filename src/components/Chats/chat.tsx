@@ -44,14 +44,13 @@ export function Chat({
 
   return (
     <div className="flex flex-row justify-center pb-4 md:pb-8 h-dvh bg-background">
-      <History user={session?.user} />
-      <div className="flex flex-col justify-between items-center gap-4">
-        <div
+      {/*       <History user={session?.user} />
+       */}{" "}
+      <div className="flex flex-col mt-32 items-center gap-4">
+        {/*    <div
           ref={messagesContainerRef}
           className="flex flex-col gap-4 h-full w-dvw items-center overflow-y-scroll"
         >
-          {messages.length === 0 && <Overview />}
-
           {messages.map(message => (
             <PreviewMessage
               key={message.id}
@@ -65,10 +64,10 @@ export function Chat({
             ref={messagesEndRef}
             className="shrink-0 min-w-[24px] min-h-[24px]"
           />
-        </div>
+        </div> */}
 
-        <h1 className="text-3xl xl:text-4xl font-semibold text-center tracking-tighter text-pretty">
-          Ask the Blockchain
+        <h1 className="text-3xl xl:text-4xl font-medium text-center tracking-tighter text-pretty">
+          What do you want to explore onchain today?
         </h1>
 
         <form className="flex flex-row gap-2 relative items-end w-full md:max-w-[800px] max-w-[calc(100dvw-32px) px-4 md:px-0">

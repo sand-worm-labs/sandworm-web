@@ -27,7 +27,7 @@ export const DashboardHeader = () => {
           </p>
         )}
         <h1 className="text-base font-medium tracking-tight">
-          <Link href="/workspace" className="hover:underline">
+          <Link href="/console" className="hover:underline">
             {board.user.name}{" "}
           </Link>
           / {board.boardTitle}

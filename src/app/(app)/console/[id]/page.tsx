@@ -9,7 +9,7 @@ export const metadata = {
     "View and edit your saved WQL query. Fork, test, and visualize results in real time.",
 };
 
-export default async function WorkspacePage({
+export default async function ConsolePage({
   params,
 }: {
   params: Promise<{ id: string }>;
