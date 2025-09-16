@@ -31,7 +31,7 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
   const [showFullDesc, setShowFullDesc] = useState<boolean>(false);
 
   const handleQueryClick = () => {
-    router.push(`/workspace/${query.id}`);
+    router.push(`/console/${query.id}`);
   };
 
   // we open signin modal if user attempt to like or fork query when not logged in
@@ -81,7 +81,7 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
             </Link>
             <span className="mx-1">/</span>
             <Link
-              href={`/workspace/${query.id}`}
+              href={`/console/${query.id}`}
               className="hover:underline"
               onClick={handleQueryClick}
             >

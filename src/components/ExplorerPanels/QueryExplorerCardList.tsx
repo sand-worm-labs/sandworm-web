@@ -23,7 +23,7 @@ export const QueryExplorerCardList: React.FC<IQueryExplorerCardListProps> = ({
   const { handleDelete } = useDeleteQuery();
 
   const openQueryInTab = (queryData: any) => {
-    router.push(`/workspace/${queryData.id}`);
+    router.push(`/console/${queryData.id}`);
   };
 
   // todo: HOOOKSSSS!

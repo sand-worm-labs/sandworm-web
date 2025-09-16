@@ -108,7 +108,7 @@ export const ExamplesModal: React.FC<ExamplesModalProps> = ({
     executionMethod: "rpc" | "indexed"
   ) => {
     const tabId = createTab(title, undefined, "sql", query, executionMethod);
-    router.push(`/workspace/${tabId}`, { showProgress: true });
+    router.push(`/console/${tabId}`, { showProgress: true });
 
     onClose();
   };
