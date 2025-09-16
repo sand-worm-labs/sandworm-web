@@ -1,6 +1,7 @@
-import { AccountDropdown } from "@/components/AccountDropdown";
 import { Home, Search, Clock, Bot, Terminal } from "lucide-react";
 import Link from "next/link";
+
+import { AccountDropdown } from "@/components/AccountDropdown";
 
 interface NavItem {
   name: string;

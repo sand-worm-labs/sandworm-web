@@ -35,7 +35,9 @@ export const Tooltip: React.FC<TooltipProps> = ({ label, children }) => {
       }}
       style={{ position: "relative", display: "inline-block" }}
     >
-      {React.cloneElement(children, { "aria-describedby": tooltipId })}
+      {React.cloneElement(children, {
+        "aria-describedby": tooltipId,
+      } as any)}
       {visible && (
         <div
           id={tooltipId}

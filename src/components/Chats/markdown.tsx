@@ -4,7 +4,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 const components = {
-  code: ({ node, inline, className, children, ...props }: any) => {
+  code: ({ _, inline, className, children, ...props }: any) => {
     const match = /language-(\w+)/.exec(className || "");
     return !inline && match ? (
       <pre
@@ -22,35 +22,35 @@ const components = {
       </code>
     );
   },
-  ol: ({ node, children, ...props }: any) => {
+  ol: ({ _, children, ...props }: any) => {
     return (
       <ol className="list-decimal list-outside ml-4" {...props}>
         {children}
       </ol>
     );
   },
-  li: ({ node, children, ...props }: any) => {
+  li: ({ _, children, ...props }: any) => {
     return (
       <li className="py-1" {...props}>
         {children}
       </li>
     );
   },
-  ul: ({ node, children, ...props }: any) => {
+  ul: ({ _, children, ...props }: any) => {
     return (
       <ul className="list-decimal list-outside ml-4" {...props}>
         {children}
       </ul>
     );
   },
-  strong: ({ node, children, ...props }: any) => {
+  strong: ({ _, children, ...props }: any) => {
     return (
       <span className="font-semibold" {...props}>
         {children}
       </span>
     );
   },
-  a: ({ node, children, ...props }: any) => {
+  a: ({ _, children, ...props }: any) => {
     return (
       <Link
         className="text-blue-500 hover:underline"
