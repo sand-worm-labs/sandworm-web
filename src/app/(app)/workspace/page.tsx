@@ -1,15 +1,14 @@
-import { WorkSpace } from "@/components/Console/WorkSpace";
-import { auth } from "@/services/auth";
+import React from "react";
+import { Chat } from "@/components/Chats/chat";
 
-export const metadata = {
-  title: "Query Workspace IDE – Sandworm",
-  description:
-    "Write and run real-time WQL queries in your own workspace. Analyze onchain data with ease.",
-};
+import { generateUUID } from "@/lib/utils";
 
-export default async function WorkSpacePage() {
-  const session = await auth();
-  const currentUserId = session?.user?.id || "";
+export default function WorkspacePage() {
+  const id = generateUUID();
 
-  return <WorkSpace initialQuery={undefined} currentUserId={currentUserId} />;
+  return (
+    <div>
+      <Chat key={id} id={id} initialMessages={[]} />;
+    </div>
+  );
 }
