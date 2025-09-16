@@ -4,10 +4,10 @@ import React from "react";
 
 import { ResearchDescription } from "@/components/Dashboard/DashboardDescriptin";
 import { DashboardHeader } from "@/components/Dashboard/DashboardHeader";
-import { CounterCard } from "@/components/WorkSpace/ResultTab/Charts/Counter";
-import { PieChart } from "@/components/WorkSpace/ResultTab/Charts/PieChart";
-import QueryResultsTable from "@/components/WorkSpace/ResultTab";
-import { BarChart } from "@/components/WorkSpace/ResultTab/Charts/BarChart";
+import { CounterCard } from "@/components/Console/ResultTab/Charts/Counter";
+import { PieChart } from "@/components/Console/ResultTab/Charts/PieChart";
+import QueryResultsTable from "@/components/Console/ResultTab";
+import { BarChart } from "@/components/Console/ResultTab/Charts/BarChart";
 
 export default function Dashboard() {
   const degenTransactionData = {

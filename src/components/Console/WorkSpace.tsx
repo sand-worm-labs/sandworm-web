@@ -9,11 +9,11 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { WorkspaceTabs } from "@/components/WorkSpace/WorkspaceTabs";
+import { WorkspaceTabs } from "@/components/Console/WorkspaceTabs";
 import { QueryHistory } from "@/components/ExplorerPanels/QueryHistory";
 import { QueryExplorer } from "@/components/ExplorerPanels/QueryExplorer";
-import { SettingsPanel } from "@/components/WorkSpace/SettingsPanel";
-import { WormAiPanel } from "@/components/WorkSpace/WormAIPanel";
+import { SettingsPanel } from "@/components/Console/SettingsPanel";
+import { WormAiPanel } from "@/components/Console/WormAIPanel";
 import type { Query } from "@/types";
 
 type ViewType =
