@@ -8,7 +8,7 @@ import type { Query } from "@/types";
 import { useDeleteQuery } from "@/hooks/useDeleteQuery";
 
 import { Input } from "../ui/input";
-import { DeleteQueryModal } from "../WorkSpace/DeleteQueryModal";
+import { DeleteQueryModal } from "../Console/DeleteQueryModal";
 
 interface IQueryExplorerCardListProps {
   query: Query[];
@@ -23,7 +23,7 @@ export const QueryExplorerCardList: React.FC<IQueryExplorerCardListProps> = ({
   const { handleDelete } = useDeleteQuery();
 
   const openQueryInTab = (queryData: any) => {
-    router.push(`/workspace/${queryData.id}`);
+    router.push(`/console/${queryData.id}`);
   };
 
   // todo: HOOOKSSSS!
