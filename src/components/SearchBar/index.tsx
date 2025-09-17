@@ -55,7 +55,7 @@ export const SearchBar = () => {
       const tab = searchParams.get("tab") || "all";
       const page = "1";
 
-      const baseUrl = `/explore?tab=${tab}&page=${page}`;
+      const baseUrl = `workspace/explore?tab=${tab}&page=${page}`;
       const searchUrl = finalQuery
         ? `${baseUrl}&search=${encodeURIComponent(finalQuery)}`
         : baseUrl;
@@ -131,7 +131,7 @@ export const SearchBar = () => {
                   const page = "1";
 
                   router.push(
-                    `/explore?tab=${tab}&page=${page}&search=${encodeURIComponent(item)}`
+                    `workspace/explore?tab=${tab}&page=${page}&search=${encodeURIComponent(item)}`
                   );
                 }}
               >
