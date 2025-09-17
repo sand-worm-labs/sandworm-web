@@ -8,6 +8,7 @@ import {
   ArrowUpRight,
   UserPlus,
 } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -20,15 +21,18 @@ import {
 import { Button } from "@/components/ui/button";
 
 export const AccountDropdown = () => {
-  const user = {
-    name: "Simi Ade",
-    avatarUrl:
-      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=256&q=80&auto=format&fit=crop",
-    plan: "Pro",
-  };
+  const { data: session } = useSession();
+  const user = session?.user;
+
+  // const userdemo = {
+  //   name: "Simi Ade",
+  //   avatarUrl:
+  //     "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=256&q=80&auto=format&fit=crop",
+  //   plan: "Pro",
+  // };
 
   return (
-    <div className="mx-auto mb-5">
+    <div className="mx-auto mb-5 dark bg-black">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
@@ -37,21 +41,26 @@ export const AccountDropdown = () => {
           >
             <div className="flex items-center gap-3">
               <Avatar className="h-8 w-8">
-                <AvatarImage src={user.avatarUrl} alt={user.name} />
-                <AvatarFallback>{user.name.split(" ")[0][0]}</AvatarFallback>
+                <AvatarImage
+                  src={user?.image ?? undefined}
+                  alt={user?.name ?? "User"}
+                />
+                <AvatarFallback>
+                  {user?.name?.split(" ")[0]?.[0] ?? "U"}
+                </AvatarFallback>
               </Avatar>
               <div className="flex flex-col text-left leading-tight">
-                <span className="text-sm font-medium">{user.name}</span>
-                <span className="text-xs text-muted-foreground">
-                  {user.plan} plan
+                <span className="text-sm font-medium">
+                  {user?.name ?? "Guest"}
                 </span>
+                <span className="text-xs text-muted-foreground">free plan</span>
               </div>
             </div>
             <ChevronDown className="ml-2 h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent className="w-56" align="end">
+        <DropdownMenuContent className="w-56 dark bg-black" align="end">
           <DropdownMenuItem className="justify-start gap-3">
             <CreditCard className="h-4 w-4" />
             <div className="flex flex-col text-left">

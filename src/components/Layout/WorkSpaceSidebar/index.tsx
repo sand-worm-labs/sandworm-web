@@ -10,9 +10,9 @@ interface NavItem {
 }
 
 const mainNav: NavItem[] = [
-  { name: "Home", href: "/", icon: Home },
+  { name: "Home", href: "/workspace", icon: Home },
   { name: "Sessions", href: "/sessions", icon: Clock },
-  { name: "Explore", href: "/explore", icon: Search },
+  { name: "Explore", href: "workspace/explore", icon: Search },
 ];
 
 const toolsNav: NavItem[] = [
