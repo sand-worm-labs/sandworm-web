@@ -7,7 +7,7 @@ import { SandwormLogo } from "@/components/Assets";
 import { Badge } from "@/components/ui/badge";
 
 const navLinks = [
-  { name: "Explore", href: "/explore" },
+  { name: "Explore", href: "workspace/explore" },
   { name: "Worm AI", href: "/chat" },
   { name: "Docs", href: "https://docs.sandwormlabs.xyz", isExternal: true },
   {
@@ -94,7 +94,7 @@ export const MainHeader = () => {
             </Link>
           ))}
           <Link
-            href="/explore"
+            href="workspace/explore"
             className="border py-1.5 bg-white text-black rounded px-4 text-[0.9rem] font-medium"
             onClick={() => setIsOpen(false)}
           >

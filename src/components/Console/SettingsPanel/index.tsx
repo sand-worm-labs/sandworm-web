@@ -97,7 +97,9 @@ export const SettingsPanel: React.FC = () => {
             <Select
               value={editorTheme}
               onValueChange={value => {
-                setEditorTheme(value);
+                setEditorTheme(
+                  value as "sandworm" | "vs-dark" | "vs-light" | "monokai"
+                );
                 toast.success(`Theme changed to ${value}`);
               }}
             >

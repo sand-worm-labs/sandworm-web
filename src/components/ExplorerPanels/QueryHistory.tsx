@@ -10,7 +10,7 @@ import { QueryCard } from "./QueryHistory/QueryCard";
 
 interface VersionEntry {
   id: number;
-  timestamp: string;
+  createdAt: string;
   query: string;
 }
 
@@ -45,7 +45,7 @@ export const QueryHistory: React.FC<QueryHistoryProps> = ({
 
       try {
         const data = await fetchQueryUpdate(queryId);
-        setVersions(data);
+        setVersions(data as VersionEntry[]);
       } catch (err) {
         console.error("Error fetching query versions:", err);
         setVersions([]);

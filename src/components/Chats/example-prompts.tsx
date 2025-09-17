@@ -5,6 +5,10 @@ const examplePrompts = [
   { id: "eliza", prompt: "What's Vitalik's wallet holding rn?" },
   { id: "agent", prompt: "Most active token on Base today?" },
   { id: "create-agent", prompt: "How do I track airdrops to new wallets?" },
+  {
+    id: "analytics",
+    prompt: "Show me top 10 NFT projects by volume this week.",
+  },
 ];
 
 interface ExamplePromptsProps {
@@ -13,7 +17,7 @@ interface ExamplePromptsProps {
 
 export function ExamplePrompts({ onPromptSelect }: ExamplePromptsProps) {
   return (
-    <div className="flex w-full flex-wrap items-center justify-center gap-2 md:gap-4 dark">
+    <div className="w-full grid grid-cols-2 items-center justify-center gap-2 md:gap-4 dark">
       {examplePrompts.map(({ id, prompt }) => (
         <button
           type="button"
