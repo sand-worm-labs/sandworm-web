@@ -25,7 +25,6 @@
   },
   "dependencies": {
     "@ai-sdk/google": "^0.0.51",
-    "cypress": "^14.2.1",
     "@auth/firebase-adapter": "^2.8.0",
     "@bprogress/next": "^3.2.12",
     "@dicebear/collection": "^9.2.2",
@@ -79,6 +78,7 @@
     "cmdk": "1.0.0",
     "config": "^3.3.12",
     "crypto": "^1.0.1",
+    "cypress": "^14.2.1",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
     "dotenv": "^16.4.7",
@@ -101,6 +101,7 @@
     "openai\n": "link:@langchain/openai\n",
     "option-t": "^52.1.0",
     "papaparse": "^5.5.2",
+    "postgres": "^3.4.7",
     "prompts": "link:@langchain/core/prompts",
     "punycode": "^2.3.1",
     "react": "^19.0.0",
