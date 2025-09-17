@@ -38,7 +38,7 @@ const workflowSteps = [
   },
   {
     title: "Share & Collaborate",
-    url: "/explore",
+    url: "workspace/explore",
     learnMoreUrl: "https://docs.sandwormlabs.xyz",
     imageUrl: "/img/sample.png",
     description: "Publish useful queries to the community for open discovery.",

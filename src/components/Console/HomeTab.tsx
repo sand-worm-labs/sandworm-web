@@ -242,7 +242,15 @@ export const HomeTab = () => {
         </TabsList>
 
         <ExamplesModal
-          createTab={createTab}
+          createTab={
+            createTab as (
+              title: string,
+              id?: string | undefined,
+              type?: string | undefined,
+              query?: string | undefined,
+              executionMethod?: "rpc" | "indexed" | undefined
+            ) => void
+          }
           isOpen={showExamplesModal}
           onClose={() => setShowExamplesModal(false)}
         />

@@ -31,7 +31,7 @@ export const ExplorerBreadCrumbs: React.FC<IExplorerBreadCrumbsProps> = ({
     if (params.namespace) newParams.set("namespace", params.namespace);
     if (params.id) newParams.set("id", params.id);
     if (params.type) newParams.set("type", params.type);
-    router.push(`/workspace?${newParams.toString()}`);
+    router.push(`/console?${newParams.toString()}`);
   };
 
   return (

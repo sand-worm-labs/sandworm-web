@@ -29,7 +29,7 @@ export const QueryList: React.FC<IQueryListProps> = ({
     const newPage = selected + 1;
     const params = new URLSearchParams(searchParams.toString());
     params.set("page", newPage.toString());
-    router.push(`/explore?${params.toString()}`);
+    router.push(`workspace/explore?${params.toString()}`);
     window.scrollTo(0, 0);
   };
 

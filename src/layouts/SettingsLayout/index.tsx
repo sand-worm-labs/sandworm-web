@@ -48,7 +48,7 @@ export default function SettingsLayout({
             </div>
           </div>
           <Link
-            href="/explore"
+            href="workspace/explore"
             className="inline-block font-semibold rounded py-1.5 lg:px-4  border-borderLight border text-xs px-3 bg-white/15  hover:bg-btnHover"
           >
             Go to Public Profile
