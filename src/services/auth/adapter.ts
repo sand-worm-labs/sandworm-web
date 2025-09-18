@@ -5,7 +5,7 @@ import {
   AccountService,
   SessionService,
   VerificationService,
-} from "../firebase/db/users";
+} from "../postgress/db/users";
 
 export function FirebaseAuthAdapter(): Adapter {
   return {
