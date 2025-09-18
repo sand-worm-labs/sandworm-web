@@ -1,5 +1,5 @@
-import type { Result, Schema, ServiceResult } from "@/services/firebase/db";
-import { DataResult, db, toResult } from "@/services/firebase/db";
+import type { Result, Schema, ServiceResult } from "@/services/postgress/db";
+import { DataResult, db, toResult } from "@/services/postgress/db";
 
 export interface SocialLinks {
   telegram: string;
