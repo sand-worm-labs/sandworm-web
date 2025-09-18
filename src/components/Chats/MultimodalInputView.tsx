@@ -6,8 +6,9 @@ import type { Attachment } from "ai";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
 
-import { ArrowUpIcon, StopIcon } from "./icons";
+import { StopIcon } from "./icons";
 import { PreviewAttachment } from "./preview-attachment";
+import { FaPaperPlane } from "react-icons/fa6";
 
 interface MultimodalInputUIProps {
   input: string;
@@ -72,28 +73,40 @@ export const MultimodalInputView = forwardRef<
           value={input}
           onChange={onInputChange}
           disabled={disabled}
-          className="min-h-[30px] overflow-hidden resize-none rounded-lg border-none bg-white/10 text-white text-xl placeholder:text-xl/50 focus:ring-0 focus:outline-none focus:border-none dark:bg-zinc-950/10 dark:text-white dark:placeholder:text-zinc-400 scrollbar-thin scrollbar-thumb-rounded-md scrollbar-thumb-zinc-700 py-4 px-5"
-          rows={5}
+          className="min-h-[50px] overflow-hidden resize-none rounded-3xl border border-[#E6E0F1] bg-white text-white text-sm placeholder:text-sm  focus:ring-0  focus:outline-none focus:border-none dark:bg-zinc-950/10 dark:text-white dark:placeholder:text-zinc-400 scrollbar-thin scrollbar-thumb-rounded-md scrollbar-thumb-zinc-700 py-4 px-5 placeholder:text-[#868E96] focus:border-orange-500 focus:ring-orange-500"
+          rows={6}
         />
 
         {/* Action Button */}
-        {isLoading ? (
+
+        <div className="flex flex-row gap-2 absolute bottom-5 right-5">
           <Button
-            className="rounded-full p-1.5 h-fit absolute bottom-2 right-2 m-0.5 text-white"
+            className="rounded-full p-2.5 h-fit m-0.5  text-sm bg-[#E7EBF0] text-black px-4 border-[#B5C8DB] border"
             onClick={onStop}
-            disabled={disabled}
           >
-            <StopIcon size={14} />
+            Deep Research
           </Button>
-        ) : (
-          <Button
-            className="rounded-full p-1.5 h-fit absolute bottom-2 right-2 m-0.5 text-white"
-            onClick={onSubmit}
-            disabled={disabled || input.length === 0 || uploadQueue.length > 0}
-          >
-            <ArrowUpIcon size={14} />
-          </Button>
-        )}
+
+          {isLoading ? (
+            <Button
+              className="rounded-full p-2.5 h-fit  m-0.5 text-white"
+              onClick={onStop}
+              disabled={disabled}
+            >
+              <StopIcon size={16} />
+            </Button>
+          ) : (
+            <Button
+              className="rounded-full p-2.5 h-fit m-0.5 text-white"
+              onClick={onSubmit}
+              disabled={
+                disabled || input.length === 0 || uploadQueue.length > 0
+              }
+            >
+              <FaPaperPlane size={16} />
+            </Button>
+          )}
+        </div>
       </div>
     );
   }
