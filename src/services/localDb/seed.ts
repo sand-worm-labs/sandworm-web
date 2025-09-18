@@ -1,10 +1,10 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { faker } from "@faker-js/faker";
 
-import { QueryService } from "@/services/postgress/db/QueryService";
+import { QueryService } from "@/services/database/postgress/db/QueryService";
 
 import { UserService } from "../postgress/db/users";
-import { db } from "../postgress/db";
+import { db } from "@/services/database/postgres";
 
 const queries = [
   `SELECT id, name, email FROM users WHERE active = true ORDER BY created_at DESC LIMIT 10;`,

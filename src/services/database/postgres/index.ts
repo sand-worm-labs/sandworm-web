@@ -1,8 +1,4 @@
-import admin from "firebase-admin";
-import { getFirestore } from "firebase-admin/firestore";
-import { getAuth } from "firebase-admin/auth";
-
-import seedDatabase from "../localDb/seed";
+import seedDatabase from "../../localDb/seed";
 
 function initAdminApp() {
   if (admin.apps.length) {
