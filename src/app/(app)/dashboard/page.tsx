@@ -54,7 +54,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="container mx-auto  mt-12 pb-20 dark">
+    <div className="container mx-auto  mt-12 pb-20 ">
       <DashboardHeader />
       <ResearchDescription />
       <div className="mt-8 border border-[#1a1a1a] rounded-md p-4 bg-[#0d0d0d]">

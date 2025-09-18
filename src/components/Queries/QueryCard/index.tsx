@@ -87,11 +87,11 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
             >
               {query.title}
             </Link>
-            <p className="text-xs text-[#ffffff90] capitalize">
+            <p className="text-xs dark:text-[#ffffff90] capitalize">
               created {new Date(query.updatedAt).toLocaleDateString("en-US")}
             </p>
             {query.description && (
-              <p className="text-xs mt-1 text-white">
+              <p className="text-xs mt-1 dark:text-white">
                 {showFullDesc || !shouldTruncate
                   ? query.description
                   : `${truncatedDescription}... `}
@@ -147,7 +147,7 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
           style={twilight}
           customStyle={{
             margin: 0,
-            background: "#ffffff10",
+            background: "#000000",
             borderRadius: 0,
             borderWidth: 1,
             borderColor: "#ffffff25",
@@ -167,19 +167,19 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
       <div className="flex items-center justify-between mt-2">
         <div>
           {query.forked_from?.trim() && (
-            <span className="bg-[#1f1f1f] border border-orange-300 text-orange-200 px-2 rounded-full text-[11px] inline-block">
+            <span className="dark:bg-[#1f1f1f] border border-orange-300 text-orange-200 px-2 rounded-full text-[11px] inline-block">
               Forked Query
             </span>
           )}
         </div>
 
         {query.tags && query.tags.length > 0 && (
-          <div className="flex flex-wrap gap-2 text-xs text-orange-300 justify-end">
+          <div className="flex flex-wrap gap-2 text-xs text-orange-500 dark:text-orange-300 justify-end">
             {query.tags.map((tag, index) => (
               <span
                 // eslint-disable-next-line react/no-array-index-key
                 key={index}
-                className="bg-[#1a1a1a] border border-[#333] px-2 py-0.5 rounded-full"
+                className="dark:bg-[#1a1a1a] border dark:border-[#333] border-black/10 px-2 py-0.5 rounded-full"
               >
                 #{tag}
               </span>
