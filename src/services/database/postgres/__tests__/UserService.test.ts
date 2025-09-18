@@ -1,9 +1,9 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import "@/services/postgress";
+import "@/services/database/postgres";
 import * as admin from "firebase-admin";
 import { expect } from "@jest/globals";
 
-import { UserService } from "@/services/postgress/db/users/UserService";
+import { UserService } from "@/services/database/postgres/db/users";
 
 jest.setTimeout(100000);
 

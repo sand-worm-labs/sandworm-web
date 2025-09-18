@@ -3,7 +3,7 @@ import "@/services/postgress";
 import * as admin from "firebase-admin";
 import { expect } from "@jest/globals";
 
-import { QueryService } from "@/services/postgress/db/QueryService";
+import { QueryService } from "@/services/database/postgress/db/QueryService";
 
 jest.setTimeout(100000);
 
