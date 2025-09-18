@@ -5,7 +5,7 @@ import {
   DataResult,
   db,
   toResult,
-} from "@/services/firebase/db";
+} from "@/services/postgress/db";
 
 import { UserService } from "./UserService";
 

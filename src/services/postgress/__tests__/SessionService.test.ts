@@ -1,8 +1,8 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import "@/services/firebase";
+import "@/services/postgress";
 import { expect } from "@jest/globals";
 
-import { SessionService } from "@/services/firebase/db/users/SessionService"; // Adjust the import path accordingly
+import { SessionService } from "@/services/postgress/db/users/SessionService"; // Adjust the import path accordingly
 
 import { UserService } from "../db/users";
 

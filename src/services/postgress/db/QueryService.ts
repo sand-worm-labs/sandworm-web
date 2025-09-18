@@ -5,14 +5,14 @@ import type {
   Result,
   Schema,
   ServiceResult,
-} from "@/services/firebase/db";
+} from "@/services/postgress/db";
 import {
   toPaginatedResult,
   db,
   toResult,
   DataResult,
   getPaginationDetails,
-} from "@/services/firebase/db";
+} from "@/services/postgress/db";
 
 export interface Query {
   title: string;

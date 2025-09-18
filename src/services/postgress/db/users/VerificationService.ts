@@ -3,7 +3,7 @@ import {
   type ServiceResult,
   DataResult,
   db,
-} from "@/services/firebase/db";
+} from "@/services/postgress/db";
 
 export class VerificationService {
   /**

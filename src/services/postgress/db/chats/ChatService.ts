@@ -1,7 +1,7 @@
 import type { Message } from "ai";
 
-import type { ServiceResult, Result, Schema } from "@/services/firebase/db";
-import { db, DataResult, toResult, toResults } from "@/services/firebase/db";
+import type { ServiceResult, Result, Schema } from "@/services/postgress/db";
+import { db, DataResult, toResult, toResults } from "@/services/postgress/db";
 
 export interface Chat {
   id?: string;
