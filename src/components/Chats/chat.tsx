@@ -32,7 +32,7 @@ export function Chat({
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
 
   return (
-    <div className="flex flex-row justify-center pb-4 md:pb-8 h-dvh bg-background">
+    <div className="flex flex-row justify-center pb-4 md:pb-8 h-dvh ">
       <div className="flex flex-col mt-32 items-center gap-4">
         <h1 className="text-3xl xl:text-4xl font-medium text-center tracking-tighter text-pretty">
           What do you want to explore onchain today?

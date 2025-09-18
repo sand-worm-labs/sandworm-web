@@ -24,7 +24,9 @@ export const AppHeader: FC = () => {
         <span className="ml-3 font-medium text-xl uppercase hidden md:inline-block">
           SandW0rm.
         </span>
-        <Badge className="bg-white/15 rounded-lg ml-2">beta</Badge>
+        <Badge className="bg-white/15 rounded-lg ml-2 text-black dark:text-white">
+          beta
+        </Badge>
       </Link>
       <div className="hidden md:block ">
         <SearchBar />
