@@ -75,14 +75,14 @@ export default async function Explore({ searchParams }: ExplorePageProps) {
 
   const isAllEmpty = allError && starredError && forkedError;
   return (
-    <div className="dark text-white min-h-[88vh]">
+    <div className=" dark:text-white min-h-[88vh]">
       <Head>
         <title>Explore</title>
       </Head>
 
       <div className="pt-10">
         {isAllEmpty ? (
-          <div className="flex items-center justify-center flex-col text-white font-medium text-lg mt-16 px-3">
+          <div className="flex items-center justify-center flex-col dark:text-white font-medium text-lg mt-16 px-3">
             <Image
               src="/img/nodata.svg"
               width={400}

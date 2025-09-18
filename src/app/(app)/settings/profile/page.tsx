@@ -33,7 +33,7 @@ export default function ProfileSettings() {
   return (
     <div>
       <div className="border-b">
-        <h2 className="text-xl font-medium text-white mb-2 ">Public Profile</h2>
+        <h2 className="text-xl font-medium mb-2 ">Public Profile</h2>
       </div>
 
       <form
@@ -47,7 +47,7 @@ export default function ProfileSettings() {
               type="text"
               name="username"
               placeholder="Username"
-              className="w-full rounded-md bg-dark-gray p-2 text-white text-sm max-w-[30rem] block"
+              className="w-full rounded-md dark:bg-dark-gray p-2 dark:text-white text-sm max-w-[30rem] block"
               value={formData.username}
               onChange={handleChange}
             />

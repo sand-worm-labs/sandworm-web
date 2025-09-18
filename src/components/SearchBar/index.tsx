@@ -101,7 +101,7 @@ export const SearchBar = () => {
           }}
           onKeyDown={handleKeyDown}
           onFocus={() => setIsActive(true)}
-          className="w-full pl-10 pr-16 py-1 rounded-md bg-[#1A1A1A] border border-[#ffffff60] text-white placeholder-[#8b949e] focus:outline-none focus:ring focus:ring-gray-300 transition text-sm md:text-sm"
+          className="w-full pl-10 pr-16 py-1 rounded-md dark:bg-[#1A1A1A] border border-[#ffffff60] dark:text-white placeholder-[#8b949e] focus:outline-none focus:ring focus:ring-gray-300 transition text-sm md:text-sm"
         />
         <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-text-gray select-none font-medium">
           Press <kbd className="bg-black/90 px-1 rounded">Enter</kbd>
@@ -109,7 +109,7 @@ export const SearchBar = () => {
       </div>
 
       {isActive && cachedQueries.length > 0 && (
-        <ul className="absolute z-10 top-full mt-1 w-full bg-black border border-[#30363d] rounded-md shadow-md max-h-48 overflow-y-auto">
+        <ul className="absolute z-10 top-full mt-1 w-full dark:bg-black border border-[#30363d] rounded-md shadow-md max-h-48 overflow-y-auto">
           {cachedQueries.map((item, i) => (
             // eslint-disable-next-line react/no-array-index-key
             <li key={i} className="w-full">

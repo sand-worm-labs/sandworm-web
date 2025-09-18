@@ -45,7 +45,8 @@ body {
 body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
-  color: theme("colors.text.primary");
+  /*   color: theme("colors.text.primary");
+ */
   accent-color: theme("colors.brand.accent");
 }
 

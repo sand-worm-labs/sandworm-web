@@ -32,12 +32,12 @@ export const AccountDropdown = () => {
   // };
 
   return (
-    <div className="mx-auto mb-5 dark bg-black">
+    <div className="mx-auto mb-5 dark:bg-black">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
-            className="px-2 py-1 rounded-md flex items-center gap-3 bg-black"
+            className="px-2 py-1 rounded-md flex items-center gap-3 "
           >
             <div className="flex items-center gap-3">
               <Avatar className="h-8 w-8">
@@ -60,7 +60,7 @@ export const AccountDropdown = () => {
           </Button>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent className="w-56 dark bg-black" align="end">
+        <DropdownMenuContent className="w-56 " align="end">
           <DropdownMenuItem className="justify-start gap-3">
             <CreditCard className="h-4 w-4" />
             <div className="flex flex-col text-left">
