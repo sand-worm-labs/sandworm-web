@@ -122,7 +122,6 @@
     "tailwind-merge": "^3.0.2",
     "tailwindcss": "^3.4.14",
     "tailwindcss-animate": "^1.0.7",
-    "typesaurus": "^10.7.0",
     "winston": "^3.14.1",
     "zod": "^3.25.67",
     "zustand": "^5.0.3"
