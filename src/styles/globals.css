@@ -4,6 +4,24 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "Helvetica Neue";
+  src: url("/fonts/HelveticaNeue-HeavyCond.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Helvetica Neue";
+  src: url("/fonts/HelveticaNeue-Medium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+}
+
+.helvetica-neue {
+  font-family: "Helvetica Neue", sans-serif;
+}
+
 :root {
   --primary: "#ea580b";
   --background: 255, 0, 0;
@@ -48,6 +66,10 @@ body {
   /*   color: theme("colors.text.primary");
  */
   accent-color: theme("colors.brand.accent");
+}
+
+h1 {
+  font-family: "Helvetica Neue";
 }
 
 /* scrollbar */
@@ -280,15 +302,14 @@ label {
 
 .line-bg {
   position: relative;
-  background-color: black;
 }
 
 .grid-overlay {
   position: absolute;
   inset: 0;
-  background-image:
+  /*   background-image:
     linear-gradient(rgba(255, 255, 255, 0.1) 1.5px, transparent 1.5px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1.5px, transparent 1.5px);
+    linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1.5px, transparent 1.5px); */
   background-size: 100px 100px;
   z-index: 0;
   filter: blur(0.7px);
@@ -298,7 +319,7 @@ label {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle, rgba(0, 0, 0, 0) 30%, black 90%);
+  /*   background: radial-gradient(circle, rgba(0, 0, 0, 0) 30%, black 90%); */
   pointer-events: none;
 }
 
