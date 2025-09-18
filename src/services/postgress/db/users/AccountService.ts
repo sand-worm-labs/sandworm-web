@@ -1,6 +1,6 @@
 import type { AdapterAccount } from "next-auth/adapters";
 
-import { type ServiceResult, DataResult, db } from "@/services/firebase/db";
+import { type ServiceResult, DataResult, db } from "@/services/postgress/db";
 
 export class AccountService {
   static async linkAccount(
