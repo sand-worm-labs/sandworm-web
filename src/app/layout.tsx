@@ -1,7 +1,7 @@
 import "@/styles/globals.css";
 import "@mysten/dapp-kit/dist/index.css";
 
-import { DM_Mono as DMMono } from "next/font/google";
+import { Azeret_Mono as AzeretMono } from "next/font/google";
 import Script from "next/script";
 
 import { QueryProvider } from "@/providers/query";
@@ -19,7 +19,7 @@ export const metadata = {
   },
 };
 
-const dmMono = DMMono({
+const azeretMono = AzeretMono({
   subsets: ["latin"],
   display: "swap",
   adjustFontFallback: false,
@@ -44,7 +44,7 @@ export default async function RootLayout({ children }: ChildrenProps) {
       </Script>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
         <body
-          className={`${dmMono.className} h-full flex flex-col justify-between`}
+          className={`${azeretMono.className} h-full flex flex-col justify-between`}
         >
           {/*      <BannerAlert
           id="wql-downtime"
