@@ -12,7 +12,7 @@ RUN npm install --global pm2
 COPY ./package*.json ./
 
 # Install dependencies
-RUN npm install
+RUN npm install --force
 
 # Change ownership to the non-root user
 RUN chown -R node:node /usr/app
