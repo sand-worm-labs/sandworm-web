@@ -14,18 +14,6 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
-  # pgAdmin web UI
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: my-pgadmin
-    depends_on:
-      - db
-    ports:
-      - "8081:80"
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
-
   # Next.js app using Yarn
   app:
     build:
