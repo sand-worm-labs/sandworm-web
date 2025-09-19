@@ -1,5 +1,4 @@
 import { pgTable, varchar, timestamp } from "drizzle-orm/pg-core";
-import { z } from "zod";
 
 // Session table
 export const sessions = pgTable("sessions", {
@@ -7,11 +6,3 @@ export const sessions = pgTable("sessions", {
   userId: varchar("user_id", { length: 255 }).notNull(),
   expires: timestamp("expires", { mode: "date" }).notNull(),
 });
-
-export const sessionSchema = z.object({
-  sessionToken: z.string().max(255),
-  userId: z.string().max(255),
-  expires: z.date(), // since Drizzle timestamp({ mode: "date" }) → JS Date
-});
-
-export type Session = z.infer<typeof sessionSchema>;
