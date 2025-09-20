@@ -1,4 +1,5 @@
-export * as chat from "./chats";
-export * as session from "./sessions";
-export * as account from "./accounts";
-export * as verificationToken from "./verificationTokens";
+export * from "./chats";
+export * from "./sessions";
+export * from "./accounts";
+export * from "./verificationTokens";
+export * from "./users";
