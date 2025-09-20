@@ -18,7 +18,7 @@ export const AppHeader: FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <header className="px-8 py-2 flex justify-between items-center bg-[#F4FEFF] dark:bg-[#000000]">
+    <header className="px-8 py-2 flex justify-between items-center  dark:bg-[#000000] border-b border-[#FEFEFF]">
       <Link href="/" className="flex items-center">
         <SandwormLogo />
         <span className="ml-3 font-medium text-xl uppercase hidden md:inline-block">
