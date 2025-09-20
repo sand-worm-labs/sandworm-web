@@ -5,6 +5,7 @@ import {
   integer,
   primaryKey,
 } from "drizzle-orm/pg-core";
+import { z } from "zod";
 
 // Account table
 export const accounts = pgTable(
@@ -28,3 +29,19 @@ export const accounts = pgTable(
     pk: primaryKey(table.provider, table.providerAccountId),
   })
 );
+
+export const accountSchema = z.object({
+  userId: z.string().max(255),
+  type: z.string().max(255),
+  provider: z.string().max(255),
+  providerAccountId: z.string().max(255),
+  refreshToken: z.string().nullable().optional(),
+  accessToken: z.string().nullable().optional(),
+  expiresAt: z.number().nullable().optional(), // unix timestamp
+  tokenType: z.string().max(255).nullable().optional(),
+  scope: z.string().nullable().optional(),
+  idToken: z.string().nullable().optional(),
+  sessionState: z.string().nullable().optional(),
+});
+
+export type Account = z.infer<typeof accountSchema>;
