@@ -24,23 +24,16 @@ export const AccountDropdown = () => {
   const { data: session } = useSession();
   const user = session?.user;
 
-  // const userdemo = {
-  //   name: "Simi Ade",
-  //   avatarUrl:
-  //     "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=256&q=80&auto=format&fit=crop",
-  //   plan: "Pro",
-  // };
-
   return (
-    <div className="mx-auto mb-5 dark:bg-black">
+    <div className="w-[90%] mx-auto mb-5 dark:bg-black ">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
-            className="px-2 py-1 rounded-md flex items-center gap-3 "
+            className="px-3  flex items-center gap-3 bg-white rounded-xl h-14 border border-[#E9ECEF] "
           >
             <div className="flex items-center gap-3">
-              <Avatar className="h-8 w-8">
+              <Avatar className="h-10 w-10">
                 <AvatarImage
                   src={user?.image ?? undefined}
                   alt={user?.name ?? "User"}
@@ -50,10 +43,7 @@ export const AccountDropdown = () => {
                 </AvatarFallback>
               </Avatar>
               <div className="flex flex-col text-left leading-tight">
-                <span className="text-sm font-medium">
-                  {user?.name ?? "Guest"}
-                </span>
-                <span className="text-xs text-muted-foreground">free plan</span>
+                <span className="text-sm "> @{user?.name ?? "Guest"}</span>
               </div>
             </div>
             <ChevronDown className="ml-2 h-4 w-4" />

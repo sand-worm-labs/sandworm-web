@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { CurrentUserProps } from "@/types";
 
-import { CreateQueryButton } from "../Queries/CreateQueryButton";
 import { DicebearAvatar } from "../DicebearAvatar";
 import { ThemeTogggle } from "../Theme/ThemeToggle";
 
@@ -27,7 +26,6 @@ export const ProfileMenu: FC<CurrentUserProps> = ({ currentUser }) => {
 
   return (
     <div className="flex space-x-2 items-center">
-      <CreateQueryButton />
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger asChild>
           <button type="button" className=" hover:bg-customgray rounded-full">

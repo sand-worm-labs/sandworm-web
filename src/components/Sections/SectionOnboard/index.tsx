@@ -5,7 +5,6 @@ import { FaDiscord } from "react-icons/fa";
 export const SectionOnboard = () => {
   return (
     <section className="mt-16 mb-16 container mx-auto px-5">
-      <div className="grid-overlay" />
       <div className="  mx-auto mt-4 py-16 text-center pt-8 content ">
         <div className="rounded-lg border border-[#ffffff30] lg:w-[80%] mx-auto p-1">
           <div className="lg:py-28 py-20 lg:px-8 px-4 border-[#ffffff60] border rounded-lg  flex flex-col items-center justify-center">
