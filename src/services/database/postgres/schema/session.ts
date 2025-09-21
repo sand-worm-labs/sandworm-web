@@ -1,7 +1,7 @@
 import { pgTable, varchar, timestamp } from "drizzle-orm/pg-core";
 import { z } from "zod";
 // Session table
-export const sessions = pgTable("sessions", {
+export const session = pgTable("Session", {
   sessionToken: varchar("session_token", { length: 255 }).primaryKey(),
   userId: varchar("user_id", { length: 255 }).notNull(),
   expires: timestamp("expires", { mode: "date" }).notNull(),
