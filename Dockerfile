@@ -1,34 +1,32 @@
-# Use an official Node.js runtime as a base image
+# Use Node 20.10 Alpine
 FROM node:20.10-alpine
 
 # Set working directory
 WORKDIR /usr/app
 
-# Install PM2 globally
-RUN npm install --global pm2
+# Install Yarn globally
+RUN corepack enable
 
-# Copy "package.json" and "package-lock.json" before other files
-# Utilise Docker cache to save re-installing dependencies if unchanged
-COPY ./package*.json ./
+# Copy package.json and yarn.lock to leverage Docker cache
+COPY package.json yarn.lock ./
 
 # Install dependencies
-RUN npm install --force
+RUN yarn install --frozen-lockfile
 
 # Change ownership to the non-root user
 RUN chown -R node:node /usr/app
 
-# Copy all files
+# Copy the rest of the app files
 COPY ./ ./
 
-# Build app
-#RUN npm run build
+# Build app if needed
+# RUN yarn build
 
-# Expose the listening port
+# Expose port
 EXPOSE 3000
 
-# Run container as non-root (unprivileged) user
-# The "node" user is provided in the Node.js Alpine base image
+# Run container as non-root user
 USER node
 
 # Launch app with PM2
-CMD [ "pm2-runtime", "start", "npm", "--", "run", "dev" ]
+CMD ["pm2-runtime", "start", "npm", "--", "run", "dev"]]
