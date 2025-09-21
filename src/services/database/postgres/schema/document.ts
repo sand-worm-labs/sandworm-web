@@ -1,9 +1,9 @@
 import { pgTable, varchar, timestamp, uuid, text } from "drizzle-orm/pg-core";
 import { z } from "zod";
 
-import { user } from "./user";
+import { UserTable } from "./user";
 
-export const document = pgTable("Document", {
+export const DocumentTable = pgTable("Document", {
   id: uuid("id").notNull().defaultRandom(),
   createdAt: timestamp("createdAt").notNull(),
   title: text("title").notNull(),
@@ -13,7 +13,7 @@ export const document = pgTable("Document", {
     .default("text"),
   userId: uuid("userId")
     .notNull()
-    .references(() => user.id),
+    .references(() => UserTable.id),
 });
 
 // ============== Document Schema Type ==============

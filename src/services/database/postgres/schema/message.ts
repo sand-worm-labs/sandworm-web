@@ -1,13 +1,13 @@
 import { z } from "zod";
 import { json, pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 
-import { chat } from "./chat";
+import { ChatTable } from "./chat";
 
 export const message = pgTable("Message_v2", {
   id: uuid("id").primaryKey().notNull().defaultRandom(),
   chatId: uuid("chatId")
     .notNull()
-    .references(() => chat.id),
+    .references(() => ChatTable.id),
   role: varchar("role").notNull(),
   parts: json("parts").notNull(),
   attachments: json("attachments").notNull(),

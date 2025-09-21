@@ -7,7 +7,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { z } from "zod";
 
-import { chat } from "./chat";
+import { ChatTable } from "./chat";
 
 export const stream = pgTable(
   "Stream",
@@ -20,7 +20,7 @@ export const stream = pgTable(
     pk: primaryKey({ columns: [table.id] }),
     chatRef: foreignKey({
       columns: [table.chatId],
-      foreignColumns: [chat.id],
+      foreignColumns: [ChatTable.id],
     }),
   })
 );

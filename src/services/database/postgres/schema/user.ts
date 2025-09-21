@@ -49,7 +49,7 @@ type SocialLinks = z.infer<typeof SocialLinksType>;
 type Status = z.infer<typeof StatusType>;
 type Wallet = z.infer<typeof WalletType>[];
 
-export const user = pgTable("User", {
+export const UserTable = pgTable("User", {
   id: uuid("id").primaryKey().defaultRandom(),
   username: varchar("username", { length: 255 }).notNull(),
   email: varchar("email", { length: 255 }).notNull(),

@@ -9,8 +9,8 @@ import {
 } from "drizzle-orm/pg-core";
 import { z } from "zod";
 
-import { user } from "./user";
-import { document } from "./document";
+import { UserTable } from "./user";
+import { DocumentTable } from "./document";
 
 export const suggestion = pgTable(
   "Suggestion",
@@ -24,14 +24,14 @@ export const suggestion = pgTable(
     isResolved: boolean("isResolved").notNull().default(false),
     userId: uuid("userId")
       .notNull()
-      .references(() => user.id),
+      .references(() => UserTable.id),
     createdAt: timestamp("createdAt").notNull(),
   },
   table => ({
     pk: primaryKey({ columns: [table.id] }),
     documentRef: foreignKey({
       columns: [table.documentId, table.documentCreatedAt],
-      foreignColumns: [document.id, document.createdAt],
+      foreignColumns: [DocumentTable.id, DocumentTable.createdAt],
     }),
   })
 );
