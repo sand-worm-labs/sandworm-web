@@ -1,6 +1,6 @@
 import type { Message } from "ai";
 
-import { db } from "@/services/database/postgres";
+import { db } from "@/services/database/postgres/db";
 import type { ServiceResult } from "@/services/database/postgres/types";
 import { DataResult } from "@/services/database/postgres/types";
 import { chat } from "@/services/database/postgres/schema";
