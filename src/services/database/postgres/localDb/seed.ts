@@ -1,9 +1,10 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
+
+import "dotenv/config";
 import { faker } from "@faker-js/faker";
 import { sql } from "drizzle-orm";
 
-import { db } from "@/services/database/postgres";
-
+import { db } from "../db";
 import { UserTable } from "../schema";
 
 const queries = [
@@ -42,7 +43,7 @@ const queries = [
   `SELECT employees.name, projects.title 
    FROM employees 
    JOIN project_assignments ON employees.id = project_assignments.employee_id 
-   JOIN projects ON project_assignments.project_id = projects.id 
+  JOIN projects ON project_assignments.project_id = projects.id 
    WHERE projects.deadline > NOW();`,
   `SELECT movies.title, directors.name AS director, COUNT(actors.id) AS actor_count 
    FROM movies 
@@ -333,4 +334,13 @@ async function seedDatabase() {
   console.log("Database seeded successfully.");
 }
 
-export default seedDatabase;
+if (!("DATABASE_URL" in process.env))
+  throw new Error("DATABASE_URL not found on .env.development");
+
+const main = async () => {
+  console.log("Seed start");
+  await seedDatabase();
+  console.log("Seed done");
+};
+
+main();
