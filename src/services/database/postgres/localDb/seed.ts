@@ -1,10 +1,10 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { faker } from "@faker-js/faker";
+import { sql } from "drizzle-orm";
 
-import { QueryService } from "@/services/database/postgress/db/QueryService";
-
-import { UserService } from "../postgress/db/users";
 import { db } from "@/services/database/postgres";
+
+import { UserTable } from "../schema";
 
 const queries = [
   `SELECT id, name, email FROM users WHERE active = true ORDER BY created_at DESC LIMIT 10;`,
@@ -267,100 +267,66 @@ const queries = [
 ];
 
 async function seedDatabase() {
-  const hasData = await db.users.all();
+  const hasData = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(UserTable);
   if (hasData.length > 0) {
     console.log("Database already has data. Skipping seed.");
     return;
   }
-  // Generate 20 random users
-  const users = await Promise.all(
-    Array.from({ length: 20 }).map(async () => {
-      const user = await UserService.create(
-        faker.internet.username(),
-        faker.internet.email(),
-        faker.person.fullName(),
-        faker.image.avatar()
-      );
-      return user.success ? user.data : null;
-    })
-  );
 
+  // Generate 20 random users
+  const fakerUsers = Array.from({ length: 20 }, () => ({
+    username: faker.internet.username(),
+    email: faker.internet.email(),
+    name: faker.person.fullName(),
+    image: faker.image.avatar(),
+  }));
+  await db.insert(UserTable).values(fakerUsers);
+  const users = await db.select().from(UserTable);
   const validUsers = users.filter(user => user !== null);
   if (validUsers.length === 0) {
     console.error("No valid users created. Cannot proceed.");
     return;
   }
 
-  const queriesResult = await Promise.all(
-    queries.map(async (query, index) => {
-      const user = validUsers[index % validUsers.length]; // Ensure user exists
-      if (!user || !user.id) return null;
-      if (!user) return null;
-      const queryResult = await QueryService.create(
-        faker.lorem.sentence(), // Random title
-        faker.lorem.paragraph(), // Random description
-        user.id,
-        false,
-        query,
-        faker.lorem.words(3).split(" ") // Random tags
-      );
-      return queryResult.success ? queryResult.data : null;
-    })
-  );
+  let fakerQueries = queries.map((query, index) => {
+    const user = validUsers[index % validUsers.length]; // Ensure user exists
+    if (!user || !user.id) return null;
+    if (!user) return null;
+    return {
+      title: faker.lorem.sentence(), // Random title
+      description: faker.lorem.paragraph(), // Random description
+      creator: user.id,
+      forked: false,
+      query,
+      tags: faker.lorem.words(3).split(" "), // Random tags
+    };
+  });
+  fakerQueries = fakerQueries.filter(user => user !== null);
+  console.log(fakerQueries);
+  /* await db.insert(QueryTable).values({ ...fakerQueries });
+  const queriesResult = db.select().from(QueryTable);
   const validQueries = queriesResult.filter(user => user !== null);
 
   if (validQueries.length === 0) {
     console.error("No valid queries created. Cannot proceed.");
   }
 
-  const data = await Promise.all(
+  await Promise.all(
     validQueries.map(async query => {
-      const minStars = 5;
-      const maxStars = 8;
-
-      const starCount =
-        Math.floor(Math.random() * (maxStars - minStars + 1)) + minStars;
-
-      const selectedUsers = [...validUsers]
-        .sort(() => 0.5 - Math.random())
+      const starCount = faker.number.int({ min: 5, max: 8 });
+      const selectedUsers = faker.helpers
+        .shuffle(validUsers)
         .slice(0, starCount)
-        .map(user => user.id);
-
-      await QueryService.star(query.id, query.creator);
-      return { selectedUsers, query: query.id };
+        .map(u => u.id);
+      await db
+        .insert(QueryStarsTable)
+        .values(
+          selectedUsers.map(userId => ({ query_id: query.id, user_id: userId }))
+        );
     })
-  );
-
-  await Promise.all(
-    data.flatMap(({ selectedUsers, query }) =>
-      selectedUsers.map(user => QueryService.star(query, user))
-    )
-  );
-
-  const queriesToFork = [...validQueries]
-    .sort(() => 0.5 - Math.random())
-    .slice(0, 30);
-
-  await Promise.all(
-    queriesToFork.flatMap(query => {
-      const eligibleUsers = validUsers.filter(
-        user => user.id !== query.creator
-      );
-      const forksToCreate = Math.floor(Math.random() * 4);
-      const selectedUsers = [...eligibleUsers]
-        .sort(() => 0.5 - Math.random())
-        .slice(0, forksToCreate);
-
-      return selectedUsers.map(user =>
-        QueryService.fork(query.id, user.id).catch(err =>
-          console.error(
-            `Failed to fork query ${query.id} by user ${user.id}:`,
-            err
-          )
-        )
-      );
-    })
-  );
+  ); */
 
   // const randomUser = users[Math.floor(Math.random() * users.length)];
   // console.log("Random user:", randomUser);
