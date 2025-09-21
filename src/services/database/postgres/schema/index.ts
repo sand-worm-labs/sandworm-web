@@ -1,4 +1,5 @@
 export * from "./chat";
+export * from "./query";
 export * from "./session";
 export * from "./account";
 export * from "./verificationToken";

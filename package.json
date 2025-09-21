@@ -15,7 +15,7 @@
     "prettier": "prettier --write .",
     "lint": "yarn eslint && yarn prettier",
     "format": "next lint --fix && prettier '**/*.{json,yaml}' --write --ignore-path .gitignore",
-    "seed": "ts-node-dev --transpile-only src/services/localDb/seed.ts",
+    "seed": "ts-node-dev --transpile-only src/services/database/postres/localDb/seed.ts",
     "commit": "git-cz"
   },
   "lint-staged": {

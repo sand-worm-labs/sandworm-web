@@ -1,15 +1,10 @@
 import type { Message } from "ai";
+
 import { db } from "@/services/database/postgres";
 import type { ServiceResult } from "@/services/database/postgres/types";
 import { DataResult } from "@/services/database/postgres/types";
-import { chats } from "@/services/database/postgres/schema";
-
-export interface Chat {
-  id?: number;
-  userId: string;
-  createdAt: Date;
-  messages: Message[];
-}
+import { chat } from "@/services/database/postgres/schema";
+import type { Chat } from "@/services/database/postgres/schema";
 
 export class ChatService {
   static async saveChat({
@@ -17,16 +12,16 @@ export class ChatService {
     userId,
     messages,
   }: {
-    id?: number;
+    id?: string;
     userId: string;
     messages: Message[];
   }): Promise<ServiceResult<Chat>> {
     try {
       if (id) {
         const updated = await db
-          .update(chats)
+          .update(chat)
           .set({ messages })
-          .where(chats.id.eq(id))
+          .where(chat.id.eq(id))
           .returning();
 
         if (updated.length === 0)
@@ -36,7 +31,7 @@ export class ChatService {
       }
 
       const inserted = await db
-        .insert(chats)
+        .insert(chat)
         .values({ userId, messages })
         .returning();
 
@@ -52,7 +47,7 @@ export class ChatService {
     id: number;
   }): Promise<ServiceResult<boolean>> {
     try {
-      const result = await db.delete(chats).where(chats.id.eq(id));
+      const result = await db.delete(chat).where(chat.id.eq(id));
       if (result === 0)
         return DataResult.failure("Chat not found.", "NOT_FOUND");
       return DataResult.success(true);
@@ -71,9 +66,9 @@ export class ChatService {
     id: number;
   }): Promise<ServiceResult<Chat>> {
     try {
-      const chat = await db.select().from(chats).where(chats.id.eq(id)).get();
-      if (!chat) return DataResult.failure("Chat not found.", "NOT_FOUND");
-      return DataResult.success(chat);
+      const chatByid = await db.select().from(chat).where(chat.id.eq(id)).get();
+      if (!chatByid) return DataResult.failure("Chat not found.", "NOT_FOUND");
+      return DataResult.success(chatByid);
     } catch (error) {
       return DataResult.failure("Failed to fetch chat.", "DB_ERROR", error);
     }
@@ -87,8 +82,8 @@ export class ChatService {
     try {
       const allChats = await db
         .select()
-        .from(chats)
-        .where(chats.userId.eq(userId));
+        .from(chat)
+        .where(chat.userId.eq(userId));
       return DataResult.success(allChats);
     } catch (error) {
       return DataResult.failure(
