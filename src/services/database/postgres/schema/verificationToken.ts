@@ -1,7 +1,7 @@
 import { pgTable, varchar, timestamp, primaryKey } from "drizzle-orm/pg-core";
 import { z } from "zod";
 
-export const verificationTokens = pgTable(
+export const VerificationTokenTable = pgTable(
   "verification_tokens",
   {
     identifier: varchar("identifier", { length: 255 }).notNull(),
@@ -14,11 +14,11 @@ export const verificationTokens = pgTable(
 );
 
 // Zod schema for verification_tokens
-export const verificationTokensSchema = z.object({
+export const verificationTokenSchema = z.object({
   identifier: z.string().max(255),
   token: z.string().max(255),
   expires: z.date(),
 });
 
 // TypeScript type inferred from Zod
-export type VerificationTokens = z.infer<typeof verificationTokensSchema>;
+export type VerificationTokens = z.infer<typeof verificationTokenSchema>;
