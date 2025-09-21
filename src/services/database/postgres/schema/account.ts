@@ -1,7 +1,7 @@
 import { pgTable, varchar, text, integer } from "drizzle-orm/pg-core";
 import { z } from "zod";
 
-export const accounts = pgTable("Account", {
+export const AccountTable = pgTable("Account", {
   userId: varchar("user_id", { length: 255 }).notNull(),
   type: varchar("type", { length: 255 }).notNull(),
   provider: varchar("provider", { length: 255 }).notNull(),

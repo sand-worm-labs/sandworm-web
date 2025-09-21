@@ -1,7 +1,7 @@
 import { pgTable, uuid, primaryKey, boolean } from "drizzle-orm/pg-core";
 import { z } from "zod";
 
-import { chat } from "./chat";
+import { ChatTable } from "./chat";
 import { message } from "./message";
 
 export const vote = pgTable(
@@ -9,7 +9,7 @@ export const vote = pgTable(
   {
     chatId: uuid("chatId")
       .notNull()
-      .references(() => chat.id),
+      .references(() => ChatTable.id),
     messageId: uuid("messageId")
       .notNull()
       .references(() => message.id),
