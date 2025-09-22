@@ -3,7 +3,7 @@ import { json, pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 
 import { ChatTable } from "./chat";
 
-export const message = pgTable("message", {
+export const message = pgTable("messages", {
   id: uuid("id").primaryKey().notNull().defaultRandom(),
   chatId: uuid("chatId")
     .notNull()

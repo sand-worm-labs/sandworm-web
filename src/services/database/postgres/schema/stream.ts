@@ -10,7 +10,7 @@ import { z } from "zod";
 import { ChatTable } from "./chat";
 
 export const stream = pgTable(
-  "Stream",
+  "streams",
   {
     id: uuid("id").notNull().defaultRandom(),
     chatId: uuid("chatId").notNull(),

@@ -12,7 +12,7 @@ import type { AppUsage } from "@/services/usage";
 
 import { UserTable } from "./user";
 
-export const ChatTable = pgTable("chat", {
+export const ChatTable = pgTable("chats", {
   id: uuid("id").primaryKey().notNull().defaultRandom(),
   createdAt: timestamp("createdAt").notNull(),
   title: text("title").notNull(),

@@ -1,6 +1,5 @@
 import {
   boolean,
-  foreignKey,
   pgTable,
   primaryKey,
   text,
@@ -12,7 +11,7 @@ import { z } from "zod";
 import { UserTable } from "./user";
 
 export const suggestion = pgTable(
-  "suggestion",
+  "suggestions",
   {
     id: uuid("id").notNull().defaultRandom(),
     documentId: uuid("documentId").notNull(),
