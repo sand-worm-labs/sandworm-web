@@ -13,7 +13,7 @@ const migrateDatabase = async () => {
 
   try {
     // Perform the migration using the configured database connection and migration folder
-    await migrate(db, { migrationsFolder: "migrations" });
+    await migrate(db, { migrationsFolder: "drizzle" });
     console.log("✅ Successfully completed the database migration.");
 
     // Exit the process successfully
