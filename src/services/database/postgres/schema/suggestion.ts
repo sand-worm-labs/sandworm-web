@@ -10,10 +10,9 @@ import {
 import { z } from "zod";
 
 import { UserTable } from "./user";
-import { DocumentTable } from "./document";
 
 export const suggestion = pgTable(
-  "Suggestion",
+  "suggestion",
   {
     id: uuid("id").notNull().defaultRandom(),
     documentId: uuid("documentId").notNull(),
@@ -29,10 +28,6 @@ export const suggestion = pgTable(
   },
   table => ({
     pk: primaryKey({ columns: [table.id] }),
-    documentRef: foreignKey({
-      columns: [table.documentId, table.documentCreatedAt],
-      foreignColumns: [DocumentTable.id, DocumentTable.createdAt],
-    }),
   })
 );
 
