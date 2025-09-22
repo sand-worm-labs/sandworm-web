@@ -15,8 +15,15 @@
     "prettier": "prettier --write .",
     "lint": "yarn eslint && yarn prettier",
     "format": "next lint --fix && prettier '**/*.{json,yaml}' --write --ignore-path .gitignore",
-    "seed": "tsx  src/services/database/postgres/localDb/seed.ts",
-    "dbgenerate": "drizzle-kit generate --config=./drizzle.config.ts",
+    "push": "drizzle-kit push:pg",
+    "pull": "drizzle-kit introspect:pg ",
+    "generate": "drizzle-kit generate:pg",
+    "drop": "drizzle-kit drop",
+    "check": "drizzle-kit check:pg",
+    "up": "drizzle-kit up:pg",
+    "migrate": "tsx scripts/migrations/migrate.ts",
+    "studio" : "drizzle-kit studio",
+    "seed": "tsx  scripts/localDb/seed.ts",
     "commit": "git-cz"
   },
   "lint-staged": {
