@@ -16,6 +16,7 @@
     "lint": "yarn eslint && yarn prettier",
     "format": "next lint --fix && prettier '**/*.{json,yaml}' --write --ignore-path .gitignore",
     "seed": "tsx  src/services/database/postgres/localDb/seed.ts",
+    "dbgenerate": "drizzle-kit generate --config=./drizzle.config.ts",
     "commit": "git-cz"
   },
   "lint-staged": {
