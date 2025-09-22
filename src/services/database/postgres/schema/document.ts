@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { UserTable } from "./user";
 
-export const DocumentTable = pgTable("document", {
+export const DocumentTable = pgTable("documents", {
   id: uuid("id").notNull().defaultRandom(),
   createdAt: timestamp("createdAt").notNull(),
   title: text("title").notNull(),

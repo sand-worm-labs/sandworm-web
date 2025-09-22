@@ -12,7 +12,7 @@ import { sql } from "drizzle-orm";
 
 import { UserTable } from "./user";
 
-export const QueryTable = pgTable("Query", {
+export const QueryTable = pgTable("queries", {
   id: uuid("id").primaryKey().defaultRandom(),
   title: text("title").notNull(),
   description: text("description").notNull(),
