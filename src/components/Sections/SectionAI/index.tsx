@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+
 import { SparkleIcon } from "@/components/Assets/Sparkle";
 
 export const SectionAI = () => {
@@ -48,9 +49,9 @@ export const SectionAI = () => {
           Accelerate with AI
         </h2>
         <div className="grid gap-8 mt-4 sm:grid-cols-2 lg:grid-cols-3">
-          {cards.map((card, idx) => (
+          {cards.map(card => (
             <div
-              key={idx}
+              key={card.title}
               className="bg-[#ECF6FF] border border-[#D3DBF4] dark:bg-[#111111] rounded-2xl shadow-md p-6 flex flex-col text-left "
             >
               <div className="flex space-x-6 mb-4">
