@@ -1,28 +1,18 @@
-import {
-  foreignKey,
-  pgTable,
-  primaryKey,
-  timestamp,
-  uuid,
-} from "drizzle-orm/pg-core";
+import { pgTable, primaryKey, timestamp, uuid } from "drizzle-orm/pg-core";
 import { z } from "zod";
 
 import { ChatTable } from "./chat";
 
-export const stream = pgTable(
+export const StreamTable = pgTable(
   "streams",
   {
     id: uuid("id").notNull().defaultRandom(),
-    chatId: uuid("chatId").notNull(),
+    chatId: uuid("chatId")
+      .notNull()
+      .references(() => ChatTable.id, { onDelete: "cascade" }),
     createdAt: timestamp("createdAt").notNull(),
   },
-  table => ({
-    pk: primaryKey({ columns: [table.id] }),
-    chatRef: foreignKey({
-      columns: [table.chatId],
-      foreignColumns: [ChatTable.id],
-    }),
-  })
+  table => [primaryKey({ columns: [table.id] })]
 );
 // ============== Stream Schema Type ==============
 export const streamSchema = z.object({

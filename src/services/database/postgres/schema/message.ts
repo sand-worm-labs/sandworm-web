@@ -3,11 +3,11 @@ import { json, pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 
 import { ChatTable } from "./chat";
 
-export const message = pgTable("messages", {
+export const MessageTable = pgTable("messages", {
   id: uuid("id").primaryKey().notNull().defaultRandom(),
   chatId: uuid("chatId")
     .notNull()
-    .references(() => ChatTable.id),
+    .references(() => ChatTable.id, { onDelete: "cascade" }),
   role: varchar("role").notNull(),
   parts: json("parts").notNull(),
   attachments: json("attachments").notNull(),
