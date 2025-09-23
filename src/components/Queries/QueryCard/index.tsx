@@ -148,7 +148,7 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
           customStyle={{
             margin: 0,
             background: "#000000",
-            borderRadius: 0,
+            borderRadius: "0.5em",
             borderWidth: 1,
             borderColor: "#ffffff25",
             overflowY: "hidden",
