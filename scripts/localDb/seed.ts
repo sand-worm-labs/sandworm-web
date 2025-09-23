@@ -6,7 +6,7 @@ import { sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
-import { UserTable } from "@/services/database/postgres/schema";
+import { QueryTable, UserTable } from "@/services/database/postgres/schema";
 
 const queries = [
   `SELECT id, name, email FROM users WHERE active = true ORDER BY created_at DESC LIMIT 10;`,
@@ -274,11 +274,14 @@ async function seedDatabase() {
     connectionString: process.env.DATABASE_URL,
   });
   const db = drizzle(pool);
+  await db.delete(UserTable);
+  await db.delete(QueryTable);
 
-  const hasData = await db
+  const [{ count }] = await db
     .select({ count: sql<number>`count(*)` })
     .from(UserTable);
-  if (hasData.length > 0) {
+
+  if (count > 0) {
     console.log("Database already has data. Skipping seed.");
     return;
   }
@@ -290,6 +293,7 @@ async function seedDatabase() {
     name: faker.person.fullName(),
     image: faker.image.avatar(),
   }));
+
   await db.insert(UserTable).values(fakerUsers);
   const users = await db.select().from(UserTable);
   const validUsers = users.filter(user => user !== null);
@@ -298,46 +302,44 @@ async function seedDatabase() {
     return;
   }
 
-  let fakerQueries = queries.map((query, index) => {
-    const user = validUsers[index % validUsers.length]; // Ensure user exists
-    if (!user || !user.id) return null;
-    if (!user) return null;
-    return {
-      title: faker.lorem.sentence(), // Random title
-      description: faker.lorem.paragraph(), // Random description
-      creator: user.id,
-      forked: false,
-      query,
-      tags: faker.lorem.words(3).split(" "), // Random tags
-    };
-  });
+  let fakerQueries = queries
+    .map((query, index) => {
+      const user = validUsers[index % validUsers.length]; // Ensure user exists
+      if (!user || !user.id) return null;
+      if (!user) return null;
+      return {
+        title: faker.lorem.sentence(), // Random title
+        description: faker.lorem.paragraph(), // Random description
+        creator_id: user.id,
+        query,
+        tags: faker.lorem.words(3).split(" "), // Random tags
+        forked_from_id: null,
+      };
+    })
+    .filter((q): q is NonNullable<typeof q> => !!q);
   fakerQueries = fakerQueries.filter(user => user !== null);
   console.log(fakerQueries);
-  /* await db.insert(QueryTable).values({ ...fakerQueries });
-  const queriesResult = db.select().from(QueryTable);
+  await db.insert(QueryTable).values(fakerQueries);
+  const queriesResult = await db.select().from(QueryTable);
   const validQueries = queriesResult.filter(user => user !== null);
 
   if (validQueries.length === 0) {
     console.error("No valid queries created. Cannot proceed.");
   }
 
-  await Promise.all(
-    validQueries.map(async query => {
-      const starCount = faker.number.int({ min: 5, max: 8 });
-      const selectedUsers = faker.helpers
-        .shuffle(validUsers)
-        .slice(0, starCount)
-        .map(u => u.id);
-      await db
-        .insert(QueryStarsTable)
-        .values(
-          selectedUsers.map(userId => ({ query_id: query.id, user_id: userId }))
-        );
-    })
-  ); */
+  const starsQuery = validQueries.map(query => {
+    const starCount = faker.number.int({ min: 5, max: 8 });
+    const selectedUsers = faker.helpers
+      .shuffle(validUsers)
+      .slice(0, starCount)
+      .map(u => u.id);
+    return { user: selectedUsers, query: query.id };
+  });
 
-  // const randomUser = users[Math.floor(Math.random() * users.length)];
-  // console.log("Random user:", randomUser);
+  console.log(starsQuery);
+
+  const randomUser = users[Math.floor(Math.random() * users.length)];
+  console.log("Random user:", randomUser);
   console.log("Database seeded successfully.");
 }
 

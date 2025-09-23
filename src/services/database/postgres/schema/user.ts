@@ -50,7 +50,7 @@ type Status = z.infer<typeof StatusType>;
 type Wallet = z.infer<typeof WalletType>[];
 
 export const UserTable = pgTable("users", {
-  id: uuid("id").primaryKey(),
+  id: uuid("id").primaryKey().defaultRandom(),
   username: varchar("username", { length: 255 }).notNull().unique(),
   email: varchar("email", { length: 255 }).notNull().unique(),
   name: varchar("name", { length: 255 }),
