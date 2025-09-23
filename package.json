@@ -15,7 +15,6 @@
     "prettier": "prettier --write .",
     "lint": "yarn eslint && yarn prettier",
     "format": "next lint --fix && prettier '**/*.{json,yaml}' --write --ignore-path .gitignore",
-
     "db:generate": "drizzle-kit generate",
     "db:up": "drizzle-kit up",
     "db:check": "drizzle-kit check",
@@ -23,19 +22,17 @@
     "db:studio": "drizzle-kit studio",
     "db:seed": "tsx scripts/localDb/seed.ts",
     "db:migrate": "tsx scripts/migrations/migrate.ts",
-
-    "db:push:danger": "drizzle-kit push", 
-
-    "db:delete":"rm -rf drizzle/",
+    "db:push:danger": "drizzle-kit push",
+    "db:delete": "rm -rf drizzle/",
     "commit": "git-cz"
   },
-
   "lint-staged": {
     "*.{js,jsx,md,ts,tsx,html,css,scss}": "yarn prettier",
     "*.{js,jsx,ts,tsx}": "eslint --cache --fix --cache-location ./node_modules/.cache/.eslintcache"
   },
   "dependencies": {
     "@ai-sdk/google": "^0.0.51",
+    "@auth/drizzle-adapter": "^1.10.0",
     "@auth/firebase-adapter": "^2.8.0",
     "@bprogress/next": "^3.2.12",
     "@dicebear/collection": "^9.2.2",
