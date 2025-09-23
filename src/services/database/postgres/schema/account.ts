@@ -1,21 +1,34 @@
-import { pgTable, varchar, text, integer } from "drizzle-orm/pg-core";
+import { pgTable, text, integer, primaryKey } from "drizzle-orm/pg-core";
+import type { AdapterAccountType } from "@auth/core/adapters";
 import { z } from "zod";
 
-export const AccountTable = pgTable("accounts", {
-  userId: varchar("user_id", { length: 255 }).notNull(),
-  type: varchar("type", { length: 255 }).notNull(),
-  provider: varchar("provider", { length: 255 }).notNull(),
-  providerAccountId: varchar("provider_account_id", {
-    length: 255,
-  }).notNull(),
-  refreshToken: text("refresh_token"),
-  accessToken: text("access_token"),
-  expiresAt: integer("expires_at"),
-  tokenType: varchar("token_type", { length: 255 }),
-  scope: text("scope"),
-  idToken: text("id_token"),
-  sessionState: text("session_state"),
-});
+import { UserTable } from "./user";
+
+export const AccountTable = pgTable(
+  "accounts",
+  {
+    userId: text("userId")
+      .notNull()
+      .references(() => UserTable.id, { onDelete: "cascade" }),
+    type: text("type").$type<AdapterAccountType>().notNull(),
+    provider: text("provider").notNull(),
+    providerAccountId: text("providerAccountId").notNull(),
+    refresh_token: text("refresh_token"),
+    access_token: text("access_token"),
+    expires_at: integer("expires_at"),
+    token_type: text("token_type"),
+    scope: text("scope"),
+    id_token: text("id_token"),
+    session_state: text("session_state"),
+  },
+  account => [
+    {
+      compoundKey: primaryKey({
+        columns: [account.provider, account.providerAccountId],
+      }),
+    },
+  ]
+);
 
 export const accountSchema = z.object({
   userId: z.string().max(255),

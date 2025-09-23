@@ -1,19 +1,22 @@
-import { pgTable, varchar, timestamp, primaryKey } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, primaryKey } from "drizzle-orm/pg-core";
 import { z } from "zod";
 
-export const VerificationTokenTable = pgTable(
+export const verificationTokenTable = pgTable(
   "verification_tokens",
   {
-    identifier: varchar("identifier", { length: 255 }).notNull(),
-    token: varchar("token", { length: 255 }).notNull(),
+    identifier: text("identifier").notNull(),
+    token: text("token").notNull(),
     expires: timestamp("expires", { mode: "date" }).notNull(),
   },
-  table => ({
-    pk: primaryKey(table.identifier, table.token),
-  })
+  verificationToken => [
+    {
+      compositePk: primaryKey({
+        columns: [verificationToken.identifier, verificationToken.token],
+      }),
+    },
+  ]
 );
 
-// Zod schema for verification_tokens
 export const verificationTokenSchema = z.object({
   identifier: z.string().max(255),
   token: z.string().max(255),
