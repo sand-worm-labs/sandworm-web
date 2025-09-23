@@ -12,6 +12,13 @@
 }
 
 @font-face {
+  font-family: "Roobert";
+  src: url("/fonts/RoobertTRIAL-Regular-BF67243fd53fdf2.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
   font-family: "Helvetica Neue";
   src: url("/fonts/HelveticaNeue-Medium.otf") format("opentype");
   font-weight: 500;
@@ -20,6 +27,10 @@
 
 .helvetica-neue {
   font-family: "Helvetica Neue", sans-serif;
+}
+
+.roobert {
+  font-family: "Roobert", sans-serif;
 }
 
 :root {
