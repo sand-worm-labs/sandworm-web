@@ -9,3 +9,4 @@ export * from "./document";
 export * from "./suggestion";
 export * from "./stream";
 export * from "./message";
+export * from "./authenticator";

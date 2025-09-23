@@ -1,9 +1,13 @@
-import { pgTable, varchar, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp } from "drizzle-orm/pg-core";
 import { z } from "zod";
-// Session table
-export const SessionTable = pgTable("sessions", {
-  sessionToken: varchar("session_token", { length: 255 }).primaryKey(),
-  userId: varchar("user_id", { length: 255 }).notNull(),
+
+import { UserTable } from "./user";
+
+export const sessions = pgTable("sessions", {
+  sessionToken: text("sessionToken").primaryKey(),
+  userId: text("userId")
+    .notNull()
+    .references(() => UserTable.id, { onDelete: "cascade" }),
   expires: timestamp("expires", { mode: "date" }).notNull(),
 });
 
