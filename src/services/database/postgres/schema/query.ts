@@ -2,37 +2,48 @@ import {
   pgTable,
   text,
   jsonb,
-  integer,
   boolean,
   timestamp,
   uuid,
+  foreignKey,
 } from "drizzle-orm/pg-core";
 import { z } from "zod";
-import { sql } from "drizzle-orm";
+import { relations } from "drizzle-orm";
 
 import { UserTable } from "./user";
 
-export const QueryTable = pgTable("queries", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  title: text("title").notNull(),
-  description: text("description").notNull(),
-  creator: uuid("creator").notNull(), // foreign key to user.id
-  private: boolean("private").notNull().default(false),
-  query: text("query").notNull(),
-  tags: jsonb("tags").notNull().default([]),
-  stared_by: jsonb("stared_by")
-    .notNull()
-    .default(sql`'[]'::jsonb`),
-  forked_from: uuid("forked_from").references(() => UserTable.id), // nullable, no fake default
-  forked_by: jsonb("forked_by")
-    .notNull()
-    .default(sql`'[]'::jsonb`),
-  forked: boolean("forked").notNull().default(false),
-  stars: integer("stars").notNull().default(0),
-  forks: integer("forks").notNull().default(0),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+export const QueryTable = pgTable(
+  "queries",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    title: text("title").notNull(),
+    description: text("description").notNull(),
+    creator_id: uuid("creator_id"),
+    private: boolean("private").notNull().default(false),
+    query: text("query").notNull(),
+    tags: jsonb("tags").notNull().default([]),
+    forked_from_id: uuid("forked_from"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  table => [
+    foreignKey({
+      columns: [table.forked_from_id],
+      foreignColumns: [table.id],
+      name: "forked_from",
+    }),
+  ]
+);
+
+export const usersRelations = relations(QueryTable, ({ one, many }) => ({
+  creator: one(UserTable, {
+    fields: [QueryTable.creator_id],
+    references: [UserTable.id],
+  }),
+  stared_by: many(UserTable),
+  forked_by: many(UserTable),
+}));
+
 // Zod schema for typing
 export const QueryType = z.object({
   title: z.string(),

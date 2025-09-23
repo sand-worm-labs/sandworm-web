@@ -2,12 +2,12 @@ import {
   pgTable,
   varchar,
   timestamp,
-  integer,
   jsonb,
   text,
   uuid,
 } from "drizzle-orm/pg-core";
 import { z } from "zod";
+import { sql } from "drizzle-orm";
 
 export const SocialLinksType = z.object({
   telegram: z.string().optional(),
@@ -50,19 +50,26 @@ type Status = z.infer<typeof StatusType>;
 type Wallet = z.infer<typeof WalletType>[];
 
 export const UserTable = pgTable("users", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  username: varchar("username", { length: 255 }).notNull(),
-  email: varchar("email", { length: 255 }).notNull(),
+  id: uuid("id").primaryKey(),
+  username: varchar("username", { length: 255 }).notNull().unique(),
+  email: varchar("email", { length: 255 }).notNull().unique(),
   name: varchar("name", { length: 255 }),
   image: text("image"),
   emailVerified: timestamp("email_verified"),
-  stars: integer("stars").default(0).notNull(),
-  forks: integer("forks").default(0).notNull(),
-  socialLinks: jsonb("social_links").$type<SocialLinks>().default({}),
+  socialLinks: jsonb("social_links")
+    .$type<SocialLinks>()
+    .notNull()
+    .default(sql`'{}'::jsonb`),
   status: jsonb("status")
     .$type<Status>()
-    .default({ text: "Just joined 🚀", timestamp: new Date() }),
-  wallets: jsonb("wallets").$type<Wallet>(),
+    .notNull()
+    .default(
+      sql`jsonb_build_object('text', 'Just joined 🚀', 'timestamp', now())`
+    ),
+  wallets: jsonb("wallets")
+    .$type<Wallet>()
+    .notNull()
+    .default(sql`'[]'::jsonb`),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

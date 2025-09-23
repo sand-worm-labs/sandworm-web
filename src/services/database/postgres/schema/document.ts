@@ -13,7 +13,7 @@ export const DocumentTable = pgTable("documents", {
     .default("text"),
   userId: uuid("userId")
     .notNull()
-    .references(() => UserTable.id),
+    .references(() => UserTable.id, { onDelete: "cascade" }),
 });
 
 // ============== Document Schema Type ==============

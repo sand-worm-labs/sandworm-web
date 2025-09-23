@@ -4,16 +4,17 @@ import {
   integer,
   pgTable,
   text,
+  uuid,
 } from "drizzle-orm/pg-core";
 import { z } from "zod";
 
 import { UserTable } from "./user";
 
-export const authenticators = pgTable(
-  "authenticator",
+export const AuthenticatorTable = pgTable(
+  "authenticators",
   {
     credentialID: text("credentialID").notNull().unique(),
-    userId: text("userId")
+    userId: uuid("userId")
       .notNull()
       .references(() => UserTable.id, { onDelete: "cascade" }),
     providerAccountId: text("providerAccountId").notNull(),
