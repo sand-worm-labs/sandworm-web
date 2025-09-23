@@ -1,15 +1,15 @@
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
+
 import {
   UserTable,
   AccountTable,
   SessionTable,
   VerificationTokenTable,
-  UserType,
 } from "@/services/database/postgres/schema";
 import { db } from "@/services/database/postgres/db";
 
-export const Adapter = DrizzleAdapter(db, {
-  usersTable: UserType,
+export const AuthAdapter = DrizzleAdapter(db, {
+  usersTable: UserTable,
   accountsTable: AccountTable,
   sessionsTable: SessionTable,
   verificationTokensTable: VerificationTokenTable,
