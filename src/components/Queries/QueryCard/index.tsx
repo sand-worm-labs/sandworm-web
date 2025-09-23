@@ -6,13 +6,17 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { twilight } from "react-syntax-highlighter/dist/esm/styles/prism";
+import {
+  twilight,
+  prism,
+} from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useState } from "react";
 
 import type { Query } from "@/types";
 import { useQueryLike } from "@/hooks/useLikeQuery";
 import { useModalStore } from "@/store/auth";
 import { useForkQuery } from "@/hooks";
+import { useTheme } from "@/components/Theme/ThemeProvider";
 
 import { DicebearAvatar } from "../../DicebearAvatar";
 
@@ -29,6 +33,8 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
   const { handleFork, loading: loadingfork } = useForkQuery(query.id);
 
   const [showFullDesc, setShowFullDesc] = useState<boolean>(false);
+
+  const { theme } = useTheme();
 
   const handleQueryClick = () => {
     router.push(`/console/${query.id}`);
@@ -48,6 +54,27 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
   // we truncate long ass description and check if we should even do that
   const truncatedDescription = query.description?.slice(0, 100) || "";
   const shouldTruncate = query.description?.length > 100;
+
+  const getSyntaxConfig = (currentTheme: string) => {
+    const systemDark = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
+
+    const isDark =
+      currentTheme === "dark" || (currentTheme === "system" && systemDark);
+
+    return {
+      style: isDark ? twilight : prism,
+      background: isDark ? "#0a0a0a" : "#D7E2E7",
+      borderColor: isDark ? "#333" : "#D4DCDF",
+    };
+  };
+
+  const {
+    style: syntaxStyle,
+    background: syntaxBg,
+    borderColor,
+  } = getSyntaxConfig(theme);
 
   return (
     <div className="shadow-sm rounded-xl p-4 md:px-8 px-5 flex flex-col justify-between">
@@ -144,13 +171,13 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
       <button type="button" onClick={handleQueryClick} className="mt-2 text-sm">
         <SyntaxHighlighter
           language="sql"
-          style={twilight}
+          style={syntaxStyle}
           customStyle={{
             margin: 0,
-            background: "#000000",
             borderRadius: "0.5em",
+            background: syntaxBg,
             borderWidth: 1,
-            borderColor: "#ffffff25",
+            borderColor,
             overflowY: "hidden",
           }}
           wrapLines
