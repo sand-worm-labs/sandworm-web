@@ -26,6 +26,7 @@ module.exports = {
 
     "header-trim": [2, "always"],
 
-    "header-empty": [2, "never"],
+    "subject-empty": [2, "never"],
+    "header-min-length": [2, "always", 15],
   },
 };
