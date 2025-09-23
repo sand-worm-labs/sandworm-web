@@ -10,7 +10,7 @@ import { z } from "zod";
 
 import { UserTable } from "./user";
 
-export const suggestion = pgTable(
+export const SuggestionTable = pgTable(
   "suggestions",
   {
     id: uuid("id").notNull().defaultRandom(),
@@ -25,9 +25,7 @@ export const suggestion = pgTable(
       .references(() => UserTable.id),
     createdAt: timestamp("createdAt").notNull(),
   },
-  table => ({
-    pk: primaryKey({ columns: [table.id] }),
-  })
+  table => [primaryKey({ columns: [table.id] })]
 );
 
 // ============== Suggestion Schema Type ==============
