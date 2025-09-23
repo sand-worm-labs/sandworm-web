@@ -17,7 +17,8 @@
     "format": "next lint --fix && prettier '**/*.{json,yaml}' --write --ignore-path .gitignore",
     "firebase": "firebase emulators:start",
     "seed": "ts-node-dev --transpile-only src/services/localDb/seed.ts",
-    "commit": "git-cz"
+    "commit": "git-cz",
+    "prepare": "husky install"
   },
   "lint-staged": {
     "*.{js,jsx,md,ts,tsx,html,css,scss}": "yarn prettier",
