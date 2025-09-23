@@ -34,9 +34,11 @@ export function Chat({
   return (
     <div className="flex flex-row justify-center pb-4 md:pb-8 h-dvh ">
       <div className="flex flex-col mt-32 items-center gap-4">
-        <h1 className="text-3xl xl:text-4xl font-medium text-center tracking-tighter text-pretty">
+        <h1 className="text-3xl xl:text-4xl font-medium text-center tracking-tighter text-pretty roobert">
           What do you want to explore onchain today?
         </h1>
+
+        <p className="text-[#6C757D]"> Search the blockchain for information</p>
 
         <form className="flex flex-row gap-2 relative items-end w-full md:max-w-[800px] max-w-[calc(100dvw-32px) px-4 md:px-0">
           <MultimodalInput
@@ -51,7 +53,10 @@ export function Chat({
             append={append}
           />
         </form>
-        <ExamplePrompts onPromptSelect={() => {}} />
+        <div className="mt-6">
+          <h3 className="mb-4 text-sm">Test Queries</h3>
+          <ExamplePrompts onPromptSelect={() => {}} />
+        </div>
       </div>
     </div>
   );
