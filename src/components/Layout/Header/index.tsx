@@ -41,7 +41,7 @@ export const MainHeader = () => {
                   {...(link.isExternal
                     ? { target: "_blank", rel: "noopener noreferrer" }
                     : {})}
-                  className="dark:text-[#999999] text-[#000000] font-medium uppercase hover:text-white"
+                  className="dark:text-[#999999] text-[#000000] font-medium uppercase  hover:text-[#C7665C]"
                 >
                   {link.name}
                 </Link>

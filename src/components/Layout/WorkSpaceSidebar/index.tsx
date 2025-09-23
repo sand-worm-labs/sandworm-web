@@ -14,7 +14,7 @@ interface NavItem {
 
 const mainNav: NavItem[] = [
   { name: "Home", href: "/workspace", icon: Home },
-  { name: "Sessions", href: "/sessions", icon: Clock },
+  { name: "Sessions", href: "/workspace/session", icon: Clock },
   { name: "Explore", href: "/workspace/explore", icon: Search },
 ];
 
