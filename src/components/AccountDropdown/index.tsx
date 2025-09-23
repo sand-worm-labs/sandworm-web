@@ -24,7 +24,7 @@ export const AccountDropdown = () => {
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
-            className="px-3 flex items-center gap-3 bg-white rounded-xl h-14 border border-[#E9ECEF] dark:bg-neutral-900"
+            className="px-3 flex items-center gap-3 bg-white rounded-xl h-12 border border-[#E9ECEF] dark:bg-neutral-900 w-full justify-between"
           >
             <div className="flex items-center gap-3">
               <Avatar className="h-9 w-9">
@@ -36,10 +36,8 @@ export const AccountDropdown = () => {
                   {user?.name?.split(" ")[0]?.[0] ?? "U"}
                 </AvatarFallback>
               </Avatar>
-              <div className="flex flex-col text-left leading-tight">
-                <span className="text-sm font-medium">
-                  @{user?.name ?? "Guest"}
-                </span>
+              <div className="flex flex-col text-left leading-tight text-base ">
+                <span className=" font-light">@{user?.name ?? "Guest"}</span>
               </div>
             </div>
             <ChevronDown className="ml-2 h-4 w-4" />
