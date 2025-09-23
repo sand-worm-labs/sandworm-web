@@ -19,6 +19,13 @@
 }
 
 @font-face {
+  font-family: "Roobert";
+  src: url("/fonts/RoobertTRIAL-Medium-BF67243fd53e059.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
   font-family: "Helvetica Neue";
   src: url("/fonts/HelveticaNeue-Medium.otf") format("opentype");
   font-weight: 500;
@@ -31,6 +38,7 @@
 
 .roobert {
   font-family: "Roobert", sans-serif;
+  font-weight: 500;
 }
 
 :root {
