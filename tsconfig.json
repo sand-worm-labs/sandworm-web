@@ -23,9 +23,6 @@
     "baseUrl": ".",
     "paths": {
       "@/database/*": ["./packages/database/src/*"],
-      "@/const/*": ["./packages/const/src/*"],
-      "@/utils/*": ["./packages/utils/src/*"],
-      "@/types/*": ["./packages/types/src/*"],
       "@/*": ["./src/*"],
       "@/public/*": ["./public/*"]
     }

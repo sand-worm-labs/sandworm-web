@@ -2,7 +2,7 @@ import "dotenv/config";
 import postgres from "postgres";
 import { drizzle } from "drizzle-orm/postgres-js";
 
-import * as schema from "./schema";
+import * as schema from "./schemas";
 
 // Validate the presence of the DATABASE_URL environment variable
 if (!process.env.DATABASE_URL) {
