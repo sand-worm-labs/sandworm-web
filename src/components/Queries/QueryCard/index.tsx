@@ -136,7 +136,7 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
           </div>
         </div>
 
-        <div className="flex  gap-4 items-center text-[#ffffff90] text-xs mt-3 md:mt-0">
+        <div className="flex  gap-4 items-center dark:text-[#ffffff90] text-xs mt-3 md:mt-0">
           <div className="flex items-center gap-1">
             <button
               type="button"
