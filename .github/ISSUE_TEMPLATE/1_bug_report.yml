@@ -1,0 +1,87 @@
+name: '🐛 Bug Report'
+description: 'Report a bug'
+labels: ['unconfirm']
+type: Bug
+body:
+  - type: dropdown
+    attributes:
+      label: '📦 Platform'
+      multiple: true
+      options:
+        - 'Official Preview'
+        - 'Official Cloud'
+        - 'Vercel'
+        - 'Zeabur'
+        - 'Sealos'
+        - 'Netlify'
+        - 'Self-hosting Docker'
+        - 'Other'
+    validations:
+      required: true
+
+  - type: dropdown
+    attributes:
+      label: '📦 Deployment Mode'
+      multiple: true
+      options:
+        - 'client db (lobe-chat image)'
+        - 'client pgelite db (lobe-chat-pglite image)'
+        - 'server db (lobe-chat-database image)'
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: '📌 Version'
+    validations:
+      required: true
+
+  - type: dropdown
+    attributes:
+      label: '💻 Operating System'
+      multiple: true
+      options:
+        - 'Windows'
+        - 'macOS'
+        - 'Ubuntu'
+        - 'Other Linux'
+        - 'iOS'
+        - 'Android'
+        - 'Other'
+    validations:
+      required: true
+
+  - type: dropdown
+    attributes:
+      label: '🌐 Browser'
+      multiple: true
+      options:
+        - 'Chrome'
+        - 'Edge'
+        - 'Safari'
+        - 'Firefox'
+        - 'Other'
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: '🐛 Bug Description'
+      description: 'A clear and concise description of the bug. If "Other" was selected above, please explain in detail.'
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: '📷 Reproduction Steps'
+      description: 'A step-by-step description of how to reproduce the bug.'
+
+  - type: textarea
+    attributes:
+      label: '🚦 Expected Behavior'
+      description: 'A clear description of what you expected to happen.'
+
+  - type: textarea
+    attributes:
+      label: '📝 Additional Information'
+      description: 'Any extra details that could help reproduce or understand the issue.'
