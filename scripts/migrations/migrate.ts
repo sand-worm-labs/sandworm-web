@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 
-import { db } from "@/services/database/postgres/db";
+import { db } from "@/database/db";
 
 /**
  * Executes database migration using drizzle-ORM.
