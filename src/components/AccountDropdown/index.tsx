@@ -1,21 +1,15 @@
 "use client";
 
 import React from "react";
-import {
-  ChevronDown,
-  CreditCard,
-  Users,
-  ArrowUpRight,
-  UserPlus,
-} from "lucide-react";
-import { useSession } from "next-auth/react";
+import { ChevronDown, Share2 } from "lucide-react";
+import { useSession, signOut } from "next-auth/react";
+import Link from "next/link";
 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
@@ -24,23 +18,16 @@ export const AccountDropdown = () => {
   const { data: session } = useSession();
   const user = session?.user;
 
-  // const userdemo = {
-  //   name: "Simi Ade",
-  //   avatarUrl:
-  //     "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=256&q=80&auto=format&fit=crop",
-  //   plan: "Pro",
-  // };
-
   return (
-    <div className="mx-auto mb-5 dark bg-black">
+    <div className="w-[90%] mx-auto mb-5 dark:bg-black">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
-            className="px-2 py-1 rounded-md flex items-center gap-3 bg-black"
+            className="px-3 flex items-center gap-3 bg-white rounded-xl h-12 border border-[#E9ECEF] dark:bg-neutral-900 w-full justify-between"
           >
             <div className="flex items-center gap-3">
-              <Avatar className="h-8 w-8">
+              <Avatar className="h-9 w-9">
                 <AvatarImage
                   src={user?.image ?? undefined}
                   alt={user?.name ?? "User"}
@@ -49,62 +36,73 @@ export const AccountDropdown = () => {
                   {user?.name?.split(" ")[0]?.[0] ?? "U"}
                 </AvatarFallback>
               </Avatar>
-              <div className="flex flex-col text-left leading-tight">
-                <span className="text-sm font-medium">
-                  {user?.name ?? "Guest"}
-                </span>
-                <span className="text-xs text-muted-foreground">free plan</span>
+              <div className="flex flex-col text-left leading-tight text-base ">
+                <span className=" font-light">@{user?.name ?? "Guest"}</span>
               </div>
             </div>
             <ChevronDown className="ml-2 h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent className="w-56 dark bg-black" align="end">
-          <DropdownMenuItem className="justify-start gap-3">
-            <CreditCard className="h-4 w-4" />
-            <div className="flex flex-col text-left">
-              <span className="text-sm">Plans & Billing</span>
-              <span className="text-xs text-muted-foreground">
-                Manage payment methods
-              </span>
+        <DropdownMenuContent
+          className="w-64 rounded-xl shadow-lg p-3 ml-6"
+          align="start"
+        >
+          {/* Avatar + Name + Share */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Avatar className="h-10 w-10">
+                <AvatarImage
+                  src={user?.image ?? undefined}
+                  alt={user?.name ?? "User"}
+                />
+                <AvatarFallback>
+                  {user?.name?.split(" ")[0]?.[0] ?? "U"}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <p className="font-medium text-sm">@{user?.name ?? "Guest"}</p>
+              </div>
             </div>
-          </DropdownMenuItem>
+            <Button
+              size="icon"
+              variant="outline"
+              className="h-8 w-8 rounded-full"
+            >
+              <Share2 className="h-4 w-4" />
+            </Button>
+          </div>
 
-          <DropdownMenuItem className="justify-start gap-3">
-            <UserPlus className="h-4 w-4" />
-            <div className="flex flex-col text-left">
-              <span className="text-sm">Invite members</span>
-              <span className="text-xs text-muted-foreground">
-                Add teammates to your workspace
-              </span>
-            </div>
-          </DropdownMenuItem>
-
-          <DropdownMenuSeparator />
-
-          <DropdownMenuItem className="justify-start gap-3">
-            <Users className="h-4 w-4" />
-            <div className="flex flex-col text-left">
-              <span className="text-sm">Members</span>
-              <span className="text-xs text-muted-foreground">
-                View or remove members
-              </span>
-            </div>
-          </DropdownMenuItem>
-
-          <DropdownMenuItem
-            className="justify-start gap-3"
-            onSelect={e => e.preventDefault()}
+          {/* Profile Link */}
+          <Link
+            href="/profile"
+            className="block mt-3 text-xs underline text-[#C7665C] hover:text-[#C7665C]"
           >
-            <ArrowUpRight className="h-4 w-4" />
-            <div className="flex flex-col text-left">
-              <span className="text-sm">Upgrade plan</span>
-              <span className="text-xs text-muted-foreground">
-                Get more seats and features
-              </span>
-            </div>
-          </DropdownMenuItem>
+            Go to profile page
+          </Link>
+
+          <p className="mt-2 text-xs text-muted-foreground">
+            Deep dive into EVM chain data with a focus on trends, adoption, and
+            the growth of the Base blockchain.
+          </p>
+
+          <DropdownMenuSeparator className="my-3" />
+
+          {/* Action Buttons */}
+          <div className="flex flex-col gap-2">
+            <Link href="/settings">
+              <Button variant="outline" className="w-full text-xs">
+                Settings
+              </Button>
+            </Link>
+            <Button
+              variant="destructive"
+              className="w-full text-xs"
+              onClick={() => signOut()}
+            >
+              Sign Out
+            </Button>
+          </div>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

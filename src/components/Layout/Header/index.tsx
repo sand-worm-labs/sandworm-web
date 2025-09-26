@@ -21,7 +21,7 @@ export const MainHeader = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <header className="border-b border-borderLight">
+    <header className="border-b border-borderLight bg-[#F4FEFF] dark:bg-[#000000]">
       <div className="px-8 flex justify-between items-center py-3">
         <div className="flex">
           <Link href="/" className="flex items-center">
@@ -29,9 +29,11 @@ export const MainHeader = () => {
             <span className="ml-3 font-medium text-xl uppercase">
               Sandw0rm.
             </span>
-            <Badge className="bg-white/15 rounded-lg ml-2">beta</Badge>
+            <Badge className="bg-white/15 text-black dark:text-white rounded-lg ml-2">
+              beta
+            </Badge>
           </Link>
-          <ul className="hidden md:flex ml-10 text-[0.9rem] items-center space-x-8">
+          <ul className="hidden md:flex ml-10 text-[0.8rem] items-center space-x-8">
             {navLinks.map(link => (
               <li key={link.name}>
                 <Link
@@ -39,7 +41,7 @@ export const MainHeader = () => {
                   {...(link.isExternal
                     ? { target: "_blank", rel: "noopener noreferrer" }
                     : {})}
-                  className="text-[#999999] hover:text-white"
+                  className="dark:text-[#999999] text-[#000000] font-medium uppercase  hover:text-[#C7665C]"
                 >
                   {link.name}
                 </Link>
@@ -49,7 +51,7 @@ export const MainHeader = () => {
         </div>
 
         <Link
-          className="hidden md:flex border py-1.5 bg-white text-black rounded px-4 text-[0.9rem] font-medium"
+          className="hidden md:flex border py-1.5 bg-black dark:bg-white text-white dark:text-black rounded-lg px-4 text-[0.9rem] font-medium"
           href="/workspace"
         >
           <span>Launch App</span>

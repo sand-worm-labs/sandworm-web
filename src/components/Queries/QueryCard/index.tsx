@@ -6,13 +6,17 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { twilight } from "react-syntax-highlighter/dist/esm/styles/prism";
+import {
+  twilight,
+  prism,
+} from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useState } from "react";
 
 import type { Query } from "@/types";
 import { useQueryLike } from "@/hooks/useLikeQuery";
 import { useModalStore } from "@/store/auth";
 import { useForkQuery } from "@/hooks";
+import { useTheme } from "@/components/Theme/ThemeProvider";
 
 import { DicebearAvatar } from "../../DicebearAvatar";
 
@@ -29,6 +33,8 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
   const { handleFork, loading: loadingfork } = useForkQuery(query.id);
 
   const [showFullDesc, setShowFullDesc] = useState<boolean>(false);
+
+  const { theme } = useTheme();
 
   const handleQueryClick = () => {
     router.push(`/console/${query.id}`);
@@ -48,6 +54,27 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
   // we truncate long ass description and check if we should even do that
   const truncatedDescription = query.description?.slice(0, 100) || "";
   const shouldTruncate = query.description?.length > 100;
+
+  const getSyntaxConfig = (currentTheme: string) => {
+    const systemDark = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
+
+    const isDark =
+      currentTheme === "dark" || (currentTheme === "system" && systemDark);
+
+    return {
+      style: isDark ? twilight : prism,
+      background: isDark ? "#0a0a0a" : "#D7E2E7",
+      borderColor: isDark ? "#333" : "#D4DCDF",
+    };
+  };
+
+  const {
+    style: syntaxStyle,
+    background: syntaxBg,
+    borderColor,
+  } = getSyntaxConfig(theme);
 
   return (
     <div className="shadow-sm rounded-xl p-4 md:px-8 px-5 flex flex-col justify-between">
@@ -87,11 +114,11 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
             >
               {query.title}
             </Link>
-            <p className="text-xs text-[#ffffff90] capitalize">
+            <p className="text-xs dark:text-[#ffffff90] capitalize">
               created {new Date(query.updatedAt).toLocaleDateString("en-US")}
             </p>
             {query.description && (
-              <p className="text-xs mt-1 text-white">
+              <p className="text-xs mt-1 dark:text-white">
                 {showFullDesc || !shouldTruncate
                   ? query.description
                   : `${truncatedDescription}... `}
@@ -109,7 +136,7 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
           </div>
         </div>
 
-        <div className="flex  gap-4 items-center text-[#ffffff90] text-xs mt-3 md:mt-0">
+        <div className="flex  gap-4 items-center dark:text-[#ffffff90] text-xs mt-3 md:mt-0">
           <div className="flex items-center gap-1">
             <button
               type="button"
@@ -144,13 +171,13 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
       <button type="button" onClick={handleQueryClick} className="mt-2 text-sm">
         <SyntaxHighlighter
           language="sql"
-          style={twilight}
+          style={syntaxStyle}
           customStyle={{
             margin: 0,
-            background: "#ffffff10",
-            borderRadius: 0,
+            borderRadius: "0.5em",
+            background: syntaxBg,
             borderWidth: 1,
-            borderColor: "#ffffff25",
+            borderColor,
             overflowY: "hidden",
           }}
           wrapLines
@@ -167,19 +194,19 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
       <div className="flex items-center justify-between mt-2">
         <div>
           {query.forked_from?.trim() && (
-            <span className="bg-[#1f1f1f] border border-orange-300 text-orange-200 px-2 rounded-full text-[11px] inline-block">
+            <span className="dark:bg-[#1f1f1f] border border-orange-300 text-orange-200 px-2 rounded-full text-[11px] inline-block">
               Forked Query
             </span>
           )}
         </div>
 
         {query.tags && query.tags.length > 0 && (
-          <div className="flex flex-wrap gap-2 text-xs text-orange-300 justify-end">
+          <div className="flex flex-wrap gap-2 text-xs text-orange-500 dark:text-orange-300 justify-end">
             {query.tags.map((tag, index) => (
               <span
                 // eslint-disable-next-line react/no-array-index-key
                 key={index}
-                className="bg-[#1a1a1a] border border-[#333] px-2 py-0.5 rounded-full"
+                className="dark:bg-[#1a1a1a] border dark:border-[#333] border-black/10 px-2 py-0.5 rounded-full"
               >
                 #{tag}
               </span>
