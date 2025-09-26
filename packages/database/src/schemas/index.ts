@@ -1,9 +1,6 @@
 // NEXT AUTH  TABLES
-export * from "./account";
-export * from "./verificationToken";
+export * from "./nextauth";
 export * from "./user";
-export * from "./authenticator";
-export * from "./session";
 
 export * from "./chat";
 export * from "./query";

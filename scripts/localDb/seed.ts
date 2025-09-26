@@ -6,7 +6,7 @@ import { sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
-import { QueryTable, UserTable } from "@/services/database/postgres/schema";
+import { QueryTable, UserTable } from "@/database/schemas";
 
 const queries = [
   `SELECT id, name, email FROM users WHERE active = true ORDER BY created_at DESC LIMIT 10;`,

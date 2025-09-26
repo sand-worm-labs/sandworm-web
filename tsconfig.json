@@ -1,4 +1,5 @@
 {
+"$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
     "types": ["jest", "next-auth"],
     "target": "es5",
@@ -21,6 +22,7 @@
     ],
     "baseUrl": ".",
     "paths": {
+      "@/database/*": ["./packages/database/src/*"],
       "@/*": ["./src/*"],
       "@/public/*": ["./public/*"]
     }
@@ -30,8 +32,6 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/components/SearchBar",
-    "src/context/index.tss"
   ],
   "exclude": ["node_modules"]
 }

@@ -1,11 +1,14 @@
 {
-  "name": "sandword-web",
+  "name": "@sandworm/web",
   "version": "1.0.0",
   "license": "MIT",
   "private": true,
   "engines": {
     "node": ">=20.0.0"
   },
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
@@ -182,5 +185,10 @@
     "tsx": "^4.20.5",
     "typescript": "^5.5.4",
     "worker-loader": "^3.0.8"
+  },
+  "packageManager": "pnpm@10.17.0",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
   }
 }
