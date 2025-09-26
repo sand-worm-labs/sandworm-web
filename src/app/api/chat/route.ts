@@ -69,6 +69,7 @@ const OutputSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  console.log("hello apu");
   // Parse request body
   let id: string;
   let rawMessages: Array<VercelChatMessage>;
@@ -113,6 +114,8 @@ export async function POST(request: NextRequest) {
     });
 
     const responseContent = JSON.stringify(result);
+
+    console.log(result, "responseContent");
 
     // Save chat in DB
     if (session?.user?.id) {

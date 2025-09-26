@@ -4,7 +4,8 @@ export async function GET(
   req: Request,
   { params }: { params: { id: string } }
 ) {
-  const { id } = params;
+  console.log("GET /api/chat/[id] called with params:", params);
+  const id = await Promise.resolve(params.id);
 
   if (!id) {
     return new Response(JSON.stringify({ error: "Missing ID" }), {
