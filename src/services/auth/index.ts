@@ -1,11 +1,10 @@
 import NextAuth from "next-auth";
-import "@/services/firebase";
 
 import authConfig from "./auth.config";
-import { FirebaseAuthAdapter } from "./adapter";
+import { AuthAdapter } from "./adapter";
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
-  adapter: FirebaseAuthAdapter(),
+  adapter: AuthAdapter,
   session: { strategy: "jwt" },
   ...authConfig,
 });
