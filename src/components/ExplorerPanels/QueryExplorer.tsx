@@ -83,7 +83,7 @@ export const QueryExplorer = () => {
   }, [session?.user?.id]);
 
   return (
-    <Card className="h-full overflow-hidden border-none dark">
+    <Card className="h-full overflow-hidden border-none ">
       <CardHeader className="p-4 border-b ">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 py-2">

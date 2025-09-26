@@ -71,7 +71,7 @@ export const DataExplorer = () => {
   };
 
   return (
-    <Card className="h-full overflow-hidden border-none dark">
+    <Card className="h-full overflow-hidden border-none ">
       {loading && (
         <div className="flex items-center justify-center h-full">
           <p className="text-muted-foreground">Loading chains...</p>

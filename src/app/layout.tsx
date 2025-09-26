@@ -1,12 +1,13 @@
 import "@/styles/globals.css";
 import "@mysten/dapp-kit/dist/index.css";
 
-import { DM_Mono as DMMono } from "next/font/google";
+import { Azeret_Mono as AzeretMono } from "next/font/google";
 import Script from "next/script";
 
 import { QueryProvider } from "@/providers/query";
 import type { ChildrenProps } from "@/types";
 import AppProvider from "@/providers/AppProvider";
+import { ThemeProvider } from "@/components/Theme/ThemeProvider";
 
 export const metadata = {
   description:
@@ -18,7 +19,7 @@ export const metadata = {
   },
 };
 
-const dmMono = DMMono({
+const azeretMono = AzeretMono({
   subsets: ["latin"],
   display: "swap",
   adjustFontFallback: false,
@@ -41,19 +42,21 @@ export default async function RootLayout({ children }: ChildrenProps) {
 
   gtag('config', "G-GQB5QS1LHQ")`}
       </Script>
-      <body
-        className={`${dmMono.className} h-full flex flex-col justify-between`}
-      >
-        {/*      <BannerAlert
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <body
+          className={`${azeretMono.className} h-full flex flex-col justify-between`}
+        >
+          {/*      <BannerAlert
           id="wql-downtime"
           message="Sandworm’s WQL is momentarily offline for upgrades. We’re working to restore access as soon as possible. Thanks for bearing with us."
         /> */}
-        <section className="flex-1 bg-background">
-          <QueryProvider>
-            <AppProvider>{children} </AppProvider>
-          </QueryProvider>
-        </section>
-      </body>
+          <section className="flex-1 dark:bg-background bg-white text-black dark:text-white">
+            <QueryProvider>
+              <AppProvider>{children} </AppProvider>
+            </QueryProvider>
+          </section>
+        </body>
+      </ThemeProvider>
     </html>
   );
 }

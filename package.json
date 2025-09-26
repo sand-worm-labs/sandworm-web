@@ -15,6 +15,10 @@
     "prettier": "prettier --write .",
     "lint": "yarn eslint && yarn prettier",
     "format": "next lint --fix && prettier '**/*.{json,yaml}' --write --ignore-path .gitignore",
+    "firebase": "firebase emulators:start",
+    "seed": "ts-node-dev --transpile-only src/services/localDb/seed.ts",
+    "commit": "git-cz",
+    "prepare": "husky install"
     "db:generate": "drizzle-kit generate",
     "db:up": "drizzle-kit up",
     "db:check": "drizzle-kit check",

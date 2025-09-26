@@ -6,7 +6,7 @@ export default function AccountSettings() {
   return (
     <div>
       <div className="border-b">
-        <h2 className="text-xl font-medium text-white mb-2 ">Link Wallet</h2>
+        <h2 className="text-xl font-medium  mb-2 ">Link Wallet</h2>
       </div>
 
       <div>
