@@ -1,18 +1,34 @@
 version: "3"
 
 services:
-  # MongoDB service
-  mongo:
-    image: mongo
-    container_name: my-mongo
+  # PostgreSQL database
+  db:
+    image: postgres:15
+    container_name: my-postgres
     ports:
-      - "27018:27017"
+      - "5432:5432"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
-      MONGO_INITDB_DATABASE: ${MONGO_DATABASE}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
 
-  # Next.js app service
+  # pgAdmin for managing PostgreSQL
+  pgadmin:
+    image: dpage/pgadmin4:7
+    container_name: my-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    volumes:
+      - pgadmindata:/var/lib/pgadmin
+
+  # Next.js app using Yarn
   app:
     build:
       context: .
@@ -21,8 +37,13 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - mongo
+      - db
     environment:
       NODE_ENV: ${NODE_ENV}
-      MONGODB_URI: ${MONGO_URI}
-    #COMMAND: [ "pm2-runtime", "start", "npm", "--", "start" ]
+      DATABASE_URL: ${DATABASE_URL}
+    command: ["yarn", "dev"]  # hot-reload for development
+
+volumes:
+  pgdata:
+  pgadmindata:
+
