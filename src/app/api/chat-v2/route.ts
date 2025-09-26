@@ -22,6 +22,7 @@ Input:
  */
 export async function POST(req: NextRequest) {
   try {
+    console.log("POST /api/chat-v2");
     const body = await req.json();
     const messages = body.messages ?? [];
     const currentMessageContent = messages[messages.length - 1].content;

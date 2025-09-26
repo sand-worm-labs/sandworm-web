@@ -3,6 +3,7 @@
 import { Home, Search, Clock, Bot, Terminal } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { LuLayoutGrid } from "react-icons/lu";
 
 import { AccountDropdown } from "@/components/AccountDropdown";
 
@@ -19,8 +20,9 @@ const mainNav: NavItem[] = [
 ];
 
 const toolsNav: NavItem[] = [
-  { name: "Worm AI", href: "/wormai", icon: Bot },
+  { name: "Ask a question", href: "/chat", icon: Bot },
   { name: "Console", href: "/console", icon: Terminal },
+  { name: "All tools", href: "/workspace/tools", icon: LuLayoutGrid },
 ];
 
 export const WorkspaceSidebar = () => {
