@@ -1,6 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import "@/services/postgress";
-import * as admin from "firebase-admin";
+//import * as admin from "firebase-admin";
 import { expect } from "@jest/globals";
 
 import { QueryService } from "@/services/database/postgress/db/QueryService";
@@ -13,7 +13,7 @@ describe("QueryService", () => {
   });
 
   afterAll(async () => {
-    await admin.app().delete();
+    // await admin.app().delete();
   });
 
   it("should create a query in Firestore", async () => {

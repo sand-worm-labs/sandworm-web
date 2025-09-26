@@ -1,6 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import "@/services/database/postgres";
-import * as admin from "firebase-admin";
 import { expect } from "@jest/globals";
 
 import { UserService } from "@/services/database/postgres/db/users";
@@ -14,7 +13,7 @@ describe("UserService", () => {
   });
 
   afterAll(async () => {
-    await admin.app().delete();
+    // await admin.app().delete();
   });
 
   it("should create a new user", async () => {
