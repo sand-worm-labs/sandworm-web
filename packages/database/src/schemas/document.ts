@@ -1,5 +1,4 @@
 import { pgTable, varchar, timestamp, uuid, text } from "drizzle-orm/pg-core";
-import { z } from "zod";
 
 import { UserTable } from "./user";
 

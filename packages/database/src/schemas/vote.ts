@@ -1,5 +1,4 @@
 import { pgTable, uuid, primaryKey, boolean } from "drizzle-orm/pg-core";
-import { z } from "zod";
 
 import { ChatTable } from "./chat";
 import { MessageTable } from "./message";

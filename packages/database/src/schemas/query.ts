@@ -7,10 +7,6 @@ import {
   uuid,
   foreignKey,
 } from "drizzle-orm/pg-core";
-import { z } from "zod";
-import { relations } from "drizzle-orm";
-
-import { UserTable } from "./user";
 
 export const QueryTable = pgTable(
   "queries",
