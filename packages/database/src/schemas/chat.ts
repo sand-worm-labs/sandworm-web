@@ -6,8 +6,6 @@ import {
   varchar,
   jsonb,
 } from "drizzle-orm/pg-core";
-import { z } from "zod";
-
 import type { AppUsage } from "@/services/usage";
 
 import { UserTable } from "./user";
