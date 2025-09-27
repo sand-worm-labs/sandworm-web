@@ -1,15 +1,15 @@
-import { pgTable, uuid, primaryKey, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, uuid, primaryKey, boolean } from "drizzle-orm/pg-core";
 
 import { ChatTable } from "./chat";
 import { MessageTable } from "./message";
-import { UserTable } from "./user";
+import { users } from "./user";
 
 export const VoteTable = pgTable(
   "votes",
   {
-    userId: uuid("userId")
-      .notNull()
-      .references(() => UserTable.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
     chatId: uuid("chatId")
       .notNull()
       .references(() => ChatTable.id, { onDelete: "cascade" }),
@@ -26,5 +26,3 @@ export const VoteTable = pgTable(
     },
   ]
 );
-
-// ==============  Vote Schema Type ==============
