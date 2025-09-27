@@ -29,10 +29,3 @@ export const VoteTable = pgTable(
 );
 
 // ==============  Vote Schema Type ==============
-export const voteSchema = z.object({
-  chatId: z.string().uuid(),
-  messageId: z.string().uuid(),
-  isUpvoted: z.boolean(),
-});
-
-export type Vote = z.infer<typeof voteSchema>;
