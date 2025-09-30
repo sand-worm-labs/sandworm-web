@@ -21,23 +21,23 @@ export const SocialLogin = () => {
   };
 
   return (
-    <div className="mt-3 flex space-x-3">
+    <div className="mt-3 ">
       <button
         type="button"
         onClick={handleGoogleSignIn}
-        className="flex w-1/2 items-center justify-center space-x-2 rounded-none border border-[#ffffff50]  px-4 py-2 text-white  hover:bg-btnHover"
+        className="flex w-full items-center justify-center space-x-2 rounded-xl border border-[#DEE2E6]   px-4 py-3  bg-[#F8F9FA]  hover:bg-btnHover text-black mb-4 text-sm "
       >
         <FcGoogle size={20} />
-        <span>Google</span>
+        <span>Sign up with Google</span>
       </button>
 
       <button
         type="button"
         onClick={handleGithubSignIn}
-        className="flex w-1/2 items-center justify-center space-x-2 border border-[#ffffff50] rounded-none px-4 py-2 text-white  hover:bg-btnHover"
+        className="flex w-full items-center justify-center space-x-2 border border-[#ffffff50] rounded-xl px-4 py-3 text-white text-sm hover:bg-btnHover bg-black"
       >
         <FaGithub size={20} />
-        <span>GitHub</span>
+        <span>Sign up with Github</span>
       </button>
     </div>
   );

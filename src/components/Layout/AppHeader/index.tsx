@@ -7,18 +7,16 @@ import { X, Search } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { SandwormLogo } from "@/components/Assets";
-import { useModalStore } from "@/store/auth";
 
 import { ProfileMenu } from "../../ProfileMenu";
 import { SearchBar } from "../../SearchBar";
 
 export const AppHeader: FC = () => {
   const { data: session } = useSession();
-  const openSignIn = useModalStore(state => state.openSignIn);
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <header className="px-8 py-2 flex justify-between items-center  dark:bg-[#000000] border-b border-[#E9ECEF]">
+    <header className="px-8 py-2 flex justify-between items-center dark:bg-[#000000] border-b border-[#E9ECEF]">
       <Link href="/" className="flex items-center">
         <SandwormLogo />
         <span className="ml-3 font-semibold text-lg uppercase hidden md:inline-block">
@@ -28,7 +26,8 @@ export const AppHeader: FC = () => {
           beta
         </Badge>
       </Link>
-      <div className="hidden md:block ">
+
+      <div className="hidden md:block">
         <SearchBar />
       </div>
 
@@ -45,16 +44,16 @@ export const AppHeader: FC = () => {
             <Search className="w-5 h-5" />
           )}
         </button>
+
         {session?.user ? (
           <ProfileMenu currentUser={{ ...session.user }} />
         ) : (
-          <button
+          <Link
+            href="/signin"
             className="border py-1.5 bg-white text-black rounded px-4 text-[0.9rem] font-medium hover:bg-white/85"
-            type="button"
-            onClick={openSignIn}
           >
             Sign In
-          </button>
+          </Link>
         )}
       </div>
     </header>
