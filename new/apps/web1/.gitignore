@@ -1,9 +1,10 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-node_modules
+/node_modules
 /.pnp
 .pnp.js
+.yarn/install-state.gz
 
 # testing
 /coverage
@@ -23,11 +24,9 @@ node_modules
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-./firestore-debug.log
-./ui-debug.log
 
-# local env files
-.env*.local
+# env files (can opt-in for commiting if needed)
+.env*
 
 # vercel
 .vercel
@@ -35,24 +34,3 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-.env
-
-/application-log
-.idea
-
-sandword-firebase.json
-serviceKey.json
-yarn.lock
-firebase-debug.log
-firestore-debug.log
-pnpm-lock.yaml
-ui-debug.log
-firebase-debug.log
-
-*.log
-
-cypress/videos/
-cypress/screenshots/
-cypress/downloads/
-
-
