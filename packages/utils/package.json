@@ -1,0 +1,19 @@
+{
+  "name": "@sandworm/utils",
+  "version": "1.0.0",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest",
+    "test:coverage": "vitest --coverage --silent='passed-only'"
+  },
+  "dependencies": {
+    "dayjs": "^1.11.18"
+  },
+  "devDependencies": {
+    "@types/dompurify": "^3.2.0",
+    "vitest-canvas-mock": "^0.3.3"
+  }
+}
