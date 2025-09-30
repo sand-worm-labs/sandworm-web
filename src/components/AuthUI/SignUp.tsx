@@ -4,32 +4,29 @@ import Link from "next/link";
 
 import { SandwormLogo } from "../Assets/SandwormLogo";
 
-import SignUpForm from "./SignUpForm";
+import { SocialLogin } from "./SocialLogin";
+import { ConnectWallet } from "./ConnectWallet";
 
 export const SignUp = () => {
   return (
-    <div className="flex min-h-screen items-center justify-center p-6 line-bg relative">
-      <Link
-        href="/"
-        className="flex items-center absolute top-6 left-6 md:left-12 z-10"
-      >
-        <SandwormLogo />
-        <span className="ml-3 font-medium text-xl uppercase">SandWorm.</span>
-      </Link>
-      <div className="grid-overlay" />
+    <div className="w-full max-w-md rounded-lg border border-[#ffffff30] p-6 content flex flex-col justify-center items-center h-full mx-auto text-black dark:text-white">
+      <SandwormLogo />
 
-      <div className="w-full max-w-md rounded-lg border border-[#ffffff30] p-6 content">
-        <h2 className="text-2xl font-bold text-center text-white">Sign Up</h2>
+      <h2 className="text-3xl font-medium text-center text-black mb-3 mt-4">
+        <span className="roobert">Welcome to </span>
+        <span className="uppercase font-bold">Sandworm!</span>
+      </h2>
 
-        <SignUpForm />
+      <p className="text-[#455768] text-sm mb-6 roobert">Sign up in 2 steps</p>
 
-        <p className="mt-4 text-center text-sm text-gray-400">
-          Already have an account?{" "}
-          <Link href="/sign-up" className="text-orange-500 hover:underline">
-            Sign in
-          </Link>
-        </p>
-      </div>
+      <SocialLogin />
+      <ConnectWallet />
+      <p className=" text-center dark:text-gray-400 text-[#343A40] roobert">
+        Already have an account?{" "}
+        <Link href="/signin" className="text-[#8053FE] hover:underline">
+          Sign In
+        </Link>
+      </p>
     </div>
   );
 };

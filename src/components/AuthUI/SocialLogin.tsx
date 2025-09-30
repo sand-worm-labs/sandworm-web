@@ -21,7 +21,7 @@ export const SocialLogin = () => {
   };
 
   return (
-    <div className="mt-3 ">
+    <div className="mt-3 w-full">
       <button
         type="button"
         onClick={handleGoogleSignIn}
