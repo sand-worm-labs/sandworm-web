@@ -3,12 +3,6 @@
   "version": "1.0.0",
   "license": "MIT",
   "private": true,
-  "engines": {
-    "node": ">=20.0.0"
-  },
-  "workspaces": [
-    "packages/*"
-  ],
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
