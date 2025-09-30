@@ -16,7 +16,7 @@
     "analyze": "ANALYZE=true next build",
     "eslint": "next lint --fix --dir src",
     "prettier": "prettier --write .",
-    "lint": "yarn eslint && yarn prettier",
+    "lint": "eslint . && prettier --check .",
     "format": "next lint --fix && prettier '**/*.{json,yaml}' --write --ignore-path .gitignore",
     "firebase": "firebase emulators:start",
     "seed": "ts-node-dev --transpile-only src/services/localDb/seed.ts",
@@ -34,7 +34,7 @@
     "commit": "git-cz"
   },
   "lint-staged": {
-    "*.{js,jsx,md,ts,tsx,html,css,scss}": "yarn prettier",
+    "*.{js,jsx,md,ts,tsx,html,css,scss}": "prettier --write",
     "*.{js,jsx,ts,tsx}": "eslint --cache --fix --cache-location ./node_modules/.cache/.eslintcache"
   },
   "dependencies": {
