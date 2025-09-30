@@ -18,12 +18,12 @@ export const ChainListPanel: React.FC<IChainListPanelProps> = ({
   onSelect,
 }) => {
   return (
-    <div className="flex flex-col  w-full border-t">
+    <div className="flex flex-col  w-full ">
       {chains.map(chain => (
         <button
           type="button"
           key={chain.name}
-          className="cursor-pointer py-4 px-3 rounded-none hover:bg-white/15 text-sm text-left flex items-center lowercase font-medium justify-between border-b last:border-b-0 transition-colors "
+          className="cursor-pointer py-4 px-3 rounded-none hover:bg-white/15 text-sm text-left flex items-center lowercase font-medium justify-between border-b last:border-b-0 transition-colors border-b-[#E9ECEF] "
           onClick={() => onSelect(chain.short_code)}
         >
           <span className="flex space-x-2 items-center ">
@@ -37,7 +37,7 @@ export const ChainListPanel: React.FC<IChainListPanelProps> = ({
             width={25}
             height={25}
             unoptimized
-            className="rounded-full border"
+            className="rounded-full "
           />
         </button>
       ))}
