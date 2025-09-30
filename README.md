@@ -1,135 +1,124 @@
-# Turborepo starter
+# SandWorm WebApp
 
-This Turborepo starter is maintained by the Turborepo core team.
+This repo is the frontend interface for SandWorm, a multi-chain blockchain data explorer and query IDE. We currently support Sui, Base, Ethereum, and other EVM-compatible networks and actively expanding to additional ecosystems beyond EVM. This repository contains the web-based UI, including the **landing page**, **public gists**, and the **integrated IDE** for querying blockchain data with SandWorm's SQL-like query language (WQL).
 
-## Using this example
+## 🚀 Features
 
-Run the following command:
+- **Landing Page** – Introduces SandWorm and its capabilities, TOC's, tutorial.
+- **Public Gists** – View and share useful queries with the community.
+- **IDE** – An interactive environment to write, test, and execute WQL queries. (/Workspace)
+
+---
+
+## Roadmap Overview
+
+This repo includes two roadmaps:
+
+- [Main App Roadmap](ROADMAP.md): Auth, landing page, navigation, settings, etc.
+- [Workspace Roadmap](<src/app/(app)/workspace/ROADMAP.md>): Query editor, tab management, execution engine, etc.
+
+## 📖 Getting Started
+
+### Prerequisites
+
+Ensure you have the following installed:
+
+- **Node.js** (Latest LTS recommended)
+- **Yarn** or **npm** or **pnpm**
+- **Firebase CLI** (for local emulation, optional)
+
+### Environment Variables
+
+Copy the example `.env` file and configure it with the necessary values:
 
 ```sh
-npx create-turbo@latest
+cp .env.example .env.local
 ```
 
-## What's inside?
+### Installation
 
-This Turborepo includes the following packages/apps:
+Clone the repository and install dependencies:
 
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+```sh
+git clone https://github.com/sand-worm-sql/web-app.git
+cd webapp
+pnpm install  # or npm install
 ```
 
-You can build a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+### Running the App
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
+To start the development server:
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
+```sh
+pnpm run dev  # or npm run dev
 ```
 
-### Develop
+This will start the Next.js development server on `http://localhost:3000/`.
 
-To develop all apps and packages, run the following command:
+---
 
-```
-cd my-turborepo
+## 🔥 Firebase Emulator Setup
 
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
+If you want to use the Firebase emulator for local development:
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
-```
+1. Install Firebase CLI:
+   ```sh
+   pnpm install -g firebase-tools
+   ```
+2. Login to Firebase:
+   ```sh
+   firebase login
+   ```
+3. Start the Firebase emulator:
+   ```sh
+   firebase emulators:start
+   ```
+   By default, the app is set up to work with a live Firebase instance. Update your `.env.local` file if you want to switch between live and emulator.
 
-You can develop a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+If you get could not spawn java version or java path error. You need to install java and set to path for the emulator to run
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
+---
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
+## 📂 Repository Structure
 
-### Remote Caching
+This repository follows a structured approach with relevant documentation in place:
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+- **`/public`** – Static assets.
+- **`/src/components`** – Reusable React components.
+- **`/src/app`** – Page routes.
+- **`/docs`** – Additional documentation.
+- **`/README.md`** – This document.
+- **`/DEVELOPER_NOTE.md`** – Developer-specific notes, guidelines, and pending features.
+- **Folder-specific README files** – Some folders contain dedicated README files listing pending features or developer notes.
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+---
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+## 🛠 Contributing
 
-```
-cd my-turborepo
+To contribute
 
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
+1. Read our **[Contributing Guidelines](CONTRIBUTING.md)** (to be added).
+2. Check the **Developer Notes** (`DEVELOPER_NOTE.md`) for pending features.
+3. Follow the project structure and coding guidelines.
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
-```
+To contribute:
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature-branch`).
+3. Commit your changes (`git commit -m "Added new feature"`).
+4. Push to the branch (`git push origin feature-branch`).
+5. Open a Pull Request.
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+---
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
+## 📜 License
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
-```
+This project is licensed under the MIT License. See the `LICENSE` file for details.
 
-## Useful Links
+---
 
-Learn more about the power of Turborepo:
+## 📫 Contact
 
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+For any questions, feel free to open an issue or reach out to the team through our official channels.
+
+---
