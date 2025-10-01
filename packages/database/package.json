@@ -13,7 +13,13 @@
 		"db:seed": "tsx scripts/seed.ts",
 		"db:migrate": "tsx scripts/migrate.ts",
 		"db:studio": "drizzle-kit studio",
-		"generate": "drizzle-kit generate:pg"
+		"generate": "drizzle-kit generate:pg",
+		"db:generate": "drizzle-kit generate",
+		"db:up": "drizzle-kit up",
+		"db:check": "drizzle-kit check",
+		"db:pull": "drizzle-kit introspect",
+		"db:push:danger": "drizzle-kit push",
+		"db:delete": "rm -rf drizzle/"
 	},
 	"dependencies": {
 		"dotenv": "^17.2.3",
