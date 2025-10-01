@@ -40,7 +40,6 @@ export const MultimodalInputView = forwardRef<
   ) => {
     return (
       <div className="relative w-full flex flex-col gap-4">
-        {/* Empty state spacing */}
         {attachments.length === 0 && uploadQueue.length === 0 && (
           <div className="grid sm:grid-cols-2 gap-4 w-full md:px-0 mx-auto md:max-w-[700px]" />
         )}

@@ -1,7 +1,9 @@
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 import { SparkleIcon } from "@/components/Assets/Sparkle";
+import { RingIcon } from "@/components/Assets/RingIcon";
 
 export const SectionAI = () => {
   const cards = [
@@ -26,16 +28,25 @@ export const SectionAI = () => {
   ];
 
   return (
-    <section className="py-32">
+    <section className="py-28 bg-[#F4FEFF]">
       <div className="container mx-auto text-center flex flex-col items-center">
-        <h3 className="uppercase mb-5 text-sm font-medium">
+        <RingIcon />
+        <h3 className="uppercase mb-5 text-sm font-medium mt-5">
           Let’s talk worm AI
         </h3>
-        <h1 className="mx-auto tracking-wide leading-[1.3] px-3 lg:px-0 text-[#A6554D] uppercase font-bold text-6xl text-center">
+        <h1 className="mx-auto tracking-wide leading-[1.2] px-3 lg:px-0 text-[#A6554D] uppercase font-bold text-6xl text-center">
           complex Onchain <br /> insight made easy
         </h1>
 
-        <div className="border border-[#D3DBF4] bg-[#ECF6FF] rounded-xl py-2 my-8 w-auto mx-auto text-[#3B5C6A] mb-14 flex gap-4 items-center px-6 justify-center text-xs">
+        <Link
+          className="border py-3 bg-black text-white border-white rounded-2xl px-5 text-sm  mt-10 font-medium dark:hover:bg-btnHover inline-block"
+          href="/workspace"
+          target="_blank"
+        >
+          <span className="ml-3">Use WormAI</span>
+        </Link>
+
+        <div className="border border-[#D3DBF4] bg-[#ECF6FF] rounded-xl py-2.5 my-8 w-auto mx-auto text-[#3B5C6A] mb-14 flex gap-4 items-center px-6 justify-center text-xs mt-20 box-glow">
           {" "}
           <SparkleIcon />
           <p>
@@ -44,7 +55,6 @@ export const SectionAI = () => {
           </p>
         </div>
 
-        {/* Cards Grid */}
         <h2 className="text-sm mb-1 text-left font-semibold uppercase text-[#06060A]">
           Accelerate with AI
         </h2>
@@ -52,7 +62,7 @@ export const SectionAI = () => {
           {cards.map(card => (
             <div
               key={card.title}
-              className="bg-[#ECF6FF] border border-[#D3DBF4] dark:bg-[#111111] rounded-2xl shadow-md p-6 flex flex-col text-left "
+              className="bg-[#ECF6FF] border-[1.5px] border-[#D3DBF4] dark:bg-[#111111] rounded-2xl shadow-md p-6 flex flex-col text-left "
             >
               <div className="flex space-x-6 mb-4">
                 <SparkleIcon />

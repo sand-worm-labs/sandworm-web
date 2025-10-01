@@ -15,7 +15,7 @@ export const SectionHero = () => {
         <div className="absolute left  top-[4rem] left-[6rem]  bottom-[-5rem] hero-line border-dashed hero-line" />
         <div className="absolute right  bottom-[-5rem] top-[4rem] right-[6rem]   hero-line  border-dashed hero-line" />
 
-        <div className="flex items-center space-x-6 relative mt-20 lg:mt-0 w-full ">
+        <div className="flex items-center space-x-6 relative mt-20 lg:mt-12 w-full ">
           <div className="lg:text-[2.8rem] text-4xl uppercase  font-[900] hero-title relative py-6 w-full">
             <h1 className="mx-auto tracking-wide leading-[1.3] px-3 lg:px-0">
               What do you want to explore{" "}
