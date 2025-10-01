@@ -1,9 +1,11 @@
-import { SignUp } from "@/components/AuthUI/SignUp";
+import { ClaimUsername } from "@/components/AuthUI/ClaimUsername";
 
 export default function SignUpPage() {
   return (
     <div>
-      <SignUp />
+      {/*       <SignUp />
+       */}{" "}
+      <ClaimUsername />
     </div>
   );
 }
