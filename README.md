@@ -1,8 +1,4 @@
 <p align="center" id="top">
-  <!-- Banner -->
-  <a href="/">
-    <img src="./misc/sandworm_banner.png" alt="Sandworm Banner" width="100%">
-  </a>
 
   <!-- Logo -->
   <a href="/">
