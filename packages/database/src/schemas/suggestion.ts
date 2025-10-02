@@ -7,7 +7,7 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
-import { UserTable } from "./user";
+import { users } from "./user";
 
 export const SuggestionTable = pgTable(
   "suggestions",
@@ -19,9 +19,9 @@ export const SuggestionTable = pgTable(
     suggestedText: text("suggestedText").notNull(),
     description: text("description"),
     isResolved: boolean("isResolved").notNull().default(false),
-    userId: uuid("userId")
+    userId: text("userId")
       .notNull()
-      .references(() => UserTable.id),
+      .references(() => users.id),
     createdAt: timestamp("createdAt").notNull(),
   },
   table => [primaryKey({ columns: [table.id] })]

@@ -1,13 +1,19 @@
-import { pgTable, timestamp, jsonb, text, boolean } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  timestamp,
+  jsonb,
+  text,
+  uuid,
+  boolean,
+} from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 
 import { timestamps, timestamptz } from "../utils/helpers";
 
 export const users = pgTable("users", {
-  id: text("id").primaryKey().notNull(),
+  id: uuid("id").primaryKey().notNull(),
   username: text("username").unique(),
   email: text("email"),
-  avatar: text("avatar"),
   firstName: text("first_name"),
   lastName: text("last_name"),
   fullName: text("full_name"),
@@ -24,7 +30,7 @@ export type UserItem = typeof users.$inferSelect;
 
 // --- User Settings table ---
 export const userSettings = pgTable("user_settings", {
-  id: text("id")
+  id: uuid("id")
     .references(() => users.id, { onDelete: "cascade" })
     .primaryKey(),
   // settings
