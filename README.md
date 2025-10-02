@@ -1,4 +1,20 @@
-# SandWorm WebApp
+<p align="center" id="top">
+  <!-- Banner -->
+  <a href="https://getwren.ai/?utm_source=github&utm_medium=title&utm_campaign=readme">
+    <img src="./misc/sandworm_banner.png" alt="Sandworm Banner" width="100%">
+  </a>
+
+  <!-- Logo -->
+  <a href="https://getwren.ai/?utm_source=github&utm_medium=title&utm_campaign=readme">
+    <picture>
+      <source media="(prefers-color-scheme: light)" srcset="./misc/sandworm_logo.png">
+      <img src="./misc/sandworm_logo.png" width="300px" alt="Sandworm Logo">
+    </picture>
+  </a>
+
+  <h1 align="center">Sandworm - Open-Source GenBI Agent</h1>
+</p>
+
 
 This repo is the frontend interface for SandWorm, a multi-chain blockchain data explorer and query IDE. We currently support Sui, Base, Ethereum, and other EVM-compatible networks and actively expanding to additional ecosystems beyond EVM. This repository contains the web-based UI, including the **landing page**, **public gists**, and the **integrated IDE** for querying blockchain data with SandWorm's SQL-like query language (WQL).
 
