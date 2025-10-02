@@ -23,6 +23,8 @@
     "baseUrl": ".",
     "paths": {
       "@/database/*": ["./packages/database/src/*"],
+      "@/graphql/*":["./packages/graphql/src/*"],
+      "@/utils/*":["./packages/utils/src/*"],
       "@/*": ["./src/*"],
       "@/public/*": ["./public/*"]
     }
