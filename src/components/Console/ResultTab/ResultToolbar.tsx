@@ -68,7 +68,7 @@ export const ResultToolbar = ({
           <SelectTrigger className="w-[140px] h-8 text-xs">
             <SelectValue placeholder="Select a view" />
           </SelectTrigger>
-          <SelectContent className="dark text-sm">
+          <SelectContent className=" text-sm">
             {options.map(option => (
               <SelectItem key={option} value={option}>
                 {option}

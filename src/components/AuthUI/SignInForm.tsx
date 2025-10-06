@@ -22,11 +22,13 @@ export const SignInForm = () => {
   return (
     <form onSubmit={handleSubmit} className="mt-4 space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-300">Email</label>
+        <label className="block text-sm font-medium dark:text-gray-300">
+          Email
+        </label>
         <input
           type="email"
           name="email"
-          className="mt-1 w-full rounded-md bg-dark-gray p-2 text-white focus:border-orange-500 focus:ring-orange-500"
+          className="mt-1 w-full rounded-md dark:bg-dark-gray p-2 text-white focus:border-orange-500 focus:ring-orange-500"
           placeholder="Enter your email"
           value={formData.email}
           onChange={handleChange}
@@ -34,13 +36,13 @@ export const SignInForm = () => {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-300">
+        <label className="block text-sm font-medium dark:text-gray-300">
           Password
         </label>
         <input
           type="password"
           name="password"
-          className="mt-1 w-full rounded-md bg-dark-gray p-2 text-white focus:border-orange-500 focus:ring-orange-500"
+          className="mt-1 w-full rounded-md dark:bg-dark-gray p-2 text-white focus:border-orange-500 focus:ring-orange-500"
           placeholder="Enter your password"
           value={formData.password}
           onChange={handleChange}
