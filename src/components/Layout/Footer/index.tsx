@@ -6,7 +6,7 @@ import { SandwormLogo } from "../../Assets/SandwormLogo";
 
 export const MainFooter = () => {
   return (
-    <footer className=" p-4 px-5 lg:text-sm text-base text-text-gray border-t border-borderLight mt-16">
+    <footer className=" p-4 px-5 lg:text-sm text-base text-[#242A2D] border-t border-borderLight mt-6 roobert font-medium">
       <div className="container mx-auto grid lg:grid-cols-3 pt-5 pb-8 gap-y-12">
         <div className="col-span-full lg:col-span-1 ">
           <Link href="/" className="flex items-center ">
@@ -17,7 +17,7 @@ export const MainFooter = () => {
           </Link>
         </div>
         <div className="flex space-y-4 flex-col ">
-          <span className="text-white font-medium mb-1">Resources</span>
+          <span className=" font-medium mb-1">Resources</span>
           <Link
             href="https://docs.sandwormlabs.xyz"
             className="hover:text-white"
@@ -41,14 +41,10 @@ export const MainFooter = () => {
           </Link>
         </div>
         <div className="flex space-y-4 flex-col ">
-          <span className="text-white font-medium mb-1">Product</span>
+          <span className=" font-medium mb-1">Product</span>
 
-          <Link href="/terms" className="hover:text-white">
-            Terms & Conditions
-          </Link>
-          <Link href="/contact" className="hover:text-white">
-            Contact Us
-          </Link>
+          <Link href="/terms">Terms & Conditions</Link>
+          <Link href="/contact">Contact Us</Link>
         </div>
       </div>
       <div className="mx-auto container flex justify-between py-4 ">

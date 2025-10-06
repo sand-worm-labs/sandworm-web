@@ -1,15 +1,21 @@
 import MainLayout from "@/layouts/MainLayout/MainLayout";
-import { SectionFeatures } from "@/components/Sections/SectionFeatures";
 import { SectionHero } from "@/components/Sections/SectionHero";
 import { SectionOnboard } from "@/components/Sections/SectionOnboard";
-import { SectionWorkFlow } from "@/components/Sections/SectionWorkFlow";
+import { SectionVideoPreview } from "@/components/Sections/SectionVideoPreview";
+import { SectionAI } from "@/components/Sections/SectionAI";
+import { SectionExplore } from "@/components/Sections/SectionExpore";
+import { SectionLaunch } from "@/components/Sections/SectionLaunch";
 
 export default function Home() {
   return (
     <MainLayout>
       <SectionHero />
-      <SectionFeatures />
-      <SectionWorkFlow />
+      <SectionVideoPreview />
+      <SectionLaunch />
+      <SectionExplore />
+      <SectionAI />
+      {/*       <SectionWorkFlow />
+       */}{" "}
       <SectionOnboard />
     </MainLayout>
   );

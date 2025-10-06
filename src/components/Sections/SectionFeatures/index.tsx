@@ -6,8 +6,6 @@ import { Features } from "./Features";
 export const SectionFeatures = () => {
   return (
     <section className="line-bg ">
-      <div className="grid-overlay" />
-
       <div className="container mx-auto py-16 pt-5 content px-5 ">
         <div className="grid lg:grid-cols-3 gap-12 lg:pl-[6rem] z-[3] ">
           <div className="text-4xl font-medium leading-[1.6] flex items-center">
