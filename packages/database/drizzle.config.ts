@@ -1,18 +1,31 @@
-import "dotenv/config";
-
+import * as dotenv from "dotenv";
 import type { Config } from "drizzle-kit";
 
-const getEnvVariable = (name: string) => {
-	const value = process.env[name];
-	if (value == null) throw new Error(`environment variable ${name} not found`);
-	return value;
-};
+// Read the .env file if it exists, or a file specified by the
+
+// dotenv_config_path parameter that's passed to Node.js
+
+dotenv.config();
+
+let connectionString = process.env.DATABASE_URL;
+
+if (process.env.NODE_ENV === "test") {
+  console.log("current ENV:", process.env.NODE_ENV);
+  connectionString = process.env.DATABASE_TEST_URL;
+}
+
+if (!connectionString)
+  throw new Error(
+    "`DATABASE_URL` or `DATABASE_TEST_URL` not found in environment"
+  );
 
 export default {
-	schema: "./src/schema/index.ts",
-	out: "./migrations",
-	dialect: "postgresql",
-	dbCredentials: {
-		url: getEnvVariable("DATABASE_URL"),
-	},
-} as Config;
+  dbCredentials: {
+    url: connectionString,
+  },
+  dialect: "postgresql",
+  out: "./packages/database/migrations",
+
+  schema: "./packages/database/src/schemas",
+  strict: true,
+} satisfies Config;
