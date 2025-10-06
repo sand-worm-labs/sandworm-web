@@ -6,6 +6,6 @@
 .dockerignore
 Dockerfile
 docker-compose.yml
-node_modules/
+node_modules
 nginx/
 README.md

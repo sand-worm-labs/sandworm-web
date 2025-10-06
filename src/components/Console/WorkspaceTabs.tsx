@@ -138,7 +138,7 @@ export const WorkspaceTabs = ({
   };
 
   return (
-    <div className="flex flex-col h-full dark">
+    <div className="flex flex-col h-full">
       <Tabs
         value={activeTabId || undefined}
         onValueChange={handleTabChange}

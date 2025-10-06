@@ -16,8 +16,12 @@
     "analyze": "ANALYZE=true next build",
     "eslint": "next lint --fix --dir src",
     "prettier": "prettier --write .",
-    "lint": "yarn eslint && yarn prettier",
+    "lint": "eslint . && prettier --check .",
     "format": "next lint --fix && prettier '**/*.{json,yaml}' --write --ignore-path .gitignore",
+    "firebase": "firebase emulators:start",
+    "seed": "ts-node-dev --transpile-only src/services/localDb/seed.ts",
+    "commit": "git-cz",
+    "prepare": "husky install",
     "db:generate": "drizzle-kit generate",
     "db:up": "drizzle-kit up",
     "db:check": "drizzle-kit check",
@@ -30,7 +34,7 @@
     "commit": "git-cz"
   },
   "lint-staged": {
-    "*.{js,jsx,md,ts,tsx,html,css,scss}": "yarn prettier",
+    "*.{js,jsx,md,ts,tsx,html,css,scss}": "prettier --write",
     "*.{js,jsx,ts,tsx}": "eslint --cache --fix --cache-location ./node_modules/.cache/.eslintcache"
   },
   "dependencies": {
@@ -105,7 +109,7 @@
     "lucide-react": "^0.476.0",
     "lodash-es": "^4.17.21",
     "monaco-editor": "^0.52.2",
-    "next": "15.2.4",
+    "next": "15.4.7",
     "next-auth": "5.0.0-beta.25",
     "next-themes": "^0.4.6",
     "nextjs-progressbar": "^0.0.16",

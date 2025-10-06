@@ -75,14 +75,14 @@ export default async function Explore({ searchParams }: ExplorePageProps) {
 
   const isAllEmpty = allError && starredError && forkedError;
   return (
-    <div className="dark text-white min-h-[88vh]">
+    <div className=" dark:text-white min-h-[88vh]">
       <Head>
         <title>Explore</title>
       </Head>
 
-      <div className="pt-10">
+      <div className="pt-5">
         {isAllEmpty ? (
-          <div className="flex items-center justify-center flex-col text-white font-medium text-lg mt-16 px-3">
+          <div className="flex items-center justify-center flex-col dark:text-white font-medium text-lg mt-16 px-3">
             <Image
               src="/img/nodata.svg"
               width={400}
@@ -94,12 +94,17 @@ export default async function Explore({ searchParams }: ExplorePageProps) {
             </p>
           </div>
         ) : (
-          <TabsSection
-            queries={allQueries}
-            starredQueries={starredQueries}
-            forkedQueries={forkedQueries}
-            defaultTab={defaultTab}
-          />
+          <div>
+            <p className="text-[#455768] text-sm mb-8 px-4">
+              See what others are creating using Sandworm
+            </p>
+            <TabsSection
+              queries={allQueries}
+              starredQueries={starredQueries}
+              forkedQueries={forkedQueries}
+              defaultTab={defaultTab}
+            />
+          </div>
         )}
       </div>
     </div>

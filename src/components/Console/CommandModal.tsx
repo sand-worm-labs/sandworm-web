@@ -10,7 +10,7 @@ import {
 
 export const CommandMenu = () => {
   return (
-    <DialogContent className="max-w-md px-2 py-1 overflow-hidden text-foreground dark">
+    <DialogContent className="max-w-md px-2 py-1 overflow-hidden text-foreground ">
       <DialogTitle className="sr-only">Command Menu</DialogTitle>
 
       {/* TODO:map through commands */}

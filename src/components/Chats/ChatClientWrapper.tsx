@@ -22,6 +22,7 @@ export function ClientChatWrapper({
   useEffect(() => {
     async function loadChat() {
       try {
+        console.log("Fetching chat with id:", id);
         const res = await fetch(`/api/chat/${id}`, {
           method: "GET",
         });

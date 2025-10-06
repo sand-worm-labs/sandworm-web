@@ -4,6 +4,49 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "Helvetica Neue";
+  src: url("/fonts/HelveticaNeue-HeavyCond.otf") format("opentype");
+  font-weight: 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Roobert";
+  src: url("/fonts/RoobertTRIAL-Regular-BF67243fd53fdf2.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Roobert";
+  src: url("/fonts/RoobertTRIAL-Medium-BF67243fd53e059.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Helvetica Neue";
+  src: url("/fonts/HelveticaNeue-Medium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+}
+
+.helvetica-neue {
+  font-family: "Helvetica Neue", sans-serif;
+}
+
+.roobert {
+  font-family: "Roobert", sans-serif;
+  font-weight: 500;
+}
+
+::cue {
+  font-family: "Roobert", sans-serif;
+  font-size: 18px;
+  background: rgba(0, 0, 0, 0.6);
+}
+
 :root {
   --primary: "#ea580b";
   --background: 255, 0, 0;
@@ -45,8 +88,13 @@ body {
 body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
-  color: theme("colors.text.primary");
+  /*   color: theme("colors.text.primary");
+ */
   accent-color: theme("colors.brand.accent");
+}
+
+h1 {
+  font-family: "Helvetica Neue";
 }
 
 /* scrollbar */
@@ -279,15 +327,11 @@ label {
 
 .line-bg {
   position: relative;
-  background-color: black;
 }
 
 .grid-overlay {
   position: absolute;
   inset: 0;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.1) 1.5px, transparent 1.5px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1.5px, transparent 1.5px);
   background-size: 100px 100px;
   z-index: 0;
   filter: blur(0.7px);
@@ -297,7 +341,6 @@ label {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle, rgba(0, 0, 0, 0) 30%, black 90%);
   pointer-events: none;
 }
 
@@ -435,6 +478,61 @@ label {
 }
 svg {
   shape-rendering: crispEdges;
+}
+
+/* -------  onboarding ----------* */
+.green-gradient {
+  background: linear-gradient(99deg, #f1f8f8 -0.93%, #dcf4f4 99.29%);
+}
+
+.box-gradient {
+  position: relative;
+  border-radius: 1rem;
+  padding: 1rem;
+  background: linear-gradient(99deg, #f1f8f8 -0.93%, #dcf4f4 99.29%);
+  z-index: 0;
+}
+
+.box-gradient::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2px;
+  background: linear-gradient(
+    99deg,
+    #6368ff 0.62%,
+    #cbecff 15.71%,
+    #7bff42 25.15%,
+    #2db2ff 42.6%,
+    #f00 60.53%,
+    #ded757 80.81%,
+    #ff00e1 98.74%
+  );
+  background-size: 200% 200%;
+  animation: gradientScroll 4s linear infinite;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  z-index: -1;
+}
+
+.box-glow {
+  box-shadow:
+    0 0 35px 6px rgba(120, 147, 208, 0.22),
+    0 0 4px 4px rgba(211, 224, 254, 0.2) inset,
+    0 0 2px 4.5px rgba(211, 224, 254, 0.2) inset;
+}
+
+@keyframes gradientScroll {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
 }
 
 @keyframes marquee {
