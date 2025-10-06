@@ -6,7 +6,8 @@ import { sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
-import { QueryTable, users as UserTable } from "@/schema";
+import { NewUser, QueryTable, users as UserTable } from "../../src/schemas";
+
 
 const queries = [
   `SELECT id, name, email FROM users WHERE active = true ORDER BY created_at DESC LIMIT 10;`,
@@ -102,7 +103,23 @@ const queries = [
    JOIN actors ON movie_cast.actor_id = actors.id 
    GROUP BY movies.id, movies.title 
    ORDER BY unique_actors DESC;`,
-  `SELECT customers.id, customers.name, MAX(orders.total_price) AS max_order 
+  `SELECT customers.id, customNo overload matches this call.
+  Overload 1 of 2, '(value: { id: string | SQL<unknown> | Placeholder<string, any>; username?: string | SQL<unknown> | Placeholder<string, any> | null | undefined; email?: string | SQL<...> | Placeholder<...> | null | undefined; ... 9 more ...; updatedAt?: SQL<...> | ... 2 more ... | undefined; }): PgInsertBase<...>', gave the following error.
+    Argument of type '{ username: string; email: string; firstName: string; lastName: string; fullName: string; avatar: string; isOnboarded: boolean; emailVerifiedAt: null; }[]' is not assignable to parameter of type '{ id: string | SQL<unknown> | Placeholder<string, any>; username?: string | SQL<unknown> | Placeholder<string, any> | null | undefined; email?: string | SQL<...> | Placeholder<...> | null | undefined; ... 9 more ...; updatedAt?: SQL<...> | ... 2 more ... | undefined; }'.
+      Property 'id' is missing in type '{ username: string; email: string; firstName: string; lastName: string; fullName: string; avatar: string; isOnboarded: boolean; emailVerifiedAt: null; }[]' but required in type '{ id: string | SQL<unknown> | Placeholder<string, any>; username?: string | SQL<unknown> | Placeholder<string, any> | null | undefined; email?: string | SQL<...> | Placeholder<...> | null | undefined; ... 9 more ...; updatedAt?: SQL<...> | ... 2 more ... | undefined; }'.
+  Overload 2 of 2, '(values: { id: string | SQL<unknown> | Placeholder<string, any>; username?: string | SQL<unknown> | Placeholder<string, any> | null | undefined; email?: string | SQL<...> | Placeholder<...> | null | undefined; ... 9 more ...; updatedAt?: SQL<...> | ... 2 more ... | undefined; }[]): PgInsertBase<...>', gave the following error.
+    Argument of type '{ username: string; email: string; firstName: string; lastName: string; fullName: string; avatar: string; isOnboarded: boolean; emailVerifiedAt: null; }[]' is not assignable to parameter of type '{ id: string | SQL<unknown> | Placeholder<string, any>; username?: string | SQL<unknown> | Placeholder<string, any> | null | undefined; email?: string | SQL<...> | Placeholder<...> | null | undefined; ... 9 more ...; updatedAt?: SQL<...> | ... 2 more ... | undefined; }[]'.
+      Property 'id' is missing in type '{ username: string; email: string; firstName: string; lastName: string; fullName: string; avatar: string; isOnboarded: boolean; emailVerifiedAt: null; }' but required in type '{ id: string | SQL<unknown> | Placeholder<string, any>; username?: string | SQL<unknown> | Placeholder<string, any> | null | undefined; email?: string | SQL<...> | Placeholder<...> | null | undefined; ... 9 more ...; updatedAt?: SQL<...> | ... 2 more ... | undefined; }'.ts(2769)
+const fakerUsers: {
+    username: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    fullName: string;
+    avatar: string;
+    isOnboarded: boolean;
+    emailVerifiedAt: null;
+}[]ers.name, MAX(orders.total_price) AS max_order 
    FROM customers 
    JOIN orders ON customers.id = orders.customer_id 
    GROUP BY customers.id, customers.name 
@@ -288,12 +305,21 @@ async function seedDatabase() {
   }
 
   // Generate 20 random users
-  const fakerUsers = Array.from({ length: 20 }, () => ({
-    username: faker.internet.username(),
-    email: faker.internet.email(),
-    name: faker.person.fullName(),
-    image: faker.image.avatar(),
-  }));
+
+  const fakerUsers: NewUser[] = Array.from({ length: 20 }, () => {
+    const fullName = faker.person.fullName();
+    const [firstName, lastName] = fullName.split(" ", 2);
+    return {
+      username: faker.internet.username(),
+      email: faker.internet.email(),
+      firstName,
+      lastName,
+      fullName,
+      avatar: faker.image.avatar(),
+      isOnboarded: false,
+      emailVerifiedAt: null,
+    };
+  })
 
   await db.insert(UserTable).values(fakerUsers);
   const users = await db.select().from(UserTable);

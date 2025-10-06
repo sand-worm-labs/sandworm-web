@@ -8,7 +8,7 @@ import {
 } from "drizzle-orm/pg-core";
 import type { AppUsage } from "@/services/usage";
 
-import { UserTable } from "./user";
+import { users as UserTable } from "./user";
 
 export const ChatTable = pgTable("chats", {
   id: uuid("id").primaryKey().notNull().defaultRandom(),

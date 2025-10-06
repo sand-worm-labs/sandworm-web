@@ -16,7 +16,7 @@ export class DatabaseAdapter {
     private static createInstance(): SandwormDatabase {
         const { DATABASE_URL, DATABASE_DRIVER, KEY_VAULTS_SECRET } = dbEnv;
 
-        if (process.env['NEXT_PUBLIC_SERVICE_MODE'] = "server") {
+        if (process.env['NEXT_PUBLIC_SERVICE_MODE'] === "server") {
             throw new Error('Database can only be initialized in server mode');
         }
 
