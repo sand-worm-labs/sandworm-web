@@ -2,7 +2,7 @@
 import "@/services/database/postgres";
 import { expect } from "@jest/globals";
 
-import { UserService } from "@/services/database/postgres/db/users";
+import { UserService } from "../models/user";
 
 jest.setTimeout(100000);
 

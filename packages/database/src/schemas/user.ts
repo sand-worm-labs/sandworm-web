@@ -1,77 +1,59 @@
 import {
   pgTable,
-  varchar,
   timestamp,
   jsonb,
   text,
   uuid,
+  boolean,
 } from "drizzle-orm/pg-core";
-import { z } from "zod";
 import { sql } from "drizzle-orm";
 
-export const SocialLinksType = z.object({
-  telegram: z.string().optional(),
-  twitter: z.string().optional(),
-  github: z.string().optional(),
-  discord: z.string().optional(),
-  email: z.string().optional(),
-  instagram: z.string().optional(),
-  warpcast: z.string().optional(),
-});
+import { timestamps, timestamptz } from "../utils/helpers";
 
-export const StatusType = z.object({
-  text: z.string(),
-  timestamp: z.date(),
-});
-
-export const WalletType = z.object({
-  chain: z.string(),
-  address: z.string(),
-});
-
-export const UserType = z.object({
-  id: z.string().uuid(),
-  username: z.string(),
-  email: z.string().email(),
-  name: z.string().optional(),
-  image: z.string().nullable().optional(),
-  emailVerified: z.date().nullable().optional(),
-  stars: z.number(),
-  forks: z.number(),
-  socialLinks: SocialLinksType.optional(),
-  status: StatusType.optional(),
-  wallets: z.array(WalletType).optional(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
-});
-
-type SocialLinks = z.infer<typeof SocialLinksType>;
-type Status = z.infer<typeof StatusType>;
-type Wallet = z.infer<typeof WalletType>[];
-
-export const UserTable = pgTable("users", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  username: varchar("username", { length: 255 }).notNull().unique(),
-  email: varchar("email", { length: 255 }).notNull().unique(),
-  name: varchar("name", { length: 255 }),
-  image: text("image"),
+export const users = pgTable("users", {
+  id: uuid("id").primaryKey().notNull(),
+  username: text("username").unique(),
+  email: text("email"),
+  firstName: text("first_name"),
+  lastName: text("last_name"),
+  fullName: text("full_name"),
+  avater: text("avater"),
+  isOnboarded: boolean("is_onboarded").default(false),
+  emailVerifiedAt: timestamptz("email_verified_at"),
   emailVerified: timestamp("email_verified"),
+
+  ...timestamps,
+});
+
+export type NewUser = typeof users.$inferInsert;
+export type UserItem = typeof users.$inferSelect;
+
+// --- User Settings table ---
+export const userSettings = pgTable("user_settings", {
+  id: uuid("id")
+    .references(() => users.id, { onDelete: "cascade" })
+    .primaryKey(),
+  // settings
   socialLinks: jsonb("social_links")
-    .$type<SocialLinks>()
+    .$type<{
+      telegram?: string;
+      twitter?: string;
+      github?: string;
+      discord?: string;
+      email?: string;
+      instagram?: string;
+      warpcast?: string;
+    }>()
     .notNull()
     .default(sql`'{}'::jsonb`),
-  status: jsonb("status")
-    .$type<Status>()
-    .notNull()
-    .default(
-      sql`jsonb_build_object('text', 'Just joined 🚀', 'timestamp', now())`
-    ),
+
+  statusText: text("status_text").notNull().default("Just joined 🚀"),
+  statusUpdatedAt: timestamp("status_updated_at").defaultNow().notNull(),
+
   wallets: jsonb("wallets")
-    .$type<Wallet>()
+    .$type<{ chain: string; address: string }[]>()
     .notNull()
     .default(sql`'[]'::jsonb`),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export type User = z.infer<typeof UserType>;
+export type UserSettingsItem = typeof userSettings.$inferSelect;

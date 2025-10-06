@@ -3,12 +3,13 @@ import {
   integer,
   pgTable,
   primaryKey,
+  uuid,
   text,
   timestamp,
 } from "drizzle-orm/pg-core";
 import { AdapterAccount } from "next-auth/adapters";
 
-import { UserTable } from "./user";
+import { users } from "./user";
 
 /**
  * This table stores nextauth accounts. This is used to link users to their sso profiles.
@@ -27,9 +28,9 @@ export const nextauthAccounts = pgTable(
     session_state: text("session_state"),
     token_type: text("token_type"),
     type: text("type").$type<AdapterAccount>().notNull(),
-    userId: text("userId")
+    userId: uuid("userId")
       .notNull()
-      .references(() => UserTable.id, { onDelete: "cascade" }),
+      .references(() => users.id, { onDelete: "cascade" }),
   },
   account => [
     {
@@ -49,9 +50,9 @@ export const nextauthAccounts = pgTable(
 export const nextauthSessions = pgTable(`nextauth_sessions`, {
   expires: timestamp("expires", { mode: "date" }).notNull(),
   sessionToken: text("sessionToken").primaryKey(),
-  userId: text("userId")
+  userId: uuid("userId")
     .notNull()
-    .references(() => UserTable.id, { onDelete: "cascade" }),
+    .references(() => users.id, { onDelete: "cascade" }),
 });
 
 /**
@@ -81,16 +82,15 @@ export const nextauthVerificationTokens = pgTable(
 export const nextauthAuthenticators = pgTable(
   `nextauth_authenticators`,
   {
-    counter: integer("counter").notNull(),
     credentialBackedUp: boolean("credentialBackedUp").notNull(),
     credentialDeviceType: text("credentialDeviceType").notNull(),
     credentialID: text("credentialID").notNull().unique(),
     credentialPublicKey: text("credentialPublicKey").notNull(),
     providerAccountId: text("providerAccountId").notNull(),
     transports: text("transports"),
-    userId: text("userId")
+    userId: uuid("userId")
       .notNull()
-      .references(() => UserTable.id, { onDelete: "cascade" }),
+      .references(() => users.id, { onDelete: "cascade" }),
   },
   authenticator => [
     {
