@@ -19,6 +19,6 @@
 		"moduleResolution": "nodenext"
 	},
 	"include": [
-		"./src"
+		"./"
 	]
 }
