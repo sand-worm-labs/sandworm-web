@@ -4,12 +4,12 @@ import type { Attachment, Message } from "ai";
 import { useChat } from "ai/react";
 import { useState } from "react";
 
-import { Message as PreviewMessage } from "@/components/Chats/message";
-
+/* import { Message as PreviewMessage } from "@/components/Chats/message";
+ */
 import { MultimodalInput } from "./multimodal-input";
 import { ExamplePrompts } from "./example-prompts";
-import { useScrollToBottom } from "./use-scroll-to-bottom";
-
+/* import { useScrollToBottom } from "./use-scroll-to-bottom";
+ */
 export function Chat({
   id,
   initialMessages,
@@ -35,13 +35,13 @@ export function Chat({
     });
 
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
-  const [messagesContainerRef, messagesEndRef] =
-    useScrollToBottom<HTMLDivElement>();
+  /*   const [messagesContainerRef, messagesEndRef] =
+    useScrollToBottom<HTMLDivElement>(); */
 
   return (
     <div className="flex flex-row justify-center pb-4 md:pb-8 h-dvh ">
       <div className="flex flex-col mt-32 items-center gap-4">
-        <div
+        {/*   <div
           ref={messagesContainerRef}
           className="flex flex-col gap-4 h-full w-dvw items-center overflow-y-scroll"
         >
@@ -60,7 +60,7 @@ export function Chat({
             ref={messagesEndRef}
             className="shrink-0 min-w-[24px] min-h-[24px]"
           />
-        </div>
+        </div> */}
         <h1 className="text-3xl xl:text-4xl font-medium text-center tracking-tighter text-pretty roobert">
           What do you want to explore onchain today?
         </h1>

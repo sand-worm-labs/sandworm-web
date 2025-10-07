@@ -25,7 +25,7 @@ export function ExamplePrompts({ onPromptSelect }: ExamplePromptsProps) {
           className={clsx([
             "!shrink-0 !rounded-full !px-3 !py-1 !text-xs !flex !items-center !gap-2 hover:cursor-pointer dark:text-white text-[#6C757D]",
             // Base
-            "relative isolate inline-flex items-center justify-center gap-x-2 rounded-md border text-base/6 font-medium",
+            "relative isolate inline-flex items-center justify-center gap-x-2 rounded-md border text-base/6 font-base",
             // Focus
             "focus:outline-none focus:outline-2 focus:outline-offset-2 focus:outline-orange-600",
             // Disabled

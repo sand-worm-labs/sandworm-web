@@ -2,7 +2,7 @@
 
 import React from "react";
 import { ChevronDown, Share2 } from "lucide-react";
-import { useSession, signOut } from "next-auth/react";
+import { useSession, signIn, signOut } from "next-auth/react";
 import Link from "next/link";
 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -18,6 +18,19 @@ export const AccountDropdown = () => {
   const { data: session } = useSession();
   const user = session?.user;
 
+  if (!user) {
+    return (
+      <div className="w-[90%] mx-auto mb-5 flex justify-center">
+        <Button
+          onClick={() => signIn()}
+          className="px-5 h-11 border-[#E9ECEF] bg-white  dark:bg-neutral-900 text-black dark:text-white font-semibold inline-block w-full"
+        >
+          Sign up Today!
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="w-[90%] mx-auto mb-5 dark:bg-black">
       <DropdownMenu>
@@ -29,15 +42,15 @@ export const AccountDropdown = () => {
             <div className="flex items-center gap-3">
               <Avatar className="h-9 w-9">
                 <AvatarImage
-                  src={user?.image ?? undefined}
-                  alt={user?.name ?? "User"}
+                  src={user.image ?? undefined}
+                  alt={user.name ?? "User"}
                 />
                 <AvatarFallback>
-                  {user?.name?.split(" ")[0]?.[0] ?? "U"}
+                  {user.name?.split(" ")[0]?.[0] ?? "U"}
                 </AvatarFallback>
               </Avatar>
-              <div className="flex flex-col text-left leading-tight text-base ">
-                <span className=" font-light">@{user?.name ?? "Guest"}</span>
+              <div className="flex flex-col text-left leading-tight text-base">
+                <span>{user.name ?? "User"}</span>
               </div>
             </div>
             <ChevronDown className="ml-2 h-4 w-4" />
@@ -53,15 +66,15 @@ export const AccountDropdown = () => {
             <div className="flex items-center gap-3">
               <Avatar className="h-10 w-10">
                 <AvatarImage
-                  src={user?.image ?? undefined}
-                  alt={user?.name ?? "User"}
+                  src={user.image ?? undefined}
+                  alt={user.name ?? "User"}
                 />
                 <AvatarFallback>
-                  {user?.name?.split(" ")[0]?.[0] ?? "U"}
+                  {user.name?.split(" ")[0]?.[0] ?? "U"}
                 </AvatarFallback>
               </Avatar>
               <div>
-                <p className="font-medium text-sm">@{user?.name ?? "Guest"}</p>
+                <p className="font-medium text-sm">@{user.name ?? "Guest"}</p>
               </div>
             </div>
             <Button
