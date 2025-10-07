@@ -8,4 +8,3 @@ export * from "./vote";
 export * from "./document";
 export * from "./suggestion";
 export * from "./message";
-export * from "./relations";
