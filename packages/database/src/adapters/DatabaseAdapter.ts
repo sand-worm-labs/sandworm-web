@@ -5,7 +5,7 @@ import { Pool as NodePool } from 'pg';
 import ws from 'ws';
 
 import { dbEnv } from '../../config';
-import { SandwormDatabase } from '../type';
+import { SandwormDatabase } from '../types/db';
 import * as schema from '../schemas'; // ensure this path is valid
 
 export class DatabaseAdapter {

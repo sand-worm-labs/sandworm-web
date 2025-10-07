@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 
 import { users, userSettings } from "../schemas";
 import type { NewUser, UserItem, UserSettingsItem } from "../schemas";
-import type { SandwormDatabase } from "../type";
+import type { SandwormDatabase } from "../types/db";
 
 export class UserModel {
   private userId: string;
