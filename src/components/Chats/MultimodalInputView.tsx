@@ -63,7 +63,7 @@ export const MultimodalInputView = forwardRef<
         {/* Textarea */}
         <Textarea
           ref={ref}
-          placeholder="What are the most active NFT collections on Base in the last 7 days?"
+          placeholder="Start  a  query . . ."
           value={input}
           onChange={onInputChange}
           onKeyDown={e => {
@@ -72,7 +72,7 @@ export const MultimodalInputView = forwardRef<
               onSubmit?.(e as any);
             }
           }}
-          className="min-h-[50px] overflow-hidden resize-none rounded-3xl border border-[#E6E0F1] bg-white dark:text-white text-sm placeholder:text-sm focus:ring-0 focus:outline-none dark:bg-zinc-950/10 dark:placeholder:text-zinc-400 scrollbar-thin scrollbar-thumb-rounded-md scrollbar-thumb-zinc-700 py-4 px-5 placeholder:text-[#868E96]"
+          className="min-h-[50px] overflow-hidden resize-none rounded-3xl border border-[#E6E0F1] bg-white dark:text-white text-sm placeholder:text-sm focus:ring-0 focus:outline-none dark:bg-zinc-950/10 dark:placeholder:text-zinc-400 scrollbar-thin scrollbar-thumb-rounded-md scrollbar-thumb-zinc-700 py-4 px-5 placeholder:text-[#868E96] placeholder:tracking-wide"
           rows={6}
         />
 

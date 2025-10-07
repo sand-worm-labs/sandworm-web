@@ -37,41 +37,43 @@ export const WorkspaceSidebar = () => {
      }`;
 
   return (
-    <aside className="w-64 h-screen flex flex-col bg-[#F1F3F4]">
-      <div className="px-6 py-4" />
+    <aside className="w-64 h-full flex flex-col justify-between bg-[#F1F3F4]">
+      <div>
+        <div className="px-6 py-4" />
+
+        <nav className="flex-1 px-3">
+          <ul className="space-y-1">
+            {mainNav.map(item => (
+              <li key={item.name}>
+                <Link href={item.href} className={linkClasses(item.href)}>
+                  <item.icon
+                    className={`h-5 w-5 ${
+                      pathname === item.href ? "text-black" : "text-gray-600"
+                    }`}
+                  />
+                  {item.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+
+          <ul className="space-y-1 mt-6">
+            {toolsNav.map(item => (
+              <li key={item.name}>
+                <Link href={item.href} className={linkClasses(item.href)}>
+                  <item.icon
+                    className={`h-5 w-5 ${
+                      pathname === item.href ? "text-black" : "text-gray-600"
+                    }`}
+                  />
+                  {item.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
       <AccountDropdown />
-
-      <nav className="flex-1 px-3">
-        <ul className="space-y-1">
-          {mainNav.map(item => (
-            <li key={item.name}>
-              <Link href={item.href} className={linkClasses(item.href)}>
-                <item.icon
-                  className={`h-5 w-5 ${
-                    pathname === item.href ? "text-black" : "text-gray-600"
-                  }`}
-                />
-                {item.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
-
-        <ul className="space-y-1 mt-6">
-          {toolsNav.map(item => (
-            <li key={item.name}>
-              <Link href={item.href} className={linkClasses(item.href)}>
-                <item.icon
-                  className={`h-5 w-5 ${
-                    pathname === item.href ? "text-black" : "text-gray-600"
-                  }`}
-                />
-                {item.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </nav>
     </aside>
   );
 };
