@@ -29,4 +29,4 @@ import { join } from "path";
   ],
   providers: [],
 })
-export class AppModule { }
+export class AppModule {}
