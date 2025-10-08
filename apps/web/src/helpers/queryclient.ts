@@ -22,21 +22,21 @@ export async function runQuery(
   apiUrl: string,
   query: string,
   executionType: string,
-  signal: AbortSignal
+  signal: AbortSignal,
 ): Promise<QueryResult> {
   try {
     console.log("Running query:", query, "Execution type:", executionType);
     const formattedQuery = query.replace(/\s/g, "+");
     const res = await fetch(
       `${apiUrl}type_param=${executionType}&query=${formattedQuery}`,
-      { signal }
+      { signal },
     );
     const resContentType = res.headers.get("Content-Type");
 
     if (!resContentType?.includes("application/json")) {
       const text = await res.text();
       throw new Error(
-        `Unexpected content type: ${resContentType}. Body: ${text}`
+        `Unexpected content type: ${resContentType}. Body: ${text}`,
       );
     }
 
@@ -64,7 +64,7 @@ export async function runQuery(
 
     console.error("Fetch error:", err);
     return emptyResult(
-      err instanceof Error ? err.message : "Unknown fetch error"
+      err instanceof Error ? err.message : "Unknown fetch error",
     );
   }
 }

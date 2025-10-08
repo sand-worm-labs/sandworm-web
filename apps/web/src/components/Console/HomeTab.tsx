@@ -72,11 +72,11 @@ export const HomeTab = () => {
     setLoading(true);
     try {
       const recentQueries = await Promise.resolve(
-        queryHistory.slice(0, 6).map(h => ({
+        queryHistory.slice(0, 6).map((h) => ({
           cleaned_query: h.query,
           latest_event_time: h.timestamp,
           query_kind: "query",
-        }))
+        })),
       );
       setRecentItems(recentQueries);
     } catch (err) {
@@ -117,7 +117,7 @@ export const HomeTab = () => {
     if (loading) {
       return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[1, 2, 3].map(i => (
+          {[1, 2, 3].map((i) => (
             <Card key={i} className="space-y-2">
               <CardHeader>
                 <Skeleton className="h-4 w-[250px]" />
@@ -248,7 +248,7 @@ export const HomeTab = () => {
               id?: string | undefined,
               type?: string | undefined,
               query?: string | undefined,
-              executionMethod?: "rpc" | "indexed" | undefined
+              executionMethod?: "rpc" | "indexed" | undefined,
             ) => void
           }
           isOpen={showExamplesModal}

@@ -55,7 +55,7 @@ export const SettingsPanel: React.FC = () => {
             </Label>
             <Select
               value={selectedChain}
-              onValueChange={value => {
+              onValueChange={(value) => {
                 setSelectedChain(value);
                 toast.success(`Chain set to ${value}`);
               }}
@@ -64,7 +64,7 @@ export const SettingsPanel: React.FC = () => {
                 <SelectValue placeholder="Select chain" />
               </SelectTrigger>
               <SelectContent className="dark">
-                {chains.map(chain => (
+                {chains.map((chain) => (
                   <SelectItem key={chain} value={chain}>
                     {chain}
                   </SelectItem>
@@ -81,7 +81,7 @@ export const SettingsPanel: React.FC = () => {
               id="rpc"
               placeholder="https://rpc.sui.io"
               value={rpcUrl}
-              onChange={e => setRpcUrl(e.target.value)}
+              onChange={(e) => setRpcUrl(e.target.value)}
               onBlur={() => {
                 if (rpcUrl.trim()) {
                   toast.success("Updated RPC URL");
@@ -96,9 +96,9 @@ export const SettingsPanel: React.FC = () => {
             </Label>
             <Select
               value={editorTheme}
-              onValueChange={value => {
+              onValueChange={(value) => {
                 setEditorTheme(
-                  value as "sandworm" | "vs-dark" | "vs-light" | "monokai"
+                  value as "sandworm" | "vs-dark" | "vs-light" | "monokai",
                 );
                 toast.success(`Theme changed to ${value}`);
               }}
@@ -107,7 +107,7 @@ export const SettingsPanel: React.FC = () => {
                 <SelectValue placeholder="Select theme" />
               </SelectTrigger>
               <SelectContent className="dark">
-                {themes.map(theme => (
+                {themes.map((theme) => (
                   <SelectItem key={theme} value={theme}>
                     {theme}
                   </SelectItem>
@@ -122,7 +122,7 @@ export const SettingsPanel: React.FC = () => {
             </Label>
             <Select
               value={defaultChain}
-              onValueChange={value => {
+              onValueChange={(value) => {
                 setDefaultChain(value);
                 toast.success(`${value} is now your default chain`);
               }}
@@ -131,7 +131,7 @@ export const SettingsPanel: React.FC = () => {
                 <SelectValue placeholder="Default Chain" />
               </SelectTrigger>
               <SelectContent className="dark">
-                {chains.map(chain => (
+                {chains.map((chain) => (
                   <SelectItem key={chain} value={chain}>
                     {chain}
                   </SelectItem>
@@ -147,12 +147,12 @@ export const SettingsPanel: React.FC = () => {
             <Switch
               id="shortcuts"
               checked={shortcutsEnabled}
-              onCheckedChange={checked => {
+              onCheckedChange={(checked) => {
                 setShortcutsEnabled(checked);
                 toast.success(
                   checked
                     ? "Shortcuts panel enabled"
-                    : "Shortcuts panel disabled"
+                    : "Shortcuts panel disabled",
                 );
               }}
             />
@@ -166,12 +166,12 @@ export const SettingsPanel: React.FC = () => {
             <Switch
               id="beta"
               checked={betaFeatures}
-              onCheckedChange={checked => {
+              onCheckedChange={(checked) => {
                 setBetaFeatures(checked);
                 toast.success(
                   checked
                     ? "Experimental features enabled. You now have access to upcoming tools still under development."
-                    : "Beta features disabled"
+                    : "Beta features disabled",
                 );
               }}
             />

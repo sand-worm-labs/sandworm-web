@@ -58,7 +58,7 @@ export const SaveModal = ({
       description,
       query: content,
       privateQuery: isPrivate,
-      tags: tags.split(",").map(tag => tag.trim()),
+      tags: tags.split(",").map((tag) => tag.trim()),
       creator: session.user.id,
       id: tabId,
     };
@@ -95,7 +95,7 @@ export const SaveModal = ({
             <Input
               id="title"
               value={formTitle}
-              onChange={e => setFormTitle(e.target.value)}
+              onChange={(e) => setFormTitle(e.target.value)}
             />
           </div>
           <div>
@@ -108,7 +108,7 @@ export const SaveModal = ({
             <Textarea
               id="description"
               value={description}
-              onChange={e => setDescription(e.target.value)}
+              onChange={(e) => setDescription(e.target.value)}
               placeholder="Enter description"
             />
           </div>
@@ -122,7 +122,7 @@ export const SaveModal = ({
             <Input
               id="tags"
               value={tags}
-              onChange={e => setTags(e.target.value)}
+              onChange={(e) => setTags(e.target.value)}
               placeholder="e.g. sql, database, analytics"
             />
           </div>
@@ -130,7 +130,7 @@ export const SaveModal = ({
             <Checkbox
               id="private"
               checked={isPrivate}
-              onCheckedChange={checked => setIsPrivate(checked === true)}
+              onCheckedChange={(checked) => setIsPrivate(checked === true)}
             />
             <Label htmlFor="private">Make Private</Label>
           </div>

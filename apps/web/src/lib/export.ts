@@ -17,7 +17,7 @@ export const serializeBigInt = (obj: any): any => {
 
   if (typeof obj === "object") {
     return Object.fromEntries(
-      Object.entries(obj).map(([key, value]) => [key, serializeBigInt(value)])
+      Object.entries(obj).map(([key, value]) => [key, serializeBigInt(value)]),
     );
   }
 
@@ -35,7 +35,7 @@ export const formatBytes = (bytes: number, decimals = 2): string => {
 
 export const estimateExportSize = (
   data: any[],
-  downloadOption: ExportFormat
+  downloadOption: ExportFormat,
 ): string => {
   if (data.length === 0) return "0 B";
 
@@ -98,7 +98,7 @@ export const processInChunks = async (
   items: any[],
   format: ExportFormat,
   chunkSize: number,
-  onProgress?: (progress: number) => void
+  onProgress?: (progress: number) => void,
 ): Promise<Blob> => {
   const chunks = Math.ceil(items.length / chunkSize);
   let result = "";
@@ -118,7 +118,7 @@ export const processInChunks = async (
 
   for (let i = 0; i < chunks; i++) {
     const chunk = serializeBigInt(
-      items.slice(i * chunkSize, (i + 1) * chunkSize)
+      items.slice(i * chunkSize, (i + 1) * chunkSize),
     );
 
     switch (format) {

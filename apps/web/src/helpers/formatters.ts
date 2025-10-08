@@ -2,7 +2,7 @@ import type { QueryResult } from "@/store";
 
 /* @check if query has result */
 export const queryHasResults = (
-  result: Record<string, unknown> | unknown[]
+  result: Record<string, unknown> | unknown[],
 ): boolean => {
   // Case 1: If result is a plain array (e.g. from 'indexed')
   if (Array.isArray(result)) {
@@ -19,9 +19,9 @@ export const queryHasResults = (
     "coin",
   ];
   return knownKeys.some(
-    key =>
+    (key) =>
       Array.isArray((result as Record<string, unknown>)[key]) &&
-      ((result as Record<string, unknown>)[key] as unknown[]).length > 0
+      ((result as Record<string, unknown>)[key] as unknown[]).length > 0,
   );
 };
 
@@ -34,7 +34,7 @@ export const queryHasResults = (
  * - Returns the columns, column types, data, and row count.
  */
 export const formatApiResultToQueryResult = (
-  result: Record<string, object[]> | object[]
+  result: Record<string, object[]> | object[],
 ): QueryResult => {
   let allData: Array<Record<string, unknown>> = [];
 
@@ -43,7 +43,7 @@ export const formatApiResultToQueryResult = (
     allData = result as Record<string, unknown>[];
   } else {
     // Otherwise, loop through the known keys and concat the arrays
-    Object.keys(result).forEach(key => {
+    Object.keys(result).forEach((key) => {
       if (Array.isArray(result[key]) && result[key].length > 0) {
         allData.push(...(result[key] as Record<string, unknown>[]));
       }
@@ -61,7 +61,7 @@ export const formatApiResultToQueryResult = (
 
   const columns = Object.keys(allData[0]);
 
-  const columnTypes = columns.map(col => {
+  const columnTypes = columns.map((col) => {
     const value = allData[0][col];
     let columnType: string;
 
@@ -82,7 +82,7 @@ export const formatApiResultToQueryResult = (
 
   const data = allData.map((item: Record<string, unknown>) => {
     const row: Record<string, unknown> = {};
-    columns.forEach(col => {
+    columns.forEach((col) => {
       row[col] =
         Array.isArray(item[col]) && item[col].length === 1
           ? item[col][0]

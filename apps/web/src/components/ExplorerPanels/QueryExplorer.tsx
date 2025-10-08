@@ -60,7 +60,7 @@ const QueryExplorerContent = ({
   loading: boolean;
   queries: Query[];
 }) => {
-  const openSignIn = useModalStore(state => state.openSignIn);
+  const openSignIn = useModalStore((state) => state.openSignIn);
 
   if (!session?.user?.id)
     return <UnauthenticatedState handleSignIn={openSignIn} />;

@@ -23,8 +23,8 @@ export const SearchBar = () => {
   }, [currentSearch]);
 
   const addToCache = (q: string) => {
-    setCachedQueries(prev => {
-      const filtered = prev.filter(item => item !== q);
+    setCachedQueries((prev) => {
+      const filtered = prev.filter((item) => item !== q);
       return [q, ...filtered].slice(0, 5);
     });
   };
@@ -33,12 +33,12 @@ export const SearchBar = () => {
     if (e.key === "ArrowDown") {
       e.preventDefault();
       setIsActive(true);
-      setHighlightIndex(prev => (prev + 1) % cachedQueries.length);
+      setHighlightIndex((prev) => (prev + 1) % cachedQueries.length);
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       setIsActive(true);
-      setHighlightIndex(prev =>
-        prev <= 0 ? cachedQueries.length - 1 : prev - 1
+      setHighlightIndex((prev) =>
+        prev <= 0 ? cachedQueries.length - 1 : prev - 1,
       );
     } else if (e.key === "Enter") {
       e.preventDefault();
@@ -95,7 +95,7 @@ export const SearchBar = () => {
           type="text"
           placeholder="Search Queries, Dahboards, Users"
           value={query}
-          onChange={e => {
+          onChange={(e) => {
             setQuery(e.target.value);
             setHighlightIndex(-1);
           }}
@@ -134,7 +134,7 @@ export const SearchBar = () => {
                   const page = "1";
 
                   router.push(
-                    `workspace/explore?tab=${tab}&page=${page}&search=${encodeURIComponent(item)}`
+                    `workspace/explore?tab=${tab}&page=${page}&search=${encodeURIComponent(item)}`,
                   );
                 }}
               >

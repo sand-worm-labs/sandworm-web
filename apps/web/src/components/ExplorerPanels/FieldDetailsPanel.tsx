@@ -15,7 +15,7 @@ export const FieldDetailsPanel = ({ entities }: IFieldDetailsPanelProps) => {
   const typeparams = searchParams.get("type") ?? "raw";
 
   const activeEntity = entities?.[typeparams as keyof typeof entities]?.find(
-    (e: any) => e.name === entity
+    (e: any) => e.name === entity,
   );
 
   if (!chain || !entity) return <p>Invalid selection</p>;

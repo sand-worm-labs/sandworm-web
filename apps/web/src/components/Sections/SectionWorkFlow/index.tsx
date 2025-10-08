@@ -58,7 +58,7 @@ export const SectionWorkFlow = () => {
       </h2>
 
       <div className="w-full  md:space-y-16 space-y-8">
-        {workflowSteps.map(step => (
+        {workflowSteps.map((step) => (
           <div className="w-full grid md:grid-cols-2 pb-12" key={step.title}>
             <div className="lg:pr-10 mt-12">
               <h3 className="md:text-3xl text-xl mb-3 font-medium">
@@ -86,7 +86,7 @@ export const SectionWorkFlow = () => {
               </div>
 
               <ul className="text-sm space-y-3">
-                {step.bullets.map(item => (
+                {step.bullets.map((item) => (
                   <li key={item} className="flex items-center space-x-3">
                     <span className="rounded-full bg-dark-translucent p-1">
                       <FaCheck className="text-orange-600 text-[0.65rem]" />

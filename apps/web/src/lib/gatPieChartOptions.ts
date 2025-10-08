@@ -4,7 +4,7 @@ export const getPieChartOptions = (
   data: { name: string; y: number }[],
   xAxis: string,
   yAxis: string,
-  title?: string
+  title?: string,
 ): Highcharts.Options => {
   return {
     chart: {

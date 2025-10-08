@@ -34,7 +34,7 @@ export const MainHeader = () => {
             </Badge>
           </Link>
           <ul className="hidden md:flex ml-10 text-[0.8rem] items-center space-x-8">
-            {navLinks.map(link => (
+            {navLinks.map((link) => (
               <li key={link.name}>
                 <Link
                   href={link.href}
@@ -82,7 +82,7 @@ export const MainHeader = () => {
 
       {isOpen && (
         <div className="md:hidden flex flex-col items-center space-y-4 py-4 bg-black border-t border-borderLight bottom-0">
-          {navLinks.map(link => (
+          {navLinks.map((link) => (
             <Link
               key={link.name}
               href={link.href}

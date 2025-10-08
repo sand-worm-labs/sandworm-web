@@ -38,9 +38,9 @@ export const useCreateQuery = () => {
           closeTab(tabId);
           replaceTabId(tabId, response.id);
           createTab(response.title, response.id, "sql", response.query);
-          useSandwormStore.setState(state => ({
-            tabs: state.tabs.map(tab =>
-              tab.id === response.id ? { ...tab, readonly: false } : tab
+          useSandwormStore.setState((state) => ({
+            tabs: state.tabs.map((tab) =>
+              tab.id === response.id ? { ...tab, readonly: false } : tab,
             ),
             activeTabId: response.id,
           }));
@@ -57,7 +57,7 @@ export const useCreateQuery = () => {
         setLoading(false);
       }
     },
-    [session?.user?.id, closeTab, replaceTabId]
+    [session?.user?.id, closeTab, replaceTabId],
   );
 
   return {

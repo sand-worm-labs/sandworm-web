@@ -6,7 +6,7 @@ interface ModalState {
   closeSignIn: () => void;
 }
 
-export const useModalStore = create<ModalState>(set => ({
+export const useModalStore = create<ModalState>((set) => ({
   signInOpen: false,
   openSignIn: () => set({ signInOpen: true }),
   closeSignIn: () => set({ signInOpen: false }),

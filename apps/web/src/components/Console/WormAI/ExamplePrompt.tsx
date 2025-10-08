@@ -14,7 +14,7 @@ interface ExamplePromptsProps {
 export function ExamplePrompts({ onPromptSelect }: ExamplePromptsProps) {
   return (
     <div className="flex w-full flex-wrap items-center justify-center gap-2 md:gap-4">
-      {examplePrompts.map(prompt => (
+      {examplePrompts.map((prompt) => (
         <button
           type="button"
           key={prompt}

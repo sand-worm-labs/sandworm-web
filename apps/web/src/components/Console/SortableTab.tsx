@@ -49,13 +49,13 @@ export const SortableTab = ({ tab, isActive }: SortableTabProps) => {
 
   useHotkeys(
     "ctrl+alt+w",
-    e => {
+    (e) => {
       if (tab.id !== "home" && isActive) {
         e.preventDefault();
         closeTab(tab.id);
       }
     },
-    [isActive, tab.id]
+    [isActive, tab.id],
   );
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -83,12 +83,12 @@ export const SortableTab = ({ tab, isActive }: SortableTabProps) => {
       className={cn(
         "flex items-center group relative ",
         isDragging ? "opacity-50" : "",
-        isActive ? "z-10" : "z-0"
+        isActive ? "z-10" : "z-0",
       )}
       onClick={handleMiddleClick}
       onAuxClick={handleMiddleClick}
       onKeyDown={handleKeyDown}
-      onMouseDown={e => e.preventDefault()}
+      onMouseDown={(e) => e.preventDefault()}
     >
       {tab.type === "sql" && (
         <div
@@ -111,7 +111,7 @@ export const SortableTab = ({ tab, isActive }: SortableTabProps) => {
           "hover:bg-black/20",
           tab.id === "home" ? "cursor-default" : "cursor-pointer",
           tab.type === "sql" ? "pl-7" : "pl-3",
-          isExecuting ? "pointer-events-none opacity-50" : ""
+          isExecuting ? "pointer-events-none opacity-50" : "",
         )}
       >
         <div className="flex items-center space-x-2 overflow-hidden w-full">
@@ -121,11 +121,11 @@ export const SortableTab = ({ tab, isActive }: SortableTabProps) => {
             // eslint-disable-next-line jsx-a11y/no-static-element-interactions
             <span
               className="cursor-pointer hover:bg-red-500/10 p-1 rounded transition-colors  flex items-center space-x-1 text-xs text-gray-500"
-              onClick={e => {
+              onClick={(e) => {
                 e.stopPropagation();
                 closeTab(tab.id);
               }}
-              onKeyDown={e => {
+              onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
                   closeTab(tab.id);

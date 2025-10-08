@@ -36,7 +36,7 @@ export const MultimodalInputView = forwardRef<
       uploadQueue = [],
       disabled = false,
     },
-    ref
+    ref,
   ) => {
     return (
       <div className="relative w-full flex flex-col gap-4">
@@ -48,11 +48,11 @@ export const MultimodalInputView = forwardRef<
         {/* Attachments Preview */}
         {(attachments.length > 0 || uploadQueue.length > 0) && (
           <div className="flex flex-row gap-2 overflow-x-scroll">
-            {attachments.map(attachment => (
+            {attachments.map((attachment) => (
               <PreviewAttachment key={attachment.url} attachment={attachment} />
             ))}
 
-            {uploadQueue.map(filename => (
+            {uploadQueue.map((filename) => (
               <PreviewAttachment
                 key={filename}
                 attachment={{
@@ -108,7 +108,7 @@ export const MultimodalInputView = forwardRef<
         </div>
       </div>
     );
-  }
+  },
 );
 
 MultimodalInputView.displayName = "MultimodalInputView";

@@ -52,7 +52,7 @@ export const ResultToolbar = ({
 
   const removeOption = (value: string) => {
     if (value === "Table") return;
-    const updatedOptions = selectedOptions.filter(option => option !== value);
+    const updatedOptions = selectedOptions.filter((option) => option !== value);
     setSelectedOptions(updatedOptions.length ? updatedOptions : ["Table"]);
 
     if (viewMode === value) {
@@ -69,7 +69,7 @@ export const ResultToolbar = ({
             <SelectValue placeholder="Select a view" />
           </SelectTrigger>
           <SelectContent className=" text-sm">
-            {options.map(option => (
+            {options.map((option) => (
               <SelectItem key={option} value={option}>
                 {option}
               </SelectItem>
@@ -78,7 +78,7 @@ export const ResultToolbar = ({
         </Select>
 
         <div className="flex flex-wrap gap-2">
-          {selectedOptions.map(option => (
+          {selectedOptions.map((option) => (
             <Badge
               key={option}
               className={`cursor-pointer px-3 py-1 text-xs rounded-full flex items-center gap-2 hover:text-white ${
@@ -92,7 +92,7 @@ export const ResultToolbar = ({
               {option !== "Table" && (
                 <button
                   type="button"
-                  onClick={e => {
+                  onClick={(e) => {
                     e.stopPropagation();
                     removeOption(option);
                   }}

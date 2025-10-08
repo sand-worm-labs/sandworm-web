@@ -58,12 +58,14 @@ export const TableControls = <T,>({
             <div className="max-h-64 overflow-auto">
               {table
                 .getAllColumns()
-                .filter(col => col.id !== "__index")
-                .map(column => (
+                .filter((col) => col.id !== "__index")
+                .map((column) => (
                   <DropdownMenuCheckboxItem
                     key={column.id}
                     checked={column.getIsVisible()}
-                    onCheckedChange={value => column.toggleVisibility(!!value)}
+                    onCheckedChange={(value) =>
+                      column.toggleVisibility(!!value)
+                    }
                     className="text-sm"
                   >
                     {column.id}

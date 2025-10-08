@@ -43,7 +43,7 @@ export const WorkspaceSidebar = () => {
 
       <nav className="flex-1 px-3">
         <ul className="space-y-1">
-          {mainNav.map(item => (
+          {mainNav.map((item) => (
             <li key={item.name}>
               <Link href={item.href} className={linkClasses(item.href)}>
                 <item.icon
@@ -58,7 +58,7 @@ export const WorkspaceSidebar = () => {
         </ul>
 
         <ul className="space-y-1 mt-6">
-          {toolsNav.map(item => (
+          {toolsNav.map((item) => (
             <li key={item.name}>
               <Link href={item.href} className={linkClasses(item.href)}>
                 <item.icon

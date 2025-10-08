@@ -20,7 +20,7 @@ interface QueryTabProps {
 export const QueryTab: React.FC<QueryTabProps> = ({ tabId }) => {
   const { tabs, isExecuting } = useSandwormStore();
   const [viewMode, setViewMode] = useState<string>("Table");
-  const currentTab = tabs.find(tab => tab.id === tabId);
+  const currentTab = tabs.find((tab) => tab.id === tabId);
 
   const renderResults = () => {
     if (!currentTab || currentTab.type !== "sql") {

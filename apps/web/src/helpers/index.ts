@@ -19,7 +19,7 @@ export async function runPredefinedQuery({
       API_URL,
       query,
       executionType,
-      signal ?? new AbortController().signal
+      signal ?? new AbortController().signal,
     );
     return result;
   } catch (error) {

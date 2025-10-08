@@ -46,7 +46,7 @@ export const Message = ({
         {/* Attachments */}
         {attachments && (
           <div className="flex flex-row gap-2">
-            {attachments.map(attachment => (
+            {attachments.map((attachment) => (
               <PreviewAttachment key={attachment.url} attachment={attachment} />
             ))}
           </div>
