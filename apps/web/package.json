@@ -8,26 +8,15 @@
     "build": "next build",
     "start": "next start",
     "analyze": "ANALYZE=true next build",
-    "eslint": "next lint --fix --dir src",
-    "prettier": "prettier --write .",
-    "lint": "yarn eslint && yarn prettier",
-    "format": "next lint --fix && prettier '**/*.{json,yaml}' --write --ignore-path .gitignore",
-    "firebase": "firebase emulators:start",
-    "seed": "ts-node-dev --transpile-only src/services/localDb/seed.ts",
-    "commit": "git-cz",
-    "prepare": "husky install",
-    "db:generate": "drizzle-kit generate",
-    "db:up": "drizzle-kit up",
-    "db:check": "drizzle-kit check",
-    "db:pull": "drizzle-kit introspect",
-    "db:studio": "drizzle-kit studio",
-    "db:seed": "tsx scripts/localDb/seed.ts",
-    "db:migrate": "tsx scripts/migrations/migrate.ts",
-    "db:push:danger": "drizzle-kit push",
-    "db:delete": "rm -rf drizzle/"
+    "eslint": "pnpm exec next lint --fix --dir src",
+    "prettier": "pnpm exec prettier --write .",
+    "lint": "pnpm eslint && pnpm prettier",
+    "format": "pnpm eslint --fix && pnpm prettier '**/*.{json,yaml}' --write --ignore-path .gitignore",
+    "firebase": "pnpm exec firebase emulators:start",
+    "seed": "pnpm exec ts-node-dev --transpile-only src/services/localDb/seed.ts"
   },
   "lint-staged": {
-    "*.{js,jsx,md,ts,tsx,html,css,scss}": "yarn prettier",
+    "*.{js,jsx,md,ts,tsx,html,css,scss}": "pnpm exec prettier",
     "*.{js,jsx,ts,tsx}": "eslint --cache --fix --cache-location ./node_modules/.cache/.eslintcache"
   },
   "dependencies": {
