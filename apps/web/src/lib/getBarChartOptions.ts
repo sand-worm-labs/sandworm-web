@@ -9,7 +9,7 @@ export const getBarChartOptions = (
   data: ParsedChartData[],
   xAxis: string,
   yAxis: string,
-  title?: string
+  title?: string,
 ): Highcharts.Options => {
   return {
     chart: {
@@ -29,7 +29,7 @@ export const getBarChartOptions = (
       align: "center",
     },
     xAxis: {
-      categories: data.map(item => item.name),
+      categories: data.map((item) => item.name),
       labels: {
         style: {
           color: "#fff",

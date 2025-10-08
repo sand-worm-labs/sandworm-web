@@ -50,7 +50,7 @@ export const QueryCodeEditor = ({
       }
     } catch (err) {
       toast.error(
-        `Query execution failed: ${err instanceof Error ? err.message : "Unknown error"}`
+        `Query execution failed: ${err instanceof Error ? err.message : "Unknown error"}`,
       );
     }
   };
@@ -78,7 +78,7 @@ export const QueryCodeEditor = ({
 
   const handleEditorDidMount = (
     codeEditor: editor.IStandaloneCodeEditor,
-    monaco: Monaco
+    monaco: Monaco,
   ) => {
     editorRef.current = codeEditor;
 
@@ -132,7 +132,7 @@ export const QueryCodeEditor = ({
     monaco.editor.setTheme(theme || "sandworm");
 
     monaco.languages.registerDocumentFormattingEditProvider("sql", {
-      provideDocumentFormattingEdits: model => {
+      provideDocumentFormattingEdits: (model) => {
         try {
           const formatted = format(model.getValue(), {
             language: "sql",
@@ -159,12 +159,12 @@ export const QueryCodeEditor = ({
       keyCombo(monaco.KeyMod.CtrlCmd, monaco.KeyCode.Enter),
       async () => {
         executeQuery();
-      }
+      },
     );
 
     codeEditor.addCommand(
       keyCombo(monaco.KeyMod.Alt, monaco.KeyCode.KeyF),
-      formatQuery
+      formatQuery,
     );
 
     codeEditor.addAction({

@@ -10,11 +10,11 @@ interface QueryStore {
   clearQueries: () => void;
 }
 
-export const useQueryStore = create<QueryStore>(set => ({
+export const useQueryStore = create<QueryStore>((set) => ({
   queries: [],
   loading: false,
 
-  loadQueries: async uid => {
+  loadQueries: async (uid) => {
     set({ loading: true });
     try {
       const res = await fetchUserQuery(uid);

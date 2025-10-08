@@ -78,7 +78,7 @@ export const QueryHistory: React.FC<QueryHistoryProps> = ({
           )}
           {!loading &&
             versions.length > 0 &&
-            versions.map(version => (
+            versions.map((version) => (
               <QueryCard key={version.query} version={version} />
             ))}
         </div>

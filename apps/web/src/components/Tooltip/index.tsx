@@ -28,7 +28,7 @@ export const Tooltip: React.FC<TooltipProps> = ({ label, children }) => {
       aria-describedby={tooltipId}
       role="button"
       tabIndex={0}
-      onKeyDown={e => {
+      onKeyDown={(e) => {
         if (e.key === "Escape") {
           setVisible(false);
         }

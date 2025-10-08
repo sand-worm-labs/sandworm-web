@@ -28,7 +28,7 @@ interface QueryCardProps {
 export const QueryCard = ({ query, liked }: QueryCardProps) => {
   const { data: session } = useSession();
   const router = useRouter();
-  const openSignIn = useModalStore(state => state.openSignIn);
+  const openSignIn = useModalStore((state) => state.openSignIn);
   const { toggleLike, loading } = useQueryLike(query.id, liked);
   const { handleFork, loading: loadingfork } = useForkQuery(query.id);
 
@@ -57,7 +57,7 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
 
   const getSyntaxConfig = (currentTheme: string) => {
     const systemDark = window.matchMedia(
-      "(prefers-color-scheme: dark)"
+      "(prefers-color-scheme: dark)",
     ).matches;
 
     const isDark =

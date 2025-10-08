@@ -13,7 +13,7 @@ interface ChartComponentProps extends ChartProps {
     data: { name: string; y: number }[],
     xAxis: string,
     yAxis: string,
-    title?: string
+    title?: string,
   ) => Highcharts.Options;
   showControls?: boolean;
 }
@@ -27,7 +27,7 @@ export const Chart: React.FC<ChartComponentProps> = ({
 }) => {
   const defaultAxis = useMemo(
     () => getDefaultAxis(result, chartType),
-    [result, chartType]
+    [result, chartType],
   );
 
   const [xAxis, setXAxis] = useState<string | null>(defaultAxis?.x || null);
@@ -42,7 +42,7 @@ export const Chart: React.FC<ChartComponentProps> = ({
 
   const parsedData = useMemo(() => {
     if (!xAxis || !yAxis) return [];
-    return sanitizeChartData(result, xAxis, yAxis).map(item => ({
+    return sanitizeChartData(result, xAxis, yAxis).map((item) => ({
       name: item.x,
       y: item.y,
     }));

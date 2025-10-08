@@ -43,7 +43,7 @@ export const WormAiPanel = () => {
         </div>
         <ScrollArea className=" pr-4">
           <div className="flex flex-col gap-4">
-            {messages.map(msg => (
+            {messages.map((msg) => (
               <div
                 key={msg.content}
                 className={`p-3 rounded-lg max-w-[75%] ${

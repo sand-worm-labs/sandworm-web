@@ -44,7 +44,7 @@ export const DownloadDialog: React.FC<DownloadDialogProps> = ({
   const [progress, setProgress] = useState(0);
   const [open, setOpen] = useState(false);
 
-  const exportParquet = useSandwormStore(state => state.exportParquet);
+  const exportParquet = useSandwormStore((state) => state.exportParquet);
 
   useEffect(() => {
     if (data.length > 0) {
@@ -75,7 +75,7 @@ export const DownloadDialog: React.FC<DownloadDialogProps> = ({
           data,
           downloadOption,
           CHUNK_SIZE,
-          setProgress
+          setProgress,
         );
       }
 
@@ -105,7 +105,7 @@ export const DownloadDialog: React.FC<DownloadDialogProps> = ({
         `Failed to export data: ${
           error instanceof Error ? error.message : "Unknown Error"
         }`,
-        { duration: 2000 }
+        { duration: 2000 },
       );
     } finally {
       setIsProcessing(false);
@@ -137,9 +137,9 @@ export const DownloadDialog: React.FC<DownloadDialogProps> = ({
 
           <RadioGroup
             value={downloadOption}
-            onValueChange={value => setDownloadOption(value as ExportFormat)}
+            onValueChange={(value) => setDownloadOption(value as ExportFormat)}
           >
-            {["csv", "json", "parquet", "clipboard"].map(format => (
+            {["csv", "json", "parquet", "clipboard"].map((format) => (
               <div className="flex items-center space-x-2" key={format}>
                 <RadioGroupItem value={format} id={format} />
                 <Label htmlFor={format}>{format.toUpperCase()}</Label>

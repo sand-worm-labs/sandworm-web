@@ -60,7 +60,7 @@ export const WorkspaceTabs = ({
   // this function is called when the page is loaded and when the initial query is set. we need to ensure we handle initial query in a better way. initial query is loaded from the url and fetched from the database. Some queries are stored locally in the browser and our approach have to handle both cases. Also taking note of if the query is readonly or not. Queries stored locally are all writable however  the once we fetch from the data base are readonly when it not the authenticated user viewing them
   useEffect(() => {
     if (!initialQuery && urlTabId) {
-      const tab = tabs.find(t => t.id === urlTabId);
+      const tab = tabs.find((t) => t.id === urlTabId);
       if (tab) {
         setActiveTab(tab.id);
       }
@@ -69,15 +69,15 @@ export const WorkspaceTabs = ({
 
     if (!initialQuery) return;
 
-    const tabExists = tabs.some(tab => tab.id === initialQuery.id);
+    const tabExists = tabs.some((tab) => tab.id === initialQuery.id);
     const isReadonly = initialQuery.creator !== currentUserId;
 
     if (!tabExists) {
       createTab(initialQuery.title, initialQuery.id, "sql", initialQuery.query);
 
-      useSandwormStore.setState(state => ({
-        tabs: state.tabs.map(tab =>
-          tab.id === initialQuery.id ? { ...tab, readonly: isReadonly } : tab
+      useSandwormStore.setState((state) => ({
+        tabs: state.tabs.map((tab) =>
+          tab.id === initialQuery.id ? { ...tab, readonly: isReadonly } : tab,
         ),
         activeTabId: initialQuery.id,
       }));
@@ -103,21 +103,21 @@ export const WorkspaceTabs = ({
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (active.id !== over?.id && active.id !== "home" && over?.id !== "home") {
-      const oldIndex = tabs.findIndex(tab => tab.id === active.id);
-      const newIndex = tabs.findIndex(tab => tab.id === over?.id);
+      const oldIndex = tabs.findIndex((tab) => tab.id === active.id);
+      const newIndex = tabs.findIndex((tab) => tab.id === over?.id);
       moveTab(oldIndex, newIndex);
     }
   };
 
   const sortedTabs = useMemo(() => {
-    const homeTab = tabs.find(tab => tab.id === "home");
-    const otherTabs = tabs.filter(tab => tab.id !== "home");
+    const homeTab = tabs.find((tab) => tab.id === "home");
+    const otherTabs = tabs.filter((tab) => tab.id !== "home");
     return homeTab ? [homeTab, ...otherTabs] : otherTabs;
   }, [tabs]);
 
@@ -161,12 +161,12 @@ export const WorkspaceTabs = ({
                   onDragEnd={handleDragEnd}
                 >
                   <SortableContext
-                    items={sortedTabs.map(tab => tab.id)}
+                    items={sortedTabs.map((tab) => tab.id)}
                     strategy={horizontalListSortingStrategy}
                   >
                     <div className="flex">
                       <TabsList className="inline-flex h-8  items-center justify-start rounded-none w-full bg-transparent ">
-                        {sortedTabs.map(tab => (
+                        {sortedTabs.map((tab) => (
                           <SortableTab
                             key={tab.id}
                             tab={tab}
@@ -199,7 +199,7 @@ export const WorkspaceTabs = ({
           </ScrollArea>
         </div>
         <div className="flex-1 overflow-hidden">
-          {sortedTabs.map(tab => (
+          {sortedTabs.map((tab) => (
             <TabsContent
               key={tab.id}
               value={tab.id}

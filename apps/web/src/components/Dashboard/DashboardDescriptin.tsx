@@ -45,7 +45,7 @@ export const ResearchDescription = () => {
             </Badge>
           </div>
           <div className="flex flex-wrap gap-2 mt-2">
-            {degeninfo.tags.map(tag => (
+            {degeninfo.tags.map((tag) => (
               <Badge
                 key={degeninfo.tags.indexOf(tag)}
                 variant="outline"

@@ -17,7 +17,7 @@ export const LandingTextarea = () => {
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       setInput(e.target.value);
     },
-    []
+    [],
   );
 
   return (
@@ -32,7 +32,7 @@ export const LandingTextarea = () => {
           ])}
         >
           <form
-            onSubmit={e => {
+            onSubmit={(e) => {
               e.preventDefault();
             }}
             className="flex flex-col items-center justify-center"

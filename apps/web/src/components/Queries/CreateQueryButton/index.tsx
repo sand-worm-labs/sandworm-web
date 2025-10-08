@@ -14,7 +14,7 @@ import { useSandwormStore } from "@/store";
 
 export const CreateQueryButton = () => {
   const router = useRouter();
-  const createTab = useSandwormStore(state => state.createTab);
+  const createTab = useSandwormStore((state) => state.createTab);
 
   const handleCreate = () => {
     createTab("New Query", undefined, "sql", "");
