@@ -36,7 +36,7 @@ export function ThemeProvider({
   ...props
 }: ThemeProviderProps) {
   const [theme, setThemeState] = useState<Theme>(
-    () => (localStorage.getItem(storageKey) as Theme) || defaultTheme,
+    () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
   );
 
   useEffect(() => {
@@ -62,7 +62,7 @@ export function ThemeProvider({
       localStorage.setItem(storageKey, newTheme);
       setThemeState(newTheme);
     },
-    [storageKey],
+    [storageKey]
   );
 
   const value = useMemo(
@@ -70,7 +70,7 @@ export function ThemeProvider({
       theme,
       setTheme,
     }),
-    [theme, setTheme],
+    [theme, setTheme]
   );
 
   return (

@@ -23,14 +23,14 @@ export const TablePageSizeSelector = <T,>({
       <Label htmlFor="page-size" className="text-xs text-gray-500">
         Rows:
       </Label>
-      <Select onValueChange={(value) => table.setPageSize(Number(value))}>
+      <Select onValueChange={value => table.setPageSize(Number(value))}>
         <SelectTrigger className="w-[70px] h-8 text-xs">
           <SelectValue
             placeholder={String(table.getState().pagination.pageSize)}
           />
         </SelectTrigger>
         <SelectContent className="dark">
-          {PAGE_SIZE_OPTIONS.map((size) => (
+          {PAGE_SIZE_OPTIONS.map(size => (
             <SelectItem key={size} value={String(size)}>
               {size}
             </SelectItem>

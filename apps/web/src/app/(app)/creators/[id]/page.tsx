@@ -24,7 +24,7 @@ export const metadata = {
 
 async function getUserQueries(uid: string): Promise<UserQueryResponse> {
   const response = await axios.get<UserQueryResponse>(
-    `/api/query/user?uid=${uid}`,
+    `/api/query/user?uid=${uid}`
   );
   if (!response) notFound();
   return response;

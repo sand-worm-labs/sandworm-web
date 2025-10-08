@@ -41,7 +41,7 @@ export const SimpleFilter = ({
         onFilterChange(value);
       }, debounceMs);
     },
-    [onFilterChange, debounceMs],
+    [onFilterChange, debounceMs]
   );
 
   useEffect(() => {
@@ -58,7 +58,7 @@ export const SimpleFilter = ({
       setFilterText(value);
       debouncedFilterChange(value);
     },
-    [debouncedFilterChange],
+    [debouncedFilterChange]
   );
 
   const handleClear = useCallback(() => {
@@ -73,7 +73,7 @@ export const SimpleFilter = ({
         handleClear();
       }
     },
-    [handleClear],
+    [handleClear]
   );
 
   return (
@@ -84,7 +84,7 @@ export const SimpleFilter = ({
         "rounded-md",
         "bg-background/5",
         "ring-1 ring-border/10",
-        className,
+        className
       )}
     >
       <Search
@@ -118,7 +118,7 @@ export const SimpleFilter = ({
                   "hover:bg-muted/50",
                   "focus-visible:ring-0",
                   "rounded-sm",
-                  "transition-colors duration-200",
+                  "transition-colors duration-200"
                 )}
               >
                 <X className="h-3.5 w-3.5 text-muted-foreground/50" />
