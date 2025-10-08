@@ -72,9 +72,9 @@ export const History = ({ user }: { user: User | undefined }) => {
     toast.promise(deletePromise, {
       loading: "Deleting chat...",
       success: () => {
-        mutate(prev => {
+        mutate((prev) => {
           if (prev) {
-            return { data: prev.data.filter(h => h.id !== id) };
+            return { data: prev.data.filter((h) => h.id !== id) };
           }
           return undefined;
         });
@@ -100,7 +100,7 @@ export const History = ({ user }: { user: User | undefined }) => {
 
       <Sheet
         open={isHistoryVisible}
-        onOpenChange={state => {
+        onOpenChange={(state) => {
           setIsHistoryVisible(state);
         }}
       >
@@ -157,7 +157,7 @@ export const History = ({ user }: { user: User | undefined }) => {
 
               {isLoading && user ? (
                 <div className="flex flex-col">
-                  {[44, 32, 28, 52].map(item => (
+                  {[44, 32, 28, 52].map((item) => (
                     <div key={item} className="p-2 my-[2px]">
                       <div
                         className={`w-${item} h-[20px] rounded-md bg-zinc-200 dark:bg-zinc-600 animate-pulse`}
@@ -168,18 +168,18 @@ export const History = ({ user }: { user: User | undefined }) => {
               ) : null}
 
               {history &&
-                history?.data?.map(chat => (
+                history?.data?.map((chat) => (
                   <div
                     key={chat.id}
                     className={cx(
                       "flex flex-row items-center gap-6 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-md pr-2",
-                      { "bg-zinc-200 dark:bg-zinc-700": chat.id === id }
+                      { "bg-zinc-200 dark:bg-zinc-700": chat.id === id },
                     )}
                   >
                     <Button
                       variant="ghost"
                       className={cx(
-                        "hover:bg-zinc-200 dark:hover:bg-zinc-700 justify-between p-0 text-sm font-normal flex flex-row items-center gap-2 pr-2 w-full transition-none"
+                        "hover:bg-zinc-200 dark:hover:bg-zinc-700 justify-between p-0 text-sm font-normal flex flex-row items-center gap-2 pr-2 w-full transition-none",
                       )}
                       asChild
                     >

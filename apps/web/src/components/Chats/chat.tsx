@@ -29,7 +29,7 @@ export function Chat({
         console.log("body", { id }, "finished chat");
         window.history.replaceState({}, "", `/chat/${id}`);
       },
-      onError: error => {
+      onError: (error) => {
         console.error("🔴 [FRONTEND] useChat onError:", error);
       },
     });
@@ -45,7 +45,7 @@ export function Chat({
           ref={messagesContainerRef}
           className="flex flex-col gap-4 h-full w-dvw items-center overflow-y-scroll"
         >
-          {messages.map(message => (
+          {messages.map((message) => (
             <PreviewMessage
               key={message.id}
               chatId={id}

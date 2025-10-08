@@ -88,7 +88,7 @@ function QueryResultsTable<T extends RowData>({
   // State
   const [sorting, setSorting] = useState<SortingState>(defaultSorting);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
-    defaultColumnVisibility
+    defaultColumnVisibility,
   );
   const [columnSizing, setColumnSizing] = useState<Record<string, number>>({});
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -114,7 +114,7 @@ function QueryResultsTable<T extends RowData>({
     }
 
     resizeTimeout.current = setTimeout(() => {
-      setColumnSizing(prev => ({
+      setColumnSizing((prev) => ({
         ...prev,
         [columnId]: Math.max(MIN_COLUMN_SIZE, size),
       }));
@@ -123,7 +123,7 @@ function QueryResultsTable<T extends RowData>({
 
   // Update your memoizedColumns definition
   const memoizedColumns = useMemo<ColumnDef<T>[]>(() => {
-    const baseColumns = (columns ?? []).map(col => ({
+    const baseColumns = (columns ?? []).map((col) => ({
       id: col,
       accessorKey: col,
       header: col,
@@ -161,7 +161,7 @@ function QueryResultsTable<T extends RowData>({
       pagination,
       columnSizing,
     },
-    onSortingChange: updater => {
+    onSortingChange: (updater) => {
       const newSorting =
         typeof updater === "function" ? updater(sorting) : updater;
       setSorting(newSorting);
@@ -170,12 +170,12 @@ function QueryResultsTable<T extends RowData>({
     onColumnVisibilityChange: setColumnVisibility,
     onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,
-    onPaginationChange: updater => {
+    onPaginationChange: (updater) => {
       const newPagination =
         typeof updater === "function" ? updater(pagination) : updater;
       setPagination(newPagination);
     },
-    onColumnSizingChange: updater => {
+    onColumnSizingChange: (updater) => {
       const newSizing =
         typeof updater === "function" ? updater(columnSizing) : updater;
       setColumnSizing(newSizing);
@@ -214,7 +214,7 @@ function QueryResultsTable<T extends RowData>({
       let maxWidth = headerWidth;
 
       const sampleRows = rows.slice(0, 200);
-      sampleRows.forEach(row => {
+      sampleRows.forEach((row) => {
         const value = row.getValue(columnId);
         const width = context.measureText(String(value ?? "")).width + 24;
         maxWidth = Math.max(maxWidth, width);
@@ -224,7 +224,7 @@ function QueryResultsTable<T extends RowData>({
       sizeCache.current[columnId] = finalSize;
       return finalSize;
     },
-    [rows]
+    [rows],
   );
 
   const handleFilterChange = useCallback(
@@ -232,7 +232,7 @@ function QueryResultsTable<T extends RowData>({
       setFilterValue(value); // Update the filterValue state (optional, for debugging)
       setGlobalFilter(value); // Update globalFilter state, which triggers filtering
     },
-    [setGlobalFilter]
+    [setGlobalFilter],
   );
 
   useEffect(() => {
@@ -245,12 +245,12 @@ function QueryResultsTable<T extends RowData>({
     }
 
     const observer = new IntersectionObserver(
-      entries => {
+      (entries) => {
         if (entries[0].isIntersecting && !isLoading) {
           onLoadMore();
         }
       },
-      { threshold: 0.8 }
+      { threshold: 0.8 },
     );
 
     observerRef.current = observer; // Store the observer in the ref

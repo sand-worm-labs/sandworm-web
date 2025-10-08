@@ -71,7 +71,7 @@ export const AppSidebar = ({
       <TooltipProvider>
         <div className="h-full w-16 bg-muted border-r flex flex-col items-center py-4 space-y-4  pt-12">
           <ScrollArea className="flex-grow ">
-            {viewOptions.map(item => (
+            {viewOptions.map((item) => (
               <Tooltip key={item.id}>
                 <TooltipTrigger asChild>
                   <button
@@ -110,7 +110,7 @@ export const AppSidebar = ({
               </TooltipContent>
             </Tooltip>
 
-            {bottomNavLinks.map(item => (
+            {bottomNavLinks.map((item) => (
               <Tooltip key={item.to}>
                 <TooltipTrigger asChild>
                   <Link

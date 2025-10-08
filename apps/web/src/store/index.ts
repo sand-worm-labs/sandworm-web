@@ -86,7 +86,7 @@ export interface SandwormStoreState {
   executeQuery: (
     query: string,
     tabId?: string,
-    provider?: ConnectionProvider
+    provider?: ConnectionProvider,
   ) => Promise<QueryResult | void>;
   cancelQueryExecution: () => void;
   setExecutionType: (tabId: string, executionType: ExecutionMethodType) => void;
@@ -95,7 +95,7 @@ export interface SandwormStoreState {
     id?: string,
     type?: EditorTabType,
     content?: EditorTab["content"],
-    executionType?: ExecutionMethodType
+    executionType?: ExecutionMethodType,
   ) => void;
   closeTab: (tabId: string) => void;
   setActiveTab: (tabId: string) => void;
@@ -144,7 +144,7 @@ const createMockWasmResult = () => {
     ],
   };
 
-  const rows = mockData.map(row => ({
+  const rows = mockData.map((row) => ({
     toJSON: () => ({ ...row }),
   }));
 
@@ -188,7 +188,7 @@ export const resultToJSON = (result: any): QueryResult => {
   return {
     columns: result.schema.fields.map((field: any) => field.name),
     columnTypes: result.schema.fields.map((field: any) =>
-      field.type.toString()
+      field.type.toString(),
     ),
     data,
     rowCount: result.numRows,
@@ -201,7 +201,7 @@ export const resultToJSON = (result: any): QueryResult => {
 const updateHistory = (
   currentHistory: QueryHistoryItem[],
   query: string,
-  errorMsg?: string
+  errorMsg?: string,
 ): QueryHistoryItem[] => {
   const newItem: QueryHistoryItem = {
     id: crypto.randomUUID(),
@@ -209,7 +209,9 @@ const updateHistory = (
     timestamp: new Date(),
     ...(errorMsg ? { error: errorMsg } : {}),
   };
-  const existingIndex = currentHistory.findIndex(item => item.query === query);
+  const existingIndex = currentHistory.findIndex(
+    (item) => item.query === query,
+  );
   const newHistory =
     existingIndex !== -1
       ? [newItem, ...currentHistory.filter((_, idx) => idx !== existingIndex)]
@@ -272,7 +274,7 @@ export const useSandwormStore = create<SandwormStoreState>()(
               API_URL,
               query,
               executionType,
-              signal
+              signal,
             );
 
             if (queryResult.error === "QueryAborted") {
@@ -281,14 +283,14 @@ export const useSandwormStore = create<SandwormStoreState>()(
               return queryResult;
             }
 
-            set(state => ({
+            set((state) => ({
               queryHistory: updateHistory(
                 state.queryHistory,
                 query,
-                queryResult.error || undefined
+                queryResult.error || undefined,
               ),
-              tabs: state.tabs.map(tab =>
-                tab.id === tabId ? { ...tab, result: queryResult } : tab
+              tabs: state.tabs.map((tab) =>
+                tab.id === tabId ? { ...tab, result: queryResult } : tab,
               ),
               isExecuting: false,
             }));
@@ -320,14 +322,14 @@ export const useSandwormStore = create<SandwormStoreState>()(
               error: errorMessage,
             };
 
-            set(state => ({
+            set((state) => ({
               queryHistory: updateHistory(
                 state.queryHistory,
                 query,
-                errorMessage
+                errorMessage,
               ),
-              tabs: state.tabs.map(tab =>
-                tab.id === tabId ? { ...tab, result: errorResult } : tab
+              tabs: state.tabs.map((tab) =>
+                tab.id === tabId ? { ...tab, result: errorResult } : tab,
               ),
               isExecuting: false,
               error: errorMessage,
@@ -346,11 +348,11 @@ export const useSandwormStore = create<SandwormStoreState>()(
 
         setExecutionType: (
           tabId: string,
-          executionType: ExecutionMethodType
+          executionType: ExecutionMethodType,
         ) => {
-          set(state => ({
-            tabs: state.tabs.map(tab =>
-              tab.id === tabId ? { ...tab, executionType } : tab
+          set((state) => ({
+            tabs: state.tabs.map((tab) =>
+              tab.id === tabId ? { ...tab, executionType } : tab,
             ),
           }));
         },
@@ -360,12 +362,12 @@ export const useSandwormStore = create<SandwormStoreState>()(
           id?: string,
           type: EditorTab["type"] = "sql",
           content = "",
-          executionType: ExecutionMethodType = "rpc"
+          executionType: ExecutionMethodType = "rpc",
         ): string => {
           const tabId = id ?? crypto?.randomUUID?.() ?? generateUUID();
 
-          set(state => {
-            const existingTab = state.tabs.find(tab => tab.id === tabId);
+          set((state) => {
+            const existingTab = state.tabs.find((tab) => tab.id === tabId);
 
             if (existingTab) {
               return { ...state, activeTabId: tabId };
@@ -390,9 +392,9 @@ export const useSandwormStore = create<SandwormStoreState>()(
           return tabId;
         },
 
-        closeTab: tabId => {
-          set(state => {
-            const updatedTabs = state.tabs.filter(tab => tab.id !== tabId);
+        closeTab: (tabId) => {
+          set((state) => {
+            const updatedTabs = state.tabs.filter((tab) => tab.id !== tabId);
             let newActiveTabId = state.activeTabId;
             if (updatedTabs.length === 0) {
               const newTab: EditorTab = {
@@ -416,30 +418,30 @@ export const useSandwormStore = create<SandwormStoreState>()(
           });
         },
 
-        setActiveTab: tabId => {
+        setActiveTab: (tabId) => {
           set({ activeTabId: tabId });
         },
 
         updateTabQuery: (tabId, query) => {
-          set(state => ({
-            tabs: state.tabs.map(tab =>
+          set((state) => ({
+            tabs: state.tabs.map((tab) =>
               tab.id === tabId && tab.type === "sql"
                 ? { ...tab, content: query }
-                : tab
+                : tab,
             ),
           }));
         },
 
         updateTabTitle: (tabId, title) => {
-          set(state => ({
-            tabs: state.tabs.map(tab =>
-              tab.id === tabId ? { ...tab, title } : tab
+          set((state) => ({
+            tabs: state.tabs.map((tab) =>
+              tab.id === tabId ? { ...tab, title } : tab,
             ),
           }));
         },
 
         moveTab: (oldIndex, newIndex) => {
-          set(state => {
+          set((state) => {
             const newTabs = [...state.tabs];
             const [movedTab] = newTabs.splice(oldIndex, 1);
             newTabs.splice(newIndex, 0, movedTab);
@@ -448,14 +450,14 @@ export const useSandwormStore = create<SandwormStoreState>()(
         },
 
         replaceTabId: (oldId: string, newId: string) => {
-          set(state => {
-            const tab = state.tabs.find(t => t.id === oldId);
+          set((state) => {
+            const tab = state.tabs.find((t) => t.id === oldId);
             if (!tab) return state;
 
             const updatedTab = { ...tab, id: newId };
 
             const updatedTabs = state.tabs
-              .filter(t => t.id !== oldId)
+              .filter((t) => t.id !== oldId)
               .concat(updatedTab);
 
             return {
@@ -467,8 +469,8 @@ export const useSandwormStore = create<SandwormStoreState>()(
 
         closeAllTabs: () => {
           try {
-            set(state => ({
-              tabs: state.tabs.filter(tab => tab.type === "home"),
+            set((state) => ({
+              tabs: state.tabs.filter((tab) => tab.type === "home"),
               activeTabId: "home",
             }));
             toast.success("All tabs closed successfully!");
@@ -497,7 +499,7 @@ export const useSandwormStore = create<SandwormStoreState>()(
             throw new Error(
               `Parquet export failed: ${
                 error instanceof Error ? error.message : "Unknown error"
-              }`
+              }`,
             );
           }
         },
@@ -522,13 +524,13 @@ export const useSandwormStore = create<SandwormStoreState>()(
         },
 
         // ⚡ settings actions
-        setSelectedChain: chain => {
+        setSelectedChain: (chain) => {
           const currentRpc = get().settings.rpcUrl;
           const previousChain = get().settings.selectedChain;
           const previousRpc = chainRpcMap[previousChain];
           const defaultRpc = chainRpcMap[chain];
 
-          set(state => ({
+          set((state) => ({
             settings: {
               ...state.settings,
               selectedChain: chain,
@@ -537,43 +539,43 @@ export const useSandwormStore = create<SandwormStoreState>()(
           }));
         },
 
-        setRpcUrl: url =>
-          set(state => ({
+        setRpcUrl: (url) =>
+          set((state) => ({
             settings: { ...state.settings, rpcUrl: url },
           })),
 
-        setEditorTheme: theme =>
-          set(state => ({
+        setEditorTheme: (theme) =>
+          set((state) => ({
             settings: { ...state.settings, editorTheme: theme },
           })),
 
-        setShortcutsEnabled: enabled =>
-          set(state => ({
+        setShortcutsEnabled: (enabled) =>
+          set((state) => ({
             settings: { ...state.settings, shortcutsEnabled: enabled },
           })),
 
-        setBetaFeatures: enabled =>
-          set(state => ({
+        setBetaFeatures: (enabled) =>
+          set((state) => ({
             settings: { ...state.settings, betaFeatures: enabled },
           })),
 
-        setDefaultChain: chain =>
-          set(state => ({
+        setDefaultChain: (chain) =>
+          set((state) => ({
             settings: { ...state.settings, defaultChain: chain },
           })),
       }),
       {
         name: "sandworm-storage",
-        partialize: state => ({
+        partialize: (state) => ({
           queryHistory: state.queryHistory,
-          tabs: state.tabs.map(tab => ({ ...tab, result: undefined })),
+          tabs: state.tabs.map((tab) => ({ ...tab, result: undefined })),
           activeTabId: state.activeTabId,
           currentDatabase: state.currentDatabase,
           currentConnection: state.currentConnection,
           connectionList: state.connectionList,
           settings: state.settings,
         }),
-      }
-    )
-  )
+      },
+    ),
+  ),
 );

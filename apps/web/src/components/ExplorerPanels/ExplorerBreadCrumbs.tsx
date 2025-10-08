@@ -18,7 +18,7 @@ export const ExplorerBreadCrumbs: React.FC<IExplorerBreadCrumbsProps> = ({
   const type = searchParams.get("type") ?? "raw";
 
   const activeEntity = entities?.[type as keyof typeof entities]?.find(
-    (e: any) => e.name === entity
+    (e: any) => e.name === entity,
   );
 
   // TODO: could be a hook or a util function
