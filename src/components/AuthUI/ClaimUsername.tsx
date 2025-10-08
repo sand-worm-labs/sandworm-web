@@ -90,15 +90,6 @@ export const ClaimUsername = () => {
             </p>
           )}
         </div>
-
-        <div className="flex flex-col gap-3 flex-end ">
-          <Button
-            variant="ghost"
-            className="text-xs roobert font-medium inline-block"
-          >
-            Skip for now
-          </Button>
-        </div>
       </div>
       <p className="roobert text-center text-sm max-w-[25rem]">
         By creating an account you agree to the Terms and confirm that you have

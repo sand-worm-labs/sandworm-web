@@ -34,7 +34,7 @@ export const SocialLogin = () => {
       <button
         type="button"
         onClick={handleGithubSignIn}
-        className="flex w-full items-center justify-center space-x-2 border border-[#ffffff50] rounded-xl px-4 py-3 text-white text-sm hover:bg-btnHover bg-black roobert"
+        className="flex w-full items-center justify-center space-x-2 border border-[#ffffff50] rounded-xl px-4 py-3 text-white text-sm dark:hover:bg-btnHover bg-black roobert"
       >
         <FaGithub size={20} />
         <span>Sign up with Github</span>
