@@ -44,7 +44,7 @@ export const useSaveQuery = () => {
         setLoading(false);
       }
     },
-    [session?.user?.id],
+    [session?.user?.id]
   );
 
   return { save, loading, error };

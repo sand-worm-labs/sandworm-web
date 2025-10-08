@@ -4,7 +4,7 @@ export const getAreaChartOptions = (
   data: { name: string; y: number; x?: number }[],
   xAxis: string,
   yAxis: string,
-  title?: string,
+  title?: string
 ): Highcharts.Options => {
   return {
     chart: {

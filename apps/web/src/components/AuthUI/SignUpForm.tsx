@@ -13,7 +13,7 @@ export default function SignUpForm() {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       [e.target.name]: e.target.value,
     }));
@@ -36,7 +36,7 @@ export default function SignUpForm() {
 
   return (
     <form onSubmit={handleSubmit} className="mt-4 space-y-4">
-      {["name", "email", "password"].map((field) => (
+      {["name", "email", "password"].map(field => (
         <div key={field}>
           <label className="block text-sm font-medium text-gray-300">
             {field.charAt(0).toUpperCase() + field.slice(1)}

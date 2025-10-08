@@ -14,7 +14,7 @@ export const SectionFeatures = () => {
               <span className="text-effect2"> Sandworm?</span>
             </p>
           </div>
-          {Features.map((item) => (
+          {Features.map(item => (
             <FeatureCard
               key={item.id}
               id={item.id}

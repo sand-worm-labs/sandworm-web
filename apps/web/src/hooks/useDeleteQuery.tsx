@@ -35,7 +35,7 @@ export const useDeleteQuery = () => {
         setLoading(false);
       }
     },
-    [loading],
+    [loading]
   );
 
   return { handleDelete, loading, success };

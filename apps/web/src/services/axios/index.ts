@@ -43,16 +43,16 @@ export class AxiosService {
 
           return newConfig;
         },
-        (error) => {
+        error => {
           return Promise.reject(error);
-        },
+        }
       );
     }
   }
 
   public async get<T>(
     url: string,
-    config: AxiosRequestConfig = {},
+    config: AxiosRequestConfig = {}
   ): Promise<T> {
     const response = await this.axiosInstance.get(url, config);
     return response.data;
@@ -61,7 +61,7 @@ export class AxiosService {
   public async post<T>(
     url: string,
     data: any,
-    config: AxiosRequestConfig = {},
+    config: AxiosRequestConfig = {}
   ): Promise<T> {
     const response = await this.axiosInstance.post(url, data, config);
     return response.data;
@@ -70,7 +70,7 @@ export class AxiosService {
   public async patch<T>(
     url: string,
     data: any,
-    config: AxiosRequestConfig = {},
+    config: AxiosRequestConfig = {}
   ): Promise<T> {
     const response = await this.axiosInstance.patch(url, data, config);
     return response.data;
@@ -79,7 +79,7 @@ export class AxiosService {
   public async put<T>(
     url: string,
     data: any,
-    config: AxiosRequestConfig = {},
+    config: AxiosRequestConfig = {}
   ): Promise<T> {
     const response = await this.axiosInstance.put(url, data, config);
     return response.data;
@@ -87,7 +87,7 @@ export class AxiosService {
 
   public async delete<T>(
     url: string,
-    config: AxiosRequestConfig = {},
+    config: AxiosRequestConfig = {}
   ): Promise<T> {
     const response = await this.axiosInstance.delete(url, config);
     return response.data;
