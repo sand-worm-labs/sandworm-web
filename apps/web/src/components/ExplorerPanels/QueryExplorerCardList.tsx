@@ -32,8 +32,8 @@ export const QueryExplorerCardList: React.FC<IQueryExplorerCardListProps> = ({
     handleDelete(id);
   };
 
-  const filteredQueries = query.filter((item) =>
-    item.title.toLowerCase().includes(search.toLowerCase()),
+  const filteredQueries = query.filter(item =>
+    item.title.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -48,13 +48,13 @@ export const QueryExplorerCardList: React.FC<IQueryExplorerCardListProps> = ({
           placeholder="Search Queries"
           className="pl-10 pr-4 py-1.5 border border-[#ffffff60] focus:border-gray-500 focus:ring focus:ring-gray-300 md:text-[0.85rem] bg-[#1A1A1A] border-none w-full rounded-none"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={e => setSearch(e.target.value)}
         />
       </div>
 
       <ul className="flex flex-col w-full my-4">
         {filteredQueries.length > 0 ? (
-          filteredQueries.map((item) => (
+          filteredQueries.map(item => (
             <li key={item.id} className="border-b first:border-t flex  ">
               <button
                 type="button"
@@ -73,14 +73,14 @@ export const QueryExplorerCardList: React.FC<IQueryExplorerCardListProps> = ({
               </button>
               <DeleteQueryModal
                 open={activeDeleteId === item.id}
-                onOpenChange={(open) =>
+                onOpenChange={open =>
                   !open ? setActiveDeleteId(null) : setActiveDeleteId(item.id)
                 }
                 onDelete={() => handleDeleteClick(item.id)}
               />
               <button
                 type="button"
-                onClick={(e) => {
+                onClick={e => {
                   e.stopPropagation();
                   setActiveDeleteId(item.id);
                 }}

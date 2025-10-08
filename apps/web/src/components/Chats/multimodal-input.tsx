@@ -33,13 +33,13 @@ export function MultimodalInput({
   messages: Array<Message>;
   append?: (
     message: Message | CreateMessage,
-    chatRequestOptions?: ChatRequestOptions,
+    chatRequestOptions?: ChatRequestOptions
   ) => Promise<string | null | undefined>;
   handleSubmit: (
     event?: {
       preventDefault?: () => void;
     },
-    chatRequestOptions?: ChatRequestOptions,
+    chatRequestOptions?: ChatRequestOptions
   ) => void;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -99,21 +99,21 @@ export function MultimodalInput({
   const handleFileChange = useCallback(
     async (event: ChangeEvent<HTMLInputElement>) => {
       const files = Array.from(event.target.files || []);
-      setUploadQueue(files.map((file) => file.name));
+      setUploadQueue(files.map(file => file.name));
 
       try {
-        const uploadPromises = files.map((file) => uploadFile(file));
+        const uploadPromises = files.map(file => uploadFile(file));
         const uploadedAttachments = await Promise.all(uploadPromises);
         const successful = uploadedAttachments.filter(Boolean) as Attachment[];
 
-        setAttachments((current) => [...current, ...successful]);
+        setAttachments(current => [...current, ...successful]);
       } catch (error) {
         console.error("Error uploading files!", error);
       } finally {
         setUploadQueue([]);
       }
     },
-    [setAttachments],
+    [setAttachments]
   );
 
   return (

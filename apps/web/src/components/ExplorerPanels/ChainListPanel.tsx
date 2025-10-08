@@ -19,7 +19,7 @@ export const ChainListPanel: React.FC<IChainListPanelProps> = ({
 }) => {
   return (
     <div className="flex flex-col  w-full border-t">
-      {chains.map((chain) => (
+      {chains.map(chain => (
         <button
           type="button"
           key={chain.name}

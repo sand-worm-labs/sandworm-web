@@ -44,12 +44,12 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
     setExecutionType,
     cancelQueryExecution,
   } = useSandwormStore();
-  const editorTheme = useSandwormStore((state) => state.settings.editorTheme);
+  const editorTheme = useSandwormStore(state => state.settings.editorTheme);
   const { data: session } = useSession();
   const { handleFork, loading } = useForkQuery(selectedTab?.id ?? "");
-  const openSignIn = useModalStore((state) => state.openSignIn);
+  const openSignIn = useModalStore(state => state.openSignIn);
 
-  const currentTab = tabs.find((tab) => tab.id === tabId);
+  const currentTab = tabs.find(tab => tab.id === tabId);
   const currentContent =
     currentTab?.type === "sql" && typeof currentTab.content === "string"
       ? currentTab.content
@@ -117,7 +117,7 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
               value={currentTitle}
               onChange={handleTitleChange}
               onBlur={handleTitleSubmit}
-              onKeyDown={(e) => {
+              onKeyDown={e => {
                 if (e.key === "Enter") {
                   handleTitleSubmit();
                 } else if (e.key === "Escape") {

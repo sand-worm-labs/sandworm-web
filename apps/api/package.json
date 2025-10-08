@@ -12,7 +12,7 @@
     "lint": "pnpm eslint && pnpm prettier"
   },
   "dependencies": {
-    "@apollo/server": "^5.0.0",
+    "@apollo/server": "^4.10.0",
     "@nestjs/apollo": "^12.2.2",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.2.2",

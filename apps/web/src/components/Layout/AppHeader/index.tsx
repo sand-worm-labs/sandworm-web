@@ -14,7 +14,7 @@ import { SearchBar } from "../../SearchBar";
 
 export const AppHeader: FC = () => {
   const { data: session } = useSession();
-  const openSignIn = useModalStore((state) => state.openSignIn);
+  const openSignIn = useModalStore(state => state.openSignIn);
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (

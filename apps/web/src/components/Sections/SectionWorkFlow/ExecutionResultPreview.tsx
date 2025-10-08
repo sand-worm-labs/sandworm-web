@@ -23,7 +23,7 @@ export const ExecutionResultPreview: FC = () => {
             >
               {header}
             </div>
-          ),
+          )
         )}
         {fakeData.map((row, i) =>
           row.map((cell, j) => (
@@ -32,14 +32,14 @@ export const ExecutionResultPreview: FC = () => {
               key={`${i}-${j}`}
               className={clsx(
                 "px-4 py-2.5 text-xs text-[#E0E0E0] border-b border-[#222] transition-all duration-200 cursor-pointer group border-l flex items-center justify-center text-center ",
-                "hover:bg-white/10 ",
+                "hover:bg-white/10 "
               )}
             >
               <span className="transition-all duration-300 group-hover:bg-white/10 border-r">
                 {cell}
               </span>
             </div>
-          )),
+          ))
         )}
       </div>
     </div>

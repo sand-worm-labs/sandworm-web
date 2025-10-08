@@ -59,7 +59,7 @@ export default function SettingsLayout({
       <div className="flex min-h-screen container mx-auto md:flex-row flex-col ">
         <div className=" p-6 border-r border-borderLight my-12 w-[35rem]">
           <ul className="mt-4  flex flex-col w-full ">
-            {tabs.map((tab) => (
+            {tabs.map(tab => (
               <li key={tab.href}>
                 <Link
                   href={tab.href}

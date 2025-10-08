@@ -62,12 +62,12 @@ export const TableContent = <T,>({
     }
 
     const observer = new IntersectionObserver(
-      (entries) => {
+      entries => {
         if (entries[0].isIntersecting && !isLoading) {
           onLoadMore();
         }
       },
-      { threshold: 0.8 },
+      { threshold: 0.8 }
     );
 
     observerRef.current = observer;
@@ -106,15 +106,15 @@ export const TableContent = <T,>({
       >
         <table className="w-full table-fixed">
           <colgroup>
-            {table.getAllColumns().map((column) => (
+            {table.getAllColumns().map(column => (
               <col key={column.id} style={{ width: column.getSize() }} />
             ))}
           </colgroup>
 
           <thead className="sticky top-0 z-1 ">
-            {table.getHeaderGroups().map((headerGroup) => (
+            {table.getHeaderGroups().map(headerGroup => (
               <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
+                {headerGroup.headers.map(header => (
                   <th
                     key={header.id}
                     style={{ width: header.getSize() }}
@@ -133,7 +133,7 @@ export const TableContent = <T,>({
                       <span className="truncate">
                         {flexRender(
                           header.column.columnDef.header,
-                          header.getContext(),
+                          header.getContext()
                         )}
                       </span>
                       {header.column.getIsSorted() && (
@@ -182,7 +182,7 @@ export const TableContent = <T,>({
               </tr>
             )}
 
-            {virtualRows.map((virtualRow) => {
+            {virtualRows.map(virtualRow => {
               const row = rows[virtualRow.index];
               return (
                 <TableRow key={row.id} row={row} renderCell={renderCell} />

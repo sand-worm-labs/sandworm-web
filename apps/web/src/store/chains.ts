@@ -14,7 +14,7 @@ interface ChainStoreState {
   fetchEntityData: (chainName: string) => Promise<void>;
 }
 
-export const useChainStore = create<ChainStoreState>((set) => ({
+export const useChainStore = create<ChainStoreState>(set => ({
   chains: null,
   entityData: null,
   loading: false,
@@ -24,7 +24,7 @@ export const useChainStore = create<ChainStoreState>((set) => ({
     set({ loading: true, error: null });
     try {
       const response = await axios.get(
-        "https://raw.githubusercontent.com/sand-worm-sql/chain_registry/main/data/chain/index.json",
+        "https://raw.githubusercontent.com/sand-worm-sql/chain_registry/main/data/chain/index.json"
       );
       set({ chains: response.data, loading: false });
     } catch (error) {
@@ -41,7 +41,7 @@ export const useChainStore = create<ChainStoreState>((set) => ({
 
     try {
       const results = await Promise.allSettled(
-        files.map((file) => axios.get(`${baseUrl}/${file}`)),
+        files.map(file => axios.get(`${baseUrl}/${file}`))
       );
 
       const [rawRes, decodedRes, projectRes] = results;

@@ -33,7 +33,7 @@ interface ExamplesModalProps {
     id?: string,
     type?: string,
     query?: string,
-    executionMethod?: "rpc" | "indexed",
+    executionMethod?: "rpc" | "indexed"
   ) => void;
 }
 
@@ -105,7 +105,7 @@ export const ExamplesModal: React.FC<ExamplesModalProps> = ({
   const handleSelect = (
     query: string,
     title: string,
-    executionMethod: "rpc" | "indexed",
+    executionMethod: "rpc" | "indexed"
   ) => {
     const tabId = createTab(title, undefined, "sql", query, executionMethod);
     router.push(`/console/${tabId}`, { showProgress: true });

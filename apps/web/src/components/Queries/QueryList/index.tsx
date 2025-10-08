@@ -44,7 +44,7 @@ export const QueryList: React.FC<IQueryListProps> = ({
     );
   }
 
-  const queriesWithLikeStatus = queries.map((query) => ({
+  const queriesWithLikeStatus = queries.map(query => ({
     ...query,
     liked: query.stared_by.includes(userId),
   }));
@@ -52,7 +52,7 @@ export const QueryList: React.FC<IQueryListProps> = ({
   return (
     <div className="mb-16">
       <div className="grid grid-cols-1 gap-4 mb-8">
-        {queriesWithLikeStatus.map((query) => (
+        {queriesWithLikeStatus.map(query => (
           <QueryCard key={query.id} query={query} liked={query.liked} />
         ))}
       </div>

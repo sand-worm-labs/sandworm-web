@@ -25,7 +25,7 @@ async function getQueries(page = "1", search = "") {
   try {
     const searchParam = search ? `&search=${encodeURIComponent(search)}` : "";
     const data = await axios.get<QueryResponse>(
-      `/api/query/?page=${page}&limit=10${searchParam}`,
+      `/api/query/?page=${page}&limit=10${searchParam}`
     );
     return { data, hasError: false };
   } catch (error) {
@@ -37,7 +37,7 @@ async function getQueries(page = "1", search = "") {
 async function getStarredQueries(page = "1") {
   try {
     const data = await axios.get<QueryResponse>(
-      `/api/query?type=stars&page=${page}&limit=10`,
+      `/api/query?type=stars&page=${page}&limit=10`
     );
     return { data, hasError: false };
   } catch (error) {
@@ -49,7 +49,7 @@ async function getStarredQueries(page = "1") {
 async function getForkedQueries(page = "1") {
   try {
     const data = await axios.get<QueryResponse>(
-      `/api/query?type=forks&page=${page}&limit=10`,
+      `/api/query?type=forks&page=${page}&limit=10`
     );
     return { data, hasError: false };
   } catch (error) {

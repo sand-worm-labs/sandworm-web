@@ -40,7 +40,7 @@ export function ClientChatWrapper({
         }
 
         chatData.messages = convertToUIMessages(
-          chatData.messages as Array<CoreMessage>,
+          chatData.messages as Array<CoreMessage>
         );
 
         setChat(chatData);

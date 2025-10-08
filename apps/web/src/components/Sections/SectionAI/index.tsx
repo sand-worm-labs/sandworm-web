@@ -49,7 +49,7 @@ export const SectionAI = () => {
           Accelerate with AI
         </h2>
         <div className="grid gap-8 mt-4 sm:grid-cols-2 lg:grid-cols-3">
-          {cards.map((card) => (
+          {cards.map(card => (
             <div
               key={card.title}
               className="bg-[#ECF6FF] border border-[#D3DBF4] dark:bg-[#111111] rounded-2xl shadow-md p-6 flex flex-col text-left "

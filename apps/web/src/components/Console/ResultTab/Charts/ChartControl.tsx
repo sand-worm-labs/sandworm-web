@@ -30,7 +30,7 @@ export const ChartControl: React.FC<ChartControlProps> = ({
           <span className="text-xs text-muted-foreground">X-Axis: </span>
           <Select
             value={selectedXAxis}
-            onValueChange={(val) =>
+            onValueChange={val =>
               onChange({ xAxis: val, yAxis: selectedYAxis })
             }
           >
@@ -38,7 +38,7 @@ export const ChartControl: React.FC<ChartControlProps> = ({
               <SelectValue placeholder="Select X" />
             </SelectTrigger>
             <SelectContent>
-              {columns?.map((col) => (
+              {columns?.map(col => (
                 <SelectItem key={col} value={col} className="text-xs">
                   {col}
                 </SelectItem>
@@ -51,7 +51,7 @@ export const ChartControl: React.FC<ChartControlProps> = ({
           <span className="text-xs text-muted-foreground">Y-Axis: </span>
           <Select
             value={selectedYAxis}
-            onValueChange={(val) =>
+            onValueChange={val =>
               onChange({ xAxis: selectedXAxis, yAxis: val })
             }
           >
@@ -59,7 +59,7 @@ export const ChartControl: React.FC<ChartControlProps> = ({
               <SelectValue placeholder="Select Y" />
             </SelectTrigger>
             <SelectContent>
-              {columns?.map((col) => (
+              {columns?.map(col => (
                 <SelectItem key={col} value={col} className="text-xs">
                   {col}
                 </SelectItem>
