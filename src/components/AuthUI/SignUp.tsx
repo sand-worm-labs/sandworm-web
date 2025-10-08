@@ -22,7 +22,7 @@ export const SignUp = () => {
       <SocialLogin />
       <ConnectWallet />
       <p className=" text-center dark:text-gray-400 text-[#343A40] roobert">
-        Already have an account?{" "}
+        Have an account?
         <Link href="/signin" className="text-[#8053FE] hover:underline">
           Sign In
         </Link>

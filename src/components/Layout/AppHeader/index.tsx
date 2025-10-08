@@ -47,14 +47,7 @@ export const AppHeader: FC = () => {
 
         {session?.user ? (
           <ProfileMenu currentUser={{ ...session.user }} />
-        ) : (
-          <Link
-            href="/signin"
-            className="border py-1.5 bg-white text-black rounded px-4 text-[0.9rem] font-medium hover:bg-white/85"
-          >
-            Sign In
-          </Link>
-        )}
+        ) : null}
       </div>
     </header>
   );
