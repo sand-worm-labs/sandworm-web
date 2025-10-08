@@ -8,7 +8,6 @@ import { Pool } from "pg";
 
 import { NewUser, QueryTable, users as UserTable } from "../../src/schemas";
 
-
 const queries = [
   `SELECT id, name, email FROM users WHERE active = true ORDER BY created_at DESC LIMIT 10;`,
   `SELECT orders.id, users.name, orders.total_price 
@@ -319,7 +318,7 @@ async function seedDatabase() {
       isOnboarded: false,
       emailVerifiedAt: null,
     };
-  })
+  });
 
   await db.insert(UserTable).values(fakerUsers);
   const users = await db.select().from(UserTable);

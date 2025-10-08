@@ -41,7 +41,9 @@ const runMigrations = async () => {
 
     if (errMsg.includes('extension "vector" is not available')) {
       console.info(PGVECTOR_HINT);
-    } else if (errMsg.includes(`Cannot read properties of undefined (reading 'migrate')`)) {
+    } else if (
+      errMsg.includes(`Cannot read properties of undefined (reading 'migrate')`)
+    ) {
       console.info(DB_FAIL_INIT_HINT);
     }
     process.exit(1);
