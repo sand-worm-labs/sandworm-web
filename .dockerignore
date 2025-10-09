@@ -9,3 +9,12 @@ docker-compose.yml
 node_modules
 nginx/
 README.md
+data
+node_modules
+.env.*
+.turbo
+.git
+dist
+.next
+venv
+*/venv
