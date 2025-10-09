@@ -6,9 +6,9 @@ import {
   varchar,
   jsonb,
 } from "drizzle-orm/pg-core";
-import type { AppUsage } from "@/services/usage";
+import type { AppUsage } from "../types/usage";
 
-import { users } from "./user";
+import { users as UserTable } from "./user";
 
 export const ChatTable = pgTable("chats", {
   id: uuid("id").primaryKey().notNull().defaultRandom(),
@@ -16,7 +16,7 @@ export const ChatTable = pgTable("chats", {
   title: text("title").notNull(),
   userId: uuid("userId")
     .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
+    .references(() => UserTable.id, { onDelete: "cascade" }),
   visibility: varchar("visibility", { enum: ["public", "private"] })
     .notNull()
     .default("private"),
