@@ -1,0 +1,49 @@
+version: "3"
+
+services:
+  # PostgreSQL database
+  db:
+    image: postgres:15
+    container_name: my-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  # pgAdmin for managing PostgreSQL
+  pgadmin:
+    image: dpage/pgadmin4:7
+    container_name: my-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    volumes:
+      - pgadmindata:/var/lib/pgadmin
+
+  # Next.js app using Yarn
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: my-nextjs-app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      DATABASE_URL: ${DATABASE_URL}
+    command: ["yarn", "dev"]  # hot-reload for development
+
+volumes:
+  pgdata:
+  pgadmindata:
+
