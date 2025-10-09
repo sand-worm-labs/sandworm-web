@@ -1,5 +1,3 @@
-import { isValidSuiAddress } from "@mysten/sui/utils";
-
 interface QueryResult {
   columns: string[];
   data: Record<string, any>[];
@@ -99,8 +97,6 @@ export function sanitizeChartData(
     .map(row => {
       const xRaw = row[xKey];
       const yRaw = row[yKey];
-
-      const xIsAddress = typeof xRaw === "string" && isValidSuiAddress(xRaw);
 
       const isClearlyNumber =
         typeof xRaw === "number" ||

@@ -5,7 +5,7 @@ import {
   nextauthAccounts,
   nextauthSessions,
   nextauthVerificationTokens,
-} from "@sandworm/database";
+} from "@sandworm/database/src/schemas";
 
 export const AuthAdapter = DrizzleAdapter(db, {
   usersTable: UserTable,

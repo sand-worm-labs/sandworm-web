@@ -3,8 +3,6 @@ import { twMerge } from "tailwind-merge";
 import type { CoreMessage, CoreToolMessage, Message, ToolInvocation } from "ai";
 import { generateId } from "ai";
 
-import type { Chat } from "@/services/firebase/db";
-
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -124,7 +122,7 @@ export function convertToUIMessages(
   }, []);
 }
 
-export function getTitleFromChat(chat: Chat) {
+export function getTitleFromChat(chat: { messages: Array<CoreMessage> }) {
   const messages = convertToUIMessages(chat.messages as Array<CoreMessage>);
   const firstMessage = messages[0];
 

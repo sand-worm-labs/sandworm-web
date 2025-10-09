@@ -1,5 +1,4 @@
 import "@/styles/globals.css";
-import "@mysten/dapp-kit/dist/index.css";
 
 import { Azeret_Mono as AzeretMono } from "next/font/google";
 import Script from "next/script";
