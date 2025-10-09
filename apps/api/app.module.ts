@@ -5,11 +5,8 @@ import { EventEmitterModule } from "@nestjs/event-emitter";
 import { GraphQLModule } from "@nestjs/graphql";
 import GraphQLJSON from "graphql-type-json";
 import { join } from "path";
-import { UsersModule } from "./src/users/users.module";
 import { AuthModule } from "./src/auth/auth.module";
-import { UsersModule } from "./src/users/users.module";
 import { WorkspaceModule } from "./src/workspace/workspace.module";
-import { WorkspaceModule } from "./src/graphql/workspace/workspace.module";
 import { UsersModule } from "./src/users/users.module";
 
 @Module({
@@ -38,4 +35,4 @@ import { UsersModule } from "./src/users/users.module";
   ],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }
