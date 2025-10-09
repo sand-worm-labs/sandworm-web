@@ -1,28 +1,46 @@
 {
   "name": "@sandworm/database",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "private": true,
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "exports": {
-    ".": "./src/index.ts",
-    "./schemas": "./src/schemas/index.ts"
+    ".": "./src/index.ts"
   },
   "scripts": {
-    "test": "npm run test:client-db && npm run test:server-db",
-    "test:client-db": "vitest run",
-    "test:coverage": "vitest --coverage --silent='passed-only' --config vitest.config.server.mts",
-    "test:server-db": "vitest run --config vitest.config.server.mts"
+    "db:seed": "tsx scripts/seed.ts",
+    "db:migrate": "tsx scripts/migrate.ts",
+    "db:studio": "drizzle-kit studio",
+    "generate": "drizzle-kit generate:pg",
+    "db:generate": "drizzle-kit generate",
+    "db:up": "drizzle-kit up",
+    "db:check": "drizzle-kit check",
+    "db:pull": "drizzle-kit introspect",
+    "db:push:danger": "drizzle-kit push",
+    "db:delete": "rm -rf drizzle/",
+    "prettier": "pnpm exec prettier --write .",
+    "lint": "pnpm eslint && pnpm prettier"
   },
   "dependencies": {
-    "@sandworm/utils": "workspace:*",
-    "next-auth": "5.0.0-beta.25",
-    "@electric-sql/pglite": "^0.2.17",
-    "dayjs": "^1.11.18",
-    "drizzle-orm": "^0.44.4",
-    "drizzle-zod":"^0.5.1",
-    "nanoid": "^5.1.5",
+    "@neondatabase/serverless": "^1.0.1",
+    "dotenv": "^17.2.3",
+    "drizzle-orm": "^0.44.5",
+    "next-auth": "^4.2.11",
     "pg": "^8.16.3",
-    "random-words": "^2.0.1",
-    "ts-md5": "^2.0.1",
+    "zod": "^4.1.11",
+    "@faker-js/faker": "^10.0.0",
+    "@t3-oss/env-nextjs": "^0.13.8",
     "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.15.5",
+    "@types/ws": "^8.18.1",
+    "drizzle-kit": "^0.31.5",
+    "eslint": "8.56.0",
+    "tsup": "8.0.2",
+    "tsx": "4.7.1",
+    "typescript": "5.3.3"
   }
 }
