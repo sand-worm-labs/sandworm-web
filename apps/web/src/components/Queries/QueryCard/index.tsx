@@ -17,8 +17,7 @@ import { useQueryLike } from "@/hooks/useLikeQuery";
 import { useModalStore } from "@/store/auth";
 import { useForkQuery } from "@/hooks";
 import { useTheme } from "@/components/Theme/ThemeProvider";
-
-import { DicebearAvatar } from "../../DicebearAvatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 interface QueryCardProps {
   query: Query;
@@ -91,11 +90,11 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
                 className="rounded-full border-2"
               />
             ) : (
-              <DicebearAvatar
-                size={20}
-                seed={query.creator}
-                className="border-2"
-              />
+              <Avatar className="h-64 w-64">
+                <AvatarFallback>
+                  {query.creator?.split(" ")[0]?.[0] ?? "U"}
+                </AvatarFallback>
+              </Avatar>
             )}
           </div>
 
