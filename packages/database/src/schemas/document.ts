@@ -1,6 +1,6 @@
 import { pgTable, varchar, timestamp, uuid, text } from "drizzle-orm/pg-core";
 
-import { users } from "./user";
+import { users as UserTable } from "./user";
 
 export const DocumentTable = pgTable("documents", {
   id: uuid("id").notNull().defaultRandom(),
@@ -12,7 +12,7 @@ export const DocumentTable = pgTable("documents", {
     .default("text"),
   userId: uuid("userId")
     .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
+    .references(() => UserTable.id, { onDelete: "cascade" }),
 });
 
 // ============== Document Schema Type ==============
