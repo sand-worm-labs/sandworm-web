@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { UserRound, Settings } from "lucide-react";
 
-import { DicebearAvatar } from "@/components";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const tabs = [
   { name: "Profile", href: "/settings/profile", icon: <UserRound size={16} /> },
@@ -37,10 +37,11 @@ export default function SettingsLayout({
                 className="rounded-full border"
               />
             ) : (
-              <DicebearAvatar
-                size={60}
-                seed={session?.user?.name || "sandworm"}
-              />
+              <Avatar className="h-64 w-64">
+                <AvatarFallback>
+                  {session?.user.id?.split(" ")[0]?.[0] ?? "U"}
+                </AvatarFallback>
+              </Avatar>
             )}
             <div>
               <p className="font-bold">{session?.user.name}</p>

@@ -4,8 +4,6 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 
-import { DicebearAvatar } from "@/components/DicebearAvatar";
-
 export default function ProfileSettings() {
   const [formData, setFormData] = useState({
     username: "ceeriil",
@@ -119,12 +117,7 @@ export default function ProfileSettings() {
               alt={`${session?.user.name} image`}
               className="rounded-full border"
             />
-          ) : (
-            <DicebearAvatar
-              size={300}
-              seed={session?.user?.name || "sandworm"}
-            />
-          )}
+          ) : null}
         </div>
       </form>
     </div>
