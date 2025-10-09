@@ -4,8 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { UserRound, Settings } from "lucide-react";
+
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const tabs = [
   { name: "Profile", href: "/settings/profile", icon: <UserRound size={16} /> },
