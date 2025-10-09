@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { CreateWorkspaceInput } from './dto/create-workspace.input';
-import { UpdateWorkspaceInput } from './dto/update-workspace.input';
+import { Injectable } from "@nestjs/common";
+import { CreateWorkspaceInput } from "./dto/create-workspace.input";
+import { UpdateWorkspaceInput } from "./dto/update-workspace.input";
 
 @Injectable()
 export class WorkspaceService {
   create(createWorkspaceInput: CreateWorkspaceInput) {
-    return 'This action adds a new workspace';
+    return "This action adds a new workspace";
   }
 
   findAll() {

@@ -5,8 +5,8 @@ import type { FC } from "react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import Image from "next/image";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
