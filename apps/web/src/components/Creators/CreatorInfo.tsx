@@ -5,10 +5,10 @@ import { SiFarcaster } from "react-icons/si";
 import Link from "next/link";
 import { FaTelegramPlane } from "react-icons/fa";
 import Image from "next/image";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 import type { User } from "@/types";
-import { timeAgo } from "@/lib";
-import { DicebearAvatar } from "@/components";
+import { timeAgo } from "@/lib/date";
 
 interface CreatorInfoProps {
   user: User;
@@ -28,7 +28,11 @@ export const CreatorInfo = ({ user }: CreatorInfoProps) => {
             className="rounded-full border-2"
           />
         ) : (
-          <DicebearAvatar size={250} seed={user.id} className="border-2" />
+          <Avatar className="h-64 w-64">
+            <AvatarFallback>
+              {user.id?.split(" ")[0]?.[0] ?? "U"}
+            </AvatarFallback>
+          </Avatar>
         )}
 
         <div className="mt-8 text-center">

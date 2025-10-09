@@ -3,8 +3,6 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 
-import { DicebearAvatar } from "../DicebearAvatar";
-
 export const DashboardHeader = () => {
   const board = {
     boardTitle: "Uniswap Degen Activity",
@@ -19,13 +17,6 @@ export const DashboardHeader = () => {
   return (
     <header className="w-full flex items-center justify-between px-4 py-3 bg-black text-white border-b border-white/10 container mx-auto mt-12">
       <div className="flex items-center gap-3">
-        {board.user.avatarUrl ? (
-          <DicebearAvatar seed={board.user.avatarUrl} size={25} />
-        ) : (
-          <p className="text-sm font-medium">
-            {board.user.name?.slice(0, 2).toUpperCase()}
-          </p>
-        )}
         <h1 className="text-base font-medium tracking-tight">
           <Link href="/console" className="hover:underline">
             {board.user.name}{" "}
