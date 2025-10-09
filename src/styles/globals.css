@@ -485,6 +485,19 @@ svg {
   background: linear-gradient(99deg, #f1f8f8 -0.93%, #dcf4f4 99.29%);
 }
 
+.bg-rainbow-gradient {
+  background: linear-gradient(
+    99deg,
+    #6368ff 0.62%,
+    #cbecff 15.71%,
+    #7bff42 25.15%,
+    #2db2ff 42.6%,
+    #f00 60.53%,
+    #ded757 80.81%,
+    #ff00e1 98.74%
+  );
+}
+
 .box-gradient {
   position: relative;
   border-radius: 1rem;
