@@ -1,8 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { WorkspaceResolver } from './workspace.resolver';
-import { WorkspaceService } from './workspace.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { WorkspaceResolver } from "./workspace.resolver";
+import { WorkspaceService } from "./workspace.service";
 
-describe('WorkspaceResolver', () => {
+describe("WorkspaceResolver", () => {
   let resolver: WorkspaceResolver;
 
   beforeEach(async () => {
@@ -13,7 +13,7 @@ describe('WorkspaceResolver', () => {
     resolver = module.get<WorkspaceResolver>(WorkspaceResolver);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(resolver).toBeDefined();
   });
 });

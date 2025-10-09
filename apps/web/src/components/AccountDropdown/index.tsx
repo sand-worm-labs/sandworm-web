@@ -2,7 +2,7 @@
 
 import React from "react";
 import { ChevronDown, Share2 } from "lucide-react";
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -13,16 +13,18 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { useModalStore } from "@/store/auth";
 
 export const AccountDropdown = () => {
   const { data: session } = useSession();
   const user = session?.user;
+  const openSignIn = useModalStore(state => state.openSignIn);
 
   if (!user) {
     return (
       <div className="w-[90%] mx-auto mb-5 flex justify-center">
         <Button
-          onClick={() => signIn()}
+          onClick={() => openSignIn()}
           className="px-5 h-11 border-[#E9ECEF] bg-white  dark:bg-neutral-900 text-black dark:text-white font-semibold inline-block w-full"
         >
           Sign up Today!
@@ -61,7 +63,6 @@ export const AccountDropdown = () => {
           className="w-64 rounded-xl shadow-lg p-3 ml-6"
           align="start"
         >
-          {/* Avatar + Name + Share */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Avatar className="h-10 w-10">
@@ -86,7 +87,6 @@ export const AccountDropdown = () => {
             </Button>
           </div>
 
-          {/* Profile Link */}
           <Link
             href="/profile"
             className="block mt-3 text-xs underline text-[#C7665C] hover:text-[#C7665C]"
@@ -101,7 +101,6 @@ export const AccountDropdown = () => {
 
           <DropdownMenuSeparator className="my-3" />
 
-          {/* Action Buttons */}
           <div className="flex flex-col gap-2">
             <Link href="/settings">
               <Button variant="outline" className="w-full text-xs">
