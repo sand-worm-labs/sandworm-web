@@ -109,11 +109,14 @@ module.exports = {
     "import/resolver": {
       typescript: {
         alwaysTryTypes: true,
-        project: "./tsconfig.json",
+        project: "./apps/web/tsconfig.json",
       },
       node: {
         extensions: [".js", ".jsx", ".ts", ".tsx"],
         moduleDirectory: ["node_modules", "node_modules/.pnpm", "src/"],
+        alias: {
+          "@": "./src",
+        },
       },
     },
     react: {
