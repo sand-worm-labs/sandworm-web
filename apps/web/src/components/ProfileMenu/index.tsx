@@ -6,6 +6,7 @@ import Link from "next/link";
 import { signOut } from "next-auth/react";
 import Image from "next/image";
 
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,7 +15,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { CurrentUserProps } from "@/types";
 
-import { DicebearAvatar } from "../DicebearAvatar";
 import { ThemeTogggle } from "../Theme/ThemeToggle";
 
 export const ProfileMenu: FC<CurrentUserProps> = ({ currentUser }) => {
@@ -38,11 +38,11 @@ export const ProfileMenu: FC<CurrentUserProps> = ({ currentUser }) => {
                 alt={`${currentUser.name} image`}
               />
             ) : (
-              <DicebearAvatar
-                size={30}
-                className="rounded-full"
-                seed={currentUser?.name || "sandworm"}
-              />
+              <Avatar className="h-64 w-64">
+                <AvatarFallback>
+                  {currentUser?.name?.split(" ")[0]?.[0] ?? "U"}
+                </AvatarFallback>
+              </Avatar>
             )}
           </button>
         </DropdownMenuTrigger>

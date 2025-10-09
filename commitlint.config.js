@@ -22,7 +22,7 @@ module.exports = {
       "always",
       [
         "feat", // ✨ Features
-        "ui", // 🎨 User interface updates
+        "ui", // 🖼 User interface updates
         "fix", // 🐛 Bug fixes
         "docs", // 📝 Documentation
         "style", // 🎨 UI, formatting

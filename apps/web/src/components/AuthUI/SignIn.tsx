@@ -5,7 +5,6 @@ import Link from "next/link";
 import { SandwormLogo } from "../Assets/SandwormLogo";
 
 import { SocialLogin } from "./SocialLogin";
-import { ConnectWallet } from "./ConnectWallet";
 
 export const SignIn = () => {
   return (
@@ -18,9 +17,9 @@ export const SignIn = () => {
       </h2>
 
       <SocialLogin />
-      <ConnectWallet />
-      <p className=" text-center text-sm dark:text-gray-400 text-[#343A40]">
-        Don&apos;t have an account?{" "}
+
+      <p className=" text-center text-sm dark:text-gray-400 text-[#343A40] roobert">
+        Need an account?{" "}
         <Link href="/signup" className="text-[#8053FE] hover:underline">
           Sign up
         </Link>
