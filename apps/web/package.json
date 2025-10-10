@@ -20,6 +20,7 @@
     "*.{js,jsx,ts,tsx}": "eslint --cache --fix --cache-location ./node_modules/.cache/.eslintcache"
   },
   "dependencies": {
+    "@sandworm/database": "workspace:*",
     "@auth/drizzle-adapter": "^1.10.0",
     "@bprogress/next": "^3.2.12",
     "@dnd-kit/core": "^6.3.1",
