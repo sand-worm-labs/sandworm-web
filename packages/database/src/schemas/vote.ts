@@ -1,4 +1,4 @@
-import { pgTable, text, uuid, primaryKey, boolean } from "drizzle-orm/pg-core";
+import { pgTable, uuid, primaryKey, boolean } from "drizzle-orm/pg-core";
 
 import { ChatTable } from "./chat";
 import { MessageTable } from "./message";
@@ -7,7 +7,7 @@ import { users } from "./user";
 export const VoteTable = pgTable(
   "votes",
   {
-    userId: text("user_id")
+    userId: uuid("user_id")
       .references(() => users.id, { onDelete: "cascade" })
       .notNull(),
     chatId: uuid("chatId")
