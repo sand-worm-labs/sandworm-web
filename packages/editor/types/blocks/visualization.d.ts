@@ -1,0 +1,36 @@
+import * as Y from "yjs";
+import { BlockType, BaseBlock, YBlock, ResultStatus } from "./index.js";
+import { AggregateFunction, ChartType, DataFrameColumn, HistogramBin, HistogramFormat, JsonObject, TimeUnit, VisualizationFilter, YAxis } from "@sandworm/types";
+export type VisualizationBlock = BaseBlock<BlockType.Visualization> & {
+    dataframeName: string | null;
+    spec: JsonObject | null;
+    chartType: ChartType;
+    xAxis: DataFrameColumn | null;
+    xAxisName: string | null;
+    xAxisTimezone: string | null;
+    xAxisSort: "ascending" | "descending";
+    xAxisGroupFunction: TimeUnit | null;
+    yAxes: YAxis[];
+    yAxis: DataFrameColumn | null;
+    yAxisName: string | null;
+    yAxisAggregateFunction: AggregateFunction | null;
+    colorBy: DataFrameColumn | null;
+    histogramFormat: HistogramFormat;
+    histogramBin: HistogramBin;
+    numberValuesFormat: string | null;
+    showDataLabels: boolean;
+    controlsHidden: boolean;
+    filters: VisualizationFilter[];
+    tooManyDataPointsHidden: boolean;
+    error: "dataframe-not-found" | "unknown" | "invalid-params" | null;
+    updatedAt: string | null;
+};
+export declare const isVisualizationBlock: (block: YBlock) => block is Y.XmlElement<VisualizationBlock>;
+export declare const makeVisualizationBlock: (id: string, init?: Partial<VisualizationBlock>) => Y.XmlElement<VisualizationBlock>;
+export declare function getVisualizationAttributes(block: Y.XmlElement<VisualizationBlock>): VisualizationBlock;
+export declare function duplicateVisualizationBlock(newId: string, block: Y.XmlElement<VisualizationBlock>): Y.XmlElement<VisualizationBlock>;
+export declare function getVisualizationBlockResultStatus(block: Y.XmlElement<VisualizationBlock>): ResultStatus;
+export declare function getVisualizationBlockExecutedAt(block: Y.XmlElement<VisualizationBlock>): Date | null;
+export declare function getVisualizationBlockIsDirty(_block: Y.XmlElement<VisualizationBlock>): boolean;
+export declare function getVisualizationBlockErrorMessage(block: Y.XmlElement<VisualizationBlock>): string | null;
+//# sourceMappingURL=visualization.d.ts.map
