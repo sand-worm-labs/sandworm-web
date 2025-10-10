@@ -1,0 +1,37 @@
+import * as Y from 'yjs';
+import { BlockType, BaseBlock, YBlock, EditableField, ResultStatus } from './index.js';
+import { ExecutionStatus } from '../execution/item.js';
+import { ExecutionQueue } from '../execution/queue.js';
+export type DropdownType = 'static' | 'dynamic';
+export type DropdownInputBlock = BaseBlock<BlockType.DropdownInput> & {
+    label: string;
+    value: EditableField<'invalid-value' | 'unexpected-error', string | null>;
+    variable: EditableField<'invalid-value' | 'invalid-variable-name' | 'unexpected-error'>;
+    configOpen: boolean;
+    executedAt: string | null;
+    dropdownType: DropdownType;
+    options: string[];
+    dataframeName: string | null;
+    columnName: string | null;
+};
+export declare const isDropdownInputBlock: (block: YBlock) => block is Y.XmlElement<DropdownInputBlock>;
+export declare const makeDropdownInputBlock: (id: string, blocks: Y.Map<YBlock>) => Y.XmlElement<DropdownInputBlock>;
+export declare function getDropdownInputAttributes(block: Y.XmlElement<DropdownInputBlock>, blocks: Y.Map<YBlock>): DropdownInputBlock;
+export declare function duplicateDropdownInputBlock(newId: string, block: Y.XmlElement<DropdownInputBlock>, blocks: Y.Map<YBlock>): Y.XmlElement<DropdownInputBlock>;
+export declare function updateDropdownInputLabel(block: Y.XmlElement<DropdownInputBlock>, newValue: string): void;
+export declare function updateDropdownInputValue(block: Y.XmlElement<DropdownInputBlock>, value: Partial<DropdownInputBlock['value']>): void;
+export declare function getDropdownInputValueExecStatus(block: Y.XmlElement<DropdownInputBlock>, executionQueue: ExecutionQueue): ExecutionStatus;
+export declare function updateDropdownInputVariable(block: Y.XmlElement<DropdownInputBlock>, blocks: Y.Map<YBlock>, newValue: Partial<DropdownInputBlock['variable']>): void;
+export declare function getDropdownInputVariableExecStatus(block: Y.XmlElement<DropdownInputBlock>, executionQueue: ExecutionQueue): ExecutionStatus;
+export declare function getDropdownInputBlockExecStatus(block: Y.XmlElement<DropdownInputBlock>, executionQueue: ExecutionQueue): ExecutionStatus;
+export declare function dropdownInputToggleConfigOpen(block: Y.XmlElement<DropdownInputBlock>): void;
+export declare function removeDropdownInputOption(block: Y.XmlElement<DropdownInputBlock>, option: string): boolean;
+export declare function appendDropdownInputOptions(block: Y.XmlElement<DropdownInputBlock>, blocks: Y.Map<YBlock>, newOptions: string[], replace: boolean): boolean;
+export declare function getDropdownInputBlockExecutedAt(block: Y.XmlElement<DropdownInputBlock>, blocks: Y.Map<YBlock>): Date | null;
+export declare function getDropdownInputBlockIsDirty(block: Y.XmlElement<DropdownInputBlock>, blocks: Y.Map<YBlock>): boolean;
+export declare function updateDropdownInputBlockExecutedAt(block: Y.XmlElement<DropdownInputBlock>, executedAt: Date | null): void;
+export declare function setDropdownType(block: Y.XmlElement<DropdownInputBlock>, type: DropdownType): void;
+export declare function setDropdownDataFrameName(block: Y.XmlElement<DropdownInputBlock>, name: string | null): void;
+export declare function setDropdownColumnName(block: Y.XmlElement<DropdownInputBlock>, name: string | null): void;
+export declare function getDropdownInputBlockResultStatus(block: Y.XmlElement<DropdownInputBlock>, blocks: Y.Map<YBlock>): ResultStatus;
+//# sourceMappingURL=dropdownInput.d.ts.map
