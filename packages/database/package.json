@@ -7,7 +7,8 @@
     "access": "public"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./schemas": "./src/schemas/index.ts"
   },
   "scripts": {
     "db:seed": "tsx scripts/seed.ts",
@@ -35,6 +36,8 @@
     "ws": "^8.18.3"
   },
   "devDependencies": {
+    "@sandworm/eslint-config": "workspace:*",
+    "@sandworm/typescript-config": "workspace:*",
     "@types/pg": "^8.15.5",
     "@types/ws": "^8.18.1",
     "drizzle-kit": "^0.31.5",

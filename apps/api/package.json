@@ -3,13 +3,20 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "clean": "rm -rf dist",
+    "dev": "nest start --watch --port 8001",
     "build": "nest build",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
+    "start:debug": "nest start --debug --watch",
+    "start:prod": "node dist/main",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
-    "prettier": "pnpm exec prettier --write .",
-    "lint": "pnpm eslint && pnpm prettier"
+    "test:cov": "jest --coverage",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
     "@apollo/server": "^4.10.0",
@@ -30,6 +37,8 @@
     "rxjs": "^7.8.1"
   },
   "devDependencies": {
+    "@sandworm/eslint-config": "workspace:*",
+    "@sandworm/typescript-config": "workspace:*",
     "@nestjs/cli": "^10.0.0",
     "@nestjs/schematics": "^10.0.0",
     "@nestjs/testing": "^10.0.0",
