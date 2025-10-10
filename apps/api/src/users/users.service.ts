@@ -1,10 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { CreateUserInput } from "./dto/create-user.input";
 import { UpdateUserInput } from "./dto/update-user.input";
-
+import { DatabaseService } from "../database/database.service";
 @Injectable()
 export class UsersService {
+  constructor(private readonly dbService: DatabaseService) { }
+
   create(createUserInput: CreateUserInput) {
+    this.drizzle
     return "This action adds a new user";
   }
 
