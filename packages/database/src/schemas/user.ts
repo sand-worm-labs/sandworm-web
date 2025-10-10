@@ -18,7 +18,6 @@ export const users = pgTable("users", {
   lastName: text("last_name"),
   fullName: text("full_name"),
   avater: text("avater"),
-  isOnboarded: boolean("is_onboarded").default(false),
   emailVerifiedAt: timestamptz("email_verified_at"),
   emailVerified: boolean("email_verified").default(false),
   ...timestamps,

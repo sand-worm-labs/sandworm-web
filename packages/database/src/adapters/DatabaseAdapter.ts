@@ -4,14 +4,14 @@ import { drizzle as nodeDrizzle } from "drizzle-orm/node-postgres";
 import { Pool as NodePool } from "pg";
 import ws from "ws";
 
-import { dbEnv } from "../../config";
+import { dbEnv } from "../config";
 import { SandwormDatabase } from "../types/db";
 import * as schema from "../schemas"; // ensure this path is valid
 
 export class DatabaseAdapter {
   private static instance: SandwormDatabase | null = null;
 
-  private constructor() {}
+  private constructor() { }
 
   private static createInstance(): SandwormDatabase {
     const { DATABASE_URL, DATABASE_DRIVER, KEY_VAULTS_SECRET } = dbEnv;

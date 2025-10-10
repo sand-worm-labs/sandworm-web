@@ -1,11 +1,10 @@
-import { ObjectType, Field, ID } from "@nestjs/graphql";
+import { ObjectType, Field } from "@nestjs/graphql";
 import { InferSelectModel } from "drizzle-orm";
-import { users } from "@sandworm/database/src/schemas";
+import { users } from "@sandworm/database/schemas";
 
 @ObjectType()
 export class User implements InferSelectModel<typeof users> {
   accessedAt: Date;
-  @Field(() => ID)
   id: string;
 
   @Field({ nullable: true })
