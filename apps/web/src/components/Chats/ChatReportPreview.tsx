@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Star, Expand, MoreVertical } from "lucide-react";
+import VisualizationBlockV2 from "../Visualization";
 
 export const ChatReportPreview = () => {
   return (
@@ -28,7 +29,27 @@ export const ChatReportPreview = () => {
 
       {/* Chart Placeholder */}
       <div className="w-full h-[500px]  flex items-center justify-center text-neutral-500 border border-[#EBD7D7] rounded-2xl">
-        <span>Chart Viz goes here 📊</span>
+        <VisualizationBlockV2
+          isPublicMode={props.isPublicViewer}
+          isEditable={props.isEditable}
+          document={props.document}
+          onAddGroupedBlock={props.addGroupedBlock}
+          block={block}
+          blocks={props.blocks}
+          dataframes={props.dataframes}
+          dragPreview={props.hasMultipleTabs ? null : props.dragPreview}
+          dashboardMode={null}
+          hasMultipleTabs={props.hasMultipleTabs}
+          isBlockHiddenInPublished={props.tab.isHiddenInPublished}
+          onToggleIsBlockHiddenInPublished={
+            props.onToggleIsBlockHiddenInPublished
+          }
+          isCursorWithin={isCursorWithin}
+          isCursorInserting={isCursorInserting}
+          userId={props.userId}
+          executionQueue={props.executionQueue}
+          isFullScreen={props.isFullScreen}
+        />
       </div>
 
       <div className=" text-[#455768] space-y-2 py-3">
