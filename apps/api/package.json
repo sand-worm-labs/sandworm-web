@@ -2,6 +2,7 @@
   "name": "@sandworm/api",
   "version": "0.0.1",
   "private": true,
+  "description": "Sandworm GraphQL API built with NestJS and Apollo",
   "scripts": {
     "clean": "rm -rf dist",
     "dev": "nest start --watch --port 8001 -r tsconfig-paths/register",

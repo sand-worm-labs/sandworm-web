@@ -80,7 +80,7 @@ type User {
   createdAt: DateTime!
   email: String
   emailVerified: Boolean!
-  emailVerifiedAt: DateTime
+  emailVerifiedAt: DateTime!
   firstName: String
   fullName: String
   id: String!

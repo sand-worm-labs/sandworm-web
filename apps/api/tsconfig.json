@@ -6,10 +6,5 @@
     "moduleResolution": "nodenext",
     "baseUrl": "./",
     "outDir": "./dist",
-    "paths": {
-      "@sandworm/database": [
-        "node_modules/@sandworm/database"
-      ],
-    }
   }
 }
