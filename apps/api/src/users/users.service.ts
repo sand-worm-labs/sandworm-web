@@ -2,7 +2,7 @@ import { Injectable, Inject } from "@nestjs/common";
 import { eq } from "drizzle-orm";
 import { users } from "@sandworm/database";
 
-import type { SandwormDatabase } from "@sandworm/database/types";
+import type { SandwormDatabase } from "@sandworm/database";
 
 import { CreateUserInput } from "./dto/create-user.input";
 import { UpdateUserInput } from "./dto/update-user.input";
