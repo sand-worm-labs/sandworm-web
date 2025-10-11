@@ -7,7 +7,7 @@ import {
   ToBoolean,
   ToLowerCase,
   ToUpperCase,
-} from '@repo/nest-common';
+} from '@sandworm/nest-common';
 import {
   IsBoolean,
   IsDate,

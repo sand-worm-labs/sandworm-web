@@ -1,5 +1,5 @@
 import { registerAs } from '@nestjs/config';
-import { Environment, LogService, validateConfig } from '@repo/nest-common';
+import { Environment, LogService, validateConfig } from '@sandworm/nest-common';
 import {
   IsBoolean,
   IsEnum,
