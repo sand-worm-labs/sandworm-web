@@ -3,38 +3,53 @@
   "version": "0.0.0",
   "private": true,
   "license": "MIT",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "./dist/**",
+    "!./dist/factories",
+    "!./dist/migrations",
+    "!./dist/seeds"
+  ],
   "publishConfig": {
     "access": "public"
   },
   "exports": {
-    ".": "./dist/index.js",
-    "./schemas": "./dist/schemas/index.js"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "default": "./dist/*.js"
+    }
   },
-  "type": "module",
   "scripts": {
+    "clean": "rm -rf dist",
+    "build": "tsc -b -v",
+    "dev": "pnpm build --watch",
+    "lint": "eslint \"{src,test}/**/*.ts\"",
     "db:seed": "tsx scripts/seed.ts",
     "db:migrate": "tsx scripts/migrate.ts",
     "db:studio": "drizzle-kit studio",
-    "generate": "drizzle-kit generate:pg",
     "db:generate": "drizzle-kit generate",
     "db:up": "drizzle-kit up",
     "db:check": "drizzle-kit check",
     "db:pull": "drizzle-kit introspect",
     "db:push:danger": "drizzle-kit push",
     "db:delete": "rm -rf drizzle/",
-    "prettier": "pnpm exec prettier --write .",
-    "lint": "pnpm eslint && pnpm prettier"
+    "prettier": "pnpm exec prettier --write ."
   },
   "dependencies": {
+    "@faker-js/faker": "^10.0.0",
     "@neondatabase/serverless": "^1.0.1",
+    "dayjs": "^1.11.18",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.44.5",
     "next-auth": "^4.2.11",
     "pg": "^8.16.3",
-    "zod": "^4.1.11",
-    "@faker-js/faker": "^10.0.0",
-    "@t3-oss/env-nextjs": "^0.13.8",
-    "ws": "^8.18.3"
+    "ws": "^8.18.3",
+    "zod": "^4.1.11"
   },
   "devDependencies": {
     "@sandworm/eslint-config": "workspace:*",
