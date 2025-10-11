@@ -32,6 +32,6 @@
   "dependencies": {
     "@nestjs-cls/transactional-adapter-drizzle-orm": "^1.2.0",
     "ai": "5.0.60",
-    "drizzle-orm": "^0.44.5",
+    "drizzle-orm": "^0.44.5"
   }
 }
