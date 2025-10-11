@@ -16,13 +16,13 @@ export const AppHeader: FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <header className="px-8 py-2 flex justify-between items-center dark:bg-[#000000] border-b border-[#E9ECEF]">
+    <header className="px-8 py-2 flex justify-between items-center border-b border">
       <Link href="/" className="flex items-center">
         <SandwormLogo />
         <span className="ml-3 font-semibold text-lg uppercase hidden md:inline-block">
           SandW0rm.
         </span>
-        <Badge className="bg-white/15 rounded-lg ml-2 text-black dark:text-white">
+        <Badge className="">
           beta
         </Badge>
       </Link>
