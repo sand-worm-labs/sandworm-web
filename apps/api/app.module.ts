@@ -8,6 +8,7 @@ import { join } from "path";
 import { AuthModule } from "./src/auth/auth.module";
 import { WorkspaceModule } from "./src/workspace/workspace.module";
 import { UsersModule } from "./src/users/users.module";
+import { DatabaseModule } from './src/database/database.module';
 
 
 @Module({
@@ -33,6 +34,7 @@ import { UsersModule } from "./src/users/users.module";
     UsersModule,
     WorkspaceModule,
     AuthModule,
+    DatabaseModule,
   ],
   providers: [],
 })
