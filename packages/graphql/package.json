@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "@sandworm/eslint-config": "workspace:*",
-    "@samdworm/typescript-config": "workspace:*",
+    "@sandworm/typescript-config": "workspace:*",
     "@types/node": "^24.7.0",
     "ts-loader": "^9.5.4",
     "ts-node": "^10.9.2",
