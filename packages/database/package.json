@@ -7,9 +7,10 @@
     "access": "public"
   },
   "exports": {
-    ".": "./src/index.ts",
-    "./schemas": "./src/schemas/index.ts"
+    ".": "./dist/index.js",
+    "./schemas": "./dist/schemas/index.js"
   },
+  "type": "module",
   "scripts": {
     "db:seed": "tsx scripts/seed.ts",
     "db:migrate": "tsx scripts/migrate.ts",
