@@ -19,7 +19,7 @@ export const SuggestionTable = pgTable(
     suggestedText: text("suggestedText").notNull(),
     description: text("description"),
     isResolved: boolean("isResolved").notNull().default(false),
-    userId: text("userId")
+    userId: uuid("userId")
       .notNull()
       .references(() => users.id),
     createdAt: timestamp("createdAt").notNull(),

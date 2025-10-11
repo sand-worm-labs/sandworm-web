@@ -2,11 +2,8 @@ import "@/styles/globals.css";
 
 import { Azeret_Mono as AzeretMono } from "next/font/google";
 import Script from "next/script";
-
-import { QueryProvider } from "@/providers/query";
 import type { ChildrenProps } from "@/types";
-import AppProvider from "@/providers/AppProvider";
-import { ThemeProvider } from "@/components/Theme/ThemeProvider";
+import { RootProvider } from "@/providers/RootProvider";
 
 export const metadata = {
   description:
@@ -29,7 +26,7 @@ const GTAG_ID = "G-GQB5QS1LHQ";
 
 export default async function RootLayout({ children }: ChildrenProps) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <Script
         strategy="afterInteractive"
         src={`https://www.googletagmanager.com/gtag/js?id=${GTAG_ID}`}
@@ -41,21 +38,17 @@ export default async function RootLayout({ children }: ChildrenProps) {
 
   gtag('config', "G-GQB5QS1LHQ")`}
       </Script>
-      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        <body
-          className={`${azeretMono.className} h-full flex flex-col justify-between`}
-        >
+      <body
+        className={`${azeretMono.className} h-full flex flex-col justify-between`}
+      >
+        <RootProvider>
           {/*      <BannerAlert
           id="wql-downtime"
           message="Sandworm’s WQL is momentarily offline for upgrades. We’re working to restore access as soon as possible. Thanks for bearing with us."
         /> */}
-          <section className="flex-1 dark:bg-background bg-white text-black dark:text-white">
-            <QueryProvider>
-              <AppProvider>{children} </AppProvider>
-            </QueryProvider>
-          </section>
-        </body>
-      </ThemeProvider>
+          <section className="flex-1">{children}</section>
+        </RootProvider>
+      </body>
     </html>
   );
 }

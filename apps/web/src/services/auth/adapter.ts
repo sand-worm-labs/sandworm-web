@@ -1,14 +1,14 @@
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import {
   db,
-  UserTable,
+  users,
   nextauthAccounts,
   nextauthSessions,
   nextauthVerificationTokens,
-} from "@sandworm/database/src/schemas";
+} from "@sandworm/database";
 
 export const AuthAdapter = DrizzleAdapter(db, {
-  usersTable: UserTable,
+  usersTable: users,
   accountsTable: nextauthAccounts,
   sessionsTable: nextauthSessions,
   verificationTokensTable: nextauthVerificationTokens,
