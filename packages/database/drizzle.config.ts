@@ -32,7 +32,7 @@ export default {
     url: connectionString,
   },
   dialect: "postgresql",
-  out: "./packages/database/migrations",
-  schema: "./packages/database/src/schemas",
+  out: "./migrations",
+  schema: "./src/schemas",
   strict: true,
 } satisfies Config;
