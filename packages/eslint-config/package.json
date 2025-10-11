@@ -1,24 +1,30 @@
 {
   "name": "@sandworm/eslint-config",
   "version": "0.0.0",
-  "type": "module",
   "private": true,
-  "exports": {
-    "./base": "./base.js",
-    "./next-js": "./next.js",
-    "./react-internal": "./react-internal.js"
-  },
+  "license": "MIT",
+  "files": [
+    "compat.mjs",
+    "eslint-base.config.mjs",
+    "eslint-nest.config.mjs",
+    "eslint-next.config.mjs",
+    "eslint-react-internal.config.mjs",
+    "prettier-base.config.mjs"
+  ],
   "devDependencies": {
-    "@eslint/js": "^9.34.0",
-    "@next/eslint-plugin-next": "^15.5.0",
-    "eslint": "^9.34.0",
-    "eslint-config-prettier": "^10.1.1",
-    "eslint-plugin-only-warn": "^1.1.0",
-    "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-turbo": "^2.5.0",
-    "globals": "^16.3.0",
-    "typescript": "^5.9.2",
-    "typescript-eslint": "^8.40.0"
+    "@eslint/compat": "^1.2.9",
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.25.1",
+    "@next/eslint-plugin-next": "^15.3.1",
+    "@types/eslint": "^9.6.1",
+    "@vercel/style-guide": "^6.0.0",
+    "eslint": "^9.25.1",
+    "eslint-config-next": "15.3.2",
+    "eslint-config-prettier": "^10.1.2",
+    "eslint-config-turbo": "^2.5.2",
+    "eslint-plugin-prettier": "^5.2.6",
+    "prettier-plugin-organize-imports": "^4.1.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.31.1"
   }
 }
