@@ -1,0 +1,50 @@
+{
+  "name": "@sandworm/graphql",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "clean": "rm -rf dist",
+    "dev": "pnpm build --watch",
+    "build": "tsc -b -v",
+    "lint": "eslint \"{src,test}/**/*.ts\""
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "./dist/**"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "default": "./dist/*.js"
+    }
+  },
+  "dependencies": {
+    "@nestjs/common": "^11.1.6",
+    "@nestjs/config": "^4.0.2",
+    "@nestjs/mapped-types": "^2.1.0",
+    "@sandworm/nest-common": "workspace:*",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.2",
+    "fastify": "^5.4.0",
+    "graphql-parse-resolve-info": "^4.14.1",
+    "pino": "^10.0.0",
+    "rxjs": "^7.8.2"
+  },
+  "devDependencies": {
+    "@sandworm/eslint-config": "workspace:*",
+    "@samdworm/typescript-config": "workspace:*",
+    "@types/node": "^24.7.0",
+    "ts-loader": "^9.5.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}

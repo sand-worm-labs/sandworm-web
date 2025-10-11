@@ -1,10 +1,22 @@
 {
     "extends": "@sandworm/typescript-config/nestjs.json",
     "compilerOptions": {
-        "target": "es2016",
-        "module": "nodenext",
-        "moduleResolution": "nodenext",
-        "baseUrl": "./",
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "allowJs": true,
+        "esModuleInterop": true,
+        "incremental": false,
+        "baseUrl": ".",
+        "rootDir": "./src",
         "outDir": "./dist"
-    }
+    },
+    "include": [
+        "src"
+    ],
+    "exclude": [
+        "node_modules",
+        "test",
+        "dist",
+        "**/*spec.ts"
+    ]
 }
