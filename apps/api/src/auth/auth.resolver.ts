@@ -1,12 +1,12 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { Public } from '@repo/nest-common';
-import { User } from '../user/model/user.model';
+import { Public } from '@sandworm/nest-common';
+import { User } from '../users/entities/user.entity';
 import { AuthService } from './auth.service';
 import { LoginInput } from './dto/auth.dto';
 
 @Resolver()
 export class AuthResolver {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   @Public()
   @Mutation(() => User, { name: 'login', description: 'Sign in' })
