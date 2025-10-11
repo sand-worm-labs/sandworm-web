@@ -26,7 +26,7 @@ const GTAG_ID = "G-GQB5QS1LHQ";
 
 export default async function RootLayout({ children }: ChildrenProps) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <Script
         strategy="afterInteractive"
         src={`https://www.googletagmanager.com/gtag/js?id=${GTAG_ID}`}
@@ -38,17 +38,17 @@ export default async function RootLayout({ children }: ChildrenProps) {
 
   gtag('config', "G-GQB5QS1LHQ")`}
       </Script>
-      <RootProvider>
-        <body
-          className={`${azeretMono.className} h-full flex flex-col justify-between`}
-        >
+      <body
+        className={`${azeretMono.className} h-full flex flex-col justify-between`}
+      >
+        <RootProvider>
           {/*      <BannerAlert
           id="wql-downtime"
           message="Sandworm’s WQL is momentarily offline for upgrades. We’re working to restore access as soon as possible. Thanks for bearing with us."
         /> */}
           <section className="flex-1">{children}</section>
-        </body>
-      </RootProvider>
+        </RootProvider>
+      </body>
     </html>
   );
 }
