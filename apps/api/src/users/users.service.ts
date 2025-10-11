@@ -1,26 +1,45 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Inject } from "@nestjs/common";
+import { eq } from "drizzle-orm";
+import { users } from "@sandworm/database";
+
+import type { SandwormDatabase } from "@sandworm/database/types";
+
 import { CreateUserInput } from "./dto/create-user.input";
 import { UpdateUserInput } from "./dto/update-user.input";
+import { DB_CONNECTION } from "../../constants";
+
 @Injectable()
 export class UsersService {
+  constructor(
+    @Inject(DB_CONNECTION) private conn: SandwormDatabase,
+  ) { }
 
-  create(createUserInput: CreateUserInput) {
-    return "This action adds a new user";
+  async create(createUserInput: CreateUserInput) {
+    return await this.conn.insert(users)
+      .values(createUserInput)
+      .returning();
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll() {
+    return await this.conn.select().from(users);
   }
 
-  findOne(id: string) {
-    return `This action returns a #${id} user`;
+  async findOne(id: string) {
+    return await this.conn.select().from(users).where(eq(users.id, id));
   }
 
-  update(id: string, updateUserInput: UpdateUserInput) {
-    return `This action updates a #${id} user`;
+
+  async update(id: string, updateUserInput: UpdateUserInput) {
+    return await this.conn.update(users)
+      .set(updateUserInput)
+      .where(eq(users.id, id))
+      .returning();
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} user`;
+  async remove(id: string) {
+    return await this.conn.delete(users)
+      .where(eq(users.id, id))
+      .returning();
   }
 }
+
