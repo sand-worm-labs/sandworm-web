@@ -1,0 +1,63 @@
+{
+  "name": "@repo/postgresql-typeorm",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "clean": "rm -rf dist",
+    "dev": "pnpm build --watch",
+    "build": "tsc -b -v",
+    "lint": "eslint \"{src,test}/**/*.ts\"",
+    "typeorm": "pnpm clean && env-cmd typeorm-ts-node-commonjs -d src/data-source.ts",
+    "migration:up": "pnpm typeorm migration:run",
+    "migration:down": "pnpm typeorm migration:revert",
+    "migration:show": "pnpm typeorm migration:show",
+    "migration:create": "typeorm migration:create",
+    "migration:generate": "pnpm typeorm migration:generate --pretty",
+    "typeorm-ex": "pnpm clean && pnpm build && env-cmd typeorm-extension",
+    "db:create": "pnpm typeorm-ex db:create",
+    "db:drop": "pnpm typeorm-ex db:drop",
+    "seed:run": "pnpm typeorm-ex seed:run",
+    "seed:create": "pnpm typeorm-ex seed:create"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "./dist/**",
+    "!./dist/factories",
+    "!./dist/migrations",
+    "!./dist/seeds"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "default": "./dist/*.js"
+    }
+  },
+  "dependencies": {
+    "@nestjs/config": "^4.0.2",
+    "@nestjs/mapped-types": "^2.1.0",
+    "@repo/nest-common": "workspace:*",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.2",
+    "env-cmd": "^11.0.0",
+    "pg": "^8.16.3",
+    "typeorm": "^0.3.27"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "^24.7.0",
+    "ts-loader": "^9.5.4",
+    "ts-node": "^10.9.2",
+    "typeorm-extension": "^3.7.1",
+    "typescript": "^5.9.3"
+  }
+}
