@@ -1,31 +1,58 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useSessionStore } from "@/store/session";
+import { z } from "zod";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 import { Username } from "../Assets/Username";
 
+const usernameSchema = z
+  .string()
+  .min(2, { message: "min" })
+  .max(14, { message: "max" })
+  .regex(/^[a-z0-9]+$/, { message: "chars" });
+
+const taken = ["jessie", "elonmusk"];
+
 export const ClaimUsername = () => {
   const [username, setUsername] = useState("");
   const [status, setStatus] = useState<
     "idle" | "checking" | "available" | "taken" | "invalid"
   >("idle");
+  const [invalid, setInvalid] = useState<{ length?: boolean; chars?: boolean }>(
+    {}
+  );
+  const router = useRouter();
+  const { claimUsername } = useSessionStore();
 
   // Example validation function (replace with API call later)
   const checkUsername = async (name: string) => {
-    if (!/^[a-z0-9-]+$/.test(name)) {
+    const parsed = usernameSchema.safeParse(name);
+    if (!parsed.success) {
+      const issues = parsed.error.issues;
+      const lengthErr = issues.some(
+        i => i.code === "too_small" || i.code === "too_big"
+      );
+      const charsErr = issues.some(
+        i => i.code === "invalid_string" && (i as any).validation === "regex"
+      );
+      setInvalid({ length: lengthErr, chars: charsErr });
       setStatus("invalid");
       return;
     }
+    // clear invalid flags if validation passes
+    setInvalid({});
     setStatus("checking");
     // fake delay
     await new Promise<void>(resolve => {
       setTimeout(resolve, 500);
     });
     // demo availability check
-    if (name.toLowerCase() === "si") {
+    if (taken.includes(name.toLowerCase())) {
       setStatus("taken");
     } else {
       setStatus("available");
@@ -34,66 +61,73 @@ export const ClaimUsername = () => {
 
   const handleSubmit = () => {
     if (status === "available") {
-      // call API to claim username
-      console.log("Claiming username:", username);
+      claimUsername(username);
+      router.push("/check-mail");
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen px-4 py-12">
+    <div className="flex flex-col items-center justify-center h-full w-full px-10 py-6 overflow-hidden">
       <Username />
-      <div className="w-full max-w-md space-y-3 text-center mx-auto">
-        <h2 className="text-2xl font-bold roobert mt-4">
-          Claim your Sandworm domain
+      <div className="w-full max-w-xl space-y-3 text-left mx-auto">
+        <h2 className="text-xl font-semibold roobert mt-4">
+          Claim your Username
         </h2>
-        <p className="text-sm font-medium text-[#455768] dark:text-white roobert">
-          Your username is your unique profile url where all your dashboards,
-          queries and public works will live, it represents your identity across
-          Sandworm.
+        <p className="text-sm font-medium text-[#70767B] dark:text-white roobert max-w-xl">
+          Your username is a subdomain where all your dashboards, queries and
+          public works will live, it represents your identity across Sandworm.
         </p>
 
-        <div className="space-y-2 ">
-          <div className="flex">
+        <div className="space-y-4">
+          <div className="flex gap-2 items-stretch">
             <Input
               value={username}
-              onChange={e => setUsername(e.target.value)}
+              onChange={e => setUsername(e.target.value.toLowerCase())}
               onBlur={() => checkUsername(username)}
-              placeholder="Enter username"
+              placeholder="Type a username"
               className="bg-[#F8F9FA] dark:bg-[#1A1A1A] text[#343A40] dark:text-white border-[#DEE2E6] py-6 rounded-xl roobert font-medium text-base"
             />
             <Button
               disabled={status !== "available"}
               onClick={handleSubmit}
-              className="bg-black rounded-xl ml-2 py-6 roobert"
+              className="rounded-xl px-5 py-6 roobert disabled:bg-[#CED4DA] disabled:text-[#495057] bg-black"
             >
-              Claim handle
+              Create Account
             </Button>
           </div>
 
-          <span className="text-lg text-[#D0DCE4]  green-gradient py-4 inline-block px-5 rounded-xl font-semibold mt-3 box-gradient">
-            {username
-              ? `${username}.sandwormlabs.xyz`
-              : "username.sandwormlabs.xyz"}
-          </span>
-          {status === "checking" && (
-            <p className="text-xs text-yellow-600">Checking availability…</p>
-          )}
-          {status === "available" && (
-            <p className="text-xs text-green-600">✅ Available</p>
-          )}
-          {status === "taken" && (
-            <p className="text-xs text-red-600">❌ Already taken</p>
-          )}
-          {status === "invalid" && (
-            <p className="text-xs text-red-600">
-              ⚠ Only letters, numbers, and hyphens allowed
-            </p>
-          )}
+          <ul className="text-xs roobert space-y-1 list-disc pl-4">
+            {status === "taken" && (
+              <li className="text-destructive">Username is unavailable</li>
+            )}
+            <li
+              className={
+                invalid.length ? "text-destructive" : "text-muted-foreground"
+              }
+            >
+              Usernames should be less than 15 characters
+            </li>
+            <li
+              className={
+                invalid.chars ? "text-destructive" : "text-muted-foreground"
+              }
+            >
+              Cannot contain punctuation/special marks
+            </li>
+          </ul>
+
+          <div className="inline-block rounded-2xl p-[1.5px] bg-rainbow-gradient">
+            <span className="block rounded-[14px] bg-white dark:bg-black px-8 py-6 text-2xl font-semibold text-[#6C757D]">
+              Sandworm/
+              <span className="text-[#1A1A1A]">{username || "username"}</span>
+            </span>
+          </div>
         </div>
       </div>
-      <p className="roobert text-center text-sm max-w-[25rem]">
-        By creating an account you agree to the Terms and confirm that you have
-        read the Privacy Policy.
+      <p className="roobert text-center text-xs text-muted-foreground mt-6">
+        By creating an account you agree to the{" "}
+        <span className="underline">Terms</span> and confirm that you have read
+        the <span className="underline">Privacy Policy</span>.
       </p>
     </div>
   );

@@ -1,12 +1,9 @@
-import React from "react";
-
-import { ClaimUsername } from "@/components/AuthUI/ClaimUsername";
+import { CheckMail } from "@/components/AuthUI/CheckMail";
 import { Stepper } from "@/components/AuthUI/Stepper";
 
-export default function ClaimPage() {
+export default function CheckMailPage() {
   return (
     <div className="h-full min-h-0 flex flex-col overflow-hidden">
-      {/* stepper is manual for now not dynamic till we handle auth logic */}
       <Stepper
         currentStep={1}
         steps={[
@@ -15,7 +12,7 @@ export default function ClaimPage() {
         ]}
       />
       <div className="flex-1 min-h-0 flex items-center">
-        <ClaimUsername />
+        <CheckMail />
       </div>
     </div>
   );
