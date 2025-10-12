@@ -28,7 +28,6 @@ const config: Config = {
           secondary: "#0C0F19",
           gray: "#888888",
         },
-        // Use CSS variable so light/dark themes (shadcn) can control background
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         customgray: "#18181B",
