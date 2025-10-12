@@ -11,7 +11,7 @@ export default function ClaimPage() {
         currentStep={1}
         steps={[
           { name: "Sign Up", href: "/signup" },
-          { name: "Setup Username", href: "/claim" },
+          { name: "Setup Subdomain", href: "/claim" },
         ]}
       />
       <div className="flex-1 min-h-0 flex items-center">

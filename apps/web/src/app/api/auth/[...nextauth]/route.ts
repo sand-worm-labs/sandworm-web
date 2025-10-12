@@ -1,4 +1,4 @@
 import { handlers } from "@/services/auth";
 
-// NextAuth route handlers for app router
+// 🔧 Notes: We may decide to use another auth service in the future
 export const { GET, POST } = handlers;

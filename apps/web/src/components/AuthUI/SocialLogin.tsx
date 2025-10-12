@@ -17,7 +17,6 @@ export const SocialLogin = ({ variant = "signup" }: SocialLoginProps) => {
 
   const handleGoogleSignIn = async () => {
     startTransition(async () => {
-      // simulate auth intent and navigation
       setIntent(variant);
       if (variant === "signup") {
         signUp();
