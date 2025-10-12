@@ -23,13 +23,11 @@ export const Stepper: React.FC<StepperProps> = ({ steps, currentStep }) => {
           return (
             <Link key={step.name} href={step.href} className="group">
               <div className="flex items-center gap-2 text-sm">
-                <span
-                  className={`opacity-70 ${active ? "text-[#6C757D]" : "text-[#6C757D]"}`}
-                >
+                <span className={`opacity-70 text-muted-foreground`}>
                   {index + 1}.
                 </span>
                 <span
-                  className={`${active ? "text-[#1A1A1A]" : "text-[#6C757D]"}`}
+                  className={`${active ? "text-foreground" : "text-muted-foreground"}`}
                 >
                   {step.name}
                 </span>

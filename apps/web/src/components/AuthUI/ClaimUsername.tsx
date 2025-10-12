@@ -73,7 +73,7 @@ export const ClaimUsername = () => {
         <h2 className="text-xl font-semibold roobert mt-4">
           Claim your Username
         </h2>
-        <p className="text-sm font-medium text-[#70767B] dark:text-white roobert max-w-xl">
+        <p className="text-sm font-medium text-muted-foreground roobert max-w-xl">
           Your username is a subdomain where all your dashboards, queries and
           public works will live, it represents your identity across Sandworm.
         </p>
@@ -117,9 +117,11 @@ export const ClaimUsername = () => {
           </ul>
 
           <div className="inline-block rounded-2xl p-[1.5px] bg-rainbow-gradient">
-            <span className="block rounded-[14px] bg-white dark:bg-black px-8 py-6 text-2xl font-semibold text-[#6C757D]">
+            <span className="block rounded-[14px] bg-[linear-gradient(180deg,#F1F8F8,#DCF4F4)] dark:bg-black px-8 py-6 text-2xl font-semibold text-muted-foreground">
               Sandworm/
-              <span className="text-[#1A1A1A]">{username || "username"}</span>
+              <span className="text-muted-foreground">
+                {username || "username"}
+              </span>
             </span>
           </div>
         </div>
