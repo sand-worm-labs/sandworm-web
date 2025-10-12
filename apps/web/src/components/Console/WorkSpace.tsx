@@ -16,8 +16,11 @@ import { SettingsPanel } from "@/components/Console/SettingsPanel";
 import { WormAiPanel } from "@/components/Console/WormAIPanel";
 import type { Query } from "@/types";
 import { Button } from "../ui/button";
-import { Icons } from "../icons";
+import { DatabaseIcon } from "lucide-react";
 
+// =====================================
+// 🎨 Interface / Props Definition
+// =====================================
 type ViewType =
   | "dataExplorer"
   | "queryExplorer"
@@ -25,37 +28,41 @@ type ViewType =
   | "wormbot"
   | "settingsPanel";
 
-// interface PanelComponents {
-//   dataExplorer: React.ReactNode;
-//   queryExplorer: React.ReactNode;
-//   ChangeLog: React.ReactNode;
-//   settingsPanel: React.ReactNode;
-//   wormbot: React.ReactNode;
-// }
+interface PanelComponents {
+  dataExplorer: React.ReactNode;
+  queryExplorer: React.ReactNode;
+  ChangeLog: React.ReactNode;
+  settingsPanel: React.ReactNode;
+  wormbot: React.ReactNode;
+}
 
 interface WorkSpaceProps {
   initialQuery?: Query;
   currentUserId: string;
 }
 
+// ⚛️ =====================================
+// Workspace component
+// =====================================
 export const WorkSpace = ({ initialQuery, currentUserId }: WorkSpaceProps) => {
+  // ═══ 🌿 State Setup and Constants ═══
   const [currentView, setCurrentView] = useState<ViewType>("dataExplorer");
   const [isMobile, setIsMobile] = useState<boolean>(false);
   const [showExplorer, setShowExplorer] = useState(false);
 
-
-  // const panelComponents: PanelComponents = {
-  //   dataExplorer: <DataExplorer />,
-  //   queryExplorer: <QueryExplorer />,
-  //   ChangeLog: <QueryHistory queryId={initialQuery?.id} />,
-  //   settingsPanel: <SettingsPanel />,
-  //   wormbot: <WormAiPanel />,
-  // };
+  const panelComponents: PanelComponents = {
+    dataExplorer: <DataExplorer />,
+    queryExplorer: <QueryExplorer />,
+    ChangeLog: <QueryHistory queryId={initialQuery?.id} />,
+    settingsPanel: <SettingsPanel />,
+    wormbot: <WormAiPanel />,
+  };
 
   const handleResize = useCallback(() => {
     setIsMobile(window.innerWidth < 768);
   }, []);
 
+  // ═══ 🔁 Effects / Subscriptions ═══
   useEffect(() => {
     handleResize();
     window.addEventListener("resize", handleResize);
@@ -81,13 +88,13 @@ export const WorkSpace = ({ initialQuery, currentUserId }: WorkSpaceProps) => {
             </ResizablePanel>
           )}
 
-          {/* <ResizablePanel
+          <ResizablePanel
             className="overflow-scroll hidden md:block"
             defaultSize={isMobile ? 50 : 25}
             minSize={isMobile ? 40 : 20}
           >
             {panelComponents[currentView]}
-          </ResizablePanel> */}
+          </ResizablePanel>
 
           {!showExplorer && (
             <Button
@@ -96,7 +103,7 @@ export const WorkSpace = ({ initialQuery, currentUserId }: WorkSpaceProps) => {
               className="shadow-none border-none fixed bottom-20 right-3 z-50 pointer-events-auto flex items-start flex-col gap-2 px-3 py-2 text-sm cursor-pointer"
             >
               <span>Data Explorers</span>
-              <Icons.Database className="h-6 w-6 shrink-0" />
+              <DatabaseIcon className="h-6 w-6 shrink-0" />
             </Button>
           )}
           {showExplorer && (

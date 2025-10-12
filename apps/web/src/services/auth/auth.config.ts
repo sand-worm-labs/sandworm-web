@@ -3,6 +3,8 @@ import GoogleProvider from "next-auth/providers/google";
 import type { NextAuthConfig } from "next-auth";
 import { cookies } from "next/headers";
 
+// 💭 TODO: Rewrite this file after backend is ready
+// 🔧 Notes: this is fine for demo but not production ready. need real error handling, testing and security pass. Audit needed
 const authConfig = {
   secret: process.env.NEXTAUTH_SECRET,
   providers: [
@@ -16,29 +18,26 @@ const authConfig = {
     }),
   ],
   callbacks: {
-    // Respect provided callbackUrl for internal redirects (e.g., /claim for signup), else default to /workspace
     async redirect({ url, baseUrl }) {
       try {
-        // Allow callbacks to internal paths only
         const isInternal = url.startsWith(baseUrl) || url.startsWith("/");
         if (isInternal) {
-          // Preserve relative URLs
           if (url.startsWith("/")) return `${baseUrl}${url}`;
           return url;
         }
       } catch (e) {
-        // fall through
+        console.error("Error in redirect callback:", e);
       }
       return `${baseUrl}/workspace`;
     },
 
     async jwt({ token, user, trigger, session }) {
-      // Enrich token with id and onboarding flags when available
+      const newToken = { ...token };
+
       if (user) {
-        token.id = user.id as string;
+        newToken.id = user.id as string;
       }
-      // On subsequent calls or session update, fetch onboarding flags from DB
-      if (token?.id && (user || trigger === "update")) {
+      if (newToken?.id && (user || trigger === "update")) {
         try {
           const { db, users } = await import("@sandworm/database");
           const { eq } = await import("drizzle-orm");
@@ -48,24 +47,23 @@ const authConfig = {
               username: users.username,
             })
             .from(users)
-            .where(eq(users.id, token.id as string))
+            .where(eq(users.id, newToken.id as string))
             .limit(1);
           if (rows[0]) {
-            token["isOnboarded"] = rows[0].isOnboarded ?? false;
-            token["hasUsername"] = !!rows[0].username;
+            newToken.isOnboarded = rows[0].isOnboarded ?? false;
+            newToken.hasUsername = !!rows[0].username;
           }
         } catch (e) {
-          // ignore
+          console.error("Error fetching user data:", e);
         }
       }
       if (session) {
-        // when session is updated, merge flags from session
-        token["isOnboarded"] =
-          (session as any).user?.isOnboarded ?? token["isOnboarded"];
-        token["hasUsername"] =
-          (session as any).user?.hasUsername ?? token["hasUsername"];
+        newToken.isOnboarded =
+          (session as any).user?.isOnboarded ?? newToken.isOnboarded;
+        newToken.hasUsername =
+          (session as any).user?.hasUsername ?? newToken.hasUsername;
       }
-      return token;
+      return newToken;
     },
 
     async session({ session, token }) {
@@ -83,15 +81,16 @@ const authConfig = {
     },
 
     async signIn({ user }) {
-      // Enforce flow: if user clicked "Sign in" and account doesn't exist yet, show NoAccount error instead of creating
       try {
         if (!user?.email) return false;
 
         const cookieStore = await cookies();
-        const intent = cookieStore.get("auth_intent")?.value; // 'signin' | 'signup'
+        const intent = cookieStore.get("auth_intent")?.value;
         try {
           if (cookieStore.has("auth_intent")) cookieStore.delete("auth_intent");
-        } catch {}
+        } catch (e) {
+          console.error("Error deleting auth_intent cookie:", e);
+        }
 
         const { db, users } = await import("@sandworm/database");
         const { eq } = await import("drizzle-orm");
@@ -104,12 +103,10 @@ const authConfig = {
             .limit(1);
 
           if (!existing.length) {
-            // Block sign in and route back with message
             return "/signin?error=NoAccount";
           }
         }
 
-        // If user is not onboarded yet, always route to claim page after auth
         const info = await db
           .select({ isOnboarded: users.isOnboarded, username: users.username })
           .from(users)
@@ -119,7 +116,6 @@ const authConfig = {
           return "/claim";
         }
 
-        // Allow normal flow otherwise (including creating a new user during signup)
         return true;
       } catch (err) {
         console.error("Sign-in callback error", err);
