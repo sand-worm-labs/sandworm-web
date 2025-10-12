@@ -8,7 +8,7 @@ export default function SignUpPage() {
         currentStep={0}
         steps={[
           { name: "Sign Up", href: "/signup" },
-          { name: "Setup Username", href: "/claim" },
+          { name: "Setup Sundomain", href: "/claim" },
         ]}
       />
 

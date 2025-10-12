@@ -5,7 +5,11 @@ import Script from "next/script";
 import type { ChildrenProps } from "@/types";
 import { RootProvider } from "@/providers/RootProvider";
 
-export const metadata = {
+import type { Metadata } from "next";
+
+// ⬢ Constants
+// =====================================
+export const metadata: Metadata = {
   description:
     "Explore, query, and visualize blockchain data on Sui, EVM, and other chains with Sandworm, your open-source, SQL-powered data IDE for Web3",
   keywords: "data, web3, blockchain, analytics, sui, base, etherium, indexer",
@@ -24,6 +28,8 @@ const azeretMono = AzeretMono({
 
 const GTAG_ID = "G-GQB5QS1LHQ";
 
+// ⬢ Root Layout
+// =====================================
 export default async function RootLayout({ children }: ChildrenProps) {
   return (
     <html lang="en" suppressHydrationWarning>
@@ -42,10 +48,6 @@ export default async function RootLayout({ children }: ChildrenProps) {
         className={`${azeretMono.className} h-full flex flex-col justify-between`}
       >
         <RootProvider>
-          {/*      <BannerAlert
-          id="wql-downtime"
-          message="Sandworm’s WQL is momentarily offline for upgrades. We’re working to restore access as soon as possible. Thanks for bearing with us."
-        /> */}
           <section className="flex-1">{children}</section>
         </RootProvider>
       </body>
