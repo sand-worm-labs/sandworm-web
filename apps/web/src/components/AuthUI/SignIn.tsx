@@ -2,17 +2,17 @@
 
 import Link from "next/link";
 
-import { SandwormLogo } from "../Assets/SandwormLogo";
 import { useSearchParams } from "next/navigation";
 
 import { SocialLogin } from "./SocialLogin";
+import { Icons } from "../icons";
 
 export const SignIn = () => {
   const params = useSearchParams();
   const error = params?.get("error");
   return (
     <div className="w-full max-w-md rounded-lg border border-[#ffffff30] p-6 content flex flex-col justify-center items-center h-full mx-auto">
-      <SandwormLogo />
+      <Icons.DarkLogo />
 
       <h2 className="text-3xl font-medium text-center text-black mb-6 mt-4 roobert">
         Welcome back to <span className="uppercase font-bold">SANDWORM</span>!
@@ -28,12 +28,12 @@ export const SignIn = () => {
 
       <div className="flex items-center gap-3 w-full my-4">
         <div className="h-px bg-[#E9ECEF] flex-1" />
-        <span className="text-xs text-[#6C757D] roobert">or</span>
+        <span className="text-xs text-muted-foreground roobert">or</span>
         <div className="h-px bg-[#E9ECEF] flex-1" />
       </div>
 
       <div className="flex justify-between w-full text-sm roobert">
-        <p className="text-[#343A40]">
+        <p className="text-muted-foreground">
           Need an account?{" "}
           <Link href="/signup" className="text-[#8053FE] hover:underline">
             Sign Up
