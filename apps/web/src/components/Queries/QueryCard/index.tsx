@@ -16,7 +16,7 @@ import type { Query } from "@/types";
 import { useQueryLike } from "@/hooks/useLikeQuery";
 import { useModalStore } from "@/store/auth";
 import { useForkQuery } from "@/hooks";
-import { useTheme } from "@/components/Theme/ThemeProvider";
+import { useTheme } from "next-themes";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 interface QueryCardProps {

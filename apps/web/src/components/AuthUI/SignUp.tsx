@@ -2,9 +2,8 @@
 
 import Link from "next/link";
 
-import { SandwormLogo } from "../Assets/SandwormLogo";
-
 import { SocialLogin } from "./SocialLogin";
+import { SandwormLogo } from "../Assets";
 
 export const SignUp = () => {
   return (
@@ -16,10 +15,12 @@ export const SignUp = () => {
         <span className="uppercase font-bold">Sandworm!</span>
       </h2>
 
-      <p className="text-[#455768] text-sm mb-6 roobert">Sign up in 2 steps</p>
+      <p className="text-muted-foreground text-sm mb-6 roobert">
+        Sign up in 2 steps
+      </p>
 
-      <SocialLogin />
-      <p className=" text-center dark:text-gray-400 text-[#343A40] roobert">
+      <SocialLogin variant="signup" />
+      <p className=" text-center text-muted-foreground roobert">
         Have an account?
         <Link href="/signin" className="text-[#8053FE] hover:underline">
           Sign In

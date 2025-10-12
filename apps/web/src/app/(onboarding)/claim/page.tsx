@@ -5,7 +5,7 @@ import { Stepper } from "@/components/AuthUI/Stepper";
 
 export default function ClaimPage() {
   return (
-    <div>
+    <div className="h-full min-h-0 flex flex-col overflow-hidden">
       {/* stepper is manual for now not dynamic till we handle auth logic */}
       <Stepper
         currentStep={1}
@@ -14,7 +14,9 @@ export default function ClaimPage() {
           { name: "Setup Subdomain", href: "/claim" },
         ]}
       />
-      <ClaimUsername />
+      <div className="flex-1 min-h-0 flex items-center">
+        <ClaimUsername />
+      </div>
     </div>
   );
 }

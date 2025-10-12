@@ -11,7 +11,7 @@ import { sql } from "drizzle-orm";
 import { timestamps, timestamptz } from "../utils/helpers";
 
 export const users = pgTable("users", {
-  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  id: uuid("id").primaryKey().notNull(),
   username: text("username").unique(),
   email: text("email"),
   firstName: text("first_name"),
@@ -20,7 +20,8 @@ export const users = pgTable("users", {
   avater: text("avater"),
   isOnboarded: boolean("is_onboarded").default(false),
   emailVerifiedAt: timestamptz("email_verified_at"),
-  emailVerified: boolean("email_verified").default(false),
+  emailVerified: timestamp("email_verified"),
+
   ...timestamps,
 });
 
