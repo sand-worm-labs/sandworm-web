@@ -8,7 +8,6 @@ type SessionState = {
   isOnboarded: boolean;
   username: string | null;
   intent: "signin" | "signup" | null;
-  // actions
   setIntent: (intent: "signin" | "signup" | null) => void;
   signIn: () => void;
   signUp: () => void;

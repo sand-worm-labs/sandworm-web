@@ -3,12 +3,12 @@
 import Link from "next/link";
 
 import { SocialLogin } from "./SocialLogin";
-import { Icons } from "../icons";
+import { SandwormLogo } from "../Assets";
 
 export const SignUp = () => {
   return (
     <div className="w-full max-w-md rounded-lg border border-[#ffffff30] p-6 content flex flex-col justify-center items-center h-full mx-auto text-black dark:text-white">
-      <Icons.DarkLogo />
+      <SandwormLogo />
 
       <h2 className="text-3xl font-medium text-center text-black mb-3 mt-4">
         <span className="roobert">Welcome to </span>
