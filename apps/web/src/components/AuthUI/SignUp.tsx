@@ -18,7 +18,7 @@ export const SignUp = () => {
 
       <p className="text-[#455768] text-sm mb-6 roobert">Sign up in 2 steps</p>
 
-      <SocialLogin />
+      <SocialLogin variant="signup" />
       <p className=" text-center dark:text-gray-400 text-[#343A40] roobert">
         Have an account?
         <Link href="/signin" className="text-[#8053FE] hover:underline">
