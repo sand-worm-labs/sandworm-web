@@ -24,15 +24,16 @@
     "lint": "pnpm eslint && pnpm prettier"
   },
   "dependencies": {
+    "@faker-js/faker": "^10.0.0",
     "@neondatabase/serverless": "^1.0.1",
+    "@t3-oss/env-nextjs": "^0.13.8",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.44.5",
     "next-auth": "^4.2.11",
     "pg": "^8.16.3",
-    "zod": "^4.1.11",
-    "@faker-js/faker": "^10.0.0",
-    "@t3-oss/env-nextjs": "^0.13.8",
-    "ws": "^8.18.3"
+    "postgres": "^3.4.7",
+    "ws": "^8.18.3",
+    "zod": "^4.1.11"
   },
   "devDependencies": {
     "@types/pg": "^8.15.5",
