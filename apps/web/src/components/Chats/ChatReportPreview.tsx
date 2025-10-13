@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Star, Expand, MoreVertical } from "lucide-react";
+
 import VisualizationBlockV2 from "../Visualization";
 
 export const ChatReportPreview = () => {
