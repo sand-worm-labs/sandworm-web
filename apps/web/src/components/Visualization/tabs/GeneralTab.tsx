@@ -1,18 +1,18 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import type {
   ChartType,
   DataFrame,
   DataFrameColumn,
   HistogramBin,
-  YAxisV2,
-} from "@briefer/types";
+  YAxis,
+} from "@sandworm/types";
 import {
   NumpyDateTypes,
   NumpyNumberTypes,
   NumpyTimeDeltaTypes,
   TimeUnit,
   HistogramFormat,
-} from "@briefer/types";
+} from "@sandworm/types";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
 import { sortWith } from "ramda";
 import clsx from "clsx";
@@ -39,9 +39,9 @@ interface GeneralTabProps {
   onChangeHistogramFormat: (format: HistogramFormat) => void;
   histogramBin: HistogramBin;
   onChangeHistogramBin: (bin: HistogramBin) => void;
-  yAxes: YAxisV2[];
-  onChangeYAxes: (yAxes: YAxisV2[]) => void;
-  onChangeYAxis: (yAxis: YAxisV2, index: number) => void;
+  yAxes: YAxis[];
+  onChangeYAxes: (yAxes: YAxis[]) => void;
+  onChangeYAxis: (yAxis: YAxis, index: number) => void;
   onRemoveYAxis: (index: number) => void;
   onAddYAxis: () => void;
   isEditable: boolean;

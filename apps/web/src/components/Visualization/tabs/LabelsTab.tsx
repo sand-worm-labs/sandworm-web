@@ -1,6 +1,6 @@
 import { useCallback } from "react";
-import type { DataFrame } from "@briefer/types";
-import type { VisualizationV2BlockInput } from "@briefer/editor";
+import type { DataFrame } from "@sandworm/types";
+import type { VisualizationV2BlockInput } from "@sandworm/editor";
 
 import AxisModifierSelector from "@/components/AxisModifierSelector";
 

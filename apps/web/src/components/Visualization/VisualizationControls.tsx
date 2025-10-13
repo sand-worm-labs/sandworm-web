@@ -7,18 +7,18 @@ import type {
   TimeUnit,
   HistogramFormat,
   HistogramBin,
-  YAxisV2,
-  SeriesV2,
+  YAxis,
+  Series,
   NumberFormat,
-} from "@briefer/types";
+} from "@sandworm/types";
 import { useCallback, useEffect, useState } from "react";
 import type {
   VisualizationV2BlockInput,
   VisualizationV2BlockOutputResult,
-} from "@briefer/editor";
-import { getDefaultDateFormat, getDefaultNumberFormat } from "@briefer/editor";
+} from "@sandworm/editor";
+import { getDefaultDateFormat, getDefaultNumberFormat } from "@sandworm/editor";
 
-import ScrollBar from "@/components/ScrollBar";
+import ScrollBar from "./blocks/ScrollBar";
 
 import type { Tab } from "./VisualizationSettingTabs";
 import VisualizationSettingsTabsV2 from "./VisualizationSettingTabs";
@@ -51,8 +51,8 @@ interface Props {
   onChangeXAxisNumberFormat: (
     format: VisualizationV2BlockInput["xAxisNumberFormat"]
   ) => void;
-  yAxes: YAxisV2[];
-  onChangeYAxes: (yAxes: YAxisV2[]) => void;
+  yAxes: YAxis[];
+  onChangeYAxes: (yAxes: YAxis[]) => void;
   histogramFormat: HistogramFormat;
   onChangeHistogramFormat: (format: HistogramFormat) => void;
   histogramBin: HistogramBin;
@@ -62,8 +62,8 @@ interface Props {
     dataLabels: VisualizationV2BlockInput["dataLabels"]
   ) => void;
   isEditable: boolean;
-  onChangeSeries: (id: SeriesV2["id"], series: SeriesV2) => void;
-  onChangeAllSeries: (yIndex: number, series: SeriesV2[]) => void;
+  onChangeSeries: (id: Series["id"], series: Series) => void;
+  onChangeAllSeries: (yIndex: number, series: Series[]) => void;
   result: VisualizationV2BlockOutputResult | null;
 }
 
@@ -127,7 +127,7 @@ function VisualizationControlsV2(props: Props) {
 
   // GeneralTab callbacks
   const onChangeYAxis = useCallback(
-    (yAxis: YAxisV2, index: number) => {
+    (yAxis: YAxis, index: number) => {
       props.onChangeYAxes(props.yAxes.map((y, i) => (i === index ? yAxis : y)));
     },
     [props.yAxes, props.onChangeYAxes]

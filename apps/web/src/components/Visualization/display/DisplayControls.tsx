@@ -1,5 +1,5 @@
-import type { Serie, VisualizationV2BlockOutputResult } from "@briefer/editor";
-import type { DataFrame, SeriesV2, YAxisV2 } from "@briefer/types";
+import type { Serie, VisualizationV2BlockOutputResult } from "@sandworm/editor";
+import type { DataFrame, Series, YAxis } from "@sandworm/types";
 import { Transition } from "@headlessui/react";
 import clsx from "clsx";
 import { GripVerticalIcon } from "lucide-react";
@@ -14,10 +14,12 @@ import type {
 } from "react-dnd";
 import ReactDOM from "react-dom";
 
-import useResizeMemo from "@/hooks/useResizeMemo";
 import { useOnClickOutside2 } from "@/hooks/useOnClickOutside";
-import DragList from "@/components/DragList";
 
+import DragList from "../DragList";
+
+//  Constants
+// =====================================
 const presetColors = [
   "#5470c6",
   "#91cc75",
@@ -37,13 +39,15 @@ const presetColors = [
   "#000000",
 ];
 
+//  Interface / Props Definition
+// =====================================
 interface Props {
-  yAxes: YAxisV2[];
+  yAxes: YAxis[];
   dataframe: DataFrame | null;
   isEditable: boolean;
   result: VisualizationV2BlockOutputResult | null;
-  onChangeSeries: (id: SeriesV2["id"], series: SeriesV2) => void;
-  onChangeAllSeries: (yIndex: number, series: SeriesV2[]) => void;
+  onChangeSeries: (id: Series["id"], series: Series) => void;
+  onChangeAllSeries: (yIndex: number, series: Series[]) => void;
 }
 
 function DisplayControls(props: Props) {
@@ -118,12 +122,12 @@ interface DisplayYAxisSeriesProps {
   drop: ConnectDropTarget;
   dragPreview: ConnectDragPreview;
   isDragging: boolean;
-  series: SeriesV2;
+  series: Series;
   dataframe: DataFrame | null;
   isEditable: boolean;
   yIndex: number;
   result: VisualizationV2BlockOutputResult | null;
-  onChangeSeries: (id: SeriesV2["id"], series: SeriesV2) => void;
+  onChangeSeries: (id: Series["id"], series: Series) => void;
 }
 const DisplayYAxisSeries = forwardRef<HTMLDivElement, DisplayYAxisSeriesProps>(
   function DisplayYAxisSeries(props, ref) {
@@ -150,7 +154,7 @@ const DisplayYAxisSeries = forwardRef<HTMLDivElement, DisplayYAxisSeriesProps>(
     );
 
     const onChangeGroups = useCallback(
-      (groups: SeriesV2["groups"]) => {
+      (groups: Series["groups"]) => {
         props.onChangeSeries(props.series.id, { ...props.series, groups });
       },
       [props.series.id, props.onChangeSeries]
@@ -307,6 +311,7 @@ interface GroupBySeriesDisplayProps {
   dataframe: DataFrame | null;
   isEditable: boolean;
 }
+
 const GroupBySeriesDisplay = forwardRef<
   HTMLDivElement,
   GroupBySeriesDisplayProps
@@ -376,6 +381,7 @@ interface ColorPickerProps {
   className?: string;
   onChangeColor: (color: string) => void;
 }
+
 function ColorPicker(props: ColorPickerProps) {
   const onChangeColor = useCallback(
     (color: { hex: string }) => {

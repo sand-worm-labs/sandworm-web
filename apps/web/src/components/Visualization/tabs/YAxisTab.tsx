@@ -1,16 +1,16 @@
 import type { ChangeEvent } from "react";
 import { useCallback } from "react";
-import type { DataFrame, YAxisV2 } from "@briefer/types";
+import type { DataFrame, YAxis } from "@sandworm/types";
 import {
   NumpyDateTypes,
   NumpyNumberTypes,
   NumpyTimeDeltaTypes,
-} from "@briefer/types";
+} from "@sandworm/types";
 
 import { NumberFormatControl, DateFormatControl } from "../FormatControls";
 
 interface YAxisTabProps {
-  yAxes: YAxisV2[];
+  yAxes: YAxis[];
   dataframe: DataFrame | null;
   isEditable: boolean;
   seriesDecimalPlaces: Record<string, string>;
@@ -40,7 +40,7 @@ interface YAxisTabProps {
 
 // Extract a component for each Y-axis section
 interface YAxisSectionProps {
-  yAxis: YAxisV2;
+  yAxis: YAxis;
   axisIndex: number;
   dataframe: DataFrame | null;
   isEditable: boolean;
@@ -89,12 +89,12 @@ const YAxisSection = ({
   onChangeSeriesPrefix,
   onChangeSeriesSuffix,
 }: YAxisSectionProps) => {
-  const isNumberSeries = (series: YAxisV2["series"][number]) =>
+  const isNumberSeries = (series: YAxis["series"][number]) =>
     series.column &&
     NumpyNumberTypes.or(NumpyTimeDeltaTypes).safeParse(series.column.type)
       .success;
 
-  const isDateSeries = (series: YAxisV2["series"][number]) =>
+  const isDateSeries = (series: YAxis["series"][number]) =>
     series.column && NumpyDateTypes.safeParse(series.column.type).success;
 
   // Adapter function for series handlers that need to match the shared component interface
