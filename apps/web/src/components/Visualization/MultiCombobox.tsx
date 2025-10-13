@@ -8,7 +8,7 @@ import { Combobox as HUCombobox, Transition } from "@headlessui/react";
 import clsx from "clsx";
 import ReactDOM from "react-dom";
 
-import useDropdownPosition from "@/hooks/dropdownPosition";
+import useDropdownPosition from "./hooks/useDropdownPosition";
 
 interface Props<T> {
   label?: string | JSX.Element;

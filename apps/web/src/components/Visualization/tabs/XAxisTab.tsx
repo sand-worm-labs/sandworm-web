@@ -4,13 +4,13 @@ import type {
   DataFrameColumn,
   DataFrame,
   DateFormatStyle,
-} from "@briefer/types";
+} from "@sandworm/types";
 import {
   NumpyDateTypes,
   NumpyNumberTypes,
   NumpyTimeDeltaTypes,
-} from "@briefer/types";
-import type { VisualizationV2BlockInput } from "@briefer/editor";
+} from "@sandworm/types";
+import type { VisualizationV2BlockInput } from "@sandworm/editor";
 
 import { parseDecimalPlaces, parseMultiplier } from "../VisualizationControls";
 import { NumberFormatControl, DateFormatControl } from "../FormatControls";
