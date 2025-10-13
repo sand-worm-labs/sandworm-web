@@ -390,6 +390,51 @@ export const Json: z.ZodType<Json> = z.lazy(() =>
 export const JsonObject = z.record(z.string(), Json);
 
 // ═══════════════════════════════════════════════
+// Outputs
+// ═══════════════════════════════════════════════
+
+export const PythonErrorOutput = z.object({
+  type: z.literal("error"),
+  ename: z.string(),
+  evalue: z.string(),
+  traceback: z.array(z.string()),
+});
+
+export type PythonErrorOutput = z.infer<typeof PythonErrorOutput>;
+
+export const PythonHTMLOutput = z.object({
+  type: z.literal("html"),
+  html: z.string(),
+});
+export type PythonHTMLOutput = z.infer<typeof PythonHTMLOutput>;
+
+export const PythonPlotlyOutput = z.object({
+  type: z.literal("plotly"),
+  data: z.any(),
+  layout: z.any(),
+  frames: z.any().optional(),
+});
+export type PythonPlotlyOutput = z.infer<typeof PythonPlotlyOutput>;
+
+export const Output = z.union([
+  PythonErrorOutput,
+  z.object({
+    type: z.literal("stdio"),
+    name: z.enum(["stdout", "stderr"]),
+    text: z.string(),
+  }),
+  PythonHTMLOutput,
+  PythonPlotlyOutput,
+  z.object({
+    type: z.literal("image"),
+    format: z.enum(["png"]),
+    data: z.string(),
+  }),
+]);
+
+export type Output = z.infer<typeof Output>;
+
+// ═══════════════════════════════════════════════
 // Visualization
 // ═══════════════════════════════════════════════
 
@@ -528,6 +573,7 @@ export const VisualizationDateFilter = z.object({
   column: DataFrameDateColumn,
   operator: VisualizationDateFilterOperator,
   value: z.union([dateSchema, z.string()]),
+  renderError: PythonErrorOutput.optional(),
   renderedValue: z.string().optional(),
 });
 export type VisualizationDateFilter = z.infer<typeof VisualizationDateFilter>;
@@ -594,51 +640,6 @@ export type PivotTableSort =
       row: string;
       order: "asc" | "desc";
     };
-
-// ═══════════════════════════════════════════════
-// Outputs
-// ═══════════════════════════════════════════════
-
-export const PythonErrorOutput = z.object({
-  type: z.literal("error"),
-  ename: z.string(),
-  evalue: z.string(),
-  traceback: z.array(z.string()),
-});
-
-export type PythonErrorOutput = z.infer<typeof PythonErrorOutput>;
-
-export const PythonHTMLOutput = z.object({
-  type: z.literal("html"),
-  html: z.string(),
-});
-export type PythonHTMLOutput = z.infer<typeof PythonHTMLOutput>;
-
-export const PythonPlotlyOutput = z.object({
-  type: z.literal("plotly"),
-  data: z.any(),
-  layout: z.any(),
-  frames: z.any().optional(),
-});
-export type PythonPlotlyOutput = z.infer<typeof PythonPlotlyOutput>;
-
-export const Output = z.union([
-  PythonErrorOutput,
-  z.object({
-    type: z.literal("stdio"),
-    name: z.enum(["stdout", "stderr"]),
-    text: z.string(),
-  }),
-  PythonHTMLOutput,
-  PythonPlotlyOutput,
-  z.object({
-    type: z.literal("image"),
-    format: z.enum(["png"]),
-    data: z.string(),
-  }),
-]);
-
-export type Output = z.infer<typeof Output>;
 
 // ═══════════════════════════════════════════════
 // Write Back
@@ -768,6 +769,92 @@ export function toDate(dateString: string): Date | undefined {
   return undefined;
 }
 
+export function getInvalidReason(
+  column: DataFrameColumn,
+  value: string | string[]
+): InvalidReason | null {
+  if (NumpyNumberTypes.or(NumpyTimeDeltaTypes).safeParse(column.type).success) {
+    if (value === "") {
+      return { type: "simple", reason: "empty-value" as const };
+    }
+
+    if (Number.isNaN(Number(value))) {
+      return { type: "simple", reason: "invalid-value" as const };
+    }
+    return null;
+  }
+
+  if (NumpyStringTypes.or(NumpyJsonTypes).safeParse(column.type).success) {
+    if ((Array.isArray(value) && value.length === 0) || value === "") {
+      return { type: "simple", reason: "empty-value" as const };
+    }
+
+    return null;
+  }
+
+  if (NumpyDateTypes.safeParse(column.type).success) {
+    if (value === "") {
+      return { type: "simple", reason: "empty-value" as const };
+    }
+
+    const date = toDate(value.toString());
+    if (!date) {
+      return { type: "simple", reason: "invalid-value" as const };
+    }
+
+    return null;
+  }
+
+  return null;
+}
+
+// ═══════════════════════════════════════════════
+// Invalid Visualization Filter
+// ═══════════════════════════════════════════════
+
+export function isUnfinishedVisualizationFilter(
+  filter: VisualizationFilter
+): filter is UnfinishedVisualizationFilter {
+  return "type" in filter && filter.type === "unfinished-visualization-filter";
+}
+
+export function isInvalidVisualizationFilter(
+  filter: VisualizationFilter,
+  dataframe: DataFrame
+): boolean {
+  if (isUnfinishedVisualizationFilter(filter)) {
+    return true;
+  }
+
+  const column = dataframe.columns.find(col => col.name === filter.column.name);
+  if (!column) {
+    return true;
+  }
+
+  if (
+    VisualizationStringFilterMultiValuesOperator.safeParse(filter.operator)
+      .success
+  ) {
+    return !Array.isArray(filter.value) || filter.value.length === 0;
+  }
+
+  if (VisualizationOperatorWithoutValue.safeParse(filter.operator).success) {
+    return false;
+  }
+
+  if ("renderError" in filter && filter.renderError !== undefined) {
+    return true;
+  }
+
+  return (
+    filter.value === "" ||
+    (filter.renderedValue !== undefined &&
+      getInvalidReason(column, filter.renderedValue) !== null)
+  );
+}
+
+export function exhaustiveCheck(_param: never) {}
+
 // ═══════════════════════════════════════════════
 // Queries and Sqls
 // ═══════════════════════════════════════════════
@@ -888,3 +975,17 @@ export const TableSort = z.object({
 });
 
 export type TableSort = z.infer<typeof TableSort>;
+
+// ═══════════════════════════════════════════════
+// Invalid Reason
+// ═══════════════════════════════════════════════
+
+export type InvalidReason =
+  | {
+      type: "simple";
+      reason: "invalid-column" | "empty-value" | "invalid-value";
+    }
+  | {
+      type: "render";
+      reason: PythonErrorOutput;
+    };
