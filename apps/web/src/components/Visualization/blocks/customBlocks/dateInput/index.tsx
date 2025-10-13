@@ -21,10 +21,10 @@ import {
 import { ClockIcon } from "@heroicons/react/20/solid";
 import { head } from "ramda";
 
-import Spin from "@/components/Spin";
-import { useBlockExecutions } from "@/hooks/useBlockExecution";
-import { useEnvironmentStatus } from "@/hooks/useEnvironmentStatus";
-import type { DashboardMode } from "@/components/Dashboard";
+import Spin from "../../Spin";
+import { useBlockExecutions } from "../../../hooks/useBlockExecution";
+import { useEnvironmentStatus } from "../../../hooks/useEnvironmentStatus";
+import type { DashboardMode } from "../../Dashboard";
 
 import DateSettings from "./DateSettings";
 import DateInputBlockInput from "./DateInputBlockInput";

@@ -27,23 +27,22 @@ import type {
   YAxis,
   Series,
 } from "@sandworm/types";
-import {
+import type {
   isInvalidVisualizationFilter,
   NumpyDateTypes,
   exhaustiveCheck,
 } from "@sandworm/types";
 import type { ConnectDragPreview } from "react-dnd";
-import { equals, head, omit } from "ramda";
+import type { equals, head, omit } from "ramda";
 import { ChartPie } from "lucide-react";
 
-import HeaderSelect from "@/components/HeaderSelect";
-import useEditorAwareness from "@/hooks/useEditorAwareness";
-import { downloadFile } from "@/utils/file";
-import { useBlockExecutions } from "@/hooks/useBlockExecution";
-import { useYMemo } from "@/hooks/useYMemo";
+import HeaderSelect from "./blocks/HeaderSelect";
+import useEditorAwareness from "./hooks/useEditorAwareness";
+import { useBlockExecutions } from "./hooks/useBlockExecution";
+import { useYMemo } from "./hooks/useYMemo";
 import { TooltipV2 } from "@/components/Visualization/blocks/ToolTips";
-import type { DashboardMode } from "@/components/Dashboard";
-import { dashboardModeHasControls } from "@/components/Dashboard";
+import type { DashboardMode } from "./blocks/Dashboard";
+import { dashboardModeHasControls } from "./blocks/Dashboard";
 
 import useFullScreenDocument from "./hooks/useFullScreenDocument";
 import { useEnvironmentStatus } from "./hooks/useEnvironmentStatus";
@@ -52,6 +51,39 @@ import { getAggFunction } from "./YAxisPicker";
 import VisualizationControlsV2 from "./VisualizationControls";
 import VisualizationViewV2 from "./VisualizationView";
 import FilterSelector from "./FilterSelector";
+
+export function readFile(
+  file: File,
+  encoding: BufferEncoding = "utf8"
+): Promise<string> {
+  const fileReader = new FileReader();
+  fileReader.readAsArrayBuffer(file);
+
+  return new Promise(resolve => {
+    fileReader.onload = e => {
+      if (!e.target?.result) {
+        return;
+      }
+
+      if (typeof e.target.result === "string") {
+        return resolve(e.target.result);
+      }
+
+      resolve(Buffer.from(e.target.result).toString(encoding));
+    };
+  });
+}
+
+export function downloadFile(url: string, name: string) {
+  const downloadLink = document.createElement("a");
+
+  downloadLink.download = name;
+  downloadLink.href = url;
+
+  document.body.appendChild(downloadLink);
+  downloadLink.click();
+  document.body.removeChild(downloadLink);
+}
 
 function didChangeFilters(
   oldFilters: VisualizationFilter[],
