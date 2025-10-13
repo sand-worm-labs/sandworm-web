@@ -5,7 +5,7 @@ import type {
   DataFrame,
   VisualizationFilter,
   InvalidReason,
-} from "@briefer/types";
+} from "@sandworm/types";
 import {
   VisualizationDateFilterOperator,
   VisualizationNumberFilterOperator,
@@ -26,7 +26,7 @@ import {
   NumpyTimeDeltaTypes,
   PythonErrorOutput,
   getInvalidReason,
-} from "@briefer/types";
+} from "@sandworm/types";
 import { Transition } from "@headlessui/react";
 import { InformationCircleIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
@@ -38,8 +38,7 @@ import useDropdownPosition from "@/hooks/dropdownPosition";
 import { preventPropagation } from "@/utils/events";
 import { Tooltip } from "@/components/Tooltips";
 
-import AxisSelector from "../../../AxisSelector";
-
+import AxisSelector from "./blocks/AxisSelector";
 import MultiComboboxV2 from "./MultiCombobox";
 import Combobox from "./Combobox";
 

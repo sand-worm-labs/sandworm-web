@@ -5,7 +5,7 @@ import {
   TIME_FORMAT_OPTIONS,
   NUMBER_STYLE_OPTIONS,
   NUMBER_SEPARATOR_OPTIONS,
-} from "@briefer/editor";
+} from "@sandworm/editor";
 
 import AxisModifierSelector from "@/components/AxisModifierSelector";
 
