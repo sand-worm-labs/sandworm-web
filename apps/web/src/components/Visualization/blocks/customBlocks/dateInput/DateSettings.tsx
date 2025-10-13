@@ -9,8 +9,8 @@ import { useCallback, useMemo } from "react";
 import { ClockIcon } from "@heroicons/react/24/outline";
 import tzList from "timezones-list";
 
-import Dropdown from "@/components/Dropdown";
-import { Tooltip } from "@/components/Tooltips";
+import Dropdown from "../../Dropdown";
+import { Tooltip } from "../../ToolTips";
 
 interface Props {
   dateType: "date" | "datetime";

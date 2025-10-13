@@ -7,7 +7,7 @@ import {
   NUMBER_SEPARATOR_OPTIONS,
 } from "@sandworm/editor";
 
-import AxisModifierSelector from "@/components/AxisModifierSelector";
+import AxisModifierSelector from "./blocks/AxisModifierSelector";
 
 import VisualizationToggleV2 from "./VisualizationToggle";
 

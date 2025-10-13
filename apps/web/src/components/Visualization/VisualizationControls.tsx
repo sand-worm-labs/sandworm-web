@@ -16,7 +16,10 @@ import type {
   VisualizationV2BlockInput,
   VisualizationV2BlockOutputResult,
 } from "@sandworm/editor";
-import { getDefaultDateFormat, getDefaultNumberFormat } from "@sandworm/editor";
+import type {
+  getDefaultDateFormat,
+  getDefaultNumberFormat,
+} from "@sandworm/editor";
 
 import ScrollBar from "./blocks/ScrollBar";
 
