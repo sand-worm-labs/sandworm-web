@@ -20,7 +20,7 @@ import type {
   DateFormat,
   NumberFormat,
 } from "@sandworm/types";
-import {
+import type {
   NumpyDateTypes,
   exhaustiveCheck,
   NumpyNumberTypes,

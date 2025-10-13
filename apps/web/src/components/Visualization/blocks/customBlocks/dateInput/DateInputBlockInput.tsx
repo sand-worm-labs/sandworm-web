@@ -11,7 +11,8 @@ import {
 import { CalendarIcon, ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import { ClockIcon } from "@heroicons/react/20/solid";
 
-import Spin from "@/components/Spin";
+import Spin from "../../../blocks/Spin";
+
 import useYTextInput from "../../../hooks/useYTextInput";
 import useEditorAwareness from "../../../hooks/useEditorAwareness";
 

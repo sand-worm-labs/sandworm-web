@@ -33,14 +33,18 @@ import clsx from "clsx";
 import { equals, identity } from "ramda";
 import ReactDOM from "react-dom";
 import { z } from "zod";
+import { EventHandler, SyntheticEvent } from "react";
 
-import useDropdownPosition from "@/hooks/dropdownPosition";
-import { preventPropagation } from "@/utils/events";
-import { Tooltip } from "@/components/Tooltips";
+import useDropdownPosition from "./hooks/useDropdownPosition";
+import { Tooltip } from "../Tooltip";
 
 import AxisSelector from "./blocks/AxisSelector";
 import MultiComboboxV2 from "./MultiCombobox";
 import Combobox from "./Combobox";
+
+const preventPropagation: EventHandler<SyntheticEvent<Element>> = e => {
+  e.stopPropagation();
+};
 
 function isNumberOperator(
   operator:
