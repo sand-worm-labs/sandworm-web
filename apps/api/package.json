@@ -31,7 +31,7 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.0.0",
-    "@sandworm/database": "workspace:*",
+    "@sandworm/postgresql-typeorm": "workspace:*",
     "@sandworm/nest-common": "workspace:*",
     "@sandworm/graphql": "workspace:*",
     "class-transformer": "^0.5.1",
