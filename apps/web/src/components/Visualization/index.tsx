@@ -26,8 +26,6 @@ import type {
   VisualizationFilter,
   YAxis,
   Series,
-} from "@sandworm/types";
-import type {
   isInvalidVisualizationFilter,
   NumpyDateTypes,
   exhaustiveCheck,
@@ -36,14 +34,15 @@ import type { ConnectDragPreview } from "react-dnd";
 import type { equals, head, omit } from "ramda";
 import { ChartPie } from "lucide-react";
 
+import { TooltipV2 } from "@/components/Visualization/blocks/ToolTips";
+
 import HeaderSelect from "./blocks/HeaderSelect";
 import useEditorAwareness from "./hooks/useEditorAwareness";
 import { useBlockExecutions } from "./hooks/useBlockExecution";
 import { useYMemo } from "./hooks/useYMemo";
-import { TooltipV2 } from "@/components/Visualization/blocks/ToolTips";
 import type { DashboardMode } from "./blocks/Dashboard";
-import { dashboardModeHasControls } from "./blocks/Dashboard";
-
+/* import { dashboardModeHasControls } from "./blocks/Dashboard";
+ */
 import useFullScreenDocument from "./hooks/useFullScreenDocument";
 import { useEnvironmentStatus } from "./hooks/useEnvironmentStatus";
 import HiddenInPublishedButton from "./blocks/HiddenInPublishedButton";

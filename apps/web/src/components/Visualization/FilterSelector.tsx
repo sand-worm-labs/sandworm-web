@@ -1,4 +1,4 @@
-import type { ChangeEventHandler } from "react";
+import type { ChangeEventHandler, EventHandler, SyntheticEvent } from "react";
 import { useCallback, useState, useEffect, useMemo, useRef } from "react";
 import type {
   DataFrameColumn,
@@ -33,11 +33,10 @@ import clsx from "clsx";
 import { equals, identity } from "ramda";
 import ReactDOM from "react-dom";
 import { z } from "zod";
-import { EventHandler, SyntheticEvent } from "react";
 
-import useDropdownPosition from "./hooks/useDropdownPosition";
 import { Tooltip } from "../Tooltip";
 
+import useDropdownPosition from "./hooks/useDropdownPosition";
 import AxisSelector from "./blocks/AxisSelector";
 import MultiComboboxV2 from "./MultiCombobox";
 import Combobox from "./Combobox";

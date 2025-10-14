@@ -1,6 +1,8 @@
-import { ValueTypes } from "@sandworm/editor";
-import { DependencyList, useEffect, useState } from "react";
-import * as Y from "yjs";
+import type { ValueTypes } from "@sandworm/editor";
+import type { DependencyList } from "react";
+import { useEffect, useState } from "react";
+import type * as Y from "yjs";
+
 import useResettableState from "./useResettableState";
 
 export function useYElementMemo<T extends { [key: string]: ValueTypes }, R>(

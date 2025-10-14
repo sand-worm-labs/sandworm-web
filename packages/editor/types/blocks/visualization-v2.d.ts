@@ -69,7 +69,7 @@ export declare const NUMBER_SEPARATOR_OPTIONS: ({
     name: string;
     value: "999999.99";
 })[];
-declare const Serie: z.ZodUnion<[z.ZodObject<{
+declare const Serie: z.ZodUnion<readonly [z.ZodObject<{
     id: z.ZodString;
     datasetIndex: z.ZodNumber;
     yAxisIndex: z.ZodNumber;
@@ -77,79 +77,20 @@ declare const Serie: z.ZodUnion<[z.ZodObject<{
     z: z.ZodNumber;
     label: z.ZodOptional<z.ZodObject<{
         show: z.ZodBoolean;
-        position: z.ZodUnion<[z.ZodLiteral<"inside">, z.ZodLiteral<"top">]>;
-    }, "strip", z.ZodTypeAny, {
-        position: "top" | "inside";
-        show: boolean;
-    }, {
-        position: "top" | "inside";
-        show: boolean;
-    }>>;
+        position: z.ZodUnion<readonly [z.ZodLiteral<"inside">, z.ZodLiteral<"top">]>;
+    }, z.core.$strip>>;
     labelLayout: z.ZodOptional<z.ZodObject<{
         hideOverlap: z.ZodBoolean;
-    }, "strip", z.ZodTypeAny, {
-        hideOverlap: boolean;
-    }, {
-        hideOverlap: boolean;
-    }>>;
+    }, z.core.$strip>>;
     encode: z.ZodOptional<z.ZodObject<{
         x: z.ZodUnion<[z.ZodString, z.ZodNumber]>;
         y: z.ZodUnion<[z.ZodString, z.ZodNumber]>;
-    }, "strip", z.ZodTypeAny, {
-        x: string | number;
-        y: string | number;
-    }, {
-        x: string | number;
-        y: string | number;
-    }>>;
-} & {
+    }, z.core.$strip>>;
     type: z.ZodLiteral<"bar">;
     stack: z.ZodOptional<z.ZodString>;
     barWidth: z.ZodOptional<z.ZodString>;
     color: z.ZodOptional<z.ZodString>;
-}, "strip", z.ZodTypeAny, {
-    type: "bar";
-    id: string;
-    datasetIndex: number;
-    yAxisIndex: number;
-    z: number;
-    label?: {
-        position: "top" | "inside";
-        show: boolean;
-    } | undefined;
-    name?: string | number | undefined;
-    labelLayout?: {
-        hideOverlap: boolean;
-    } | undefined;
-    encode?: {
-        x: string | number;
-        y: string | number;
-    } | undefined;
-    stack?: string | undefined;
-    barWidth?: string | undefined;
-    color?: string | undefined;
-}, {
-    type: "bar";
-    id: string;
-    datasetIndex: number;
-    yAxisIndex: number;
-    z: number;
-    label?: {
-        position: "top" | "inside";
-        show: boolean;
-    } | undefined;
-    name?: string | number | undefined;
-    labelLayout?: {
-        hideOverlap: boolean;
-    } | undefined;
-    encode?: {
-        x: string | number;
-        y: string | number;
-    } | undefined;
-    stack?: string | undefined;
-    barWidth?: string | undefined;
-    color?: string | undefined;
-}>, z.ZodObject<{
+}, z.core.$strip>, z.ZodObject<{
     id: z.ZodString;
     datasetIndex: z.ZodNumber;
     yAxisIndex: z.ZodNumber;
@@ -157,83 +98,20 @@ declare const Serie: z.ZodUnion<[z.ZodObject<{
     z: z.ZodNumber;
     label: z.ZodOptional<z.ZodObject<{
         show: z.ZodBoolean;
-        position: z.ZodUnion<[z.ZodLiteral<"inside">, z.ZodLiteral<"top">]>;
-    }, "strip", z.ZodTypeAny, {
-        position: "top" | "inside";
-        show: boolean;
-    }, {
-        position: "top" | "inside";
-        show: boolean;
-    }>>;
+        position: z.ZodUnion<readonly [z.ZodLiteral<"inside">, z.ZodLiteral<"top">]>;
+    }, z.core.$strip>>;
     labelLayout: z.ZodOptional<z.ZodObject<{
         hideOverlap: z.ZodBoolean;
-    }, "strip", z.ZodTypeAny, {
-        hideOverlap: boolean;
-    }, {
-        hideOverlap: boolean;
-    }>>;
+    }, z.core.$strip>>;
     encode: z.ZodOptional<z.ZodObject<{
         x: z.ZodUnion<[z.ZodString, z.ZodNumber]>;
         y: z.ZodUnion<[z.ZodString, z.ZodNumber]>;
-    }, "strip", z.ZodTypeAny, {
-        x: string | number;
-        y: string | number;
-    }, {
-        x: string | number;
-        y: string | number;
-    }>>;
-} & {
+    }, z.core.$strip>>;
     type: z.ZodLiteral<"scatter">;
     itemStyle: z.ZodOptional<z.ZodObject<{
         color: z.ZodOptional<z.ZodString>;
-    }, "strip", z.ZodTypeAny, {
-        color?: string | undefined;
-    }, {
-        color?: string | undefined;
-    }>>;
-}, "strip", z.ZodTypeAny, {
-    type: "scatter";
-    id: string;
-    datasetIndex: number;
-    yAxisIndex: number;
-    z: number;
-    label?: {
-        position: "top" | "inside";
-        show: boolean;
-    } | undefined;
-    name?: string | number | undefined;
-    labelLayout?: {
-        hideOverlap: boolean;
-    } | undefined;
-    encode?: {
-        x: string | number;
-        y: string | number;
-    } | undefined;
-    itemStyle?: {
-        color?: string | undefined;
-    } | undefined;
-}, {
-    type: "scatter";
-    id: string;
-    datasetIndex: number;
-    yAxisIndex: number;
-    z: number;
-    label?: {
-        position: "top" | "inside";
-        show: boolean;
-    } | undefined;
-    name?: string | number | undefined;
-    labelLayout?: {
-        hideOverlap: boolean;
-    } | undefined;
-    encode?: {
-        x: string | number;
-        y: string | number;
-    } | undefined;
-    itemStyle?: {
-        color?: string | undefined;
-    } | undefined;
-}>, z.ZodObject<{
+    }, z.core.$strip>>;
+}, z.core.$strip>, z.ZodObject<{
     id: z.ZodString;
     datasetIndex: z.ZodNumber;
     yAxisIndex: z.ZodNumber;
@@ -241,372 +119,119 @@ declare const Serie: z.ZodUnion<[z.ZodObject<{
     z: z.ZodNumber;
     label: z.ZodOptional<z.ZodObject<{
         show: z.ZodBoolean;
-        position: z.ZodUnion<[z.ZodLiteral<"inside">, z.ZodLiteral<"top">]>;
-    }, "strip", z.ZodTypeAny, {
-        position: "top" | "inside";
-        show: boolean;
-    }, {
-        position: "top" | "inside";
-        show: boolean;
-    }>>;
+        position: z.ZodUnion<readonly [z.ZodLiteral<"inside">, z.ZodLiteral<"top">]>;
+    }, z.core.$strip>>;
     labelLayout: z.ZodOptional<z.ZodObject<{
         hideOverlap: z.ZodBoolean;
-    }, "strip", z.ZodTypeAny, {
-        hideOverlap: boolean;
-    }, {
-        hideOverlap: boolean;
-    }>>;
+    }, z.core.$strip>>;
     encode: z.ZodOptional<z.ZodObject<{
         x: z.ZodUnion<[z.ZodString, z.ZodNumber]>;
         y: z.ZodUnion<[z.ZodString, z.ZodNumber]>;
-    }, "strip", z.ZodTypeAny, {
-        x: string | number;
-        y: string | number;
-    }, {
-        x: string | number;
-        y: string | number;
-    }>>;
-} & {
+    }, z.core.$strip>>;
     type: z.ZodLiteral<"line">;
     areaStyle: z.ZodOptional<z.ZodObject<{
         color: z.ZodOptional<z.ZodString>;
-    }, "strip", z.ZodTypeAny, {
-        color?: string | undefined;
-    }, {
-        color?: string | undefined;
-    }>>;
+    }, z.core.$strip>>;
     lineStyle: z.ZodOptional<z.ZodObject<{
         color: z.ZodOptional<z.ZodString>;
-    }, "strip", z.ZodTypeAny, {
-        color?: string | undefined;
-    }, {
-        color?: string | undefined;
-    }>>;
+    }, z.core.$strip>>;
     itemStyle: z.ZodOptional<z.ZodObject<{
         color: z.ZodOptional<z.ZodString>;
-    }, "strip", z.ZodTypeAny, {
-        color?: string | undefined;
-    }, {
-        color?: string | undefined;
-    }>>;
+    }, z.core.$strip>>;
     stack: z.ZodOptional<z.ZodString>;
     symbolSize: z.ZodOptional<z.ZodNumber>;
-}, "strip", z.ZodTypeAny, {
-    type: "line";
-    id: string;
-    datasetIndex: number;
-    yAxisIndex: number;
-    z: number;
-    label?: {
-        position: "top" | "inside";
-        show: boolean;
-    } | undefined;
-    name?: string | number | undefined;
-    labelLayout?: {
-        hideOverlap: boolean;
-    } | undefined;
-    encode?: {
-        x: string | number;
-        y: string | number;
-    } | undefined;
-    stack?: string | undefined;
-    itemStyle?: {
-        color?: string | undefined;
-    } | undefined;
-    areaStyle?: {
-        color?: string | undefined;
-    } | undefined;
-    lineStyle?: {
-        color?: string | undefined;
-    } | undefined;
-    symbolSize?: number | undefined;
-}, {
-    type: "line";
-    id: string;
-    datasetIndex: number;
-    yAxisIndex: number;
-    z: number;
-    label?: {
-        position: "top" | "inside";
-        show: boolean;
-    } | undefined;
-    name?: string | number | undefined;
-    labelLayout?: {
-        hideOverlap: boolean;
-    } | undefined;
-    encode?: {
-        x: string | number;
-        y: string | number;
-    } | undefined;
-    stack?: string | undefined;
-    itemStyle?: {
-        color?: string | undefined;
-    } | undefined;
-    areaStyle?: {
-        color?: string | undefined;
-    } | undefined;
-    lineStyle?: {
-        color?: string | undefined;
-    } | undefined;
-    symbolSize?: number | undefined;
-}>]>;
+}, z.core.$strip>]>;
 export type Serie = z.infer<typeof Serie>;
 declare const XAxis: z.ZodIntersection<z.ZodIntersection<z.ZodObject<{
-    position: z.ZodOptional<z.ZodUnion<[z.ZodLiteral<"top">, z.ZodLiteral<"bottom">, z.ZodLiteral<"left">, z.ZodLiteral<"right">]>>;
+    position: z.ZodOptional<z.ZodUnion<readonly [z.ZodLiteral<"top">, z.ZodLiteral<"bottom">, z.ZodLiteral<"left">, z.ZodLiteral<"right">]>>;
     name: z.ZodNullable<z.ZodOptional<z.ZodString>>;
     nameLocation: z.ZodLiteral<"middle">;
     nameGap: z.ZodOptional<z.ZodNumber>;
-}, "strip", z.ZodTypeAny, {
-    nameLocation: "middle";
-    position?: "left" | "right" | "top" | "bottom" | undefined;
-    name?: string | null | undefined;
-    nameGap?: number | undefined;
-}, {
-    nameLocation: "middle";
-    position?: "left" | "right" | "top" | "bottom" | undefined;
-    name?: string | null | undefined;
-    nameGap?: number | undefined;
-}>, z.ZodUnion<[z.ZodObject<{
+}, z.core.$strip>, z.ZodUnion<readonly [z.ZodObject<{
     type: z.ZodLiteral<"value">;
-    min: z.ZodOptional<z.ZodUnion<[z.ZodNumber, z.ZodLiteral<"dataMin">]>>;
-    max: z.ZodOptional<z.ZodUnion<[z.ZodNumber, z.ZodLiteral<"dataMax">]>>;
-}, "strip", z.ZodTypeAny, {
-    type: "value";
-    min?: number | "dataMin" | undefined;
-    max?: number | "dataMax" | undefined;
-}, {
-    type: "value";
-    min?: number | "dataMin" | undefined;
-    max?: number | "dataMax" | undefined;
-}>, z.ZodObject<{
+    min: z.ZodOptional<z.ZodUnion<readonly [z.ZodNumber, z.ZodLiteral<"dataMin">]>>;
+    max: z.ZodOptional<z.ZodUnion<readonly [z.ZodNumber, z.ZodLiteral<"dataMax">]>>;
+}, z.core.$strip>, z.ZodObject<{
     type: z.ZodLiteral<"category">;
-}, "strip", z.ZodTypeAny, {
-    type: "category";
-}, {
-    type: "category";
-}>, z.ZodObject<{
+}, z.core.$strip>, z.ZodObject<{
     type: z.ZodLiteral<"time">;
     min: z.ZodOptional<z.ZodString>;
     max: z.ZodOptional<z.ZodString>;
-}, "strip", z.ZodTypeAny, {
-    type: "time";
-    min?: string | undefined;
-    max?: string | undefined;
-}, {
-    type: "time";
-    min?: string | undefined;
-    max?: string | undefined;
-}>]>>, z.ZodObject<{
+}, z.core.$strip>]>>, z.ZodObject<{
     axisPointer: z.ZodObject<{
         type: z.ZodLiteral<"shadow">;
-    }, "strip", z.ZodTypeAny, {
-        type: "shadow";
-    }, {
-        type: "shadow";
-    }>;
-}, "strip", z.ZodTypeAny, {
-    axisPointer: {
-        type: "shadow";
-    };
-}, {
-    axisPointer: {
-        type: "shadow";
-    };
-}>>;
+    }, z.core.$strip>;
+}, z.core.$strip>>;
 export type XAxis = z.infer<typeof XAxis>;
 declare const YAxis: z.ZodIntersection<z.ZodIntersection<z.ZodObject<{
-    position: z.ZodOptional<z.ZodUnion<[z.ZodLiteral<"top">, z.ZodLiteral<"bottom">, z.ZodLiteral<"left">, z.ZodLiteral<"right">]>>;
+    position: z.ZodOptional<z.ZodUnion<readonly [z.ZodLiteral<"top">, z.ZodLiteral<"bottom">, z.ZodLiteral<"left">, z.ZodLiteral<"right">]>>;
     name: z.ZodNullable<z.ZodOptional<z.ZodString>>;
     nameLocation: z.ZodLiteral<"middle">;
     nameGap: z.ZodOptional<z.ZodNumber>;
-}, "strip", z.ZodTypeAny, {
-    nameLocation: "middle";
-    position?: "left" | "right" | "top" | "bottom" | undefined;
-    name?: string | null | undefined;
-    nameGap?: number | undefined;
-}, {
-    nameLocation: "middle";
-    position?: "left" | "right" | "top" | "bottom" | undefined;
-    name?: string | null | undefined;
-    nameGap?: number | undefined;
-}>, z.ZodUnion<[z.ZodObject<{
+}, z.core.$strip>, z.ZodUnion<readonly [z.ZodObject<{
     type: z.ZodLiteral<"value">;
-    min: z.ZodOptional<z.ZodUnion<[z.ZodNumber, z.ZodLiteral<"dataMin">]>>;
-    max: z.ZodOptional<z.ZodUnion<[z.ZodNumber, z.ZodLiteral<"dataMax">]>>;
-}, "strip", z.ZodTypeAny, {
-    type: "value";
-    min?: number | "dataMin" | undefined;
-    max?: number | "dataMax" | undefined;
-}, {
-    type: "value";
-    min?: number | "dataMin" | undefined;
-    max?: number | "dataMax" | undefined;
-}>, z.ZodObject<{
+    min: z.ZodOptional<z.ZodUnion<readonly [z.ZodNumber, z.ZodLiteral<"dataMin">]>>;
+    max: z.ZodOptional<z.ZodUnion<readonly [z.ZodNumber, z.ZodLiteral<"dataMax">]>>;
+}, z.core.$strip>, z.ZodObject<{
     type: z.ZodLiteral<"category">;
-}, "strip", z.ZodTypeAny, {
-    type: "category";
-}, {
-    type: "category";
-}>, z.ZodObject<{
+}, z.core.$strip>, z.ZodObject<{
     type: z.ZodLiteral<"time">;
     min: z.ZodOptional<z.ZodString>;
     max: z.ZodOptional<z.ZodString>;
-}, "strip", z.ZodTypeAny, {
-    type: "time";
-    min?: string | undefined;
-    max?: string | undefined;
-}, {
-    type: "time";
-    min?: string | undefined;
-    max?: string | undefined;
-}>]>>, z.ZodObject<{
-    position: z.ZodOptional<z.ZodUnion<[z.ZodLiteral<"left">, z.ZodLiteral<"right">]>>;
-}, "strip", z.ZodTypeAny, {
-    position?: "left" | "right" | undefined;
-}, {
-    position?: "left" | "right" | undefined;
-}>>;
+}, z.core.$strip>]>>, z.ZodObject<{
+    position: z.ZodOptional<z.ZodUnion<readonly [z.ZodLiteral<"left">, z.ZodLiteral<"right">]>>;
+}, z.core.$strip>>;
 export declare const VisualizationV2BlockOutputResult: z.ZodObject<{
     tooltip: z.ZodObject<{
         trigger: z.ZodLiteral<"axis">;
-    }, "strip", z.ZodTypeAny, {
-        trigger: "axis";
-    }, {
-        trigger: "axis";
-    }>;
-    legend: z.ZodObject<{}, "strip", z.ZodTypeAny, {}, {}>;
+    }, z.core.$strip>;
+    legend: z.ZodObject<{}, z.core.$strip>;
     grid: z.ZodObject<{
         containLabel: z.ZodLiteral<true>;
-    }, "strip", z.ZodTypeAny, {
-        containLabel: true;
-    }, {
-        containLabel: true;
-    }>;
+    }, z.core.$strip>;
     dataset: z.ZodArray<z.ZodObject<{
-        dimensions: z.ZodArray<z.ZodString, "many">;
-        source: z.ZodArray<z.ZodRecord<z.ZodString, z.ZodUnion<[z.ZodString, z.ZodNumber]>>, "many">;
-    }, "strip", z.ZodTypeAny, {
-        source: Record<string, string | number>[];
-        dimensions: string[];
-    }, {
-        source: Record<string, string | number>[];
-        dimensions: string[];
-    }>, "many">;
+        dimensions: z.ZodArray<z.ZodString>;
+        source: z.ZodArray<z.ZodRecord<z.ZodString, z.ZodUnion<[z.ZodString, z.ZodNumber]>>>;
+    }, z.core.$strip>>;
     xAxis: z.ZodArray<z.ZodIntersection<z.ZodIntersection<z.ZodObject<{
-        position: z.ZodOptional<z.ZodUnion<[z.ZodLiteral<"top">, z.ZodLiteral<"bottom">, z.ZodLiteral<"left">, z.ZodLiteral<"right">]>>;
+        position: z.ZodOptional<z.ZodUnion<readonly [z.ZodLiteral<"top">, z.ZodLiteral<"bottom">, z.ZodLiteral<"left">, z.ZodLiteral<"right">]>>;
         name: z.ZodNullable<z.ZodOptional<z.ZodString>>;
         nameLocation: z.ZodLiteral<"middle">;
         nameGap: z.ZodOptional<z.ZodNumber>;
-    }, "strip", z.ZodTypeAny, {
-        nameLocation: "middle";
-        position?: "left" | "right" | "top" | "bottom" | undefined;
-        name?: string | null | undefined;
-        nameGap?: number | undefined;
-    }, {
-        nameLocation: "middle";
-        position?: "left" | "right" | "top" | "bottom" | undefined;
-        name?: string | null | undefined;
-        nameGap?: number | undefined;
-    }>, z.ZodUnion<[z.ZodObject<{
+    }, z.core.$strip>, z.ZodUnion<readonly [z.ZodObject<{
         type: z.ZodLiteral<"value">;
-        min: z.ZodOptional<z.ZodUnion<[z.ZodNumber, z.ZodLiteral<"dataMin">]>>;
-        max: z.ZodOptional<z.ZodUnion<[z.ZodNumber, z.ZodLiteral<"dataMax">]>>;
-    }, "strip", z.ZodTypeAny, {
-        type: "value";
-        min?: number | "dataMin" | undefined;
-        max?: number | "dataMax" | undefined;
-    }, {
-        type: "value";
-        min?: number | "dataMin" | undefined;
-        max?: number | "dataMax" | undefined;
-    }>, z.ZodObject<{
+        min: z.ZodOptional<z.ZodUnion<readonly [z.ZodNumber, z.ZodLiteral<"dataMin">]>>;
+        max: z.ZodOptional<z.ZodUnion<readonly [z.ZodNumber, z.ZodLiteral<"dataMax">]>>;
+    }, z.core.$strip>, z.ZodObject<{
         type: z.ZodLiteral<"category">;
-    }, "strip", z.ZodTypeAny, {
-        type: "category";
-    }, {
-        type: "category";
-    }>, z.ZodObject<{
+    }, z.core.$strip>, z.ZodObject<{
         type: z.ZodLiteral<"time">;
         min: z.ZodOptional<z.ZodString>;
         max: z.ZodOptional<z.ZodString>;
-    }, "strip", z.ZodTypeAny, {
-        type: "time";
-        min?: string | undefined;
-        max?: string | undefined;
-    }, {
-        type: "time";
-        min?: string | undefined;
-        max?: string | undefined;
-    }>]>>, z.ZodObject<{
+    }, z.core.$strip>]>>, z.ZodObject<{
         axisPointer: z.ZodObject<{
             type: z.ZodLiteral<"shadow">;
-        }, "strip", z.ZodTypeAny, {
-            type: "shadow";
-        }, {
-            type: "shadow";
-        }>;
-    }, "strip", z.ZodTypeAny, {
-        axisPointer: {
-            type: "shadow";
-        };
-    }, {
-        axisPointer: {
-            type: "shadow";
-        };
-    }>>, "many">;
+        }, z.core.$strip>;
+    }, z.core.$strip>>>;
     yAxis: z.ZodArray<z.ZodIntersection<z.ZodIntersection<z.ZodObject<{
-        position: z.ZodOptional<z.ZodUnion<[z.ZodLiteral<"top">, z.ZodLiteral<"bottom">, z.ZodLiteral<"left">, z.ZodLiteral<"right">]>>;
+        position: z.ZodOptional<z.ZodUnion<readonly [z.ZodLiteral<"top">, z.ZodLiteral<"bottom">, z.ZodLiteral<"left">, z.ZodLiteral<"right">]>>;
         name: z.ZodNullable<z.ZodOptional<z.ZodString>>;
         nameLocation: z.ZodLiteral<"middle">;
         nameGap: z.ZodOptional<z.ZodNumber>;
-    }, "strip", z.ZodTypeAny, {
-        nameLocation: "middle";
-        position?: "left" | "right" | "top" | "bottom" | undefined;
-        name?: string | null | undefined;
-        nameGap?: number | undefined;
-    }, {
-        nameLocation: "middle";
-        position?: "left" | "right" | "top" | "bottom" | undefined;
-        name?: string | null | undefined;
-        nameGap?: number | undefined;
-    }>, z.ZodUnion<[z.ZodObject<{
+    }, z.core.$strip>, z.ZodUnion<readonly [z.ZodObject<{
         type: z.ZodLiteral<"value">;
-        min: z.ZodOptional<z.ZodUnion<[z.ZodNumber, z.ZodLiteral<"dataMin">]>>;
-        max: z.ZodOptional<z.ZodUnion<[z.ZodNumber, z.ZodLiteral<"dataMax">]>>;
-    }, "strip", z.ZodTypeAny, {
-        type: "value";
-        min?: number | "dataMin" | undefined;
-        max?: number | "dataMax" | undefined;
-    }, {
-        type: "value";
-        min?: number | "dataMin" | undefined;
-        max?: number | "dataMax" | undefined;
-    }>, z.ZodObject<{
+        min: z.ZodOptional<z.ZodUnion<readonly [z.ZodNumber, z.ZodLiteral<"dataMin">]>>;
+        max: z.ZodOptional<z.ZodUnion<readonly [z.ZodNumber, z.ZodLiteral<"dataMax">]>>;
+    }, z.core.$strip>, z.ZodObject<{
         type: z.ZodLiteral<"category">;
-    }, "strip", z.ZodTypeAny, {
-        type: "category";
-    }, {
-        type: "category";
-    }>, z.ZodObject<{
+    }, z.core.$strip>, z.ZodObject<{
         type: z.ZodLiteral<"time">;
         min: z.ZodOptional<z.ZodString>;
         max: z.ZodOptional<z.ZodString>;
-    }, "strip", z.ZodTypeAny, {
-        type: "time";
-        min?: string | undefined;
-        max?: string | undefined;
-    }, {
-        type: "time";
-        min?: string | undefined;
-        max?: string | undefined;
-    }>]>>, z.ZodObject<{
-        position: z.ZodOptional<z.ZodUnion<[z.ZodLiteral<"left">, z.ZodLiteral<"right">]>>;
-    }, "strip", z.ZodTypeAny, {
-        position?: "left" | "right" | undefined;
-    }, {
-        position?: "left" | "right" | undefined;
-    }>>, "many">;
-    series: z.ZodArray<z.ZodUnion<[z.ZodObject<{
+    }, z.core.$strip>]>>, z.ZodObject<{
+        position: z.ZodOptional<z.ZodUnion<readonly [z.ZodLiteral<"left">, z.ZodLiteral<"right">]>>;
+    }, z.core.$strip>>>;
+    series: z.ZodArray<z.ZodUnion<readonly [z.ZodObject<{
         id: z.ZodString;
         datasetIndex: z.ZodNumber;
         yAxisIndex: z.ZodNumber;
@@ -614,79 +239,20 @@ export declare const VisualizationV2BlockOutputResult: z.ZodObject<{
         z: z.ZodNumber;
         label: z.ZodOptional<z.ZodObject<{
             show: z.ZodBoolean;
-            position: z.ZodUnion<[z.ZodLiteral<"inside">, z.ZodLiteral<"top">]>;
-        }, "strip", z.ZodTypeAny, {
-            position: "top" | "inside";
-            show: boolean;
-        }, {
-            position: "top" | "inside";
-            show: boolean;
-        }>>;
+            position: z.ZodUnion<readonly [z.ZodLiteral<"inside">, z.ZodLiteral<"top">]>;
+        }, z.core.$strip>>;
         labelLayout: z.ZodOptional<z.ZodObject<{
             hideOverlap: z.ZodBoolean;
-        }, "strip", z.ZodTypeAny, {
-            hideOverlap: boolean;
-        }, {
-            hideOverlap: boolean;
-        }>>;
+        }, z.core.$strip>>;
         encode: z.ZodOptional<z.ZodObject<{
             x: z.ZodUnion<[z.ZodString, z.ZodNumber]>;
             y: z.ZodUnion<[z.ZodString, z.ZodNumber]>;
-        }, "strip", z.ZodTypeAny, {
-            x: string | number;
-            y: string | number;
-        }, {
-            x: string | number;
-            y: string | number;
-        }>>;
-    } & {
+        }, z.core.$strip>>;
         type: z.ZodLiteral<"bar">;
         stack: z.ZodOptional<z.ZodString>;
         barWidth: z.ZodOptional<z.ZodString>;
         color: z.ZodOptional<z.ZodString>;
-    }, "strip", z.ZodTypeAny, {
-        type: "bar";
-        id: string;
-        datasetIndex: number;
-        yAxisIndex: number;
-        z: number;
-        label?: {
-            position: "top" | "inside";
-            show: boolean;
-        } | undefined;
-        name?: string | number | undefined;
-        labelLayout?: {
-            hideOverlap: boolean;
-        } | undefined;
-        encode?: {
-            x: string | number;
-            y: string | number;
-        } | undefined;
-        stack?: string | undefined;
-        barWidth?: string | undefined;
-        color?: string | undefined;
-    }, {
-        type: "bar";
-        id: string;
-        datasetIndex: number;
-        yAxisIndex: number;
-        z: number;
-        label?: {
-            position: "top" | "inside";
-            show: boolean;
-        } | undefined;
-        name?: string | number | undefined;
-        labelLayout?: {
-            hideOverlap: boolean;
-        } | undefined;
-        encode?: {
-            x: string | number;
-            y: string | number;
-        } | undefined;
-        stack?: string | undefined;
-        barWidth?: string | undefined;
-        color?: string | undefined;
-    }>, z.ZodObject<{
+    }, z.core.$strip>, z.ZodObject<{
         id: z.ZodString;
         datasetIndex: z.ZodNumber;
         yAxisIndex: z.ZodNumber;
@@ -694,83 +260,20 @@ export declare const VisualizationV2BlockOutputResult: z.ZodObject<{
         z: z.ZodNumber;
         label: z.ZodOptional<z.ZodObject<{
             show: z.ZodBoolean;
-            position: z.ZodUnion<[z.ZodLiteral<"inside">, z.ZodLiteral<"top">]>;
-        }, "strip", z.ZodTypeAny, {
-            position: "top" | "inside";
-            show: boolean;
-        }, {
-            position: "top" | "inside";
-            show: boolean;
-        }>>;
+            position: z.ZodUnion<readonly [z.ZodLiteral<"inside">, z.ZodLiteral<"top">]>;
+        }, z.core.$strip>>;
         labelLayout: z.ZodOptional<z.ZodObject<{
             hideOverlap: z.ZodBoolean;
-        }, "strip", z.ZodTypeAny, {
-            hideOverlap: boolean;
-        }, {
-            hideOverlap: boolean;
-        }>>;
+        }, z.core.$strip>>;
         encode: z.ZodOptional<z.ZodObject<{
             x: z.ZodUnion<[z.ZodString, z.ZodNumber]>;
             y: z.ZodUnion<[z.ZodString, z.ZodNumber]>;
-        }, "strip", z.ZodTypeAny, {
-            x: string | number;
-            y: string | number;
-        }, {
-            x: string | number;
-            y: string | number;
-        }>>;
-    } & {
+        }, z.core.$strip>>;
         type: z.ZodLiteral<"scatter">;
         itemStyle: z.ZodOptional<z.ZodObject<{
             color: z.ZodOptional<z.ZodString>;
-        }, "strip", z.ZodTypeAny, {
-            color?: string | undefined;
-        }, {
-            color?: string | undefined;
-        }>>;
-    }, "strip", z.ZodTypeAny, {
-        type: "scatter";
-        id: string;
-        datasetIndex: number;
-        yAxisIndex: number;
-        z: number;
-        label?: {
-            position: "top" | "inside";
-            show: boolean;
-        } | undefined;
-        name?: string | number | undefined;
-        labelLayout?: {
-            hideOverlap: boolean;
-        } | undefined;
-        encode?: {
-            x: string | number;
-            y: string | number;
-        } | undefined;
-        itemStyle?: {
-            color?: string | undefined;
-        } | undefined;
-    }, {
-        type: "scatter";
-        id: string;
-        datasetIndex: number;
-        yAxisIndex: number;
-        z: number;
-        label?: {
-            position: "top" | "inside";
-            show: boolean;
-        } | undefined;
-        name?: string | number | undefined;
-        labelLayout?: {
-            hideOverlap: boolean;
-        } | undefined;
-        encode?: {
-            x: string | number;
-            y: string | number;
-        } | undefined;
-        itemStyle?: {
-            color?: string | undefined;
-        } | undefined;
-    }>, z.ZodObject<{
+        }, z.core.$strip>>;
+    }, z.core.$strip>, z.ZodObject<{
         id: z.ZodString;
         datasetIndex: z.ZodNumber;
         yAxisIndex: z.ZodNumber;
@@ -778,360 +281,29 @@ export declare const VisualizationV2BlockOutputResult: z.ZodObject<{
         z: z.ZodNumber;
         label: z.ZodOptional<z.ZodObject<{
             show: z.ZodBoolean;
-            position: z.ZodUnion<[z.ZodLiteral<"inside">, z.ZodLiteral<"top">]>;
-        }, "strip", z.ZodTypeAny, {
-            position: "top" | "inside";
-            show: boolean;
-        }, {
-            position: "top" | "inside";
-            show: boolean;
-        }>>;
+            position: z.ZodUnion<readonly [z.ZodLiteral<"inside">, z.ZodLiteral<"top">]>;
+        }, z.core.$strip>>;
         labelLayout: z.ZodOptional<z.ZodObject<{
             hideOverlap: z.ZodBoolean;
-        }, "strip", z.ZodTypeAny, {
-            hideOverlap: boolean;
-        }, {
-            hideOverlap: boolean;
-        }>>;
+        }, z.core.$strip>>;
         encode: z.ZodOptional<z.ZodObject<{
             x: z.ZodUnion<[z.ZodString, z.ZodNumber]>;
             y: z.ZodUnion<[z.ZodString, z.ZodNumber]>;
-        }, "strip", z.ZodTypeAny, {
-            x: string | number;
-            y: string | number;
-        }, {
-            x: string | number;
-            y: string | number;
-        }>>;
-    } & {
+        }, z.core.$strip>>;
         type: z.ZodLiteral<"line">;
         areaStyle: z.ZodOptional<z.ZodObject<{
             color: z.ZodOptional<z.ZodString>;
-        }, "strip", z.ZodTypeAny, {
-            color?: string | undefined;
-        }, {
-            color?: string | undefined;
-        }>>;
+        }, z.core.$strip>>;
         lineStyle: z.ZodOptional<z.ZodObject<{
             color: z.ZodOptional<z.ZodString>;
-        }, "strip", z.ZodTypeAny, {
-            color?: string | undefined;
-        }, {
-            color?: string | undefined;
-        }>>;
+        }, z.core.$strip>>;
         itemStyle: z.ZodOptional<z.ZodObject<{
             color: z.ZodOptional<z.ZodString>;
-        }, "strip", z.ZodTypeAny, {
-            color?: string | undefined;
-        }, {
-            color?: string | undefined;
-        }>>;
+        }, z.core.$strip>>;
         stack: z.ZodOptional<z.ZodString>;
         symbolSize: z.ZodOptional<z.ZodNumber>;
-    }, "strip", z.ZodTypeAny, {
-        type: "line";
-        id: string;
-        datasetIndex: number;
-        yAxisIndex: number;
-        z: number;
-        label?: {
-            position: "top" | "inside";
-            show: boolean;
-        } | undefined;
-        name?: string | number | undefined;
-        labelLayout?: {
-            hideOverlap: boolean;
-        } | undefined;
-        encode?: {
-            x: string | number;
-            y: string | number;
-        } | undefined;
-        stack?: string | undefined;
-        itemStyle?: {
-            color?: string | undefined;
-        } | undefined;
-        areaStyle?: {
-            color?: string | undefined;
-        } | undefined;
-        lineStyle?: {
-            color?: string | undefined;
-        } | undefined;
-        symbolSize?: number | undefined;
-    }, {
-        type: "line";
-        id: string;
-        datasetIndex: number;
-        yAxisIndex: number;
-        z: number;
-        label?: {
-            position: "top" | "inside";
-            show: boolean;
-        } | undefined;
-        name?: string | number | undefined;
-        labelLayout?: {
-            hideOverlap: boolean;
-        } | undefined;
-        encode?: {
-            x: string | number;
-            y: string | number;
-        } | undefined;
-        stack?: string | undefined;
-        itemStyle?: {
-            color?: string | undefined;
-        } | undefined;
-        areaStyle?: {
-            color?: string | undefined;
-        } | undefined;
-        lineStyle?: {
-            color?: string | undefined;
-        } | undefined;
-        symbolSize?: number | undefined;
-    }>]>, "many">;
-}, "strip", z.ZodTypeAny, {
-    tooltip: {
-        trigger: "axis";
-    };
-    legend: {};
-    grid: {
-        containLabel: true;
-    };
-    dataset: {
-        source: Record<string, string | number>[];
-        dimensions: string[];
-    }[];
-    xAxis: (({
-        nameLocation: "middle";
-        position?: "left" | "right" | "top" | "bottom" | undefined;
-        name?: string | null | undefined;
-        nameGap?: number | undefined;
-    } & ({
-        type: "value";
-        min?: number | "dataMin" | undefined;
-        max?: number | "dataMax" | undefined;
-    } | {
-        type: "category";
-    } | {
-        type: "time";
-        min?: string | undefined;
-        max?: string | undefined;
-    })) & {
-        axisPointer: {
-            type: "shadow";
-        };
-    })[];
-    yAxis: (({
-        nameLocation: "middle";
-        position?: "left" | "right" | "top" | "bottom" | undefined;
-        name?: string | null | undefined;
-        nameGap?: number | undefined;
-    } & ({
-        type: "value";
-        min?: number | "dataMin" | undefined;
-        max?: number | "dataMax" | undefined;
-    } | {
-        type: "category";
-    } | {
-        type: "time";
-        min?: string | undefined;
-        max?: string | undefined;
-    })) & {
-        position?: "left" | "right" | undefined;
-    })[];
-    series: ({
-        type: "bar";
-        id: string;
-        datasetIndex: number;
-        yAxisIndex: number;
-        z: number;
-        label?: {
-            position: "top" | "inside";
-            show: boolean;
-        } | undefined;
-        name?: string | number | undefined;
-        labelLayout?: {
-            hideOverlap: boolean;
-        } | undefined;
-        encode?: {
-            x: string | number;
-            y: string | number;
-        } | undefined;
-        stack?: string | undefined;
-        barWidth?: string | undefined;
-        color?: string | undefined;
-    } | {
-        type: "scatter";
-        id: string;
-        datasetIndex: number;
-        yAxisIndex: number;
-        z: number;
-        label?: {
-            position: "top" | "inside";
-            show: boolean;
-        } | undefined;
-        name?: string | number | undefined;
-        labelLayout?: {
-            hideOverlap: boolean;
-        } | undefined;
-        encode?: {
-            x: string | number;
-            y: string | number;
-        } | undefined;
-        itemStyle?: {
-            color?: string | undefined;
-        } | undefined;
-    } | {
-        type: "line";
-        id: string;
-        datasetIndex: number;
-        yAxisIndex: number;
-        z: number;
-        label?: {
-            position: "top" | "inside";
-            show: boolean;
-        } | undefined;
-        name?: string | number | undefined;
-        labelLayout?: {
-            hideOverlap: boolean;
-        } | undefined;
-        encode?: {
-            x: string | number;
-            y: string | number;
-        } | undefined;
-        stack?: string | undefined;
-        itemStyle?: {
-            color?: string | undefined;
-        } | undefined;
-        areaStyle?: {
-            color?: string | undefined;
-        } | undefined;
-        lineStyle?: {
-            color?: string | undefined;
-        } | undefined;
-        symbolSize?: number | undefined;
-    })[];
-}, {
-    tooltip: {
-        trigger: "axis";
-    };
-    legend: {};
-    grid: {
-        containLabel: true;
-    };
-    dataset: {
-        source: Record<string, string | number>[];
-        dimensions: string[];
-    }[];
-    xAxis: (({
-        nameLocation: "middle";
-        position?: "left" | "right" | "top" | "bottom" | undefined;
-        name?: string | null | undefined;
-        nameGap?: number | undefined;
-    } & ({
-        type: "value";
-        min?: number | "dataMin" | undefined;
-        max?: number | "dataMax" | undefined;
-    } | {
-        type: "category";
-    } | {
-        type: "time";
-        min?: string | undefined;
-        max?: string | undefined;
-    })) & {
-        axisPointer: {
-            type: "shadow";
-        };
-    })[];
-    yAxis: (({
-        nameLocation: "middle";
-        position?: "left" | "right" | "top" | "bottom" | undefined;
-        name?: string | null | undefined;
-        nameGap?: number | undefined;
-    } & ({
-        type: "value";
-        min?: number | "dataMin" | undefined;
-        max?: number | "dataMax" | undefined;
-    } | {
-        type: "category";
-    } | {
-        type: "time";
-        min?: string | undefined;
-        max?: string | undefined;
-    })) & {
-        position?: "left" | "right" | undefined;
-    })[];
-    series: ({
-        type: "bar";
-        id: string;
-        datasetIndex: number;
-        yAxisIndex: number;
-        z: number;
-        label?: {
-            position: "top" | "inside";
-            show: boolean;
-        } | undefined;
-        name?: string | number | undefined;
-        labelLayout?: {
-            hideOverlap: boolean;
-        } | undefined;
-        encode?: {
-            x: string | number;
-            y: string | number;
-        } | undefined;
-        stack?: string | undefined;
-        barWidth?: string | undefined;
-        color?: string | undefined;
-    } | {
-        type: "scatter";
-        id: string;
-        datasetIndex: number;
-        yAxisIndex: number;
-        z: number;
-        label?: {
-            position: "top" | "inside";
-            show: boolean;
-        } | undefined;
-        name?: string | number | undefined;
-        labelLayout?: {
-            hideOverlap: boolean;
-        } | undefined;
-        encode?: {
-            x: string | number;
-            y: string | number;
-        } | undefined;
-        itemStyle?: {
-            color?: string | undefined;
-        } | undefined;
-    } | {
-        type: "line";
-        id: string;
-        datasetIndex: number;
-        yAxisIndex: number;
-        z: number;
-        label?: {
-            position: "top" | "inside";
-            show: boolean;
-        } | undefined;
-        name?: string | number | undefined;
-        labelLayout?: {
-            hideOverlap: boolean;
-        } | undefined;
-        encode?: {
-            x: string | number;
-            y: string | number;
-        } | undefined;
-        stack?: string | undefined;
-        itemStyle?: {
-            color?: string | undefined;
-        } | undefined;
-        areaStyle?: {
-            color?: string | undefined;
-        } | undefined;
-        lineStyle?: {
-            color?: string | undefined;
-        } | undefined;
-        symbolSize?: number | undefined;
-    })[];
-}>;
+    }, z.core.$strip>]>>;
+}, z.core.$strip>;
 export type VisualizationV2BlockOutputResult = z.infer<typeof VisualizationV2BlockOutputResult>;
 export declare const VisualizationV2BlockOutput: z.ZodObject<{
     executedAt: z.ZodString;
@@ -1139,144 +311,54 @@ export declare const VisualizationV2BlockOutput: z.ZodObject<{
     result: z.ZodObject<{
         tooltip: z.ZodObject<{
             trigger: z.ZodLiteral<"axis">;
-        }, "strip", z.ZodTypeAny, {
-            trigger: "axis";
-        }, {
-            trigger: "axis";
-        }>;
-        legend: z.ZodObject<{}, "strip", z.ZodTypeAny, {}, {}>;
+        }, z.core.$strip>;
+        legend: z.ZodObject<{}, z.core.$strip>;
         grid: z.ZodObject<{
             containLabel: z.ZodLiteral<true>;
-        }, "strip", z.ZodTypeAny, {
-            containLabel: true;
-        }, {
-            containLabel: true;
-        }>;
+        }, z.core.$strip>;
         dataset: z.ZodArray<z.ZodObject<{
-            dimensions: z.ZodArray<z.ZodString, "many">;
-            source: z.ZodArray<z.ZodRecord<z.ZodString, z.ZodUnion<[z.ZodString, z.ZodNumber]>>, "many">;
-        }, "strip", z.ZodTypeAny, {
-            source: Record<string, string | number>[];
-            dimensions: string[];
-        }, {
-            source: Record<string, string | number>[];
-            dimensions: string[];
-        }>, "many">;
+            dimensions: z.ZodArray<z.ZodString>;
+            source: z.ZodArray<z.ZodRecord<z.ZodString, z.ZodUnion<[z.ZodString, z.ZodNumber]>>>;
+        }, z.core.$strip>>;
         xAxis: z.ZodArray<z.ZodIntersection<z.ZodIntersection<z.ZodObject<{
-            position: z.ZodOptional<z.ZodUnion<[z.ZodLiteral<"top">, z.ZodLiteral<"bottom">, z.ZodLiteral<"left">, z.ZodLiteral<"right">]>>;
+            position: z.ZodOptional<z.ZodUnion<readonly [z.ZodLiteral<"top">, z.ZodLiteral<"bottom">, z.ZodLiteral<"left">, z.ZodLiteral<"right">]>>;
             name: z.ZodNullable<z.ZodOptional<z.ZodString>>;
             nameLocation: z.ZodLiteral<"middle">;
             nameGap: z.ZodOptional<z.ZodNumber>;
-        }, "strip", z.ZodTypeAny, {
-            nameLocation: "middle";
-            position?: "left" | "right" | "top" | "bottom" | undefined;
-            name?: string | null | undefined;
-            nameGap?: number | undefined;
-        }, {
-            nameLocation: "middle";
-            position?: "left" | "right" | "top" | "bottom" | undefined;
-            name?: string | null | undefined;
-            nameGap?: number | undefined;
-        }>, z.ZodUnion<[z.ZodObject<{
+        }, z.core.$strip>, z.ZodUnion<readonly [z.ZodObject<{
             type: z.ZodLiteral<"value">;
-            min: z.ZodOptional<z.ZodUnion<[z.ZodNumber, z.ZodLiteral<"dataMin">]>>;
-            max: z.ZodOptional<z.ZodUnion<[z.ZodNumber, z.ZodLiteral<"dataMax">]>>;
-        }, "strip", z.ZodTypeAny, {
-            type: "value";
-            min?: number | "dataMin" | undefined;
-            max?: number | "dataMax" | undefined;
-        }, {
-            type: "value";
-            min?: number | "dataMin" | undefined;
-            max?: number | "dataMax" | undefined;
-        }>, z.ZodObject<{
+            min: z.ZodOptional<z.ZodUnion<readonly [z.ZodNumber, z.ZodLiteral<"dataMin">]>>;
+            max: z.ZodOptional<z.ZodUnion<readonly [z.ZodNumber, z.ZodLiteral<"dataMax">]>>;
+        }, z.core.$strip>, z.ZodObject<{
             type: z.ZodLiteral<"category">;
-        }, "strip", z.ZodTypeAny, {
-            type: "category";
-        }, {
-            type: "category";
-        }>, z.ZodObject<{
+        }, z.core.$strip>, z.ZodObject<{
             type: z.ZodLiteral<"time">;
             min: z.ZodOptional<z.ZodString>;
             max: z.ZodOptional<z.ZodString>;
-        }, "strip", z.ZodTypeAny, {
-            type: "time";
-            min?: string | undefined;
-            max?: string | undefined;
-        }, {
-            type: "time";
-            min?: string | undefined;
-            max?: string | undefined;
-        }>]>>, z.ZodObject<{
+        }, z.core.$strip>]>>, z.ZodObject<{
             axisPointer: z.ZodObject<{
                 type: z.ZodLiteral<"shadow">;
-            }, "strip", z.ZodTypeAny, {
-                type: "shadow";
-            }, {
-                type: "shadow";
-            }>;
-        }, "strip", z.ZodTypeAny, {
-            axisPointer: {
-                type: "shadow";
-            };
-        }, {
-            axisPointer: {
-                type: "shadow";
-            };
-        }>>, "many">;
+            }, z.core.$strip>;
+        }, z.core.$strip>>>;
         yAxis: z.ZodArray<z.ZodIntersection<z.ZodIntersection<z.ZodObject<{
-            position: z.ZodOptional<z.ZodUnion<[z.ZodLiteral<"top">, z.ZodLiteral<"bottom">, z.ZodLiteral<"left">, z.ZodLiteral<"right">]>>;
+            position: z.ZodOptional<z.ZodUnion<readonly [z.ZodLiteral<"top">, z.ZodLiteral<"bottom">, z.ZodLiteral<"left">, z.ZodLiteral<"right">]>>;
             name: z.ZodNullable<z.ZodOptional<z.ZodString>>;
             nameLocation: z.ZodLiteral<"middle">;
             nameGap: z.ZodOptional<z.ZodNumber>;
-        }, "strip", z.ZodTypeAny, {
-            nameLocation: "middle";
-            position?: "left" | "right" | "top" | "bottom" | undefined;
-            name?: string | null | undefined;
-            nameGap?: number | undefined;
-        }, {
-            nameLocation: "middle";
-            position?: "left" | "right" | "top" | "bottom" | undefined;
-            name?: string | null | undefined;
-            nameGap?: number | undefined;
-        }>, z.ZodUnion<[z.ZodObject<{
+        }, z.core.$strip>, z.ZodUnion<readonly [z.ZodObject<{
             type: z.ZodLiteral<"value">;
-            min: z.ZodOptional<z.ZodUnion<[z.ZodNumber, z.ZodLiteral<"dataMin">]>>;
-            max: z.ZodOptional<z.ZodUnion<[z.ZodNumber, z.ZodLiteral<"dataMax">]>>;
-        }, "strip", z.ZodTypeAny, {
-            type: "value";
-            min?: number | "dataMin" | undefined;
-            max?: number | "dataMax" | undefined;
-        }, {
-            type: "value";
-            min?: number | "dataMin" | undefined;
-            max?: number | "dataMax" | undefined;
-        }>, z.ZodObject<{
+            min: z.ZodOptional<z.ZodUnion<readonly [z.ZodNumber, z.ZodLiteral<"dataMin">]>>;
+            max: z.ZodOptional<z.ZodUnion<readonly [z.ZodNumber, z.ZodLiteral<"dataMax">]>>;
+        }, z.core.$strip>, z.ZodObject<{
             type: z.ZodLiteral<"category">;
-        }, "strip", z.ZodTypeAny, {
-            type: "category";
-        }, {
-            type: "category";
-        }>, z.ZodObject<{
+        }, z.core.$strip>, z.ZodObject<{
             type: z.ZodLiteral<"time">;
             min: z.ZodOptional<z.ZodString>;
             max: z.ZodOptional<z.ZodString>;
-        }, "strip", z.ZodTypeAny, {
-            type: "time";
-            min?: string | undefined;
-            max?: string | undefined;
-        }, {
-            type: "time";
-            min?: string | undefined;
-            max?: string | undefined;
-        }>]>>, z.ZodObject<{
-            position: z.ZodOptional<z.ZodUnion<[z.ZodLiteral<"left">, z.ZodLiteral<"right">]>>;
-        }, "strip", z.ZodTypeAny, {
-            position?: "left" | "right" | undefined;
-        }, {
-            position?: "left" | "right" | undefined;
-        }>>, "many">;
-        series: z.ZodArray<z.ZodUnion<[z.ZodObject<{
+        }, z.core.$strip>]>>, z.ZodObject<{
+            position: z.ZodOptional<z.ZodUnion<readonly [z.ZodLiteral<"left">, z.ZodLiteral<"right">]>>;
+        }, z.core.$strip>>>;
+        series: z.ZodArray<z.ZodUnion<readonly [z.ZodObject<{
             id: z.ZodString;
             datasetIndex: z.ZodNumber;
             yAxisIndex: z.ZodNumber;
@@ -1284,79 +366,20 @@ export declare const VisualizationV2BlockOutput: z.ZodObject<{
             z: z.ZodNumber;
             label: z.ZodOptional<z.ZodObject<{
                 show: z.ZodBoolean;
-                position: z.ZodUnion<[z.ZodLiteral<"inside">, z.ZodLiteral<"top">]>;
-            }, "strip", z.ZodTypeAny, {
-                position: "top" | "inside";
-                show: boolean;
-            }, {
-                position: "top" | "inside";
-                show: boolean;
-            }>>;
+                position: z.ZodUnion<readonly [z.ZodLiteral<"inside">, z.ZodLiteral<"top">]>;
+            }, z.core.$strip>>;
             labelLayout: z.ZodOptional<z.ZodObject<{
                 hideOverlap: z.ZodBoolean;
-            }, "strip", z.ZodTypeAny, {
-                hideOverlap: boolean;
-            }, {
-                hideOverlap: boolean;
-            }>>;
+            }, z.core.$strip>>;
             encode: z.ZodOptional<z.ZodObject<{
                 x: z.ZodUnion<[z.ZodString, z.ZodNumber]>;
                 y: z.ZodUnion<[z.ZodString, z.ZodNumber]>;
-            }, "strip", z.ZodTypeAny, {
-                x: string | number;
-                y: string | number;
-            }, {
-                x: string | number;
-                y: string | number;
-            }>>;
-        } & {
+            }, z.core.$strip>>;
             type: z.ZodLiteral<"bar">;
             stack: z.ZodOptional<z.ZodString>;
             barWidth: z.ZodOptional<z.ZodString>;
             color: z.ZodOptional<z.ZodString>;
-        }, "strip", z.ZodTypeAny, {
-            type: "bar";
-            id: string;
-            datasetIndex: number;
-            yAxisIndex: number;
-            z: number;
-            label?: {
-                position: "top" | "inside";
-                show: boolean;
-            } | undefined;
-            name?: string | number | undefined;
-            labelLayout?: {
-                hideOverlap: boolean;
-            } | undefined;
-            encode?: {
-                x: string | number;
-                y: string | number;
-            } | undefined;
-            stack?: string | undefined;
-            barWidth?: string | undefined;
-            color?: string | undefined;
-        }, {
-            type: "bar";
-            id: string;
-            datasetIndex: number;
-            yAxisIndex: number;
-            z: number;
-            label?: {
-                position: "top" | "inside";
-                show: boolean;
-            } | undefined;
-            name?: string | number | undefined;
-            labelLayout?: {
-                hideOverlap: boolean;
-            } | undefined;
-            encode?: {
-                x: string | number;
-                y: string | number;
-            } | undefined;
-            stack?: string | undefined;
-            barWidth?: string | undefined;
-            color?: string | undefined;
-        }>, z.ZodObject<{
+        }, z.core.$strip>, z.ZodObject<{
             id: z.ZodString;
             datasetIndex: z.ZodNumber;
             yAxisIndex: z.ZodNumber;
@@ -1364,83 +387,20 @@ export declare const VisualizationV2BlockOutput: z.ZodObject<{
             z: z.ZodNumber;
             label: z.ZodOptional<z.ZodObject<{
                 show: z.ZodBoolean;
-                position: z.ZodUnion<[z.ZodLiteral<"inside">, z.ZodLiteral<"top">]>;
-            }, "strip", z.ZodTypeAny, {
-                position: "top" | "inside";
-                show: boolean;
-            }, {
-                position: "top" | "inside";
-                show: boolean;
-            }>>;
+                position: z.ZodUnion<readonly [z.ZodLiteral<"inside">, z.ZodLiteral<"top">]>;
+            }, z.core.$strip>>;
             labelLayout: z.ZodOptional<z.ZodObject<{
                 hideOverlap: z.ZodBoolean;
-            }, "strip", z.ZodTypeAny, {
-                hideOverlap: boolean;
-            }, {
-                hideOverlap: boolean;
-            }>>;
+            }, z.core.$strip>>;
             encode: z.ZodOptional<z.ZodObject<{
                 x: z.ZodUnion<[z.ZodString, z.ZodNumber]>;
                 y: z.ZodUnion<[z.ZodString, z.ZodNumber]>;
-            }, "strip", z.ZodTypeAny, {
-                x: string | number;
-                y: string | number;
-            }, {
-                x: string | number;
-                y: string | number;
-            }>>;
-        } & {
+            }, z.core.$strip>>;
             type: z.ZodLiteral<"scatter">;
             itemStyle: z.ZodOptional<z.ZodObject<{
                 color: z.ZodOptional<z.ZodString>;
-            }, "strip", z.ZodTypeAny, {
-                color?: string | undefined;
-            }, {
-                color?: string | undefined;
-            }>>;
-        }, "strip", z.ZodTypeAny, {
-            type: "scatter";
-            id: string;
-            datasetIndex: number;
-            yAxisIndex: number;
-            z: number;
-            label?: {
-                position: "top" | "inside";
-                show: boolean;
-            } | undefined;
-            name?: string | number | undefined;
-            labelLayout?: {
-                hideOverlap: boolean;
-            } | undefined;
-            encode?: {
-                x: string | number;
-                y: string | number;
-            } | undefined;
-            itemStyle?: {
-                color?: string | undefined;
-            } | undefined;
-        }, {
-            type: "scatter";
-            id: string;
-            datasetIndex: number;
-            yAxisIndex: number;
-            z: number;
-            label?: {
-                position: "top" | "inside";
-                show: boolean;
-            } | undefined;
-            name?: string | number | undefined;
-            labelLayout?: {
-                hideOverlap: boolean;
-            } | undefined;
-            encode?: {
-                x: string | number;
-                y: string | number;
-            } | undefined;
-            itemStyle?: {
-                color?: string | undefined;
-            } | undefined;
-        }>, z.ZodObject<{
+            }, z.core.$strip>>;
+        }, z.core.$strip>, z.ZodObject<{
             id: z.ZodString;
             datasetIndex: z.ZodNumber;
             yAxisIndex: z.ZodNumber;
@@ -1448,613 +408,30 @@ export declare const VisualizationV2BlockOutput: z.ZodObject<{
             z: z.ZodNumber;
             label: z.ZodOptional<z.ZodObject<{
                 show: z.ZodBoolean;
-                position: z.ZodUnion<[z.ZodLiteral<"inside">, z.ZodLiteral<"top">]>;
-            }, "strip", z.ZodTypeAny, {
-                position: "top" | "inside";
-                show: boolean;
-            }, {
-                position: "top" | "inside";
-                show: boolean;
-            }>>;
+                position: z.ZodUnion<readonly [z.ZodLiteral<"inside">, z.ZodLiteral<"top">]>;
+            }, z.core.$strip>>;
             labelLayout: z.ZodOptional<z.ZodObject<{
                 hideOverlap: z.ZodBoolean;
-            }, "strip", z.ZodTypeAny, {
-                hideOverlap: boolean;
-            }, {
-                hideOverlap: boolean;
-            }>>;
+            }, z.core.$strip>>;
             encode: z.ZodOptional<z.ZodObject<{
                 x: z.ZodUnion<[z.ZodString, z.ZodNumber]>;
                 y: z.ZodUnion<[z.ZodString, z.ZodNumber]>;
-            }, "strip", z.ZodTypeAny, {
-                x: string | number;
-                y: string | number;
-            }, {
-                x: string | number;
-                y: string | number;
-            }>>;
-        } & {
+            }, z.core.$strip>>;
             type: z.ZodLiteral<"line">;
             areaStyle: z.ZodOptional<z.ZodObject<{
                 color: z.ZodOptional<z.ZodString>;
-            }, "strip", z.ZodTypeAny, {
-                color?: string | undefined;
-            }, {
-                color?: string | undefined;
-            }>>;
+            }, z.core.$strip>>;
             lineStyle: z.ZodOptional<z.ZodObject<{
                 color: z.ZodOptional<z.ZodString>;
-            }, "strip", z.ZodTypeAny, {
-                color?: string | undefined;
-            }, {
-                color?: string | undefined;
-            }>>;
+            }, z.core.$strip>>;
             itemStyle: z.ZodOptional<z.ZodObject<{
                 color: z.ZodOptional<z.ZodString>;
-            }, "strip", z.ZodTypeAny, {
-                color?: string | undefined;
-            }, {
-                color?: string | undefined;
-            }>>;
+            }, z.core.$strip>>;
             stack: z.ZodOptional<z.ZodString>;
             symbolSize: z.ZodOptional<z.ZodNumber>;
-        }, "strip", z.ZodTypeAny, {
-            type: "line";
-            id: string;
-            datasetIndex: number;
-            yAxisIndex: number;
-            z: number;
-            label?: {
-                position: "top" | "inside";
-                show: boolean;
-            } | undefined;
-            name?: string | number | undefined;
-            labelLayout?: {
-                hideOverlap: boolean;
-            } | undefined;
-            encode?: {
-                x: string | number;
-                y: string | number;
-            } | undefined;
-            stack?: string | undefined;
-            itemStyle?: {
-                color?: string | undefined;
-            } | undefined;
-            areaStyle?: {
-                color?: string | undefined;
-            } | undefined;
-            lineStyle?: {
-                color?: string | undefined;
-            } | undefined;
-            symbolSize?: number | undefined;
-        }, {
-            type: "line";
-            id: string;
-            datasetIndex: number;
-            yAxisIndex: number;
-            z: number;
-            label?: {
-                position: "top" | "inside";
-                show: boolean;
-            } | undefined;
-            name?: string | number | undefined;
-            labelLayout?: {
-                hideOverlap: boolean;
-            } | undefined;
-            encode?: {
-                x: string | number;
-                y: string | number;
-            } | undefined;
-            stack?: string | undefined;
-            itemStyle?: {
-                color?: string | undefined;
-            } | undefined;
-            areaStyle?: {
-                color?: string | undefined;
-            } | undefined;
-            lineStyle?: {
-                color?: string | undefined;
-            } | undefined;
-            symbolSize?: number | undefined;
-        }>]>, "many">;
-    }, "strip", z.ZodTypeAny, {
-        tooltip: {
-            trigger: "axis";
-        };
-        legend: {};
-        grid: {
-            containLabel: true;
-        };
-        dataset: {
-            source: Record<string, string | number>[];
-            dimensions: string[];
-        }[];
-        xAxis: (({
-            nameLocation: "middle";
-            position?: "left" | "right" | "top" | "bottom" | undefined;
-            name?: string | null | undefined;
-            nameGap?: number | undefined;
-        } & ({
-            type: "value";
-            min?: number | "dataMin" | undefined;
-            max?: number | "dataMax" | undefined;
-        } | {
-            type: "category";
-        } | {
-            type: "time";
-            min?: string | undefined;
-            max?: string | undefined;
-        })) & {
-            axisPointer: {
-                type: "shadow";
-            };
-        })[];
-        yAxis: (({
-            nameLocation: "middle";
-            position?: "left" | "right" | "top" | "bottom" | undefined;
-            name?: string | null | undefined;
-            nameGap?: number | undefined;
-        } & ({
-            type: "value";
-            min?: number | "dataMin" | undefined;
-            max?: number | "dataMax" | undefined;
-        } | {
-            type: "category";
-        } | {
-            type: "time";
-            min?: string | undefined;
-            max?: string | undefined;
-        })) & {
-            position?: "left" | "right" | undefined;
-        })[];
-        series: ({
-            type: "bar";
-            id: string;
-            datasetIndex: number;
-            yAxisIndex: number;
-            z: number;
-            label?: {
-                position: "top" | "inside";
-                show: boolean;
-            } | undefined;
-            name?: string | number | undefined;
-            labelLayout?: {
-                hideOverlap: boolean;
-            } | undefined;
-            encode?: {
-                x: string | number;
-                y: string | number;
-            } | undefined;
-            stack?: string | undefined;
-            barWidth?: string | undefined;
-            color?: string | undefined;
-        } | {
-            type: "scatter";
-            id: string;
-            datasetIndex: number;
-            yAxisIndex: number;
-            z: number;
-            label?: {
-                position: "top" | "inside";
-                show: boolean;
-            } | undefined;
-            name?: string | number | undefined;
-            labelLayout?: {
-                hideOverlap: boolean;
-            } | undefined;
-            encode?: {
-                x: string | number;
-                y: string | number;
-            } | undefined;
-            itemStyle?: {
-                color?: string | undefined;
-            } | undefined;
-        } | {
-            type: "line";
-            id: string;
-            datasetIndex: number;
-            yAxisIndex: number;
-            z: number;
-            label?: {
-                position: "top" | "inside";
-                show: boolean;
-            } | undefined;
-            name?: string | number | undefined;
-            labelLayout?: {
-                hideOverlap: boolean;
-            } | undefined;
-            encode?: {
-                x: string | number;
-                y: string | number;
-            } | undefined;
-            stack?: string | undefined;
-            itemStyle?: {
-                color?: string | undefined;
-            } | undefined;
-            areaStyle?: {
-                color?: string | undefined;
-            } | undefined;
-            lineStyle?: {
-                color?: string | undefined;
-            } | undefined;
-            symbolSize?: number | undefined;
-        })[];
-    }, {
-        tooltip: {
-            trigger: "axis";
-        };
-        legend: {};
-        grid: {
-            containLabel: true;
-        };
-        dataset: {
-            source: Record<string, string | number>[];
-            dimensions: string[];
-        }[];
-        xAxis: (({
-            nameLocation: "middle";
-            position?: "left" | "right" | "top" | "bottom" | undefined;
-            name?: string | null | undefined;
-            nameGap?: number | undefined;
-        } & ({
-            type: "value";
-            min?: number | "dataMin" | undefined;
-            max?: number | "dataMax" | undefined;
-        } | {
-            type: "category";
-        } | {
-            type: "time";
-            min?: string | undefined;
-            max?: string | undefined;
-        })) & {
-            axisPointer: {
-                type: "shadow";
-            };
-        })[];
-        yAxis: (({
-            nameLocation: "middle";
-            position?: "left" | "right" | "top" | "bottom" | undefined;
-            name?: string | null | undefined;
-            nameGap?: number | undefined;
-        } & ({
-            type: "value";
-            min?: number | "dataMin" | undefined;
-            max?: number | "dataMax" | undefined;
-        } | {
-            type: "category";
-        } | {
-            type: "time";
-            min?: string | undefined;
-            max?: string | undefined;
-        })) & {
-            position?: "left" | "right" | undefined;
-        })[];
-        series: ({
-            type: "bar";
-            id: string;
-            datasetIndex: number;
-            yAxisIndex: number;
-            z: number;
-            label?: {
-                position: "top" | "inside";
-                show: boolean;
-            } | undefined;
-            name?: string | number | undefined;
-            labelLayout?: {
-                hideOverlap: boolean;
-            } | undefined;
-            encode?: {
-                x: string | number;
-                y: string | number;
-            } | undefined;
-            stack?: string | undefined;
-            barWidth?: string | undefined;
-            color?: string | undefined;
-        } | {
-            type: "scatter";
-            id: string;
-            datasetIndex: number;
-            yAxisIndex: number;
-            z: number;
-            label?: {
-                position: "top" | "inside";
-                show: boolean;
-            } | undefined;
-            name?: string | number | undefined;
-            labelLayout?: {
-                hideOverlap: boolean;
-            } | undefined;
-            encode?: {
-                x: string | number;
-                y: string | number;
-            } | undefined;
-            itemStyle?: {
-                color?: string | undefined;
-            } | undefined;
-        } | {
-            type: "line";
-            id: string;
-            datasetIndex: number;
-            yAxisIndex: number;
-            z: number;
-            label?: {
-                position: "top" | "inside";
-                show: boolean;
-            } | undefined;
-            name?: string | number | undefined;
-            labelLayout?: {
-                hideOverlap: boolean;
-            } | undefined;
-            encode?: {
-                x: string | number;
-                y: string | number;
-            } | undefined;
-            stack?: string | undefined;
-            itemStyle?: {
-                color?: string | undefined;
-            } | undefined;
-            areaStyle?: {
-                color?: string | undefined;
-            } | undefined;
-            lineStyle?: {
-                color?: string | undefined;
-            } | undefined;
-            symbolSize?: number | undefined;
-        })[];
-    }>;
-}, "strip", z.ZodTypeAny, {
-    result: {
-        tooltip: {
-            trigger: "axis";
-        };
-        legend: {};
-        grid: {
-            containLabel: true;
-        };
-        dataset: {
-            source: Record<string, string | number>[];
-            dimensions: string[];
-        }[];
-        xAxis: (({
-            nameLocation: "middle";
-            position?: "left" | "right" | "top" | "bottom" | undefined;
-            name?: string | null | undefined;
-            nameGap?: number | undefined;
-        } & ({
-            type: "value";
-            min?: number | "dataMin" | undefined;
-            max?: number | "dataMax" | undefined;
-        } | {
-            type: "category";
-        } | {
-            type: "time";
-            min?: string | undefined;
-            max?: string | undefined;
-        })) & {
-            axisPointer: {
-                type: "shadow";
-            };
-        })[];
-        yAxis: (({
-            nameLocation: "middle";
-            position?: "left" | "right" | "top" | "bottom" | undefined;
-            name?: string | null | undefined;
-            nameGap?: number | undefined;
-        } & ({
-            type: "value";
-            min?: number | "dataMin" | undefined;
-            max?: number | "dataMax" | undefined;
-        } | {
-            type: "category";
-        } | {
-            type: "time";
-            min?: string | undefined;
-            max?: string | undefined;
-        })) & {
-            position?: "left" | "right" | undefined;
-        })[];
-        series: ({
-            type: "bar";
-            id: string;
-            datasetIndex: number;
-            yAxisIndex: number;
-            z: number;
-            label?: {
-                position: "top" | "inside";
-                show: boolean;
-            } | undefined;
-            name?: string | number | undefined;
-            labelLayout?: {
-                hideOverlap: boolean;
-            } | undefined;
-            encode?: {
-                x: string | number;
-                y: string | number;
-            } | undefined;
-            stack?: string | undefined;
-            barWidth?: string | undefined;
-            color?: string | undefined;
-        } | {
-            type: "scatter";
-            id: string;
-            datasetIndex: number;
-            yAxisIndex: number;
-            z: number;
-            label?: {
-                position: "top" | "inside";
-                show: boolean;
-            } | undefined;
-            name?: string | number | undefined;
-            labelLayout?: {
-                hideOverlap: boolean;
-            } | undefined;
-            encode?: {
-                x: string | number;
-                y: string | number;
-            } | undefined;
-            itemStyle?: {
-                color?: string | undefined;
-            } | undefined;
-        } | {
-            type: "line";
-            id: string;
-            datasetIndex: number;
-            yAxisIndex: number;
-            z: number;
-            label?: {
-                position: "top" | "inside";
-                show: boolean;
-            } | undefined;
-            name?: string | number | undefined;
-            labelLayout?: {
-                hideOverlap: boolean;
-            } | undefined;
-            encode?: {
-                x: string | number;
-                y: string | number;
-            } | undefined;
-            stack?: string | undefined;
-            itemStyle?: {
-                color?: string | undefined;
-            } | undefined;
-            areaStyle?: {
-                color?: string | undefined;
-            } | undefined;
-            lineStyle?: {
-                color?: string | undefined;
-            } | undefined;
-            symbolSize?: number | undefined;
-        })[];
-    };
-    executedAt: string;
-    tooManyDataPoints: boolean;
-}, {
-    result: {
-        tooltip: {
-            trigger: "axis";
-        };
-        legend: {};
-        grid: {
-            containLabel: true;
-        };
-        dataset: {
-            source: Record<string, string | number>[];
-            dimensions: string[];
-        }[];
-        xAxis: (({
-            nameLocation: "middle";
-            position?: "left" | "right" | "top" | "bottom" | undefined;
-            name?: string | null | undefined;
-            nameGap?: number | undefined;
-        } & ({
-            type: "value";
-            min?: number | "dataMin" | undefined;
-            max?: number | "dataMax" | undefined;
-        } | {
-            type: "category";
-        } | {
-            type: "time";
-            min?: string | undefined;
-            max?: string | undefined;
-        })) & {
-            axisPointer: {
-                type: "shadow";
-            };
-        })[];
-        yAxis: (({
-            nameLocation: "middle";
-            position?: "left" | "right" | "top" | "bottom" | undefined;
-            name?: string | null | undefined;
-            nameGap?: number | undefined;
-        } & ({
-            type: "value";
-            min?: number | "dataMin" | undefined;
-            max?: number | "dataMax" | undefined;
-        } | {
-            type: "category";
-        } | {
-            type: "time";
-            min?: string | undefined;
-            max?: string | undefined;
-        })) & {
-            position?: "left" | "right" | undefined;
-        })[];
-        series: ({
-            type: "bar";
-            id: string;
-            datasetIndex: number;
-            yAxisIndex: number;
-            z: number;
-            label?: {
-                position: "top" | "inside";
-                show: boolean;
-            } | undefined;
-            name?: string | number | undefined;
-            labelLayout?: {
-                hideOverlap: boolean;
-            } | undefined;
-            encode?: {
-                x: string | number;
-                y: string | number;
-            } | undefined;
-            stack?: string | undefined;
-            barWidth?: string | undefined;
-            color?: string | undefined;
-        } | {
-            type: "scatter";
-            id: string;
-            datasetIndex: number;
-            yAxisIndex: number;
-            z: number;
-            label?: {
-                position: "top" | "inside";
-                show: boolean;
-            } | undefined;
-            name?: string | number | undefined;
-            labelLayout?: {
-                hideOverlap: boolean;
-            } | undefined;
-            encode?: {
-                x: string | number;
-                y: string | number;
-            } | undefined;
-            itemStyle?: {
-                color?: string | undefined;
-            } | undefined;
-        } | {
-            type: "line";
-            id: string;
-            datasetIndex: number;
-            yAxisIndex: number;
-            z: number;
-            label?: {
-                position: "top" | "inside";
-                show: boolean;
-            } | undefined;
-            name?: string | number | undefined;
-            labelLayout?: {
-                hideOverlap: boolean;
-            } | undefined;
-            encode?: {
-                x: string | number;
-                y: string | number;
-            } | undefined;
-            stack?: string | undefined;
-            itemStyle?: {
-                color?: string | undefined;
-            } | undefined;
-            areaStyle?: {
-                color?: string | undefined;
-            } | undefined;
-            lineStyle?: {
-                color?: string | undefined;
-            } | undefined;
-            symbolSize?: number | undefined;
-        })[];
-    };
-    executedAt: string;
-    tooManyDataPoints: boolean;
-}>;
+        }, z.core.$strip>]>>;
+    }, z.core.$strip>;
+}, z.core.$strip>;
 export type VisualizationV2BlockOutput = z.infer<typeof VisualizationV2BlockOutput>;
 export type VisualizationV2Block = BaseBlock<BlockType.VisualizationV2> & {
     input: VisualizationV2BlockInput;

@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 
-import { SocialLogin } from "./SocialLogin";
 import { SandwormLogo } from "../Assets";
+
+import { SocialLogin } from "./SocialLogin";
 
 export const SignUp = () => {
   return (

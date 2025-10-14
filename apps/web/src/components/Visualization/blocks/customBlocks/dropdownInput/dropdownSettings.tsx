@@ -14,8 +14,9 @@ import { CheckIcon, DatabaseZapIcon, KeyboardIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import type { DataFrame } from "@sandworm/types";
 
-import { useYMemo } from "../../../hooks/useYMemo";
 import Dropdown from "@/components/ui/dropdown-menu";
+
+import { useYMemo } from "../../../hooks/useYMemo";
 
 type Props = {
   block: Y.XmlElement<DropdownInputBlock>;
