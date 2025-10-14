@@ -3,29 +3,53 @@
 import React from "react";
 import { Star, Expand, MoreVertical } from "lucide-react";
 import * as Y from "yjs";
+import { BlockType } from "@sandworm/editor";
 import type {
   ExecutionQueue,
   YBlock,
   VisualizationV2Block,
+  ExecutionQueueBatch,
+  RunAllSource,
+  YBlockGroup,
 } from "@sandworm/editor";
 import type { DataFrame } from "@sandworm/types";
 
 import VisualizationBlockV2 from "../Visualization";
 
-// ✅ Create placeholder data (typed & clean)
-const placeholderDoc = new Y.Doc();
-const placeholderBlock =
-  new Y.XmlElement() as Y.XmlElement<VisualizationV2Block>;
-const placeholderBlocks = new Y.Map<YBlock>();
-const placeholderDataframes = new Y.Map<DataFrame>();
+const yDoc = new Y.Doc();
 
-// ✅ Create placeholder execution queue
-const placeholderQueue: ExecutionQueue = {
-  queue: new Y.Array(),
+// Create a visualization block
+const visualizationBlock = new Y.XmlElement(
+  "visualization"
+) as Y.XmlElement<VisualizationV2Block>;
+visualizationBlock.setAttribute("type", BlockType.VisualizationV2);
+visualizationBlock.setAttribute("id", "visualization");
+
+// Set up blocks map
+const blocks = yDoc.getMap<YBlock>("blocks");
+blocks.set("visualization", visualizationBlock as YBlock);
+
+// Set up other Y.js structures
+const dataframes = yDoc.getMap<DataFrame>("dataframes");
+
+const executionQueue: ExecutionQueue = {
   blocks: new Y.Map<YBlock>(),
+  queue: new Y.Array(),
   layout: new Y.Array(),
   observers: new Set(),
+  options: {},
   enqueueBlock: () => {},
+  enqueueBlockGroup: () => {},
+  enqueueBlockOnwards: () => {},
+  enqueueRunAll: (
+    layout: Y.Array<YBlockGroup>,
+    blocksMap: Y.Map<YBlock>,
+    source: RunAllSource
+  ): ExecutionQueueBatch => ({
+    id: "batch-1",
+    status: "pending",
+    timestamp: Date.now(),
+  }),
   getCurrentBatch: () => null,
   advance: () => {},
   getBlockExecutions: () => [],
@@ -33,6 +57,24 @@ const placeholderQueue: ExecutionQueue = {
   toJSON: () => [],
   getRunAllBatches: () => [],
   length: 0,
+  onObservation: () => {},
+  getExecutionQueueMetadataForBlock: () => ({
+    status: "pending",
+    timestamp: Date.now(),
+  }),
+};
+
+const document = {
+  appClock: 0,
+  appId: "c9eda31f-0a6a-408f-b217-1948b73b4b1b",
+  clock: 0,
+  createdAt: "2025-10-05T13:41:16.642Z",
+  deletedAt: null,
+  hasDashboard: true,
+  icon: "DocumentIcon",
+  id: "0ad689b1-252b-4ada-88b7-71ba3e27c5a9",
+  title: "Test Notebook",
+  updatedAt: "2025-10-14T20:31:01.941Z",
 };
 
 export const ChatReportPreview = () => {
@@ -62,12 +104,14 @@ export const ChatReportPreview = () => {
       <div className="w-full h-[500px] flex items-center justify-center text-neutral-500 border border-[#EBD7D7] rounded-2xl">
         <VisualizationBlockV2
           isPublicMode={false}
-          isEditable={false}
-          document={placeholderDoc}
+          isEditable={true}
+          document={document}
           onAddGroupedBlock={() => {}}
-          block={placeholderBlock}
-          blocks={placeholderBlocks}
-          dataframes={placeholderDataframes}
+          block={
+            blocks.get("visualization") as Y.XmlElement<VisualizationV2Block>
+          }
+          blocks={blocks}
+          dataframes={dataframes}
           dragPreview={null}
           dashboardMode={null}
           hasMultipleTabs={false}
@@ -76,7 +120,7 @@ export const ChatReportPreview = () => {
           isCursorWithin={false}
           isCursorInserting={false}
           userId="default-user"
-          executionQueue={placeholderQueue}
+          executionQueue={executionQueue}
           isFullScreen={false}
         />
       </div>
