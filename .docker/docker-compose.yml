@@ -1,49 +1,36 @@
 version: "3"
 
 services:
-  # PostgreSQL database
   db:
-    image: postgres:15
-    container_name: my-postgres
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+    container_name: sandworm-postgres
+    image: postgres:17
+    restart: always
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: sandworm
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      TZ: "UTC"
+    ports:
+      - "25432:5432"
 
-  # pgAdmin for managing PostgreSQL
   pgadmin:
-    image: dpage/pgadmin4:7
-    container_name: my-pgadmin
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    restart: always
     ports:
-      - "8080:80"
-    depends_on:
-      - db
+      - "18080:80"
     volumes:
-      - pgadmindata:/var/lib/pgadmin
-
-  # Next.js app using Yarn
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: my-nextjs-app
-    ports:
-      - "3000:3000"
+      - pgadmin_data:/root/.pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: 12345678
+      PGADMIN_CONFIG_WTF_CSRF_ENABLED: "False"
+      PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: "False"
     depends_on:
       - db
-    environment:
-      NODE_ENV: ${NODE_ENV}
-      DATABASE_URL: ${DATABASE_URL}
-    command: ["yarn", "dev"]  # hot-reload for development
 
 volumes:
-  pgdata:
-  pgadmindata:
-
+  postgres_data:
+  pgadmin_data:
