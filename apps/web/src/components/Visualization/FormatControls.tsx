@@ -8,7 +8,6 @@ import {
 } from "@sandworm/editor";
 
 import AxisModifierSelector from "./blocks/AxisModifierSelector";
-
 import VisualizationToggleV2 from "./VisualizationToggle";
 
 // Generic interface for number formatting props

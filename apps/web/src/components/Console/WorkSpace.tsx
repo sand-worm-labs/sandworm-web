@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { DatabaseIcon } from "lucide-react";
 
 import { AppSidebar } from "@/components/Layout/AppSidebar";
 import { DataExplorer } from "@/components/ExplorerPanels/DataExplorer";
@@ -15,8 +16,8 @@ import { QueryExplorer } from "@/components/ExplorerPanels/QueryExplorer";
 import { SettingsPanel } from "@/components/Console/SettingsPanel";
 import { WormAiPanel } from "@/components/Console/WormAIPanel";
 import type { Query } from "@/types";
+
 import { Button } from "../ui/button";
-import { DatabaseIcon } from "lucide-react";
 
 // =====================================
 // 🎨 Interface / Props Definition

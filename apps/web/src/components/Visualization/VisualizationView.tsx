@@ -19,8 +19,6 @@ import type {
   Series,
   DateFormat,
   NumberFormat,
-} from "@sandworm/types";
-import type {
   NumpyDateTypes,
   exhaustiveCheck,
   NumpyNumberTypes,

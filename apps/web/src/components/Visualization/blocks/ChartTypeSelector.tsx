@@ -5,7 +5,7 @@ import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 import type { ChartType } from "@sandworm/types";
 
-import useDropdownPosition from "@/hooks/dropdownPosition";
+import useDropdownPosition from "../hooks/useDropdownPosition";
 
 type Chart = {
   value: ChartType;

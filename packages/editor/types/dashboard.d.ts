@@ -11,27 +11,7 @@ export declare const DashboardItem: z.ZodObject<{
     h: z.ZodNumber;
     minW: z.ZodOptional<z.ZodNumber>;
     minH: z.ZodOptional<z.ZodNumber>;
-}, "strip", z.ZodTypeAny, {
-    type: "DASHBOARD_ITEM";
-    blockId: string;
-    id: string;
-    x: number;
-    y: number;
-    w: number;
-    h: number;
-    minW?: number | undefined;
-    minH?: number | undefined;
-}, {
-    type: "DASHBOARD_ITEM";
-    blockId: string;
-    id: string;
-    x: number;
-    y: number;
-    w: number;
-    h: number;
-    minW?: number | undefined;
-    minH?: number | undefined;
-}>;
+}, z.core.$strip>;
 export type DashboardItem = z.infer<typeof DashboardItem>;
 export type YDashboardItem = Y.XmlElement<DashboardItem>;
 export declare function addDashboardItemToYDashboard(dashboard: Y.Map<YDashboardItem>, item: Omit<DashboardItem, 'type'>): void;
