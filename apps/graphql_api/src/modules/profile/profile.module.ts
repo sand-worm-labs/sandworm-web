@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserEntity, UserFollowsEntity } from '@repo/postgresql-typeorm';
+import { UserEntity, UserFollowsEntity } from '@sandworm/postgresql-typeorm';
 import { ProfileResolver } from './profile.resolver';
 import { ProfileService } from './profile.service';
 
@@ -8,4 +8,4 @@ import { ProfileService } from './profile.service';
   imports: [TypeOrmModule.forFeature([UserEntity, UserFollowsEntity])],
   providers: [ProfileResolver, ProfileService],
 })
-export class ProfileModule {}
+export class ProfileModule { }

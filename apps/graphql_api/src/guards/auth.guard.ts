@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
-import { IS_AUTH_OPTIONAL, IS_PUBLIC } from '@repo/nest-common';
+import { IS_AUTH_OPTIONAL, IS_PUBLIC } from '@sandworm/nest-common';
 import { type FastifyRequest } from 'fastify';
 import { AuthService } from 'src/modules/auth/auth.service';
 
@@ -15,7 +15,7 @@ export class AuthGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
     private authService: AuthService,
-  ) {}
+  ) { }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC, [

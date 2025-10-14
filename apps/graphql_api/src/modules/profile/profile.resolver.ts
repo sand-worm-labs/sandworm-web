@@ -1,12 +1,12 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { CurrentUser } from '@repo/graphql';
+import { CurrentUser } from '@sandworm/graphql';
 import { UsernameArgs } from './dto/profile.dto';
 import { Profile } from './model/profile.model';
 import { ProfileService } from './profile.service';
 
 @Resolver(() => Profile)
 export class ProfileResolver {
-  constructor(private readonly profileService: ProfileService) {}
+  constructor(private readonly profileService: ProfileService) { }
 
   @Query(() => Profile, {
     description: 'Get Profile',

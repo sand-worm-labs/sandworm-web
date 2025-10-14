@@ -1,6 +1,6 @@
 import { Injectable, Scope } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ArticleEntity, UserEntity } from '@repo/postgresql-typeorm';
+import { ArticleEntity, UserEntity } from '@sandworm/postgresql-typeorm';
 import DataLoader from 'dataloader';
 import { In, Repository } from 'typeorm';
 
@@ -17,7 +17,7 @@ export class ArticleDataLoader {
     private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(ArticleEntity)
     private readonly articleRepository: Repository<ArticleEntity>,
-  ) {}
+  ) { }
 
   getAuthorLoader() {
     if (!this.authorLoader) {

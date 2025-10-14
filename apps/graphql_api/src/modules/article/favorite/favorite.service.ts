@@ -1,8 +1,8 @@
 import { ErrorCode } from '@/constants/error-code.constant';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ValidationException } from '@repo/graphql/exceptions/validation.exception';
-import { ArticleEntity, UserEntity } from '@repo/postgresql-typeorm';
+import { ValidationException } from '@sandworm/graphql/exceptions/validation.exception';
+import { ArticleEntity, UserEntity } from '@sandworm/postgresql-typeorm';
 import { Repository } from 'typeorm';
 import { Article } from '../model/article.model';
 @Injectable()
@@ -13,7 +13,7 @@ export class FavoriteService {
     private readonly articleRepository: Repository<ArticleEntity>,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
-  ) {}
+  ) { }
 
   async create(
     slug: string,

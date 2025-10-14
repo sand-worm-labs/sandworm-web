@@ -3,8 +3,8 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { verifyPassword } from '@repo/nest-common';
-import { UserEntity } from '@repo/postgresql-typeorm';
+import { verifyPassword } from '@sandworm/nest-common';
+import { UserEntity } from '@sandworm/postgresql-typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../user/model/user.model';
 import { LoginInput } from './dto/auth.dto';
@@ -17,7 +17,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
-  ) {}
+  ) { }
 
   async login(input: LoginInput): Promise<User> {
     const { email, password } = input;
@@ -58,14 +58,14 @@ export class AuthService {
     const tokenExpiresIn = this.configService.getOrThrow('auth.expires', {
       infer: true,
     });
-
+    let secret = this.configService.getOrThrow('auth.secret', { infer: true })
     const accessToken = await this.jwtService.signAsync(
       {
         id: data.id,
       },
       {
-        secret: this.configService.getOrThrow('auth.secret', { infer: true }),
-        expiresIn: tokenExpiresIn,
+        secret,
+        expiresIn: "7D",
       },
     );
 
