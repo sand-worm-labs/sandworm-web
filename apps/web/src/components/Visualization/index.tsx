@@ -1,4 +1,10 @@
 import { v4 as uuidv4 } from "uuid";
+import {
+  ChartPieIcon,
+  ClockIcon,
+  StopIcon,
+  PlayIcon,
+} from "@heroicons/react/20/solid";
 import * as Y from "yjs";
 import {
   ExecutionQueue,
@@ -31,7 +37,7 @@ import type {
   exhaustiveCheck,
 } from "@sandworm/types";
 import type { ConnectDragPreview } from "react-dnd";
-import type { equals, head, omit } from "ramda";
+import { equals, head, omit } from "ramda";
 import { ChartPie } from "lucide-react";
 
 import { TooltipV2 } from "@/components/Visualization/blocks/ToolTips";

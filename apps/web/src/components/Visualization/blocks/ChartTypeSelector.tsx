@@ -5,7 +5,7 @@ import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 import type { ChartType } from "@sandworm/types";
 
-import useDropdownPosition from "../hooks/useDropdownPosition";
+import useDropdownPosition from "../hooks/dropdownposition";
 
 type Chart = {
   value: ChartType;
@@ -123,6 +123,7 @@ export default function ChartTypeSelector(props: Props) {
               <ChevronDownIcon className="h-4 w-4 text-gray-500" />
             </div>
           </Listbox.Button>
+
           {ReactDOM.createPortal(
             <Transition
               show={open}
