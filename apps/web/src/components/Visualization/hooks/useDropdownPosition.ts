@@ -1,12 +1,6 @@
 import { exhaustiveCheck } from "@sandworm/types";
-import {
-  CSSProperties,
-  RefObject,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import type { CSSProperties, RefObject } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 function useDropdownPosition(
   buttonRef: RefObject<HTMLElement>,

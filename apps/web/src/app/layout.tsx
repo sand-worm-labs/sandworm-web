@@ -2,10 +2,10 @@ import "@/styles/globals.css";
 
 import { Azeret_Mono as AzeretMono } from "next/font/google";
 import Script from "next/script";
+import type { Metadata } from "next";
+
 import type { ChildrenProps } from "@/types";
 import { RootProvider } from "@/providers/RootProvider";
-
-import type { Metadata } from "next";
 
 // ⬢ Constants
 // =====================================

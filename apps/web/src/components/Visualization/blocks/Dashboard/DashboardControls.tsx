@@ -1,4 +1,4 @@
-import * as Y from 'yjs'
+import type * as Y from "yjs";
 import {
   Bars3CenterLeftIcon,
   ChartPieIcon,
@@ -6,13 +6,15 @@ import {
   CommandLineIcon,
   PencilSquareIcon,
   TableCellsIcon,
-} from '@heroicons/react/24/solid'
-import {
+} from "@heroicons/react/24/solid";
+import type {
   AITasks,
-  BlockType,
   ExecutionQueue,
   YBlock,
   YBlockGroup,
+} from "@sandworm/editor";
+import {
+  BlockType,
   addDashboardItemToYDashboard,
   addDashboardOnlyBlock,
   getBaseAttributes,
@@ -24,58 +26,68 @@ import {
   getPythonBlockResult,
   getSQLAttributes,
   switchBlockType,
-} from '@briefer/editor'
-import { useCallback, useMemo, useRef, useState } from 'react'
-import PythonBlock from '../v2Editor/customBlocks/python'
-import { ApiDocument } from '@briefer/database'
-import SQLBlock from '../v2Editor/customBlocks/sql'
-import VisualizationBlock from '../v2Editor/customBlocks/visualization'
-import { DataFrame, exhaustiveCheck } from '@briefer/types'
-import { useYDocState } from '@/hooks/useYDoc'
-import RichTextBlock from '../v2Editor/customBlocks/richText'
-import InputBlock from '../v2Editor/customBlocks/input'
-import DropdownInputBlock from '../v2Editor/customBlocks/dropdownInput'
-import DateInputBlock from '../v2Editor/customBlocks/dateInput'
+} from "@sandworm/editor";
+import { useCallback, useMemo, useRef, useState } from "react";
+import type { ApiDocument } from "@briefer/database";
+import type { DataFrame } from "@sandworm/types";
+import { exhaustiveCheck } from "@sandworm/types";
 import {
   ChevronDoubleRightIcon,
   ChevronDoubleLeftIcon,
   MagnifyingGlassIcon,
-} from '@heroicons/react/24/outline'
-import { DraggingBlock } from '.'
-import { APIDataSources } from '@/hooks/useDatasources'
-import ScaleChild from '../ScaleChild'
-import { Heading1Icon } from 'lucide-react'
-import { v4 as uuidv4 } from 'uuid'
-import { getDefaults } from './DashboardView'
-import PivotTableBlock from '../v2Editor/customBlocks/pivotTable'
-import VisualizationV2Block from '../v2Editor/customBlocks/visualizationV2'
-import MultiSelect from '../MultiSelect'
-import clsx from 'clsx'
-import SimpleBar from 'simplebar-react'
+} from "@heroicons/react/24/outline";
+import { Heading1Icon } from "lucide-react";
+import { v4 as uuidv4 } from "uuid";
+import clsx from "clsx";
+import SimpleBar from "simplebar-react";
+
+import { useYDocState } from "@/hooks/useYDoc";
+
+import { APIDataSources } from "@/hooks/useDatasources";
+import PythonBlock from "../v2Editor/customBlocks/python";
+import SQLBlock from "../v2Editor/customBlocks/sql";
+import VisualizationBlock from "../v2Editor/customBlocks/visualization";
+
+
+
+import RichTextBlock from "../v2Editor/customBlocks/richText";
+import InputBlock from "../v2Editor/customBlocks/input";
+import DropdownInputBlock from "../v2Editor/customBlocks/dropdownInput";
+import DateInputBlock from "../v2Editor/customBlocks/dateInput";
+
+
+import ScaleChild from "../ScaleChild";
+import PivotTableBlock from "../v2Editor/customBlocks/pivotTable";
+import VisualizationV2Block from "../v2Editor/customBlocks/visualizationV2";
+
+import MultiSelect from "../MultiSelect";
+import { getDefaults } from "./DashboardView";
+import { DraggingBlock } from ".";
+
 
 function getTypeLabel(t: BlockType) {
   switch (t) {
     case BlockType.VisualizationV2:
     case BlockType.Visualization:
-      return 'Visualization'
+      return "Visualization";
     case BlockType.Python:
-      return 'Python output'
+      return "Python output";
     case BlockType.SQL:
-      return 'Query results'
+      return "Query results";
     case BlockType.PivotTable:
-      return 'Pivot table'
+      return "Pivot table";
     case BlockType.Input:
     case BlockType.DateInput:
     case BlockType.DropdownInput:
-      return 'Input'
+      return "Input";
     case BlockType.RichText:
-      return 'Rich Text'
+      return "Rich Text";
     case BlockType.FileUpload:
-      return 'File Upload'
+      return "File Upload";
     case BlockType.DashboardHeader:
-      return 'Dashboard Header'
+      return "Dashboard Header";
     case BlockType.Writeback:
-      return 'Writeback'
+      return "Writeback";
   }
 }
 
@@ -83,23 +95,23 @@ function getTypeIcon(t: BlockType): JSX.Element {
   switch (t) {
     case BlockType.VisualizationV2:
     case BlockType.Visualization:
-      return <ChartPieIcon className="w-4 h-4 text-gray-500" />
+      return <ChartPieIcon className="w-4 h-4 text-gray-500" />;
     case BlockType.Python:
-      return <CommandLineIcon className="w-4 h-4 text-gray-500" />
+      return <CommandLineIcon className="w-4 h-4 text-gray-500" />;
     case BlockType.SQL:
-      return <CircleStackIcon className="w-4 h-4 text-gray-500" />
+      return <CircleStackIcon className="w-4 h-4 text-gray-500" />;
     case BlockType.PivotTable:
-      return <TableCellsIcon className="w-4 h-4 text-gray-500" />
+      return <TableCellsIcon className="w-4 h-4 text-gray-500" />;
     case BlockType.Input:
     case BlockType.DateInput:
     case BlockType.DropdownInput:
-      return <PencilSquareIcon className="w-4 h-4 text-gray-500" />
+      return <PencilSquareIcon className="w-4 h-4 text-gray-500" />;
     case BlockType.RichText:
-      return <Bars3CenterLeftIcon className="w-4 h-4 text-gray-500" />
+      return <Bars3CenterLeftIcon className="w-4 h-4 text-gray-500" />;
     case BlockType.FileUpload:
     case BlockType.DashboardHeader:
     case BlockType.Writeback:
-      return <></>
+      return <></>;
   }
 }
 
@@ -109,68 +121,66 @@ const typeOptions = [
   BlockType.SQL,
   BlockType.PivotTable,
   BlockType.Input,
-]
+];
 
 interface Props {
-  document: ApiDocument
-  dataSources: APIDataSources
-  yDoc: Y.Doc
-  onDragStart: (draggingBlock: DraggingBlock) => void
-  onAddBlock: (blockId: string) => void
-  userId: string | null
-  executionQueue: ExecutionQueue
-  aiTasks: AITasks
-  onToggleSchemaExplorer: (dataSourceId?: string | null) => void
-  onExpand: (block: YBlock) => void
-  isOpen: boolean
-  onOpen: () => void
-  onClose: () => void
+  document: ApiDocument;
+  dataSources: APIDataSources;
+  yDoc: Y.Doc;
+  onDragStart: (draggingBlock: DraggingBlock) => void;
+  onAddBlock: (blockId: string) => void;
+  userId: string | null;
+  executionQueue: ExecutionQueue;
+  aiTasks: AITasks;
+  onToggleSchemaExplorer: (dataSourceId?: string | null) => void;
+  onExpand: (block: YBlock) => void;
+  isOpen: boolean;
+  onOpen: () => void;
+  onClose: () => void;
 }
 function DashboardControls(props: Props) {
-  const { state: dataframes } = useYDocState(props.yDoc, getDataframes)
-  const { state: blocks } = useYDocState(props.yDoc, getBlocks)
-  const { state: layout } = useYDocState(props.yDoc, getLayout)
-  const { state: dashboard } = useYDocState(props.yDoc, getDashboard)
-  const [search, setSearch] = useState('')
-  const [types, setTypes] = useState<BlockType[]>([])
+  const { state: dataframes } = useYDocState(props.yDoc, getDataframes);
+  const { state: blocks } = useYDocState(props.yDoc, getBlocks);
+  const { state: layout } = useYDocState(props.yDoc, getLayout);
+  const { state: dashboard } = useYDocState(props.yDoc, getDashboard);
+  const [search, setSearch] = useState("");
+  const [types, setTypes] = useState<BlockType[]>([]);
   const onToggleType = useCallback((t: BlockType) => {
-    setTypes((types) => {
+    setTypes(types => {
       if (types.includes(t)) {
-        return types.filter((type) => type !== t)
+        return types.filter(type => type !== t);
       }
 
-      return [...types, t]
-    })
-  }, [])
+      return [...types, t];
+    });
+  }, []);
 
   const blocksInDashboard = useMemo(
     () =>
       new Set(
-        Array.from(dashboard.value.values()).map((i) =>
-          i.getAttribute('blockId')
-        )
+        Array.from(dashboard.value.values()).map(i => i.getAttribute("blockId"))
       ),
     [dashboard]
-  )
+  );
 
   const addHeading = useCallback(() => {
     const blockId = addDashboardOnlyBlock(blocks.value, {
       type: BlockType.DashboardHeader,
-      content: '',
-    })
+      content: "",
+    });
 
     const lastRow = Array.from(dashboard.value.values()).reduce<number>(
       (last, yItem) => {
-        const itemId = yItem.getAttribute('id')
+        const itemId = yItem.getAttribute("id");
         if (!itemId) {
-          return last
+          return last;
         }
 
-        const item = getDashboardItem(dashboard.value, itemId)
-        return Math.max(last, item?.y ?? 0)
+        const item = getDashboardItem(dashboard.value, itemId);
+        return Math.max(last, item?.y ?? 0);
       },
       0
-    )
+    );
 
     addDashboardItemToYDashboard(dashboard.value, {
       id: uuidv4(),
@@ -180,116 +190,116 @@ function DashboardControls(props: Props) {
       w: 24,
       h: 1,
       ...getDefaults(BlockType.DashboardHeader),
-    })
+    });
 
-    props.onAddBlock(blockId)
-  }, [blocks, dashboard, props.onAddBlock])
+    props.onAddBlock(blockId);
+  }, [blocks, dashboard, props.onAddBlock]);
 
   const blocksList = useMemo(
     () =>
       layout.value
-        .map((blockGroup) => {
+        .map(blockGroup => {
           const groupBlocks =
-            blockGroup.getAttribute('tabs')?.map((tab) => {
-              const id = tab.getAttribute('id')
+            blockGroup.getAttribute("tabs")?.map(tab => {
+              const id = tab.getAttribute("id");
               if (!id || blocksInDashboard.has(id)) {
-                return null
+                return null;
               }
 
-              const block = blocks.value.get(id)
+              const block = blocks.value.get(id);
               if (!block) {
-                return null
+                return null;
               }
 
               return switchBlockType(block, {
-                onRichText: (_) => block,
-                onSQL: (sBlock) => {
-                  const { result } = getSQLAttributes(sBlock, blocks.value)
+                onRichText: _ => block,
+                onSQL: sBlock => {
+                  const { result } = getSQLAttributes(sBlock, blocks.value);
                   if (!result) {
-                    return null
+                    return null;
                   }
 
-                  return block
+                  return block;
                 },
-                onPython: (pBlock) => {
-                  const results = getPythonBlockResult(pBlock)
+                onPython: pBlock => {
+                  const results = getPythonBlockResult(pBlock);
                   if (results.length === 0) {
-                    return null
+                    return null;
                   }
 
-                  return block
+                  return block;
                 },
-                onVisualization: (_) => block,
-                onVisualizationV2: (_) => block,
-                onInput: (_) => block,
-                onDropdownInput: (_) => block,
-                onDateInput: (_) => block,
-                onPivotTable: (block) => block,
-                onFileUpload: (_) => null,
-                onDashboardHeader: (_) => null,
-                onWriteback: (_) => null,
-              })
-            }) ?? []
+                onVisualization: _ => block,
+                onVisualizationV2: _ => block,
+                onInput: _ => block,
+                onDropdownInput: _ => block,
+                onDateInput: _ => block,
+                onPivotTable: block => block,
+                onFileUpload: _ => null,
+                onDashboardHeader: _ => null,
+                onWriteback: _ => null,
+              });
+            }) ?? [];
 
           return groupBlocks.filter((block): block is YBlock => {
             if (block === null) {
-              return false
+              return false;
             }
 
-            const attrs = getBaseAttributes(block)
+            const attrs = getBaseAttributes(block);
             if (types.length > 0) {
               switch (attrs.type) {
                 case BlockType.Visualization:
                 case BlockType.VisualizationV2:
                   if (!types.includes(BlockType.Visualization)) {
-                    return false
+                    return false;
                   }
-                  break
+                  break;
                 case BlockType.Python:
                   if (!types.includes(BlockType.Python)) {
-                    return false
+                    return false;
                   }
-                  break
+                  break;
                 case BlockType.SQL:
                   if (!types.includes(BlockType.SQL)) {
-                    return false
+                    return false;
                   }
-                  break
+                  break;
                 case BlockType.Input:
                 case BlockType.DateInput:
                 case BlockType.DropdownInput:
                   if (!types.includes(BlockType.Input)) {
-                    return false
+                    return false;
                   }
-                  break
+                  break;
                 case BlockType.PivotTable:
                   if (!types.includes(BlockType.PivotTable)) {
-                    return false
+                    return false;
                   }
-                  break
+                  break;
                 case BlockType.RichText:
                 case BlockType.Writeback:
                 case BlockType.FileUpload:
                 case BlockType.DashboardHeader:
                   // these do not show up in the list in the first place
-                  break
+                  break;
                 default:
-                  exhaustiveCheck(attrs.type)
+                  exhaustiveCheck(attrs.type);
               }
             }
 
-            const s = search.trim()
-            if (s === '') {
-              return true
+            const s = search.trim();
+            if (s === "") {
+              return true;
             }
 
-            const title = attrs.title.trim()
-            return title.toLowerCase().includes(s.toLowerCase())
-          })
+            const title = attrs.title.trim();
+            return title.toLowerCase().includes(s.toLowerCase());
+          });
         })
         .flat(),
     [blocks, layout, blocksInDashboard, search, types]
-  )
+  );
 
   if (!props.isOpen) {
     return (
@@ -304,94 +314,92 @@ function DashboardControls(props: Props) {
           </span>
         </button>
       </div>
-    )
+    );
   }
 
   return (
-    <>
-      <div className="relative w-[400px] font-sans h-full">
-        <button
-          className="absolute z-10 top-12 transform rounded-full border border-gray-300 text-gray-400 bg-white hover:bg-ceramic-200 hover:border-ceramic-200 hover:text-ceramic-400 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
-          onClick={props.onClose}
-        >
-          <ChevronDoubleRightIcon className="w-3 h-3" />
-        </button>
+    <div className="relative w-[400px] font-sans h-full">
+      <button
+        className="absolute z-10 top-12 transform rounded-full border border-gray-300 text-gray-400 bg-white hover:bg-ceramic-200 hover:border-ceramic-200 hover:text-ceramic-400 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
+        onClick={props.onClose}
+      >
+        <ChevronDoubleRightIcon className="w-3 h-3" />
+      </button>
 
-        <div className="bg-white border-l border-gray-200 overflow-y-auto relative h-full flex flex-col justify-between">
-          <div className="bg-gray-50 border-b border-gray-200 py-6 px-4 shadow-sm">
-            <h2 className="font-syne text-lg font-medium text-gray-900 pb-4">
-              Blocks
-            </h2>
-            <div className="flex flex-col space-y-3">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Find block by title"
-                  className="block w-full rounded-md border-0 pl-7 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 text-xs h-[38px]"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
-                <MagnifyingGlassIcon className="absolute top-1 left-2 w-4 h-4 text-gray-400 translate-y-1/2" />
-              </div>
-              <MultiSelect<BlockType>
-                value={types}
-                getLabel={getTypeLabel}
-                getIcon={getTypeIcon}
-                placeholder="Filter by type"
-                options={typeOptions}
-                onToggle={onToggleType}
+      <div className="bg-white border-l border-gray-200 overflow-y-auto relative h-full flex flex-col justify-between">
+        <div className="bg-gray-50 border-b border-gray-200 py-6 px-4 shadow-sm">
+          <h2 className="font-syne text-lg font-medium text-gray-900 pb-4">
+            Blocks
+          </h2>
+          <div className="flex flex-col space-y-3">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Find block by title"
+                className="block w-full rounded-md border-0 pl-7 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 text-xs h-[38px]"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
               />
+              <MagnifyingGlassIcon className="absolute top-1 left-2 w-4 h-4 text-gray-400 translate-y-1/2" />
             </div>
-          </div>
-          <SimpleBar className="px-3 h-full overflow-y-auto no-scroll">
-            <BlocksList
-              document={props.document}
-              list={blocksList}
-              dataSources={props.dataSources}
-              dataframes={dataframes.value}
-              blocks={blocks.value}
-              layout={layout.value}
-              onDragStart={props.onDragStart}
-              userId={props.userId}
-              executionQueue={props.executionQueue}
-              aiTasks={props.aiTasks}
-              onExpand={props.onExpand}
+            <MultiSelect<BlockType>
+              value={types}
+              getLabel={getTypeLabel}
+              getIcon={getTypeIcon}
+              placeholder="Filter by type"
+              options={typeOptions}
+              onToggle={onToggleType}
             />
-          </SimpleBar>
-          <div className="bg-gray-50 p-4 border-t border-gray-200">
-            <button
-              className="flex items-center rounded-md px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 border border-gray-200 disabled:cursor-not-allowed disabled:opacity-50 gap-x-2 w-full bg-white shadow-sm justify-center"
-              onClick={addHeading}
-            >
-              <Heading1Icon strokeWidth={1} className="w-4 h-4" />
-              <span>Add heading</span>
-            </button>
           </div>
         </div>
+        <SimpleBar className="px-3 h-full overflow-y-auto no-scroll">
+          <BlocksList
+            document={props.document}
+            list={blocksList}
+            dataSources={props.dataSources}
+            dataframes={dataframes.value}
+            blocks={blocks.value}
+            layout={layout.value}
+            onDragStart={props.onDragStart}
+            userId={props.userId}
+            executionQueue={props.executionQueue}
+            aiTasks={props.aiTasks}
+            onExpand={props.onExpand}
+          />
+        </SimpleBar>
+        <div className="bg-gray-50 p-4 border-t border-gray-200">
+          <button
+            className="flex items-center rounded-md px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 border border-gray-200 disabled:cursor-not-allowed disabled:opacity-50 gap-x-2 w-full bg-white shadow-sm justify-center"
+            onClick={addHeading}
+          >
+            <Heading1Icon strokeWidth={1} className="w-4 h-4" />
+            <span>Add heading</span>
+          </button>
+        </div>
       </div>
-    </>
-  )
+    </div>
+  );
 }
 
 interface BlocksListProps {
-  document: ApiDocument
-  dataSources: APIDataSources
-  dataframes: Y.Map<DataFrame>
-  list: YBlock[]
-  blocks: Y.Map<YBlock>
-  layout: Y.Array<YBlockGroup>
-  onDragStart: (draggingBlock: DraggingBlock) => void
-  userId: string | null
-  executionQueue: ExecutionQueue
-  aiTasks: AITasks
-  onExpand: (block: YBlock) => void
+  document: ApiDocument;
+  dataSources: APIDataSources;
+  dataframes: Y.Map<DataFrame>;
+  list: YBlock[];
+  blocks: Y.Map<YBlock>;
+  layout: Y.Array<YBlockGroup>;
+  onDragStart: (draggingBlock: DraggingBlock) => void;
+  userId: string | null;
+  executionQueue: ExecutionQueue;
+  aiTasks: AITasks;
+  onExpand: (block: YBlock) => void;
 }
 function BlocksList(props: BlocksListProps) {
   return props.list.map((block, i) => {
-    const { id } = getBaseAttributes(block)
+    const { id } = getBaseAttributes(block);
     return (
       <BlockListItem
-        className={clsx('mt-6', i === props.list.length - 1 && 'mb-6')}
+        className={clsx("mt-6", i === props.list.length - 1 && "mb-6")}
         key={id}
         document={props.document}
         dataSources={props.dataSources}
@@ -405,71 +413,71 @@ function BlocksList(props: BlocksListProps) {
         aiTasks={props.aiTasks}
         onExpand={props.onExpand}
       />
-    )
-  })
+    );
+  });
 }
 
 interface BlockListItemProps {
-  document: ApiDocument
-  dataSources: APIDataSources
-  dataframes: Y.Map<DataFrame>
-  block: YBlock
-  blocks: Y.Map<YBlock>
-  layout: Y.Array<YBlockGroup>
-  onDragStart: (draggingBlock: DraggingBlock) => void
-  userId: string | null
-  executionQueue: ExecutionQueue
-  aiTasks: AITasks
-  onExpand: (block: YBlock) => void
-  className?: string
+  document: ApiDocument;
+  dataSources: APIDataSources;
+  dataframes: Y.Map<DataFrame>;
+  block: YBlock;
+  blocks: Y.Map<YBlock>;
+  layout: Y.Array<YBlockGroup>;
+  onDragStart: (draggingBlock: DraggingBlock) => void;
+  userId: string | null;
+  executionQueue: ExecutionQueue;
+  aiTasks: AITasks;
+  onExpand: (block: YBlock) => void;
+  className?: string;
 }
 function BlockListItem(props: BlockListItemProps) {
-  const { id, type } = getBaseAttributes(props.block)
-  const blockRef = useRef<HTMLDivElement>(null)
+  const { id, type } = getBaseAttributes(props.block);
+  const blockRef = useRef<HTMLDivElement>(null);
 
   const onDragStart = useCallback(
     (event: React.DragEvent<HTMLDivElement>) => {
-      event.dataTransfer.setData('text/plain', id)
+      event.dataTransfer.setData("text/plain", id);
 
-      const width = blockRef.current?.offsetWidth ?? 0
-      const height = blockRef.current?.offsetHeight ?? 0
-      props.onDragStart({ id, type, width, height })
+      const width = blockRef.current?.offsetWidth ?? 0;
+      const height = blockRef.current?.offsetHeight ?? 0;
+      props.onDragStart({ id, type, width, height });
 
-      const dragImage = document.createElement('div')
-      dragImage.className = 'shadow-md bg-white rounded-md overflow-hidden'
-      dragImage.style.position = 'absolute'
-      dragImage.style.top = '-1000px'
-      dragImage.style.left = '-1000px'
-      dragImage.style.width = `${width}px`
-      dragImage.style.height = `${height}px`
-      dragImage.style.zIndex = '9999'
-      dragImage.style.pointerEvents = 'none'
-      dragImage.innerHTML = blockRef.current?.innerHTML ?? ''
-      document.body.appendChild(dragImage)
+      const dragImage = document.createElement("div");
+      dragImage.className = "shadow-md bg-white rounded-md overflow-hidden";
+      dragImage.style.position = "absolute";
+      dragImage.style.top = "-1000px";
+      dragImage.style.left = "-1000px";
+      dragImage.style.width = `${width}px`;
+      dragImage.style.height = `${height}px`;
+      dragImage.style.zIndex = "9999";
+      dragImage.style.pointerEvents = "none";
+      dragImage.innerHTML = blockRef.current?.innerHTML ?? "";
+      document.body.appendChild(dragImage);
 
-      event.dataTransfer.setDragImage(dragImage, 0, 0)
+      event.dataTransfer.setDragImage(dragImage, 0, 0);
       setTimeout(() => {
-        document.body.removeChild(dragImage)
-      }, 0)
+        document.body.removeChild(dragImage);
+      }, 0);
     },
     [id, type, props.onDragStart, blockRef.current]
-  )
+  );
 
   const jsx = useMemo(
     () =>
       switchBlockType(props.block, {
-        onRichText: (block) => (
+        onRichText: block => (
           <RichTextBlock
             block={block}
             belongsToMultiTabGroup={false}
             isEditable={false}
             dragPreview={null}
-            dashboardMode={{ _tag: 'editing', position: 'sidebar' }}
+            dashboardMode={{ _tag: "editing", position: "sidebar" }}
             isCursorWithin={false}
             isCursorInserting={false}
           />
         ),
-        onSQL: (block) => (
+        onSQL: block => (
           <div className="w-full h-64">
             <SQLBlock
               block={block}
@@ -479,7 +487,7 @@ function BlockListItem(props: BlockListItemProps) {
               dataSources={props.dataSources}
               isEditable={false}
               dragPreview={null}
-              dashboardMode={{ _tag: 'editing', position: 'sidebar' }}
+              dashboardMode={{ _tag: "editing", position: "sidebar" }}
               isPublicMode={false}
               hasMultipleTabs={false}
               isBlockHiddenInPublished={false}
@@ -489,11 +497,11 @@ function BlockListItem(props: BlockListItemProps) {
               userId={props.userId}
               executionQueue={props.executionQueue}
               aiTasks={props.aiTasks}
-              isFullScreen={true}
+              isFullScreen
             />
           </div>
         ),
-        onPython: (block) => (
+        onPython: block => (
           <PythonBlock
             document={props.document}
             block={block}
@@ -501,7 +509,7 @@ function BlockListItem(props: BlockListItemProps) {
             isEditable={false}
             dragPreview={null}
             isPDF={false}
-            dashboardMode={{ _tag: 'editing', position: 'sidebar' }}
+            dashboardMode={{ _tag: "editing", position: "sidebar" }}
             isPublicMode={false}
             hasMultipleTabs={false}
             isBlockHiddenInPublished={false}
@@ -509,10 +517,10 @@ function BlockListItem(props: BlockListItemProps) {
             userId={props.userId}
             executionQueue={props.executionQueue}
             aiTasks={props.aiTasks}
-            isFullScreen={true}
+            isFullScreen
           />
         ),
-        onVisualization: (block) => (
+        onVisualization: block => (
           <div className="w-full h-96">
             <VisualizationBlock
               document={props.document}
@@ -522,7 +530,7 @@ function BlockListItem(props: BlockListItemProps) {
               dragPreview={null}
               isEditable={false}
               onAddGroupedBlock={() => {}}
-              isDashboard={true}
+              isDashboard
               renderer="svg"
               isPublicMode={false}
               hasMultipleTabs={false}
@@ -532,11 +540,11 @@ function BlockListItem(props: BlockListItemProps) {
               isCursorInserting={false}
               userId={props.userId}
               executionQueue={props.executionQueue}
-              isFullScreen={true}
+              isFullScreen
             />
           </div>
         ),
-        onVisualizationV2: (block) => (
+        onVisualizationV2: block => (
           <div className="w-full h-96">
             <VisualizationV2Block
               document={props.document}
@@ -546,7 +554,7 @@ function BlockListItem(props: BlockListItemProps) {
               dragPreview={null}
               isEditable={false}
               onAddGroupedBlock={() => {}}
-              dashboardMode={{ _tag: 'editing', position: 'sidebar' }}
+              dashboardMode={{ _tag: "editing", position: "sidebar" }}
               isPublicMode={false}
               hasMultipleTabs={false}
               isBlockHiddenInPublished={false}
@@ -555,19 +563,19 @@ function BlockListItem(props: BlockListItemProps) {
               isCursorInserting={false}
               userId={props.userId}
               executionQueue={props.executionQueue}
-              isFullScreen={true}
+              isFullScreen
             />
           </div>
         ),
-        onInput: (block) => (
+        onInput: block => (
           <InputBlock
             block={block}
             blocks={props.blocks}
             dragPreview={null}
             belongsToMultiTabGroup={false}
             isEditable={false}
-            isApp={true}
-            dashboardMode={{ _tag: 'editing', position: 'sidebar' }}
+            isApp
+            dashboardMode={{ _tag: "editing", position: "sidebar" }}
             isCursorWithin={false}
             isCursorInserting={false}
             userId={props.userId}
@@ -575,15 +583,15 @@ function BlockListItem(props: BlockListItemProps) {
             executionQueue={props.executionQueue}
           />
         ),
-        onDropdownInput: (block) => (
+        onDropdownInput: block => (
           <DropdownInputBlock
             block={block}
             blocks={props.blocks}
             dragPreview={null}
             belongsToMultiTabGroup={false}
             isEditable={false}
-            isApp={true}
-            dashboardMode={{ _tag: 'editing', position: 'sidebar' }}
+            isApp
+            dashboardMode={{ _tag: "editing", position: "sidebar" }}
             dataframes={props.dataframes}
             isCursorWithin={false}
             isCursorInserting={false}
@@ -593,7 +601,7 @@ function BlockListItem(props: BlockListItemProps) {
           />
         ),
         onFileUpload: () => null,
-        onDateInput: (block) => (
+        onDateInput: block => (
           <DateInputBlock
             block={block}
             blocks={props.blocks}
@@ -601,15 +609,15 @@ function BlockListItem(props: BlockListItemProps) {
             dragPreview={null}
             belongsToMultiTabGroup={false}
             isEditable={false}
-            isApp={true}
-            dashboardMode={{ _tag: 'editing', position: 'sidebar' }}
+            isApp
+            dashboardMode={{ _tag: "editing", position: "sidebar" }}
             isCursorWithin={false}
             isCursorInserting={false}
             userId={props.userId}
             executionQueue={props.executionQueue}
           />
         ),
-        onPivotTable: (block) => (
+        onPivotTable: block => (
           <div className="w-full h-96">
             <PivotTableBlock
               workspaceId={props.document.workspaceId}
@@ -619,7 +627,7 @@ function BlockListItem(props: BlockListItemProps) {
               dragPreview={null}
               isEditable={false}
               onAddGroupedBlock={() => {}}
-              dashboardMode={{ _tag: 'editing', position: 'sidebar' }}
+              dashboardMode={{ _tag: "editing", position: "sidebar" }}
               hasMultipleTabs={false}
               isBlockHiddenInPublished={false}
               onToggleIsBlockHiddenInPublished={() => {}}
@@ -627,7 +635,7 @@ function BlockListItem(props: BlockListItemProps) {
               isCursorInserting={false}
               userId={props.userId}
               executionQueue={props.executionQueue}
-              isFullScreen={true}
+              isFullScreen
             />
           </div>
         ),
@@ -642,9 +650,9 @@ function BlockListItem(props: BlockListItemProps) {
       props.dataframes,
       props.document,
     ]
-  )
+  );
 
-  const blockTitle = props.block.getAttribute('title')
+  const blockTitle = props.block.getAttribute("title");
 
   const onPointerUp = useCallback(() => {
     switch (type) {
@@ -658,36 +666,36 @@ function BlockListItem(props: BlockListItemProps) {
       case BlockType.Python:
       case BlockType.RichText:
       case BlockType.Writeback:
-        props.onExpand(props.block)
-        break
+        props.onExpand(props.block);
+        break;
       case BlockType.FileUpload:
       case BlockType.DashboardHeader:
-        return
+        return;
       default:
-        exhaustiveCheck(type)
+        exhaustiveCheck(type);
     }
-  }, [props.onExpand, props.block, type])
+  }, [props.onExpand, props.block, type]);
 
   return (
     <div
       key={id}
       className={clsx(
-        'border border-gray-300 hover:border-ceramic-200 rounded-md bg-white relative p-2 overflow-x-hidden',
+        "border border-gray-300 hover:border-ceramic-200 rounded-md bg-white relative p-2 overflow-x-hidden",
         props.className
       )}
-      draggable={true}
+      draggable
       onDragStart={onDragStart}
       unselectable="on"
       onPointerUp={onPointerUp}
     >
       <div className="flex flex-col gap-y-6">
         <span className="text-gray-400 text-md font-medium">
-          {blockTitle || 'Untitled'}
+          {blockTitle || "Untitled"}
         </span>
         <ScaleChild
           width={768}
           disableScale={
-            props.block.getAttribute('type') === BlockType.Visualization
+            props.block.getAttribute("type") === BlockType.Visualization
           }
         >
           <div className="overflow-hidden" ref={blockRef}>
@@ -703,7 +711,7 @@ function BlockListItem(props: BlockListItemProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default DashboardControls
+export default DashboardControls;

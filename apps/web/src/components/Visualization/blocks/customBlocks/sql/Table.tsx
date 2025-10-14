@@ -13,7 +13,7 @@ import {
   ArrowsUpDownIcon,
 } from "@heroicons/react/20/solid";
 
-import ScrollBar from "@/components/ScrollBar";
+import ScrollBar from "../../ScrollBar";
 
 interface Props {
   rows: Record<string, Json>[];

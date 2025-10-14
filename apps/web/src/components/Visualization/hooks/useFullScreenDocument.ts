@@ -1,25 +1,25 @@
-import { useCallback } from 'react'
-import { useSession } from './useAuth'
-import { useLocalStorage } from '@uidotdev/usehooks'
+import { useCallback } from "react";
+import { useLocalStorage } from "@uidotdev/usehooks";
+import { useSession } from "next-auth/react";
 
 type UseFullScreenDocument = [
   boolean,
   {
-    toggle: () => void
-  }
-]
+    toggle: () => void;
+  },
+];
 function useFullScreenDocument(documentId: string): UseFullScreenDocument {
-  const { data: user } = useSession({ redirectToLogin: true })
+  const { data: user } = useSession({ redirectToLogin: true });
   const [isFullScreen, setIsFullScreen] = useLocalStorage(
-    `briefer-user-${user?.id}-doc-${documentId}-fullscreen`,
+    `sandworm-user-${user?.id}-doc-${documentId}-fullscreen`,
     true
-  )
+  );
 
   const toggle = useCallback(() => {
-    setIsFullScreen((prev) => !prev)
-  }, [setIsFullScreen])
+    setIsFullScreen(prev => !prev);
+  }, [setIsFullScreen]);
 
-  return [isFullScreen, { toggle }]
+  return [isFullScreen, { toggle }];
 }
 
-export default useFullScreenDocument
+export default useFullScreenDocument;

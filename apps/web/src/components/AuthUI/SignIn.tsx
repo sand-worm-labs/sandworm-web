@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-
 import { useSearchParams } from "next/navigation";
 
-import { SocialLogin } from "./SocialLogin";
 import { Icons } from "../icons";
+
+import { SocialLogin } from "./SocialLogin";
 
 export const SignIn = () => {
   const params = useSearchParams();

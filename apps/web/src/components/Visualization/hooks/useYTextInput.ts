@@ -1,6 +1,6 @@
 import { updateYText } from "@sandworm/editor";
 import { useCallback, useEffect, useState } from "react";
-import * as Y from "yjs";
+import type * as Y from "yjs";
 
 type UseYTextInput = {
   value: string;
