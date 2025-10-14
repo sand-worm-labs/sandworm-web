@@ -42,28 +42,23 @@ import clsx from "clsx";
 import SimpleBar from "simplebar-react";
 
 import { useYDocState } from "@/hooks/useYDoc";
+import type { APIDataSources } from "@/hooks/useDatasources";
 
-import { APIDataSources } from "@/hooks/useDatasources";
 import PythonBlock from "../v2Editor/customBlocks/python";
 import SQLBlock from "../v2Editor/customBlocks/sql";
 import VisualizationBlock from "../v2Editor/customBlocks/visualization";
-
-
-
 import RichTextBlock from "../v2Editor/customBlocks/richText";
 import InputBlock from "../v2Editor/customBlocks/input";
 import DropdownInputBlock from "../v2Editor/customBlocks/dropdownInput";
 import DateInputBlock from "../v2Editor/customBlocks/dateInput";
-
-
 import ScaleChild from "../ScaleChild";
 import PivotTableBlock from "../v2Editor/customBlocks/pivotTable";
 import VisualizationV2Block from "../v2Editor/customBlocks/visualizationV2";
-
 import MultiSelect from "../MultiSelect";
-import { getDefaults } from "./DashboardView";
-import { DraggingBlock } from ".";
 
+import { getDefaults } from "./DashboardView";
+
+import type { DraggingBlock } from ".";
 
 function getTypeLabel(t: BlockType) {
   switch (t) {

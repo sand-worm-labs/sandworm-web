@@ -8,7 +8,7 @@ import React, {
   useCallback,
 } from "react";
 
-import useWebsocket from "./useWebSocket";
+import { useWebsocket } from "./useWebSocket";
 
 export type EnvironmentStatus =
   | "Running"

@@ -22,7 +22,6 @@ import AxisSelector from "../blocks/AxisSelector";
 import AxisModifierSelector from "../blocks/AxisModifierSelector";
 import { PortalTooltip } from "../blocks/ToolTips";
 import useResettableState from "../hooks/useResettableState";
-
 import YAxisPickerV2 from "../YAxisPicker";
 
 interface GeneralTabProps {
