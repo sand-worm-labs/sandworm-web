@@ -1,5 +1,5 @@
 import { registerAs } from '@nestjs/config';
-import { validateConfig } from '@repo/nest-common';
+import { validateConfig } from '@sandworm/nest-common';
 import {
   IsBoolean,
   IsInt,
