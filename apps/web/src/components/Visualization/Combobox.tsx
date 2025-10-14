@@ -4,7 +4,7 @@ import { Transition } from "@headlessui/react";
 import clsx from "clsx";
 import ReactDOM from "react-dom";
 
-import useDropdownPosition from "./hooks/useDropdownPosition";
+import useDropdownPosition from "./hooks/dropdownposition";
 
 interface Props<T> {
   label?: string | JSX.Element;

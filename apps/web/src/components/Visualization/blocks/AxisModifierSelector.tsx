@@ -4,7 +4,7 @@ import { CheckIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 import ReactDOM from "react-dom";
 
-import useDropdownPosition from "../hooks/useDropdownPosition";
+import useDropdownPosition from "../hooks/dropdownposition";
 
 type Option = {
   name: string;
