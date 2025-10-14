@@ -6,8 +6,8 @@ import {
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
-import { CurrentUser } from '@repo/graphql';
-import { Public } from '@repo/nest-common';
+import { CurrentUser } from '@sandworm/graphql';
+import { Public } from '@sandworm/nest-common';
 import { AuthService } from '../auth/auth.service';
 import { CreateUserInput, UpdateUserInput } from './dto/user.dto';
 import { User } from './model/user.model';
@@ -18,7 +18,7 @@ export class UserResolver {
   constructor(
     private readonly userService: UserService,
     private readonly authService: AuthService,
-  ) {}
+  ) { }
 
   @Query(() => User, {
     name: 'currentUser',

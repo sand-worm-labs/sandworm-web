@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ArticleEntity, UserEntity } from '@repo/postgresql-typeorm';
+import { ArticleEntity, UserEntity } from '@sandworm/postgresql-typeorm';
 import { FavoriteResolver } from './favorite.resolver';
 import { FavoriteService } from './favorite.service';
 
@@ -8,4 +8,4 @@ import { FavoriteService } from './favorite.service';
   imports: [TypeOrmModule.forFeature([ArticleEntity, UserEntity])],
   providers: [FavoriteResolver, FavoriteService],
 })
-export class FavoriteModule {}
+export class FavoriteModule { }

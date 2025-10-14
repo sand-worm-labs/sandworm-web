@@ -1,7 +1,7 @@
 import { ErrorCode } from '@/constants/error-code.constant';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ArticleEntity, TagEntity, UserEntity } from '@repo/postgresql-typeorm';
+import { ArticleEntity, TagEntity, UserEntity } from '@sandworm/postgresql-typeorm';
 import { I18nService } from 'nestjs-i18n';
 import slugify from 'slugify';
 import { In, Repository } from 'typeorm';
@@ -19,7 +19,7 @@ export class ArticleService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     private readonly i18n: I18nService,
-  ) {}
+  ) { }
 
   async get(slug: string): Promise<Article> {
     const article = await this.articleRepository.findOne({

@@ -1,5 +1,5 @@
 import { InputType } from '@nestjs/graphql';
-import { EmailField, PasswordField } from '@repo/graphql';
+import { EmailField, PasswordField } from '@sandworm/graphql';
 
 @InputType({ description: 'Login input' })
 export class LoginInput {

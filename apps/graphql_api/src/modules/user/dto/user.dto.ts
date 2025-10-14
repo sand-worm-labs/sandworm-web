@@ -6,8 +6,8 @@ import {
   StringField,
   StringFieldOptional,
   URLFieldOptional,
-} from '@repo/graphql';
-import { lowerCaseTransformer } from '@repo/nest-common';
+} from '@sandworm/graphql';
+import { lowerCaseTransformer } from '@sandworm/nest-common';
 import { Transform } from 'class-transformer';
 
 @InputType({ description: 'User register request' })

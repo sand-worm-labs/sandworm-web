@@ -1,8 +1,8 @@
 import { ErrorCode } from '@/constants/error-code.constant';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ValidationException } from '@repo/graphql';
-import { UserEntity, UserFollowsEntity } from '@repo/postgresql-typeorm';
+import { ValidationException } from '@sandworm/graphql';
+import { UserEntity, UserFollowsEntity } from '@sandworm/postgresql-typeorm';
 import { Repository } from 'typeorm';
 import { Profile } from './model/profile.model';
 
@@ -13,7 +13,7 @@ export class ProfileService {
     private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(UserFollowsEntity)
     private readonly userFollowRepository: Repository<UserFollowsEntity>,
-  ) {}
+  ) { }
 
   async getProfile(userId: number, username: string): Promise<Profile> {
     // Get the profile of the target user

@@ -1,5 +1,5 @@
 import { ArgsType } from '@nestjs/graphql';
-import { StringField } from '@repo/graphql';
+import { StringField } from '@sandworm/graphql';
 
 @ArgsType()
 export class UsernameArgs {

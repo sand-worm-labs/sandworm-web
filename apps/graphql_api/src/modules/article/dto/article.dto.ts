@@ -1,5 +1,5 @@
 import { ArgsType, InputType, PartialType } from '@nestjs/graphql';
-import { StringField, StringFieldOptional } from '@repo/graphql';
+import { StringField, StringFieldOptional } from '@sandworm/graphql';
 
 @ArgsType()
 export class SlugArgs {
@@ -34,4 +34,4 @@ export class CreateArticleInput {
 }
 
 @InputType()
-export class UpdateArticleInput extends PartialType(CreateArticleInput) {}
+export class UpdateArticleInput extends PartialType(CreateArticleInput) { }

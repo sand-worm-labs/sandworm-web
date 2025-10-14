@@ -1,13 +1,13 @@
 import { Args, Info, Mutation, Resolver } from '@nestjs/graphql';
-import { CurrentUser } from '@repo/graphql/decorators/current-user.decorator';
-import { getFieldNames } from '@repo/graphql/utils/graphql-fields.util';
+import { CurrentUser } from '@sandworm/graphql/decorators/current-user.decorator';
+import { getFieldNames } from '@sandworm/graphql/utils/graphql-fields.util';
 import type { GraphQLResolveInfo } from 'graphql';
 import { Article } from '../model/article.model';
 import { FavoriteService } from './favorite.service';
 
 @Resolver(() => Article)
 export class FavoriteResolver {
-  constructor(private readonly favoriteService: FavoriteService) {}
+  constructor(private readonly favoriteService: FavoriteService) { }
 
   @Mutation(() => Article, {
     name: 'favoriteArticle',

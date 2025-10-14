@@ -1,3 +1,3 @@
-import prettier from '@repo/eslint-config/prettier-base.config.mjs';
+import prettier from '@sandworm/eslint-config/prettier-base.config.mjs';
 
 export default { ...prettier };

@@ -8,7 +8,7 @@ import {
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
-import { CurrentUser, getFieldNames } from '@repo/graphql';
+import { CurrentUser, getFieldNames } from '@sandworm/graphql';
 import type { GraphQLResolveInfo } from 'graphql';
 import { Profile } from '../profile/model/profile.model';
 import { ArticleDataLoader } from './article.loader';
@@ -26,7 +26,7 @@ export class ArticleResolver {
   constructor(
     private readonly articleService: ArticleService,
     private readonly dataLoader: ArticleDataLoader,
-  ) {}
+  ) { }
 
   @Query(() => Article, {
     name: 'article',

@@ -1,10 +1,10 @@
 import { Query, Resolver } from '@nestjs/graphql';
-import { Public } from '@repo/nest-common';
+import { Public } from '@sandworm/nest-common';
 import { TagService } from './tag.service';
 
 @Resolver()
 export class TagResolver {
-  constructor(private readonly tagService: TagService) {}
+  constructor(private readonly tagService: TagService) { }
 
   @Public()
   @Query(() => [String], { name: 'tags' })
