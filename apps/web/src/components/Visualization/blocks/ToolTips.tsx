@@ -1,9 +1,8 @@
 import { Transition } from "@headlessui/react";
 import clsx from "clsx";
-import type { CSSProperties } from "react";
+import type { CSSProperties, RefObject } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import type { RefObject } from "react";
 
 import useDropdownPosition from "../hooks/useDropdownPosition";
 

@@ -3,7 +3,6 @@ import type { DataFrame } from "@sandworm/types";
 import type { VisualizationV2BlockInput } from "@sandworm/editor";
 
 import AxisModifierSelector from "../blocks/AxisModifierSelector";
-
 import VisualizationToggleV2 from "../VisualizationToggle";
 
 interface LabelsTabProps {
