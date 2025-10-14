@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import * as Y from "yjs";
-import type {
+import {
   ExecutionQueue,
   YBlock,
   VisualizationV2BlockInput,

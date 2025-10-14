@@ -20,7 +20,7 @@ function extractParamValue(
 export const useStringQuery = (name: string): string => {
   const router = useRouter();
 
-  const pathname = router.pathname;
+  const { pathname } = router;
   const path = typeof window === "undefined" ? "" : window.location.pathname;
 
   const arg = router.query[name] ?? extractParamValue(pathname, path, name);
