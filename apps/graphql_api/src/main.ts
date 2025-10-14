@@ -1,6 +1,7 @@
 import compression from '@fastify/compress';
 import helmet from '@fastify/helmet';
 import {
+  ConsoleLogger,
   HttpStatus,
   UnprocessableEntityException,
   ValidationError,
@@ -48,22 +49,24 @@ async function bootstrap() {
 
   // Configure the logger
   const asyncContext = app.get(AsyncContextProvider);
-  const logger = new FastifyPinoLogger(
-    asyncContext,
-    fastifyAdapter.getInstance().log,
-  );
+  // const logger = new FastifyPinoLogger(
+  //   asyncContext,
+  //   fastifyAdapter.getInstance().log,
+  // );
 
   // If you want to use the console logger, uncomment the following code
-  // const logger = new ConsoleLogger({
-  //   ...(configService.getOrThrow('app.nodeEnv', { infer: true }) ===
-  //     Environment.LOCAL && {
-  //     colors: true,
-  //   }),
-  //   ...(configService.getOrThrow('app.nodeEnv', { infer: true }) !==
-  //     Environment.LOCAL && {
-  //     json: true,
-  //   }),
-  // });
+
+  const logger = new ConsoleLogger({
+    ...(configService.getOrThrow('app.nodeEnv', { infer: true }) ===
+      Environment.LOCAL && {
+      colors: true,
+    }),
+    ...(configService.getOrThrow('app.nodeEnv', { infer: true }) !==
+      Environment.LOCAL && {
+      json: true,
+    }),
+  });
+
   app.useLogger(logger);
 
   fastifyAdapter.getInstance().addHook('onRequest', (request, reply, done) => {

@@ -1,5 +1,5 @@
 import { registerAs } from '@nestjs/config';
-import { IsMs, validateConfig } from '@repo/nest-common';
+import { IsMs, validateConfig } from '@sandworm/nest-common';
 import { IsNotEmpty, IsString } from 'class-validator';
 import { AuthConfig } from './auth-config.type';
 

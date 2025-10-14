@@ -1,19 +1,19 @@
-# @repo/eslint-config
+# @sandwormworm/eslint-config
 
 Shared ESLint configuration for the entire monorepo.
 
 ## Available Configurations
 
-- `@repo/eslint-config/eslint-base` - Base configuration for all projects
-- `@repo/eslint-config/eslint-nest` - Configuration for NestJS projects
-- `@repo/eslint-config/eslint-next` - Configuration for Next.js projects
-- `@repo/eslint-config/eslint-react-internal` - Configuration for internal React libraries
+- `@sandworm/eslint-config/eslint-base` - Base configuration for all projects
+- `@sandworm/eslint-config/eslint-nest` - Configuration for NestJS projects
+- `@sandworm/eslint-config/eslint-next` - Configuration for Next.js projects
+- `@sandworm/eslint-config/eslint-react-internal` - Configuration for internal React libraries
 
 ## Installation
 
 ```bash
 # Install package
-pnpm add -D @repo/eslint-config
+pnpm add -D @sandworm/eslint-config
 ```
 
 ## Usage
@@ -23,7 +23,7 @@ pnpm add -D @repo/eslint-config
 ```js
 // .eslintrc.js
 module.exports = {
-  extends: ["@repo/eslint-config/eslint-nest"],
+  extends: ["@sandworm/eslint-config/eslint-nest"],
 };
 ```
 
@@ -32,7 +32,7 @@ module.exports = {
 ```js
 // .eslintrc.js
 module.exports = {
-  extends: ["@repo/eslint-config/eslint-next"],
+  extends: ["@sandworm/eslint-config/eslint-next"],
 };
 ```
 
@@ -41,7 +41,7 @@ module.exports = {
 ```js
 // .eslintrc.js
 module.exports = {
-  extends: ["@repo/eslint-config/eslint-react-internal"],
+  extends: ["@sandworm/eslint-config/eslint-react-internal"],
 };
 ```
 
@@ -51,7 +51,7 @@ This package also provides a default Prettier configuration:
 
 ```js
 // .prettierrc.js
-module.exports = require("@repo/eslint-config/prettier-base");
+module.exports = require("@sandworm/eslint-config/prettier-base");
 ```
 
 ## Rules

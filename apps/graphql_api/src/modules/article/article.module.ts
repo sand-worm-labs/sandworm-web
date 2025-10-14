@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ArticleEntity, TagEntity, UserEntity } from '@repo/postgresql-typeorm';
+import { ArticleEntity, TagEntity, UserEntity } from '@sandworm/postgresql-typeorm';
 import { ArticleDataLoader } from './article.loader';
 import { ArticleResolver } from './article.resolver';
 import { ArticleService } from './article.service';
@@ -14,4 +14,4 @@ import { FavoriteModule } from './favorite/favorite.module';
   providers: [ArticleResolver, ArticleService, ArticleDataLoader],
   exports: [ArticleService],
 })
-export class ArticleModule {}
+export class ArticleModule { }
