@@ -21,6 +21,7 @@ import { UserFollowsEntity } from "./user-follows.entity";
 import { UserSettingEntity } from "./user-settings.entity";
 import { DocumentEntity } from "./document.entity";
 import { ChatEntity } from "./chat.entity";
+import { VoteEntity } from "./vote.entity";
 
 @Entity("users")
 export class UserEntity extends AbstractEntity {
@@ -61,10 +62,10 @@ export class UserEntity extends AbstractEntity {
 
   @Column({
     name: "email_verified",
-    type: "timestamp",
+    type: "bool",
     nullable: true,
   })
-  emailVerified?: Date | null;
+  emailVerified?: boolean | null;
 
 
   @Column({ nullable: true })
@@ -114,4 +115,7 @@ export class UserEntity extends AbstractEntity {
 
   @OneToMany(() => ChatEntity, (chat) => chat.user)
   chats!: Relation<ChatEntity[]>;
+
+  @OneToMany(() => VoteEntity, (vote) => vote.user)
+  votes!: Relation<VoteEntity[]>;
 }
