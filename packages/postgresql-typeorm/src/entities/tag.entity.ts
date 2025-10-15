@@ -3,8 +3,8 @@ import { AbstractEntity } from './abstract.entity';
 
 @Entity('tag')
 export class TagEntity extends AbstractEntity {
-  @PrimaryGeneratedColumn({ primaryKeyConstraintName: 'PK_tag_id' })
-  id!: number;
+  @PrimaryGeneratedColumn("uuid", { primaryKeyConstraintName: 'PK_tag_id' })
+  id!: string;
 
   @Column()
   @Index('UQ_tag_name', ['name'], { unique: true })

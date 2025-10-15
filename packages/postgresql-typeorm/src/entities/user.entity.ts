@@ -1,42 +1,74 @@
-import { hashPassword as hashPass } from '@sandworm/nest-common';
 import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
   BeforeInsert,
   BeforeUpdate,
-  Column,
-  Entity,
-  Index,
-  JoinTable,
-  ManyToMany,
+  OneToOne,
   OneToMany,
-  PrimaryGeneratedColumn,
+  ManyToMany,
+  JoinTable,
+  JoinColumn,
+  Index,
   type Relation,
-} from 'typeorm';
-import { AbstractEntity } from './abstract.entity';
-import { ArticleEntity } from './article.entity';
-import { CommentEntity } from './comment.entity';
-import { UserFollowsEntity } from './user-follows.entity';
+} from "typeorm";
+import { hashPassword as hashPass } from "@sandworm/nest-common";
+import { AbstractEntity } from "./abstract.entity";
+import { CommentEntity } from "./comment.entity";
+import { UserFollowsEntity } from "./user-follows.entity";
+import { UserSettingEntity } from "./user-settings.entity";
+import { DocumentEntity } from "./document.entity";
+import { ChatEntity } from "./chat.entity";
 
-@Entity('user')
+@Entity("users")
 export class UserEntity extends AbstractEntity {
-  @PrimaryGeneratedColumn({ primaryKeyConstraintName: 'PK_user_id' })
-  id!: number;
+  @PrimaryGeneratedColumn("uuid", {
+    primaryKeyConstraintName: "PK_users_id",
+  })
+  id!: string;
 
-  @Column()
-  @Index('UQ_user_username', ['username'], { unique: true })
-  username!: string;
+  @Column({ unique: true, nullable: true })
+  @Index("UQ_users_username", ["username"], { unique: true })
+  username?: string;
 
-  @Column()
-  @Index('UQ_user_email', ['email'], { unique: true })
-  email!: string;
+  @Column({ nullable: true })
+  @Index("UQ_users_email", ["email"], { unique: true })
+  email?: string;
 
-  @Column()
-  password!: string;
+  @Column({ name: "first_name", nullable: true })
+  firstName?: string;
 
-  @Column({ default: '' })
-  image!: string;
+  @Column({ name: "last_name", nullable: true })
+  lastName?: string;
 
-  @Column({ default: '' })
-  bio!: string;
+  @Column({ name: "full_name", nullable: true })
+  fullName?: string;
+
+  @Column({ name: "avater", nullable: true })
+  avater?: string;
+
+  @Column({ name: "is_onboarded", default: false })
+  isOnboarded!: boolean;
+
+  @Column({
+    name: "email_verified_at",
+    type: "timestamptz",
+    nullable: true,
+  })
+  emailVerifiedAt?: Date | null;
+
+  @Column({
+    name: "email_verified",
+    type: "timestamp",
+    nullable: true,
+  })
+  emailVerified?: Date | null;
+
+
+  @Column({ nullable: true })
+  password?: string;
 
   @BeforeInsert()
   @BeforeUpdate()
@@ -46,31 +78,40 @@ export class UserEntity extends AbstractEntity {
     }
   }
 
-  @OneToMany(() => ArticleEntity, (article) => article.author)
-  articles: Relation<ArticleEntity[]>;
+  // --- RELATIONS ---
+
+  @OneToOne(() => UserSettingEntity, (userSetting) => userSetting)
+  @JoinColumn()
+  settings?: Relation<UserSettingEntity>;
+
+  @OneToMany(() => DocumentEntity, (document) => document.author)
+  documents?: Relation<DocumentEntity[]>;
 
   @OneToMany(() => CommentEntity, (comment) => comment.author)
-  comments: Relation<CommentEntity[]>;
+  comments?: Relation<CommentEntity[]>;
 
-  @ManyToMany(() => ArticleEntity, (article) => article.favoritedBy)
+  @ManyToMany(() => DocumentEntity, (document) => document.favoritedBy)
   @JoinTable({
-    name: 'user_favorites',
+    name: "user_favorites",
     joinColumn: {
-      name: 'user_id',
-      referencedColumnName: 'id',
-      foreignKeyConstraintName: 'FK_user_favorites_user',
+      name: "user_id",
+      referencedColumnName: "id",
+      foreignKeyConstraintName: "FK_user_favorites_user",
     },
     inverseJoinColumn: {
-      name: 'article_id',
-      referencedColumnName: 'id',
-      foreignKeyConstraintName: 'FK_user_favorites_article',
+      name: "document_id",
+      referencedColumnName: "id",
+      foreignKeyConstraintName: "FK_user_favorites_document",
     },
   })
-  favorites: Relation<ArticleEntity[]>;
+  favorites?: Relation<DocumentEntity[]>;
 
   @OneToMany(() => UserFollowsEntity, (userFollow) => userFollow.follower)
-  following: Relation<UserFollowsEntity[]>;
+  following?: Relation<UserFollowsEntity[]>;
 
   @OneToMany(() => UserFollowsEntity, (userFollow) => userFollow.followee)
-  followers: Relation<UserFollowsEntity[]>;
+  followers?: Relation<UserFollowsEntity[]>;
+
+  @OneToMany(() => ChatEntity, (chat) => chat.user)
+  chats!: Relation<ChatEntity[]>;
 }
