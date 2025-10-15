@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
-import { Icons } from "../icons";
 
 import { SocialLogin } from "./SocialLogin";
+import { Icons } from "../Assets/Icons";
 
 export const SignIn = () => {
   const params = useSearchParams();
