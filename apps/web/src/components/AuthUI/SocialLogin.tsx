@@ -2,21 +2,43 @@
 
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
-import { signIn } from "next-auth/react";
 import { useTransition } from "react";
+import { useRouter } from "next/navigation";
 
-export const SocialLogin = () => {
+import { useSessionStore } from "@/store/session";
+
+type SocialLoginProps = {
+  variant?: "signup" | "signin";
+};
+
+export const SocialLogin = ({ variant = "signup" }: SocialLoginProps) => {
   const [, startTransition] = useTransition();
+  const router = useRouter();
+  const { setIntent, signIn, signUp } = useSessionStore();
 
   const handleGoogleSignIn = async () => {
     startTransition(async () => {
-      await signIn("google");
+      setIntent(variant);
+      if (variant === "signup") {
+        signUp();
+        router.push("/claim");
+      } else {
+        signIn();
+        router.push("/workspace");
+      }
     });
   };
 
   const handleGithubSignIn = async () => {
     startTransition(async () => {
-      await signIn("github");
+      setIntent(variant);
+      if (variant === "signup") {
+        signUp();
+        router.push("/claim");
+      } else {
+        signIn();
+        router.push("/workspace");
+      }
     });
   };
 
@@ -28,7 +50,9 @@ export const SocialLogin = () => {
         className="flex w-full items-center justify-center space-x-2 rounded-xl border border-[#DEE2E6]   px-4 py-3  bg-[#F8F9FA]  hover:bg-btnHover text-black mb-4 text-sm roobert "
       >
         <FcGoogle size={20} />
-        <span>Sign up with Google</span>
+        <span>
+          {variant === "signup" ? "Sign up with Google" : "Sign in with Google"}
+        </span>
       </button>
 
       <button
@@ -37,7 +61,9 @@ export const SocialLogin = () => {
         className="flex w-full items-center justify-center space-x-2 border border-[#ffffff50] rounded-xl px-4 py-3 text-white text-sm dark:hover:bg-btnHover bg-black roobert"
       >
         <FaGithub size={20} />
-        <span>Sign up with Github</span>
+        <span>
+          {variant === "signup" ? "Sign up with Github" : "Sign in with Github"}
+        </span>
       </button>
     </div>
   );

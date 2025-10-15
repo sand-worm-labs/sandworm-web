@@ -2,11 +2,7 @@ import * as Y from 'yjs';
 import * as z from 'zod';
 declare const Metadata: z.ZodObject<{
     isDirty: z.ZodBoolean;
-}, "strip", z.ZodTypeAny, {
-    isDirty: boolean;
-}, {
-    isDirty: boolean;
-}>;
+}, z.core.$strip>;
 export type Metadata = z.infer<typeof Metadata>;
 export type YMetadata = Y.XmlElement<Metadata>;
 export declare function getMetadata(yDoc: Y.Doc): YMetadata;

@@ -20,28 +20,11 @@ import { Button } from "../ui/button";
 type EntityType = "raw" | "project" | "decoded";
 
 export function DataExplorer({ onClose }: { onClose?: () => void }) {
-  const getInitialPosition = () => {
-    if (typeof window === "undefined") {
-      return { x: 100, y: 50 };
-    }
-
-    const panelWidth = 400;
-    // const panelHeight = 500;
-    const margin = 20;
-
-    // Position from right edge with margin, but ensure it doesn't go off-screen
-    const x = Math.max(margin, window.innerWidth - panelWidth - margin);
-    const y = margin;
-
-    return { x, y };
-  };
-
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
   const searchParams = useSearchParams();
   const selectedChain = searchParams.get("namespace");
   const selectedEntity = searchParams.get("id");
-
   const { chains, entityData, loading, fetchChainData, fetchEntityData } =
     useChainStore();
 
@@ -64,6 +47,20 @@ export function DataExplorer({ onClose }: { onClose?: () => void }) {
 
   const handleSelectChain = (chainId: string) => {
     router.push(`?namespace=${chainId}`);
+  };
+
+  const getInitialPosition = () => {
+    if (typeof window === "undefined") {
+      return { x: 100, y: 50 };
+    }
+
+    const panelWidth = 400;
+    const margin = 20;
+
+    const x = Math.max(margin, window.innerWidth - panelWidth - margin);
+    const y = margin;
+
+    return { x, y };
   };
 
   const renderExplorer = () => {
@@ -104,7 +101,6 @@ export function DataExplorer({ onClose }: { onClose?: () => void }) {
       className="z-[100]"
     >
       <Card className="h-full overflow-hidden relative">
-        {/* Top-centered drag handle button */}
         <div
           aria-label="Drag panel"
           className="border rounded drag-handle absolute left-1/2 -translate-x-1/2 top-4 -translate-y-1/2 z-10 p-1 h-6 w-6 shadow-sm cursor-grab active:cursor-grabbing"
