@@ -1,48 +1,52 @@
 import {
   Column,
-  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
-import { AbstractEntity } from './abstract.entity';
-import { DocumentEntity } from './document.entity';
-import { UserEntity } from './user.entity';
+  PrimaryGeneratedColumn
+} from "typeorm";
+import type { Relation } from "typeorm";
+import { AbstractEntity } from "./abstract.entity";
+import { DocumentEntity } from "./document.entity";
+import { UserEntity } from "./user.entity";
 
-@Entity('comment')
+@Entity("comment")
 export class CommentEntity extends AbstractEntity {
   constructor(data?: Partial<CommentEntity>) {
     super();
     Object.assign(this, data);
   }
-
-  @PrimaryGeneratedColumn('uuid', { primaryKeyConstraintName: 'PK_comment_id' })
+  @PrimaryGeneratedColumn("uuid", { primaryKeyConstraintName: "PK_comment_id" })
   id!: string;
 
   @Column()
   body!: string;
 
-  @Column({ name: 'document_id' })
-  documentId!: number;
+  // ----- Relation to Document -----
+  @Column({ name: "document_id" })
+  documentId!: string;
 
-  @ManyToOne(() => DocumentEntity, (document) => document.comments)
-  @JoinColumn({
-    name: 'document_id',
-    referencedColumnName: 'id',
-    foreignKeyConstraintName: 'FK_comment_document',
+  @ManyToOne(() => DocumentEntity, (document) => document.comments, {
+    onDelete: "CASCADE",
   })
-  document: DocumentEntity;
-
-  @Column({ name: 'author_id' })
-  authorId!: number;
-
-  @ManyToOne(() => UserEntity, (user) => user.comments)
   @JoinColumn({
-    name: 'author_id',
-    referencedColumnName: 'id',
-    foreignKeyConstraintName: 'FK_comment_user',
+    name: "document_id",
+    referencedColumnName: "id",
+    foreignKeyConstraintName: "FK_comment_document",
   })
-  author: UserEntity;
+  document!: Relation<DocumentEntity>;
+
+  // ----- Relation to Author/User -----
+  @Column({ name: "author_id" })
+  authorId!: string;
+
+  @ManyToOne(() => UserEntity, (user) => user.comments, {
+    onDelete: "CASCADE",
+  })
+  @JoinColumn({
+    name: "author_id",
+    referencedColumnName: "id",
+    foreignKeyConstraintName: "FK_comment_user",
+  })
+  author!: Relation<UserEntity>;
 }
