@@ -11,12 +11,12 @@ import {
   prism,
 } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useState } from "react";
+import { useTheme } from "next-themes";
 
 import type { Query } from "@/types";
 import { useQueryLike } from "@/hooks/useLikeQuery";
 import { useModalStore } from "@/store/auth";
 import { useForkQuery } from "@/hooks";
-import { useTheme } from "@/components/Theme/ThemeProvider";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 interface QueryCardProps {

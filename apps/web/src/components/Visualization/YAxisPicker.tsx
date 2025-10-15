@@ -1,11 +1,10 @@
-import { v4 as uuidv4 } from "uuid";
 import type {
   ChartType,
   DataFrame,
   DataFrameColumn,
-  YAxisV2,
-  SeriesV2,
-} from "@briefer/types";
+  YAxis,
+  Series,
+} from "@sandworm/types";
 import {
   AggregateFunction,
   NumpyNumberTypes,
@@ -14,23 +13,21 @@ import {
   DataFrameDateColumn,
   DataFrameStringColumn,
   DataFrameBooleanColumn,
-  DateFormat,
-  NumberFormat,
-} from "@briefer/types";
+} from "@sandworm/types";
 import { sortWith } from "ramda";
 import { useCallback, useMemo } from "react";
-import { createDefaultSeries } from "@briefer/editor";
+import { createDefaultSeries } from "@sandworm/editor";
 
-import ChartTypeSelector from "@/components/ChartTypeSelector";
-import AxisSelector from "@/components/AxisSelector";
-import AxisModifierSelector from "@/components/AxisModifierSelector";
+import ChartTypeSelector from "@/components/Visualization/blocks/ChartTypeSelector";
+import AxisSelector from "@/components/Visualization/blocks/AxisSelector";
+import AxisModifierSelector from "@/components/Visualization/blocks/AxisModifierSelector";
 
 interface Props {
   index: number;
   label?: string;
   defaultChartType: ChartType;
-  yAxis: YAxisV2;
-  onChange: (yAxis: YAxisV2, i: number) => void;
+  yAxis: YAxis;
+  onChange: (yAxis: YAxis, i: number) => void;
   isEditable: boolean;
   dataframe: DataFrame | null;
   onRemove?: (i: number) => void;
@@ -38,7 +35,7 @@ interface Props {
 }
 
 export function getAggFunction(
-  series: SeriesV2,
+  series: Series,
   column: DataFrameColumn | null
 ): AggregateFunction {
   if (!column) {

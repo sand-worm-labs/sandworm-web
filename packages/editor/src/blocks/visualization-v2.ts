@@ -183,7 +183,7 @@ const CartesianAxisOption = z
 
 const DataSet = z.object({
   dimensions: z.array(z.string()),
-  source: z.array(z.record(OrdinalRawValue)),
+  source: z.array(z.record(z.string(), OrdinalRawValue)),
 });
 
 const SerieCommon = z.object({
