@@ -9,8 +9,6 @@ import type {
   YBlock,
   VisualizationV2Block,
   ExecutionQueueBatch,
-  RunAllSource,
-  YBlockGroup,
 } from "@sandworm/editor";
 import type { DataFrame } from "@sandworm/types";
 
@@ -41,11 +39,7 @@ const executionQueue: ExecutionQueue = {
   enqueueBlock: () => {},
   enqueueBlockGroup: () => {},
   enqueueBlockOnwards: () => {},
-  enqueueRunAll: (
-    layout: Y.Array<YBlockGroup>,
-    blocksMap: Y.Map<YBlock>,
-    source: RunAllSource
-  ): ExecutionQueueBatch => ({
+  enqueueRunAll: (): ExecutionQueueBatch => ({
     id: "batch-1",
     status: "pending",
     timestamp: Date.now(),
@@ -93,18 +87,16 @@ export const ChatReportPreview = () => {
         </div>
       </div>
 
-      {/* Description */}
       <p className="text-[#455768] leading-relaxed">
         Building a database to know the rotation of the earth via a 2.5
         rotationary telescope. This is a dummy text here designed to test if
         this fits the design.
       </p>
 
-      {/* Chart Placeholder */}
-      <div className="w-full h-[500px] flex items-center justify-center text-neutral-500 border border-[#EBD7D7] rounded-2xl">
+      <div className="w-full flex items-center justify-center text-neutral-500  rounded-2xl relative pt-16">
         <VisualizationBlockV2
           isPublicMode={false}
-          isEditable={true}
+          isEditable
           document={document}
           onAddGroupedBlock={() => {}}
           block={
