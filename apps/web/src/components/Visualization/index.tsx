@@ -1,6 +1,12 @@
 import { v4 as uuidv4 } from "uuid";
+import {
+  ChartPieIcon,
+  ClockIcon,
+  StopIcon,
+  PlayIcon,
+} from "@heroicons/react/20/solid";
 import * as Y from "yjs";
-import type {
+import {
   ExecutionQueue,
   YBlock,
   VisualizationV2BlockInput,
@@ -11,7 +17,7 @@ import type {
   getVisualizationV2Attributes,
   isVisualizationV2Block,
   setVisualizationV2Input,
-} from "@briefer/editor";
+} from "@sandworm/editor";
 import { FunnelIcon } from "@heroicons/react/24/outline";
 import type { RefObject } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -24,37 +30,65 @@ import type {
   HistogramFormat,
   TimeUnit,
   VisualizationFilter,
-  YAxisV2,
-  SeriesV2,
-} from "@briefer/types";
-import {
+  YAxis,
+  Series,
   isInvalidVisualizationFilter,
   NumpyDateTypes,
   exhaustiveCheck,
-} from "@briefer/types";
+} from "@sandworm/types";
 import type { ConnectDragPreview } from "react-dnd";
 import { equals, head, omit } from "ramda";
 import { ChartPie } from "lucide-react";
 
-import HeaderSelect from "@/components/HeaderSelect";
-import { useEnvironmentStatus } from "@/hooks/useEnvironmentStatus";
-import useFullScreenDocument from "@/hooks/useFullScreenDocument";
+import { TooltipV2 } from "@/components/Visualization/blocks/ToolTips";
 
-
-import useEditorAwareness from "@/hooks/useEditorAwareness";
-import { downloadFile } from "@/utils/file";
-import { useBlockExecutions } from "@/hooks/useBlockExecution";
-import { useYMemo } from "@/hooks/useYMemo";
-
+import HeaderSelect from "./blocks/HeaderSelect";
+import useEditorAwareness from "./hooks/useEditorAwareness";
+import { useBlockExecutions } from "./hooks/useBlockExecution";
+import { useYMemo } from "./hooks/useYMemo";
+import type { DashboardMode } from "./blocks/Dashboard";
+/* import { dashboardModeHasControls } from "./blocks/Dashboard";
+ */
+import useFullScreenDocument from "./hooks/useFullScreenDocument";
+import { useEnvironmentStatus } from "./hooks/useEnvironmentStatus";
+import HiddenInPublishedButton from "./blocks/HiddenInPublishedButton";
 import { getAggFunction } from "./YAxisPicker";
-
-import { TooltipV2 } from "@/components/Tooltips";
-import type { DashboardMode } from "@/components/Dashboard";
-import { dashboardModeHasControls } from "@/components/Dashboard";
-import HiddenInPublishedButton from "../../HiddenInPublishedButton";
 import VisualizationControlsV2 from "./VisualizationControls";
 import VisualizationViewV2 from "./VisualizationView";
 import FilterSelector from "./FilterSelector";
+
+export function readFile(
+  file: File,
+  encoding: BufferEncoding = "utf8"
+): Promise<string> {
+  const fileReader = new FileReader();
+  fileReader.readAsArrayBuffer(file);
+
+  return new Promise(resolve => {
+    fileReader.onload = e => {
+      if (!e.target?.result) {
+        return;
+      }
+
+      if (typeof e.target.result === "string") {
+        return resolve(e.target.result);
+      }
+
+      resolve(Buffer.from(e.target.result).toString(encoding));
+    };
+  });
+}
+
+export function downloadFile(url: string, name: string) {
+  const downloadLink = document.createElement("a");
+
+  downloadLink.download = name;
+  downloadLink.href = url;
+
+  document.body.appendChild(downloadLink);
+  downloadLink.click();
+  document.body.removeChild(downloadLink);
+}
 
 function didChangeFilters(
   oldFilters: VisualizationFilter[],
@@ -522,7 +556,7 @@ function VisualizationBlockV2(props: Props) {
               "xAxisDateFormat",
             ];
 
-            const seriesFormattingFields: (keyof SeriesV2)[] = [
+            const seriesFormattingFields: (keyof Series)[] = [
               "dateFormat",
               "numberFormat",
             ];
@@ -531,7 +565,7 @@ function VisualizationBlockV2(props: Props) {
             // excluding both filters and formatting fields
             const oldValueForComparison = {
               ...omit([...xAxisFormattingFields, "filters"], val.oldValue),
-              yAxes: val.oldValue.yAxes.map((yAxis: YAxisV2) => ({
+              yAxes: val.oldValue.yAxes.map((yAxis: YAxis) => ({
                 ...yAxis,
                 series: yAxis.series.map(series => ({
                   ...omit(seriesFormattingFields, series),
@@ -540,9 +574,9 @@ function VisualizationBlockV2(props: Props) {
             };
             const newValueForComparison = {
               ...omit([...xAxisFormattingFields, "filters"], input),
-              yAxes: input.yAxes.map((yAxis: YAxisV2) => ({
+              yAxes: input.yAxes.map((yAxis: YAxis) => ({
                 ...yAxis,
-                series: yAxis.series.map((series: SeriesV2) => ({
+                series: yAxis.series.map((series: Series) => ({
                   ...omit(seriesFormattingFields, series),
                 })),
               })),
@@ -593,7 +627,7 @@ function VisualizationBlockV2(props: Props) {
   const [isFullScreen] = useFullScreenDocument(props.document.id);
 
   const onChangeYAxes = useCallback(
-    (yAxes: YAxisV2[]) => {
+    (yAxes: YAxis[]) => {
       setVisualizationV2Input(props.block, { yAxes });
     },
     [props.block]
@@ -622,7 +656,7 @@ function VisualizationBlockV2(props: Props) {
   );
 
   const onChangeSeries = useCallback(
-    (id: SeriesV2["id"], series: SeriesV2) => {
+    (id: Series["id"], series: Series) => {
       const yAxes = attrs.input.yAxes.map(yAxis => {
         const newSeries = yAxis.series.map(s => {
           if (s.id === id) {
@@ -639,7 +673,7 @@ function VisualizationBlockV2(props: Props) {
   );
 
   const onChangeAllSeries = useCallback(
-    (yIndex: number, series: SeriesV2[]) => {
+    (yIndex: number, series: Series[]) => {
       setVisualizationV2Input(props.block, {
         yAxes: attrs.input.yAxes.map((yAxis, index) => {
           if (index === yIndex) {
