@@ -4,10 +4,13 @@ import {
     PrimaryGeneratedColumn,
     ManyToOne,
     JoinColumn,
+    OneToMany,
 } from "typeorm";
 import type { Relation } from "typeorm";
 import { UserEntity } from "./user.entity";
 import { AbstractEntity } from "./abstract.entity";
+import { MessageEntity } from "./message.entity";
+import { VoteEntity } from "./vote.entity";
 
 @Entity("chats")
 export class ChatEntity extends AbstractEntity {
@@ -25,6 +28,12 @@ export class ChatEntity extends AbstractEntity {
 
     @Column({ name: "user_id", type: "uuid", nullable: false })
     userId!: string;
+
+    @OneToMany(() => MessageEntity, (message) => message.chat)
+    messages!: Relation<MessageEntity[]>;
+
+    @OneToMany(() => VoteEntity, (vote) => vote.chat)
+    votes!: Relation<VoteEntity[]>;
 
     @ManyToOne(() => UserEntity, (user) => user.chats, {
         onDelete: "CASCADE",

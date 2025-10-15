@@ -4,14 +4,16 @@ import {
     ManyToOne,
     JoinColumn,
     PrimaryColumn,
+    OneToOne
 } from "typeorm";
 import type { Relation } from "typeorm";
+import { AbstractEntity } from "./abstract.entity";
 import { UserEntity } from "./user.entity";
 import { ChatEntity } from "./chat.entity";
 import { MessageEntity } from "./message.entity";
 
 @Entity("votes")
-export class VoteEntity {
+export class VoteEntity extends AbstractEntity {
     @PrimaryColumn("uuid", { name: "user_id" })
     userId!: string;
 
@@ -23,6 +25,14 @@ export class VoteEntity {
 
     @Column({ name: "is_upvoted", type: "boolean", nullable: false })
     isUpvoted!: boolean;
+
+    @OneToOne(() => MessageEntity, (message) => message.vote, { onDelete: "CASCADE" })
+    @JoinColumn({
+        name: "message_id",
+        referencedColumnName: "id",
+        foreignKeyConstraintName: "FK_votes_message",
+    })
+    message!: Relation<MessageEntity>;
 
     @ManyToOne(() => UserEntity, (user) => user.votes, {
         onDelete: "CASCADE",
@@ -44,13 +54,4 @@ export class VoteEntity {
     })
     chat!: Relation<ChatEntity>;
 
-    @ManyToOne(() => MessageEntity, (message) => message.votes, {
-        onDelete: "CASCADE",
-    })
-    @JoinColumn({
-        name: "message_id",
-        referencedColumnName: "id",
-        foreignKeyConstraintName: "FK_votes_message",
-    })
-    message!: Relation<MessageEntity>;
 }
