@@ -8,7 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { AbstractEntity } from './abstract.entity';
-import { ArticleEntity } from './article.entity';
+import { DocumentEntity } from './document.entity';
 import { UserEntity } from './user.entity';
 
 @Entity('comment')
@@ -18,22 +18,22 @@ export class CommentEntity extends AbstractEntity {
     Object.assign(this, data);
   }
 
-  @PrimaryGeneratedColumn({ primaryKeyConstraintName: 'PK_comment_id' })
-  id!: number;
+  @PrimaryGeneratedColumn('uuid', { primaryKeyConstraintName: 'PK_comment_id' })
+  id!: string;
 
   @Column()
   body!: string;
 
-  @Column({ name: 'article_id' })
-  articleId!: number;
+  @Column({ name: 'document_id' })
+  documentId!: number;
 
-  @ManyToOne(() => ArticleEntity, (article) => article.comments)
+  @ManyToOne(() => DocumentEntity, (document) => document.comments)
   @JoinColumn({
-    name: 'article_id',
+    name: 'document_id',
     referencedColumnName: 'id',
-    foreignKeyConstraintName: 'FK_comment_article',
+    foreignKeyConstraintName: 'FK_comment_document',
   })
-  article: ArticleEntity;
+  document: DocumentEntity;
 
   @Column({ name: 'author_id' })
   authorId!: number;
@@ -45,20 +45,4 @@ export class CommentEntity extends AbstractEntity {
     foreignKeyConstraintName: 'FK_comment_user',
   })
   author: UserEntity;
-
-  @CreateDateColumn({
-    name: 'created_at',
-    type: 'timestamptz',
-    default: () => 'CURRENT_TIMESTAMP',
-    nullable: false,
-  })
-  createdAt: Date;
-
-  @UpdateDateColumn({
-    name: 'updated_at',
-    type: 'timestamptz',
-    default: () => 'CURRENT_TIMESTAMP',
-    nullable: false,
-  })
-  updatedAt: Date;
 }

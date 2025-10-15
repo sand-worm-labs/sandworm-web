@@ -17,18 +17,18 @@ import { CommentEntity } from './comment.entity';
 import { TagEntity } from './tag.entity';
 import { UserEntity } from './user.entity';
 
-@Entity('article')
-export class ArticleEntity extends AbstractEntity {
-  constructor(data?: Partial<ArticleEntity>) {
+@Entity('document')
+export class DocumentEntity extends AbstractEntity {
+  constructor(data?: Partial<DocumentEntity>) {
     super();
     Object.assign(this, data);
   }
 
-  @PrimaryGeneratedColumn({ primaryKeyConstraintName: 'PK_article_id' })
-  id!: number;
+  @PrimaryGeneratedColumn('uuid', { primaryKeyConstraintName: 'PK_document_id' })
+  id!: string;
 
   @Column()
-  @Index('UQ_article_slug', ['slug'], { unique: true })
+  @Index('UQ_document_slug', ['slug'], { unique: true })
   slug!: string;
 
   @Column()
@@ -43,49 +43,49 @@ export class ArticleEntity extends AbstractEntity {
   @Column({ name: 'author_id' })
   authorId: number;
 
-  @ManyToOne(() => UserEntity, (user) => user.articles)
+  @ManyToOne(() => UserEntity, (user) => user.documents)
   @JoinColumn({
     name: 'author_id',
     referencedColumnName: 'id',
-    foreignKeyConstraintName: 'FK_article_user',
+    foreignKeyConstraintName: 'FK_document_user',
   })
   author: UserEntity;
 
-  @CreateDateColumn({
-    name: 'created_at',
-    type: 'timestamptz',
-    default: () => 'CURRENT_TIMESTAMP',
-    nullable: false,
-  })
-  createdAt: Date;
-
-  @UpdateDateColumn({
-    name: 'updated_at',
-    type: 'timestamptz',
-    default: () => 'CURRENT_TIMESTAMP',
-    nullable: false,
-  })
-  updatedAt: Date;
-
   @ManyToMany(() => TagEntity)
   @JoinTable({
-    name: 'article_to_tag',
+    name: 'document_to_tag',
     joinColumn: {
-      name: 'article_id',
-      foreignKeyConstraintName: 'FK_article_to_tag_article',
+      name: 'document_id',
+      foreignKeyConstraintName: 'FK_document_to_tag_document',
       referencedColumnName: 'id',
     },
     inverseJoinColumn: {
       name: 'tag_id',
-      foreignKeyConstraintName: 'FK_article_to_tag_tag',
+      foreignKeyConstraintName: 'FK_document_to_tag_tag',
       referencedColumnName: 'id',
     },
   })
   tags: Relation<TagEntity[]>;
 
-  @OneToMany(() => CommentEntity, (comment) => comment.article)
+  @OneToMany(() => CommentEntity, (comment) => comment.document)
   comments: Relation<CommentEntity[]>;
 
   @ManyToMany(() => UserEntity, (user) => user.favorites)
   favoritedBy: Relation<UserEntity[]>;
+
+
+  @ManyToOne(() => DocumentEntity, (doc) => doc.forks, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({
+    name: 'forked_from_id',
+    referencedColumnName: 'id',
+    foreignKeyConstraintName: 'FK_document_forked_from',
+  })
+  forkedFrom?: Relation<DocumentEntity>;
+
+
+  @OneToMany(() => DocumentEntity, (doc) => doc.forkedFrom)
+  forks: Relation<DocumentEntity[]>;
 }
