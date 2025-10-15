@@ -18,10 +18,12 @@ import { hashPassword as hashPass } from "@sandworm/nest-common";
 import { AbstractEntity } from "./abstract.entity";
 import { CommentEntity } from "./comment.entity";
 import { UserFollowsEntity } from "./user-follows.entity";
-import { UserSettingEntity } from "./user-settings.entity";
+import { UserSettingEntity } from "./user-setting.entity";
 import { DocumentEntity } from "./document.entity";
 import { ChatEntity } from "./chat.entity";
 import { VoteEntity } from "./vote.entity";
+import { WorkspaceEntity } from "./workspace.entity";
+import { OnboardingTutorialEntity } from "./onboarding_tutorial.entity";
 
 @Entity("users")
 export class UserEntity extends AbstractEntity {
@@ -118,4 +120,10 @@ export class UserEntity extends AbstractEntity {
 
   @OneToMany(() => VoteEntity, (vote) => vote.user)
   votes!: Relation<VoteEntity[]>;
+
+  @OneToMany(() => WorkspaceEntity, (workspace) => workspace.owner)
+  workspaces!: Relation<WorkspaceEntity[]>;
+
+  @OneToMany(() => OnboardingTutorialEntity, (onboarding_tutorial) => onboarding_tutorial.user)
+  onboardingTutorials!: Relation<OnboardingTutorialEntity[]>;
 }
