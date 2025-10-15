@@ -28,7 +28,7 @@ export const SignInModal = () => {
               </span>
             </DialogTitle>
 
-            <DialogDescription className=" mb-6 text-[#455768] roobert text-sm">
+            <DialogDescription className=" mb-6 text-muted-foreground roobert text-sm">
               Decode complex Onchain data in seconds!
             </DialogDescription>
 

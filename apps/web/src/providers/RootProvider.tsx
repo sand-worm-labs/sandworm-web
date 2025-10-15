@@ -1,6 +1,7 @@
 "use client";
 
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
+
 import { ThemeProvider } from "./ThemeProvider";
 import { QueryProvider } from "./query";
 import AppProvider from "./AppProvider";
