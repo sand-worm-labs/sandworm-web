@@ -45,7 +45,7 @@ const config: Config = {
           foreground: "hsl(var(--popover-foreground))",
         },
         primary: {
-          DEFAULT: "#ea580b",
+          DEFAULT: "#FF887A",
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
@@ -74,6 +74,15 @@ const config: Config = {
           "4": "hsl(var(--chart-4))",
           "5": "hsl(var(--chart-5))",
         },
+
+        /* -----  ------ */
+        "hero-bg": "#000",
+        "custom-gray": "#8A919E",
+        "custom-light-gray": "#DFE1E6",
+        "custom-dark-gray": "#141B1F",
+        "custom-medium-gray": "#363C46",
+        "custom-black": "#0B0B12",
+        "neutral-500": "#868E96",
       },
       fontFamily: {
         sans: ["var(--font-inter)", ...defaultTheme.fontFamily.sans],
@@ -84,6 +93,8 @@ const config: Config = {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        "3.5xl": "2.2rem",
+        "4xl": "2.5rem",
       },
     },
   },

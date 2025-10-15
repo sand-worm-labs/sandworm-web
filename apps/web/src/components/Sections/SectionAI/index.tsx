@@ -28,18 +28,18 @@ export const SectionAI = () => {
   ];
 
   return (
-    <section className="py-28 bg-[#F4FEFF]">
+    <section className="py-28 bg-black text-white">
       <div className="container mx-auto text-center flex flex-col items-center">
         <RingIcon />
         <h3 className="uppercase mb-5 text-sm font-medium mt-5">
           Let’s talk worm AI
         </h3>
-        <h1 className="mx-auto tracking-wide leading-[1.2] px-3 lg:px-0 text-[#A6554D] uppercase font-bold text-6xl text-center">
+        <h1 className="mx-auto tracking-wide leading-[1.2] px-3 lg:px-0 text-primary uppercase font-bold text-6xl text-center">
           complex Onchain <br /> insight made easy
         </h1>
 
         <Link
-          className="border py-3 bg-black text-white border-white rounded-2xl px-5 text-sm  mt-10 font-medium dark:hover:bg-btnHover inline-block"
+          className="border py-3 bg-white text-white rounded-2xl px-5 text-sm  mt-10 font-medium dark:hover:bg-btnHover inline-block"
           href="/workspace"
           target="_blank"
         >
@@ -62,16 +62,14 @@ export const SectionAI = () => {
           {cards.map(card => (
             <div
               key={card.title}
-              className="bg-[#ECF6FF] border-[1.5px] border-[#D3DBF4] dark:bg-[#111111] rounded-2xl shadow-md p-6 flex flex-col text-left "
+              className="bg-custom-black  rounded-2xl shadow-md p-6 flex flex-col text-left "
             >
               <div className="flex space-x-6 mb-4">
                 <SparkleIcon />
-                <h4 className="text-sm text-[#3B5C6A] font-semibold mb-3">
-                  {card.title}
-                </h4>
+                <h4 className="text-sm  font-semibold mb-3">{card.title}</h4>
               </div>
 
-              <p className="text-[#242A2D] dark:text-gray-300 text-[0.95rem] leading-relaxed font-medium helvetica-neue">
+              <p className="text-custom-gray text-[0.95rem] leading-relaxed font-medium helvetica-neue">
                 {card.description}
               </p>
               <div className="w-full h-[10rem] relative">
