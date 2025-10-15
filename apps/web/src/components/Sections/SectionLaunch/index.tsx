@@ -1,41 +1,88 @@
 import React from "react";
-import Image from "next/image";
 import Link from "next/link";
-
 import { Star } from "@/components/Assets/Star";
 
-export const SectionLaunch = () => {
+interface FeatureCardProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
+export const FeatureCard = ({ children, className = "" }: FeatureCardProps) => {
   return (
-    <section className="py-32 bg-[#F5F8FF] dark:bg-[#000000]">
-      <div className="container mx-auto px-5 py-16 grid grid-cols-2 ">
-        <div className="my-16 pr-20">
-          <Star />
-          <h3 className="uppercase text-sm mb-4 font-semibold mt-6">
-            Explore{" "}
-          </h3>
-          <p>
-            Our protocol helps teams hit their data goals, whether it’s checking
-            live balances across wallets, gaining on-chain insights into
-            onboarding activities, or comparing activity across several
-            blockchains over any time frame.
-          </p>
-          <Link
-            className="border py-3 bg-black text-white border-white rounded-2xl px-5 text-sm  mt-10 font-medium dark:hover:bg-btnHover inline-block"
-            href="/workspace"
-            target="_blank"
-          >
-            <span className="ml-3">Launch App</span>
-          </Link>
-        </div>
-        <div>
-          <Image
-            alt="wormcard-placeholder"
-            className=" object-contain"
-            src="/img/imac.svg"
-            width={618}
-            height={520}
-            priority
-          />
+    <div
+      className={`border border-white/20 rounded-2xl p-8 bg-black/40 backdrop-blur-sm ${className}`}
+    >
+      {children}
+    </div>
+  );
+};
+
+export const SectionFeatures = () => {
+  return (
+    <section className="py-32 bg-black text-white">
+      <div className="container mx-auto px-5 py-16">
+        <h1 className="lg:text-[4.5rem] text-4xl text-primary mb-16 uppercase font-bold leading-[1.3] text-center">
+          Built for the future
+        </h1>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+          {/* First Card */}
+          <FeatureCard>
+            <Star />
+            <h3 className="uppercase text-sm mb-4 font-semibold mt-6">
+              Explore
+            </h3>
+            <p className="text-custom-gray text-sm">
+              Our protocol helps teams hit their data goals, whether it’s
+              checking live balances across wallets, gaining on-chain insights
+              into onboarding activities, or comparing activity across several
+              blockchains over any time frame.
+            </p>
+            <Link
+              className="border py-2 bg-white text-black rounded-2xl px-3 text-sm mt-10 font-medium inline-block"
+              href="/workspace"
+              target="_blank"
+            >
+              <span className="ml-3">Launch App</span>
+            </Link>
+          </FeatureCard>
+
+          {/* Second Card */}
+          <FeatureCard>
+            <h3 className="uppercase text-sm mb-4 font-semibold mt-2">
+              Query the blockchain
+            </h3>
+            <p className="text-custom-gray text-sm">
+              You can explore over 25+ blockchain networks, comparing data,
+              getting information and building a database, all with natural
+              language prompts.
+            </p>
+            <Link
+              className="border py-2 bg-white text-black rounded-2xl px-3 text-sm mt-10 font-medium inline-block"
+              href="/workspace"
+              target="_blank"
+            >
+              <span className="ml-3">Launch App</span>
+            </Link>
+          </FeatureCard>
+
+          {/* Third Card — Full Width */}
+          <FeatureCard className="lg:col-span-2">
+            <h3 className="uppercase text-sm mb-4 font-semibold mt-2">
+              Powerful sql
+            </h3>
+            <p className="text-custom-gray text-sm">
+              Integrate the Sandworm API into your workflow or dashboard. Use
+              WQL to craft on-chain intelligence tailored for your team.
+            </p>
+            <Link
+              className="border py-2 bg-white text-black rounded-2xl px-3 text-sm mt-10 font-medium inline-block"
+              href="/workspace"
+              target="_blank"
+            >
+              <span className="ml-3">Launch App</span>
+            </Link>
+          </FeatureCard>
         </div>
       </div>
     </section>

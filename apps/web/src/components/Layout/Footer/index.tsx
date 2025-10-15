@@ -6,7 +6,7 @@ import { SandwormLogo } from "../../Assets/SandwormLogo";
 
 export const MainFooter = () => {
   return (
-    <footer className=" p-4 px-5 lg:text-sm text-base text-[#242A2D] border-t border-borderLight mt-6 roobert font-medium">
+    <footer className=" p-4 px-5 lg:text-sm text-base text-[#242A2D] border-t border-borderLight mt-6 roobert font-medium ">
       <div className="container mx-auto grid lg:grid-cols-3 pt-5 pb-8 gap-y-12">
         <div className="col-span-full lg:col-span-1 ">
           <Link href="/" className="flex items-center ">
