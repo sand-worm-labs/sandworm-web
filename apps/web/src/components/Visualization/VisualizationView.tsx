@@ -16,15 +16,13 @@ import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import type {
   DataFrame,
   TimeUnit,
-  SeriesV2,
+  Series,
   DateFormat,
   NumberFormat,
-} from "@briefer/types";
-import {
   NumpyDateTypes,
   exhaustiveCheck,
   NumpyNumberTypes,
-} from "@briefer/types";
+} from "@sandworm/types";
 import clsx from "clsx";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import debounce from "lodash.debounce";
@@ -32,13 +30,13 @@ import type {
   VisualizationV2BlockInput,
   VisualizationV2BlockOutputResult,
   XAxis,
-} from "@briefer/editor";
+} from "@sandworm/editor";
 import { head, uniq } from "ramda";
 
-import { findMaxFontSize, measureText } from "@/measureText";
-import useResettableState from "@/hooks/useResettableState";
-import useSideBar from "@/hooks/useSideBar";
-import LargeSpinner from "@/components/LargeSpinner";
+import { findMaxFontSize, measureText } from "./measureText";
+import useResettableState from "./hooks/useResettableState";
+import useSideBar from "./hooks/useSideBar";
+import LargeSpinner from "./blocks/LargeSpinner";
 
 const FONT_FAMILY = ["Inter", ...twFontFamiliy.sans].join(", ");
 
@@ -286,7 +284,7 @@ function BrieferResult(props: {
           ...series.label,
           formatter: (param: { dataIndex: number }) => {
             const seriesId = series.id.split(":")[0];
-            let seriesInput: SeriesV2 | null = null;
+            let seriesInput: Series | null = null;
             for (const yAxis of props.input.yAxes) {
               for (const s of yAxis.series) {
                 if (s.id === seriesId) {
@@ -441,7 +439,7 @@ function BrieferResult(props: {
                 continue;
               }
 
-              let seriesInput: SeriesV2 | null = null;
+              let seriesInput: Series | null = null;
               for (const yAxis of props.input.yAxes) {
                 for (const series of yAxis.series) {
                   if (series.id === key) {

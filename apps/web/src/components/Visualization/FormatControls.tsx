@@ -5,10 +5,9 @@ import {
   TIME_FORMAT_OPTIONS,
   NUMBER_STYLE_OPTIONS,
   NUMBER_SEPARATOR_OPTIONS,
-} from "@briefer/editor";
+} from "@sandworm/editor";
 
-import AxisModifierSelector from "@/components/AxisModifierSelector";
-
+import AxisModifierSelector from "./blocks/AxisModifierSelector";
 import VisualizationToggleV2 from "./VisualizationToggle";
 
 // Generic interface for number formatting props

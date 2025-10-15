@@ -7,10 +7,13 @@ export function useCurrentUser() {
   useEffect(() => {
     async function fetchUser() {
       try {
-        const res = await fetch("/api/auth/user", { credentials: "include" });
+        const res = await fetch("/api/auth/session", {
+          credentials: "include",
+        });
         if (!res.ok) throw new Error("Not authenticated");
         const data = await res.json();
-        setUser(data.user);
+        // NextAuth session returns shape { user?: { name?: string; email?: string; image?: string; id?: string } }
+        setUser(data?.user ?? null);
       } catch {
         setUser(null);
       } finally {

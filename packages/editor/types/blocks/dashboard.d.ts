@@ -1,5 +1,5 @@
 import * as Y from "yjs";
-import { BaseBlock, BlockType } from "../../src/index.js";
+import { BaseBlock, BlockType } from "./index.js";
 export type DashboardHeaderBlock = BaseBlock<BlockType.DashboardHeader> & {
     content: string;
 };

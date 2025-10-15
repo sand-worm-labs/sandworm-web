@@ -1,252 +1,84 @@
 import * as Y from "yjs";
 import * as z from "zod";
-export declare const AITaskItemStatus: z.ZodUnion<[z.ZodObject<{
+export declare const AITaskItemStatus: z.ZodUnion<readonly [z.ZodObject<{
     _tag: z.ZodLiteral<"enqueued">;
-}, "strip", z.ZodTypeAny, {
-    _tag: "enqueued";
-}, {
-    _tag: "enqueued";
-}>, z.ZodObject<{
+}, z.core.$strip>, z.ZodObject<{
     _tag: z.ZodLiteral<"aborting">;
     ping: z.ZodNumber;
-}, "strip", z.ZodTypeAny, {
-    _tag: "aborting";
-    ping: number;
-}, {
-    _tag: "aborting";
-    ping: number;
-}>, z.ZodObject<{
+}, z.core.$strip>, z.ZodObject<{
     _tag: z.ZodLiteral<"running">;
     ping: z.ZodNumber;
-}, "strip", z.ZodTypeAny, {
-    _tag: "running";
-    ping: number;
-}, {
-    _tag: "running";
-    ping: number;
-}>, z.ZodObject<{
+}, z.core.$strip>, z.ZodObject<{
     _tag: z.ZodLiteral<"completed">;
-    status: z.ZodUnion<[z.ZodLiteral<"success">, z.ZodLiteral<"error">, z.ZodLiteral<"aborted">]>;
-}, "strip", z.ZodTypeAny, {
-    status: "aborted" | "success" | "error";
-    _tag: "completed";
-}, {
-    status: "aborted" | "success" | "error";
-    _tag: "completed";
-}>, z.ZodObject<{
+    status: z.ZodUnion<readonly [z.ZodLiteral<"success">, z.ZodLiteral<"error">, z.ZodLiteral<"aborted">]>;
+}, z.core.$strip>, z.ZodObject<{
     _tag: z.ZodLiteral<"unknown">;
-}, "strip", z.ZodTypeAny, {
-    _tag: "unknown";
-}, {
-    _tag: "unknown";
-}>]>;
+}, z.core.$strip>]>;
 export type AITaskItemStatus = z.infer<typeof AITaskItemStatus>;
 export type AITaskStatus = AITaskItemStatus["_tag"] | "idle";
 export declare function isAITaskStatusLoading(status: AITaskStatus): status is "running" | "aborting" | "enqueued";
 export declare const AITaskItemEditPythonMetadata: z.ZodObject<{
     _tag: z.ZodLiteral<"edit-python">;
-}, "strip", z.ZodTypeAny, {
-    _tag: "edit-python";
-}, {
-    _tag: "edit-python";
-}>;
+}, z.core.$strip>;
 export type AITaskItemEditPythonMetadata = z.infer<typeof AITaskItemEditPythonMetadata>;
 export declare const AITaskItemFixPythonMetadata: z.ZodObject<{
     _tag: z.ZodLiteral<"fix-python">;
-}, "strip", z.ZodTypeAny, {
-    _tag: "fix-python";
-}, {
-    _tag: "fix-python";
-}>;
+}, z.core.$strip>;
 export type AITaskItemFixPythonMetadata = z.infer<typeof AITaskItemFixPythonMetadata>;
 export declare const AITaskItemEditSQLMetadata: z.ZodObject<{
     _tag: z.ZodLiteral<"edit-sql">;
-}, "strip", z.ZodTypeAny, {
-    _tag: "edit-sql";
-}, {
-    _tag: "edit-sql";
-}>;
+}, z.core.$strip>;
 export type AITaskItemEditSQLMetadata = z.infer<typeof AITaskItemEditSQLMetadata>;
 export declare const AITaskItemFixSQLMetadata: z.ZodObject<{
     _tag: z.ZodLiteral<"fix-sql">;
-}, "strip", z.ZodTypeAny, {
-    _tag: "fix-sql";
-}, {
-    _tag: "fix-sql";
-}>;
+}, z.core.$strip>;
 export type AITaskItemFixSQLMetadata = z.infer<typeof AITaskItemFixSQLMetadata>;
 export declare const AITaskItemNoopMetadata: z.ZodObject<{
     _tag: z.ZodLiteral<"noop">;
-}, "strip", z.ZodTypeAny, {
-    _tag: "noop";
-}, {
-    _tag: "noop";
-}>;
+}, z.core.$strip>;
 export type AITaskItemNoopMetadata = z.infer<typeof AITaskItemNoopMetadata>;
-export declare const AITaskItemMetadata: z.ZodUnion<[z.ZodObject<{
+export declare const AITaskItemMetadata: z.ZodUnion<readonly [z.ZodObject<{
     _tag: z.ZodLiteral<"edit-python">;
-}, "strip", z.ZodTypeAny, {
-    _tag: "edit-python";
-}, {
-    _tag: "edit-python";
-}>, z.ZodObject<{
+}, z.core.$strip>, z.ZodObject<{
     _tag: z.ZodLiteral<"fix-python">;
-}, "strip", z.ZodTypeAny, {
-    _tag: "fix-python";
-}, {
-    _tag: "fix-python";
-}>, z.ZodObject<{
+}, z.core.$strip>, z.ZodObject<{
     _tag: z.ZodLiteral<"edit-sql">;
-}, "strip", z.ZodTypeAny, {
-    _tag: "edit-sql";
-}, {
-    _tag: "edit-sql";
-}>, z.ZodObject<{
+}, z.core.$strip>, z.ZodObject<{
     _tag: z.ZodLiteral<"fix-sql">;
-}, "strip", z.ZodTypeAny, {
-    _tag: "fix-sql";
-}, {
-    _tag: "fix-sql";
-}>, z.ZodObject<{
+}, z.core.$strip>, z.ZodObject<{
     _tag: z.ZodLiteral<"noop">;
-}, "strip", z.ZodTypeAny, {
-    _tag: "noop";
-}, {
-    _tag: "noop";
-}>]>;
+}, z.core.$strip>]>;
 export type AITaskItemMetadata = z.infer<typeof AITaskItemMetadata>;
 export type AITaskItemMetadataWithoutNoop = Exclude<AITaskItemMetadata, AITaskItemNoopMetadata>;
 export declare const AITaskItemAttrs: z.ZodObject<{
-    blockId: z.ZodEffects<z.ZodString, string, string>;
-    userId: z.ZodNullable<z.ZodEffects<z.ZodString, string, string>>;
-    status: z.ZodUnion<[z.ZodObject<{
+    blockId: z.ZodString;
+    userId: z.ZodNullable<z.ZodString>;
+    status: z.ZodUnion<readonly [z.ZodObject<{
         _tag: z.ZodLiteral<"enqueued">;
-    }, "strip", z.ZodTypeAny, {
-        _tag: "enqueued";
-    }, {
-        _tag: "enqueued";
-    }>, z.ZodObject<{
+    }, z.core.$strip>, z.ZodObject<{
         _tag: z.ZodLiteral<"aborting">;
         ping: z.ZodNumber;
-    }, "strip", z.ZodTypeAny, {
-        _tag: "aborting";
-        ping: number;
-    }, {
-        _tag: "aborting";
-        ping: number;
-    }>, z.ZodObject<{
+    }, z.core.$strip>, z.ZodObject<{
         _tag: z.ZodLiteral<"running">;
         ping: z.ZodNumber;
-    }, "strip", z.ZodTypeAny, {
-        _tag: "running";
-        ping: number;
-    }, {
-        _tag: "running";
-        ping: number;
-    }>, z.ZodObject<{
+    }, z.core.$strip>, z.ZodObject<{
         _tag: z.ZodLiteral<"completed">;
-        status: z.ZodUnion<[z.ZodLiteral<"success">, z.ZodLiteral<"error">, z.ZodLiteral<"aborted">]>;
-    }, "strip", z.ZodTypeAny, {
-        status: "aborted" | "success" | "error";
-        _tag: "completed";
-    }, {
-        status: "aborted" | "success" | "error";
-        _tag: "completed";
-    }>, z.ZodObject<{
+        status: z.ZodUnion<readonly [z.ZodLiteral<"success">, z.ZodLiteral<"error">, z.ZodLiteral<"aborted">]>;
+    }, z.core.$strip>, z.ZodObject<{
         _tag: z.ZodLiteral<"unknown">;
-    }, "strip", z.ZodTypeAny, {
-        _tag: "unknown";
-    }, {
-        _tag: "unknown";
-    }>]>;
-    metadata: z.ZodUnion<[z.ZodObject<{
+    }, z.core.$strip>]>;
+    metadata: z.ZodUnion<readonly [z.ZodObject<{
         _tag: z.ZodLiteral<"edit-python">;
-    }, "strip", z.ZodTypeAny, {
-        _tag: "edit-python";
-    }, {
-        _tag: "edit-python";
-    }>, z.ZodObject<{
+    }, z.core.$strip>, z.ZodObject<{
         _tag: z.ZodLiteral<"fix-python">;
-    }, "strip", z.ZodTypeAny, {
-        _tag: "fix-python";
-    }, {
-        _tag: "fix-python";
-    }>, z.ZodObject<{
+    }, z.core.$strip>, z.ZodObject<{
         _tag: z.ZodLiteral<"edit-sql">;
-    }, "strip", z.ZodTypeAny, {
-        _tag: "edit-sql";
-    }, {
-        _tag: "edit-sql";
-    }>, z.ZodObject<{
+    }, z.core.$strip>, z.ZodObject<{
         _tag: z.ZodLiteral<"fix-sql">;
-    }, "strip", z.ZodTypeAny, {
-        _tag: "fix-sql";
-    }, {
-        _tag: "fix-sql";
-    }>, z.ZodObject<{
+    }, z.core.$strip>, z.ZodObject<{
         _tag: z.ZodLiteral<"noop">;
-    }, "strip", z.ZodTypeAny, {
-        _tag: "noop";
-    }, {
-        _tag: "noop";
-    }>]>;
-}, "strip", z.ZodTypeAny, {
-    status: {
-        _tag: "enqueued";
-    } | {
-        _tag: "aborting";
-        ping: number;
-    } | {
-        _tag: "running";
-        ping: number;
-    } | {
-        status: "aborted" | "success" | "error";
-        _tag: "completed";
-    } | {
-        _tag: "unknown";
-    };
-    blockId: string;
-    userId: string | null;
-    metadata: {
-        _tag: "edit-python";
-    } | {
-        _tag: "fix-python";
-    } | {
-        _tag: "edit-sql";
-    } | {
-        _tag: "fix-sql";
-    } | {
-        _tag: "noop";
-    };
-}, {
-    status: {
-        _tag: "enqueued";
-    } | {
-        _tag: "aborting";
-        ping: number;
-    } | {
-        _tag: "running";
-        ping: number;
-    } | {
-        status: "aborted" | "success" | "error";
-        _tag: "completed";
-    } | {
-        _tag: "unknown";
-    };
-    blockId: string;
-    userId: string | null;
-    metadata: {
-        _tag: "edit-python";
-    } | {
-        _tag: "fix-python";
-    } | {
-        _tag: "edit-sql";
-    } | {
-        _tag: "fix-sql";
-    } | {
-        _tag: "noop";
-    };
-}>;
+    }, z.core.$strip>]>;
+}, z.core.$strip>;
 export type YAITaskItemAttrs = z.infer<typeof AITaskItemAttrs>;
 export type YAITaskItem = Y.XmlElement<YAITaskItemAttrs>;
 export declare function createYAITaskItem(blockId: string, userId: string | null, metadata: AITaskItemMetadataWithoutNoop): YAITaskItem;
@@ -274,13 +106,12 @@ export declare class AITaskItem {
             _tag: "running";
             ping: number;
         } | {
-            status: "aborted" | "success" | "error";
             _tag: "completed";
+            status: "error" | "success" | "aborted";
         } | {
             _tag: "unknown";
         } | undefined;
         blockId?: string | undefined;
-        userId?: string | null | undefined;
         metadata?: {
             _tag: "edit-python";
         } | {
@@ -292,6 +123,7 @@ export declare class AITaskItem {
         } | {
             _tag: "noop";
         } | undefined;
+        userId?: string | null | undefined;
     };
     private onStatusObservation;
     static fromYjs(item: YAITaskItem): AITaskItem;
