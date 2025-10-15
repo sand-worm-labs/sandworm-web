@@ -28,7 +28,7 @@ const config: Config = {
           secondary: "#0C0F19",
           gray: "#888888",
         },
-        background: "#000",
+        background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         customgray: "#18181B",
         borderLight: "hsla(0, 100%, 100%, 0.14)",
