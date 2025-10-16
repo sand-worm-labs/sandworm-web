@@ -48,6 +48,7 @@
     "@radix-ui/react-tooltip": "^1.1.8",
     "@radix-ui/react-visually-hidden": "^1.2.3",
     "@sandworm/database": "workspace:*",
+    "@sandworm/ui": "workspace:*",
     "@sandworm/editor": "workspace:*",
     "@sandworm/types": "workspace:*",
     "@tanstack/react-query": "^5.59.16",
