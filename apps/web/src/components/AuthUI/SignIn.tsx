@@ -3,16 +3,16 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
-import { Icons } from "../icons";
 
 import { SocialLogin } from "./SocialLogin";
+import { SandwormDarkLogo } from "../Assets/SandwormDarkLogo";
 
 export const SignIn = () => {
   const params = useSearchParams();
   const error = params?.get("error");
   return (
     <div className="w-full max-w-md rounded-lg border border-[#ffffff30] p-6 content flex flex-col justify-center items-center h-full mx-auto">
-      <Icons.DarkLogo />
+      <SandwormDarkLogo />
 
       <h2 className="text-3xl font-medium text-center text-black mb-6 mt-4 roobert">
         Welcome back to <span className="uppercase font-bold">SANDWORM</span>!
