@@ -17,9 +17,9 @@ import {
 import { usePathname, useParams } from "next/navigation";
 import { useRouter } from "@bprogress/next/app";
 
-import { Tabs, TabsList, TabsContent } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Tabs, TabsList, TabsContent } from "@sandworm/ui/components/tabs";
+import { Button } from "@sandworm/ui/components/button";
+import { ScrollArea, ScrollBar } from "@sandworm/ui/components/scroll-area";
 import {
   ContextMenu,
   ContextMenuContent,

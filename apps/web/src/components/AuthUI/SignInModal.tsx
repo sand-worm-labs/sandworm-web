@@ -7,7 +7,7 @@ import {
   DialogContent,
   DialogTitle,
   DialogDescription,
-} from "@/components/ui/dialog";
+} from "@sandworm/ui/components/dialog";
 import { useModalStore } from "@/store/auth";
 
 import { PartnersSection } from "../Partners";

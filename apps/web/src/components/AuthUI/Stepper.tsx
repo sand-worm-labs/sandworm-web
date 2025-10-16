@@ -5,7 +5,7 @@ import Link from "next/link";
 
 interface Step {
   name: string;
-  href: string; // this is temporary and would be removed once nav logic is implemented
+  href: string;
   completed?: boolean;
 }
 
