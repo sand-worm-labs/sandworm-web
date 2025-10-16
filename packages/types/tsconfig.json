@@ -1,21 +1,3 @@
 {
-  "compilerOptions": {
-    "target": "es2016",
-    "module": "nodenext",
-    "outDir": "./dist",
-    "declaration": true,
-    "declarationMap": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "alwaysStrict": true,
-    "noUncheckedIndexedAccess": true,
-    "noPropertyAccessFromIndexSignature": true,
-    "skipLibCheck": true,
-    "moduleResolution": "nodenext"
-  },
-  "include": ["./src"]
+  "extends": "@sandworm/typescript-config/base.json"
 }
