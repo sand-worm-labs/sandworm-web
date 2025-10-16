@@ -22,21 +22,21 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "../ui/alert-dialog";
-import { Button } from "../ui/button";
+} from "@sandworm/ui/components/alert-dialog";
+import { Button } from "@sandworm/ui/components/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+} from "@sandworm/ui/components/dropdown-menu";
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from "../ui/sheet";
+} from "@sandworm/ui/components/sheet";
 
 import { InfoIcon, MenuIcon, MoreHorizontalIcon, TrashIcon } from "./icons";
 
