@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { z } from "zod";
 import Link from "next/link";
 
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Input } from "@sandworm/ui/components/input";
+import { Button } from "@sandworm/ui/components/button";
 
 import { Username } from "../Assets/Username";
 
