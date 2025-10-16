@@ -4,17 +4,17 @@ packages:
   - configs/*
 
 catalog:
-  '@types/node': 20.19.9
-  typescript: 5.9.2
+  "@types/node": 20.19.9
+  "typescript": 5.9.2
 
 catalogs:
   react:
-    '@tanstack/react-query': 5.59.16
-    '@types/react': 19.1.9
-    '@types/react-dom': 19.1.7
-    next: 15.4.7
-    next-themes: 0.4.6
-    react: 19.1.1
-    react-dom: 19.1.1
+    "@tanstack/react-query": 5.59.16
+    "@types/react": 19.1.9
+    "@types/react-dom": 19.1.7
+    "next": 15.4.7
+    "next-themes": 0.4.6
+    "react": 19.1.1
+    "react-dom": 19.1.1
   ui:
-    tailwindcss: 4.1.11
+    "tailwindcss": 4.1.11

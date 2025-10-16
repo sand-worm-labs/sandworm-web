@@ -3,8 +3,8 @@
 import { Bot, SparkleIcon } from "lucide-react";
 import { useState } from "react";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Card, CardContent, CardHeader, CardTitle } from "@sandworm/ui/components/card";
+import { ScrollArea } from "@sandworm/ui/components/scroll-area";
 
 import { Badge } from "../ui/badge";
 
