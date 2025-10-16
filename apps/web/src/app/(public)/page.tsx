@@ -4,6 +4,7 @@ import { SectionOnboard } from "@/components/Sections/SectionOnboard";
 import { SectionVideoPreview } from "@/components/Sections/SectionVideoPreview";
 import { SectionAI } from "@/components/Sections/SectionAI";
 import { SectionFeatures } from "@/components/Sections/SectionLaunch";
+import { SectionWorkFlow } from "@/components/Sections/SectionWorkFlow";
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
       <SectionVideoPreview />
       <SectionFeatures />
       <SectionAI />
+      <SectionWorkFlow />
       <SectionOnboard />
     </MainLayout>
   );

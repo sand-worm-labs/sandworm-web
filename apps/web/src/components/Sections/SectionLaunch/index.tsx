@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { Star } from "@/components/Assets/Star";
+import Image from "next/image";
 
 interface FeatureCardProps {
   children: React.ReactNode;
@@ -17,6 +18,8 @@ export const FeatureCard = ({ children, className = "" }: FeatureCardProps) => {
   );
 };
 
+// 💭 The images on each card will be animated for final form
+
 export const SectionFeatures = () => {
   return (
     <section className="py-32 bg-black text-white">
@@ -26,8 +29,20 @@ export const SectionFeatures = () => {
         </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-          {/* First Card */}
+          {/* ════════════ First Card ════════════ */}
           <FeatureCard>
+            <div>
+              <div>
+                <Image
+                  alt="wormcard-placeholder"
+                  className=" object-contain"
+                  src="/img/radar-static.svg"
+                  width={386}
+                  height={386}
+                  priority
+                />
+              </div>
+            </div>
             <Star />
             <h3 className="uppercase text-sm mb-4 font-semibold mt-6">
               Explore
@@ -47,8 +62,18 @@ export const SectionFeatures = () => {
             </Link>
           </FeatureCard>
 
-          {/* Second Card */}
+          {/* ════════════ Second Card ════════════ */}
           <FeatureCard>
+            <div>
+              <Image
+                alt="wormcard-placeholder"
+                className=" object-contain"
+                src="/img/chainimages.svg"
+                width={576}
+                height={345}
+                priority
+              />
+            </div>
             <h3 className="uppercase text-sm mb-4 font-semibold mt-2">
               Query the blockchain
             </h3>
@@ -66,22 +91,35 @@ export const SectionFeatures = () => {
             </Link>
           </FeatureCard>
 
-          {/* Third Card — Full Width */}
-          <FeatureCard className="lg:col-span-2">
-            <h3 className="uppercase text-sm mb-4 font-semibold mt-2">
-              Powerful sql
-            </h3>
-            <p className="text-custom-gray text-sm">
-              Integrate the Sandworm API into your workflow or dashboard. Use
-              WQL to craft on-chain intelligence tailored for your team.
-            </p>
-            <Link
-              className="border py-2 bg-white text-black rounded-2xl px-3 text-sm mt-10 font-medium inline-block"
-              href="/workspace"
-              target="_blank"
-            >
-              <span className="ml-3">Launch App</span>
-            </Link>
+          {/* ════════════ Third Card ════════════ */}
+          <FeatureCard className="lg:col-span-2 grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <div>
+              <h3 className="uppercase text-sm mb-4 font-semibold mt-2">
+                Powerful sql
+              </h3>
+              <p className="text-custom-gray text-sm">
+                Integrate the Sandworm API into your workflow or dashboard. Use
+                WQL to craft on-chain intelligence tailored for your team.
+              </p>
+              <Link
+                className="border py-2 bg-white text-black rounded-2xl px-3 text-sm mt-10 font-medium inline-block"
+                href="/workspace"
+                target="_blank"
+              >
+                <span className="ml-3">Launch App</span>
+              </Link>
+            </div>
+
+            <div>
+              <Image
+                alt="wormcard-placeholder"
+                className=" object-contain"
+                src="/img/console.svg"
+                width={576}
+                height={345}
+                priority
+              />
+            </div>
           </FeatureCard>
         </div>
       </div>

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 
 import { ChatLaunchInput } from "./ChatLaunchInputProps";
 import { Button } from "@/components/ui/button";
-import { PartnersSection } from "@/components/Partners";
+import Image from "next/image";
 
 export const SectionHero = () => {
   const [input, setInput] = useState("");
@@ -68,7 +68,22 @@ export const SectionHero = () => {
       {/* ════════════ Backed by ════════════ */}
       <div className="absolute bottom-16 w-full text-center px-5 text-white">
         <h2 className="uppercase text-base mb-5">Trusted by</h2>
-        <PartnersSection />
+        <div className="flex flex-wrap  items-center gap-8">
+          <Image
+            src="/img/base-logo.svg"
+            alt="Base logo"
+            width={49}
+            height={16}
+            className="object-contain opacity-80 hover:opacity-100 transition"
+          />
+          <Image
+            src="/img/icn-logo-black.svg"
+            alt="ICN Logo"
+            width={98}
+            height={24}
+            className="object-contain opacity-80 hover:opacity-100 transition"
+          />
+        </div>
       </div>
     </section>
   );

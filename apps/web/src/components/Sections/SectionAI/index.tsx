@@ -39,20 +39,21 @@ export const SectionAI = () => {
         </h1>
 
         <Link
-          className="border py-3 bg-white text-white rounded-2xl px-5 text-sm  mt-10 font-medium dark:hover:bg-btnHover inline-block"
+          className="border py-3 bg-white text-black rounded-2xl px-5 text-sm  mt-10 font-medium dark:hover:bg-btnHover inline-block "
           href="/workspace"
           target="_blank"
         >
           <span className="ml-3">Use WormAI</span>
         </Link>
 
-        <div className="border border-[#D3DBF4] bg-[#ECF6FF] rounded-xl py-2.5 my-8 w-auto mx-auto text-[#3B5C6A] mb-14 flex gap-4 items-center px-6 justify-center text-xs mt-20 box-glow">
-          {" "}
-          <SparkleIcon />
-          <p>
-            Create a bar chart of the tokens with {">"} $1m mcap on Zora in
-            August, 2025
-          </p>
+        <div className="bg-rainbow-gradient p-1 mt-20 my-8  mb-14 mx-auto rounded-full">
+          <div className=" rounded-full py-2.5  w-auto  flex gap-4 items-center px-6 justify-center text-xs bg-custom-dark-gray">
+            <SparkleIcon />
+            <p>
+              Create a bar chart of the tokens with {">"} $1m mcap on Zora in
+              August, 2025
+            </p>
+          </div>
         </div>
 
         <h2 className="text-sm mb-1 text-left font-semibold uppercase text-[#06060A]">
