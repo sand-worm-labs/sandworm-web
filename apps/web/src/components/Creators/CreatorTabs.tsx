@@ -1,7 +1,12 @@
 import { HiOutlineCommandLine } from "react-icons/hi2";
 import { FaRegStar } from "react-icons/fa";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@sandworm/ui/components/tabs";
 import type { QueryResponse } from "@/types";
 import { QueryList } from "@/components/Queries";
 
