@@ -5,7 +5,7 @@ import { useState, type FC } from "react";
 import { useSession } from "next-auth/react";
 import { X, Search } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@sandworm/ui/components/badge";
 import { SandwormLogo } from "@/components/Assets";
 
 import { ProfileMenu } from "../../ProfileMenu";

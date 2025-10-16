@@ -5,8 +5,13 @@ import { Database, GripHorizontal, X } from "lucide-react";
 import { Rnd } from "react-rnd";
 import { useRouter, useSearchParams } from "next/navigation";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@sandworm/ui/components/card";
+import { Input } from "@sandworm/ui/components/input";
 import { useChainStore } from "@/store/chains";
 import {
   ChainListPanel,
