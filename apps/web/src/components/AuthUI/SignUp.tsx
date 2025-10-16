@@ -2,8 +2,6 @@
 
 import Link from "next/link";
 
-import { SandwormLogo } from "../Assets";
-
 import { SocialLogin } from "./SocialLogin";
 import { Icons } from "../Assets/Icons";
 

@@ -6,13 +6,13 @@ import Link from "next/link";
 import { signOut } from "next-auth/react";
 import Image from "next/image";
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@sandworm/ui/components/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@sandworm/ui/components/dropdown-menu";
 import type { CurrentUserProps } from "@/types";
 
 import { ThemeTogggle } from "../Theme/ThemeToggle";

@@ -10,12 +10,15 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+} from "@sandworm/ui/components/dialog";
+import { Button } from "@sandworm/ui/components/button";
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from "@sandworm/ui/components/radio-group";
+import { Label } from "@sandworm/ui/components/label";
+import { Progress } from "@sandworm/ui/components/progress";
+import { Alert, AlertDescription } from "@sandworm/ui/components/alert";
 import { useSandwormStore } from "@/store";
 import type { ExportFormat } from "@/types";
 import {

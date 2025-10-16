@@ -12,16 +12,16 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@sandworm/ui/components/button";
+import { ScrollArea } from "@sandworm/ui/components/scroll-area";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "@sandworm/ui/components/tooltip";
 import { CommandMenu } from "@/components/Console/CommandModal";
-import { Dialog } from "@/components/ui/dialog";
+import { Dialog } from "@sandworm/ui/components/dialog";
 
 type ViewType =
   | "dataExplorer"

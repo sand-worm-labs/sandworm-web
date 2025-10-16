@@ -5,8 +5,12 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
   ResizableHandle,
-} from "@/components/ui/resizable";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+} from "@sandworm/ui/components/resizable";
+import {
+  Alert,
+  AlertTitle,
+  AlertDescription,
+} from "@sandworm/ui/components/alert";
 import { useSandwormStore } from "@/store";
 
 import QueryResultsTable from "./ResultTab/index";
