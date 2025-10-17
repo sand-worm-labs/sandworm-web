@@ -4,11 +4,14 @@ import { MessageEntity } from '../entities';
 export default setSeederFactory(MessageEntity, (fake) => {
   const message = new MessageEntity();
 
-  // Content of the message
-  // message.body = fake.lorem.sentences(3); // generate a few sentences
-  message.role = fake.helpers.arrayElement(['user', 'assistant']); // user or AI role
-  //message.chatId = 1;       // link to a chat/conversation
-  //message.authorId = 1;     // optional, can be user or AI ID
+  message.role = fake.helpers.arrayElement(['user', 'assistant']);
+  message.parts = [
+    { type: 'text', content: fake.lorem.paragraphs(2) },
+    { type: 'code', content: 'console.log("Hello, world!");', language: 'javascript' },
+  ];
 
+  message.attachments = [
+    { filename: 'image.png', path: fake.image.imageUrl() }
+  ];
   return message;
 });

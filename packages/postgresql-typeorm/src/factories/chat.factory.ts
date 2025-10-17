@@ -3,10 +3,11 @@ import { ChatEntity } from '../entities';
 
 export default setSeederFactory(ChatEntity, (fake) => {
     const chat = new ChatEntity();
-
-    //chat.body = fake.lorem.paragraphs(1);
-    // chat.documentId = 1; // adjust as needed
-    // chat.authorId = 1;   // adjust as needed
-
+    chat.title = fake.lorem.paragraphs(1);
+    chat.private = fake.datatype.boolean();
+    chat.lastContext = {
+        topic: fake.lorem.words(3),
+        mood: fake.helpers.arrayElement(['happy', 'neutral', 'sad']),
+    };
     return chat;
 });
