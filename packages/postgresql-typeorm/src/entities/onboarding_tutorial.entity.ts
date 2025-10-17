@@ -20,14 +20,8 @@ export class OnboardingTutorialEntity extends AbstractEntity {
     @Column()
     userId!: string;
 
-    @ManyToOne(() => UserEntity, (user) => user.onboardingTutorials, { onDelete: "CASCADE" })
-    user!: Relation<UserEntity>;
-
     @Column()
     workspaceId!: string;
-
-    @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.onboardingTutorials, { onDelete: "CASCADE" })
-    workspace!: Relation<WorkspaceEntity>;
 
     @Column({ type: "enum", enum: OnboardingStep, default: OnboardingStep.RUN_QUERY })
     currentStep!: OnboardingStep;
@@ -37,4 +31,10 @@ export class OnboardingTutorialEntity extends AbstractEntity {
 
     @Column({ default: false })
     isDismissed!: boolean;
+
+    @ManyToOne(() => UserEntity, (user) => user.onboardingTutorials, { onDelete: "CASCADE" })
+    user!: Relation<UserEntity>;
+
+    @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.onboardingTutorials, { onDelete: "CASCADE" })
+    workspace!: Relation<WorkspaceEntity>;
 }
