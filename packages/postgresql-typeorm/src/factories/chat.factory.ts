@@ -1,47 +1,12 @@
-import {
-    Entity,
-    Column,
-    PrimaryGeneratedColumn,
-    ManyToOne,
-    JoinColumn,
-    OneToMany,
-} from "typeorm";
-import type { Relation } from "typeorm";
-import { UserEntity } from "./user.entity";
-import { AbstractEntity } from "./abstract.entity";
-import { MessageEntity } from "./message.entity";
-import { VoteEntity } from "./vote.entity";
+import { setSeederFactory } from 'typeorm-extension';
+import { ChatEntity } from '../entities';
 
-@Entity("chats")
-export class ChatEntity extends AbstractEntity {
-    @PrimaryGeneratedColumn("uuid", { primaryKeyConstraintName: "PK_chat_id" })
-    id!: string;
+export default setSeederFactory(ChatEntity, (fake) => {
+    const chat = new ChatEntity();
 
-    @Column({ type: "text", nullable: false })
-    title!: string;
+    //chat.body = fake.lorem.paragraphs(1);
+    // chat.documentId = 1; // adjust as needed
+    // chat.authorId = 1;   // adjust as needed
 
-    @Column({ name: "visibility", type: "varchar", default: "private" })
-    visibility!: "public" | "private";
-
-    @Column({ name: "last_context", type: "jsonb", nullable: true })
-    lastContext?: Record<string, any> | null;
-
-    @Column({ name: "user_id", type: "uuid", nullable: false })
-    userId!: string;
-
-    @OneToMany(() => MessageEntity, (message) => message.chat)
-    messages!: Relation<MessageEntity[]>;
-
-    @OneToMany(() => VoteEntity, (vote) => vote.chat)
-    votes!: Relation<VoteEntity[]>;
-
-    @ManyToOne(() => UserEntity, (user) => user.chats, {
-        onDelete: "CASCADE",
-    })
-    @JoinColumn({
-        name: "user_id",
-        referencedColumnName: "id",
-        foreignKeyConstraintName: "FK_chat_user",
-    })
-    user!: Relation<UserEntity>;
-}
+    return chat;
+});
