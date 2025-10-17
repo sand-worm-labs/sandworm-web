@@ -32,7 +32,6 @@ export class UserSettingEntity extends AbstractEntity {
     github?: string;
     discord?: string;
     email?: string;
-    instagram?: string;
     warpcast?: string;
   };
 
@@ -49,6 +48,13 @@ export class UserSettingEntity extends AbstractEntity {
     default: () => "CURRENT_TIMESTAMP",
   })
   statusUpdatedAt: Date;
+
+  @Column({
+    type: "varchar",
+    name: "theme",
+    default: "dark",
+  })
+  theme: 'light' | 'dark';
 
   @Column({
     type: "jsonb",
