@@ -20,7 +20,7 @@ import {
   FieldDetailsPanel,
 } from "@/components/ExplorerPanels";
 
-import { Button } from "../ui/button";
+import { Button } from "@sandworm/ui/components/button";
 
 type EntityType = "raw" | "project" | "decoded";
 

@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
+import { Button } from "@sandworm/ui/components/button";
 
 export const SectionVideoPreview: React.FC = () => {
   const videoSrc = "/img/preview.png";
