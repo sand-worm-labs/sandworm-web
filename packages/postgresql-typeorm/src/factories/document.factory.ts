@@ -1,14 +1,14 @@
 import { setSeederFactory } from 'typeorm-extension';
-import { ArticleEntity } from '../entities';
+import { DocumentEntity } from '../entities';
 
-export default setSeederFactory(ArticleEntity, (fake) => {
-  const article = new ArticleEntity();
+export default setSeederFactory(DocumentEntity, (fake) => {
+  const document = new DocumentEntity(); // renamed variable to match entity
 
-  article.title = fake.lorem.sentence();
-  article.slug = fake.lorem.slug();
-  article.description = fake.lorem.sentence();
-  article.body = fake.lorem.paragraphs(10);
-  article.authorId = 1;
+  document.title = fake.lorem.sentence();
+  document.slug = fake.lorem.slug();
+  document.description = fake.lorem.sentence();
+  document.body = fake.lorem.paragraphs(10);
+  document.authorId = "bf91c434-dcf3-3a4c-b49a-12e0944ef1e2";
 
-  return article;
+  return document;
 });
