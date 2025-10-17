@@ -1,7 +1,7 @@
 import { getRandomInt } from '@sandworm/nest-common';
 import { DataSource } from 'typeorm';
 import { Seeder, SeederFactoryManager } from 'typeorm-extension';
-import { ArticleEntity, UserEntity } from '../entities';
+import { DocumentEntity, UserEntity } from '../entities';
 
 export class UserFavoritesSeeder1732032454792 implements Seeder {
   track = false;
@@ -22,25 +22,25 @@ export class UserFavoritesSeeder1732032454792 implements Seeder {
       .take(10)
       .getMany();
 
-    // Get random articles
-    const articleRepository = dataSource.getRepository(ArticleEntity);
-    const numberOfArticles = await articleRepository.count();
-    const randomArticleOffset = getRandomInt(0, numberOfArticles - 1);
+    // Get random documents
+    const documentRepository = dataSource.getRepository(DocumentEntity);
+    const numberOfDocuments = await documentRepository.count();
+    const randomDocumentOffset = getRandomInt(0, numberOfDocuments - 1);
 
-    const articles = await articleRepository
-      .createQueryBuilder('article')
-      .skip(randomArticleOffset)
+    const documents = await documentRepository
+      .createQueryBuilder('document')
+      .skip(randomDocumentOffset)
       .take(10)
       .getMany();
 
     for (const user of users) {
-      const randomArticleNumber = getRandomInt(0, articles.length - 1);
+      const randomDocumentNumber = getRandomInt(0, documents.length - 1);
       const isExist = user.favorites.some(
-        (favorite) => favorite.id === articles[randomArticleNumber].id,
+        (favorite) => favorite.id === documents[randomDocumentNumber].id,
       );
 
       if (!isExist) {
-        user.favorites.push(articles[randomArticleNumber]);
+        user.favorites.push(documents[randomDocumentNumber]);
         await userRepository.save(user);
       }
     }
