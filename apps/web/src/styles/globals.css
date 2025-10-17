@@ -41,13 +41,13 @@
   font-style: normal;
 }
 
-.helvetica-neue {
-  font-family: "Helvetica Neue", sans-serif;
-}
-
-.roobert {
+.font-primary {
   font-family: "Roobert", sans-serif;
   font-weight: 500;
+}
+
+.font-secondary {
+  font-family: "Helvetica Neue", sans-serif;
 }
 
 ::cue {

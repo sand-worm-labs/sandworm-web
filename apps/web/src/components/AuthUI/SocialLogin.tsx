@@ -47,7 +47,7 @@ export const SocialLogin = ({ variant = "signup" }: SocialLoginProps) => {
       <button
         type="button"
         onClick={handleGoogleSignIn}
-        className="flex w-full items-center justify-center space-x-2 rounded-xl border border-[#DEE2E6]   px-4 py-3  bg-[#F8F9FA]  hover:bg-btnHover text-black mb-4 text-sm roobert "
+        className="flex w-full items-center justify-center space-x-2 rounded-xl border border-[#DEE2E6]   px-4 py-3  bg-[#F8F9FA]  hover:bg-btnHover text-black mb-4 text-sm font-primary "
       >
         <FcGoogle size={20} />
         <span>
