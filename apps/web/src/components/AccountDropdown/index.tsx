@@ -16,7 +16,7 @@ import {
   DropdownMenuContent,
   DropdownMenuSeparator,
 } from "@sandworm/ui/components/dropdown-menu";
-import { Button } from "@/components/ui/button";
+import { Button } from "@sandworm/ui/components/button";
 import { useModalStore } from "@/store/auth";
 
 export const AccountDropdown = () => {

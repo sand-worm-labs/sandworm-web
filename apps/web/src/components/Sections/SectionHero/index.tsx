@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { ChatLaunchInput } from "./ChatLaunchInputProps";
-import { Button } from "@/components/ui/button";
+import { Button } from "@sandworm/ui/components/button";
 import Image from "next/image";
 
 export const SectionHero = () => {

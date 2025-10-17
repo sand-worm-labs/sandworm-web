@@ -7,7 +7,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@sandworm/ui/components/dropdown-menu";
 
 export function ThemeTogggle() {
   const { setTheme } = useTheme();
