@@ -1,9 +1,11 @@
 @import "tailwindcss";
-@source "../../../apps/**/*.{ts,tsx}";
-@source "../../../components/**/*.{ts,tsx}";
-@source "../**/*.{ts,tsx}";
-
 @import "tw-animate-css";
+/* Tailwind v4 scans sources via @source. These paths are resolved
+  relative to this file (packages/ui/src/styles/globals.css). */
+/* Include all app sources in the monorepo */
+@source "../../../../apps/**/src/**/*.{ts,tsx}";
+/* Include all package sources (ui, editor, database, etc.) */
+@source "../../../../packages/**/src/**/*.{ts,tsx}";
 
 @custom-variant dark (&:is(.dark *));
 

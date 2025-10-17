@@ -5,8 +5,8 @@ import type { Attachment } from "ai";
 import { PiPaperPlaneTilt } from "react-icons/pi";
 import { useRouter } from "next/navigation";
 
-import { Button } from "../ui/button";
-import { Textarea } from "../ui/textarea";
+import { Button } from "@sandworm/ui/components/button";
+import { Textarea } from "@sandworm/ui/components/textarea";
 
 import { StopIcon } from "./icons";
 import { PreviewAttachment } from "./preview-attachment";

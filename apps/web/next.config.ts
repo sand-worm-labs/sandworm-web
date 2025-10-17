@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  transpilePackages: ["@sandworm/ui"],
   reactStrictMode: true,
   typescript: {
     ignoreBuildErrors: true,

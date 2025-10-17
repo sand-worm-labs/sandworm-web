@@ -9,7 +9,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "@sandworm/ui/components/tooltip";
 
 interface SimpleFilterProps {
   onFilterChange: (filterValue: string) => void;

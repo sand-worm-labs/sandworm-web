@@ -11,8 +11,8 @@ import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
-} from "@/components/ui/tooltip";
-import { Button } from "@/components/ui/button";
+} from "@sandworm/ui/components/tooltip";
+import { Button } from "@sandworm/ui/components/button";
 
 import { TablePageSizeSelector } from "./TablePageSizeSelector";
 
