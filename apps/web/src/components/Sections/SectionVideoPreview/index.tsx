@@ -6,7 +6,7 @@ export const SectionVideoPreview: React.FC = () => {
   const videoSrc = "/img/preview.png";
 
   return (
-    <section className="relative w-full py-32  px-6 flex flex-col items-center text-left overflow-hidden text-white">
+    <section className="relative w-full py-32  px-6 flex flex-col items-center text-left overflow-hidden text-white bg-black">
       {/* ════════════ Video/Image Preview ════════════ */}
       <div className="max-w-6xl w-full relative z-10">
         <div className="relative rounded-2xl shadow-lg overflow-hidden">
@@ -21,15 +21,15 @@ export const SectionVideoPreview: React.FC = () => {
       </div>
 
       {/* ════════════ Text Content Overlay ════════════ */}
-      <div className="absolute bottom-20 grid grid-cols-[70%,30%] container mx-auto px-16 z-10">
+      <div className="absolute bottom-20 grid grid-cols-[70%,30%] container mx-auto px-16 pt-32 z-10  bg-gradient-to-r from-transparent to-black/80">
         <div>
           <h3 className="uppercase font-medium mb-2">Easy intelligence</h3>
           <p className="text-3xl leading-[1.6]">
             Unlock Clear, <br /> Actionable Data for <br /> Smarter Decisions.
           </p>
         </div>
-        <div className="text-sm text-custom-light-gray">
-          <p className="mb-5">
+        <div className="text-sm text-custom-light-gray helvetica-neue leading-[1.5]">
+          <p className="mb-5  ">
             Most analytics tools are built for engineers, complicated, rigid,
             and slow.Sandworm brings simplicity and speed to everyone.
           </p>

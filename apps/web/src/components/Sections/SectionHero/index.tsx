@@ -20,7 +20,15 @@ export const SectionHero = () => {
   };
 
   return (
-    <section className="py-16 text-center pb-64 min-h-screen pt-28 bg-hero-bg text-white relative">
+    // 💬 Note: we use a static background for now till we replace with animation
+    <section
+      className="py-16 text-center pb-64 min-h-screen pt-28  text-white relative"
+      style={{
+        backgroundImage: `url('/img/temp.svg')`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
       <div className="container mx-auto relative flex flex-col h-full items-center">
         {/* ════════════ Hero Text Content ════════════ */}
         <div className="flex items-center space-x-6 relative mt-20 lg:mt-12 w-full">
@@ -28,7 +36,7 @@ export const SectionHero = () => {
             <h1 className="mx-auto tracking-wide leading-[1.3] px-3 lg:px-0 lg:text-[2.8rem] text-3xl ">
               Deep, clean Blockchain Data Analysis
             </h1>
-            <p className="text-custom-gray mt-7 mb-3 lg:max-w-[60%] mx-auto">
+            <p className="text-custom-gray mt-7 mb-3 lg:max-w-[40rem] mx-auto font-primary text-lg">
               Sandworm gives you deep, clear, and editable data on various
               blockchains, driving your whole team to make better data-based
               decisions.
@@ -66,22 +74,22 @@ export const SectionHero = () => {
       </div>
 
       {/* ════════════ Backed by ════════════ */}
-      <div className="absolute bottom-16 w-full text-center px-5 text-white">
-        <h2 className="uppercase text-base mb-5">Trusted by</h2>
+      <div className="absolute bottom-16 w-full text-center px-5 text-white flex flex-col items-center">
+        <h2 className="uppercase text-sm font-medium mb-5">Trusted by</h2>
         <div className="flex flex-wrap  items-center gap-8">
           <Image
             src="/img/base-logo.svg"
             alt="Base logo"
-            width={49}
-            height={16}
-            className="object-contain opacity-80 hover:opacity-100 transition"
+            width={98}
+            height={32}
+            className="object-contain opacity-80 hover:opacity-100 transition filter invert"
           />
           <Image
             src="/img/icn-logo-black.svg"
             alt="ICN Logo"
-            width={98}
-            height={24}
-            className="object-contain opacity-80 hover:opacity-100 transition"
+            width={130}
+            height={32}
+            className="object-contain opacity-80 hover:opacity-100 transition filter invert"
           />
         </div>
       </div>

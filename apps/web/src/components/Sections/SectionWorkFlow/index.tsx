@@ -10,8 +10,9 @@ import { ExecutionResultPreview } from "./ExecutionResultPreview";
 
 const workflowSteps = [
   {
-    title: "Write Queries",
-    description: "Compose powerful WQL queries using familiar SQL syntax.",
+    title: "Create and edit notes",
+    description:
+      "Using our powerful AI, create a full notebook, filled with charts, data points, information and more, all editable, from the raw SQL, to the visualization type.",
     url: "/workspace",
     learnMoreUrl: "https://docs.sandwormlabs.xyz",
     imageUrl: "/img/queries.png",
@@ -23,11 +24,11 @@ const workflowSteps = [
     ],
   },
   {
-    title: "Execute and Analyze",
+    title: "visualize and store data",
     url: "/workspace",
     learnMoreUrl: "https://docs.sandwormlabs.xyz",
     description:
-      "Visualize and explore on-chain data with blazing-fast responses.",
+      "View, understand, utilize and store the information you got from using our product.",
     imageUrl: "/img/queries.png",
     preview: <ExecutionResultPreview />,
     bullets: [
@@ -37,11 +38,12 @@ const workflowSteps = [
     ],
   },
   {
-    title: "Share & Collaborate",
+    title: "Organize and export notebooks",
     url: "workspace/explore",
     learnMoreUrl: "https://docs.sandwormlabs.xyz",
     imageUrl: "/img/sample.png",
-    description: "Publish useful queries to the community for open discovery.",
+    description:
+      "You can create any amount of dashboard to store your visualizations, as well as create texts, add photos etc to personalize it. You can then add these to your subdomain or export them.",
     bullets: [
       "Share links to your queries with anyone",
       "Fork, remix, and iterate on ideas",
@@ -52,64 +54,22 @@ const workflowSteps = [
 
 export const SectionWorkFlow = () => {
   return (
-    <div className="container mx-auto mt-16 px-6">
-      <h2 className="text-center md:text-4xl text-3xl md:mb-16">
-        How SandWorm Works
-      </h2>
+    <div className="container mx-auto mt-16 px-6 bg-black">
+      <h1 className="lg:text-[4.5rem] text-4xl text-primary mb-16 uppercase font-bold leading-[1.3] text-center">
+        Get started in 3 easy steps
+      </h1>
 
-      <div className="w-full  md:space-y-16 space-y-8">
-        {workflowSteps.map(step => (
-          <div className="w-full grid md:grid-cols-2 pb-12" key={step.title}>
-            <div className="lg:pr-10 mt-12">
-              <h3 className="md:text-3xl text-xl mb-3 font-medium">
-                {step.title}
+      <div className="w-full  grid gap-x-6 grid-cols-3">
+        {workflowSteps.map((step, index) => (
+          <div
+            className="w-full bg-custom-black-200 rounded-2xl h-full"
+            key={step.title}
+          >
+            <div className="  p-6">
+              <h3 className=" text-base mb-3 font-bold uppercase text-white">
+                {index + 1} {step.title}
               </h3>
-              <p className="md:text-lg  text-[#999999] mb-6">
-                {step.description}
-              </p>
-
-              <div className="flex space-x-4 mb-8">
-                <Link
-                  href={step.url}
-                  className="inline-block font-medium bg-orange-600 rounded py-2.5 px-5 text-white text-[0.9rem] transition duration-200 ease-in-out hover:opacity-90  hover:brightness-90"
-                >
-                  Get Started
-                </Link>
-                <Link
-                  href={step.learnMoreUrl}
-                  target="blank_"
-                  className="font-medium rounded py-2.5 px-5 border border-borderLight text-[0.9rem] flex items-center space-x-2  hover:bg-btnHover"
-                >
-                  <span>Learn More</span>
-                  <MdOutlineArrowForwardIos />
-                </Link>
-              </div>
-
-              <ul className="text-sm space-y-3">
-                {step.bullets.map(item => (
-                  <li key={item} className="flex items-center space-x-3">
-                    <span className="rounded-full bg-dark-translucent p-1">
-                      <FaCheck className="text-orange-600 text-[0.65rem]" />
-                    </span>
-                    <span className="text-[#999999]">{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="md:w-[90%] pt-[1rem] flex justify-center mt-6 md:mt-0">
-              <TerminalFrame>
-                {step.preview ? (
-                  step.preview
-                ) : (
-                  <Image
-                    src={step.imageUrl}
-                    width={800}
-                    height={512}
-                    alt="Workflow Example"
-                    className="w-full object-cover border border-gray-800"
-                  />
-                )}
-              </TerminalFrame>
+              <p className=" text-custom-gray mb-6">{step.description}</p>
             </div>
           </div>
         ))}
