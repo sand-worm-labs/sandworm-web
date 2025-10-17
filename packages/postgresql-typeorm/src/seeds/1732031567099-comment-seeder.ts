@@ -27,7 +27,7 @@ export class CommentSeeder1732031567099 implements Seeder {
     const randomDocumentsOffset = getRandomInt(0, numberOfArticles - 1);
 
     const documents = await documentsRepository
-      .createQueryBuilder('article')
+      .createQueryBuilder('document')
       .skip(randomDocumentsOffset)
       .take(10)
       .getMany();
