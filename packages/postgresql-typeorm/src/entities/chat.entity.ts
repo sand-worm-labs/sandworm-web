@@ -20,8 +20,8 @@ export class ChatEntity extends AbstractEntity {
     @Column({ type: "text", nullable: false })
     title!: string;
 
-    @Column({ name: "visibility", type: "varchar", default: "private" })
-    visibility!: "public" | "private";
+    @Column({ name: "is_visible", type: "boolean", default: false })
+    private!: boolean;
 
     @Column({ name: "last_context", type: "jsonb", nullable: true })
     lastContext?: Record<string, any> | null;

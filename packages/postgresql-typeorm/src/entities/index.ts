@@ -1,4 +1,5 @@
 export * from './document.entity';
+export * from './message.entity';
 export * from './comment.entity';
 export * from './tag.entity';
 export * from './user-follows.entity';
