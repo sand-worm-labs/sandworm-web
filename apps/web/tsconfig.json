@@ -11,7 +11,8 @@
       }
     ],
     "jsx": "preserve",
-    "moduleResolution": "bundler"
+    "moduleResolution": "bundler",
+    "outDir": "./dist"
   },
   "include": [
     "next-env.d.ts",

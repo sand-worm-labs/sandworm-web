@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
-
 import { SocialLogin } from "./SocialLogin";
 import { SandwormDarkLogo } from "../Assets/SandwormDarkLogo";
 
@@ -19,7 +18,7 @@ export const SignIn = () => {
       </h2>
 
       {error === "NoAccount" && (
-        <div className="w-full text-sm roobert bg-red-50 text-red-700 border border-red-200 rounded-md p-3 mb-3">
+        <div className="w-full text-sm font-primary bg-red-50 text-red-700 border border-red-200 rounded-md p-3 mb-3">
           No account found. Please sign up first.
         </div>
       )}
