@@ -1,13 +1,17 @@
 import { setSeederFactory } from 'typeorm-extension';
-import { WorkspaceEntity } from '../entities';
+import { Plan, WorkspaceEntity } from '../entities';
 
 export default setSeederFactory(WorkspaceEntity, (fake) => {
     const workspace = new WorkspaceEntity();
 
     workspace.name = fake.company.name();
-    // workspace.ownerId = 1; // adjust as needed
-    // workspace.createdAt = fake.date.past();
-    // workspace.updatedAt = fake.date.recent();
+    workspace.source = fake.internet.url(); // or leave undefined sometimes
+    workspace.useCases = fake.helpers.arrayElements(
+        ["analytics", "marketing", "dev", "design", "support"],
+        fake.datatype.number({ min: 1, max: 3 })
+    );
+    workspace.useContext = fake.lorem.sentence();
+    workspace.plan = fake.helpers.arrayElement([Plan.FREE, Plan.PRO, Plan.ENTERPRISE]);
 
     return workspace;
 }); 
