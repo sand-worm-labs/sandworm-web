@@ -17,7 +17,7 @@ import type { Query } from "@/types";
 import { useQueryLike } from "@/hooks/useLikeQuery";
 import { useModalStore } from "@/store/auth";
 import { useForkQuery } from "@/hooks";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@sandworm/ui/components/avatar";
 
 interface QueryCardProps {
   query: Query;
