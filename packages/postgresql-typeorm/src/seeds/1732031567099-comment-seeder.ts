@@ -21,10 +21,10 @@ export class CommentSeeder1732031567099 implements Seeder {
       .take(10)
       .getMany();
 
-    // Get random articles
+    // Get random Documents
     const documentsRepository = dataSource.getRepository(DocumentEntity);
-    const numberOfArticles = await documentsRepository.count();
-    const randomDocumentsOffset = getRandomInt(0, numberOfArticles - 1);
+    const numberOfDocuments = await documentsRepository.count();
+    const randomDocumentsOffset = getRandomInt(0, numberOfDocuments - 1);
 
     const documents = await documentsRepository
       .createQueryBuilder('document')

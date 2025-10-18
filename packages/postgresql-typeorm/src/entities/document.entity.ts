@@ -14,6 +14,7 @@ import { AbstractEntity } from "./abstract.entity";
 import { CommentEntity } from "./comment.entity";
 import { TagEntity } from "./tag.entity";
 import { UserEntity } from "./user.entity";
+import { WorkspaceEntity } from "./workspace.entity";
 
 @Entity("document")
 export class DocumentEntity extends AbstractEntity {
@@ -49,6 +50,19 @@ export class DocumentEntity extends AbstractEntity {
     foreignKeyConstraintName: "FK_document_user",
   })
   author!: Relation<UserEntity>;
+
+  // ----- Author -----
+  @Column({ name: "workspace_id" })
+  workspaceId!: string;
+
+  @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.documents, { onDelete: "CASCADE" })
+  @JoinColumn({
+    name: "workspace_id",
+    referencedColumnName: "id",
+    foreignKeyConstraintName: "FK_workspace_document",
+  })
+  workspace!: Relation<WorkspaceEntity>;
+
 
   // ----- Tags -----
   @ManyToMany(() => TagEntity)
