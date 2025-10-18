@@ -10,6 +10,7 @@ import { Plan } from "./enums";
 import { UserEntity } from "./user.entity";
 import { AbstractEntity } from "./abstract.entity";
 import { OnboardingTutorialEntity } from "./onboarding_tutorial.entity";
+import { DocumentEntity } from "./document.entity";
 
 @Entity("workspaces")
 export class WorkspaceEntity extends AbstractEntity {
@@ -36,6 +37,10 @@ export class WorkspaceEntity extends AbstractEntity {
 
     @ManyToOne(() => UserEntity, (user) => user.workspaces, { onDelete: "CASCADE" })
     owner!: Relation<UserEntity>;
+
+    @OneToMany(() => DocumentEntity, (documents) => documents.workspaceId, { onDelete: "CASCADE" })
+    documents!: Relation<DocumentEntity[]>;
+
 
     @OneToMany(() => OnboardingTutorialEntity, (tut) => tut.workspace)
     onboardingTutorials!: Relation<OnboardingTutorialEntity[]>;
