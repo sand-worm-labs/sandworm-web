@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { ExecutionResultPreview } from "./ExecutionResultPreview";
+import { Dots } from "@/components/Assets/Dots";
 
 const workflowSteps = [
   {
@@ -59,25 +60,31 @@ export const SectionWorkFlow = () => {
         />
       </div>
       <div className="container mx-auto  px-6 bg-black pt-10">
-        <h1 className="lg:text-[4.5rem] text-4xl text-primary mb-16 uppercase font-bold leading-[1.3] text-center">
+        <h3 className="uppercase mb-5 text-sm font-medium mt-5 text-white text-center">
+          How Sandworm works
+        </h3>
+        <h1 className="lg:text-[4.5rem] text-4xl text-primary mb-4 uppercase font-bold leading-[1.3] text-center">
           Get started in 3 easy steps
         </h1>
+        <div className="flex justify-center mb-16">
+          <Dots />
+        </div>
 
         <div className="w-full  grid gap-x-6 grid-cols-3">
           {workflowSteps.map((step, index) => (
             <div
-              className="w-full bg-custom-black-200 rounded-2xl h-full gradient-border"
+              className="w-full bg-custom-black-200 rounded-2xl  h-full gradient-border relative "
               key={step.title}
             >
-              <div className=" inner h-full py-8 px-6">
-                <h3 className="  mb-3 font-bold uppercase text-white text-sm ">
+              <div className=" inner h-full py-8 px-6 rounded-2xl">
+                <h3 className="  mb-3 font-bold uppercase text-white text-xs ">
                   {index + 1} {step.title}
                 </h3>
-                <p className=" text-custom-gray mb-6 font-secondary">
+                <p className=" text-custom-gray mb-6 font-secondary text-sm">
                   {step.description}
                 </p>
 
-                <div className="bottom-0">
+                <div className=" ">
                   <Image
                     src={step.imageUrl}
                     width={558}

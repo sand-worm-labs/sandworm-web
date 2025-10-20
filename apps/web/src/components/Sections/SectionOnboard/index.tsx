@@ -9,15 +9,15 @@ export const SectionOnboard = () => {
         <Image src="/img/light-bar.svg" fill alt="unaminated background" />
       </div>
 
-      <div className="  mt-4 py-16 text-center pt-8 pb-28 container mx-auto relative ">
+      <div className="  mt-4 py-32 text-center pt-8 pb-48 container mx-auto relative  ">
         <div className="rounded-lg lg:w-[80%] mx-auto p-1">
           <div className="lg:py-28 py-20 lg:px-8 px-4   flex flex-col items-center justify-center">
-            <h1 className="lg:text-[4rem] text-4xl text-white mb-7 uppercase font-bold leading-[1.1] ">
+            <h1 className="lg:text-[3rem] text-4xl text-white mb-7 uppercase font-bold leading-[1.1] lg:max-w-[600px] ">
               ACCESS ONCHAIN DATA IN SECONDS, NOT DAYS
             </h1>
 
             <Link
-              className="border py-3 bg-white text-black rounded-2xl px-6 text-sm  mt-10 font-medium flex items-center hover:bg-btnHover"
+              className="border py-2 bg-white text-black rounded-2xl px-4 text-sm  mt-6 font-medium flex items-center hover:bg-btnHover"
               href="https://discord.gg/pftQtpcjK2"
               target="_blank"
             >

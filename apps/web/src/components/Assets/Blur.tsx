@@ -7,6 +7,7 @@ export const Blur = () => {
       height="674"
       viewBox="0 0 622 674"
       fill="none"
+      className="w-full"
       xmlns="http://www.w3.org/2000/svg"
     >
       <g filter="url(#filter0_f_1149_4667)">
