@@ -1,7 +1,7 @@
 import { getRandomInt } from '@sandworm/nest-common';
 import { DataSource } from 'typeorm';
 import { Seeder, SeederFactoryManager } from 'typeorm-extension';
-import { ArticleEntity, CommentEntity, UserEntity } from '../entities';
+import { DocumentEntity, CommentEntity, UserEntity } from '../entities';
 
 export class CommentSeeder1732031567099 implements Seeder {
   track = false;
@@ -21,23 +21,23 @@ export class CommentSeeder1732031567099 implements Seeder {
       .take(10)
       .getMany();
 
-    // Get random articles
-    const articleRepository = dataSource.getRepository(ArticleEntity);
-    const numberOfArticles = await articleRepository.count();
-    const randomArticleOffset = getRandomInt(0, numberOfArticles - 1);
+    // Get random Documents
+    const documentsRepository = dataSource.getRepository(DocumentEntity);
+    const numberOfDocuments = await documentsRepository.count();
+    const randomDocumentsOffset = getRandomInt(0, numberOfDocuments - 1);
 
-    const articles = await articleRepository
-      .createQueryBuilder('article')
-      .skip(randomArticleOffset)
+    const documents = await documentsRepository
+      .createQueryBuilder('document')
+      .skip(randomDocumentsOffset)
       .take(10)
       .getMany();
 
     const commentFactory = factoryManager.get(CommentEntity);
     for (const user of users) {
-      const randomArticleNumber = getRandomInt(0, articles.length - 1);
+      const randomDocumentsNumber = getRandomInt(0, documents.length - 1);
       await commentFactory.saveMany(5, {
         authorId: user.id,
-        articleId: articles[randomArticleNumber].id,
+        documentId: documents[randomDocumentsNumber].id,
       });
     }
   }
