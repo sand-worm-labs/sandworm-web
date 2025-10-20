@@ -393,6 +393,15 @@ select:-webkit-autofill:focus {
   z-index: -1;
 }
 
+.gradient-border {
+  padding: 1px;
+  background: linear-gradient(99deg, #094b72 0.62%, #560036 91.19%);
+}
+
+.gradient-border > .inner {
+  background: #000;
+}
+
 .box-glow {
   box-shadow:
     0 0 35px 6px rgba(120, 147, 208, 0.22),
