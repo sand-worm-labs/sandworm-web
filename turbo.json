@@ -1,21 +1,71 @@
 {
-  "$schema": "https://turborepo.com/schema.json",
+  "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
+  "globalEnv": [
+    "NODE_ENV",
+    "APP_PORT",
+    "PORT",
+    "APP_NAME",
+    "APP_URL",
+    "APP_DEBUG",
+    "API_PREFIX",
+    "APP_FALLBACK_LANGUAGE",
+    "APP_LOG_LEVEL",
+    "APP_LOG_SERVICE",
+    "APP_CORS_ORIGIN",
+    "DATABASE_URL",
+    "DATABASE_HOST",
+    "DATABASE_PORT",
+    "DATABASE_PASSWORD",
+    "DATABASE_NAME",
+    "DATABASE_SCHEMA",
+    "DATABASE_USERNAME",
+    "DATABASE_LOGGING",
+    "DATABASE_SYNCHRONIZE",
+    "DATABASE_MAX_CONNECTIONS",
+    "DATABASE_SSL_ENABLED",
+    "DATABASE_REJECT_UNAUTHORIZED",
+    "DATABASE_CA",
+    "DATABASE_KEY",
+    "DATABASE_CERT"
+  ],
   "tasks": {
+    "clean": {
+      "cache": false
+    },
     "build": {
-      "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**"]
-    },
-    "lint": {
-      "dependsOn": ["^lint"]
-    },
-    "check-types": {
-      "dependsOn": ["^check-types"]
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env*"
+      ],
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**",
+        "dist/**"
+      ]
     },
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    "test": {},
+    "lint": {
+      "dependsOn": [
+        "^lint"
+      ]
+    },
+    "test:e2e": {},
+    "@sandworm/postgresql-typeorm#migration:up": {
+      "cache": false
+    },
+    "@sandworm/postgresql-typeorm#migration:down": {
+      "cache": false
+    },
+    "@sandworm/postgresql-typeorm#migration:generate": {
+      "cache": false
     }
   }
 }
