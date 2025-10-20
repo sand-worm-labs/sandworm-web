@@ -1,0 +1,30 @@
+{
+  "name": "@sandworm/eslint-config",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "files": [
+    "compat.mjs",
+    "eslint-base.config.mjs",
+    "eslint-nest.config.mjs",
+    "eslint-next.config.mjs",
+    "eslint-react-internal.config.mjs",
+    "prettier-base.config.mjs"
+  ],
+  "devDependencies": {
+    "@eslint/compat": "^1.2.9",
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.25.1",
+    "@next/eslint-plugin-next": "^15.3.1",
+    "@types/eslint": "^9.6.1",
+    "@vercel/style-guide": "^6.0.0",
+    "eslint": "^9.25.1",
+    "eslint-config-next": "15.3.2",
+    "eslint-config-prettier": "^10.1.2",
+    "eslint-config-turbo": "^2.5.2",
+    "eslint-plugin-prettier": "^5.2.6",
+    "prettier-plugin-organize-imports": "^4.1.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.31.1"
+  }
+}
