@@ -6,6 +6,8 @@ import { Users } from "../../Assets/Users";
 import { BarChart } from "@/components/Assets/BarChart";
 import { Ellipse } from "@/components/Assets/Ellipse";
 import { Wave } from "@/components/Assets/Wave";
+import Image from "next/image";
+import { Dots } from "@/components/Assets/Dots";
 
 interface AICardProps {
   title: string;
@@ -35,23 +37,27 @@ export const SectionAI = () => {
     <section className="py-28 bg-black text-white">
       <div className="container mx-auto flex flex-col items-center">
         <RingIcon />
-        <h3 className="uppercase mb-5 text-sm font-medium mt-5">
-          Let’s talk worm AI
+        <h3 className="uppercase mb-5 text-xs font-medium mt-5">
+          ● Let’s talk worm AI ●
         </h3>
 
-        <h1 className="mx-auto tracking-wide leading-[1.2] px-3 lg:px-0 text-primary uppercase font-bold text-6xl text-center">
+        <h1 className="mx-auto  leading-[1] px-3 lg:px-0 text-primary uppercase font-bold text-6xl text-center">
           complex Onchain <br /> insight made easy
         </h1>
 
+        <div className="flex justify-center mb-8 mt-8">
+          <Dots />
+        </div>
+
         <Link
-          className="border py-3 bg-white text-black rounded-2xl px-5 text-sm mt-10 font-medium dark:hover:bg-btnHover inline-block"
+          className="border py-2.5 bg-white text-black rounded-2xl px-4 text-xs  font-medium dark:hover:bg-btnHover inline-block"
           href="/workspace"
           target="_blank"
         >
-          <span className="ml-3">Use WormAI</span>
+          <span className="">Use WormAI</span>
         </Link>
 
-        <div className="bg-rainbow-gradient p-1 mt-20 my-8 mb-14 mx-auto rounded-full">
+        <div className="bg-rainbow-gradient p-1 mt-28 my-8 mb-8 mx-auto rounded-full">
           <div className="rounded-full py-2.5 w-auto flex gap-4 items-center px-6 justify-center text-xs bg-custom-dark-gray">
             <SparkleIcon />
             <p>
@@ -61,11 +67,19 @@ export const SectionAI = () => {
           </div>
         </div>
 
-        <h2 className="text-sm mb-1 text-left font-semibold uppercase text-white">
-          Accelerate with AI
+        <Image
+          alt="blockchain placeholder"
+          src="/img/wormcard-placeholder.svg"
+          width={1007}
+          height={120}
+        />
+      </div>
+      <div className="container mx-auto lg:max-w-[75%]">
+        <h2 className="text-xs mb-1 mt-16 text-left font-semibold uppercase text-white">
+        ● Accelerate with AI
         </h2>
 
-        <div className="grid gap-4 mt-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 mt-4 sm:grid-cols-2 lg:grid-cols-3 ">
           <AICard
             title="Create Charts"
             description="Easily prompt and create charts, comparing, contrasting, analysing data from the blockchain all from a single prompt on our AI."
@@ -91,7 +105,7 @@ export const SectionAI = () => {
             title="Analyze Price Data"
             description="Analyse price action over any period of time to spot trends, systems and underlying issues before others do."
           >
-            <div className="absolute bottom-[1.5rem] right-[-4rem] w-[100%]">
+            <div className="absolute bottom-[1.5rem] right-[-3rem] left-6 w-[100%]">
               <Wave />
             </div>
           </AICard>
