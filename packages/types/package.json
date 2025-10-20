@@ -1,0 +1,21 @@
+{
+  "name": "@sandworm/types",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "typecheck": "tsc --pretty"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@sandworm/typescript-config": "workspace:*",
+    "@types/node": "^24.7.0",
+    "@types/uuid": "9.0.8",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "date-fns": "^4.1.0",
+    "react-dnd": "^16.0.1",
+    "uuid": "^9.0.1",
+    "zod": "^4.1.12"
+  }
+}

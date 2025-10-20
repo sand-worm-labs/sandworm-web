@@ -4,7 +4,7 @@ import { useFormStatus } from "react-dom";
 
 import { LoaderIcon } from "@/components/Chats/icons";
 
-import { Button } from "../ui/button";
+import { Button } from "@sandworm/ui/components/button";
 
 export function SubmitButton({ children }: { children: React.ReactNode }) {
   const { pending } = useFormStatus();

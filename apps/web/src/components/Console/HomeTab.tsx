@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@sandworm/ui/components/button";
 import {
   Card,
   CardHeader,
@@ -17,8 +17,13 @@ import {
   CardDescription,
   CardFooter,
 } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@sandworm/ui/components/tabs";
+import { Skeleton } from "@sandworm/ui/components/skeleton";
 import { useSandwormStore } from "@/store";
 
 import { ExamplesModal } from "./ExampleModal";

@@ -1,7 +1,7 @@
 import { Star } from "lucide-react";
 import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@sandworm/ui/components/button";
 
 export const DashboardHeader = () => {
   const board = {

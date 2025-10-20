@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@sandworm/ui/components/badge";
 
 export const ResearchDescription = () => {
   const degeninfo = {

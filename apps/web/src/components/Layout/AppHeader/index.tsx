@@ -5,7 +5,7 @@ import { useState, type FC } from "react";
 import { useSession } from "next-auth/react";
 import { X, Search } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@sandworm/ui/components/badge";
 import { SandwormLogo } from "@/components/Assets";
 
 import { ProfileMenu } from "../../ProfileMenu";
@@ -16,15 +16,13 @@ export const AppHeader: FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <header className="px-8 py-2 flex justify-between items-center dark:bg-[#000000] border-b border-[#E9ECEF]">
+    <header className="px-8 py-2 flex justify-between items-center border-b border">
       <Link href="/" className="flex items-center">
         <SandwormLogo />
         <span className="ml-3 font-semibold text-lg uppercase hidden md:inline-block">
           SandW0rm.
         </span>
-        <Badge className="bg-white/15 rounded-lg ml-2 text-black dark:text-white">
-          beta
-        </Badge>
+        <Badge className="ml-2">beta</Badge>
       </Link>
 
       <div className="hidden md:block">

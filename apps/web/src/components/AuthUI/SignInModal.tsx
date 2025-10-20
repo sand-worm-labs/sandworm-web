@@ -7,7 +7,7 @@ import {
   DialogContent,
   DialogTitle,
   DialogDescription,
-} from "@/components/ui/dialog";
+} from "@sandworm/ui/components/dialog";
 import { useModalStore } from "@/store/auth";
 
 import { PartnersSection } from "../Partners";
@@ -28,7 +28,7 @@ export const SignInModal = () => {
               </span>
             </DialogTitle>
 
-            <DialogDescription className=" mb-6 text-[#455768] roobert text-sm">
+            <DialogDescription className=" mb-6 text-muted-foreground font-primary text-sm">
               Decode complex Onchain data in seconds!
             </DialogDescription>
 

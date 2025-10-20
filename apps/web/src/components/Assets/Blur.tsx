@@ -1,0 +1,61 @@
+import React from "react";
+
+export const Blur = () => {
+  return (
+    <svg
+      width="622"
+      height="674"
+      viewBox="0 0 622 674"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <g filter="url(#filter0_f_1149_4667)">
+        <path
+          d="M380.692 135.168L627.242 391V246.55L380.692 0L89.4722 226.826L-6.24744 82.3769L-2.76672 263.084L89.4722 391L380.692 135.168Z"
+          fill="url(#paint0_linear_1149_4667)"
+        />
+        <path
+          d="M380.692 135.168L627.242 391V246.55L380.692 0L89.4722 226.826L-6.24744 82.3769L-2.76672 263.084L89.4722 391L380.692 135.168Z"
+          stroke="black"
+          stroke-width="1.16024"
+        />
+      </g>
+      <defs>
+        <filter
+          id="filter0_f_1149_4667"
+          x="-288.066"
+          y="-281.973"
+          width="1197.09"
+          height="955.611"
+          filterUnits="userSpaceOnUse"
+          color-interpolation-filters="sRGB"
+        >
+          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feBlend
+            mode="normal"
+            in="SourceGraphic"
+            in2="BackgroundImageFix"
+            result="shape"
+          />
+          <feGaussianBlur
+            stdDeviation="140.6"
+            result="effect1_foregroundBlur_1149_4667"
+          />
+        </filter>
+        <linearGradient
+          id="paint0_linear_1149_4667"
+          x1="639.24"
+          y1="67.4722"
+          x2="-35.7878"
+          y2="232.474"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stop-color="#6368FF" />
+          <stop offset="0.153846" stop-color="#6D185C" />
+          <stop offset="0.427885" stop-color="#2DB2FF" />
+          <stop offset="1" stop-color="#FF00E1" />
+        </linearGradient>
+      </defs>
+    </svg>
+  );
+};
