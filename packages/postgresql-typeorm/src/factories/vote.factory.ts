@@ -1,0 +1,9 @@
+import { setSeederFactory } from 'typeorm-extension';
+import { VoteEntity } from '../entities';
+
+export default setSeederFactory(VoteEntity, (fake) => {
+    const vote = new VoteEntity();
+    vote.isUpvoted = fake.datatype.boolean();
+
+    return vote;
+});

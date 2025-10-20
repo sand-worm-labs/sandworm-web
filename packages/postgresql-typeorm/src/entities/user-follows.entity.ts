@@ -23,16 +23,16 @@ export class UserFollowsEntity extends AbstractEntity {
     Object.assign(this, data);
   }
 
-  @PrimaryGeneratedColumn({ primaryKeyConstraintName: 'PK_user_follows_id' })
-  id: number;
+  @PrimaryGeneratedColumn('uuid', { primaryKeyConstraintName: 'PK_user_follows_id' })
+  id: string;
 
   @Column({ name: 'follower_id' })
   @Index('UQ_user_follows_follower_id', ['followerId'])
-  followerId: number;
+  followerId: string;
 
   @Column({ name: 'followee_id' })
   @Index('UQ_user_follows_followee_id', ['followeeId'])
-  followeeId: number;
+  followeeId: string;
 
   @ManyToOne(() => UserEntity, (user) => user.following)
   @JoinColumn({
