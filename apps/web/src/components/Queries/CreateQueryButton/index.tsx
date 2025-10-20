@@ -3,7 +3,7 @@
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@sandworm/ui/components/button";
 import {
   Tooltip,
   TooltipContent,

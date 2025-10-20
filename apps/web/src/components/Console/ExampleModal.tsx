@@ -9,14 +9,14 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@sandworm/ui/components/dialog";
 import {
   Card,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@sandworm/ui/components/card";
 
 interface ExampleQuery {
   title: string;
