@@ -1,0 +1,141 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Article {
+  author: Profile
+  body: String!
+  createdAt: DateTime
+  description: String!
+  favorited: Boolean
+  favoritesCount: Float
+  slug: String!
+  tagList: [String!]!
+  title: String!
+  updatedAt: DateTime
+}
+
+input CreateArticleInput {
+  """Body of the article"""
+  body: String!
+
+  """Description of the article"""
+  description: String!
+
+  """Tag list of the article"""
+  tagList: [String!]
+
+  """Title of the article"""
+  title: String!
+}
+
+"""User register request"""
+input CreateUserInput {
+  email: String!
+  password: String!
+  username: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+"""Login input"""
+input LoginInput {
+  """Email address"""
+  email: String!
+
+  """Password"""
+  password: String!
+}
+
+type Mutation {
+  createArticle(input: CreateArticleInput!): Article!
+
+  """Register new user"""
+  createUser(input: CreateUserInput!): User!
+  deleteArticle(slug: String!): Boolean!
+
+  """Favorite an article"""
+  favoriteArticle(slug: String!): Article!
+
+  """Follow User"""
+  followUser(
+    """Username of the profile"""
+    username: String!
+  ): Profile!
+
+  """Sign in"""
+  login(input: LoginInput!): User!
+
+  """Unfavorite an article"""
+  unfavoriteArticle(slug: String!): Article!
+
+  """Unfollow User"""
+  unfollowUser(
+    """Username of the profile"""
+    username: String!
+  ): Profile!
+  updateArticle(input: UpdateArticleInput!, slug: String!): Article!
+
+  """Update current user"""
+  updateUser(input: UpdateUserInput!): User!
+}
+
+type Profile {
+  bio: String!
+  following: Boolean!
+  image: String!
+  username: String!
+}
+
+type Query {
+  """Get an article by slug"""
+  article(
+    """Slug of the article"""
+    slug: String!
+  ): Article!
+
+  """Get current user (from token)"""
+  currentUser: User!
+  hello: String!
+
+  """Get Profile"""
+  profile(
+    """Username of the profile"""
+    username: String!
+  ): Profile!
+  tags: [String!]!
+}
+
+input UpdateArticleInput {
+  """Body of the article"""
+  body: String
+
+  """Description of the article"""
+  description: String
+
+  """Tag list of the article"""
+  tagList: [String!]
+
+  """Title of the article"""
+  title: String
+}
+
+"""User update request"""
+input UpdateUserInput {
+  bio: String
+  email: String
+  image: String
+  username: String
+}
+
+type User {
+  bio: String
+  email: String
+  id: Float
+  image: String
+  token: String
+  username: String
+}

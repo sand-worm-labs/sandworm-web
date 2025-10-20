@@ -1,0 +1,45 @@
+{
+  "extends": "@sandworm/typescript-config/nestjs.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./dist",
+    "paths": {
+      "@/api/*": [
+        "src/modules/*"
+      ],
+      "@/common/*": [
+        "src/common/*"
+      ],
+      "@/config/*": [
+        "src/config/*"
+      ],
+      "@/constants/*": [
+        "src/constants/*"
+      ],
+      "@/database/*": [
+        "src/database/*"
+      ],
+      "@/decorators/*": [
+        "src/decorators/*"
+      ],
+      "@/exceptions/*": [
+        "src/exceptions/*"
+      ],
+      "@/filters/*": [
+        "src/filters/*"
+      ],
+      "@/generated/*": [
+        "src/generated/*"
+      ],
+      "@/guards/*": [
+        "src/guards/*"
+      ],
+      "@/interceptors/*": [
+        "src/interceptors/*"
+      ],
+      "@/utils/*": [
+        "src/utils/*"
+      ]
+    }
+  }
+}
