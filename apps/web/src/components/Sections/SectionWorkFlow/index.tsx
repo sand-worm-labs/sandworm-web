@@ -1,11 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
-import { MdOutlineArrowForwardIos } from "react-icons/md";
-import { FaCheck } from "react-icons/fa";
-
-import { TerminalFrame } from "./TerminalFrame";
 import { ExecutionResultPreview } from "./ExecutionResultPreview";
 
 const workflowSteps = [
@@ -15,7 +10,7 @@ const workflowSteps = [
       "Using our powerful AI, create a full notebook, filled with charts, data points, information and more, all editable, from the raw SQL, to the visualization type.",
     url: "/workspace",
     learnMoreUrl: "https://docs.sandwormlabs.xyz",
-    imageUrl: "/img/queries.png",
+    imageUrl: "/img/box2.svg",
 
     bullets: [
       "Use an SQL-like language designed for on-chain data",
@@ -29,7 +24,7 @@ const workflowSteps = [
     learnMoreUrl: "https://docs.sandwormlabs.xyz",
     description:
       "View, understand, utilize and store the information you got from using our product.",
-    imageUrl: "/img/queries.png",
+    imageUrl: "/img/box1.svg",
     preview: <ExecutionResultPreview />,
     bullets: [
       "Real-time query execution with instant feedback",
@@ -41,7 +36,7 @@ const workflowSteps = [
     title: "Organize and export notebooks",
     url: "workspace/explore",
     learnMoreUrl: "https://docs.sandwormlabs.xyz",
-    imageUrl: "/img/sample.png",
+    imageUrl: "/img/box3.svg",
     description:
       "You can create any amount of dashboard to store your visualizations, as well as create texts, add photos etc to personalize it. You can then add these to your subdomain or export them.",
     bullets: [
@@ -54,26 +49,47 @@ const workflowSteps = [
 
 export const SectionWorkFlow = () => {
   return (
-    <div className="container mx-auto mt-16 px-6 bg-black">
-      <h1 className="lg:text-[4.5rem] text-4xl text-primary mb-16 uppercase font-bold leading-[1.3] text-center">
-        Get started in 3 easy steps
-      </h1>
-
-      <div className="w-full  grid gap-x-6 grid-cols-3">
-        {workflowSteps.map((step, index) => (
-          <div
-            className="w-full bg-custom-black-200 rounded-2xl h-full"
-            key={step.title}
-          >
-            <div className="  p-6">
-              <h3 className=" text-base mb-3 font-bold uppercase text-white">
-                {index + 1} {step.title}
-              </h3>
-              <p className=" text-custom-gray mb-6">{step.description}</p>
-            </div>
-          </div>
-        ))}
+    <>
+      <div className="w-full flex-col items-center justify-center mx-auto container">
+        <Image
+          src="/img/illustration.svg"
+          width={1391}
+          height={1500}
+          alt="illustration"
+        />
       </div>
-    </div>
+      <div className="container mx-auto  px-6 bg-black pt-10">
+        <h1 className="lg:text-[4.5rem] text-4xl text-primary mb-16 uppercase font-bold leading-[1.3] text-center">
+          Get started in 3 easy steps
+        </h1>
+
+        <div className="w-full  grid gap-x-6 grid-cols-3">
+          {workflowSteps.map((step, index) => (
+            <div
+              className="w-full bg-custom-black-200 rounded-2xl h-full gradient-border"
+              key={step.title}
+            >
+              <div className=" inner h-full py-8 px-6">
+                <h3 className="  mb-3 font-bold uppercase text-white text-sm ">
+                  {index + 1} {step.title}
+                </h3>
+                <p className=" text-custom-gray mb-6 font-secondary">
+                  {step.description}
+                </p>
+
+                <div className="bottom-0">
+                  <Image
+                    src={step.imageUrl}
+                    width={558}
+                    height={511}
+                    alt="image"
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
   );
 };
