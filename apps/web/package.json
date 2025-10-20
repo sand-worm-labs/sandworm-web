@@ -1,6 +1,6 @@
 {
   "name": "@sandworm/web",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "license": "MIT",
   "private": true,
   "scripts": {
@@ -31,7 +31,6 @@
     "@monaco-editor/react": "^4.7.0",
     "@next/bundle-analyzer": "^15.0.1",
     "@radix-ui/react-visually-hidden": "^1.2.3",
-    "@sandworm/database": "workspace:*",
     "@sandworm/editor": "workspace:*",
     "@sandworm/types": "workspace:*",
     "@sandworm/ui": "workspace:*",
