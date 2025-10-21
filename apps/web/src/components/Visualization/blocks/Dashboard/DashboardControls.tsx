@@ -28,7 +28,7 @@ import {
   switchBlockType,
 } from "@sandworm/editor";
 import { useCallback, useMemo, useRef, useState } from "react";
-import type { ApiDocument } from "@briefer/database";
+import type { ApiDocument } from "@sandworm/database";
 import type { DataFrame } from "@sandworm/types";
 import { exhaustiveCheck } from "@sandworm/types";
 import {

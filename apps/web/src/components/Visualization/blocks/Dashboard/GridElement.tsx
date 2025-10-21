@@ -10,7 +10,7 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import type GridLayout from "react-grid-layout";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
-import type { ApiDocument } from "@briefer/database";
+import type { ApiDocument } from "@sandworm/database";
 import clsx from "clsx";
 
 import { useYDocState } from "@/hooks/useYDoc";

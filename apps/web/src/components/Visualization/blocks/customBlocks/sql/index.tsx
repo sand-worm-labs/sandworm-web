@@ -33,7 +33,7 @@ import type {
   ApiDocument,
   ApiWorkspace,
   DataSourceType,
-} from "@briefer/database";
+} from "@sandworm/database";
 import clsx from "clsx";
 import type { ConnectDragPreview } from "react-dnd";
 import { useRouter } from "next/router";
