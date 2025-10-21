@@ -1,5 +1,5 @@
 import ReactDOM from "react-dom";
-import type { APIDataSource } from "@briefer/database";
+import type { APIDataSource } from "@sandworm/database";
 import { Switch, Transition } from "@headlessui/react";
 import { Cog6ToothIcon } from "@heroicons/react/24/solid";
 import clsx from "clsx";

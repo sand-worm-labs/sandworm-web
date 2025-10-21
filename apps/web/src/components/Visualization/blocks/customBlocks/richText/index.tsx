@@ -20,7 +20,7 @@ import type { ConnectDragPreview } from "react-dnd";
 import ImageExtension from "./ImageExtension";
 
 import "katex/dist/katex.min.css";
-import useEditorAwareness from "@/hooks/useEditorAwareness";
+import useEditorAwareness from "../../../hooks/useEditorAwareness";
 import type { DashboardMode } from "@/components/Dashboard";
 
 import FormattingToolbar from "./FormattingToolbar";
@@ -102,7 +102,7 @@ const useBlockEditor = ({
           autocorrect: "off",
           autocapitalize: "off",
           class:
-            "briefer-editor-body min-h-full prose sm:prose-base prose-sm max-w-full rounded-sm focus:outline-0 whitespace-pre-wrap ph-no-capture",
+            " min-h-full prose sm:prose-base prose-sm max-w-full rounded-sm focus:outline-0 whitespace-pre-wrap ph-no-capture",
         },
       },
     },

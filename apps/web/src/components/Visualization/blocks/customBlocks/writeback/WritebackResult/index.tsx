@@ -1,4 +1,4 @@
-import type { DataSource } from "@briefer/database";
+import type { DataSource } from "@sandworm/database";
 import { DatabaseZapIcon } from "lucide-react";
 import type { WriteBackResult } from "@sandworm/types";
 import type { ExecutionStatus } from "@sandworm/editor";
