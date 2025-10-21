@@ -60,6 +60,7 @@
     "echarts-unofficial-v6": "^6.0.0",
     "eslint-plugin-cypress": "^4.2.0",
     "framer-motion": "11.16.1",
+    "gsap": "^3.13.0",
     "highcharts": "^12.2.0",
     "highcharts-react-official": "^3.2.1",
     "immutability-helper": "^3.1.1",
@@ -112,8 +113,8 @@
     "zustand": "^5.0.3"
   },
   "devDependencies": {
-    "@sandworm/eslint-config": "workspace:*",
     "@jest/globals": "^29.7.0",
+    "@sandworm/eslint-config": "workspace:*",
     "@sandworm/typescript-config": "workspace:*",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",

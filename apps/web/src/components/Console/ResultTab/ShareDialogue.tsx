@@ -8,8 +8,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+} from "@sandworm/ui/components/dialog";
+import { Button } from "@sandworm/ui/components/button";
 
 const sharePlatforms = [
   {

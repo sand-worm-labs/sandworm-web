@@ -21,6 +21,13 @@
 }
 
 @font-face {
+  font-family: "Helvetica Neue";
+  src: url("/fonts/HelveticaNeueMedium.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
   font-family: "Roobert";
   src: url("/fonts/RoobertTRIAL-Regular-BF67243fd53fdf2.otf") format("opentype");
   font-weight: 400;
@@ -48,6 +55,11 @@
 
 .font-secondary {
   font-family: "Helvetica Neue", sans-serif;
+}
+
+.font-secondary.font-normal {
+  font-family: "Helvetica Neue", sans-serif;
+  font-weight: 400;
 }
 
 ::cue {
@@ -357,6 +369,9 @@ select:-webkit-autofill:focus {
     #ded757 80.81%,
     #ff00e1 98.74%
   );
+  background-size: 250% 250%;
+  animation: gradientScroll 8s ease-in-out infinite;
+  will-change: background-position;
 }
 
 .box-gradient {
@@ -480,8 +495,11 @@ label {
   0% {
     background-position: 0% 50%;
   }
-  100% {
+  50% {
     background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
   }
 }
 
