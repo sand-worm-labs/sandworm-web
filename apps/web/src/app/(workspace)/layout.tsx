@@ -9,7 +9,7 @@ import { SignInModal } from "@/components/AuthUI/SignInModal";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="roobert">
+    <div className="font-primary">
       <ProgressProvider
         height="1px"
         color="#FF7F4F"
@@ -23,8 +23,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <Toaster
           position="bottom-right"
           toastOptions={{
-            className:
-              " border border-neutral-700 shadow-xl rounded-none dm-sans ",
+            className: " border border-neutral-700 shadow-xl rounded-none  ",
           }}
         />
       </ProgressProvider>
