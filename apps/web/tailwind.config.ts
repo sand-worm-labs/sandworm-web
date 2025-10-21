@@ -84,6 +84,7 @@ const config: Config = {
         "custom-black": "#0B0B12",
         "custom-black-200": "#0A0B13",
         "neutral-500": "#868E96",
+        "divider-light": "#E9ECEF",
       },
       fontFamily: {
         sans: ["var(--font-inter)", ...defaultTheme.fontFamily.sans],
