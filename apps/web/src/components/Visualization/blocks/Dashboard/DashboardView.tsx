@@ -22,10 +22,10 @@ import {
 } from "@sandworm/editor";
 import SimpleBar from "simplebar-react";
 
-import { useYDocState } from "@/hooks/useYDoc";
+import { useYDocState } from "../../hooks/useYDocs";
 import type { APIDataSources } from "@/hooks/useDatasources";
 
-import Title from "../v2Editor/Title";
+import Title from "../Title";
 
 import GridElement from "./GridElement";
 
