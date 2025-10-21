@@ -8,7 +8,7 @@ import { SizeMe } from "react-sizeme";
 import GridLayout from "react-grid-layout";
 import { useCallback, useMemo, useState } from "react";
 import clsx from "clsx";
-import type { ApiDocument } from "@briefer/database";
+import type { ApiDocument } from "@sandworm/database";
 import type { ExecutionQueue, AITasks, YBlock } from "@sandworm/editor";
 import {
   getBlocks,
