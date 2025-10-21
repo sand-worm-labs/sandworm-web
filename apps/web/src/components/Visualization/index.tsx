@@ -776,19 +776,21 @@ function VisualizationBlockV2(props: Props) {
         className={clsx(
           "rounded-2xl border",
           props.isBlockHiddenInPublished && "border-dashed",
-          props.hasMultipleTabs ? "rounded-tl-none" : "rounded-2xl",
+          props.hasMultipleTabs ? "rounded-2xl" : "rounded-2xl",
 
-          props.isCursorWithin ? "border-blue-400 shadow-sm" : "border-gray-200"
+          props.isCursorWithin
+            ? "border-blue-400 shadow-sm"
+            : "border-[#EBD7D7]"
         )}
       >
         <div
           className={clsx(
-            "rounded-md",
-            props.hasMultipleTabs ? "rounded-tl-none" : ""
+            "rounded-2xl",
+            props.hasMultipleTabs ? "rounded-2xl" : ""
           )}
         >
           <div
-            className="border-b border-[#EBD7D7]  rounded-t-md"
+            className="border-b border-[#EBD7D7]  rounded-t-2xl"
             ref={d => {
               props.dragPreview?.(d);
             }}

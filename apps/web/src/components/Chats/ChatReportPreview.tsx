@@ -87,13 +87,15 @@ export const ChatReportPreview = () => {
         </div>
       </div>
 
-      <p className="text-[#455768] leading-relaxed">
-        Building a database to know the rotation of the earth via a 2.5
-        rotationary telescope. This is a dummy text here designed to test if
-        this fits the design.
+      <p className="text-[#050818] text-base leading-relaxed ">
+        This dashboard visualizes the most actively traded tokens on Base over
+        the past 30 days. The data highlights on-chain volume trends, unique
+        holder growth, and the top projects driving activity within the Base
+        ecosystem. It’s a test section meant to evaluate layout spacing and
+        typography responsiveness across chart elements.
       </p>
 
-      <div className="w-full flex items-center justify-center text-neutral-500  rounded-2xl relative pt-16">
+      <div className="w-full flex items-center justify-center text-neutral-500  rounded-2xl relative pt-5">
         <VisualizationBlockV2
           isPublicMode={false}
           isEditable
@@ -117,29 +119,55 @@ export const ChatReportPreview = () => {
         />
       </div>
 
-      <div className="text-[#455768] space-y-2 py-3">
+      <div className="text-[#050818] text-base space-y-2 py-3">
         <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec
-          odio. Praesent libero. Sed cursus ante dapibus diam.
+          The leading tokens by transaction count include several
+          community-driven assets and DeFi primitives. While some of these
+          tokens show consistent daily volume, others reflect cyclical hype
+          driven by liquidity farming and protocol updates
         </p>
         <p>
-          Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis
-          ipsum. Praesent mauris.
+          These insights help track capital flow, identify emerging projects,
+          and provide a clearer understanding of Base’s on-chain momentum as the
+          network matures. This block is purely for layout testing and does not
+          represent live data.
         </p>
       </div>
 
-      <div className="w-full h-[500px] flex items-center justify-center text-neutral-500 border border-[#EBD7D7] rounded-2xl">
-        <span>Chart Viz goes here 📊</span>
+      <div className="w-full flex items-center justify-center text-neutral-500  rounded-2xl relative pt-4">
+        <VisualizationBlockV2
+          isPublicMode={false}
+          isEditable
+          document={document}
+          onAddGroupedBlock={() => {}}
+          block={
+            blocks.get("visualization") as Y.XmlElement<VisualizationV2Block>
+          }
+          blocks={blocks}
+          dataframes={dataframes}
+          dragPreview={null}
+          dashboardMode={null}
+          hasMultipleTabs={false}
+          isBlockHiddenInPublished={false}
+          onToggleIsBlockHiddenInPublished={() => {}}
+          isCursorWithin={false}
+          isCursorInserting={false}
+          userId="default-user"
+          executionQueue={executionQueue}
+          isFullScreen={false}
+        />
       </div>
 
-      <div className="text-[#455768] space-y-2 py-3">
+      <div className="text-[#050818] text-base  space-y-2 py-3">
         <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec
-          odio. Praesent libero. Sed cursus ante dapibus diam.
+          Future iterations of this visualization will include dynamic filtering
+          by token type, project category, and activity source, giving users
+          more granular control over their data views.
         </p>
         <p>
-          Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis
-          ipsum. Praesent mauris.
+          Until then, this placeholder section serves as a design reference to
+          test scroll behavior, spacing, and content density for data-heavy
+          notebook.
         </p>
       </div>
     </div>
