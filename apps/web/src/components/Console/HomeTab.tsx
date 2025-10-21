@@ -16,7 +16,7 @@ import {
   CardTitle,
   CardDescription,
   CardFooter,
-} from "@/components/ui/card";
+} from "@sandworm/ui/components/card";
 import {
   Tabs,
   TabsContent,

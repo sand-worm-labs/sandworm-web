@@ -1,13 +1,13 @@
 import type { Table } from "@tanstack/react-table";
 import { Columns, RefreshCw, Loader2 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@sandworm/ui/components/button";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuCheckboxItem,
-} from "@/components/ui/dropdown-menu";
+} from "@sandworm/ui/components/dropdown-menu";
 
 import { DownloadDialog } from "../DownloadDialog";
 import { SimpleFilter } from "../SimpleFilter";
