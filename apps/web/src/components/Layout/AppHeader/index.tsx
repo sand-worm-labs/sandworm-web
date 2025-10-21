@@ -5,7 +5,6 @@ import { useState, type FC } from "react";
 import { useSession } from "next-auth/react";
 import { X, Search } from "lucide-react";
 
-import { Badge } from "@sandworm/ui/components/badge";
 import { SandwormLogo } from "@/components/Assets";
 
 import { ProfileMenu } from "../../ProfileMenu";
@@ -19,10 +18,9 @@ export const AppHeader: FC = () => {
     <header className="px-8 py-2 flex justify-between items-center border-b border border-divider-light">
       <Link href="/" className="flex items-center">
         <SandwormLogo />
-        <span className="ml-3 font-semibold text-lg uppercase hidden md:inline-block">
+        <span className="ml-3 font-bold text-lg uppercase hidden md:inline-block">
           SandW0rm.
         </span>
-        <Badge className="ml-2">beta</Badge>
       </Link>
 
       <div className="hidden md:block">

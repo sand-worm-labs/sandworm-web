@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import type { Query } from "@/types";
 import { useDeleteQuery } from "@/hooks/useDeleteQuery";
 
-import { Input } from "../ui/input";
+import { Input } from "@sandworm/ui/components/input";
 import { DeleteQueryModal } from "../Console/DeleteQueryModal";
 
 interface IQueryExplorerCardListProps {

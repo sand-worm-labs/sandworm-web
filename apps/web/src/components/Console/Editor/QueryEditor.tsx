@@ -4,14 +4,14 @@ import { toast } from "sonner";
 import { FaCodeBranch } from "react-icons/fa";
 import { useSession } from "next-auth/react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@sandworm/ui/components/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Input } from "@/components/ui/input";
+} from "@sandworm/ui/components/tooltip";
+import { Input } from "@sandworm/ui/components/input";
 import { cn } from "@/lib/utils";
 import { useSandwormStore } from "@/store";
 import { useForkQuery } from "@/hooks";

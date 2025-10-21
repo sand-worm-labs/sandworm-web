@@ -9,8 +9,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
+} from "@sandworm/ui/components/select";
+import { Badge } from "@sandworm/ui/components/badge";
 
 import { ShareDialogue } from "./ShareDialogue";
 

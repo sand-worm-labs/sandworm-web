@@ -4,7 +4,12 @@ import { useSession } from "next-auth/react";
 
 import { fetchQueryUpdate } from "@/services/axios/queryService";
 
-import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "@sandworm/ui/components/card";
 
 import { QueryCard } from "./QueryHistory/QueryCard";
 
