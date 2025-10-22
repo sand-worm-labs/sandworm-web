@@ -22,7 +22,7 @@ export const SectionHero = () => {
   return (
     // 💬 Note: we use a static background for now till we replace with animation
     <section
-      className="py-16 text-center pb-64 min-h-screen pt-28  text-white relative"
+      className="py-16 text-center pb-64 min-h-screen pt-28  text-white relative "
       style={{
         backgroundImage: `url('/img/temp.svg')`,
         backgroundSize: "cover",
@@ -33,7 +33,7 @@ export const SectionHero = () => {
         {/* ════════════ Hero Text Content ════════════ */}
         <div className="flex items-center space-x-6 relative mt-20 lg:mt-12 w-full">
           <div className=" relative py-6 w-full">
-            <h1 className="mx-auto tracking-wide leading-[1.3] px-3 lg:px-0 lg:text-[2.8rem] text-3xl ">
+            <h1 className="mx-auto tracking-wide leading-[1.3] px-3 lg:px-0 lg:text-[2.8rem] text-3xl font-primary ">
               Deep, clean Blockchain Data Analysis
             </h1>
             <p className="text-custom-gray mt-7 mb-3 lg:max-w-[40rem] mx-auto font-primary text-lg">
