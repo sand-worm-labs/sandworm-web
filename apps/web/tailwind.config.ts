@@ -81,6 +81,7 @@ const config: Config = {
         "custom-light-gray": "#DFE1E6",
         "custom-dark-gray": "#141B1F",
         "custom-medium-gray": "#363C46",
+        "custom-light-gray-2": "#C5CED9",
         "custom-black": "#0B0B12",
         "custom-black-200": "#0A0B13",
         "neutral-500": "#868E96",
