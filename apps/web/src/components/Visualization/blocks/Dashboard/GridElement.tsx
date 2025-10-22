@@ -16,8 +16,15 @@ import clsx from "clsx";
 import { useYDocState } from "@/hooks/useYDoc";
 import type { APIDataSources } from "@/hooks/useDatasources";
 
+import RichTextBlock from "../v2Editor/customBlocks/richText";
+import SQLBlock from "../v2Editor/customBlocks/sql";
 import VisualizationBlock from "../v2Editor/customBlocks/visualization";
-import DashboardHeader from "../customBlocks/dashboardHeader";
+import PythonBlock from "../v2Editor/customBlocks/python";
+import InputBlock from "../v2Editor/customBlocks/input";
+import DropdownInputBlock from "../v2Editor/customBlocks/dropdownInput";
+import DashboardHeader from "../v2Editor/customBlocks/dashboardHeader";
+import DateInputBlock from "../v2Editor/customBlocks/dateInput";
+import PivotTableBlock from "../v2Editor/customBlocks/pivotTable";
 import VisualizationV2Block from "../../../Visualization";
 
 interface Props {
@@ -74,60 +81,67 @@ function GridElement(props: Props) {
     (block: YBlock, item: GridLayout.Layout) =>
       switchBlockType(block, {
         onVisualization: block => (
-          <VisualizationBlock
-            document={props.document}
-            dataframes={dataframes.value}
-            block={block}
-            blocks={blocks.value}
-            dragPreview={null}
-            isEditable={false}
-            onAddGroupedBlock={() => {}}
-            isDashboard
-            isPublicMode={false}
-            hasMultipleTabs={false}
-            isBlockHiddenInPublished={false}
-            onToggleIsBlockHiddenInPublished={() => {}}
-            isCursorWithin={false}
-            isCursorInserting={false}
-            userId={props.userId}
-            executionQueue={props.executionQueue}
-            isFullScreen
-          />
-        ),
-        onVisualizationV2: block => (
-          <VisualizationV2Block
-            document={props.document}
-            dataframes={dataframes.value}
-            block={block}
-            blocks={blocks.value}
-            dragPreview={null}
-            isEditable={false}
-            onAddGroupedBlock={() => {}}
-            dashboardMode={
-              props.isEditingDashboard
-                ? { _tag: "editing", position: "dashboard" }
-                : { _tag: "live" }
-            }
-            isPublicMode={false}
-            hasMultipleTabs={false}
-            isBlockHiddenInPublished={false}
-            onToggleIsBlockHiddenInPublished={() => {}}
-            isCursorWithin={false}
-            isCursorInserting={false}
-            userId={props.userId}
-            executionQueue={props.executionQueue}
-            isFullScreen
-          />
-        ),
-        onDashboardHeader: block => (
-          <DashboardHeader
-            block={block}
-            isEditing={isEditingHeader}
-            onFinishedEditing={() => setIsEditingHeader(false)}
-            dashboardMode={props.isEditingDashboard ? "editing" : "live"}
-            onStartEditing={() => setIsEditingHeader(true)}
-          />
-        ),
+          return (
+            <VisualizationBlock
+              document={props.document}
+              dataframes={dataframes.value}
+              block={block}
+              blocks={blocks.value}
+              dragPreview={null}
+              isEditable={false}
+              onAddGroupedBlock={() => {}}
+              isDashboard
+              isPublicMode={false}
+              hasMultipleTabs={false}
+              isBlockHiddenInPublished={false}
+              onToggleIsBlockHiddenInPublished={() => {}}
+              isCursorWithin={false}
+              isCursorInserting={false}
+              userId={props.userId}
+              executionQueue={props.executionQueue}
+              isFullScreen
+            />
+          ) as null;
+        },
+        onVisualizationV2: block => {
+          return (
+            <VisualizationV2Block
+              document={props.document}
+              dataframes={dataframes.value}
+              block={block}
+              blocks={blocks.value}
+              dragPreview={null}
+              isEditable={false}
+              onAddGroupedBlock={() => {}}
+              dashboardMode={
+                props.isEditingDashboard
+                  ? { _tag: "editing", position: "dashboard" }
+                  : { _tag: "live" }
+              }
+              isPublicMode={false}
+              hasMultipleTabs={false}
+              isBlockHiddenInPublished={false}
+              onToggleIsBlockHiddenInPublished={() => {}}
+              isCursorWithin={false}
+              isCursorInserting={false}
+              userId={props.userId}
+              executionQueue={props.executionQueue}
+              isFullScreen
+            />
+          ) as null;
+        },
+
+        onDashboardHeader: block => {
+          return (
+            <DashboardHeader
+              block={block}
+              isEditing={isEditingHeader}
+              onFinishedEditing={() => setIsEditingHeader(false)}
+              dashboardMode={props.isEditingDashboard ? "editing" : "live"}
+              onStartEditing={() => setIsEditingHeader(true)}
+            />
+          ) as null;
+        },
         onFileUpload: () => null,
         onWriteback: () => null,
       }),

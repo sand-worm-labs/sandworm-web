@@ -7,7 +7,7 @@ import Underline from "@tiptap/extension-underline";
 import Placeholder from "@tiptap/extension-placeholder";
 import Link from "@tiptap/extension-link";
 import Highlight from "@tiptap/extension-highlight";
-import TextStyle from "@tiptap/extension-text-style";
+import { TextStyleKit } from "@tiptap/extension-text-style";
 import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
 import Color from "@tiptap/extension-color";
@@ -21,7 +21,7 @@ import ImageExtension from "./ImageExtension";
 
 import "katex/dist/katex.min.css";
 import useEditorAwareness from "../../../hooks/useEditorAwareness";
-import type { DashboardMode } from "@/components/Dashboard";
+import type { DashboardMode } from "../../Dashboard";
 
 import FormattingToolbar from "./FormattingToolbar";
 
@@ -64,7 +64,7 @@ const useBlockEditor = ({
             target: "_blank",
           },
         }),
-        TextStyle,
+        TextStyleKit,
         Color.configure({
           types: ["textStyle"],
         }),

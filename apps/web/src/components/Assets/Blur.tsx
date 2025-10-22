@@ -18,7 +18,7 @@ export const Blur = () => {
         <path
           d="M380.692 135.168L627.242 391V246.55L380.692 0L89.4722 226.826L-6.24744 82.3769L-2.76672 263.084L89.4722 391L380.692 135.168Z"
           stroke="black"
-          stroke-width="1.16024"
+          strokeWidth="1.16024"
         />
       </g>
       <defs>
@@ -29,9 +29,9 @@ export const Blur = () => {
           width="1197.09"
           height="955.611"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feBlend
             mode="normal"
             in="SourceGraphic"
@@ -51,10 +51,10 @@ export const Blur = () => {
           y2="232.474"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#6368FF" />
-          <stop offset="0.153846" stop-color="#6D185C" />
-          <stop offset="0.427885" stop-color="#2DB2FF" />
-          <stop offset="1" stop-color="#FF00E1" />
+          <stop stopColor="#6368FF" />
+          <stop offset="0.153846" stopColor="#6D185C" />
+          <stop offset="0.427885" stopColor="#2DB2FF" />
+          <stop offset="1" stopColor="#FF00E1" />
         </linearGradient>
       </defs>
     </svg>

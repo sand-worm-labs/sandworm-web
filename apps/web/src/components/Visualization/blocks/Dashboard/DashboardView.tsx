@@ -59,7 +59,7 @@ function generateBackground(
 ): string {
   const rects = range(0, COLS_COUNT).map(i => {
     const x = i * (cellWidth + MARGIN) + MARGIN;
-    return `<rect stroke="#f2f1f3" stroke-width="2" fill="none" x="${x}" y="${MARGIN}" width="${cellWidth}" height="${cellHeight}" />`;
+    return `<rect stroke="#f2f1f3" strokeWidth="2" fill="none" x="${x}" y="${MARGIN}" width="${cellWidth}" height="${cellHeight}" />`;
   });
 
   const svg = [

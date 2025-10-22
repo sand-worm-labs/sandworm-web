@@ -13,6 +13,8 @@ import {
 } from "@sandworm/editor";
 import VisualizationBlockV2 from "../Visualization";
 import { Star, Expand, MoreVertical } from "lucide-react";
+import ItemActionsDropdown from "./ItemAction";
+import RichTextBlock from "../Visualization/blocks/customBlocks/richText";
 
 const yDoc = new Y.Doc();
 
@@ -133,7 +135,7 @@ export const ChatReportPreview = () => {
         <div className="flex items-center gap-3 text-neutral-400">
           <Star className="w-4 h-4 cursor-pointer hover:text-yellow-400 transition-colors" />
           <Expand className="w-4 h-4 cursor-pointer hover:text-neutral-200 transition-colors" />
-          <MoreVertical className="w-4 h-4 cursor-pointer hover:text-neutral-200 transition-colors" />
+          <ItemActionsDropdown />
         </div>
       </div>
 
@@ -144,10 +146,20 @@ export const ChatReportPreview = () => {
         ecosystem.
       </p>
 
+{/*       <RichTextBlock
+        block={blocks}
+        belongsToMultiTabGroup={false}
+        isEditable={false}
+        dragPreview={null}
+        dashboardMode={{ _tag: "editing", position: "sidebar" }}
+        isCursorWithin={false}
+        isCursorInserting={false}
+      /> */}
+
       <div className="w-full flex items-center justify-center text-neutral-500 rounded-2xl relative pt-5">
         <VisualizationBlockV2
           isPublicMode={false}
-          isEditable
+          isEditable={false}
           document={document}
           onAddGroupedBlock={() => {}}
           block={
@@ -167,6 +179,20 @@ export const ChatReportPreview = () => {
           isFullScreen={false}
         />
       </div>
+
+      <p className="text-[#050818] text-base leading-relaxed ">
+        This dashboard visualizes the most actively traded tokens on Base over
+        the past 30 days. The data highlights on-chain volume trends, unique
+        holder growth, and the top projects driving activity within the Base
+        ecosystem.
+      </p>
+
+      <p className="text-[#050818] text-base leading-relaxed ">
+        This dashboard visualizes the most actively traded tokens on Base over
+        the past 30 days. The data highlights on-chain volume trends, unique
+        holder growth, and the top projects driving activity within the Base
+        ecosystem.
+      </p>
     </div>
   );
 };
