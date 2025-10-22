@@ -2,14 +2,10 @@ import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
   BeforeInsert,
   BeforeUpdate,
   OneToOne,
   OneToMany,
-  ManyToMany,
-  JoinTable,
   JoinColumn,
   Index,
   type Relation,
@@ -26,6 +22,7 @@ import { WorkspaceEntity } from "./workspace.entity";
 import { OnboardingTutorialEntity } from "./onboarding_tutorial.entity";
 import { YjsDocumentEntity } from "./yjs-document.entity";
 import { YjsAppDocumentEntity } from "./yjs-app-document.entity";
+import { FavoriteEntity } from "./favorite.enitity";
 
 @Entity("users")
 export class UserEntity extends AbstractEntity {
@@ -95,21 +92,8 @@ export class UserEntity extends AbstractEntity {
   @OneToMany(() => CommentEntity, (comment) => comment.author)
   comments?: Relation<CommentEntity[]>;
 
-  @ManyToMany(() => DocumentEntity, (document) => document.favoritedBy)
-  @JoinTable({
-    name: "user_favorites",
-    joinColumn: {
-      name: "user_id",
-      referencedColumnName: "id",
-      foreignKeyConstraintName: "FK_user_favorites_user",
-    },
-    inverseJoinColumn: {
-      name: "document_id",
-      referencedColumnName: "id",
-      foreignKeyConstraintName: "FK_user_favorites_document",
-    },
-  })
-  favorites?: Relation<DocumentEntity[]>;
+  @OneToMany(() => FavoriteEntity, (favorite) => favorite.user)
+  favorites!: Relation<FavoriteEntity[]>;
 
   @OneToMany(() => UserFollowsEntity, (userFollow) => userFollow.follower)
   following?: Relation<UserFollowsEntity[]>;
