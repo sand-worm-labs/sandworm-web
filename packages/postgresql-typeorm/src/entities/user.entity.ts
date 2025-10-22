@@ -24,6 +24,8 @@ import { ChatEntity } from "./chat.entity";
 import { VoteEntity } from "./vote.entity";
 import { WorkspaceEntity } from "./workspace.entity";
 import { OnboardingTutorialEntity } from "./onboarding_tutorial.entity";
+import { YjsDocumentEntity } from "./yjs-document.entity";
+import { YjsAppDocumentEntity } from "./yjs-app-document.entity";
 
 @Entity("users")
 export class UserEntity extends AbstractEntity {
@@ -126,4 +128,11 @@ export class UserEntity extends AbstractEntity {
 
   @OneToMany(() => OnboardingTutorialEntity, (onboarding_tutorial) => onboarding_tutorial.user)
   onboardingTutorials!: Relation<OnboardingTutorialEntity[]>;
+
+
+  @OneToMany(() => YjsDocumentEntity, (yjsDoc) => yjsDoc.document)
+  yjsDocuments!: Relation<YjsDocumentEntity[]>;
+
+  @OneToMany(() => YjsAppDocumentEntity, (yjsAppDoc) => yjsAppDoc.document)
+  yjsAppDocuments!: Relation<YjsAppDocumentEntity[]>;
 }
