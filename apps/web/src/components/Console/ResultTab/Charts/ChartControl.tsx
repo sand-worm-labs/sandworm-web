@@ -4,7 +4,7 @@ import {
   SelectValue,
   SelectContent,
   SelectItem,
-} from "@/components/ui/select";
+} from "@sandworm/ui/components/select";
 
 import { DownloadDialog } from "../../DownloadDialog";
 

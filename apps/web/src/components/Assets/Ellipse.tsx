@@ -23,9 +23,9 @@ export const Ellipse = () => {
           width="81.8223"
           height="81.8224"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feBlend
             mode="normal"
             in="SourceGraphic"
@@ -65,13 +65,13 @@ export const Ellipse = () => {
           y2="27.8095"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#6368FF" />
-          <stop offset="0.153846" stop-color="#CBECFF" />
-          <stop offset="0.25" stop-color="#7BFF42" />
-          <stop offset="0.427885" stop-color="#2DEAFF" />
-          <stop offset="0.610577" stop-color="#FF23B2" />
-          <stop offset="0.817308" stop-color="#DED757" />
-          <stop offset="1" stop-color="#FF00E1" />
+          <stop stopColor="#6368FF" />
+          <stop offset="0.153846" stopColor="#CBECFF" />
+          <stop offset="0.25" stopColor="#7BFF42" />
+          <stop offset="0.427885" stopColor="#2DEAFF" />
+          <stop offset="0.610577" stopColor="#FF23B2" />
+          <stop offset="0.817308" stopColor="#DED757" />
+          <stop offset="1" stopColor="#FF00E1" />
         </linearGradient>
       </defs>
     </svg>
