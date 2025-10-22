@@ -435,12 +435,12 @@ select:-webkit-autofill:focus {
   margin-left: -50px;
 
   path {
-    stroke-dasharray: 203px, 345px;
+    strokedasharray: 203px, 345px;
     stroke-dashoffset: 0;
     fill: none;
     stroke: #ea580b;
-    stroke-width: 13;
-    stroke-linecap: round;
+    strokewidth: 13;
+    strokelinecap: round;
     stroke-miterlimit: 10;
     animation: worm 1s linear infinite;
   }

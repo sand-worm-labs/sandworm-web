@@ -13,8 +13,8 @@ export const Wave = () => {
         <path
           d="M3 179.5L11.1691 161.371C27.2227 125.745 67.7643 108.204 104.722 120.894L109.034 122.374C137.113 132.015 168.213 122.7 186.369 99.2117L210.953 67.4068C220.171 55.4818 237.197 53.0419 249.393 61.8983C260.852 70.2199 276.729 68.6281 286.308 58.1974L337 3"
           stroke="url(#paint0_linear_1149_4619)"
-          stroke-width="6"
-          stroke-linecap="round"
+          strokeWidth="6"
+          strokeLinecap="round"
         />
       </g>
       <defs>
@@ -25,9 +25,9 @@ export const Wave = () => {
           width="340"
           height="184.312"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feBlend
             mode="normal"
             in="SourceGraphic"
@@ -61,13 +61,13 @@ export const Wave = () => {
           y2="133.022"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#6368FF" />
-          <stop offset="0.153846" stop-color="#CBECFF" />
-          <stop offset="0.25" stop-color="#7BFF42" />
-          <stop offset="0.427885" stop-color="#2DB2FF" />
-          <stop offset="0.610577" stop-color="#FF0000" />
-          <stop offset="0.817308" stop-color="#DED757" />
-          <stop offset="1" stop-color="#FF00E1" />
+          <stop stopColor="#6368FF" />
+          <stop offset="0.153846" stopColor="#CBECFF" />
+          <stop offset="0.25" stopColor="#7BFF42" />
+          <stop offset="0.427885" stopColor="#2DB2FF" />
+          <stop offset="0.610577" stopColor="#FF0000" />
+          <stop offset="0.817308" stopColor="#DED757" />
+          <stop offset="1" stopColor="#FF00E1" />
         </linearGradient>
       </defs>
     </svg>

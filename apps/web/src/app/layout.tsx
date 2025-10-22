@@ -45,10 +45,10 @@ export default async function RootLayout({ children }: ChildrenProps) {
   gtag('config', "G-GQB5QS1LHQ")`}
       </Script>
       <body
-        className={`${azeretMono.className} h-full flex flex-col justify-between`}
+        className={`${azeretMono.className} h-full flex flex-col justify-between bg-black`}
       >
         <RootProvider>
-          <section className="flex-1">{children}</section>
+          <section className="flex-1 over-flow-x-hidden">{children}</section>
         </RootProvider>
       </body>
     </html>

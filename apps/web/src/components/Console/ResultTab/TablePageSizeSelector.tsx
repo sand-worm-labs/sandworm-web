@@ -1,13 +1,13 @@
 import type { Table } from "@tanstack/react-table";
 
-import { Label } from "@/components/ui/label";
+import { Label } from "@sandworm/ui/components/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@sandworm/ui/components/select";
 
 const PAGE_SIZE_OPTIONS = [50, 100, 200, 400];
 
