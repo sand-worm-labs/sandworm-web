@@ -8,6 +8,7 @@ import { Ellipse } from "@/components/Assets/Ellipse";
 import { Wave } from "@/components/Assets/Wave";
 import Image from "next/image";
 import { Dots } from "@/components/Assets/Dots";
+import { Blockchains } from "./Blockchains";
 
 interface AICardProps {
   title: string;
@@ -67,6 +68,10 @@ export const SectionAI = () => {
           </div>
         </div>
 
+        <div className="relative mx-auto w-full min-h-[250px]">
+          <Blockchains />
+        </div>
+
         <Image
           alt="blockchain placeholder"
           src="/img/wormcard-placeholder.svg"
@@ -76,7 +81,7 @@ export const SectionAI = () => {
       </div>
       <div className="container mx-auto lg:max-w-[75%]">
         <h2 className="text-xs mb-1 mt-16 text-left font-semibold uppercase text-white">
-        ● Accelerate with AI
+          ● Accelerate with AI
         </h2>
 
         <div className="grid gap-4 mt-4 sm:grid-cols-2 lg:grid-cols-3 ">

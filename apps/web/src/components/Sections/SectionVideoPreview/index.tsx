@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Link from "next/link";
 import { Button } from "@sandworm/ui/components/button";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -49,24 +50,29 @@ export const SectionVideoPreview: React.FC = () => {
       </div>
 
       {/* ════════════ Text Content Overlay ════════════ */}
-      <div className="absolute bottom-20 grid grid-cols-[70%,30%] container mx-auto px-16 pt-32 z-10 bg-gradient-to-r from-transparent to-black/80">
+      <div className="absolute bottom-20 grid grid-cols-[70%,30%] container mx-auto px-16 pt-32 z-10 bg-gradient-to-r from-transparent to-black/80 backdrop:blur-lg">
         <div className="overflow-hidden smooth-text">
-          <h3 className="uppercase font-medium mb-2">Easy intelligence</h3>
+          <h3 className="uppercase font-semibold mb-6 text-xs">
+            Easy intelligence
+          </h3>
           <p className="text-4xl leading-[1.4] font-normal font-secondary">
             Unlock Clear, <br /> Actionable Data for <br /> Smarter Decisions.
           </p>
         </div>
 
-        <div className="text-sm text-custom-light-gray helvetica-neue leading-[1.5] smooth-text">
-          <p className="mb-5">
+        <div className="text-sm text-custom-light-gray  leading-[1.5] smooth-text">
+          <p className="mb-5 font-secondary">
             Most analytics tools are built for engineers, complicated, rigid,
             and slow. Sandworm brings simplicity and speed to everyone.
           </p>
-          <p>
+          <p className="font-secondary">
             Whether you’re a protocol team, data analyst, or founder, Sandworm
             adapts to how you work — not the other way around.
           </p>
-          <Button className="bg-white text-black rounded-xl mt-8">
+          <Button
+            type="button"
+            className="rounded-xl py-2.5  h-fit m-0.5 text-black bg-white px-4 mt-4 text-xs"
+          >
             Get Started
           </Button>
         </div>

@@ -56,10 +56,11 @@ export const SectionWorkFlow = () => {
           src="/img/illustration.svg"
           width={1391}
           height={1500}
+          className="w-[85%] mx-auto"
           alt="illustration"
         />
       </div>
-      <div className="container mx-auto  px-6 bg-black pt-10">
+      <div className="container mx-auto  px-6 bg-black pt-6">
         <h3 className="uppercase mb-5 text-sm font-medium mt-5 text-white text-center">
           How Sandworm works
         </h3>
