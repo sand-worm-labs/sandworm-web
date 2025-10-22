@@ -15,6 +15,8 @@ import { CommentEntity } from "./comment.entity";
 import { TagEntity } from "./tag.entity";
 import { UserEntity } from "./user.entity";
 import { WorkspaceEntity } from "./workspace.entity";
+import { YjsDocumentEntity } from "./yjs-document.entity";
+import { YjsAppDocumentEntity } from "./yjs-app-document.entity";
 
 @Entity("document")
 export class DocumentEntity extends AbstractEntity {
@@ -51,7 +53,7 @@ export class DocumentEntity extends AbstractEntity {
   })
   author!: Relation<UserEntity>;
 
-  // ----- Author -----
+  // ----- Workspace -----
   @Column({ name: "workspace_id" })
   workspaceId!: string;
 
@@ -62,7 +64,6 @@ export class DocumentEntity extends AbstractEntity {
     foreignKeyConstraintName: "FK_workspace_document",
   })
   workspace!: Relation<WorkspaceEntity>;
-
 
   // ----- Tags -----
   @ManyToMany(() => TagEntity)
@@ -103,4 +104,11 @@ export class DocumentEntity extends AbstractEntity {
 
   @OneToMany(() => DocumentEntity, (doc) => doc.forkedFrom)
   forks!: Relation<DocumentEntity[]>;
+
+  // ----- Yjs Relations -----
+  @OneToMany(() => YjsDocumentEntity, (yjsDoc) => yjsDoc.document)
+  yjsDocuments!: Relation<YjsDocumentEntity[]>;
+
+  @OneToMany(() => YjsAppDocumentEntity, (yjsAppDoc) => yjsAppDoc.document)
+  yjsAppDocuments!: Relation<YjsAppDocumentEntity[]>;
 }
