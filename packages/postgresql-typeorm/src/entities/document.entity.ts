@@ -17,6 +17,7 @@ import { UserEntity } from "./user.entity";
 import { WorkspaceEntity } from "./workspace.entity";
 import { YjsDocumentEntity } from "./yjs-document.entity";
 import { YjsAppDocumentEntity } from "./yjs-app-document.entity";
+import { ExecutionScheduleEntity } from "./execution-schedule.entity";
 
 @Entity("document")
 export class DocumentEntity extends AbstractEntity {
@@ -111,4 +112,7 @@ export class DocumentEntity extends AbstractEntity {
 
   @OneToMany(() => YjsAppDocumentEntity, (yjsAppDoc) => yjsAppDoc.document)
   yjsAppDocuments!: Relation<YjsAppDocumentEntity[]>;
+
+  @OneToMany(() => ExecutionScheduleEntity, (schedule) => schedule.document)
+  executionSchedules!: Relation<ExecutionScheduleEntity[]>;
 }
