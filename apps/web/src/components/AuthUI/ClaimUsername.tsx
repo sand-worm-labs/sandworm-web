@@ -68,7 +68,7 @@ export const ClaimUsername = () => {
       <Username />
 
       <div className="w-full max-w-md mx-auto space-y-4 text-center">
-        <h2 className="text-2xl font-bold roobert mt-4">
+        <h2 className="text-2xl font-bold font-primarymt-4">
           Claim your Sandworm domain
         </h2>
         <p className="text-sm font-medium text-[#455768] dark:text-white roobert">
@@ -85,7 +85,7 @@ export const ClaimUsername = () => {
               onChange={e => setUsername(e.target.value)}
               onBlur={() => checkUsername(username)}
               placeholder="Enter username"
-              className="bg-[#F8F9FA] dark:bg-[#1A1A1A] text-[#343A40] dark:text-white border-[#DEE2E6] py-6 rounded-xl roobert font-medium text-base"
+              className="bg-[#F8F9FA] dark:bg-[#1A1A1A] text-[#343A40] dark:text-white border-[#DEE2E6] py-6 rounded-xl font-primary font-medium text-base"
             />
             <Button
               disabled={status !== "available"}
@@ -111,7 +111,7 @@ export const ClaimUsername = () => {
             </p>
           )}
 
-          <ul className="text-xs roobert space-y-1 list-disc pl-4 text-left">
+          <ul className="text-xs font-primary space-y-1 list-disc pl-4 text-left">
             <li
               className={
                 username.length > 14
@@ -134,7 +134,7 @@ export const ClaimUsername = () => {
         </div>
       </div>
 
-      <p className="roobert text-center text-xs text-muted-foreground mt-6">
+      <p className="font-primary text-center text-xs text-muted-foreground mt-6">
         By creating an account you agree to the{" "}
         <Link href="/terms" className="underline">
           Terms

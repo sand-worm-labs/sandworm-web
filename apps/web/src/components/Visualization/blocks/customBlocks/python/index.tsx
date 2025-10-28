@@ -23,7 +23,7 @@ import type {
   isExecutionStatusLoading,
 } from "@sandworm/editor";
 import clsx from "clsx";
-import type { ApiDocument, ApiWorkspace } from "@briefer/database";
+import type { ApiDocument, ApiWorkspace } from "@sandworm/database";
 import type { RefObject } from "react";
 import { useCallback, useMemo, useState } from "react";
 import type { ConnectDragPreview } from "react-dnd";

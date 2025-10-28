@@ -1,37 +1,85 @@
 "use client";
-
-import React from "react";
-import { Star, Expand, MoreVertical } from "lucide-react";
 import * as Y from "yjs";
-import { BlockType } from "@sandworm/editor";
-import type {
-  ExecutionQueue,
+import {
   YBlock,
-  VisualizationV2Block,
+  ExecutionQueue,
   ExecutionQueueBatch,
-  RunAllSource,
-  YBlockGroup,
+  DataFrame,
+} from "@sandworm/types";
+import {
+  BlockType,
+  ExecutionQueueItem,
+  VisualizationV2Block,
 } from "@sandworm/editor";
-import type { DataFrame } from "@sandworm/types";
-
 import VisualizationBlockV2 from "../Visualization";
+import { Star, Expand, MoreVertical } from "lucide-react";
+import ItemActionsDropdown from "./ItemAction";
+import RichTextBlock from "../Visualization/blocks/customBlocks/richText";
 
 const yDoc = new Y.Doc();
 
-// Create a visualization block
+// --- Create a visualization block ---
 const visualizationBlock = new Y.XmlElement(
   "visualization"
 ) as Y.XmlElement<VisualizationV2Block>;
+
 visualizationBlock.setAttribute("type", BlockType.VisualizationV2);
 visualizationBlock.setAttribute("id", "visualization");
+visualizationBlock.setAttribute("title", "Top Tokens Chart");
+visualizationBlock.setAttribute("input", {
+  chartType: "groupedColumn",
+  dataframeName: "num1 ",
+  xAxis: null,
+  xAxisName: null,
+  xAxisSort: null,
+  xAxisGroupFunction: null,
+  xAxisDateFormat: null,
+  xAxisNumberFormat: null,
+  yAxes: [],
+  filters: [],
+  histogramFormat: "count",
+  histogramBin: { type: "auto" },
+  dataLabels: null,
+});
 
-// Set up blocks map
+// --- Add mock data inside the element ---
+const dataElement = new Y.XmlElement("data");
+dataElement.setAttribute("xField", "token");
+dataElement.setAttribute("yField", "volume");
+dataElement.setAttribute("color", "#0C7CE8");
+
+const sampleData = new Y.XmlText();
+const data = [
+  { token: "WETH", volume: 523000 },
+  { token: "USDC", volume: 310000 },
+  { token: "AERO", volume: 125000 },
+  { token: "DEGEN", volume: 78000 },
+];
+sampleData.insert(0, JSON.stringify(data));
+
+dataElement.insert(0, [sampleData]);
+visualizationBlock.insert(0, [dataElement]);
+
+// --- Set up blocks map ---
 const blocks = yDoc.getMap<YBlock>("blocks");
 blocks.set("visualization", visualizationBlock as YBlock);
 
-// Set up other Y.js structures
+// --- Set up dataframes map (mock one for query_1) ---
 const dataframes = yDoc.getMap<DataFrame>("dataframes");
 
+const query1Frame = {
+  name: "query_1",
+  blockId: "07dba87c-d847-4c83-b1c9-51d77a208a24",
+  columns: [
+    { name: "token", type: "string" },
+    { name: "volume", type: "int32" },
+  ],
+  rows: data.map(item => [item.token, item.volume]),
+};
+
+dataframes.set("query_1", query1Frame as DataFrame);
+
+// --- ExecutionQueue ---
 const executionQueue: ExecutionQueue = {
   blocks: new Y.Map<YBlock>(),
   queue: new Y.Array(),
@@ -41,11 +89,7 @@ const executionQueue: ExecutionQueue = {
   enqueueBlock: () => {},
   enqueueBlockGroup: () => {},
   enqueueBlockOnwards: () => {},
-  enqueueRunAll: (
-    layout: Y.Array<YBlockGroup>,
-    blocksMap: Y.Map<YBlock>,
-    source: RunAllSource
-  ): ExecutionQueueBatch => ({
+  enqueueRunAll: (): ExecutionQueueBatch => ({
     id: "batch-1",
     status: "pending",
     timestamp: Date.now(),
@@ -64,6 +108,7 @@ const executionQueue: ExecutionQueue = {
   }),
 };
 
+// --- Document info ---
 const document = {
   appClock: 0,
   appId: "c9eda31f-0a6a-408f-b217-1948b73b4b1b",
@@ -77,6 +122,7 @@ const document = {
   updatedAt: "2025-10-14T20:31:01.941Z",
 };
 
+// --- Preview component ---
 export const ChatReportPreview = () => {
   return (
     <div className="w-full max-h-[95vh] p-6 flex flex-col gap-4 overflow-y-auto">
@@ -89,22 +135,31 @@ export const ChatReportPreview = () => {
         <div className="flex items-center gap-3 text-neutral-400">
           <Star className="w-4 h-4 cursor-pointer hover:text-yellow-400 transition-colors" />
           <Expand className="w-4 h-4 cursor-pointer hover:text-neutral-200 transition-colors" />
-          <MoreVertical className="w-4 h-4 cursor-pointer hover:text-neutral-200 transition-colors" />
+          <ItemActionsDropdown />
         </div>
       </div>
 
-      {/* Description */}
-      <p className="text-[#455768] leading-relaxed">
-        Building a database to know the rotation of the earth via a 2.5
-        rotationary telescope. This is a dummy text here designed to test if
-        this fits the design.
+      <p className="text-[#050818] text-base leading-relaxed ">
+        This dashboard visualizes the most actively traded tokens on Base over
+        the past 30 days. The data highlights on-chain volume trends, unique
+        holder growth, and the top projects driving activity within the Base
+        ecosystem.
       </p>
 
-      {/* Chart Placeholder */}
-      <div className="w-full h-[500px] flex items-center justify-center text-neutral-500 border border-[#EBD7D7] rounded-2xl">
+{/*       <RichTextBlock
+        block={blocks}
+        belongsToMultiTabGroup={false}
+        isEditable={false}
+        dragPreview={null}
+        dashboardMode={{ _tag: "editing", position: "sidebar" }}
+        isCursorWithin={false}
+        isCursorInserting={false}
+      /> */}
+
+      <div className="w-full flex items-center justify-center text-neutral-500 rounded-2xl relative pt-5">
         <VisualizationBlockV2
           isPublicMode={false}
-          isEditable={true}
+          isEditable={false}
           document={document}
           onAddGroupedBlock={() => {}}
           block={
@@ -125,31 +180,19 @@ export const ChatReportPreview = () => {
         />
       </div>
 
-      <div className="text-[#455768] space-y-2 py-3">
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec
-          odio. Praesent libero. Sed cursus ante dapibus diam.
-        </p>
-        <p>
-          Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis
-          ipsum. Praesent mauris.
-        </p>
-      </div>
+      <p className="text-[#050818] text-base leading-relaxed ">
+        This dashboard visualizes the most actively traded tokens on Base over
+        the past 30 days. The data highlights on-chain volume trends, unique
+        holder growth, and the top projects driving activity within the Base
+        ecosystem.
+      </p>
 
-      <div className="w-full h-[500px] flex items-center justify-center text-neutral-500 border border-[#EBD7D7] rounded-2xl">
-        <span>Chart Viz goes here 📊</span>
-      </div>
-
-      <div className="text-[#455768] space-y-2 py-3">
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec
-          odio. Praesent libero. Sed cursus ante dapibus diam.
-        </p>
-        <p>
-          Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis
-          ipsum. Praesent mauris.
-        </p>
-      </div>
+      <p className="text-[#050818] text-base leading-relaxed ">
+        This dashboard visualizes the most actively traded tokens on Base over
+        the past 30 days. The data highlights on-chain volume trends, unique
+        holder growth, and the top projects driving activity within the Base
+        ecosystem.
+      </p>
     </div>
   );
 };

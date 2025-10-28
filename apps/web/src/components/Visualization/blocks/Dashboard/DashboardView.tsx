@@ -8,7 +8,7 @@ import { SizeMe } from "react-sizeme";
 import GridLayout from "react-grid-layout";
 import { useCallback, useMemo, useState } from "react";
 import clsx from "clsx";
-import type { ApiDocument } from "@briefer/database";
+import type { ApiDocument } from "@sandworm/database";
 import type { ExecutionQueue, AITasks, YBlock } from "@sandworm/editor";
 import {
   getBlocks,
@@ -22,10 +22,10 @@ import {
 } from "@sandworm/editor";
 import SimpleBar from "simplebar-react";
 
-import { useYDocState } from "@/hooks/useYDoc";
+import { useYDocState } from "../../hooks/useYDocs";
 import type { APIDataSources } from "@/hooks/useDatasources";
 
-import Title from "../v2Editor/Title";
+import Title from "../Title";
 
 import GridElement from "./GridElement";
 
@@ -59,7 +59,7 @@ function generateBackground(
 ): string {
   const rects = range(0, COLS_COUNT).map(i => {
     const x = i * (cellWidth + MARGIN) + MARGIN;
-    return `<rect stroke="#f2f1f3" stroke-width="2" fill="none" x="${x}" y="${MARGIN}" width="${cellWidth}" height="${cellHeight}" />`;
+    return `<rect stroke="#f2f1f3" strokeWidth="2" fill="none" x="${x}" y="${MARGIN}" width="${cellWidth}" height="${cellHeight}" />`;
   });
 
   const svg = [

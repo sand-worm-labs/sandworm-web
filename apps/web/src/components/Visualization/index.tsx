@@ -22,7 +22,7 @@ import { FunnelIcon } from "@heroicons/react/24/outline";
 import type { RefObject } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
-import type {
+import {
   ChartType,
   DataFrame,
   DataFrameColumn,
@@ -768,27 +768,29 @@ function VisualizationBlockV2(props: Props) {
 
   return (
     <div
-      className="relative group/block"
+      className=" group/block w-full"
       onClick={onClickWithin}
       data-block-id={attrs.id}
     >
       <div
         className={clsx(
-          "rounded-md border",
+          "rounded-2xl border",
           props.isBlockHiddenInPublished && "border-dashed",
-          props.hasMultipleTabs ? "rounded-tl-none" : "rounded-tl-md",
+          props.hasMultipleTabs ? "rounded-2xl" : "rounded-2xl",
 
-          props.isCursorWithin ? "border-blue-400 shadow-sm" : "border-gray-200"
+          props.isCursorWithin
+            ? "border-blue-400 shadow-sm"
+            : "border-[#EBD7D7]"
         )}
       >
         <div
           className={clsx(
-            "rounded-md",
-            props.hasMultipleTabs ? "rounded-tl-none" : ""
+            "rounded-2xl",
+            props.hasMultipleTabs ? "rounded-2xl" : ""
           )}
         >
           <div
-            className="border-b border-gray-200 bg-gray-50 rounded-t-md"
+            className="border-b border-[#EBD7D7]  rounded-t-2xl"
             ref={d => {
               props.dragPreview?.(d);
             }}
@@ -799,7 +801,7 @@ function VisualizationBlockV2(props: Props) {
                 <input
                   type="text"
                   className={clsx(
-                    "text-sm font-sans font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-md border-0 text-gray-800 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-gray-400 focus:ring-inset py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white"
+                    "text-sm font-sans font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-md border-0 text-gray-800 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-gray-400  py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white"
                   )}
                   placeholder="Visualization (click to add a title)"
                   value={attrs.title}

@@ -19,7 +19,7 @@ export default function OnboardingLayout({
               className="object-cover"
             />
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-center text-white roobert drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]">
+              <div className="text-center text-white font-primary drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]">
                 <p className="text-2xl md:text-3xl font-semibold">
                   Deep and Insightful Onchain data
                 </p>

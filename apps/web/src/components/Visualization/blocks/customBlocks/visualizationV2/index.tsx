@@ -18,7 +18,7 @@ import type {
   isVisualizationV2Block,
   setVisualizationV2Input,
 } from "@sandworm/editor";
-import type { ApiDocument } from "@briefer/database";
+import type { ApiDocument } from "@sandworm/database";
 import { FunnelIcon } from "@heroicons/react/24/outline";
 import type { RefObject } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";

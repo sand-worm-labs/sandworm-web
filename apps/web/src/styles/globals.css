@@ -5,6 +5,7 @@
    ╚════════════════════════════════════════════╝ */
 
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap");
+@import "./fonts.css";
 
 @import "@sandworm/ui/globals.css";
 /* Tailwind v4 is brought in via @sandworm/ui globals. Ensure this file is processed by PostCSS. */
@@ -12,41 +13,18 @@
 /* ╔════════════════════════════════════════════╗
    ║                Fonts.                      ║
    ╚════════════════════════════════════════════╝ */
-@font-face {
-  font-family: "Helvetica Neue";
-  src: url("/fonts/HelveticaNeue-HeavyCond.otf") format("opentype");
-  font-weight: 900;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "Roobert";
-  src: url("/fonts/RoobertTRIAL-Regular-BF67243fd53fdf2.otf") format("opentype");
-  font-weight: 400;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "Roobert";
-  src: url("/fonts/RoobertTRIAL-Medium-BF67243fd53e059.otf") format("opentype");
+.font-primary {
+  font-family: "Roobert", sans-serif;
   font-weight: 500;
-  font-style: normal;
 }
 
-@font-face {
-  font-family: "Helvetica Neue";
-  src: url("/fonts/HelveticaNeue-Medium.otf") format("opentype");
-  font-weight: 500;
-  font-style: normal;
-}
-
-.helvetica-neue {
+.font-secondary {
   font-family: "Helvetica Neue", sans-serif;
 }
 
-.roobert {
-  font-family: "Roobert", sans-serif;
-  font-weight: 500;
+.font-secondary.font-normal {
+  font-family: "Helvetica Neue", sans-serif;
+  font-weight: 400;
 }
 
 ::cue {
@@ -298,6 +276,9 @@ select:-webkit-autofill:focus {
     #ded757 80.81%,
     #ff00e1 98.74%
   );
+  background-size: 250% 250%;
+  animation: gradientScroll 8s ease-in-out infinite;
+  will-change: background-position;
 }
 
 .box-gradient {
@@ -334,6 +315,15 @@ select:-webkit-autofill:focus {
   z-index: -1;
 }
 
+.gradient-border {
+  padding: 1px;
+  background: linear-gradient(99deg, #094b72 0.62%, #560036 91.19%);
+}
+
+.gradient-border > .inner {
+  background: #000;
+}
+
 .box-glow {
   box-shadow:
     0 0 35px 6px rgba(120, 147, 208, 0.22),
@@ -352,12 +342,12 @@ select:-webkit-autofill:focus {
   margin-left: -50px;
 
   path {
-    stroke-dasharray: 203px, 345px;
+    strokedasharray: 203px, 345px;
     stroke-dashoffset: 0;
     fill: none;
     stroke: #ea580b;
-    stroke-width: 13;
-    stroke-linecap: round;
+    strokewidth: 13;
+    strokelinecap: round;
     stroke-miterlimit: 10;
     animation: worm 1s linear infinite;
   }
@@ -373,6 +363,164 @@ label {
 
 .line-left-to-right {
   animation: fadeScaleLeftToRight 1s ease-in-out forwards;
+}
+
+/* ════════════ Worm Animations Blockchains ════════════ */
+.wrap {
+  position: absolute;
+  left: -120px;
+  right: 0;
+  margin: 0px auto;
+  height: 150px;
+  width: 850px;
+  top: 20%;
+  background: black;
+}
+
+.ball {
+  position: absolute;
+  bottom: 0px;
+  display: block;
+  height: 96px;
+  width: 96px;
+  background: white;
+  border-radius: 1.2rem;
+  bottom: 10px;
+  float: left;
+  margin-bottom: -30px;
+  transform: rotate(-15deg);
+  /* Animations temporarily disabled
+  -webkit-animation: bounce 3.5s infinite;
+  -moz-animation: bounce 3.5s infinite;
+  -ms-animation: bounce 3.5s infinite;
+  -o-animation: bounce 3.5s infinite;
+  animation: bounce 3.5s infinite;
+  */
+}
+
+.ball:nth-child(2) {
+  margin-left: 20%;
+  margin-bottom: 30px;
+  transform: rotate(-5deg);
+  /* Animation delays temporarily disabled
+  -webkit-animation-delay: 0.4s;
+  -moz-animation-delay: 0.4s;
+  -ms-animation-delay: 0.4s;
+  -o-animation-delay: 0.4s;
+  animation-delay: 0.4s;
+  */
+}
+
+.ball:nth-child(3) {
+  margin-left: 40%;
+  margin-bottom: 30px;
+  transform: rotate(12deg);
+  /* Animation delays temporarily disabled
+  -webkit-animation-delay: 0.8s;
+  -moz-animation-delay: 0.8s;
+  -ms-animation-delay: 0.8s;
+  -o-animation-delay: 0.8s;
+  animation-delay: 0.8s;
+  */
+}
+
+.ball:nth-child(4) {
+  margin-left: 60%;
+  margin-bottom: -30px;
+  transform: rotate(10deg);
+  /* Animation delays temporarily disabled
+  -webkit-animation-delay: 1.2s;
+  -moz-animation-delay: 1.2s;
+  -ms-animation-delay: 1.2s;
+  -o-animation-delay: 1.2s;
+  animation-delay: 1.2s;
+  */
+}
+
+.ball:nth-child(5) {
+  margin-left: 80%;
+  margin-bottom: -30px;
+  transform: rotate(2deg);
+  /* Animation delays temporarily disabled
+  -webkit-animation-delay: 1.6s;
+  -moz-animation-delay: 1.6s;
+  -ms-animation-delay: 1.6s;
+  -o-animation-delay: 1.6s;
+  animation-delay: 1.6s;
+  */
+}
+
+.ball:nth-child(6) {
+  margin-left: 100%;
+  margin-bottom: 30px;
+  transform: rotate(-15deg);
+  /* Animation delays temporarily disabled
+  -webkit-animation-delay: 2s;
+  -moz-animation-delay: 2s;
+  -ms-animation-delay: 2s;
+  -o-animation-delay: 2s;
+  animation-delay: 2s;
+  */
+}
+
+@keyframes bounce {
+  0% {
+    margin-bottom: 0px;
+  }
+  50% {
+    margin-bottom: 100px;
+  }
+  100% {
+    margin-bottom: 0px;
+  }
+}
+
+@-webkit-keyframes bounce {
+  0% {
+    margin-bottom: 0px;
+  }
+  50% {
+    margin-bottom: 100px;
+  }
+  100% {
+    margin-bottom: 0px;
+  }
+}
+
+@-moz-keyframes bounce {
+  0% {
+    margin-bottom: 0px;
+  }
+  50% {
+    margin-bottom: 100px;
+  }
+  100% {
+    margin-bottom: 0px;
+  }
+}
+
+@-o-keyframes bounce {
+  0% {
+    margin-bottom: 0px;
+  }
+  50% {
+    margin-bottom: 100px;
+  }
+  100% {
+    margin-bottom: 0px;
+  }
+}
+
+@-ms-keyframes bounce {
+  0% {
+    margin-bottom: 0px;
+  }
+  50% {
+    margin-bottom: 100px;
+  }
+  100% {
+    margin-bottom: 0px;
+  }
 }
 
 /* ╔════════════════════════════════════════════╗
@@ -412,8 +560,11 @@ label {
   0% {
     background-position: 0% 50%;
   }
-  100% {
+  50% {
     background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
   }
 }
 

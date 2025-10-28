@@ -12,7 +12,7 @@ import type {
   getDataframe,
   isExecutionStatusLoading,
 } from "@sandworm/editor";
-import type { ApiDocument } from "@briefer/database";
+import type { ApiDocument } from "@sandworm/database";
 import { ChartPieIcon } from "@heroicons/react/24/solid";
 import type { RefObject } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";

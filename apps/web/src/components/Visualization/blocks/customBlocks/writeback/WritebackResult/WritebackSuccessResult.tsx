@@ -1,4 +1,4 @@
-import type { DataSource } from "@briefer/database";
+import type { DataSource } from "@sandworm/database";
 import type { WriteBackSuccessResult } from "@sandworm/types";
 import { CheckCircleIcon } from "@heroicons/react/24/outline";
 

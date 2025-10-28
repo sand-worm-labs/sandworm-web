@@ -1,0 +1,75 @@
+import React from "react";
+
+export const Wave = () => {
+  return (
+    <svg
+      width="340"
+      height="183"
+      viewBox="0 0 340 183"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <g filter="url(#filter0_i_1149_4619)">
+        <path
+          d="M3 179.5L11.1691 161.371C27.2227 125.745 67.7643 108.204 104.722 120.894L109.034 122.374C137.113 132.015 168.213 122.7 186.369 99.2117L210.953 67.4068C220.171 55.4818 237.197 53.0419 249.393 61.8983C260.852 70.2199 276.729 68.6281 286.308 58.1974L337 3"
+          stroke="url(#paint0_linear_1149_4619)"
+          strokeWidth="6"
+          strokeLinecap="round"
+        />
+      </g>
+      <defs>
+        <filter
+          id="filter0_i_1149_4619"
+          x="0"
+          y="0"
+          width="340"
+          height="184.312"
+          filterUnits="userSpaceOnUse"
+          colorInterpolationFilters="sRGB"
+        >
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
+          <feBlend
+            mode="normal"
+            in="SourceGraphic"
+            in2="BackgroundImageFix"
+            result="shape"
+          />
+          <feColorMatrix
+            in="SourceAlpha"
+            type="matrix"
+            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+            result="hardAlpha"
+          />
+          <feOffset dy="1.81132" />
+          <feGaussianBlur stdDeviation="0.90566" />
+          <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1" />
+          <feColorMatrix
+            type="matrix"
+            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.67 0"
+          />
+          <feBlend
+            mode="normal"
+            in2="shape"
+            result="effect1_innerShadow_1149_4619"
+          />
+        </filter>
+        <linearGradient
+          id="paint0_linear_1149_4619"
+          x1="-3.32576"
+          y1="33.4574"
+          x2="345.414"
+          y2="133.022"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stopColor="#6368FF" />
+          <stop offset="0.153846" stopColor="#CBECFF" />
+          <stop offset="0.25" stopColor="#7BFF42" />
+          <stop offset="0.427885" stopColor="#2DB2FF" />
+          <stop offset="0.610577" stopColor="#FF0000" />
+          <stop offset="0.817308" stopColor="#DED757" />
+          <stop offset="1" stopColor="#FF00E1" />
+        </linearGradient>
+      </defs>
+    </svg>
+  );
+};
