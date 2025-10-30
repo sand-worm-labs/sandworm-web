@@ -15,6 +15,13 @@ import { CommentEntity } from "./comment.entity";
 import { TagEntity } from "./tag.entity";
 import { UserEntity } from "./user.entity";
 import { WorkspaceEntity } from "./workspace.entity";
+import { YjsDocumentEntity } from "./yjs-document.entity";
+import { YjsAppDocumentEntity } from "./yjs-app-document.entity";
+import { ExecutionScheduleEntity } from "./execution-schedule.entity";
+import { FavoriteEntity } from "./favorite.enitity";
+import { ReusableComponentEntity } from "./reusable_component.entity";
+import { ReusableComponentInstanceEntity } from "./reusable_component_instance.entity";
+
 
 @Entity("document")
 export class DocumentEntity extends AbstractEntity {
@@ -51,7 +58,7 @@ export class DocumentEntity extends AbstractEntity {
   })
   author!: Relation<UserEntity>;
 
-  // ----- Author -----
+  // ----- Workspace -----
   @Column({ name: "workspace_id" })
   workspaceId!: string;
 
@@ -62,7 +69,6 @@ export class DocumentEntity extends AbstractEntity {
     foreignKeyConstraintName: "FK_workspace_document",
   })
   workspace!: Relation<WorkspaceEntity>;
-
 
   // ----- Tags -----
   @ManyToMany(() => TagEntity)
@@ -85,9 +91,9 @@ export class DocumentEntity extends AbstractEntity {
   @OneToMany(() => CommentEntity, (comment) => comment.document)
   comments!: Relation<CommentEntity[]>;
 
-  // ----- Favorited By Users -----
-  @ManyToMany(() => UserEntity, (user) => user.favorites)
-  favoritedBy!: Relation<UserEntity[]>;
+  // ----- Favorites -----
+  @OneToMany(() => FavoriteEntity, (favorite) => favorite.document)
+  favorites!: Relation<FavoriteEntity[]>;
 
   // ----- Forking -----
   @ManyToOne(() => DocumentEntity, (doc) => doc.forks, {
@@ -103,4 +109,31 @@ export class DocumentEntity extends AbstractEntity {
 
   @OneToMany(() => DocumentEntity, (doc) => doc.forkedFrom)
   forks!: Relation<DocumentEntity[]>;
+
+  // ----- Yjs Relations -----
+  @OneToMany(() => YjsDocumentEntity, (yjsDoc) => yjsDoc.document)
+  yjsDocuments!: Relation<YjsDocumentEntity[]>;
+
+  @OneToMany(() => YjsAppDocumentEntity, (yjsAppDoc) => yjsAppDoc.document)
+  yjsAppDocuments!: Relation<YjsAppDocumentEntity[]>;
+
+  @OneToMany(() => ExecutionScheduleEntity, (schedule) => schedule.document)
+  executionSchedules!: Relation<ExecutionScheduleEntity[]>;
+
+  @OneToMany(() => ReusableComponentEntity, (rc) => rc.document)
+  reusableComponents: ReusableComponentEntity[];
+
+  @OneToMany(() => ReusableComponentInstanceEntity, (rci) => rci.document)
+  reusableComponentInstances: ReusableComponentInstanceEntity[];
+
+  @Column({ default: false })
+  runUnexecutedBlocks: boolean;
+
+  @Column({ default: true })
+  runSQLSelection: boolean;
+
+  @Column({ default: true })
+  shareLinksWithoutSidebar: boolean;
+
+
 }
