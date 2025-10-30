@@ -10,7 +10,7 @@ export const PartnersSection = () => {
 
       <div className="flex flex-wrap  items-center gap-8">
         <Image
-          src="/img/base-logo.svg"
+          src="/img/base-white.svg"
           alt="Base logo"
           width={49}
           height={16}

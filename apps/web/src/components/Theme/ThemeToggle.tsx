@@ -1,14 +1,13 @@
 import { Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@sandworm/ui/components/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
-import { useTheme } from "./ThemeProvider";
+} from "@sandworm/ui/components/dropdown-menu";
 
 export function ThemeTogggle() {
   const { setTheme } = useTheme();

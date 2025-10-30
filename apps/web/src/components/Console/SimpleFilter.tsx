@@ -1,9 +1,9 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import { Search, X } from "lucide-react";
 
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Input } from "@sandworm/ui/components/input";
+import { Button } from "@sandworm/ui/components/button";
+import { cn } from "@sandworm/ui/lib/utils";
 import {
   Tooltip,
   TooltipContent,
