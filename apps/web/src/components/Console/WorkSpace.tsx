@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { DatabaseIcon } from "lucide-react";
 
 import { AppSidebar } from "@/components/Layout/AppSidebar";
 import { DataExplorer } from "@/components/ExplorerPanels/DataExplorer";
@@ -8,7 +9,7 @@ import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-} from "@/components/ui/resizable";
+} from "@sandworm/ui/components/resizable";
 import { WorkspaceTabs } from "@/components/Console/WorkspaceTabs";
 import { QueryHistory } from "@/components/ExplorerPanels/QueryHistory";
 import { QueryExplorer } from "@/components/ExplorerPanels/QueryExplorer";
@@ -16,6 +17,11 @@ import { SettingsPanel } from "@/components/Console/SettingsPanel";
 import { WormAiPanel } from "@/components/Console/WormAIPanel";
 import type { Query } from "@/types";
 
+import { Button } from "@sandworm/ui/components/button";
+
+// =====================================
+// 🎨 Interface / Props Definition
+// =====================================
 type ViewType =
   | "dataExplorer"
   | "queryExplorer"
@@ -36,9 +42,14 @@ interface WorkSpaceProps {
   currentUserId: string;
 }
 
+// ⚛️ =====================================
+// Workspace component
+// =====================================
 export const WorkSpace = ({ initialQuery, currentUserId }: WorkSpaceProps) => {
+  // ═══ 🌿 State Setup and Constants ═══
   const [currentView, setCurrentView] = useState<ViewType>("dataExplorer");
   const [isMobile, setIsMobile] = useState<boolean>(false);
+  const [showExplorer, setShowExplorer] = useState(false);
 
   const panelComponents: PanelComponents = {
     dataExplorer: <DataExplorer />,
@@ -52,6 +63,7 @@ export const WorkSpace = ({ initialQuery, currentUserId }: WorkSpaceProps) => {
     setIsMobile(window.innerWidth < 768);
   }, []);
 
+  // ═══ 🔁 Effects / Subscriptions ═══
   useEffect(() => {
     handleResize();
     window.addEventListener("resize", handleResize);
@@ -84,6 +96,20 @@ export const WorkSpace = ({ initialQuery, currentUserId }: WorkSpaceProps) => {
           >
             {panelComponents[currentView]}
           </ResizablePanel>
+
+          {!showExplorer && (
+            <Button
+              onClick={() => setShowExplorer(true)}
+              variant="outline"
+              className="shadow-none border-none fixed bottom-20 right-3 z-50 pointer-events-auto flex items-start flex-col gap-2 px-3 py-2 text-sm cursor-pointer"
+            >
+              <span>Data Explorers</span>
+              <DatabaseIcon className="h-6 w-6 shrink-0" />
+            </Button>
+          )}
+          {showExplorer && (
+            <DataExplorer onClose={() => setShowExplorer(false)} />
+          )}
 
           {!isMobile && (
             <>

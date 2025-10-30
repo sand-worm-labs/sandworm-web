@@ -1,12 +1,12 @@
 "use client";
 
-import { DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { DialogContent, DialogTitle } from "@sandworm/ui/components/dialog";
 import {
   Command,
   CommandList,
   CommandGroup,
   CommandItem,
-} from "@/components/ui/command";
+} from "@sandworm/ui/components/command";
 
 export const CommandMenu = () => {
   return (
