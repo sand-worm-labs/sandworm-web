@@ -5,14 +5,18 @@ import { ChevronDown, Share2 } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+} from "@sandworm/ui/components/avatar";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
+} from "@sandworm/ui/components/dropdown-menu";
+import { Button } from "@sandworm/ui/components/button";
 import { useModalStore } from "@/store/auth";
 
 export const AccountDropdown = () => {

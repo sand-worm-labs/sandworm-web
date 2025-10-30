@@ -1,0 +1,3 @@
+{
+  "extends": "@sandworm/typescript-config/base.json"
+}

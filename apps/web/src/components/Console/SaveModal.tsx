@@ -10,12 +10,12 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
+} from "@sandworm/ui/components/dialog";
+import { Input } from "@sandworm/ui/components/input";
+import { Textarea } from "@sandworm/ui/components/textarea";
+import { Button } from "@sandworm/ui/components/button";
+import { Label } from "@sandworm/ui/components/label";
+import { Checkbox } from "@sandworm/ui/components/checkbox";
 import { useSaveQuery } from "@/hooks/useSaveQuery";
 
 interface SaveModalProps {
