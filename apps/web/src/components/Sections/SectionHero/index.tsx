@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import { ChatLaunchInput } from "./ChatLaunchInputProps";
@@ -19,16 +19,37 @@ export const SectionHero = () => {
     router.push(`/chat?input=${encodeURIComponent(input)}`);
   };
 
+  const [mousePosition, setMousePosition] = useState({ x: 0.5, y: 0.5 });
+
+  useEffect(() => {
+    const handleMouseMove = e => {
+      // Normalize mouse position to 0-1 range
+      const x = e.clientX / window.innerWidth;
+      const y = e.clientY / window.innerHeight;
+      setMousePosition({ x, y });
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
+  // Calculate offset based on mouse position - increased for more noticeable effect
+  const offsetX = (mousePosition.x - 0.5) * 120; // Max 60px offset in each direction
+  const offsetY = (mousePosition.y - 0.5) * 120;
+
   return (
     // 💬 Note: we use a static background for now till we replace with animation
-    <section
-      className="py-16 text-center pb-64 min-h-screen pt-28  text-white relative "
-      style={{
-        backgroundImage: `url('/img/temp.svg')`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
+    <section className="py-16 text-center pb-64 min-h-screen pt-28  text-white relative ">
+      <div
+        className="absolute inset-0 opacity-60 transition-all duration-500 ease-out"
+        style={{
+          background:
+            "linear-gradient(117deg, rgba(22, 95, 95, 0.60) 25.67%, rgba(137, 28, 94, 0.60) 34.48%, rgba(28, 16, 97, 0.60) 52.34%, rgba(137, 28, 94, 0.60) 66.01%)",
+          filter: "blur(80px)",
+          transform: `translate(${offsetX}px, ${offsetY}px) scale(1.1)`,
+        }}
+      />
+
       <div className="container mx-auto relative flex flex-col h-full items-center">
         {/* ════════════ Hero Text Content ════════════ */}
         <div className="flex items-center space-x-6 relative mt-20 lg:mt-12 w-full">
