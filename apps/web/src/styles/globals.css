@@ -401,13 +401,8 @@ select:-webkit-autofill:focus {
   margin-left: -50px;
 
   path {
-    strokedasharray: 203px, 345px;
+    stroke-dasharray: 203px, 345px;
     stroke-dashoffset: 0;
-    fill: none;
-    stroke: #ea580b;
-    strokewidth: 13;
-    strokelinecap: round;
-    stroke-miterlimit: 10;
     animation: worm 1s linear infinite;
   }
 }
@@ -439,7 +434,9 @@ label {
 .ball {
   position: absolute;
   bottom: 0px;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 96px;
   width: 96px;
   background: white;
@@ -448,6 +445,7 @@ label {
   float: left;
   margin-bottom: -30px;
   transform: rotate(-15deg);
+
   /* Animations temporarily disabled
   -webkit-animation: bounce 3.5s infinite;
   -moz-animation: bounce 3.5s infinite;
