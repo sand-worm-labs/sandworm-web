@@ -237,7 +237,7 @@ importers:
         version: 1.11.0
       '@bprogress/next':
         specifier: ^3.2.12
-        version: 3.2.12(next@15.4.7(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 3.2.12(next@15.4.7(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.93.3))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@dnd-kit/core':
         specifier: ^6.3.1
         version: 6.3.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -250,6 +250,9 @@ importers:
       '@faker-js/faker':
         specifier: ^9.6.0
         version: 9.9.0
+      '@gsap/react':
+        specifier: ^2.1.2
+        version: 2.1.2(gsap@3.13.0)(react@19.1.1)
       '@headlessui/react':
         specifier: ^2.2.9
         version: 2.2.9(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -274,6 +277,9 @@ importers:
       '@sandworm/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@tailwindcss/postcss':
+        specifier: ^4.1.11
+        version: 4.1.15
       '@tanstack/react-query':
         specifier: ^5.59.16
         version: 5.90.3(react@19.1.1)
@@ -438,10 +444,10 @@ importers:
         version: 0.52.2
       next:
         specifier: catalog:react
-        version: 15.4.7(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 15.4.7(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.93.3)
       next-auth:
         specifier: 5.0.0-beta.25
-        version: 5.0.0-beta.25(next@15.4.7(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react@19.1.1)
+        version: 5.0.0-beta.25(next@15.4.7(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.93.3))(react@19.1.1)
       next-themes:
         specifier: catalog:react
         version: 0.4.6(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -520,6 +526,9 @@ importers:
       remark-gfm:
         specifier: ^4.0.1
         version: 4.0.1
+      sass:
+        specifier: ^1.93.3
+        version: 1.93.3
       server-only:
         specifier: ^0.0.1
         version: 0.0.1
@@ -637,7 +646,7 @@ importers:
         version: 8.57.1
       eslint-config-airbnb:
         specifier: ^19.0.4
-        version: 19.0.4(eslint-plugin-import@2.32.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@8.57.1))(eslint-plugin-jsx-a11y@6.10.2(eslint@8.57.1))(eslint-plugin-react-hooks@5.2.0(eslint@8.57.1))(eslint-plugin-react@7.37.5(eslint@8.57.1))(eslint@8.57.1)
+        version: 19.0.4(eslint-plugin-import@2.32.0)(eslint-plugin-jsx-a11y@6.10.2(eslint@8.57.1))(eslint-plugin-react-hooks@5.2.0(eslint@8.57.1))(eslint-plugin-react@7.37.5(eslint@8.57.1))(eslint@8.57.1)
       eslint-config-next:
         specifier: 14.1.4
         version: 14.1.4(eslint@8.57.1)(typescript@5.9.3)
@@ -2245,6 +2254,12 @@ packages:
     peerDependencies:
       graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
 
+  '@gsap/react@2.1.2':
+    resolution: {integrity: sha512-JqliybO1837UcgH2hVOM4VO+38APk3ECNrsuSM4MuXp+rbf+/2IG2K1YJiqfTcXQHH7XlA0m3ykniFYstfq0Iw==}
+    peerDependencies:
+      gsap: ^3.12.5
+      react: '>=17'
+
   '@headlessui/react@2.2.9':
     resolution: {integrity: sha512-Mb+Un58gwBn0/yWZfyrCh0TJyurtT+dETj7YHleylHk5od3dv2XqETPGWMyQ5/7sYN7oWdyM1u9MvC0OC8UmzQ==}
     engines: {node: '>=10'}
@@ -3154,6 +3169,88 @@ packages:
 
   '@paralleldrive/cuid2@2.2.2':
     resolution: {integrity: sha512-ZOBkgDwEdoYVlSeRbYYXs0S9MejQofiVYoTbKzy/6GQa39/q5tQU2IX46+shYnUkpEl3wc+J6wRlar7r2EK2xA==}
+
+  '@parcel/watcher-android-arm64@2.5.1':
+    resolution: {integrity: sha512-KF8+j9nNbUN8vzOFDpRMsaKBHZ/mcjEjMToVMJOhTozkDonQFFrRcfdLWn6yWKCmJKmdVxSgHiYvTCef4/qcBA==}
+    engines: {node: '>= 10.0.0'}
+    cpu: [arm64]
+    os: [android]
+
+  '@parcel/watcher-darwin-arm64@2.5.1':
+    resolution: {integrity: sha512-eAzPv5osDmZyBhou8PoF4i6RQXAfeKL9tjb3QzYuccXFMQU0ruIc/POh30ePnaOyD1UXdlKguHBmsTs53tVoPw==}
+    engines: {node: '>= 10.0.0'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@parcel/watcher-darwin-x64@2.5.1':
+    resolution: {integrity: sha512-1ZXDthrnNmwv10A0/3AJNZ9JGlzrF82i3gNQcWOzd7nJ8aj+ILyW1MTxVk35Db0u91oD5Nlk9MBiujMlwmeXZg==}
+    engines: {node: '>= 10.0.0'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@parcel/watcher-freebsd-x64@2.5.1':
+    resolution: {integrity: sha512-SI4eljM7Flp9yPuKi8W0ird8TI/JK6CSxju3NojVI6BjHsTyK7zxA9urjVjEKJ5MBYC+bLmMcbAWlZ+rFkLpJQ==}
+    engines: {node: '>= 10.0.0'}
+    cpu: [x64]
+    os: [freebsd]
+
+  '@parcel/watcher-linux-arm-glibc@2.5.1':
+    resolution: {integrity: sha512-RCdZlEyTs8geyBkkcnPWvtXLY44BCeZKmGYRtSgtwwnHR4dxfHRG3gR99XdMEdQ7KeiDdasJwwvNSF5jKtDwdA==}
+    engines: {node: '>= 10.0.0'}
+    cpu: [arm]
+    os: [linux]
+
+  '@parcel/watcher-linux-arm-musl@2.5.1':
+    resolution: {integrity: sha512-6E+m/Mm1t1yhB8X412stiKFG3XykmgdIOqhjWj+VL8oHkKABfu/gjFj8DvLrYVHSBNC+/u5PeNrujiSQ1zwd1Q==}
+    engines: {node: '>= 10.0.0'}
+    cpu: [arm]
+    os: [linux]
+
+  '@parcel/watcher-linux-arm64-glibc@2.5.1':
+    resolution: {integrity: sha512-LrGp+f02yU3BN9A+DGuY3v3bmnFUggAITBGriZHUREfNEzZh/GO06FF5u2kx8x+GBEUYfyTGamol4j3m9ANe8w==}
+    engines: {node: '>= 10.0.0'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@parcel/watcher-linux-arm64-musl@2.5.1':
+    resolution: {integrity: sha512-cFOjABi92pMYRXS7AcQv9/M1YuKRw8SZniCDw0ssQb/noPkRzA+HBDkwmyOJYp5wXcsTrhxO0zq1U11cK9jsFg==}
+    engines: {node: '>= 10.0.0'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@parcel/watcher-linux-x64-glibc@2.5.1':
+    resolution: {integrity: sha512-GcESn8NZySmfwlTsIur+49yDqSny2IhPeZfXunQi48DMugKeZ7uy1FX83pO0X22sHntJ4Ub+9k34XQCX+oHt2A==}
+    engines: {node: '>= 10.0.0'}
+    cpu: [x64]
+    os: [linux]
+
+  '@parcel/watcher-linux-x64-musl@2.5.1':
+    resolution: {integrity: sha512-n0E2EQbatQ3bXhcH2D1XIAANAcTZkQICBPVaxMeaCVBtOpBZpWJuf7LwyWPSBDITb7In8mqQgJ7gH8CILCURXg==}
+    engines: {node: '>= 10.0.0'}
+    cpu: [x64]
+    os: [linux]
+
+  '@parcel/watcher-win32-arm64@2.5.1':
+    resolution: {integrity: sha512-RFzklRvmc3PkjKjry3hLF9wD7ppR4AKcWNzH7kXR7GUe0Igb3Nz8fyPwtZCSquGrhU5HhUNDr/mKBqj7tqA2Vw==}
+    engines: {node: '>= 10.0.0'}
+    cpu: [arm64]
+    os: [win32]
+
+  '@parcel/watcher-win32-ia32@2.5.1':
+    resolution: {integrity: sha512-c2KkcVN+NJmuA7CGlaGD1qJh1cLfDnQsHjE89E60vUEMlqduHGCdCLJCID5geFVM0dOtA3ZiIO8BoEQmzQVfpQ==}
+    engines: {node: '>= 10.0.0'}
+    cpu: [ia32]
+    os: [win32]
+
+  '@parcel/watcher-win32-x64@2.5.1':
+    resolution: {integrity: sha512-9lHBdJITeNR++EvSQVUcaZoWupyHfXe1jZvGZ06O/5MflPcuPLtEphScIBL+AiCWBO46tDSHzWyD0uDmmZqsgA==}
+    engines: {node: '>= 10.0.0'}
+    cpu: [x64]
+    os: [win32]
+
+  '@parcel/watcher@2.5.1':
+    resolution: {integrity: sha512-dfUnCxiN9H4ap84DvD2ubjw+3vUNpstxa0TneY/Paat8a3R4uQZDLSvWjmznAY/DoahqTHl9V46HF/Zs3F29pg==}
+    engines: {node: '>= 10.0.0'}
 
   '@phc/format@1.0.0':
     resolution: {integrity: sha512-m7X9U6BG2+J+R1lSOdCiITLLrxm+cWlNI3HUFA92oLO77ObGNzaKdh8pMLqdZcshtkKuV84olNNXDfMc4FezBQ==}
@@ -6262,6 +6359,11 @@ packages:
     resolution: {integrity: sha512-y+8xyqdGLL+6sh0tVeHcfP/QDd8gUgbasolJJpY7NgeQGSZ739bDtSiaiDgtoicy+mtYB81dKLxO9xRhCyIB3A==}
     engines: {node: '>=12.20'}
 
+  detect-libc@1.0.3:
+    resolution: {integrity: sha512-pGjwhsmsp4kL2RTz08wcOlGN83otlqHeD/Z5T8GXZB+/YcpQ/dgo+lbU8ZsGxV0HIvqqxo9l7mqYwyYMD9bKDg==}
+    engines: {node: '>=0.10'}
+    hasBin: true
+
   detect-libc@2.1.2:
     resolution: {integrity: sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==}
     engines: {node: '>=8'}
@@ -9196,6 +9298,9 @@ packages:
   node-addon-api@5.1.0:
     resolution: {integrity: sha512-eh0GgfEkpnoWDq+VY8OyvYhFEzBk6jIYbRKdIlyTiAXIVJ8PyBaKb0rp7oDtoddbdoHWhq8wwr+XZ81F1rpNdA==}
 
+  node-addon-api@7.1.1:
+    resolution: {integrity: sha512-5m3bsyrjFWE1xf7nz7YXdN4udnVtXK6/Yfgn5qnahL6bCkf2yKt4k3nuTKAtT4r3IG8JNR2ncsIMdZuAzJjHQQ==}
+
   node-addon-api@8.5.0:
     resolution: {integrity: sha512-/bRZty2mXUIFY/xU5HLvveNHlswNJej+RnxBjOMkidWfwZzgTbPG1E3K5TOxRLOR+5hX7bSofy8yf1hZevMS8A==}
     engines: {node: ^18 || ^20 || >= 21}
@@ -10326,6 +10431,11 @@ packages:
 
   safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
+
+  sass@1.93.3:
+    resolution: {integrity: sha512-elOcIZRTM76dvxNAjqYrucTSI0teAF/L2Lv0s6f6b7FOwcwIuA357bIE871580AjHJuSvLIRUosgV+lIWx6Rgg==}
+    engines: {node: '>=14.0.0'}
+    hasBin: true
 
   scheduler@0.26.0:
     resolution: {integrity: sha512-NlHwttCI/l5gCPR3D1nNXtWABUmBwvZpEQiD4IXSbIDq8BzLIK/7Ir5gTFSGZDUu37K5cMNp0hFtzO38sC7gWA==}
@@ -12320,11 +12430,11 @@ snapshots:
 
   '@bprogress/core@1.3.4': {}
 
-  '@bprogress/next@3.2.12(next@15.4.7(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
+  '@bprogress/next@3.2.12(next@15.4.7(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.93.3))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
     dependencies:
       '@bprogress/core': 1.3.4
       '@bprogress/react': 1.2.7(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-      next: 15.4.7(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      next: 15.4.7(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.93.3)
       react: 19.1.1
       react-dom: 19.1.1(react@19.1.1)
 
@@ -12880,6 +12990,11 @@ snapshots:
   '@graphql-typed-document-node/core@3.2.0(graphql@16.11.0)':
     dependencies:
       graphql: 16.11.0
+
+  '@gsap/react@2.1.2(gsap@3.13.0)(react@19.1.1)':
+    dependencies:
+      gsap: 3.13.0
+      react: 19.1.1
 
   '@headlessui/react@2.2.9(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
     dependencies:
@@ -13928,6 +14043,67 @@ snapshots:
   '@paralleldrive/cuid2@2.2.2':
     dependencies:
       '@noble/hashes': 1.8.0
+
+  '@parcel/watcher-android-arm64@2.5.1':
+    optional: true
+
+  '@parcel/watcher-darwin-arm64@2.5.1':
+    optional: true
+
+  '@parcel/watcher-darwin-x64@2.5.1':
+    optional: true
+
+  '@parcel/watcher-freebsd-x64@2.5.1':
+    optional: true
+
+  '@parcel/watcher-linux-arm-glibc@2.5.1':
+    optional: true
+
+  '@parcel/watcher-linux-arm-musl@2.5.1':
+    optional: true
+
+  '@parcel/watcher-linux-arm64-glibc@2.5.1':
+    optional: true
+
+  '@parcel/watcher-linux-arm64-musl@2.5.1':
+    optional: true
+
+  '@parcel/watcher-linux-x64-glibc@2.5.1':
+    optional: true
+
+  '@parcel/watcher-linux-x64-musl@2.5.1':
+    optional: true
+
+  '@parcel/watcher-win32-arm64@2.5.1':
+    optional: true
+
+  '@parcel/watcher-win32-ia32@2.5.1':
+    optional: true
+
+  '@parcel/watcher-win32-x64@2.5.1':
+    optional: true
+
+  '@parcel/watcher@2.5.1':
+    dependencies:
+      detect-libc: 1.0.3
+      is-glob: 4.0.3
+      micromatch: 4.0.8
+      node-addon-api: 7.1.1
+    optionalDependencies:
+      '@parcel/watcher-android-arm64': 2.5.1
+      '@parcel/watcher-darwin-arm64': 2.5.1
+      '@parcel/watcher-darwin-x64': 2.5.1
+      '@parcel/watcher-freebsd-x64': 2.5.1
+      '@parcel/watcher-linux-arm-glibc': 2.5.1
+      '@parcel/watcher-linux-arm-musl': 2.5.1
+      '@parcel/watcher-linux-arm64-glibc': 2.5.1
+      '@parcel/watcher-linux-arm64-musl': 2.5.1
+      '@parcel/watcher-linux-x64-glibc': 2.5.1
+      '@parcel/watcher-linux-x64-musl': 2.5.1
+      '@parcel/watcher-win32-arm64': 2.5.1
+      '@parcel/watcher-win32-ia32': 2.5.1
+      '@parcel/watcher-win32-x64': 2.5.1
+    optional: true
 
   '@phc/format@1.0.0': {}
 
@@ -17392,6 +17568,9 @@ snapshots:
 
   detect-indent@7.0.2: {}
 
+  detect-libc@1.0.3:
+    optional: true
+
   detect-libc@2.1.2: {}
 
   detect-newline@3.1.0: {}
@@ -17788,7 +17967,7 @@ snapshots:
     optionalDependencies:
       source-map: 0.6.1
 
-  eslint-config-airbnb-base@15.0.0(eslint-plugin-import@2.32.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@8.57.1))(eslint@8.57.1):
+  eslint-config-airbnb-base@15.0.0(eslint-plugin-import@2.32.0)(eslint@8.57.1):
     dependencies:
       confusing-browser-globals: 1.0.11
       eslint: 8.57.1
@@ -17797,10 +17976,10 @@ snapshots:
       object.entries: 1.1.9
       semver: 6.3.1
 
-  eslint-config-airbnb@19.0.4(eslint-plugin-import@2.32.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@8.57.1))(eslint-plugin-jsx-a11y@6.10.2(eslint@8.57.1))(eslint-plugin-react-hooks@5.2.0(eslint@8.57.1))(eslint-plugin-react@7.37.5(eslint@8.57.1))(eslint@8.57.1):
+  eslint-config-airbnb@19.0.4(eslint-plugin-import@2.32.0)(eslint-plugin-jsx-a11y@6.10.2(eslint@8.57.1))(eslint-plugin-react-hooks@5.2.0(eslint@8.57.1))(eslint-plugin-react@7.37.5(eslint@8.57.1))(eslint@8.57.1):
     dependencies:
       eslint: 8.57.1
-      eslint-config-airbnb-base: 15.0.0(eslint-plugin-import@2.32.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@8.57.1))(eslint@8.57.1)
+      eslint-config-airbnb-base: 15.0.0(eslint-plugin-import@2.32.0)(eslint@8.57.1)
       eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.46.1(eslint@8.57.1)(typescript@5.9.3))(eslint-import-resolver-typescript@4.4.4)(eslint@8.57.1)
       eslint-plugin-jsx-a11y: 6.10.2(eslint@8.57.1)
       eslint-plugin-react: 7.37.5(eslint@8.57.1)
@@ -21272,10 +21451,10 @@ snapshots:
 
   netmask@2.0.2: {}
 
-  next-auth@5.0.0-beta.25(next@15.4.7(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react@19.1.1):
+  next-auth@5.0.0-beta.25(next@15.4.7(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.93.3))(react@19.1.1):
     dependencies:
       '@auth/core': 0.37.2
-      next: 15.4.7(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      next: 15.4.7(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.93.3)
       react: 19.1.1
 
   next-themes@0.4.6(react-dom@19.1.1(react@19.1.1))(react@19.1.1):
@@ -21287,7 +21466,7 @@ snapshots:
     dependencies:
       enhanced-resolve: 5.18.3
 
-  next@15.4.7(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1):
+  next@15.4.7(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.93.3):
     dependencies:
       '@next/env': 15.4.7
       '@swc/helpers': 0.5.15
@@ -21306,6 +21485,7 @@ snapshots:
       '@next/swc-win32-arm64-msvc': 15.4.7
       '@next/swc-win32-x64-msvc': 15.4.7
       '@opentelemetry/api': 1.9.0
+      sass: 1.93.3
       sharp: 0.34.4
     transitivePeerDependencies:
       - '@babel/core'
@@ -21323,6 +21503,9 @@ snapshots:
   node-abort-controller@3.1.1: {}
 
   node-addon-api@5.1.0: {}
+
+  node-addon-api@7.1.1:
+    optional: true
 
   node-addon-api@8.5.0: {}
 
@@ -22641,6 +22824,14 @@ snapshots:
   safe-stable-stringify@2.5.0: {}
 
   safer-buffer@2.1.2: {}
+
+  sass@1.93.3:
+    dependencies:
+      chokidar: 4.0.3
+      immutable: 5.1.4
+      source-map-js: 1.2.1
+    optionalDependencies:
+      '@parcel/watcher': 2.5.1
 
   scheduler@0.26.0: {}
 
