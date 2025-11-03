@@ -1,6 +1,7 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
 
 import { SparkleIcon } from "@/components/Assets/Sparkle";
 import { RingIcon } from "@/components/Assets/RingIcon";
@@ -12,6 +13,7 @@ import { Dots } from "@/components/Assets/Dots";
 import { Users } from "../../Assets/Users";
 
 import { Blockchains } from "./Blockchains";
+import AnimatedTitle from "@/components/Animations/AnimatedTitle";
 
 interface AICardProps {
   title: string;
@@ -21,13 +23,13 @@ interface AICardProps {
 
 const AICard = ({ title, description, children }: AICardProps) => {
   return (
-    <div className="bg-custom-black rounded-2xl gradient-border relative overflow-hidden min-h-[23rem]">
-      <div className="bg-custom-black inner rounded-2xl p-6 flex flex-col text-left h-full relative z-10">
-        <div className="flex space-x-6 mb-4">
+    <div className="bg-custom-black rounded-2xl gradient-border relative overflow-hidden min-h-[21rem]">
+      <div className="bg-custom-black inner rounded-2xl p-6 px-4 flex flex-col text-left h-full relative z-10">
+        <div className="flex space-x-4 mb-3">
           <SparkleIcon />
-          <h4 className="text-sm font-semibold mb-3">{title}</h4>
+          <h4 className="text-[13px] font-semibold mb-3">{title}</h4>
         </div>
-        <p className="text-custom-gray text-[0.95rem] leading-relaxed font-medium font-secondary">
+        <p className="text-custom-gray text-[0.9rem] leading-relaxed font-medium font-secondary">
           {description}
         </p>
         {children}
@@ -45,9 +47,18 @@ export const SectionAI = () => {
           ● Let’s talk worm AI ●
         </h3>
 
-        <h1 className="mx-auto  leading-[1] px-3 lg:px-0 text-primary uppercase font-bold text-6xl text-center">
-          complex Onchain <br /> insight made easy
-        </h1>
+        <AnimatedTitle
+          text="complex Onchain insight"
+          className="mx-auto  leading-[1] px-3 lg:px-0 text-primary uppercase font-bold text-6xl text-center"
+          wordSpace={"mr-[14px]"}
+          charSpace={"mr-[0.0005em]"}
+        />
+        <AnimatedTitle
+          text=" made easy"
+          className="mx-auto  leading-[1] px-3 lg:px-0 text-primary uppercase font-bold text-6xl text-center"
+          wordSpace={"mr-[14px]"}
+          charSpace={"mr-[0.0005em]"}
+        />
 
         <div className="flex justify-center mb-8 mt-8">
           <Dots />
@@ -74,15 +85,8 @@ export const SectionAI = () => {
         <div className="relative mx-auto w-full min-h-[250px]">
           <Blockchains />
         </div>
-
-        <Image
-          alt="blockchain placeholder"
-          src="/img/wormcard-placeholder.svg"
-          width={1007}
-          height={120}
-        />
       </div>
-      <div className="container mx-auto lg:max-w-[75%]">
+      <div className="container mx-auto lg:max-w-[75%] MT-16">
         <h2 className="text-xs mb-1 mt-16 text-left font-semibold uppercase text-white">
           ● Accelerate with AI
         </h2>
@@ -113,7 +117,7 @@ export const SectionAI = () => {
             title="Analyze Price Data"
             description="Analyse price action over any period of time to spot trends, systems and underlying issues before others do."
           >
-            <div className="absolute bottom-[1.5rem] right-[-3rem] left-6 w-[100%]">
+            <div className="absolute bottom-[1.5rem] right-[-2rem] left-6 w-[100%]">
               <Wave />
             </div>
           </AICard>
