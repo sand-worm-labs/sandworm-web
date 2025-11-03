@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 import { SparkleIcon } from "@/components/Assets/Sparkle";
 import { RingIcon } from "@/components/Assets/RingIcon";
@@ -19,11 +20,36 @@ interface AICardProps {
   title: string;
   description: string;
   children?: React.ReactNode;
+  delay?: number;
 }
 
-const AICard = ({ title, description, children }: AICardProps) => {
+const AICard = ({ title, description, children, delay = 0 }: AICardProps) => {
+  const cardVariants = {
+    hidden: { opacity: 0, y: 40, scale: 0.95 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        duration: 0.7,
+        delay,
+        ease: [0.22, 1, 0.36, 1],
+      },
+    },
+  };
+
   return (
-    <div className="bg-custom-black rounded-2xl gradient-border relative overflow-hidden min-h-[21rem]">
+    <motion.div
+      className="bg-custom-black rounded-2xl gradient-border relative overflow-hidden min-h-[21rem]"
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.2 }}
+      variants={cardVariants}
+      whileHover={{
+        scale: 1.02,
+        transition: { duration: 0.3, ease: "easeOut" },
+      }}
+    >
       <div className="bg-custom-black inner rounded-2xl p-6 px-4 flex flex-col text-left h-full relative z-10">
         <div className="flex space-x-4 mb-3">
           <SparkleIcon />
@@ -34,7 +60,7 @@ const AICard = ({ title, description, children }: AICardProps) => {
         </p>
         {children}
       </div>
-    </div>
+    </motion.div>
   );
 };
 
@@ -44,20 +70,20 @@ export const SectionAI = () => {
       <div className="container mx-auto flex flex-col items-center">
         <RingIcon />
         <h3 className="uppercase mb-5 text-xs font-medium mt-5">
-          ● Let’s talk worm AI ●
+          ● Let's talk worm AI ●
         </h3>
 
         <AnimatedTitle
           text="complex Onchain insight"
-          className="mx-auto  leading-[1] px-3 lg:px-0 text-primary uppercase font-bold text-6xl text-center"
-          wordSpace={"mr-[14px]"}
-          charSpace={"mr-[0.0005em]"}
+          className="mx-auto  leading-[1] px-3 lg:px-0 text-primary uppercase font-black text-6xl text-center"
+          wordSpace="mr-[14px]"
+          charSpace="mr-[0.0005em]"
         />
         <AnimatedTitle
           text=" made easy"
           className="mx-auto  leading-[1] px-3 lg:px-0 text-primary uppercase font-bold text-6xl text-center"
-          wordSpace={"mr-[14px]"}
-          charSpace={"mr-[0.0005em]"}
+          wordSpace="mr-[14px]"
+          charSpace="mr-[0.0005em]"
         />
 
         <div className="flex justify-center mb-8 mt-8">
@@ -95,6 +121,7 @@ export const SectionAI = () => {
           <AICard
             title="Create Charts"
             description="Easily prompt and create charts, comparing, contrasting, analysing data from the blockchain all from a single prompt on our AI."
+            delay={0}
           >
             <div className="absolute bottom-[4rem] left-12 w-[6rem] h-[6rem]">
               <Ellipse />
@@ -107,6 +134,7 @@ export const SectionAI = () => {
           <AICard
             title="Query User Data"
             description="Get information on user behaviour, insights, transaction statistics, campaign outlook and more easily."
+            delay={0.15}
           >
             <div className="absolute bottom-0 right-0 w-[9rem] h-[9rem]">
               <Users />
@@ -116,6 +144,7 @@ export const SectionAI = () => {
           <AICard
             title="Analyze Price Data"
             description="Analyse price action over any period of time to spot trends, systems and underlying issues before others do."
+            delay={0.3}
           >
             <div className="absolute bottom-[1.5rem] right-[-2rem] left-6 w-[100%]">
               <Wave />

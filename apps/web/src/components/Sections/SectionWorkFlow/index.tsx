@@ -63,7 +63,7 @@ export const SectionWorkFlow = () => {
         </h3>
         <AnimatedTitle
           text="Get started in 3 easy steps"
-          className="lg:text-[4.5rem] text-4xl text-primary mb-4 uppercase font-bold leading-[1.3] text-center font-secondary"
+          className="lg:text-[4.5rem] text-4xl text-primary mb-4 uppercase  leading-[1.3] text-center font-secondary font-black"
           wordSpace="mr-[14px]"
           charSpace="mr-[0.0005em]"
         />
