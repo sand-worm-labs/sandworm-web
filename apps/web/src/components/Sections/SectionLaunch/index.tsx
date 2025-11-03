@@ -64,10 +64,10 @@ export const SectionFeatures = () => {
           ● Built to Last ●
         </h3>
         <AnimatedTitle
-          wordSpace={"mr-[14px]"}
-          charSpace={"mr-[0.0005em]"}
+          wordSpace="mr-[14px]"
+          charSpace="mr-[0.0005em]"
           text="Built for the future"
-          className="lg:text-[4rem] text-4xl text-primary mb-4 uppercase font-bold leading-[1.3] text-center"
+          className="lg:text-[4rem] text-4xl text-primary mb-4 uppercase font-black leading-[1.3] text-center"
         />
         <div className="flex justify-center mb-16">
           <Dots />

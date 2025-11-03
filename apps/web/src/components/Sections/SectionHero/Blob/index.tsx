@@ -1,3 +1,5 @@
+/* eslint-disable dot-notation */
+
 "use client";
 
 import { memo, useRef } from "react";
@@ -37,11 +39,11 @@ const Blob = () => {
     { dependencies: [x, y], scope: blobRef }
   );
 
-  return <span className={styles.blob} aria-hidden="true" ref={blobRef} />;
+  return <span className={styles["blob"]} aria-hidden="true" ref={blobRef} />;
 };
 
 const Noise = memo(function Noise() {
-  return <span className={styles.noise} aria-hidden="true" />;
+  return <span className={styles["noise"]} aria-hidden="true" />;
 });
 
 export { Blob, Noise };
