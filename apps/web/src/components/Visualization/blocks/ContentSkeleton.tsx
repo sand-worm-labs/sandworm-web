@@ -1,6 +1,7 @@
-import useResettableState from "../hooks/useResettableState";
 import clsx from "clsx";
 import { useEffect, useMemo } from "react";
+
+import useResettableState from "../hooks/useResettableState";
 
 const possibleOffset = ["left-1/4", "left-1/2", "left-3/4"];
 
@@ -89,10 +90,9 @@ export function ContentSkeleton(props: Props) {
           author={quotes[randomIndex].author}
         />
       );
-    } else {
-      const randomIndex = Math.floor(Math.random() * didYouKnows.length);
-      return <DidYouKnowBlock content={didYouKnows[randomIndex]} />;
     }
+    const randomIndex = Math.floor(Math.random() * didYouKnows.length);
+    return <DidYouKnowBlock content={didYouKnows[randomIndex]} />;
   }, [type]);
 
   return (
@@ -125,12 +125,10 @@ const didYouKnows = [
       Add one by typing <code>/upload</code> and pressing <code>Enter</code>.
     </p>
   </>,
-  <>
-    <p>
-      You can invite other users to your workspace using the <code>Users</code>{" "}
-      menu on the bottom left.
-    </p>
-  </>,
+  <p>
+    You can invite other users to your workspace using the <code>Users</code>{" "}
+    menu on the bottom left.
+  </p>,
   <>
     <p>
       You can automatically rerun and update your document on a fixed schedule.

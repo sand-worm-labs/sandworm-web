@@ -6,7 +6,7 @@ import {
   PlayIcon,
 } from "@heroicons/react/20/solid";
 import * as Y from "yjs";
-import {
+import type {
   ExecutionQueue,
   YBlock,
   VisualizationV2BlockInput,
@@ -22,7 +22,7 @@ import { FunnelIcon } from "@heroicons/react/24/outline";
 import type { RefObject } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
-import {
+import type {
   ChartType,
   DataFrame,
   DataFrameColumn,
@@ -32,6 +32,8 @@ import {
   VisualizationFilter,
   YAxis,
   Series,
+} from "@sandworm/types";
+import {
   isInvalidVisualizationFilter,
   NumpyDateTypes,
   exhaustiveCheck,

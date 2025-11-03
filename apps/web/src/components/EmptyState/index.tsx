@@ -1,8 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-
 import { Button } from "@sandworm/ui/components/button";
+
 import { Heading } from "@/components/EmptyState/Heading";
 
 interface EmptyStateProps {

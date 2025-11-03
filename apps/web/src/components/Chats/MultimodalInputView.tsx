@@ -4,7 +4,6 @@ import React, { forwardRef } from "react";
 import type { Attachment } from "ai";
 import { PiPaperPlaneTilt } from "react-icons/pi";
 import { useRouter } from "next/navigation";
-
 import { Button } from "@sandworm/ui/components/button";
 import { Textarea } from "@sandworm/ui/components/textarea";
 

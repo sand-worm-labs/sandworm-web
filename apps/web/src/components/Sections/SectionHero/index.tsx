@@ -2,10 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-
-import { ChatLaunchInput } from "./ChatLaunchInputProps";
 import { Button } from "@sandworm/ui/components/button";
 import Image from "next/image";
+
+import { ChatLaunchInput } from "./ChatLaunchInputProps";
 import { Blob, Noise } from "./Blob";
 
 export const SectionHero = () => {

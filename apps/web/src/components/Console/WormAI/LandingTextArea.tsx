@@ -3,7 +3,6 @@
 import clsx from "clsx";
 import { ArrowUpRightIcon } from "lucide-react";
 import { useCallback, useState } from "react";
-
 import { Button } from "@sandworm/ui/components/button";
 
 import { ExamplePrompts } from "./ExamplePrompt";

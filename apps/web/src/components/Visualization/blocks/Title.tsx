@@ -1,4 +1,4 @@
-import * as Y from "yjs";
+import type * as Y from "yjs";
 import { EditorContent, useEditor } from "@tiptap/react";
 import Collaboration from "@tiptap/extension-collaboration";
 import Document from "@tiptap/extension-document";
@@ -6,8 +6,9 @@ import Placeholder from "@tiptap/extension-placeholder";
 import Text from "@tiptap/extension-text";
 import { mergeAttributes, Node } from "@tiptap/core";
 import clsx from "clsx";
-import { TitleSkeleton } from "./ContentSkeleton";
 import { useEffect } from "react";
+
+import { TitleSkeleton } from "./ContentSkeleton";
 
 export type Level = 1 | 2 | 3 | 4 | 5 | 6;
 
@@ -35,7 +36,7 @@ export const TitleExtension = Node.create<ITitleOptions>({
     };
   },
   renderHTML({ HTMLAttributes }) {
-    const level = this.options.level;
+    const { level } = this.options;
 
     return [
       `h${level}`,
@@ -64,7 +65,7 @@ function Title(props: Props) {
         TitleExtension.configure({
           level: 1,
           HTMLAttributes: {
-            style: "font-weight: bold; font-size: 4rem;" + (props.style ?? ""),
+            style: `font-weight: bold; font-size: 4rem;${props.style ?? ""}`,
           },
         }),
         Placeholder.configure({

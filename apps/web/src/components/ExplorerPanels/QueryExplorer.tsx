@@ -3,11 +3,6 @@
 import React, { useEffect } from "react";
 import { SquareTerminal, Plus, Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
-
-import type { Query } from "@/types";
-import { useModalStore } from "@/store/auth";
-import { useQueryStore } from "@/store/queries";
-
 import {
   CardHeader,
   CardTitle,
@@ -15,6 +10,10 @@ import {
   Card,
 } from "@sandworm/ui/components/card";
 import { Button } from "@sandworm/ui/components/button";
+
+import type { Query } from "@/types";
+import { useModalStore } from "@/store/auth";
+import { useQueryStore } from "@/store/queries";
 
 import { QueryExplorerCardList } from "./QueryExplorerCardList";
 

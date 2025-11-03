@@ -5,7 +5,6 @@ import type { FC } from "react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import Image from "next/image";
-
 import { Avatar, AvatarFallback } from "@sandworm/ui/components/avatar";
 import {
   DropdownMenu,
@@ -13,6 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@sandworm/ui/components/dropdown-menu";
+
 import type { CurrentUserProps } from "@/types";
 
 import { ThemeTogggle } from "../Theme/ThemeToggle";

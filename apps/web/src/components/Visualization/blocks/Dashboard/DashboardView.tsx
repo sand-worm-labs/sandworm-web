@@ -22,9 +22,9 @@ import {
 } from "@sandworm/editor";
 import SimpleBar from "simplebar-react";
 
-import { useYDocState } from "../../hooks/useYDocs";
 import type { APIDataSources } from "@/hooks/useDatasources";
 
+import { useYDocState } from "../../hooks/useYDocs";
 import Title from "../Title";
 
 import GridElement from "./GridElement";

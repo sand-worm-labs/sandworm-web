@@ -1,20 +1,20 @@
 "use client";
+
 import * as Y from "yjs";
-import {
+import type {
   YBlock,
   ExecutionQueue,
   ExecutionQueueBatch,
   DataFrame,
 } from "@sandworm/types";
-import {
-  BlockType,
-  ExecutionQueueItem,
-  VisualizationV2Block,
-} from "@sandworm/editor";
-import VisualizationBlockV2 from "../Visualization";
+import type { VisualizationV2Block } from "@sandworm/editor";
+import { BlockType, ExecutionQueueItem } from "@sandworm/editor";
 import { Star, Expand, MoreVertical } from "lucide-react";
-import ItemActionsDropdown from "./ItemAction";
+
+import VisualizationBlockV2 from "../Visualization";
 import RichTextBlock from "../Visualization/blocks/customBlocks/richText";
+
+import ItemActionsDropdown from "./ItemAction";
 
 const yDoc = new Y.Doc();
 
@@ -146,7 +146,7 @@ export const ChatReportPreview = () => {
         ecosystem.
       </p>
 
-{/*       <RichTextBlock
+      {/*       <RichTextBlock
         block={blocks}
         belongsToMultiTabGroup={false}
         isEditable={false}

@@ -4,6 +4,7 @@ import { memo, useRef } from "react";
 
 import { useMousePosition } from "@/hooks/useMousePosition";
 import { gsap, useGSAP } from "@/lib/gsap";
+
 import styles from "./Blob.module.scss";
 
 const Blob = () => {

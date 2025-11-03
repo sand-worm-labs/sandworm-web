@@ -4,7 +4,6 @@ import React from "react";
 import { ChevronDown, Share2 } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
-
 import {
   Avatar,
   AvatarImage,
@@ -17,6 +16,7 @@ import {
   DropdownMenuSeparator,
 } from "@sandworm/ui/components/dropdown-menu";
 import { Button } from "@sandworm/ui/components/button";
+
 import { useModalStore } from "@/store/auth";
 
 export const AccountDropdown = () => {

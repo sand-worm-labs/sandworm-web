@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { Badge } from "@sandworm/ui/components/badge";
 
 import { SandwormLogo } from "@/components/Assets";
-import { Badge } from "@sandworm/ui/components/badge";
 
 const navLinks = [
   { name: "Explore", href: "workspace/explore" },

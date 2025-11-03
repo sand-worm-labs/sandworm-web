@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Database } from "lucide-react";
 import { useSession } from "next-auth/react";
-
-import { fetchQueryUpdate } from "@/services/axios/queryService";
-
 import {
   Card,
   CardHeader,
   CardTitle,
   CardContent,
 } from "@sandworm/ui/components/card";
+
+import { fetchQueryUpdate } from "@/services/axios/queryService";
 
 import { QueryCard } from "./QueryHistory/QueryCard";
 

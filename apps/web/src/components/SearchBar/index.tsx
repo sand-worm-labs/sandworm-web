@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Search } from "lucide-react";
-
 import { Input } from "@sandworm/ui/components/input";
 
 /* we are currently using custom search with client side caching. this needs to be replaced with proper search in future probably typesense. once we scale we need more advance and performant search. TODO: cache response and rate limiting to reduce backend overload */

@@ -1,8 +1,8 @@
 "use client";
 
 import { ProgressProvider } from "@bprogress/next/app";
-
 import { Toaster } from "@sandworm/ui/components/sonner";
+
 import { FooterWrapper } from "@/components/Layout/AppFooter/FooterWrapper";
 import { AppHeader } from "@/components/Layout/AppHeader";
 import { SignInModal } from "@/components/AuthUI/SignInModal";

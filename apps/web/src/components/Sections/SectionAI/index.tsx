@@ -1,13 +1,16 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
+
 import { SparkleIcon } from "@/components/Assets/Sparkle";
 import { RingIcon } from "@/components/Assets/RingIcon";
-import { Users } from "../../Assets/Users";
 import { BarChart } from "@/components/Assets/BarChart";
 import { Ellipse } from "@/components/Assets/Ellipse";
 import { Wave } from "@/components/Assets/Wave";
-import Image from "next/image";
 import { Dots } from "@/components/Assets/Dots";
+
+import { Users } from "../../Assets/Users";
+
 import { Blockchains } from "./Blockchains";
 
 interface AICardProps {
