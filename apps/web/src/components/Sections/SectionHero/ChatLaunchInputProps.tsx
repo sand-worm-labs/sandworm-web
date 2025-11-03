@@ -3,9 +3,9 @@
 import React, { forwardRef } from "react";
 import type { Attachment } from "ai";
 import { PiPaperPlaneTilt } from "react-icons/pi";
-
 import { Button } from "@sandworm/ui/components/button";
 import { Textarea } from "@sandworm/ui/components/textarea";
+
 import { PreviewAttachment } from "@/components/Chats/preview-attachment";
 import { StopIcon } from "@/components/Chats/icons";
 import { Binocular } from "@/components/Assets/Binocular";

@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
-import { SocialLogin } from "./SocialLogin";
 import { SandwormDarkLogo } from "../Assets/SandwormDarkLogo";
+
+import { SocialLogin } from "./SocialLogin";
 
 export const SignIn = () => {
   const params = useSearchParams();

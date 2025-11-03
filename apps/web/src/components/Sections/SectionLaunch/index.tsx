@@ -1,8 +1,9 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
+
 import { Star } from "@/components/Assets/Star";
 import { CircuitIcon } from "@/components/Assets/Circuit";
-import Image from "next/image";
 import { Dots } from "@/components/Assets/Dots";
 import { Boxes } from "@/components/Assets/Boxes";
 import { Blur } from "@/components/Assets/Blur";

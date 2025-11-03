@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import { CodeSquareIcon } from "lucide-react";
 import { useRouter } from "@bprogress/next/app";
-
 import {
   Dialog,
   DialogContent,

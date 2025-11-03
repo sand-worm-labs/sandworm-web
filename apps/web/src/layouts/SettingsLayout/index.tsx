@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { UserRound, Settings } from "lucide-react";
-
 import { Avatar, AvatarFallback } from "@sandworm/ui/components/avatar";
 
 const tabs = [

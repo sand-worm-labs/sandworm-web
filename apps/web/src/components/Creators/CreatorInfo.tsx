@@ -5,8 +5,8 @@ import { SiFarcaster } from "react-icons/si";
 import Link from "next/link";
 import { FaTelegramPlane } from "react-icons/fa";
 import Image from "next/image";
-
 import { Avatar, AvatarFallback } from "@sandworm/ui/components/avatar";
+
 import type { User } from "@/types";
 import { timeAgo } from "@/lib/date";
 

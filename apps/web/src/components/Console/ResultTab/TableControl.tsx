@@ -1,6 +1,5 @@
 import type { Table } from "@tanstack/react-table";
 import { Columns, RefreshCw, Loader2 } from "lucide-react";
-
 import { Button } from "@sandworm/ui/components/button";
 import {
   DropdownMenu,

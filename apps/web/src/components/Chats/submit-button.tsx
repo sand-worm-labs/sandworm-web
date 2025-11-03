@@ -1,10 +1,9 @@
 "use client";
 
 import { useFormStatus } from "react-dom";
+import { Button } from "@sandworm/ui/components/button";
 
 import { LoaderIcon } from "@/components/Chats/icons";
-
-import { Button } from "@sandworm/ui/components/button";
 
 export function SubmitButton({ children }: { children: React.ReactNode }) {
   const { pending } = useFormStatus();
