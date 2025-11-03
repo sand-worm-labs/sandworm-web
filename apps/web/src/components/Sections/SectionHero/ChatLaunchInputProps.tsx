@@ -8,6 +8,7 @@ import { Button } from "@sandworm/ui/components/button";
 import { Textarea } from "@sandworm/ui/components/textarea";
 import { PreviewAttachment } from "@/components/Chats/preview-attachment";
 import { StopIcon } from "@/components/Chats/icons";
+import { Binocular } from "@/components/Assets/Binocular";
 
 // ⬢ Interface ⬢
 // =====================================
@@ -67,11 +68,11 @@ export const ChatLaunchInput = forwardRef<
         <div className="p-[5px] bg-rainbow-gradient rounded-[28px]">
           <Textarea
             ref={ref}
-            placeholder="Start  a  query . . ."
+            placeholder="Start a query..."
             value={input}
             onChange={onInputChange}
             onKeyDown={undefined}
-            className="min-h-[40px] overflow-hidden resize-none  bg-custom-dark-gray  text-sm placeholder:text-sm focus:ring-0 focus:outline-none   scrollbar-thin scrollbar-thumb-rounded-md scrollbar-thumb-zinc-700 py-4 px-8 placeholder:text-neutral-500 placeholder:tracking-wide rounded-[25px] "
+            className="min-h-[40px] overflow-hidden resize-none  bg-custom-dark-gray  text-sm placeholder:text-sm focus:ring-0 focus:outline-none   scrollbar-thin scrollbar-thumb-rounded-md scrollbar-thumb-zinc-700 py-4 px-6 placeholder:text-neutral-500 placeholder:tracking-wide rounded-[25px] "
             rows={5}
           />
         </div>
@@ -80,10 +81,11 @@ export const ChatLaunchInput = forwardRef<
         <div className="flex flex-row gap-2 absolute bottom-5 right-5">
           <Button
             type="button"
-            className="rounded-full p-2.5 py-2 h-fit m-0.5 text-sm bg-custom-medium-gray  text-custom-light-gray-2 px-4"
+            className="rounded-full p-2.5 py-2 h-fit m-0.5 text-xs bg-custom-medium-gray  text-custom-light-gray-2 px-4 flex"
             onClick={onStop}
           >
-            Deep Research
+            <Binocular className="w-5 h-5" />
+            <span>Deep Research</span>
           </Button>
 
           {isLoading ? (

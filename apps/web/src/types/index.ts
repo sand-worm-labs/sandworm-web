@@ -153,3 +153,9 @@ export interface Chat {
   createdAt: Date;
   messages: Message[];
 }
+
+export interface IconProps {
+  width?: number | string;
+  height?: number | string;
+  className?: string;
+}
