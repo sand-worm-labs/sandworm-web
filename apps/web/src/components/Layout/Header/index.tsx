@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Badge } from "@sandworm/ui/components/badge";
 
 import { SandwormLogo } from "@/components/Assets";
@@ -25,14 +26,40 @@ const navLinks = [
   },
 ];
 
+// ⬢ Motion Variants ⬢
+const headerContainer = {
+  hidden: { opacity: 0, y: -5 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { staggerChildren: 0.1, delayChildren: 0.1 },
+  },
+};
+
+const navItem = {
+  hidden: { opacity: 0, y: -5 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] },
+  },
+  hover: { scale: 1.05, color: "#C7665C", transition: { duration: 0.2 } },
+};
+
 export const MainHeader = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <header className="  fixed w-full top-5  mx-auto left-0 right-0 z-[99]">
-      <div className="w-[85%] mx-auto  rounded-xl">
+    <header className="fixed w-full top-5 mx-auto left-0 right-0 z-[99]">
+      <motion.div
+        className="w-[85%] mx-auto rounded-xl"
+        variants={headerContainer}
+        initial="hidden"
+        animate="visible"
+      >
         <div className="px-3 flex justify-between items-center py-2.5">
-          <div className="flex">
+          {/* Logo */}
+          <motion.div variants={navItem} className="flex items-center">
             <Link href="/" className="flex items-center">
               <SandwormLogo />
               <span className="ml-3 font-medium text-xl uppercase text-white">
@@ -42,9 +69,13 @@ export const MainHeader = () => {
                 beta
               </Badge>
             </Link>
-          </div>
+          </motion.div>
 
-          <ul className="hidden md:flex ml-10 text-[0.8rem] items-center space-x-8 rounded-full backdrop-blur-lg py-2.5 px-8 border border-borderLight">
+          {/* Desktop Nav Links */}
+          <motion.ul
+            className="hidden md:flex ml-10 text-[0.8rem] items-center space-x-8 rounded-full backdrop-blur-lg py-2.5 px-8 border border-borderLight"
+            variants={headerContainer}
+          >
             {navLinks.map(link => (
               <li key={link.name}>
                 <Link
@@ -52,21 +83,25 @@ export const MainHeader = () => {
                   {...(link.isExternal
                     ? { target: "_blank", rel: "noopener noreferrer" }
                     : {})}
-                  className="text-neutral-500 font-medium  hover:text-[#C7665C]"
+                  className="text-neutral-500 font-medium hover:text-primary"
                 >
                   {link.name}
                 </Link>
               </li>
             ))}
-          </ul>
+          </motion.ul>
 
-          <Link
-            className="hidden md:flex border py-2 bg-primary text-black rounded-2xl px-4 text-[0.9rem] font-medium"
-            href="/workspace"
-          >
-            <span>Launch App</span>
-          </Link>
+          {/* Launch App Button */}
+          <motion.div variants={navItem} whileHover={{ scale: 1.05 }}>
+            <Link
+              className="hidden md:flex border py-2 bg-primary text-black rounded-2xl px-4 text-[0.9rem] font-medium"
+              href="/workspace"
+            >
+              Launch App
+            </Link>
+          </motion.div>
 
+          {/* Mobile Hamburger */}
           <button
             type="button"
             className="md:hidden flex flex-col space-y-1 cursor-pointer"
@@ -90,8 +125,14 @@ export const MainHeader = () => {
           </button>
         </div>
 
+        {/* Mobile Menu */}
         {isOpen && (
-          <div className="md:hidden flex flex-col items-center space-y-4 py-4 bg-black border-t border-borderLight bottom-0">
+          <motion.div
+            className="md:hidden flex flex-col items-center space-y-4 py-4 bg-black border-t border-borderLight bottom-0"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
             {navLinks.map(link => (
               <Link
                 key={link.name}
@@ -112,9 +153,9 @@ export const MainHeader = () => {
             >
               Launch App
             </Link>
-          </div>
+          </motion.div>
         )}
-      </div>
+      </motion.div>
     </header>
   );
 };
