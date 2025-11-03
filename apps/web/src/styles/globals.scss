@@ -292,6 +292,7 @@ select:-webkit-autofill:focus {
 .text-effect2 {
   background: linear-gradient(#ff7f4f, #b54324);
   -webkit-text-fill-color: transparent;
+  background-clip: text;
   -webkit-background-clip: text;
 }
 
@@ -366,6 +367,9 @@ select:-webkit-autofill:focus {
   );
   background-size: 200% 200%;
   animation: gradientScroll 4s linear infinite;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
   -webkit-mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);

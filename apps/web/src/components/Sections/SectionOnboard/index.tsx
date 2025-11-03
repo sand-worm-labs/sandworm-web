@@ -4,7 +4,7 @@ import Image from "next/image";
 
 export const SectionOnboard = () => {
   return (
-    <section className="mt-16  px-5 relative bg-black">
+    <section className="pt-16  px-5 relative bg-black">
       <div className="absolute top-0 left-0 h-full w-full">
         <Image src="/img/light-bar.svg" fill alt="unaminated background" />
       </div>

@@ -8,13 +8,13 @@ export const Blockchains = () => {
         <Image src="/img/eth.svg" alt="Ethereum" width={78} height={78} />
       </div>
       <div className="ball">
-        <Image src="/img/base.svg" alt="Ethereum" width={96} height={96} />
+        <Image src="/img/base.svg" alt="Ethereum" fill />
       </div>
       <div className="ball">
         <Image src="/img/polygon.svg" alt="Ethereum" width={82} height={82} />
       </div>
       <div className="ball">
-        <Image src="/img/celo.svg" alt="Ethereum" width={76} height={76} />
+        <Image src="/img/celo.svg" alt="Ethereum" width={80} height={80} />
       </div>
       <div className="ball">
         <Image src="/img/op.svg" alt="Ethereum" width={72} height={72} />
