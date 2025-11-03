@@ -1,8 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { ExecutionResultPreview } from "./ExecutionResultPreview";
+
 import { Dots } from "@/components/Assets/Dots";
+
+import { ExecutionResultPreview } from "./ExecutionResultPreview";
 
 const workflowSteps = [
   {

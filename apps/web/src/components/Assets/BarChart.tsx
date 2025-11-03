@@ -1,6 +1,6 @@
-type IconProps = React.HTMLAttributes<SVGElement>;
-
 import React from "react";
+
+type IconProps = React.HTMLAttributes<SVGElement>;
 
 export const BarChart = (props: IconProps) => {
   return (

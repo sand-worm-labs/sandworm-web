@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { FileX2 } from "lucide-react";
-
 import {
   ResizablePanel,
   ResizablePanelGroup,
@@ -11,6 +10,7 @@ import {
   AlertTitle,
   AlertDescription,
 } from "@sandworm/ui/components/alert";
+
 import { useSandwormStore } from "@/store";
 
 import QueryResultsTable from "./ResultTab/index";

@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Settings } from "lucide-react";
 import { toast } from "sonner";
-
 import { Label } from "@sandworm/ui/components/label";
 import { Input } from "@sandworm/ui/components/input";
 import {
@@ -18,6 +17,7 @@ import {
   CardContent,
   CardHeader,
 } from "@sandworm/ui/components/card";
+
 import { useSandwormStore } from "@/store";
 
 const chains = ["Sui", "Ethereum", "Polygon", "Base", "Arbitrum"];

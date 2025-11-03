@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Copy, Facebook, Linkedin, Twitter, X } from "lucide-react";
 import { toast } from "sonner";
-
 import {
   Dialog,
   DialogContent,

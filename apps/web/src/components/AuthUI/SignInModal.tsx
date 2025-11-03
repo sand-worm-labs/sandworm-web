@@ -1,13 +1,13 @@
 "use client";
 
 import Image from "next/image";
-
 import {
   Dialog,
   DialogContent,
   DialogTitle,
   DialogDescription,
 } from "@sandworm/ui/components/dialog";
+
 import { useModalStore } from "@/store/auth";
 
 import { PartnersSection } from "../Partners";

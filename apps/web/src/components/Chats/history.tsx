@@ -9,10 +9,6 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import useSWR from "swr";
 import { SquarePenIcon } from "lucide-react";
-
-import type { Chat } from "@/types";
-import { fetcher, getTitleFromChat } from "@/lib/utils";
-
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,6 +33,9 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@sandworm/ui/components/sheet";
+
+import { fetcher, getTitleFromChat } from "@/lib/utils";
+import type { Chat } from "@/types";
 
 import { InfoIcon, MenuIcon, MoreHorizontalIcon, TrashIcon } from "./icons";
 

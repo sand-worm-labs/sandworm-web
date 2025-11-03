@@ -3,8 +3,6 @@
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
-
-import { useCreateQuery } from "@/hooks/useCreateQuery";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +14,8 @@ import { Textarea } from "@sandworm/ui/components/textarea";
 import { Button } from "@sandworm/ui/components/button";
 import { Label } from "@sandworm/ui/components/label";
 import { Checkbox } from "@sandworm/ui/components/checkbox";
+
+import { useCreateQuery } from "@/hooks/useCreateQuery";
 import { useSaveQuery } from "@/hooks/useSaveQuery";
 
 interface SaveModalProps {

@@ -43,11 +43,12 @@ import SimpleBar from "simplebar-react";
 
 import { useYDocState } from "@/hooks/useYDoc";
 import type { APIDataSources } from "@/hooks/useDatasources";
-import VisualizationBlock from "../../../Visualization";
-import ScaleChild from "./ScaleChild";
-import VisualizationV2Block from "../../../Visualization";
+
+import VisualizationBlock from "../..";
+import VisualizationV2Block from "../..";
 import MultiSelect from "../MultiSelect";
 
+import ScaleChild from "./ScaleChild";
 import { getDefaults } from "./DashboardView";
 
 import type { DraggingBlock } from ".";
@@ -453,13 +454,13 @@ function BlockListItem(props: BlockListItemProps) {
   const jsx = useMemo(
     () =>
       switchBlockType(props.block, {
-        onRichText: block => <div className="w-full h-96"></div>,
+        onRichText: block => <div className="w-full h-96" />,
         onSQL: block => (
           <div className="w-full h-64">
-            <div className="w-full h-96"></div>
+            <div className="w-full h-96" />
           </div>
         ),
-        onPython: block => <div className="w-full h-96"></div>,
+        onPython: block => <div className="w-full h-96" />,
         onVisualization: block => (
           <div className="w-full h-96">
             <VisualizationBlock
@@ -507,13 +508,13 @@ function BlockListItem(props: BlockListItemProps) {
             />
           </div>
         ),
-        onInput: block => <div className="w-full h-96"></div>,
-        onDropdownInput: block => <div className="w-full h-96"></div>,
+        onInput: block => <div className="w-full h-96" />,
+        onDropdownInput: block => <div className="w-full h-96" />,
         onFileUpload: () => null,
-        onDateInput: block => <div className="w-full h-96"></div>,
+        onDateInput: block => <div className="w-full h-96" />,
         onPivotTable: block => (
           <div className="w-full h-96">
-            <div className="w-full h-96"></div>
+            <div className="w-full h-96" />
           </div>
         ),
         onDashboardHeader: () => null,

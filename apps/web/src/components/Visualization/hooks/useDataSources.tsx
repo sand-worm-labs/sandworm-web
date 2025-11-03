@@ -1,5 +1,4 @@
 import { Map, List } from "immutable";
-import { NEXT_PUBLIC_API_URL } from "@/utils/env";
 import {
   createContext,
   useCallback,
@@ -8,10 +7,13 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useWebsocket } from "./useWebsocket";
 import type { APIDataSource, DataSourceType } from "@sandworm/database";
-import { DataSourceSchema, DataSourceTable } from "@sandworm/types";
+import type { DataSourceSchema, DataSourceTable } from "@sandworm/types";
 import { omit } from "ramda";
+
+import { NEXT_PUBLIC_API_URL } from "@/utils/env";
+
+import { useWebsocket } from "./useWebsocket";
 
 export type APIDataSources = List<APIDataSource>;
 
@@ -273,7 +275,7 @@ export function DataSourcesProvider(props: Props) {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ type: type }),
+          body: JSON.stringify({ type }),
         }
       );
 

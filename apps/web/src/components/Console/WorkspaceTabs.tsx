@@ -16,10 +16,10 @@ import {
 } from "@dnd-kit/sortable";
 import { usePathname, useParams } from "next/navigation";
 import { useRouter } from "@bprogress/next/app";
-
 import { Tabs, TabsList, TabsContent } from "@sandworm/ui/components/tabs";
 import { Button } from "@sandworm/ui/components/button";
 import { ScrollArea, ScrollBar } from "@sandworm/ui/components/scroll-area";
+
 import {
   ContextMenu,
   ContextMenuContent,

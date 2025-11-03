@@ -1,10 +1,11 @@
-import { computeMenuPosition } from "@/utils/dom";
 import { Menu, Transition } from "@headlessui/react";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { useRef } from "react";
 import { createPortal } from "react-dom";
+
+import { computeMenuPosition } from "@/utils/dom";
 
 interface Props<T> {
   options: T[];

@@ -17,7 +17,8 @@ export const useMousePosition = (): MousePosition => {
     const { innerHeight, innerWidth } = window;
 
     const updateMousePosition = throttle((event: MouseEvent | TouchEvent) => {
-      let x: number, y: number;
+      let x: number;
+      let y: number;
 
       if ("touches" in event) {
         const { clientX, clientY } = (event as TouchEvent).touches[0];
