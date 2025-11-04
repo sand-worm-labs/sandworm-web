@@ -26,7 +26,7 @@ import {
   ContextMenuItem,
   ContextMenuSeparator,
   ContextMenuTrigger,
-} from "@/components/ui/context-menu";
+} from "@sandworm/ui/components/context-menu";
 import { useSandwormStore } from "@/store";
 import type { Query } from "@/types";
 

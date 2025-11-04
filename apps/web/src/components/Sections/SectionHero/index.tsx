@@ -110,7 +110,7 @@ export const SectionHero = () => {
         <div className="container mx-auto relative flex flex-col h-full items-center">
           {/* ════════════ Hero Text Content ════════════ */}
           <motion.div
-            className="flex items-center space-x-6 relative mt-20 lg:mt-12 w-full"
+            className="flex items-center space-x-6 relative mt-20 lg:mt-8 w-full"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
@@ -118,13 +118,13 @@ export const SectionHero = () => {
             <div className="relative py-6 w-full">
               <motion.h1
                 variants={itemVariants}
-                className="mx-auto tracking-wide leading-[1.3] px-3 lg:px-0 lg:text-[2.8rem] text-3xl font-primary roobert"
+                className="mx-auto  leading-[1.3] px-3 lg:px-0 lg:text-[2.9rem] text-3xl font-primary font-semibold roobert"
               >
                 Deep, clean Blockchain Data Analysis
               </motion.h1>
               <motion.p
                 variants={itemVariants}
-                className="text-custom-gray mt-7 mb-3 lg:max-w-[40rem] mx-auto font-primary text-lg"
+                className="text-custom-gray mt-7 mb-3 lg:max-w-[35rem] mx-auto font-primary text-base font-medium"
               >
                 Sandworm gives you deep, clear, and editable data on various
                 blockchains, driving your whole team to make better data-based
@@ -172,7 +172,7 @@ export const SectionHero = () => {
           {/* ════════════ Chat Launch Input ════════════ */}
           <motion.form
             onSubmit={handleSubmit}
-            className="w-3/4 mx-auto"
+            className="w-[47rem] mx-auto"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
@@ -193,9 +193,9 @@ export const SectionHero = () => {
       <Noise />
 
       {/* ════════════ Backed by ════════════ */}
-      <div className="absolute bottom-16 w-full text-center px-5 text-white flex flex-col items-center z-10">
+      <div className="absolute bottom-8 w-full text-center px-5 text-white flex flex-col items-center z-10">
         <motion.h2
-          className="uppercase text-sm font-medium mb-5"
+          className="uppercase text-sm font-medium mb-5 text-[#C5C5C5]"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{

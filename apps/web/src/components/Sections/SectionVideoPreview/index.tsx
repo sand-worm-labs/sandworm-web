@@ -5,6 +5,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 
 import { Button } from "@sandworm/ui/components/button";
+import AnimatedTitle from "@/components/Animations/AnimatedTitle";
 
 export const SectionVideoPreview: React.FC = () => {
   const videoSrc = "/img/preview.png";
@@ -103,7 +104,7 @@ export const SectionVideoPreview: React.FC = () => {
 
       {/* ════════════ Text Content Overlay ════════════ */}
       <motion.div
-        className="absolute bottom-20 grid grid-cols-[70%,30%] container mx-auto px-16 pt-32 z-10 bg-gradient-to-r from-transparent to-black/80 backdrop:blur-lg"
+        className="absolute bottom-20 grid grid-cols-[70%,30%] container mx-auto px-16 pt-32 z-10 bg-gradient-to-r from-transparent to-black/80 backdrop:blur-[8rem"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.5 }}
@@ -119,12 +120,27 @@ export const SectionVideoPreview: React.FC = () => {
           >
             Easy intelligence
           </motion.h3>
-          <motion.p
-            className="text-4xl leading-[1.4] font-normal font-secondary"
-            variants={itemVariants}
-          >
-            Unlock Clear, <br /> Actionable Data for <br /> Smarter Decisions.
-          </motion.p>
+
+          <AnimatedTitle
+            text="Unlock Clear,"
+            className="text-[2.5rem] leading-[1.4]  font-secondary"
+            wordSpace="mr-[14px]"
+            charSpace="mr-[0.0005em]"
+          />
+
+          <AnimatedTitle
+            text="Actionable Data for"
+            className="text-[2.5rem] leading-[1.4]  font-secondary"
+            wordSpace="mr-[14px]"
+            charSpace="mr-[0.0005em]"
+          />
+
+          <AnimatedTitle
+            text="Smarter Decisions."
+            className="text-[2.5rem] leading-[1.4]  font-secondary"
+            wordSpace="mr-[14px]"
+            charSpace="mr-[0.0005em]"
+          />
         </motion.div>
 
         <motion.div
