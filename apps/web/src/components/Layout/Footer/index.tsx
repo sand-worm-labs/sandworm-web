@@ -81,14 +81,14 @@ export const MainFooter = () => {
           <span className="font-medium mb-1">Resources</span>
           <Link
             href="https://docs.sandwormlabs.xyz"
-            className="hover:text-white"
+            className="hover:text-primary"
             target="blank_"
           >
             Docs
           </Link>
           <Link
             href="https://docs.sandwormlabs.xyz/blog"
-            className="hover:text-white"
+            className="hover:text-primary"
             target="blank_"
           >
             Blog
@@ -96,7 +96,7 @@ export const MainFooter = () => {
           <Link
             href="https://github.com/sand-worm-labs"
             target="blank_"
-            className="hover:text-white"
+            className="hover:text-primary"
           >
             CLI
           </Link>
@@ -104,8 +104,15 @@ export const MainFooter = () => {
         <motion.div className="flex space-y-4 flex-col" variants={itemVariants}>
           <span className="font-medium mb-1">Product</span>
 
-          <Link href="/terms">Terms & Conditions</Link>
-          <Link href="/contact">Contact Us</Link>
+          <Link href="/terms" className="hover:text-primary">
+            Terms & Conditions
+          </Link>
+          <Link
+            href="https://x.com/sandwormlabs"
+            className="hover:text-primary"
+          >
+            Contact Us
+          </Link>
         </motion.div>
       </motion.div>
       <motion.div
@@ -129,7 +136,7 @@ export const MainFooter = () => {
               <Link
                 href="https://github.com/sand-worm-labs"
                 target="blank_"
-                className="hover:text-white"
+                className="hover:text-primary"
               >
                 <FaGithub size={20} />
               </Link>
@@ -144,7 +151,7 @@ export const MainFooter = () => {
             >
               <Link
                 href="https://discord.gg/pftQtpcjK2"
-                className="hover:text-white"
+                className="hover:text-primary"
                 target="blank_"
               >
                 <FaDiscord size={20} />
@@ -160,7 +167,7 @@ export const MainFooter = () => {
             >
               <Link
                 href="https://x.com/sandwormlabs"
-                className="hover:text-white"
+                className="hover:text-primary"
                 target="blank_"
               >
                 <FaXTwitter size={20} />

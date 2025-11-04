@@ -10,7 +10,7 @@ import type {
   ExecutionQueue,
   YBlock,
   VisualizationV2BlockInput,
-  type VisualizationV2Block,
+  VisualizationV2Block,
   BlockType,
   isExecutionStatusLoading,
   getDataframeFromVisualizationV2,

@@ -7,13 +7,13 @@ export const metadata = {
 
 export default function Terms() {
   return (
-    <div className="bg-black text-text-gray min-h-screen p-8">
+    <div className="bg-black text-custom-gray min-h-screen p-8 font-primary pt-24 pb-20">
       <div className="max-w-4xl mx-auto space-y-12 mt-12">
         <section>
-          <h1 className="text-3xl font-medium mb-4 uppercase dark:text-white">
+          <h1 className="lg:text-4xl text-3xl font-bold mb-4 text-primary uppercase">
             Terms and Conditions
           </h1>
-          <h2 className="text-2xl font-medium mt-6 mb-4 dark:text-white">
+          <h2 className="text-2xl font-medium mt-6 mb-4 text-white">
             1. Acceptance of Terms
           </h2>
           <p>
@@ -29,12 +29,13 @@ export default function Terms() {
           <p>
             <strong>Sandworm</strong> is an open-source analytics tool that
             enables users to query blockchain data (including
-            <strong> Sui, Etherium, EVM chains</strong>,and potentially other
-            blockchains) using an SQL-like language. It also provides a
-            <strong> public gist</strong> for sharing and discovering queries.
+            <strong> Base, Etherium, Sui and EVM chains</strong>, and
+            potentially other blockchains) using an SQL-like language. It also
+            provides a<strong> public gist</strong> for sharing and discovering
+            queries.
           </p>
 
-          <h2 className="text-2xl font-medium mt-6 mb-4 dark:text-white">
+          <h2 className="text-2xl font-medium mt-6 mb-4 text-white">
             3. Use of the Service
           </h2>
           <ul className="list-disc pl-6">
@@ -52,7 +53,7 @@ export default function Terms() {
             </li>
           </ul>
 
-          <h2 className="text-2xl font-medium mt-6 mb-4 dark:text-white">
+          <h2 className="text-2xl font-medium mt-6 mb-4 text-white">
             4. Open Sourc e License and Contributions
           </h2>
           <p>
@@ -62,7 +63,7 @@ export default function Terms() {
             modifications or misuse.
           </p>
 
-          <h2 className="text-2xl font-medium mt-6 mb-4 dark:text-white">
+          <h2 className="text-2xl font-medium mt-6 mb-4 text-white">
             5. User-Generated Content
           </h2>
           <p>
@@ -72,7 +73,7 @@ export default function Terms() {
             these terms.
           </p>
 
-          <h2 className="text-2xl font-medium mt-6 mb-4 dark:text-white">
+          <h2 className="text-2xl font-medium mt-6 mb-4 text-white">
             6. Disclaimers and Limitations of Liability
           </h2>
           <ul className="list-disc pl-6">
@@ -86,7 +87,7 @@ export default function Terms() {
             <li>Blockchain data may be incomplete, inaccurate, or outdated.</li>
           </ul>
 
-          <h2 className="text-2xl font-medium mt-6 mb-4 dark:text-white">
+          <h2 className="text-2xl font-medium mt-6 mb-4 text-white">
             7. Authentication and Security
           </h2>
           <p>
@@ -97,10 +98,10 @@ export default function Terms() {
         </section>
 
         <section>
-          <h1 className="text-3xl font-bold mb-4 dark:text-white uppercase">
+          <h1 className="lg:text-4xl text-3xl font-bold mb-4 text-primary uppercase">
             Privacy Policy
           </h1>
-          <h2 className="text-2xl font-medium mt-6 mb-4 dark:text-white">
+          <h2 className="text-2xl font-medium mt-6 mb-4 text-white">
             1. Information We Collect
           </h2>
           <ul className="list-disc pl-6">
@@ -119,7 +120,7 @@ export default function Terms() {
             </li>
           </ul>
 
-          <h2 className="text-2xl font-medium mt-6 mb-4 dark:text-white">
+          <h2 className="text-2xl font-medium mt-6 mb-4 text-white">
             2. How We Use Your Data
           </h2>
           <p>
@@ -128,7 +129,7 @@ export default function Terms() {
             users. Public queries shared in the gist are visible to all users.
           </p>
 
-          <h2 className="text-2xl font-medium mt-6 mb-4 dark:text-white">
+          <h2 className="text-2xl font-medium mt-6 mb-4 text-white">
             3. Data Sharing and Security
           </h2>
           <p>
@@ -137,7 +138,7 @@ export default function Terms() {
             guarantee complete security.
           </p>
 
-          <h2 className="text-2xl font-medium mt-6 mb-4 dark:text-white">
+          <h2 className="text-2xl font-medium mt-6 mb-4 text-white">
             4. Third-Party Services
           </h2>
           <p>
@@ -147,7 +148,7 @@ export default function Terms() {
             privacy policies.
           </p>
 
-          <h2 className="text-2xl font-medium mt-6 mb-4 dark:text-white">
+          <h2 className="text-2xl font-medium mt-6 mb-4 text-white">
             5. Blockchain and Public Data
           </h2>
           <p>
@@ -156,7 +157,7 @@ export default function Terms() {
             sensitive data in public queries.
           </p>
 
-          <h2 className="text-2xl font-medium mt-6 mb-4 dark: text-white">
+          <h2 className="text-2xl font-medium mt-6 mb-4  text-white">
             6. Your Choices
           </h2>
           <ul className="list-disc pl-6">
