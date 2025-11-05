@@ -82,7 +82,7 @@ export const Blockchains = () => {
   });
 
   return (
-    <div className="absolute left-[-120px] right-0 mx-auto h-[150px] w-[850px] top-[20%] bg-black">
+    <div className="absolute left-[-120px] right-0 mx-auto h-[150px] w-[850px] top-[10%] bg-black">
       {blockchains.map((chain, index) => {
         const delay = index * 0.4;
 
