@@ -164,7 +164,7 @@ export const SectionVideoPreview: React.FC = () => {
           >
             <Button
               type="button"
-              className="rounded-xl py-2.5 h-fit m-0.5 text-black bg-white px-4 mt-4 text-xs"
+              className="rounded-2xl p-2.5 h-fit m-0.5 bg-white text-black hover:scale-105 px-5 font-medium inline-block text-sm mt-5"
             >
               Get Started
             </Button>
