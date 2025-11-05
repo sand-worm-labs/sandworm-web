@@ -75,12 +75,12 @@ export const SectionWorkFlow = () => {
         {/* scroll animation wrapper */}
         <div
           ref={cardRef}
-          className="w-full overflow-hidden relative min-h-[600px] flex justify-center  "
+          className="w-full overflow-hidden relative h-[550px] flex justify-center  "
         >
           <motion.div
             style={{ x }}
             transition={{ ease: "easeInOut" }}
-            className="flex gap-10 absolute left-[68px]"
+            className="flex gap-10 absolute left-[68px] h-full"
           >
             {workflowSteps.map((step, index) => (
               <div

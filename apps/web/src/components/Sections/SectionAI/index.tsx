@@ -45,12 +45,8 @@ const AICard = ({ title, description, children, delay = 0 }: AICardProps) => {
       whileInView="visible"
       viewport={{ once: true, amount: 0.2 }}
       variants={cardVariants}
-      whileHover={{
-        scale: 1.02,
-        transition: { duration: 0.3, ease: "easeOut" },
-      }}
     >
-      <div className="bg-custom-black inner rounded-2xl p-6 px-4 flex flex-col text-left h-full relative z-10">
+      <div className="bg-custom-black inner rounded-2xl p-5 px-4 flex flex-col text-left h-full relative z-10">
         <div className="flex space-x-4 mb-3">
           <SparkleIcon />
           <h4 className="text-[13px] font-semibold mb-3">{title}</h4>
@@ -67,21 +63,21 @@ const AICard = ({ title, description, children, delay = 0 }: AICardProps) => {
 export const SectionAI = () => {
   return (
     <section className="py-28 bg-black text-white">
-      <div className="container mx-auto flex flex-col items-center">
+      <div className="container px-4 mx-auto flex flex-col items-center">
         <RingIcon />
         <h3 className="uppercase mb-5 text-xs font-medium mt-5">
           ● Let's talk worm AI ●
         </h3>
 
         <AnimatedTitle
-          text="complex Onchain insight"
-          className="mx-auto  leading-[1] px-3 lg:px-0 text-primary uppercase font-black text-6xl text-center"
+          text="complex Onchain "
+          className="mx-auto  leading-[1] px-3 lg:px-0 text-primary uppercase font-black lg:text-[4rem]   text-4xl text-center"
           wordSpace="mr-[14px]"
           charSpace="mr-[0.0005em]"
         />
         <AnimatedTitle
-          text=" made easy"
-          className="mx-auto  leading-[1] px-3 lg:px-0 text-primary uppercase font-bold text-6xl text-center"
+          text="insight made easy"
+          className="mx-auto  leading-[1] px-3 lg:px-0 text-primary uppercase font-bold lg:text-[4rem] text-4xl text-center"
           wordSpace="mr-[14px]"
           charSpace="mr-[0.0005em]"
         />
@@ -99,7 +95,7 @@ export const SectionAI = () => {
         </Link>
 
         <div className="bg-rainbow-gradient p-1 mt-28 my-8 mb-8 mx-auto rounded-full">
-          <div className="rounded-full py-2.5 w-auto flex gap-4 items-center px-6 justify-center text-xs bg-custom-dark-gray">
+          <div className="rounded-full py-3 w-auto flex gap-4 items-center px-6 justify-center text-xs bg-custom-dark-gray">
             <SparkleIcon />
             <p>
               Create a bar chart of the tokens with {">"} $1m mcap on Zora in
@@ -112,7 +108,7 @@ export const SectionAI = () => {
           <Blockchains />
         </div>
       </div>
-      <div className="container mx-auto lg:max-w-[75%] MT-16">
+      <div className="container mx-auto lg:max-w-[75%] mt-16 px-4">
         <h2 className="text-xs mb-1 mt-16 text-left font-semibold uppercase text-white">
           ● Accelerate with AI
         </h2>
