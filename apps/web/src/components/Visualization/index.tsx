@@ -6,7 +6,7 @@ import {
   PlayIcon,
 } from "@heroicons/react/20/solid";
 import * as Y from "yjs";
-import type {
+import {
   ExecutionQueue,
   YBlock,
   VisualizationV2BlockInput,

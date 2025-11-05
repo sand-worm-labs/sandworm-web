@@ -18,7 +18,7 @@ export const SectionHero = () => {
   const handleSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!input.trim()) return;
-    router.push(`/chat?input=${encodeURIComponent(input)}`);
+    router.push(`/waitlist?input=${encodeURIComponent(input)}`);
   };
 
   // ⬢ Animation Variant ⬢
@@ -148,7 +148,7 @@ export const SectionHero = () => {
               <Button
                 type="button"
                 className="rounded-2xl p-2.5 h-fit m-0.5 text-black bg-white px-5 transition-colors duration-200 hover:bg-white/80"
-                onClick={() => router.push("/chat")}
+                onClick={() => router.push("/waitlist")}
               >
                 Get Started
               </Button>
@@ -162,7 +162,7 @@ export const SectionHero = () => {
               <Button
                 type="button"
                 className="rounded-2xl p-2.5 h-fit m-0.5 text-black bg-primary px-5 font-medium"
-                onClick={() => router.push("/chat")}
+                onClick={() => router.push("/waitlist")}
               >
                 Explore Worm AI
               </Button>

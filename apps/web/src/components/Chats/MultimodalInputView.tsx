@@ -67,7 +67,7 @@ export const MultimodalInputView = forwardRef<
           value={input}
           onChange={onInputChange}
           onKeyDown={undefined}
-          className="min-h-[50px] overflow-hidden resize-none rounded-3xl border border-[#E6E0F1] bg-white dark:text-white text-sm placeholder:text-sm focus:ring-0 focus:outline-none dark:bg-zinc-950/10 dark:placeholder:text-zinc-400 scrollbar-thin scrollbar-thumb-rounded-md scrollbar-thumb-zinc-700 py-4 px-5 placeholder:text-[#868E96] placeholder:tracking-wide"
+          className="min-h-[50px] overflow-hidden resize-none rounded-3xl border border-[#E6E0F1] bg-white dark:text-white text-sm placeholder:text-sm focus:ring-0 focus:outline-none dark:bg-[#121417] dark:border-[#262A30] dark:placeholder:text-zinc-400 scrollbar-thin scrollbar-thumb-rounded-md scrollbar-thumb-zinc-700 py-4 px-5 placeholder:text-[#868E96] placeholder:tracking-wide"
           rows={6}
         />
 
@@ -75,7 +75,7 @@ export const MultimodalInputView = forwardRef<
         <div className="flex flex-row gap-2 absolute bottom-5 right-5">
           <Button
             type="button"
-            className="rounded-full p-2.5 py-2 h-fit m-0.5 text-sm bg-[#E7EBF0] text-black px-4 border-[#B5C8DB] border"
+            className="rounded-full p-2.5 py-2 h-fit m-0.5 text-sm bg-[#E7EBF0] dark:bg-[#363C46] dark:text-[#C5CED9] text-black px-4 "
             onClick={onStop}
           >
             Deep Research
