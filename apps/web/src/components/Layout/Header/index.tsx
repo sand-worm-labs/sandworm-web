@@ -50,7 +50,7 @@ export const MainHeader = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <header className="fixed w-full top-5 mx-auto left-0 right-0 z-[99]">
+    <header className="fixed w-full top-5 mx-auto left-0 right-0 z-[99] ">
       <motion.div
         className="w-[85%] mx-auto rounded-xl"
         variants={headerContainer}
@@ -65,7 +65,7 @@ export const MainHeader = () => {
               <span className="ml-3 font-medium text-xl uppercase text-white">
                 Sandw0rm.
               </span>
-              <Badge className="bg-white text-black dark:text-white rounded-xl ml-2 font-normal">
+              <Badge className="bg-white text-black dark:text-black rounded-xl ml-2 font-normal">
                 beta
               </Badge>
             </Link>

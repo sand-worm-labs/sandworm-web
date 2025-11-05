@@ -100,7 +100,7 @@ export const SectionFeatures = () => {
                   across several blockchains over any time frame.
                 </p>
                 <Link
-                  className="border py-2.5 bg-white text-black rounded-2xl px-4 text-xs mt-6 font-medium inline-block"
+                  className="rounded-2xl p-2.5 h-fit m-0.5 bg-white text-black hover:scale-105 px-5 font-medium inline-block text-sm"
                   href="/workspace"
                   target="_blank"
                 >
@@ -137,7 +137,7 @@ export const SectionFeatures = () => {
                   language prompts.
                 </p>
                 <Link
-                  className="border py-2.5 bg-white text-black rounded-2xl px-4 text-xs mt-6 font-medium inline-block"
+                  className="rounded-2xl p-2.5 h-fit m-0.5 bg-white text-black hover:scale-105 px-5 font-medium inline-block text-sm"
                   href="/workspace"
                   target="_blank"
                 >
@@ -167,7 +167,7 @@ export const SectionFeatures = () => {
                   hypotheses, and uncover new trends instantly.
                 </p>
                 <Link
-                  className="border py-2.5 bg-white text-black rounded-2xl px-4 text-xs mt-6 font-medium inline-block"
+                  className="rounded-2xl p-2.5 h-fit m-0.5 bg-white text-black hover:scale-105 px-5 font-medium inline-block text-sm"
                   href="/workspace"
                   target="_blank"
                 >
