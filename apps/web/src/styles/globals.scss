@@ -428,6 +428,47 @@ label {
   animation: fadeScaleLeftToRight 1s ease-in-out forwards;
 }
 
+/* ════════════ Liquid Glass════════════ */
+.glass-container {
+  position: relative;
+  display: flex;
+  cursor: pointer;
+  background: transparent;
+  border-radius: 2rem;
+  overflow: hidden;
+  box-shadow:
+    0 6px 6px rgba(0, 0, 0, 0.2),
+    0 0 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2);
+}
+
+.glass-filter {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  backdrop-filter: blur(0px);
+  filter: url(#lg-dist);
+  isolation: isolate;
+}
+
+.glass-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.glass-specular {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  overflow: hidden;
+  box-shadow:
+    inset 1px 1px 0 #ffffff50,
+    inset 0 0 2px #868e9699;
+}
+
 /* ════════════ Worm Animations Blockchains ════════════ */
 .wrap {
   position: absolute;
