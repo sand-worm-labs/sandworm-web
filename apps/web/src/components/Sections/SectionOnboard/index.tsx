@@ -3,8 +3,11 @@
 import React from "react";
 import Image from "next/image";
 import AnimatedTitle from "@/components/Animations/AnimatedTitle";
+import { Button } from "@sandworm/ui/components/button";
+import { useRouter } from "next/navigation";
 
 export const SectionOnboard = () => {
+  const router = useRouter();
   return (
     <section className="pt-16  px-5 relative bg-black">
       <div className="absolute top-0 left-0 h-full w-full">
@@ -20,6 +23,13 @@ export const SectionOnboard = () => {
               wordSpace="mr-[14px]"
               charSpace="mr-[0.0005em]"
             />
+            <Button
+              type="button"
+              className="rounded-2xl p-2.5 h-fit m-0.5 text-black bg-white px-5 transition-colors duration-200 hover:bg-white/80"
+              onClick={() => router.push("/chat")}
+            >
+              Get Started
+            </Button>
           </div>
         </div>
       </div>

@@ -69,20 +69,22 @@ export const SectionVideoPreview: React.FC = () => {
         ease: [0.22, 1, 0.36, 1],
       },
     },
-    hover: {
-      scale: 1.05,
-      transition: {
-        duration: 0.2,
-        ease: "easeOut",
-      },
-    },
+
     tap: {
       scale: 0.98,
     },
   };
 
   return (
-    <section className="relative w-full py-32 px-6 flex flex-col items-center text-left overflow-hidden text-white bg-black">
+    <section
+      className="relative w-full py-32 pt-16 px-6 flex flex-col items-center text-left overflow-hidden text-white bg-black"
+      style={{
+        backgroundImage: "url('/img/temp2.svg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
       {/* ════════════ Video/Image Preview ════════════ */}
       <motion.div
         className="max-w-6xl w-full relative z-10"
@@ -104,7 +106,7 @@ export const SectionVideoPreview: React.FC = () => {
 
       {/* ════════════ Text Content Overlay ════════════ */}
       <motion.div
-        className="absolute bottom-20 grid grid-cols-[70%,30%] container mx-auto px-16 pt-32 z-10 bg-gradient-to-r from-transparent to-black/80 backdrop:blur-[8rem"
+        className="lg:absolute bottom-20 grid lg:grid-cols-[65%,35%]  lg:px-16 px-2 lg:pt-20 pt-16 z-10 bg-gradient-to-b from-transparent to-black/90 backdrop-blur-[0.2rem] w-full"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.5 }}
@@ -115,36 +117,36 @@ export const SectionVideoPreview: React.FC = () => {
           variants={contentVariants}
         >
           <motion.h3
-            className="uppercase font-semibold mb-6 text-xs"
+            className="uppercase font-semibold mb-4 text-xs"
             variants={itemVariants}
           >
-            Easy intelligence
+            ● Easy intelligence
           </motion.h3>
 
           <AnimatedTitle
             text="Unlock Clear,"
-            className="text-[2.5rem] leading-[1.4]  font-secondary"
+            className="lg:text-[2.5rem] text-3xl leading-[1.4]  font-secondary"
             wordSpace="mr-[14px]"
             charSpace="mr-[0.0005em]"
           />
 
           <AnimatedTitle
             text="Actionable Data for"
-            className="text-[2.5rem] leading-[1.4]  font-secondary"
+            className="lg:text-[2.5rem] text-3xl  leading-[1.4]  font-secondary"
             wordSpace="mr-[14px]"
             charSpace="mr-[0.0005em]"
           />
 
           <AnimatedTitle
             text="Smarter Decisions."
-            className="text-[2.5rem] leading-[1.4]  font-secondary"
+            className="lg:text-[2.5rem] text-3xl  leading-[1.4]  font-secondary"
             wordSpace="mr-[14px]"
             charSpace="mr-[0.0005em]"
           />
         </motion.div>
 
         <motion.div
-          className="text-sm text-custom-light-gray leading-[1.5]"
+          className="text-base text-custom-light-gray leading-[1.5]"
           variants={contentVariants}
         >
           <motion.p className="mb-5 font-secondary" variants={itemVariants}>

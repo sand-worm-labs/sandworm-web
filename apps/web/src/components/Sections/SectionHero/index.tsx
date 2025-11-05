@@ -124,7 +124,7 @@ export const SectionHero = () => {
               </motion.h1>
               <motion.p
                 variants={itemVariants}
-                className="text-custom-gray mt-7 mb-3 lg:max-w-[35rem] mx-auto font-primary text-base font-medium"
+                className="text-custom-gray mt-5 mb-3 lg:max-w-[35rem] mx-auto font-primary text-base font-medium"
               >
                 Sandworm gives you deep, clear, and editable data on various
                 blockchains, driving your whole team to make better data-based
@@ -172,7 +172,7 @@ export const SectionHero = () => {
           {/* ════════════ Chat Launch Input ════════════ */}
           <motion.form
             onSubmit={handleSubmit}
-            className="w-[47rem] mx-auto"
+            className="lg:w-[47rem] w-[95%] lg:mx-auto  "
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
