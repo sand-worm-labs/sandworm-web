@@ -6,6 +6,8 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import AnimatedTitle from "@/components/Animations/AnimatedTitle";
 
+// 🎨 Workflow steps
+// =====================================
 const workflowSteps = [
   {
     title: "Create and edit notes",
@@ -33,17 +35,28 @@ const workflowSteps = [
   },
 ];
 
+/* ╔════════════════════════════════════════════╗
+   ║ ⬢ SectionWorkFlow                          ║                       
+   ╚════════════════════════════════════════════╝ */
 export const SectionWorkFlow = () => {
-  const cardRef = useRef<HTMLDivElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
-  // scroll tracking for smooth animation
+  // ⬢ Scroll-based horizontal animation
+  // =====================================
   const { scrollYProgress } = useScroll({
-    target: cardRef,
-    offset: ["start end", "30% start"],
+    target: containerRef,
+    offset: ["start end", "end start"],
   });
 
-  // transform the x value as the scroll progresses
-  const x = useTransform(scrollYProgress, [0, 1], ["68px", "-997px"]);
+  // 💭 Calculate transform range based on content
+  // 💭 Card width (430px) + gap (40px) = 470px per card
+  // 💭 Total cards = 4, so total width = 470 * 4 = 1880px
+  // 💭 Minus one viewport width to show the last card
+  const totalWidth =
+    430 * workflowSteps.length + 40 * (workflowSteps.length - 1);
+  const endPosition = -(totalWidth - 430);
+
+  const x = useTransform(scrollYProgress, [0, 1], [0, endPosition]);
 
   return (
     <div className="relative bg-black">
@@ -72,41 +85,46 @@ export const SectionWorkFlow = () => {
           <Dots />
         </div>
 
-        {/* scroll animation wrapper */}
-        <div
-          ref={cardRef}
-          className="w-full overflow-hidden relative h-[550px] flex justify-center  "
-        >
-          <motion.div
-            style={{ x }}
-            transition={{ ease: "easeInOut" }}
-            className="flex gap-10 absolute left-[68px] h-full"
-          >
-            {workflowSteps.map((step, index) => (
-              <div
-                key={step.title}
-                className="w-[430px] flex-shrink-0 bg-custom-black-200 rounded-2xl h-full gradient-border relative"
-              >
-                <div className="inner h-full py-8 px-6 rounded-2xl">
-                  <h3 className="mb-3 font-bold uppercase text-white text-xs">
-                    {index + 1}. {step.title}
-                  </h3>
-                  <p className="text-custom-gray mb-6 font-secondary font-medium text-sm">
-                    {step.description}
-                  </p>
+        <div ref={containerRef} className="w-full relative py-20">
+          <div className="sticky top-20 overflow-hidden h-[550px]">
+            <motion.div
+              style={{
+                x,
+                willChange: "transform",
+              }}
+              transition={{
+                ease: "linear",
+                duration: 0,
+              }}
+              className="flex gap-10 pl-[68px] h-full"
+            >
+              {workflowSteps.map((step, index) => (
+                <div
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={`${step.title}-${index}`}
+                  className="w-[430px] flex-shrink-0 bg-custom-black-200 rounded-2xl h-full gradient-border relative"
+                >
+                  <div className="inner h-full py-8 px-6 rounded-2xl">
+                    <h3 className="mb-3 font-bold uppercase text-white text-xs">
+                      {index + 1}. {step.title}
+                    </h3>
+                    <p className="text-custom-gray mb-6 font-secondary font-medium text-sm">
+                      {step.description}
+                    </p>
 
-                  <div>
-                    <Image
-                      src={step.imageUrl}
-                      width={558}
-                      height={511}
-                      alt="image"
-                    />
+                    <div>
+                      <Image
+                        src={step.imageUrl}
+                        width={558}
+                        height={511}
+                        alt="image"
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </motion.div>
+              ))}
+            </motion.div>
+          </div>
         </div>
       </div>
     </div>
