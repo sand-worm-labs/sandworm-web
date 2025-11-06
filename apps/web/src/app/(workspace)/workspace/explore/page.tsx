@@ -4,6 +4,14 @@ import Image from "next/image";
 import { AxiosService } from "@/services/axios";
 import { TabsSection } from "@/components/TabsSection";
 import type { QueryResponse } from "@/types";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@sandworm/ui/components/dialog";
 
 const axios = new AxiosService(process.env.NEXT_PUBLIC_API_URL!, false);
 
@@ -79,6 +87,19 @@ export default async function Explore({ searchParams }: ExplorePageProps) {
       <Head>
         <title>Explore</title>
       </Head>
+
+      <Dialog>
+        <DialogTrigger>Open</DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Are you absolutely sure?</DialogTitle>
+            <DialogDescription>
+              This action cannot be undone. This will permanently delete your
+              account and remove your data from our servers.
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
 
       <div className="pt-5">
         {isAllEmpty ? (
