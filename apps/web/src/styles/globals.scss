@@ -30,6 +30,15 @@
   font-weight: 400;
 }
 
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
 ::cue {
   font-family: "Roobert", sans-serif;
   font-size: 18px;
