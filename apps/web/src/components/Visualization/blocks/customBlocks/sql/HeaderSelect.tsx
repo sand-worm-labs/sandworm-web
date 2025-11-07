@@ -8,7 +8,7 @@ import {
 import clsx from "clsx";
 import type { DataSourceType } from "@sandworm/database";
 
-import { databaseImages } from "@/components/DataSourcesList";
+import { databaseImages } from "../../DataSourcesList";
 
 type Option = {
   value: string;

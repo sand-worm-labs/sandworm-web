@@ -69,12 +69,12 @@ export const Blockchains = () => {
       y: [0, -100, finalBottom],
       opacity: 1,
       transition: {
-        duration: 1.5,
+        duration: 1,
         delay,
         ease: "easeInOut",
         times: [0, 0.5, 1],
         opacity: {
-          duration: 0.3,
+          duration: 0.2,
           delay,
         },
       },
@@ -88,7 +88,7 @@ export const Blockchains = () => {
 
         return (
           <motion.div
-            key={index}
+            key={chain.alt}
             className="absolute bottom-[10px] flex items-center justify-center h-24 w-24 bg-white rounded-[1.2rem]"
             style={{
               marginLeft: chain.marginLeft,

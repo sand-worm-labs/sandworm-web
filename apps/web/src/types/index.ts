@@ -159,3 +159,33 @@ export interface IconProps {
   height?: number | string;
   className?: string;
 }
+
+/* ╔════════════════════════════════════════════╗
+   ║                Api Section                 ║
+   ╚════════════════════════════════════════════╝ */
+
+type Document = {
+  id: string;
+  title: string;
+  icon: string;
+  orderIndex: number;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date | null;
+  version: number;
+  isSyncedWithYjs: boolean;
+  workspaceId: string;
+  parentId: string | null;
+  runUnexecutedBlocks: boolean;
+  runSQLSelection: boolean;
+  shareLinksWithoutSidebar: boolean;
+};
+
+export type ApiDocument = Document & {
+  publishedAt: string | null;
+  clock: number;
+  appClock: number;
+  appId: string;
+  userAppClock: Record<string, number>;
+  hasDashboard: boolean;
+};

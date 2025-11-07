@@ -79,7 +79,7 @@ const useBlockEditor = ({
           evaluation: false,
         }),
         Extension.create({
-          name: "brieferKeyboardShortcuts",
+          name: "sandwormKeyboardShortcuts",
           addKeyboardShortcuts: () => ({
             Escape: args => {
               args.editor.commands.blur();

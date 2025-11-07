@@ -19,7 +19,6 @@ import { useRouter } from "@bprogress/next/app";
 import { Tabs, TabsList, TabsContent } from "@sandworm/ui/components/tabs";
 import { Button } from "@sandworm/ui/components/button";
 import { ScrollArea, ScrollBar } from "@sandworm/ui/components/scroll-area";
-
 import {
   ContextMenu,
   ContextMenuContent,
@@ -27,6 +26,7 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from "@sandworm/ui/components/context-menu";
+
 import { useSandwormStore } from "@/store";
 import type { Query } from "@/types";
 

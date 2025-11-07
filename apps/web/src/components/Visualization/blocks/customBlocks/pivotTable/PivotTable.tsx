@@ -12,7 +12,7 @@ import clsx from "clsx";
 import { equals } from "ramda";
 import { useCallback } from "react";
 
-import ScrollBar from "@/components/ScrollBar";
+import ScrollBar from "../../ScrollBar";
 
 function renderJson(j?: Json): string {
   if (j === undefined) {
