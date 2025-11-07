@@ -46,6 +46,7 @@
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
     "tailwindcss": "catalog:ui",
+    "tailwindcss-animate": "^1.0.7",
     "typescript": "catalog:"
   },
   "exports": {
