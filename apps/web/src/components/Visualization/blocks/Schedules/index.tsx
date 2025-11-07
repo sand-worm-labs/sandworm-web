@@ -6,6 +6,10 @@ import {
   QuestionMarkCircleIcon,
   ExclamationTriangleIcon,
 } from "@heroicons/react/24/solid";
+import clsx from "clsx";
+import cronstrue from "cronstrue";
+import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
+
 import type {
   ExecutionSchedule,
   HourlySchedule,
@@ -13,14 +17,10 @@ import type {
   WeeklySchedule,
   MonthlySchedule,
   CronSchedule,
-} from "@sandworm/database";
-import clsx from "clsx";
-import cronstrue from "cronstrue";
-import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
+} from "@/types";
 
-import { useSchedules } from "@/hooks/useSchedules";
-
-import { PortalTooltip, Tooltip } from "../Tooltips";
+import { useSchedules } from "../../hooks/useSchedules";
+import { PortalTooltip, Tooltip } from "../ToolTips";
 import ScrollBar from "../ScrollBar";
 
 import AddScheduleForm from "./AddScheduleForm";

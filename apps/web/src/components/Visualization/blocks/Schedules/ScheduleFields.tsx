@@ -6,9 +6,8 @@ import type {
   UseFormRegister,
 } from "react-hook-form";
 
-import WeekdaySelector from "@/components/WeekdaySelector";
-import MonthDaySelector from "@/components/MonthDaySelector";
-
+import WeekdaySelector from "../WeekdaySelector";
+import MonthDaySelector from "../MonthDaySelector";
 import FormError from "../forms/formError";
 
 import type { ScheduleFormValues } from "./AddScheduleForm";

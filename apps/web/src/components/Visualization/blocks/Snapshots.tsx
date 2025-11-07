@@ -4,7 +4,7 @@ import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 import { Transition } from "@headlessui/react";
 import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 
-import { Tooltip } from "./Tooltips";
+import { Tooltip } from "./ToolTips";
 import ScrollBar from "./ScrollBar";
 
 interface Props {

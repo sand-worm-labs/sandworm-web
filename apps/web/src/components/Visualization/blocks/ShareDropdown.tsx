@@ -9,7 +9,8 @@ import {
   GlobeAltIcon,
   ShareIcon,
 } from "@heroicons/react/24/outline";
-import type { UserWorkspaceRole } from "@sandworm/database";
+
+import type { UserWorkspaceRole } from "@/types";
 
 import { Tooltip } from "./ToolTips";
 

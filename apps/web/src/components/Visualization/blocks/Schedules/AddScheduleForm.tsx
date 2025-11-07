@@ -1,6 +1,7 @@
-import type { ExecutionSchedule, ScheduleParams } from "@sandworm/database";
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
+
+import type { ExecutionSchedule, ScheduleParams } from "@/types";
 
 import ScheduleConfigForm from "./ScheduleConfigForm";
 

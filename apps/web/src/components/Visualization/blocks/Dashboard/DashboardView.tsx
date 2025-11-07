@@ -8,7 +8,6 @@ import { SizeMe } from "react-sizeme";
 import GridLayout from "react-grid-layout";
 import { useCallback, useMemo, useState } from "react";
 import clsx from "clsx";
-import type { ApiDocument } from "@sandworm/database";
 import type { ExecutionQueue, AITasks, YBlock } from "@sandworm/editor";
 import {
   getBlocks,
@@ -21,6 +20,8 @@ import {
   removeDashboardBlock,
 } from "@sandworm/editor";
 import SimpleBar from "simplebar-react";
+
+import type { ApiDocument } from "@/types";
 
 import type { APIDataSources } from "../../hooks/useDataSources";
 import { useYDocState } from "../../hooks/useYDocs";

@@ -1,8 +1,9 @@
-import type { DataSource } from "@sandworm/database";
 import { DatabaseZapIcon } from "lucide-react";
 import type { WriteBackResult } from "@sandworm/types";
 import type { ExecutionStatus } from "@sandworm/editor";
 import { isExecutionStatusLoading } from "@sandworm/editor";
+
+import type { DataSource } from "@/types";
 
 import LargeSpinner from "../../../LargeSpinner";
 

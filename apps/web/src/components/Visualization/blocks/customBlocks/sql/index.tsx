@@ -29,11 +29,6 @@ import type {
   isExecutionStatusLoading,
   getSQLCodeFormatted,
 } from "@sandworm/editor";
-import type {
-  ApiDocument,
-  ApiWorkspace,
-  DataSourceType,
-} from "@sandworm/database";
 import clsx from "clsx";
 import type { ConnectDragPreview } from "react-dnd";
 import { useRouter } from "next/router";
@@ -47,11 +42,12 @@ import {
 } from "@heroicons/react/24/solid";
 import { Transition } from "@headlessui/react";
 
-import useFeatureFlags from "@/hooks/useFeatureFlags";
-import { TooltipV2 } from "@/components/Tooltips";
-import type { DashboardMode } from "@/components/Dashboard";
-import { dashboardModeHasControls } from "@/components/Dashboard";
+import type { ApiDocument, ApiWorkspace, DataSourceType } from "@/types";
 
+import useFeatureFlags from "../../../hooks/useFeatureFlags";
+import { TooltipV2 } from "../../ToolTips";
+import type { DashboardMode } from "../../Dashboard";
+import { dashboardModeHasControls } from "../../Dashboard";
 import HeaderSelect from "../../HeaderSelect";
 import { useEnvironmentStatus } from "../../../hooks/useEnvironmentStatus";
 import {
@@ -68,8 +64,8 @@ import { SaveReusableComponentButton } from "../../ReusableComponents";
 import { useReusableComponents } from "../../../hooks/useReusableComponents";
 import { useBlockExecutions } from "../../../hooks/useBlockExecution";
 import { useAITasks } from "../../../hooks/useAITasks";
-import CodeEditor from "../../CodeEditor";
-import type { CodeEditorRef } from "../../CodeEditor";
+import CodeEditor from "../CodeEditor";
+import type { CodeEditorRef } from "../CodeEditor";
 import HiddenInPublishedButton from "../../HiddenInPublishedButton";
 import FormatSQLButton from "../../FormatSQLButton";
 import ApproveDiffButons from "../../ApproveDiffButtons";

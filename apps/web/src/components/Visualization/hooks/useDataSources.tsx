@@ -7,11 +7,12 @@ import {
   useMemo,
   useState,
 } from "react";
-import type { APIDataSource, DataSourceType } from "@sandworm/database";
 import type { DataSourceSchema, DataSourceTable } from "@sandworm/types";
 import { omit } from "ramda";
 
-import { NEXT_PUBLIC_API_URL } from "@/utils/env";
+import type { APIDataSource, DataSourceType } from "@/types";
+
+import { NEXT_PUBLIC_API_URL } from "../utils/env";
 
 import { useWebsocket } from "./useWebSocket";
 
