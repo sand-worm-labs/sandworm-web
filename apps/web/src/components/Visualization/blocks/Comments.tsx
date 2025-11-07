@@ -3,9 +3,9 @@ import type { ChangeEventHandler, FormEvent } from "react";
 import { useCallback, useState, useRef, useEffect } from "react";
 import { UserIcon, ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 
-import timeAgo from "@/utils/timeAgo";
-import { useComments } from "@/hooks/useComments";
+import { timeAgo } from "@/lib";
 
+import { useComments } from "../hooks/useComments";
 import { useSession } from "../hooks/useAuth";
 
 import ScrollBar from "./ScrollBar";

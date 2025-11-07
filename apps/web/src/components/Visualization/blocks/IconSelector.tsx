@@ -5,12 +5,14 @@ import * as allOutlineIcons from "@heroicons/react/24/outline";
 import Fuse from "fuse.js";
 import clsx from "clsx";
 import ReactDOM from "react-dom";
-import { FixedSizeGrid as Grid } from "react-window";
+/* import { FixedSizeGrid as Grid } from "react-window";
+Fixed
+ */
+import allLucideIcons from "../utils/lucideIcons";
 
-import { useDebounce } from "@/hooks/useDebounce";
-import useDocument from "@/hooks/useDocument";
-import useDropdownPosition from "@/hooks/dropdownPosition";
-import allLucideIcons from "@/utils/lucideIcons";
+import { useDebounce } from "../hooks/useDebounce";
+import useDocument from "../hooks/useDocument";
+import useDropdownPosition from "../hooks/useDropdownPosition";
 
 const icons: Record<string, React.ComponentType<React.ComponentProps<any>>> = {
   ...allOutlineIcons,
@@ -167,7 +169,7 @@ function IconSelector(props: Props) {
                   onKeyDown={onSearchKeyDownHandler}
                 />
               </div>
-              <div className="flex flex-wrap pt-4 w-full h-56 content-start">
+              {/*   <div className="flex flex-wrap pt-4 w-full h-56 content-start">
                 <Grid
                   columnCount={11}
                   columnWidth={32}
@@ -178,7 +180,7 @@ function IconSelector(props: Props) {
                 >
                   {IconOption}
                 </Grid>
-              </div>
+              </div> */}
             </div>
           </Menu.Items>
         </Transition>,

@@ -1,36 +1,33 @@
 import dynamic from "next/dynamic";
 import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/router";
-import type { ApiDocument } from "@sandworm/database";
 import { isNil } from "ramda";
 import Link from "next/link";
 import { EyeIcon, PencilIcon } from "@heroicons/react/24/outline";
 import { BookUpIcon } from "lucide-react";
 import clsx from "clsx";
 import { AITasks, ExecutionQueue } from "@sandworm/editor";
-
 import { useHotkeys } from "react-hotkeys-hook";
-import { useDataSources } from "@/hooks/useDatasources";
-import useDocument from "@/hooks/useDocument";
 
-import { useDocuments } from "@/hooks/useDocuments";
-import useFullScreenDocument from "@/hooks/useFullScreenDocument";
-import { useYDoc } from "@/hooks/useYDoc";
+import type { ApiDocument } from "@/types";
 
-import { NEXT_PUBLIC_PUBLIC_URL } from "@/utils/env";
+import { useDataSources } from "../hooks/useDataSources";
+import useDocument from "../hooks/useDocument";
+import { useDocuments } from "../hooks/useDocuments";
+import useFullScreenDocument from "../hooks/useFullScreenDocument";
+import { useYDoc } from "../hooks/useYDoc";
+import { NEXT_PUBLIC_PUBLIC_URL } from "../utils/env";
+import type { SessionUser } from "../hooks/useAuth";
+
 import ShareDropdown from "./ShareDropdown";
 import Layout from "./Layout";
 import Comments from "./Comments";
 import RunAllV2 from "./RunAllV2";
-
 import Schedules from "./Schedules";
 import Snapshots from "./Snapshots";
-
 import DashboardNotebookGroupButton from "./DashboarNotebookGroupButton";
 import EllipsisDropdown from "./EllipsisDropdown";
-
 import LiveButton from "./LiveButton";
-
 import { widthClasses } from "./v2Editor/constants";
 import { ContentSkeleton, TitleSkeleton } from "./v2Editor/ContentSkeleton";
 import Files from "./Files";
@@ -40,8 +37,6 @@ import SchemaExplorer from "./schemaExplorer";
 import ShortcutsModal from "./ShortcutsModal";
 import ReusableComponents from "./ReusableComponents";
 import PageSettingsPanel from "./PageSettingsPanel";
-
-import type { SessionUser } from "@/hooks/useAuth";
 
 // this is needed because this component only works with the browser
 const V2Editor = dynamic(() => import("@/components/v2Editor"), {

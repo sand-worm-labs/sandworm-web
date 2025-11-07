@@ -33,11 +33,6 @@ import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import { Transition } from "@headlessui/react";
 
 import type { ApiDocument, ApiWorkspace } from "@/types";
-import {
-  ExecutingPythonText,
-  LoadingEnvText,
-  PythonSucceededText,
-} from "@/components/ExecutionStatusText";
 
 import { useBlockExecutions } from "../../../hooks/useBlockExecution";
 import { useAITasks } from "../../../hooks/useAITasks";
@@ -50,8 +45,13 @@ import useProperties from "../../../hooks/useProperties";
 import { useWorkspaces } from "../../../hooks/useWorkspaces";
 import useEditorAwareness from "../../../hooks/useEditorAwareness";
 import ScrollBar from "../../ScrollBar";
+import {
+  ExecutingPythonText,
+  LoadingEnvText,
+  PythonSucceededText,
+} from "../../ExecutionStatusText";
 import { useEnvironmentStatus } from "../../../hooks/useEnvironmentStatus";
-import CodeEditor from "../../CodeEditor";
+import CodeEditor from "../CodeEditor";
 import HiddenInPublishedButton from "../../HiddenInPublishedButton";
 import EditWithAIForm from "../../EditWithAIForm";
 import ApproveDiffButons from "../../ApproveDiffButtons";

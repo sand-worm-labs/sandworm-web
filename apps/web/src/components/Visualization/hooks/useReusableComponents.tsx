@@ -7,15 +7,16 @@ import {
   useMemo,
   useState,
 } from "react";
+
 import type {
   NewReusableComponent,
   APIReusableComponent,
   UpdateReusableComponent,
-} from "@sandworm/database";
+} from "@/types";
 
-import { NEXT_PUBLIC_API_URL } from "@/utils/env";
+import { NEXT_PUBLIC_API_URL } from "../utils/env";
 
-import useWebsocket from "./useWebsocket";
+import { useWebsocket } from "./useWebSocket";
 
 export type ReusableComponents = List<APIReusableComponent>;
 

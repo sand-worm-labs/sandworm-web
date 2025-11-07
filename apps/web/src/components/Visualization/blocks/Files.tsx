@@ -27,13 +27,12 @@ import {
   CloudArrowUpIcon as CloudArrowUpIconSolid,
 } from "@heroicons/react/20/solid";
 
-import { useFiles } from "@/hooks/useFiles";
-import type { UploadResult, UploadFile } from "@/hooks/useFiles";
-import { NEXT_PUBLIC_API_URL } from "@/utils/env";
-
+import type { UploadResult, UploadFile } from "../hooks/useFiles";
+import { NEXT_PUBLIC_API_URL } from "../utils/env";
 import { useEnvironmentStatus } from "../hooks/useEnvironmentStatus";
+import { useFiles } from "../hooks/useFiles";
 
-import { PortalTooltip, Tooltip } from "./Tooltips";
+import { PortalTooltip, Tooltip } from "./ToolTips";
 import Spin from "./Spin";
 
 interface Props {

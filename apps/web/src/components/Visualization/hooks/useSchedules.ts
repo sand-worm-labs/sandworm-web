@@ -1,10 +1,10 @@
-import type { ExecutionSchedule } from "@sandworm/database";
 import { useCallback, useMemo } from "react";
 import useSWR from "swr";
 
-import fetcher from "@/utils/fetcher";
-import { NEXT_PUBLIC_API_URL } from "@/utils/env";
+import type { ExecutionSchedule } from "@/types";
+import fetcher from "../utils/fetcher";
 
+import { NEXT_PUBLIC_API_URL } from "../utils/env";
 import type { CreateSchedulePayload } from "../blocks/Schedules/index";
 
 type API = {

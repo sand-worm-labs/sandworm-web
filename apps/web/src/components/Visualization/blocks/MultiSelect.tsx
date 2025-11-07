@@ -5,7 +5,7 @@ import clsx from "clsx";
 import { useRef } from "react";
 import { createPortal } from "react-dom";
 
-import { computeMenuPosition } from "@/utils/dom";
+import { computeMenuPosition } from "../utils/dom";
 
 interface Props<T> {
   options: T[];

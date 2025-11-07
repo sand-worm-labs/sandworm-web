@@ -21,11 +21,10 @@ import SimpleBar from "simplebar-react";
 import clsx from "clsx";
 import { useHotkeys } from "react-hotkeys-hook";
 
-import type { SessionUser } from "@/hooks/useAuth";
-import { useDataSources } from "@/hooks/useDatasources";
-import { useLastUpdatedAt, useYDoc, useYDocState } from "@/hooks/useYDoc";
-import Layout from "@/components/Layout";
-
+import type { SessionUser } from "../../hooks/useAITasks";
+import { useDataSources } from "../../hooks/useDataSources";
+import { useLastUpdatedAt, useYDoc, useYDocState } from "../../hooks/useYDocs";
+import Layout from "../../Layout";
 import ShareDropdown from "../ShareDropdown";
 import DashboardNotebookGroupButton from "../DashboarNotebookGroupButton";
 import EllipsisDropdown from "../EllipsisDropdown";
@@ -39,8 +38,7 @@ import { PublishBlinkingSignal } from "../BlinkingSignal";
 import { Tooltip } from "../ToolTips";
 import { SQLExtensionProvider } from "../customBlocks/CodeEditor/sql";
 import ScrollBar from "../ScrollBar";
-import VisualizationBlock from "../../blocks/customBlocks/visualization";
-import VisualizationV2Block from "../../blocks/customBlocks/visualizationV2";
+import VisualizationBlock from "../../index";
 import RichTextBlock from "../customBlocks/richText";
 import SQLBlock from "../customBlocks/sql";
 import PythonBlock from "../customBlocks/python";
@@ -532,7 +530,7 @@ function DashboardContent(
                     isFullScreen
                   />
                 ),
-                onVisualizationV2: block => (
+                /*    onVisualizationV2: block => (
                   <VisualizationV2Block
                     document={props.document}
                     dataframes={dataframes.value}
@@ -552,7 +550,7 @@ function DashboardContent(
                     executionQueue={props.executionQueue}
                     isFullScreen
                   />
-                ),
+                ), */
                 onRichText: block => (
                   <RichTextBlock
                     block={block}

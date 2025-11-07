@@ -23,33 +23,33 @@ import clsx from "clsx";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { CpuChipIcon, SparklesIcon } from "@heroicons/react/24/solid";
-import type { UserWorkspaceRole } from "@sandworm/database";
 import ReactDOM from "react-dom";
 import { useHotkeys } from "react-hotkeys-hook";
 import GitHubButton from "react-github-btn";
 
-import { useStringQuery } from "@/hooks/useQueryArgs";
-import useDropdownPosition from "@/hooks/dropdownPosition";
+import type { UserWorkspaceRole } from "@/types";
+
+import { useStringQuery } from "./hooks/useQueryArgs";
+import useDropdownPosition from "./hooks/dropdownposition";
 import useSideBar, {
   MIN_SIDEBAR_WIDTH,
   MAX_SIDEBAR_WIDTH,
-} from "@/hooks/useSideBar";
-import { useDataSources } from "@/hooks/useDatasources";
-import type { SessionUser } from "@/hooks/useAuth";
-import { useSignout } from "@/hooks/useAuth";
-
+} from "./hooks/useSideBar";
+import { useDataSources } from "./hooks/useDataSources";
+import type { SessionUser } from "./hooks/useAuth";
+import { useSignout } from "./hooks/useAuth";
 import type { Page } from "./blocks/PagePath";
 import { useDocuments } from "./hooks/useDocuments";
-import DocumentTree from "./DocumentsTree";
-import MobileWarning from "./MobileWarning";
-import CommandPalette from "./commandPalette";
+import DocumentTree from "./blocks/DocumentsTree";
+import MobileWarning from "./blocks/MobileWarning";
+import CommandPalette from "./blocks/commandPalette";
 import {
   ConfigurationsMenuButton,
   ConfigurationsMenuLink,
-} from "./ConfigurationsMenuItem";
-import { FeaturesDialog } from "./SubscriptionBadge";
+} from "./blocks/ConfigurationsMenuItem";
+import { FeaturesDialog } from "./blocks/SubscriptionBadge";
 import PagePath from "./blocks/PagePath";
-import DragLayer from "./DragLayer";
+import DragLayer from "./blocks/DragLayer";
 
 const syne = Syne({ subsets: ["latin"] });
 
