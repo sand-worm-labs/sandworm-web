@@ -6,11 +6,13 @@ import {
   PlayIcon,
 } from "@heroicons/react/20/solid";
 import * as Y from "yjs";
-import {
+import type {
   ExecutionQueue,
   YBlock,
   VisualizationV2BlockInput,
   VisualizationV2Block,
+} from "@sandworm/editor";
+import {
   BlockType,
   isExecutionStatusLoading,
   getDataframeFromVisualizationV2,

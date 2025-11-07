@@ -28,7 +28,6 @@ import {
   switchBlockType,
 } from "@sandworm/editor";
 import { useCallback, useMemo, useRef, useState } from "react";
-import type { ApiDocument } from "@sandworm/database";
 import type { DataFrame } from "@sandworm/types";
 import { exhaustiveCheck } from "@sandworm/types";
 import {
@@ -41,9 +40,10 @@ import { v4 as uuidv4 } from "uuid";
 import clsx from "clsx";
 import SimpleBar from "simplebar-react";
 
-import { useYDocState } from "@/hooks/useYDoc";
-import type { APIDataSources } from "@/hooks/useDatasources";
+import type { ApiDocument } from "@/types";
 
+import { useYDocState } from "../../hooks/useYDocs";
+import type { APIDataSources } from "../../hooks/useDataSources";
 import VisualizationBlock from "../..";
 import VisualizationV2Block from "../..";
 import MultiSelect from "../MultiSelect";

@@ -12,10 +12,10 @@ import {
 import clsx from "clsx";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
-import LargeSpinner from "@/components/LargeSpinner";
-import PageButtons from "@/components/PageButtons";
-import type { DashboardMode } from "@/components/Dashboard";
-import { dashboardModeHasControls } from "@/components/Dashboard";
+import LargeSpinner from "../../LargeSpinner";
+import PageButtons from "../../PageButtons";
+import type { DashboardMode } from "../../Dashboard";
+import { dashboardModeHasControls } from "../../Dashboard";
 
 import PivotTable from "./PivotTable";
 

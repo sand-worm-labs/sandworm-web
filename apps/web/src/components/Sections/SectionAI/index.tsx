@@ -10,11 +10,11 @@ import { BarChart } from "@/components/Assets/BarChart";
 import { Ellipse } from "@/components/Assets/Ellipse";
 import { Wave } from "@/components/Assets/Wave";
 import { Dots } from "@/components/Assets/Dots";
+import AnimatedTitle from "@/components/Animations/AnimatedTitle";
 
 import { Users } from "../../Assets/Users";
 
 import { Blockchains } from "./Blockchains";
-import AnimatedTitle from "@/components/Animations/AnimatedTitle";
 
 interface AICardProps {
   title: string;
