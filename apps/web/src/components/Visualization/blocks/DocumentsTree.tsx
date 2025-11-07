@@ -7,7 +7,6 @@ import {
   BookmarkIcon,
   BookmarkSlashIcon,
 } from "@heroicons/react/24/outline";
-import type { ApiDocument, UserWorkspaceRole } from "@sandworm/database";
 import clsx from "clsx";
 import Link from "next/link";
 import { Menu, Transition } from "@headlessui/react";
@@ -21,6 +20,8 @@ import {
 } from "@heroicons/react/20/solid";
 import { List, Stack } from "immutable";
 import { getEmptyImage } from "react-dnd-html5-backend";
+
+import type { ApiDocument, UserWorkspaceRole } from "@/types";
 
 import useDropdownPosition from "../hooks/useDropdownPosition";
 

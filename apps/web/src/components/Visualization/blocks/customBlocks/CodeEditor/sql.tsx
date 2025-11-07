@@ -23,9 +23,10 @@ import type {
   CompletionResult,
 } from "@codemirror/autocomplete";
 import type { DataSourceSchema } from "@sandworm/types";
-import type { APIDataSource } from "@sandworm/database";
 
-import { useDataSources } from "@/hooks/useDatasources";
+import type { APIDataSource } from "@/types";
+
+import { useDataSources } from "../../../hooks/useDataSources";
 
 function getDialect(type?: APIDataSource["config"]["type"]): SQLDialect {
   if (!type) {

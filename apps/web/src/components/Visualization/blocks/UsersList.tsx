@@ -1,10 +1,11 @@
-import type { UserWorkspaceRole, WorkspaceUser } from "@sandworm/database";
 import { Menu, Transition } from "@headlessui/react";
 import { EllipsisVerticalIcon } from "@heroicons/react/24/solid";
 import clsx from "clsx";
 import { Fragment, useCallback, useMemo } from "react";
 
-import useProperties from "./../hooks/useProperties";
+import type { UserWorkspaceRole, WorkspaceUser } from "@/types";
+
+import useProperties from "../hooks/useProperties";
 
 type Props = {
   currentUserEmail: string;

@@ -14,13 +14,13 @@ import { ArrowDownTrayIcon, ChartPieIcon } from "@heroicons/react/24/solid";
 import debounce from "lodash.debounce";
 import { Transition } from "@headlessui/react";
 
-import { Tooltip, TooltipV2 } from "@/components/Tooltips";
-import type { DashboardMode } from "@/components/Dashboard";
-import { dashboardModeHasControls } from "@/components/Dashboard";
-import LargeSpinner from "@/components/LargeSpinner";
-import { useCSV } from "@/hooks/useQueryCSV";
-import Spin from "@/components/Spin";
-import PageButtons from "@/components/PageButtons";
+import { Tooltip, TooltipV2 } from "../../ToolTips";
+import type { DashboardMode } from "../../Dashboard";
+import { dashboardModeHasControls } from "../../Dashboard";
+import LargeSpinner from "../../LargeSpinner";
+import { useCSV } from "../../../hooks/useQueryCSV";
+import Spin from "../../Spin";
+import PageButtons from "../../PageButtons";
 
 import Table from "./Table";
 

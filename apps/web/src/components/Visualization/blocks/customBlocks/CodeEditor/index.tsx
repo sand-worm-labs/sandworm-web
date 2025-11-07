@@ -16,7 +16,7 @@ import type { ViewUpdate } from "@codemirror/view";
 import { EditorView, keymap, ViewPlugin } from "@codemirror/view";
 import { historyField } from "@codemirror/commands";
 
-import useEditorAwareness from "@/hooks/useEditorAwareness";
+import useEditorAwareness from "../../../hooks/useEditorAwareness";
 
 import { materialLight } from "./theme";
 import { useSQLExtension } from "./sql";

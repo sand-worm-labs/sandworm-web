@@ -1,5 +1,4 @@
 import { Map, List, Set } from "immutable";
-import type { Document, ApiDocument } from "@sandworm/database";
 import { v4 as uuidv4 } from "uuid";
 import React, {
   createContext,
@@ -11,10 +10,12 @@ import React, {
 } from "react";
 import { equals } from "ramda";
 
-import { NEXT_PUBLIC_API_URL } from "@/utils/env";
+import type { Document, ApiDocument } from "@/types";
+
+import { NEXT_PUBLIC_API_URL } from "../utils/env";
 
 import { useFavorites } from "./useFavorites";
-import useWebsocket from "./useWebsocket";
+import { useWebsocket } from "./useWebSocket";
 
 function upsertDocumentInMemory(
   documents: List<ApiDocument>,

@@ -8,12 +8,12 @@ import {
 import { useCallback, useEffect, useMemo, useState } from "react";
 import * as allOutlineIcons from "@heroicons/react/24/outline";
 import { useRouter } from "next/router";
-import type { ApiDocument } from "@sandworm/database";
 import Fuse from "fuse.js";
 import clsx from "clsx";
 
-import allLucideIcons from "@/utils/lucideIcons";
+import type { ApiDocument } from "@/types";
 
+import allLucideIcons from "../utils/lucideIcons";
 import { useDebounce } from "../hooks/useDebounce";
 import { useDocuments } from "../hooks/useDocuments";
 

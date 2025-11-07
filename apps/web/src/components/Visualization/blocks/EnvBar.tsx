@@ -1,4 +1,3 @@
-import type { EnvironmentStatus } from "@sandworm/database";
 import {
   ArrowPathIcon,
   CodeBracketIcon,
@@ -11,8 +10,10 @@ import Link from "next/link";
 import * as dfns from "date-fns";
 import clsx from "clsx";
 
-import { useStringQuery } from "./../hooks/useQueryArgs";
-import { useEnvironmentStatus } from "./../hooks/useEnvironmentStatus";
+import type { EnvironmentStatus } from "@/types";
+
+import { useStringQuery } from "../hooks/useQueryArgs";
+import { useEnvironmentStatus } from "../hooks/useEnvironmentStatus";
 
 interface Props {
   onOpenFiles: () => void;

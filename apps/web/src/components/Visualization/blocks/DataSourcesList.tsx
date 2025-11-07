@@ -1,10 +1,11 @@
-import type { DataSource, DataSourceType } from "@sandworm/database";
 import { Menu, Transition } from "@headlessui/react";
 import { EllipsisVerticalIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 import { formatDistanceToNow, differenceInSeconds } from "date-fns";
 import Link from "next/link";
 import { Fragment, useCallback, useMemo } from "react";
+
+import type { DataSource, DataSourceType } from "@/types";
 
 import type { APIDataSources } from "../hooks/useDataSources";
 

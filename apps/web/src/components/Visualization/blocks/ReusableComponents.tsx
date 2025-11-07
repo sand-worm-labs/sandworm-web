@@ -6,18 +6,16 @@ import { Transition, Dialog } from "@headlessui/react";
 import { format } from "date-fns";
 import clsx from "clsx";
 import { SaveIcon } from "lucide-react";
-import type {
-  APIReusableComponent,
-  ReusableComponentType,
-} from "@sandworm/database";
 import { addComponentToDocument, decodeComponentState } from "@sandworm/editor";
 import Link from "next/link";
 import * as allOutlineIcons from "@heroicons/react/24/outline";
 
-import allLucideIcons from "@/utils/lucideIcons";
-import { useReusableComponents } from "@/hooks/useReusableComponents";
+import type { APIReusableComponent, ReusableComponentType } from "@/types";
+import allLucideIcons from "../utils/lucideIcons";
 
-import { Tooltip, TooltipV2 } from "./Tooltips";
+import { useReusableComponents } from "../hooks/useReusableComponents";
+
+import { Tooltip, TooltipV2 } from "./ToolTips";
 import Spin from "./Spin";
 import ScrollBar from "./ScrollBar";
 

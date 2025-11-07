@@ -6,8 +6,9 @@ import { isExecutionStatusLoading } from "@sandworm/editor";
 import clsx from "clsx";
 
 import useRunAll from "@/hooks/useRunAll";
-import useEditorAwareness from "./../hooks/useEditorAwareness";
 import usePreviousEffect from "@/hooks/usePreviousEffect";
+
+import useEditorAwareness from "../hooks/useEditorAwareness";
 
 interface Props {
   disabled: boolean;

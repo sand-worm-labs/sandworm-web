@@ -6,7 +6,8 @@ import {
   PlusIcon,
 } from "@heroicons/react/20/solid";
 import clsx from "clsx";
-import type { DataSourceType } from "@sandworm/database";
+
+import type { DataSourceType } from "@/types";
 
 import { databaseImages } from "../../DataSourcesList";
 
