@@ -22,8 +22,7 @@ import {
 } from "@sandworm/editor";
 import SimpleBar from "simplebar-react";
 
-import type { APIDataSources } from "@/hooks/useDatasources";
-
+import type { APIDataSources } from "../../hooks/useDataSources";
 import { useYDocState } from "../../hooks/useYDocs";
 import Title from "../Title";
 

@@ -1,4 +1,4 @@
-import VisualizationToggle from "../../visualization/VisualizationToggle";
+import VisualizationToggle from "../../../../VisualizationToggle";
 
 interface Props {
   value: boolean;

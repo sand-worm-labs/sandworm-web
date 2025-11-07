@@ -13,7 +13,7 @@ import { omit } from "ramda";
 
 import { NEXT_PUBLIC_API_URL } from "@/utils/env";
 
-import { useWebsocket } from "./useWebsocket";
+import { useWebsocket } from "./useWebSocket";
 
 export type APIDataSources = List<APIDataSource>;
 

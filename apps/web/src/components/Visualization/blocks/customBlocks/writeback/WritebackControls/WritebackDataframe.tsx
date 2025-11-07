@@ -4,9 +4,7 @@ import { ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 import { useCallback, useMemo } from "react";
 
-import Dropdown from "@/components/Dropdown";
-
-import Combobox from "../../visualization/Combobox";
+import Dropdown from "../../../Dropdown";
 
 function search(options: DataFrame[], query: string) {
   return options.filter(c => {

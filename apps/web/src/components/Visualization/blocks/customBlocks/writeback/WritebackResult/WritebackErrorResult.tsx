@@ -3,7 +3,7 @@ import { XCircleIcon } from "@heroicons/react/24/outline";
 import Ansi from "@cocalc/ansi-to-react";
 import type { PythonErrorOutput, WriteBackErrorResult } from "@sandworm/types";
 
-import ScrollBar from "@/components/ScrollBar";
+import ScrollBar from "../../../ScrollBar";
 
 function renderError(result: WriteBackErrorResult): JSX.Element {
   if (result.reason === "python-error") {

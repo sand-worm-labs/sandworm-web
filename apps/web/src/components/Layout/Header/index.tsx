@@ -76,12 +76,12 @@ export const MainHeader = () => {
             className="hidden md:flex ml-10 text-[0.8rem]  rounded-full  py-2.5 px-8  glass-container relative"
             variants={headerContainer}
           >
-            <div className="glass-filter"></div>
-            <div className="glass-overlay"></div>
-            <div className="glass-specular"></div>
-            <div class="glass-filter"></div>
-            <div class="glass-overlay"></div>
-            <div class="glass-specular"></div>
+            <div className="glass-filter" />
+            <div className="glass-overlay" />
+            <div className="glass-specular" />
+            <div className="glass-filter" />
+            <div className="glass-overlay" />
+            <div className="glass-specular" />
             <div className="relative flex space-x-6 items-center">
               {navLinks.map(link => (
                 <li key={link.name}>

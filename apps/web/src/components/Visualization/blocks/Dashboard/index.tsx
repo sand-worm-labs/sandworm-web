@@ -21,13 +21,11 @@ import SimpleBar from "simplebar-react";
 import clsx from "clsx";
 import { useHotkeys } from "react-hotkeys-hook";
 
-import { NEXT_PUBLIC_PUBLIC_URL } from "@/utils/env";
 import type { SessionUser } from "@/hooks/useAuth";
 import { useDataSources } from "@/hooks/useDatasources";
 import { useLastUpdatedAt, useYDoc, useYDocState } from "@/hooks/useYDoc";
 import Layout from "@/components/Layout";
 
-import RunAllV2 from "../RunAllV2";
 import ShareDropdown from "../ShareDropdown";
 import DashboardNotebookGroupButton from "../DashboarNotebookGroupButton";
 import EllipsisDropdown from "../EllipsisDropdown";
@@ -38,19 +36,18 @@ import LiveButton from "../LiveButton";
 import EnvBar from "../EnvBar";
 import Files from "../Files";
 import { PublishBlinkingSignal } from "../BlinkingSignal";
-import { Tooltip } from "../Tooltips";
-import { SQLExtensionProvider } from "../v2Editor/CodeEditor/sql";
-import SchemaExplorer from "../schemaExplorer";
+import { Tooltip } from "../ToolTips";
+import { SQLExtensionProvider } from "../customBlocks/CodeEditor/sql";
 import ScrollBar from "../ScrollBar";
-import VisualizationBlock from "../v2Editor/customBlocks/visualization";
-import VisualizationV2Block from "../v2Editor/customBlocks/visualizationV2";
-import RichTextBlock from "../v2Editor/customBlocks/richText";
-import SQLBlock from "../v2Editor/customBlocks/sql";
-import PythonBlock from "../v2Editor/customBlocks/python";
-import InputBlock from "../v2Editor/customBlocks/input";
-import DropdownInputBlock from "../v2Editor/customBlocks/dropdownInput";
-import DateInputBlock from "../v2Editor/customBlocks/dateInput";
-import PivotTableBlock from "../v2Editor/customBlocks/pivotTable";
+import VisualizationBlock from "../../blocks/customBlocks/visualization";
+import VisualizationV2Block from "../../blocks/customBlocks/visualizationV2";
+import RichTextBlock from "../customBlocks/richText";
+import SQLBlock from "../customBlocks/sql";
+import PythonBlock from "../customBlocks/python";
+import InputBlock from "../customBlocks/input";
+import DateInputBlock from "../customBlocks/dateInput";
+import PivotTableBlock from "../customBlocks/pivotTable";
+import DropdownInputBlock from "../customBlocks/dropdownInput";
 
 import DashboardSkeleton from "./DashboardSkeleton";
 import DashboardControls from "./DashboardControls";
@@ -143,7 +140,7 @@ export default function Dashboard(props: Props) {
   const shareLinkWithoutSidebar = props.document.shareLinksWithoutSidebar;
   const copyLink = useMemo(
     () =>
-      `${NEXT_PUBLIC_PUBLIC_URL()}/workspaces/${
+      `${process.env.NEXT_PUBLIC_PUBLIC_URL()}/workspaces/${
         props.document.workspaceId
       }/documents/${props.document.id}/dashboard${
         shareLinkWithoutSidebar ? "?sidebarCollapsed=true" : ""
@@ -342,15 +339,6 @@ export default function Dashboard(props: Props) {
           />
         </div>
 
-        {!props.isEditing && (
-          <RunAllV2
-            disabled={false}
-            yDoc={yDoc}
-            primary
-            userId={props.user.id}
-            executionQueue={executionQueue}
-          />
-        )}
         <Comments
           workspaceId={props.document.workspaceId}
           documentId={props.document.id}

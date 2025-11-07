@@ -2,9 +2,10 @@
 
 import React from "react";
 import Image from "next/image";
-import AnimatedTitle from "@/components/Animations/AnimatedTitle";
 import { Button } from "@sandworm/ui/components/button";
 import { useRouter } from "next/navigation";
+
+import AnimatedTitle from "@/components/Animations/AnimatedTitle";
 
 export const SectionOnboard = () => {
   const router = useRouter();

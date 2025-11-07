@@ -14,8 +14,7 @@ import { CheckIcon, DatabaseZapIcon, KeyboardIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import type { DataFrame } from "@sandworm/types";
 
-import Dropdown from "@/components/ui/dropdown-menu";
-
+import Dropdown from "../../Dropdown";
 import { useYMemo } from "../../../hooks/useYMemo";
 
 type Props = {

@@ -16,9 +16,7 @@ import axios from "axios";
 import { uniqBy } from "ramda";
 import type { ConnectDragPreview } from "react-dnd";
 
-import { useYElementMemo } from "@/hooks/useYMemo";
-import { NEXT_PUBLIC_API_URL } from "@/utils/env";
-
+import { useYElementMemo } from "../../../hooks/useYMemo";
 import HiddenInPublishedButton from "../../HiddenInPublishedButton";
 
 import FilesTable from "./FilesTable";
@@ -187,7 +185,7 @@ function FileUploadBlock(props: Props) {
     });
 
     const replace = state.current.replace || state.replaceAll;
-    const url = `${NEXT_PUBLIC_API_URL()}/v1/workspaces/${
+    const url = `${process.env.NEXT_PUBLIC_API_URL()}/v1/workspaces/${
       props.workspaceId
     }/documents/${props.documentId}/files?replace=${replace}`;
     axios({

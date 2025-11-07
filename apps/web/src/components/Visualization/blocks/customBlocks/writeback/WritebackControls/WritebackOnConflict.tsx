@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 
-import Dropdown from "@/components/Dropdown";
+import Dropdown from "../../../Dropdown";
 
 const options = [
   { label: "Update", value: "update" },
