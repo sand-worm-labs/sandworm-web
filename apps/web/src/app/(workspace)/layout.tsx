@@ -6,6 +6,7 @@ import { Toaster } from "@sandworm/ui/components/sonner";
 import { FooterWrapper } from "@/components/Layout/AppFooter/FooterWrapper";
 import { AppHeader } from "@/components/Layout/AppHeader";
 import { SignInModal } from "@/components/AuthUI/SignInModal";
+import DndBackendProvider from "@/components/Visualization/blocks/DndBackendProvider";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -17,7 +18,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         shallowRouting
       >
         <AppHeader />
-        <main> {children}</main>
+        <DndBackendProvider>
+          <main> {children}</main>
+        </DndBackendProvider>
         <FooterWrapper />
         <SignInModal />
         <Toaster
