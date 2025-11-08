@@ -12,7 +12,7 @@ import {
   getLayout,
   switchBlockType,
 } from "@sandworm/editor";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { isNil } from "ramda";
 import { Transition } from "@headlessui/react";
@@ -138,7 +138,7 @@ export default function Dashboard(props: Props) {
   const shareLinkWithoutSidebar = props.document.shareLinksWithoutSidebar;
   const copyLink = useMemo(
     () =>
-      `${process.env.NEXT_PUBLIC_PUBLIC_URL()}/workspaces/${
+      `${process.env.NEXT_PUBLIC_PUBLIC_URL}/workspaces/${
         props.document.workspaceId
       }/documents/${props.document.id}/dashboard${
         shareLinkWithoutSidebar ? "?sidebarCollapsed=true" : ""
@@ -369,7 +369,7 @@ export default function Dashboard(props: Props) {
               yDoc={yDoc}
               executionQueue={executionQueue}
             />
-            <SchemaExplorer
+            {/*    <SchemaExplorer
               workspaceId={props.document.workspaceId}
               visible={selectedSidebar?._tag === "schemaExplorer"}
               onHide={onHideSidebar}
@@ -379,7 +379,7 @@ export default function Dashboard(props: Props) {
                   : null
               }
               canRetrySchema
-            />
+            /> */}
           </>
         )}
       </div>

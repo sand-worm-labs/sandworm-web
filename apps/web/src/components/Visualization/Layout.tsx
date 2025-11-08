@@ -21,7 +21,7 @@ import {
 } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { CpuChipIcon, SparklesIcon } from "@heroicons/react/24/solid";
 import ReactDOM from "react-dom";
 import { useHotkeys } from "react-hotkeys-hook";
@@ -50,6 +50,7 @@ import {
 import { FeaturesDialog } from "./blocks/SubscriptionBadge";
 import PagePath from "./blocks/PagePath";
 import DragLayer from "./blocks/DragLayer";
+import { useFavorites } from "./hooks/useFavorites";
 
 const syne = Syne({ subsets: ["latin"] });
 
