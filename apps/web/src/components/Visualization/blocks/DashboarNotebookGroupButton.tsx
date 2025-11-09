@@ -2,7 +2,7 @@ import React from "react";
 import { Squares2X2Icon, BookOpenIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import clsx from "clsx";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 import { Tooltip } from "./ToolTips";
 

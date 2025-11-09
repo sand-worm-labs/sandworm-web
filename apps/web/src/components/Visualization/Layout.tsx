@@ -21,7 +21,7 @@ import {
 } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { CpuChipIcon, SparklesIcon } from "@heroicons/react/24/solid";
 import ReactDOM from "react-dom";
 import { useHotkeys } from "react-hotkeys-hook";
@@ -159,6 +159,8 @@ export default function Layout({
   );
 
   const router = useRouter();
+  const pathname = usePathname();
+
   const workspaceId = useStringQuery("workspaceId");
   const documentId = useStringQuery("documentId");
 
@@ -301,7 +303,7 @@ export default function Layout({
 
   const scrollRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    const onBeforeUnload = () => {
+    const saveScroll = () => {
       if (scrollRef.current) {
         localStorage.setItem(
           `scroll-${workspaceId}`,
@@ -310,17 +312,19 @@ export default function Layout({
       }
     };
 
-    router.events.on("routeChangeStart", onBeforeUnload);
+    // Run when route changes (pathname updates)
     return () => {
-      router.events.off("routeChangeStart", onBeforeUnload);
+      saveScroll();
     };
-  }, [workspaceId, scrollRef, router]);
+  }, [pathname, workspaceId]);
+
+  // Restore scroll position when returning to this route
   useEffect(() => {
     const scroll = localStorage.getItem(`scroll-${workspaceId}`);
     if (scroll && scrollRef.current) {
       scrollRef.current.scrollTop = parseInt(scroll);
     }
-  }, [workspaceId, scrollRef]);
+  }, [workspaceId]);
 
   const [isUpgradeDialogOpen, setUpgradeDialogOpen] = useState(false);
 
