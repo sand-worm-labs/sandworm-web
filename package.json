@@ -17,7 +17,9 @@
     "prepare": "husky || true"
   },
   "dependencies": {
-    "ai": "5.0.60"
+    "ai": "5.0.60",
+    "re-resizable": "^6.11.2",
+    "react-rnd": "^10.5.2"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.5",
@@ -27,10 +29,10 @@
     "cz-conventional-changelog": "^3.3.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.3",
+    "next": "15.4.7",
     "prettier": "^3.6.2",
     "turbo": "^2.5.8",
-    "typescript": "^5.9.3",
-    "next": "15.4.7"
+    "typescript": "^5.9.3"
   },
   "packageManager": "pnpm@10.17.0",
   "pnpm": {

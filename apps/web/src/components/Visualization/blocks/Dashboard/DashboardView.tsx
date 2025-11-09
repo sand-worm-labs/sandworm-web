@@ -4,7 +4,6 @@ import "react-resizable/css/styles.css";
 import { range, sortWith, ascend } from "ramda";
 import type * as Y from "yjs";
 import { v4 as uuidv4 } from "uuid";
-import { SizeMe } from "react-sizeme";
 import GridLayout from "react-grid-layout";
 import { useCallback, useMemo, useState } from "react";
 import clsx from "clsx";
@@ -353,15 +352,6 @@ export default function DashboardView(props: Props) {
           isPDF={false}
         />
       </div>
-      <SizeMe monitorWidth>
-        {({ size }) => {
-          if (!size.width) {
-            return <div />;
-          }
-
-          return <DashboardViewInner {...props} width={size.width} />;
-        }}
-      </SizeMe>
     </SimpleBar>
   );
 }

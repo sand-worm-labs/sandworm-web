@@ -1,12 +1,16 @@
+"use client";
+
 import type { ApiUser, UserWorkspaceRole } from "@types";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation"; // ✅ updated
 import { useCallback, useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
+import { usePathname, useSearchParams } from "next/navigation";
 
 import fetcher, { AuthenticationError } from "../utils/fetcher";
 import { NEXT_PUBLIC_API_URL, NEXT_PUBLIC_PUBLIC_URL } from "../utils/env";
 
 type UseAuthError = "unexpected" | "invalid-creds";
+
 type AuthState = {
   loading: boolean;
   data?: { email: string; loginLink?: string };
@@ -15,6 +19,7 @@ type AuthState = {
 
 type SignupApi = { signupWithEmail: (email: string) => void };
 type UseSignup = [AuthState, SignupApi];
+
 export const useSignup = (): UseSignup => {
   const [state, setState] = useState<{
     loading: boolean;
@@ -67,7 +72,9 @@ type LoginAPI = {
     callback?: string
   ) => void;
 };
+
 type UseLogin = [AuthState, LoginAPI];
+
 export const useLogin = (): UseLogin => {
   const [state, setState] = useState<AuthState>({
     loading: false,
@@ -111,7 +118,10 @@ export const useLogin = (): UseLogin => {
     [setState]
   );
 
-  return useMemo(() => [state, { loginWithPassword }], [state]);
+  return useMemo(
+    () => [state, { loginWithPassword }],
+    [state, loginWithPassword]
+  );
 };
 
 export type SessionUser = ApiUser & {
@@ -125,6 +135,9 @@ export const useSession = ({
   redirectToLogin: boolean;
 }) => {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const session = useSWR<SessionUser>(`${NEXT_PUBLIC_API_URL()}/auth/session`, {
     fetcher,
     refreshInterval: redirectToLogin ? 1000 * 30 : undefined,
@@ -137,9 +150,11 @@ export const useSession = ({
       session.error instanceof AuthenticationError &&
       redirectToLogin
     ) {
+      const search = searchParams.toString();
       const callback = encodeURIComponent(
-        `${location.pathname}${location.search}`
+        `${pathname}${search ? `?${search}` : ""}`
       );
+      router.replace(`/auth/signin?callback=${callback}`);
       router.replace(`/auth/signin?callback=${callback}`);
     }
   }, [session.error, redirectToLogin, router]);

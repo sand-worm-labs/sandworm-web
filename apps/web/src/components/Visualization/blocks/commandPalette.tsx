@@ -7,7 +7,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import * as allOutlineIcons from "@heroicons/react/24/outline";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import Fuse from "fuse.js";
 import clsx from "clsx";
 
