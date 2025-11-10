@@ -42,7 +42,7 @@ export default function DashboardPage() {
         <title>{mockDocument.title}</title>
       </Head>
 
-      <main className="min-h-screen p-6 bg-neutral-950 text-white">
+      <main className="min-h-screen p-6 dark:bg-neutral-950 dark:text-white">
         <Dashboard
           document={mockDocument}
           role={mockRole}
