@@ -3,8 +3,8 @@
 import React from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-
 import { Button } from "@sandworm/ui/components/button";
+
 import AnimatedTitle from "@/components/Animations/AnimatedTitle";
 
 export const SectionVideoPreview: React.FC = () => {

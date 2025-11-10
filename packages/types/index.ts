@@ -967,6 +967,67 @@ export type SQLQueryConfiguration = {
 };
 
 // ═══════════════════════════════════════════════
+// Migrations
+// ═══════════════════════════════════════════════
+
+export function migrateSuccessSQLResult(
+  current: SuccessRunQueryResult
+): SuccessRunQueryResultV3 {
+  if (!("version" in current)) {
+    const v2: SuccessRunQueryResultV2 = {
+      version: 2,
+      type: "success",
+      columns: current.columns,
+      rows: current.rows,
+      count: current.count,
+      page: 0,
+      pageSize: 50,
+      pageCount: 1,
+      queryDurationMs: current.durationMs,
+    };
+
+    return migrateSuccessSQLResult(v2);
+  }
+
+  switch (current.version) {
+    case 2: {
+      const pageSize = 50;
+      const dashboardPageSize = 6;
+      const dashboardPageCount =
+        current.count > 0 ? Math.ceil(current.count / dashboardPageSize) : 1;
+
+      const page = current.page;
+      // compute equivalent dashboardPage, pageSize for v2 is always 50
+      let dashboardPage = Math.floor((page * pageSize) / dashboardPageSize);
+      const dashboardRows = current.rows.slice(
+        dashboardPage * dashboardPageSize,
+        (dashboardPage + 1) * dashboardPageSize
+      );
+      if (dashboardRows.length === 0) {
+        dashboardPage = 0;
+      }
+
+      return {
+        version: 3,
+        type: "success",
+        columns: current.columns,
+        rows: current.rows.slice(0, pageSize),
+        count: current.count,
+        page,
+        pageSize: current.pageSize,
+        pageCount: current.pageCount,
+        dashboardPage,
+        dashboardPageCount,
+        dashboardPageSize,
+        dashboardRows,
+      };
+    }
+    case 3:
+      return current;
+  }
+}
+
+// ═══════════════════════════════════════════════
 // Table Sort
 // ═══════════════════════════════════════════════
 export const TableSort = z.object({
@@ -989,3 +1050,12 @@ export type InvalidReason =
       type: "render";
       reason: PythonErrorOutput;
     };
+
+// ═══════════════════════════════════════════════
+// Element Type
+// ═══════════════════════════════════════════════
+
+export enum ElementType {
+  Block = "BLOCK",
+  BlockGroup = "BLOCK_GROUP",
+}

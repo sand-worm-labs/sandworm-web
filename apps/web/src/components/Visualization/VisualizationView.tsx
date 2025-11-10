@@ -80,7 +80,7 @@ function VisualizationViewV2(props: Props) {
     >
       {props.result ? (
         <div className="relative w-full h-full">
-          <BrieferResult
+          <sandwormResult
             title={props.title}
             result={props.result}
             input={props.input}
@@ -189,7 +189,7 @@ function VisualizationViewV2(props: Props) {
   );
 }
 
-function BrieferResult(props: {
+function sandwormResult(props: {
   title: string;
   input: VisualizationV2BlockInput;
   hasControls: boolean;

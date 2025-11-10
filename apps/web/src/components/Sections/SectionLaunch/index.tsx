@@ -100,8 +100,8 @@ export const SectionFeatures = () => {
                   across several blockchains over any time frame.
                 </p>
                 <Link
-                  className="rounded-2xl p-2.5 h-fit m-0.5 bg-white text-black hover:scale-105 px-5 font-medium inline-block text-sm"
-                  href="/workspace"
+                  className="rounded-xl p-2 h-fit m-0.5 bg-white text-black hover:scale-105 px-4 font-medium inline-block text-sm mt-5"
+                  href="/waitlist"
                   target="_blank"
                 >
                   Launch App
@@ -137,8 +137,8 @@ export const SectionFeatures = () => {
                   language prompts.
                 </p>
                 <Link
-                  className="rounded-2xl p-2.5 h-fit m-0.5 bg-white text-black hover:scale-105 px-5 font-medium inline-block text-sm"
-                  href="/workspace"
+                  className="rounded-xl p-2 h-fit m-0.5 bg-white text-black hover:scale-105 px-4 font-medium inline-block text-sm mt-5"
+                  href="/waitlist"
                   target="_blank"
                 >
                   Explore Queries
@@ -167,8 +167,8 @@ export const SectionFeatures = () => {
                   hypotheses, and uncover new trends instantly.
                 </p>
                 <Link
-                  className="rounded-2xl p-2.5 h-fit m-0.5 bg-white text-black hover:scale-105 px-5 font-medium inline-block text-sm"
-                  href="/workspace"
+                  className="rounded-xl p-2 h-fit m-0.5 bg-white text-black hover:scale-105 px-4 font-medium inline-block text-sm mt-5"
+                  href="/waitlist"
                   target="_blank"
                 >
                   Launch App

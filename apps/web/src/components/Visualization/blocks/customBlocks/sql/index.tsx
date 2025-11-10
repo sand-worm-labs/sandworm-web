@@ -29,11 +29,6 @@ import type {
   isExecutionStatusLoading,
   getSQLCodeFormatted,
 } from "@sandworm/editor";
-import type {
-  ApiDocument,
-  ApiWorkspace,
-  DataSourceType,
-} from "@sandworm/database";
 import clsx from "clsx";
 import type { ConnectDragPreview } from "react-dnd";
 import { useRouter } from "next/router";
@@ -47,29 +42,30 @@ import {
 } from "@heroicons/react/24/solid";
 import { Transition } from "@headlessui/react";
 
-import HeaderSelect from "@/components/v2Editor/customBlocks/sql/HeaderSelect";
-import { useEnvironmentStatus } from "@/hooks/useEnvironmentStatus";
+import type { ApiDocument, ApiWorkspace, DataSourceType } from "@/types";
+
+import useFeatureFlags from "../../../hooks/useFeatureFlags";
+import { TooltipV2 } from "../../ToolTips";
+import type { DashboardMode } from "../../Dashboard";
+import { dashboardModeHasControls } from "../../Dashboard";
+import HeaderSelect from "../../HeaderSelect";
+import { useEnvironmentStatus } from "../../../hooks/useEnvironmentStatus";
 import {
   LoadingEnvText,
   LoadingQueryText,
   QuerySucceededText,
-} from "@/components/ExecutionStatusText";
-import LargeSpinner from "@/components/LargeSpinner";
-import type { APIDataSources } from "@/hooks/useDatasources";
-import useEditorAwareness from "@/hooks/useEditorAwareness";
-import { useWorkspaces } from "@/hooks/useWorkspaces";
-import useProperties from "@/hooks/useProperties";
-import { SaveReusableComponentButton } from "@/components/ReusableComponents";
-import { useReusableComponents } from "@/hooks/useReusableComponents";
-import { useBlockExecutions } from "@/hooks/useBlockExecution";
-import { useAITasks } from "@/hooks/useAITasks";
-import useFeatureFlags from "@/hooks/useFeatureFlags";
-import { TooltipV2 } from "@/components/Tooltips";
-import type { DashboardMode } from "@/components/Dashboard";
-import { dashboardModeHasControls } from "@/components/Dashboard";
-
-import CodeEditor from "../../CodeEditor";
-import type { CodeEditorRef } from "../../CodeEditor";
+} from "../../ExecutionStatusText";
+import LargeSpinner from "../../LargeSpinner";
+import type { APIDataSources } from "../../../hooks/useDataSources";
+import useEditorAwareness from "../../../hooks/useEditorAwareness";
+import { useWorkspaces } from "../../../hooks/useWorkspaces";
+import useProperties from "../../../hooks/useProperties";
+import { SaveReusableComponentButton } from "../../ReusableComponents";
+import { useReusableComponents } from "../../../hooks/useReusableComponents";
+import { useBlockExecutions } from "../../../hooks/useBlockExecution";
+import { useAITasks } from "../../../hooks/useAITasks";
+import CodeEditor from "../CodeEditor";
+import type { CodeEditorRef } from "../CodeEditor";
 import HiddenInPublishedButton from "../../HiddenInPublishedButton";
 import FormatSQLButton from "../../FormatSQLButton";
 import ApproveDiffButons from "../../ApproveDiffButtons";

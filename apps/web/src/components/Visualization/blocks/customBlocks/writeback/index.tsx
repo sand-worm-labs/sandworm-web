@@ -22,12 +22,11 @@ import { XCircleIcon } from "lucide-react";
 import { CheckCircleIcon } from "@heroicons/react/24/outline";
 import { head } from "ramda";
 
-import { useEnvironmentStatus } from "@/hooks/useEnvironmentStatus";
-import useEditorAwareness from "@/hooks/useEditorAwareness";
-import { useBlockExecutions } from "@/hooks/useBlockExecution";
-import type { APIDataSources } from "@/hooks/useDatasources";
-import { TooltipV2 } from "@/components/Tooltips";
-
+import { useEnvironmentStatus } from "../../../hooks/useEnvironmentStatus";
+import useEditorAwareness from "../../../hooks/useEditorAwareness";
+import { useBlockExecutions } from "../../../hooks/useBlockExecution";
+import type { APIDataSources } from "../../../hooks/useDataSources";
+import { TooltipV2 } from "../../ToolTips";
 import HiddenInPublishedButton from "../../HiddenInPublishedButton";
 
 import WritebackResult from "./WritebackResult";
