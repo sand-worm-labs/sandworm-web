@@ -12,7 +12,7 @@ import {
   getLayout,
   switchBlockType,
 } from "@sandworm/editor";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { isNil } from "ramda";
 import { Transition } from "@headlessui/react";
@@ -21,13 +21,10 @@ import SimpleBar from "simplebar-react";
 import clsx from "clsx";
 import { useHotkeys } from "react-hotkeys-hook";
 
-import { NEXT_PUBLIC_PUBLIC_URL } from "@/utils/env";
-import type { SessionUser } from "@/hooks/useAuth";
-import { useDataSources } from "@/hooks/useDatasources";
-import { useLastUpdatedAt, useYDoc, useYDocState } from "@/hooks/useYDoc";
-import Layout from "@/components/Layout";
-
-import RunAllV2 from "../RunAllV2";
+import type { SessionUser } from "../../hooks/useAITasks";
+import { useDataSources } from "../../hooks/useDataSources";
+import { useLastUpdatedAt, useYDoc, useYDocState } from "../../hooks/useYDocs";
+import Layout from "../../Layout";
 import ShareDropdown from "../ShareDropdown";
 import DashboardNotebookGroupButton from "../DashboarNotebookGroupButton";
 import EllipsisDropdown from "../EllipsisDropdown";
@@ -38,19 +35,17 @@ import LiveButton from "../LiveButton";
 import EnvBar from "../EnvBar";
 import Files from "../Files";
 import { PublishBlinkingSignal } from "../BlinkingSignal";
-import { Tooltip } from "../Tooltips";
-import { SQLExtensionProvider } from "../v2Editor/CodeEditor/sql";
-import SchemaExplorer from "../schemaExplorer";
+import { Tooltip } from "../ToolTips";
+import { SQLExtensionProvider } from "../customBlocks/CodeEditor/sql";
 import ScrollBar from "../ScrollBar";
-import VisualizationBlock from "../v2Editor/customBlocks/visualization";
-import VisualizationV2Block from "../v2Editor/customBlocks/visualizationV2";
-import RichTextBlock from "../v2Editor/customBlocks/richText";
-import SQLBlock from "../v2Editor/customBlocks/sql";
-import PythonBlock from "../v2Editor/customBlocks/python";
-import InputBlock from "../v2Editor/customBlocks/input";
-import DropdownInputBlock from "../v2Editor/customBlocks/dropdownInput";
-import DateInputBlock from "../v2Editor/customBlocks/dateInput";
-import PivotTableBlock from "../v2Editor/customBlocks/pivotTable";
+import VisualizationBlock from "../../index";
+import RichTextBlock from "../customBlocks/richText";
+import SQLBlock from "../customBlocks/sql";
+import PythonBlock from "../customBlocks/python";
+import InputBlock from "../customBlocks/input";
+import DateInputBlock from "../customBlocks/dateInput";
+import PivotTableBlock from "../customBlocks/pivotTable";
+import DropdownInputBlock from "../customBlocks/dropdownInput";
 
 import DashboardSkeleton from "./DashboardSkeleton";
 import DashboardControls from "./DashboardControls";
@@ -143,7 +138,7 @@ export default function Dashboard(props: Props) {
   const shareLinkWithoutSidebar = props.document.shareLinksWithoutSidebar;
   const copyLink = useMemo(
     () =>
-      `${NEXT_PUBLIC_PUBLIC_URL()}/workspaces/${
+      `${process.env.NEXT_PUBLIC_PUBLIC_URL}/workspaces/${
         props.document.workspaceId
       }/documents/${props.document.id}/dashboard${
         shareLinkWithoutSidebar ? "?sidebarCollapsed=true" : ""
@@ -342,15 +337,6 @@ export default function Dashboard(props: Props) {
           />
         </div>
 
-        {!props.isEditing && (
-          <RunAllV2
-            disabled={false}
-            yDoc={yDoc}
-            primary
-            userId={props.user.id}
-            executionQueue={executionQueue}
-          />
-        )}
         <Comments
           workspaceId={props.document.workspaceId}
           documentId={props.document.id}
@@ -383,7 +369,7 @@ export default function Dashboard(props: Props) {
               yDoc={yDoc}
               executionQueue={executionQueue}
             />
-            <SchemaExplorer
+            {/*    <SchemaExplorer
               workspaceId={props.document.workspaceId}
               visible={selectedSidebar?._tag === "schemaExplorer"}
               onHide={onHideSidebar}
@@ -393,7 +379,7 @@ export default function Dashboard(props: Props) {
                   : null
               }
               canRetrySchema
-            />
+            /> */}
           </>
         )}
       </div>
@@ -544,7 +530,7 @@ function DashboardContent(
                     isFullScreen
                   />
                 ),
-                onVisualizationV2: block => (
+                /*    onVisualizationV2: block => (
                   <VisualizationV2Block
                     document={props.document}
                     dataframes={dataframes.value}
@@ -564,7 +550,7 @@ function DashboardContent(
                     executionQueue={props.executionQueue}
                     isFullScreen
                   />
-                ),
+                ), */
                 onRichText: block => (
                   <RichTextBlock
                     block={block}

@@ -159,3 +159,121 @@ export interface IconProps {
   height?: number | string;
   className?: string;
 }
+
+/* ╔════════════════════════════════════════════╗
+   ║                Api Section                 ║
+   ╚════════════════════════════════════════════╝ */
+
+type Document = {
+  id: string;
+  title: string;
+  icon: string;
+  orderIndex: number;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date | null;
+  version: number;
+  isSyncedWithYjs: boolean;
+  workspaceId: string;
+  parentId: string | null;
+  runUnexecutedBlocks: boolean;
+  runSQLSelection: boolean;
+  shareLinksWithoutSidebar: boolean;
+};
+
+export type ApiDocument = Document & {
+  publishedAt: string | null;
+  clock: number;
+  appClock: number;
+  appId: string;
+  userAppClock: Record<string, number>;
+  hasDashboard: boolean;
+};
+
+export type UserWorkspaceRole = {
+  editor: "editor";
+  viewer: "viewer";
+  admin: "admin";
+};
+
+type Workspace = {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  name: string;
+  source: string | null;
+  useCases: string[];
+  useContext: string | null;
+  plan: $Enums.Plan;
+  ownerId: string;
+  secretsId: string | null;
+  assistantModel: string;
+};
+
+export type ApiUser = Omit<User, "passwordDigest" | "confirmedAt">;
+
+export type WorkspaceUser = ApiUser & {
+  workspaceId: string;
+  role: UserWorkspaceRole;
+};
+
+export type ApiWorkspace = Workspace & {
+  secrets: {
+    hasOpenAiApiKey: boolean;
+  };
+};
+
+/* ───────────────────────────────
+  Schedule
+─────────────────────────────── */
+
+export type HourlySchedule = {
+  type: "hourly";
+  documentId: string;
+  minute: number;
+  timezone: string;
+};
+
+export type DailySchedule = {
+  type: "daily";
+  documentId: string;
+  hour: number;
+  minute: number;
+  timezone: string;
+};
+
+export type WeeklySchedule = {
+  type: "weekly";
+  documentId: string;
+  hour: number;
+  minute: number;
+  weekdays: number[];
+  timezone: string;
+};
+
+export type MonthlySchedule = {
+  type: "monthly";
+  documentId: string;
+  hour: number;
+  minute: number;
+  days: number[];
+  timezone: string;
+};
+
+export type CronSchedule = {
+  type: "cron";
+  documentId: string;
+  cron: string;
+  timezone: string;
+};
+
+export type ScheduleParams =
+  | HourlySchedule
+  | DailySchedule
+  | WeeklySchedule
+  | MonthlySchedule
+  | CronSchedule;
+
+export type ExecutionSchedule = {
+  id: string;
+} & ScheduleParams;

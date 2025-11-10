@@ -1,121 +1,328 @@
-import * as Y from 'yjs'
-import { EditorContent, useEditor } from '@tiptap/react'
-import Collaboration from '@tiptap/extension-collaboration'
-import Document from '@tiptap/extension-document'
-import Placeholder from '@tiptap/extension-placeholder'
-import Text from '@tiptap/extension-text'
-import { mergeAttributes, Node } from '@tiptap/core'
-import clsx from 'clsx'
-import { TitleSkeleton } from '../blocks/ContentSkeleton'
-import { useEffect } from 'react'
+import * as Y from "yjs";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { YBlock } from "@sandworm/editor";
+import {
+  getBlocks,
+  getDashboard,
+  getLastUpdatedAt,
+  getLayout,
+  getMetadata,
+  isDirty,
+  setDirty,
+  switchBlockType,
+} from "@sandworm/editor";
+import { LRUCache } from "lru-cache";
+import type { EntityTable } from "dexie";
+import Dexie from "dexie";
 
-export type Level = 1 | 2 | 3 | 4 | 5 | 6
+import { getDocId, useProvider } from "./useYProvider";
+import useResettableState from "./useResettableState";
+import { useReusableComponents } from "./useReusableComponents";
 
-export interface ITitleOptions {
-  level: Level
-  HTMLAttributes: Record<string, any>
+const db = new Dexie("YjsDatabase") as Dexie & {
+  yDocs: EntityTable<{ id: string; data: Uint8Array; clock: number }, "id">;
+};
+
+db.version(2).stores({
+  yDocs: "id, data, clock",
+});
+
+function persistYDoc(id: string, yDoc: Y.Doc, clock: number) {
+  const data = Y.encodeStateAsUpdate(yDoc);
+  db.yDocs.put({ id, data, clock });
 }
 
-export const TitleExtension = Node.create<ITitleOptions>({
-  name: 'title',
-  addOptions() {
-    return {
-      level: 1,
-      onUpdate: () => {},
-      HTMLAttributes: {},
-    }
-  },
-  content: 'text*',
-  marks: '',
-  group: 'block',
-  defining: true,
-  addKeyboardShortcuts(this) {
-    return {
-      Enter: () => true,
-    }
-  },
-  renderHTML({ HTMLAttributes }) {
-    const level = this.options.level
+function restoreYDoc(
+  id: string,
+  clock: number
+): [{ clock: number; yDoc: Y.Doc }, Promise<void>] {
+  const yDoc = new Y.Doc();
 
-    return [
-      `h${level}`,
-      mergeAttributes(this.options.HTMLAttributes, HTMLAttributes),
-      0,
-    ]
-  },
-})
-
-interface Props {
-  content: Y.XmlFragment
-  isEditable: boolean
-  isLoading: boolean
-  isPDF: boolean
-  style?: string
-}
-
-function Title(props: Props) {
-  const editor = useEditor(
-    {
-      autofocus: true,
-      editable: props.isEditable,
-      extensions: [
-        Document,
-        Text,
-        TitleExtension.configure({
-          level: 1,
-          HTMLAttributes: {
-            style: 'font-weight: bold; font-size: 4rem;' + (props.style ?? ''),
-          },
-        }),
-        Placeholder.configure({
-          placeholder: 'Untitled',
-          showOnlyWhenEditable: false,
-        }),
-        Collaboration.configure({
-          fragment: props.content,
-        }),
-      ],
-      editorProps: {
-        attributes: {
-          autocomplete: 'off',
-          autocorrect: 'off',
-          autocapitalize: 'off',
-          class:
-            'min-h-full prose sm:prose-base prose-sm max-w-full rounded-sm focus:outline-0',
-        },
-      },
-    },
-    [props.content, props.isEditable, props.style]
-  )
-
-  useEffect(
-    () => () => {
-      // cleanup after unmount
-      editor?.destroy()
-
-      // manually destroy collaboration undo manager
-      try {
-        // @ts-ignore
-        const undoManager = editor?.state['y-undo$']?.undoManager
-        if (undoManager) {
-          undoManager.destroy()
-          undoManager.restore = null
-        }
-      } catch (e) {
-        console.error('Failed to destroy collaboration undo manager', e)
+  const restore = db.yDocs
+    .get({ id, clock })
+    .then(item => {
+      if (item) {
+        Y.applyUpdate(yDoc, item.data);
       }
-    },
-    [editor]
-  )
+    })
+    .catch(async e => {
+      console.error("Failed to restore Y.Doc", e);
 
-  return (
-    <div className="font-sans">
-      <TitleSkeleton visible={props.isLoading} />
-      <div className={clsx(props.isLoading && 'hidden')}>
-        <EditorContent editor={editor} />
-      </div>
-    </div>
-  )
+      try {
+        await db.yDocs.delete(id);
+      } catch (e) {
+        console.error("Failed to delete Y.Doc", e);
+      }
+    });
+
+  return [{ yDoc, clock }, restore];
 }
 
-export default Title
+const cache = new LRUCache<string, { clock: number; yDoc: Y.Doc }>({
+  max: 10,
+
+  dispose: ({ yDoc }) => {
+    yDoc.destroy();
+  },
+});
+
+type GetYDocResult = {
+  id: string;
+  cached: boolean;
+  yDoc: Y.Doc;
+  clock: number;
+  restore: Promise<void>;
+};
+
+function getYDoc(
+  documentId: string,
+  isDataApp: boolean,
+  clock: number,
+  publishedAt: string | null
+): GetYDocResult {
+  const id = getDocId(documentId, isDataApp, clock, publishedAt);
+  let fromCache = cache.get(id);
+  const cached = Boolean(fromCache);
+  let restore = Promise.resolve();
+
+  if (!fromCache) {
+    const restoreResult = restoreYDoc(id, clock);
+    fromCache = restoreResult[0];
+    restore = restoreResult[1];
+    cache.set(id, fromCache);
+  }
+
+  return { id, cached, yDoc: fromCache.yDoc, clock: fromCache.clock, restore };
+}
+
+export function useYDoc(
+  workspaceId: string,
+  documentId: string,
+  isDataApp: boolean,
+  clock: number,
+  userId: string | null,
+  publishedAt: string | null,
+  connect: boolean,
+  initialState: Buffer | null
+) {
+  const isFirst = useRef(true);
+  const [{ id, cached, yDoc, restore }, setYDoc] = useState(() =>
+    getYDoc(documentId, isDataApp, clock, publishedAt)
+  );
+  const [restoring, setRestoring] = useResettableState(() => true, [restore]);
+  useEffect(() => {
+    restore.then(() => {
+      setRestoring(false);
+    });
+  }, [restore]);
+
+  useEffect(() => {
+    if (isFirst.current) {
+      isFirst.current = false;
+      return () => {
+        persistYDoc(id, yDoc, clock);
+      };
+    }
+
+    const next = getYDoc(documentId, isDataApp, clock, publishedAt);
+    setYDoc(next);
+    return () => {
+      persistYDoc(next.id, next.yDoc, next.clock);
+    };
+  }, [documentId, isDataApp, clock, publishedAt, userId]);
+
+  const metadata = useYDocState(yDoc, getMetadata);
+  const provider = useProvider(
+    yDoc,
+    documentId,
+    isDataApp,
+    clock,
+    userId,
+    publishedAt
+  );
+  const [syncing, setSyncing] = useResettableState(() => true, [provider]);
+  useEffect(() => {
+    const onSynced = (synced: boolean) => {
+      setSyncing(!synced);
+    };
+
+    provider.onSynced(onSynced);
+
+    return () => {
+      provider.offSynced(onSynced);
+    };
+  }, [provider]);
+
+  useEffect(() => {
+    if (initialState) {
+      Y.applyUpdate(yDoc, initialState);
+    }
+  }, [initialState]);
+
+  useEffect(() => {
+    if (connect) {
+      provider.connect();
+    }
+
+    return () => {
+      provider.destroy();
+    };
+  }, [provider, connect]);
+
+  useEffect(() => {
+    if (syncing) {
+      console.time(`${documentId} sync`);
+      console.log(`${documentId} syncing`, new Date().toISOString());
+      return;
+    }
+    console.timeEnd(`${documentId} sync`);
+    console.log(`${documentId} not syncing`, new Date().toISOString());
+
+    const update = (
+      _update: Uint8Array,
+      _: any,
+      yDoc: Y.Doc,
+      tr: Y.Transaction
+    ) => {
+      if (syncing || !tr.local) {
+        return;
+      }
+
+      if (!isDirty(yDoc)) {
+        setDirty(yDoc);
+      }
+    };
+
+    yDoc.on("update", update);
+
+    return () => {
+      yDoc.off("update", update);
+    };
+  }, [yDoc, syncing]);
+
+  const [, { removeInstance: removeComponentInstance }] =
+    useReusableComponents(workspaceId);
+  useEffect(() => {
+    const blocks = getBlocks(yDoc);
+
+    // map of blockId to componentId
+    const components: Map<string, string> = new Map();
+    const updateComponents = (blockId: string) => {
+      const block = blocks.get(blockId);
+      if (!block) {
+        return;
+      }
+
+      const componentId = switchBlockType(block, {
+        onSQL: block => block.getAttribute("componentId"),
+        onPython: block => block.getAttribute("componentId"),
+        onRichText: () => null,
+        onVisualization: () => null,
+        onVisualizationV2: () => null,
+        onInput: () => null,
+        onDropdownInput: () => null,
+        onDateInput: () => null,
+        onFileUpload: () => null,
+        onDashboardHeader: () => null,
+        onWriteback: () => null,
+        onPivotTable: () => null,
+      });
+
+      if (componentId) {
+        components.set(blockId, componentId);
+      }
+    };
+
+    for (const blockId of Array.from(blocks.keys())) {
+      updateComponents(blockId);
+    }
+
+    const onUpdate = (evt: Y.YMapEvent<YBlock>) => {
+      const changes = evt.changes.keys;
+      for (const [blockId, { action }] of Array.from(changes.entries())) {
+        if (action === "add" || action === "update") {
+          updateComponents(blockId);
+        } else if (action === "delete") {
+          const componentId = components.get(blockId);
+          if (componentId) {
+            components.delete(blockId);
+            removeComponentInstance(workspaceId, componentId, blockId);
+          }
+        }
+      }
+    };
+
+    blocks.observe(onUpdate);
+
+    return () => {
+      blocks.unobserve(onUpdate);
+    };
+  }, [yDoc, removeComponentInstance]);
+
+  const undoManager = useMemo(
+    () =>
+      new Y.UndoManager([getLayout(yDoc), getBlocks(yDoc), getDashboard(yDoc)]),
+    [yDoc]
+  );
+
+  const undo = useCallback(() => {
+    undoManager.undo();
+  }, [undoManager]);
+
+  const redo = useCallback(() => {
+    undoManager.redo();
+  }, [undoManager]);
+
+  return {
+    yDoc,
+    provider,
+    syncing: (syncing || restoring) && !cached,
+    isDirty: metadata.state.value.getAttribute("isDirty") ?? false,
+    undo,
+    redo,
+  };
+}
+
+export function useYDocState<T extends Y.AbstractType<any>>(
+  yDoc: Y.Doc,
+  getter: (doc: Y.Doc) => T
+) {
+  const [state, setState] = useResettableState<{ value: T }>(
+    () => ({ value: getter(yDoc) }),
+    [yDoc]
+  );
+
+  useEffect(() => {
+    const onUpdate = () => {
+      setState({ value: getter(yDoc) });
+    };
+
+    state.value.observeDeep(onUpdate);
+
+    return () => {
+      state.value.unobserveDeep(onUpdate);
+    };
+  }, [yDoc, state.value, getter]);
+
+  return { yDoc, state };
+}
+
+export function useLastUpdatedAt(yDoc: Y.Doc): string | null {
+  const [lastUpdatedAt, setLastUpdatedAt] = useResettableState<string | null>(
+    () => getLastUpdatedAt(yDoc),
+    [yDoc]
+  );
+
+  useEffect(() => {
+    const onUpdate = () => {
+      setLastUpdatedAt(getLastUpdatedAt(yDoc));
+    };
+    yDoc.on("update", onUpdate);
+
+    return () => {
+      yDoc.off("update", onUpdate);
+    };
+  }, [yDoc]);
+
+  return lastUpdatedAt;
+}

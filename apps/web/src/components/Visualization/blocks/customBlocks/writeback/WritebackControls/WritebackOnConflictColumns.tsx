@@ -2,7 +2,7 @@ import { uniq, identity, always } from "ramda";
 import type { DataFrame } from "@sandworm/types";
 import { useCallback, useMemo } from "react";
 
-import MultiCombobox from "../../visualization/MultiCombobox";
+import MultiCombobox from "../../../../MultiCombobox";
 
 const nullFn = always(null);
 

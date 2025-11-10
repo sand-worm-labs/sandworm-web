@@ -6,8 +6,8 @@ import type {
 import { NumpyNumberTypes, NumpyTimeDeltaTypes } from "@sandworm/types";
 import { useCallback } from "react";
 
-import AxisModifierSelector from "@/components/AxisModifierSelector";
-import AxisSelector from "@/components/AxisSelector";
+import AxisModifierSelector from "../../AxisModifierSelector";
+import AxisSelector from "../../AxisSelector";
 
 interface Props<T> {
   dataframe: DataFrame | null;

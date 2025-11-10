@@ -5,8 +5,8 @@ import { useCallback } from "react";
 import { SparklesIcon } from "@heroicons/react/20/solid";
 import type { PythonErrorOutput } from "@sandworm/types";
 
-import Spin from "@/components/Spin";
-import { Tooltip } from "@/components/Tooltips";
+import Spin from "../../Spin";
+import { Tooltip } from "../../ToolTips";
 
 interface Props {
   error: PythonErrorOutput;

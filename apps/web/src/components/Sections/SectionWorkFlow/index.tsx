@@ -1,9 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { Dots } from "@/components/Assets/Dots";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
+
+import { Dots } from "@/components/Assets/Dots";
 import AnimatedTitle from "@/components/Animations/AnimatedTitle";
 
 // 🎨 Workflow steps
@@ -86,7 +87,7 @@ export const SectionWorkFlow = () => {
         </div>
 
         <div ref={containerRef} className="w-full relative py-20">
-          <div className="sticky top-20 overflow-hidden h-[550px]">
+          <div className="sticky top-20 overflow-hidden h-[500px]">
             <motion.div
               style={{
                 x,
@@ -112,11 +113,11 @@ export const SectionWorkFlow = () => {
                       {step.description}
                     </p>
 
-                    <div>
+                    <div className="absolute bottom-0">
                       <Image
                         src={step.imageUrl}
                         width={558}
-                        height={511}
+                        height={410}
                         alt="image"
                       />
                     </div>
