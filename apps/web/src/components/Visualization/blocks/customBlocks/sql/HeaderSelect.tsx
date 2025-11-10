@@ -6,9 +6,10 @@ import {
   PlusIcon,
 } from "@heroicons/react/20/solid";
 import clsx from "clsx";
-import type { DataSourceType } from "@sandworm/database";
 
-import { databaseImages } from "@/components/DataSourcesList";
+import type { DataSourceType } from "@/types";
+
+import { databaseImages } from "../../DataSourcesList";
 
 type Option = {
   value: string;

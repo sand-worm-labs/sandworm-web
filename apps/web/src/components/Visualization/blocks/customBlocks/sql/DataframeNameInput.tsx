@@ -8,8 +8,8 @@ import { useCallback } from "react";
 import clsx from "clsx";
 import { head } from "ramda";
 
-import { useBlockExecutions } from "@/hooks/useBlockExecution";
-import { TooltipV2 } from "@/components/Tooltips";
+import { useBlockExecutions } from "../../../hooks/useBlockExecution";
+import { TooltipV2 } from "../../ToolTips";
 
 function queryNameErrorMessage(
   err: SQLBlock["dataframeName"]["error"]

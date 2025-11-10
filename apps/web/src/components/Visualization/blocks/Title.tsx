@@ -29,6 +29,7 @@ export const TitleExtension = Node.create<ITitleOptions>({
   content: "text*",
   marks: "",
   group: "block",
+
   defining: true,
   addKeyboardShortcuts(this) {
     return {
@@ -59,6 +60,7 @@ function Title(props: Props) {
     {
       autofocus: true,
       editable: props.isEditable,
+      immediatelyRender: false,
       extensions: [
         Document,
         Text,

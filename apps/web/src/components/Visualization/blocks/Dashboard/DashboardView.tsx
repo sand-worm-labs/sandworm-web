@@ -4,11 +4,9 @@ import "react-resizable/css/styles.css";
 import { range, sortWith, ascend } from "ramda";
 import type * as Y from "yjs";
 import { v4 as uuidv4 } from "uuid";
-import { SizeMe } from "react-sizeme";
 import GridLayout from "react-grid-layout";
 import { useCallback, useMemo, useState } from "react";
 import clsx from "clsx";
-import type { ApiDocument } from "@sandworm/database";
 import type { ExecutionQueue, AITasks, YBlock } from "@sandworm/editor";
 import {
   getBlocks,
@@ -22,8 +20,9 @@ import {
 } from "@sandworm/editor";
 import SimpleBar from "simplebar-react";
 
-import type { APIDataSources } from "@/hooks/useDatasources";
+import type { ApiDocument } from "@/types";
 
+import type { APIDataSources } from "../../hooks/useDataSources";
 import { useYDocState } from "../../hooks/useYDocs";
 import Title from "../Title";
 
@@ -353,15 +352,6 @@ export default function DashboardView(props: Props) {
           isPDF={false}
         />
       </div>
-      <SizeMe monitorWidth>
-        {({ size }) => {
-          if (!size.width) {
-            return <div />;
-          }
-
-          return <DashboardViewInner {...props} width={size.width} />;
-        }}
-      </SizeMe>
     </SimpleBar>
   );
 }
