@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import { Database, GripHorizontal, X } from "lucide-react";
 import { Rnd } from "react-rnd";
 import { useRouter, useSearchParams } from "next/navigation";
-
 import {
   Card,
   CardContent,
@@ -12,6 +11,8 @@ import {
   CardTitle,
 } from "@sandworm/ui/components/card";
 import { Input } from "@sandworm/ui/components/input";
+import { Button } from "@sandworm/ui/components/button";
+
 import { useChainStore } from "@/store/chains";
 import {
   ChainListPanel,
@@ -19,8 +20,6 @@ import {
   EntityListPanel,
   FieldDetailsPanel,
 } from "@/components/ExplorerPanels";
-
-import { Button } from "@sandworm/ui/components/button";
 
 type EntityType = "raw" | "project" | "decoded";
 

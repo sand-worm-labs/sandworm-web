@@ -1,10 +1,11 @@
-import type { DataSource } from "@briefer/database";
 import { DatabaseZapIcon } from "lucide-react";
 import type { WriteBackResult } from "@sandworm/types";
 import type { ExecutionStatus } from "@sandworm/editor";
 import { isExecutionStatusLoading } from "@sandworm/editor";
 
-import LargeSpinner from "@/components/LargeSpinner";
+import type { DataSource } from "@/types";
+
+import LargeSpinner from "../../../LargeSpinner";
 
 import WritebackSuccessResult from "./WritebackSuccessResult";
 import WritebackErrorResult from "./WritebackErrorResult";

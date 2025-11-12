@@ -1,15 +1,14 @@
 import { useState } from "react";
 import { Copy, Facebook, Linkedin, Twitter, X } from "lucide-react";
 import { toast } from "sonner";
-
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+} from "@sandworm/ui/components/dialog";
+import { Button } from "@sandworm/ui/components/button";
 
 const sharePlatforms = [
   {

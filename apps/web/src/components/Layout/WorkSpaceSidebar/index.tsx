@@ -32,12 +32,12 @@ export const WorkspaceSidebar = () => {
     `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors
      ${
        pathname === href
-         ? "bg-[#DEE2E6] text-black "
-         : "text-gray-600 hover:bg-white/10"
+         ? "bg-[#DEE2E6] dark:bg-[#181C21] text-black dark:text-white "
+         : "text-gray-600 dark:text-white hover:bg-white/10"
      }`;
 
   return (
-    <aside className="w-64 h-full flex flex-col justify-between bg-[#F1F3F4]">
+    <aside className="w-64 h-full flex flex-col justify-between dark:bg-[#0C1015] bg-[#F1F3F4]">
       <div>
         <div className="px-6 py-4" />
 
@@ -48,7 +48,9 @@ export const WorkspaceSidebar = () => {
                 <Link href={item.href} className={linkClasses(item.href)}>
                   <item.icon
                     className={`h-5 w-5 ${
-                      pathname === item.href ? "text-black" : "text-gray-600"
+                      pathname === item.href
+                        ? "text-black "
+                        : "text-gray-600 dark:text-[#868E96]"
                     }`}
                   />
                   {item.name}

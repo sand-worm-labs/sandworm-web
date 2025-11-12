@@ -1,14 +1,9 @@
-import "react-grid-layout/css/styles.css";
-import "react-resizable/css/styles.css";
-
 import { range, sortWith, ascend } from "ramda";
 import type * as Y from "yjs";
 import { v4 as uuidv4 } from "uuid";
-import { SizeMe } from "react-sizeme";
 import GridLayout from "react-grid-layout";
 import { useCallback, useMemo, useState } from "react";
 import clsx from "clsx";
-import type { ApiDocument } from "@briefer/database";
 import type { ExecutionQueue, AITasks, YBlock } from "@sandworm/editor";
 import {
   getBlocks,
@@ -22,10 +17,11 @@ import {
 } from "@sandworm/editor";
 import SimpleBar from "simplebar-react";
 
-import { useYDocState } from "@/hooks/useYDoc";
-import type { APIDataSources } from "@/hooks/useDatasources";
+import type { ApiDocument } from "@/types";
 
-import Title from "../v2Editor/Title";
+import type { APIDataSources } from "../../hooks/useDataSources";
+import { useYDocState } from "../../hooks/useYDocs";
+import Title from "../../../Editor/Title";
 
 import GridElement from "./GridElement";
 
@@ -59,7 +55,7 @@ function generateBackground(
 ): string {
   const rects = range(0, COLS_COUNT).map(i => {
     const x = i * (cellWidth + MARGIN) + MARGIN;
-    return `<rect stroke="#f2f1f3" stroke-width="2" fill="none" x="${x}" y="${MARGIN}" width="${cellWidth}" height="${cellHeight}" />`;
+    return `<rect stroke="#f2f1f3" strokeWidth="2" fill="none" x="${x}" y="${MARGIN}" width="${cellWidth}" height="${cellHeight}" />`;
   });
 
   const svg = [
@@ -353,15 +349,6 @@ export default function DashboardView(props: Props) {
           isPDF={false}
         />
       </div>
-      <SizeMe monitorWidth>
-        {({ size }) => {
-          if (!size.width) {
-            return <div />;
-          }
-
-          return <DashboardViewInner {...props} width={size.width} />;
-        }}
-      </SizeMe>
     </SimpleBar>
   );
 }

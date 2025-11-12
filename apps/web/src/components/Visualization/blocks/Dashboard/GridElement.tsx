@@ -10,22 +10,22 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import type GridLayout from "react-grid-layout";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
-import type { ApiDocument } from "@briefer/database";
 import clsx from "clsx";
 
-import { useYDocState } from "@/hooks/useYDoc";
-import type { APIDataSources } from "@/hooks/useDatasources";
+import type { ApiDocument } from "@/types";
 
-import RichTextBlock from "../v2Editor/customBlocks/richText";
-import SQLBlock from "../v2Editor/customBlocks/sql";
-import VisualizationBlock from "../v2Editor/customBlocks/visualization";
-import PythonBlock from "../v2Editor/customBlocks/python";
-import InputBlock from "../v2Editor/customBlocks/input";
-import DropdownInputBlock from "../v2Editor/customBlocks/dropdownInput";
-import DashboardHeader from "../v2Editor/customBlocks/dashboardHeader";
-import DateInputBlock from "../v2Editor/customBlocks/dateInput";
-import PivotTableBlock from "../v2Editor/customBlocks/pivotTable";
-import VisualizationV2Block from "../v2Editor/customBlocks/visualizationV2";
+import { useYDocState } from "../../hooks/useYDocs";
+import type { APIDataSources } from "../../hooks/useDataSources";
+import RichTextBlock from "../customBlocks/richText";
+import SQLBlock from "../customBlocks/sql";
+import VisualizationBlock from "../../index";
+import PythonBlock from "../customBlocks/python";
+import InputBlock from "../customBlocks/input";
+import DropdownInputBlock from "../customBlocks/dropdownInput";
+import DashboardHeader from "../customBlocks/dashboardHeader";
+import DateInputBlock from "../customBlocks/dateInput";
+import PivotTableBlock from "../customBlocks/pivotTable";
+/* import VisualizationV2Block from "../../blocks/customBlocks/visualizationV2"; */
 
 interface Props {
   item: GridLayout.Layout;

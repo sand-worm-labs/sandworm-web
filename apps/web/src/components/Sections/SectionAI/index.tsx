@@ -1,58 +1,101 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
+
 import { SparkleIcon } from "@/components/Assets/Sparkle";
 import { RingIcon } from "@/components/Assets/RingIcon";
-import { Users } from "../../Assets/Users";
 import { BarChart } from "@/components/Assets/BarChart";
 import { Ellipse } from "@/components/Assets/Ellipse";
 import { Wave } from "@/components/Assets/Wave";
+import { Dots } from "@/components/Assets/Dots";
+import AnimatedTitle from "@/components/Animations/AnimatedTitle";
+
+import { Users } from "../../Assets/Users";
+
+import { Blockchains } from "./Blockchains";
 
 interface AICardProps {
   title: string;
   description: string;
   children?: React.ReactNode;
+  delay?: number;
 }
 
-const AICard = ({ title, description, children }: AICardProps) => {
+const AICard = ({ title, description, children, delay = 0 }: AICardProps) => {
+  const cardVariants = {
+    hidden: { opacity: 0, y: 40, scale: 0.95 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        duration: 0.7,
+        delay,
+        ease: [0.22, 1, 0.36, 1],
+      },
+    },
+  };
+
   return (
-    <div className="bg-custom-black rounded-2xl gradient-border relative overflow-hidden min-h-[23rem]">
-      <div className="bg-custom-black inner rounded-2xl p-6 flex flex-col text-left h-full relative z-10">
-        <div className="flex space-x-6 mb-4">
+    <motion.div
+      className="bg-custom-black rounded-2xl gradient-border relative overflow-hidden min-h-[21rem]"
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.2 }}
+      variants={cardVariants}
+    >
+      <div className="bg-custom-black inner rounded-2xl p-5 px-4 flex flex-col text-left h-full relative z-10">
+        <div className="flex space-x-4 mb-3">
           <SparkleIcon />
-          <h4 className="text-sm font-semibold mb-3">{title}</h4>
+          <h4 className="text-[13px] font-semibold mb-3">{title}</h4>
         </div>
-        <p className="text-custom-gray text-[0.95rem] leading-relaxed font-medium font-secondary">
+        <p className="text-custom-gray text-[0.9rem] leading-relaxed font-medium font-secondary">
           {description}
         </p>
         {children}
       </div>
-    </div>
+    </motion.div>
   );
 };
 
 export const SectionAI = () => {
   return (
     <section className="py-28 bg-black text-white">
-      <div className="container mx-auto flex flex-col items-center">
+      <div className="container px-4 mx-auto flex flex-col items-center">
         <RingIcon />
-        <h3 className="uppercase mb-5 text-sm font-medium mt-5">
-          Let’s talk worm AI
+        <h3 className="uppercase mb-5 text-xs font-medium mt-5">
+          ● Let's talk worm AI ●
         </h3>
 
-        <h1 className="mx-auto tracking-wide leading-[1.2] px-3 lg:px-0 text-primary uppercase font-bold text-6xl text-center">
-          complex Onchain <br /> insight made easy
-        </h1>
+        <AnimatedTitle
+          text="complex Onchain "
+          className="mx-auto  leading-[1] px-3 lg:px-0 text-primary uppercase font-black lg:text-[4rem]   text-4xl text-center"
+          wordSpace="mr-[14px]"
+          charSpace="mr-[0.0005em]"
+        />
+        <AnimatedTitle
+          text="insight made easy"
+          className="mx-auto  leading-[1] px-3 lg:px-0 text-primary uppercase font-bold lg:text-[4rem] text-4xl text-center"
+          wordSpace="mr-[14px]"
+          charSpace="mr-[0.0005em]"
+        />
+
+        <div className="flex justify-center mb-8 mt-8">
+          <Dots />
+        </div>
 
         <Link
-          className="border py-3 bg-white text-black rounded-2xl px-5 text-sm mt-10 font-medium dark:hover:bg-btnHover inline-block"
+          className="rounded-2xl p-2.5 h-fit m-0.5 bg-white text-black hover:scale-105 px-5 font-medium inline-block text-sm"
           href="/workspace"
           target="_blank"
         >
-          <span className="ml-3">Use WormAI</span>
+          <span className="">Use WormAI</span>
         </Link>
 
-        <div className="bg-rainbow-gradient p-1 mt-20 my-8 mb-14 mx-auto rounded-full">
-          <div className="rounded-full py-2.5 w-auto flex gap-4 items-center px-6 justify-center text-xs bg-custom-dark-gray">
+        <div className="bg-rainbow-gradient p-1 mt-28 my-8 mb-8 mx-auto rounded-full">
+          <div className="rounded-full py-3 w-auto flex gap-4 items-center px-6 justify-center text-xs bg-custom-dark-gray">
             <SparkleIcon />
             <p>
               Create a bar chart of the tokens with {">"} $1m mcap on Zora in
@@ -61,14 +104,20 @@ export const SectionAI = () => {
           </div>
         </div>
 
-        <h2 className="text-sm mb-1 text-left font-semibold uppercase text-white">
-          Accelerate with AI
+        <div className="relative mx-auto w-full min-h-[250px]">
+          <Blockchains />
+        </div>
+      </div>
+      <div className="container mx-auto lg:max-w-[75%] mt-16 px-4">
+        <h2 className="text-xs mb-1 mt-16 text-left font-semibold uppercase text-white">
+          ● Accelerate with AI
         </h2>
 
-        <div className="grid gap-4 mt-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 mt-4 sm:grid-cols-2 lg:grid-cols-3 ">
           <AICard
             title="Create Charts"
             description="Easily prompt and create charts, comparing, contrasting, analysing data from the blockchain all from a single prompt on our AI."
+            delay={0}
           >
             <div className="absolute bottom-[4rem] left-12 w-[6rem] h-[6rem]">
               <Ellipse />
@@ -81,6 +130,7 @@ export const SectionAI = () => {
           <AICard
             title="Query User Data"
             description="Get information on user behaviour, insights, transaction statistics, campaign outlook and more easily."
+            delay={0.15}
           >
             <div className="absolute bottom-0 right-0 w-[9rem] h-[9rem]">
               <Users />
@@ -90,8 +140,9 @@ export const SectionAI = () => {
           <AICard
             title="Analyze Price Data"
             description="Analyse price action over any period of time to spot trends, systems and underlying issues before others do."
+            delay={0.3}
           >
-            <div className="absolute bottom-[1.5rem] right-[-4rem] w-[100%]">
+            <div className="absolute bottom-[1.5rem] right-[-2rem] left-6 w-[100%]">
               <Wave />
             </div>
           </AICard>

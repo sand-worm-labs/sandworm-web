@@ -28,7 +28,6 @@ import {
   switchBlockType,
 } from "@sandworm/editor";
 import { useCallback, useMemo, useRef, useState } from "react";
-import type { ApiDocument } from "@briefer/database";
 import type { DataFrame } from "@sandworm/types";
 import { exhaustiveCheck } from "@sandworm/types";
 import {
@@ -41,21 +40,15 @@ import { v4 as uuidv4 } from "uuid";
 import clsx from "clsx";
 import SimpleBar from "simplebar-react";
 
-import { useYDocState } from "@/hooks/useYDoc";
-import type { APIDataSources } from "@/hooks/useDatasources";
+import type { ApiDocument } from "@/types";
 
-import PythonBlock from "../v2Editor/customBlocks/python";
-import SQLBlock from "../v2Editor/customBlocks/sql";
-import VisualizationBlock from "../v2Editor/customBlocks/visualization";
-import RichTextBlock from "../v2Editor/customBlocks/richText";
-import InputBlock from "../v2Editor/customBlocks/input";
-import DropdownInputBlock from "../v2Editor/customBlocks/dropdownInput";
-import DateInputBlock from "../v2Editor/customBlocks/dateInput";
-import ScaleChild from "../ScaleChild";
-import PivotTableBlock from "../v2Editor/customBlocks/pivotTable";
-import VisualizationV2Block from "../v2Editor/customBlocks/visualizationV2";
+import { useYDocState } from "../../hooks/useYDocs";
+import type { APIDataSources } from "../../hooks/useDataSources";
+import VisualizationBlock from "../..";
+import VisualizationV2Block from "../..";
 import MultiSelect from "../MultiSelect";
 
+import ScaleChild from "./ScaleChild";
 import { getDefaults } from "./DashboardView";
 
 import type { DraggingBlock } from ".";
@@ -392,6 +385,9 @@ interface BlocksListProps {
 function BlocksList(props: BlocksListProps) {
   return props.list.map((block, i) => {
     const { id } = getBaseAttributes(block);
+
+    console.log(`Block #${i}`, block);
+
     return (
       <BlockListItem
         className={clsx("mt-6", i === props.list.length - 1 && "mb-6")}
@@ -461,60 +457,13 @@ function BlockListItem(props: BlockListItemProps) {
   const jsx = useMemo(
     () =>
       switchBlockType(props.block, {
-        onRichText: block => (
-          <RichTextBlock
-            block={block}
-            belongsToMultiTabGroup={false}
-            isEditable={false}
-            dragPreview={null}
-            dashboardMode={{ _tag: "editing", position: "sidebar" }}
-            isCursorWithin={false}
-            isCursorInserting={false}
-          />
-        ),
+        onRichText: block => <div className="w-full h-96" />,
         onSQL: block => (
           <div className="w-full h-64">
-            <SQLBlock
-              block={block}
-              blocks={props.blocks}
-              layout={props.layout}
-              document={props.document}
-              dataSources={props.dataSources}
-              isEditable={false}
-              dragPreview={null}
-              dashboardMode={{ _tag: "editing", position: "sidebar" }}
-              isPublicMode={false}
-              hasMultipleTabs={false}
-              isBlockHiddenInPublished={false}
-              onToggleIsBlockHiddenInPublished={() => {}}
-              onSchemaExplorer={() => {}}
-              insertBelow={() => {}}
-              userId={props.userId}
-              executionQueue={props.executionQueue}
-              aiTasks={props.aiTasks}
-              isFullScreen
-            />
+            <div className="w-full h-96" />
           </div>
         ),
-        onPython: block => (
-          <PythonBlock
-            document={props.document}
-            block={block}
-            blocks={props.blocks}
-            isEditable={false}
-            dragPreview={null}
-            isPDF={false}
-            dashboardMode={{ _tag: "editing", position: "sidebar" }}
-            isPublicMode={false}
-            hasMultipleTabs={false}
-            isBlockHiddenInPublished={false}
-            onToggleIsBlockHiddenInPublished={() => {}}
-            userId={props.userId}
-            executionQueue={props.executionQueue}
-            aiTasks={props.aiTasks}
-            isFullScreen
-          />
-        ),
+        onPython: block => <div className="w-full h-96" />,
         onVisualization: block => (
           <div className="w-full h-96">
             <VisualizationBlock
@@ -562,76 +511,13 @@ function BlockListItem(props: BlockListItemProps) {
             />
           </div>
         ),
-        onInput: block => (
-          <InputBlock
-            block={block}
-            blocks={props.blocks}
-            dragPreview={null}
-            belongsToMultiTabGroup={false}
-            isEditable={false}
-            isApp
-            dashboardMode={{ _tag: "editing", position: "sidebar" }}
-            isCursorWithin={false}
-            isCursorInserting={false}
-            userId={props.userId}
-            workspaceId={props.document.workspaceId}
-            executionQueue={props.executionQueue}
-          />
-        ),
-        onDropdownInput: block => (
-          <DropdownInputBlock
-            block={block}
-            blocks={props.blocks}
-            dragPreview={null}
-            belongsToMultiTabGroup={false}
-            isEditable={false}
-            isApp
-            dashboardMode={{ _tag: "editing", position: "sidebar" }}
-            dataframes={props.dataframes}
-            isCursorWithin={false}
-            isCursorInserting={false}
-            userId={props.userId}
-            workspaceId={props.document.workspaceId}
-            executionQueue={props.executionQueue}
-          />
-        ),
+        onInput: block => <div className="w-full h-96" />,
+        onDropdownInput: block => <div className="w-full h-96" />,
         onFileUpload: () => null,
-        onDateInput: block => (
-          <DateInputBlock
-            block={block}
-            blocks={props.blocks}
-            workspaceId={props.document.workspaceId}
-            dragPreview={null}
-            belongsToMultiTabGroup={false}
-            isEditable={false}
-            isApp
-            dashboardMode={{ _tag: "editing", position: "sidebar" }}
-            isCursorWithin={false}
-            isCursorInserting={false}
-            userId={props.userId}
-            executionQueue={props.executionQueue}
-          />
-        ),
+        onDateInput: block => <div className="w-full h-96" />,
         onPivotTable: block => (
           <div className="w-full h-96">
-            <PivotTableBlock
-              workspaceId={props.document.workspaceId}
-              dataframes={props.dataframes}
-              block={block}
-              blocks={props.blocks}
-              dragPreview={null}
-              isEditable={false}
-              onAddGroupedBlock={() => {}}
-              dashboardMode={{ _tag: "editing", position: "sidebar" }}
-              hasMultipleTabs={false}
-              isBlockHiddenInPublished={false}
-              onToggleIsBlockHiddenInPublished={() => {}}
-              isCursorWithin={false}
-              isCursorInserting={false}
-              userId={props.userId}
-              executionQueue={props.executionQueue}
-              isFullScreen
-            />
+            <div className="w-full h-96" />
           </div>
         ),
         onDashboardHeader: () => null,

@@ -1,5 +1,4 @@
 import Image from "next/image";
-
 import { Badge } from "@sandworm/ui/components/badge";
 
 export const ResearchDescription = () => {

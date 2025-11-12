@@ -1,15 +1,16 @@
 "use client";
 
 import { ProgressProvider } from "@bprogress/next/app";
-
 import { Toaster } from "@sandworm/ui/components/sonner";
+
 import { FooterWrapper } from "@/components/Layout/AppFooter/FooterWrapper";
 import { AppHeader } from "@/components/Layout/AppHeader";
 import { SignInModal } from "@/components/AuthUI/SignInModal";
+import DndBackendProvider from "@/components/Visualization/blocks/DndBackendProvider";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="roobert">
+    <div className="font-primary">
       <ProgressProvider
         height="1px"
         color="#FF7F4F"
@@ -17,14 +18,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         shallowRouting
       >
         <AppHeader />
-        <main> {children}</main>
+        <DndBackendProvider>
+          <main> {children}</main>
+        </DndBackendProvider>
         <FooterWrapper />
         <SignInModal />
         <Toaster
           position="bottom-right"
           toastOptions={{
-            className:
-              " border border-neutral-700 shadow-xl rounded-none dm-sans ",
+            className: " border border-neutral-700 shadow-xl rounded-none  ",
           }}
         />
       </ProgressProvider>

@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import type * as Y from "yjs";
 
-import useYTextInput from "@/hooks/useYTextInput";
+import useYTextInput from "../../../../hooks/useYTextInput";
 
 interface Props {
   name: Y.Text;
