@@ -3,7 +3,7 @@ import { Switch, Transition } from "@headlessui/react";
 import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 
-import useDocument from "@/hooks/useDocument";
+import useDocument from "../hooks/useDocument";
 
 interface Props {
   workspaceId: string;

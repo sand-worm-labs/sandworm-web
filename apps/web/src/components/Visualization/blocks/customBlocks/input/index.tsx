@@ -1,6 +1,6 @@
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import type * as Y from "yjs";
-import type {
+import {
   YBlock,
   ExecutionQueue,
   type InputBlock,

@@ -11,7 +11,7 @@ import {
   ForwardIcon,
 } from "@heroicons/react/24/solid";
 import clsx from "clsx";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import React, {
   useCallback,
   useEffect,

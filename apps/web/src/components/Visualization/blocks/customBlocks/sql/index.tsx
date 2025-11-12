@@ -10,7 +10,7 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import type { RefObject } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type * as Y from "yjs";
-import type {
+import {
   YBlockGroup,
   YBlock,
   ExecutionQueue,
@@ -31,7 +31,7 @@ import type {
 } from "@sandworm/editor";
 import clsx from "clsx";
 import type { ConnectDragPreview } from "react-dnd";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import type { SQLQueryConfiguration, TableSort } from "@sandworm/types";
 import { exhaustiveCheck } from "@sandworm/types";
 import { head } from "ramda";
@@ -97,11 +97,12 @@ interface Props {
 }
 function SQLBlock(props: Props) {
   const properties = useProperties();
+
   const [workspaces] = useWorkspaces();
-  const currentWorkspace: ApiWorkspace | undefined = useMemo(
-    () => workspaces.data.find(w => w.id === props.document.workspaceId),
-    [workspaces.data, props.document.workspaceId]
-  );
+  const currentWorkspace: ApiWorkspace | undefined = useMemo(() => {
+    if (!props.document) return undefined;
+    return workspaces.data.find(w => w.id === props.document.workspaceId);
+  }, [workspaces.data, props.document?.workspaceId]);
 
   const hasOaiKey = useMemo(() => {
     return (
@@ -149,6 +150,8 @@ function SQLBlock(props: Props) {
   const onSQLSelectionChanged = useCallback((selectedCode: string | null) => {
     setSelectedCode(selectedCode);
   }, []);
+
+  console.log(props.block, props.block, "SQLBlock render");
 
   const {
     dataframeName,
@@ -841,6 +844,7 @@ function SQLBlock(props: Props) {
                 />
               </div>
               <Transition
+                as="div"
                 className="print:hidden flex items-center gap-x-0 group-focus/block:opacity-100 h-full divide-x divide-gray-200"
                 show={!isCodeHidden}
                 enter="transition-opacity ease-in duration-300"

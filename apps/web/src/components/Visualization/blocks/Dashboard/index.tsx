@@ -562,7 +562,7 @@ function DashboardContent(
                     isCursorInserting={false}
                   />
                 ),
-                onSQL: block => (
+                /*     onSQL: block => (
                   <SQLBlock
                     block={block}
                     blocks={blocks.value}
@@ -583,7 +583,7 @@ function DashboardContent(
                     aiTasks={props.aiTasks}
                     isFullScreen
                   />
-                ),
+                ), */
                 onPython: block => (
                   <PythonBlock
                     document={props.document}

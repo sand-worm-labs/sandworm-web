@@ -1,6 +1,3 @@
-import "react-grid-layout/css/styles.css";
-import "react-resizable/css/styles.css";
-
 import { range, sortWith, ascend } from "ramda";
 import type * as Y from "yjs";
 import { v4 as uuidv4 } from "uuid";
@@ -24,7 +21,7 @@ import type { ApiDocument } from "@/types";
 
 import type { APIDataSources } from "../../hooks/useDataSources";
 import { useYDocState } from "../../hooks/useYDocs";
-import Title from "../Title";
+import Title from "../../../Editor/Title";
 
 import GridElement from "./GridElement";
 
