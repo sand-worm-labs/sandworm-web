@@ -10,7 +10,7 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import type { RefObject } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type * as Y from "yjs";
-import type {
+import {
   YBlockGroup,
   YBlock,
   ExecutionQueue,
@@ -29,14 +29,9 @@ import type {
   isExecutionStatusLoading,
   getSQLCodeFormatted,
 } from "@sandworm/editor";
-import type {
-  ApiDocument,
-  ApiWorkspace,
-  DataSourceType,
-} from "@briefer/database";
 import clsx from "clsx";
 import type { ConnectDragPreview } from "react-dnd";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import type { SQLQueryConfiguration, TableSort } from "@sandworm/types";
 import { exhaustiveCheck } from "@sandworm/types";
 import { head } from "ramda";
@@ -47,29 +42,30 @@ import {
 } from "@heroicons/react/24/solid";
 import { Transition } from "@headlessui/react";
 
-import HeaderSelect from "@/components/v2Editor/customBlocks/sql/HeaderSelect";
-import { useEnvironmentStatus } from "@/hooks/useEnvironmentStatus";
+import type { ApiDocument, ApiWorkspace, DataSourceType } from "@/types";
+
+import useFeatureFlags from "../../../hooks/useFeatureFlags";
+import { TooltipV2 } from "../../ToolTips";
+import type { DashboardMode } from "../../Dashboard";
+import { dashboardModeHasControls } from "../../Dashboard";
+import HeaderSelect from "../../HeaderSelect";
+import { useEnvironmentStatus } from "../../../hooks/useEnvironmentStatus";
 import {
   LoadingEnvText,
   LoadingQueryText,
   QuerySucceededText,
-} from "@/components/ExecutionStatusText";
-import LargeSpinner from "@/components/LargeSpinner";
-import type { APIDataSources } from "@/hooks/useDatasources";
-import useEditorAwareness from "@/hooks/useEditorAwareness";
-import { useWorkspaces } from "@/hooks/useWorkspaces";
-import useProperties from "@/hooks/useProperties";
-import { SaveReusableComponentButton } from "@/components/ReusableComponents";
-import { useReusableComponents } from "@/hooks/useReusableComponents";
-import { useBlockExecutions } from "@/hooks/useBlockExecution";
-import { useAITasks } from "@/hooks/useAITasks";
-import useFeatureFlags from "@/hooks/useFeatureFlags";
-import { TooltipV2 } from "@/components/Tooltips";
-import type { DashboardMode } from "@/components/Dashboard";
-import { dashboardModeHasControls } from "@/components/Dashboard";
-
-import CodeEditor from "../../CodeEditor";
-import type { CodeEditorRef } from "../../CodeEditor";
+} from "../../ExecutionStatusText";
+import LargeSpinner from "../../LargeSpinner";
+import type { APIDataSources } from "../../../hooks/useDataSources";
+import useEditorAwareness from "../../../hooks/useEditorAwareness";
+import { useWorkspaces } from "../../../hooks/useWorkspaces";
+import useProperties from "../../../hooks/useProperties";
+import { SaveReusableComponentButton } from "../../ReusableComponents";
+import { useReusableComponents } from "../../../hooks/useReusableComponents";
+import { useBlockExecutions } from "../../../hooks/useBlockExecution";
+import { useAITasks } from "../../../hooks/useAITasks";
+import CodeEditor from "../CodeEditor";
+import type { CodeEditorRef } from "../CodeEditor";
 import HiddenInPublishedButton from "../../HiddenInPublishedButton";
 import FormatSQLButton from "../../FormatSQLButton";
 import ApproveDiffButons from "../../ApproveDiffButtons";
@@ -101,11 +97,12 @@ interface Props {
 }
 function SQLBlock(props: Props) {
   const properties = useProperties();
+
   const [workspaces] = useWorkspaces();
-  const currentWorkspace: ApiWorkspace | undefined = useMemo(
-    () => workspaces.data.find(w => w.id === props.document.workspaceId),
-    [workspaces.data, props.document.workspaceId]
-  );
+  const currentWorkspace: ApiWorkspace | undefined = useMemo(() => {
+    if (!props.document) return undefined;
+    return workspaces.data.find(w => w.id === props.document.workspaceId);
+  }, [workspaces.data, props.document?.workspaceId]);
 
   const hasOaiKey = useMemo(() => {
     return (
@@ -153,6 +150,8 @@ function SQLBlock(props: Props) {
   const onSQLSelectionChanged = useCallback((selectedCode: string | null) => {
     setSelectedCode(selectedCode);
   }, []);
+
+  console.log(props.block, props.block, "SQLBlock render");
 
   const {
     dataframeName,
@@ -845,6 +844,7 @@ function SQLBlock(props: Props) {
                 />
               </div>
               <Transition
+                as="div"
                 className="print:hidden flex items-center gap-x-0 group-focus/block:opacity-100 h-full divide-x divide-gray-200"
                 show={!isCodeHidden}
                 enter="transition-opacity ease-in duration-300"

@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-
 import { Button } from "@sandworm/ui/components/button";
 import { ScrollArea } from "@sandworm/ui/components/scroll-area";
 import {
@@ -20,8 +19,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@sandworm/ui/components/tooltip";
-import { CommandMenu } from "@/components/Console/CommandModal";
 import { Dialog } from "@sandworm/ui/components/dialog";
+
+import { CommandMenu } from "@/components/Console/CommandModal";
 
 type ViewType =
   | "dataExplorer"

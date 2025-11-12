@@ -1,13 +1,12 @@
 import { ChevronDown, Play, Loader2 } from "lucide-react";
-
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuLabel,
   DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
+} from "@sandworm/ui/components/dropdown-menu";
+import { Button } from "@sandworm/ui/components/button";
 
 type ExecutionType = "rpc" | "indexed";
 

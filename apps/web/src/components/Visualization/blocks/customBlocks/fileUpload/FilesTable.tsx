@@ -6,13 +6,13 @@ import clsx from "clsx";
 import { useCallback, useMemo } from "react";
 import Link from "next/link";
 
-import Spin from "@/components/Spin";
-import { NEXT_PUBLIC_API_URL } from "@/utils/env";
+import Spin from "../../Spin";
 
 import StateFiles from "./StateFiles";
 import UploadedFileC from "./UploadedFile";
 
 import type { FileUploadState, UploadError } from ".";
+import { NEXT_PUBLIC_API_URL } from "@/components/Visualization/utils/env";
 
 export type FilesTableHeader =
   | "Name"

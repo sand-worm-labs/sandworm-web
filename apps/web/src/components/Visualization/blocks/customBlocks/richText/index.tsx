@@ -7,7 +7,7 @@ import Underline from "@tiptap/extension-underline";
 import Placeholder from "@tiptap/extension-placeholder";
 import Link from "@tiptap/extension-link";
 import Highlight from "@tiptap/extension-highlight";
-import TextStyle from "@tiptap/extension-text-style";
+import { TextStyleKit } from "@tiptap/extension-text-style";
 import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
 import Color from "@tiptap/extension-color";
@@ -20,8 +20,8 @@ import type { ConnectDragPreview } from "react-dnd";
 import ImageExtension from "./ImageExtension";
 
 import "katex/dist/katex.min.css";
-import useEditorAwareness from "@/hooks/useEditorAwareness";
-import type { DashboardMode } from "@/components/Dashboard";
+import useEditorAwareness from "../../../hooks/useEditorAwareness";
+import type { DashboardMode } from "../../Dashboard";
 
 import FormattingToolbar from "./FormattingToolbar";
 
@@ -36,6 +36,7 @@ const useBlockEditor = ({
 }) => {
   const editor = useEditor(
     {
+      immediatelyRender: false,
       autofocus: false,
       editable: isEditable,
       extensions: [
@@ -64,7 +65,7 @@ const useBlockEditor = ({
             target: "_blank",
           },
         }),
-        TextStyle,
+        TextStyleKit,
         Color.configure({
           types: ["textStyle"],
         }),
@@ -79,7 +80,7 @@ const useBlockEditor = ({
           evaluation: false,
         }),
         Extension.create({
-          name: "brieferKeyboardShortcuts",
+          name: "sandwormKeyboardShortcuts",
           addKeyboardShortcuts: () => ({
             Escape: args => {
               args.editor.commands.blur();
@@ -102,7 +103,7 @@ const useBlockEditor = ({
           autocorrect: "off",
           autocapitalize: "off",
           class:
-            "briefer-editor-body min-h-full prose sm:prose-base prose-sm max-w-full rounded-sm focus:outline-0 whitespace-pre-wrap ph-no-capture",
+            " min-h-full prose sm:prose-base prose-sm max-w-full rounded-sm focus:outline-0 whitespace-pre-wrap ph-no-capture",
         },
       },
     },
@@ -156,6 +157,7 @@ const RichTextBlock = (props: Props) => {
   const { editor } = useBlockEditor({
     content,
     setTitle,
+
     isEditable: props.isEditable,
   });
 

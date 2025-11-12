@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import { Search, X } from "lucide-react";
-
 import { Input } from "@sandworm/ui/components/input";
 import { Button } from "@sandworm/ui/components/button";
 import { cn } from "@sandworm/ui/lib/utils";
@@ -9,7 +8,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "@sandworm/ui/components/tooltip";
 
 interface SimpleFilterProps {
   onFilterChange: (filterValue: string) => void;

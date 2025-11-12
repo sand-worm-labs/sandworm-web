@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { motion } from "framer-motion";
+import { Badge } from "@sandworm/ui/components/badge";
 
 import { SandwormLogo } from "@/components/Assets";
-import { Badge } from "@sandworm/ui/components/badge";
 
 const navLinks = [
   { name: "Explore", href: "workspace/explore" },
@@ -25,48 +26,109 @@ const navLinks = [
   },
 ];
 
+// ⬢ Motion Variants ⬢
+const headerContainer = {
+  hidden: { opacity: 0, y: -5 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { staggerChildren: 0.1, delayChildren: 0.1 },
+  },
+};
+
+const navItem = {
+  hidden: { opacity: 0, y: -5 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] },
+  },
+  hover: { scale: 1.05, color: "#C7665C", transition: { duration: 0.2 } },
+};
+
 export const MainHeader = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <header className="  fixed w-full top-5  mx-auto left-0 right-0 z-[99]">
-      <div className="w-[85%] mx-auto  rounded-xl">
+    <header className="fixed w-full top-5 mx-auto left-0 right-0 z-[99] ">
+      <motion.div
+        className="w-[85%] mx-auto rounded-xl"
+        variants={headerContainer}
+        initial="hidden"
+        animate="visible"
+      >
         <div className="px-3 flex justify-between items-center py-2.5">
-          <div className="flex">
+          {/* Logo */}
+          <motion.div variants={navItem} className="flex items-center">
             <Link href="/" className="flex items-center">
               <SandwormLogo />
               <span className="ml-3 font-medium text-xl uppercase text-white">
                 Sandw0rm.
               </span>
-              <Badge className="bg-white text-black dark:text-white rounded-xl ml-2 font-normal">
+              <Badge className="bg-white text-black dark:text-black rounded-xl ml-2 font-normal">
                 beta
               </Badge>
             </Link>
-          </div>
+          </motion.div>
 
-          <ul className="hidden md:flex ml-10 text-[0.8rem] items-center space-x-8 rounded-full backdrop-blur-lg py-2.5 px-8 border border-borderLight">
-            {navLinks.map(link => (
-              <li key={link.name}>
-                <Link
-                  href={link.href}
-                  {...(link.isExternal
-                    ? { target: "_blank", rel: "noopener noreferrer" }
-                    : {})}
-                  className="text-neutral-500 font-medium  hover:text-[#C7665C]"
-                >
-                  {link.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-
-          <Link
-            className="hidden md:flex border py-2 bg-primary text-black rounded-2xl px-4 text-[0.9rem] font-medium"
-            href="/workspace"
+          {/* Desktop Nav Links */}
+          <motion.ul
+            className="hidden md:flex ml-10 text-[0.8rem]  rounded-full  py-2.5 px-8  glass-container relative"
+            variants={headerContainer}
           >
-            <span>Launch App</span>
-          </Link>
+            <div className="glass-filter" />
+            <div className="glass-overlay" />
+            <div className="glass-specular" />
+            <div className="glass-filter" />
+            <div className="glass-overlay" />
+            <div className="glass-specular" />
+            <div className="relative flex space-x-6 items-center">
+              {navLinks.map(link => (
+                <li key={link.name}>
+                  <Link
+                    href={link.href}
+                    {...(link.isExternal
+                      ? { target: "_blank", rel: "noopener noreferrer" }
+                      : {})}
+                    className="text-neutral-500 font-medium hover:text-primary"
+                  >
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </div>
+            <svg style={{ display: "none" }}>
+              <filter id="lg-dist" x="0%" y="0%" width="100%" height="100%">
+                <feTurbulence
+                  type="fractalNoise"
+                  baseFrequency="0.008 0.008"
+                  numOctaves="2"
+                  seed="92"
+                  result="noise"
+                />
+                <feGaussianBlur in="noise" stdDeviation="2" result="blurred" />
+                <feDisplacementMap
+                  in="SourceGraphic"
+                  in2="blurred"
+                  scale="70"
+                  xChannelSelector="R"
+                  yChannelSelector="G"
+                />
+              </filter>
+            </svg>
+          </motion.ul>
 
+          {/* Launch App Button */}
+          <motion.div variants={navItem} whileHover={{ scale: 1.05 }}>
+            <Link
+              className="hidden md:flex border py-2 bg-primary text-black rounded-2xl px-4 text-[0.9rem] font-medium"
+              href="/workspace"
+            >
+              Launch App
+            </Link>
+          </motion.div>
+
+          {/* Mobile Hamburger */}
           <button
             type="button"
             className="md:hidden flex flex-col space-y-1 cursor-pointer"
@@ -90,8 +152,14 @@ export const MainHeader = () => {
           </button>
         </div>
 
+        {/* Mobile Menu */}
         {isOpen && (
-          <div className="md:hidden flex flex-col items-center space-y-4 py-4 bg-black border-t border-borderLight bottom-0">
+          <motion.div
+            className="md:hidden flex flex-col items-center space-y-4 py-4 bg-black border-t border-borderLight bottom-0"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
             {navLinks.map(link => (
               <Link
                 key={link.name}
@@ -112,9 +180,9 @@ export const MainHeader = () => {
             >
               Launch App
             </Link>
-          </div>
+          </motion.div>
         )}
-      </div>
+      </motion.div>
     </header>
   );
 };

@@ -1,4 +1,6 @@
-import "@/styles/globals.css";
+import "react-grid-layout/css/styles.css";
+import "react-resizable/css/styles.css";
+import "@/styles/globals.scss";
 
 import { Azeret_Mono as AzeretMono } from "next/font/google";
 import Script from "next/script";
@@ -45,10 +47,10 @@ export default async function RootLayout({ children }: ChildrenProps) {
   gtag('config', "G-GQB5QS1LHQ")`}
       </Script>
       <body
-        className={`${azeretMono.className} h-full flex flex-col justify-between`}
+        className={`${azeretMono.className} h-full flex flex-col justify-between `}
       >
         <RootProvider>
-          <section className="flex-1">{children}</section>
+          <section className="flex-1 over-flow-x-hidden">{children}</section>
         </RootProvider>
       </body>
     </html>

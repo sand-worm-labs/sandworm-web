@@ -1,8 +1,8 @@
 import { useCallback, useMemo } from "react";
 
-import { databaseImages } from "@/components/DataSourcesList";
-import Dropdown from "@/components/Dropdown";
-import type { APIDataSources } from "@/hooks/useDatasources";
+import { databaseImages } from "../../../DataSourcesList";
+import Dropdown from "../../../Dropdown";
+import type { APIDataSources } from "../../../../hooks/useDataSources";
 
 interface Props {
   value: string;

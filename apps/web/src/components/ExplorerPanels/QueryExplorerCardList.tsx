@@ -3,11 +3,11 @@ import { AiOutlineCode } from "react-icons/ai";
 import { Search, Trash2 } from "lucide-react";
 import { MdKeyboardDoubleArrowRight } from "react-icons/md";
 import { useRouter } from "next/navigation";
+import { Input } from "@sandworm/ui/components/input";
 
 import type { Query } from "@/types";
 import { useDeleteQuery } from "@/hooks/useDeleteQuery";
 
-import { Input } from "../ui/input";
 import { DeleteQueryModal } from "../Console/DeleteQueryModal";
 
 interface IQueryExplorerCardListProps {

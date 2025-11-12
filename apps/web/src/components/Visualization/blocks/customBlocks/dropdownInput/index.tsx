@@ -28,11 +28,11 @@ import { Combobox } from "@headlessui/react";
 import ReactDOM from "react-dom";
 import { head } from "ramda";
 
-import useEditorAwareness from "@/hooks/useEditorAwareness";
-import { useBlockExecutions } from "@/hooks/useBlockExecution";
-import Spin from "@/components/Spin";
-import { useEnvironmentStatus } from "@/hooks/useEnvironmentStatus";
-import type { DashboardMode } from "@/components/Dashboard";
+import useEditorAwareness from "../../../hooks/useEditorAwareness";
+import { useBlockExecutions } from "../../../hooks/useBlockExecution";
+import Spin from "../../Spin";
+import { useEnvironmentStatus } from "../../../hooks/useEnvironmentStatus";
+import type { DashboardMode } from "../../Dashboard";
 
 import DropdownSettings from "./dropdownSettings";
 

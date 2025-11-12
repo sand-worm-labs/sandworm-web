@@ -2,9 +2,9 @@ import { CSS } from "@dnd-kit/utilities";
 import { X, Home, Terminal, GripVertical } from "lucide-react";
 import { useSortable } from "@dnd-kit/sortable";
 import { useHotkeys } from "react-hotkeys-hook";
-
 import { TabsTrigger } from "@sandworm/ui/components/tabs";
 import { cn } from "@sandworm/ui/lib/utils";
+
 import { useSandwormStore } from "@/store";
 
 interface Tab {

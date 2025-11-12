@@ -1,5 +1,4 @@
 import ReactDOM from "react-dom";
-import type { APIDataSource } from "@briefer/database";
 import { Switch, Transition } from "@headlessui/react";
 import { Cog6ToothIcon } from "@heroicons/react/24/solid";
 import clsx from "clsx";
@@ -7,7 +6,9 @@ import { DatabaseZapIcon } from "lucide-react";
 import type { SQLQueryConfiguration } from "@sandworm/types";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import useDropdownPosition from "@/hooks/dropdownPosition";
+import type { APIDataSource } from "@/types";
+
+import useDropdownPosition from "../../../hooks/dropdownposition";
 
 interface Props {
   value: SQLQueryConfiguration | null;

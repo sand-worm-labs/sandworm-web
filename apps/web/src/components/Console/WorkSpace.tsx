@@ -2,22 +2,21 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { DatabaseIcon } from "lucide-react";
-
-import { AppSidebar } from "@/components/Layout/AppSidebar";
-import { DataExplorer } from "@/components/ExplorerPanels/DataExplorer";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@sandworm/ui/components/resizable";
+import { Button } from "@sandworm/ui/components/button";
+
+import { AppSidebar } from "@/components/Layout/AppSidebar";
+import { DataExplorer } from "@/components/ExplorerPanels/DataExplorer";
 import { WorkspaceTabs } from "@/components/Console/WorkspaceTabs";
 import { QueryHistory } from "@/components/ExplorerPanels/QueryHistory";
 import { QueryExplorer } from "@/components/ExplorerPanels/QueryExplorer";
 import { SettingsPanel } from "@/components/Console/SettingsPanel";
 import { WormAiPanel } from "@/components/Console/WormAIPanel";
 import type { Query } from "@/types";
-
-import { Button } from "@sandworm/ui/components/button";
 
 // =====================================
 // 🎨 Interface / Props Definition

@@ -1,18 +1,23 @@
 import * as React from "react";
 import { Settings } from "lucide-react";
 import { toast } from "sonner";
-
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+import { Label } from "@sandworm/ui/components/label";
+import { Input } from "@sandworm/ui/components/input";
 import {
   Select,
   SelectTrigger,
   SelectContent,
   SelectItem,
   SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { Card, CardTitle, CardContent, CardHeader } from "@/components/ui/card";
+} from "@sandworm/ui/components/select";
+import { Switch } from "@sandworm/ui/components/switch";
+import {
+  Card,
+  CardTitle,
+  CardContent,
+  CardHeader,
+} from "@sandworm/ui/components/card";
+
 import { useSandwormStore } from "@/store";
 
 const chains = ["Sui", "Ethereum", "Polygon", "Base", "Arbitrum"];
