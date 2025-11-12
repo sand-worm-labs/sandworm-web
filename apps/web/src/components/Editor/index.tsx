@@ -92,7 +92,7 @@ import { useEnvironmentStatus } from "../Visualization/hooks/useEnvironmentStatu
 import { APIDataSources } from "../Visualization/hooks/useDataSources";
 import { IProvider } from "../Visualization/hooks/useYProvider";
 import { widthClasses } from "./constants";
-import { descend, head, sortWith } from "ramda";
+import { descend, head, prop, sortWith } from "ramda";
 import WritebackBlock from "../Visualization/blocks/customBlocks/writeback";
 import RemoveBlockDashboardConflictDialog from "./RemoveBlockDashboardConflictDialog";
 import PivotTableBlock from "../Visualization/blocks/customBlocks/pivotTable";
@@ -101,7 +101,7 @@ import { HotkeysProvider } from "react-hotkeys-hook";
 import useEditorAwareness, {
   EditorAwarenessProvider,
 } from "../Visualization/hooks/useEditorAwareness";
-import SQLExtensionProvider from "../Visualization/blocks/customBlocks/sql";
+import { SQLExtensionProvider } from "../Visualization/blocks/customBlocks/CodeEditor/sql";
 import VisualizationV2Block from "../Visualization";
 import SQLBlock from "../Visualization/blocks/customBlocks/sql";
 
@@ -2079,6 +2079,7 @@ function TabRef(props: TabRefProps) {
 export default function V2Editor(
   props: Omit<Props, "scrollViewRef"> & { children?: ReactNode }
 ) {
+  console.log("checking structure of props editor", props);
   const scrollViewRef = useRef<HTMLDivElement>(null);
   return (
     <EditorAwarenessProvider scrollViewRef={scrollViewRef} yDoc={props.yDoc}>

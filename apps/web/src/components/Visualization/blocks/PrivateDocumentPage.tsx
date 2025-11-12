@@ -52,16 +52,20 @@ interface Props {
   isApp: boolean;
 }
 
+const createdAt = new Date("2025-11-10T12:27:06.601Z");
+const updatedAt = new Date("2025-11-11T07:05:48.593Z");
+
 const mockDocument = {
   id: "b800552d-a2f2-4396-86eb-70b336821cd3",
   title: "Mocked Untitled Document",
   icon: "DocumentIcon",
   orderIndex: 1,
-  createdAt: "2025-11-11T07:05:48.593Z",
-  updatedAt: "2025-11-11T07:05:48.593Z",
+  createdAt,
+  updatedAt,
   deletedAt: null,
   hasDashboard: false,
   isSyncedWithYjs: false,
+  parentId: null,
   appId: "36951d2c-7b7e-4e83-87e9-180fccbda7d1",
   workspaceId: "405498a2-f3cb-4307-bd1e-4daf5b3a1dba",
   publishedAt: "2025-11-11T07:06:00.318Z",
@@ -106,6 +110,8 @@ export default function PrivateDocumentPage(props: Props) {
     console.log("Mock publish triggered for", document.id);
     await new Promise(r => setTimeout(r, 500));
   };
+
+  console.log("check the structure of document:", document, typeof document);
 
   if (!document) {
     console.log("Document not found, showing skeleton");
