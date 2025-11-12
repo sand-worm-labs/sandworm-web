@@ -5,8 +5,7 @@ import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { UserRound, Settings } from "lucide-react";
-
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@sandworm/ui/components/avatar";
 
 const tabs = [
   { name: "Profile", href: "/settings/profile", icon: <UserRound size={16} /> },

@@ -1,6 +1,6 @@
-type IconProps = React.HTMLAttributes<SVGElement>;
-
 import React from "react";
+
+type IconProps = React.HTMLAttributes<SVGElement>;
 
 export const BarChart = (props: IconProps) => {
   return (
@@ -136,9 +136,9 @@ export const BarChart = (props: IconProps) => {
           width="12"
           height="44"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feBlend
             mode="normal"
             in="SourceGraphic"
@@ -171,9 +171,9 @@ export const BarChart = (props: IconProps) => {
           width="12"
           height="44"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feBlend
             mode="normal"
             in="SourceGraphic"
@@ -206,9 +206,9 @@ export const BarChart = (props: IconProps) => {
           width="12"
           height="44"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feBlend
             mode="normal"
             in="SourceGraphic"
@@ -241,9 +241,9 @@ export const BarChart = (props: IconProps) => {
           width="12"
           height="46"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feBlend
             mode="normal"
             in="SourceGraphic"
@@ -276,9 +276,9 @@ export const BarChart = (props: IconProps) => {
           width="12"
           height="49"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feBlend
             mode="normal"
             in="SourceGraphic"
@@ -311,9 +311,9 @@ export const BarChart = (props: IconProps) => {
           width="12"
           height="55"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feBlend
             mode="normal"
             in="SourceGraphic"
@@ -346,9 +346,9 @@ export const BarChart = (props: IconProps) => {
           width="12"
           height="66"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feBlend
             mode="normal"
             in="SourceGraphic"
@@ -381,9 +381,9 @@ export const BarChart = (props: IconProps) => {
           width="12"
           height="78"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feBlend
             mode="normal"
             in="SourceGraphic"
@@ -416,9 +416,9 @@ export const BarChart = (props: IconProps) => {
           width="12"
           height="89"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feBlend
             mode="normal"
             in="SourceGraphic"
@@ -451,9 +451,9 @@ export const BarChart = (props: IconProps) => {
           width="12"
           height="102"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feBlend
             mode="normal"
             in="SourceGraphic"
@@ -486,9 +486,9 @@ export const BarChart = (props: IconProps) => {
           width="12"
           height="115"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feBlend
             mode="normal"
             in="SourceGraphic"
@@ -521,9 +521,9 @@ export const BarChart = (props: IconProps) => {
           width="12"
           height="136"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feBlend
             mode="normal"
             in="SourceGraphic"
@@ -557,13 +557,13 @@ export const BarChart = (props: IconProps) => {
           y2="46.2656"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#6368FF" />
-          <stop offset="0.153846" stop-color="#CBECFF" />
-          <stop offset="0.25" stop-color="#7BFF42" />
-          <stop offset="0.427885" stop-color="#2DB2FF" />
-          <stop offset="0.610577" stop-color="#FF0000" />
-          <stop offset="0.817308" stop-color="#DED757" />
-          <stop offset="1" stop-color="#FF00E1" />
+          <stop stopColor="#6368FF" />
+          <stop offset="0.153846" stopColor="#CBECFF" />
+          <stop offset="0.25" stopColor="#7BFF42" />
+          <stop offset="0.427885" stopColor="#2DB2FF" />
+          <stop offset="0.610577" stopColor="#FF0000" />
+          <stop offset="0.817308" stopColor="#DED757" />
+          <stop offset="1" stopColor="#FF00E1" />
         </linearGradient>
         <linearGradient
           id="paint1_linear_1149_3272"
@@ -573,13 +573,13 @@ export const BarChart = (props: IconProps) => {
           y2="103.149"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#6368FF" />
-          <stop offset="0.153846" stop-color="#CBECFF" />
-          <stop offset="0.25" stop-color="#7BFF42" />
-          <stop offset="0.427885" stop-color="#2DB2FF" />
-          <stop offset="0.610577" stop-color="#FF0000" />
-          <stop offset="0.817308" stop-color="#DED757" />
-          <stop offset="1" stop-color="#FF00E1" />
+          <stop stopColor="#6368FF" />
+          <stop offset="0.153846" stopColor="#CBECFF" />
+          <stop offset="0.25" stopColor="#7BFF42" />
+          <stop offset="0.427885" stopColor="#2DB2FF" />
+          <stop offset="0.610577" stopColor="#FF0000" />
+          <stop offset="0.817308" stopColor="#DED757" />
+          <stop offset="1" stopColor="#FF00E1" />
         </linearGradient>
         <linearGradient
           id="paint2_linear_1149_3272"
@@ -589,13 +589,13 @@ export const BarChart = (props: IconProps) => {
           y2="105.149"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#6368FF" />
-          <stop offset="0.153846" stop-color="#CBECFF" />
-          <stop offset="0.25" stop-color="#7BFF42" />
-          <stop offset="0.427885" stop-color="#2DB2FF" />
-          <stop offset="0.610577" stop-color="#FF0000" />
-          <stop offset="0.817308" stop-color="#DED757" />
-          <stop offset="1" stop-color="#FF00E1" />
+          <stop stopColor="#6368FF" />
+          <stop offset="0.153846" stopColor="#CBECFF" />
+          <stop offset="0.25" stopColor="#7BFF42" />
+          <stop offset="0.427885" stopColor="#2DB2FF" />
+          <stop offset="0.610577" stopColor="#FF0000" />
+          <stop offset="0.817308" stopColor="#DED757" />
+          <stop offset="1" stopColor="#FF00E1" />
         </linearGradient>
         <linearGradient
           id="paint3_linear_1149_3272"
@@ -605,13 +605,13 @@ export const BarChart = (props: IconProps) => {
           y2="98.4704"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#6368FF" />
-          <stop offset="0.153846" stop-color="#CBECFF" />
-          <stop offset="0.25" stop-color="#7BFF42" />
-          <stop offset="0.427885" stop-color="#2DB2FF" />
-          <stop offset="0.610577" stop-color="#FF0000" />
-          <stop offset="0.817308" stop-color="#DED757" />
-          <stop offset="1" stop-color="#FF00E1" />
+          <stop stopColor="#6368FF" />
+          <stop offset="0.153846" stopColor="#CBECFF" />
+          <stop offset="0.25" stopColor="#7BFF42" />
+          <stop offset="0.427885" stopColor="#2DB2FF" />
+          <stop offset="0.610577" stopColor="#FF0000" />
+          <stop offset="0.817308" stopColor="#DED757" />
+          <stop offset="1" stopColor="#FF00E1" />
         </linearGradient>
         <linearGradient
           id="paint4_linear_1149_3272"
@@ -621,13 +621,13 @@ export const BarChart = (props: IconProps) => {
           y2="94.9079"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#6368FF" />
-          <stop offset="0.153846" stop-color="#CBECFF" />
-          <stop offset="0.25" stop-color="#7BFF42" />
-          <stop offset="0.427885" stop-color="#2DB2FF" />
-          <stop offset="0.610577" stop-color="#FF0000" />
-          <stop offset="0.817308" stop-color="#DED757" />
-          <stop offset="1" stop-color="#FF00E1" />
+          <stop stopColor="#6368FF" />
+          <stop offset="0.153846" stopColor="#CBECFF" />
+          <stop offset="0.25" stopColor="#7BFF42" />
+          <stop offset="0.427885" stopColor="#2DB2FF" />
+          <stop offset="0.610577" stopColor="#FF0000" />
+          <stop offset="0.817308" stopColor="#DED757" />
+          <stop offset="1" stopColor="#FF00E1" />
         </linearGradient>
         <linearGradient
           id="paint5_linear_1149_3272"
@@ -637,13 +637,13 @@ export const BarChart = (props: IconProps) => {
           y2="90.9365"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#6368FF" />
-          <stop offset="0.153846" stop-color="#CBECFF" />
-          <stop offset="0.25" stop-color="#7BFF42" />
-          <stop offset="0.427885" stop-color="#2DB2FF" />
-          <stop offset="0.610577" stop-color="#FF0000" />
-          <stop offset="0.817308" stop-color="#DED757" />
-          <stop offset="1" stop-color="#FF00E1" />
+          <stop stopColor="#6368FF" />
+          <stop offset="0.153846" stopColor="#CBECFF" />
+          <stop offset="0.25" stopColor="#7BFF42" />
+          <stop offset="0.427885" stopColor="#2DB2FF" />
+          <stop offset="0.610577" stopColor="#FF0000" />
+          <stop offset="0.817308" stopColor="#DED757" />
+          <stop offset="1" stopColor="#FF00E1" />
         </linearGradient>
         <linearGradient
           id="paint6_linear_1149_3272"
@@ -653,13 +653,13 @@ export const BarChart = (props: IconProps) => {
           y2="-18.7939"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#6368FF" />
-          <stop offset="0.153846" stop-color="#CBECFF" />
-          <stop offset="0.25" stop-color="#7BFF42" />
-          <stop offset="0.427885" stop-color="#2DB2FF" />
-          <stop offset="0.610577" stop-color="#FF0000" />
-          <stop offset="0.817308" stop-color="#DED757" />
-          <stop offset="1" stop-color="#FF00E1" />
+          <stop stopColor="#6368FF" />
+          <stop offset="0.153846" stopColor="#CBECFF" />
+          <stop offset="0.25" stopColor="#7BFF42" />
+          <stop offset="0.427885" stopColor="#2DB2FF" />
+          <stop offset="0.610577" stopColor="#FF0000" />
+          <stop offset="0.817308" stopColor="#DED757" />
+          <stop offset="1" stopColor="#FF00E1" />
         </linearGradient>
         <linearGradient
           id="paint7_linear_1149_3272"
@@ -669,13 +669,13 @@ export const BarChart = (props: IconProps) => {
           y2="71.7743"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#6368FF" />
-          <stop offset="0.153846" stop-color="#CBECFF" />
-          <stop offset="0.25" stop-color="#7BFF42" />
-          <stop offset="0.427885" stop-color="#2DB2FF" />
-          <stop offset="0.610577" stop-color="#FF0000" />
-          <stop offset="0.817308" stop-color="#DED757" />
-          <stop offset="1" stop-color="#FF00E1" />
+          <stop stopColor="#6368FF" />
+          <stop offset="0.153846" stopColor="#CBECFF" />
+          <stop offset="0.25" stopColor="#7BFF42" />
+          <stop offset="0.427885" stopColor="#2DB2FF" />
+          <stop offset="0.610577" stopColor="#FF0000" />
+          <stop offset="0.817308" stopColor="#DED757" />
+          <stop offset="1" stopColor="#FF00E1" />
         </linearGradient>
         <linearGradient
           id="paint8_linear_1149_3272"
@@ -685,13 +685,13 @@ export const BarChart = (props: IconProps) => {
           y2="-51.8913"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#6368FF" />
-          <stop offset="0.153846" stop-color="#CBECFF" />
-          <stop offset="0.25" stop-color="#7BFF42" />
-          <stop offset="0.427885" stop-color="#2DB2FF" />
-          <stop offset="0.610577" stop-color="#FF0000" />
-          <stop offset="0.817308" stop-color="#DED757" />
-          <stop offset="1" stop-color="#FF00E1" />
+          <stop stopColor="#6368FF" />
+          <stop offset="0.153846" stopColor="#CBECFF" />
+          <stop offset="0.25" stopColor="#7BFF42" />
+          <stop offset="0.427885" stopColor="#2DB2FF" />
+          <stop offset="0.610577" stopColor="#FF0000" />
+          <stop offset="0.817308" stopColor="#DED757" />
+          <stop offset="1" stopColor="#FF00E1" />
         </linearGradient>
         <linearGradient
           id="paint9_linear_1149_3272"
@@ -701,13 +701,13 @@ export const BarChart = (props: IconProps) => {
           y2="26.3614"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#6368FF" />
-          <stop offset="0.153846" stop-color="#CBECFF" />
-          <stop offset="0.25" stop-color="#7BFF42" />
-          <stop offset="0.427885" stop-color="#2DB2FF" />
-          <stop offset="0.610577" stop-color="#FF0000" />
-          <stop offset="0.817308" stop-color="#DED757" />
-          <stop offset="1" stop-color="#FF00E1" />
+          <stop stopColor="#6368FF" />
+          <stop offset="0.153846" stopColor="#CBECFF" />
+          <stop offset="0.25" stopColor="#7BFF42" />
+          <stop offset="0.427885" stopColor="#2DB2FF" />
+          <stop offset="0.610577" stopColor="#FF0000" />
+          <stop offset="0.817308" stopColor="#DED757" />
+          <stop offset="1" stopColor="#FF00E1" />
         </linearGradient>
         <linearGradient
           id="paint10_linear_1149_3272"
@@ -717,13 +717,13 @@ export const BarChart = (props: IconProps) => {
           y2="-39.3133"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#6368FF" />
-          <stop offset="0.153846" stop-color="#CBECFF" />
-          <stop offset="0.25" stop-color="#7BFF42" />
-          <stop offset="0.427885" stop-color="#2DB2FF" />
-          <stop offset="0.610577" stop-color="#FF0000" />
-          <stop offset="0.817308" stop-color="#DED757" />
-          <stop offset="1" stop-color="#FF00E1" />
+          <stop stopColor="#6368FF" />
+          <stop offset="0.153846" stopColor="#CBECFF" />
+          <stop offset="0.25" stopColor="#7BFF42" />
+          <stop offset="0.427885" stopColor="#2DB2FF" />
+          <stop offset="0.610577" stopColor="#FF0000" />
+          <stop offset="0.817308" stopColor="#DED757" />
+          <stop offset="1" stopColor="#FF00E1" />
         </linearGradient>
         <linearGradient
           id="paint11_linear_1149_3272"
@@ -733,13 +733,13 @@ export const BarChart = (props: IconProps) => {
           y2="-42.0219"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#6368FF" />
-          <stop offset="0.153846" stop-color="#CBECFF" />
-          <stop offset="0.25" stop-color="#7BFF42" />
-          <stop offset="0.427885" stop-color="#2DB2FF" />
-          <stop offset="0.610577" stop-color="#FF0000" />
-          <stop offset="0.817308" stop-color="#DED757" />
-          <stop offset="1" stop-color="#FF00E1" />
+          <stop stopColor="#6368FF" />
+          <stop offset="0.153846" stopColor="#CBECFF" />
+          <stop offset="0.25" stopColor="#7BFF42" />
+          <stop offset="0.427885" stopColor="#2DB2FF" />
+          <stop offset="0.610577" stopColor="#FF0000" />
+          <stop offset="0.817308" stopColor="#DED757" />
+          <stop offset="1" stopColor="#FF00E1" />
         </linearGradient>
       </defs>
     </svg>

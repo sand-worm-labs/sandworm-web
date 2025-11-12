@@ -1,6 +1,6 @@
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import type * as Y from "yjs";
-import type {
+import {
   YBlock,
   ExecutionQueue,
   type InputBlock,
@@ -16,11 +16,11 @@ import type { ConnectDragPreview } from "react-dnd";
 import { ClockIcon } from "@heroicons/react/20/solid";
 import { head } from "ramda";
 
-import Spin from "@/components/Spin";
-import useEditorAwareness from "@/hooks/useEditorAwareness";
-import { useBlockExecutions } from "@/hooks/useBlockExecution";
-import { useEnvironmentStatus } from "@/hooks/useEnvironmentStatus";
-import type { DashboardMode } from "@/components/Dashboard";
+import Spin from "../../Spin";
+import useEditorAwareness from "../../../hooks/useEditorAwareness";
+import { useBlockExecutions } from "../../../hooks/useBlockExecution";
+import { useEnvironmentStatus } from "../../../hooks/useEnvironmentStatus";
+import type { DashboardMode } from "../../Dashboard";
 
 function errorMessage(
   error: InputBlock["variable"]["error"],

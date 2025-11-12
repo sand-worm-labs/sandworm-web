@@ -5,13 +5,13 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { HiOutlineCommandLine } from "react-icons/hi2";
 import { FaRegStar } from "react-icons/fa";
 import { VscRepoForked } from "react-icons/vsc";
-
 import {
   Tabs,
   TabsList,
   TabsTrigger,
   TabsContent,
 } from "@sandworm/ui/components/tabs";
+
 import { QueryList } from "@/components/Queries/QueryList";
 import type { QueryResponse } from "@/types";
 

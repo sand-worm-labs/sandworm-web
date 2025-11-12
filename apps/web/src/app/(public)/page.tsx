@@ -10,11 +10,13 @@ export default function Home() {
   return (
     <MainLayout>
       <SectionHero />
-      <SectionVideoPreview />
-      <SectionFeatures />
-      <SectionAI />
-      <SectionWorkFlow />
-      <SectionOnboard />
+      <div className="relative z-10">
+        <SectionVideoPreview />
+        <SectionFeatures />
+        <SectionAI />
+        <SectionWorkFlow />
+        <SectionOnboard />
+      </div>
     </MainLayout>
   );
 }

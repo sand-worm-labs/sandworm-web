@@ -14,8 +14,9 @@ import React, { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import debounce from "lodash.debounce";
 import type { PythonBlock } from "@sandworm/editor";
 
-import useResettableState from "@/hooks/useResettableState";
-import { downloadFile } from "@/utils/file";
+import { downloadFile } from "../../../utils/file";
+
+import useResettableState from "../../../hooks/useResettableState";
 
 import PythonError from "./PythonError";
 

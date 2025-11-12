@@ -1,7 +1,5 @@
 "use client";
 
-import { ConnectWallet } from "@/components/AuthUI/ConnectWallet";
-
 export default function AccountSettings() {
   return (
     <div>
@@ -15,7 +13,6 @@ export default function AccountSettings() {
           claiming rewards or proving on-chain ownership of your contributions
           in the future
         </p>
-        <ConnectWallet />
       </div>
 
       <div className="border-b mt-12">

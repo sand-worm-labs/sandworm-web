@@ -22,15 +22,14 @@ import { equals, head } from "ramda";
 import { ClockIcon, PlayIcon, StopIcon } from "@heroicons/react/20/solid";
 import { TableCellsIcon } from "@heroicons/react/24/solid";
 
-import { useEnvironmentStatus } from "@/hooks/useEnvironmentStatus";
-import LargeSpinner from "@/components/LargeSpinner";
-import useEditorAwareness from "@/hooks/useEditorAwareness";
-import { useBlockExecutions } from "@/hooks/useBlockExecution";
-import HeaderSelect from "@/components/HeaderSelect";
-import { TooltipV2 } from "@/components/Tooltips";
-import type { DashboardMode } from "@/components/Dashboard";
-import { dashboardModeHasControls } from "@/components/Dashboard";
-
+import { useEnvironmentStatus } from "../../../hooks/useEnvironmentStatus";
+import LargeSpinner from "../../LargeSpinner";
+import useEditorAwareness from "../../../hooks/useEditorAwareness";
+import { useBlockExecutions } from "../../../hooks/useBlockExecution";
+import HeaderSelect from "../../HeaderSelect";
+import { TooltipV2 } from "../../ToolTips";
+import type { DashboardMode } from "../../Dashboard";
+import { dashboardModeHasControls } from "../../Dashboard";
 import HiddenInPublishedButton from "../../HiddenInPublishedButton";
 
 import PivotTableView from "./PivotTableView";

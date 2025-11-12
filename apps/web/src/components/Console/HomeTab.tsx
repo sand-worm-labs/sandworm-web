@@ -8,7 +8,6 @@ import {
   TestTubeDiagonal,
 } from "lucide-react";
 import { motion } from "framer-motion";
-
 import { Button } from "@sandworm/ui/components/button";
 import {
   Card,
@@ -16,7 +15,7 @@ import {
   CardTitle,
   CardDescription,
   CardFooter,
-} from "@/components/ui/card";
+} from "@sandworm/ui/components/card";
 import {
   Tabs,
   TabsContent,
@@ -24,6 +23,7 @@ import {
   TabsTrigger,
 } from "@sandworm/ui/components/tabs";
 import { Skeleton } from "@sandworm/ui/components/skeleton";
+
 import { useSandwormStore } from "@/store";
 
 import { ExamplesModal } from "./ExampleModal";

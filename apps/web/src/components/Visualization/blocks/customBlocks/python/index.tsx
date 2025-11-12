@@ -23,7 +23,6 @@ import type {
   isExecutionStatusLoading,
 } from "@sandworm/editor";
 import clsx from "clsx";
-import type { ApiDocument, ApiWorkspace } from "@briefer/database";
 import type { RefObject } from "react";
 import { useCallback, useMemo, useState } from "react";
 import type { ConnectDragPreview } from "react-dnd";
@@ -33,25 +32,26 @@ import { CommandLineIcon } from "@heroicons/react/24/solid";
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import { Transition } from "@headlessui/react";
 
-import { useBlockExecutions } from "@/hooks/useBlockExecution";
-import { useAITasks } from "@/hooks/useAITasks";
-import { TooltipV2 } from "@/components/Tooltips";
-import type { DashboardMode } from "@/components/Dashboard";
-import { dashboardModeHasControls } from "@/components/Dashboard";
-import { useReusableComponents } from "@/hooks/useReusableComponents";
-import { SaveReusableComponentButton } from "@/components/ReusableComponents";
-import useProperties from "@/hooks/useProperties";
-import { useWorkspaces } from "@/hooks/useWorkspaces";
-import useEditorAwareness from "@/hooks/useEditorAwareness";
-import ScrollBar from "@/components/ScrollBar";
+import type { ApiDocument, ApiWorkspace } from "@/types";
+
+import { useBlockExecutions } from "../../../hooks/useBlockExecution";
+import { useAITasks } from "../../../hooks/useAITasks";
+import { TooltipV2 } from "../../ToolTips";
+import type { DashboardMode } from "../../Dashboard";
+import { dashboardModeHasControls } from "../../Dashboard";
+import { useReusableComponents } from "../../../hooks/useReusableComponents";
+import { SaveReusableComponentButton } from "../../ReusableComponents";
+import useProperties from "../../../hooks/useProperties";
+import { useWorkspaces } from "../../../hooks/useWorkspaces";
+import useEditorAwareness from "../../../hooks/useEditorAwareness";
+import ScrollBar from "../../ScrollBar";
 import {
   ExecutingPythonText,
   LoadingEnvText,
   PythonSucceededText,
-} from "@/components/ExecutionStatusText";
-import { useEnvironmentStatus } from "@/hooks/useEnvironmentStatus";
-
-import CodeEditor from "../../CodeEditor";
+} from "../../ExecutionStatusText";
+import { useEnvironmentStatus } from "../../../hooks/useEnvironmentStatus";
+import CodeEditor from "../CodeEditor";
 import HiddenInPublishedButton from "../../HiddenInPublishedButton";
 import EditWithAIForm from "../../EditWithAIForm";
 import ApproveDiffButons from "../../ApproveDiffButtons";

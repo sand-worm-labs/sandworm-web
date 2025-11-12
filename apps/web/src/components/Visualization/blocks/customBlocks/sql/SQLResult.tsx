@@ -14,13 +14,13 @@ import { ArrowDownTrayIcon, ChartPieIcon } from "@heroicons/react/24/solid";
 import debounce from "lodash.debounce";
 import { Transition } from "@headlessui/react";
 
-import { Tooltip, TooltipV2 } from "@/components/Tooltips";
-import type { DashboardMode } from "@/components/Dashboard";
-import { dashboardModeHasControls } from "@/components/Dashboard";
-import LargeSpinner from "@/components/LargeSpinner";
-import { useCSV } from "@/hooks/useQueryCSV";
-import Spin from "@/components/Spin";
-import PageButtons from "@/components/PageButtons";
+import { Tooltip, TooltipV2 } from "../../ToolTips";
+import type { DashboardMode } from "../../Dashboard";
+import { dashboardModeHasControls } from "../../Dashboard";
+import LargeSpinner from "../../LargeSpinner";
+import { useCSV } from "../../../hooks/useQueryCSV";
+import Spin from "../../Spin";
+import PageButtons from "../../PageButtons";
 
 import Table from "./Table";
 
@@ -276,6 +276,7 @@ function SQLSuccess(props: SQLSuccessProps) {
       )}
 
       <Transition
+        as="div"
         show={!props.isResultHidden || props.dashboardMode !== null}
         enter="transition-all ease-in duration-300"
         enterFrom="max-h-0 overflow-hidden"
@@ -433,6 +434,7 @@ function SQLAborted(props: {
         </div>
       )}
       <Transition
+        as="div"
         show={!props.isResultHidden || props.dashboardMode !== null}
         enter="transition-all ease-in duration-300"
         enterFrom="max-h-0 overflow-hidden"
@@ -477,6 +479,7 @@ function SQLSyntaxError(props: {
       )}
 
       <Transition
+        as="div"
         show={!props.isResultHidden || props.dashboardMode !== null}
         enter="transition-all ease-in duration-300"
         enterFrom="max-h-0 overflow-hidden"
@@ -554,6 +557,7 @@ function SQLPythonError(props: {
       )}
 
       <Transition
+        as="div"
         show={!props.isResultHidden || props.dashboardMode !== null}
         enter="transition-all ease-in duration-300"
         enterFrom="max-h-0 overflow-hidden"

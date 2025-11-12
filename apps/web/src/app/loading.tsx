@@ -6,19 +6,25 @@ const loading = () => {
         x="0px"
         y="0px"
         viewBox="0 0 316 40"
-        enableBackground="new 0 0 316 40"
-        xmlSpace="preserve"
+        xmlns="http://www.w3.org/2000/svg"
       >
+        <defs>
+          <linearGradient id="wormGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#ea580b" />
+            <stop offset="100%" stopColor="#9333ea" />
+          </linearGradient>
+        </defs>
+
         <path
           d="M6.5,6.5c30,0,30,26.9,60,26.9c30,0,30-26.9,60-26.9c30,0,30,26.9,60,26.9c30,0,30-26.9,60-26.9
 c30,0,30,26.9,60,26.9"
+          fill="none"
+          stroke="url(#wormGradient)"
+          strokeWidth="13"
+          strokeLinecap="round"
+          strokeMiterlimit="10"
         />
       </svg>
-
-      {/* some browsers be tweaking so fallback to text */}
-      <p className="text-center text-gray-600 dark:text-gray-200 text-sm font-mono animate-pulse mt-20">
-        Loading Sandworm...
-      </p>
     </div>
   );
 };

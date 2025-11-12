@@ -3,7 +3,7 @@ import type { DataFrame } from "@sandworm/types";
 import clsx from "clsx";
 import { useState } from "react";
 
-import type { APIDataSources } from "@/hooks/useDatasources";
+import type { APIDataSources } from "../../../../hooks/useDataSources";
 
 import WritebackTarget from "./WritebackTarget";
 import WritebackTableName from "./WritebackTableName";
