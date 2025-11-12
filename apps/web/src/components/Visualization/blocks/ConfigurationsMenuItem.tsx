@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import Link from "next/link";
-import router from "next/router";
+import router from "next/navigation";
 
 import { ConfigurationsMenuBlinkingSignal } from "./BlinkingSignal";
 
