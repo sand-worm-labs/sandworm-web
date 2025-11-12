@@ -1,3 +1,6 @@
+import "react-grid-layout/css/styles.css";
+import "react-resizable/css/styles.css";
+
 import type { ReactNode } from "react";
 
 import { WorkspaceSidebar } from "@/components/Layout/WorkSpaceSidebar";
@@ -11,9 +14,7 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
     <div className="flex h-screen">
       <WorkspaceSidebar />
 
-      <main className="flex-1 overflow-y-auto bg-background  p-6">
-        {children}
-      </main>
+      <main className="flex-1 overflow-y-auto bg-background ">{children}</main>
     </div>
   );
 }
