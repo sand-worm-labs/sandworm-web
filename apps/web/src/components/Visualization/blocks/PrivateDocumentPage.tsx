@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 import { useCallback, useMemo, useState } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { isNil } from "ramda";
 import Link from "next/link";
 import { EyeIcon, PencilIcon } from "@heroicons/react/24/outline";
@@ -15,12 +15,12 @@ import { useDataSources } from "../hooks/useDataSources";
 import useDocument from "../hooks/useDocument";
 import { useDocuments } from "../hooks/useDocuments";
 import useFullScreenDocument from "../hooks/useFullScreenDocument";
-import { useYDoc } from "../hooks/useYDoc";
 import { NEXT_PUBLIC_PUBLIC_URL } from "../utils/env";
+
 import type { SessionUser } from "../hooks/useAuth";
 
 import ShareDropdown from "./ShareDropdown";
-import Layout from "./Layout";
+import Layout from "../Layout";
 import Comments from "./Comments";
 import RunAllV2 from "./RunAllV2";
 import Schedules from "./Schedules";
@@ -28,18 +28,20 @@ import Snapshots from "./Snapshots";
 import DashboardNotebookGroupButton from "./DashboarNotebookGroupButton";
 import EllipsisDropdown from "./EllipsisDropdown";
 import LiveButton from "./LiveButton";
-import { widthClasses } from "./v2Editor/constants";
-import { ContentSkeleton, TitleSkeleton } from "./v2Editor/ContentSkeleton";
+
 import Files from "./Files";
 import { PublishBlinkingSignal } from "./BlinkingSignal";
-import { Tooltip } from "./Tooltips";
-import SchemaExplorer from "./schemaExplorer";
+
 import ShortcutsModal from "./ShortcutsModal";
 import ReusableComponents from "./ReusableComponents";
 import PageSettingsPanel from "./PageSettingsPanel";
+import { useYDoc } from "../hooks/useYDocs";
+import { Tooltip } from "./ToolTips";
+import { ContentSkeleton, TitleSkeleton } from "./ContentSkeleton";
+import { widthClasses } from "@/components/Editor/constants";
 
 // this is needed because this component only works with the browser
-const V2Editor = dynamic(() => import("@/components/v2Editor"), {
+const V2Editor = dynamic(() => import("@/components/Editor"), {
   ssr: false,
 });
 
@@ -49,13 +51,64 @@ interface Props {
   user: SessionUser;
   isApp: boolean;
 }
+
+const mockDocument = {
+  id: "b800552d-a2f2-4396-86eb-70b336821cd3",
+  title: "Mocked Untitled Document",
+  icon: "DocumentIcon",
+  orderIndex: 1,
+  createdAt: "2025-11-11T07:05:48.593Z",
+  updatedAt: "2025-11-11T07:05:48.593Z",
+  deletedAt: null,
+  hasDashboard: false,
+  isSyncedWithYjs: false,
+  appId: "36951d2c-7b7e-4e83-87e9-180fccbda7d1",
+  workspaceId: "405498a2-f3cb-4307-bd1e-4daf5b3a1dba",
+  publishedAt: "2025-11-11T07:06:00.318Z",
+  runSQLSelection: false,
+  runUnexecutedBlocks: false,
+  shareLinksWithoutSidebar: true,
+  clock: 0,
+  appClock: 0,
+  version: 2,
+  userAppClock: {
+    "4a6e71c4-2c06-460b-bb29-f337bf64e0bc": 0,
+  },
+  yjsAppDocuments: [
+    {
+      id: "36951d2c-7b7e-4e83-87e9-180fccbda7d1",
+      clock: 0,
+      hasDashboard: false,
+      createdAt: "2025-11-11T07:06:00.318Z",
+    },
+  ],
+  userYjsAppDocuments: [
+    {
+      userId: "4a6e71c4-2c06-460b-bb29-f337bf64e0bc",
+      clock: 0,
+    },
+  ],
+  yjsDocument: {
+    clock: 0,
+  },
+};
+
 export default function PrivateDocumentPage(props: Props) {
-  const [{ document, publishing }, { publish }] = useDocument(
+  console.log("Rendering PrivateDocumentPage");
+  /*   const [{ document, publishing }, { publish }] = useDocument(
     props.workspaceId,
     props.documentId
   );
+ */
+  const document = mockDocument;
+  const publishing = false;
+  const publish = async () => {
+    console.log("Mock publish triggered for", document.id);
+    await new Promise(r => setTimeout(r, 500));
+  };
 
   if (!document) {
+    console.log("Document not found, showing skeleton");
     return (
       <Layout user={props.user}>
         <div className="w-full flex justify-center">
@@ -89,6 +142,8 @@ function PrivateDocumentPageInner(
     () => props.document.title || "Untitled",
     [props.document.title]
   );
+
+  console.log("Document found, rendering content:", documentTitle);
 
   const [selectedSidebar, setSelectedSidebar] = useState<
     | { _tag: "comments" }
@@ -177,7 +232,13 @@ function PrivateDocumentPageInner(
     [props.workspaceId, props.documentId, shareLinkWithoutSidebar]
   );
 
+  console.log("workspaceId:", props.workspaceId);
+  console.log("user roles:", props.user?.roles);
+
   const isViewer = props.user.roles[props.workspaceId] === "viewer";
+
+  console.log("isViewer:", isViewer);
+
   const isDeleted = !isNil(props.document.deletedAt);
 
   const [isFullScreen, { toggle: onToggleFullScreen }] = useFullScreenDocument(
@@ -244,6 +305,14 @@ function PrivateDocumentPageInner(
       `/workspaces/${props.document.workspaceId}/documents/${props.document.id}/notebook`
     );
   }, [router]);
+
+  console.log(
+    "is app",
+    props.isApp,
+    "role:",
+    props.user.roles[props.workspaceId],
+    props.isApp || props.user.roles[props.workspaceId] === "viewer"
+  );
 
   const topBarContent = (
     <div className="flex items-center w-full justify-between gap-x-6">
@@ -360,9 +429,7 @@ function PrivateDocumentPageInner(
           isPublicViewer={false}
           isDeleted={isDeleted}
           onRestoreDocument={onRestoreDocument}
-          isEditable={
-            !props.isApp && props.user.roles[props.workspaceId] !== "viewer"
-          }
+          isEditable={true}
           isPDF={false}
           isApp={props.isApp}
           userId={props.user.id}
@@ -382,18 +449,6 @@ function PrivateDocumentPageInner(
           documentId={props.documentId}
           visible={selectedSidebar?._tag === "comments"}
           onHide={onHideSidebar}
-        />
-
-        <SchemaExplorer
-          workspaceId={props.workspaceId}
-          visible={selectedSidebar?._tag === "schemaExplorer"}
-          onHide={onHideSidebar}
-          dataSourceId={
-            selectedSidebar?._tag === "schemaExplorer"
-              ? selectedSidebar.dataSourceId
-              : null
-          }
-          canRetrySchema={!isViewer}
         />
 
         <ShortcutsModal

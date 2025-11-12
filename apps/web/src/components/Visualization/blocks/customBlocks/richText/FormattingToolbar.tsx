@@ -7,7 +7,7 @@ import {
   useState,
 } from "react";
 import type { Editor } from "@tiptap/react";
-import { BubbleMenu } from "@tiptap/extension-bubble-menu";
+import { BubbleMenu } from "@tiptap/react/menus";
 import { Level } from "@tiptap/extension-heading";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";

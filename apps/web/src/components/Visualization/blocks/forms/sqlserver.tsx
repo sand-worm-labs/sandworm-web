@@ -1,4 +1,4 @@
-import type { SQLServerDataSource } from "@briefer/database";
+import type { SQLServerDataSource } from "@sandworm/database";
 import Link from "next/link";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";

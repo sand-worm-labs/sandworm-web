@@ -1,4 +1,4 @@
-import type { BigQueryDataSource } from "@briefer/database";
+import type { BigQueryDataSource } from "@sandworm/database";
 import Link from "next/link";
 import { useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form";
