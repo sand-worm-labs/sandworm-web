@@ -36,6 +36,7 @@ const useBlockEditor = ({
 }) => {
   const editor = useEditor(
     {
+      immediatelyRender: false,
       autofocus: false,
       editable: isEditable,
       extensions: [
@@ -156,6 +157,7 @@ const RichTextBlock = (props: Props) => {
   const { editor } = useBlockEditor({
     content,
     setTitle,
+
     isEditable: props.isEditable,
   });
 

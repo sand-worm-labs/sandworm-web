@@ -276,6 +276,7 @@ function SQLSuccess(props: SQLSuccessProps) {
       )}
 
       <Transition
+        as="div"
         show={!props.isResultHidden || props.dashboardMode !== null}
         enter="transition-all ease-in duration-300"
         enterFrom="max-h-0 overflow-hidden"
@@ -433,6 +434,7 @@ function SQLAborted(props: {
         </div>
       )}
       <Transition
+        as="div"
         show={!props.isResultHidden || props.dashboardMode !== null}
         enter="transition-all ease-in duration-300"
         enterFrom="max-h-0 overflow-hidden"
@@ -477,6 +479,7 @@ function SQLSyntaxError(props: {
       )}
 
       <Transition
+        as="div"
         show={!props.isResultHidden || props.dashboardMode !== null}
         enter="transition-all ease-in duration-300"
         enterFrom="max-h-0 overflow-hidden"
@@ -554,6 +557,7 @@ function SQLPythonError(props: {
       )}
 
       <Transition
+        as="div"
         show={!props.isResultHidden || props.dashboardMode !== null}
         enter="transition-all ease-in duration-300"
         enterFrom="max-h-0 overflow-hidden"

@@ -113,6 +113,7 @@ export default function CommandPalette(props: CommandPaletteProps) {
 
         <div className="fixed inset-0 z-[910] w-screen overflow-y-auto p-4 sm:p-6 md:p-20">
           <Transition.Child
+            as="div"
             enter="ease-out duration-300"
             enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             enterTo="opacity-100 translate-y-0 sm:scale-100"
