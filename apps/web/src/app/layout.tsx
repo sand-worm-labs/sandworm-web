@@ -1,3 +1,5 @@
+import "react-grid-layout/css/styles.css";
+import "react-resizable/css/styles.css";
 import "@/styles/globals.scss";
 
 import { Azeret_Mono as AzeretMono } from "next/font/google";
