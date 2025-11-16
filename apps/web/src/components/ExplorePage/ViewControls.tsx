@@ -9,7 +9,9 @@ import {
   SelectValue,
 } from "@sandworm/ui/components/select";
 import { Button } from "@sandworm/ui/components/button";
+
 import { cn } from "@/lib/utils";
+
 import type { ViewMode, SortOption } from "./QueriesList";
 
 interface ViewControlsProps {

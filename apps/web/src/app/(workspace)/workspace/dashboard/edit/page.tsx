@@ -74,7 +74,7 @@ export default function DashboardEditPage() {
           document={mockDocument}
           role={mockRole}
           user={mockUser}
-          isEditing={true}
+          isEditing
           publish={() => Promise.resolve()}
           publishing={false}
         />

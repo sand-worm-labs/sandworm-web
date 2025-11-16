@@ -2,8 +2,9 @@
 
 import { useMemo } from "react";
 import { Terminal, GitFork, Star } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+
+import { cn } from "@/lib/utils";
 
 type Tab = "all" | "forked" | "starred";
 

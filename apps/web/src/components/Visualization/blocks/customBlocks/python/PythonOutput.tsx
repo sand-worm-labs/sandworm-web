@@ -15,7 +15,6 @@ import debounce from "lodash.debounce";
 import type { PythonBlock } from "@sandworm/editor";
 
 import { downloadFile } from "../../../utils/file";
-
 import useResettableState from "../../../hooks/useResettableState";
 
 import PythonError from "./PythonError";

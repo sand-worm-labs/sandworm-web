@@ -1,4 +1,4 @@
-import * as Y from "yjs";
+import type * as Y from "yjs";
 import { Menu, Transition } from "@headlessui/react";
 import clsx from "clsx";
 import { PlusIcon } from "@heroicons/react/20/solid";
@@ -18,11 +18,12 @@ import {
   CodeBracketIcon,
   TableCellsIcon,
 } from "@heroicons/react/24/outline";
-import { APIDataSources } from "../Visualization/hooks/useDataSources";
-import useDropdownPosition from "../Visualization/hooks/dropdownposition";
 import { createPortal } from "react-dom";
 import { Table2Icon } from "lucide-react";
-import { FeatureFlags } from "@sandworm/types";
+import type { FeatureFlags } from "@sandworm/types";
+
+import useDropdownPosition from "../Visualization/hooks/dropdownposition";
+import type { APIDataSources } from "../Visualization/hooks/useDataSources";
 import useFeatureFlags from "../Visualization/hooks/useFeatureFlags";
 
 type Item = {

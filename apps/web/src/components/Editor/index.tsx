@@ -1,33 +1,25 @@
-import { Awareness } from "y-protocols/awareness";
+import type { Awareness } from "y-protocols/awareness";
 import clsx from "clsx";
-import {
-  ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import {
-  ConnectDragPreview,
-  DropTargetMonitor,
-  useDrag,
-  useDrop,
-} from "react-dnd";
-import {
-  useLastUpdatedAt,
-  useYDocState,
-} from "../Visualization/hooks/useYDocs";
-import * as Y from "yjs";
-import Title from "./Title";
-import DragHandle from "./DragHandle";
+import type { ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { ConnectDragPreview, DropTargetMonitor } from "react-dnd";
+import { useDrag, useDrop } from "react-dnd";
+import type * as Y from "yjs";
+import type {
+  YBlock,
+  TabRef as TabRefT,
+  YBlockGroup,
+  RemoveBlockGroupResult,
+  RemoveBlockDashboardConflictResult,
+  ExecutionQueue,
+  AITasks,
+} from "@sandworm/editor";
 import {
   addBlockGroup,
   updateOrder,
   groupBlockGroups,
   checkCanDropBlockGroup,
   removeBlockGroup,
-  YBlock,
   checkCanDropBlock,
   groupBlocks,
   BlockType,
@@ -39,8 +31,6 @@ import {
   removeBlock,
   addBlockGroupAfterBlock,
   getBaseAttributes,
-  TabRef as TabRefT,
-  YBlockGroup,
   canReorderTab,
   getCurrentTabId,
   reorderTab,
@@ -50,21 +40,11 @@ import {
   toggleIsBlockHiddenInPublished,
   getTabsFromBlockGroup,
   getBlockGroup,
-  RemoveBlockGroupResult,
-  RemoveBlockDashboardConflictResult,
   getNextBlockIdAfterDelete,
   isRunnableBlock,
-  ExecutionQueue,
-  AITasks,
   getClosestDataframe,
   getBlockFlatPosition,
 } from "@sandworm/editor";
-import EnvBar from "../Visualization/blocks/EnvBar";
-import PlusButton from "./PlusButton";
-import RichTextBlock from "../Visualization/blocks/customBlocks/richText";
-import { ApiDocument, UserWorkspaceRole } from "@/types";
-import PythonBlock from "../Visualization/blocks/customBlocks/python";
-import VisualizationBlock from "../Visualization";
 import { DataFrame, ElementType } from "@sandworm/types";
 import {
   Bars3CenterLeftIcon,
@@ -80,7 +60,7 @@ import {
   ArrowUpTrayIcon,
   CalendarIcon,
 } from "@heroicons/react/20/solid";
-import { ContentSkeleton } from "./ContentSkeleton";
+
 import InputBlock from "../Visualization/blocks/customBlocks/input";
 import FileUploadBlock from "../Visualization/blocks/customBlocks/fileUpload";
 import ExecIndicator from "./ExecIndicator";
@@ -116,7 +96,21 @@ import {
 import { useOnClickOutside } from "@/hooks/useOnClickOutside";
 /* import RunAllV2 from "../RunAllV2";
  */ import SimpleBar from "simplebar-react";
+import { ApiDocument, UserWorkspaceRole } from "@/types";
+import VisualizationBlock from "../Visualization";
+import PythonBlock from "../Visualization/blocks/customBlocks/python";
+import RichTextBlock from "../Visualization/blocks/customBlocks/richText";
+import EnvBar from "../Visualization/blocks/EnvBar";
+import {
+  useLastUpdatedAt,
+  useYDocState,
+} from "../Visualization/hooks/useYDocs";
 import useSideBar from "../Visualization/hooks/useSideBar";
+import { ContentSkeleton } from "./ContentSkeleton";
+
+import PlusButton from "./PlusButton";
+import DragHandle from "./DragHandle";
+import Title from "./Title";
 
 // The react-dnd package does not export this...
 type Identifier = string | symbol;
@@ -265,9 +259,8 @@ function Tab(props: TabProps) {
         const buttonCenter = buttonPos.x + buttonPos.width / 2;
         if (offset.x < buttonCenter) {
           return "left";
-        } else {
-          return "right";
         }
+        return "right";
       }
     },
     [buttonRef]
@@ -400,10 +393,7 @@ function Tab(props: TabProps) {
         className="h-full flex text-xs"
       >
         {draggingSide === "left" && isOver && canDrop && (
-          <div
-            className={`bg-ceramic-100`}
-            style={{ width: `${dragSize}px` }}
-          />
+          <div className="bg-ceramic-100" style={{ width: `${dragSize}px` }} />
         )}
         <button
           key={props.tabRef.blockId}
@@ -445,10 +435,7 @@ function Tab(props: TabProps) {
           />
         </button>
         {draggingSide === "right" && isOver && canDrop && (
-          <div
-            className={`bg-ceramic-100`}
-            style={{ width: `${dragSize}px` }}
-          />
+          <div className="bg-ceramic-100" style={{ width: `${dragSize}px` }} />
         )}
       </div>
       {createPortal(
@@ -465,7 +452,7 @@ function Tab(props: TabProps) {
           show={contextMenu !== null}
           ref={contextMenuRef}
         >
-          <div className="rounded-md bg-white shadow-[0_4px_12px_#CFCFCF] ring-1 ring-gray-100 focus:outline-none font-sans divide-y divide-gray-200 flex flex-col text-xs text-gray-600">
+          <div className="rounded-md bg-white dark:bg-black shadow-[0_4px_12px_#CFCFCF] ring-1 ring-gray-100 focus:outline-none font-sans divide-y divide-gray-200 flex flex-col text-xs text-gray-600">
             <div className="flex flex-col divide-y divide-gray-200">
               <div className="py-0.5 px-0.5">
                 <button
@@ -1564,7 +1551,8 @@ const Editor = (props: Props) => {
     (blockGroupId: string, index: number, type: Identifier | null) => {
       if (type === ElementType.Block) {
         return checkCanDropBlock(layout.value, blockGroupId, index);
-      } else if (type === ElementType.BlockGroup) {
+      }
+      if (type === ElementType.BlockGroup) {
         return checkCanDropBlockGroup(layout.value, blockGroupId, index);
       }
       return false;
@@ -1636,7 +1624,7 @@ const Editor = (props: Props) => {
           onDuplicateBlock={onDuplicateBlock}
           onDuplicateBlockGroup={onDuplicateBlockGroup}
           isPDF={props.isPDF}
-          writebackEnabled={true}
+          writebackEnabled
           onSchemaExplorer={props.onSchemaExplorer}
           insertBelow={insertBelow}
           userId={props.userId}

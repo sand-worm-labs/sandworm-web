@@ -783,8 +783,8 @@ function VisualizationBlockV2(props: Props) {
           props.hasMultipleTabs ? "rounded-2xl" : "rounded-2xl",
 
           props.isCursorWithin
-            ? "border-blue-400 shadow-sm"
-            : "border-[#EBD7D7]"
+            ? "border-primary shadow-sm"
+            : "border-[#EBD7D7] dark:border-[#262A30]"
         )}
       >
         <div
@@ -794,7 +794,7 @@ function VisualizationBlockV2(props: Props) {
           )}
         >
           <div
-            className="border-b border-[#EBD7D7]  rounded-t-2xl"
+            className="border-b border-[#EBD7D7] dark:border-[#262A30]  rounded-t-2xl"
             ref={d => {
               props.dragPreview?.(d);
             }}
