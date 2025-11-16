@@ -3,8 +3,8 @@ import useSWR from "swr";
 import type { WorkspaceEditFormValues } from "@sandworm/types";
 
 import type { ApiWorkspace } from "@/types";
-import fetcher from "../utils/fetcher";
 
+import fetcher from "../utils/fetcher";
 import { NEXT_PUBLIC_API_URL } from "../utils/env";
 
 type API = {

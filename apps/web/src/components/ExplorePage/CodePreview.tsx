@@ -45,7 +45,7 @@ export const CodePreview: React.FC<CodePreviewProps> = ({ code, language }) => {
           language={language}
           style={customTheme}
           customStyle={customStyle}
-          showLineNumbers={true}
+          showLineNumbers
           lineNumberStyle={{
             color: "#e06c75",
             fontWeight: 500,
@@ -55,7 +55,7 @@ export const CodePreview: React.FC<CodePreviewProps> = ({ code, language }) => {
             userSelect: "none",
           }}
           codeTagProps={codeTagProps}
-          wrapLines={true}
+          wrapLines
         >
           {displayCode}
         </SyntaxHighlighter>

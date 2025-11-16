@@ -190,16 +190,16 @@ const RichTextBlock = (props: Props) => {
 
   const ringColor =
     editor?.isFocused && !props.belongsToMultiTabGroup && props.isEditable
-      ? "ring-1 ring-ceramic-400"
+      ? " border border-[#262A30]"
       : !editor?.isFocused &&
           !props.belongsToMultiTabGroup &&
           props.isEditable &&
           props.isCursorWithin &&
           !props.isCursorInserting
-        ? "ring-1 ring-blue-400"
+        ? " border border-[#262A30]"
         : props.dashboardMode?._tag === "editing" &&
             props.dashboardMode.position === "expanded"
-          ? "ring-1 ring-gray-200"
+          ? "border border-[#262A30]"
           : "";
 
   return (
@@ -210,12 +210,12 @@ const RichTextBlock = (props: Props) => {
       }}
       className={clsx(
         "ring-outline ring-offset-4",
-        props.dashboardMode ? "px-4 py-3 h-full overflow-y-auto" : "",
+        props.dashboardMode ? "px-4 py-4 h-full overflow-y-auto" : "",
         ringColor,
         {
-          "rounded-tl-none rounded-sm border border-gray-200 p-2":
+          "rounded-tl-none rounded-sm border border-[#262A30] p-2":
             props.belongsToMultiTabGroup,
-          "rounded-tl-none rounded-sm border border-blue-400 p-2":
+          "rounded-tl-none rounded-sm border border-blue-400 p-2 ":
             props.belongsToMultiTabGroup &&
             props.isCursorWithin &&
             !props.isCursorInserting,

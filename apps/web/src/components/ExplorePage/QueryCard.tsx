@@ -5,6 +5,7 @@ import {
   AvatarImage,
 } from "@sandworm/ui/components/avatar";
 import { Badge } from "@sandworm/ui/components/badge";
+
 import { CodePreview } from "./CodePreview";
 import { UserProfileHover } from "./UserProfileHover";
 import type { Query } from "./DummyData";
@@ -16,10 +17,14 @@ interface QueryCardProps {
 }
 
 export function QueryCard({ query, viewMode }: QueryCardProps) {
-
   return (
-    <div className={`${viewMode === "detailed"    ? "bg-background my-2"
-      : "border rounded-lg bg-card hover:shadow-md transition-shadow my-2"}`}>
+    <div
+      className={`${
+        viewMode === "detailed"
+          ? "bg-background my-2"
+          : "border rounded-lg bg-card hover:shadow-md transition-shadow my-2"
+      }`}
+    >
       <div className="p-2">
         <div className="flex items-end justify-between gap-4">
           <div className="flex items-start gap-3 flex-1 min-w-0">

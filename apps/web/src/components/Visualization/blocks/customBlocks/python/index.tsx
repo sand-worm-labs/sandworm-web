@@ -539,6 +539,7 @@ function PythonBlock(props: Props) {
             </div>
           </div>
           <Transition
+            as="div"
             show={!isCodeHidden}
             enter="transition-all ease-in duration-300 overflow-hidden"
             enterFrom="max-h-0"

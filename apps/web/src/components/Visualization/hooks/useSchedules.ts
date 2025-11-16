@@ -2,8 +2,8 @@ import { useCallback, useMemo } from "react";
 import useSWR from "swr";
 
 import type { ExecutionSchedule } from "@/types";
-import fetcher from "../utils/fetcher";
 
+import fetcher from "../utils/fetcher";
 import { NEXT_PUBLIC_API_URL } from "../utils/env";
 import type { CreateSchedulePayload } from "../blocks/Schedules/index";
 

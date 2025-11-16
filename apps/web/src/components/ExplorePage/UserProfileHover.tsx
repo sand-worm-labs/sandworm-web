@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import {
   Avatar,
   AvatarFallback,
@@ -13,6 +12,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@sandworm/ui/components/hover-card";
+
 import type { Query } from "./DummyData";
 
 interface UserProfileHoverProps {

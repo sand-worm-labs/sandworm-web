@@ -681,6 +681,7 @@ function FilterSelectorV2(props: Props) {
 
       {ReactDOM.createPortal(
         <Transition
+          as="div"
           show={open}
           enter="transition ease-out duration-100"
           enterFrom="transform opacity-0 scale-95"
