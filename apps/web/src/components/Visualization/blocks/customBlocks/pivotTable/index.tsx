@@ -1,7 +1,7 @@
 import type { ConnectDragPreview } from "react-dnd";
 import type * as Y from "yjs";
 import type { DataFrame, PivotTableSort } from "@sandworm/types";
-import type {
+import {
   ExecutionQueue,
   PivotTableColumn,
   PivotTableMetric,

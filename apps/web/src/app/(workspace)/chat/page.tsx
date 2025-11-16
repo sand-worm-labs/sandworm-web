@@ -14,7 +14,7 @@ export default async function Page() {
           <ChatReportPreview />
         </ResultPane>
       </div>
-      <div className="w-[30%] border-l border-[#E9ECEF] overflow-hidden px-3">
+      <div className="w-[30%] border-l dark:border-[#262A30] border-[#E9ECEF] overflow-hidden px-3">
         <MiniChat />
       </div>
     </div>
