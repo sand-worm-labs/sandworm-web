@@ -102,7 +102,7 @@ export default function ChartTypeSelector(props: Props) {
       disabled={!props.isEditable}
     >
       {({ open }) => (
-        <div className="relative">
+        <div className="relative bg-black">
           {!props.compact && (
             <div className="block text-xs font-medium leading-6 text-gray-900 pb-1">
               {props.label}
@@ -139,7 +139,7 @@ export default function ChartTypeSelector(props: Props) {
             >
               <Listbox.Options
                 as="div"
-                className="w-[30rem] z-20 mt-2 divide-y divide-gray-200 overflow-hidden rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none px-5 py-4"
+                className="w-[30rem] z-20 mt-2 divide-y divide-gray-200 overflow-hidden rounded-md bg-white  dark:bg-black shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none px-5 py-4 dark:border-[#262A30] dark:border "
               >
                 <div className="grid grid-cols-3 gap-x-4 gap-y-6 items-stretch">
                   {charts.map(option => (
@@ -149,7 +149,9 @@ export default function ChartTypeSelector(props: Props) {
                       disabled={option.comingSoon}
                       className={({ active }) =>
                         clsx(
-                          active ? "border-gray-600" : "border-gray-200",
+                          active
+                            ? " border-primary"
+                            : "border-gray-200 dark:border-[#262A30]",
                           option.comingSoon
                             ? "cursor-not-allowed"
                             : "cursor-pointer",
@@ -163,17 +165,21 @@ export default function ChartTypeSelector(props: Props) {
                           <div className="h-12 w-20 rounded-sm">
                             <img
                               rel="preload"
-                              src={`/images/charts/${option.icon}`}
+                              src={`/img/charts/${option.icon}`}
                               alt=""
                               className={
-                                option.comingSoon ? "grayscale opacity-50" : ""
+                                option.comingSoon
+                                  ? "grayscale opacity-50"
+                                  : "filter hue-rotate-[230deg] saturate-120 brightness-110"
                               }
                             />
                           </div>
                           <span
                             className={clsx(
-                              active ? "text-gray-600" : "text-gray-400",
-                              "text-center px-1.5 text-[10px] absolute bottom-0 translate-y-1/2 bg-white"
+                              active
+                                ? "text-gray-600 dark:text-white"
+                                : "text-gray-400 dark:text-white",
+                              "text-center px-1.5 text-[10px] absolute bottom-0 translate-y-1/2 bg-white dark:bg-black"
                             )}
                           >
                             {option.label}

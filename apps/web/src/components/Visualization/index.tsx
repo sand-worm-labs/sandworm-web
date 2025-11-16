@@ -858,13 +858,13 @@ function VisualizationBlockV2(props: Props) {
               props.dragPreview?.(d);
             }}
           >
-            <div className="flex items-center justify-between px-3 pr-0 gap-x-4 font-sans h-12 divide-x divide-gray-200">
+            <div className="flex items-center justify-between px-3 pr-0 gap-x-4 font-sans h-12 divide-x divide-gray-200 dark:divide-[#262A30]">
               <div className="select-none text-gray-300 text-xs flex items-center w-full h-full gap-x-1.5">
                 <ChartPie className="h-4 w-4 text-gray-400" />
                 <input
                   type="text"
                   className={clsx(
-                    "text-sm font-sans font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-md border-0 text-gray-800 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-gray-400  py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white"
+                    "text-sm font-sans font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-md border-0 text-gray-800 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-gray-400 dark:placeholder:text-[#868E96]  py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white dark:text-white"
                   )}
                   placeholder="Visualization (click to add a title)"
                   value={attrs.title}
@@ -872,10 +872,10 @@ function VisualizationBlockV2(props: Props) {
                   disabled={!props.isEditable}
                 />
               </div>
-              <div className="print:hidden flex items-center gap-x-0 group-focus/block:opacity-100 h-full divide-x divide-gray-200">
+              <div className="print:hidden flex items-center gap-x-0 group-focus/block:opacity-100 h-full divide-x divide-gray-200 dark:divide-[#262A30]">
                 <button
                   className={clsx(
-                    "font-sans text-xs flex justify-center items-center gap-x-1.5 text-gray-400 px-2.5 whitespace-nowrap disabled:bg-white hover:bg-gray-100 disabled:cursor-not-allowed h-full min-w-[124px]",
+                    "font-sans text-xs flex justify-center items-center gap-x-1.5 text-gray-400 px-2.5 whitespace-nowrap disabled:bg-white hover:bg-gray-100 disabled:cursor-not-allowed h-full min-w-[124px] dark:hover:bg-[#181C21]",
                     props.isPublicMode ? "hidden" : "inline-block"
                   )}
                   onClick={onAddFilter}

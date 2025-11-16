@@ -60,7 +60,6 @@ import {
   ArrowUpTrayIcon,
   CalendarIcon,
 } from "@heroicons/react/20/solid";
-
 import InputBlock from "../Visualization/blocks/customBlocks/input";
 import FileUploadBlock from "../Visualization/blocks/customBlocks/fileUpload";
 import ExecIndicator from "./ExecIndicator";
@@ -94,8 +93,7 @@ import {
   PlayIcon,
 } from "@heroicons/react/24/outline";
 import { useOnClickOutside } from "@/hooks/useOnClickOutside";
-/* import RunAllV2 from "../RunAllV2";
- */ import SimpleBar from "simplebar-react";
+import SimpleBar from "simplebar-react";
 import { ApiDocument, UserWorkspaceRole } from "@/types";
 import VisualizationBlock from "../Visualization";
 import PythonBlock from "../Visualization/blocks/customBlocks/python";
@@ -216,7 +214,6 @@ export function getTabIcon(
     case BlockType.Writeback:
       return ArrowUpTrayIcon;
     case BlockType.PivotTable:
-      // TODO: PivotTable icon
       return Bars3CenterLeftIcon;
   }
 }
@@ -981,7 +978,6 @@ file`;
   return (
     <div className="flex group/wrapper gap-x-1 relative">
       <div
-        // this calc is here because CSS sucks
         className={clsx(
           "flex flex-col gap-y-1 absolute -translate-x-[calc(100%+4px)] h-full",
           {
