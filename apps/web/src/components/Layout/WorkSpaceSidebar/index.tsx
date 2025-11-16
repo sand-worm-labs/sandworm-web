@@ -37,7 +37,7 @@ export const WorkspaceSidebar = () => {
      }`;
 
   return (
-    <aside className="w-64 h-full flex flex-col justify-between dark:bg-[#0C1015] bg-[#F1F3F4]">
+    <aside className="w-64 h-full flex flex-col justify-between dark:bg-[#0C1015] bg-[#F1F3F4] border-r dark:border-[#262A30]">
       <div>
         <div className="px-6 py-4" />
 

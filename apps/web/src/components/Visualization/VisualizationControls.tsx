@@ -390,7 +390,9 @@ function VisualizationControlsV2(props: Props) {
     <ScrollBar
       className={clsx(
         "h-full relative shadow-[2px_0_5px_-4px_#888] overflow-y-auto",
-        props.isHidden ? "w-0" : "w-1/3 border-r border-gray-200"
+        props.isHidden
+          ? "w-0"
+          : "w-1/3 border-r border-gray-200  dark:border-[#262A30]"
       )}
     >
       <VisualizationSettingsTabsV2 tab={tab} onChange={setTab} />
