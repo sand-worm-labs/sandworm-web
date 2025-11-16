@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+
+import { ThemeTogggle } from "../Theme/ThemeToggle";
+
 import { QueryTabs } from "./QueryTabs";
 import { ViewControls } from "./ViewControls";
 import { QueryCard } from "./QueryCard";
 import { queries } from "./DummyData";
-import { ThemeTogggle } from "../Theme/ThemeToggle";
 
 export type ViewMode = "compact" | "detailed";
 export type SortOption =

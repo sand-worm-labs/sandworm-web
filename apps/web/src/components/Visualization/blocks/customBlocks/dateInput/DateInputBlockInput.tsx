@@ -1,6 +1,6 @@
 import ReactDOM from "react-dom";
 import type * as Y from "yjs";
-import ReactInputMask from "react-input-mask";
+import { IMaskInput } from "react-imask";
 import { useCallback, useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import type { DateInputValue } from "@sandworm/editor";
@@ -67,7 +67,7 @@ function DateInputBlockInput(props: Props) {
     [onChangeNewTextValue]
   );
 
-  const inputRef = useRef<ReactInputMask>(null);
+  const inputRef = useRef<IMaskInput>(null);
 
   const [isPickerOpen, setIsPickerOpen] = useState(false);
   const onClick = useCallback(() => {
@@ -141,40 +141,32 @@ function DateInputBlockInput(props: Props) {
 
   return (
     <div className="relative">
-      <ReactInputMask
-        ref={inputRef}
+      <IMaskInput
         mask={props.dateType === "date" ? "9999/99/99" : "9999/99/99 99:99:99"}
         value={newTextValue}
-        onChange={onChangeEvent}
+        unmask={false}
+        inputRef={inputRef}
+        onAccept={(value: string) => {
+          onChangeNewTextValue(value);
+        }}
         onKeyUp={onKeyUp}
         onClick={onClick}
         onFocus={onFocus}
         onBlur={editorAPI.blur}
-      >
-        {
-          // @ts-ignore
-          (inputProps: any) => (
-            <input
-              {...inputProps}
-              ref={innerRef}
-              type="text"
-              className={clsx(
-                "block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset w-full disabled:bg-gray-100 disabled:cursor-not-allowed bg-white appearance-none",
-                props.error
-                  ? "ring-red-200 focus:ring-red-200"
-                  : "focus:ring-primary-200",
-                props.isCursorWithin &&
-                  !props.isCursorInserting &&
-                  !props.belongsToMultiTabGroup
-                  ? "ring-blue-400"
-                  : "ring-gray-200",
-                (isLoading || props.error) && "bg-none" // this removes the caret
-              )}
-              onKeyDown={unfocusOnEscape}
-            />
-          )
-        }
-      </ReactInputMask>
+        onKeyDown={unfocusOnEscape}
+        className={clsx(
+          "block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset w-full disabled:bg-gray-100 disabled:cursor-not-allowed bg-white appearance-none",
+          props.error
+            ? "ring-red-200 focus:ring-red-200"
+            : "focus:ring-primary-200",
+          props.isCursorWithin &&
+            !props.isCursorInserting &&
+            !props.belongsToMultiTabGroup
+            ? "ring-blue-400"
+            : "ring-gray-200",
+          (isLoading || props.error) && "bg-none" // this removes the caret
+        )}
+      />
 
       {ReactDOM.createPortal(
         <div

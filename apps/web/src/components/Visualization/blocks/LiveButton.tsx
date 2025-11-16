@@ -17,7 +17,7 @@ function LiveButton(props: Props) {
       active={props.tooltipActive}
     >
       <button
-        className="flex items-center rounded-sm px-3 py-1 text-sm bg-white hover:bg-gray-100 text-gray-500 border border-gray-200 disabled:cursor-not-allowed disabled:bg-gray-100 group overflow-hidden group max-w-[42px] xl:max-w-[136px] hover:max-w-[136px] transition-mw duration-500"
+        className="flex items-center rounded-sm px-3 py-1 text-sm bg-white dark:bg-black dark:text-[#868E96] hover:bg-gray-100 dark:hover:bg-[#181C21] text-gray-500 border dark:border-[#262A30] border-gray-200 disabled:cursor-not-allowed disabled:bg-gray-100  group overflow-hidden group max-w-[42px] xl:max-w-[136px] hover:max-w-[136px] transition-mw duration-500"
         onClick={props.onClick}
         disabled={props.disabled}
       >

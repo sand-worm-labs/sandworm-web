@@ -11,8 +11,8 @@ import Link from "next/link";
 import * as allOutlineIcons from "@heroicons/react/24/outline";
 
 import type { APIReusableComponent, ReusableComponentType } from "@/types";
-import allLucideIcons from "../utils/lucideIcons";
 
+import allLucideIcons from "../utils/lucideIcons";
 import { useReusableComponents } from "../hooks/useReusableComponents";
 
 import { Tooltip, TooltipV2 } from "./ToolTips";

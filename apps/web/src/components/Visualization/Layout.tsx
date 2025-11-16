@@ -394,7 +394,7 @@ export default function Layout({
         <div
           className={clsx(
             isSideBarOpen ? "px-8" : "pr-8",
-            "shrink-0 w-full h-12 border-b b-1 border-gray-200 flex justify-between",
+            "shrink-0 w-full h-12 border-b b-1 border-gray-200 dark:border-[#262A30] flex justify-between",
             topBarClassname
           )}
         >
@@ -403,7 +403,7 @@ export default function Layout({
             <div
               className={clsx(
                 isSideBarOpen ? "hidden" : "mr-8",
-                "relative h-12 w-12 border-b border-gray-200 bg-ceramic-50 text-gray-500 cursor-pointer hover:bg-ceramic-100 flex-shrink-0"
+                "relative h-12 w-12 border-b border-gray-200 bg-ceramic-50 text-gray-500 dark:text-[#868E96] cursor-pointer hover:bg-ceramic-100 flex-shrink-0"
               )}
               onClick={toggleSideBar(true)}
             >

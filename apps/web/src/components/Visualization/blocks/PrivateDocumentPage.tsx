@@ -10,17 +10,18 @@ import { AITasks, ExecutionQueue } from "@sandworm/editor";
 import { useHotkeys } from "react-hotkeys-hook";
 
 import type { ApiDocument } from "@/types";
+import { widthClasses } from "@/components/Editor/constants";
 
 import { useDataSources } from "../hooks/useDataSources";
 import useDocument from "../hooks/useDocument";
 import { useDocuments } from "../hooks/useDocuments";
 import useFullScreenDocument from "../hooks/useFullScreenDocument";
 import { NEXT_PUBLIC_PUBLIC_URL } from "../utils/env";
-
 import type { SessionUser } from "../hooks/useAuth";
+import Layout from "../Layout";
+import { useYDoc } from "../hooks/useYDocs";
 
 import ShareDropdown from "./ShareDropdown";
-import Layout from "../Layout";
 import Comments from "./Comments";
 import RunAllV2 from "./RunAllV2";
 import Schedules from "./Schedules";
@@ -28,17 +29,13 @@ import Snapshots from "./Snapshots";
 import DashboardNotebookGroupButton from "./DashboarNotebookGroupButton";
 import EllipsisDropdown from "./EllipsisDropdown";
 import LiveButton from "./LiveButton";
-
 import Files from "./Files";
 import { PublishBlinkingSignal } from "./BlinkingSignal";
-
 import ShortcutsModal from "./ShortcutsModal";
 import ReusableComponents from "./ReusableComponents";
 import PageSettingsPanel from "./PageSettingsPanel";
-import { useYDoc } from "../hooks/useYDocs";
 import { Tooltip } from "./ToolTips";
 import { ContentSkeleton, TitleSkeleton } from "./ContentSkeleton";
-import { widthClasses } from "@/components/Editor/constants";
 
 // this is needed because this component only works with the browser
 const V2Editor = dynamic(() => import("@/components/Editor"), {
@@ -322,7 +319,7 @@ function PrivateDocumentPageInner(
 
   const topBarContent = (
     <div className="flex items-center w-full justify-between gap-x-6">
-      <div className="w-full overflow-hidden flex items-center gap-x-1.5 text-sm text-gray-400 font-sans">
+      <div className="w-full overflow-hidden flex items-center gap-x-1.5 text-sm text-gray-400 dark:text-[#868E96] font-sans">
         {props.isApp || props.user.roles[props.workspaceId] === "viewer" ? (
           <EyeIcon className="w-4 h-4" />
         ) : (
@@ -387,7 +384,7 @@ function PrivateDocumentPageInner(
             tooltipClassname="w-40"
           >
             <button
-              className="flex items-center rounded-sm px-3 py-1 text-sm bg-primary-200 hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 group relative"
+              className="flex items-center rounded-sm px-3 py-1 text-sm bg-white dark:bg-black dark:border-[#262A30] dark:text-[#868E96] hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 group relative border"
               onClick={onPublish}
               disabled={props.publishing}
             >
@@ -435,7 +432,7 @@ function PrivateDocumentPageInner(
           isPublicViewer={false}
           isDeleted={isDeleted}
           onRestoreDocument={onRestoreDocument}
-          isEditable={true}
+          isEditable
           isPDF={false}
           isApp={props.isApp}
           userId={props.user.id}
