@@ -128,7 +128,7 @@ export const ChatReportPreview = () => {
     <div className="w-full max-h-[95vh] p-6 flex flex-col gap-4 overflow-y-auto">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl text-black font-semibold">
+        <h2 className="text-3xl text-black dark:text-white font-semibold">
           Tokens on Base - Bar chart
         </h2>
 
@@ -139,22 +139,12 @@ export const ChatReportPreview = () => {
         </div>
       </div>
 
-      <p className="text-[#050818] text-base leading-relaxed ">
+      <p className="text-[#050818] text-base leading-relaxed dark:text-white ">
         This dashboard visualizes the most actively traded tokens on Base over
         the past 30 days. The data highlights on-chain volume trends, unique
         holder growth, and the top projects driving activity within the Base
         ecosystem.
       </p>
-
-      {/*       <RichTextBlock
-        block={blocks}
-        belongsToMultiTabGroup={false}
-        isEditable={false}
-        dragPreview={null}
-        dashboardMode={{ _tag: "editing", position: "sidebar" }}
-        isCursorWithin={false}
-        isCursorInserting={false}
-      /> */}
 
       <div className="w-full flex items-center justify-center text-neutral-500 rounded-2xl relative pt-5">
         <VisualizationBlockV2
@@ -180,14 +170,14 @@ export const ChatReportPreview = () => {
         />
       </div>
 
-      <p className="text-[#050818] text-base leading-relaxed ">
+      <p className="text-[#050818] dark:text-white text-base leading-relaxed ">
         This dashboard visualizes the most actively traded tokens on Base over
         the past 30 days. The data highlights on-chain volume trends, unique
         holder growth, and the top projects driving activity within the Base
         ecosystem.
       </p>
 
-      <p className="text-[#050818] text-base leading-relaxed ">
+      <p className="text-[#050818] dark:text-white text-base leading-relaxed ">
         This dashboard visualizes the most actively traded tokens on Base over
         the past 30 days. The data highlights on-chain volume trends, unique
         holder growth, and the top projects driving activity within the Base
