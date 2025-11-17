@@ -449,7 +449,7 @@ function Tab(props: TabProps) {
           show={contextMenu !== null}
           ref={contextMenuRef}
         >
-          <div className="rounded-md bg-white dark:bg-black shadow-[0_4px_12px_#CFCFCF] ring-1 ring-gray-100 focus:outline-none font-sans divide-y divide-gray-200 flex flex-col text-xs text-gray-600">
+          <div className="rounded-md bg-white dark:bg-black shadow-[0_4px_12px_#CFCFCF] ring-1 ring-gray-100 focus:outline-none font-primary divide-y divide-gray-200 flex flex-col text-xs text-gray-600">
             <div className="flex flex-col divide-y divide-gray-200">
               <div className="py-0.5 px-0.5">
                 <button
@@ -1700,7 +1700,7 @@ const Editor = (props: Props) => {
         <div
           className={clsx(
             "flex justify-center w-full",
-            props.isFullScreen ? "px-20" : "sm:px-0 px-4"
+            props.isFullScreen ? "px-10" : "sm:px-0 px-4"
           )}
         >
           <div

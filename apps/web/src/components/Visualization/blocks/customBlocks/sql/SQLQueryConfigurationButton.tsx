@@ -173,7 +173,7 @@ function SQLQueryConfigurationButton(props: Props) {
         >
           <div
             ref={popoverRef}
-            className="w-72 bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none font-sans rounded-md"
+            className="w-72 bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none font-primary rounded-md"
           >
             <div className="px-4 py-3">
               <Switch.Group

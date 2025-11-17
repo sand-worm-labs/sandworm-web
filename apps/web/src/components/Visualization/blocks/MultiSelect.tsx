@@ -85,7 +85,7 @@ export default function MultiSelect<T>(props: Props<T>) {
                 <Menu.Items
                   as="div"
                   ref={menuContainerRef}
-                  className="w-full rounded-md bg-white dark:bg-black shadow-md ring-1 ring-gray-100 dark:text-[#868E96] focus:outline-none font-sans flex flex-col text-xs text-gray-600 py-1.5 dark:ring-[#262A30]"
+                  className="w-full rounded-md bg-white dark:bg-black shadow-md ring-1 ring-gray-100 dark:text-[#868E96] focus:outline-none font-primary flex flex-col text-xs text-gray-600 py-1.5 dark:ring-[#262A30]"
                 >
                   {props.options.map((option, index) => (
                     <Menu.Item

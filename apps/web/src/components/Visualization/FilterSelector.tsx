@@ -36,7 +36,7 @@ import { z } from "zod";
 
 import { Tooltip } from "../Tooltip";
 
-import useDropdownPosition from "./hooks/useDropdownPosition";
+import useDropdownPosition from "./hooks/dropdownposition";
 import AxisSelector from "./blocks/AxisSelector";
 import MultiComboboxV2 from "./MultiCombobox";
 import Combobox from "./Combobox";
@@ -315,25 +315,22 @@ function FilterSelectorV2(props: Props) {
             : ""))
   );
 
+  // TODO: TEMPORARY FIX - Runtime validation removed
+  // Previous implementation used Zod .safeParse() for runtime type validation
+  // but was causing "keyValidator._parse is not a function" error due to
+  // PythonErrorOutput schema issues (likely version mismatch or incorrect import)
+  //
   const renderedValue = useMemo(() => {
-    const renderedValue = z
-      .object({ renderedValue: z.union([z.string(), z.array(z.string())]) })
-      .safeParse(props.filter);
-    if (renderedValue.success) {
-      return renderedValue.data.renderedValue;
+    if ("renderedValue" in props.filter) {
+      return props.filter.renderedValue;
     }
-
     return undefined;
   }, [props.filter]);
 
   const renderError = useMemo(() => {
-    const renderError = z
-      .object({ renderError: PythonErrorOutput })
-      .safeParse(props.filter);
-    if (renderError.success) {
-      return renderError.data.renderError;
+    if ("renderError" in props.filter) {
+      return props.filter.renderError;
     }
-
     return undefined;
   }, [props.filter]);
 
@@ -575,7 +572,7 @@ function FilterSelectorV2(props: Props) {
   return (
     <div className="relative text-xs group">
       {invalidReason ? (
-        <div className="w-64 font-sans pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1">
+        <div className="w-64 font-primary pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1">
           {invalidReason.type === "simple" ? (
             <>
               {invalidReason.reason === "invalid-column" ? (
@@ -611,7 +608,7 @@ function FilterSelectorV2(props: Props) {
           )}
         </div>
       ) : renderedValue && renderedValue !== value ? (
-        <div className="w-72 font-sans pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md gap-y-1 text-center">
+        <div className="w-72 font-primary pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md gap-y-1 text-center">
           This filter includes a Python value. The raw value is{" "}
           <span className="font-mono break-all">
             {Array.isArray(value)

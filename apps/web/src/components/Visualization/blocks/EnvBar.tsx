@@ -140,7 +140,7 @@ const StatusBadge = ({
                   >
                     <ArrowPathIcon className="h-3 w-3" />
                   </button>
-                  <div className="right-0 font-sans pointer-events-none absolute -top-2 -translate-y-full w-max opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex items-center justify-center gap-y-1">
+                  <div className="right-0 font-primary pointer-events-none absolute -top-2 -translate-y-full w-max opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex items-center justify-center gap-y-1">
                     Restart environment
                   </div>
                 </div>

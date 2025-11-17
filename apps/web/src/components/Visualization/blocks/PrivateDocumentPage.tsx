@@ -319,7 +319,7 @@ function PrivateDocumentPageInner(
 
   const topBarContent = (
     <div className="flex items-center w-full justify-between gap-x-6">
-      <div className="w-full overflow-hidden flex items-center gap-x-1.5 text-sm text-gray-400 dark:text-[#868E96] font-sans">
+      <div className="w-full overflow-hidden flex items-center gap-x-1.5 text-sm text-gray-400 dark:text-[#868E96] font-primary">
         {props.isApp || props.user.roles[props.workspaceId] === "viewer" ? (
           <EyeIcon className="w-4 h-4" />
         ) : (
@@ -384,7 +384,7 @@ function PrivateDocumentPageInner(
             tooltipClassname="w-40"
           >
             <button
-              className="flex items-center rounded-sm px-3 py-1 text-sm bg-white dark:bg-black dark:border-[#262A30] dark:text-[#868E96] hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 group relative border"
+              className="flex items-center rounded-sm px-3 py-1 text-sm bg-white dark:bg-black dark:border-[#262A30] dark:text-[#868E96] hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 group relative border border-[#E9ECEF]"
               onClick={onPublish}
               disabled={props.publishing}
             >

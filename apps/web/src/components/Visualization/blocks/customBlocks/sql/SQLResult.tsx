@@ -287,7 +287,7 @@ function SQLSuccess(props: SQLSuccessProps) {
       >
         <div
           className={clsx(
-            "max-w-full ph-no-capture bg-white font-sans",
+            "max-w-full ph-no-capture bg-white font-primary",
             tableTopBorder === "rounded" && "rounded-md",
             (!props.dashboardMode ||
               dashboardModeHasControls(props.dashboardMode)) &&
