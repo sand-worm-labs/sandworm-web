@@ -40,8 +40,8 @@ function EnvBar(props: Props) {
   return (
     <div
       className={clsx(
-        "flex items-center justify-between border-t border-gray-200 py-2 px-4 font-primary",
-        props.publishedAt && "bg-gray-50"
+        "flex items-center justify-between border-t border-gray-200 dark:border-[#262A30] py-2 px-4 font-primary",
+        props.publishedAt && "bg-gray-50 dark:bg-black"
       )}
     >
       <div className="flex items-center space-x-2">
@@ -58,7 +58,7 @@ function EnvBar(props: Props) {
             <div className={clsx(props.isViewer ? "hidden" : "")}>
               <Link
                 href={`/workspaces/${workspaceId}/environments/current/variables`}
-                className="border border-gray-200 rounded-sm text-sm px-3 py-1 hover:bg-gray-50 cursor-pointer flex items-center gap-x-2"
+                className="border border-gray-200 dark:border-[#262A30]  rounded-sm text-sm px-3 py-1 hover:bg-gray-50 cursor-pointer flex items-center gap-x-2"
               >
                 <CodeBracketIcon className="h-4 w-4 text-gray-600" />
                 <span className="text-gray-700">Environment variables</span>
@@ -67,7 +67,7 @@ function EnvBar(props: Props) {
             <button
               className={clsx(
                 props.isViewer ? "hidden" : "",
-                "border border-gray-200 rounded-sm text-sm px-3 py-1 hover:bg-gray-50 cursor-pointer flex items-center gap-x-2"
+                "border border-gray-200 dark:border-[#262A30]  rounded-sm text-sm px-3 py-1 hover:bg-gray-50 cursor-pointer flex items-center gap-x-2"
               )}
               onClick={props.onOpenFiles}
             >
@@ -99,7 +99,7 @@ const EnvironmentButton = ({
   return (
     <Link
       href={`/workspaces/${workspaceId}/environments/current`}
-      className="border border-gray-200 rounded-sm text-sm px-3 py-1 hover:bg-gray-50 cursor-pointer flex items-center gap-x-2"
+      className="border border-gray-200 dark:border-[#262A30]  rounded-sm text-sm px-3 py-1 hover:bg-gray-50 cursor-pointer flex items-center gap-x-2"
     >
       <CpuChipIcon className="h-4 w-4 text-gray-600" />
       <span className="text-gray-700">{name}</span>
