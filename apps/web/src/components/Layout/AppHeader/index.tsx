@@ -9,14 +9,15 @@ import { SandwormLogo } from "@/components/Assets";
 
 import { ProfileMenu } from "../../ProfileMenu";
 import { SearchBar } from "../../SearchBar";
+import { ThemeTogggle } from "@/components/Theme/ThemeToggle";
 
 export const AppHeader: FC = () => {
   const { data: session } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <header className="bg-background px-8 py-2 flex justify-between items-center border-b border-[#E9ECEF] dark:border-[#262A30]">
-      <Link href="/" className="flex items-center">
+    <header className="bg-background px-8 py-2 flex justify-between items-center border-b border-[#E9ECEF] dark:border-[#262A30] ">
+      <Link href="/" className="flex items-center ">
         <SandwormLogo />
         <span className="ml-3 font-bold text-lg uppercase hidden md:inline-block">
           SandW0rm.
@@ -41,6 +42,7 @@ export const AppHeader: FC = () => {
           )}
         </button>
 
+        <ThemeTogggle />
         {session?.user ? (
           <ProfileMenu currentUser={{ ...session.user }} />
         ) : null}

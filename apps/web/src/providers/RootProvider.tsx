@@ -11,7 +11,6 @@ export function RootProvider({ children }: { children: ReactNode }) {
     <ThemeProvider
       attribute="class"
       defaultTheme="dark"
-      forcedTheme="dark"
       enableSystem
       disableTransitionOnChange
     >
