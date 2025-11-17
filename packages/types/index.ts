@@ -483,6 +483,7 @@ export const VisualizationStringFilter = z.union([
     column: DataFrameStringColumn,
     operator: VisualizationStringFilterOperator,
     value: z.string(),
+    renderError: PythonErrorOutput.optional(),
     renderedValue: z.string().optional(),
   }),
   z.object({
@@ -490,6 +491,7 @@ export const VisualizationStringFilter = z.union([
     column: DataFrameStringColumn,
     operator: VisualizationStringFilterMultiValuesOperator,
     value: z.array(z.string()),
+    renderError: PythonErrorOutput.optional(),
     renderedValue: z.array(z.string()).optional(),
   }),
 ]);
@@ -528,6 +530,7 @@ export const VisualizationNumberFilter = z.object({
   column: DataFrameNumberColumn,
   operator: VisualizationNumberFilterOperator,
   value: z.union([z.string(), z.number()]),
+  renderError: PythonErrorOutput.optional(),
   renderedValue: z.string().optional(),
 });
 export type VisualizationNumberFilter = z.infer<

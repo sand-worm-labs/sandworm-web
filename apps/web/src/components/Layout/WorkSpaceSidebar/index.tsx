@@ -37,9 +37,9 @@ export const WorkspaceSidebar = () => {
      }`;
 
   return (
-    <aside className="w-64 h-full flex flex-col justify-between dark:bg-[#0C1015] bg-[#F1F3F4] border-r dark:border-[#262A30] border-[#E9ECEF]">
+    <aside className="w-[240px] h-full flex flex-col justify-between dark:bg-[#0C1015] bg-[#F1F3F4] border-r dark:border-[#262A30] border-[#E9ECEF]">
       <div>
-        <div className="px-6 py-4" />
+        <div className="px-4 py-4" />
 
         <nav className="flex-1 px-3">
           <ul className="space-y-1">
@@ -47,7 +47,7 @@ export const WorkspaceSidebar = () => {
               <li key={item.name}>
                 <Link href={item.href} className={linkClasses(item.href)}>
                   <item.icon
-                    className={`h-5 w-5 ${
+                    className={`h-4 w-4 ${
                       pathname === item.href
                         ? "text-black dark:text-[#868E96] "
                         : "text-gray-600 dark:text-[#868E96]"
@@ -64,7 +64,7 @@ export const WorkspaceSidebar = () => {
               <li key={item.name}>
                 <Link href={item.href} className={linkClasses(item.href)}>
                   <item.icon
-                    className={`h-5 w-5 ${
+                    className={`h-4 w-4 ${
                       pathname === item.href ? "text-black" : "text-gray-600"
                     }`}
                   />

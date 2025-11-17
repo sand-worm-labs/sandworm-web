@@ -51,6 +51,7 @@ import { FeaturesDialog } from "./blocks/SubscriptionBadge";
 import PagePath from "./blocks/PagePath";
 import DragLayer from "./blocks/DragLayer";
 import { useFavorites } from "./hooks/useFavorites";
+import { MiniChat } from "../Chats/MiniChat";
 
 const syne = Syne({ subsets: ["latin"] });
 
@@ -413,7 +414,10 @@ export default function Layout({
             {topBarContent}
           </div>
         </div>
-        <div className="flex-grow flex overflow-hidden">{children}</div>
+        <div className="grid grid-cols-[70%,30%]">
+          <div className="flex-grow flex overflow-hidden">{children}</div>
+          <MiniChat />
+        </div>
       </main>
     </div>
   );

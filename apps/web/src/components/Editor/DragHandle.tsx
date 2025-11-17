@@ -99,7 +99,7 @@ const DragHandle = ({
                 <Menu.Items
                   as="div"
                   ref={menuContainerRef}
-                  className="absolute z-30 rounded-md dark:bg-black bg-white  ring-1 ring-gray-100 focus:outline-none font-sans divide-y divide-gray-200 dark:divide-[#262A30] flex flex-col text-xs text-gray-600 dark:ring-[#262A30] dark:border-[#262A30] dark:border"
+                  className="absolute z-30 rounded-md dark:bg-black bg-white  ring-1 ring-gray-100 focus:outline-none font-primary divide-y divide-gray-200 dark:divide-[#262A30] flex flex-col text-xs text-gray-600 dark:ring-[#262A30] dark:border-[#262A30] dark:border"
                 >
                   <div className="flex flex-col divide-y divide-gray-200 dark:divide-[#262A30]">
                     <div className="py-0.5 px-0.5">

@@ -44,7 +44,7 @@ function EllipsisDropdown(props: Props) {
       >
         <Menu.Items
           as="div"
-          className="mt-1 rounded-md bg-white dark:bg-black shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none font-sans divide-y divide-gray-200 dark:divide-[#262A30] w-52"
+          className="mt-1 rounded-md bg-white dark:bg-black shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none font-primary divide-y divide-gray-200 dark:divide-[#262A30] w-52"
         >
           {!props.isViewer && props.onToggleFiles && (
             <MenuButton

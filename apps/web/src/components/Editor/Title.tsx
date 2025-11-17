@@ -67,7 +67,8 @@ function Title(props: Props) {
         TitleExtension.configure({
           level: 1,
           HTMLAttributes: {
-            style: `font-weight: bold; font-size: 4rem;${props.style ?? ""}`,
+            style: `font-weight: semi-bold; font-size: 2.4rem;${props.style ?? ""}`,
+            class: "font-primary",
           },
         }),
         Placeholder.configure({
@@ -112,7 +113,7 @@ function Title(props: Props) {
   );
 
   return (
-    <div className="font-sans">
+    <div className="font-primary">
       <TitleSkeleton visible={props.isLoading} />
       <div className={clsx(props.isLoading && "hidden")}>
         <EditorContent editor={editor} />

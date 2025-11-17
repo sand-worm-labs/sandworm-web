@@ -270,7 +270,7 @@ function MultiBlockSuggestion(props: MultiBlockSuggestionProps) {
       >
         <Menu.Items
           as="div"
-          className="w-44 mt-2 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none font-sans divide-y divide-gray-200"
+          className="w-44 mt-2 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none font-primary divide-y divide-gray-200"
         >
           {props.options.map((option, index) => (
             <Menu.Item key={index}>

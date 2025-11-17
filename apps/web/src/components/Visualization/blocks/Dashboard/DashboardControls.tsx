@@ -306,7 +306,7 @@ function DashboardControls(props: Props) {
   }
 
   return (
-    <div className="relative w-[400px] font-sans h-full">
+    <div className="relative w-[400px] font-primary h-full">
       <button
         className="absolute z-10 top-12 transform rounded-full border border-gray-300 text-gray-400 bg-white dark:bg-black hover:bg-ceramic-200 hover:border-ceramic-200 hover:text-ceramic-400 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2 dark:border-[#262A30]"
         onClick={props.onClose}

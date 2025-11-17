@@ -202,7 +202,7 @@ function DateInputBlockInput(props: Props) {
                 aria-hidden="true"
               />
             </button>
-            <div className="font-sans pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 w-32">
+            <div className="font-primary pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 w-32">
               <span className="inline-flex gap-x-1 items-center text-gray-400">
                 <span>{invalidValueErrorMessage(props.error)}</span>
               </span>

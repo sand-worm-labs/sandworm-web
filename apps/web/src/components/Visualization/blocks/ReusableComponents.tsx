@@ -158,7 +158,7 @@ function ReusableComponentItem(props: ReusableComponentItemProps) {
     icons[props.component.document.icon ?? "DocumentIcon"] || (() => null);
 
   return (
-    <div className="px-4 py-3 font-sans block w-full">
+    <div className="px-4 py-3 font-primary block w-full">
       <div className="flex flex-col">
         <div className="flex justify-between">
           <div
