@@ -10,7 +10,7 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import type { RefObject } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type * as Y from "yjs";
-import type {
+import {
   YBlockGroup,
   YBlock,
   ExecutionQueue,
@@ -782,25 +782,25 @@ function SQLBlock(props: Props) {
               isEditorFocused && editorState.mode === "insert",
             "border-blue-400 shadow-sm":
               isEditorFocused && editorState.mode === "normal",
-            "border-gray-200": !isEditorFocused,
+            "border-gray-200 dark:border-[#262A30]": !isEditorFocused,
           }
         )}
       >
         <div
           className={clsx(
             "rounded-t-md",
-            statusIsDisabled ? "bg-gray-100" : "bg-white",
+            statusIsDisabled ? "bg-gray-100" : "bg-white dark:bg-black",
             props.hasMultipleTabs ? "rounded-tl-none" : "",
             !(isResultHidden || !result) &&
               !isCodeHidden &&
-              "border-b border-gray-200",
+              "border-b border-gray-200 dark:border-[#262A30]",
             (isResultHidden || !result) && !isCodeHidden && "rounded-b-md",
             (isResultHidden || !result) && isCodeHidden && "rounded-b-md"
           )}
         >
           <div
             className={clsx(
-              "bg-gray-50 rounded-t-md",
+              "bg-gray-50 rounded-t-md dark:bg-black ",
               props.hasMultipleTabs ? "rounded-tl-none" : "",
               isCodeHidden && (isResultHidden || !result) ? "rounded-b-md" : ""
             )}
@@ -811,11 +811,12 @@ function SQLBlock(props: Props) {
             <div
               className={clsx(
                 "flex items-center justify-between px-3 pr-0 gap-x-4 font-sans h-12 rounded-t-md",
-                !isCodeHidden && "divide-x divide-gray-200",
+                !isCodeHidden &&
+                  "divide-x divide-gray-200 dark:divide-[#262A30]",
                 props.hasMultipleTabs ? "rounded-tl-none" : "",
                 isCodeHidden && (isResultHidden || !result)
                   ? "rounded-b-md"
-                  : "border-b border-gray-200"
+                  : "border-b border-gray-200 dark:border-[#262A30]"
               )}
             >
               <div className="select-none text-gray-300 text-xs flex items-center w-full h-full gap-x-1.5">

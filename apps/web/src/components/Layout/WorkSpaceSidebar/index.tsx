@@ -33,11 +33,11 @@ export const WorkspaceSidebar = () => {
      ${
        pathname === href
          ? "bg-[#DEE2E6] dark:bg-[#181C21] text-black dark:text-white "
-         : "text-gray-600 dark:text-white hover:bg-white/10"
+         : "text-gray-600 dark:text-white hover:bg-white/10 dark:hover:bg-[#181C21]"
      }`;
 
   return (
-    <aside className="w-64 h-full flex flex-col justify-between dark:bg-[#0C1015] bg-[#F1F3F4] border-r dark:border-[#262A30]">
+    <aside className="w-64 h-full flex flex-col justify-between dark:bg-[#0C1015] bg-[#F1F3F4] border-r dark:border-[#262A30] border-[#E9ECEF]">
       <div>
         <div className="px-6 py-4" />
 
@@ -49,7 +49,7 @@ export const WorkspaceSidebar = () => {
                   <item.icon
                     className={`h-5 w-5 ${
                       pathname === item.href
-                        ? "text-black "
+                        ? "text-black dark:text-[#868E96] "
                         : "text-gray-600 dark:text-[#868E96]"
                     }`}
                   />
