@@ -28,7 +28,7 @@ const PageButtons: React.FC<PageButtonsProps> = ({
         : currentPage + 1;
   return (
     totalPages > 1 && (
-      <div className="flex items-center justify-center left-0 bottom-0 w-full font-sans">
+      <div className="flex items-center justify-center left-0 bottom-0 w-full font-primary">
         <button
           onClick={prevPage}
           disabled={currentPage === 0 || loading}

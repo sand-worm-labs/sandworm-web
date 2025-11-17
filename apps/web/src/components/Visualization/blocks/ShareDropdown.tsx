@@ -64,7 +64,7 @@ export default function ShareDropdown(props: Props) {
       >
         <Menu.Items
           as="div"
-          className="w-60 xl:w-72 mt-1 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none font-sans divide-y divide-gray-200"
+          className="w-60 xl:w-72 mt-1 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none font-primary divide-y divide-gray-200"
         >
           {props.role !== "viewer" && props.onTogglePublic && (
             <Menu.Item>

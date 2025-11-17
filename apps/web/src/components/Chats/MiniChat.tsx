@@ -6,7 +6,7 @@ import { MultimodalInput } from "./multimodal-input";
 
 export const MiniChat = () => {
   return (
-    <div className="flex flex-col items-center w-full md:max-w-[800px] max-w-[calc(100dvw-32px)] px-4 md:px-0 mx-auto py-6">
+    <div className="flex flex-col items-center w-full md:max-w-[800px] max-w-[calc(100dvw-32px)] px-4 md:px-6 mx-auto py-6 border-l dark:border-[#262A30] text-sm border-[#E9ECEF]">
       <div className="flex flex-col w-full gap-4 mb-6">
         <div className="flex justify-end">
           <div className="bg-[#DEFCFE] text-[#343A40] dark:bg-[#121417] px-4 py-2 rounded-2xl max-w-[75%] rounded-br-none dark:text-[#8696A6] ">

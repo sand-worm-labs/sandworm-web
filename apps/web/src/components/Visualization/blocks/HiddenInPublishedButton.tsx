@@ -73,7 +73,7 @@ function HiddenInPublishedButton(props: Props) {
                 <Menu.Items
                   as="div"
                   ref={containerRef}
-                  className="absolute z-30 rounded-md bg-white shadow-[0_4px_12px_#CFCFCF] ring-1 ring-gray-100 focus:outline-none font-sans divide-y divide-gray-200 flex flex-col text-xs text-gray-600"
+                  className="absolute z-30 rounded-md bg-white shadow-[0_4px_12px_#CFCFCF] ring-1 ring-gray-100 focus:outline-none font-primary divide-y divide-gray-200 flex flex-col text-xs text-gray-600"
                 >
                   <div className="flex flex-col divide-y divide-gray-200">
                     <div className="py-0.5 px-0.5">

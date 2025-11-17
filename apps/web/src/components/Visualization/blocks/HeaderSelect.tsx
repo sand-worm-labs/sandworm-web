@@ -51,7 +51,7 @@ export default function HeaderSelect(props: Props) {
                 : "text-red-400 bg-red-50 dark:bg-black hover:bg-red-100"
             )}
           >
-            <div className="flex gap-x-3 items-center font-sans overflow-hidden">
+            <div className="flex gap-x-3 items-center font-primary overflow-hidden">
               <span className="block truncate">{selectedOptionContent}</span>
             </div>
             <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">

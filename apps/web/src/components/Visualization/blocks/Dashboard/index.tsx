@@ -210,7 +210,7 @@ export default function Dashboard(props: Props) {
 
   const topBarContent = (
     <div className="flex items-center w-full justify-between">
-      <div className="w-full overflow-hidden flex items-center gap-x-1.5 text-sm text-gray-400 font-sans">
+      <div className="w-full overflow-hidden flex items-center gap-x-1.5 text-sm text-gray-400 font-primary">
         {props.isEditing ? (
           <SquaresPlusIcon className="w-4 h-4" />
         ) : (

@@ -195,7 +195,7 @@ function NewTabButton(props: Props) {
         >
           <Menu.Items
             as="div"
-            className="rounded-md bg-white shadow-xl ring-1 ring-black ring-opacity-5 focus:outline-none font-sans py-1.5 px-1.5 flex flex-col gap-y-2"
+            className="rounded-md bg-white shadow-xl ring-1 ring-black ring-opacity-5 focus:outline-none font-primary py-1.5 px-1.5 flex flex-col gap-y-2"
             ref={containerRef}
           >
             {menuItems.map(item => (
