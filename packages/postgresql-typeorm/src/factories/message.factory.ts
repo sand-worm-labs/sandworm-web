@@ -1,7 +1,8 @@
 import { setSeederFactory } from 'typeorm-extension';
 import { MessageEntity } from '../entities';
+import { fake } from '../utils';
 
-export default setSeederFactory(MessageEntity, (fake) => {
+export default setSeederFactory(MessageEntity, () => {
   const message = new MessageEntity();
 
   message.role = fake.helpers.arrayElement(['user', 'assistant']);
@@ -11,7 +12,7 @@ export default setSeederFactory(MessageEntity, (fake) => {
   ];
 
   message.attachments = [
-    { filename: 'image.png', path: fake.image.imageUrl() }
+    { filename: 'image.png', path: fake.image.url() }
   ];
   return message;
 });
