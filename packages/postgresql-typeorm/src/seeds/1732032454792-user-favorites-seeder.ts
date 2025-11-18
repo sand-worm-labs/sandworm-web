@@ -1,7 +1,7 @@
 import { getRandomInt } from '@sandworm/nest-common';
 import { DataSource } from 'typeorm';
 import { Seeder, SeederFactoryManager } from 'typeorm-extension';
-import { DocumentEntity, UserEntity } from '../entities';
+import { DocumentEntity, UserEntity, FavoriteEntity } from '../entities';
 
 export class UserFavoritesSeeder1732032454792 implements Seeder {
   track = false;
@@ -10,8 +10,10 @@ export class UserFavoritesSeeder1732032454792 implements Seeder {
     dataSource: DataSource,
     _factoryManager: SeederFactoryManager,
   ): Promise<any> {
-    // Get random users
     const userRepository = dataSource.getRepository(UserEntity);
+    const documentRepository = dataSource.getRepository(DocumentEntity);
+    const favoriteRepository = dataSource.getRepository(FavoriteEntity);
+
     const numberOfUsers = await userRepository.count();
     const randomOffset = getRandomInt(0, numberOfUsers - 1);
 
@@ -22,8 +24,7 @@ export class UserFavoritesSeeder1732032454792 implements Seeder {
       .take(10)
       .getMany();
 
-    // Get random documents
-    const documentRepository = dataSource.getRepository(DocumentEntity);
+    // --- GET RANDOM DOCUMENTS ---
     const numberOfDocuments = await documentRepository.count();
     const randomDocumentOffset = getRandomInt(0, numberOfDocuments - 1);
 
@@ -34,14 +35,19 @@ export class UserFavoritesSeeder1732032454792 implements Seeder {
       .getMany();
 
     for (const user of users) {
-      const randomDocumentNumber = getRandomInt(0, documents.length - 1);
-      const isExist = user.favorites.some(
-        (favorite) => favorite.id === documents[randomDocumentNumber].id,
-      );
+      const randomDocument = documents[getRandomInt(0, documents.length - 1)];
 
-      if (!isExist) {
-        user.favorites.push(documents[randomDocumentNumber]);
-        await userRepository.save(user);
+      const exists = await favoriteRepository.findOne({
+        where: { user: { id: user.id }, document: { id: randomDocument.id } },
+      });
+
+      if (!exists) {
+        const fav = favoriteRepository.create({
+          user,
+          document: randomDocument,
+        });
+
+        await favoriteRepository.save(fav);
       }
     }
   }

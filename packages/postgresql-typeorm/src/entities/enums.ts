@@ -15,7 +15,8 @@ export enum ConnStatus {
 export enum Plan {
     FREE = 'free',
     TRIAL = 'trial',
-    PROFESSIONAL = 'professional',
+    ENTERPRISE = 'enterprise',
+    PRO = 'professional',
 }
 
 export enum UserWorkspaceRole {

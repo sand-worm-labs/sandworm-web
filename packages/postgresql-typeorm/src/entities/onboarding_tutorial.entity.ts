@@ -6,7 +6,7 @@ import {
     Unique,
     type Relation,
 } from "typeorm";
-import { OnboardingStep } from "./enums";
+import { OnboardingTutorialStep } from "./enums";
 import { UserEntity } from "./user.entity";
 import { AbstractEntity } from "./abstract.entity";
 import { WorkspaceEntity } from "./workspace.entity";
@@ -23,8 +23,8 @@ export class OnboardingTutorialEntity extends AbstractEntity {
     @Column()
     workspaceId!: string;
 
-    @Column({ type: "enum", enum: OnboardingStep, default: OnboardingStep.RUN_QUERY })
-    currentStep!: OnboardingStep;
+    @Column({ type: "enum", enum: OnboardingTutorialStep, default: OnboardingTutorialStep.RUN_QUERY })
+    currentStep!: OnboardingTutorialStep;
 
     @Column({ default: false })
     isComplete!: boolean;

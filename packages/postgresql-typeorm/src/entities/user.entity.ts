@@ -22,7 +22,7 @@ import { WorkspaceEntity } from "./workspace.entity";
 import { OnboardingTutorialEntity } from "./onboarding_tutorial.entity";
 import { YjsDocumentEntity } from "./yjs-document.entity";
 import { YjsAppDocumentEntity } from "./yjs-app-document.entity";
-import { FavoriteEntity } from "./favorite.enitity";
+import { FavoriteEntity } from "./favorite.entity";
 
 @Entity("users")
 export class UserEntity extends AbstractEntity {
@@ -80,8 +80,6 @@ export class UserEntity extends AbstractEntity {
     }
   }
 
-  // --- RELATIONS ---
-
   @OneToOne(() => UserSettingEntity, (userSetting) => userSetting)
   @JoinColumn()
   settings?: Relation<UserSettingEntity>;
@@ -92,7 +90,7 @@ export class UserEntity extends AbstractEntity {
   @OneToMany(() => CommentEntity, (comment) => comment.author)
   comments?: Relation<CommentEntity[]>;
 
-  @OneToMany(() => FavoriteEntity, (favorite) => favorite.user)
+  @OneToMany(() => FavoriteEntity, (userfavorite) => userfavorite.user)
   favorites!: Relation<FavoriteEntity[]>;
 
   @OneToMany(() => UserFollowsEntity, (userFollow) => userFollow.follower)
