@@ -1,7 +1,8 @@
 import { setSeederFactory } from 'typeorm-extension';
 import { DocumentEntity } from '../entities';
+import { fake } from '../utils';
 
-export default setSeederFactory(DocumentEntity, (fake) => {
+export default setSeederFactory(DocumentEntity, () => {
   const document = new DocumentEntity(); // renamed variable to match entity
 
   document.title = fake.lorem.sentence();
