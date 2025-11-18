@@ -1,16 +1,17 @@
 import { setSeederFactory } from 'typeorm-extension';
 import { UserSettingEntity } from '../entities';
+import { fake } from '../utils';
 
-export default setSeederFactory(UserSettingEntity, (fake) => {
+export default setSeederFactory(UserSettingEntity, () => {
   const setting = new UserSettingEntity();
 
   setting.socialLinks = {
-    telegram: fake.internet.userName(),
-    twitter: `https://twitter.com/${fake.internet.userName()}`,
-    github: `https://github.com/${fake.internet.userName()}`,
-    discord: `${fake.internet.userName()}#${fake.number.int({ min: 1000, max: 9999 })}`,
+    telegram: fake.internet.username(),
+    twitter: `https://twitter.com/${fake.internet.username()}`,
+    github: `https://github.com/${fake.internet.username()}`,
+    discord: `${fake.internet.username()}#${fake.number.int({ min: 1000, max: 9999 })}`,
     email: fake.internet.email(),
-    warpcast: `https://warpcast.com/${fake.internet.userName()}`,
+    warpcast: `https://warpcast.com/${fake.internet.username()}`,
   };
   setting.statusText = fake.lorem.sentence();
   setting.statusUpdatedAt = fake.date.recent();

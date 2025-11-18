@@ -1,7 +1,8 @@
 import { setSeederFactory } from 'typeorm-extension';
 import { OnboardingTutorialStep, OnboardingTutorialEntity } from '../entities';
+import { fake } from '../utils';
 
-export default setSeederFactory(OnboardingTutorialEntity, (fake) => {
+export default setSeederFactory(OnboardingTutorialEntity, () => {
     const onboarding = new OnboardingTutorialEntity();
 
     const steps = Object.values(OnboardingTutorialStep);
