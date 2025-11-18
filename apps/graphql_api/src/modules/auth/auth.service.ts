@@ -54,7 +54,7 @@ export class AuthService {
     return payload;
   }
 
-  async createToken(data: { id: number }): Promise<string> {
+  async createToken(data: { id: string }): Promise<string> {
     const tokenExpiresIn = this.configService.getOrThrow('auth.expires', {
       infer: true,
     });
