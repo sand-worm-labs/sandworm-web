@@ -3,7 +3,7 @@ import { DataSource } from 'typeorm';
 import { Seeder, SeederFactoryManager } from 'typeorm-extension';
 import { DocumentEntity, UserEntity, WorkspaceEntity } from '../entities';
 
-export class DocumentSeeder1760696714055 implements Seeder {
+export class DocumentSeeder17320198482745 implements Seeder {
   track = false;
 
   public async run(
