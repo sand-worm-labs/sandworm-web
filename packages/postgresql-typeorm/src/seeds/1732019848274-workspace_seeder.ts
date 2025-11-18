@@ -3,7 +3,7 @@ import { Seeder, SeederFactoryManager } from 'typeorm-extension';
 import { getRandomInt } from '@sandworm/nest-common';
 import { UserEntity, WorkspaceEntity } from '../entities';
 
-export class WorkspaceSeeder1760696739409 implements Seeder {
+export class WorkspaceSeeder1732019848274 implements Seeder {
     track = false;
 
     public async run(
