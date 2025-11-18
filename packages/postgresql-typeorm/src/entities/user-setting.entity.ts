@@ -17,9 +17,13 @@ export class UserSettingEntity extends AbstractEntity {
   @PrimaryGeneratedColumn("uuid", { primaryKeyConstraintName: 'PK_user_setting_id' })
   id: string;
 
+  @Column({ type: "uuid", name: "user_id", unique: true })
+  userId: string;
+
   @OneToOne(() => UserEntity, (user) => user.settings, { onDelete: "CASCADE" })
-  @JoinColumn({ name: "id" })
+  @JoinColumn({ name: "user_id" })
   user: UserEntity;
+
 
   @Column({
     type: "jsonb",

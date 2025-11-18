@@ -18,7 +18,7 @@ import { WorkspaceEntity } from "./workspace.entity";
 import { YjsDocumentEntity } from "./yjs-document.entity";
 import { YjsAppDocumentEntity } from "./yjs-app-document.entity";
 import { ExecutionScheduleEntity } from "./execution-schedule.entity";
-import { FavoriteEntity } from "./favorite.enitity";
+import { FavoriteEntity } from "./favorite.entity";
 import { ReusableComponentEntity } from "./reusable_component.entity";
 import { ReusableComponentInstanceEntity } from "./reusable_component_instance.entity";
 

@@ -1,10 +1,10 @@
 import { setSeederFactory } from 'typeorm-extension';
-import { OnboardingStep, OnboardingTutorialEntity } from '../entities';
+import { OnboardingTutorialStep, OnboardingTutorialEntity } from '../entities';
 
 export default setSeederFactory(OnboardingTutorialEntity, (fake) => {
     const onboarding = new OnboardingTutorialEntity();
 
-    const steps = Object.values(OnboardingStep);
+    const steps = Object.values(OnboardingTutorialStep);
     const randomStep = fake.helpers.arrayElement(steps);
 
     onboarding.currentStep = randomStep// adjust as needed
