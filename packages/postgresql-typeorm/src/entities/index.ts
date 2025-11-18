@@ -1,5 +1,6 @@
 export * from './document.entity';
 export * from './message.entity';
+export * from './favorite.entity';  // fixed
 export * from './comment.entity';
 export * from './tag.entity';
 export * from './user-follows.entity';
@@ -10,7 +11,6 @@ export * from './onboarding_tutorial.entity';
 export * from './chat.entity';
 export * from './vote.entity';
 export * from './enums';
-export * from './favorite.enitity';
 export * from './reusable_component.entity';
 export * from './reusable_component_instance.entity';
 export * from './yjs-document.entity';

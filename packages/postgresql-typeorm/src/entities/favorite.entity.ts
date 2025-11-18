@@ -4,19 +4,20 @@ import {
     PrimaryGeneratedColumn,
     ManyToOne,
     JoinColumn,
-    CreateDateColumn,
-    UpdateDateColumn,
     Index,
-    type Relation,
-    Unique,
 } from "typeorm";
 import { DocumentEntity } from "./document.entity";
 import { UserEntity } from "./user.entity";
 import { AbstractEntity } from "./abstract.entity";
 
-@Entity("favorite")
-@Unique("UQ_favorite_user_document", ["userId", "documentId"])
-@Index("documentId_index", ["documentId"])
+@Entity('favorites')
+@Index(
+  'UQ_favorite_userid_documentdid',
+  ['userId', 'documentId'],
+  {
+    unique: true,
+  },
+)
 export class FavoriteEntity extends AbstractEntity {
     @PrimaryGeneratedColumn("uuid", { primaryKeyConstraintName: "PK_favorite_id" })
     id!: string;
@@ -33,7 +34,7 @@ export class FavoriteEntity extends AbstractEntity {
         referencedColumnName: "id",
         foreignKeyConstraintName: "FK_favorite_document",
     })
-    document!: Relation<DocumentEntity>;
+    document!: DocumentEntity;
 
     @ManyToOne(() => UserEntity, (user) => user.favorites)
     @JoinColumn({
@@ -41,5 +42,5 @@ export class FavoriteEntity extends AbstractEntity {
         referencedColumnName: "id",
         foreignKeyConstraintName: "FK_favorite_user",
     })
-    user!: Relation<UserEntity>;
+    user!: UserEntity;
 }
