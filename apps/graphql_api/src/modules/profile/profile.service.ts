@@ -15,7 +15,7 @@ export class ProfileService {
     private readonly userFollowRepository: Repository<UserFollowsEntity>,
   ) { }
 
-  async getProfile(userId: number, username: string): Promise<Profile> {
+  async getProfile(userId: string, username: string): Promise<Profile> {
     // Get the profile of the target user
     const targetProfile = await this.userRepository.findOneBy({ username });
 
@@ -25,8 +25,8 @@ export class ProfileService {
 
     const profile: Profile = {
       username: targetProfile.username,
-      bio: targetProfile.bio,
-      image: targetProfile.image,
+      bio: targetProfile.settings.statusText,
+      image: targetProfile.avater,
       following: false,
     };
 
@@ -53,7 +53,7 @@ export class ProfileService {
     return profile;
   }
 
-  async follow(userId: number, username: string): Promise<Profile> {
+  async follow(userId: string, username: string): Promise<Profile> {
     // Find the user who wants to follow
     // And check if the user is already following the target user
     const [user] = await this.userRepository.find({
@@ -98,13 +98,13 @@ export class ProfileService {
 
     return {
       username: followingUser.username,
-      bio: followingUser.bio,
-      image: followingUser.image,
+      bio: followingUser.settings.statusText,
+      image: followingUser.avater,
       following: true,
     };
   }
 
-  async unfollow(userId: number, username: string): Promise<Profile> {
+  async unfollow(userId: string, username: string): Promise<Profile> {
     // Find the user who wants to unfollow
     const user = await this.userRepository.findOne({
       where: { id: userId },
@@ -136,8 +136,8 @@ export class ProfileService {
 
     return {
       username: followUser.username,
-      bio: followUser.bio,
-      image: followUser.image,
+      bio: followUser.settings.statusText,
+      image: followUser.avater,
       following: false,
     };
   }
