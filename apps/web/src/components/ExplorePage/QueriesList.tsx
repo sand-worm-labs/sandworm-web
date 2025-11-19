@@ -6,7 +6,7 @@ import { ThemeTogggle } from "../Theme/ThemeToggle";
 
 import { QueryTabs } from "./QueryTabs";
 import { ViewControls } from "./ViewControls";
-import { QueryCard } from "./QueryCard";
+import { QueryCard } from "./ExploreCard";
 import { queries } from "./DummyData";
 
 export type ViewMode = "compact" | "detailed";
