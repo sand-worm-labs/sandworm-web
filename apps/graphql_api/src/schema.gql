@@ -20,6 +20,17 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type Document {
+  email: String
+  firstName: String
+  fullName: String
+  id: String!
+  image: String
+  isOnboarded: Boolean!
+  lastName: String
+  username: String
+}
+
 input GetAllUsersInput {
   limit: Float
   offset: Float
@@ -45,6 +56,9 @@ type Mutation {
   """Register new user"""
   createUser(input: CreateUserInput!): User!
 
+  """Create a new workspace"""
+  createWorkspace(name: String!): Workspace!
+
   """Follow User"""
   followUser(
     """Username of the profile"""
@@ -62,6 +76,9 @@ type Mutation {
 
   """Update current user"""
   updateUser(input: UpdateUserInput!): User!
+
+  """Update workspace info"""
+  updateWorkspace(name: String, workspaceId: String!): Workspace!
 }
 
 type Profile {
@@ -75,6 +92,9 @@ type Query {
   """Get current user (from token)"""
   currentUser: AuthPayload!
 
+  """Get all User workspaces"""
+  getAllUserWorkspaces(limit: Int, offset: Int): [Workspace!]!
+
   """Get all users"""
   getAllUsers(input: GetAllUsersInput!): [User!]!
 
@@ -83,6 +103,9 @@ type Query {
 
   """Users that a given user is following"""
   getUserFollowing(userId: String!): [User!]!
+
+  """Get workspace by ID"""
+  getWorkspace(workspaceId: String!): Workspace!
   hello: String!
 
   """Get Profile"""
@@ -104,8 +127,10 @@ input UpdateUserInput {
 type User {
   email: String
   firstName: String
-  followersCount: Int
-  followingCount: Int
+  followers: [User!]!
+  followersCount: Int!
+  following: [User!]!
+  followingCount: Int!
   fullName: String
   id: String!
   image: String
@@ -123,4 +148,24 @@ type UserSetting {
   theme: String!
   userId: ID!
   wallets: [JSON!]!
+}
+
+type Workspace {
+  documentsCount: [Document!]!
+  id: ID!
+  name: String!
+  owner: User!
+  ownerId: ID!
+  plan: WorkspacePlan!
+  source: String
+  useCases: [String!]!
+  useContext: String
+}
+
+"""Price plan of the workspace"""
+enum WorkspacePlan {
+  ENTERPRISE
+  FREE
+  PRO
+  TRIAL
 }
