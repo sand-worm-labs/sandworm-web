@@ -7,8 +7,7 @@ import Image from "next/image";
 
 import { useIsMobile } from "@/hooks/useMobile";
 import type { Query, QueryPagination } from "@/types";
-
-import { QueryCard } from "../QueryCard";
+import { ExploreCard } from "@/components/ExplorePage/ExploreCard";
 
 interface IQueryListProps {
   queries: Query[] | null;
@@ -51,9 +50,14 @@ export const QueryList: React.FC<IQueryListProps> = ({
 
   return (
     <div className="mb-16">
-      <div className="grid grid-cols-1 gap-4 mb-8">
+      <div className="grid grid-cols-1 gap-2 mb-8">
         {queriesWithLikeStatus.map(query => (
-          <QueryCard key={query.id} query={query} liked={query.liked} />
+          <ExploreCard
+            key={query.id}
+            query={query}
+            liked={query.liked}
+            viewMode="compact"
+          />
         ))}
       </div>
 

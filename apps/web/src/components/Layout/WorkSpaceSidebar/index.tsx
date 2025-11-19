@@ -33,7 +33,7 @@ export const WorkspaceSidebar = () => {
      ${
        pathname === href
          ? "bg-[#DEE2E6] dark:bg-[#181C21] text-black dark:text-white "
-         : "text-gray-600 dark:text-white hover:bg-white/10 dark:hover:bg-[#181C21]"
+         : "text-gray-600 dark:text-white hover:bg-[#DEE2E6] dark:hover:bg-[#181C21] hover:text-black dark:hover:text-white"
      }`;
 
   return (
