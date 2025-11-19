@@ -92,9 +92,6 @@ type Query {
   """Get current user (from token)"""
   currentUser: AuthPayload!
 
-  """Get all User workspaces"""
-  getAllUserWorkspaces(limit: Int, offset: Int): [Workspace!]!
-
   """Get all users"""
   getAllUsers(input: GetAllUsersInput!): [User!]!
 
@@ -103,6 +100,9 @@ type Query {
 
   """Users that a given user is following"""
   getUserFollowing(userId: String!): [User!]!
+
+  """Get User workspaces"""
+  getUserWorkspaces(limit: Int, offset: Int): [Workspace!]!
 
   """Get workspace by ID"""
   getWorkspace(workspaceId: String!): Workspace!
@@ -125,6 +125,7 @@ input UpdateUserInput {
 }
 
 type User {
+  avater: String
   email: String
   firstName: String
   followers: [User!]!
@@ -133,7 +134,6 @@ type User {
   followingCount: Int!
   fullName: String
   id: String!
-  image: String
   isOnboarded: Boolean!
   lastName: String
   settings: UserSetting
