@@ -29,9 +29,10 @@ export class WorkspaceService {
     return this.toGraphQLWorkspace(workspace);
   }
 
-  async getAllUserWorkspaces(options: PaginationOptions): Promise<Workspace[]> {
+  async getAllUserWorkspaces( userId: string, options: PaginationOptions): Promise<Workspace[]> {
     const { limit = 20, offset = 0 } = options;
     const workspaces = await this.workspaceRepository.find({
+      where: { ownerId: userId },
       take: limit,
       skip: offset,
       order: { createdAt: 'DESC' },
@@ -72,7 +73,7 @@ export class WorkspaceService {
     let documents = await this.documentRepository.find({ where: { workspaceId } });
     return [];
   }
-  
+
   async getWorkspacesByUser(userId: string, options: PaginationOptions = {}): Promise<Workspace[]> {
     const { limit = 20, offset = 0 } = options;
     const workspaces = await this.workspaceRepository.find({
