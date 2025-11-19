@@ -93,13 +93,24 @@ export class UserResolver {
     return this.userService.getUserSettings(user.id);
   }
 
-  @ResolveField(() => Int)
-  async followersCount(@Parent() user: User): Promise<number> {
-    return this.userService.getFollowersCount(user.id);
+  @ResolveField(() => [User])
+  async followers(@Parent() user: User): Promise<User[]> {
+    return this.userService.getUserFollowers(user.id);
   }
 
-  @ResolveField(() => Int)
+  @ResolveField(() => [User])
+  async following(@Parent() user: User): Promise<User[]> {
+    return this.userService.getUserFollowing(user.id);
+  }
+
+
+  @ResolveField(() => Int, { name: 'followersCount' })
+  async followersCount(@Parent() user: User): Promise<number> {
+    return await this.userService.getUserFollowersCount(user.id);
+  }
+
+  @ResolveField(() => Int, { name: 'followingCount' })
   async followingCount(@Parent() user: User): Promise<number> {
-    return this.userService.getFollowingCount(user.id);
+    return await this.userService.getUserFollowingCount(user.id);
   }
 }
