@@ -27,8 +27,9 @@ export class UserService {
     const user = await this.userRepository.findOneByOrFail({
       id: currentUser.id,
     });
-
-    return { id : user.id, user: { ...user, followersCount: 0, followingCount: 0}, token: currentUser.token };
+    
+    let foundUser = this.toGraphQLUser(user);
+    return { id : user.id, user: foundUser, token: currentUser.token };
   }
 
   async createUser(input: CreateUserInput): Promise<User> {
@@ -44,8 +45,8 @@ export class UserService {
 
     const newUser = this.userRepository.create({ username, email, password });
     const savedUser = await this.userRepository.save(newUser);
-
-    return {...savedUser, followersCount:0, followingCount:0};
+  
+    return this.toGraphQLUser(savedUser);
   }
 
   async updateUser(userId: string, input: UpdateUserInput): Promise<User> {
@@ -60,36 +61,25 @@ export class UserService {
       ...input,
     });
 
-    return {
-      ...user,
-      ...savedUser,
-      followersCount: 0,
-      followingCount: 0
-    };
+    return this.toGraphQLUser(savedUser);
   }
 
-  async getAllUsers(
-   input: GetAllUsersInput
-  ): Promise<User[]> {
-   let { limit = 20,offset = 0, sortBy, sortOrder} = input;
+  async getAllUsers(input: GetAllUsersInput): Promise<User[]> {
+    let { limit = 20, offset = 0, sortBy, sortOrder } = input;
+  
     const users = await this.userRepository.find({
       take: limit,
       skip: offset,
+      relations: ['settings'],
     });
   
-    // Map to GraphQL User type with placeholder counts
-    const formattedUsers = await Promise.all(
-      users.map(async user => ({
-        ...user,
-        followersCount: await this.getFollowersCount(user.id),
-        followingCount: await this.getFollowingCount(user.id),
-      })),
-    );
-  
-    // Sort by requested field
-    formattedUsers.sort((a, b) => {
-      if (sortOrder === 'ASC') return (a as any)[sortBy] - (b as any)[sortBy];
-      return (b as any)[sortBy] - (a as any)[sortBy];
+    const formattedUsers = users.map(u => this.toGraphQLUser(u));
+
+    formattedUsers.sort((a: any, b: any) => {
+      const A = a[sortBy];
+      const B = b[sortBy];
+      if (typeof A === 'string') return sortOrder === 'ASC'  ? A.localeCompare(B) : B.localeCompare(A);
+      return sortOrder === 'ASC' ? A - B : B - A;
     });
   
     return formattedUsers;
@@ -111,6 +101,26 @@ export class UserService {
   async getFollowingCount(userId: string): Promise<number> {
     return this.usersfollowsRepository.count({ where: { followerId: userId } }) ?? 0;
   }
+
+  async getUserFollowers(userId: string): Promise<User[]> {
+    const relations = await this.usersfollowsRepository.find({
+      where: { followeeId: userId },
+      relations: ['follower'],
+    });
+  
+    return relations.map(r => this.toGraphQLUser(r.follower));
+  }
+
+
+  async getUserFollowing(userId: string): Promise<User[]> {
+    const relations = await this.usersfollowsRepository.find({
+      where: { followerId: userId },
+      relations: ['followee'],
+    });
+  
+    return relations.map(r => this.toGraphQLUser(r.followee));
+  }
+  
   
 
   async deleteUser(userId: string) {
@@ -121,5 +131,14 @@ export class UserService {
     }
 
     await this.userRepository.remove(user);
+  }
+
+  private toGraphQLUser(entity: UserEntity): User {
+    return {
+      ...entity,
+      followersCount: 0,
+      followingCount: 0,
+  
+    };
   }
 }
