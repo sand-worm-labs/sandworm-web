@@ -49,26 +49,26 @@ export const TabsSection: React.FC<TabSectionProps> = ({
       <TabsList className="flex border-b border-borderLight">
         <TabsTrigger
           value="all"
-          className={`md:px-4 px-2 py-2 flex md:items-center space-x-2 ${tab === "all" ? "border-b-2 border-primary" : ""}`}
+          className={`md:px-2 px-2 py-2 flex md:items-center space-x-2 ${tab === "all" ? "text-[#A6554D] " : "text-[#868E96]"}`}
         >
           <HiOutlineCommandLine size={18} />
-          <span className="text-sm">All Queries</span>
+          <span className="text-sm">All Insights</span>
         </TabsTrigger>
         <TabsTrigger
           value="forked"
-          className={`md:px-4 px-2 py-2 flex md:items-center space-x-2 ${tab === "forked" ? "border-b-2 border-primary" : ""}`}
+          className={`md:px-2 px-2 py-2 flex md:items-center space-x-2 ${tab === "forked" ? "text-[#A6554D]" : "text-[#868E96]"}`}
         >
           <VscRepoForked size={16} />
-          <span className="text-sm"> Forked</span>
+          <span className="text-sm"> Dashboards</span>
         </TabsTrigger>
         <TabsTrigger
           value="starred"
-          className={`md:px-4 px-2 py-2 flex md:items-center space-x-2 ${tab === "starred" ? "border-b-2 border-primary" : ""}`}
+          className={`md:px-2 px-2 py-2 flex md:items-center space-x-2 ${tab === "starred" ? "text-[#A6554D]" : "text-[#868E96]"}`}
         >
-          <FaRegStar size={16} /> <span className="text-sm">Starred</span>
+          <FaRegStar size={16} /> <span className="text-sm">Reports</span>
         </TabsTrigger>
       </TabsList>
-      <div className="container mx-auto pt-6">
+      <div className="container mx-auto ">
         <TabsContent value="all">
           {queries ? (
             <QueryList

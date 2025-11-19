@@ -8,38 +8,44 @@ import { Badge } from "@sandworm/ui/components/badge";
 
 import { CodePreview } from "./CodePreview";
 import { UserProfileHover } from "./UserProfileHover";
-import type { Query } from "./DummyData";
+import type { Query } from "@/types";
 import type { ViewMode } from "./QueriesList";
 
-interface QueryCardProps {
+interface ExploreCardProps {
   query: Query;
   viewMode: ViewMode;
+  liked: boolean;
 }
 
-export function QueryCard({ query, viewMode }: QueryCardProps) {
+export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
   return (
     <div
       className={`${
         viewMode === "detailed"
-          ? "bg-background my-2"
-          : "border rounded-lg bg-card hover:shadow-md transition-shadow my-2"
+          ? "bg-background "
+          : "border border-[#D4DCDF] rounded-lg bg-card  transition-shadow mb-1 dark:border-[#262A30] "
       }`}
     >
-      <div className="p-2">
+      <div className="p-2 px-5">
         <div className="flex items-end justify-between gap-4">
           <div className="flex items-start gap-3 flex-1 min-w-0">
             <Avatar className="h-8 w-8 flex-shrink-0">
-              <AvatarImage src={query.author.avatar || "/placeholder.svg"} />
-              <AvatarFallback>{query.author.name[0]}</AvatarFallback>
+              {query.creator ? (
+                <AvatarImage src="/img/avatar.svg" />
+              ) : (
+                <AvatarFallback>
+                  <img src="/img/avatar.svg" alt="fallback avatar" />
+                </AvatarFallback>
+              )}
             </Avatar>
             <div className="flex-1 min-w-0">
-              <UserProfileHover author={query.author}>
+              <UserProfileHover>
                 <h3 className="text-sm font-medium truncate cursor-pointer hover:underline">
-                  {query.author.username} - {query.title}
+                  {query.creator} - {query.title}
                 </h3>
               </UserProfileHover>
               <p className="text-xs text-muted-foreground mt-1">
-                Created {query.createdAt}
+                Created {query.createdAt.toDateString()}
               </p>
             </div>
           </div>
@@ -47,12 +53,12 @@ export function QueryCard({ query, viewMode }: QueryCardProps) {
           <div className="flex flex-col items-end gap-4 flex-shrink-0">
             <div className="flex items-center gap-3 text-sm">
               <span className="flex items-center gap-1">
-                {query.stars}
-                <Star className="h-4 w-4" />
+                {query.stared_by.length || 0}
+                <Star className="h-4 w-4 font-light text-[#1C3B5A]" />
               </span>
               <span className="flex items-center gap-1">
-                {query.forks}
-                <GitFork className="h-4 w-4" />
+                {query.forked_by.length || 0}
+                <GitFork className="h-4 w-4 font-light text-[#1C3B5A]" />
               </span>
             </div>
 
@@ -61,7 +67,7 @@ export function QueryCard({ query, viewMode }: QueryCardProps) {
                 <Badge
                   key={tag}
                   variant="secondary"
-                  className="text-xs bg-secondary text-muted-foreground"
+                  className="text-xs bg-[#E0EAF1] text-muted-foreground"
                 >
                   #{tag}
                 </Badge>
@@ -72,8 +78,8 @@ export function QueryCard({ query, viewMode }: QueryCardProps) {
       </div>
 
       {viewMode === "detailed" && (
-        <CodePreview code={query.code} language={query.language} />
+        <CodePreview code={query.query} language={"sql"} />
       )}
     </div>
   );
-}
+};

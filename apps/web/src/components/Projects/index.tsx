@@ -10,9 +10,21 @@ import {
   Copy,
   Trash2,
 } from "lucide-react";
+import ProjectControl from "./ProjectControls";
 
-export const Projects = () => {
-  const [projects, setProjects] = useState([
+interface Project {
+  id: number;
+  title: string;
+  creator: string;
+  lastEdited: string;
+  created: string;
+  isFavorite: boolean;
+}
+
+type MenuAction = "duplicate" | "newTab" | "trash";
+
+export const Projects: React.FC = () => {
+  const [projects, setProjects] = useState<Project[]>([
     {
       id: 1,
       title: "Top Base Tokens Analysis",
@@ -39,17 +51,17 @@ export const Projects = () => {
     },
   ]);
 
-  const [openMenuId, setOpenMenuId] = useState(null);
-  const [hoveredUser, setHoveredUser] = useState(null);
-  const [hoveredSave, setHoveredSave] = useState(null);
+  const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+  const [hoveredUser, setHoveredUser] = useState<number | null>(null);
+  const [hoveredSave, setHoveredSave] = useState<number | null>(null);
 
-  const toggleFavorite = id => {
+  const toggleFavorite = (id: number): void => {
     setProjects(
       projects.map(p => (p.id === id ? { ...p, isFavorite: !p.isFavorite } : p))
     );
   };
 
-  const handleMenuAction = (action, projectId) => {
+  const handleMenuAction = (action: MenuAction, projectId: number): void => {
     console.log(`${action} project ${projectId}`);
     setOpenMenuId(null);
 
@@ -58,7 +70,6 @@ export const Projects = () => {
     }
   };
 
-  // Empty state
   if (projects.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-black flex items-center justify-center p-8">
@@ -79,28 +90,28 @@ export const Projects = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-black p-8">
+    <div className="min-h-screen dark:bg-black p-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center gap-3 mb-8">
-          <FolderOpen className="w-5 h-5 text-primary" />
+        <div className="flex items-center gap-3 mb-0">
+          <span className="bg-[#C7665C20] rounded-full p-2 flex items-center justify-center">
+            <FolderOpen className="w-4 h-4 text-[#C7665C] " />
+          </span>
           <h2 className="text-xl font-medium ">Projects</h2>
         </div>
 
-        {/* Project Grid */}
+        <ProjectControl />
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.map(project => (
             <div
               key={project.id}
-              className="bg-white dark:bg-black rounded-3xl border border-gray-200 dark:border-[#262A30]  transition-all duration-200 p-4 py-4 relative group"
+              className="bg-white dark:bg-black rounded-3xl border border-gray-200 dark:border-[#262A30]  transition-all duration-200 p-4 py-3 relative group"
             >
-              {/* Header with Title and Actions */}
               <div className="flex items-start justify-between mb-4">
-                <h3 className="text-base font-medium text-gray-900 dark:text-white flex-1 pr-2">
+                <h3 className="text-[0.9rem] font-medium text-gray-900 dark:text-white flex-1 pr-2">
                   {project.title}
                 </h3>
                 <div className="flex items-center gap-2">
-                  {/* Star Icon - Shows on Hover */}
                   <button
                     onClick={() => toggleFavorite(project.id)}
                     className={`opacity-0 group-hover:opacity-100 transition-opacity ${
@@ -108,15 +119,14 @@ export const Projects = () => {
                     }`}
                   >
                     <Star
-                      className={`w-5 h-5 ${
+                      className={`w-4 h-4 ${
                         project.isFavorite
-                          ? "fill-primary text-primary"
-                          : "text-gray-400 hover:text-primary"
+                          ? "fill-[#C7665C] text-[#C7665C]"
+                          : "text-gray-400 hover:text-[#C7665C]"
                       }`}
                     />
                   </button>
 
-                  {/* Menu Button */}
                   <div className="relative">
                     <button
                       onClick={() =>
@@ -126,10 +136,9 @@ export const Projects = () => {
                       }
                       className="p-1 rounded transition-colors"
                     >
-                      <MoreVertical className="w-5 h-5 text-gray-600" />
+                      <MoreVertical className="w-4 h-4 text-[#717a94]" />
                     </button>
 
-                    {/* Dropdown Menu */}
                     {openMenuId === project.id && (
                       <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-black rounded-lg shadow-lg border border-gray-200 dark:border-[#262A30] py-1 z-10">
                         <button
@@ -161,18 +170,16 @@ export const Projects = () => {
                 </div>
               </div>
 
-              <div className="bg-white dark:bg-black rounded-lg h-20 mb-4 flex items-center justify-center"></div>
+              <div className="bg-white dark:bg-black rounded-lg h-10 mb-4 flex items-center justify-center"></div>
 
-              {/* Footer with Icons */}
               <div className="flex items-center justify-between">
-                {/* User Icon with Tooltip */}
                 <div className="relative">
                   <button
                     onMouseEnter={() => setHoveredUser(project.id)}
                     onMouseLeave={() => setHoveredUser(null)}
                     className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                   >
-                    <User className="w-4 h-4 text-gray-600" />
+                    <User className="w-4 h-4 text-[#717a94]" />
                   </button>
 
                   {hoveredUser === project.id && (
@@ -182,14 +189,13 @@ export const Projects = () => {
                   )}
                 </div>
 
-                {/* Save Icon with Project Info Tooltip */}
                 <div className="relative">
                   <button
                     onMouseEnter={() => setHoveredSave(project.id)}
                     onMouseLeave={() => setHoveredSave(null)}
                     className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                   >
-                    <Save className="w-4 h-4 text-gray-600" />
+                    <Save className="w-4 h-4 text-[#717a94]" />
                   </button>
 
                   {hoveredSave === project.id && (
