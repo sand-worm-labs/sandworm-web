@@ -26,9 +26,9 @@ export class UserFollowsSeeder1732032435851 implements Seeder {
       const randomUserNumber = getRandomInt(0, users.length - 1);
       const randomFoloweeId = users[randomUserNumber].id;
       const followeeId =
-        randomFoloweeId === user.id
-          ? users[randomUserNumber + 1].id
-          : randomFoloweeId;
+      randomFoloweeId === user.id
+        ? users[(randomUserNumber + 1) % users.length].id
+        : randomFoloweeId;
       const isExist = await userFollowsRepository.existsBy({
         followerId: user.id,
         followeeId,
