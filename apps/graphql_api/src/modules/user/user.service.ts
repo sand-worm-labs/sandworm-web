@@ -23,7 +23,7 @@ export class UserService {
     private readonly usersfollowsRepository: Repository<UserFollowsEntity>,
   ) { }
 
-  async get(currentUser: { id: string; token: string }): Promise<AuthPayload> {
+  async getCurrentUser(currentUser: { id: string; token: string }): Promise<AuthPayload> {
     const user = await this.userRepository.findOneByOrFail({
       id: currentUser.id,
     });
@@ -31,7 +31,7 @@ export class UserService {
     return { id : user.id, user: { ...user, followersCount: 0, followingCount: 0}, token: currentUser.token };
   }
 
-  async create(input: CreateUserInput): Promise<User> {
+  async createUser(input: CreateUserInput): Promise<User> {
     const { username, email, password } = input;
 
     const user = await this.userRepository.findOne({
@@ -48,7 +48,7 @@ export class UserService {
     return {...savedUser, followersCount:0, followingCount:0};
   }
 
-  async update(userId: string, input: UpdateUserInput): Promise<User> {
+  async updateUser(userId: string, input: UpdateUserInput): Promise<User> {
     const user = await this.userRepository.findOneBy({ id: userId });
 
     if (!user) {
@@ -68,7 +68,7 @@ export class UserService {
     };
   }
 
-  async getAll(
+  async getAllUsers(
    input: GetAllUsersInput
   ): Promise<User[]> {
    let { limit = 20,offset = 0, sortBy, sortOrder} = input;
@@ -95,8 +95,6 @@ export class UserService {
     return formattedUsers;
   }
 
-  
-  
   async getUserSettings(userId: string): Promise<UserSetting> {
     const settings = await this.userSettingRepository.findOneBy({ userId });
     if (!settings) {
@@ -115,7 +113,7 @@ export class UserService {
   }
   
 
-  async delete(userId: string) {
+  async deleteUser(userId: string) {
     const user = await this.userRepository.findOneBy({ id: userId });
 
     if (!user) {

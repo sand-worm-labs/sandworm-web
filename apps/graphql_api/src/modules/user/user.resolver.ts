@@ -30,7 +30,7 @@ export class UserResolver {
   async currentUser(
     @CurrentUser() user: { id: string; token: string },
   ): Promise<AuthPayload> {
-    return this.userService.get(user);
+    return this.userService.getCurrentUser(user);
   }
 
   @Public()
@@ -39,7 +39,7 @@ export class UserResolver {
     description: 'Register new user',
   })
   async createUser(@Args('input') input: CreateUserInput): Promise<User> {
-    return await this.userService.create(input);
+    return await this.userService.createUser(input);
   }
 
 
@@ -51,7 +51,7 @@ export class UserResolver {
     @CurrentUser('id') userId: string,
     @Args('input') input: UpdateUserInput,
   ): Promise<User> {
-    return await this.userService.update(userId, input);
+    return await this.userService.updateUser(userId, input);
   }
 
   @Public()
@@ -62,7 +62,7 @@ export class UserResolver {
   async getAllUsers(
     @Args('input') input: GetAllUsersInput,
   ): Promise<User[]> {
-    return await this.userService.getAll(input );
+    return await this.userService.getAllUsers(input );
   }
 
 
