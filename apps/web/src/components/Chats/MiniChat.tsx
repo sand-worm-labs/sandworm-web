@@ -3,6 +3,7 @@
 import React from "react";
 
 import { MultimodalInput } from "./multimodal-input";
+import { MiniChatInput } from "./MiniChatInput";
 
 export const MiniChat = () => {
   return (
@@ -43,7 +44,7 @@ export const MiniChat = () => {
       </div>
 
       {/* Input area */}
-      <form className="flex flex-row gap-2 items-end w-full" />
+      <MiniChatInput />
     </div>
   );
 };
