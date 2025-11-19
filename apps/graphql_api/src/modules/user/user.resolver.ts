@@ -1,5 +1,6 @@
 import {
   Args,
+  Int,
   Mutation,
   Parent,
   Query,
@@ -9,9 +10,11 @@ import {
 import { CurrentUser } from '@sandworm/graphql';
 import { Public } from '@sandworm/nest-common';
 import { AuthService } from '../auth/auth.service';
-import { CreateUserInput, UpdateUserInput } from './dto/user.dto';
+import { CreateUserInput, UpdateUserInput, GetAllUsersInput } from './dto/user.dto';
 import { User } from './model/user.model';
 import { UserService } from './user.service';
+import { UserSetting } from './model/user-setting.model';
+import { AuthPayload } from '../auth/models/auth-payload';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -26,7 +29,7 @@ export class UserResolver {
   })
   async currentUser(
     @CurrentUser() user: { id: string; token: string },
-  ): Promise<User> {
+  ): Promise<AuthPayload> {
     return this.userService.get(user);
   }
 
@@ -39,6 +42,7 @@ export class UserResolver {
     return await this.userService.create(input);
   }
 
+
   @Mutation(() => User, {
     name: 'updateUser',
     description: 'Update current user',
@@ -50,8 +54,31 @@ export class UserResolver {
     return await this.userService.update(userId, input);
   }
 
-  @ResolveField()
-  async token(@Parent() user: User) {
-    return await this.authService.createToken({ id: user.id });
+  @Public()
+  @Query(() => [User], {
+    name: 'getAllUsers',
+    description: 'Get all users',
+  })
+  async getAllUsers(
+    @Args('input') input: GetAllUsersInput,
+  ): Promise<User[]> {
+    return await this.userService.getAll(input );
+  }
+
+
+  @ResolveField(() => UserSetting, { nullable: true })
+  async settings(@Parent() user: User) {
+    if (!user.id) return null;
+     return this.userService.getUserSettings(user.id);
+  }
+
+  @ResolveField(() => Int)
+  async followersCount(@Parent() user: User): Promise<number> {
+    return this.userService.getFollowersCount(user.id);
+  }
+
+  @ResolveField(() => Int)
+  async followingCount(@Parent() user: User): Promise<number> {
+    return this.userService.getFollowingCount(user.id);
   }
 }
