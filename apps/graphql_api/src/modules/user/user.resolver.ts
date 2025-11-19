@@ -25,7 +25,7 @@ export class UserResolver {
     description: 'Get current user (from token)',
   })
   async currentUser(
-    @CurrentUser() user: { id: number; token: string },
+    @CurrentUser() user: { id: string; token: string },
   ): Promise<User> {
     return this.userService.get(user);
   }
@@ -44,7 +44,7 @@ export class UserResolver {
     description: 'Update current user',
   })
   async updateUser(
-    @CurrentUser('id') userId: number,
+    @CurrentUser('id') userId: string,
     @Args('input') input: UpdateUserInput,
   ): Promise<User> {
     return await this.userService.update(userId, input);
