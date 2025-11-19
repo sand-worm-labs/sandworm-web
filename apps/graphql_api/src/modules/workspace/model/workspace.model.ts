@@ -1,8 +1,14 @@
-import { Field, ObjectType, ID } from '@nestjs/graphql';
+import { Field, ObjectType, ID, registerEnumType } from '@nestjs/graphql';
 import { User } from '../../user/model/user.model';
 import { Document } from '../../document/model/document.model';
 import { OnboardingTutorial } from './onboarding_tutorial.model';
 import { Plan } from '@sandworm/postgresql-typeorm';
+
+
+registerEnumType(Plan, {
+    name: 'WorkspacePlan',
+    description: 'Price plan of the workspace',
+});
 
 @ObjectType()
 export class Workspace {
@@ -21,15 +27,9 @@ export class Workspace {
   @Field(() => String, { nullable: true })
   useContext?: string;
 
-  @Field(() => Plan)
+  @Field(() => Plan , { defaultValue: Plan.FREE })
   plan!: Plan;
 
-  @Field(() => User)
-  owner!: User;
-
-  @Field(() => [Document])
-  documents!: Document[];
-
-  @Field(() => [OnboardingTutorial])
-  onboardingTutorials!: OnboardingTutorial[];
+  @Field(() => ID)
+  ownerId!: string;
 }
