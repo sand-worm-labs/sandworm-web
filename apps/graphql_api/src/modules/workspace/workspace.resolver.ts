@@ -30,14 +30,15 @@ export class WorkspaceResolver {
 
   @Public()
   @Query(() => [Workspace], {
-    name: 'getAllUserWorkspaces',
-    description: 'Get all User workspaces',
+    name: 'getUserWorkspaces',
+    description: 'Get User workspaces',
   })
-  async getAllWorkspaces(
+  async getUserWorkspaces(
+    @CurrentUser('id') userId: string,
     @Args('limit', { type: () => Int, nullable: true }) limit?: number,
     @Args('offset', { type: () => Int, nullable: true }) offset?: number,
   ): Promise<Workspace[]> {
-    return this.workspaceService.getAllUserWorkspaces({ limit, offset });
+    return this.workspaceService.getAllUserWorkspaces(userId,{ limit, offset });
   }
 
   @Mutation(() => Workspace, {
