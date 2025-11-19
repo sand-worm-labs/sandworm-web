@@ -1,11 +1,8 @@
 import {
   Entity,
   Column,
-  PrimaryColumn,
   OneToOne,
   JoinColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
   PrimaryGeneratedColumn
 } from "typeorm";
 import { UserEntity } from "./user.entity";
@@ -14,7 +11,7 @@ import { AbstractEntity } from "./abstract.entity";
 @Entity({ name: "user_settings" })
 export class UserSettingEntity extends AbstractEntity {
 
-  @PrimaryGeneratedColumn("uuid", { primaryKeyConstraintName: 'PK_user_setting_id' })
+  @PrimaryGeneratedColumn("increment", { primaryKeyConstraintName: 'PK_user_setting_id' })
   id: string;
 
   @Column({ type: "uuid", name: "user_id", unique: true })
