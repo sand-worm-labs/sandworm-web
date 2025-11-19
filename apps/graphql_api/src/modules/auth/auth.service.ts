@@ -6,7 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { verifyPassword } from '@sandworm/nest-common';
 import { UserEntity } from '@sandworm/postgresql-typeorm';
 import { Repository } from 'typeorm';
-import { User } from '../user/model/user.model';
+import { AuthPayload } from './models/auth-payload';
 import { LoginInput } from './dto/auth.dto';
 import { JwtPayloadType } from './types/jwt-payload.type';
 
@@ -19,7 +19,7 @@ export class AuthService {
     private readonly userRepository: Repository<UserEntity>,
   ) { }
 
-  async login(input: LoginInput): Promise<User> {
+  async login(input: LoginInput): Promise<AuthPayload> {
     const { email, password } = input;
 
     const user = await this.userRepository.findOne({
@@ -36,8 +36,9 @@ export class AuthService {
     const token = await this.createToken({ id: user.id });
 
     return {
-      ...user,
+      id: user.id,
       token,
+      user
     };
   }
 
