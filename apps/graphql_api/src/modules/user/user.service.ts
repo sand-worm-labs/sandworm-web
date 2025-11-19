@@ -9,6 +9,7 @@ import { CreateUserInput, GetAllUsersInput, UpdateUserInput } from './dto/user.d
 import { User } from './model/user.model';
 import { UserSetting } from './model/user-setting.model';
 import { AuthPayload } from '../auth/models/auth-payload';
+import { toGraphQLUserUtils } from "@/utils/models"
 @Injectable()
 export class UserService {
   private readonly logger = new Logger(UserService.name);
@@ -73,8 +74,8 @@ export class UserService {
       relations: ['settings'],
     });
   
-    const formattedUsers = users.map(u => this.toGraphQLUser(u));
 
+    const formattedUsers = users.map(u => this.toGraphQLUser(u));
     formattedUsers.sort((a: any, b: any) => {
       const A = a[sortBy];
       const B = b[sortBy];
@@ -94,11 +95,11 @@ export class UserService {
     return settings;
   }
     
-  async getFollowersCount(userId: string): Promise<number> {
+  async getUserFollowersCount(userId: string): Promise<number> {
     return this.usersfollowsRepository.count({ where: { followeeId: userId } }) ?? 0;
   }
     
-  async getFollowingCount(userId: string): Promise<number> {
+  async getUserFollowingCount(userId: string): Promise<number> {
     return this.usersfollowsRepository.count({ where: { followerId: userId } }) ?? 0;
   }
 
@@ -134,11 +135,6 @@ export class UserService {
   }
 
   private toGraphQLUser(entity: UserEntity): User {
-    return {
-      ...entity,
-      followersCount: 0,
-      followingCount: 0,
-  
-    };
+    return  toGraphQLUserUtils(entity);
   }
 }

@@ -26,13 +26,4 @@ export class User {
 
   @Field(() => String, { nullable: true })
   image?: string;
-
-  @Field(() => UserSetting, { nullable: true })
-  settings?: UserSetting | null;
-
-  @Field(() => Int, { nullable: true })
-  followersCount: number = 0;
-
-  @Field(() => Int, { nullable: true })
-  followingCount: number = 0;
 }
