@@ -25,5 +25,5 @@ export class User {
   isOnboarded!: boolean;
 
   @Field(() => String, { nullable: true })
-  image?: string;
+  avater?: string;
 }
