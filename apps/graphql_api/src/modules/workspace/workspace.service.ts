@@ -37,7 +37,7 @@ export class WorkspaceService {
       skip: offset,
       order: { createdAt: 'DESC' },
     });
-
+    if (!workspaces.length) throw new NotFoundException('Workspace not found');
     return workspaces.map((ws) => this.toGraphQLWorkspace(ws));
   }
 

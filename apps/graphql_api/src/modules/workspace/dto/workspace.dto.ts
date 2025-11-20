@@ -1,4 +1,4 @@
-import { InputType, Int } from '@nestjs/graphql';
+import { InputType} from '@nestjs/graphql';
 import {
   EmailField,
   EmailFieldOptional,
