@@ -8,6 +8,12 @@ type AuthPayload {
   user: User!
 }
 
+input CreateDocumentInput {
+  icon: String
+  parentId: String
+  title: String
+}
+
 """User register request"""
 input CreateUserInput {
   email: String!
@@ -20,15 +26,29 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+input DeleteDocumentInput {
+  documentId: String!
+  isPermanent: Boolean
+  workspaceId: String!
+}
+
 type Document {
-  email: String
-  firstName: String
-  fullName: String
-  id: String!
-  image: String
-  isOnboarded: Boolean!
-  lastName: String
-  username: String
+  authorId: ID!
+  children: [Document!]!
+  id: ID!
+  parent: Document
+  parentId: ID!
+  runSQLSelection: Boolean!
+  runUnexecutedBlocks: Boolean!
+  shareLinksWithoutSidebar: Boolean!
+  slug: String!
+  title: String!
+  workspaceId: ID!
+}
+
+input DuplicateDocumentInput {
+  documentId: String!
+  workspaceId: String!
 }
 
 input GetAllUsersInput {
@@ -53,11 +73,20 @@ input LoginInput {
 }
 
 type Mutation {
+  """Create a new document in a workspace"""
+  createDocument(input: CreateDocumentInput!, workspaceId: String!): Document!
+
   """Register new user"""
   createUser(input: CreateUserInput!): User!
 
   """Create a new workspace"""
   createWorkspace(name: String!): Workspace!
+
+  """Soft delete or permanently delete a document"""
+  deleteDocument(input: DeleteDocumentInput!): Document!
+
+  """Create a fork/duplicate of a document"""
+  duplicateDocument(input: DuplicateDocumentInput!): Document!
 
   """Follow User"""
   followUser(
@@ -68,11 +97,17 @@ type Mutation {
   """Sign in"""
   login(input: LoginInput!): User!
 
+  """Restore a previously deleted document"""
+  restoreDocument(input: RestoreDocumentInput!): Document!
+
   """Unfollow User"""
   unfollowUser(
     """Username of the profile"""
     username: String!
   ): Profile!
+
+  """Update document metadata"""
+  updateDocument(documentId: String!, input: UpdateDocumentInput!, workspaceId: String!): Document!
 
   """Update current user"""
   updateUser(input: UpdateUserInput!): User!
@@ -95,6 +130,9 @@ type Query {
   """Get all users"""
   getAllUsers(input: GetAllUsersInput!): [User!]!
 
+  """Get a single document by ID"""
+  getDocument(documentId: String!, workspaceId: String!): Document!
+
   """Users who follow a given user"""
   getUserFollowers(userId: String!): [User!]!
 
@@ -106,6 +144,9 @@ type Query {
 
   """Get workspace by ID"""
   getWorkspace(workspaceId: String!): Workspace!
+
+  """Get all documents in a workspace"""
+  getWorkspaceDocuments(workspaceId: String!): [Document!]!
   hello: String!
 
   """Get Profile"""
@@ -114,6 +155,15 @@ type Query {
     username: String!
   ): Profile!
   tags: [String!]!
+}
+
+input RestoreDocumentInput {
+  documentId: String!
+  workspaceId: String!
+}
+
+input UpdateDocumentInput {
+  title: String
 }
 
 """User update request"""
@@ -151,7 +201,7 @@ type UserSetting {
 }
 
 type Workspace {
-  documentsCount: [Document!]!
+  documents: [Document!]!
   id: ID!
   name: String!
   owner: User!
