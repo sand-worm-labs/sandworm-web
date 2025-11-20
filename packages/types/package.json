@@ -1,6 +1,8 @@
 {
   "name": "@sandworm/types",
   "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
   "scripts": {
     "clean": "rm -rf dist",
     "dev": "pnpm build --watch",
@@ -25,7 +27,6 @@
       "default": "./dist/*.js"
     }
   },
-  "license": "MIT",
   "devDependencies": {
     "@sandworm/typescript-config": "workspace:*",
     "@types/node": "^24.7.0",

@@ -989,3 +989,16 @@ export type InvalidReason =
       type: "render";
       reason: PythonErrorOutput;
     };
+
+
+export const SandwormFile = z.object({
+  name: z.string().min(1),
+  path: z.string().min(1),
+  relCwdPath: z.string().min(1),
+  size: z.number().int().nonnegative(),
+  mimeType: z.string().nullish(),
+  createdAt: z.number().nonnegative(),
+  isDirectory: z.boolean(),
+})
+
+export type SandwormFile = z.infer<typeof SandwormFile>
