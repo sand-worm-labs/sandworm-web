@@ -11,7 +11,6 @@ export class DocumentSeeder17320198482745 implements Seeder {
     factoryManager: SeederFactoryManager
   ): Promise<any> {
 
-    // --- USERS ---
     const userRepository = dataSource.getRepository(UserEntity);
     const numberOfUsers = await userRepository.count();
     const randomOffset = getRandomInt(0, numberOfUsers - 1);
@@ -23,7 +22,6 @@ export class DocumentSeeder17320198482745 implements Seeder {
       .getMany();
 
 
-    // --- WORKSPACES ---
     const workspaceRepository = dataSource.getRepository(WorkspaceEntity);
     const numberOfWorkspaces = await workspaceRepository.count();
     const randomWorkspaceOffset = getRandomInt(0, numberOfWorkspaces - 1);

@@ -2,26 +2,23 @@ import {
   Column,
   Entity,
   Index,
-  JoinColumn,
-  JoinTable,
-  ManyToMany,
   ManyToOne,
   OneToMany,
+  JoinColumn,
   PrimaryGeneratedColumn,
   type Relation,
 } from "typeorm";
+
 import { AbstractEntity } from "./abstract.entity";
-import { CommentEntity } from "./comment.entity";
-import { TagEntity } from "./tag.entity";
-import { UserEntity } from "./user.entity";
 import { WorkspaceEntity } from "./workspace.entity";
 import { YjsDocumentEntity } from "./yjs-document.entity";
 import { YjsAppDocumentEntity } from "./yjs-app-document.entity";
-import { ExecutionScheduleEntity } from "./execution-schedule.entity";
+import { CommentEntity } from "./comment.entity";
 import { FavoriteEntity } from "./favorite.entity";
+import { ExecutionScheduleEntity } from "./execution-schedule.entity";
 import { ReusableComponentEntity } from "./reusable_component.entity";
 import { ReusableComponentInstanceEntity } from "./reusable_component_instance.entity";
-
+import { UserEntity } from "./user.entity";
 
 @Entity("document")
 export class DocumentEntity extends AbstractEntity {
@@ -34,22 +31,54 @@ export class DocumentEntity extends AbstractEntity {
   id!: string;
 
   @Column()
-  @Index("UQ_document_slug", ["slug"], { unique: true })
-  slug!: string;
-
-  @Column()
   title!: string;
 
-  @Column({ default: "" })
-  description!: string;
+  @Column({ default: "DocumentIcon" })
+  slug!: string;
 
-  @Column({ default: "" })
-  body!: string;
+  @Column({ name: "order_index" })
+  orderIndex!: number;
 
-  // ----- Author -----
+  @Column({ type: "timestamp", name: "deleted_at", nullable: true })
+  deletedAt?: Date | null;
+
+  @Column({ default: 1 })
+  version!: number;
+
+  @Column({ default: false })
+  isSyncedWithYjs!: boolean;
+
+  @Column({ name: "workspace_id" })
+  workspaceId!: string;
+
   @Column({ name: "author_id" })
   authorId!: string;
 
+
+  @Column({ name: "parent_id", nullable: true })
+  parentId?: string | null;
+
+  @Column({ default: false })
+  runUnexecutedBlocks!: boolean;
+
+  @Column({ default: true })
+  runSQLSelection!: boolean;
+
+  @Column({ default: true })
+  shareLinksWithoutSidebar!: boolean;
+  
+
+
+  @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.documents, {
+    onDelete: "CASCADE",
+  })
+  @JoinColumn({
+    name: "workspace_id",
+    referencedColumnName: "id",
+    foreignKeyConstraintName: "FK_document_workspace",
+  })
+  workspace!: Relation<WorkspaceEntity>;
+  
   @ManyToOne(() => UserEntity, (user) => user.documents, { onDelete: "CASCADE" })
   @JoinColumn({
     name: "author_id",
@@ -58,82 +87,42 @@ export class DocumentEntity extends AbstractEntity {
   })
   author!: Relation<UserEntity>;
 
-  // ----- Workspace -----
-  @Column({ name: "workspace_id" })
-  workspaceId!: string;
-
-  @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.documents, { onDelete: "CASCADE" })
+  @ManyToOne(() => DocumentEntity, (doc) => doc.children, {
+    nullable: true,
+    onDelete: "CASCADE",
+  })
   @JoinColumn({
-    name: "workspace_id",
+    name: "parent_id",
     referencedColumnName: "id",
-    foreignKeyConstraintName: "FK_workspace_document",
+    foreignKeyConstraintName: "FK_document_parent",
   })
-  workspace!: Relation<WorkspaceEntity>;
+  parent?: Relation<DocumentEntity> | null;
 
-  // ----- Tags -----
-  @ManyToMany(() => TagEntity)
-  @JoinTable({
-    name: "document_to_tag",
-    joinColumn: {
-      name: "document_id",
-      referencedColumnName: "id",
-      foreignKeyConstraintName: "FK_document_to_tag_document",
-    },
-    inverseJoinColumn: {
-      name: "tag_id",
-      referencedColumnName: "id",
-      foreignKeyConstraintName: "FK_document_to_tag_tag",
-    },
-  })
-  tags!: Relation<TagEntity[]>;
+  @OneToMany(() => DocumentEntity, (doc) => doc.parent)
+  children!: Relation<DocumentEntity[]>;
 
-  // ----- Comments -----
+  @OneToMany(() => YjsDocumentEntity, (yjs) => yjs.document)
+  yjsDocuments!: Relation<YjsDocumentEntity[]>;
+
+  @OneToMany(() => YjsAppDocumentEntity, (yjsApp) => yjsApp.document)
+  yjsAppDocuments!: Relation<YjsAppDocumentEntity[]>;
+
   @OneToMany(() => CommentEntity, (comment) => comment.document)
   comments!: Relation<CommentEntity[]>;
 
-  // ----- Favorites -----
   @OneToMany(() => FavoriteEntity, (favorite) => favorite.document)
   favorites!: Relation<FavoriteEntity[]>;
-
-  // ----- Forking -----
-  @ManyToOne(() => DocumentEntity, (doc) => doc.forks, {
-    nullable: true,
-    onDelete: "SET NULL",
-  })
-  @JoinColumn({
-    name: "forked_from_id",
-    referencedColumnName: "id",
-    foreignKeyConstraintName: "FK_document_forked_from",
-  })
-  forkedFrom?: Relation<DocumentEntity>;
-
-  @OneToMany(() => DocumentEntity, (doc) => doc.forkedFrom)
-  forks!: Relation<DocumentEntity[]>;
-
-  // ----- Yjs Relations -----
-  @OneToMany(() => YjsDocumentEntity, (yjsDoc) => yjsDoc.document)
-  yjsDocuments!: Relation<YjsDocumentEntity[]>;
-
-  @OneToMany(() => YjsAppDocumentEntity, (yjsAppDoc) => yjsAppDoc.document)
-  yjsAppDocuments!: Relation<YjsAppDocumentEntity[]>;
 
   @OneToMany(() => ExecutionScheduleEntity, (schedule) => schedule.document)
   executionSchedules!: Relation<ExecutionScheduleEntity[]>;
 
+
   @OneToMany(() => ReusableComponentEntity, (rc) => rc.document)
-  reusableComponents: ReusableComponentEntity[];
+  reusableComponents!: Relation<ReusableComponentEntity[]>;
 
-  @OneToMany(() => ReusableComponentInstanceEntity, (rci) => rci.document)
-  reusableComponentInstances: ReusableComponentInstanceEntity[];
-
-  @Column({ default: false })
-  runUnexecutedBlocks: boolean;
-
-  @Column({ default: true })
-  runSQLSelection: boolean;
-
-  @Column({ default: true })
-  shareLinksWithoutSidebar: boolean;
-
-
+  @OneToMany(
+    () => ReusableComponentInstanceEntity,
+    (rci) => rci.document,
+  )
+  reusableComponentInstances!: Relation<ReusableComponentInstanceEntity[]>;
 }

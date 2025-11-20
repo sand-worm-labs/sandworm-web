@@ -4,8 +4,9 @@ import { ProfileModule } from './profile/profile.module';
 import { TagModule } from './tag/tag.module';
 import { UserModule } from './user/user.module';
 import { WorkspaceModule } from './workspace/workspace.module';
+import { DocumentModule } from './document/document.module';
 
 @Module({
-  imports: [UserModule, AuthModule, ProfileModule, TagModule, WorkspaceModule],
+  imports: [UserModule, AuthModule, ProfileModule, TagModule, WorkspaceModule, DocumentModule],
 })
 export class ApiModule {}
