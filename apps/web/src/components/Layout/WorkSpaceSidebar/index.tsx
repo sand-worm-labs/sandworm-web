@@ -21,7 +21,7 @@ const mainNav: NavItem[] = [
 
 const toolsNav: NavItem[] = [
   { name: "Ask a question", href: "/workspace/notebook", icon: Bot },
-  { name: "Console", href: "/console", icon: Terminal },
+  { name: "Console", href: "/workspace/console", icon: Terminal },
   { name: "All tools", href: "/workspace/tools", icon: LuLayoutGrid },
 ];
 
@@ -47,10 +47,11 @@ export const WorkspaceSidebar = () => {
               <li key={item.name}>
                 <Link href={item.href} className={linkClasses(item.href)}>
                   <item.icon
+                    strokeWidth={1.8}
                     className={`h-4 w-4 ${
                       pathname === item.href
-                        ? "text-black dark:text-[#868E96] "
-                        : "text-gray-600 dark:text-[#868E96]"
+                        ? "text-[#1C3B5A] dark:text-[#868E96] "
+                        : "text-[#1C3B5A] dark:text-[#868E96]"
                     }`}
                   />
                   {item.name}
@@ -64,8 +65,11 @@ export const WorkspaceSidebar = () => {
               <li key={item.name}>
                 <Link href={item.href} className={linkClasses(item.href)}>
                   <item.icon
+                    strokeWidth={1.8}
                     className={`h-4 w-4 ${
-                      pathname === item.href ? "text-black" : "text-gray-600"
+                      pathname === item.href
+                        ? "text-[#1C3B5A] dark:text-[#868E96] "
+                        : "text-[#1C3B5A] dark:text-[#868E96]"
                     }`}
                   />
                   {item.name}

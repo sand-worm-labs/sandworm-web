@@ -124,7 +124,7 @@ c30,0,30,26.9,60,26.9"
   return (
     <div className="h-full">
       <ResizablePanelGroup direction="vertical" className="relative">
-        <ResizablePanel defaultSize={40} minSize={25} className="relative">
+        <ResizablePanel defaultSize={40} minSize={25} className="relative px-6">
           <QueryEditor
             tabId={tabId}
             title={currentTab.title}

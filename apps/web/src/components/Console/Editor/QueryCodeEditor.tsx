@@ -196,7 +196,7 @@ export const QueryCodeEditor = ({
   }, []);
 
   return (
-    <div className=" rounded-md overflow-hidden relative">
+    <div className=" rounded-xl overflow-auto relative">
       <Editor
         height={height}
         defaultLanguage="sql"
@@ -210,6 +210,7 @@ export const QueryCodeEditor = ({
           automaticLayout: true,
           tabSize: 2,
           fontSize: 14,
+          padding: { top: 20, bottom: 20 },
           wordWrap: "on",
           scrollBeyondLastLine: false,
           lineNumbers: "on",
