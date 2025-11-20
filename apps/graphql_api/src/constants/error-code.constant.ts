@@ -9,6 +9,7 @@ export enum ErrorCode {
   // Error
   E001 = 'app.user.username_or_email_exists',
   E002 = 'app.user.not_found',
+  E003 = 'app.document.not_found',
   E101 = 'app.profile.not_found',
   E102 = 'app.profile.following_self',
   E103 = 'app.profile.already_followed',

@@ -1,7 +1,5 @@
 import { ObjectType, Field, ID } from '@nestjs/graphql';
 import { GraphQLJSON } from 'graphql-type-json';
-import { User } from './user.model';
-
 @ObjectType('UserSetting')
 export class UserSetting {
   @Field(() => ID)
