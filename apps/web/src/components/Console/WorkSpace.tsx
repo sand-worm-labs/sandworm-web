@@ -71,7 +71,7 @@ export const WorkSpace = ({ initialQuery, currentUserId }: WorkSpaceProps) => {
 
   return (
     <div className="flex w-full h-[calc(100vh-3.4rem)] overflow-hidden  md:flex-row">
-      <AppSidebar currentView={currentView} setCurrentView={setCurrentView} />
+      {/*   <AppSidebar currentView={currentView} setCurrentView={setCurrentView} /> */}
 
       <div className="flex-1 h-full overflow-auto border-t">
         <ResizablePanelGroup direction="horizontal">
