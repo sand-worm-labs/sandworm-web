@@ -7,8 +7,12 @@ export default setSeederFactory(DocumentEntity, () => {
 
   document.title = fake.lorem.sentence();
   document.slug = fake.lorem.slug();
-  document.description = fake.lorem.sentence();
-  document.body = fake.lorem.paragraphs(10);
+  document.orderIndex = fake.number.int({ min: 1, max: 10 });
+  document.version = 1;
+  document.isSyncedWithYjs = fake.datatype.boolean();
+  document.runUnexecutedBlocks =  fake.datatype.boolean(); 
+  document.runSQLSelection =  fake.datatype.boolean();
+  document.shareLinksWithoutSidebar =  fake.datatype.boolean();
 
   return document;
 });
