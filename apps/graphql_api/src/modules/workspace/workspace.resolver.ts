@@ -69,7 +69,7 @@ export class WorkspaceResolver {
   }
 
   @ResolveField(() => [Document])
-  async documentsCount(@Parent() workspace: Workspace): Promise<Document[]> {
+  async documents(@Parent() workspace: Workspace): Promise<Document[]> {
     return this.workspaceService.getWorkspaceDocuments(workspace.id);
   }
 }
