@@ -415,7 +415,9 @@ export default function Layout({
           </div>
         </div>
         <div className="grid grid-cols-[70%,30%]">
-          <div className="flex-grow flex overflow-hidden">{children}</div>
+          <div className="flex-grow flex flex-col overflow-scroll">
+            {children}
+          </div>
           <MiniChat />
         </div>
       </main>

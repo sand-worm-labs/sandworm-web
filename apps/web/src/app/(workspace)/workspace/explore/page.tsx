@@ -154,7 +154,7 @@ export default async function Explore({ searchParams }: ExplorePageProps) {
   const isAllEmpty = false; // 💭 We're setting this to falso temporarily
 
   return (
-    <div className=" dark:text-white min-h-[88vh]">
+    <div className=" dark:text-white bg-[#F9FAFD] min-h-[88vh] dark:bg-black">
       <Head>
         <title>Explore</title>
       </Head>
@@ -174,9 +174,6 @@ export default async function Explore({ searchParams }: ExplorePageProps) {
           </div>
         ) : (
           <div>
-            <p className="text-[#455768] text-sm mb-8 px-4">
-              See what others are creating using Sandworm
-            </p>
             <TabsSection
               queries={allQueries}
               starredQueries={starredQueries}

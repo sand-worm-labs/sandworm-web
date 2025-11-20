@@ -6,10 +6,10 @@ import {
 } from "@sandworm/ui/components/avatar";
 import { Badge } from "@sandworm/ui/components/badge";
 
-import { CodePreview } from "./CodePreview";
 import { UserProfileHover } from "./UserProfileHover";
 import type { Query } from "@/types";
-import type { ViewMode } from "./QueriesList";
+
+type ViewMode = "compact" | "detailed";
 
 interface ExploreCardProps {
   query: Query;
@@ -28,37 +28,48 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
     >
       <div className="p-2 px-5">
         <div className="flex items-end justify-between gap-4">
-          <div className="flex items-start gap-3 flex-1 min-w-0">
-            <Avatar className="h-8 w-8 flex-shrink-0">
-              {query.creator ? (
-                <AvatarImage src="/img/avatar.svg" />
-              ) : (
-                <AvatarFallback>
-                  <img src="/img/avatar.svg" alt="fallback avatar" />
-                </AvatarFallback>
-              )}
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <UserProfileHover>
-                <h3 className="text-sm font-medium truncate cursor-pointer hover:underline">
-                  {query.creator} - {query.title}
-                </h3>
-              </UserProfileHover>
-              <p className="text-xs text-muted-foreground mt-1">
-                Created {query.createdAt.toDateString()}
-              </p>
+          {/* ✦ Profile Info ✦ */}
+          <div className="flex flex-col items-start gap-2 flex-1 min-w-0">
+            <div className="flex space-x-3 items-center">
+              <Avatar className="h-7 w-7 flex-shrink-0">
+                {" "}
+                {query.creator ? (
+                  <AvatarImage src="/img/avatar.svg" />
+                ) : (
+                  <AvatarFallback>
+                    <img src="/img/avatar.svg" alt="fallback avatar" />
+                  </AvatarFallback>
+                )}
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <UserProfileHover>
+                  <h3 className="text-[0.9rem] font-medium truncate cursor-pointer hover:underline">
+                    @ {query.creator} - {query.title}
+                  </h3>
+                </UserProfileHover>
+              </div>
             </div>
+            <p className="text-xs  text-[#6C757D] ">
+              Created {query.createdAt.toLocaleDateString("en-US")}
+            </p>
           </div>
 
+          {/* ✦ Actions + tags ✦ */}
           <div className="flex flex-col items-end gap-4 flex-shrink-0">
             <div className="flex items-center gap-3 text-sm">
               <span className="flex items-center gap-1">
                 {query.stared_by.length || 0}
-                <Star className="h-4 w-4 font-light text-[#1C3B5A]" />
+                <Star
+                  className="h-4 w-4 font-light text-[#1C3B5A] dark:text-[#868E96]"
+                  strokeWidth={1.2}
+                />
               </span>
               <span className="flex items-center gap-1">
                 {query.forked_by.length || 0}
-                <GitFork className="h-4 w-4 font-light text-[#1C3B5A]" />
+                <GitFork
+                  className="h-4 w-4 font-light text-[#1C3B5A] dark:text-[#868E96]"
+                  strokeWidth={1.2}
+                />
               </span>
             </div>
 
@@ -67,7 +78,7 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
                 <Badge
                   key={tag}
                   variant="secondary"
-                  className="text-xs bg-[#E0EAF1] text-muted-foreground"
+                  className="text-xs dark:bg-[#262A30] bg-[#E0EAF1] text-muted-foreground dark:text-[#8696A6]"
                 >
                   #{tag}
                 </Badge>
@@ -78,7 +89,7 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
       </div>
 
       {viewMode === "detailed" && (
-        <CodePreview code={query.query} language={"sql"} />
+        <div className="px-5 pb-4 text-sm text-[#495057]" />
       )}
     </div>
   );

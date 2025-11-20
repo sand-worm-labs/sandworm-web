@@ -420,7 +420,7 @@ function PrivateDocumentPageInner(
 
   return (
     <Layout
-      topBarClassname={props.isApp ? "bg-gray-50" : undefined}
+      topBarClassname={props.isApp ? "bg-gray-50 " : undefined}
       topBarContent={topBarContent}
       user={props.user}
     >

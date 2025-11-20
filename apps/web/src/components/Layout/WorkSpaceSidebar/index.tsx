@@ -20,7 +20,7 @@ const mainNav: NavItem[] = [
 ];
 
 const toolsNav: NavItem[] = [
-  { name: "Ask a question", href: "/chat", icon: Bot },
+  { name: "Ask a question", href: "/workspace/notebook", icon: Bot },
   { name: "Console", href: "/console", icon: Terminal },
   { name: "All tools", href: "/workspace/tools", icon: LuLayoutGrid },
 ];

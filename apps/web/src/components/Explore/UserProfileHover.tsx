@@ -13,26 +13,29 @@ import {
   HoverCardTrigger,
 } from "@sandworm/ui/components/hover-card";
 
+// 🎨 Interfaces and Constants
+// =====================================
 interface UserProfileHoverProps {
   children: React.ReactNode;
 }
 
-export function UserProfileHover({ children }: UserProfileHoverProps) {
-  // Dummy data
-  const dummyUser = {
-    name: "Si",
-    username: "si_username",
-    queriesCount: 42,
-    dashboardsCount: 7,
-    bio: "Just a dummy bio for this user. Loves coding and blockchain stuff.",
-    avatarUrl: "/placeholder.svg",
-  };
+const dummyUser = {
+  name: "Si",
+  username: "si_username",
+  queriesCount: 42,
+  dashboardsCount: 7,
+  bio: "Just a dummy bio for this user. Loves coding and blockchain stuff.",
+  avatarUrl: "/placeholder.svg",
+};
 
+// UserProfileHover Component
+// =====================================
+export function UserProfileHover({ children }: UserProfileHoverProps) {
   return (
     <HoverCard openDelay={200}>
       <HoverCardTrigger asChild>{children}</HoverCardTrigger>
       <HoverCardContent
-        className="w-80 font-primary border-[#E9ECEF] rounded-2xl"
+        className="w-80 font-primary border-[#E9ECEF] rounded-2xl dark:bg-black dark:border-[#262A30]"
         align="start"
       >
         <div className="space-y-4">
@@ -44,15 +47,15 @@ export function UserProfileHover({ children }: UserProfileHoverProps) {
               </Avatar>
               <div>
                 <p className="font-semibold text-sm">{dummyUser.name}</p>
-                <p className="text-sm text-muted-foreground">
-                  {dummyUser.username}
+                <p className="text-sm text-[#6C757D] font-primary">
+                  @{dummyUser.username}
                 </p>
               </div>
             </div>
             <Button
               size="sm"
               variant="secondary"
-              className="bg-primary/10 text-primary hover:bg-primary/20"
+              className="bg-[#E2ECFF] dark:bg-[#C7665C20] dark:text-[#C7665C] text-[#8053FE] hover:bg-[#E2ECFF]/90 text-sm rounded-md font-medium h-6"
             >
               Share
             </Button>
@@ -60,7 +63,7 @@ export function UserProfileHover({ children }: UserProfileHoverProps) {
 
           <a
             href="#"
-            className="text-sm text-red-500 hover:text-red-600 font-medium inline-block"
+            className="text-sm text-[#C7665C] hover:text-red-600 underline font-medium inline-block"
             onClick={e => e.preventDefault()}
           >
             Go to Profile Page
@@ -68,22 +71,22 @@ export function UserProfileHover({ children }: UserProfileHoverProps) {
 
           <div className="flex gap-6 text-sm">
             <div>
-              <span className="font-semibold">{dummyUser.queriesCount}</span>{" "}
-              <span className="text-muted-foreground">Queries</span>
+              <span className="font-medium">{dummyUser.queriesCount}</span>{" "}
+              <span className="text-[#6C757D] font-medium">Queries</span>
             </div>
             <div>
-              <span className="font-semibold">{dummyUser.dashboardsCount}</span>{" "}
-              <span className="text-muted-foreground">Dashboards</span>
+              <span className="font-medium">{dummyUser.dashboardsCount}</span>{" "}
+              <span className="text-[#6C757D] font-medium">Dashboards</span>
             </div>
           </div>
 
-          <p className="text-sm text-muted-foreground leading-relaxed">
+          <p className="text-sm text-muted-foreground leading-relaxed border-t border-b border-[#E9ECEF] py-3 text-[#343A40] dark:text-white dark:border-[#262A30]">
             {dummyUser.bio}
           </p>
 
           <Button
             variant="outline"
-            className="w-full bg-[#F8F9FA] border border-[#DEE2E6] py-5 rounded-lg"
+            className="w-full bg-[#F8F9FA] dark:bg-[#0C1015] border border-[#DEE2E6] dark:border-[#262A30] py-5 rounded-lg"
           >
             Visit profile
           </Button>
