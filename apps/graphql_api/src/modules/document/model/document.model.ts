@@ -1,28 +1,32 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, ID, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
 export class Document {
-  @Field(() => String )
+  @Field(() => ID)
   id!: string;
 
-  @Field(() => String, { nullable: true })
-  username?: string;
+  @Field()
+  slug!: string;
 
-  @Field(() => String, { nullable: true })
-  email?: string;
+  @Field()
+  title!: string;
 
-  @Field(() => String, { nullable: true })
-  firstName?: string;
 
-  @Field(() => String, { nullable: true })
-  lastName?: string;
+  @Field(() => ID)
+  authorId!: string;
 
-  @Field(() => String, { nullable: true })
-  fullName?: string;
+  @Field(() => ID)
+  workspaceId!: string;
+
+  @Field(() => ID)
+  parentId!: string;
 
   @Field(() => Boolean)
-  isOnboarded!: boolean;
+  runUnexecutedBlocks!: boolean;
 
-  @Field(() => String, { nullable: true })
-  image?: string;
+  @Field(() => Boolean)
+  runSQLSelection!: boolean;
+
+  @Field(() => Boolean)
+  shareLinksWithoutSidebar!: boolean;
 }

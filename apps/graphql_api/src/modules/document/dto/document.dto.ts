@@ -1,47 +1,67 @@
-import { InputType, Int } from '@nestjs/graphql';
+import { InputType } from '@nestjs/graphql';
 import {
-  EmailField,
-  EmailFieldOptional,
-  PasswordField,
-  StringField,
   StringFieldOptional,
-  URLFieldOptional,
+  NumberField,
   NumberFieldOptional,
+  UUIDField,
+  UUIDFieldOptional,
+  BooleanFieldOptional,
 } from '@sandworm/graphql';
-import { lowerCaseTransformer } from '@sandworm/nest-common';
-import { Transform } from 'class-transformer';
 
-@InputType({ description: 'User register request' })
-export class CreateUserInput {
-  @EmailField()
-  email: string;
-
-  @StringField()
-  @Transform(lowerCaseTransformer)
-  username: string;
-
-  @PasswordField()
-  password: string;
-}
-
-@InputType({ description: 'User update request' })
-export class UpdateUserInput {
-  @EmailFieldOptional()
-  email?: string;
+@InputType()
+export class CreateDocumentInput {
+  @StringFieldOptional()
+  title: string;
 
   @StringFieldOptional()
-  @Transform(lowerCaseTransformer)
-  username?: string;
+  icon?: string;
 
-  @StringFieldOptional()
-  bio?: string;
-
-  @URLFieldOptional()
-  image?: string;
+  @UUIDFieldOptional()
+  parentId?: string;
 }
 
 @InputType()
-export class GetAllUsersInput {
-  @NumberFieldOptional()
-  limit: number;
+export class DocumentRelationsInput {
+  @UUIDFieldOptional()
+  parentId?: string | null;
+
+  @NumberField()
+  orderIndex: number;
+}
+
+@InputType()
+export class UpdateDocumentInput {
+  @StringFieldOptional()
+  title?: string;
+  relations?: DocumentRelationsInput;
+}
+
+@InputType()
+export class DeleteDocumentInput {
+  @UUIDField()
+  workspaceId: string;
+
+  @UUIDField()
+  documentId: string;
+
+  @BooleanFieldOptional()
+  isPermanent?: boolean;
+}
+
+@InputType()
+export class RestoreDocumentInput {
+  @UUIDField()
+  workspaceId: string;
+
+  @UUIDField()
+  documentId: string;
+}
+
+@InputType()
+export class DuplicateDocumentInput {
+  @UUIDField()
+  workspaceId: string;
+
+  @UUIDField()
+  documentId: string;
 }
