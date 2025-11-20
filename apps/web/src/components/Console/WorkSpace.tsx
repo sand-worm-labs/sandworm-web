@@ -88,13 +88,13 @@ export const WorkSpace = ({ initialQuery, currentUserId }: WorkSpaceProps) => {
             </ResizablePanel>
           )}
 
-          <ResizablePanel
+          {/*   <ResizablePanel
             className="overflow-scroll hidden md:block"
             defaultSize={isMobile ? 50 : 25}
             minSize={isMobile ? 40 : 20}
           >
             {panelComponents[currentView]}
-          </ResizablePanel>
+          </ResizablePanel> */}
 
           {!showExplorer && (
             <Button

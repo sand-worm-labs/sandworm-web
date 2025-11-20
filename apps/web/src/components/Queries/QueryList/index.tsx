@@ -7,7 +7,7 @@ import Image from "next/image";
 
 import { useIsMobile } from "@/hooks/useMobile";
 import type { Query, QueryPagination } from "@/types";
-import { ExploreCard } from "@/components/ExplorePage/ExploreCard";
+import { ExploreCard } from "@/components/Explore/ExploreCard";
 
 interface IQueryListProps {
   queries: Query[] | null;
@@ -71,8 +71,8 @@ export const QueryList: React.FC<IQueryListProps> = ({
         pageClassName="px-3 py-1 rounded hover:bg-gray-100 hover:text-black"
         previousClassName="px-3 py-1 rounded hover:bg-gray-100 hover:text-black"
         nextClassName="px-3 py-1 rounded hover:bg-gray-100 hover:text-black"
-        previousLinkClassName="text-orange-500"
-        nextLinkClassName="text-orange-500"
+        previousLinkClassName="text-[#C7665C]"
+        nextLinkClassName="text-[#C7665C]"
         breakClassName="px-3 py-1"
         breakLinkClassName="text-gray-500"
         activeClassName="bg-white text-black"
