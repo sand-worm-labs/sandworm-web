@@ -1,7 +1,4 @@
 import { Field, ObjectType, ID, registerEnumType } from '@nestjs/graphql';
-import { User } from '../../user/model/user.model';
-import { Document } from '../../document/model/document.model';
-import { OnboardingTutorial } from './onboarding_tutorial.model';
 import { Plan } from '@sandworm/postgresql-typeorm';
 
 
