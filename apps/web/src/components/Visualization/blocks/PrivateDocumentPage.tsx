@@ -309,14 +309,6 @@ function PrivateDocumentPageInner(
     );
   }, [router]);
 
-  console.log(
-    "is app",
-    props.isApp,
-    "role:",
-    props.user.roles[props.workspaceId],
-    props.isApp || props.user.roles[props.workspaceId] === "viewer"
-  );
-
   const topBarContent = (
     <div className="flex items-center w-full justify-between gap-x-6">
       <div className="w-full overflow-hidden flex items-center gap-x-1.5 text-sm text-gray-400 dark:text-[#868E96] font-primary">
