@@ -7,6 +7,7 @@ import type {
   ExecutionQueueBatch,
   DataFrame,
 } from "@sandworm/types";
+
 import type { VisualizationV2Block } from "@sandworm/editor";
 import { BlockType, ExecutionQueueItem } from "@sandworm/editor";
 import { Star, Expand, MoreVertical } from "lucide-react";
@@ -108,18 +109,148 @@ const executionQueue: ExecutionQueue = {
   }),
 };
 
-// --- Document info ---
-const document = {
-  appClock: 0,
-  appId: "c9eda31f-0a6a-408f-b217-1948b73b4b1b",
-  clock: 0,
-  createdAt: "2025-10-05T13:41:16.642Z",
-  deletedAt: null,
-  hasDashboard: true,
-  icon: "DocumentIcon",
-  id: "0ad689b1-252b-4ada-88b7-71ba3e27c5a9",
-  title: "Test Notebook",
-  updatedAt: "2025-10-14T20:31:01.941Z",
+// --- Mock Yjs Block --------------------------
+const mockBlock = {
+  nodeName: "block",
+
+  _attributes: {
+    id: "mock-block-123",
+    type: "VISUALIZATION_V2",
+
+    input: {
+      dataframeName: "df",
+      chartType: "groupedColumn",
+
+      xAxis: { name: "age", type: "int32" },
+      xAxisName: "age",
+      xAxisSort: "ascending",
+      xAxisGroupFunction: null,
+
+      yAxes: [
+        {
+          id: "y-axis-1",
+          series: [
+            {
+              id: "series-1",
+              column: { name: "id", type: "int32" },
+              aggregateFunction: "sum",
+            },
+          ],
+        },
+      ],
+
+      filters: [],
+    },
+
+    output: null,
+    controlsHidden: false,
+    error: null,
+  },
+
+  // --- Mock Yjs API Methods --------------------
+  getAttribute(key) {
+    return this._attributes[key];
+  },
+
+  setAttribute(key, value) {
+    this._attributes[key] = value;
+  },
+
+  removeAttribute(key) {
+    delete this._attributes[key];
+  },
+
+  getAttributes() {
+    return new Map(Object.entries(this._attributes));
+  },
+};
+
+// --- Mock Dataframes Collection (Y.Map-like) ----
+const mockDataframes = {
+  _store: new Map([
+    [
+      "df",
+      {
+        name: "df",
+        columns: [
+          { name: "id", type: "int32" },
+          { name: "name", type: "object" },
+          { name: "email", type: "object" },
+          { name: "age", type: "int32" },
+          { name: "country", type: "object" },
+        ],
+        rows: [
+          {
+            id: 1,
+            name: "Si",
+            email: "si@example.com",
+            age: 25,
+            country: "Nigeria",
+          },
+          {
+            id: 2,
+            name: "Zoe",
+            email: "zoe@example.com",
+            age: 29,
+            country: "USA",
+          },
+          { id: 3, name: "Leo", email: "leo@worm.ai", age: 27, country: "UK" },
+          {
+            id: 4,
+            name: "Tayo",
+            email: "tayo@web3.dev",
+            age: 31,
+            country: "Ghana",
+          },
+          {
+            id: 5,
+            name: "Nina",
+            email: "nina@codebae.com",
+            age: 23,
+            country: "Kenya",
+          },
+        ],
+      },
+    ],
+  ]),
+
+  // Y.Map API
+  get(key) {
+    return this._store.get(key);
+  },
+
+  set(key, value) {
+    this._store.set(key, value);
+  },
+
+  has(key) {
+    return this._store.has(key);
+  },
+
+  keys() {
+    return this._store.keys();
+  },
+};
+
+// --- Full Props to Pass ------------------------
+export const visualizationMockProps = {
+  isPublicMode: false,
+  isEditable: false,
+  document: { id: "mock-doc-id", title: "Mock Dashboard" },
+  addGroupedBlock: () => {},
+  block: mockBlock,
+  blocks: {},
+  dataframes: mockDataframes,
+  dragPreview: "MOCK_DRAG",
+  dashboardMode: null,
+  hasMultipleTabs: false,
+  isBlockHiddenInPublished: false,
+  onToggleIsBlockHiddenInPublished: () => {},
+  userId: "mock-user-123",
+  executionQueue: "MOCK_QUEUE",
+  isFullScreen: true,
+  isCursorWithin: false,
+  isCursorInserting: false,
 };
 
 // --- Preview component ---
@@ -147,27 +278,7 @@ export const ChatReportPreview = () => {
       </p>
 
       <div className="w-full flex items-center justify-center text-neutral-500 rounded-2xl relative pt-5">
-        <VisualizationBlockV2
-          isPublicMode={false}
-          isEditable={false}
-          document={document}
-          onAddGroupedBlock={() => {}}
-          block={
-            blocks.get("visualization") as Y.XmlElement<VisualizationV2Block>
-          }
-          blocks={blocks}
-          dataframes={dataframes}
-          dragPreview={null}
-          dashboardMode={null}
-          hasMultipleTabs={false}
-          isBlockHiddenInPublished={false}
-          onToggleIsBlockHiddenInPublished={() => {}}
-          isCursorWithin={false}
-          isCursorInserting={false}
-          userId="default-user"
-          executionQueue={executionQueue}
-          isFullScreen={false}
-        />
+        <VisualizationBlockV2 {...visualizationMockProps} />
       </div>
 
       <p className="text-[#050818] dark:text-white text-base leading-relaxed ">
