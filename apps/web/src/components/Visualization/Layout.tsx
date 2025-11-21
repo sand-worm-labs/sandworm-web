@@ -52,6 +52,11 @@ import PagePath from "./blocks/PagePath";
 import DragLayer from "./blocks/DragLayer";
 import { useFavorites } from "./hooks/useFavorites";
 import { MiniChat } from "../Chats/MiniChat";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@sandworm/ui/components/resizable";
 
 const syne = Syne({ subsets: ["latin"] });
 
@@ -414,85 +419,30 @@ export default function Layout({
             {topBarContent}
           </div>
         </div>
-        <div className="grid grid-cols-[70%,30%]">
-          <div className="flex-grow flex flex-col overflow-scroll">
-            {children}
-          </div>
-          <MiniChat />
-        </div>
+        <ResizablePanelGroup direction="horizontal" className="h-full">
+          <ResizablePanel
+            className="overflow-auto"
+            defaultSize={70}
+            minSize={40}
+            maxSize={100}
+          >
+            <div className="h-full flex-grow flex overflow-hidden">
+              {children}
+            </div>
+          </ResizablePanel>
+
+          <ResizableHandle withHandle />
+
+          <ResizablePanel
+            className="overflow-auto"
+            defaultSize={30}
+            minSize={0}
+            maxSize={60}
+          >
+            <MiniChat />
+          </ResizablePanel>
+        </ResizablePanelGroup>
       </main>
     </div>
-  );
-}
-
-function UserDropdown(props: { workspaceId: string }) {
-  const signOut = useSignout();
-
-  const buttonRef = useRef<HTMLButtonElement | null>(null);
-  const { onOpen, dropdownPosition } = useDropdownPosition(buttonRef);
-
-  return (
-    <Menu as="div" className="relative inline-flex text-left">
-      <Menu.Button className="pr-2" ref={buttonRef} onClick={onOpen}>
-        <div className="p-1 hover:bg-ceramic-200/50 rounded-md">
-          <ChevronUpIcon className="h-4 w-4 shrink-0" />
-        </div>
-      </Menu.Button>
-
-      {ReactDOM.createPortal(
-        <Transition
-          as="div"
-          id="doc-dropdown"
-          enter="transition ease-out duration-100"
-          enterFrom="transform opacity-0 scale-95"
-          enterTo="transform opacity-100 scale-100"
-          leave="transition ease-in duration-75"
-          leaveFrom="transform opacity-100 scale-100"
-          leaveTo="transform opacity-0 scale-95"
-          style={{
-            position: "absolute",
-            top: dropdownPosition.top - 5,
-            left: dropdownPosition.left,
-          }}
-          className="absolute z-[2000]"
-        >
-          <Menu.Items className="absolute left-2 bottom-2 z-20 w-56 origin-bottom-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-            <div className="py-2 px-2">
-              <Menu.Item>
-                {({ active }) => (
-                  <Link
-                    href={`/workspaces/${props.workspaceId}/profile`}
-                    className={clsx(
-                      active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                      "w-full px-4 py-2 text-left text-sm flex items-center gap-x-2 rounded-md"
-                    )}
-                  >
-                    <UserIcon className="h-4 w-4" />
-                    <span>Profile</span>
-                  </Link>
-                )}
-              </Menu.Item>
-              <Menu.Item>
-                {({ active }) => (
-                  <button
-                    onClick={() => {
-                      signOut();
-                    }}
-                    className={clsx(
-                      active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                      "w-full px-4 py-2 text-left text-sm flex items-center gap-x-2 rounded-md"
-                    )}
-                  >
-                    <ArrowLeftOnRectangleIcon className="h-4 w-4" />
-                    <span>Sign Out</span>
-                  </button>
-                )}
-              </Menu.Item>
-            </div>
-          </Menu.Items>
-        </Transition>,
-        document.body
-      )}
-    </Menu>
   );
 }
