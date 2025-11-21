@@ -38,6 +38,8 @@
     "@sandworm/graphql": "workspace:*",
     "@sandworm/nest-common": "workspace:*",
     "@sandworm/postgresql-typeorm": "workspace:*",
+    "@sandworm/types": "workspace:*",
+    "@sandworm/jupyter": "workspace:*",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
     "dataloader": "^2.2.3",
