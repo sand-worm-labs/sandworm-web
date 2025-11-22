@@ -122,7 +122,7 @@ export const WorkspaceTabs = ({
   }, [tabs]);
 
   const handleTabChange = (tabId: string) => {
-    const basePath = "/console";
+    const basePath = "/workspace/console";
     const currentTabId = pathname.split("/")[2];
 
     if (tabId !== currentTabId) {
@@ -134,7 +134,7 @@ export const WorkspaceTabs = ({
 
   const addNewCodeTab = () => {
     const tabId = createTab("New Query");
-    router.push(`/console/${tabId}`, { showProgress: true });
+    router.push(`/workspace/console/${tabId}`, { showProgress: true });
   };
 
   return (
