@@ -27,7 +27,7 @@ import { BaseContext } from '@apollo/server';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { appConfig } from '@sandworm/graphql';
 import { TypeOrmConfigService } from './database/typeorm-config.service';
-import { JupyterModule } from './jupyter/ jupyter.module';
+import { JupyterModule } from './jupyter/jupyter.module';
 
 const configModule = ConfigModule.forRoot({
   isGlobal: true,
