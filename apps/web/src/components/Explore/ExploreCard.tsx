@@ -6,8 +6,9 @@ import {
 } from "@sandworm/ui/components/avatar";
 import { Badge } from "@sandworm/ui/components/badge";
 
-import { UserProfileHover } from "./UserProfileHover";
 import type { Query } from "@/types";
+
+import { UserProfileHover } from "./UserProfileHover";
 
 type ViewMode = "compact" | "detailed";
 

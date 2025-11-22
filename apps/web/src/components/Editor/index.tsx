@@ -45,7 +45,8 @@ import {
   getClosestDataframe,
   getBlockFlatPosition,
 } from "@sandworm/editor";
-import { DataFrame, ElementType } from "@sandworm/types";
+import type { DataFrame } from "@sandworm/types";
+import { ElementType } from "@sandworm/types";
 import {
   Bars3CenterLeftIcon,
   ChartPieIcon,
@@ -60,30 +61,8 @@ import {
   ArrowUpTrayIcon,
   CalendarIcon,
 } from "@heroicons/react/20/solid";
-import InputBlock from "../Visualization/blocks/customBlocks/input";
-import FileUploadBlock from "../Visualization/blocks/customBlocks/fileUpload";
-import ExecIndicator from "./ExecIndicator";
-import DropdownInputBlock from "../Visualization/blocks/customBlocks/dropdownInput";
-import DateInputBlock from "../Visualization/blocks/customBlocks/dateInput";
-import NewTabButton from "./NewTabButton";
-import useScrollDetection from "../Visualization/hooks/useScrollDetection";
-import { useEnvironmentStatus } from "../Visualization/hooks/useEnvironmentStatus";
-import { APIDataSources } from "../Visualization/hooks/useDataSources";
-import { IProvider } from "../Visualization/hooks/useYProvider";
-import { widthClasses } from "./constants";
 import { descend, head, prop, sortWith } from "ramda";
-import WritebackBlock from "../Visualization/blocks/customBlocks/writeback";
-import RemoveBlockDashboardConflictDialog from "./RemoveBlockDashboardConflictDialog";
-import PivotTableBlock from "../Visualization/blocks/customBlocks/pivotTable";
-import useHotkeys from "../Visualization/hooks/useHotkeys";
 import { HotkeysProvider } from "react-hotkeys-hook";
-import useEditorAwareness, {
-  EditorAwarenessProvider,
-} from "../Visualization/hooks/useEditorAwareness";
-import { SQLExtensionProvider } from "../Visualization/blocks/customBlocks/CodeEditor/sql";
-import VisualizationV2Block from "../Visualization";
-import SQLBlock from "../Visualization/blocks/customBlocks/sql";
-
 import { createPortal } from "react-dom";
 import { Transition } from "@headlessui/react";
 import {
@@ -92,9 +71,28 @@ import {
   MinusCircleIcon,
   PlayIcon,
 } from "@heroicons/react/24/outline";
-import { useOnClickOutside } from "@/hooks/useOnClickOutside";
 import SimpleBar from "simplebar-react";
-import { ApiDocument, UserWorkspaceRole } from "@/types";
+
+import { useOnClickOutside } from "@/hooks/useOnClickOutside";
+import type { ApiDocument, UserWorkspaceRole } from "@/types";
+
+import PivotTableBlock from "../Visualization/blocks/customBlocks/pivotTable";
+import useHotkeys from "../Visualization/hooks/useHotkeys";
+import useEditorAwareness, {
+  EditorAwarenessProvider,
+} from "../Visualization/hooks/useEditorAwareness";
+import { SQLExtensionProvider } from "../Visualization/blocks/customBlocks/CodeEditor/sql";
+import VisualizationV2Block from "../Visualization";
+import SQLBlock from "../Visualization/blocks/customBlocks/sql";
+import WritebackBlock from "../Visualization/blocks/customBlocks/writeback";
+import type { IProvider } from "../Visualization/hooks/useYProvider";
+import type { APIDataSources } from "../Visualization/hooks/useDataSources";
+import { useEnvironmentStatus } from "../Visualization/hooks/useEnvironmentStatus";
+import useScrollDetection from "../Visualization/hooks/useScrollDetection";
+import DateInputBlock from "../Visualization/blocks/customBlocks/dateInput";
+import DropdownInputBlock from "../Visualization/blocks/customBlocks/dropdownInput";
+import FileUploadBlock from "../Visualization/blocks/customBlocks/fileUpload";
+import InputBlock from "../Visualization/blocks/customBlocks/input";
 import VisualizationBlock from "../Visualization";
 import PythonBlock from "../Visualization/blocks/customBlocks/python";
 import RichTextBlock from "../Visualization/blocks/customBlocks/richText";
@@ -104,8 +102,12 @@ import {
   useYDocState,
 } from "../Visualization/hooks/useYDocs";
 import useSideBar from "../Visualization/hooks/useSideBar";
-import { ContentSkeleton } from "./ContentSkeleton";
 
+import RemoveBlockDashboardConflictDialog from "./RemoveBlockDashboardConflictDialog";
+import { widthClasses } from "./constants";
+import NewTabButton from "./NewTabButton";
+import ExecIndicator from "./ExecIndicator";
+import { ContentSkeleton } from "./ContentSkeleton";
 import PlusButton from "./PlusButton";
 import DragHandle from "./DragHandle";
 import Title from "./Title";

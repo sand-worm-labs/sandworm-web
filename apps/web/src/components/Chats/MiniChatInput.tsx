@@ -1,4 +1,5 @@
-import React, { useState, useRef, ChangeEvent, KeyboardEvent } from "react";
+import type { ChangeEvent, KeyboardEvent } from "react";
+import React, { useState, useRef } from "react";
 import { Plus, Send, X, FileText, FileSpreadsheet } from "lucide-react";
 
 interface MiniChatInputProps {
@@ -53,7 +54,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
   const handleTextareaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value);
     e.target.style.height = "auto";
-    e.target.style.height = Math.min(e.target.scrollHeight, maxHeight) + "px";
+    e.target.style.height = `${Math.min(e.target.scrollHeight, maxHeight)}px`;
   };
 
   const getFileIcon = (file: File): JSX.Element => {

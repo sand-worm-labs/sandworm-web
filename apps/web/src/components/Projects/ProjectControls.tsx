@@ -166,7 +166,7 @@ const ProjectControl: React.FC<ProjectControlProps> = ({
               <Settings className="w-4 h-4 text-[#717a94]" />
             </Button>
 
-            <div className="w-px h-6 bg-gray-300 mx-1"></div>
+            <div className="w-px h-6 bg-gray-300 mx-1" />
 
             <Button
               variant={activeView === "grid" ? "default" : "ghost"}

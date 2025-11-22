@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState } from "react";
 import {
   Star,
@@ -10,6 +11,7 @@ import {
   Copy,
   Trash2,
 } from "lucide-react";
+
 import ProjectControl from "./ProjectControls";
 
 interface Project {
@@ -170,7 +172,7 @@ export const Projects: React.FC = () => {
                 </div>
               </div>
 
-              <div className="bg-white dark:bg-black rounded-lg h-10 mb-4 flex items-center justify-center"></div>
+              <div className="bg-white dark:bg-black rounded-lg h-10 mb-4 flex items-center justify-center" />
 
               <div className="flex items-center justify-between">
                 <div className="relative">

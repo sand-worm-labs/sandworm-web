@@ -2,6 +2,7 @@
 
 import { LayoutGrid, List } from "lucide-react";
 import { Button } from "@sandworm/ui/components/button";
+
 import { cn } from "@/lib/utils";
 
 export type ViewMode = "grid" | "list";
