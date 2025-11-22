@@ -4,7 +4,6 @@ import { CommentEntity, UserEntity } from '@sandworm/postgresql-typeorm';
 import { AuthModule } from '../auth/auth.module';
 import { CommentResolver } from './comment.resolver';
 import { CommentService } from './comment.service';
-// import { CommentGateway } from './comment.gateway';
 
 @Module({
   imports: [
