@@ -182,7 +182,7 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
         </div>
       </div>
 
-      <div className="flex-1 relative">
+      <div className="flex-1 relative border-b border-b-red-500">
         <QueryCodeEditor
           initialValue={currentContent}
           tabId={tabId}

@@ -26,7 +26,7 @@ export const QueryCodeEditor = ({
   tabId,
   updateTabQueryAction,
   onRunQuery,
-  height = "450px",
+  height = "200px",
   readonly = false,
   theme,
 }: QueryCodeEditorProps) => {
@@ -196,7 +196,7 @@ export const QueryCodeEditor = ({
   }, []);
 
   return (
-    <div className=" rounded-xl overflow-auto relative">
+    <div className=" rounded-xl overflow-auto relative border-b  mb-20">
       <Editor
         height={height}
         defaultLanguage="sql"
