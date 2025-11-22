@@ -5,12 +5,15 @@ import {
     ManyToOne,
     OneToMany,
     type Relation,
+    OneToOne,
 } from "typeorm";
 import { Plan } from "./enums";
 import { UserEntity } from "./user.entity";
 import { AbstractEntity } from "./abstract.entity";
 import { OnboardingTutorialEntity } from "./onboarding_tutorial.entity";
 import { DocumentEntity } from "./document.entity";
+import { EnvironmentEntity } from "./environment.entity";
+import { EnvironmentVariableEntity } from "./environment_variable.entity";
 
 @Entity("workspaces")
 export class WorkspaceEntity extends AbstractEntity {
@@ -43,5 +46,11 @@ export class WorkspaceEntity extends AbstractEntity {
 
     @OneToMany(() => OnboardingTutorialEntity, (tut) => tut.workspace)
     onboardingTutorials!: Relation<OnboardingTutorialEntity[]>;
+
+    @OneToOne(() => EnvironmentEntity, (environment) => environment.workspace, {onDelete: "CASCADE"})
+    environment?: Relation<EnvironmentEntity>;
+    
+    @OneToMany(() => EnvironmentVariableEntity,(envVar) => envVar.workspace, {onDelete: "CASCADE"})
+    environmentVariables!: Relation<EnvironmentVariableEntity[]>;
 }
 
