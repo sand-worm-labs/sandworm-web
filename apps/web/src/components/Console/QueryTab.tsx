@@ -54,10 +54,31 @@ c30,0,30,26.9,60,26.9"
     // Show empty state if no query has been run
     if (!currentTab.result) {
       return (
-        <div className="h-full flex items-center justify-center">
-          <div className="flex flex-col items-center">
-            <FileX2 size={48} className="text-muted-foreground mb-4" />
-            <p className="text-sm text-muted-foreground text-center">
+        <div className="h-full flex items-center justify-center relative">
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle, #E2E8F0 4px, transparent 3px)",
+              backgroundSize: "32px 32px",
+            }}
+          />
+
+          {/* Fade overlay - radial gradient from center */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(ellipse 80% 120% at 50% 0%, transparent 0%, white 70%)",
+            }}
+          />
+          <div className="flex flex-col items-center relative z-10">
+            <FileX2
+              size={48}
+              className="text-[#868E96] mb-4"
+              strokeWidth={1.5}
+            />
+            <p className="text-sm text-[#868E96] text-center">
               There's no data yet! Run a query to get started.
             </p>
           </div>

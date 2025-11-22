@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import {
   Star,
-  MoreVertical,
+  MoreHorizontal,
   User,
   Save,
   FolderOpen,
@@ -11,8 +11,10 @@ import {
   Copy,
   Trash2,
 } from "lucide-react";
+import { PiPlus } from "react-icons/pi";
 
 import ProjectControl from "./ProjectControls";
+import { useRouter } from "next/navigation";
 
 interface Project {
   id: number;
@@ -56,6 +58,7 @@ export const Projects: React.FC = () => {
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
   const [hoveredUser, setHoveredUser] = useState<number | null>(null);
   const [hoveredSave, setHoveredSave] = useState<number | null>(null);
+  const router = useRouter();
 
   const toggleFavorite = (id: number): void => {
     setProjects(
@@ -83,7 +86,10 @@ export const Projects: React.FC = () => {
           <p className="text-gray-500 mb-6">
             Create your first project to get started
           </p>
-          <button className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          <button
+            type="button"
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
             Create Project
           </button>
         </div>
@@ -92,22 +98,35 @@ export const Projects: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen dark:bg-black p-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen dark:bg-black  p-8">
+      <div
+        className="flex justify-between
+      w-full"
+      >
         <div className="flex items-center gap-3 mb-0">
-          <span className="bg-[#C7665C20] rounded-full p-2 flex items-center justify-center">
+          <span className="bg-[#C7665C20]  rounded-full p-2 flex items-center justify-center">
             <FolderOpen className="w-4 h-4 text-[#C7665C] " />
           </span>
           <h2 className="text-xl font-medium ">Projects</h2>
         </div>
+        <button
+          type="button"
+          className="px-3  bg-[#C7665C20] hover:bg-[#c7665c30]  border-[#C7665C] border  text-[#C7665C] rounded-lg transition-colors text-sm flex items-center gap-x-2 py-0 "
+          onClick={() => router.push("/workspace/notebooks/edit")}
+        >
+          <PiPlus size={18} />
+          <span className="inline-block"> Create Project</span>
+        </button>
+      </div>
 
+      <div className=" mx-auto">
         <ProjectControl />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.map(project => (
             <div
               key={project.id}
-              className="bg-white dark:bg-black rounded-3xl border border-gray-200 dark:border-[#262A30]  transition-all duration-200 p-4 py-3 relative group"
+              className="bg-white dark:bg-black rounded-3xl border border-[#CED4DA] dark:border-[#262A30]  transition-all duration-200 p-4 py-3 relative group"
             >
               <div className="flex items-start justify-between mb-4">
                 <h3 className="text-[0.9rem] font-medium text-gray-900 dark:text-white flex-1 pr-2">
@@ -115,6 +134,7 @@ export const Projects: React.FC = () => {
                 </h3>
                 <div className="flex items-center gap-2">
                   <button
+                    type="button"
                     onClick={() => toggleFavorite(project.id)}
                     className={`opacity-0 group-hover:opacity-100 transition-opacity ${
                       project.isFavorite ? "opacity-100" : ""
@@ -131,6 +151,7 @@ export const Projects: React.FC = () => {
 
                   <div className="relative">
                     <button
+                      type="button"
                       onClick={() =>
                         setOpenMenuId(
                           openMenuId === project.id ? null : project.id
@@ -138,32 +159,38 @@ export const Projects: React.FC = () => {
                       }
                       className="p-1 rounded transition-colors"
                     >
-                      <MoreVertical className="w-4 h-4 text-[#717a94]" />
+                      <MoreHorizontal className="w-4 h-4 text-[#717a94]" />
                     </button>
 
                     {openMenuId === project.id && (
-                      <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-black rounded-lg shadow-lg border border-gray-200 dark:border-[#262A30] py-1 z-10">
+                      <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-black rounded-xl shadow-lg border border-[#CED4DA] dark:border-[#262A30] pb-1 z-10 text-[#455768]">
                         <button
+                          type="button"
                           onClick={() =>
                             handleMenuAction("duplicate", project.id)
                           }
-                          className="w-full px-4 py-2 text-left text-sm flex items-center gap-2"
+                          className="w-full px-4 py-2 text-left text-sm flex items-center gap-2 hover:bg-primary/20"
                         >
-                          <Copy className="w-4 h-4" />
+                          <Copy className="w-3.5 h-.5" strokeWidth={1.4} />
                           Duplicate
                         </button>
                         <button
+                          type="button"
                           onClick={() => handleMenuAction("newTab", project.id)}
-                          className="w-full px-4 py-2 text-left text-sm flex items-center gap-2"
+                          className="w-full px-4 py-2 text-left text-sm flex items-center gap-2 hover:bg-primary/20"
                         >
-                          <ExternalLink className="w-4 h-4" />
+                          <ExternalLink
+                            className="w-3.5 h-3.5"
+                            strokeWidth={1.4}
+                          />
                           Open in new tab
                         </button>
                         <button
+                          type="button"
                           onClick={() => handleMenuAction("trash", project.id)}
-                          className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                          className="w-full px-4 py-2 text-left text-sm  hover:bg-primary/20 flex items-center gap-2"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="w-3.5 h-3.5" strokeWidth={1.4} />
                           Move to trash
                         </button>
                       </div>
@@ -177,6 +204,7 @@ export const Projects: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div className="relative">
                   <button
+                    type="button"
                     onMouseEnter={() => setHoveredUser(project.id)}
                     onMouseLeave={() => setHoveredUser(null)}
                     className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -185,7 +213,7 @@ export const Projects: React.FC = () => {
                   </button>
 
                   {hoveredUser === project.id && (
-                    <div className="absolute bottom-full left-0 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded shadow-lg whitespace-nowrap z-20">
+                    <div className="absolute bottom-full left-0 mb-2 px-3 py-1 dark:bg-gray-900 bg-white text-[#6C757D] border-[#E9ECEF] border dark:text-white text-xs rounded shadow-[0_0.5px_4px_#2516660A] whitespace-nowrap z-20">
                       Creator: {project.creator}
                     </div>
                   )}
@@ -193,6 +221,7 @@ export const Projects: React.FC = () => {
 
                 <div className="relative">
                   <button
+                    type="button"
                     onMouseEnter={() => setHoveredSave(project.id)}
                     onMouseLeave={() => setHoveredSave(null)}
                     className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -201,18 +230,24 @@ export const Projects: React.FC = () => {
                   </button>
 
                   {hoveredSave === project.id && (
-                    <div className="absolute bottom-full right-0 mb-2 px-4 py-3 bg-gray-900 text-white text-xs rounded shadow-lg whitespace-nowrap z-20">
+                    <div className="absolute bottom-full right-0 mb-2 px-4 py-1.5 dark:bg-gray-900 bg-white text-[#343A40] border-[#E9ECEF] border dark:text-white text-xs rounded shadow-[0_0.5px_4px_#2516660A] whitespace-nowrap z-20">
                       <div className="space-y-1">
                         <div>
-                          <span className="font-semibold">Creator:</span>{" "}
+                          <span className="font-medium text-[#6C757D] dark:text-white">
+                            Creator:
+                          </span>{" "}
                           {project.creator}
                         </div>
                         <div>
-                          <span className="font-semibold">Last edited:</span>{" "}
+                          <span className="font-medium text-[#6C757D] dark:text-white">
+                            Last edited:
+                          </span>{" "}
                           {project.lastEdited}
                         </div>
                         <div>
-                          <span className="font-semibold">Created:</span>{" "}
+                          <span className="font-medium text-[#6C757D] dark:text-white">
+                            Created:
+                          </span>{" "}
                           {project.created}
                         </div>
                       </div>
