@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@sandworm/ui/components/card";
+import { LuLayoutGrid } from "react-icons/lu";
 
 type Tool = {
   id: string;
@@ -68,14 +69,14 @@ type ToolCardProps = {
 const ToolCard: React.FC<ToolCardProps> = ({ tool }) => {
   return (
     <Link href={tool.href} className="inline-block h-full">
-      <Card className="bg-[#FFFFFF] border-[#E9ECEF] dark:bg-[#111111] rounded-2xl p-6 flex flex-col text-left py-8 hover:shadow-md transition-shadow h-full">
-        <CardHeader className="p-0 mb-3">
-          <CardTitle className="text-sm text-[#3B5C6A] font-semibold">
+      <Card className="bg-[#FFFFFF] border-[#CED4DA] dark:bg-[#111111] rounded-3xl p-6  flex flex-col text-left pb-8 pt-6 transition-shadow h-full">
+        <CardHeader className="p-0 mb-0">
+          <CardTitle className="text-[0.90rem] text-[#1A1A1A] font-medium">
             {tool.name}
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          <p className="text-[#242A2D] dark:text-gray-300 text-[0.95rem] leading-relaxed font-medium">
+          <p className="text-[#6C757D] dark:text-gray-300 text-[0.85rem] leading-relaxed font-medium">
             {tool.description}
           </p>
         </CardContent>
@@ -86,10 +87,18 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool }) => {
 
 export default function ToolsPage() {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-      {tools.map(tool => (
-        <ToolCard key={tool.id} tool={tool} />
-      ))}
+    <div>
+      <div className="flex items-center gap-3  mt-10 px-8 mb-5">
+        <span className="bg-[#C7665C20]  rounded-full p-2 flex items-center justify-center">
+          <LuLayoutGrid className="w-4 h-4 text-[#C7665C] " />
+        </span>
+        <h2 className="text-xl font-medium ">Tools</h2>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+        {tools.map(tool => (
+          <ToolCard key={tool.id} tool={tool} />
+        ))}
+      </div>
     </div>
   );
 }

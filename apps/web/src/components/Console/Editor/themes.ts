@@ -2,7 +2,7 @@ export const sandwormTheme = {
   base: "vs-dark",
   inherit: true,
   rules: [
-    { token: "", foreground: "f8f8f2", background: "141414" },
+    { token: "", foreground: "f8f8f2", background: "333233" },
     { token: "keyword", foreground: "cda869", fontStyle: "bold" },
     { token: "string", foreground: "8f9d6a" },
     { token: "comment", foreground: "5f5a60", fontStyle: "italic" },

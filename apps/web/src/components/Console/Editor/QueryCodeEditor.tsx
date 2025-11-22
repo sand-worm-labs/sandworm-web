@@ -98,7 +98,7 @@ export const QueryCodeEditor = ({
         { token: "variable", foreground: "9b859d" },
       ],
       colors: {
-        "editor.background": "#101010",
+        "editor.background": "#333233",
         "editor.foreground": "#F8F8F2",
         "editorCursor.foreground": "#A7A7A7",
         "editor.selectionBackground": "#49483E",

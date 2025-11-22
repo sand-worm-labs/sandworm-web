@@ -20,12 +20,10 @@ import {
   AcademicCapIcon,
 } from "@heroicons/react/24/outline";
 import clsx from "clsx";
-import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { CpuChipIcon, SparklesIcon } from "@heroicons/react/24/solid";
 import ReactDOM from "react-dom";
 import { useHotkeys } from "react-hotkeys-hook";
-import GitHubButton from "react-github-btn";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -44,16 +42,11 @@ import useSideBar, {
 } from "./hooks/useSideBar";
 import { useDataSources } from "./hooks/useDataSources";
 import type { SessionUser } from "./hooks/useAuth";
-import { useSignout } from "./hooks/useAuth";
 import type { Page } from "./blocks/PagePath";
 import { useDocuments } from "./hooks/useDocuments";
-import DocumentTree from "./blocks/DocumentsTree";
 import MobileWarning from "./blocks/MobileWarning";
 import CommandPalette from "./blocks/commandPalette";
-import {
-  ConfigurationsMenuButton,
-  ConfigurationsMenuLink,
-} from "./blocks/ConfigurationsMenuItem";
+
 import { FeaturesDialog } from "./blocks/SubscriptionBadge";
 import PagePath from "./blocks/PagePath";
 import DragLayer from "./blocks/DragLayer";
@@ -335,43 +328,6 @@ export default function Layout({
 
   const [isUpgradeDialogOpen, setUpgradeDialogOpen] = useState(false);
 
-  // For sidebar resizing
-  const isResizingRef = useRef(false);
-  const sidebarRef = useRef<HTMLDivElement>(null);
-
-  const startResizing = useCallback(
-    (e: React.MouseEvent) => {
-      e.preventDefault();
-      isResizingRef.current = true;
-
-      function handleMouseMove(e: MouseEvent) {
-        if (!isResizingRef.current) return;
-
-        const newWidth = Math.max(
-          MIN_SIDEBAR_WIDTH,
-          Math.min(MAX_SIDEBAR_WIDTH, e.clientX)
-        );
-
-        sideBarApi.resize(newWidth);
-      }
-
-      function handleMouseUp() {
-        isResizingRef.current = false;
-        document.removeEventListener("mousemove", handleMouseMove);
-        document.removeEventListener("mouseup", handleMouseUp);
-      }
-
-      // Clean up any existing listeners first to prevent duplicates
-      document.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("mouseup", handleMouseUp);
-
-      // Add the event listeners
-      document.addEventListener("mousemove", handleMouseMove);
-      document.addEventListener("mouseup", handleMouseUp);
-    },
-    [sideBarApi.resize]
-  );
-
   return (
     <div
       className={`flex w-full h-full overflow-hidden ${syne.className} relative`}
@@ -407,7 +363,8 @@ export default function Layout({
         >
           <div className="flex w-full">
             {/* Original expand sidebar button (visible when sidebar is closed) */}
-            <div
+            <button
+              type="button"
               className={clsx(
                 isSideBarOpen ? "hidden" : "mr-8",
                 "relative h-12 w-12 border-b border-gray-200 bg-ceramic-50 text-gray-500 dark:text-[#868E96] cursor-pointer hover:bg-ceramic-100 flex-shrink-0"
@@ -415,7 +372,7 @@ export default function Layout({
               onClick={toggleSideBar(true)}
             >
               <ChevronDoubleRightIcon className="w-5 h-5 absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2" />
-            </div>
+            </button>
             {pagePath && <PagePath pages={pagePath} />}
             {topBarContent}
           </div>
