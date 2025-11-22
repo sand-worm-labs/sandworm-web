@@ -15,6 +15,7 @@ import type {
 import ReactDOM from "react-dom";
 
 import { useOnClickOutside2 } from "@/hooks/useOnClickOutside";
+import useResizeMemo from "@/hooks/useResizeMemo";
 
 import DragList from "../DragList";
 

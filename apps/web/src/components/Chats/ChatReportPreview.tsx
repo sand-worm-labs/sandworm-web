@@ -1,15 +1,18 @@
 "use client";
 
 import * as Y from "yjs";
-import type {
-  YBlock,
+import {
+  makeVisualizationV2Block,
+  VisualizationV2BlockInput,
+  getDefaultDateFormat,
+  getDefaultNumberFormat,
   ExecutionQueue,
-  ExecutionQueueBatch,
-  DataFrame,
-} from "@sandworm/types";
-
+  BlockType,
+  ExecutionQueueItem,
+} from "@sandworm/editor";
+import type { DataFrame, DataFrameColumn } from "@sandworm/types";
+import { v4 as uuidv4 } from "uuid";
 import type { VisualizationV2Block } from "@sandworm/editor";
-import { BlockType, ExecutionQueueItem } from "@sandworm/editor";
 import { Star, Expand, MoreVertical } from "lucide-react";
 
 import VisualizationBlockV2 from "../Visualization";
@@ -17,240 +20,172 @@ import RichTextBlock from "../Visualization/blocks/customBlocks/richText";
 
 import ItemActionsDropdown from "./ItemAction";
 
-const yDoc = new Y.Doc();
+const doc = new Y.Doc();
 
-// --- Create a visualization block ---
-const visualizationBlock = new Y.XmlElement(
-  "visualization"
-) as Y.XmlElement<VisualizationV2Block>;
+// 2. Create mock DataFrame
+const mockDataframe: DataFrame = {
+  name: "sales_data",
+  columns: [
+    {
+      name: "date",
+      type: "datetime64[ns]",
+      categories: null,
+    } as DataFrameColumn,
+    {
+      name: "revenue",
+      type: "float64",
+      categories: null,
+    } as DataFrameColumn,
+    {
+      name: "region",
+      type: "str",
+      categories: ["North", "South", "East", "West"],
+    } as DataFrameColumn,
+  ],
+  updatedAt: new Date().toISOString(),
+  blockId: null,
+};
 
-visualizationBlock.setAttribute("type", BlockType.VisualizationV2);
-visualizationBlock.setAttribute("id", "visualization");
-visualizationBlock.setAttribute("title", "Top Tokens Chart");
-visualizationBlock.setAttribute("input", {
-  chartType: "groupedColumn",
-  dataframeName: "num1 ",
-  xAxis: null,
-  xAxisName: null,
-  xAxisSort: null,
-  xAxisGroupFunction: null,
-  xAxisDateFormat: null,
+// 3. Add dataframe to the doc
+const dataframes = doc.getMap<DataFrame>("dataframes");
+dataframes.set("sales_data", mockDataframe);
+
+// 4. Create the visualization block
+const blockId = uuidv4();
+const blocks = doc.getMap("blocks");
+
+const visualizationBlock = makeVisualizationV2Block(blockId, {
+  dataframeName: "sales_data",
+  chartType: "line",
+  xAxis: mockDataframe.columns[0], // date column
+  xAxisName: "Date",
+  xAxisSort: "ascending",
+  xAxisGroupFunction: "month",
+  xAxisDateFormat: getDefaultDateFormat(),
   xAxisNumberFormat: null,
-  yAxes: [],
+  yAxes: [
+    {
+      id: uuidv4(),
+      name: "Revenue",
+      series: [
+        {
+          id: uuidv4(),
+          column: mockDataframe.columns[1], // revenue column
+          aggregateFunction: "sum",
+          groupBy: null,
+          chartType: null,
+          name: "Total Revenue",
+          color: "#5470c6",
+          groups: null,
+          dateFormat: getDefaultDateFormat(),
+          numberFormat: getDefaultNumberFormat(),
+        },
+      ],
+    },
+  ],
   filters: [],
   histogramFormat: "count",
   histogramBin: { type: "auto" },
-  dataLabels: null,
+  dataLabels: {
+    show: false,
+    frequency: "some",
+  },
 });
 
-// --- Add mock data inside the element ---
-const dataElement = new Y.XmlElement("data");
-dataElement.setAttribute("xField", "token");
-dataElement.setAttribute("yField", "volume");
-dataElement.setAttribute("color", "#0C7CE8");
-
-const sampleData = new Y.XmlText();
-const data = [
-  { token: "WETH", volume: 523000 },
-  { token: "USDC", volume: 310000 },
-  { token: "AERO", volume: 125000 },
-  { token: "DEGEN", volume: 78000 },
-];
-sampleData.insert(0, JSON.stringify(data));
-
-dataElement.insert(0, [sampleData]);
-visualizationBlock.insert(0, [dataElement]);
-
-// --- Set up blocks map ---
-const blocks = yDoc.getMap<YBlock>("blocks");
-blocks.set("visualization", visualizationBlock as YBlock);
-
-// --- Set up dataframes map (mock one for query_1) ---
-const dataframes = yDoc.getMap<DataFrame>("dataframes");
-
-const query1Frame = {
-  name: "query_1",
-  blockId: "07dba87c-d847-4c83-b1c9-51d77a208a24",
-  columns: [
-    { name: "token", type: "string" },
-    { name: "volume", type: "int32" },
-  ],
-  rows: data.map(item => [item.token, item.volume]),
-};
-
-dataframes.set("query_1", query1Frame as DataFrame);
-
-// --- ExecutionQueue ---
-const executionQueue: ExecutionQueue = {
-  blocks: new Y.Map<YBlock>(),
-  queue: new Y.Array(),
-  layout: new Y.Array(),
-  observers: new Set(),
-  options: {},
-  enqueueBlock: () => {},
-  enqueueBlockGroup: () => {},
-  enqueueBlockOnwards: () => {},
-  enqueueRunAll: (): ExecutionQueueBatch => ({
-    id: "batch-1",
-    status: "pending",
-    timestamp: Date.now(),
-  }),
-  getCurrentBatch: () => null,
-  advance: () => {},
-  getBlockExecutions: () => [],
-  observe: () => () => {},
-  toJSON: () => [],
-  getRunAllBatches: () => [],
-  length: 0,
-  onObservation: () => {},
-  getExecutionQueueMetadataForBlock: () => ({
-    status: "pending",
-    timestamp: Date.now(),
-  }),
-};
-
-// --- Mock Yjs Block --------------------------
-const mockBlock = {
-  nodeName: "block",
-
-  _attributes: {
-    id: "mock-block-123",
-    type: "VISUALIZATION_V2",
-
-    input: {
-      dataframeName: "df",
-      chartType: "groupedColumn",
-
-      xAxis: { name: "age", type: "int32" },
-      xAxisName: "age",
-      xAxisSort: "ascending",
-      xAxisGroupFunction: null,
-
-      yAxes: [
-        {
-          id: "y-axis-1",
-          series: [
-            {
-              id: "series-1",
-              column: { name: "id", type: "int32" },
-              aggregateFunction: "sum",
-            },
-          ],
-        },
-      ],
-
-      filters: [],
-    },
-
-    output: null,
-    controlsHidden: false,
-    error: null,
-  },
-
-  // --- Mock Yjs API Methods --------------------
-  getAttribute(key) {
-    return this._attributes[key];
-  },
-
-  setAttribute(key, value) {
-    this._attributes[key] = value;
-  },
-
-  removeAttribute(key) {
-    delete this._attributes[key];
-  },
-
-  getAttributes() {
-    return new Map(Object.entries(this._attributes));
-  },
-};
-
-// --- Mock Dataframes Collection (Y.Map-like) ----
-const mockDataframes = {
-  _store: new Map([
-    [
-      "df",
+// 5. Set the output with mock chart data
+visualizationBlock.setAttribute("output", {
+  executedAt: new Date().toISOString(),
+  tooManyDataPoints: false,
+  result: {
+    tooltip: { trigger: "axis" },
+    legend: {},
+    grid: { containLabel: true },
+    dataset: [
       {
-        name: "df",
-        columns: [
-          { name: "id", type: "int32" },
-          { name: "name", type: "object" },
-          { name: "email", type: "object" },
-          { name: "age", type: "int32" },
-          { name: "country", type: "object" },
-        ],
-        rows: [
-          {
-            id: 1,
-            name: "Si",
-            email: "si@example.com",
-            age: 25,
-            country: "Nigeria",
-          },
-          {
-            id: 2,
-            name: "Zoe",
-            email: "zoe@example.com",
-            age: 29,
-            country: "USA",
-          },
-          { id: 3, name: "Leo", email: "leo@worm.ai", age: 27, country: "UK" },
-          {
-            id: 4,
-            name: "Tayo",
-            email: "tayo@web3.dev",
-            age: 31,
-            country: "Ghana",
-          },
-          {
-            id: 5,
-            name: "Nina",
-            email: "nina@codebae.com",
-            age: 23,
-            country: "Kenya",
-          },
+        dimensions: ["date", uuidv4()], // series id
+        source: [
+          { date: "2024-01-01", [uuidv4()]: 1000 },
+          { date: "2024-02-01", [uuidv4()]: 1500 },
+          { date: "2024-03-01", [uuidv4()]: 1200 },
+          { date: "2024-04-01", [uuidv4()]: 1800 },
+          { date: "2024-05-01", [uuidv4()]: 2000 },
         ],
       },
     ],
-  ]),
-
-  // Y.Map API
-  get(key) {
-    return this._store.get(key);
+    xAxis: [
+      {
+        type: "time",
+        name: "Date",
+        nameLocation: "middle",
+        nameGap: 30,
+        axisPointer: { type: "shadow" },
+      },
+    ],
+    yAxis: [
+      {
+        type: "value",
+        name: "Revenue",
+        nameLocation: "middle",
+        nameGap: 50,
+        position: "left",
+      },
+    ],
+    series: [
+      {
+        id: uuidv4(),
+        type: "line",
+        datasetIndex: 0,
+        yAxisIndex: 0,
+        name: "Total Revenue",
+        z: 0,
+        encode: { x: "date", y: uuidv4() },
+        lineStyle: { color: "#5470c6" },
+        itemStyle: { color: "#5470c6" },
+      },
+    ],
   },
+});
 
-  set(key, value) {
-    this._store.set(key, value);
-  },
+blocks.set(blockId, visualizationBlock);
 
-  has(key) {
-    return this._store.has(key);
-  },
+// 6. Create layout and block group
+const layout = doc.getArray("layout");
+const blockGroupId = uuidv4();
+const blockGroup = new Y.XmlElement("block-group");
+blockGroup.setAttribute("id", blockGroupId);
 
-  keys() {
-    return this._store.keys();
-  },
-};
+const tabRef = new Y.XmlElement("block-ref");
+tabRef.setAttribute("id", blockId);
 
-// --- Full Props to Pass ------------------------
-export const visualizationMockProps = {
+const tabs = new Y.Array();
+tabs.push([tabRef]);
+
+blockGroup.setAttribute("tabs", tabs);
+blockGroup.setAttribute("current", tabRef.clone());
+layout.push([blockGroup]);
+
+// 7. Create execution queue
+const executionQueue = doc.getArray("executionQueue");
+
+// Now you can use these in your component
+const mockProps = {
+  document: { id: "doc-1", workspaceId: "ws-1" } as any,
+  dataframes,
+  block: visualizationBlock,
+  blocks,
+  dragPreview: null,
+  isEditable: true,
   isPublicMode: false,
-  isEditable: false,
-  document: { id: "mock-doc-id", title: "Mock Dashboard" },
-  addGroupedBlock: () => {},
-  block: mockBlock,
-  blocks: {},
-  dataframes: mockDataframes,
-  dragPreview: "MOCK_DRAG",
+  onAddGroupedBlock: () => {},
   dashboardMode: null,
   hasMultipleTabs: false,
   isBlockHiddenInPublished: false,
   onToggleIsBlockHiddenInPublished: () => {},
-  userId: "mock-user-123",
-  executionQueue: "MOCK_QUEUE",
-  isFullScreen: true,
-  isCursorWithin: false,
+  isCursorWithin: true,
   isCursorInserting: false,
+  executionQueue: ExecutionQueue.fromYjs(doc),
+  userId: "user-1",
+  isFullScreen: false,
 };
 
 // --- Preview component ---
@@ -278,7 +213,7 @@ export const ChatReportPreview = () => {
       </p>
 
       <div className="w-full flex items-center justify-center text-neutral-500 rounded-2xl relative pt-5">
-        <VisualizationBlockV2 {...visualizationMockProps} />
+        <VisualizationBlockV2 {...mockProps} />
       </div>
 
       <p className="text-[#050818] dark:text-white text-base leading-relaxed ">

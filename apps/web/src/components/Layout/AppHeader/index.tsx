@@ -6,10 +6,10 @@ import { useSession } from "next-auth/react";
 import { X, Search } from "lucide-react";
 
 import { SandwormLogo } from "@/components/Assets";
+import { ThemeTogggle } from "@/components/Theme/ThemeToggle";
 
 import { ProfileMenu } from "../../ProfileMenu";
 import { SearchBar } from "../../SearchBar";
-import { ThemeTogggle } from "@/components/Theme/ThemeToggle";
 
 export const AppHeader: FC = () => {
   const { data: session } = useSession();
