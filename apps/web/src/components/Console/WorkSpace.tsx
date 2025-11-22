@@ -73,7 +73,7 @@ export const WorkSpace = ({ initialQuery, currentUserId }: WorkSpaceProps) => {
     <div className="flex w-full h-[calc(100vh-3.4rem)] overflow-hidden  md:flex-row">
       {/*   <AppSidebar currentView={currentView} setCurrentView={setCurrentView} /> */}
 
-      <div className="flex-1 h-full overflow-auto border-t">
+      <div className="flex-1 h-full overflow-auto border-t border-[#FEFEFF]">
         <ResizablePanelGroup direction="horizontal">
           {isMobile && (
             <ResizablePanel
@@ -100,10 +100,12 @@ export const WorkSpace = ({ initialQuery, currentUserId }: WorkSpaceProps) => {
             <Button
               onClick={() => setShowExplorer(true)}
               variant="outline"
-              className="shadow-none border-none fixed bottom-20 right-3 z-50 pointer-events-auto flex items-start flex-col gap-2 px-3 py-2 text-sm cursor-pointer"
+              className="shadow-none border-none fixed bottom-20 right-3 z-50 pointer-events-auto flex items-start flex-col gap-2 px-3 py-2 text-sm bg-transparent cursor-pointer hover:bg-transparent "
             >
               <span>Data Explorers</span>
-              <DatabaseIcon className="h-6 w-6 shrink-0" />
+              <div className="bg-[#ECF6FF] border-[3px] border-[#E9ECEF] rounded-xl p-2.5">
+                <DatabaseIcon className="h-5 w-5 text-[#A6554D] shrink-0" />
+              </div>
             </Button>
           )}
           {showExplorer && (
@@ -111,19 +113,16 @@ export const WorkSpace = ({ initialQuery, currentUserId }: WorkSpaceProps) => {
           )}
 
           {!isMobile && (
-            <>
-              <ResizableHandle withHandle />
-              <ResizablePanel
-                className="overflow-auto"
-                defaultSize={75}
-                minSize={40}
-              >
-                <WorkspaceTabs
-                  initialQuery={initialQuery}
-                  currentUserId={currentUserId}
-                />
-              </ResizablePanel>
-            </>
+            <ResizablePanel
+              className="overflow-auto"
+              defaultSize={75}
+              minSize={40}
+            >
+              <WorkspaceTabs
+                initialQuery={initialQuery}
+                currentUserId={currentUserId}
+              />
+            </ResizablePanel>
           )}
         </ResizablePanelGroup>
       </div>

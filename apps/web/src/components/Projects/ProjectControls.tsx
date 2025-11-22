@@ -8,6 +8,7 @@ import {
 } from "@sandworm/ui/components/dropdown-menu";
 import { Button } from "@sandworm/ui/components/button";
 import { Badge } from "@sandworm/ui/components/badge";
+import { IoFilterOutline } from "react-icons/io5";
 
 type ViewType = "grid" | "table";
 
@@ -92,12 +93,12 @@ const ProjectControl: React.FC<ProjectControlProps> = ({
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="gap-2 outline-none border-none text-sm bg-transparent text-[#717a94]"
+                  className="gap-2 outline-none border-none text-sm bg-transparent text-[#717a94] hover:bg-[rgba(177,182,196,0.1)] h-7"
                 >
-                  <Filter className="w-3 h-3" />
+                  <IoFilterOutline className="w-4 h-4" />
                   <span>Filter</span>
                   {selectedFilters.length > 0 && (
-                    <Badge variant="secondary" className="ml-1 px-2 py-0.5">
+                    <Badge variant="secondary" className="ml-1 px-1 py-0.5">
                       {selectedFilters.length}
                     </Badge>
                   )}
@@ -112,7 +113,7 @@ const ProjectControl: React.FC<ProjectControlProps> = ({
                   >
                     <span>{filter}</span>
                     {selectedFilters.includes(filter) && (
-                      <div className="w-4 h-4 bg-blue-600 rounded flex items-center justify-center">
+                      <div className="w-4 h-4 bg-[#C7665C] rounded flex items-center justify-center">
                         <Check className="w-3 h-3 text-white" />
                       </div>
                     )}
@@ -127,12 +128,13 @@ const ProjectControl: React.FC<ProjectControlProps> = ({
                   <Badge
                     key={filter}
                     variant="secondary"
-                    className="gap-1 px-3 py-1 bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100"
+                    className="gap-1 px-2 py-0.5 bg-[rgba(177,182,196,0.1)] text-[#6C757D] font-edium "
                   >
                     <span>{filter}</span>
                     <button
+                      type="button"
                       onClick={() => removeFilter(filter)}
-                      className="hover:bg-blue-200 rounded-full p-0.5 transition-colors"
+                      className="hover:bg-primary/20 rounded-full p-0.5  transition-colors"
                     >
                       <X className="w-3 h-3" />
                     </button>

@@ -105,8 +105,8 @@ export const SortableTab = ({ tab, isActive }: SortableTabProps) => {
         disabled={isExecuting}
         value={tab.id}
         className={cn(
-          "flex h-8 items-center rounded-none px-3 relative w-full border-r border-[#ffffff20] ",
-          "data-[state=active]:bg-black data-[state=active]:text-white data-[state=active]:border-b border-b-primary",
+          "flex h-8 items-center rounded-md px-3 relative w-full border-r border-[#ffffff20] ",
+          "data-[state=active]:bg-[#E5E4E6] data-[state=active]:text-[#212529] ",
           "transition-colors duration-200",
           "hover:bg-black/20",
           tab.id === "home" ? "cursor-default" : "cursor-pointer",
@@ -133,7 +133,7 @@ export const SortableTab = ({ tab, isActive }: SortableTabProps) => {
               }}
               aria-label="Close tab"
             >
-              <X className="h-4 w-4 text-white/90 hover:text-red-500 transition-colors" />
+              <X className="h-4 w-4 text-black dark:text-white/90 hover:text-red-500 transition-colors" />
             </span>
           )}
         </div>

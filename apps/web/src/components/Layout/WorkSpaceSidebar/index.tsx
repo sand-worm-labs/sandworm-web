@@ -29,15 +29,15 @@ export const WorkspaceSidebar = () => {
   const pathname = usePathname();
 
   const linkClasses = (href: string) =>
-    `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors
+    `flex items-center gap-3 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors
      ${
        pathname === href
-         ? "bg-[#DEE2E6] dark:bg-[#181C21] text-black dark:text-white "
-         : "text-gray-600 dark:text-white hover:bg-[#DEE2E6] dark:hover:bg-[#181C21] hover:text-black dark:hover:text-white"
+         ? "bg-white dark:bg-[#181C21] shadow-[0_0.5px_4px_#2516660A] text-black dark:text-white "
+         : "text-gray-600 dark:text-white hover:bg-[#ffffff] dark:hover:bg-[#181C21] hover:text-black dark:hover:text-white"
      }`;
 
   return (
-    <aside className="w-[240px] h-full flex flex-col justify-between dark:bg-[#0C1015] bg-[#F1F3F4] border-r dark:border-[#262A30] border-[#E9ECEF]">
+    <aside className="w-[220px] h-full flex flex-col justify-between dark:bg-[#0C1015] bg-[#F1F3F4] border-r dark:border-[#262A30] border-[#E9ECEF]">
       <div>
         <div className="px-4 py-4" />
 
@@ -60,7 +60,9 @@ export const WorkspaceSidebar = () => {
             ))}
           </ul>
 
-          <ul className="space-y-1 mt-6">
+          <hr className="border-t-[1px] border-[#E6E0F1] mt-4" />
+
+          <ul className="space-y-1 mt-4">
             {toolsNav.map(item => (
               <li key={item.name}>
                 <Link href={item.href} className={linkClasses(item.href)}>

@@ -49,7 +49,7 @@ export const QueryList: React.FC<IQueryListProps> = ({
   }));
 
   return (
-    <div className="mb-16">
+    <div className="mb-16 h-full justify-between flex flex-col">
       <div className="grid grid-cols-1 gap-2 mb-8">
         {queriesWithLikeStatus.map(query => (
           <ExploreCard
@@ -75,7 +75,7 @@ export const QueryList: React.FC<IQueryListProps> = ({
         nextLinkClassName="text-[#C7665C]"
         breakClassName="px-3 py-1"
         breakLinkClassName="text-gray-500"
-        activeClassName="bg-white text-black"
+        activeClassName="bg-transparent text-black"
         activeLinkClassName="text-black hover:text-black"
         disabledClassName="text-gray-300 cursor-not-allowed"
         pageRangeDisplayed={isMobile ? 2 : 3}
