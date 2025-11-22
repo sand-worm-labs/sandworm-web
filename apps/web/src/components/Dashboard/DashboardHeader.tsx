@@ -17,7 +17,7 @@ export const DashboardHeader = () => {
     <header className="w-full flex items-center justify-between px-4 py-3 bg-black text-white border-b border-white/10 container mx-auto mt-12">
       <div className="flex items-center gap-3">
         <h1 className="text-base font-medium tracking-tight">
-          <Link href="/console" className="hover:underline">
+          <Link href="/workspace/console" className="hover:underline">
             {board.user.name}{" "}
           </Link>
           / {board.boardTitle}
