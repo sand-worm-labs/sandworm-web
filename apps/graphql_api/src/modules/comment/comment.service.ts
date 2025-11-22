@@ -16,33 +16,33 @@ export class CommentService {
     private readonly userRepository: Repository<UserEntity>,
   ) {}
 
-  private toGraphQLComment(entity: CommentEntity): Comment {
+  private toGraphQLComment(commentEntity: CommentEntity): Comment {
     return {
-       ...entity,
+       ...commentEntity,
     };
   }
 
   async getCommentsByDocument(documentId: string): Promise<Comment[]> {
-    const entities = await this.commentRepository.find({
+    const comments = await this.commentRepository.find({
       where: { documentId },
       relations: ['user'],
       order: { createdAt: 'ASC' },
     });
 
-    return entities.map(entity => this.toGraphQLComment(entity));
+    return comments.map(comment => this.toGraphQLComment(comment));
   }
 
   async getComment(commentId: string): Promise<Comment> {
-    const entity = await this.commentRepository.findOne({
+    const comment = await this.commentRepository.findOne({
       where: { id: commentId },
       relations: ['user'],
     });
 
-    if (!entity) {
+    if (!comment) {
       throw new NotFoundException(`Comment ${commentId} not found`);
     }
 
-    return this.toGraphQLComment(entity);
+    return this.toGraphQLComment(comment);
   }
 
   async createComment(
@@ -50,42 +50,42 @@ export class CommentService {
     authorId: string,
     input: CreateCommentInput,
   ): Promise<Comment> {
-    const user = await this.userRepository.findOne({
+    const userEntity = await this.userRepository.findOne({
       where: { id: authorId },
     });
 
-    if (!user) {
+    if (!userEntity) {
       throw new NotFoundException('User not found');
     }
 
-    const entity = this.commentRepository.create({
+    const comment = this.commentRepository.create({
         id: input.id,
         body: input.body,
         documentId,
         authorId,   
-    })
+    });
 
-    await this.commentRepository.save(entity);
+    await this.commentRepository.save(comment);
 
-    this.logger.log(`Comment created: ${entity.id} on document ${documentId}`);
+    this.logger.log(`Comment created: ${comment.id} on document ${documentId}`);
 
-    return this.toGraphQLComment(entity);
+    return this.toGraphQLComment(comment);
   }
 
   async deleteComment(
     input: DeleteCommentInput,
     currentUserId: string,
   ): Promise<boolean> {
-    const entity = await this.commentRepository.findOne({
+    const comment = await this.commentRepository.findOne({
       where: { id: input.commentId },
     });
 
-    if (!entity) {
+    if (!comment) {
       throw new NotFoundException('Comment not found');
     }
 
     // Only comment author can delete their own comments
-    if (entity.authorId !== currentUserId) {
+    if (comment.authorId !== currentUserId) {
       throw new ForbiddenException('You can only delete your own comments');
     }
 
