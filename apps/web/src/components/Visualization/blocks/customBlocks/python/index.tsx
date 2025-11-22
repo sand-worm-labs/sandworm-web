@@ -5,7 +5,7 @@ import {
   SparklesIcon,
 } from "@heroicons/react/20/solid";
 import type * as Y from "yjs";
-import type {
+import {
   YBlock,
   ExecutionQueue,
   AITasks,
