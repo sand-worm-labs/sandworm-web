@@ -15,18 +15,9 @@ export const toGraphQLWorkspaceUtils = (entity: WorkspaceEntity): Workspace => {
   };
 };
 
-export const toGraphQLDocumentUtils = (entity: DocumentEntity): Document => {
-  return {
-  ...entity,
-  id: '',
-  slug: '',
-  title: '',
-  authorId: '',
-  workspaceId: '',
-  parentId: '',
-  runUnexecutedBlocks: false,
-  runSQLSelection: false,
-  shareLinksWithoutSidebar: false
-};
-};
+// export const toGraphQLDocumentUtils = (entity: DocumentEntity): Document => {
+//   return {
+//   ...entity
+// };
+// };
 
