@@ -9,14 +9,7 @@ import {
 import type { Relation } from "typeorm";
 import { AbstractEntity } from "./abstract.entity";
 import { WorkspaceEntity } from "./workspace.entity";
-
-export enum EnvironmentStatus {
-  Running = "Running",
-  Stopped = "Stopped",
-  Failing = "Failing",
-  Starting = "Starting",
-  Stopping = "Stopping",
-}
+import { EnvironmentStatus } from "./enums";
 
 @Entity("environment")
 @Unique("unique_workspaceId", ["workspaceId"])
@@ -38,7 +31,7 @@ export class EnvironmentEntity extends AbstractEntity {
     name: "status",
     type: "enum",
     enum: EnvironmentStatus,
-    default: EnvironmentStatus.Stopped,
+    default: EnvironmentStatus.STOPPED,
   })
   status!: EnvironmentStatus;
 
@@ -54,7 +47,7 @@ export class EnvironmentEntity extends AbstractEntity {
   @Column({ name: "jupyter_token", type: "varchar", default: "" })
   jupyterToken!: string;
 
-  
+
   @OneToOne(() => WorkspaceEntity, (workspace) => workspace.environment, {
     onDelete: "CASCADE",
   })
