@@ -36,7 +36,7 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
   const { theme } = useTheme();
 
   const handleQueryClick = () => {
-    router.push(`/console/${query.id}`);
+    router.push(`/workspace/console/${query.id}`);
   };
 
   // we open signin modal if user attempt to like or fork query when not logged in
@@ -107,7 +107,7 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
             </Link>
             <span className="mx-1">/</span>
             <Link
-              href={`/console/${query.id}`}
+              href={`/workspace/console/${query.id}`}
               className="hover:underline"
               onClick={handleQueryClick}
             >
