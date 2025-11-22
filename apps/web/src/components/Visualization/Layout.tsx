@@ -26,8 +26,15 @@ import { CpuChipIcon, SparklesIcon } from "@heroicons/react/24/solid";
 import ReactDOM from "react-dom";
 import { useHotkeys } from "react-hotkeys-hook";
 import GitHubButton from "react-github-btn";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@sandworm/ui/components/resizable";
 
 import type { UserWorkspaceRole } from "@/types";
+
+import { MiniChat } from "../Chats/MiniChat";
 
 import { useStringQuery } from "./hooks/useQueryArgs";
 import useDropdownPosition from "./hooks/dropdownposition";
@@ -51,12 +58,6 @@ import { FeaturesDialog } from "./blocks/SubscriptionBadge";
 import PagePath from "./blocks/PagePath";
 import DragLayer from "./blocks/DragLayer";
 import { useFavorites } from "./hooks/useFavorites";
-import { MiniChat } from "../Chats/MiniChat";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@sandworm/ui/components/resizable";
 
 const syne = Syne({ subsets: ["latin"] });
 

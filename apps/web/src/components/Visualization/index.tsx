@@ -38,7 +38,9 @@ import {
 import type { ConnectDragPreview } from "react-dnd";
 import { equals, head, omit } from "ramda";
 import { ChartPie, Check } from "lucide-react";
+
 import { TooltipV2 } from "@/components/Visualization/blocks/ToolTips";
+
 import HeaderSelect from "./blocks/HeaderSelect";
 import useEditorAwareness from "./hooks/useEditorAwareness";
 import { useBlockExecutions } from "./hooks/useBlockExecution";

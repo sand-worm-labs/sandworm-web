@@ -4,7 +4,7 @@ import {
   ChevronUpDownIcon,
   XMarkIcon,
 } from "@heroicons/react/20/solid";
-import { Combobox as HUCombobox, Transition } from "@headlessui/react";
+import { Transition } from "@headlessui/react";
 import clsx from "clsx";
 import ReactDOM from "react-dom";
 
