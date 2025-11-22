@@ -21,20 +21,20 @@ export const EntityListPanel: React.FC<IEntityListPanelProps> = ({
   onSelect,
 }) => {
   return (
-    <div className="flex flex-col p-4 border gap-2 w-full">
+    <div className="flex flex-col p-4 gap-2 w-full">
       {entityTypes.map(({ key, label }) => {
         const list = entities[key];
         if (!list?.length) return null;
 
         return (
           <div key={key}>
-            <p className="text-xs text-text-gray font-medium">{label}</p>
+            <p className="text-xs text-[#6C757D] mb-2 font-medium">{label}</p>
             {list.map(entity => (
               <button
                 type="button"
                 key={entity.name}
                 onClick={() => onSelect(entity.name, key)}
-                className="cursor-pointer py-2 px-2 rounded-md hover:bg-primary/10 text-sm text-left flex items-center space-x-2 lowercase font-medium"
+                className="cursor-pointer py-2 px-2 rounded-md hover:bg-primary/10 text-sm text-left flex items-center space-x-2 lowercase font-medium text-[#0F0F0F] dark:text-white w-full"
               >
                 <Sheet size={15} />
                 <span>{entity.name}</span>

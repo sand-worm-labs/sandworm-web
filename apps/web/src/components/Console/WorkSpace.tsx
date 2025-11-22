@@ -3,13 +3,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { DatabaseIcon } from "lucide-react";
 import {
-  ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@sandworm/ui/components/resizable";
 import { Button } from "@sandworm/ui/components/button";
 
-import { AppSidebar } from "@/components/Layout/AppSidebar";
 import { DataExplorer } from "@/components/ExplorerPanels/DataExplorer";
 import { WorkspaceTabs } from "@/components/Console/WorkspaceTabs";
 import { QueryHistory } from "@/components/ExplorerPanels/QueryHistory";
@@ -46,17 +44,9 @@ interface WorkSpaceProps {
 // =====================================
 export const WorkSpace = ({ initialQuery, currentUserId }: WorkSpaceProps) => {
   // ═══ 🌿 State Setup and Constants ═══
-  const [currentView, setCurrentView] = useState<ViewType>("dataExplorer");
+
   const [isMobile, setIsMobile] = useState<boolean>(false);
   const [showExplorer, setShowExplorer] = useState(false);
-
-  const panelComponents: PanelComponents = {
-    dataExplorer: <DataExplorer />,
-    queryExplorer: <QueryExplorer />,
-    ChangeLog: <QueryHistory queryId={initialQuery?.id} />,
-    settingsPanel: <SettingsPanel />,
-    wormbot: <WormAiPanel />,
-  };
 
   const handleResize = useCallback(() => {
     setIsMobile(window.innerWidth < 768);
