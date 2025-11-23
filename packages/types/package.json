@@ -1,11 +1,32 @@
 {
   "name": "@sandworm/types",
   "version": "1.0.0",
-  "main": "index.ts",
-  "scripts": {
-    "typecheck": "tsc --pretty"
-  },
+  "private": true,
   "license": "MIT",
+  "scripts": {
+    "clean": "rm -rf dist",
+    "dev": "pnpm build --watch",
+    "build": "tsc -b -v",
+    "lint": "eslint \"{src,test}/**/*.ts\""
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "./dist/**"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "default": "./dist/*.js"
+    }
+  },
   "devDependencies": {
     "@sandworm/typescript-config": "workspace:*",
     "@types/node": "^24.7.0",

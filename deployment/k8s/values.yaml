@@ -1,0 +1,236 @@
+# Default values for sandwormlabs
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Global settings
+global:
+  # Override the chart name
+  nameOverride: ""
+  fullnameOverride: ""
+
+# Web frontend configuration
+web:
+  enabled: true
+  replicaCount: 2
+
+  image:
+    repository: docker.io/sadwormlabs
+    name: sandwormlabs-web
+    tag: latest
+    pullPolicy: Always
+
+  service:
+    type: ClusterIP
+    port: 4000
+
+  env:
+    apiUrl: http://localhost:8080
+    publicUrl: http://localhost:4000
+
+  resources:
+    requests:
+      cpu: 500m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+
+  # Pod affinity/anti-affinity
+  affinity: {}
+  # Example:
+  # affinity:
+  #   podAntiAffinity:
+  #     preferredDuringSchedulingIgnoredDuringExecution:
+  #       - weight: 100
+  #         podAffinityTerm:
+  #           labelSelector:
+  #             matchExpressions:
+  #               - key: app.kubernetes.io/component
+  #                 operator: In
+  #                 values:
+  #                   - web
+  #           topologyKey: kubernetes.io/hostname
+
+  # Node tolerations
+  tolerations: []
+  # Example:
+  # tolerations:
+  #   - key: "app"
+  #     operator: "Equal"
+  #     value: "web"
+  #     effect: "NoSchedule"
+
+  # Node selector
+  nodeSelector: {}
+  # Example:
+  # nodeSelector:
+  #   workload-type: web
+
+# GraphQL API configuration
+graphqlApi:
+  enabled: true
+  replicaCount: 2
+
+  image:
+    repository: docker.io/sadwormlabs
+    name: sandwormlabs-graphql-api
+    tag: latest
+    pullPolicy: Always
+
+  service:
+    type: ClusterIP
+    port: 8080
+
+  env:
+    # Application
+    nodeEnv: production
+    appName: "sandwormlabs GraphQL API"
+    appUrl: http://localhost:8080
+    appDebug: false
+    fallbackLanguage: en
+    logLevel: info
+    corsOrigin: "http://localhost:3000,http://localhost:4000"
+
+    # Database connection
+    databaseType: postgres
+    databaseHost: sandwormlabs-postgresql
+    databasePort: 5432
+    databaseName: sandwormlabs
+    databaseSchema: public
+    databaseLogging: false
+    databaseMaxConnections: 100
+    databaseSslEnabled: false
+
+    # JWT
+    jwtExpiresIn: 7d
+
+  secrets:
+    # Database credentials
+    databaseUsername: postgres
+    databasePassword: change_this_password
+
+    # JWT secrets (leave empty to auto-generate)
+    jwtSecret: ""
+    authJwtSecret: ""
+
+    # Encryption keys (leave empty to auto-generate)
+    datasourcesEncryptionKey: ""
+    workspaceSecretsEncryptionKey: ""
+
+  resources:
+    requests:
+      cpu: 1000m
+      memory: 2Gi
+    limits:
+      cpu: 2000m
+      memory: 4Gi
+
+  affinity: {}
+  tolerations: []
+  nodeSelector: {}
+
+# PostgreSQL database
+postgresql:
+  # Set to false to use external PostgreSQL
+  enabled: true
+
+  image: postgres:15-alpine
+
+  persistence:
+    enabled: true
+    size: 20Gi
+    storageClass: standard
+
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+
+# Redis cache (optional)
+redis:
+  enabled: true
+
+  image: redis:7-alpine
+
+  persistence:
+    enabled: true
+    size: 8Gi
+    storageClass: standard
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+# Ingress configuration
+ingress:
+  enabled: false
+  className: nginx
+
+  annotations: {}
+  # Example annotations for cert-manager:
+  # annotations:
+  #   cert-manager.io/cluster-issuer: letsencrypt-prod
+  #   nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  #   nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+  #   nginx.ingress.kubernetes.io/proxy-connect-timeout: "600"
+  #   nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+  #   nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+  #   # WebSocket support
+  #   nginx.ingress.kubernetes.io/websocket-services: sandwormlabs-graphql-api
+  #   nginx.ingress.kubernetes.io/configuration-snippet: |
+  #     proxy_set_header Upgrade $http_upgrade;
+  #     proxy_set_header Connection "Upgrade";
+
+  hosts:
+    - host: sandwormlabs.com
+      paths:
+        - path: /
+          pathType: Prefix
+
+  tls: []
+  # Example TLS configuration:
+  # tls:
+  #   - secretName: sandwormlabs-tls
+  #     hosts:
+  #       - sandwormlabs.example.com
+
+# Service monitoring (Prometheus)
+serviceMonitor:
+  enabled: false
+  interval: 30s
+  scrapeTimeout: 10s
+
+# Horizontal Pod Autoscaler
+autoscaling:
+  enabled: false
+
+  web:
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+
+  graphqlApi:
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+
+# Pod Disruption Budget
+podDisruptionBudget:
+  enabled: false
+  minAvailable: 1
+
+# Network policies
+networkPolicy:
+  enabled: false
+  policyTypes:
+    - Ingress
+    - Egress

@@ -13,7 +13,7 @@ export class ProfileResolver {
     name: 'profile',
   })
   getProfile(
-    @CurrentUser('id') userId: number,
+    @CurrentUser('id') userId: string,
     @Args() args: UsernameArgs,
   ): Promise<Profile> {
     return this.profileService.getProfile(userId, args.username);
@@ -24,7 +24,7 @@ export class ProfileResolver {
     name: 'followUser',
   })
   follow(
-    @CurrentUser('id') userId: number,
+    @CurrentUser('id') userId: string,
     @Args() args: UsernameArgs,
   ): Promise<Profile> {
     return this.profileService.follow(userId, args.username);
@@ -35,7 +35,7 @@ export class ProfileResolver {
     name: 'unfollowUser',
   })
   unfollow(
-    @CurrentUser('id') userId: number,
+    @CurrentUser('id') userId: string,
     @Args() args: UsernameArgs,
   ): Promise<Profile> {
     return this.profileService.unfollow(userId, args.username);

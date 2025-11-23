@@ -384,7 +384,7 @@ export type JsonObject = { [key: string]: Json };
 export type Json = JsonLiteral | JsonObject | Json[];
 
 export const Json: z.ZodType<Json> = z.lazy(() =>
-  z.union([JsonLiteral, z.array(Json), z.record(Json)])
+  z.union([JsonLiteral, z.array(Json), z.record(z.string(), Json)])
 );
 
 export const JsonObject = z.record(z.string(), Json);
@@ -989,3 +989,16 @@ export type InvalidReason =
       type: "render";
       reason: PythonErrorOutput;
     };
+
+
+export const SandwormFile = z.object({
+  name: z.string().min(1),
+  path: z.string().min(1),
+  relCwdPath: z.string().min(1),
+  size: z.number().int().nonnegative(),
+  mimeType: z.string().nullish(),
+  createdAt: z.number().nonnegative(),
+  isDirectory: z.boolean(),
+})
+
+export type SandwormFile = z.infer<typeof SandwormFile>

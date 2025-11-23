@@ -1,7 +1,8 @@
 import { setSeederFactory } from 'typeorm-extension';
 import { TagEntity } from '../entities';
+import { fake } from '../utils';
 
-export default setSeederFactory(TagEntity, async (fake) => {
+export default setSeederFactory(TagEntity, async () => {
   const tag = new TagEntity();
 
   let uniqueName: string;
