@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@sandworm/ui/components/card";
+import { LuLayoutGrid } from "react-icons/lu";
 
 type Tool = {
   id: string;
@@ -67,15 +68,38 @@ type ToolCardProps = {
 
 const ToolCard: React.FC<ToolCardProps> = ({ tool }) => {
   return (
-    <Link href={tool.href} className="inline-block h-full">
-      <Card className="bg-[#FFFFFF] border-[#E9ECEF] dark:bg-[#111111] rounded-2xl p-6 flex flex-col text-left py-8 hover:shadow-md transition-shadow h-full">
-        <CardHeader className="p-0 mb-3">
-          <CardTitle className="text-sm text-[#3B5C6A] font-semibold">
+    <Link href={tool.href} className="inline-block h-full group relative">
+      <Card
+        className="
+          bg-[#FFFFFF] dark:bg-[#111111] border-[#CED4DA]
+          rounded-3xl p-6 pb-8 pt-6 flex flex-col text-left h-full
+          transition-all duration-200 ease-out
+          group-hover:shadow-[0_4px_16px_rgba(0,0,0,0.08)]
+          group-hover:-translate-y-1
+        "
+      >
+        {/* Arrow */}
+        <span
+          className="
+            absolute top-4 left-4 opacity-0
+            group-hover:opacity-100 group-hover:translate-x-0 group-hover:-translate-y-0
+            -translate-x-1 -translate-y-1
+            transition-all duration-200 ease-out
+            text-[#C7665C]
+            text-xs font-bold
+          "
+        >
+          ↑
+        </span>
+
+        <CardHeader className="p-0 mb-0">
+          <CardTitle className="text-[0.90rem] text-[#1A1A1A] font-medium">
             {tool.name}
           </CardTitle>
         </CardHeader>
+
         <CardContent className="p-0">
-          <p className="text-[#242A2D] dark:text-gray-300 text-[0.95rem] leading-relaxed font-medium">
+          <p className="text-[#6C757D] dark:text-gray-300 text-[0.85rem] leading-relaxed font-medium">
             {tool.description}
           </p>
         </CardContent>
@@ -86,10 +110,18 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool }) => {
 
 export default function ToolsPage() {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-      {tools.map(tool => (
-        <ToolCard key={tool.id} tool={tool} />
-      ))}
+    <div>
+      <div className="flex items-center gap-3  mt-10 px-8 mb-5">
+        <span className="bg-[#C7665C20]  rounded-full p-2 flex items-center justify-center">
+          <LuLayoutGrid className="w-4 h-4 text-[#C7665C] " />
+        </span>
+        <h2 className="text-xl font-medium ">Tools</h2>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+        {tools.map(tool => (
+          <ToolCard key={tool.id} tool={tool} />
+        ))}
+      </div>
     </div>
   );
 }

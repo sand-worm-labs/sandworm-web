@@ -31,11 +31,11 @@ export const ExplorerBreadCrumbs: React.FC<IExplorerBreadCrumbsProps> = ({
     if (params.namespace) newParams.set("namespace", params.namespace);
     if (params.id) newParams.set("id", params.id);
     if (params.type) newParams.set("type", params.type);
-    router.push(`/console?${newParams.toString()}`);
+    router.push(`/workspace/console?${newParams.toString()}`);
   };
 
   return (
-    <nav className="py-3 px-4 border-b text-sm capitalize font-medium">
+    <nav className="py-2 pb-4 px-4   border-b border-[#E9ECEF] text-sm capitalize font-medium">
       <button
         type="button"
         className="cursor-pointer"

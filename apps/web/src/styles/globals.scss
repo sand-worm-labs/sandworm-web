@@ -33,6 +33,11 @@
   font-weight: 400;
 }
 
+font-tertiary {
+  font-family: "AzeretMono", sans-serif;
+  font-weight: 400;
+}
+
 ::cue {
   font-family: "Roobert", sans-serif;
   font-size: 18px;
@@ -88,6 +93,7 @@
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
+    --input: "#CED4DA";
   }
   .dark {
     --background: 0 0% 3.9%;
@@ -148,7 +154,7 @@ h1 {
 /* ════════════ Scrollbar ════════════ */
 ::-webkit-scrollbar {
   height: 8px;
-  width: 8px;
+  width: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -157,7 +163,7 @@ h1 {
 
 ::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {

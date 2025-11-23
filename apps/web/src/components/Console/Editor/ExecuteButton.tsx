@@ -34,7 +34,7 @@ export const ExecuteButton = ({
       <Button
         onClick={handleClick}
         disabled={isExecuting}
-        className="bg-orange-700 text-white h-[2rem] pl-2 pr-2 rounded-sm text-xs flex items-center gap-2 rounded-r-none"
+        className="bg-[#C7665C] text-white h-[2rem] pl-2 pr-2 rounded-lg text-xs flex items-center gap-2 rounded-r-none"
       >
         {isExecuting ? (
           <Loader2 className="w-4 h-4 animate-spin" />
@@ -48,7 +48,7 @@ export const ExecuteButton = ({
         <DropdownMenuTrigger asChild>
           <Button
             variant="default"
-            className="h-[2rem] px-1.5 rounded-sm rounded-l-none bg-orange-700 text-white border-l border-l-black"
+            className="h-[2rem] px-1.5 rounded-lg rounded-l-none bg-white text-black border-l border-[#D4DCDF] border"
           >
             <ChevronDown className="w-5 h-5" />
           </Button>

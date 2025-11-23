@@ -109,7 +109,7 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
 
   return (
     <div className={cn("flex flex-col h-full", className)}>
-      <div className="flex items-center justify-between px-4 py-2.5 border-b min-h-[3rem] overflow-x-auto overflow-y-hidden">
+      <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#FEFEFF] min-h-[3rem] overflow-x-auto overflow-y-hidden">
         <div className="flex items-center gap-2">
           {isEditingTitle ? (
             <Input
@@ -174,7 +174,7 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
             <Button
               onClick={() => setIsSaveModalOpen(true)}
               variant="outline"
-              className="flex items-center gap-2 min-w-[100px] text-sm font-medium  h-[2.2rem] rounded-sm"
+              className="flex items-center gap-2 min-w-[100px] text-sm font-medium  h-[2.2rem] rounded-lg bg-[#F8F9FA] border-[#DEE2E6] "
             >
               Save
             </Button>
@@ -182,7 +182,7 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
         </div>
       </div>
 
-      <div className="flex-1 relative">
+      <div className="flex-1 relative border-b border-b-red-500">
         <QueryCodeEditor
           initialValue={currentContent}
           tabId={tabId}

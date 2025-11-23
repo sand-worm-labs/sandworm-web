@@ -422,7 +422,7 @@ function UploadResultItem(props: UploadResultItemProps) {
   }, [props.onRemove, props.result.file]);
 
   return (
-    <div className="px-4 py-2 font-sans">
+    <div className="px-4 py-2 font-primary">
       <div>
         <div className="flex justify-between pb-1">
           <div
@@ -469,7 +469,7 @@ function FileItem(props: FileItemProps) {
   }, [props.onDelete, props.file]);
 
   return (
-    <div className="px-4 py-3 font-sans">
+    <div className="px-4 py-3 font-primary">
       <div>
         <div className="flex justify-between pb-0.5">
           <div
@@ -562,7 +562,7 @@ function UploadingItem(props: UploadingItemProps) {
   }, [props.onAbort, props.upload.file]);
 
   return (
-    <div className="px-4 py-3 font-sans">
+    <div className="px-4 py-3 font-primary">
       <div>
         <div className="flex items-center justify-between pb-1">
           <div
@@ -598,7 +598,7 @@ function WaitingItem(props: WaitingItemProps) {
   }, [props.onAbort, props.file]);
 
   return (
-    <div className="px-4 py-3 font-sans">
+    <div className="px-4 py-3 font-primary">
       <div>
         <div className="flex items-center justify-between pb-1">
           <div className="font-medium pr-2 text-sm break-all">

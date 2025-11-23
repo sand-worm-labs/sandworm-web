@@ -35,10 +35,10 @@ export default function MultiSelect<T>(props: Props<T>) {
             <Menu.Button
               ref={buttonRef}
               className={clsx(
-                "flex items-center justify-between w-full rounded-md border-0 px-3 text-gray-900 shadow-sm text-xs text-left bg-white py-2",
+                "flex items-center justify-between w-full rounded-md border-0 px-3 text-gray-900 shadow-sm text-xs text-left bg-white dark:bg-black dark:text-white py-2 dark:border-[#262A30] ",
                 open
                   ? "ring-2 ring-inset ring-ceramic-200/70"
-                  : "ring-1 ring-inset ring-gray-300",
+                  : "ring-1 ring-inset ring-gray-300 dark:ring-[#262A30]",
                 props.value.length === 0 && "h-[38px]"
               )}
             >
@@ -47,7 +47,7 @@ export default function MultiSelect<T>(props: Props<T>) {
                   {props.value.map((value, index) => (
                     <div
                       key={index}
-                      className="bg-gray-50 border border-gray-200 px-1.5 py-0.5 rounded-sm flex items-center gap-x-1 text-xs text-gray-600"
+                      className="bg-gray-50 dark:bg-black border border-gray-200 px-1.5 py-0.5 rounded-sm flex items-center gap-x-1 text-xs text-gray-600 dark:text-[#868E96]"
                     >
                       <span>{props.getLabel(value)}</span>
                       <button
@@ -85,7 +85,7 @@ export default function MultiSelect<T>(props: Props<T>) {
                 <Menu.Items
                   as="div"
                   ref={menuContainerRef}
-                  className="w-full rounded-md bg-white shadow-md ring-1 ring-gray-100 focus:outline-none font-sans flex flex-col text-xs text-gray-600 py-1.5"
+                  className="w-full rounded-md bg-white dark:bg-black shadow-md ring-1 ring-gray-100 dark:text-[#868E96] focus:outline-none font-primary flex flex-col text-xs text-gray-600 py-1.5 dark:ring-[#262A30]"
                 >
                   {props.options.map((option, index) => (
                     <Menu.Item
@@ -97,7 +97,7 @@ export default function MultiSelect<T>(props: Props<T>) {
                         props.onToggle(option);
                       }}
                       className={clsx(
-                        "w-full hover:bg-gray-100 w-full pl-3 pr-4 py-1.5 text-left flex gap-x-2 items-center justify-between whitespace-nowrap",
+                        "w-full hover:bg-gray-100 dark:hover:bg-[#181C21] w-full pl-3 pr-4 py-1.5 text-left flex gap-x-2 items-center justify-between whitespace-nowrap",
                         props.value.includes(option) ? "font-medium" : ""
                       )}
                     >

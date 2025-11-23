@@ -4,12 +4,16 @@ import {
   ChevronUpDownIcon,
   XMarkIcon,
 } from "@heroicons/react/20/solid";
-import { Combobox as HUCombobox, Transition } from "@headlessui/react";
+import { Transition } from "@headlessui/react";
 import clsx from "clsx";
 import ReactDOM from "react-dom";
 
-import useDropdownPosition from "./hooks/useDropdownPosition";
+import useDropdownPosition from "./hooks/dropdownposition";
 
+import { useStableKeys } from "@sandworm/ui/lib/utils";
+
+// 🎨 Interface / Props Definition
+// =====================================
 interface Props<T> {
   label?: string | JSX.Element;
   value: T[];
@@ -26,50 +30,87 @@ interface Props<T> {
   disabled?: boolean;
 }
 
-export default function MultiComboboxV2<T>(props: Props<T>) {
+// ⬢ Combo Box JSX
+// =====================================
+const ComboboxLabel = ({ label }: { label?: string | JSX.Element }) => {
+  if (!label) return null;
+
+  if (typeof label === "string") {
+    return (
+      <div className="block text-xs font-medium leading-6 text-gray-900">
+        {label}
+      </div>
+    );
+  }
+
+  return label;
+};
+
+// =====================================
+// ⬢ MultiComboboxV2 Component
+// =====================================
+export default function MultiComboboxV2<T extends object>({
+  label,
+  value,
+  options,
+  equals,
+  onChange,
+  search,
+  getLabel,
+  icon,
+  placeholder,
+  valueFromQuery,
+  fetchOptions,
+  loadingOptions,
+  disabled,
+}: Props<T>) {
   const [query, setQuery] = useState<null | string>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-
-  const filteredOptions = useMemo(() => {
-    return query === null || query === ""
-      ? props.options
-      : props.search(props.options, query);
-  }, [query, props.options, props.search]);
-
-  useEffect(() => {
-    if (filteredOptions.length < 5 && props.fetchOptions) {
-      props.fetchOptions(query ?? "");
-    }
-  }, [query, filteredOptions, props.fetchOptions]);
-
-  const onKeyDown = useCallback(
-    (event: React.KeyboardEvent<HTMLInputElement>) => {
-      if (props.valueFromQuery && query) {
-        if (event.key === "Enter" || event.key === "Tab") {
-          event.preventDefault();
-          props.onChange([...props.value, props.valueFromQuery(query)]);
-          setQuery(null);
-        }
-      }
-    },
-    [query, props.valueFromQuery, props.onChange, props.value]
-  );
-
   const [open, setOpen] = useState(false);
   const inputContainerRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLUListElement>(null);
   const { onOpen, dropdownPosition } = useDropdownPosition(inputContainerRef);
+  const getKey = useStableKeys<T>();
+
+  // ⬢ Filtered Options
+  // =====================================
+  const filteredOptions = useMemo(() => {
+    return query === null || query === "" ? options : search(options, query);
+  }, [query, options, search]);
+
+  useEffect(() => {
+    if (filteredOptions.length < 5 && fetchOptions) {
+      fetchOptions(query ?? "");
+    }
+  }, [query, filteredOptions, fetchOptions]);
+
+  // ⬢ onKeyDown Handler
+  // =====================================
+  const onKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLInputElement>) => {
+      if (valueFromQuery && query) {
+        if (event.key === "Enter" || event.key === "Tab") {
+          event.preventDefault();
+          onChange([...value, valueFromQuery(query)]);
+          setQuery(null);
+        }
+      }
+    },
+    [query, valueFromQuery, onChange, value]
+  );
+
+  // ⬢ onClickButton Handler
+  // =====================================
   const onClickButton = useCallback(() => {
-    if (!props.disabled) {
+    if (!disabled) {
       setOpen(true);
       onOpen();
     }
-  }, [props.disabled, onOpen]);
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
+  }, [disabled, onOpen]);
 
+  // ⬢ Click Outside Event Listener
+  // =====================================
+  useEffect(() => {
     const onClickOutside = (e: MouseEvent) => {
       if (
         inputContainerRef.current &&
@@ -78,13 +119,15 @@ export default function MultiComboboxV2<T>(props: Props<T>) {
         !menuRef.current.contains(e.target as Node)
       ) {
         e.preventDefault();
-        e.stopImmediatePropagation();
         e.stopPropagation();
         setOpen(false);
       }
     };
 
-    document.addEventListener("click", onClickOutside);
+    if (open) {
+      document.addEventListener("click", onClickOutside);
+    }
+
     return () => {
       document.removeEventListener("click", onClickOutside);
     };
@@ -92,40 +135,30 @@ export default function MultiComboboxV2<T>(props: Props<T>) {
 
   return (
     <div className="w-full">
-      {props.label ? (
-        typeof props.label === "string" ? (
-          <div className="block text-xs font-medium leading-6 text-gray-900">
-            {props.label}
-          </div>
-        ) : (
-          props.label
-        )
-      ) : null}
+      <ComboboxLabel label={label} />
+
       <div className="relative mt-1 mb-0.5" ref={inputContainerRef}>
         <div
           className={clsx(
             "flex items-center space-x-1.5 rounded-md ring-1 ring-inset ring-gray-200 focus-within:ring-1 focus-within:ring-inset focus-within:ring-gray-300 group pl-2 pr-8 text-gray-800",
-            props.disabled ? "bg-gray-100 cursor-not-allowed" : "bg-white"
+            disabled ? "bg-gray-100 cursor-not-allowed" : "bg-white"
           )}
         >
           <div className="flex flex-wrap py-0.5">
             <div className="flex flex-wrap space-x-0.5">
-              {props.value.map((value, index) => (
-                <div className="py-1">
-                  <div
-                    key={index}
-                    className="bg-gray-50 border border-gray-200 px-2 py-1 rounded-sm flex items-center gap-x-1 text-xs"
-                  >
-                    <span>{props.getLabel(value)}</span>
+              {value.map((val, index) => (
+                <div className="py-1" key={getKey(val)}>
+                  <div className="bg-gray-50 border border-gray-200 px-2 py-1 rounded-sm flex items-center gap-x-1 text-xs">
+                    <span>{getLabel(val)}</span>
                     <button
                       type="button"
                       onClick={() => {
-                        const newValue = [...props.value];
+                        const newValue = [...value];
                         newValue.splice(index, 1);
-                        props.onChange(newValue);
+                        onChange(newValue);
                       }}
                       className="p-0.5 rounded-full hover:bg-red-100 hover:text-red-700 disabled:cursor-not-allowed disabled:hover:bg-gray-50 disabled:hover:text-gray-800"
-                      disabled={props.disabled}
+                      disabled={disabled}
                     >
                       <XMarkIcon className="w-3 h-3" />
                     </button>
@@ -133,13 +166,14 @@ export default function MultiComboboxV2<T>(props: Props<T>) {
                 </div>
               ))}
             </div>
+
             <input
               className={clsx(
                 "w-full truncate border-0 text-xs pl-0.5 focus:ring-0 bg-transparent font-mono placeholder:text-gray-400 disabled:cursor-not-allowed",
-                props.value === null && "text-gray-400"
+                value === null && "text-gray-400"
               )}
               onChange={event => setQuery(event.target.value)}
-              placeholder={props.placeholder}
+              placeholder={placeholder}
               onClick={e => {
                 if (!open) {
                   e.preventDefault();
@@ -162,7 +196,9 @@ export default function MultiComboboxV2<T>(props: Props<T>) {
             />
           </div>
         </div>
+
         <button
+          type="button"
           className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none"
           ref={buttonRef}
           onClick={onClickButton}
@@ -175,6 +211,7 @@ export default function MultiComboboxV2<T>(props: Props<T>) {
 
         {ReactDOM.createPortal(
           <Transition
+            as="div"
             show={open}
             enter="transition duration-100 ease-out"
             enterFrom="transform scale-95 opacity-0"
@@ -193,63 +230,64 @@ export default function MultiComboboxV2<T>(props: Props<T>) {
               ref={menuRef}
               className="absolute z-20 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
             >
-              {filteredOptions.map((option, i) => {
-                const active = props.value.some(o =>
-                  props.equals ? props.equals(option, o) : option === o
+              {filteredOptions.map(option => {
+                const active = value.some(o =>
+                  equals ? equals(option, o) : option === o
                 );
 
                 return (
-                  <li
-                    key={i}
-                    className={clsx(
-                      active ? "text-white bg-gray-50" : "text-gray-900",
-                      "group relative w-full select-none flex items-center gap-x-2 text-xs",
-                      !props.disabled && "cursor-pointer"
-                    )}
-                    onClick={e => {
-                      e.preventDefault();
-                      const exists = props.value.some(v =>
-                        props.equals ? props.equals(v, option) : v === option
-                      );
-                      if (exists) {
-                        props.onChange(
-                          props.value.filter(v =>
-                            props.equals
-                              ? !props.equals(v, option)
-                              : v !== option
-                          )
-                        );
-                      } else {
-                        props.onChange([...props.value, option]);
-                      }
-                    }}
-                  >
-                    <div
+                  <li key={getKey(option)}>
+                    <button
+                      type="button"
                       className={clsx(
-                        "hover:bg-gray-50",
-                        "text-gray-900 w-full flex items-center justify-between py-2 px-4"
+                        active ? "text-white bg-gray-50" : "text-gray-900",
+                        "group relative w-full select-none flex items-center gap-x-2 text-xs",
+                        !disabled && "cursor-pointer"
                       )}
+                      onClick={e => {
+                        e.preventDefault();
+                        const exists = value.some(v =>
+                          equals ? equals(v, option) : v === option
+                        );
+                        if (exists) {
+                          onChange(
+                            value.filter(v =>
+                              equals ? !equals(v, option) : v !== option
+                            )
+                          );
+                        } else {
+                          onChange([...value, option]);
+                        }
+                      }}
                     >
-                      <div className="flex items-center gap-x-2">
-                        {props.icon(option)}
-                        <span
-                          className={clsx(
-                            "truncate font-mono",
-                            "group-hover:font-semibold"
-                          )}
-                        >
-                          {props.getLabel(option)}
-                        </span>
-                      </div>
+                      <div
+                        className={clsx(
+                          "hover:bg-gray-50",
+                          "text-gray-900 w-full flex items-center justify-between py-2 px-4"
+                        )}
+                      >
+                        <div className="flex items-center gap-x-2">
+                          {icon(option)}
+                          <span
+                            className={clsx(
+                              "truncate font-mono",
+                              "group-hover:font-semibold"
+                            )}
+                          >
+                            {getLabel(option)}
+                          </span>
+                        </div>
 
-                      {active && (
-                        <CheckIcon className="h-3 w-3" aria-hidden="true" />
-                      )}
-                    </div>
+                        {active && (
+                          <CheckIcon className="h-3 w-3" aria-hidden="true" />
+                        )}
+                      </div>
+                    </button>
                   </li>
                 );
               })}
-              {props.loadingOptions && (
+
+              {loadingOptions && (
                 <div className="text-center text-gray-400 py-2">Loading...</div>
               )}
             </ul>

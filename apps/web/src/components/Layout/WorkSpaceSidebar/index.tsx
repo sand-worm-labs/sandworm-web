@@ -20,8 +20,8 @@ const mainNav: NavItem[] = [
 ];
 
 const toolsNav: NavItem[] = [
-  { name: "Ask a question", href: "/chat", icon: Bot },
-  { name: "Console", href: "/console", icon: Terminal },
+  { name: "Ask a question", href: "/workspace/notebook", icon: Bot },
+  { name: "Console", href: "/workspace/console", icon: Terminal },
   { name: "All tools", href: "/workspace/tools", icon: LuLayoutGrid },
 ];
 
@@ -29,17 +29,17 @@ export const WorkspaceSidebar = () => {
   const pathname = usePathname();
 
   const linkClasses = (href: string) =>
-    `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors
+    `flex items-center gap-3 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors
      ${
        pathname === href
-         ? "bg-[#DEE2E6] dark:bg-[#181C21] text-black dark:text-white "
-         : "text-gray-600 dark:text-white hover:bg-white/10"
+         ? "bg-white dark:bg-[#181C21] shadow-[0_0.5px_4px_#2516660A] text-black dark:text-white "
+         : "text-gray-600 dark:text-white hover:bg-[#ffffff] dark:hover:bg-[#181C21] hover:text-black dark:hover:text-white"
      }`;
 
   return (
-    <aside className="w-64 h-full flex flex-col justify-between dark:bg-[#0C1015] bg-[#F1F3F4]">
+    <aside className="w-[220px] h-full flex flex-col justify-between dark:bg-[#0C1015] bg-[#F1F3F4] border-r dark:border-[#262A30] border-[#E9ECEF]">
       <div>
-        <div className="px-6 py-4" />
+        <div className="px-4 py-4" />
 
         <nav className="flex-1 px-3">
           <ul className="space-y-1">
@@ -47,10 +47,11 @@ export const WorkspaceSidebar = () => {
               <li key={item.name}>
                 <Link href={item.href} className={linkClasses(item.href)}>
                   <item.icon
-                    className={`h-5 w-5 ${
+                    strokeWidth={1.8}
+                    className={`h-4 w-4 ${
                       pathname === item.href
-                        ? "text-black "
-                        : "text-gray-600 dark:text-[#868E96]"
+                        ? "text-[#1C3B5A] dark:text-[#868E96] "
+                        : "text-[#1C3B5A] dark:text-[#868E96]"
                     }`}
                   />
                   {item.name}
@@ -59,13 +60,18 @@ export const WorkspaceSidebar = () => {
             ))}
           </ul>
 
-          <ul className="space-y-1 mt-6">
+          <hr className="border-t-[1px] border-[#E6E0F1] mt-4" />
+
+          <ul className="space-y-1 mt-4">
             {toolsNav.map(item => (
               <li key={item.name}>
                 <Link href={item.href} className={linkClasses(item.href)}>
                   <item.icon
-                    className={`h-5 w-5 ${
-                      pathname === item.href ? "text-black" : "text-gray-600"
+                    strokeWidth={1.8}
+                    className={`h-4 w-4 ${
+                      pathname === item.href
+                        ? "text-[#1C3B5A] dark:text-[#868E96] "
+                        : "text-[#1C3B5A] dark:text-[#868E96]"
                     }`}
                   />
                   {item.name}

@@ -1,6 +1,5 @@
 "use client";
 
-import { GiBackwardTime } from "react-icons/gi";
 import {
   SquareTerminal,
   BookText,
@@ -8,6 +7,7 @@ import {
   Settings,
   Bug,
   Keyboard,
+  RotateCcw,
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -48,7 +48,7 @@ export const AppSidebar = ({
       label: "Saved Queries",
       icon: SquareTerminal,
     },
-    { id: "ChangeLog" as const, label: "ChangeLog", icon: GiBackwardTime },
+    { id: "ChangeLog" as const, label: "ChangeLog", icon: RotateCcw },
   ];
 
   const bottomNavLinks = [
@@ -69,21 +69,24 @@ export const AppSidebar = ({
   return (
     <>
       <TooltipProvider>
-        <div className="h-full w-16 bg-muted border-r flex flex-col items-center py-4 space-y-4  pt-12">
+        <div className="h-full w-16  border-r flex flex-col items-center py-4 space-y-4  pt-12 border-[#E9ECEF] bg-[#F1F3F4]">
           <ScrollArea className="flex-grow ">
             {viewOptions.map(item => (
               <Tooltip key={item.id}>
                 <TooltipTrigger asChild>
                   <button
                     type="button"
-                    className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors w-full mb-5 ${
+                    className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors w-full mb-5 flex-shrink-0 ${
                       currentView === item.id
-                        ? " border-l-4 border-orange-600 rounded-none"
+                        ? "  rounded-none"
                         : "hover:bg-white/15"
                     }`}
                     onClick={() => setCurrentView(item.id)}
                   >
-                    <item.icon className="h-5 w-5" />
+                    <item.icon
+                      className="h-[18px] w-[18px] flex-shrink-0"
+                      strokeWidth={1.5}
+                    />
                   </button>
                 </TooltipTrigger>
                 <TooltipContent side="right">
@@ -95,14 +98,17 @@ export const AppSidebar = ({
 
           <div className="space-y-3">
             <Tooltip>
-              <TooltipTrigger asChild>
+              <TooltipTrigger asChild className="mb-2">
                 <Button
                   variant="ghost"
                   size="icon"
                   className="w-full"
                   onClick={() => setCommandMenuOpen(true)}
                 >
-                  <Keyboard className="h-6 w-6" />
+                  <Keyboard
+                    className="h-[18px] w-[18px] flex-shrink-0"
+                    strokeWidth={1.5}
+                  />
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="right">
@@ -112,7 +118,7 @@ export const AppSidebar = ({
 
             {bottomNavLinks.map(item => (
               <Tooltip key={item.to}>
-                <TooltipTrigger asChild>
+                <TooltipTrigger asChild className="mb-2">
                   <Link
                     href={item.to}
                     target={item.isNewWindow ? "_blank" : "_self"}
@@ -123,7 +129,10 @@ export const AppSidebar = ({
                       className="w-full"
                       aria-label={item.label}
                     >
-                      <item.icon className="h-6 w-6" />
+                      <item.icon
+                        className="h-[18px] w-[18px] flex-shrink-0"
+                        strokeWidth={1.5}
+                      />
                     </Button>
                   </Link>
                 </TooltipTrigger>
@@ -134,13 +143,13 @@ export const AppSidebar = ({
             ))}
 
             <Tooltip>
-              <TooltipTrigger asChild>
+              <TooltipTrigger asChild className="mb-2">
                 <Button
                   variant={
                     currentView === "settingsPanel" ? "secondary" : "ghost"
                   }
                   size="icon"
-                  className="w-full"
+                  className="w-full "
                   onClick={() => setCurrentView("settingsPanel")}
                 >
                   <Settings className="h-6 w-6" />

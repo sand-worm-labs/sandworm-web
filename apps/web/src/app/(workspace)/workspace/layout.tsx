@@ -11,7 +11,7 @@ interface WorkspaceLayoutProps {
 
 export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
   return (
-    <div className="flex h-screen">
+    <div className="flex h-[94vh]">
       <WorkspaceSidebar />
 
       <main className="flex-1 overflow-y-auto bg-background ">{children}</main>

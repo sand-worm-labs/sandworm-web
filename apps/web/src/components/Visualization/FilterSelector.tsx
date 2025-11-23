@@ -24,7 +24,6 @@ import {
   NumpyBoolTypes,
   VisualizationStringFilterMultiValuesOperator,
   NumpyTimeDeltaTypes,
-  PythonErrorOutput,
   getInvalidReason,
 } from "@sandworm/types";
 import { Transition } from "@headlessui/react";
@@ -32,11 +31,10 @@ import { InformationCircleIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 import { equals, identity } from "ramda";
 import ReactDOM from "react-dom";
-import { z } from "zod";
 
-import { Tooltip } from "../Tooltip";
+import { Tooltip } from "./blocks/ToolTips";
 
-import useDropdownPosition from "./hooks/useDropdownPosition";
+import useDropdownPosition from "./hooks/dropdownposition";
 import AxisSelector from "./blocks/AxisSelector";
 import MultiComboboxV2 from "./MultiCombobox";
 import Combobox from "./Combobox";
@@ -92,8 +90,11 @@ function numberOperatorSymbol(
       return "is null";
     case "isNotNull":
       return "is not null";
+    default:
+      throw new Error(`Unknown number operator: ${operator}`);
   }
 }
+
 function numberOperatorLabel(
   operator: VisualizationNumberFilterOperator
 ): string {
@@ -114,6 +115,8 @@ function numberOperatorLabel(
       return "Is Null";
     case "isNotNull":
       return "Is Not Null";
+    default:
+      throw new Error(`Unknown number operator: ${operator}`);
   }
 }
 
@@ -141,8 +144,11 @@ function stringOperatorSymbol(
       return "is null";
     case "isNotNull":
       return "is not null";
+    default:
+      throw new Error(`Unknown string operator: ${operator}`);
   }
 }
+
 function stringOperatorLabel(
   operator: VisualizationStringFilterOperator
 ): string {
@@ -167,6 +173,8 @@ function stringOperatorLabel(
       return "Is Null";
     case "isNotNull":
       return "Is Not Null";
+    default:
+      throw new Error(`Unknown string operator: ${operator}`);
   }
 }
 
@@ -188,8 +196,11 @@ function dateOperatorSymbol(operator: VisualizationDateFilterOperator): string {
       return "is null";
     case "isNotNull":
       return "is not null";
+    default:
+      throw new Error(`Unknown date operator: ${operator}`);
   }
 }
+
 function dateOperatorLabel(operator: VisualizationDateFilterOperator): string {
   switch (operator) {
     case "eq":
@@ -208,6 +219,8 @@ function dateOperatorLabel(operator: VisualizationDateFilterOperator): string {
       return "Is Null";
     case "isNotNull":
       return "Is Not Null";
+    default:
+      throw new Error(`Unknown date operator: ${operator}`);
   }
 }
 
@@ -291,51 +304,71 @@ interface Props {
   isInvalid: boolean;
   disabled?: boolean;
 }
-function FilterSelectorV2(props: Props) {
-  const onRemove = useCallback(() => {
-    props.onRemove(props.filter);
-  }, [props.onRemove, props.filter]);
 
-  const [column, setColumn] = useState<DataFrameColumn | null>(
-    props.filter.column
+function FilterValueLabel() {
+  return (
+    <div className="flex items-center justify-between">
+      <label className="text-xs font-medium leading-6 text-gray-900">
+        Value
+      </label>
+      <Tooltip
+        title=""
+        message="You can interpolate variables using {{ variable }}."
+        active
+        tooltipClassname="w-52"
+      >
+        <InformationCircleIcon className="w-4 h-4 text-gray-300" />
+      </Tooltip>
+    </div>
   );
+}
 
-  const [operator, setOperator] = useState<Operator | null>(
-    props.filter.operator
-  );
+function FilterSelectorV2({
+  onRemove,
+  filter,
+  onChange,
+  dataframe,
+  isInvalid,
+  disabled,
+}: Props) {
+  const HandleOnRemove = useCallback(() => {
+    onRemove(filter);
+  }, [onRemove, filter]);
 
-  const [value, setValue] = useState<string | string[]>(
-    Array.isArray(props.filter.value)
-      ? props.filter.value
-      : (props.filter.value?.toString() ??
-          (props.filter.operator
-            ? ["in", "notIn"].includes(props.filter.operator)
-              ? []
-              : ""
-            : ""))
-  );
+  const [column, setColumn] = useState<DataFrameColumn | null>(filter.column);
 
+  const [operator, setOperator] = useState<Operator | null>(filter.operator);
+
+  let initialValue: string | string[] = "";
+
+  if (Array.isArray(filter.value)) {
+    initialValue = filter.value;
+  } else if (filter.value != null) {
+    initialValue = filter.value.toString();
+  } else if (filter.operator && ["in", "notIn"].includes(filter.operator)) {
+    initialValue = [];
+  }
+
+  const [value, setValue] = useState<string | string[]>(initialValue);
+
+  // TODO: TEMPORARY FIX - Runtime validation removed
+  // Previous implementation used Zod .safeParse() for runtime type validation
+  // but was causing "keyValidator._parse is not a function" error due to
+  // PythonErrorOutput schema issues (likely version mismatch or incorrect import)
+  //
   const renderedValue = useMemo(() => {
-    const renderedValue = z
-      .object({ renderedValue: z.union([z.string(), z.array(z.string())]) })
-      .safeParse(props.filter);
-    if (renderedValue.success) {
-      return renderedValue.data.renderedValue;
+    if ("renderedValue" in filter) {
+      return filter.renderedValue;
     }
-
     return undefined;
-  }, [props.filter]);
+  }, [filter]);
 
   const renderError = useMemo(() => {
-    const renderError = z
-      .object({ renderError: PythonErrorOutput })
-      .safeParse(props.filter);
-    if (renderError.success) {
-      return renderError.data.renderError;
+    if ("renderError" in filter) {
+      return filter.renderError;
     }
-
     return undefined;
-  }, [props.filter]);
+  }, [filter]);
 
   const onChangeValue: ChangeEventHandler<HTMLInputElement> = useCallback(
     event => {
@@ -378,9 +411,9 @@ function FilterSelectorV2(props: Props) {
     }
 
     const didChange =
-      !equals(props.filter.column, column) ||
-      props.filter.operator !== operator ||
-      !equals(props.filter.value, value);
+      !equals(filter.column, column) ||
+      filter.operator !== operator ||
+      !equals(filter.value, value);
     if (!didChange) {
       return;
     }
@@ -390,14 +423,14 @@ function FilterSelectorV2(props: Props) {
         NumpyNumberTypes.or(NumpyTimeDeltaTypes).safeParse(column.type).success
       ) {
         if (isNumberOperator(operator)) {
-          const filter = VisualizationNumberFilter.safeParse({
-            id: props.filter.id,
+          const filterV = VisualizationNumberFilter.safeParse({
+            id: filter.id,
             column,
             operator,
             value: value.toString(),
           });
-          if (filter.success) {
-            props.onChange(filter.data);
+          if (filterV.success) {
+            onChange(filterV.data);
             return;
           }
         }
@@ -405,14 +438,14 @@ function FilterSelectorV2(props: Props) {
 
       if (NumpyStringTypes.or(NumpyJsonTypes).safeParse(column.type).success) {
         if (isStringOperator(operator)) {
-          const filter = VisualizationStringFilter.safeParse({
-            id: props.filter.id,
+          const filterV = VisualizationStringFilter.safeParse({
+            id: filter.id,
             column,
             operator,
             value,
           });
-          if (filter.success) {
-            props.onChange(filter.data);
+          if (filterV.success) {
+            onChange(filterV.data);
             return;
           }
         }
@@ -420,22 +453,22 @@ function FilterSelectorV2(props: Props) {
 
       if (NumpyDateTypes.safeParse(column.type).success) {
         if (isDateOperator(operator)) {
-          const filter = VisualizationDateFilter.safeParse({
-            id: props.filter.id,
+          const filterV = VisualizationDateFilter.safeParse({
+            id: filter.id,
             column,
             operator,
             value: toDate(value.toString())?.toISOString() ?? value,
           });
-          if (filter.success) {
-            props.onChange(filter.data);
+          if (filterV.success) {
+            onChange(filterV.data);
             return;
           }
         }
       }
 
-      props.onChange({
+      onChange({
         type: "unfinished-visualization-filter",
-        id: props.filter.id,
+        id: filter.id,
         column,
         operator,
         value,
@@ -445,23 +478,14 @@ function FilterSelectorV2(props: Props) {
     return () => {
       clearTimeout(timeout);
     };
-  }, [
-    column,
-    operator,
-    value,
-    props.filter.column,
-    props.filter.operator,
-    props.filter.value,
-  ]);
+  }, [column, operator, value, filter.column, filter.operator, filter.value]);
 
   const invalidReason: InvalidReason | null = useMemo(() => {
-    if (!props.isInvalid || !column || !operator) {
+    if (!isInvalid || !column || !operator) {
       return null;
     }
 
-    const columnExists = props.dataframe.columns.some(
-      c => c.name === column.name
-    );
+    const columnExists = dataframe.columns.some(c => c.name === column.name);
     if (!columnExists) {
       return { type: "simple", reason: "invalid-column" as const };
     }
@@ -480,11 +504,11 @@ function FilterSelectorV2(props: Props) {
 
     return null;
   }, [
-    props.isInvalid,
+    isInvalid,
     column,
     operator,
     value,
-    props.dataframe,
+    dataframe,
     renderedValue,
     renderError,
   ]);
@@ -566,31 +590,43 @@ function FilterSelectorV2(props: Props) {
   }, [menuRef, open]);
 
   const onClickButton = useCallback(() => {
-    if (!props.disabled) {
+    if (!disabled) {
       onOpen();
       setOpen(true);
     }
-  }, [props.disabled, onOpen]);
+  }, [disabled, onOpen]);
 
   return (
     <div className="relative text-xs group">
-      {invalidReason ? (
-        <div className="w-64 font-sans pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1">
-          {invalidReason.type === "simple" ? (
-            <>
-              {invalidReason.reason === "invalid-column" ? (
-                <span className="text-center">
-                  The selected column does not belong to the{" "}
-                  <span className="font-mono">{props.dataframe.name}</span>{" "}
-                  dataframe.
-                </span>
-              ) : invalidReason.reason === "empty-value" ? (
-                <span className="text-center">
-                  The value for the selected column of type{" "}
-                  <span className="font-mono">{column?.type}</span> cannot be
-                  empty.
-                </span>
-              ) : (
+      {(() => {
+        if (invalidReason) {
+          if (invalidReason.type === "simple") {
+            if (invalidReason.reason === "invalid-column") {
+              return (
+                <div className="w-64 font-primary pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1">
+                  <span className="text-center">
+                    The selected column does not belong to the{" "}
+                    <span className="font-mono">{dataframe.name}</span>{" "}
+                    dataframe.
+                  </span>
+                </div>
+              );
+            }
+
+            if (invalidReason.reason === "empty-value") {
+              return (
+                <div className="w-64 font-primary pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1">
+                  <span className="text-center">
+                    The value for the selected column of type{" "}
+                    <span className="font-mono">{column?.type}</span> cannot be
+                    empty.
+                  </span>
+                </div>
+              );
+            }
+
+            return (
+              <div className="w-64 font-primary pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1">
                 <span className="text-center">
                   The value{" "}
                   <span className="font-mono">
@@ -599,38 +635,48 @@ function FilterSelectorV2(props: Props) {
                   is invalid for the selected column of type{" "}
                   <span className="font-mono">{column?.type}</span>.
                 </span>
-              )}
-            </>
-          ) : (
-            <div className="text-xs">
+              </div>
+            );
+          }
+
+          // complex type
+          return (
+            <div className="w-64 font-primary pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1">
               <p>We received the following error:</p>
               <pre className="whitespace-pre-wrap pt-0.5">
                 {invalidReason.reason.ename} - {invalidReason.reason.evalue}
               </pre>
             </div>
-          )}
-        </div>
-      ) : renderedValue && renderedValue !== value ? (
-        <div className="w-72 font-sans pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md gap-y-1 text-center">
-          This filter includes a Python value. The raw value is{" "}
-          <span className="font-mono break-all">
-            {Array.isArray(value)
-              ? value.length > 1
-                ? `[${value.map(v => JSON.stringify(v)).join(", ")}]`
-                : value[0]
-              : value}
-          </span>
-        </div>
-      ) : null}
+          );
+        }
+
+        if (renderedValue && renderedValue !== value) {
+          return (
+            <div className="w-72 font-primary pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md gap-y-1 text-center">
+              This filter includes a Python value. The raw value is{" "}
+              <span className="font-mono break-all">
+                {Array.isArray(value)
+                  ? value.length > 1
+                    ? `[${value.map(v => JSON.stringify(v)).join(", ")}]`
+                    : value[0]
+                  : value}
+              </span>
+            </div>
+          );
+        }
+
+        return null;
+      })()}
 
       <button
+        type="button"
         className={clsx(
           "flex items-center gap-x-2.5 py-1.5 px-2 rounded-sm border",
-          props.isInvalid && column
+          isInvalid && column
             ? "text-red-500 bg-red-50 border-red-200 hover:border-red-400/60"
             : "text-gray-500 bg-gray-50 hover:border-gray-400/60 border-gray-200"
         )}
-        disabled={props.disabled}
+        disabled={disabled}
         ref={buttonRef}
         onClick={onClickButton}
       >
@@ -641,7 +687,7 @@ function FilterSelectorV2(props: Props) {
               operator === "isNull" || operator === "isNotNull"
                 ? "pl-0.5"
                 : "px-0.5",
-              props.isInvalid ? "text-red-400" : "text-gray-400"
+              isInvalid ? "text-red-400" : "text-gray-400"
             )}
           >
             {operator
@@ -675,12 +721,13 @@ function FilterSelectorV2(props: Props) {
           ) : null}
         </div>
         <span className="p-0.5 rounded-full hover:bg-red-100  hover:text-red-700">
-          <XMarkIcon className="h-3 w-3" onClick={onRemove} />
+          <XMarkIcon className="h-3 w-3" onClick={HandleOnRemove} />
         </span>
       </button>
 
       {ReactDOM.createPortal(
         <Transition
+          as="div"
           show={open}
           enter="transition ease-out duration-100"
           enterFrom="transform opacity-0 scale-95"
@@ -697,7 +744,7 @@ function FilterSelectorV2(props: Props) {
         >
           <div
             className={clsx(
-              "absolute py-4 px-2 left-0 z-20 mt-2 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none px-4",
+              "absolute py-4 px-2 left-0 z-20 mt-2 origin-top-right divide-y divide-gray-100 dark:divide-[#262A30] rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none px-4",
 
               VisualizationStringFilterMultiValuesOperator.safeParse(operator)
                 .success
@@ -710,7 +757,7 @@ function FilterSelectorV2(props: Props) {
               <AxisSelector
                 label="Column"
                 value={column}
-                columns={props.dataframe.columns}
+                columns={dataframe.columns}
                 onChange={setColumn}
                 defaultValue={null}
               />
@@ -730,7 +777,7 @@ function FilterSelectorV2(props: Props) {
                     search={searchOperator}
                     getLabel={getOperatorLabel}
                     placeholder="Operator"
-                    disabled={props.disabled}
+                    disabled={disabled}
                   />
                   {operator !== "isNull" && operator !== "isNotNull" && (
                     <div className="relative">
@@ -753,7 +800,7 @@ function FilterSelectorV2(props: Props) {
                           getLabel={value => value}
                           icon={() => null}
                           placeholder="Value"
-                          disabled={props.disabled}
+                          disabled={disabled}
                           valueFromQuery={identity}
                         />
                       ) : (
@@ -768,7 +815,7 @@ function FilterSelectorV2(props: Props) {
                             onChange={onChangeValue}
                             placeholder="Value"
                             onKeyDown={preventPropagation}
-                            disabled={props.disabled}
+                            disabled={disabled}
                           />
                         </div>
                       )}
@@ -781,24 +828,6 @@ function FilterSelectorV2(props: Props) {
         </Transition>,
         document.body
       )}
-    </div>
-  );
-}
-
-function FilterValueLabel() {
-  return (
-    <div className="flex items-center justify-between">
-      <label className="text-xs font-medium leading-6 text-gray-900">
-        Value
-      </label>
-      <Tooltip
-        title=""
-        message="You can interpolate variables using {{ variable }}."
-        active
-        tooltipClassname="w-52"
-      >
-        <InformationCircleIcon className="w-4 h-4 text-gray-300" />
-      </Tooltip>
     </div>
   );
 }

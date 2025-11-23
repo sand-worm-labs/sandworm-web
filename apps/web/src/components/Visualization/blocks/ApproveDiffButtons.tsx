@@ -5,6 +5,8 @@ import {
 } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 
+// 🎨 Interface / Props Definition
+// =====================================
 interface Props {
   visible: boolean;
   onAccept: () => void;
@@ -12,6 +14,12 @@ interface Props {
   canTry: boolean;
   onTry: () => void;
 }
+
+// ApproveDiffButtons Component
+// =====================================
+// Shows buttons to accept, reject, or try an AI-generated suggestion.
+// Visibility and button state are controlled via props.
+// =====================================
 function ApproveDiffButtons(props: Props) {
   return (
     <div

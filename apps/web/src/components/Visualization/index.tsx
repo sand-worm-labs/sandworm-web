@@ -1,10 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import {
-  ChartPieIcon,
-  ClockIcon,
-  StopIcon,
-  PlayIcon,
-} from "@heroicons/react/20/solid";
+import { ClockIcon, StopIcon, PlayIcon } from "@heroicons/react/20/solid";
 import * as Y from "yjs";
 import type {
   ExecutionQueue,
@@ -42,7 +37,7 @@ import {
 } from "@sandworm/types";
 import type { ConnectDragPreview } from "react-dnd";
 import { equals, head, omit } from "ramda";
-import { ChartPie } from "lucide-react";
+import { ChartPie, Check } from "lucide-react";
 
 import { TooltipV2 } from "@/components/Visualization/blocks/ToolTips";
 
@@ -50,9 +45,10 @@ import HeaderSelect from "./blocks/HeaderSelect";
 import useEditorAwareness from "./hooks/useEditorAwareness";
 import { useBlockExecutions } from "./hooks/useBlockExecution";
 import { useYMemo } from "./hooks/useYMemo";
-import type { DashboardMode } from "./blocks/Dashboard";
-/* import { dashboardModeHasControls } from "./blocks/Dashboard";
- */
+import {
+  dashboardModeHasControls,
+  type DashboardMode,
+} from "./blocks/Dashboard";
 import useFullScreenDocument from "./hooks/useFullScreenDocument";
 import { useEnvironmentStatus } from "./hooks/useEnvironmentStatus";
 import HiddenInPublishedButton from "./blocks/HiddenInPublishedButton";
@@ -61,6 +57,8 @@ import VisualizationControlsV2 from "./VisualizationControls";
 import VisualizationViewV2 from "./VisualizationView";
 import FilterSelector from "./FilterSelector";
 
+// ⬢ Read File
+// =====================================
 export function readFile(
   file: File,
   encoding: BufferEncoding = "utf8"
@@ -83,6 +81,8 @@ export function readFile(
   });
 }
 
+// ⬢ Download File
+// =====================================
 export function downloadFile(url: string, name: string) {
   const downloadLink = document.createElement("a");
 
@@ -94,6 +94,9 @@ export function downloadFile(url: string, name: string) {
   document.body.removeChild(downloadLink);
 }
 
+// ⬢ Did Change Filters
+// Check if visualization filters have changed
+// =====================================
 function didChangeFilters(
   oldFilters: VisualizationFilter[],
   newFilters: VisualizationFilter[],
@@ -134,6 +137,8 @@ function didChangeFilters(
   return didChange || toCompare.size > 0;
 }
 
+// 🎨 Interface / Props Definition
+// =====================================
 interface Props {
   document: ApiDocument;
   dataframes: Y.Map<DataFrame>;
@@ -157,7 +162,19 @@ interface Props {
   userId: string | null;
   isFullScreen: boolean;
 }
+
+/* ╔════════════════════════════════════════════╗
+   ║ ⬢ Visualization Block Main Component       ║                      
+   ╚════════════════════════════════════════════╝ */
 function VisualizationBlockV2(props: Props) {
+  // ⬢ Attributes, Dataframe and Callbacks
+  // =====================================
+  // We memoizes all derived visualization state — the block's
+  // attributes, the resolved dataframe, and the dropdown options for
+  // selecting dataframes. Each value only recomputes when its dependencies
+  // change, which keeps the component performant and avoids unnecessary
+  // recalculations during renders.
+  // =====================================
   const attrs = useYMemo(
     [props.block],
     () => getVisualizationV2Attributes(props.block),
@@ -180,6 +197,14 @@ function VisualizationBlockV2(props: Props) {
     []
   );
 
+  // ⬢ Callbacks
+  // =====================================
+  // These callbacks update different parts of the visualization state.
+  // They’re memoized so the component avoids unnecessary rerenders, while
+  // still reacting to changes in the block’s configuration. Each handler
+  // focuses on a specific interaction: creating new SQL blocks, updating
+  // the X-axis field, and renaming the X-axis label.
+  // =====================================
   const onNewSQL = useCallback(() => {
     props.onAddGroupedBlock(attrs.id, BlockType.SQL, "before");
   }, [props.onAddGroupedBlock]);
@@ -206,6 +231,14 @@ function VisualizationBlockV2(props: Props) {
     [props.block]
   );
 
+  // ⬢ Execution State & Run Handler
+  // =====================================
+  // This section manages the visualization’s execution lifecycle. It reads the
+  // current execution status for this block, tracks the environment's state,
+  // and provides a memoized run callback. When executed, any in-flight runs are
+  // aborted before queueing a fresh visualization execution with the latest
+  // environment timestamp.
+  // =====================================
   const executions = useBlockExecutions(
     props.executionQueue,
     props.block,
@@ -252,6 +285,8 @@ function VisualizationBlockV2(props: Props) {
     }
   }, [attrs.output, attrs.input.dataframeName, onRun]);
 
+  // ⬢ Change Dataframe
+  // =====================================
   const onChangeDataframe = useCallback(
     (dataframeName: string) => {
       const df = props.dataframes.get(dataframeName);
@@ -315,6 +350,8 @@ function VisualizationBlockV2(props: Props) {
     ]
   );
 
+  // ⬢ Run / Abort Handler
+  // =====================================
   const onRunAbort = useCallback(() => {
     switch (status) {
       case "enqueued":
@@ -335,6 +372,8 @@ function VisualizationBlockV2(props: Props) {
     }
   }, [status, execution, onRun, attrs.id]);
 
+  // ⬢ Add Filter
+  // =====================================
   const onAddFilter = useCallback(() => {
     const newFilter: VisualizationFilter = {
       id: uuidv4(),
@@ -348,6 +387,8 @@ function VisualizationBlockV2(props: Props) {
     });
   }, [attrs.input.filters, props.block]);
 
+  // ⬢ Change Filter
+  // =====================================
   const onChangeFilter = useCallback(
     (filter: VisualizationFilter) => {
       const filters = attrs.input.filters.map(f =>
@@ -358,6 +399,8 @@ function VisualizationBlockV2(props: Props) {
     [attrs.input.filters, props.block]
   );
 
+  // ⬢ Remove Filter
+  // =====================================
   const onRemoveFilter = useCallback(
     (filter: VisualizationFilter) => {
       setVisualizationV2Input(props.block, {
@@ -367,19 +410,23 @@ function VisualizationBlockV2(props: Props) {
     [props.block, attrs.input.filters]
   );
 
+  // ⬢ Toggle Controls Hidden
+  // =====================================
   const onToggleHidden = useCallback(() => {
     props.block.setAttribute("controlsHidden", !attrs.controlsHidden);
   }, [attrs.controlsHidden, props.block]);
 
+  // ⬢ Export to PNG Handler
+  // =====================================
   const onExportToPNG = async () => {
-    // we don't need to check if props.renderer is undefined because the application sets as 'canvas' in this case
+    // 💭  we don't need to check if props.renderer is undefined because the application sets as 'canvas' in this case
     if (attrs.input.chartType === "number" || attrs.input.chartType === "trend")
       return;
 
     // if the controls are visible the canvas shrinks, making the export smaller
     if (!attrs.controlsHidden) {
       onToggleHidden();
-      // tick to ensure the canvas size gets updated
+      // 💭  tick to ensure the canvas size gets updated
       await new Promise(r => setTimeout(r, 500));
     }
 
@@ -395,6 +442,8 @@ function VisualizationBlockV2(props: Props) {
     downloadFile(imageUrl, fileName);
   };
 
+  // ⬢ Chart Type Change Handler
+  // =====================================
   const onChangeChartType = useCallback(
     (chartType: ChartType) => {
       let nextInput: Partial<VisualizationV2BlockInput>;
@@ -701,6 +750,8 @@ function VisualizationBlockV2(props: Props) {
     (!hasAValidYAxis && attrs.input.chartType !== "histogram") ||
     !props.isEditable;
 
+  // ⬢ Tooltip Content
+  // =====================================
   const runTooltipContent = useMemo(() => {
     if (status !== "idle") {
       switch (status) {
@@ -737,7 +788,7 @@ function VisualizationBlockV2(props: Props) {
       return {
         content: (ref: RefObject<HTMLDivElement>) => (
           <div
-            className="font-sans pointer-events-none w-max bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1"
+            className="font-primary pointer-events-none w-max bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1"
             ref={ref}
           >
             <span>Refresh</span>
@@ -747,6 +798,11 @@ function VisualizationBlockV2(props: Props) {
     }
   }, [status, envStatus, envLoading, execution, isRunButtonDisabled]);
 
+  // ⬢ Render Visualization Block
+  // =====================================
+  // If we're in dashboard mode without controls, render a simplified readonly view
+  // of the visualization that displays only the output.
+  // =====================================
   if (props.dashboardMode && !dashboardModeHasControls(props.dashboardMode)) {
     return (
       <VisualizationViewV2
@@ -770,6 +826,11 @@ function VisualizationBlockV2(props: Props) {
     );
   }
 
+  // ⬢ Full Visualization Block
+  // =====================================
+  // In the standard mode, we render the full visualization block with
+  // controls, filters, and editing capabilities.
+  // =====================================
   return (
     <div
       className=" group/block w-full"
@@ -783,8 +844,8 @@ function VisualizationBlockV2(props: Props) {
           props.hasMultipleTabs ? "rounded-2xl" : "rounded-2xl",
 
           props.isCursorWithin
-            ? "border-blue-400 shadow-sm"
-            : "border-[#EBD7D7]"
+            ? "border-primary shadow-sm"
+            : "border-[#EBD7D7] dark:border-[#262A30]"
         )}
       >
         <div
@@ -794,18 +855,18 @@ function VisualizationBlockV2(props: Props) {
           )}
         >
           <div
-            className="border-b border-[#EBD7D7]  rounded-t-2xl"
+            className="border-b border-[#EBD7D7] dark:border-[#262A30]  rounded-t-2xl"
             ref={d => {
               props.dragPreview?.(d);
             }}
           >
-            <div className="flex items-center justify-between px-3 pr-0 gap-x-4 font-sans h-12 divide-x divide-gray-200">
+            <div className="flex items-center justify-between px-3 pr-0 gap-x-4 font-primary h-12 divide-x divide-gray-200 dark:divide-[#262A30]">
               <div className="select-none text-gray-300 text-xs flex items-center w-full h-full gap-x-1.5">
                 <ChartPie className="h-4 w-4 text-gray-400" />
                 <input
                   type="text"
                   className={clsx(
-                    "text-sm font-sans font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-md border-0 text-gray-800 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-gray-400  py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white"
+                    "text-sm font-primary font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-md border-0 text-gray-800 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-gray-400 dark:placeholder:text-[#868E96]  py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white dark:text-white"
                   )}
                   placeholder="Visualization (click to add a title)"
                   value={attrs.title}
@@ -813,10 +874,10 @@ function VisualizationBlockV2(props: Props) {
                   disabled={!props.isEditable}
                 />
               </div>
-              <div className="print:hidden flex items-center gap-x-0 group-focus/block:opacity-100 h-full divide-x divide-gray-200">
+              <div className="print:hidden flex items-center gap-x-0 group-focus/block:opacity-100 h-full divide-x divide-gray-200 dark:divide-[#262A30]">
                 <button
                   className={clsx(
-                    "font-sans text-xs flex justify-center items-center gap-x-1.5 text-gray-400 px-2.5 whitespace-nowrap disabled:bg-white hover:bg-gray-100 disabled:cursor-not-allowed h-full min-w-[124px]",
+                    "font-primary text-xs flex justify-center items-center gap-x-1.5 text-gray-400 px-2.5 whitespace-nowrap disabled:bg-white hover:bg-gray-100 disabled:cursor-not-allowed h-full min-w-[124px] dark:hover:bg-[#181C21]",
                     props.isPublicMode ? "hidden" : "inline-block"
                   )}
                   onClick={onAddFilter}

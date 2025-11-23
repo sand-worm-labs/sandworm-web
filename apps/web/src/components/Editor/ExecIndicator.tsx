@@ -1,18 +1,15 @@
-import * as Y from "yjs";
+import type * as Y from "yjs";
 import {
   CheckIcon,
   ClockIcon,
   ExclamationTriangleIcon,
 } from "@heroicons/react/24/outline";
-import Spin from "../Visualization/blocks/Spin";
-import {
-  ExecutionQueue,
-  getResultStatus,
-  TabRef,
-  YBlock,
-} from "@sandworm/editor";
-import { useBlockExecutions } from "../Visualization/hooks/useBlockExecution";
+import type { ExecutionQueue, TabRef, YBlock } from "@sandworm/editor";
+import { getResultStatus } from "@sandworm/editor";
 import { head } from "ramda";
+
+import Spin from "../Visualization/blocks/Spin";
+import { useBlockExecutions } from "../Visualization/hooks/useBlockExecution";
 
 interface Props {
   tabRef: TabRef;

@@ -6,9 +6,9 @@ import { AppFooter } from "@/components/Layout/AppFooter";
 
 export const FooterWrapper = () => {
   const pathname = usePathname();
-  const hideFooterOnPath = "/console";
+  const hideFooterOnPath = "/workspace/explore";
 
-  if (pathname === hideFooterOnPath) {
+  if (pathname !== hideFooterOnPath) {
     return null;
   }
 

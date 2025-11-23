@@ -1,4 +1,3 @@
-import { computeMenuPosition } from "../Visualization/utils/dom";
 import { Menu, Transition } from "@headlessui/react";
 import {
   ForwardIcon,
@@ -13,6 +12,8 @@ import {
 import clsx from "clsx";
 import { CSSProperties, useRef } from "react";
 import { createPortal } from "react-dom";
+
+import { computeMenuPosition } from "../Visualization/utils/dom";
 
 const DragHandle = ({
   isDragging,
@@ -45,7 +46,7 @@ const DragHandle = ({
   const menuContainerRef = useRef<HTMLDivElement>(null);
 
   return (
-    <Menu as="div" className="inline-block text-left">
+    <Menu as="div" className="inline-block text-left dark:bg-black">
       {({ open }) => {
         const portalStyle = computeMenuPosition(
           buttonRef,
@@ -58,7 +59,7 @@ const DragHandle = ({
           <>
             <Menu.Button
               ref={buttonRef}
-              className="rounded-md hover:bg-gray-100 h-6 w-6 flex items-center justify-center"
+              className="rounded-md hover:bg-gray-100 h-6 w-6 flex items-center justify-center  dark:bg-black"
             >
               <div
                 className={clsx(
@@ -98,15 +99,15 @@ const DragHandle = ({
                 <Menu.Items
                   as="div"
                   ref={menuContainerRef}
-                  className="absolute z-30 rounded-md bg-white shadow-[0_4px_12px_#CFCFCF] ring-1 ring-gray-100 focus:outline-none font-sans divide-y divide-gray-200 flex flex-col text-xs text-gray-600"
+                  className="absolute z-30 rounded-md dark:bg-black bg-white  ring-1 ring-gray-100 focus:outline-none font-primary divide-y divide-gray-200 dark:divide-[#262A30] flex flex-col text-xs text-gray-600 dark:ring-[#262A30] dark:border-[#262A30] dark:border"
                 >
-                  <div className="flex flex-col divide-y divide-gray-200">
+                  <div className="flex flex-col divide-y divide-gray-200 dark:divide-[#262A30]">
                     <div className="py-0.5 px-0.5">
                       {hasRunnableBlocks && (
                         <Menu.Item
                           as="button"
                           onClick={onRunAllTabs}
-                          className="hover:bg-gray-100 w-full px-2 py-1.5 rounded-md text-left flex gap-x-2 items-center whitespace-nowrap"
+                          className="dark:hover:bg-[#181C21] hover:bg-gray-100 w-full px-2 py-1.5 rounded-md text-left flex gap-x-2 items-center whitespace-nowrap"
                         >
                           {hasMultipleTabs ? (
                             <ForwardIcon className="h-4 w-4" />
@@ -122,23 +123,21 @@ const DragHandle = ({
                       <Menu.Item
                         as="button"
                         onClick={onRunBelowBlock}
-                        className="hover:bg-gray-100 w-full px-2 py-1.5 rounded-md text-left flex gap-x-2 items-center whitespace-nowrap"
+                        className="hover:bg-gray-100 dark:hover:bg-[#181C21]  w-full px-2 py-1.5 rounded-md text-left flex gap-x-2 items-center whitespace-nowrap"
                       >
                         <BarsArrowDownIcon className="h-4 w-4" />
                         <span>Run onwards</span>
                       </Menu.Item>
 
                       {hasMultipleTabs && (
-                        <>
-                          <Menu.Item
-                            as="button"
-                            onClick={onHideAllTabs}
-                            className="hover:bg-gray-100 w-full px-2 py-1.5 rounded-md text-left flex gap-x-2 items-center whitespace-nowrap"
-                          >
-                            <EyeSlashIcon className="h-4 w-4" />
-                            <span>Hide all tabs</span>
-                          </Menu.Item>
-                        </>
+                        <Menu.Item
+                          as="button"
+                          onClick={onHideAllTabs}
+                          className="hover:bg-gray-100 dark:hover:bg-[#181C21]  w-full px-2 py-1.5 rounded-md text-left flex gap-x-2 items-center whitespace-nowrap"
+                        >
+                          <EyeSlashIcon className="h-4 w-4" />
+                          <span>Hide all tabs</span>
+                        </Menu.Item>
                       )}
                     </div>
 
@@ -146,7 +145,7 @@ const DragHandle = ({
                       {onDuplicateTab && (
                         <Menu.Item
                           as="button"
-                          className="hover:bg-gray-100 w-full px-2 py-1.5 rounded-md text-left flex gap-x-2 items-center whitespace-nowrap"
+                          className="hover:bg-gray-100 dark:hover:bg-[#181C21] w-full px-2 py-1.5 rounded-md text-left flex gap-x-2 items-center whitespace-nowrap"
                           onClick={onDuplicateTab}
                         >
                           <FolderIcon className="h-4 w-4" />
@@ -156,7 +155,7 @@ const DragHandle = ({
                       <Menu.Item
                         as="button"
                         onClick={onDuplicateBlock}
-                        className="hover:bg-gray-100 w-full px-2 py-1.5 rounded-md text-left flex gap-x-2 items-center whitespace-nowrap"
+                        className="hover:bg-gray-100 dark:hover:bg-[#181C21] w-full px-2 py-1.5 rounded-md text-left flex gap-x-2 items-center whitespace-nowrap"
                       >
                         <RectangleStackIcon className="h-4 w-4" />
                         <span>Duplicate block</span>
@@ -166,7 +165,7 @@ const DragHandle = ({
                       {onDeleteTab && (
                         <Menu.Item
                           as="button"
-                          className="hover:bg-gray-100 w-full px-2 py-1.5 rounded-md text-left flex gap-x-2 items-center whitespace-nowrap"
+                          className="hover:bg-gray-100  dark:hover:bg-[#181C21] w-full px-2 py-1.5 rounded-md text-left flex gap-x-2 items-center whitespace-nowrap"
                           onClick={onDeleteTab}
                         >
                           <MinusCircleIcon className="h-4 w-4" />
@@ -176,7 +175,7 @@ const DragHandle = ({
                       <Menu.Item
                         as="button"
                         onClick={onDeleteBlock}
-                        className="hover:bg-gray-100 w-full px-2 py-1.5 rounded-md text-left flex gap-x-2 items-center whitespace-nowrap"
+                        className="hover:bg-gray-100 dark:hover:bg-[#181C21] w-full px-2 py-1.5 rounded-md text-left flex gap-x-2 items-center whitespace-nowrap"
                       >
                         <XCircleIcon className="h-4 w-4" />
                         <span>Delete block</span>

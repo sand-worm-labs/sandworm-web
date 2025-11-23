@@ -97,6 +97,8 @@ interface Props {
 }
 function SQLBlock(props: Props) {
   const properties = useProperties();
+  console.log("SQLBlock props:", props);
+  console.log("SQLBlock document:", props[0]);
 
   const [workspaces] = useWorkspaces();
   const currentWorkspace: ApiWorkspace | undefined = useMemo(() => {
@@ -660,7 +662,7 @@ function SQLBlock(props: Props) {
       return {
         content: (ref: RefObject<HTMLDivElement>) => (
           <div
-            className="font-sans pointer-events-none absolute w-max bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1"
+            className="font-primary pointer-events-none absolute w-max bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1"
             ref={ref}
           >
             <span>Run query</span>
@@ -780,25 +782,25 @@ function SQLBlock(props: Props) {
               isEditorFocused && editorState.mode === "insert",
             "border-blue-400 shadow-sm":
               isEditorFocused && editorState.mode === "normal",
-            "border-gray-200": !isEditorFocused,
+            "border-gray-200 dark:border-[#262A30]": !isEditorFocused,
           }
         )}
       >
         <div
           className={clsx(
             "rounded-t-md",
-            statusIsDisabled ? "bg-gray-100" : "bg-white",
+            statusIsDisabled ? "bg-gray-100" : "bg-white dark:bg-black",
             props.hasMultipleTabs ? "rounded-tl-none" : "",
             !(isResultHidden || !result) &&
               !isCodeHidden &&
-              "border-b border-gray-200",
+              "border-b border-gray-200 dark:border-[#262A30]",
             (isResultHidden || !result) && !isCodeHidden && "rounded-b-md",
             (isResultHidden || !result) && isCodeHidden && "rounded-b-md"
           )}
         >
           <div
             className={clsx(
-              "bg-gray-50 rounded-t-md",
+              "bg-gray-50 rounded-t-md dark:bg-black ",
               props.hasMultipleTabs ? "rounded-tl-none" : "",
               isCodeHidden && (isResultHidden || !result) ? "rounded-b-md" : ""
             )}
@@ -808,12 +810,13 @@ function SQLBlock(props: Props) {
           >
             <div
               className={clsx(
-                "flex items-center justify-between px-3 pr-0 gap-x-4 font-sans h-12 rounded-t-md",
-                !isCodeHidden && "divide-x divide-gray-200",
+                "flex items-center justify-between px-3 pr-0 gap-x-4 font-primary h-12 rounded-t-md",
+                !isCodeHidden &&
+                  "divide-x divide-gray-200 dark:divide-[#262A30]",
                 props.hasMultipleTabs ? "rounded-tl-none" : "",
                 isCodeHidden && (isResultHidden || !result)
                   ? "rounded-b-md"
-                  : "border-b border-gray-200"
+                  : "border-b border-gray-200 dark:border-[#262A30]"
               )}
             >
               <div className="select-none text-gray-300 text-xs flex items-center w-full h-full gap-x-1.5">
@@ -833,7 +836,7 @@ function SQLBlock(props: Props) {
                 <input
                   type="text"
                   className={clsx(
-                    "text-sm font-sans font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-md border-0 text-gray-800 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-gray-400 focus:ring-inset py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white"
+                    "text-sm font-primary font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-md border-0 text-gray-800 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-gray-400 focus:ring-inset py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white"
                   )}
                   placeholder={
                     props.isEditable ? "SQL (click to add a title)" : "SQL"
@@ -890,7 +893,7 @@ function SQLBlock(props: Props) {
                   <code className="bg-primary-500/20 text-primary-700 px-1.5 py-0.5 font-mono rounded-md relative group cursor-pointer">
                     {copied ? "Copied!" : dataframeName?.value}
 
-                    <div className="font-sans pointer-events-none absolute -top-2 right-0 -translate-y-full opacity-0 transition-opacity scale-0 group-hover:scale-100 group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 w-56 whitespace-normal z-20">
+                    <div className="font-primary pointer-events-none absolute -top-2 right-0 -translate-y-full opacity-0 transition-opacity scale-0 group-hover:scale-100 group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 w-56 whitespace-normal z-20">
                       <span className="text-gray-400 text-center">
                         Use this variable name to reference the results as a
                         Pandas dataframe in further Python blocks.{" "}
@@ -984,7 +987,7 @@ function SQLBlock(props: Props) {
                               !props.isEditable
                                 ? "cursor-not-allowed bg-gray-200"
                                 : "cusor-pointer hover:bg-gray-50 hover:text-gray-700",
-                              "flex items-center border rounded-sm border-gray-200 px-2 py-1 gap-x-1 text-gray-500 group relative font-sans"
+                              "flex items-center border rounded-sm border-gray-200 px-2 py-1 gap-x-1 text-gray-500 group relative font-primary"
                             )}
                           >
                             <BookOpenIcon className="w-3 h-3" />
@@ -1009,7 +1012,7 @@ function SQLBlock(props: Props) {
                                   !props.isEditable || !hasOaiKey
                                     ? "cursor-not-allowed bg-gray-200"
                                     : "cusor-pointer hover:bg-gray-50 hover:text-gray-700",
-                                  "flex items-center border rounded-sm border-gray-200 px-2 py-1 gap-x-1 text-gray-500 group relative font-sans"
+                                  "flex items-center border rounded-sm border-gray-200 px-2 py-1 gap-x-1 text-gray-500 group relative font-primary"
                                 )}
                                 onClick={onAddVariable}
                               >
@@ -1028,7 +1031,7 @@ function SQLBlock(props: Props) {
                               <div
                                 ref={ref}
                                 className={clsx(
-                                  "font-sans pointer-events-none bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1 z-30",
+                                  "font-primary pointer-events-none bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1 z-30",
                                   hasOaiKey ? "w-32" : "w-40"
                                 )}
                               >
@@ -1063,7 +1066,7 @@ function SQLBlock(props: Props) {
                                   !props.isEditable || !hasOaiKey
                                     ? "cursor-not-allowed bg-gray-200"
                                     : "cusor-pointer hover:bg-gray-50 hover:text-gray-700",
-                                  "flex items-center border rounded-sm border-gray-200 px-2 py-1 gap-x-1 text-gray-500 group relative font-sans"
+                                  "flex items-center border rounded-sm border-gray-200 px-2 py-1 gap-x-1 text-gray-500 group relative font-primary"
                                 )}
                               >
                                 <SparklesIcon className="w-3 h-3" />

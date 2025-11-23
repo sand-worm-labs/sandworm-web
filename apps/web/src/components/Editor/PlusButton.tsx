@@ -9,12 +9,12 @@ import {
   ArrowUpTrayIcon,
 } from "@heroicons/react/24/outline";
 import clsx from "clsx";
-import { useCallback, useEffect, useRef } from "react";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { BlockType } from "@sandworm/editor";
 import { CalendarIcon, QueueListIcon } from "@heroicons/react/24/solid";
 import { Menu, Transition } from "@headlessui/react";
 import { Table2Icon } from "lucide-react";
+
 import useFeatureFlags from "../Visualization/hooks/useFeatureFlags";
 
 const useClickOutside = (
@@ -85,12 +85,12 @@ function PlusButton(props: Props) {
         )}
         onClick={toggleOptions}
       >
-        <div className="w-full h-[1px] bg-gray-200" />
+        <div className="w-full h-[1px] bg-gray-200 dark:bg-[#181C21]" />
         <div className="flex text-gray-400 justify-center items-center gap-x-1 text-[10px] whitespace-nowrap">
-          <PlusIcon className="h-3 w-3 text-gray-400" />
+          <PlusIcon className="h-3 w-3 text-gray-400 dark:text-[#868E96]" />
           <span>Add block</span>
         </div>
-        <div className="w-full h-[1px] bg-gray-200" />
+        <div className="w-full h-[1px] bg-gray-200 dark:bg-[#181C21]" />
       </button>
 
       {props.isEditable && (showOptions || props.alwaysOpen) && (
@@ -106,7 +106,7 @@ function PlusButton(props: Props) {
 
 const TriangleUp = () => {
   return (
-    <div className="h-3 w-3 bg-white border-t border-l border-gray-200 rotate-45 translate-y-1/2"></div>
+    <div className="h-3 w-3 bg-white border-t border-l border-gray-200 rotate-45 translate-y-1/2" />
   );
 };
 
@@ -153,7 +153,7 @@ function BlockList(props: BlockListProps) {
       <div className="w-full flex justify-center relative z-30">
         <TriangleUp />
       </div>
-      <div className="w-full bg-white py-1 rounded-md border border-gray-200 flex items-center justify-center divide-x divide-gray-200 shadow-lg">
+      <div className="w-full bg-white dark:bg-[#0C1015] py-1 rounded-md border border-gray-200 dark:border-[#262A30] flex items-center justify-center divide-x divide-gray-200 dark:divide-[#262A30]">
         <BlockSuggestion
           id="add-block-text"
           icon={<Bars3CenterLeftIcon className="w-4 h-4" />}
@@ -234,7 +234,7 @@ function BlockSuggestion(props: BlockSuggestionProps) {
   return (
     <div id={props.id} className="w-full text-sm px-1 relative z-30">
       <button
-        className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 rounded-md text-gray-400 bg-white hover:bg-gray-100 hover:text-gray-700"
+        className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 rounded-md text-gray-400 bg-white dark:bg-[#0C1015]  hover:bg-gray-100 hover:text-gray-700"
         onClick={onClick}
       >
         {props.icon}
@@ -253,7 +253,7 @@ interface MultiBlockSuggestionProps {
 function MultiBlockSuggestion(props: MultiBlockSuggestionProps) {
   return (
     <Menu as="div" className="w-full text-sm px-1 relative z-30">
-      <Menu.Button className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 rounded-md text-gray-400 bg-white hover:bg-gray-100 hover:text-gray-700 relative">
+      <Menu.Button className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 rounded-md text-gray-400 bg-white dark:bg-[#0C1015] hover:bg-gray-100 hover:text-gray-700 relative">
         {props.icon}
         <span>{props.text}</span>
         <ChevronDownIcon className="w-4 h-4" />
@@ -270,7 +270,7 @@ function MultiBlockSuggestion(props: MultiBlockSuggestionProps) {
       >
         <Menu.Items
           as="div"
-          className="w-44 mt-2 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none font-sans divide-y divide-gray-200"
+          className="w-44 mt-2 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none font-primary divide-y divide-gray-200"
         >
           {props.options.map((option, index) => (
             <Menu.Item key={index}>

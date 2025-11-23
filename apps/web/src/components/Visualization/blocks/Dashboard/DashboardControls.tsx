@@ -294,7 +294,7 @@ function DashboardControls(props: Props) {
       <div className="pt-3 fixed right-0">
         <button
           onClick={props.onOpen}
-          className="bg-white flex items-center rounded-l-sm px-3 py-1 text-sm text-gray-500 hover:bg-gray-100 border border-r-0 border-gray-200 group max-w-11 hover:max-w-32 overflow-hidden transition-mw group duration-500"
+          className="bg-white dark:bg-black flex items-center rounded-l-sm px-3 py-1 text-sm text-gray-500 hover:bg-gray-100 border border-r-0 border-gray-200 group max-w-11 hover:max-w-32 overflow-hidden transition-mw group duration-500"
         >
           <ChevronDoubleLeftIcon className="min-w-3 min-h-3" />
           <span className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 whitespace-nowrap">
@@ -306,17 +306,17 @@ function DashboardControls(props: Props) {
   }
 
   return (
-    <div className="relative w-[400px] font-sans h-full">
+    <div className="relative w-[400px] font-primary h-full">
       <button
-        className="absolute z-10 top-12 transform rounded-full border border-gray-300 text-gray-400 bg-white hover:bg-ceramic-200 hover:border-ceramic-200 hover:text-ceramic-400 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
+        className="absolute z-10 top-12 transform rounded-full border border-gray-300 text-gray-400 bg-white dark:bg-black hover:bg-ceramic-200 hover:border-ceramic-200 hover:text-ceramic-400 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2 dark:border-[#262A30]"
         onClick={props.onClose}
       >
         <ChevronDoubleRightIcon className="w-3 h-3" />
       </button>
 
-      <div className="bg-white border-l border-gray-200 overflow-y-auto relative h-full flex flex-col justify-between">
-        <div className="bg-gray-50 border-b border-gray-200 py-6 px-4 shadow-sm">
-          <h2 className="font-syne text-lg font-medium text-gray-900 pb-4">
+      <div className="bg-white dark:bg-black border-l border-gray-200 dark:border-[#262A30] overflow-y-auto relative h-full flex flex-col justify-between">
+        <div className="bg-gray-50  dark:bg-black border-b dark:border-[#262A30]  border-gray-200 py-6 px-4 shadow-sm">
+          <h2 className="font-syne text-lg font-medium text-gray-900 dark:text-white pb-4">
             Blocks
           </h2>
           <div className="flex flex-col space-y-3">
@@ -355,9 +355,9 @@ function DashboardControls(props: Props) {
             onExpand={props.onExpand}
           />
         </SimpleBar>
-        <div className="bg-gray-50 p-4 border-t border-gray-200">
+        <div className="bg-gray-50 dark:bg-black dark:border-[#262A30] p-4 border-t border-gray-200">
           <button
-            className="flex items-center rounded-md px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 border border-gray-200 disabled:cursor-not-allowed disabled:opacity-50 gap-x-2 w-full bg-white shadow-sm justify-center"
+            className="flex items-center rounded-md px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 border dark:border-[#262A30] border-gray-200 disabled:cursor-not-allowed disabled:opacity-50 gap-x-2 w-full dark:bg-black  bg-white shadow-sm justify-center"
             onClick={addHeading}
           >
             <Heading1Icon strokeWidth={1} className="w-4 h-4" />
