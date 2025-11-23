@@ -27,6 +27,7 @@ import { BaseContext } from '@apollo/server';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { appConfig } from '@sandworm/graphql';
 import { TypeOrmConfigService } from './database/typeorm-config.service';
+import { JupyterModule } from './jupyter/jupyter.module';
 
 const configModule = ConfigModule.forRoot({
   isGlobal: true,
@@ -98,7 +99,7 @@ const graphqlModule = GraphQLModule.forRootAsync<ApolloDriverConfig>({
 });
 
 @Module({
-  imports: [configModule, dbModule, i18nModule, ApiModule, graphqlModule],
+  imports: [configModule, dbModule, i18nModule, ApiModule, graphqlModule, JupyterModule],
   providers: [AppService, AsyncContextProvider, FastifyPinoLogger, AppResolver],
   exports: [AsyncContextProvider],
 })
