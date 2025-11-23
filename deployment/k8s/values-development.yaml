@@ -1,0 +1,99 @@
+# Development values for sandwormlabs
+# Usage: helm install sandwormlabs ./chart -f values-development.yaml
+
+web:
+  replicaCount: 1
+
+  image:
+    repository: docker.io/
+    name: sandwormlabs-web
+    tag: dev
+    pullPolicy: Always
+
+  env:
+    apiUrl: http://localhost:8080
+    publicUrl: http://localhost:4000
+
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+graphqlApi:
+  replicaCount: 1
+
+  image:
+    repository: docker.io/yourorg
+    name: sandwormlabs-graphql-api
+    tag: dev
+    pullPolicy: Always
+
+  env:
+    nodeEnv: development
+    appDebug: true
+    logLevel: debug
+    corsOrigin: "*"
+
+    databaseHost: sandwormlabs-postgresql
+    databasePort: 5432
+    databaseName: sandwormlabs_dev
+    databaseLogging: true
+    databaseSslEnabled: false
+
+  secrets:
+    databaseUsername: postgres
+    databasePassword: postgres
+
+    jwtSecret: "dev-jwt-secret-key"
+    authJwtSecret: "dev-auth-jwt-secret"
+    datasourcesEncryptionKey: "dev-datasources-key"
+    workspaceSecretsEncryptionKey: "dev-workspace-key"
+
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+
+postgresql:
+  enabled: true
+  persistence:
+    enabled: false
+
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+
+redis:
+  enabled: true
+  persistence:
+    enabled: false
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+ingress:
+  enabled: false
+
+autoscaling:
+  enabled: false
+
+serviceMonitor:
+  enabled: false
+
+podDisruptionBudget:
+  enabled: false
