@@ -51,6 +51,11 @@ input DuplicateDocumentInput {
   workspaceId: String!
 }
 
+input FavoriteDocumentInput {
+  documentId: String!
+  workspaceId: String!
+}
+
 input GetAllUsersInput {
   limit: Float
   offset: Float
@@ -73,6 +78,9 @@ input LoginInput {
 }
 
 type Mutation {
+  """Mark a document as a favorite"""
+  addFavoriteDocument(input: FavoriteDocumentInput!): Document!
+
   """Create a new document in a workspace"""
   createDocument(input: CreateDocumentInput!, workspaceId: String!): Document!
 
@@ -96,6 +104,9 @@ type Mutation {
 
   """Sign in"""
   login(input: LoginInput!): User!
+
+  """Unmark a document as a favorite"""
+  removeFavoriteDocument(input: FavoriteDocumentInput!): Document!
 
   """Restore a previously deleted document"""
   restoreDocument(input: RestoreDocumentInput!): Document!

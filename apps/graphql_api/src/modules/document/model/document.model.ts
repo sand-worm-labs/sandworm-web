@@ -11,7 +11,6 @@ export class Document {
   @Field()
   title!: string;
 
-
   @Field(() => ID)
   authorId!: string;
 
