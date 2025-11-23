@@ -65,3 +65,12 @@ export class DuplicateDocumentInput {
   @UUIDField()
   documentId: string;
 }
+
+@InputType()
+export class FavoriteDocumentInput {
+  @UUIDField()
+  workspaceId: string;
+
+  @UUIDField()
+  documentId: string;
+}

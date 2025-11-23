@@ -16,6 +16,7 @@ import {
   DeleteDocumentInput,
   RestoreDocumentInput,
   DuplicateDocumentInput,
+  FavoriteDocumentInput,
 } from './dto/document.dto';
 
 @Resolver(() => Document)
@@ -96,6 +97,27 @@ export class DocumentResolver {
   ): Promise<Document> {
     return this.documentService.duplicateDocument(input);
   }
+
+  @Mutation(() => Document, {
+    name: 'addFavoriteDocument',
+    description: 'Mark a document as a favorite',
+  })
+  async addFavoriteDocument(
+    @Args('input') input: FavoriteDocumentInput,
+  ): Promise<Document> {
+    return this.documentService.addFavorite(input);
+  }
+  
+  @Mutation(() => Document, {
+    name: 'removeFavoriteDocument',
+    description: 'Unmark a document as a favorite',
+  })
+  async removeFavoriteDocument(
+    @Args('input') input: FavoriteDocumentInput,
+  ): Promise<Document> {
+    return this.documentService.removeFavorite(input);
+  }
+  
 
   @ResolveField(() => [Document], {
     name: 'children',

@@ -8,11 +8,10 @@ import {
 import { Not, Repository } from 'typeorm';
 import { Document } from './model/document.model';
 import { toGraphQLDocumentUtils } from '@/utils/models';
-import { DeleteDocumentInput, DuplicateDocumentInput, RestoreDocumentInput, UpdateDocumentInput } from './dto/document.dto';
+import { DeleteDocumentInput, DuplicateDocumentInput, FavoriteDocumentInput, RestoreDocumentInput, UpdateDocumentInput } from './dto/document.dto';
 
 @Injectable()
 export class DocumentService {
-  [x: string]: any;
   private readonly logger = new Logger(DocumentService.name);
 
   constructor(
@@ -26,22 +25,22 @@ export class DocumentService {
   }
 
   async getDocument(documentId: string, workspaceId: string): Promise<Document> {
-    const entity = await this.documentRepository.findOne({
+    const document = await this.documentRepository.findOne({
       where: { id: documentId, workspaceId },
     });
 
-    if (!entity) {
+    if (!document) {
       throw new ValidationException(ErrorCode.E003, `Document ${documentId} not found`);
     }
 
-    return this.toGraphQLDocument(entity);
+    return this.toGraphQLDocument(document);
   }
 
   async getWorkspaceDocuments(workspaceId: string): Promise<Document[]> {
-    const entity = await this.documentRepository.find({
+    const  documents_list = await this.documentRepository.find({
       where: { workspaceId },
     });
-    let documents =  entity.map(doc => this.toGraphQLDocument(doc));
+    let documents =  documents_list.map(doc => this.toGraphQLDocument(doc));
     return documents
   }
 
@@ -51,23 +50,23 @@ export class DocumentService {
     input: UpdateDocumentInput,
   ): Promise<Document> {
 
-    const entity = await this.documentRepository.findOne({
+    const document = await this.documentRepository.findOne({
       where: { id: documentId, workspaceId },
     });
   
-    if (!entity) {
+    if (!document) {
       throw new ValidationException(ErrorCode.E003);
     }
   
-    entity.title = input.title ?? "";
+    document.title = input.title ?? "";
   
     if (input.relations) {
-      entity.parentId = input.relations.parentId ?? null;
-      entity.orderIndex = input.relations.orderIndex;
+      document.parentId = input.relations.parentId ?? null;
+      document.orderIndex = input.relations.orderIndex;
     }
   
-    await this.documentRepository.save(entity);
-    return this.toGraphQLDocument(entity);
+    await this.documentRepository.save(document);
+    return this.toGraphQLDocument(document);
   }
   
   async deleteDocument(
@@ -75,22 +74,22 @@ export class DocumentService {
   ): Promise<Document> {
     const {documentId, workspaceId, isPermanent} = input;
 
-    const entity = await this.documentRepository.findOne({
+    const document = await this.documentRepository.findOne({
       where: { id: documentId, workspaceId },
     });
 
-    if (!entity) {
+    if (!document) {
       throw new ValidationException(ErrorCode.E003);
     }
 
     if (isPermanent) {
-      await this.documentRepository.softRemove(entity);
+      await this.documentRepository.softRemove(document);
     } else {
-      entity.deletedAt = new Date();
-      await this.documentRepository.save(entity);
+      document.deletedAt = new Date();
+      await this.documentRepository.save(document);
     }
 
-    return this.toGraphQLDocument(entity);
+    return this.toGraphQLDocument(document);
   }
 
 
@@ -98,12 +97,12 @@ export class DocumentService {
     input: RestoreDocumentInput
   ): Promise<Document> {
     const { documentId, workspaceId} = input;
-    const entity = await this.documentRepository.findOne({
+    const document = await this.documentRepository.findOne({
       where: { id: documentId, workspaceId, deletedAt: Not(null) },
       withDeleted: true,
     });
 
-    if (!entity) {
+    if (!document) {
       throw new ValidationException(ErrorCode.E003);
     }
 
@@ -135,4 +134,14 @@ export class DocumentService {
 
     return this.toGraphQLDocument(duplicate);
   }
+
+  async addFavoriteDocument(
+    input: FavoriteDocumentInput
+ ): Promise<Document> {
+  const {documentId, workspaceId} = input;
+  const document = await this.documentRepository.findOne({
+    where: { id: documentId, workspaceId, deletedAt: null },
+  });
+
+ }
 }
