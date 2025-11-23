@@ -1,4 +1,4 @@
-# Default values for Sandworm
+# Default values for sandwormlabs
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -14,8 +14,8 @@ web:
   replicaCount: 2
 
   image:
-    repository: docker.io/yourorg
-    name: sandworm-web
+    repository: docker.io/sadwormlabs
+    name: sandwormlabs-web
     tag: latest
     pullPolicy: Always
 
@@ -72,8 +72,8 @@ graphqlApi:
   replicaCount: 2
 
   image:
-    repository: docker.io/yourorg
-    name: sandworm-graphql-api
+    repository: docker.io/sadwormlabs
+    name: sandwormlabs-graphql-api
     tag: latest
     pullPolicy: Always
 
@@ -84,7 +84,7 @@ graphqlApi:
   env:
     # Application
     nodeEnv: production
-    appName: "Sandworm GraphQL API"
+    appName: "sandwormlabs GraphQL API"
     appUrl: http://localhost:8080
     appDebug: false
     fallbackLanguage: en
@@ -93,9 +93,9 @@ graphqlApi:
 
     # Database connection
     databaseType: postgres
-    databaseHost: sandworm-postgresql
+    databaseHost: sandwormlabs-postgresql
     databasePort: 5432
-    databaseName: sandworm
+    databaseName: sandwormlabs
     databaseSchema: public
     databaseLogging: false
     databaseMaxConnections: 100
@@ -183,13 +183,13 @@ ingress:
   #   nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
   #   nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
   #   # WebSocket support
-  #   nginx.ingress.kubernetes.io/websocket-services: sandworm-graphql-api
+  #   nginx.ingress.kubernetes.io/websocket-services: sandwormlabs-graphql-api
   #   nginx.ingress.kubernetes.io/configuration-snippet: |
   #     proxy_set_header Upgrade $http_upgrade;
   #     proxy_set_header Connection "Upgrade";
 
   hosts:
-    - host: sandworm.example.com
+    - host: sandwormlabs.com
       paths:
         - path: /
           pathType: Prefix
@@ -197,9 +197,9 @@ ingress:
   tls: []
   # Example TLS configuration:
   # tls:
-  #   - secretName: sandworm-tls
+  #   - secretName: sandwormlabs-tls
   #     hosts:
-  #       - sandworm.example.com
+  #       - sandwormlabs.example.com
 
 # Service monitoring (Prometheus)
 serviceMonitor:
