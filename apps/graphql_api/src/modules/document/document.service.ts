@@ -7,7 +7,7 @@ import {
 } from '@sandworm/postgresql-typeorm';
 import { Not, Repository } from 'typeorm';
 import { Document } from './model/document.model';
-import { toGraphQLDocumentUtils } from '@/utils/models';
+import { toGraphQLUserUtils } from '@/utils/models';
 import { DeleteDocumentInput, DuplicateDocumentInput, FavoriteDocumentInput, RestoreDocumentInput, UpdateDocumentInput } from './dto/document.dto';
 
 @Injectable()
@@ -106,10 +106,10 @@ export class DocumentService {
       throw new ValidationException(ErrorCode.E003);
     }
 
-    entity.deletedAt = null;
-    await this.documentRepository.save(entity);
+    document.deletedAt = null;
+    await this.documentRepository.save(document);
 
-    return this.toGraphQLDocument(entity);
+    return this.toGraphQLDocument(document);
   }
 
   async duplicateDocument(
