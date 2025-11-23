@@ -26,7 +26,7 @@ export const QueryCodeEditor = ({
   tabId,
   updateTabQueryAction,
   onRunQuery,
-  height = "450px",
+  height = "200px",
   readonly = false,
   theme,
 }: QueryCodeEditorProps) => {
@@ -98,7 +98,7 @@ export const QueryCodeEditor = ({
         { token: "variable", foreground: "9b859d" },
       ],
       colors: {
-        "editor.background": "#101010",
+        "editor.background": "#333233",
         "editor.foreground": "#F8F8F2",
         "editorCursor.foreground": "#A7A7A7",
         "editor.selectionBackground": "#49483E",
@@ -196,7 +196,7 @@ export const QueryCodeEditor = ({
   }, []);
 
   return (
-    <div className=" rounded-md overflow-hidden relative">
+    <div className=" rounded-xl overflow-auto relative border-b  mb-20">
       <Editor
         height={height}
         defaultLanguage="sql"
@@ -210,6 +210,7 @@ export const QueryCodeEditor = ({
           automaticLayout: true,
           tabSize: 2,
           fontSize: 14,
+          padding: { top: 20, bottom: 20 },
           wordWrap: "on",
           scrollBeyondLastLine: false,
           lineNumbers: "on",

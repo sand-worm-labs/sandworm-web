@@ -33,7 +33,7 @@ export function ExamplePrompts({ onPromptSelect }: ExamplePromptsProps) {
             // Icon
             "*[data-slot=icon]:-mx-0.5 *[data-slot=icon]:my-0.5 *[data-slot=icon]:size-5 *[data-slot=icon]:shrink-0 *[data-slot=icon]:text-(--btn-icon) sm:*[data-slot=icon]:my-1 sm:*[data-slot=icon]:size-4 forced-colors:[--btn-icon:ButtonText] forced-colors:hover:[--btn-icon:ButtonText]",
             // Base
-            "border-[#E9ECEF] dark:text-white hover:bg-zinc-950/[2.5%] text-black active:bg-zinc-950/[2.5%]",
+            "border-[#E9ECEF] dark:text-white hover:bg-zinc-950/[2.5%] text-[#6C757D] active:bg-zinc-950/[2.5%]",
             // Dark mode
             "dark:border-white/15 dark:text-white dark:[--btn-bg:transparent] dark:hover:bg-white/5 dark:active:bg-white/5",
             // Icon

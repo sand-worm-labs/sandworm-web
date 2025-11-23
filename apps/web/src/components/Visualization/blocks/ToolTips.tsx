@@ -93,7 +93,7 @@ export const Tooltip = ({
       {active && (
         <div
           className={clsx(
-            "font-sans pointer-events-none absolute opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1 z-[4000]",
+            "font-primary pointer-events-none absolute opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1 z-[4000]",
             getPosClass(position),
             tooltipClassname
           )}
@@ -251,7 +251,7 @@ export function TooltipV2<T extends Element>(props: TooltipV2Props<T>) {
               <div
                 ref={tooltipRef}
                 className={clsx(
-                  "font-sans pointer-events-none bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1 w-36",
+                  "font-primary pointer-events-none bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1 w-36",
                   props.className
                 )}
               >

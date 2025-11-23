@@ -10,8 +10,7 @@ export function RootProvider({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider
       attribute="class"
-      defaultTheme="light"
-      forcedTheme="light"
+      defaultTheme="dark"
       enableSystem
       disableTransitionOnChange
     >

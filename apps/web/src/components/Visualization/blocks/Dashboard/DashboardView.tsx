@@ -338,7 +338,7 @@ export default function DashboardView(props: Props) {
     <SimpleBar
       id="dashboard-wrapper"
       data-dashboard-ready="true"
-      className={clsx("px-8 py-6 font-sans", props.className)}
+      className={clsx("px-8 py-6 font-primary", props.className)}
     >
       <div className="pb-8 px-1">
         <Title

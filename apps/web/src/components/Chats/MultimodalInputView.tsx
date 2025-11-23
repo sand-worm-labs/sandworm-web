@@ -2,7 +2,7 @@
 
 import React, { forwardRef } from "react";
 import type { Attachment } from "ai";
-import { PiPaperPlaneTilt } from "react-icons/pi";
+import { PiPaperPlaneTilt, PiPlus } from "react-icons/pi";
 import { useRouter } from "next/navigation";
 import { Button } from "@sandworm/ui/components/button";
 import { Textarea } from "@sandworm/ui/components/textarea";
@@ -18,6 +18,7 @@ interface MultimodalInputUIProps {
   attachments?: Array<Attachment>;
   uploadQueue?: Array<string>;
   disabled?: boolean;
+  onFileClick?: () => void;
 }
 
 export const MultimodalInputView = forwardRef<
@@ -33,6 +34,7 @@ export const MultimodalInputView = forwardRef<
       attachments = [],
       uploadQueue = [],
       disabled = false,
+      onFileClick,
     },
     ref
   ) => {
@@ -63,19 +65,51 @@ export const MultimodalInputView = forwardRef<
         {/* Textarea */}
         <Textarea
           ref={ref}
-          placeholder="Start  a  query . . ."
+          placeholder="Start a query..."
           value={input}
           onChange={onInputChange}
-          onKeyDown={undefined}
-          className="min-h-[50px] overflow-hidden resize-none rounded-3xl border border-[#E6E0F1] bg-white dark:text-white text-sm placeholder:text-sm focus:ring-0 focus:outline-none dark:bg-[#121417] dark:border-[#262A30] dark:placeholder:text-zinc-400 scrollbar-thin scrollbar-thumb-rounded-md scrollbar-thumb-zinc-700 py-4 px-5 placeholder:text-[#868E96] placeholder:tracking-wide"
+          className="
+    min-h-[50px]
+    overflow-hidden
+    resize-none
+    rounded-3xl
+    border-[1.5px] border-[#E6E0F1]
+    bg-white
+    dark:bg-[#121417]
+    dark:text-white
+    text-sm
+    placeholder:text-[#868E96]
+    placeholder:tracking-wide
+    py-4 px-5
+    focus:outline-none
+    focus:border-transparent
+    focus:ring-4
+    focus:ring-[rgba(139,69,19,0.2)]
+    transition-all
+    duration-300
+    ease-in-out
+    scrollbar-thin
+    scrollbar-thumb-rounded-md
+    scrollbar-thumb-zinc-700
+  "
           rows={6}
         />
 
         {/* Action Buttons */}
+        <div className="absolute bottom-5 left-5">
+          <Button
+            type="button"
+            className="rounded-full p-2.5 h-fit m-0.5 bg-transparent dark:bg-[#363C46] text-black dark:text-[#C5CED9] border-[#B5C8DB] border  hover:bg-[rgba(207,211,222,0.15)] 
+    dark:hover:bg-[rgba(255,255,255,0.05)]"
+            onClick={onFileClick}
+          >
+            <PiPlus size={18} />
+          </Button>
+        </div>
         <div className="flex flex-row gap-2 absolute bottom-5 right-5">
           <Button
             type="button"
-            className="rounded-full p-2.5 py-2 h-fit m-0.5 text-sm bg-[#E7EBF0] dark:bg-[#363C46] dark:text-[#C5CED9] text-black px-4 "
+            className="rounded-full p-2.5 py-2 h-fit m-0.5 text-sm bg-[#E7EBF0] dark:bg-[#363C46] dark:text-[#C5CED9] text-black px-4 font-primary font-medium hidden"
             onClick={onStop}
           >
             Deep Research
@@ -88,15 +122,15 @@ export const MultimodalInputView = forwardRef<
               onClick={onStop}
               disabled={disabled}
             >
-              <StopIcon size={16} />
+              <StopIcon size={18} />
             </Button>
           ) : (
             <Button
               type="button"
-              className="rounded-full p-2.5 h-fit m-0.5 text-white bg-[#C7665C]"
+              className="rounded-full p-2.5 h-fit m-0.5 text-white bg-[#C7665C] font-light"
               onClick={() => router.push("/chat")}
             >
-              <PiPaperPlaneTilt size={16} />
+              <PiPaperPlaneTilt size={18} strokeWidth={0.5} />
             </Button>
           )}
         </div>

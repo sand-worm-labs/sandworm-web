@@ -11,8 +11,8 @@ import Link from "next/link";
 import * as allOutlineIcons from "@heroicons/react/24/outline";
 
 import type { APIReusableComponent, ReusableComponentType } from "@/types";
-import allLucideIcons from "../utils/lucideIcons";
 
+import allLucideIcons from "../utils/lucideIcons";
 import { useReusableComponents } from "../hooks/useReusableComponents";
 
 import { Tooltip, TooltipV2 } from "./ToolTips";
@@ -158,7 +158,7 @@ function ReusableComponentItem(props: ReusableComponentItemProps) {
     icons[props.component.document.icon ?? "DocumentIcon"] || (() => null);
 
   return (
-    <div className="px-4 py-3 font-sans block w-full">
+    <div className="px-4 py-3 font-primary block w-full">
       <div className="flex flex-col">
         <div className="flex justify-between">
           <div

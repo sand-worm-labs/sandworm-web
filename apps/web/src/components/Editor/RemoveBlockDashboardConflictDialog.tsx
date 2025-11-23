@@ -1,4 +1,4 @@
-import * as Y from "yjs";
+import type * as Y from "yjs";
 import { useCallback, useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import * as R from "ramda";
@@ -7,10 +7,8 @@ import {
   InformationCircleIcon,
   Squares2X2Icon,
 } from "@heroicons/react/24/outline";
-import {
-  RemoveBlockGroupDashboardConflictResult,
-  removeBlockGroup,
-} from "@sandworm/editor";
+import type { RemoveBlockGroupDashboardConflictResult } from "@sandworm/editor";
+import { removeBlockGroup } from "@sandworm/editor";
 
 interface Props {
   yDoc: Y.Doc;

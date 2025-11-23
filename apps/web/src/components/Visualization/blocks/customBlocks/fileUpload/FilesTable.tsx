@@ -6,13 +6,14 @@ import clsx from "clsx";
 import { useCallback, useMemo } from "react";
 import Link from "next/link";
 
+import { NEXT_PUBLIC_API_URL } from "@/components/Visualization/utils/env";
+
 import Spin from "../../Spin";
 
 import StateFiles from "./StateFiles";
 import UploadedFileC from "./UploadedFile";
 
 import type { FileUploadState, UploadError } from ".";
-import { NEXT_PUBLIC_API_URL } from "@/components/Visualization/utils/env";
 
 export type FilesTableHeader =
   | "Name"
@@ -97,7 +98,7 @@ function FilesTable(props: Props) {
           <input
             type="text"
             className={clsx(
-              "w-1/2 font-sans bg-transparent pl-1 ring-gray-200 focus:ring-gray-400 block rounded-md border-0 text-gray-500 hover:ring-1 focus:ring-1 ring-inset placeholder:text-gray-400 focus:ring-inset h-full py-0 text-xs disabled:ring-0 h-full"
+              "w-1/2 font-primary bg-transparent pl-1 ring-gray-200 focus:ring-gray-400 block rounded-md border-0 text-gray-500 hover:ring-1 focus:ring-1 ring-inset placeholder:text-gray-400 focus:ring-inset h-full py-0 text-xs disabled:ring-0 h-full"
             )}
             placeholder="Files"
             value={props.title}
@@ -203,7 +204,7 @@ function FilesTable(props: Props) {
           </span>
           <div className="relative group/tooltip">
             <InformationCircleIcon className="text-gray-400 hover:text-gray-600 cursor-help w-4 h-4" />
-            <div className="font-sans pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover/tooltip:opacity-100 bg-hunter-950 text-xs p-3 rounded-md flex flex-col gap-y-1 font-sans w-64 text-center">
+            <div className="font-primary pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover/tooltip:opacity-100 bg-hunter-950 text-xs p-3 rounded-md flex flex-col gap-y-1 font-primary w-64 text-center">
               <span className="text-white">These files are in your disk.</span>
               <span className="text-gray-400">
                 Your files are available in your filesystem at

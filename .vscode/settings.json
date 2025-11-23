@@ -7,5 +7,38 @@
   "css.lint.unknownAtRules": "ignore",
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
-  "cSpell.words": ["commitlint", "cssnano", "nextauth", "tailwindcss"]
+  "cSpell.words": ["commitlint", "cssnano", "nextauth", "tailwindcss"],
+
+  "eslint.workingDirectories": [
+    {
+      "directory": "apps/web",
+      "changeProcessCWD": true
+    }
+  ],
+
+  "eslint.useESLintClass": true,
+
+  "eslint.probe": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+
+  "eslint.nodePath": "apps/web/node_modules",
+
+  "eslint.options": {
+    "resolvePluginsRelativeTo": "apps/web"
+  },
+
+  "eslint.rules.customizations": [],
+
+  "eslint.run": "onType"
 }

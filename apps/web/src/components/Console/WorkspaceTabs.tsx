@@ -122,7 +122,7 @@ export const WorkspaceTabs = ({
   }, [tabs]);
 
   const handleTabChange = (tabId: string) => {
-    const basePath = "/console";
+    const basePath = "/workspace/console";
     const currentTabId = pathname.split("/")[2];
 
     if (tabId !== currentTabId) {
@@ -134,7 +134,7 @@ export const WorkspaceTabs = ({
 
   const addNewCodeTab = () => {
     const tabId = createTab("New Query");
-    router.push(`/console/${tabId}`, { showProgress: true });
+    router.push(`/workspace/console/${tabId}`, { showProgress: true });
   };
 
   return (
@@ -142,9 +142,9 @@ export const WorkspaceTabs = ({
       <Tabs
         value={activeTabId || undefined}
         onValueChange={handleTabChange}
-        className="flex flex-col h-full"
+        className="flex flex-col h-full gap-0 border  border-[#FEFEFF] "
       >
-        <div className="flex-shrink-0 flex items-center border-b-0 bg-muted">
+        <div className="flex-shrink-0 flex items-center bg-muted border-b  border-[#FEFEFF]">
           <Button
             variant="ghost"
             className="rounded-none hover:bg-gray-100 hover:bg-black/20 h-8 px-2 sticky left-0 z-10"
@@ -203,7 +203,7 @@ export const WorkspaceTabs = ({
             <TabsContent
               key={tab.id}
               value={tab.id}
-              className="h-full m-0 outline-none data-[state=active]:flex-1"
+              className="h-full m-0 outline-none data-[state=active]:flex-1 bg-[#F9FAFD]"
             >
               {(() => {
                 if (tab.type === "home") {

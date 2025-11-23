@@ -210,7 +210,7 @@ export default function Dashboard(props: Props) {
 
   const topBarContent = (
     <div className="flex items-center w-full justify-between">
-      <div className="w-full overflow-hidden flex items-center gap-x-1.5 text-sm text-gray-400 font-sans">
+      <div className="w-full overflow-hidden flex items-center gap-x-1.5 text-sm text-gray-400 font-primary">
         {props.isEditing ? (
           <SquaresPlusIcon className="w-4 h-4" />
         ) : (
@@ -306,7 +306,7 @@ export default function Dashboard(props: Props) {
 
   return (
     <Layout
-      topBarClassname={!props.isEditing ? "bg-gray-50" : undefined}
+      topBarClassname={!props.isEditing ? "dark:bg-black" : undefined}
       topBarContent={topBarContent}
       user={props.user}
     >
@@ -328,7 +328,7 @@ export default function Dashboard(props: Props) {
           )}
         </div>
 
-        <div className="w-full fixed bottom-0 bg-white z-20">
+        <div className="w-full fixed bottom-0 bg-white dark:bg-black z-20">
           <EnvBar
             onOpenFiles={onToggleFiles}
             publishedAt={!props.isEditing ? props.document.publishedAt : null}

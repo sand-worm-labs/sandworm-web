@@ -1,14 +1,18 @@
 "use client";
 
 import * as Y from "yjs";
-import type {
-  YBlock,
+import {
+  makeVisualizationV2Block,
+  VisualizationV2BlockInput,
+  getDefaultDateFormat,
+  getDefaultNumberFormat,
   ExecutionQueue,
-  ExecutionQueueBatch,
-  DataFrame,
-} from "@sandworm/types";
+  BlockType,
+  ExecutionQueueItem,
+} from "@sandworm/editor";
+import type { DataFrame, DataFrameColumn } from "@sandworm/types";
+import { v4 as uuidv4 } from "uuid";
 import type { VisualizationV2Block } from "@sandworm/editor";
-import { BlockType, ExecutionQueueItem } from "@sandworm/editor";
 import { Star, Expand, MoreVertical } from "lucide-react";
 
 import VisualizationBlockV2 from "../Visualization";
@@ -16,110 +20,172 @@ import RichTextBlock from "../Visualization/blocks/customBlocks/richText";
 
 import ItemActionsDropdown from "./ItemAction";
 
-const yDoc = new Y.Doc();
+const doc = new Y.Doc();
 
-// --- Create a visualization block ---
-const visualizationBlock = new Y.XmlElement(
-  "visualization"
-) as Y.XmlElement<VisualizationV2Block>;
+// 2. Create mock DataFrame
+const mockDataframe: DataFrame = {
+  name: "sales_data",
+  columns: [
+    {
+      name: "date",
+      type: "datetime64[ns]",
+      categories: null,
+    } as DataFrameColumn,
+    {
+      name: "revenue",
+      type: "float64",
+      categories: null,
+    } as DataFrameColumn,
+    {
+      name: "region",
+      type: "str",
+      categories: ["North", "South", "East", "West"],
+    } as DataFrameColumn,
+  ],
+  updatedAt: new Date().toISOString(),
+  blockId: null,
+};
 
-visualizationBlock.setAttribute("type", BlockType.VisualizationV2);
-visualizationBlock.setAttribute("id", "visualization");
-visualizationBlock.setAttribute("title", "Top Tokens Chart");
-visualizationBlock.setAttribute("input", {
-  chartType: "groupedColumn",
-  dataframeName: "num1 ",
-  xAxis: null,
-  xAxisName: null,
-  xAxisSort: null,
-  xAxisGroupFunction: null,
-  xAxisDateFormat: null,
+// 3. Add dataframe to the doc
+const dataframes = doc.getMap<DataFrame>("dataframes");
+dataframes.set("sales_data", mockDataframe);
+
+// 4. Create the visualization block
+const blockId = uuidv4();
+const blocks = doc.getMap("blocks");
+
+const visualizationBlock = makeVisualizationV2Block(blockId, {
+  dataframeName: "sales_data",
+  chartType: "line",
+  xAxis: mockDataframe.columns[0], // date column
+  xAxisName: "Date",
+  xAxisSort: "ascending",
+  xAxisGroupFunction: "month",
+  xAxisDateFormat: getDefaultDateFormat(),
   xAxisNumberFormat: null,
-  yAxes: [],
+  yAxes: [
+    {
+      id: uuidv4(),
+      name: "Revenue",
+      series: [
+        {
+          id: uuidv4(),
+          column: mockDataframe.columns[1], // revenue column
+          aggregateFunction: "sum",
+          groupBy: null,
+          chartType: null,
+          name: "Total Revenue",
+          color: "#5470c6",
+          groups: null,
+          dateFormat: getDefaultDateFormat(),
+          numberFormat: getDefaultNumberFormat(),
+        },
+      ],
+    },
+  ],
   filters: [],
   histogramFormat: "count",
   histogramBin: { type: "auto" },
-  dataLabels: null,
+  dataLabels: {
+    show: false,
+    frequency: "some",
+  },
 });
 
-// --- Add mock data inside the element ---
-const dataElement = new Y.XmlElement("data");
-dataElement.setAttribute("xField", "token");
-dataElement.setAttribute("yField", "volume");
-dataElement.setAttribute("color", "#0C7CE8");
+// 5. Set the output with mock chart data
+visualizationBlock.setAttribute("output", {
+  executedAt: new Date().toISOString(),
+  tooManyDataPoints: false,
+  result: {
+    tooltip: { trigger: "axis" },
+    legend: {},
+    grid: { containLabel: true },
+    dataset: [
+      {
+        dimensions: ["date", uuidv4()], // series id
+        source: [
+          { date: "2024-01-01", [uuidv4()]: 1000 },
+          { date: "2024-02-01", [uuidv4()]: 1500 },
+          { date: "2024-03-01", [uuidv4()]: 1200 },
+          { date: "2024-04-01", [uuidv4()]: 1800 },
+          { date: "2024-05-01", [uuidv4()]: 2000 },
+        ],
+      },
+    ],
+    xAxis: [
+      {
+        type: "time",
+        name: "Date",
+        nameLocation: "middle",
+        nameGap: 30,
+        axisPointer: { type: "shadow" },
+      },
+    ],
+    yAxis: [
+      {
+        type: "value",
+        name: "Revenue",
+        nameLocation: "middle",
+        nameGap: 50,
+        position: "left",
+      },
+    ],
+    series: [
+      {
+        id: uuidv4(),
+        type: "line",
+        datasetIndex: 0,
+        yAxisIndex: 0,
+        name: "Total Revenue",
+        z: 0,
+        encode: { x: "date", y: uuidv4() },
+        lineStyle: { color: "#5470c6" },
+        itemStyle: { color: "#5470c6" },
+      },
+    ],
+  },
+});
 
-const sampleData = new Y.XmlText();
-const data = [
-  { token: "WETH", volume: 523000 },
-  { token: "USDC", volume: 310000 },
-  { token: "AERO", volume: 125000 },
-  { token: "DEGEN", volume: 78000 },
-];
-sampleData.insert(0, JSON.stringify(data));
+blocks.set(blockId, visualizationBlock);
 
-dataElement.insert(0, [sampleData]);
-visualizationBlock.insert(0, [dataElement]);
+// 6. Create layout and block group
+const layout = doc.getArray("layout");
+const blockGroupId = uuidv4();
+const blockGroup = new Y.XmlElement("block-group");
+blockGroup.setAttribute("id", blockGroupId);
 
-// --- Set up blocks map ---
-const blocks = yDoc.getMap<YBlock>("blocks");
-blocks.set("visualization", visualizationBlock as YBlock);
+const tabRef = new Y.XmlElement("block-ref");
+tabRef.setAttribute("id", blockId);
 
-// --- Set up dataframes map (mock one for query_1) ---
-const dataframes = yDoc.getMap<DataFrame>("dataframes");
+const tabs = new Y.Array();
+tabs.push([tabRef]);
 
-const query1Frame = {
-  name: "query_1",
-  blockId: "07dba87c-d847-4c83-b1c9-51d77a208a24",
-  columns: [
-    { name: "token", type: "string" },
-    { name: "volume", type: "int32" },
-  ],
-  rows: data.map(item => [item.token, item.volume]),
-};
+blockGroup.setAttribute("tabs", tabs);
+blockGroup.setAttribute("current", tabRef.clone());
+layout.push([blockGroup]);
 
-dataframes.set("query_1", query1Frame as DataFrame);
+// 7. Create execution queue
+const executionQueue = doc.getArray("executionQueue");
 
-// --- ExecutionQueue ---
-const executionQueue: ExecutionQueue = {
-  blocks: new Y.Map<YBlock>(),
-  queue: new Y.Array(),
-  layout: new Y.Array(),
-  observers: new Set(),
-  options: {},
-  enqueueBlock: () => {},
-  enqueueBlockGroup: () => {},
-  enqueueBlockOnwards: () => {},
-  enqueueRunAll: (): ExecutionQueueBatch => ({
-    id: "batch-1",
-    status: "pending",
-    timestamp: Date.now(),
-  }),
-  getCurrentBatch: () => null,
-  advance: () => {},
-  getBlockExecutions: () => [],
-  observe: () => () => {},
-  toJSON: () => [],
-  getRunAllBatches: () => [],
-  length: 0,
-  onObservation: () => {},
-  getExecutionQueueMetadataForBlock: () => ({
-    status: "pending",
-    timestamp: Date.now(),
-  }),
-};
-
-// --- Document info ---
-const document = {
-  appClock: 0,
-  appId: "c9eda31f-0a6a-408f-b217-1948b73b4b1b",
-  clock: 0,
-  createdAt: "2025-10-05T13:41:16.642Z",
-  deletedAt: null,
-  hasDashboard: true,
-  icon: "DocumentIcon",
-  id: "0ad689b1-252b-4ada-88b7-71ba3e27c5a9",
-  title: "Test Notebook",
-  updatedAt: "2025-10-14T20:31:01.941Z",
+// Now you can use these in your component
+const mockProps = {
+  document: { id: "doc-1", workspaceId: "ws-1" } as any,
+  dataframes,
+  block: visualizationBlock,
+  blocks,
+  dragPreview: null,
+  isEditable: true,
+  isPublicMode: false,
+  onAddGroupedBlock: () => {},
+  dashboardMode: null,
+  hasMultipleTabs: false,
+  isBlockHiddenInPublished: false,
+  onToggleIsBlockHiddenInPublished: () => {},
+  isCursorWithin: true,
+  isCursorInserting: false,
+  executionQueue: ExecutionQueue.fromYjs(doc),
+  userId: "user-1",
+  isFullScreen: false,
 };
 
 // --- Preview component ---
@@ -128,7 +194,7 @@ export const ChatReportPreview = () => {
     <div className="w-full max-h-[95vh] p-6 flex flex-col gap-4 overflow-y-auto">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl text-black font-semibold">
+        <h2 className="text-3xl text-black dark:text-white font-semibold">
           Tokens on Base - Bar chart
         </h2>
 
@@ -139,55 +205,25 @@ export const ChatReportPreview = () => {
         </div>
       </div>
 
-      <p className="text-[#050818] text-base leading-relaxed ">
+      <p className="text-[#050818] text-base leading-relaxed dark:text-white ">
         This dashboard visualizes the most actively traded tokens on Base over
         the past 30 days. The data highlights on-chain volume trends, unique
         holder growth, and the top projects driving activity within the Base
         ecosystem.
       </p>
-
-      {/*       <RichTextBlock
-        block={blocks}
-        belongsToMultiTabGroup={false}
-        isEditable={false}
-        dragPreview={null}
-        dashboardMode={{ _tag: "editing", position: "sidebar" }}
-        isCursorWithin={false}
-        isCursorInserting={false}
-      /> */}
 
       <div className="w-full flex items-center justify-center text-neutral-500 rounded-2xl relative pt-5">
-        <VisualizationBlockV2
-          isPublicMode={false}
-          isEditable={false}
-          document={document}
-          onAddGroupedBlock={() => {}}
-          block={
-            blocks.get("visualization") as Y.XmlElement<VisualizationV2Block>
-          }
-          blocks={blocks}
-          dataframes={dataframes}
-          dragPreview={null}
-          dashboardMode={null}
-          hasMultipleTabs={false}
-          isBlockHiddenInPublished={false}
-          onToggleIsBlockHiddenInPublished={() => {}}
-          isCursorWithin={false}
-          isCursorInserting={false}
-          userId="default-user"
-          executionQueue={executionQueue}
-          isFullScreen={false}
-        />
+        <VisualizationBlockV2 {...mockProps} />
       </div>
 
-      <p className="text-[#050818] text-base leading-relaxed ">
+      <p className="text-[#050818] dark:text-white text-base leading-relaxed ">
         This dashboard visualizes the most actively traded tokens on Base over
         the past 30 days. The data highlights on-chain volume trends, unique
         holder growth, and the top projects driving activity within the Base
         ecosystem.
       </p>
 
-      <p className="text-[#050818] text-base leading-relaxed ">
+      <p className="text-[#050818] dark:text-white text-base leading-relaxed ">
         This dashboard visualizes the most actively traded tokens on Base over
         the past 30 days. The data highlights on-chain volume trends, unique
         holder growth, and the top projects driving activity within the Base
