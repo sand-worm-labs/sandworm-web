@@ -17,4 +17,5 @@ export enum ErrorCode {
   E201 = 'app.article.not_found',
   E301 = 'app.comment.not_found',
   E302 = 'app.comment.not_authorized_to_delete',
+  E005 = "E005",
 }
