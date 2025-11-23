@@ -4,11 +4,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ValidationException } from '@sandworm/graphql';
 import {
   DocumentEntity,
+  FavoriteEntity
 } from '@sandworm/postgresql-typeorm';
 import { Not, Repository } from 'typeorm';
 import { Document } from './model/document.model';
-import { toGraphQLUserUtils } from '@/utils/models';
-import { DeleteDocumentInput, DuplicateDocumentInput, FavoriteDocumentInput, RestoreDocumentInput, UpdateDocumentInput } from './dto/document.dto';
+import { DeleteDocumentInput, DuplicateDocumentInput, FavoriteDocumentInput, RestoreDocumentInput, UpdateDocumentInput, CreateDocumentInput } from './dto/document.dto';
 
 @Injectable()
 export class DocumentService {
@@ -17,11 +17,23 @@ export class DocumentService {
   constructor(
     @InjectRepository(DocumentEntity)
     private readonly documentRepository: Repository<DocumentEntity>,
+    @InjectRepository(FavoriteEntity)
+    private readonly favoriteRepository: Repository<FavoriteEntity>,
   ) {}
 
 
   private toGraphQLDocument(entity: DocumentEntity): Document {
-    return toGraphQLDocumentUtils(entity);
+    return {
+      id: entity.id,
+      slug: entity.slug,
+      title: entity.title,
+      authorId: entity.authorId,
+      workspaceId: entity.workspaceId,
+      parentId: entity.parentId ?? null,
+      runUnexecutedBlocks: entity.runUnexecutedBlocks,
+      runSQLSelection: entity.runSQLSelection,
+      shareLinksWithoutSidebar: entity.shareLinksWithoutSidebar,
+    }
   }
 
   async getDocument(documentId: string, workspaceId: string): Promise<Document> {
@@ -113,6 +125,7 @@ export class DocumentService {
   }
 
   async duplicateDocument(
+      userId: string,
      input: DuplicateDocumentInput
   ): Promise<Document> {
     const {documentId, workspaceId} = input;
@@ -127,6 +140,7 @@ export class DocumentService {
     const duplicate = this.documentRepository.create({
       ...original,
       id: undefined,
+      authorId: userId,
       title: `${original.title} Fork`,
     });
 
@@ -135,13 +149,83 @@ export class DocumentService {
     return this.toGraphQLDocument(duplicate);
   }
 
-  async addFavoriteDocument(
-    input: FavoriteDocumentInput
- ): Promise<Document> {
-  const {documentId, workspaceId} = input;
-  const document = await this.documentRepository.findOne({
-    where: { id: documentId, workspaceId, deletedAt: null },
-  });
+  async createDocument(
+    workspaceId: string,
+    userId: string,
+    input: CreateDocumentInput
+  ): Promise<Document> {
+    const document = this.documentRepository.create({
+      ...input,
+      workspaceId,
+      authorId: userId,
+    });
+    try {
+      await this.documentRepository.save(document);
+    } catch (err) {
+      throw new ValidationException(ErrorCode.E005);
+    }
+    return this.toGraphQLDocument(document);
+  }
 
- }
+  async addFavoriteDocument(
+      userId: string,
+      input: FavoriteDocumentInput
+  ): Promise<Document> {
+    const {documentId, workspaceId} = input;
+    const document = await this.documentRepository.findOne({
+      where: { id: documentId, workspaceId, deletedAt: null },
+    });
+    if (!document) {
+      throw new ValidationException(ErrorCode.E003);
+    }
+
+    const favoriteDocument =  this.favoriteRepository.create({
+      userId,
+      documentId,
+    });
+
+    await this.favoriteRepository.save(favoriteDocument);
+    return this.toGraphQLDocument(document);
+  }
+
+  async removeFavoriteDocument(
+    userId: string,
+    input: FavoriteDocumentInput
+  ): Promise<Document> {
+    const { documentId, workspaceId } = input;
+
+    const document = await this.documentRepository.findOne({
+      where: { id: documentId, workspaceId, deletedAt: null },
+    });
+
+    if (!document) {
+      throw new ValidationException(ErrorCode.E003);
+    }
+    let favoriteDocument = await this.favoriteRepository.findOne({
+      where: {
+        userId,
+        documentId,
+      },
+    });
+
+    if (!favoriteDocument) {
+      throw new ValidationException(ErrorCode.E003);
+    }
+
+    await this.favoriteRepository.delete({
+      userId,
+      documentId,
+    });
+
+    return this.toGraphQLDocument(document);
+  }
+
+  async getChildren(
+    parentId: string
+  ): Promise<Document[]> {
+    const documents = await this.documentRepository.find({
+      where: { parentId, deletedAt: null },
+    });
+    return  documents.map(document => this.toGraphQLDocument(document));
+  }
 }
