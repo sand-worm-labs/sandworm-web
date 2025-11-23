@@ -73,7 +73,7 @@
     "@tiptap/starter-kit": "^3.7.2",
     "@types/react-paginate": "^7.1.4",
     "@uidotdev/usehooks": "^2.4.1",
-    "ai": "3.4.9",
+    "ai": "5.0.52",
     "axios": "^1.8.3",
     "bcrypt": "^5.1.1",
     "class-variance-authority": "^0.7.1",
