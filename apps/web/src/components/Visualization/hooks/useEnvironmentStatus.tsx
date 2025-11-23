@@ -17,14 +17,6 @@ export type EnvironmentStatus =
   | "Starting"
   | "Stopping";
 
-function getDefaultStateItem(): StateItem {
-  return {
-    loading: true,
-    error: null,
-    status: "Stopped",
-    startedAt: null,
-  };
-}
 export type StateItem = {
   loading: boolean;
   error: string | null;
@@ -50,6 +42,16 @@ const Context = createContext<ContextValue>([
 type Props = {
   children: React.ReactNode;
 };
+
+function getDefaultStateItem(): StateItem {
+  return {
+    loading: true,
+    error: null,
+    status: "Stopped",
+    startedAt: null,
+  };
+}
+
 export function EnvironmentStatusProvider(props: Props) {
   const socket = useWebsocket();
   const [state, setState] = useState<State>(Map());

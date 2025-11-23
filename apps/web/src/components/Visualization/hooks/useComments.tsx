@@ -63,7 +63,7 @@ export function useComments(documentId: string): UseComments {
 interface Props {
   children: React.ReactNode;
 }
-export function CommentsProvider(props: Props) {
+export function CommentsProvider({ children }: Props) {
   const [state, setState] = useState<State>(Map());
   const socket = useWebsocket();
   const session = useSession({ redirectToLogin: false });
@@ -198,5 +198,5 @@ export function CommentsProvider(props: Props) {
     [state, createComment, deleteComment]
   );
 
-  return <Context.Provider value={value}>{props.children}</Context.Provider>;
+  return <Context.Provider value={value}>{children}</Context.Provider>;
 }

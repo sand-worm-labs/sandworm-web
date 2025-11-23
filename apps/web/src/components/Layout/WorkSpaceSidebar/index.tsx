@@ -60,7 +60,7 @@ export const WorkspaceSidebar = () => {
             ))}
           </ul>
 
-          <hr className="border-t-[1px] border-[#E6E0F1] mt-4" />
+          <hr className="border-t-[1px] border-[#E6E0F1] dark:border-[#262A30] mt-4" />
 
           <ul className="space-y-1 mt-4">
             {toolsNav.map(item => (
