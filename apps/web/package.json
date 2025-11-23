@@ -111,7 +111,7 @@
     "lucide-react": "^0.476.0",
     "monaco-editor": "^0.52.2",
     "next": "catalog:react",
-    "next-auth": "5.0.0-beta.25",
+    "next-auth": "5.0.0-beta.30",
     "next-themes": "catalog:react",
     "papaparse": "^5.5.2",
     "pg": "^8.16.3",
