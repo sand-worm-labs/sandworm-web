@@ -15,5 +15,5 @@ setup(
     },
     author='Sandworm Labs',
     description='Filesystem API bridge for Jupyter Server',
-    python_requires='>=3.8',
+    python_requires='>=3.9',
 )
