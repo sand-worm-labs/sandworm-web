@@ -73,7 +73,7 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
     style: syntaxStyle,
     background: syntaxBg,
     borderColor,
-  } = getSyntaxConfig(theme);
+  } = getSyntaxConfig(theme ?? "twilight");
 
   return (
     <div className="shadow-sm rounded-xl p-4 md:px-8 px-5 flex flex-col justify-between">

@@ -164,7 +164,7 @@ export interface IconProps {
    ║                Api Section                 ║
    ╚════════════════════════════════════════════╝ */
 
-type Document = {
+export type Document = {
   id: string;
   title: string;
   icon: string;
