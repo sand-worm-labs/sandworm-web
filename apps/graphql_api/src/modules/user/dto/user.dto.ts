@@ -1,4 +1,4 @@
-import { InputType } from '@nestjs/graphql';
+import { Field, InputType } from '@nestjs/graphql';
 import {
   EmailField,
   EmailFieldOptional,
@@ -6,6 +6,7 @@ import {
   StringField,
   StringFieldOptional,
   URLFieldOptional,
+  NumberFieldOptional,
 } from '@sandworm/graphql';
 import { lowerCaseTransformer } from '@sandworm/nest-common';
 import { Transform } from 'class-transformer';
@@ -37,4 +38,19 @@ export class UpdateUserInput {
 
   @URLFieldOptional()
   image?: string;
+}
+
+@InputType()
+export class GetAllUsersInput {
+  @NumberFieldOptional()
+  limit: number;
+
+  @NumberFieldOptional()
+  offset: number;
+  
+  @StringField({"defaultValue": "followersCount"})
+  sortBy?: string; 
+
+  @StringField({"defaultValue": 'DESC'})
+  sortOrder?: 'ASC' | 'DESC';
 }

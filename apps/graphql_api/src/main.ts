@@ -1,7 +1,6 @@
 import compression from '@fastify/compress';
 import helmet from '@fastify/helmet';
 import {
-  ConsoleLogger,
   HttpStatus,
   UnprocessableEntityException,
   ValidationError,
@@ -49,24 +48,22 @@ async function bootstrap() {
 
   // Configure the logger
   const asyncContext = app.get(AsyncContextProvider);
-  // const logger = new FastifyPinoLogger(
-  //   asyncContext,
-  //   fastifyAdapter.getInstance().log,
-  // );
+  const logger = new FastifyPinoLogger(
+    asyncContext,
+    fastifyAdapter.getInstance().log,
+  );
 
   // If you want to use the console logger, uncomment the following code
-
-  const logger = new ConsoleLogger({
-    ...(configService.getOrThrow('app.nodeEnv', { infer: true }) ===
-      Environment.LOCAL && {
-      colors: true,
-    }),
-    ...(configService.getOrThrow('app.nodeEnv', { infer: true }) !==
-      Environment.LOCAL && {
-      json: true,
-    }),
-  });
-
+  // const logger = new ConsoleLogger({
+  //   ...(configService.getOrThrow('app.nodeEnv', { infer: true }) ===
+  //     Environment.LOCAL && {
+  //     colors: true,
+  //   }),
+  //   ...(configService.getOrThrow('app.nodeEnv', { infer: true }) !==
+  //     Environment.LOCAL && {
+  //     json: true,
+  //   }),
+  // });
   app.useLogger(logger);
 
   fastifyAdapter.getInstance().addHook('onRequest', (request, reply, done) => {
@@ -103,13 +100,13 @@ async function bootstrap() {
   app.register(helmet, {
     contentSecurityPolicy:
       configService.getOrThrow('app.nodeEnv', { infer: true }) ===
-        Environment.PRODUCTION
+      Environment.PRODUCTION
         ? undefined
         : devContentSecurityPolicy,
   });
 
   // For high-traffic websites in production, it is strongly recommended to offload compression from the application server - typically in a reverse proxy (e.g., Nginx). In that case, you should not use compression middleware.
-  app.register(compression);
+  //app.register(compression);
 
   // Enable CORS
   const corsOrigin = configService.getOrThrow('app.corsOrigin', {

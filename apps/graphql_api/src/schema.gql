@@ -2,31 +2,16 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type Article {
-  author: Profile
-  body: String!
-  createdAt: DateTime
-  description: String!
-  favorited: Boolean
-  favoritesCount: Float
-  slug: String!
-  tagList: [String!]!
-  title: String!
-  updatedAt: DateTime
+type AuthPayload {
+  id: String!
+  token: String!
+  user: User!
 }
 
-input CreateArticleInput {
-  """Body of the article"""
-  body: String!
-
-  """Description of the article"""
-  description: String!
-
-  """Tag list of the article"""
-  tagList: [String!]
-
-  """Title of the article"""
-  title: String!
+input CreateDocumentInput {
+  icon: String
+  parentId: String
+  title: String
 }
 
 """User register request"""
@@ -41,6 +26,48 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+input DeleteDocumentInput {
+  documentId: String!
+  isPermanent: Boolean
+  workspaceId: String!
+}
+
+type Document {
+  authorId: ID!
+  children: [Document!]!
+  id: ID!
+  parent: Document
+  parentId: ID!
+  runSQLSelection: Boolean!
+  runUnexecutedBlocks: Boolean!
+  shareLinksWithoutSidebar: Boolean!
+  slug: String!
+  title: String!
+  workspaceId: ID!
+}
+
+input DuplicateDocumentInput {
+  documentId: String!
+  workspaceId: String!
+}
+
+input FavoriteDocumentInput {
+  documentId: String!
+  workspaceId: String!
+}
+
+input GetAllUsersInput {
+  limit: Float
+  offset: Float
+  sortBy: String! = "followersCount"
+  sortOrder: String! = "DESC"
+}
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
 """Login input"""
 input LoginInput {
   """Email address"""
@@ -51,14 +78,23 @@ input LoginInput {
 }
 
 type Mutation {
-  createArticle(input: CreateArticleInput!): Article!
+  """Mark a document as a favorite"""
+  addFavoriteDocument(input: FavoriteDocumentInput!): Document!
+
+  """Create a new document in a workspace"""
+  createDocument(input: CreateDocumentInput!, workspaceId: String!): Document!
 
   """Register new user"""
   createUser(input: CreateUserInput!): User!
-  deleteArticle(slug: String!): Boolean!
 
-  """Favorite an article"""
-  favoriteArticle(slug: String!): Article!
+  """Create a new workspace"""
+  createWorkspace(name: String!): Workspace!
+
+  """Soft delete or permanently delete a document"""
+  deleteDocument(input: DeleteDocumentInput!): Document!
+
+  """Create a fork/duplicate of a document"""
+  duplicateDocument(input: DuplicateDocumentInput!): Document!
 
   """Follow User"""
   followUser(
@@ -69,18 +105,26 @@ type Mutation {
   """Sign in"""
   login(input: LoginInput!): User!
 
-  """Unfavorite an article"""
-  unfavoriteArticle(slug: String!): Article!
+  """Unmark a document as a favorite"""
+  removeFavoriteDocument(input: FavoriteDocumentInput!): Document!
+
+  """Restore a previously deleted document"""
+  restoreDocument(input: RestoreDocumentInput!): Document!
 
   """Unfollow User"""
   unfollowUser(
     """Username of the profile"""
     username: String!
   ): Profile!
-  updateArticle(input: UpdateArticleInput!, slug: String!): Article!
+
+  """Update document metadata"""
+  updateDocument(documentId: String!, input: UpdateDocumentInput!, workspaceId: String!): Document!
 
   """Update current user"""
   updateUser(input: UpdateUserInput!): User!
+
+  """Update workspace info"""
+  updateWorkspace(name: String, workspaceId: String!): Workspace!
 }
 
 type Profile {
@@ -91,14 +135,29 @@ type Profile {
 }
 
 type Query {
-  """Get an article by slug"""
-  article(
-    """Slug of the article"""
-    slug: String!
-  ): Article!
-
   """Get current user (from token)"""
-  currentUser: User!
+  currentUser: AuthPayload!
+
+  """Get all users"""
+  getAllUsers(input: GetAllUsersInput!): [User!]!
+
+  """Get a single document by ID"""
+  getDocument(documentId: String!, workspaceId: String!): Document!
+
+  """Users who follow a given user"""
+  getUserFollowers(userId: String!): [User!]!
+
+  """Users that a given user is following"""
+  getUserFollowing(userId: String!): [User!]!
+
+  """Get User workspaces"""
+  getUserWorkspaces(limit: Int, offset: Int): [Workspace!]!
+
+  """Get workspace by ID"""
+  getWorkspace(workspaceId: String!): Workspace!
+
+  """Get all documents in a workspace"""
+  getWorkspaceDocuments(workspaceId: String!): [Document!]!
   hello: String!
 
   """Get Profile"""
@@ -109,17 +168,12 @@ type Query {
   tags: [String!]!
 }
 
-input UpdateArticleInput {
-  """Body of the article"""
-  body: String
+input RestoreDocumentInput {
+  documentId: String!
+  workspaceId: String!
+}
 
-  """Description of the article"""
-  description: String
-
-  """Tag list of the article"""
-  tagList: [String!]
-
-  """Title of the article"""
+input UpdateDocumentInput {
   title: String
 }
 
@@ -132,10 +186,47 @@ input UpdateUserInput {
 }
 
 type User {
-  bio: String
+  avater: String
   email: String
-  id: Float
-  image: String
-  token: String
+  firstName: String
+  followers: [User!]!
+  followersCount: Int!
+  following: [User!]!
+  followingCount: Int!
+  fullName: String
+  id: String!
+  isOnboarded: Boolean!
+  lastName: String
+  settings: UserSetting
   username: String
+}
+
+type UserSetting {
+  id: ID!
+  socialLinks: JSON
+  statusText: String!
+  statusUpdatedAt: DateTime!
+  theme: String!
+  userId: ID!
+  wallets: [JSON!]!
+}
+
+type Workspace {
+  documents: [Document!]!
+  id: ID!
+  name: String!
+  owner: User!
+  ownerId: ID!
+  plan: WorkspacePlan!
+  source: String
+  useCases: [String!]!
+  useContext: String
+}
+
+"""Price plan of the workspace"""
+enum WorkspacePlan {
+  ENTERPRISE
+  FREE
+  PRO
+  TRIAL
 }

@@ -1,0 +1,166 @@
+# Production values for Sandworm
+# Usage: helm install sandworm ./chart -f values-production.yaml
+
+web:
+  replicaCount: 3
+
+  image:
+    repository: docker.io/sandworm
+    name: sandworm-web
+    tag: v1.0.0
+    pullPolicy: IfNotPresent
+
+  env:
+    apiUrl: https://api.sandwormlabs.com
+    publicUrl: https://sandwormlabs.com
+
+  resources:
+    requests:
+      cpu: 1000m
+      memory: 1Gi
+    limits:
+      cpu: 2000m
+      memory: 2Gi
+
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                    - web
+            topologyKey: kubernetes.io/hostname
+
+graphqlApi:
+  replicaCount: 3
+
+  image:
+    repository: docker.io/yourorg
+    name: sandworm-graphql-api
+    tag: v1.0.0
+    pullPolicy: IfNotPresent
+
+  env:
+    nodeEnv: production
+    appUrl: https://api.sandworm.example.com
+    appDebug: false
+    logLevel: warn
+    corsOrigin: "https://sandworm.example.com"
+
+    # Use external database in production
+    databaseHost: your-rds-endpoint.amazonaws.com
+    databasePort: 5432
+    databaseName: sandworm_prod
+    databaseSslEnabled: true
+
+  secrets:
+    # Use strong passwords in production
+    databaseUsername: sandworm_user
+    databasePassword: "USE_STRONG_PASSWORD_HERE"
+
+    # Generate with: openssl rand -hex 32
+    jwtSecret: "GENERATE_RANDOM_SECRET"
+    authJwtSecret: "GENERATE_RANDOM_SECRET"
+    datasourcesEncryptionKey: "GENERATE_RANDOM_SECRET"
+    workspaceSecretsEncryptionKey: "GENERATE_RANDOM_SECRET"
+
+  resources:
+    requests:
+      cpu: 2000m
+      memory: 4Gi
+    limits:
+      cpu: 4000m
+      memory: 8Gi
+
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                    - graphql-api
+            topologyKey: kubernetes.io/hostname
+
+# Disable local PostgreSQL in production
+postgresql:
+  enabled: false
+
+# Use managed Redis in production or enable persistence
+redis:
+  enabled: true
+  persistence:
+    enabled: true
+    size: 20Gi
+    storageClass: gp3
+
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+
+# Enable ingress
+ingress:
+  enabled: true
+  className: nginx
+
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/websocket-services: sandworm-graphql-api
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection "Upgrade";
+
+  hosts:
+    - host: sandworm.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+
+  tls:
+    - secretName: sandworm-tls
+      hosts:
+        - sandworm.example.com
+
+# Enable autoscaling
+autoscaling:
+  enabled: true
+
+  web:
+    minReplicas: 3
+    maxReplicas: 20
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+
+  graphqlApi:
+    minReplicas: 3
+    maxReplicas: 20
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+
+# Enable pod disruption budget
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 2
+
+# Enable monitoring
+serviceMonitor:
+  enabled: true
+  interval: 30s
+  scrapeTimeout: 10s
