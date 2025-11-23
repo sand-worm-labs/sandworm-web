@@ -292,7 +292,7 @@ const GeneralTab = ({
 
                 <PortalTooltip
                   content={
-                    <div className="font-sans bg-hunter-950 text-gray-400 text-center text-xs p-2 rounded-md w-64 -translate-x-1/2">
+                    <div className="font-primary bg-hunter-950 text-gray-400 text-center text-xs p-2 rounded-md w-64 -translate-x-1/2">
                       If provided, this column will be used to sort the data
                       before picking the number.
                     </div>

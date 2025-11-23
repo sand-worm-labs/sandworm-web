@@ -80,7 +80,7 @@ function VisualizationViewV2(props: Props) {
     >
       {props.result ? (
         <div className="relative w-full h-full">
-          <sandwormResult
+          <SandwormResult
             title={props.title}
             result={props.result}
             input={props.input}
@@ -163,7 +163,7 @@ function VisualizationViewV2(props: Props) {
       {props.hasControls && props.isEditable && (
         <button
           className={clsx(
-            "absolute bottom-0 bg-white rounded-tr-md border-t border-r border-gray-200 p-2 hover:bg-gray-50 z-10",
+            "absolute bottom-0 bg-white rounded-tr-md border-t border-r border-gray-200 p-2 hover:bg-gray-50 z-10 dark:bg-[#181C21] dark:border-[#262A30]",
             props.isHidden ? "left-0 rounded-bl-md" : "-left-[1px]"
           )}
           onClick={props.onToggleHidden}
@@ -179,7 +179,7 @@ function VisualizationViewV2(props: Props) {
         props.input.chartType !== "number" &&
         props.input.chartType !== "trend" && (
           <button
-            className="absolute bottom-0 bg-white rounded-tl-md rounded-br-md border-t border-l border-gray-200 p-2 hover:bg-gray-50 z-10 right-0 text-xs text-gray-400"
+            className="absolute bottom-0 bg-white rounded-tl-md rounded-br-2xl border-t border-l border-gray-200 p-2 hover:bg-gray-50 z-10 right-0 text-xs text-gray-400 dark:bg-[#181C21] dark:border-[#262A30]"
             onClick={props.onExportToPNG}
           >
             PNG
@@ -189,7 +189,7 @@ function VisualizationViewV2(props: Props) {
   );
 }
 
-function sandwormResult(props: {
+function SandwormResult(props: {
   title: string;
   input: VisualizationV2BlockInput;
   hasControls: boolean;

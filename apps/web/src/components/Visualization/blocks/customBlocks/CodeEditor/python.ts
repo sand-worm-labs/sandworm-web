@@ -14,6 +14,7 @@ import type {
   PythonSuggestion,
   PythonSuggestionsResult,
 } from "@sandworm/types";
+
 import { useWebsocket } from "@/components/Visualization/hooks/useWebSocket";
 
 function getType(s: PythonSuggestion): string {

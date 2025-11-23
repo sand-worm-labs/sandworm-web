@@ -81,11 +81,11 @@ export default function ComboboxV2<T>(props: Props<T>) {
         props.label
       )}
       <div className="relative mt-1 mb-0.5" ref={inputContainerRef}>
-        <div className="flex items-center space-x-1.5 rounded-md ring-1 ring-inset ring-gray-200 focus-within:ring-1 focus-within:ring-inset focus-within:ring-gray-300 bg-white group pl-2.5 pr-8 text-gray-800">
+        <div className="flex items-center space-x-1.5 rounded-md ring-1 ring-inset ring-gray-200 focus-within:ring-1 focus-within:ring-inset focus-within:ring-gray-300 bg-white group pl-2.5 pr-8 text-gray-800 dark:bg-black dark:text-white">
           {props.value && props.icon(props.value)}
           <input
             className={clsx(
-              "w-full truncate border-0 text-xs pl-0.5 focus:ring-0 bg-transparent font-mono placeholder:text-gray-400",
+              "w-full truncate border-0 text-xs pl-0.5 focus:ring-0 bg-transparent font-mono placeholder:text-gray-400 ",
               props.value === null && "text-gray-400"
             )}
             onChange={event => setQuery(event.target.value)}
@@ -123,6 +123,7 @@ export default function ComboboxV2<T>(props: Props<T>) {
 
         {ReactDOM.createPortal(
           <Transition
+            as="div"
             show={open}
             enter="transition duration-100 ease-out"
             enterFrom="transform scale-95 opacity-0"

@@ -145,8 +145,8 @@ export const HomeTab = () => {
 
     if (recentItems.length === 0) {
       return (
-        <Card className="p-4 text-center text-muted-foreground rounded-none min-h-32 flex items-center justify-center flex-col bg-transparent border-borderLight">
-          No recent queries found
+        <Card className="p-4 text-center rounded-none min-h-32 flex items-center justify-center flex-col bg-transparent border-none shadow-none text-[#868E96]">
+          No Recent Queries Found
         </Card>
       );
     }
@@ -213,14 +213,14 @@ export const HomeTab = () => {
           >
             <button
               type="button"
-              className="h-full p-4 flex flex-col items-start space-y-2 hover:bg-accent hover:text-accent-foreground group w-full overflow-hidden border-borderLight border "
+              className="h-full p-4 py-8 flex flex-col items-start space-y-2 hover:bg-accent hover:text-accent-foreground group w-full overflow-hidden border-[#CED4DA] border rounded-2xl "
               onClick={() => handleNewAction(action.action)}
             >
-              <div className="flex items-center space-x-2 text-white break-words">
+              <div className="flex items-center space-x-2 dark:text-white text-black font-primary break-words">
                 <div className="p-2 rounded-full bg-primary/10 group-hover:bg-primary/20 ">
                   {action.icon}
                 </div>
-                <p className="font-semibold text-base">{action.title}</p>
+                <p className="font-medium text-base">{action.title}</p>
               </div>
               <p className="text-sm text-muted-foreground text-left ">
                 {action.description}
@@ -230,17 +230,17 @@ export const HomeTab = () => {
         ))}
       </motion.div>
 
-      <Tabs defaultValue="recent" className=" pt-3">
+      <Tabs defaultValue="recent" className=" pt-5 border-t border-[#E9ECEF]">
         <TabsList className="w-full justify-start px-0 pb-8">
           <TabsTrigger
             value="recent"
-            className="flex items-start gap-2 data-[state=active]:border-primary data-[state=active]:border-b"
+            className="flex items-start gap-2 data-[state=active]:text-[#A6554D] data-[state=active]:border-b border-none"
           >
             Recent Queries
           </TabsTrigger>
           <TabsTrigger
             value="resources"
-            className="data-[state=active]:border-primary data-[state=active]:border-b"
+            className="data-[state=active]:text-[#A6554D] data-[state=active]:border-b border-none"
           >
             Resources
           </TabsTrigger>

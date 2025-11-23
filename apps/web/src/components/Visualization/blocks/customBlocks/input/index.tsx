@@ -1,8 +1,8 @@
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import type * as Y from "yjs";
 import {
-  YBlock,
-  ExecutionQueue,
+  type YBlock,
+  type ExecutionQueue,
   type InputBlock,
   getInputAttributes,
   updateInputLabel,
@@ -287,7 +287,7 @@ function InputBlock(props: Props) {
                         aria-hidden="true"
                       />
                     </button>
-                    <div className="font-sans pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 w-72">
+                    <div className="font-primary pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 w-72">
                       <span className="inline-flex gap-x-1 items-center text-gray-400 text-center">
                         {errorMessage(attrs.variable.error, attrs.inputType)}
                       </span>
@@ -340,7 +340,7 @@ function InputBlock(props: Props) {
                       aria-hidden="true"
                     />
                   </button>
-                  <div className="font-sans pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 w-72">
+                  <div className="font-primary pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 w-72">
                     <span className="inline-flex gap-x-1 items-center text-gray-400">
                       <span>
                         {errorMessage(attrs.value.error, attrs.inputType)}

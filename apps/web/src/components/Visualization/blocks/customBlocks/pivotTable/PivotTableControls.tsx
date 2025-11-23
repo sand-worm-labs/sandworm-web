@@ -78,8 +78,10 @@ function PivotTableControls(props: Props) {
   return (
     <div
       className={clsx(
-        "h-full relative shadow-[2px_0_5px_-4px_#888] overflow-y-auto z-10",
-        props.isHidden ? "w-0" : "w-1/3 border-r border-gray-200"
+        "h-full relative overflow-y-auto z-10",
+        props.isHidden
+          ? "w-0"
+          : "w-1/3 border-r border-gray-200 dark:border-[#262A30]"
       )}
     >
       <div
