@@ -94,8 +94,9 @@ export class DocumentResolver {
   })
   async duplicateDocument(
     @Args('input') input: DuplicateDocumentInput,
+    @CurrentUser('id') userId: string,
   ): Promise<Document> {
-    return this.documentService.duplicateDocument(input);
+    return this.documentService.duplicateDocument(userId,input);
   }
 
   @Mutation(() => Document, {
@@ -104,8 +105,9 @@ export class DocumentResolver {
   })
   async addFavoriteDocument(
     @Args('input') input: FavoriteDocumentInput,
+    @CurrentUser('id') userId: string,
   ): Promise<Document> {
-    return this.documentService.addFavorite(input);
+    return this.documentService.addFavoriteDocument(userId,input);
   }
   
   @Mutation(() => Document, {
@@ -114,8 +116,9 @@ export class DocumentResolver {
   })
   async removeFavoriteDocument(
     @Args('input') input: FavoriteDocumentInput,
+    @CurrentUser('id') userId: string,
   ): Promise<Document> {
-    return this.documentService.removeFavorite(input);
+    return this.documentService.removeFavoriteDocument(userId,input);
   }
   
 
