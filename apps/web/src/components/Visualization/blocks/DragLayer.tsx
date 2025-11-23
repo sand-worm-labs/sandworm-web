@@ -2,9 +2,9 @@ import type { CSSProperties } from "react";
 import { useEffect } from "react";
 import type { XYCoord } from "react-dnd";
 import { useDragLayer } from "react-dnd";
-import { ElementType } from "@sandworm/types";
 
 import IconSelector from "./IconSelector";
+import { ElementType } from "@sandworm/types";
 
 function getItemStyles(
   initialCursorOffset: XYCoord | null,
