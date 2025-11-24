@@ -8,6 +8,20 @@ type AuthPayload {
   user: User!
 }
 
+type Comment {
+  authorId: ID!
+  body: String!
+  createdAt: DateTime!
+  documentId: ID!
+  id: ID!
+  updatedAt: DateTime!
+}
+
+input CreateCommentInput {
+  body: String!
+  id: String!
+}
+
 input CreateDocumentInput {
   icon: String
   parentId: String
@@ -25,6 +39,12 @@ input CreateUserInput {
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
 scalar DateTime
+
+input DeleteCommentInput {
+  commentId: String!
+  documentId: String!
+  workspaceId: String!
+}
 
 input DeleteDocumentInput {
   documentId: String!
@@ -49,6 +69,36 @@ type Document {
 input DuplicateDocumentInput {
   documentId: String!
   workspaceId: String!
+}
+
+type Environment {
+  id: ID!
+  lastActivityAt: DateTime!
+  resourceVersion: Float!
+  status: EnvironmentStatus!
+  workspaceId: ID!
+}
+
+"""The status of the Jupyter environment"""
+enum EnvironmentStatus {
+  FAILING
+  RUNNING
+  STARTING
+  STOPPED
+  STOPPING
+}
+
+type EnvironmentVariable {
+  id: ID!
+  name: String!
+  updatedAt: DateTime!
+  value: String!
+  workspaceId: ID!
+}
+
+input EnvironmentVariableInput {
+  name: String!
+  value: String!
 }
 
 input FavoriteDocumentInput {
@@ -81,6 +131,9 @@ type Mutation {
   """Mark a document as a favorite"""
   addFavoriteDocument(input: FavoriteDocumentInput!): Document!
 
+  """Create a new comment on a document"""
+  createComment(documentId: String!, input: CreateCommentInput!): Comment!
+
   """Create a new document in a workspace"""
   createDocument(input: CreateDocumentInput!, workspaceId: String!): Document!
 
@@ -90,8 +143,14 @@ type Mutation {
   """Create a new workspace"""
   createWorkspace(name: String!): Workspace!
 
+  """Delete a comment (only by comment author)"""
+  deleteComment(input: DeleteCommentInput!): Boolean!
+
   """Soft delete or permanently delete a document"""
   deleteDocument(input: DeleteDocumentInput!): Document!
+
+  """Delete a single environment variable"""
+  deleteEnvironmentVariable(variableId: String!, workspaceId: String!): Boolean!
 
   """Create a fork/duplicate of a document"""
   duplicateDocument(input: DuplicateDocumentInput!): Document!
@@ -108,8 +167,14 @@ type Mutation {
   """Unmark a document as a favorite"""
   removeFavoriteDocument(input: FavoriteDocumentInput!): Document!
 
+  """Restart the Jupyter environment"""
+  restartEnvironment(input: RestartEnvironmentInput!): Environment!
+
   """Restore a previously deleted document"""
   restoreDocument(input: RestoreDocumentInput!): Document!
+
+  """Add or remove environment variables"""
+  setEnvironmentVariables(input: SetEnvironmentVariablesInput!, workspaceId: String!): [EnvironmentVariable!]!
 
   """Unfollow User"""
   unfollowUser(
@@ -135,8 +200,23 @@ type Profile {
 }
 
 type Query {
+  """Get a single comment by ID"""
+  comment(commentId: String!): Comment!
+
+  """Get all comments for a document"""
+  comments(documentId: String!): [Comment!]!
+
   """Get current user (from token)"""
   currentUser: AuthPayload!
+
+  """Get environment details for a workspace"""
+  environment(workspaceId: String!): Environment!
+
+  """Get current environment status"""
+  environmentStatus(workspaceId: String!): EnvironmentStatus!
+
+  """Get all environment variables (values are masked)"""
+  environmentVariables(workspaceId: String!): [EnvironmentVariable!]!
 
   """Get all users"""
   getAllUsers(input: GetAllUsersInput!): [User!]!
@@ -168,9 +248,18 @@ type Query {
   tags: [String!]!
 }
 
+input RestartEnvironmentInput {
+  workspaceId: String!
+}
+
 input RestoreDocumentInput {
   documentId: String!
   workspaceId: String!
+}
+
+input SetEnvironmentVariablesInput {
+  add: [EnvironmentVariableInput!]!
+  remove: [String!]!
 }
 
 input UpdateDocumentInput {

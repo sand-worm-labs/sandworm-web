@@ -5,8 +5,10 @@ import { TagModule } from './tag/tag.module';
 import { UserModule } from './user/user.module';
 import { WorkspaceModule } from './workspace/workspace.module';
 import { DocumentModule } from './document/document.module';
+import { CommentModule } from './comment/comment.module';
+import { EnvironmentModule } from './environment/environment.module';
 
 @Module({
-  imports: [UserModule, AuthModule, ProfileModule, TagModule, WorkspaceModule, DocumentModule],
+  imports: [UserModule, AuthModule, ProfileModule, TagModule, WorkspaceModule, DocumentModule, CommentModule, EnvironmentModule],
 })
 export class ApiModule {}

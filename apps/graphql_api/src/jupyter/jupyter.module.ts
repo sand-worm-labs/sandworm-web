@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common'
-// import { JupyterService } from './jupyter.service'
+import { JupyterService } from './jupyter.service'
 // import { SocketServerAdapter } from './jupyter.gateway'
 
 @Module({
-  providers: [],
-  exports: [],
+  providers: [JupyterService],
+  exports: [JupyterService],
 })
 export class JupyterModule {}
