@@ -10,6 +10,8 @@ import { JupyterService } from '../../jupyter/jupyter.service';
 import { Environment } from './model/environment.model';
 import { EnvironmentVariable } from './model/environment_variable.model';
 import { SetEnvironmentVariablesInput } from './dto/environment.dto';
+import { ValidationException } from '@sandworm/graphql';
+import { ErrorCode } from '@/constants/error-code.constant';
 
 @Injectable()
 export class EnvironmentService {
@@ -73,19 +75,18 @@ export class EnvironmentService {
 
     await this.jupyterService.restart(workspaceId);
 
-    const entity = await this.environmentRepository.findOne({
+    const environment = await this.environmentRepository.findOne({
       where: { workspaceId },
     });
 
-    if (!entity) {
-      throw new NotFoundException('Environment not found');
+    if (!environment) {
+      throw new ValidationException(ErrorCode.E401);
     }
 
-    entity.status = EnvironmentStatus.RUNNING;
-    entity.startedAt = new Date();
-    await this.environmentRepository.save(entity);
-
-    return this.toGraphQLEnvironment(entity);
+    environment.status = EnvironmentStatus.RUNNING;
+    environment.startedAt = new Date();
+    await this.environmentRepository.save(environment);
+    return this.toGraphQLEnvironment(environment);
   }
 
   async getEnvironmentVariables(
