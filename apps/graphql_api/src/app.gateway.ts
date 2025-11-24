@@ -19,7 +19,7 @@ import {
   
     afterInit(server: Server) {
       this.socketIOAdapter.setServer(server)
-      this.jupyterService.setSocketAdapter(this.socketIOAdapter)
+      //this.jupyterService.setSocketAdapter(this.socketIOAdapter)
       
       this.jupyterService.start()
         .catch(err => console.error('Failed to start Jupyter service', err))
