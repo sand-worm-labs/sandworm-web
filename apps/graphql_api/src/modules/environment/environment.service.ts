@@ -1,16 +1,14 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import {
   EnvironmentEntity,
+  EnvironmentStatus,
   EnvironmentVariableEntity,
 } from '@sandworm/postgresql-typeorm';
 import { JupyterService } from '../../jupyter/jupyter.service';
-import {
-  Environment,
-  EnvironmentVariable,
-  EnvironmentStatus,
-} from './model/environment.model';
+import { Environment } from './model/environment.model';
+import { EnvironmentVariable } from './model/environment_variable.model';
 import { SetEnvironmentVariablesInput } from './dto/environment.dto';
 
 @Injectable()
@@ -49,7 +47,6 @@ export class EnvironmentService {
     });
 
     if (!entity) {
-      // Create environment if it doesn't exist
       entity = this.environmentRepository.create({
         workspaceId,
         status: EnvironmentStatus.STOPPED,
@@ -69,7 +66,6 @@ export class EnvironmentService {
   async restartEnvironment(workspaceId: string): Promise<Environment> {
     this.logger.log(`Restarting environment for workspace ${workspaceId}`);
 
-    // Update status to stopping
     await this.environmentRepository.update(
       { workspaceId },
       { status: EnvironmentStatus.STOPPING },
@@ -111,15 +107,20 @@ export class EnvironmentService {
       `Setting environment variables for workspace ${workspaceId}`,
     );
 
-  
+    const removeNames = input.remove.length > 0 
+      ? await this.envVarRepository.find({
+          where: { id: In(input.remove), workspaceId },
+          select: ['name'],
+        })
+      : [];
+
     if (input.remove.length > 0) {
       await this.envVarRepository.delete({
-        id: { $in: input.remove } as any,
+        id: In(input.remove),
         workspaceId,
       });
     }
 
-   
     if (input.add.length > 0) {
       const newVars = input.add.map(v =>
         this.envVarRepository.create({
@@ -131,17 +132,11 @@ export class EnvironmentService {
       await this.envVarRepository.save(newVars);
     }
 
-    const removeNames = await this.envVarRepository.find({
-      where: { id: { $in: input.remove } as any },
-      select: ['name'],
-    });
-
     await this.jupyterService.setEnvironmentVariables(workspaceId, {
       add: input.add,
       remove: removeNames.map(v => v.name),
     });
 
-    // Return updated list
     return this.getEnvironmentVariables(workspaceId);
   }
 
