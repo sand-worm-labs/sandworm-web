@@ -9,7 +9,7 @@ export * from './user-setting.entity';
 export * from './workspace.entity';
 export * from './environment.entity';
 export * from './environment_variable.entity';
-export * from './onboarding_tutorial.entity';
+export * from './tutorial.entity';
 export * from './chat.entity';
 export * from './vote.entity';
 export * from './enums';
