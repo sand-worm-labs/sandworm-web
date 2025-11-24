@@ -19,7 +19,7 @@ import { DocumentEntity } from "./document.entity";
 import { ChatEntity } from "./chat.entity";
 import { VoteEntity } from "./vote.entity";
 import { WorkspaceEntity } from "./workspace.entity";
-import { OnboardingTutorialEntity } from "./onboarding_tutorial.entity";
+import { OnboardingTutorialEntity } from "./tutorial.entity";
 import { YjsDocumentEntity } from "./yjs-document.entity";
 import { YjsAppDocumentEntity } from "./yjs-app-document.entity";
 import { FavoriteEntity } from "./favorite.entity";
