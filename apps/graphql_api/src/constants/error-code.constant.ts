@@ -4,7 +4,7 @@ export enum ErrorCode {
   V001 = 'app.common.validation.is_empty',
   V002 = 'app.common.validation.is_invalid',
 
-  // Generic Errors
+  // Generic User Errors
   E001 = 'app.user.username_or_email_exists',
   E002 = 'app.user.not_found',
 
@@ -29,4 +29,13 @@ export enum ErrorCode {
   E303 = 'app.comment.not_authorized_to_update',
   E304 = 'app.comment.invalid_document',
   E305 = 'app.comment.user_not_found',
+
+  // Environment Errors
+  E401 = 'app.environment.not_found',
+  E402 = 'app.environment.create_failed',
+  E403 = 'app.environment.restart_failed',
+  E404 = 'app.environment.invalid_variable',
+  E405 = 'app.environment.variable_not_found',
+  E406 = 'app.environment.variable_sync_failed',
+  E407 = 'app.environment.variable_save_failed',
 }
