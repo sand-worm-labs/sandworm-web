@@ -11,11 +11,11 @@ import type { RefObject } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type * as Y from "yjs";
 import {
-  YBlockGroup,
-  YBlock,
-  ExecutionQueue,
-  AITasks,
-  AddBlockGroupBlock,
+  type YBlockGroup,
+  type YBlock,
+  type ExecutionQueue,
+  type AITasks,
+  type AddBlockGroupBlock,
   type SQLBlock,
   setTitle,
   toggleSQLEditWithAIPromptOpen,
@@ -802,7 +802,7 @@ function SQLBlock(props: Props) {
             className={clsx(
               "rounded-t-2xl dark:bg-black ",
               props.hasMultipleTabs ? "rounded-tl-none" : "",
-              isCodeHidden && (isResultHidden || !result) ? "rounded-b-md" : ""
+              isCodeHidden && (isResultHidden || !result) ? "rounded-b-2xl" : ""
             )}
             ref={d => {
               props.dragPreview?.(d);
@@ -810,7 +810,7 @@ function SQLBlock(props: Props) {
           >
             <div
               className={clsx(
-                "flex items-center justify-between px-3 pr-0 gap-x-4 font-primary h-12 rounded-t-md",
+                "flex items-center justify-between px-3 pr-0 gap-x-4 font-primary h-12 rounded-t-2xl",
                 !isCodeHidden &&
                   "divide-x divide-gray-200 dark:divide-[#262A30]",
                 props.hasMultipleTabs ? "rounded-tl-none" : "",
@@ -837,7 +837,7 @@ function SQLBlock(props: Props) {
                 <input
                   type="text"
                   className={clsx(
-                    "text-lg font-primary font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-md border-0 text-gray-800 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-gray-400 py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white"
+                    "text-lg font-primary font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-2xl border-0 text-gray-800 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-gray-400 py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white"
                   )}
                   placeholder={
                     props.isEditable ? "SQL (click to add a title)" : "SQL"
