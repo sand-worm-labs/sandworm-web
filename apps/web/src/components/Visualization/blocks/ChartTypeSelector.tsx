@@ -102,7 +102,7 @@ export default function ChartTypeSelector(props: Props) {
       disabled={!props.isEditable}
     >
       {({ open }) => (
-        <div className="relative bg-black">
+        <div className="relative bg-white dark:bg-black">
           {!props.compact && (
             <div className="block text-xs font-medium leading-6 text-gray-900 pb-1">
               {props.label}
@@ -113,7 +113,7 @@ export default function ChartTypeSelector(props: Props) {
             ref={buttonRef}
             onClick={onClickButton}
           >
-            <div className="border border-gray-200 rounded-md w-full px-3 flex items-center justify-between gap-x-2 w-full min-h-8">
+            <div className="border border-gray-200 rounded-md  px-3 flex items-center justify-between gap-x-2 w-full min-h-8">
               <div className="flex items-center justify-left gap-x-2 text-left w-full h-6">
                 <div className="h-4 w-6 rounded-sm grayscale">
                   <img src={`/images/charts/${selected.icon}`} alt="" />

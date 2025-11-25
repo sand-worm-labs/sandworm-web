@@ -60,7 +60,7 @@ function AxisModifierSelector(props: Props) {
           </Listbox.Label>
           <div className="relative">
             <Listbox.Button
-              className="w-full cursor-pointer text-gray-500 text-xs leading-6 flex items-center justify-end gap-x-1"
+              className="w-full cursor-pointer text-gray-500 text-xs leading-6 flex items-center justify-end gap-x-1 "
               ref={buttonRef}
               onClick={onClickButton}
             >

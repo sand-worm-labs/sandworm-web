@@ -88,6 +88,7 @@ module.exports = {
     "no-use-before-define": "error",
     "react/jsx-filename-extension": [1, { extensions: [".ts", ".tsx"] }],
     "react/jsx-props-no-spreading": ["off", { custom: "ignore" }],
+    "react/destructuring-assignment": "off",
     "react/no-unescaped-entities": "off",
     "react/prop-types": "off",
     "react/react-in-jsx-scope": "off",

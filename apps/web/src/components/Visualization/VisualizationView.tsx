@@ -94,7 +94,10 @@ function VisualizationViewV2(props: Props) {
           {!props.tooManyDataPointsHidden && props.hasControls && (
             <div className="absolute top-0 left-0 right-0 bg-yellow-50 p-2">
               <div className="flex items-center justify-center gap-x-2">
-                <ExclamationTriangleIcon className="h-4 w-4 text-yellow-500" />
+                <ExclamationTriangleIcon
+                  strokeWidth={1.2}
+                  className="h-4 w-4 text-yellow-500"
+                />
                 <span className="text-xs leading-5 text-yellow-700">
                   Too many data points. Consider filtering or aggregating the
                   data.{" "}
@@ -117,7 +120,10 @@ function VisualizationViewV2(props: Props) {
         <div className="flex flex-col h-full w-full space-y-6 items-center justify-center bg-ceramic-50/30">
           {props.error === "dataframe-not-found" && props.dataframe ? (
             <div className="flex flex-col items-center justify-center gap-y-2">
-              <ExclamationTriangleIcon className="h-12 w-12 text-gray-300" />
+              <ExclamationTriangleIcon
+                strokeWidth={1.2}
+                className="h-12 w-12 text-gray-300"
+              />
               <div className="flex flex-col items-center text-sm text-gray-300 gap-y-2">
                 <div>
                   <span className="font-mono">{props.dataframe.name}</span> not
@@ -132,25 +138,35 @@ function VisualizationViewV2(props: Props) {
             </div>
           ) : props.error === "unknown" ? (
             <div className="flex flex-col items-center justify-center space-y-2">
-              <ExclamationTriangleIcon className="h-12 w-12 text-gray-300" />
-              <span className="text-lg text-gray-300">
+              <ExclamationTriangleIcon
+                strokeWidth={1.2}
+                className="h-12 w-12 text-[#6C757D]"
+              />
+              <span className="text-lg text-[#6C757D]">
                 Something went wrong
               </span>
             </div>
           ) : props.error === "invalid-params" ? (
             <div className="flex flex-col items-center justify-center space-y-2">
-              <ExclamationTriangleIcon className="h-12 w-12 text-gray-300" />
-              <span className="text-lg text-gray-300">
+              <ExclamationTriangleIcon
+                strokeWidth={1.2}
+                className="h-12 w-12 text-[#6C757D]"
+              />
+              <span className="text-lg text-[#6C757D]">
                 Missing or invalid parameters
               </span>
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center space-y-2">
-              <CubeTransparentIcon className="h-12 w-12 text-gray-300" />
-              <span className="text-lg text-gray-300">No data</span>
+              <CubeTransparentIcon
+                strokeWidth={1.2}
+                className="h-12 w-12 text-[#6C757D]"
+              />
+              <span className="text-lg text-[#6C757D]">No data</span>
               {!props.dataframe && (
                 <button
-                  className="text-xs text-gray-300 hover:underline"
+                  type="button"
+                  className="text-xs text-[#6C757D] hover:underline"
                   onClick={props.onNewSQL}
                 >
                   Add a SQL block to fetch data to visualize.
@@ -162,6 +178,7 @@ function VisualizationViewV2(props: Props) {
       )}
       {props.hasControls && props.isEditable && (
         <button
+          type="button"
           className={clsx(
             "absolute bottom-0 bg-white rounded-tr-md border-t border-r border-gray-200 p-2 hover:bg-gray-50 z-10 dark:bg-[#181C21] dark:border-[#262A30]",
             props.isHidden ? "left-0 rounded-bl-md" : "-left-[1px]"
@@ -179,6 +196,7 @@ function VisualizationViewV2(props: Props) {
         props.input.chartType !== "number" &&
         props.input.chartType !== "trend" && (
           <button
+            type="button"
             className="absolute bottom-0 bg-white rounded-tl-md rounded-br-2xl border-t border-l border-gray-200 p-2 hover:bg-gray-50 z-10 right-0 text-xs text-gray-400 dark:bg-[#181C21] dark:border-[#262A30]"
             onClick={props.onExportToPNG}
           >

@@ -774,21 +774,21 @@ function SQLBlock(props: Props) {
     >
       <div
         className={clsx(
-          "rounded-md border",
+          "rounded-2xl border",
           props.isBlockHiddenInPublished && "border-dashed",
-          props.hasMultipleTabs ? "rounded-tl-none" : "rounded-tl-md",
+          props.hasMultipleTabs ? "rounded-tl-2xl" : "rounded-tl-2xl",
           {
-            "border-ceramic-400 shadow-sm":
+            "border-[#EBD7D7] shadow-sm":
               isEditorFocused && editorState.mode === "insert",
-            "border-blue-400 shadow-sm":
+            "border-[#EBD7D7] shadow-sm":
               isEditorFocused && editorState.mode === "normal",
-            "border-gray-200 dark:border-[#262A30]": !isEditorFocused,
+            "border-[#EBD7D7] dark:border-[#262A30]": !isEditorFocused,
           }
         )}
       >
         <div
           className={clsx(
-            "rounded-t-md",
+            "rounded-2xl",
             statusIsDisabled ? "bg-gray-100" : "bg-white dark:bg-black",
             props.hasMultipleTabs ? "rounded-tl-none" : "",
             !(isResultHidden || !result) &&
@@ -800,7 +800,7 @@ function SQLBlock(props: Props) {
         >
           <div
             className={clsx(
-              "bg-gray-50 rounded-t-md dark:bg-black ",
+              "rounded-t-2xl dark:bg-black ",
               props.hasMultipleTabs ? "rounded-tl-none" : "",
               isCodeHidden && (isResultHidden || !result) ? "rounded-b-md" : ""
             )}
@@ -819,10 +819,11 @@ function SQLBlock(props: Props) {
                   : "border-b border-gray-200 dark:border-[#262A30]"
               )}
             >
-              <div className="select-none text-gray-300 text-xs flex items-center w-full h-full gap-x-1.5">
+              <div className="select-none text-gray-300 text-xs flex items-center w-full h-full gap-x-1.5 px-4">
                 <div className="relative group w-4 h-4">
-                  <CircleStackIcon className="absolute inset-0 h-4 w-4 text-gray-400 group-hover:opacity-0 transition-opacity" />
+                  <CircleStackIcon className="absolute inset-0 h-5 w-5 text-[#343330] group-hover:opacity-0 transition-opacity" />
                   <button
+                    type="button"
                     className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
                     onClick={toggleCodeHidden}
                   >
@@ -836,7 +837,7 @@ function SQLBlock(props: Props) {
                 <input
                   type="text"
                   className={clsx(
-                    "text-sm font-primary font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-md border-0 text-gray-800 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-gray-400 focus:ring-inset py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white"
+                    "text-lg font-primary font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-md border-0 text-gray-800 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-gray-400 py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white"
                   )}
                   placeholder={
                     props.isEditable ? "SQL (click to add a title)" : "SQL"
