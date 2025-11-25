@@ -47,6 +47,7 @@ const ConfigurationsMenuLink = (props: ConfigurationsMenuLinkProps) => {
 const ConfigurationsMenuButton = (props: ConfigurationsMenuButtonProps) => {
   return (
     <button
+      type="button"
       onClick={props.onClick}
       className={clsx(
         "group text-sm font-medium leading-6 w-full flex py-1 hover:text-ceramic-600",
