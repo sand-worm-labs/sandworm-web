@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import type { DataFrameColumn } from "@sandworm/types";
 
 import Combobox from "../Combobox";
@@ -36,16 +36,22 @@ type AxisSelectorProps = {
 };
 
 export default function AxisSelector(props: AxisSelectorProps) {
-  // Use the value from the columns array so that the value equality check works
   const value = useMemo(
     () => props.columns.find(c => c?.name === props.value?.name) ?? null,
     [props.columns, props.value]
   );
+
   useEffect(() => {
     if (value === null && props.defaultValue !== null && !props.disabled) {
       props.onChange(props.defaultValue);
     }
   }, [props.defaultValue, value, props.onChange, props.disabled]);
+
+  const renderIcon = useCallback((column: DataFrameColumn | null) => {
+    return column ? (
+      <ColumnIcon type={column.type} className="h-3 w-3 text-gray-500" />
+    ) : null;
+  }, []);
 
   return (
     <Combobox<DataFrameColumn | null>
@@ -54,12 +60,8 @@ export default function AxisSelector(props: AxisSelectorProps) {
       options={props.columns}
       onChange={props.onChange}
       search={search}
-      getLabel={value => value?.name.toString() ?? "None"}
-      icon={value =>
-        value ? (
-          <ColumnIcon type={value.type} className="h-3 w-3 text-gray-500" />
-        ) : null
-      }
+      getLabel={col => col?.name.toString() ?? "None"}
+      icon={renderIcon}
       placeholder="Column"
       disabled={props.disabled}
     />
