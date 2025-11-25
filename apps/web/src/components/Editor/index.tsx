@@ -451,10 +451,11 @@ function Tab(props: TabProps) {
           show={contextMenu !== null}
           ref={contextMenuRef}
         >
-          <div className="rounded-md bg-white dark:bg-black shadow-[0_4px_12px_#CFCFCF] ring-1 ring-gray-100 focus:outline-none font-primary divide-y divide-gray-200 flex flex-col text-xs text-gray-600">
-            <div className="flex flex-col divide-y divide-gray-200">
+          <div className="rounded-md bg-white dark:bg-black ring-1 ring-gray-100 focus:outline-none font-primary flex flex-col text-xs text-[#455768] border border-[#CED4DA]">
+            <div className="flex flex-col ">
               <div className="py-0.5 px-0.5">
                 <button
+                  type="button"
                   className="hover:bg-gray-100 w-full px-2 py-1.5 rounded-md text-left flex gap-x-2 items-center whitespace-nowrap"
                   onClick={onRun}
                 >
@@ -462,6 +463,7 @@ function Tab(props: TabProps) {
                   <span>Run tab</span>
                 </button>
                 <button
+                  type="button"
                   className="hover:bg-gray-100 w-full px-2 py-1.5 rounded-md text-left flex gap-x-2 items-center whitespace-nowrap"
                   onClick={onRunOnwards}
                 >
@@ -471,6 +473,7 @@ function Tab(props: TabProps) {
               </div>
               <div className="py-0.5 px-0.5">
                 <button
+                  type="button"
                   className="hover:bg-gray-100 w-full px-2 py-1.5 rounded-md text-left flex gap-x-2 items-center whitespace-nowrap"
                   onClick={onDuplicateTab}
                 >
@@ -480,6 +483,7 @@ function Tab(props: TabProps) {
               </div>
               <div className="py-0.5 px-0.5">
                 <button
+                  type="button"
                   className="hover:bg-gray-100 w-full px-2 py-1.5 rounded-md text-left flex gap-x-2 items-center whitespace-nowrap"
                   onClick={onDeleteTab}
                 >
@@ -1014,6 +1018,7 @@ file`;
             >
               {isScrollable && !isScrolledAllTheWayLeft && (
                 <button
+                  type="button"
                   className="sticky left-0 h-full bg-white border-t border-r border-l border-gray-200"
                   onClick={onClickScrollLeft}
                 >
@@ -1039,6 +1044,7 @@ file`;
               ))}
               {isScrollable && !isScrolledAllTheWayRight && (
                 <button
+                  type="button"
                   className="sticky right-0 h-full bg-white border-t border-r border-l border-gray-200"
                   onClick={onClickScrollRight}
                 >

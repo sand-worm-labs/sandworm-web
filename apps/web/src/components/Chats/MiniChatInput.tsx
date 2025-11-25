@@ -66,7 +66,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
 
   return (
     <div className="w-full">
-      <div className="bg-[#F1F3F4] border border-[#E9ECEF] rounded-2xl shadow-sm">
+      <div className="bg-[#F1F3F4] dark:bg-[#121417] border border-[#E9ECEF] rounded-2xl shadow-sm dark:border-[#262A30]">
         {/* File Preview Section */}
         {files.length > 0 && (
           <div className="px-4 pt-3 pb-2 border-b border-gray-100">
@@ -81,6 +81,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
                     {file.name}
                   </span>
                   <button
+                    type="button"
                     onClick={() => removeFile(index)}
                     className="text-gray-400 hover:text-gray-600 transition-colors"
                     aria-label="Remove file"
@@ -101,7 +102,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
             onChange={handleTextareaChange}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
-            className="w-full resize-none bg-transparent outline-none text-gray-800 placeholder-gray-400 max-h-[300px]"
+            className="w-full resize-none bg-transparent outline-none text-gray-800 dark:text-white placeholder-gray-400 max-h-[300px]"
             rows={2}
             aria-label="Message input"
           />
@@ -110,12 +111,13 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
         {/* Action Buttons */}
         <div className="flex items-center justify-between px-3 pb-3">
           <button
+            type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="flex items-center justify-center w-8 h-8  hover:bg-gray-100 text-gray-600 transition-colors border border-[#B5C8DB] bg-white rounded-full"
+            className="flex items-center justify-center w-8 h-8  hover:bg-gray-100 text-gray-600 transition-colors border border-[#B5C8DB] dark:bg-[#363C46]  bg-white rounded-full dark:text-[#C5CED9] dark:border-transparent"
             title="Attach files"
             aria-label="Attach files"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-4 h-4" strokeWidth={1.2} />
           </button>
 
           <button
