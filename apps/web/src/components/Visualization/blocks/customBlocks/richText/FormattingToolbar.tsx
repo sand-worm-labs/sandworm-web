@@ -105,7 +105,7 @@ const NodeTypeDropdown = ({ editor }: { editor: Editor }) => {
           leaveFrom="transform opacity-100 scale-100"
           leaveTo="transform opacity-0 scale-95"
         >
-          <Menu.Items className="absolute right-0 z-10 -mr-1 mt-2 origin-top-right rounded-md dark:bg-[#0C1015] bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none whitespace-nowrap dark:ring-[#262A30]">
+          <Menu.Items className="absolute right-0 z-10 -mr-1 mt-2 origin-top-right rounded-md dark:bg-[#0C1015] bg-white shadow-lg ring-1 ring-[#E9ECEF] ring-opacity-5 focus:outline-none whitespace-nowrap dark:ring-[#262A30]">
             <div className="py-0.5">
               {Object.values(items).map(item => (
                 <Menu.Item key={item.name}>
@@ -183,7 +183,7 @@ const bgColors: ColorSpec[] = [
 const textColors: ColorSpec[] = [
   // This corresponds to --tw-prose-body
   { name: "Default", type: "fg", hex: "#374151" },
-  { name: "Gray", type: "fg", hex: "#9b9a97" },
+  { name: "Gray", type: "fg", hex: "#455768" },
   { name: "Brown", type: "fg", hex: "#64473a" },
   { name: "Orange", type: "fg", hex: "#d9730d" },
   { name: "Yellow", type: "fg", hex: "#dfab01" },

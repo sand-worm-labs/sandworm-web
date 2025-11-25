@@ -224,6 +224,32 @@ select:-webkit-autofill:focus {
   transition: background-color 5000s ease-in-out 0s;
 }
 
+[type="text"],
+input:where(:not([type])),
+[type="email"],
+[type="url"],
+[type="password"],
+[type="number"],
+[type="date"],
+[type="datetime-local"],
+[type="month"],
+[type="search"],
+[type="tel"],
+[type="time"],
+[type="week"],
+[multiple],
+textarea,
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  padding-top: 0.5rem;
+  padding-right: 0.75rem;
+  padding-bottom: 0.5rem;
+  padding-left: 0.75rem;
+  line-height: 1.5rem;
+}
+
 .header-section {
   text-align: center;
   padding: 1rem 6rem;
@@ -433,6 +459,10 @@ label {
 
 .line-left-to-right {
   animation: fadeScaleLeftToRight 1s ease-in-out forwards;
+}
+
+.tiptap p {
+  @apply font-normal;
 }
 
 /* ════════════ Liquid Glass════════════ */
