@@ -37,7 +37,7 @@ import {
 } from "@sandworm/types";
 import type { ConnectDragPreview } from "react-dnd";
 import { equals, head, omit } from "ramda";
-import { ChartPie, Check } from "lucide-react";
+import { ChartPie } from "lucide-react";
 
 import { TooltipV2 } from "@/components/Visualization/blocks/ToolTips";
 
