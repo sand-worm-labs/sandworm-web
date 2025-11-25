@@ -6,9 +6,9 @@ import {
 } from "@heroicons/react/20/solid";
 import type * as Y from "yjs";
 import {
-  YBlock,
-  ExecutionQueue,
-  AITasks,
+  type YBlock,
+  type ExecutionQueue,
+  type AITasks,
   type PythonBlock,
   setTitle,
   getPythonAISuggestions,

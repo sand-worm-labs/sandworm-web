@@ -212,6 +212,7 @@ function DateInput(props: Props) {
                       ) : attrs.error && attrs.error !== "invalid-value" ? (
                         <>
                           <button
+                            type="button"
                             disabled={attrs.error !== "invalid-variable"}
                             onClick={onRun}
                           >
