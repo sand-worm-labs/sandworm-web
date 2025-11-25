@@ -8,7 +8,6 @@ export class RedisPubSubAdapter implements ISocketAdapter {
   private subscriber: Redis | null = null
 
   constructor() {
-    // Initialize Redis connections
     this.redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379')
     this.subscriber = new Redis(process.env.REDIS_URL || 'redis://localhost:6379')
   }
