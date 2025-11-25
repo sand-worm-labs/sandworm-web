@@ -1,3 +1,3 @@
-import nest from '@sandworm/eslint-config/eslint-nest.config.mjs';
+import config from '@sandworm/eslint-config/eslint-nest';
 
-export default [...nest];
+export default config;

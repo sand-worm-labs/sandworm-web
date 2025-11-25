@@ -46,3 +46,9 @@ export enum OnboardingTutorialStep {
     PUBLISH_DASHBOARD = 'publishDashboard',
     INVITE_TEAM_MEMBERS = 'inviteTeamMembers',
 }
+
+
+export enum TutorialType {
+    ONBOARDING = 'onboarding',
+  }
+  
