@@ -3,9 +3,9 @@ import {
   ExclamationCircleIcon,
 } from "@heroicons/react/24/solid";
 import type * as Y from "yjs";
-import type {
-  YBlock,
-  ExecutionQueue,
+import {
+  type YBlock,
+  type ExecutionQueue,
   type DropdownInputBlock,
   getDropdownInputAttributes,
   updateDropdownInputLabel,
@@ -13,7 +13,6 @@ import type {
   dropdownInputToggleConfigOpen,
   updateDropdownInputVariable,
   isExecutionStatusLoading,
-  YBlockGroup,
 } from "@sandworm/editor";
 import clsx from "clsx";
 import { useCallback, useEffect, useRef, useState } from "react";
