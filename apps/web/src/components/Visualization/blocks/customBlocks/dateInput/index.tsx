@@ -1,8 +1,8 @@
 import type * as Y from "yjs";
 import type { ConnectDragPreview } from "react-dnd";
-import type {
-  ExecutionQueue,
-  YBlock,
+import {
+  type ExecutionQueue,
+  type YBlock,
   getDateInputAttributes,
   getDateInputBlockExecStatus,
   isExecutionStatusLoading,
