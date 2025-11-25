@@ -4,20 +4,11 @@ import {
     PrimaryGeneratedColumn,
     ManyToOne,
     JoinColumn,
-    Index,
     type Relation,
 } from "typeorm";
 import { AbstractEntity } from "./abstract.entity";
 import { DocumentEntity } from "./document.entity";
-
-// ----- Enum -----
-export enum ExecutionScheduleType {
-    HOURLY = "hourly",
-    DAILY = "daily",
-    WEEKLY = "weekly",
-    MONTHLY = "monthly",
-    CRON = "cron",
-}
+import { ExecutionScheduleType } from "./enums";
 
 @Entity("execution_schedule")
 export class ExecutionScheduleEntity extends AbstractEntity {
@@ -37,17 +28,25 @@ export class ExecutionScheduleEntity extends AbstractEntity {
     cron?: string;
 
     @Column({ type: "text", nullable: true })
-    weekdays?: string; // serialized array of integers, e.g., "[1,3,5]"
+    weekdays?: string; 
 
     @Column({ type: "text", nullable: true })
-    days?: string; // serialized array of integers, e.g., "[1,15,30]"
+    days?: string;
 
     @Column({ type: "text" })
     timezone!: string;
 
-    // ----- Relation to Document -----
     @Column({ name: "document_id" })
     documentId!: string;
+
+    @Column({ type: "boolean", default: false })
+    isActive!: boolean;
+
+    @Column({ type: "timestamp", nullable: true })
+    lastExecutedAt?: Date;
+
+    @Column({ type: "timestamp", nullable: true })
+    nextExecutionAt?: Date;
 
     @ManyToOne(() => DocumentEntity, (document) => document.executionSchedules, {
         onDelete: "CASCADE",
