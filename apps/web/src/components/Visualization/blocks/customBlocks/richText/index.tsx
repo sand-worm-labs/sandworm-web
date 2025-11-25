@@ -209,13 +209,13 @@ const RichTextBlock = (props: Props) => {
         props.dragPreview?.(d);
       }}
       className={clsx(
-        "ring-outline ring-offset-4",
+        "ring-[#EBD7D7] ring-offset-4",
         props.dashboardMode ? "px-4 py-4 h-full overflow-y-auto" : "",
         ringColor,
         {
-          "rounded-tl-none rounded-sm border border-[#262A30] p-2":
+          "rounded-tl-none rounded-sm border border-[#262A30] p-2 px-5":
             props.belongsToMultiTabGroup,
-          "rounded-tl-none rounded-sm border border-blue-400 p-2 ":
+          "rounded-tl-none rounded-sm border border-[#EBD7D7] p-2 ":
             props.belongsToMultiTabGroup &&
             props.isCursorWithin &&
             !props.isCursorInserting,
