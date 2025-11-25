@@ -39,7 +39,7 @@ function materialLightTheme(disabled: boolean) {
 }
 
 const materialLightHighlightStyle = HighlightStyle.define([
-  { tag: t.comment, color: "#008000" },
+  { tag: t.comment, color: "#C7665C" },
   { tag: t.keyword, color: "#0000ff" },
   { tag: t.number, color: "#098658" },
   { tag: t.string, color: "#a31515" },
