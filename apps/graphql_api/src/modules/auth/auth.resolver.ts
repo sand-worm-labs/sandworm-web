@@ -7,7 +7,7 @@ import { AuthPayload } from './models/auth-payload';
 
 @Resolver()
 export class AuthResolver {
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {}
 
   @Public()
   @Mutation(() => User, { name: 'login', description: 'Sign in' })
