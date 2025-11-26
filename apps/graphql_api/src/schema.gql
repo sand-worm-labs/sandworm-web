@@ -52,6 +52,11 @@ input DeleteDocumentInput {
   workspaceId: String!
 }
 
+input DeleteFileInput {
+  path: String!
+  workspaceId: String!
+}
+
 type Document {
   authorId: ID!
   children: [Document!]!
@@ -118,6 +123,11 @@ The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://
 """
 scalar JSON
 
+input ListFilesInput {
+  path: String
+  workspaceId: String!
+}
+
 """Login input"""
 input LoginInput {
   """Email address"""
@@ -151,6 +161,9 @@ type Mutation {
 
   """Delete a single environment variable"""
   deleteEnvironmentVariable(variableId: String!, workspaceId: String!): Boolean!
+
+  """Delete a file from the workspace"""
+  deleteFile(input: DeleteFileInput!): Boolean!
 
   """Create a fork/duplicate of a document"""
   duplicateDocument(input: DuplicateDocumentInput!): Document!
@@ -218,6 +231,9 @@ type Query {
   """Get all environment variables (values are masked)"""
   environmentVariables(workspaceId: String!): [EnvironmentVariable!]!
 
+  """Check if a file exists"""
+  fileExists(fileName: String!, workspaceId: String!): Boolean!
+
   """Get all users"""
   getAllUsers(input: GetAllUsersInput!): [User!]!
 
@@ -238,7 +254,9 @@ type Query {
 
   """Get all documents in a workspace"""
   getWorkspaceDocuments(workspaceId: String!): [Document!]!
-  hello: String!
+
+  """List all files in a workspace"""
+  listFiles(input: ListFilesInput!): [SandwormFile!]!
 
   """Get Profile"""
   profile(
@@ -255,6 +273,15 @@ input RestartEnvironmentInput {
 input RestoreDocumentInput {
   documentId: String!
   workspaceId: String!
+}
+
+type SandwormFile {
+  isDirectory: Boolean!
+  mimeType: String
+  name: String!
+  path: String!
+  relCwdPath: String!
+  size: Float!
 }
 
 input SetEnvironmentVariablesInput {
