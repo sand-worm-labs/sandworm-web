@@ -18,7 +18,6 @@ import {
 } from 'nestjs-i18n';
 import path, { join } from 'path';
 import { DataSource, DataSourceOptions } from 'typeorm';
-import { AppResolver } from './app.resolver';
 import { AppService } from './app.service';
 import { AllConfigType } from './config/config.type';
 import { ApiModule } from './modules/api.module';
@@ -100,7 +99,7 @@ const graphqlModule = GraphQLModule.forRootAsync<ApolloDriverConfig>({
 
 @Module({
   imports: [configModule, dbModule, i18nModule, ApiModule, graphqlModule, JupyterModule],
-  providers: [AppService, AsyncContextProvider, FastifyPinoLogger, AppResolver],
+  providers: [AppService, AsyncContextProvider, FastifyPinoLogger],
   exports: [AsyncContextProvider],
 })
 export class AppModule implements NestModule {

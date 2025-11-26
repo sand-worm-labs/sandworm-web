@@ -1,18 +1,18 @@
-# Production values for Sandworm
-# Usage: helm install sandworm ./chart -f values-production.yaml
+# Production values for sandwormlabs
+# Usage: helm install sandwormlabs ./chart -f values-production.yaml
 
 web:
   replicaCount: 3
 
   image:
-    repository: docker.io/sandworm
-    name: sandworm-web
+    repository: docker.io/sandwormlabs
+    name: sandwormlabs-web
     tag: v1.0.0
     pullPolicy: IfNotPresent
 
   env:
-    apiUrl: https://api.sandwormlabs.com
-    publicUrl: https://sandwormlabs.com
+    apiUrl: https://api.sandwormlabslabs.com
+    publicUrl: https://sandwormlabslabs.com
 
   resources:
     requests:
@@ -40,26 +40,26 @@ graphqlApi:
 
   image:
     repository: docker.io/yourorg
-    name: sandworm-graphql-api
+    name: sandwormlabs-graphql-api
     tag: v1.0.0
     pullPolicy: IfNotPresent
 
   env:
     nodeEnv: production
-    appUrl: https://api.sandworm.example.com
+    appUrl: https://api.sandwormlabs.example.com
     appDebug: false
     logLevel: warn
-    corsOrigin: "https://sandworm.example.com"
+    corsOrigin: "https://sandwormlabs.example.com"
 
     # Use external database in production
     databaseHost: your-rds-endpoint.amazonaws.com
     databasePort: 5432
-    databaseName: sandworm_prod
+    databaseName: sandwormlabs_prod
     databaseSslEnabled: true
 
   secrets:
     # Use strong passwords in production
-    databaseUsername: sandworm_user
+    databaseUsername: sandwormlabs_user
     databasePassword: "USE_STRONG_PASSWORD_HERE"
 
     # Generate with: openssl rand -hex 32
@@ -122,21 +122,21 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
-    nginx.ingress.kubernetes.io/websocket-services: sandworm-graphql-api
+    nginx.ingress.kubernetes.io/websocket-services: sandwormlabs-graphql-api
     nginx.ingress.kubernetes.io/configuration-snippet: |
       proxy_set_header Upgrade $http_upgrade;
       proxy_set_header Connection "Upgrade";
 
   hosts:
-    - host: sandworm.example.com
+    - host: sandwormlabs.example.com
       paths:
         - path: /
           pathType: Prefix
 
   tls:
-    - secretName: sandworm-tls
+    - secretName: sandwormlabs-tls
       hosts:
-        - sandworm.example.com
+        - sandwormlabs.example.com
 
 # Enable autoscaling
 autoscaling:

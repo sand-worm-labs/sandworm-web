@@ -10,7 +10,7 @@ import {
 import { Plan } from "./enums";
 import { UserEntity } from "./user.entity";
 import { AbstractEntity } from "./abstract.entity";
-import { OnboardingTutorialEntity } from "./onboarding_tutorial.entity";
+import { TutorialEntity } from "./tutorial.entity";
 import { DocumentEntity } from "./document.entity";
 import { EnvironmentEntity } from "./environment.entity";
 import { EnvironmentVariableEntity } from "./environment_variable.entity";
@@ -44,8 +44,8 @@ export class WorkspaceEntity extends AbstractEntity {
     @OneToMany(() => DocumentEntity, (documents) => documents.workspaceId, { onDelete: "CASCADE" })
     documents!: Relation<DocumentEntity[]>;
 
-    @OneToMany(() => OnboardingTutorialEntity, (tut) => tut.workspace)
-    onboardingTutorials!: Relation<OnboardingTutorialEntity[]>;
+    @OneToMany(() => TutorialEntity, (tut) => tut.workspace)
+    onboardingTutorials!: Relation<TutorialEntity[]>;
 
     @OneToOne(() => EnvironmentEntity, (environment) => environment.workspace, {onDelete: "CASCADE"})
     environment?: Relation<EnvironmentEntity>;

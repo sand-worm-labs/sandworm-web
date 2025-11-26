@@ -1,0 +1,25 @@
+# Comment Queries
+
+# Get all comments for a document
+query GetComments($documentId: String!) {
+  comments(documentId: $documentId) {
+    id
+    body
+    authorId
+    documentId
+    createdAt
+    updatedAt
+  }
+}
+
+# Get a single comment by ID
+query GetComment($commentId: String!) {
+  comment(commentId: $commentId) {
+    id
+    body
+    authorId
+    documentId
+    createdAt
+    updatedAt
+  }
+}
