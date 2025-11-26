@@ -263,6 +263,7 @@ export default function Dashboard(props: Props) {
             tooltipClassname="w-40"
           >
             <button
+              type="button"
               id="dashboard-publish-button"
               className="flex items-center rounded-sm px-3 py-1 text-sm bg-primary-200 hover:bg-primary-300 border border-transparent disabled:border-gray-200 disabled:bg-gray-100 disabled:cursor-not-allowed gap-x-1.5 group relative disabled:text-gray-500"
               onClick={onPublish}
@@ -500,7 +501,8 @@ function DashboardContent(
           show={expanded !== null}
         >
           {expanded ? (
-            <div
+            <button
+              type="button"
               className="fixed inset-0 bg-black bg-opacity-50"
               onClick={() => setExpanded(null)} // Close when clicking on backdrop
             />

@@ -90,6 +90,7 @@ function FilesTable(props: Props) {
       <div className="bg-gray-50 text-xs py-2 rounded-t-md">
         <div className="flex items-center text-gray-400 hover:text-gray-500 px-3 h-[1.6rem]">
           <button
+            type="button"
             className="print:hidden h-4 w-4 hover:text-gray-400 rounded-sm mr-0.5"
             onClick={props.toggleFilesHidden}
           >
@@ -194,12 +195,13 @@ function FilesTable(props: Props) {
         <div className="flex space-x-2">
           <span>
             Drag and drop to{" "}
-            <span
+            <button
+              type="button"
               className="underline hover:text-primary-700 cursor-pointer"
               onClick={props.onUpload}
             >
               upload more
-            </span>
+            </button>
             .
           </span>
           <div className="relative group/tooltip">

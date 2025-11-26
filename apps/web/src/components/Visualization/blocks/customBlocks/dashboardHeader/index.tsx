@@ -87,9 +87,10 @@ function DashboardHeader(props: Props) {
           onMouseDown={stopPropagation}
         />
       ) : (
-        <h1
+        <button
+          type="button"
           className={clsx(
-            "text-2xl font-semibold font-medium text-left truncate min-h-6 pl-3 w-full",
+            "text-2xl font-medium text-left truncate min-h-6 pl-3 w-full",
             hasContent ? "text-gray-900" : "text-gray-400",
             props.dashboardMode !== "live" && "hover:cursor-text"
           )}
@@ -97,7 +98,7 @@ function DashboardHeader(props: Props) {
           onMouseDown={stopPropagation}
         >
           {content}
-        </h1>
+        </button>
       )}
     </div>
   );

@@ -71,7 +71,8 @@ const MonthDaySelector = (props: WeekdaySelectorProps) => {
                 {monthDays.map((day, dayIndex) => (
                   <Menu.Item key={dayIndex}>
                     {({ active }) => (
-                      <div
+                      <button
+                        type="button"
                         className={`${
                           active ? "bg-gray-100" : ""
                         } group flex items-center px-2 py-2 text-sm cursor-pointer`}
@@ -85,7 +86,7 @@ const MonthDaySelector = (props: WeekdaySelectorProps) => {
                           )}
                           <span>{day}</span>
                         </div>
-                      </div>
+                      </button>
                     )}
                   </Menu.Item>
                 ))}
