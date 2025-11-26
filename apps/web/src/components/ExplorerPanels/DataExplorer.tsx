@@ -163,17 +163,7 @@ export function DataExplorer({ onClose }: { onClose?: () => void }) {
                 {renderExplorer()}
               </ul>
             </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center h-full gap-4 text-center">
-              <div className="flex flex-col items-center gap-2">
-                <Database className="h-8 w-8 text-muted-foreground" />
-                <p className="text-muted-foreground text-sm px-2">
-                  No datasets Found. You can upload your data to Sandworm via
-                  the UI and query it like any other table.
-                </p>
-              </div>
-            </div>
-          )}
+          ) : null}
         </CardContent>
       </Card>
     </Rnd>

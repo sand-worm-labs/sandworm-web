@@ -84,7 +84,7 @@ font-tertiary {
     --accent-foreground: 0 0% 9%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 15.8%;
+    --border: #e9ecef;
     --input: 0 0% 89.8%;
     --ring: 0 0% 3.9%;
     --chart-1: 12 76% 61%;
@@ -119,6 +119,7 @@ font-tertiary {
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+    --input: "#262A30";
   }
 }
 
@@ -221,6 +222,32 @@ select:-webkit-autofill:focus {
   color: white !important;
   -webkit-text-fill-color: white !important;
   transition: background-color 5000s ease-in-out 0s;
+}
+
+[type="text"],
+input:where(:not([type])),
+[type="email"],
+[type="url"],
+[type="password"],
+[type="number"],
+[type="date"],
+[type="datetime-local"],
+[type="month"],
+[type="search"],
+[type="tel"],
+[type="time"],
+[type="week"],
+[multiple],
+textarea,
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  padding-top: 0.5rem;
+  padding-right: 0.75rem;
+  padding-bottom: 0.5rem;
+  padding-left: 0.75rem;
+  line-height: 1.5rem;
 }
 
 .header-section {
@@ -432,6 +459,10 @@ label {
 
 .line-left-to-right {
   animation: fadeScaleLeftToRight 1s ease-in-out forwards;
+}
+
+.tiptap p {
+  @apply font-normal;
 }
 
 /* ════════════ Liquid Glass════════════ */

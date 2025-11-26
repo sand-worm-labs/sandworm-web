@@ -36,10 +36,7 @@ import { MiniChat } from "../Chats/MiniChat";
 
 import { useStringQuery } from "./hooks/useQueryArgs";
 import useDropdownPosition from "./hooks/dropdownposition";
-import useSideBar, {
-  MIN_SIDEBAR_WIDTH,
-  MAX_SIDEBAR_WIDTH,
-} from "./hooks/useSideBar";
+import useSideBar from "./hooks/useSideBar";
 import { useDataSources } from "./hooks/useDataSources";
 import type { SessionUser } from "./hooks/useAuth";
 import type { Page } from "./blocks/PagePath";

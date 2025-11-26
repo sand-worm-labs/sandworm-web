@@ -56,8 +56,6 @@ export function MultimodalInput({
     if (textareaRef.current) adjustHeight();
   }, []);
 
-  console.log(messages, "messages in multimodal input", append);
-
   const handleInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(event.target.value);
     adjustHeight();

@@ -376,6 +376,7 @@ function PrivateDocumentPageInner(
             tooltipClassname="w-40"
           >
             <button
+              type="button"
               className="flex items-center rounded-sm px-3 py-1 text-sm bg-white dark:bg-black dark:border-[#262A30] dark:text-[#868E96] hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 group relative border border-[#E9ECEF]"
               onClick={onPublish}
               disabled={props.publishing}

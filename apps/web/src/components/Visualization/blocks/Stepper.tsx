@@ -31,6 +31,7 @@ const Stepper: React.FC<StepperProps> = ({
             if (isDone) {
               circle = (
                 <button
+                  type="button"
                   className="h-5 w-5 bg-primary-700 rounded-full flex items-center justify-center hover:bg-primary-800"
                   onClick={setStepHandler(index)}
                 >

@@ -12,6 +12,25 @@ import {
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/20/solid";
 import { Menu, Transition } from "@headlessui/react";
 
+interface MenuButtonProps {
+  icon?: JSX.Element;
+  text: string;
+  onClick: () => void;
+}
+function MenuButton(props: MenuButtonProps) {
+  return (
+    <Menu.Item
+      as="button"
+      onClick={props.onClick}
+      type="button"
+      className="w-full flex items-center rounded-sm px-4 py-2 text-gray-500 dark:text-white text-sm gap-x-2 hover:bg-gray-100 dark:hover:bg-[#181C21]"
+    >
+      <div className="flex justify-center w-6">{props.icon}</div>
+      <span>{props.text}</span>
+    </Menu.Item>
+  );
+}
+
 interface Props {
   onToggleSchedules: () => void;
   onToggleSnapshots: () => void;
@@ -134,25 +153,6 @@ function EllipsisDropdown(props: Props) {
         </Menu.Items>
       </Transition>
     </Menu>
-  );
-}
-
-interface MenuButtonProps {
-  icon?: JSX.Element;
-  text: string;
-  onClick: () => void;
-}
-function MenuButton(props: MenuButtonProps) {
-  return (
-    <Menu.Item
-      as="button"
-      onClick={props.onClick}
-      type="button"
-      className="w-full flex items-center rounded-sm px-4 py-2 text-gray-500 dark:text-white text-sm gap-x-2 hover:bg-gray-100 dark:hover:bg-[#181C21]"
-    >
-      <div className="flex justify-center w-6">{props.icon}</div>
-      <span>{props.text}</span>
-    </Menu.Item>
   );
 }
 

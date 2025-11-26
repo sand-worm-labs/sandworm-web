@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@sandworm/ui/components/card";
 import { LuLayoutGrid } from "react-icons/lu";
+import { ArrowRight } from "lucide-react";
 
 type Tool = {
   id: string;
@@ -71,29 +72,26 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool }) => {
     <Link href={tool.href} className="inline-block h-full group relative">
       <Card
         className="
-          bg-[#FFFFFF] dark:bg-[#111111] border-[#CED4DA]
+          bg-[#FFFFFF] dark:border-[#262A30] dark:bg-[#111111] border-[#CED4DA]
           rounded-3xl p-6 pb-8 pt-6 flex flex-col text-left h-full
           transition-all duration-200 ease-out
-          group-hover:shadow-[0_4px_16px_rgba(0,0,0,0.08)]
-          group-hover:-translate-y-1
         "
       >
-        {/* Arrow */}
         <span
           className="
-            absolute top-4 left-4 opacity-0
+            absolute top-4 right-4 opacity-0
             group-hover:opacity-100 group-hover:translate-x-0 group-hover:-translate-y-0
             -translate-x-1 -translate-y-1
             transition-all duration-200 ease-out
-            text-[#C7665C]
+            dark:text-white text-[#1A1A1A] 
             text-xs font-bold
           "
         >
-          ↑
+          <ArrowRight className="inline-block w-4 h-4 mr-1" />
         </span>
 
         <CardHeader className="p-0 mb-0">
-          <CardTitle className="text-[0.90rem] text-[#1A1A1A] font-medium">
+          <CardTitle className="text-[0.90rem] dark:text-white text-[#1A1A1A] font-medium">
             {tool.name}
           </CardTitle>
         </CardHeader>
