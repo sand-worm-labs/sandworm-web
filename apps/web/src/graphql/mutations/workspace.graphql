@@ -1,0 +1,31 @@
+# Workspace Mutations
+
+# Create a new workspace
+mutation CreateWorkspace($name: String!) {
+  createWorkspace(name: $name) {
+    id
+    name
+    plan
+    source
+    useCases
+    useContext
+    ownerId
+    owner {
+      id
+      username
+      email
+    }
+  }
+}
+
+# Update workspace information
+mutation UpdateWorkspace($workspaceId: String!, $name: String) {
+  updateWorkspace(workspaceId: $workspaceId, name: $name) {
+    id
+    name
+    plan
+    source
+    useCases
+    useContext
+  }
+}

@@ -1,0 +1,68 @@
+# Workspace Queries
+
+# Get all workspaces for the current user
+query GetUserWorkspaces($limit: Int, $offset: Int) {
+  getUserWorkspaces(limit: $limit, offset: $offset) {
+    id
+    name
+    plan
+    source
+    useCases
+    useContext
+    ownerId
+    owner {
+      id
+      username
+      email
+      firstName
+      lastName
+    }
+  }
+}
+
+# Get a specific workspace by ID
+query GetWorkspace($workspaceId: String!) {
+  getWorkspace(workspaceId: $workspaceId) {
+    id
+    name
+    plan
+    source
+    useCases
+    useContext
+    ownerId
+    owner {
+      id
+      username
+      email
+      firstName
+      lastName
+    }
+    documents {
+      id
+      title
+      slug
+      authorId
+      parentId
+    }
+  }
+}
+
+# Get all documents in a workspace
+query GetWorkspaceDocuments($workspaceId: String!) {
+  getWorkspaceDocuments(workspaceId: $workspaceId) {
+    id
+    title
+    slug
+    authorId
+    workspaceId
+    parentId
+    runSQLSelection
+    runUnexecutedBlocks
+    shareLinksWithoutSidebar
+    children {
+      id
+      title
+      slug
+    }
+  }
+}

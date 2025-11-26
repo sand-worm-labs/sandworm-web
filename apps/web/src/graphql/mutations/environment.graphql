@@ -1,0 +1,31 @@
+# Environment Mutations
+
+# Restart the Jupyter environment
+mutation RestartEnvironment($input: RestartEnvironmentInput!) {
+  restartEnvironment(input: $input) {
+    id
+    workspaceId
+    status
+    resourceVersion
+    lastActivityAt
+  }
+}
+
+# Add or remove environment variables
+mutation SetEnvironmentVariables(
+  $workspaceId: String!
+  $input: SetEnvironmentVariablesInput!
+) {
+  setEnvironmentVariables(workspaceId: $workspaceId, input: $input) {
+    id
+    name
+    value
+    updatedAt
+    workspaceId
+  }
+}
+
+# Delete a single environment variable
+mutation DeleteEnvironmentVariable($workspaceId: String!, $variableId: String!) {
+  deleteEnvironmentVariable(workspaceId: $workspaceId, variableId: $variableId)
+}
