@@ -17,6 +17,7 @@ const graphqlCodegenConfig: CodegenConfig = {
         withHooks: true,
         withHOC: false,
         withComponent: false,
+        apolloClientVersion: 4,
       },
     },
   },
