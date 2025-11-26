@@ -1,0 +1,6 @@
+# File Mutations
+
+# Delete a file from the workspace
+mutation DeleteFile($input: DeleteFileInput!) {
+  deleteFile(input: $input)
+}

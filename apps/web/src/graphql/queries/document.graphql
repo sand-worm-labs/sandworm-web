@@ -1,0 +1,27 @@
+# Document Queries
+
+# Get a single document by ID
+query GetDocument($workspaceId: String!, $documentId: String!) {
+  getDocument(workspaceId: $workspaceId, documentId: $documentId) {
+    id
+    title
+    slug
+    authorId
+    workspaceId
+    parentId
+    runSQLSelection
+    runUnexecutedBlocks
+    shareLinksWithoutSidebar
+    parent {
+      id
+      title
+      slug
+    }
+    children {
+      id
+      title
+      slug
+      authorId
+    }
+  }
+}

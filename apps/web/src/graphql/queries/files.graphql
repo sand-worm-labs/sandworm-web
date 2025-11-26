@@ -1,0 +1,18 @@
+# File Queries
+
+# List all files in a workspace
+query ListFiles($input: ListFilesInput!) {
+  listFiles(input: $input) {
+    name
+    path
+    relCwdPath
+    size
+    isDirectory
+    mimeType
+  }
+}
+
+# Check if a file exists
+query FileExists($workspaceId: String!, $fileName: String!) {
+  fileExists(workspaceId: $workspaceId, fileName: $fileName)
+}
