@@ -91,7 +91,11 @@ export const MiniChatEmptyState: React.FC = () => {
   );
 };
 
-export const MiniChat = () => {
+interface MiniChatProps {
+  onClose?: () => void;
+}
+
+export const MiniChat: React.FC<MiniChatProps> = ({ onClose }) => {
   const searchParams = useSearchParams();
   const [messages, setMessages] = useState<
     Array<{ text: string; isUser: boolean }>
@@ -127,7 +131,7 @@ export const MiniChat = () => {
 
   return (
     <div className="flex flex-col h-[94%] w-full md:max-w-[800px] max-w-[calc(100dvw-32px)] md:px-0 mx-auto border-l dark:border-[#262A30] border-[#E9ECEF] text-sm">
-      <MiniChatHeader />
+      <MiniChatHeader onCancel={onClose} />
 
       <div className="flex-1 overflow-y-auto py-6 px-4">
         {messages.length === 0 ? (

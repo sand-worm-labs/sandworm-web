@@ -41,7 +41,7 @@ export function Chat({
     if (!input.trim()) return;
 
     router.push(
-      `/workspace/${workspaceId}/notebook?prompt=${encodeURIComponent(input)}`
+      `/workspace/${workspaceId}/documents/notebook?prompt=${encodeURIComponent(input)}`
     );
   };
 
@@ -57,7 +57,7 @@ export function Chat({
 
   const handlePromptSelect = (prompt: string) => {
     router.push(
-      `/workspace/${workspaceId}/notebook?prompt=${encodeURIComponent(prompt)}`
+      `/workspace/${workspaceId}/documents/notebook?prompt=${encodeURIComponent(prompt)}`
     );
   };
 
