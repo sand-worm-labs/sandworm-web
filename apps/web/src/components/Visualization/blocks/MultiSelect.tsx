@@ -45,10 +45,7 @@ export default function MultiSelect<T>(props: Props<T>) {
               {props.value.length > 0 ? (
                 <div className="flex flex-wrap gap-x-1 gap-y-1">
                   {props.value.map((value, index) => (
-                    <div
-                      key={index}
-                      className="bg-gray-50 dark:bg-black border border-gray-200 px-1.5 py-0.5 rounded-sm flex items-center gap-x-1 text-xs text-gray-600 dark:text-[#868E96]"
-                    >
+                    <div className="bg-gray-50 dark:bg-black border border-gray-200 px-1.5 py-0.5 rounded-sm flex items-center gap-x-1 text-xs text-gray-600 dark:text-[#868E96]">
                       <span>{props.getLabel(value)}</span>
                       <button
                         type="button"
@@ -90,7 +87,6 @@ export default function MultiSelect<T>(props: Props<T>) {
                   {props.options.map((option, index) => (
                     <Menu.Item
                       as="button"
-                      key={index}
                       onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
