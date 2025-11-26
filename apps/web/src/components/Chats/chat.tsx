@@ -1,36 +1,61 @@
 "use client";
 
-import type { Attachment, Message } from "ai";
-import { useChat } from "ai/react";
 import { useState } from "react";
 
 import { MultimodalInput } from "./multimodal-input";
 import { ExamplePrompts } from "./example-prompts";
+
+type Attachment = {
+  url: string;
+  name: string;
+  contentType: string;
+};
+
+type Message = {
+  id: string;
+  role: string;
+  content: string;
+};
 
 export function Chat({
   id,
   initialMessages,
 }: {
   id: string;
-  initialMessages: Array<Message>;
+  initialMessages?: Array<Message>;
 }) {
-  const { messages, input, setInput, append, isLoading, stop, handleSubmit } =
-    useChat({
-      id,
-      body: { id },
-      initialMessages,
-      api: "/api/chat",
-      streamMode: "text",
-      onFinish: () => {
-        console.log("body", { id }, "finished chat");
-        window.history.replaceState({}, "", `/chat/${id}`);
-      },
-      onError: error => {
-        console.error("🔴 [FRONTEND] useChat onError:", error);
-      },
-    });
-
+  const [messages, setMessages] = useState<Array<Message>>(
+    initialMessages || []
+  );
+  const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
+
+  const handleSubmit = (
+    event?: { preventDefault?: () => void },
+    chatRequestOptions?: any
+  ) => {
+    if (event?.preventDefault) event.preventDefault();
+    if (!input.trim()) return;
+
+    console.log("Chat submit:", { id, input, chatRequestOptions });
+    // TODO: Implement chat functionality once AI package is available
+    setInput("");
+  };
+
+  const append = async (
+    message: any,
+    chatRequestOptions?: any
+  ): Promise<string | null | undefined> => {
+    console.log("Append message:", message, chatRequestOptions);
+    // TODO: Implement message append functionality
+    return null;
+  };
+
+  const stop = () => {
+    console.log("Stop generation");
+    setIsLoading(false);
+  };
 
   return (
     <div className="flex flex-row justify-center pb-4 md:pb-8 h-dvh bg-[#F9FAFD] dark:bg-black ">
