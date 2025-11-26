@@ -45,7 +45,7 @@ function ApproveDiffButtons(props: Props) {
       </button>
       <button
         type="button"
-        className="border border-primary-400 bg-primary-100 rounded-sm px-2 py-1 flex items-center justify-center gap-x-1 shadow-sm text-primary-700 hover:bg-primary-200 text-xs"
+        className="border border-primary-400 bg-primary-100 rounded-sm px-2 py-1 flex items-center justify-center gap-x-1 shadow-sm text-primary-700 hover:bg-[#C7665C] text-xs"
         onClick={props.onAccept}
       >
         <CheckIcon className="h-3 w-3" /> Accept

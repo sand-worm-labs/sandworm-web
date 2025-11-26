@@ -227,7 +227,7 @@ file`;
       <Transition
         as="div"
         show={props.visible}
-        className="top-0 right-0 h-full absolute bg-white z-30"
+        className="top-0 right-0 h-full absolute bg-white z-30 font-primary "
         enter="transition-transform duration-300"
         enterFrom="transform translate-x-full"
         enterTo="transform translate-x-0"
@@ -243,7 +243,7 @@ file`;
         />
         <button
           type="button"
-          className="absolute z-10 top-7 transform rounded-full border border-gray-300 text-gray-400 bg-white hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
+          className="absolute z-10 top-7 transform rounded-full border border-[#E9ECEF]  text-gray-400 bg-white hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
           onClick={props.onHide}
         >
           <ChevronDoubleRightIcon className="w-3 h-3" />
@@ -265,7 +265,7 @@ file`;
             <div>
               <button
                 type="button"
-                className="flex items-center gap-x-2 rounded-sm bg-primary-200 px-3 py-1 text-sm hover:bg-primary-300 disabled:cursor-not-allowed disabled:bg-gray-200"
+                className="flex items-center gap-x-2 rounded-sm bg-[#C7665C] px-3 py-1 text-sm hover:bg-primary-300 text-white disabled:cursor-not-allowed disabled:bg-gray-200"
                 onClick={openUpload}
               >
                 <CloudArrowUpIcon className="w-4 h-4" />

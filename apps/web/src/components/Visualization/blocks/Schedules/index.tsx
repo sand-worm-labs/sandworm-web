@@ -288,7 +288,7 @@ function ScheduleList(props: ScheduleListProps) {
                 className={clsx(
                   "text-gray-900 flex items-center justify-center gap-x-2 text-sm px-2 py-1.5 rounded-sm",
                   !props.isLimited && props.isPublished
-                    ? "bg-primary-200 hover:bg-primary-300"
+                    ? "bg-[#C7665C] hover:bg-primary-300"
                     : "bg-gray-200 cursor-not-allowed"
                 )}
                 onClick={props.onAddSchedule}
@@ -349,7 +349,7 @@ function ScheduleList(props: ScheduleListProps) {
             <div className="flex items-center justify-center">
               <button
                 type="button"
-                className="rounded-sm px-3 py-1 text-sm bg-primary-200 hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-sm px-3 py-1 text-sm bg-[#C7665C] hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50"
                 onClick={props.onPublish}
                 disabled={props.publishing}
               >
