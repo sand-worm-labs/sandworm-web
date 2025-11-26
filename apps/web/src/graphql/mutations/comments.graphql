@@ -1,0 +1,18 @@
+# Comment Mutations
+
+# Create a new comment on a document
+mutation CreateComment($documentId: String!, $input: CreateCommentInput!) {
+  createComment(documentId: $documentId, input: $input) {
+    id
+    body
+    authorId
+    documentId
+    createdAt
+    updatedAt
+  }
+}
+
+# Delete a comment (only by comment author)
+mutation DeleteComment($input: DeleteCommentInput!) {
+  deleteComment(input: $input)
+}

@@ -1,0 +1,81 @@
+# Authentication Mutations
+
+# Sign in with email and password
+mutation Login($input: LoginInput!) {
+  login(input: $input) {
+    id
+    email
+    username
+    firstName
+    lastName
+    fullName
+    avater
+    isOnboarded
+    followersCount
+    followingCount
+    settings {
+      id
+      theme
+      statusText
+      statusUpdatedAt
+      socialLinks
+      wallets
+      userId
+    }
+  }
+}
+
+# Register a new user
+mutation CreateUser($input: CreateUserInput!) {
+  createUser(input: $input) {
+    id
+    email
+    username
+    firstName
+    lastName
+    fullName
+    isOnboarded
+  }
+}
+
+# Update current user profile
+mutation UpdateUser($input: UpdateUserInput!) {
+  updateUser(input: $input) {
+    id
+    email
+    username
+    firstName
+    lastName
+    fullName
+    avater
+    isOnboarded
+    settings {
+      id
+      theme
+      statusText
+      statusUpdatedAt
+      socialLinks
+      wallets
+    }
+  }
+}
+
+# Follow a user
+mutation FollowUser($username: String!) {
+  followUser(username: $username) {
+    username
+    bio
+    image
+    following
+  }
+}
+
+# Unfollow a user
+mutation UnfollowUser($username: String!) {
+  unfollowUser(username: $username) {
+    username
+    bio
+    image
+    following
+  }
+}

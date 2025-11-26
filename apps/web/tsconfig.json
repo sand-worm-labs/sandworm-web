@@ -33,5 +33,12 @@
     ".next/types/**/*.ts",
     "types"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
+
+   // For GraphQL
+   "esModuleInterop": true,
+   "skipLibCheck": true,
+   "resolveJsonModule": true,
+   "isolatedModules": true,
+   "allowJs": true,
 }

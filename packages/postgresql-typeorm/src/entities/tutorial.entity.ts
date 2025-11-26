@@ -13,7 +13,7 @@ import { WorkspaceEntity } from "./workspace.entity";
 
 @Entity("onboarding_tutorials")
 @Unique("user_workspace_unique", ["userId", "workspaceId"])
-export class OnboardingTutorialEntity extends AbstractEntity {
+export class TutorialEntity extends AbstractEntity {
     @PrimaryGeneratedColumn("uuid", { primaryKeyConstraintName: "PK_onboarding_tutorial_id" })
     id!: string;
 
