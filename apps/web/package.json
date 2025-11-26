@@ -5,15 +5,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "pnpm exec run codegen && next build",
     "start": "next start",
     "analyze": "ANALYZE=true next build",
+    "codegen": "graphql-codegen --config codegen.ts",
+    "codegen:watch": "graphql-codegen --config codegen.ts --watch",
     "eslint": "pnpm exec next lint --fix --dir src",
     "prettier": "pnpm exec prettier --write .",
     "lint": "pnpm eslint && pnpm prettier",
-    "format": "pnpm eslint --fix && pnpm prettier '**/*.{json,yaml}' --write --ignore-path .gitignore",
-    "firebase": "pnpm exec firebase emulators:start",
-    "seed": "pnpm exec ts-node-dev --transpile-only src/services/localDb/seed.ts"
+    "format": "pnpm eslint --fix && pnpm prettier '**/*.{json,yaml}' --write --ignore-path .gitignore"
   },
   "lint-staged": {
     "*.{js,jsx,md,ts,tsx,html,css,scss}": "pnpm exec prettier",
@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@aarkue/tiptap-math-extension": "^1.4.0",
+    "@apollo/client": "^4.0.9",
     "@auth/drizzle-adapter": "^1.10.0",
     "@bprogress/next": "^3.2.12",
     "@cocalc/ansi-to-react": "^7.0.0",
@@ -100,6 +101,7 @@
     "eslint-plugin-cypress": "^4.2.0",
     "framer-motion": "11.16.1",
     "fuse.js": "^7.1.0",
+    "graphql": "^16.11.0",
     "gsap": "^3.13.0",
     "highcharts": "^12.2.0",
     "highcharts-react-official": "^3.2.1",
@@ -171,6 +173,10 @@
     "zustand": "^5.0.3"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^6.1.0",
+    "@graphql-codegen/typescript": "^5.0.5",
+    "@graphql-codegen/typescript-operations": "^5.0.5",
+    "@graphql-codegen/typescript-react-apollo": "^4.3.3",
     "@jest/globals": "^29.7.0",
     "@sandworm/eslint-config": "workspace:^",
     "@sandworm/typescript-config": "workspace:*",
