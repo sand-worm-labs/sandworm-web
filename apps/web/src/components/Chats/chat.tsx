@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter, useParams } from "next/navigation";
 
 import { MultimodalInput } from "./multimodal-input";
 import { ExamplePrompts } from "./example-prompts";
@@ -24,6 +25,10 @@ export function Chat({
   id: string;
   initialMessages?: Array<Message>;
 }) {
+  const router = useRouter();
+  const params = useParams();
+  const workspaceId = params.workspaceId as string;
+
   const [messages, setMessages] = useState<Array<Message>>(
     initialMessages || []
   );
@@ -31,24 +36,17 @@ export function Chat({
   const [isLoading, setIsLoading] = useState(false);
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
 
-  const handleSubmit = (
-    event?: { preventDefault?: () => void },
-    chatRequestOptions?: any
-  ) => {
-    if (event?.preventDefault) event.preventDefault();
+  const handleSubmit = (event?: { preventDefault?: () => void }) => {
+    event?.preventDefault?.();
     if (!input.trim()) return;
 
-    console.log("Chat submit:", { id, input, chatRequestOptions });
-    // TODO: Implement chat functionality once AI package is available
-    setInput("");
+    router.push(
+      `/workspace/${workspaceId}/notebook?prompt=${encodeURIComponent(input)}`
+    );
   };
 
-  const append = async (
-    message: any,
-    chatRequestOptions?: any
-  ): Promise<string | null | undefined> => {
-    console.log("Append message:", message, chatRequestOptions);
-    // TODO: Implement message append functionality
+  const append = async (message: any) => {
+    console.log("Append message:", message);
     return null;
   };
 
@@ -57,16 +55,22 @@ export function Chat({
     setIsLoading(false);
   };
 
+  const handlePromptSelect = (prompt: string) => {
+    router.push(
+      `/workspace/${workspaceId}/notebook?prompt=${encodeURIComponent(prompt)}`
+    );
+  };
+
   return (
-    <div className="flex flex-row justify-center pb-4 md:pb-8 h-dvh bg-[#F9FAFD] dark:bg-black ">
+    <div className="flex flex-row justify-center pb-4 md:pb-8 h-dvh bg-[#F9FAFD] dark:bg-black">
       <div className="flex flex-col mt-32 items-center gap-2">
         <h1 className="text-3xl lg:text-3xl font-medium text-center tracking-tighter text-pretty font-primary">
           What do you want to explore onchain today?
         </h1>
 
-        <p className="text-[#6C757D]"> Search the blockchain for information</p>
+        <p className="text-[#6C757D]">Search the blockchain for information</p>
 
-        <form className="flex flex-row gap-2 relative items-end w-full md:max-w-[800px] max-w-[calc(100dvw-32px) px-4 md:px-0">
+        <form className="flex flex-row gap-2 relative items-end w-full md:max-w-[800px] max-w-[calc(100dvw-32px)] px-4 md:px-0">
           <MultimodalInput
             input={input}
             setInput={setInput}
@@ -79,9 +83,10 @@ export function Chat({
             append={append}
           />
         </form>
+
         <div className="mt-6">
           <h3 className="mb-4 text-sm">Test Queries</h3>
-          <ExamplePrompts onPromptSelect={() => {}} />
+          <ExamplePrompts onPromptSelect={handlePromptSelect} />
         </div>
       </div>
     </div>

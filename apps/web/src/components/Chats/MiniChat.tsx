@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { MiniChatInput } from "./MiniChatInput";
 
 interface MiniChatHeaderProps {
@@ -91,9 +92,26 @@ export const MiniChatEmptyState: React.FC = () => {
 };
 
 export const MiniChat = () => {
+  const searchParams = useSearchParams();
   const [messages, setMessages] = useState<
     Array<{ text: string; isUser: boolean }>
   >([]);
+
+  // Handle incoming prompt from URL
+  useEffect(() => {
+    const prompt = searchParams.get("prompt");
+    if (prompt && messages.length === 0) {
+      // Add the user's message
+      setMessages([{ text: prompt, isUser: true }]);
+
+      // Simulate agent response
+      setTimeout(() => {
+        const agentResponse =
+          "I've analyzed the blockchain data you requested. Here's what I found: The tokens above $1m market cap on Base show strong growth trends, with the top performers being in the DeFi and NFT sectors. Would you like me to create a visualization or dive deeper into specific metrics?";
+        setMessages(prev => [...prev, { text: agentResponse, isUser: false }]);
+      }, 800);
+    }
+  }, [searchParams]);
 
   const handleSendMessage = (data: { message: string; files: File[] }) => {
     if (data.message.trim()) {
@@ -116,24 +134,18 @@ export const MiniChat = () => {
           <MiniChatEmptyState />
         ) : (
           <div className="flex flex-col w-full gap-4">
-            {messages.length === 0 ? (
-              <MiniChatEmptyState />
-            ) : (
-              <div className="flex flex-col w-full gap-4">
-                {messages.map((msg, idx) => (
-                  <div
-                    key={idx}
-                    className={`flex ${msg.isUser ? "justify-end" : "justify-start"}`}
-                  >
-                    <div
-                      className={`${msg.isUser ? "bg-[#F7E4E1] dark:bg-[#121417]" : "bg-[#F1F3F4] dark:bg-[#121417]"} text-[#343A40] dark:text-[#8696A6] px-4 py-2 rounded-2xl max-w-[75%]`}
-                    >
-                      {msg.text}
-                    </div>
-                  </div>
-                ))}
+            {messages.map((msg, idx) => (
+              <div
+                key={idx}
+                className={`flex ${msg.isUser ? "justify-end" : "justify-start"}`}
+              >
+                <div
+                  className={`${msg.isUser ? "bg-[#F7E4E1] dark:bg-[#121417]" : "bg-[#F1F3F4] dark:bg-[#121417]"} text-[#343A40] dark:text-[#8696A6] px-4 py-2 rounded-2xl max-w-[75%]`}
+                >
+                  {msg.text}
+                </div>
               </div>
-            )}
+            ))}
           </div>
         )}
       </div>
