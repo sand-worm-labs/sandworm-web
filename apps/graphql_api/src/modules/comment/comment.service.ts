@@ -1,9 +1,11 @@
-import { Injectable, Logger, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CommentEntity, UserEntity } from '@sandworm/postgresql-typeorm';
 import { Comment } from './model/comment.model';
 import { CreateCommentInput, DeleteCommentInput } from './dto/comment.dto';
+import { ValidationException } from '@sandworm/graphql';
+import { ErrorCode } from '@/constants/error-code.constant';
 
 @Injectable()
 export class CommentService {
@@ -17,9 +19,7 @@ export class CommentService {
   ) {}
 
   private toGraphQLComment(commentEntity: CommentEntity): Comment {
-    return {
-       ...commentEntity,
-    };
+    return { ...commentEntity };
   }
 
   async getCommentsByDocument(documentId: string): Promise<Comment[]> {
@@ -29,7 +29,7 @@ export class CommentService {
       order: { createdAt: 'ASC' },
     });
 
-    return comments.map(comment => this.toGraphQLComment(comment));
+    return comments.map(c => this.toGraphQLComment(c));
   }
 
   async getComment(commentId: string): Promise<Comment> {
@@ -39,7 +39,7 @@ export class CommentService {
     });
 
     if (!comment) {
-      throw new NotFoundException(`Comment ${commentId} not found`);
+      throw new ValidationException(ErrorCode.E301); // comment not found
     }
 
     return this.toGraphQLComment(comment);
@@ -55,14 +55,14 @@ export class CommentService {
     });
 
     if (!userEntity) {
-      throw new NotFoundException('User not found');
+      throw new ValidationException(ErrorCode.E305);
     }
 
     const comment = this.commentRepository.create({
-        id: input.id,
-        body: input.body,
-        documentId,
-        authorId,   
+      id: input.id,
+      body: input.body,
+      documentId,
+      authorId,
     });
 
     await this.commentRepository.save(comment);
@@ -81,12 +81,11 @@ export class CommentService {
     });
 
     if (!comment) {
-      throw new NotFoundException('Comment not found');
+      throw new ValidationException(ErrorCode.E301); 
     }
 
-    // Only comment author can delete their own comments
     if (comment.authorId !== currentUserId) {
-      throw new ForbiddenException('You can only delete your own comments');
+      throw new ValidationException(ErrorCode.E302);
     }
 
     await this.commentRepository.delete({ id: input.commentId });
@@ -97,8 +96,6 @@ export class CommentService {
   }
 
   async getCommentCount(documentId: string): Promise<number> {
-    return this.commentRepository.count({
-      where: { documentId },
-    });
+    return this.commentRepository.count({ where: { documentId } });
   }
 }

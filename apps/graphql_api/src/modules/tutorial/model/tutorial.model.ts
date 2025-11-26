@@ -1,67 +1,44 @@
-import { InputType } from '@nestjs/graphql';
-import {
-  StringFieldOptional,
-  NumberField,
-  NumberFieldOptional,
-  UUIDField,
-  UUIDFieldOptional,
-  BooleanFieldOptional,
-} from '@sandworm/graphql';
+import {  ObjectType, Field, registerEnumType } from '@nestjs/graphql';
+import { BooleanField} from '@sandworm/graphql';
+import { OnboardingTutorialStep } from '@sandworm/postgresql-typeorm';
 
-@InputType()
-export class CreateDocumentInput {
-  @StringFieldOptional()
-  title: string;
+registerEnumType(OnboardingTutorialStep, {
+  name: 'OnboardingTutorialStep',
+  description: 'Steps in the onboarding tutorial',
+})
 
-  @StringFieldOptional()
-  icon?: string;
+@ObjectType()
+export class TutorialStepState {
+  @BooleanField()
+  isComplete: boolean;
 
-  @UUIDFieldOptional()
-  parentId?: string;
+  @BooleanField()
+  isActive: boolean;
 }
 
-@InputType()
-export class DocumentRelationsInput {
-  @UUIDFieldOptional()
-  parentId?: string | null;
+@ObjectType()
+export class TutorialState {
+  @Field(() => OnboardingTutorialStep)
+  currentStep: OnboardingTutorialStep;
 
-  @NumberField()
-  orderIndex: number;
+  @BooleanField()
+  isComplete: boolean;
+
+  @BooleanField()
+  isDismissed: boolean;
+
+  @Field(() => Object, { nullable: true })
+  stepStates: Record<string, TutorialStepState>;
 }
 
-@InputType()
-export class UpdateDocumentInput {
-  @StringFieldOptional()
-  title?: string;
-  relations?: DocumentRelationsInput;
-}
+@ObjectType()
+export class AdvanceTutorialResult {
+  @Field(() => OnboardingTutorialStep, { nullable: true })
+  prevStep: OnboardingTutorialStep | null;
 
-@InputType()
-export class DeleteDocumentInput {
-  @UUIDField()
-  workspaceId: string;
+  @Field(() => TutorialState, { nullable: true })
+  currentState: TutorialState | null;
 
-  @UUIDField()
-  documentId: string;
-
-  @BooleanFieldOptional()
-  isPermanent?: boolean;
-}
-
-@InputType()
-export class RestoreDocumentInput {
-  @UUIDField()
-  workspaceId: string;
-
-  @UUIDField()
-  documentId: string;
-}
-
-@InputType()
-export class DuplicateDocumentInput {
-  @UUIDField()
-  workspaceId: string;
-
-  @UUIDField()
-  documentId: string;
+  @BooleanField()
+  didAdvance: boolean;
 }

@@ -1,14 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { OnboardingTutorialEntity } from '@sandworm/postgresql-typeorm';
 import { AuthModule } from '../auth/auth.module';
-import { TutorialResolver } from './tutorial.resolver';
 import { TutorialService } from './tutorial.service';
-import { TutorialGateway } from './tutorial.resolver';
+import { TutorialResolver } from './tutorial.resolver'
+import { TutorialEntity } from '@sandworm/postgresql-typeorm';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([OnboardingTutorialEntity]), AuthModule],
-  providers: [TutorialResolver, TutorialService, TutorialGateway],
-  exports: [TutorialService, TutorialGateway],
+  imports: [TypeOrmModule.forFeature([TutorialEntity]), AuthModule],
+  providers: [TutorialResolver, TutorialService],
+  exports: [TutorialService],
 })
 export class TutorialModule {}

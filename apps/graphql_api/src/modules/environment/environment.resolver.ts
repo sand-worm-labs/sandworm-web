@@ -1,14 +1,12 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { EnvironmentService } from './environment.service';
-import {
-  Environment,
-  EnvironmentVariable,
-  EnvironmentStatus,
-} from './model/environment.model';
+import { Environment} from './model/environment.model';
+import {EnvironmentVariable} from './model/environment_variable.model';
 import {
   SetEnvironmentVariablesInput,
   RestartEnvironmentInput,
 } from './dto/environment.dto';
+import { EnvironmentStatus } from '@sandworm/postgresql-typeorm';
 
 @Resolver(() => Environment)
 export class EnvironmentResolver {

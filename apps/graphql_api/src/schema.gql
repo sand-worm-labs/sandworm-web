@@ -8,6 +8,20 @@ type AuthPayload {
   user: User!
 }
 
+type Comment {
+  authorId: ID!
+  body: String!
+  createdAt: DateTime!
+  documentId: ID!
+  id: ID!
+  updatedAt: DateTime!
+}
+
+input CreateCommentInput {
+  body: String!
+  id: String!
+}
+
 input CreateDocumentInput {
   icon: String
   parentId: String
@@ -26,9 +40,20 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+input DeleteCommentInput {
+  commentId: String!
+  documentId: String!
+  workspaceId: String!
+}
+
 input DeleteDocumentInput {
   documentId: String!
   isPermanent: Boolean
+  workspaceId: String!
+}
+
+input DeleteFileInput {
+  path: String!
   workspaceId: String!
 }
 
@@ -51,6 +76,36 @@ input DuplicateDocumentInput {
   workspaceId: String!
 }
 
+type Environment {
+  id: ID!
+  lastActivityAt: DateTime!
+  resourceVersion: Float!
+  status: EnvironmentStatus!
+  workspaceId: ID!
+}
+
+"""The status of the Jupyter environment"""
+enum EnvironmentStatus {
+  FAILING
+  RUNNING
+  STARTING
+  STOPPED
+  STOPPING
+}
+
+type EnvironmentVariable {
+  id: ID!
+  name: String!
+  updatedAt: DateTime!
+  value: String!
+  workspaceId: ID!
+}
+
+input EnvironmentVariableInput {
+  name: String!
+  value: String!
+}
+
 input FavoriteDocumentInput {
   documentId: String!
   workspaceId: String!
@@ -68,6 +123,11 @@ The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://
 """
 scalar JSON
 
+input ListFilesInput {
+  path: String
+  workspaceId: String!
+}
+
 """Login input"""
 input LoginInput {
   """Email address"""
@@ -81,6 +141,9 @@ type Mutation {
   """Mark a document as a favorite"""
   addFavoriteDocument(input: FavoriteDocumentInput!): Document!
 
+  """Create a new comment on a document"""
+  createComment(documentId: String!, input: CreateCommentInput!): Comment!
+
   """Create a new document in a workspace"""
   createDocument(input: CreateDocumentInput!, workspaceId: String!): Document!
 
@@ -90,8 +153,17 @@ type Mutation {
   """Create a new workspace"""
   createWorkspace(name: String!): Workspace!
 
+  """Delete a comment (only by comment author)"""
+  deleteComment(input: DeleteCommentInput!): Boolean!
+
   """Soft delete or permanently delete a document"""
   deleteDocument(input: DeleteDocumentInput!): Document!
+
+  """Delete a single environment variable"""
+  deleteEnvironmentVariable(variableId: String!, workspaceId: String!): Boolean!
+
+  """Delete a file from the workspace"""
+  deleteFile(input: DeleteFileInput!): Boolean!
 
   """Create a fork/duplicate of a document"""
   duplicateDocument(input: DuplicateDocumentInput!): Document!
@@ -108,8 +180,14 @@ type Mutation {
   """Unmark a document as a favorite"""
   removeFavoriteDocument(input: FavoriteDocumentInput!): Document!
 
+  """Restart the Jupyter environment"""
+  restartEnvironment(input: RestartEnvironmentInput!): Environment!
+
   """Restore a previously deleted document"""
   restoreDocument(input: RestoreDocumentInput!): Document!
+
+  """Add or remove environment variables"""
+  setEnvironmentVariables(input: SetEnvironmentVariablesInput!, workspaceId: String!): [EnvironmentVariable!]!
 
   """Unfollow User"""
   unfollowUser(
@@ -135,8 +213,26 @@ type Profile {
 }
 
 type Query {
+  """Get a single comment by ID"""
+  comment(commentId: String!): Comment!
+
+  """Get all comments for a document"""
+  comments(documentId: String!): [Comment!]!
+
   """Get current user (from token)"""
   currentUser: AuthPayload!
+
+  """Get environment details for a workspace"""
+  environment(workspaceId: String!): Environment!
+
+  """Get current environment status"""
+  environmentStatus(workspaceId: String!): EnvironmentStatus!
+
+  """Get all environment variables (values are masked)"""
+  environmentVariables(workspaceId: String!): [EnvironmentVariable!]!
+
+  """Check if a file exists"""
+  fileExists(fileName: String!, workspaceId: String!): Boolean!
 
   """Get all users"""
   getAllUsers(input: GetAllUsersInput!): [User!]!
@@ -158,7 +254,9 @@ type Query {
 
   """Get all documents in a workspace"""
   getWorkspaceDocuments(workspaceId: String!): [Document!]!
-  hello: String!
+
+  """List all files in a workspace"""
+  listFiles(input: ListFilesInput!): [SandwormFile!]!
 
   """Get Profile"""
   profile(
@@ -168,9 +266,27 @@ type Query {
   tags: [String!]!
 }
 
+input RestartEnvironmentInput {
+  workspaceId: String!
+}
+
 input RestoreDocumentInput {
   documentId: String!
   workspaceId: String!
+}
+
+type SandwormFile {
+  isDirectory: Boolean!
+  mimeType: String
+  name: String!
+  path: String!
+  relCwdPath: String!
+  size: Float!
+}
+
+input SetEnvironmentVariablesInput {
+  add: [EnvironmentVariableInput!]!
+  remove: [String!]!
 }
 
 input UpdateDocumentInput {

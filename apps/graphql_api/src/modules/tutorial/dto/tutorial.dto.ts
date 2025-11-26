@@ -1,67 +1,33 @@
 import { InputType } from '@nestjs/graphql';
 import {
-  StringFieldOptional,
-  NumberField,
-  NumberFieldOptional,
   UUIDField,
-  UUIDFieldOptional,
-  BooleanFieldOptional,
+  StringField,
 } from '@sandworm/graphql';
 
-@InputType()
-export class CreateDocumentInput {
-  @StringFieldOptional()
-  title: string;
-
-  @StringFieldOptional()
-  icon?: string;
-
-  @UUIDFieldOptional()
-  parentId?: string;
-}
 
 @InputType()
-export class DocumentRelationsInput {
-  @UUIDFieldOptional()
-  parentId?: string | null;
-
-  @NumberField()
-  orderIndex: number;
-}
-
-@InputType()
-export class UpdateDocumentInput {
-  @StringFieldOptional()
-  title?: string;
-  relations?: DocumentRelationsInput;
-}
-
-@InputType()
-export class DeleteDocumentInput {
+export class GetTutorialStateInput {
   @UUIDField()
   workspaceId: string;
 
-  @UUIDField()
-  documentId: string;
-
-  @BooleanFieldOptional()
-  isPermanent?: boolean;
+  @StringField()
+  tutorialType: 'onboarding';
 }
 
 @InputType()
-export class RestoreDocumentInput {
+export class AdvanceTutorialInput {
   @UUIDField()
   workspaceId: string;
 
-  @UUIDField()
-  documentId: string;
+  @StringField()
+  tutorialType: 'onboarding';
 }
 
 @InputType()
-export class DuplicateDocumentInput {
+export class DismissTutorialInput {
   @UUIDField()
   workspaceId: string;
 
-  @UUIDField()
-  documentId: string;
+  @StringField()
+  tutorialType: 'onboarding';
 }
