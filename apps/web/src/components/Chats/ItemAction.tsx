@@ -31,6 +31,7 @@ export default function ItemActionsDropdown({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
+          type="button"
           aria-label="More options"
           className={`p-2 rounded-md transition-colors ${className}`}
         >

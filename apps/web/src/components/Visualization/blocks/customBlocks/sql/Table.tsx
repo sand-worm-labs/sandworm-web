@@ -60,7 +60,6 @@ function Table(props: Props) {
               const Icon = getColumnTypeIcon(column.type);
               return (
                 <th
-                  key={index}
                   scope="col"
                   className={clsx(
                     "p-2 text-gray-500 whitespace-nowrap font-medium border-b hover:bg-gray-100 cursor-pointer",

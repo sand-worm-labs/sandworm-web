@@ -179,6 +179,8 @@ const getScheduleBlock = (schedule: ExecutionSchedule) => {
       return <MonthlySchedule schedule={schedule} />;
     case "cron":
       return <CronSchedule schedule={schedule} />;
+    default:
+      return null;
   }
 };
 
@@ -218,6 +220,7 @@ export default function Schedules(props: Props) {
       leaveTo="transform translate-x-full"
     >
       <button
+        type="button"
         className="absolute z-10 top-7 transform rounded-full border border-gray-300 text-gray-400 bg-white hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
         onClick={props.onHide}
       >
@@ -302,10 +305,7 @@ function ScheduleList(props: ScheduleListProps) {
 
       {props.isPublished ? (
         <ScrollBar className="overflow-auto">
-          <ul
-            
-            className="flex-1 text-xs font-primary overflow-visible"
-          >
+          <ul className="flex-1 text-xs font-primary overflow-visible">
             {props.schedules.map((scheduledRun, i) => {
               return (
                 <li
