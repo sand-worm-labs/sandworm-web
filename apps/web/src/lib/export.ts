@@ -64,6 +64,9 @@ export const getSizeWarning = (estimatedSize: string | null): string | null => {
   if (!estimatedSize) return null;
 
   const [size, unit] = estimatedSize.split(" ");
+
+  if (!size) return null;
+
   const sizeNum = parseFloat(size);
 
   let sizeInMB = sizeNum;

@@ -75,38 +75,40 @@ interface Props {
   compact?: boolean;
 }
 
-export default function ChartTypeSelector(props: Props) {
-  const selected = charts.find(type => type.value === props.value);
+export default function ChartTypeSelector({
+  label,
+  value,
+  onChange,
+  isEditable,
+  compact,
+}: Props) {
+  const selected = charts.find(type => type.value === value);
   useEffect(() => {
-    if (!selected && charts[0]) {
-      props.onChange(charts[0].value);
+    if (!selected && charts.length > 0) {
+      onChange(charts[0]!.value);
     }
-  }, [selected, charts, props]);
+  }, [selected, charts]);
 
   const buttonRef = useRef<HTMLButtonElement>(null);
   const { onOpen, dropdownPosition } = useDropdownPosition(buttonRef);
 
   const onClickButton = useCallback(() => {
-    if (props.isEditable) {
+    if (isEditable) {
       onOpen();
     }
-  }, [props.isEditable, onOpen]);
+  }, [isEditable, onOpen]);
 
   if (!selected) {
     return null;
   }
 
   return (
-    <Listbox
-      value={props.value}
-      onChange={props.onChange}
-      disabled={!props.isEditable}
-    >
+    <Listbox value={value} onChange={onChange} disabled={!isEditable}>
       {({ open }) => (
-        <div className="relative bg-white dark:bg-black">
-          {!props.compact && (
+        <div className="relative bg-black">
+          {!compact && (
             <div className="block text-xs font-medium leading-6 text-gray-900 pb-1">
-              {props.label}
+              {label}
             </div>
           )}
           <Listbox.Button
@@ -114,12 +116,12 @@ export default function ChartTypeSelector(props: Props) {
             ref={buttonRef}
             onClick={onClickButton}
           >
-            <div className="border border-gray-200 rounded-md  px-3 flex items-center justify-between gap-x-2 w-full min-h-8">
+            <div className="border border-gray-200 rounded-md px-3 flex items-center justify-between gap-x-2 w-full min-h-8">
               <div className="flex items-center justify-left gap-x-2 text-left w-full h-6">
                 <div className="h-4 w-6 rounded-sm grayscale">
-                  <img src={`/images/charts/${selected.icon}`} alt="" />
+                  <Image src={`/images/charts/${selected.icon}`} alt="" />
                 </div>
-                {!props.compact && <span>{selected.label}</span>}
+                {!compact && <span>{selected.label}</span>}
               </div>
               <ChevronDownIcon className="h-4 w-4 text-gray-500" />
             </div>
@@ -167,9 +169,9 @@ export default function ChartTypeSelector(props: Props) {
                           <>
                             <div className="h-12 w-20 rounded-sm">
                               <Image
+                                rel="preload"
                                 src={`/img/charts/${option.icon}`}
                                 alt=""
-                                fill
                                 className={
                                   option.comingSoon
                                     ? "grayscale opacity-50"
