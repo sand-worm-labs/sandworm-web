@@ -1,7 +1,7 @@
+import { getRandomInt } from '@sandworm/nest-common';
 import { DataSource } from 'typeorm';
 import { Seeder, SeederFactoryManager } from 'typeorm-extension';
-import { OnboardingTutorialEntity, UserEntity, WorkspaceEntity } from '../entities';
-import { getRandomInt } from '@sandworm/nest-common';
+import { TutorialEntity, UserEntity, WorkspaceEntity } from '../entities';
 import { OnboardingTutorialStep } from '../entities/enums';
 
 export class OnboardingTutorialSeeder1760696720396 implements Seeder {
@@ -9,12 +9,11 @@ export class OnboardingTutorialSeeder1760696720396 implements Seeder {
 
   public async run(
     dataSource: DataSource,
-    _factoryManager: SeederFactoryManager
+    _factoryManager: SeederFactoryManager,
   ): Promise<any> {
-
     const userRepository = dataSource.getRepository(UserEntity);
     const workspaceRepository = dataSource.getRepository(WorkspaceEntity);
-    const tutorialRepository = dataSource.getRepository(OnboardingTutorialEntity);
+    const tutorialRepository = dataSource.getRepository(TutorialEntity);
 
     // --- Fetch random users ---
     const numberOfUsers = await userRepository.count();
@@ -36,8 +35,7 @@ export class OnboardingTutorialSeeder1760696720396 implements Seeder {
       .getMany();
 
     for (const user of users) {
-      const workspace =
-        workspaces[getRandomInt(0, workspaces.length - 1)];
+      const workspace = workspaces[getRandomInt(0, workspaces.length - 1)];
 
       const exists = await tutorialRepository.findOne({
         where: { userId: user.id, workspaceId: workspace.id },

@@ -1,11 +1,6 @@
 "use client";
 
-import type {
-  Attachment,
-  ChatRequestOptions,
-  CreateMessage,
-  Message,
-} from "ai";
+import type { Attachment, ChatRequestOptions, CreateUIMessage } from "ai";
 import type { Dispatch, SetStateAction, ChangeEvent } from "react";
 import React, { useRef, useEffect, useState, useCallback } from "react";
 import { toast } from "sonner";
@@ -32,7 +27,7 @@ export function MultimodalInput({
   setAttachments: Dispatch<SetStateAction<Array<Attachment>>>;
   messages: Array<Message>;
   append?: (
-    message: Message | CreateMessage,
+    message: Message | CreateUIMessage,
     chatRequestOptions?: ChatRequestOptions
   ) => Promise<string | null | undefined>;
   handleSubmit: (
@@ -130,7 +125,7 @@ export function MultimodalInput({
         input={input}
         onInputChange={handleInput}
         isLoading={isLoading}
-        onSubmit={submitForm}
+        onSubmit={handleSubmit}
         onStop={stop}
         attachments={attachments}
         uploadQueue={uploadQueue}
