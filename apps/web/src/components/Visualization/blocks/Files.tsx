@@ -333,10 +333,7 @@ file`;
                 />
               </div>
               {actualFiles.length > 0 ? (
-                <ul
-                  role="list"
-                  className="flex-1 divide-y divide-solid overflow-y-auto"
-                >
+                <ul className="flex-1 divide-y divide-solid overflow-y-auto">
                   {actualFiles
                     .filter(f => !f.isDirectory)
                     .map(file => (
@@ -412,6 +409,8 @@ function UploadResultItem(props: UploadResultItemProps) {
         return "An unexpected error occurred";
       case "success":
         return "Upload successful";
+      default:
+        return "";
     }
   }, [props.result.outcome]);
 

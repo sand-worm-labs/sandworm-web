@@ -11,7 +11,7 @@ export function FeaturesDialog({
   currentPlan,
 }: {
   open: boolean;
-  setOpen: (open: boolean) => void;
+  setOpen: (should_open: boolean) => void;
   currentPlan: PlanName;
 }) {
   const cancelButtonRef = useRef(null);
