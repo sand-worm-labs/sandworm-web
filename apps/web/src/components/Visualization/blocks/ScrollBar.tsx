@@ -6,7 +6,6 @@ import SimpleBar from "simplebar-react";
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
   className?: string;
-  disabled?: boolean;
 }
 const ScrollBar = forwardRef<HTMLDivElement, Props>(
   function ScrollBar(props, ref) {

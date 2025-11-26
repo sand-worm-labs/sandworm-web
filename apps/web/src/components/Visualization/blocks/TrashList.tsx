@@ -30,7 +30,7 @@ export default function TrashList({
   );
 
   return (
-    <ul role="list" className="divide-y divide-gray-100">
+    <ul className="divide-y divide-gray-100">
       {sorted.map(doc => {
         const path: string[] = [doc.title || "Untitled"];
         let parent = doc.parentId ? docById.get(doc.parentId) : undefined;
