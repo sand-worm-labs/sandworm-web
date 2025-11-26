@@ -121,6 +121,7 @@ export default function ShareDropdown(props: Props) {
           <Menu.Item>
             {({ active }) => (
               <button
+                type="button"
                 className={clsx(
                   active ? "bg-gray-100 text-gray-900" : "text-gray-700",
                   "flex items-center gap-x-2 w-full text-sm px-4 py-3"
@@ -148,6 +149,7 @@ export default function ShareDropdown(props: Props) {
             <Menu.Item>
               {({ active }) => (
                 <button
+                  type="button"
                   className={clsx(
                     "cursor-not-allowed",
                     active ? "bg-gray-100 text-gray-900" : "text-gray-700",

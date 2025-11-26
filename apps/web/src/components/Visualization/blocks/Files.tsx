@@ -23,7 +23,6 @@ import {
 import {
   FolderIcon,
   InformationCircleIcon,
-  QuestionMarkCircleIcon,
   CloudArrowUpIcon as CloudArrowUpIconSolid,
 } from "@heroicons/react/20/solid";
 
@@ -32,7 +31,7 @@ import { NEXT_PUBLIC_API_URL } from "../utils/env";
 import { useEnvironmentStatus } from "../hooks/useEnvironmentStatus";
 import { useFiles } from "../hooks/useFiles";
 
-import { PortalTooltip, Tooltip } from "./ToolTips";
+import { Tooltip } from "./ToolTips";
 import Spin from "./Spin";
 
 interface Props {
@@ -243,6 +242,7 @@ file`;
           {...getInputProps()}
         />
         <button
+          type="button"
           className="absolute z-10 top-7 transform rounded-full border border-gray-300 text-gray-400 bg-white hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
           onClick={props.onHide}
         >
@@ -264,6 +264,7 @@ file`;
 
             <div>
               <button
+                type="button"
                 className="flex items-center gap-x-2 rounded-sm bg-primary-200 px-3 py-1 text-sm hover:bg-primary-300 disabled:cursor-not-allowed disabled:bg-gray-200"
                 onClick={openUpload}
               >
@@ -280,10 +281,7 @@ file`;
                   Uploading
                 </div>
               </div>
-              <ul
-                role="list"
-                className="divide-y divide-solid overflow-y-auto border-b"
-              >
+              <ul className="divide-y divide-solid overflow-y-auto border-b">
                 {results.map((result, i) => (
                   <li>
                     <UploadResultItem
@@ -480,6 +478,7 @@ function FileItem(props: FileItemProps) {
           </div>
           <div>
             <button
+              type="button"
               className="text-gray-500 hover:text-red-500 disabled:cursor-not-allowed"
               onClick={onRemove}
               disabled={props.isDeleting}
@@ -505,6 +504,7 @@ function FileItem(props: FileItemProps) {
           tooltipClassname="-top-1 w-44 -translate-y-full"
         >
           <button
+            type="button"
             className="text-gray-500 hover:text-gray-400 disabled:hover:text-gray-500 disabled:cursor-not-allowed"
             onClick={onUseInPython}
             disabled={props.isDeleting || !props.canUse}
@@ -520,6 +520,7 @@ function FileItem(props: FileItemProps) {
           tooltipClassname="w-44"
         >
           <button
+            type="button"
             className="text-gray-500 hover:text-gray-400 disabled:hover:text-gray-500 disabled:cursor-not-allowed"
             onClick={onUseInSQL}
             disabled={props.isDeleting || !props.canUse}

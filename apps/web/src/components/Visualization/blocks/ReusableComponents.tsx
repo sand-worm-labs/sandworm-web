@@ -75,6 +75,7 @@ export default function ReusableComponents(props: Props) {
       leaveTo="transform translate-x-full"
     >
       <button
+        type="button"
         className="absolute z-10 top-7 transform rounded-full border border-gray-300 text-gray-400 bg-white hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
         onClick={props.onHide}
       >
@@ -169,6 +170,7 @@ function ReusableComponentItem(props: ReusableComponentItemProps) {
           </div>
           <div>
             <button
+              type="button"
               className="text-gray-500 hover:text-red-500 disabled:cursor-not-allowed"
               onClick={onRemove}
             >
@@ -209,6 +211,7 @@ function ReusableComponentItem(props: ReusableComponentItemProps) {
             tooltipClassname="-top-1 w-44 -translate-y-full"
           >
             <button
+              type="button"
               className="text-gray-500 hover:text-gray-400 disabled:hover:text-gray-500 disabled:cursor-not-allowed"
               onClick={onUse}
               disabled={!props.canUse}
@@ -259,6 +262,7 @@ export function SaveReusableComponentButton(
         >
           {ref => (
             <button
+              type="button"
               className="rounded-sm h-6 min-w-6 flex items-center justify-center border border-gray-200 text-gray-400 hover:bg-gray-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-300"
               onClick={onSave}
               disabled={props.disabled || props.isComponentInstance}

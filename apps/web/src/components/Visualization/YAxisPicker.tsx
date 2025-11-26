@@ -24,7 +24,6 @@ import AxisModifierSelector from "@/components/Visualization/blocks/AxisModifier
 
 interface Props {
   index: number;
-  label?: string;
   defaultChartType: ChartType;
   yAxis: YAxis;
   onChange: (yAxis: YAxis, i: number) => void;
@@ -164,41 +163,37 @@ function YAxisPickerV2(props: Props) {
     () =>
       sortWith(
         [
-          (a, b) =>
-            DataFrameNumberColumn.safeParse(a).success ===
-            DataFrameNumberColumn.safeParse(b).success
-              ? 0
-              : DataFrameNumberColumn.safeParse(a).success
-                ? -1
-                : 1,
-          (a, b) =>
-            DataFrameDateColumn.safeParse(a).success ===
-            DataFrameDateColumn.safeParse(b).success
-              ? 0
-              : DataFrameDateColumn.safeParse(a).success
-                ? -1
-                : 1,
-          (a, b) =>
-            DataFrameBooleanColumn.safeParse(a).success ===
-            DataFrameNumberColumn.safeParse(b).success
-              ? 0
-              : DataFrameNumberColumn.safeParse(a).success
-                ? -1
-                : 1,
-          (a, b) =>
-            DataFrameStringColumn.safeParse(a).success ===
-            DataFrameStringColumn.safeParse(b).success
-              ? 0
-              : DataFrameStringColumn.safeParse(a).success
-                ? -1
-                : 1,
-          // Put columns with 'id' in the name at the end to avoid them being selected by default
-          (a, b) =>
-            a.name.toString().toLowerCase().includes("id")
-              ? 1
-              : b.name.toString().toLowerCase().includes("id")
-                ? -1
-                : 0,
+          (a, b) => {
+            const aIsNumber = DataFrameNumberColumn.safeParse(a).success;
+            const bIsNumber = DataFrameNumberColumn.safeParse(b).success;
+            if (aIsNumber === bIsNumber) return 0;
+            return aIsNumber ? -1 : 1;
+          },
+          (a, b) => {
+            const aIsDate = DataFrameDateColumn.safeParse(a).success;
+            const bIsDate = DataFrameDateColumn.safeParse(b).success;
+            if (aIsDate === bIsDate) return 0;
+            return aIsDate ? -1 : 1;
+          },
+          (a, b) => {
+            const aIsBoolean = DataFrameBooleanColumn.safeParse(a).success;
+            const bIsBoolean = DataFrameNumberColumn.safeParse(b).success; // Note: this looks like a bug?
+            if (aIsBoolean === bIsBoolean) return 0;
+            return aIsBoolean ? -1 : 1;
+          },
+          (a, b) => {
+            const aIsString = DataFrameStringColumn.safeParse(a).success;
+            const bIsString = DataFrameStringColumn.safeParse(b).success;
+            if (aIsString === bIsString) return 0;
+            return aIsString ? -1 : 1;
+          },
+          (a, b) => {
+            const aHasId = a.name.toString().toLowerCase().includes("id");
+            const bHasId = b.name.toString().toLowerCase().includes("id");
+            if (aHasId && !bHasId) return 1;
+            if (!aHasId && bHasId) return -1;
+            return 0;
+          },
         ],
         columns
       ),
@@ -217,6 +212,7 @@ function YAxisPickerV2(props: Props) {
           )}
         {props.onAddYAxis && (
           <button
+            type="button"
             className="text-[10px] text-gray-400 underline pb-0.5 hover:text-gray-500"
             onClick={props.onAddYAxis}
           >
@@ -257,6 +253,7 @@ function YAxisPickerV2(props: Props) {
 
                 {(props.yAxis.series.length > 1 || props.onRemove) && (
                   <button
+                    type="button"
                     className="flex items-center jutify-center cursor-pointer text-gray-400 hover:text-red-600 text-[10px] absolute top-1 right-1 underline"
                     onClick={() => onRemoveSerie(i)}
                   >
@@ -329,6 +326,7 @@ function YAxisPickerV2(props: Props) {
           props.yAxis.series[0]?.column !== null) && (
           <div className="flex justify-end pt-2">
             <button
+              type="button"
               onClick={onAddSerie}
               className="text-[10px] text-gray-400 underline hover:text-gray-500"
             >

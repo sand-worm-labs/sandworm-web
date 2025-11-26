@@ -71,6 +71,7 @@ export default function TrashList({
             <dl className="flex items-center justify-center gap-x-2 sm:w-auto px-2">
               <div className="group relative">
                 <button
+                  type="button"
                   className="flex p-2 hover:bg-gray-100 rounded-sm"
                   onClick={() => onRestore(doc.id)}
                 >
@@ -85,6 +86,7 @@ export default function TrashList({
 
               <div className="group relative">
                 <button
+                  type="button"
                   className="flex p-2 hover:bg-gray-100 rounded-sm"
                   onClick={() => onPermanentDelete(doc.id)}
                 >

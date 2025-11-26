@@ -1,13 +1,6 @@
 import Link from "next/link";
 import { PuzzlePieceIcon } from "@heroicons/react/24/outline";
 
-interface Props {
-  workspaceId: string;
-}
-export default function IntegrationsList(props: Props) {
-  return <EmptyIntegrations workspaceId={props.workspaceId} />;
-}
-
 function EmptyIntegrations(props: { workspaceId: string }) {
   return (
     <div className="py-6">
@@ -24,4 +17,11 @@ function EmptyIntegrations(props: { workspaceId: string }) {
       </Link>
     </div>
   );
+}
+
+interface Props {
+  workspaceId: string;
+}
+export default function IntegrationsList(props: Props) {
+  return <EmptyIntegrations workspaceId={props.workspaceId} />;
 }
