@@ -1,0 +1,84 @@
+# Authentication Queries
+
+# Get current authenticated user
+query CurrentUser {
+  currentUser {
+    id
+    token
+    user {
+      id
+      email
+      username
+      firstName
+      lastName
+      fullName
+      avater
+      isOnboarded
+      followersCount
+      followingCount
+      settings {
+        id
+        theme
+        statusText
+        statusUpdatedAt
+        socialLinks
+        wallets
+        userId
+      }
+    }
+  }
+}
+
+# Get a user's public profile
+query GetProfile($username: String!) {
+  profile(username: $username) {
+    username
+    bio
+    image
+    following
+  }
+}
+
+# Get all users with pagination and sorting
+query GetAllUsers($input: GetAllUsersInput!) {
+  getAllUsers(input: $input) {
+    id
+    username
+    email
+    firstName
+    lastName
+    fullName
+    avater
+    followersCount
+    followingCount
+    isOnboarded
+  }
+}
+
+# Get users who follow a specific user
+query GetUserFollowers($userId: String!) {
+  getUserFollowers(userId: $userId) {
+    id
+    username
+    email
+    firstName
+    lastName
+    avater
+    followersCount
+    followingCount
+  }
+}
+
+# Get users that a specific user is following
+query GetUserFollowing($userId: String!) {
+  getUserFollowing(userId: $userId) {
+    id
+    username
+    email
+    firstName
+    lastName
+    avater
+    followersCount
+    followingCount
+  }
+}

@@ -1,0 +1,28 @@
+# Environment Queries
+
+# Get environment details for a workspace
+query GetEnvironment($workspaceId: String!) {
+  environment(workspaceId: $workspaceId) {
+    id
+    workspaceId
+    status
+    resourceVersion
+    lastActivityAt
+  }
+}
+
+# Get current environment status
+query GetEnvironmentStatus($workspaceId: String!) {
+  environmentStatus(workspaceId: $workspaceId)
+}
+
+# Get all environment variables (values are masked)
+query GetEnvironmentVariables($workspaceId: String!) {
+  environmentVariables(workspaceId: $workspaceId) {
+    id
+    name
+    value
+    updatedAt
+    workspaceId
+  }
+}
