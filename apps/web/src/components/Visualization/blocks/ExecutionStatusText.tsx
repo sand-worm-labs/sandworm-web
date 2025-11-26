@@ -3,7 +3,6 @@ import {
   CheckCircleIcon,
   CloudArrowDownIcon,
   Cog8ToothIcon,
-  CheckIcon,
   ChevronRightIcon,
   ChevronDownIcon,
 } from "@heroicons/react/20/solid";
@@ -39,6 +38,7 @@ export function QuerySucceededText({
           )}
         />
         <button
+          type="button"
           className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
           onClick={onToggleResultHidden}
         >
@@ -136,6 +136,7 @@ export function PythonSucceededText({
           )}
         />
         <button
+          type="button"
           className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
           onClick={onToggleResultHidden}
         >

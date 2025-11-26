@@ -1,6 +1,6 @@
 import { Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { CheckIcon, DevicePhoneMobileIcon } from "@heroicons/react/24/outline";
+import { DevicePhoneMobileIcon } from "@heroicons/react/24/outline";
 
 export default function MobileWarning() {
   const [open, setOpen] = useState(window.innerWidth < 768);
