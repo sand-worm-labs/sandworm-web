@@ -123,7 +123,6 @@ function EditWithAIForm(props: Props) {
             placeholder="My code does X. It must do Y instead."
             onChange={onChange}
             onKeyDown={onKeyDown}
-            autoFocus
           />
           <button
             type="submit"

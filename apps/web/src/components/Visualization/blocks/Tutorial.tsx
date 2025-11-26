@@ -72,6 +72,7 @@ export const OnboardingTutorial = () => {
 
   const completeButton = (
     <button
+      type="button"
       disabled={!tutorialState.isCompleted}
       onClick={() => dismissTutorial()}
       className="text-sm w-full flex gap-x-1.5 items-center justify-center font-medium py-1.5 px-2 rounded-sm disabled:opacity-50 bg-primary-200 hover:bg-primary-300 text-primary-800 border border-primary-400 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-800 disabled:border-gray-400"
@@ -83,6 +84,7 @@ export const OnboardingTutorial = () => {
 
   const dismissButton = (
     <button
+      type="button"
       className="text-sm w-full flex gap-x-1.5 items-center justify-center font-medium px-2 py-1.5 rounded-sm bg-white hover:bg-gray-50 text-gray-600 border border-gray-200 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400 disabled:border-gray-200"
       disabled={tutorialState.isCompleted}
       onClick={() => {
@@ -373,6 +375,7 @@ export const Tutorial = (props: TutorialProps) => {
             Welcome to sandworm
           </span>
           <button
+            type="button"
             className="text-gray-400 text-xs font-medium inline-block"
             onClick={props.onAdvanceTutorial}
           >
@@ -380,6 +383,7 @@ export const Tutorial = (props: TutorialProps) => {
           </button>
         </div>
         <button
+          type="button"
           className="text-gray-400 hover:text-gray-800"
           onClick={() => setIsCollapsed(prev => !prev)}
         >
@@ -464,6 +468,7 @@ const TutorialStepAction = (props: TutorialStepActionProps) => {
 
   return (
     <button
+      type="button"
       className="text-blue-600 text-xs w-full flex gap-x-1 items-center font-medium hover:text-blue-800"
       onClick={props.onClick}
     >
@@ -518,6 +523,7 @@ const TutorialStep = (props: TutorialStepProps) => {
 
       <div className="flex flex-col py-0.5 text-sm w-full flex gap-y-1">
         <button
+          type="button"
           disabled={props.status === "current"}
           onClick={stepRef.current ? props.onExpand : () => {}}
           className={clsx(

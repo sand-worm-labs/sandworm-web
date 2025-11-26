@@ -210,6 +210,13 @@ type Workspace = {
   assistantModel: string;
 };
 
+export type EnvironmentStatus =
+  | "Running"
+  | "Stopped"
+  | "Failing"
+  | "Starting"
+  | "Stopping";
+
 export type ApiUser = Omit<User, "passwordDigest" | "confirmedAt">;
 
 export type WorkspaceUser = ApiUser & {

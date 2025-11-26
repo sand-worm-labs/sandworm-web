@@ -131,7 +131,7 @@ function DocumentTree(props: Props) {
   );
 
   return (
-    <ul role="list" className="space-y-1">
+    <ul className="space-y-1">
       {trees.map((node, i) => {
         const isLast = i === trees.size - 1;
         return (
@@ -399,6 +399,7 @@ function NodeComponent(props: NodeComponentProps) {
               >
                 {!props.flat && (
                   <button
+                    type="button"
                     className="hover:bg-ceramic-200 rounded-md p-0.5 flex items-center justify-center"
                     onClick={toggleIsExpanded}
                   >
@@ -434,7 +435,6 @@ function NodeComponent(props: NodeComponentProps) {
           </Link>
           {isExpanded && (
             <ul
-              role="list"
               className={clsx(
                 isDropping &&
                   dropHoverState === "center" &&

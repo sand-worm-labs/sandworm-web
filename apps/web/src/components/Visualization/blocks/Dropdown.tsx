@@ -28,7 +28,7 @@ function Dropdown(props: Props) {
         onChange={props.onChange}
         disabled={props.disabled}
       >
-        {({ open }) => (
+        {() => (
           <>
             <Listbox.Label className="block text-xs font-medium leading-6 text-gray-900">
               {props.label}
