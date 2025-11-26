@@ -1,6 +1,0 @@
-# Miscellaneous Queries
-
-# Get all available tags
-query GetTags {
-  tags
-}
