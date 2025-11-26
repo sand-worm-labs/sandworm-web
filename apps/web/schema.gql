@@ -1,0 +1,348 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type AuthPayload {
+  id: String!
+  token: String!
+  user: User!
+}
+
+type Comment {
+  authorId: ID!
+  body: String!
+  createdAt: DateTime!
+  documentId: ID!
+  id: ID!
+  updatedAt: DateTime!
+}
+
+input CreateCommentInput {
+  body: String!
+  id: String!
+}
+
+input CreateDocumentInput {
+  icon: String
+  parentId: String
+  title: String
+}
+
+"""User register request"""
+input CreateUserInput {
+  email: String!
+  password: String!
+  username: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+input DeleteCommentInput {
+  commentId: String!
+  documentId: String!
+  workspaceId: String!
+}
+
+input DeleteDocumentInput {
+  documentId: String!
+  isPermanent: Boolean
+  workspaceId: String!
+}
+
+input DeleteFileInput {
+  path: String!
+  workspaceId: String!
+}
+
+type Document {
+  authorId: ID!
+  children: [Document!]!
+  id: ID!
+  parent: Document
+  parentId: ID!
+  runSQLSelection: Boolean!
+  runUnexecutedBlocks: Boolean!
+  shareLinksWithoutSidebar: Boolean!
+  slug: String!
+  title: String!
+  workspaceId: ID!
+}
+
+input DuplicateDocumentInput {
+  documentId: String!
+  workspaceId: String!
+}
+
+type Environment {
+  id: ID!
+  lastActivityAt: DateTime!
+  resourceVersion: Float!
+  status: EnvironmentStatus!
+  workspaceId: ID!
+}
+
+"""The status of the Jupyter environment"""
+enum EnvironmentStatus {
+  FAILING
+  RUNNING
+  STARTING
+  STOPPED
+  STOPPING
+}
+
+type EnvironmentVariable {
+  id: ID!
+  name: String!
+  updatedAt: DateTime!
+  value: String!
+  workspaceId: ID!
+}
+
+input EnvironmentVariableInput {
+  name: String!
+  value: String!
+}
+
+input FavoriteDocumentInput {
+  documentId: String!
+  workspaceId: String!
+}
+
+input GetAllUsersInput {
+  limit: Float
+  offset: Float
+  sortBy: String! = "followersCount"
+  sortOrder: String! = "DESC"
+}
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+input ListFilesInput {
+  path: String
+  workspaceId: String!
+}
+
+"""Login input"""
+input LoginInput {
+  """Email address"""
+  email: String!
+
+  """Password"""
+  password: String!
+}
+
+type Mutation {
+  """Mark a document as a favorite"""
+  addFavoriteDocument(input: FavoriteDocumentInput!): Document!
+
+  """Create a new comment on a document"""
+  createComment(documentId: String!, input: CreateCommentInput!): Comment!
+
+  """Create a new document in a workspace"""
+  createDocument(input: CreateDocumentInput!, workspaceId: String!): Document!
+
+  """Register new user"""
+  createUser(input: CreateUserInput!): User!
+
+  """Create a new workspace"""
+  createWorkspace(name: String!): Workspace!
+
+  """Delete a comment (only by comment author)"""
+  deleteComment(input: DeleteCommentInput!): Boolean!
+
+  """Soft delete or permanently delete a document"""
+  deleteDocument(input: DeleteDocumentInput!): Document!
+
+  """Delete a single environment variable"""
+  deleteEnvironmentVariable(variableId: String!, workspaceId: String!): Boolean!
+
+  """Delete a file from the workspace"""
+  deleteFile(input: DeleteFileInput!): Boolean!
+
+  """Create a fork/duplicate of a document"""
+  duplicateDocument(input: DuplicateDocumentInput!): Document!
+
+  """Follow User"""
+  followUser(
+    """Username of the profile"""
+    username: String!
+  ): Profile!
+
+  """Sign in"""
+  login(input: LoginInput!): User!
+
+  """Unmark a document as a favorite"""
+  removeFavoriteDocument(input: FavoriteDocumentInput!): Document!
+
+  """Restart the Jupyter environment"""
+  restartEnvironment(input: RestartEnvironmentInput!): Environment!
+
+  """Restore a previously deleted document"""
+  restoreDocument(input: RestoreDocumentInput!): Document!
+
+  """Add or remove environment variables"""
+  setEnvironmentVariables(input: SetEnvironmentVariablesInput!, workspaceId: String!): [EnvironmentVariable!]!
+
+  """Unfollow User"""
+  unfollowUser(
+    """Username of the profile"""
+    username: String!
+  ): Profile!
+
+  """Update document metadata"""
+  updateDocument(documentId: String!, input: UpdateDocumentInput!, workspaceId: String!): Document!
+
+  """Update current user"""
+  updateUser(input: UpdateUserInput!): User!
+
+  """Update workspace info"""
+  updateWorkspace(name: String, workspaceId: String!): Workspace!
+}
+
+type Profile {
+  bio: String!
+  following: Boolean!
+  image: String!
+  username: String!
+}
+
+type Query {
+  """Get a single comment by ID"""
+  comment(commentId: String!): Comment!
+
+  """Get all comments for a document"""
+  comments(documentId: String!): [Comment!]!
+
+  """Get current user (from token)"""
+  currentUser: AuthPayload!
+
+  """Get environment details for a workspace"""
+  environment(workspaceId: String!): Environment!
+
+  """Get current environment status"""
+  environmentStatus(workspaceId: String!): EnvironmentStatus!
+
+  """Get all environment variables (values are masked)"""
+  environmentVariables(workspaceId: String!): [EnvironmentVariable!]!
+
+  """Check if a file exists"""
+  fileExists(fileName: String!, workspaceId: String!): Boolean!
+
+  """Get all users"""
+  getAllUsers(input: GetAllUsersInput!): [User!]!
+
+  """Get a single document by ID"""
+  getDocument(documentId: String!, workspaceId: String!): Document!
+
+  """Users who follow a given user"""
+  getUserFollowers(userId: String!): [User!]!
+
+  """Users that a given user is following"""
+  getUserFollowing(userId: String!): [User!]!
+
+  """Get User workspaces"""
+  getUserWorkspaces(limit: Int, offset: Int): [Workspace!]!
+
+  """Get workspace by ID"""
+  getWorkspace(workspaceId: String!): Workspace!
+
+  """Get all documents in a workspace"""
+  getWorkspaceDocuments(workspaceId: String!): [Document!]!
+
+  """List all files in a workspace"""
+  listFiles(input: ListFilesInput!): [SandwormFile!]!
+
+  """Get Profile"""
+  profile(
+    """Username of the profile"""
+    username: String!
+  ): Profile!
+  tags: [String!]!
+}
+
+input RestartEnvironmentInput {
+  workspaceId: String!
+}
+
+input RestoreDocumentInput {
+  documentId: String!
+  workspaceId: String!
+}
+
+type SandwormFile {
+  isDirectory: Boolean!
+  mimeType: String
+  name: String!
+  path: String!
+  relCwdPath: String!
+  size: Float!
+}
+
+input SetEnvironmentVariablesInput {
+  add: [EnvironmentVariableInput!]!
+  remove: [String!]!
+}
+
+input UpdateDocumentInput {
+  title: String
+}
+
+"""User update request"""
+input UpdateUserInput {
+  bio: String
+  email: String
+  image: String
+  username: String
+}
+
+type User {
+  avater: String
+  email: String
+  firstName: String
+  followers: [User!]!
+  followersCount: Int!
+  following: [User!]!
+  followingCount: Int!
+  fullName: String
+  id: String!
+  isOnboarded: Boolean!
+  lastName: String
+  settings: UserSetting
+  username: String
+}
+
+type UserSetting {
+  id: ID!
+  socialLinks: JSON
+  statusText: String!
+  statusUpdatedAt: DateTime!
+  theme: String!
+  userId: ID!
+  wallets: [JSON!]!
+}
+
+type Workspace {
+  documents: [Document!]!
+  id: ID!
+  name: String!
+  owner: User!
+  ownerId: ID!
+  plan: WorkspacePlan!
+  source: String
+  useCases: [String!]!
+  useContext: String
+}
+
+"""Price plan of the workspace"""
+enum WorkspacePlan {
+  ENTERPRISE
+  FREE
+  PRO
+  TRIAL
+}
