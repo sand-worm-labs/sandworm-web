@@ -76,6 +76,7 @@ function PlusButton(props: Props) {
       ref={wrapperRef}
     >
       <button
+        type="button"
         className={clsx(
           "flex items-center justify-center gap-x-2 group-hover:opacity-100 transition-opacity duration-200 w-full h-6",
           !props.isEditable && "invisible",
@@ -234,6 +235,7 @@ function BlockSuggestion(props: BlockSuggestionProps) {
   return (
     <div id={props.id} className="w-full text-sm px-1 relative z-30">
       <button
+        type="button"
         className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 rounded-md text-gray-400 bg-white dark:bg-[#0C1015]  hover:bg-gray-100 hover:text-gray-700"
         onClick={onClick}
       >
@@ -273,9 +275,10 @@ function MultiBlockSuggestion(props: MultiBlockSuggestionProps) {
           className="w-44 mt-2 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none font-primary divide-y divide-gray-200"
         >
           {props.options.map((option, index) => (
-            <Menu.Item key={index}>
+            <Menu.Item>
               {({ active }) => (
                 <button
+                  type="button"
                   className={clsx(
                     active ? "bg-gray-100 text-gray-900" : "text-gray-700",
                     index === 0 ? "rounded-t-md" : "",

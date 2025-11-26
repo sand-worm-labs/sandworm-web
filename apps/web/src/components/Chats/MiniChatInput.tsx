@@ -72,10 +72,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
           <div className="px-4 pt-3 pb-2 border-b border-gray-100">
             <div className="flex flex-wrap gap-2">
               {files.map((file, index) => (
-                <div
-                  key={index}
-                  className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 text-sm"
-                >
+                <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 text-sm">
                   <div className="text-gray-600">{getFileIcon(file)}</div>
                   <span className="text-gray-700 max-w-[150px] truncate">
                     {file.name}
@@ -121,6 +118,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
           </button>
 
           <button
+            type="button"
             onClick={handleSend}
             disabled={!message.trim() && files.length === 0}
             className={`flex items-center justify-center w-8 h-8 rounded-lg transition-colors ${
