@@ -95,14 +95,14 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
         )}
 
         {/* Text Area */}
-        <div className="px-4 pt-3 pb-2">
+        <div className="px-1.5 pt-1.5 pb-1.5">
           <textarea
             ref={textareaRef}
             value={message}
             onChange={handleTextareaChange}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
-            className="w-full resize-none bg-transparent outline-none text-gray-800 dark:text-white placeholder-gray-400 max-h-[300px]"
+            className="w-full resize-none bg-transparent outline-none text-gray-800 dark:text-white placeholder-[#343A40] max-h-[300px]"
             rows={2}
             aria-label="Message input"
           />
@@ -117,7 +117,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
             title="Attach files"
             aria-label="Attach files"
           >
-            <Plus className="w-4 h-4" strokeWidth={1.2} />
+            <Plus className="w-5 h-5" strokeWidth={1.2} />
           </button>
 
           <button
@@ -125,7 +125,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
             disabled={!message.trim() && files.length === 0}
             className={`flex items-center justify-center w-8 h-8 rounded-lg transition-colors ${
               message.trim() || files.length > 0
-                ? "bg-blue-600 hover:bg-blue-700 text-white"
+                ? "bg-[#C7665C] hover:bg-[#C7665C] text-white"
                 : "bg-gray-100 text-gray-400 cursor-not-allowed"
             }`}
             title="Send message"
