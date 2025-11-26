@@ -28,7 +28,9 @@ input CreateDocumentInput {
   title: String
 }
 
-"""User register request"""
+"""
+User register request
+"""
 input CreateUserInput {
   email: String!
   password: String!
@@ -84,7 +86,9 @@ type Environment {
   workspaceId: ID!
 }
 
-"""The status of the Jupyter environment"""
+"""
+The status of the Jupyter environment
+"""
 enum EnvironmentStatus {
   FAILING
   RUNNING
@@ -128,80 +132,137 @@ input ListFilesInput {
   workspaceId: String!
 }
 
-"""Login input"""
+"""
+Login input
+"""
 input LoginInput {
-  """Email address"""
+  """
+  Email address
+  """
   email: String!
 
-  """Password"""
+  """
+  Password
+  """
   password: String!
 }
 
 type Mutation {
-  """Mark a document as a favorite"""
+  """
+  Mark a document as a favorite
+  """
   addFavoriteDocument(input: FavoriteDocumentInput!): Document!
 
-  """Create a new comment on a document"""
+  """
+  Create a new comment on a document
+  """
   createComment(documentId: String!, input: CreateCommentInput!): Comment!
 
-  """Create a new document in a workspace"""
+  """
+  Create a new document in a workspace
+  """
   createDocument(input: CreateDocumentInput!, workspaceId: String!): Document!
 
-  """Register new user"""
+  """
+  Register new user
+  """
   createUser(input: CreateUserInput!): User!
 
-  """Create a new workspace"""
+  """
+  Create a new workspace
+  """
   createWorkspace(name: String!): Workspace!
 
-  """Delete a comment (only by comment author)"""
+  """
+  Delete a comment (only by comment author)
+  """
   deleteComment(input: DeleteCommentInput!): Boolean!
 
-  """Soft delete or permanently delete a document"""
+  """
+  Soft delete or permanently delete a document
+  """
   deleteDocument(input: DeleteDocumentInput!): Document!
 
-  """Delete a single environment variable"""
+  """
+  Delete a single environment variable
+  """
   deleteEnvironmentVariable(variableId: String!, workspaceId: String!): Boolean!
 
-  """Delete a file from the workspace"""
+  """
+  Delete a file from the workspace
+  """
   deleteFile(input: DeleteFileInput!): Boolean!
 
-  """Create a fork/duplicate of a document"""
+  """
+  Create a fork/duplicate of a document
+  """
   duplicateDocument(input: DuplicateDocumentInput!): Document!
 
-  """Follow User"""
+  """
+  Follow User
+  """
   followUser(
-    """Username of the profile"""
+    """
+    Username of the profile
+    """
     username: String!
   ): Profile!
 
-  """Sign in"""
+  """
+  Sign in
+  """
   login(input: LoginInput!): User!
 
-  """Unmark a document as a favorite"""
+  """
+  Unmark a document as a favorite
+  """
   removeFavoriteDocument(input: FavoriteDocumentInput!): Document!
 
-  """Restart the Jupyter environment"""
+  """
+  Restart the Jupyter environment
+  """
   restartEnvironment(input: RestartEnvironmentInput!): Environment!
 
-  """Restore a previously deleted document"""
+  """
+  Restore a previously deleted document
+  """
   restoreDocument(input: RestoreDocumentInput!): Document!
 
-  """Add or remove environment variables"""
-  setEnvironmentVariables(input: SetEnvironmentVariablesInput!, workspaceId: String!): [EnvironmentVariable!]!
+  """
+  Add or remove environment variables
+  """
+  setEnvironmentVariables(
+    input: SetEnvironmentVariablesInput!
+    workspaceId: String!
+  ): [EnvironmentVariable!]!
 
-  """Unfollow User"""
+  """
+  Unfollow User
+  """
   unfollowUser(
-    """Username of the profile"""
+    """
+    Username of the profile
+    """
     username: String!
   ): Profile!
 
-  """Update document metadata"""
-  updateDocument(documentId: String!, input: UpdateDocumentInput!, workspaceId: String!): Document!
+  """
+  Update document metadata
+  """
+  updateDocument(
+    documentId: String!
+    input: UpdateDocumentInput!
+    workspaceId: String!
+  ): Document!
 
-  """Update current user"""
+  """
+  Update current user
+  """
   updateUser(input: UpdateUserInput!): User!
 
-  """Update workspace info"""
+  """
+  Update workspace info
+  """
   updateWorkspace(name: String, workspaceId: String!): Workspace!
 }
 
@@ -213,54 +274,88 @@ type Profile {
 }
 
 type Query {
-  """Get a single comment by ID"""
+  """
+  Get a single comment by ID
+  """
   comment(commentId: String!): Comment!
 
-  """Get all comments for a document"""
+  """
+  Get all comments for a document
+  """
   comments(documentId: String!): [Comment!]!
 
-  """Get current user (from token)"""
+  """
+  Get current user (from token)
+  """
   currentUser: AuthPayload!
 
-  """Get environment details for a workspace"""
+  """
+  Get environment details for a workspace
+  """
   environment(workspaceId: String!): Environment!
 
-  """Get current environment status"""
+  """
+  Get current environment status
+  """
   environmentStatus(workspaceId: String!): EnvironmentStatus!
 
-  """Get all environment variables (values are masked)"""
+  """
+  Get all environment variables (values are masked)
+  """
   environmentVariables(workspaceId: String!): [EnvironmentVariable!]!
 
-  """Check if a file exists"""
+  """
+  Check if a file exists
+  """
   fileExists(fileName: String!, workspaceId: String!): Boolean!
 
-  """Get all users"""
+  """
+  Get all users
+  """
   getAllUsers(input: GetAllUsersInput!): [User!]!
 
-  """Get a single document by ID"""
+  """
+  Get a single document by ID
+  """
   getDocument(documentId: String!, workspaceId: String!): Document!
 
-  """Users who follow a given user"""
+  """
+  Users who follow a given user
+  """
   getUserFollowers(userId: String!): [User!]!
 
-  """Users that a given user is following"""
+  """
+  Users that a given user is following
+  """
   getUserFollowing(userId: String!): [User!]!
 
-  """Get User workspaces"""
+  """
+  Get User workspaces
+  """
   getUserWorkspaces(limit: Int, offset: Int): [Workspace!]!
 
-  """Get workspace by ID"""
+  """
+  Get workspace by ID
+  """
   getWorkspace(workspaceId: String!): Workspace!
 
-  """Get all documents in a workspace"""
+  """
+  Get all documents in a workspace
+  """
   getWorkspaceDocuments(workspaceId: String!): [Document!]!
 
-  """List all files in a workspace"""
+  """
+  List all files in a workspace
+  """
   listFiles(input: ListFilesInput!): [SandwormFile!]!
 
-  """Get Profile"""
+  """
+  Get Profile
+  """
   profile(
-    """Username of the profile"""
+    """
+    Username of the profile
+    """
     username: String!
   ): Profile!
   tags: [String!]!
@@ -293,7 +388,9 @@ input UpdateDocumentInput {
   title: String
 }
 
-"""User update request"""
+"""
+User update request
+"""
 input UpdateUserInput {
   bio: String
   email: String
@@ -339,7 +436,9 @@ type Workspace {
   useContext: String
 }
 
-"""Price plan of the workspace"""
+"""
+Price plan of the workspace
+"""
 enum WorkspacePlan {
   ENTERPRISE
   FREE
