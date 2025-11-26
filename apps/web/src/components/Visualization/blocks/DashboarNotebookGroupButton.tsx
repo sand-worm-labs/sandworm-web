@@ -30,7 +30,7 @@ function DashboardNotebookGroupButton(props: Props) {
             ? "bg-ceramic-50 text-gray-900 dark:text-[#8696A6] -mr-px"
             : "bg-white dark:bg-[#181C21] dark:text-white text-gray-500"
         )}
-        href={`/workspaces/${props.workspaceId}/documents/${
+        href={`/workspace/${props.workspaceId}/documents/${
           props.documentId
         }/notebook${props.isEditing ? "/edit" : ""}`}
       >
@@ -57,7 +57,7 @@ function DashboardNotebookGroupButton(props: Props) {
           disabled={isDashboardButtonDisabled}
           onClick={() => {
             router.push(
-              `/workspaces/${props.workspaceId}/documents/${
+              `/workspace/${props.workspaceId}/documents/${
                 props.documentId
               }/dashboard${props.isEditing ? "/edit" : ""}`
             );

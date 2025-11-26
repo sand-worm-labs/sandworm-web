@@ -64,7 +64,7 @@ const KeyboardKey = (props: {
     className={clsx(
       "px-1.5 py-0.5 rounded-md font-mono",
       props.mode === "insert"
-        ? "bg-green-100 text-green-700"
+        ? "bg-[#C7665C20] text-[#C7665C]"
         : "bg-blue-100 text-blue-700"
     )}
   >
@@ -84,7 +84,7 @@ export default function ShortcutsModal(props: ShortcutsModalProps) {
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity font-primary" />
         </Transition.Child>
 
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
@@ -119,11 +119,11 @@ export default function ShortcutsModal(props: ShortcutsModalProps) {
                         When in insert mode, blocks will be highlighted in{" "}
                         <span className="text-green-600">green</span>. When in
                         command mode, blocks will be highlighted in{" "}
-                        <span className="text-blue-600">blue</span>. Shortcuts
-                        here are highlighted accordingly.
+                        <span className="text-[#C7665C]">orange</span>.
+                        Shortcuts here are highlighted accordingly.
                       </p>
                     </div>
-                    <div className="mt-6 mb-8 text-sm flex flex-col gap-y-2">
+                    <div className="mt-6 mb-8 text-sm flex flex-col gap-y-2 ">
                       {shortcuts.map(shortcut => (
                         <div key={shortcut.action} className="flex gap-x-4">
                           <div className="flex items-center justify-end w-1/3 gap-x-2 whitespace-nowrap">
@@ -138,7 +138,7 @@ export default function ShortcutsModal(props: ShortcutsModalProps) {
                               </Fragment>
                             ))}
                           </div>
-                          <div className="text-gray-500 whitespace-nowrap ">
+                          <div className="text-[#455768] whitespace-nowrap ">
                             {shortcut.action}
                           </div>
                         </div>
