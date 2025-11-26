@@ -161,6 +161,7 @@ function UserItem(props: UserItemProps) {
             {({ active }) => {
               return (
                 <button
+                  type="button"
                   onClick={onClick}
                   className={clsx(
                     active ? "bg-gray-50" : "",
@@ -230,6 +231,7 @@ function UserItem(props: UserItemProps) {
                     {({ active }) => {
                       return (
                         <button
+                          type="button"
                           onClick={onResetPassword}
                           className={clsx(
                             active ? "bg-gray-50" : "",
@@ -245,6 +247,7 @@ function UserItem(props: UserItemProps) {
                   <Menu.Item>
                     {({ active }) => (
                       <button
+                        type="button"
                         onClick={onRemoveUser}
                         className={clsx(
                           active ? "bg-gray-50 cursor-pointer" : "",

@@ -1,17 +1,9 @@
-import {
-  Fragment,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import type { Editor } from "@tiptap/react";
 import { BubbleMenu } from "@tiptap/react/menus";
-import { Level } from "@tiptap/extension-heading";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
-import { SwatchIcon } from "@heroicons/react/24/outline";
+
 import clsx from "clsx";
 import { CheckIcon, LinkIcon } from "@heroicons/react/24/solid";
 
@@ -45,6 +37,8 @@ const getCurrentType = (editor: Editor): NodeType => {
         return "heading-2";
       case 3:
         return "heading-3";
+      default:
+        return "heading-1";
     }
   }
 
@@ -87,6 +81,9 @@ const NodeTypeDropdown = ({ editor }: { editor: Editor }) => {
         case "task-list":
           editor.chain().focus().toggleTaskList().run();
           break;
+        default:
+          editor.chain().focus().setParagraph().run();
+          break;
       }
     },
     [editor]
@@ -95,7 +92,7 @@ const NodeTypeDropdown = ({ editor }: { editor: Editor }) => {
   return (
     <div className="inline-flex">
       <Menu as="div" className="relative block">
-        <Menu.Button className="relative inline-flex gap-x-1 items-center hover:bg-gray-100 py-1.5 px-1.5 rounded-md">
+        <Menu.Button className="relative inline-flex gap-x-1 items-center hover:bg-gray-100 py-1.5 px-1.5 rounded-md dark:hover:bg-[#181C21]">
           {items[currentType].name}
           <ChevronDownIcon className="h-4 w-4" aria-hidden="true" />
         </Menu.Button>
@@ -108,16 +105,19 @@ const NodeTypeDropdown = ({ editor }: { editor: Editor }) => {
           leaveFrom="transform opacity-100 scale-100"
           leaveTo="transform opacity-0 scale-95"
         >
-          <Menu.Items className="absolute right-0 z-10 -mr-1 mt-2 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none whitespace-nowrap">
+          <Menu.Items className="absolute right-0 z-10 -mr-1 mt-2 origin-top-right rounded-md dark:bg-[#0C1015] bg-white shadow-lg ring-1 ring-[#E9ECEF] ring-opacity-5 focus:outline-none whitespace-nowrap dark:ring-[#262A30]">
             <div className="py-0.5">
               {Object.values(items).map(item => (
                 <Menu.Item key={item.name}>
                   {({ active }) => (
                     <button
+                      type="button"
                       onClick={() => setNodeType(item.type)}
                       className={clsx(
-                        active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                        "block w-full px-4 py-2 text-left"
+                        active
+                          ? "bg-gray-100 dark:bg-[#0C1015] text-gray-900 dark:text-[#868E96] "
+                          : "text-gray-700 dark:text-[#8B8A9D]",
+                        "block w-full px-4 py-2 text-left dark:hover:bg-[#181C21]"
                       )}
                     >
                       {item.name}
@@ -145,17 +145,18 @@ const ToggleFormattingButton = (props: {
 
   return (
     <button
+      type="button"
       onClick={props.onToggle}
       className={clsx(
-        isActive ? "bg-gray-100" : "",
+        isActive ? "bg-white dark:bg-black" : "",
         "h-full text-sm px-2.5 hover:bg-gray-100 relative rounded-md group/toggle-button"
       )}
     >
       {props.children}
       <span className="sr-only">{props.name}</span>
-      <div className="font-primary pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 w-max opacity-0 transition-opacity group-hover/toggle-button:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 shadow-lg">
+      <div className="font-primary pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 w-max opacity-0 transition-opacity group-hover/toggle-button:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 shadow-lg bg-black">
         <span>{props.name}</span>
-        <span className="text-xs text-gray-400 flex gap-x-0.5 flex justify-center items-center">
+        <span className="text-xs text-gray-400 flex gap-x-0.5  justify-center items-center">
           {props.shortcut.split("").map((key, i) => {
             return <span key={i}>{key}</span>;
           })}
@@ -182,7 +183,7 @@ const bgColors: ColorSpec[] = [
 const textColors: ColorSpec[] = [
   // This corresponds to --tw-prose-body
   { name: "Default", type: "fg", hex: "#374151" },
-  { name: "Gray", type: "fg", hex: "#9b9a97" },
+  { name: "Gray", type: "fg", hex: "#455768" },
   { name: "Brown", type: "fg", hex: "#64473a" },
   { name: "Orange", type: "fg", hex: "#d9730d" },
   { name: "Yellow", type: "fg", hex: "#dfab01" },
@@ -200,11 +201,12 @@ const ColorOption = (props: {
 }) => {
   return (
     <button
-      className="flex gap-x-1 items-center hover:bg-gray-100 px-2 py-1 rounded-md w-full"
+      type="button"
+      className="flex gap-x-1 items-center hover:bg-gray-100 px-2 py-1 rounded-md w-full dark:hover:bg-[#181C21]"
       onClick={() => props.onShiftColor(props.color)}
     >
       <div
-        className="rounded-md border border-gray-200 p-0.5"
+        className="rounded-md border border-gray-200 p-0.5 dark:border-[#262A30]"
         style={{
           backgroundColor: props.color.type === "bg" ? props.color.hex : "#fff",
           color: props.color.type === "fg" ? props.color.hex : "#000",
@@ -252,9 +254,10 @@ const ColorTextButton = (props: { editor: Editor }) => {
   return (
     <div className="pr-0.5 py-[1px] h-full relative group/toggle-button">
       <button
+        type="button"
         onClick={toggleShowColorsMenu}
         className={clsx(
-          "h-full text-sm px-2.5 relative rounded-md ring-1 ring-inset ring-gray-200 relative overflow-hidden"
+          "h-full text-sm px-2.5  rounded-md ring-1 ring-inset ring-gray-200 dark:ring-[#262A30] relative overflow-hidden"
         )}
         style={{
           color: currentColor ?? "inherit",
@@ -265,14 +268,14 @@ const ColorTextButton = (props: { editor: Editor }) => {
         <span className="font-bold text-xs">A</span>
       </button>
 
-      <div className="font-primary pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 w-max opacity-0 transition-opacity group-hover/toggle-button:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 shadow-lg">
+      <div className="font-primary pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 w-max opacity-0 transition-opacity group-hover/toggle-button:opacity-100  text-white dark:text-white text-xs p-2 rounded-md flex flex-col gap-y-1 shadow-lg bg-black ">
         <span>Colors</span>
       </div>
 
       {showColorsMenu && (
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-[calc(100%+8px)] bg-white border border-gray-200 px-1 py-2 flex gap-x-2 rounded-md shadow-md">
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-[calc(100%+8px)] bg-white border dark:bg-[#0C1015] dark:border-[#262A30] border-gray-200 px-1 py-2 flex gap-x-2 rounded-md shadow-md z-[10]">
           <div className="flex flex-col gap-y-1">
-            <span className="font-medium px-2">Text</span>
+            <span className="font-medium px-2 dark:text-white">Text</span>
             {textColors.map(color => (
               <ColorOption
                 key={color.name}
@@ -286,7 +289,7 @@ const ColorTextButton = (props: { editor: Editor }) => {
             ))}
           </div>
           <div className="flex flex-col gap-y-1">
-            <span className="font-medium px-2">Background</span>
+            <span className="font-medium px-2 dark:text-white">Background</span>
             {bgColors.map(color => (
               <ColorOption
                 key={color.name}
@@ -356,23 +359,24 @@ const AddLinkButton = (props: {
   return (
     <div className="relative h-full">
       <button
+        type="button"
         onClick={onClickLinkButton}
         className={clsx(
-          isActive ? "bg-gray-100" : "",
-          "h-full text-sm px-2.5 hover:bg-gray-100 relative rounded-md group/toggle-button"
+          isActive ? "bg-gray-100 dark:bg-[#0C1015]" : "",
+          "h-full text-sm px-2.5 dark:hover:bg-[#181C21] hover:bg-gray-100 relative rounded-md group/toggle-button"
         )}
       >
         {props.children}
       </button>
       <form
         className={clsx(
-          "absolute top-0 left-1/2 -translate-x-1/2 -translate-y-[calc(100%+8px)] bg-white p-1.5 ring-1 ring-inset ring-gray-300 rounded-md flex items-center gap-x-1.5 h-8 shadow-md",
+          "absolute top-0 left-1/2 -translate-x-1/2 -translate-y-[calc(100%+8px)] bg-white dark:bg-[#0C1015] p-1.5 ring-1 ring-inset ring-gray-300 rounded-md dark:ring-[#262A30] flex items-center gap-x-1.5 h-8 shadow-md",
           { hidden: !showLinkForm }
         )}
         onSubmit={onSubmit}
       >
         <input
-          className="text-xs focus:outline-none w-40 px-1 py-0.5 border-0 rounded-sm ring-1 ring-gray-200 focus:ring-1 focus:ring-gray-300 placeholder-gray-300 w-48"
+          className="text-xs focus:outline-none  px-1 py-0.5 border-0 rounded-sm ring-1 ring-gray-200 dark-ring-[#262A30]  focus:ring-1 focus:ring-gray-300 placeholder-gray-300 w-48"
           placeholder="Enter a link and press Enter"
           ref={inputRef}
           onChange={e => setUrl(e.target.value)}
@@ -395,6 +399,7 @@ const FormattingToolbar = ({ editor }: { editor: Editor }) => {
       editor={editor}
       tippyOptions={{
         hideOnClick: true,
+
         placement: "top-start",
         popperOptions: {
           strategy: "fixed",
@@ -409,7 +414,7 @@ const FormattingToolbar = ({ editor }: { editor: Editor }) => {
         },
         duration: 100,
       }}
-      className="bg-white ring-1 ring-inset ring-gray-300 text-gray-600 py-1 rounded-md shadow-md text-xs flex divide-x divide-gray-200"
+      className="bg-white dark:bg-[#0C1015] ring-1 ring-inset ring-[#E9ECEF] text-gray-600  py-1 rounded-md shadow-md text-xs flex divide-x divide-[#E9ECEF] dark:divide-[#262A30] dark:ring-[#262A30]"
     >
       <div className="flex gap-x-1 items-center justify-center px-1">
         <NodeTypeDropdown editor={editor} />

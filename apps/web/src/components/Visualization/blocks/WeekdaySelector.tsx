@@ -47,12 +47,13 @@ const WeekdaySelector = (props: WeekdaySelectorProps) => {
                     className="flex items-center bg-gray-50 rounded-sm px-2 gap-x-1 py-0.5 text-sm border border-gray-200"
                   >
                     <span>{orderedWeekdays[dayIndex]}</span>
-                    <span
+                    <button
+                      type="button"
                       className="hover:bg-gray-200 rounded-full p-0.5"
                       onClick={() => toggleDay(dayIndex)}
                     >
                       <XMarkIcon className="h-3 w-3 cursor-pointer" />
-                    </span>
+                    </button>
                   </div>
                 ))}
               </div>
@@ -78,7 +79,8 @@ const WeekdaySelector = (props: WeekdaySelectorProps) => {
                 {orderedWeekdays.map((day, dayIndex) => (
                   <Menu.Item key={dayIndex}>
                     {({ active }) => (
-                      <div
+                      <button
+                        type="button"
                         className={`${
                           active ? "bg-gray-100" : ""
                         } group flex items-center px-2 py-2 text-sm cursor-pointer`}
@@ -92,7 +94,7 @@ const WeekdaySelector = (props: WeekdaySelectorProps) => {
                           )}
                           <span>{day}</span>
                         </div>
-                      </div>
+                      </button>
                     )}
                   </Menu.Item>
                 ))}

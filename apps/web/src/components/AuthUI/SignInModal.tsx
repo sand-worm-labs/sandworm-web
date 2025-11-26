@@ -23,7 +23,7 @@ export const SignInModal = () => {
         <div className="grid grid-cols-6  h-full">
           <div className="col-span-3 flex flex-col justify-center p-8 pr-[6rem]">
             <DialogTitle>
-              <span className="text-2xl font-sewmibold block mb-2 roobert">
+              <span className="text-2xl font-sewmibold block mb-2 font-primary">
                 Join Sandworm
               </span>
             </DialogTitle>

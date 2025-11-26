@@ -29,6 +29,7 @@ export default function VisualizationSettingsTabsV2(props: Props) {
       <nav className="-mb-px flex" aria-label="Tabs">
         {tabs.map(tab => (
           <button
+            type="button"
             key={tabToName(tab)}
             className={clsx(
               tab === props.tab

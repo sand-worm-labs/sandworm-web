@@ -68,6 +68,7 @@ export default function Comments(props: Props) {
       leaveTo="translate-x-full"
     >
       <button
+        type="button"
         className="absolute z-10 top-7 transform rounded-full border border-gray-300 text-gray-400 bg-white hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
         onClick={props.onHide}
       >
@@ -80,10 +81,7 @@ export default function Comments(props: Props) {
         <h3 className="text-lg font-medium leading-6 text-gray-900 px-2 px-4 pt-6 xl:px-6">
           Comments
         </h3>
-        <ul
-          role="list"
-          className="flex-1 space-y-6 pb-6 pt-4 px-2 px-4 pt-6 xl:px-6"
-        >
+        <ul className="flex-1 space-y-6 pb-6 pt-4 px-2 px-4 pt-6 xl:px-6">
           {comments.map(comment => {
             return (
               <li key={comment.id} className="relative flex gap-x-4">

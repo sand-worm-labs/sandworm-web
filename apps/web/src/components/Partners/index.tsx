@@ -6,7 +6,7 @@ import Image from "next/image";
 export const PartnersSection = () => {
   return (
     <div className="w-full max-w-5xl mx-auto text-left mt-8">
-      <h4 className="text-sm font-medium mb-3 roobert">Trusted by</h4>
+      <h4 className="text-sm font-medium mb-3 font-primary">Trusted by</h4>
 
       <div className="flex flex-wrap  items-center gap-8">
         <Image

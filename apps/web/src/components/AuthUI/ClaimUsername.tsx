@@ -43,9 +43,13 @@ export const ClaimUsername = () => {
 
     setStatus("checking");
     setError(null);
-    await new Promise(resolve => setTimeout(resolve, 500));
 
-    // 💭 for demo purpose only. we assume si name is taken
+    // fix: wrap in braces so nothing is returned inside the executor
+    await new Promise<void>(resolve => {
+      setTimeout(resolve, 500);
+    });
+
+    // 💭 for demo purpose only. assume "si" is taken
     if (name.toLowerCase() === "si") {
       setStatus("taken");
       setError("Username is already taken.");

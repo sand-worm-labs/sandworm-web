@@ -4,16 +4,16 @@
    ║ AUTHOR: Sandworm Dev Team                             
    ╚════════════════════════════════════════════╝ */
 
-import { z } from "zod";
-import { validate as validateUUID } from "uuid";
-import { parse, parseISO, parseJSON, isValid } from "date-fns";
+import { isValid, parse, parseISO, parseJSON } from 'date-fns';
+import { validate as validateUUID } from 'uuid';
+import { z } from 'zod';
 
 // ═══════════════════════════════════════════════
 //  UUID Schema
 // ═══════════════════════════════════════════════
 
-export const uuidSchema = z.string().refine(uuid => validateUUID(uuid), {
-  message: "Invalid UUID format",
+export const uuidSchema = z.string().refine((uuid) => validateUUID(uuid), {
+  message: 'Invalid UUID format',
 });
 
 // ═══════════════════════════════════════════════
@@ -23,137 +23,137 @@ export const uuidSchema = z.string().refine(uuid => validateUUID(uuid), {
 export type NumpyNumberTypes = z.infer<typeof NumpyNumberTypes>;
 
 export const NumpyIntegerTypes = z.enum([
-  "byte",
-  "ubyte",
+  'byte',
+  'ubyte',
 
-  "short",
-  "ushort",
+  'short',
+  'ushort',
 
-  "i1",
-  "i2",
-  "i4",
-  "i8",
+  'i1',
+  'i2',
+  'i4',
+  'i8',
 
-  "int0",
-  "int",
-  "Int",
-  "int8",
-  "Int8",
-  "int16",
-  "Int16",
-  "int32",
-  "Int32",
-  "int64",
-  "Int64",
+  'int0',
+  'int',
+  'Int',
+  'int8',
+  'Int8',
+  'int16',
+  'Int16',
+  'int32',
+  'Int32',
+  'int64',
+  'Int64',
 
-  "long",
+  'long',
 
-  "longlong",
+  'longlong',
 
-  "u1",
-  "u2",
-  "u4",
-  "u8",
+  'u1',
+  'u2',
+  'u4',
+  'u8',
 
-  "uint0",
-  "uint8",
-  "uint16",
-  "uint32",
-  "uint64",
+  'uint0',
+  'uint8',
+  'uint16',
+  'uint32',
+  'uint64',
 
-  "UInt0",
-  "UInt8",
-  "UInt16",
-  "UInt32",
-  "UInt64",
+  'UInt0',
+  'UInt8',
+  'UInt16',
+  'UInt32',
+  'UInt64',
 
-  "uint",
-  "UInt",
+  'uint',
+  'UInt',
 
-  "ulong",
-  "ULong",
+  'ulong',
+  'ULong',
 
-  "ulonglong",
-  "ULongLong",
+  'ulonglong',
+  'ULongLong',
 ]);
 
 export const NumpyNumberTypes = z.enum([
   ...NumpyIntegerTypes.options,
-  "f2",
-  "f4",
-  "f8",
-  "f16",
+  'f2',
+  'f4',
+  'f8',
+  'f16',
 
-  "float16",
-  "float32",
-  "float64",
-  "float128",
+  'float16',
+  'float32',
+  'float64',
+  'float128',
 
-  "Float",
-  "Float16",
-  "Float32",
-  "Float64",
+  'Float',
+  'Float16',
+  'Float32',
+  'Float64',
 
-  "float",
-  "longfloat",
+  'float',
+  'longfloat',
 
-  "double",
-  "longdouble",
+  'double',
+  'longdouble',
 ]);
 
 export const NumpyDateTypes = z.enum([
-  "dbdate",
-  "dbtime",
-  "datetime64",
-  "datetime64[ns]",
-  "datetime64[ns, UTC]",
-  "datetime64[ns, Etc/UTC]",
-  "datetime64[us]",
-  "datetime64[us, UTC]",
-  "datetime64[us, Etc/UTC]",
-  "period",
-  "period[Y-DEC]",
-  "period[Q-DEC]",
-  "period[M]",
-  "period[Q]",
-  "period[W]",
-  "period[D]",
-  "period[h]",
-  "period[min]",
-  "period[m]",
-  "period[s]",
-  "period[ms]",
-  "period[us]",
-  "period[ns]",
+  'dbdate',
+  'dbtime',
+  'datetime64',
+  'datetime64[ns]',
+  'datetime64[ns, UTC]',
+  'datetime64[ns, Etc/UTC]',
+  'datetime64[us]',
+  'datetime64[us, UTC]',
+  'datetime64[us, Etc/UTC]',
+  'period',
+  'period[Y-DEC]',
+  'period[Q-DEC]',
+  'period[M]',
+  'period[Q]',
+  'period[W]',
+  'period[D]',
+  'period[h]',
+  'period[min]',
+  'period[m]',
+  'period[s]',
+  'period[ms]',
+  'period[us]',
+  'period[ns]',
 ]);
 export type NumpyDateTypes = z.infer<typeof NumpyDateTypes>;
 
 export const NumpyTimeDeltaTypes = z.enum([
-  "timedelta64",
-  "timedelta64[ns]",
-  "timedelta64[ns, UTC]",
-  "timedelta64[us]",
-  "timedelta64[us, UTC]",
+  'timedelta64',
+  'timedelta64[ns]',
+  'timedelta64[ns, UTC]',
+  'timedelta64[us]',
+  'timedelta64[us, UTC]',
 ]);
 export type NumpyTimeDeltaTypes = z.infer<typeof NumpyTimeDeltaTypes>;
 
 export const NumpyStringTypes = z.enum([
-  "string",
-  "unicode",
-  "str",
-  "bytes",
-  "bytes0",
-  "str0",
-  "str",
-  "bytes",
-  "category",
+  'string',
+  'unicode',
+  'str',
+  'bytes',
+  'bytes0',
+  'str0',
+  'str',
+  'bytes',
+  'category',
 ]);
 export type NumpyStringTypes = z.infer<typeof NumpyStringTypes>;
 
-export const NumpyJsonTypes = z.enum(["object", "object0"]);
+export const NumpyJsonTypes = z.enum(['object', 'object0']);
 export type NumpyJsonTypes = z.infer<typeof NumpyJsonTypes>;
 
-export const NumpyBoolTypes = z.enum(["bool", "bool8", "b1", "boolean"]);
+export const NumpyBoolTypes = z.enum(['bool', 'bool8', 'b1', 'boolean']);
 export type NumpyBoolTypes = z.infer<typeof NumpyBoolTypes>;
 
 // ═══════════════════════════════════════════════
@@ -161,17 +161,17 @@ export type NumpyBoolTypes = z.infer<typeof NumpyBoolTypes>;
 // ═══════════════════════════════════════════════
 
 export const ChartType = z.union([
-  z.literal("groupedColumn"),
-  z.literal("stackedColumn"),
-  z.literal("hundredPercentStackedColumn"),
-  z.literal("line"),
-  z.literal("area"),
-  z.literal("hundredPercentStackedArea"),
-  z.literal("scatterPlot"),
-  z.literal("pie"),
-  z.literal("histogram"),
-  z.literal("trend"),
-  z.literal("number"),
+  z.literal('groupedColumn'),
+  z.literal('stackedColumn'),
+  z.literal('hundredPercentStackedColumn'),
+  z.literal('line'),
+  z.literal('area'),
+  z.literal('hundredPercentStackedArea'),
+  z.literal('scatterPlot'),
+  z.literal('pie'),
+  z.literal('histogram'),
+  z.literal('trend'),
+  z.literal('number'),
 ]);
 
 export type ChartType = z.infer<typeof ChartType>;
@@ -227,29 +227,29 @@ export type DataFrame = z.infer<typeof DataFrame>;
 // ═══════════════════════════════════════════════
 
 const dateFormatStrings = [
-  "yyyy-MM-dd",
-  "yyyy-MM-dd HH:mm:ss",
-  "yyyy-MM-dd HH:mm:ss.SSS",
+  'yyyy-MM-dd',
+  'yyyy-MM-dd HH:mm:ss',
+  'yyyy-MM-dd HH:mm:ss.SSS',
   "yyyy-MM-dd'T'HH:mm:ss",
   "yyyy-MM-dd'T'HH:mm:ss.SSS",
   "yyyy-MM-dd'T'HH:mm:ssXXX",
   "yyyy-MM-dd'T'HH:mm:ss.SSSXXX",
-  "HH:mm:ss",
-  "HH:mm:ss.SSS",
+  'HH:mm:ss',
+  'HH:mm:ss.SSS',
   "yyyy-MM-dd'T'HH:mm:ss'Z'",
   "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
 ];
 
 export type DateFormatStyle =
-  | "MMMM d, yyyy"
-  | "d MMMM, yyyy"
-  | "EEEE, MMMM d, yyyy"
-  | "M/d/yyyy"
-  | "d/M/yyyy"
-  | "yyyy/M/d"
+  | 'MMMM d, yyyy'
+  | 'd MMMM, yyyy'
+  | 'EEEE, MMMM d, yyyy'
+  | 'M/d/yyyy'
+  | 'd/M/yyyy'
+  | 'yyyy/M/d'
   | null;
 
-export type TimeFormatStyle = "h:mm a" | "HH:mm" | null;
+export type TimeFormatStyle = 'h:mm a' | 'HH:mm' | null;
 
 export type DateFormat = {
   dateStyle: DateFormatStyle;
@@ -259,32 +259,32 @@ export type DateFormat = {
 
 export const dateSchema = z
   .string()
-  .refine(date => toDate(date) !== undefined, {
-    message: "Invalid date format",
+  .refine((date) => toDate(date) !== undefined, {
+    message: 'Invalid date format',
   });
 
 export const TimeUnit = z.union([
-  z.literal("year"),
-  z.literal("quarter"),
-  z.literal("month"),
-  z.literal("week"),
-  z.literal("date"),
-  z.literal("hours"),
-  z.literal("minutes"),
-  z.literal("seconds"),
+  z.literal('year'),
+  z.literal('quarter'),
+  z.literal('month'),
+  z.literal('week'),
+  z.literal('date'),
+  z.literal('hours'),
+  z.literal('minutes'),
+  z.literal('seconds'),
 ]);
 export type TimeUnit = z.infer<typeof TimeUnit>;
 
 // ═══════════════════════════════════════════════
 // Number Format
 // ═══════════════════════════════════════════════
-export type NumberFormatStyle = "normal" | "percent" | "scientific";
+export type NumberFormatStyle = 'normal' | 'percent' | 'scientific';
 
 export type NumberSeparatorStyle =
-  | "999,999.99"
-  | "999.999,99"
-  | "999 999,99"
-  | "999999.99";
+  | '999,999.99'
+  | '999.999,99'
+  | '999 999,99'
+  | '999999.99';
 
 export type NumberFormat = {
   style: NumberFormatStyle;
@@ -300,13 +300,13 @@ export type NumberFormat = {
 // ═══════════════════════════════════════════════
 
 export const AggregateFunction = z.union([
-  z.literal("sum"),
-  z.literal("mean"),
-  z.literal("median"),
-  z.literal("count"),
-  z.literal("min"),
-  z.literal("max"),
-  z.literal("count"),
+  z.literal('sum'),
+  z.literal('mean'),
+  z.literal('median'),
+  z.literal('count'),
+  z.literal('min'),
+  z.literal('max'),
+  z.literal('count'),
 ]);
 export type AggregateFunction = z.infer<typeof AggregateFunction>;
 
@@ -348,21 +348,21 @@ export type YAxis = {
 // ═══════════════════════════════════════════════
 
 export const HistogramFormat = z.union([
-  z.literal("count"),
-  z.literal("percentage"),
+  z.literal('count'),
+  z.literal('percentage'),
 ]);
 export type HistogramFormat = z.infer<typeof HistogramFormat>;
 
 export const HistogramBin = z.union([
   z.object({
-    type: z.literal("auto"),
+    type: z.literal('auto'),
   }),
   z.object({
-    type: z.literal("stepSize"),
+    type: z.literal('stepSize'),
     value: z.number(),
   }),
   z.object({
-    type: z.literal("maxBins"),
+    type: z.literal('maxBins'),
     value: z.number(),
   }),
 ]);
@@ -384,7 +384,7 @@ export type JsonObject = { [key: string]: Json };
 export type Json = JsonLiteral | JsonObject | Json[];
 
 export const Json: z.ZodType<Json> = z.lazy(() =>
-  z.union([JsonLiteral, z.array(Json), z.record(z.string(), Json)])
+  z.union([JsonLiteral, z.array(Json), z.record(z.string(), Json)]),
 );
 
 export const JsonObject = z.record(z.string(), Json);
@@ -394,7 +394,7 @@ export const JsonObject = z.record(z.string(), Json);
 // ═══════════════════════════════════════════════
 
 export const PythonErrorOutput = z.object({
-  type: z.literal("error"),
+  type: z.literal('error'),
   ename: z.string(),
   evalue: z.string(),
   traceback: z.array(z.string()),
@@ -403,13 +403,13 @@ export const PythonErrorOutput = z.object({
 export type PythonErrorOutput = z.infer<typeof PythonErrorOutput>;
 
 export const PythonHTMLOutput = z.object({
-  type: z.literal("html"),
+  type: z.literal('html'),
   html: z.string(),
 });
 export type PythonHTMLOutput = z.infer<typeof PythonHTMLOutput>;
 
 export const PythonPlotlyOutput = z.object({
-  type: z.literal("plotly"),
+  type: z.literal('plotly'),
   data: z.any(),
   layout: z.any(),
   frames: z.any().optional(),
@@ -419,15 +419,15 @@ export type PythonPlotlyOutput = z.infer<typeof PythonPlotlyOutput>;
 export const Output = z.union([
   PythonErrorOutput,
   z.object({
-    type: z.literal("stdio"),
-    name: z.enum(["stdout", "stderr"]),
+    type: z.literal('stdio'),
+    name: z.enum(['stdout', 'stderr']),
     text: z.string(),
   }),
   PythonHTMLOutput,
   PythonPlotlyOutput,
   z.object({
-    type: z.literal("image"),
-    format: z.enum(["png"]),
+    type: z.literal('image'),
+    format: z.enum(['png']),
     data: z.string(),
   }),
 ]);
@@ -439,30 +439,30 @@ export type Output = z.infer<typeof Output>;
 // ═══════════════════════════════════════════════
 
 export const VisualizationStringFilterSingleValueOperator = z.union([
-  z.literal("eq"),
-  z.literal("ne"),
-  z.literal("contains"),
-  z.literal("notContains"),
-  z.literal("startsWith"),
-  z.literal("endsWith"),
-  z.literal("isNull"),
-  z.literal("isNotNull"),
+  z.literal('eq'),
+  z.literal('ne'),
+  z.literal('contains'),
+  z.literal('notContains'),
+  z.literal('startsWith'),
+  z.literal('endsWith'),
+  z.literal('isNull'),
+  z.literal('isNotNull'),
 ]);
 export type VisualizationStringFilterSingleValueOperator = z.infer<
   typeof VisualizationStringFilterSingleValueOperator
 >;
 
 export const VisualizationOperatorWithoutValue = z.union([
-  z.literal("isNull"),
-  z.literal("isNotNull"),
+  z.literal('isNull'),
+  z.literal('isNotNull'),
 ]);
 export type VisualizationOperatorWithoutValue = z.infer<
   typeof VisualizationOperatorWithoutValue
 >;
 
 export const VisualizationStringFilterMultiValuesOperator = z.union([
-  z.literal("in"),
-  z.literal("notIn"),
+  z.literal('in'),
+  z.literal('notIn'),
 ]);
 export type VisualizationStringFilterMultiValuesOperator = z.infer<
   typeof VisualizationStringFilterMultiValuesOperator
@@ -497,27 +497,27 @@ export type VisualizationStringFilter = z.infer<
   typeof VisualizationStringFilter
 >;
 export const stringFilterOperators: VisualizationStringFilterOperator[] = [
-  "eq",
-  "ne",
-  "in",
-  "notIn",
-  "contains",
-  "notContains",
-  "startsWith",
-  "endsWith",
-  "isNull",
-  "isNotNull",
+  'eq',
+  'ne',
+  'in',
+  'notIn',
+  'contains',
+  'notContains',
+  'startsWith',
+  'endsWith',
+  'isNull',
+  'isNotNull',
 ];
 
 export const VisualizationNumberFilterOperator = z.union([
-  z.literal("eq"),
-  z.literal("ne"),
-  z.literal("lt"),
-  z.literal("lte"),
-  z.literal("gt"),
-  z.literal("gte"),
-  z.literal("isNull"),
-  z.literal("isNotNull"),
+  z.literal('eq'),
+  z.literal('ne'),
+  z.literal('lt'),
+  z.literal('lte'),
+  z.literal('gt'),
+  z.literal('gte'),
+  z.literal('isNull'),
+  z.literal('isNotNull'),
 ]);
 export type VisualizationNumberFilterOperator = z.infer<
   typeof VisualizationNumberFilterOperator
@@ -534,38 +534,38 @@ export type VisualizationNumberFilter = z.infer<
   typeof VisualizationNumberFilter
 >;
 export const numberFilterOperators: VisualizationNumberFilterOperator[] = [
-  "eq",
-  "ne",
-  "lt",
-  "lte",
-  "gt",
-  "gte",
-  "isNull",
-  "isNotNull",
+  'eq',
+  'ne',
+  'lt',
+  'lte',
+  'gt',
+  'gte',
+  'isNull',
+  'isNotNull',
 ];
 
 export const VisualizationDateFilterOperator = z.union([
-  z.literal("eq"),
-  z.literal("ne"),
-  z.literal("before"),
-  z.literal("beforeOrEq"),
-  z.literal("after"),
-  z.literal("afterOrEq"),
-  z.literal("isNull"),
-  z.literal("isNotNull"),
+  z.literal('eq'),
+  z.literal('ne'),
+  z.literal('before'),
+  z.literal('beforeOrEq'),
+  z.literal('after'),
+  z.literal('afterOrEq'),
+  z.literal('isNull'),
+  z.literal('isNotNull'),
 ]);
 export type VisualizationDateFilterOperator = z.infer<
   typeof VisualizationDateFilterOperator
 >;
 export const dateFilterOperators: VisualizationDateFilterOperator[] = [
-  "eq",
-  "ne",
-  "before",
-  "beforeOrEq",
-  "after",
-  "afterOrEq",
-  "isNull",
-  "isNotNull",
+  'eq',
+  'ne',
+  'before',
+  'beforeOrEq',
+  'after',
+  'afterOrEq',
+  'isNull',
+  'isNotNull',
 ];
 
 export const VisualizationDateFilter = z.object({
@@ -586,7 +586,7 @@ const VisualizationFilterOperator = z.union([
 
 export const UnfinishedVisualizationFilter = z.object({
   id: uuidSchema,
-  type: z.literal("unfinished-visualization-filter"),
+  type: z.literal('unfinished-visualization-filter'),
   column: DataFrameColumn.nullable(),
   operator: VisualizationFilterOperator.nullable(),
   value: z.union([z.string(), z.number(), z.array(z.string())]).nullable(),
@@ -630,15 +630,15 @@ export type PivotTableResult = z.infer<typeof PivotTableResult>;
 
 export type PivotTableSort =
   | {
-      _tag: "column";
+      _tag: 'column';
       metric: string;
-      order: "asc" | "desc";
+      order: 'asc' | 'desc';
       columnValues: Json[];
     }
   | {
-      _tag: "row";
+      _tag: 'row';
       row: string;
-      order: "asc" | "desc";
+      order: 'asc' | 'desc';
     };
 
 // ═══════════════════════════════════════════════
@@ -646,7 +646,7 @@ export type PivotTableSort =
 // ═══════════════════════════════════════════════
 
 export const WriteBackSuccessResult = z.object({
-  _tag: z.literal("success"),
+  _tag: z.literal('success'),
   dataSourceId: z.string(),
   tableName: z.string(),
   overwritten: z.boolean(),
@@ -659,80 +659,80 @@ export type WriteBackSuccessResult = z.infer<typeof WriteBackSuccessResult>;
 
 export const WriteBackErrorResult = z.union([
   z.object({
-    _tag: z.literal("error"),
-    step: z.literal("validation"),
+    _tag: z.literal('error'),
+    step: z.literal('validation'),
     reason: z.union([
-      z.literal("dataframe-not-found"),
-      z.literal("datasource-not-found"),
+      z.literal('dataframe-not-found'),
+      z.literal('datasource-not-found'),
     ]),
     executedAt: z.string(),
   }),
   z.object({
-    _tag: z.literal("error"),
-    step: z.literal("validation"),
-    reason: z.literal("invalid-table-template"),
+    _tag: z.literal('error'),
+    step: z.literal('validation'),
+    reason: z.literal('invalid-table-template'),
     executedAt: z.string(),
     pythonError: PythonErrorOutput,
   }),
   z.object({
-    _tag: z.literal("error"),
+    _tag: z.literal('error'),
     step: z.union([
-      z.literal("validation"),
-      z.literal("schema-inspection"),
-      z.literal("cleanup"),
-      z.literal("insert"),
-      z.literal("unknown"),
+      z.literal('validation'),
+      z.literal('schema-inspection'),
+      z.literal('cleanup'),
+      z.literal('insert'),
+      z.literal('unknown'),
     ]),
     executedAt: z.string(),
-    reason: z.literal("python-error"),
+    reason: z.literal('python-error'),
     ename: z.string(),
     evalue: z.string(),
   }),
   z.object({
-    _tag: z.literal("error"),
-    step: z.literal("validation"),
-    reason: z.literal("invalid-table-name"),
+    _tag: z.literal('error'),
+    step: z.literal('validation'),
+    reason: z.literal('invalid-table-name'),
     executedAt: z.string(),
     message: z.string(),
   }),
   z.object({
-    _tag: z.literal("error"),
-    step: z.literal("validation"),
-    reason: z.literal("invalid-conflict-columns"),
+    _tag: z.literal('error'),
+    step: z.literal('validation'),
+    reason: z.literal('invalid-conflict-columns'),
     executedAt: z.string(),
     columns: z.array(z.string()),
   }),
   z.object({
-    _tag: z.literal("error"),
-    step: z.literal("schema-inspection"),
+    _tag: z.literal('error'),
+    step: z.literal('schema-inspection'),
     reason: z.undefined(),
     message: z.string(),
     executedAt: z.string(),
   }),
   z.object({
-    _tag: z.literal("error"),
-    step: z.literal("cleanup"),
+    _tag: z.literal('error'),
+    step: z.literal('cleanup'),
     reason: z.undefined(),
     message: z.string(),
     executedAt: z.string(),
   }),
   z.object({
-    _tag: z.literal("error"),
-    step: z.literal("insert"),
+    _tag: z.literal('error'),
+    step: z.literal('insert'),
     reason: z.undefined(),
     message: z.string(),
     executedAt: z.string(),
   }),
   z.object({
-    _tag: z.literal("error"),
-    step: z.literal("unknown"),
+    _tag: z.literal('error'),
+    step: z.literal('unknown'),
     reason: z.undefined(),
     executedAt: z.string(),
   }),
   z.object({
-    _tag: z.literal("error"),
+    _tag: z.literal('error'),
     step: z.undefined().optional(),
-    reason: z.literal("overwrite-empty-dataframe"),
+    reason: z.literal('overwrite-empty-dataframe'),
     executedAt: z.string(),
   }),
 ]);
@@ -771,35 +771,35 @@ export function toDate(dateString: string): Date | undefined {
 
 export function getInvalidReason(
   column: DataFrameColumn,
-  value: string | string[]
+  value: string | string[],
 ): InvalidReason | null {
   if (NumpyNumberTypes.or(NumpyTimeDeltaTypes).safeParse(column.type).success) {
-    if (value === "") {
-      return { type: "simple", reason: "empty-value" as const };
+    if (value === '') {
+      return { type: 'simple', reason: 'empty-value' as const };
     }
 
     if (Number.isNaN(Number(value))) {
-      return { type: "simple", reason: "invalid-value" as const };
+      return { type: 'simple', reason: 'invalid-value' as const };
     }
     return null;
   }
 
   if (NumpyStringTypes.or(NumpyJsonTypes).safeParse(column.type).success) {
-    if ((Array.isArray(value) && value.length === 0) || value === "") {
-      return { type: "simple", reason: "empty-value" as const };
+    if ((Array.isArray(value) && value.length === 0) || value === '') {
+      return { type: 'simple', reason: 'empty-value' as const };
     }
 
     return null;
   }
 
   if (NumpyDateTypes.safeParse(column.type).success) {
-    if (value === "") {
-      return { type: "simple", reason: "empty-value" as const };
+    if (value === '') {
+      return { type: 'simple', reason: 'empty-value' as const };
     }
 
     const date = toDate(value.toString());
     if (!date) {
-      return { type: "simple", reason: "invalid-value" as const };
+      return { type: 'simple', reason: 'invalid-value' as const };
     }
 
     return null;
@@ -813,20 +813,22 @@ export function getInvalidReason(
 // ═══════════════════════════════════════════════
 
 export function isUnfinishedVisualizationFilter(
-  filter: VisualizationFilter
+  filter: VisualizationFilter,
 ): filter is UnfinishedVisualizationFilter {
-  return "type" in filter && filter.type === "unfinished-visualization-filter";
+  return 'type' in filter && filter.type === 'unfinished-visualization-filter';
 }
 
 export function isInvalidVisualizationFilter(
   filter: VisualizationFilter,
-  dataframe: DataFrame
+  dataframe: DataFrame,
 ): boolean {
   if (isUnfinishedVisualizationFilter(filter)) {
     return true;
   }
 
-  const column = dataframe.columns.find(col => col.name === filter.column.name);
+  const column = dataframe.columns.find(
+    (col) => col.name === filter.column.name,
+  );
   if (!column) {
     return true;
   }
@@ -842,12 +844,12 @@ export function isInvalidVisualizationFilter(
     return false;
   }
 
-  if ("renderError" in filter && filter.renderError !== undefined) {
+  if ('renderError' in filter && filter.renderError !== undefined) {
     return true;
   }
 
   return (
-    filter.value === "" ||
+    filter.value === '' ||
     (filter.renderedValue !== undefined &&
       getInvalidReason(column, filter.renderedValue) !== null)
   );
@@ -862,7 +864,7 @@ export function exhaustiveCheck(_param: never) {}
 // 🔧 Notes: These may be changed later
 
 export const SuccessRunQueryResultV1 = z.object({
-  type: z.literal("success"),
+  type: z.literal('success'),
   columns: z.array(DataFrameColumn),
   rows: z.array(z.record(z.string(), Json)),
   count: z.number(),
@@ -873,7 +875,7 @@ export type SuccessRunQueryResultV1 = z.infer<typeof SuccessRunQueryResultV1>;
 export const SuccessRunQueryResultV2 = z.object({
   version: z.literal(2),
 
-  type: z.literal("success"),
+  type: z.literal('success'),
   columns: z.array(DataFrameColumn),
   rows: z.array(z.record(z.string(), Json)),
   count: z.number(),
@@ -890,7 +892,7 @@ export type SuccessRunQueryResultV2 = z.infer<typeof SuccessRunQueryResultV2>;
 export const SuccessRunQueryResultV3 = z.object({
   version: z.literal(3),
 
-  type: z.literal("success"),
+  type: z.literal('success'),
   columns: z.array(DataFrameColumn),
   rows: z.array(z.record(z.string(), Json)),
   count: z.number(),
@@ -917,14 +919,14 @@ export const SuccessRunQueryResult = z.union([
 export type SuccessRunQueryResult = z.infer<typeof SuccessRunQueryResult>;
 
 const AbortErrorRunQueryResult = z.object({
-  type: z.literal("abort-error"),
+  type: z.literal('abort-error'),
   message: z.string(),
 });
 
 export type AbortErrorRunQueryResult = z.infer<typeof AbortErrorRunQueryResult>;
 
 const SyntaxErrorRunQueryResult = z.object({
-  type: z.literal("syntax-error"),
+  type: z.literal('syntax-error'),
   message: z.string(),
 });
 
@@ -933,7 +935,7 @@ export type SyntaxErrorRunQueryResult = z.infer<
 >;
 
 export const PythonErrorRunQueryResult = z.object({
-  type: z.literal("python-error"),
+  type: z.literal('python-error'),
   ename: z.string(),
   evalue: z.string(),
   traceback: z.array(z.string()),
@@ -970,7 +972,7 @@ export type SQLQueryConfiguration = {
 // Table Sort
 // ═══════════════════════════════════════════════
 export const TableSort = z.object({
-  order: z.union([z.literal("asc"), z.literal("desc")]),
+  order: z.union([z.literal('asc'), z.literal('desc')]),
   column: z.string(),
 });
 
@@ -982,14 +984,13 @@ export type TableSort = z.infer<typeof TableSort>;
 
 export type InvalidReason =
   | {
-      type: "simple";
-      reason: "invalid-column" | "empty-value" | "invalid-value";
+      type: 'simple';
+      reason: 'invalid-column' | 'empty-value' | 'invalid-value';
     }
   | {
-      type: "render";
+      type: 'render';
       reason: PythonErrorOutput;
     };
-
 
 export const SandwormFile = z.object({
   name: z.string().min(1),
@@ -999,6 +1000,11 @@ export const SandwormFile = z.object({
   mimeType: z.string().nullish(),
   createdAt: z.number().nonnegative(),
   isDirectory: z.boolean(),
-})
+});
 
-export type SandwormFile = z.infer<typeof SandwormFile>
+export type SandwormFile = z.infer<typeof SandwormFile>;
+
+export enum ElementType {
+  Block = 'BLOCK',
+  BlockGroup = 'BLOCK_GROUP',
+}

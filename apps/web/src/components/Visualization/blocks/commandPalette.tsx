@@ -1,11 +1,7 @@
 import { Combobox, Dialog, Transition } from "@headlessui/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import {
-  DocumentPlusIcon,
-  DocumentTextIcon,
-  FolderIcon,
-} from "@heroicons/react/24/outline";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { FolderIcon } from "@heroicons/react/24/outline";
+import { useCallback, useMemo, useState } from "react";
 import * as allOutlineIcons from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 import Fuse from "fuse.js";
@@ -163,7 +159,7 @@ export default function CommandPalette(props: CommandPaletteProps) {
                                   key={doc.id}
                                   value={doc}
                                   className={clsx(
-                                    "group flex cursor-default select-none items-center rounded-md px-3 py-2 data-[focus]:bg-gray-600 data-[focus]:text-white cursor-pointer",
+                                    "group flex  select-none items-center rounded-md px-3 py-2 data-[focus]:bg-gray-600 data-[focus]:text-white cursor-pointer",
                                     activeOption === doc && "bg-gray-100"
                                   )}
                                   onClick={() => navigateToDocument(doc)}

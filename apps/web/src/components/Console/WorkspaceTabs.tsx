@@ -142,9 +142,9 @@ export const WorkspaceTabs = ({
       <Tabs
         value={activeTabId || undefined}
         onValueChange={handleTabChange}
-        className="flex flex-col h-full gap-0 border  border-[#FEFEFF] "
+        className="flex flex-col h-full gap-0 border  border-[#FEFEFF] dark:border-[#262A30] "
       >
-        <div className="flex-shrink-0 flex items-center bg-muted border-b  border-[#FEFEFF]">
+        <div className="flex-shrink-0 flex items-center bg-muted border-b  border-[#FEFEFF] dark:border-[#262A30]">
           <Button
             variant="ghost"
             className="rounded-none hover:bg-gray-100 hover:bg-black/20 h-8 px-2 sticky left-0 z-10"
@@ -203,7 +203,7 @@ export const WorkspaceTabs = ({
             <TabsContent
               key={tab.id}
               value={tab.id}
-              className="h-full m-0 outline-none data-[state=active]:flex-1 bg-[#F9FAFD]"
+              className="h-full m-0 outline-none data-[state=active]:flex-1 bg-[#F9FAFD] dark:bg-black"
             >
               {(() => {
                 if (tab.type === "home") {

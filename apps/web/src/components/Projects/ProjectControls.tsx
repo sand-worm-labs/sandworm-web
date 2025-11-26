@@ -168,12 +168,12 @@ const ProjectControl: React.FC<ProjectControlProps> = ({
               <Settings className="w-4 h-4 text-[#717a94]" />
             </Button>
 
-            <div className="w-px h-6 bg-gray-300 mx-1" />
+            <div className="w-px h-6 bg-gray-300  dark:bg-[#262A30] mx-1" />
 
             <Button
               variant={activeView === "grid" ? "default" : "ghost"}
               size="icon"
-              className="bg-transparent border border-[#DEE2E6] p-1 rounded-sm text-[#717a94]"
+              className="bg-transparent border border-[#DEE2E6] p-1 rounded-sm text-[#717a94] dark:border-[#262A30]"
               onClick={() => handleViewChange("grid")}
               title="Grid view"
             >
@@ -183,7 +183,7 @@ const ProjectControl: React.FC<ProjectControlProps> = ({
             <Button
               variant={activeView === "table" ? "default" : "ghost"}
               size="icon"
-              className="bg-transparent border border-[#DEE2E6] p-1 rounded-sm text-[#717a94]"
+              className="bg-transparent border border-[#DEE2E6]  dark:border-[#262A30] p-1 rounded-sm text-[#717a94]"
               onClick={() => handleViewChange("table")}
               title="Table view"
             >

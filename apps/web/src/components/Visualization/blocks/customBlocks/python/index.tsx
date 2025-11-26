@@ -6,9 +6,9 @@ import {
 } from "@heroicons/react/20/solid";
 import type * as Y from "yjs";
 import {
-  YBlock,
-  ExecutionQueue,
-  AITasks,
+  type YBlock,
+  type ExecutionQueue,
+  type AITasks,
   type PythonBlock,
   setTitle,
   getPythonAISuggestions,
@@ -468,30 +468,30 @@ function PythonBlock(props: Props) {
     >
       <div
         className={clsx(
-          "rounded-md border",
+          "rounded-2xl border",
           props.isBlockHiddenInPublished && "border-dashed",
-          props.hasMultipleTabs ? "rounded-tl-none" : "rounded-tl-md",
+          props.hasMultipleTabs ? "rounded-tl-2xl" : "rounded-tl-2xl",
           {
-            "border-ceramic-400 shadow-sm":
+            "border-[#EBD7D7] shadow-sm":
               isEditorFocused && editorState.mode === "insert",
-            "border-blue-400 shadow-sm":
+            "border-[#EBD7D7] shadow-sm":
               isEditorFocused && editorState.mode === "normal",
-            "border-gray-200": !isEditorFocused,
+            "border-[#EBD7D7]": !isEditorFocused,
           }
         )}
       >
         <div
           className={clsx(
-            "rounded-md",
-            statusIsDisabled ? "bg-gray-100" : "bg-white",
+            "rounded-2xl",
+            statusIsDisabled ? "" : "bg-white",
             props.hasMultipleTabs ? "rounded-tl-none" : ""
           )}
         >
           <div
             className={clsx(
-              "bg-gray-50 rounded-t-md",
+              " rounded-t-2xl",
               isCodeHidden && isResultHidden
-                ? "rounded-b-md"
+                ? "rounded-b-2xl"
                 : "border-b border-gray-200"
             )}
             ref={d => {
@@ -503,6 +503,7 @@ function PythonBlock(props: Props) {
                 <div className="relative group w-4 h-4">
                   <CommandLineIcon className="absolute inset-0 h-4 w-4 text-gray-400 group-hover:opacity-0 transition-opacity" />
                   <button
+                    type="button"
                     className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
                     onClick={toggleCodeHidden}
                   >
@@ -516,7 +517,7 @@ function PythonBlock(props: Props) {
                 <input
                   type="text"
                   className={clsx(
-                    "text-sm font-primary font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-md border-0 text-gray-800 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-gray-400 focus:ring-inset py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white"
+                    "text-lg font-primary font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-md border-0 text-gray-800 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-gray-400 py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white"
                   )}
                   placeholder={
                     props.isEditable
@@ -638,6 +639,7 @@ function PythonBlock(props: Props) {
                       >
                         {ref => (
                           <button
+                            type="button"
                             ref={ref}
                             disabled={!props.isEditable}
                             onClick={onToggleEditWithAIPromptOpen}
@@ -701,6 +703,7 @@ function PythonBlock(props: Props) {
         <TooltipV2<HTMLButtonElement> {...runTooltipContent} active>
           {ref => (
             <button
+              type="button"
               ref={ref}
               onClick={onRunAbort}
               disabled={isRunButtonDisabled}

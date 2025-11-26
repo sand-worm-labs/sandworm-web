@@ -31,6 +31,13 @@
 
 @font-face {
   font-family: "Roobert";
+  src: url("/fonts/RoobertSemibold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Roobert";
   src: url("/fonts/RoobertTRIAL-Medium-BF67243fd53e059.otf") format("opentype");
   font-weight: 500;
   font-style: normal;

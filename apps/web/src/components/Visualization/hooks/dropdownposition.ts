@@ -4,7 +4,6 @@ function useDropdownPosition(
   buttonRef: React.RefObject<HTMLElement>,
   anchor: "top" | "bottom" = "bottom",
   paddingX = 0,
-  paddingY = 0,
   ignoreScrollableAncestor = false
 ) {
   const [dropdownPosition, setDropdownPosition] = useState({
@@ -78,8 +77,9 @@ function useDropdownPosition(
     const resizeObserver = new ResizeObserver(() => {
       calculateDropdownPosition();
     });
-    buttonRef.current && resizeObserver.observe(buttonRef.current);
-
+    if (buttonRef.current) {
+      resizeObserver.observe(buttonRef.current);
+    }
     return () => {
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("scroll", handleScroll, true);
