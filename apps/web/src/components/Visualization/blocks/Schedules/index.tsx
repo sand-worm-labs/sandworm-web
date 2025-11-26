@@ -303,7 +303,7 @@ function ScheduleList(props: ScheduleListProps) {
       {props.isPublished ? (
         <ScrollBar className="overflow-auto">
           <ul
-            role="list"
+            
             className="flex-1 text-xs font-primary overflow-visible"
           >
             {props.schedules.map((scheduledRun, i) => {
