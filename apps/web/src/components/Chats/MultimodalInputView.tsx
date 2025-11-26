@@ -121,7 +121,7 @@ dark:focus:ring-[rgba(255,165,79,0.3)]
           {isLoading ? (
             <Button
               type="button"
-              className="rounded-full p-2.5 h-fit m-0.5 text-white bg-[#C7665C]"
+              className="rounded-full p-2.5 h-fit m-0.5 text-white bg-[#C7665C] "
               onClick={onStop}
               disabled={disabled}
             >
@@ -130,7 +130,7 @@ dark:focus:ring-[rgba(255,165,79,0.3)]
           ) : (
             <Button
               type="button"
-              className="rounded-full p-2.5 h-fit m-0.5 text-white bg-[#C7665C] font-light"
+              className="rounded-full p-2.5 h-fit m-0.5 text-white bg-[#C7665C]  font-light"
               onClick={() => onSubmit?.()}
             >
               <PiPaperPlaneTilt size={18} strokeWidth={0.5} />

@@ -265,7 +265,7 @@ export default function Dashboard(props: Props) {
             <button
               type="button"
               id="dashboard-publish-button"
-              className="flex items-center rounded-sm px-3 py-1 text-sm bg-primary-200 hover:bg-primary-300 border border-transparent disabled:border-gray-200 disabled:bg-gray-100 disabled:cursor-not-allowed gap-x-1.5 group relative disabled:text-gray-500"
+              className="flex items-center rounded-sm px-3 py-1 text-sm bg-[#C7665C] hover:bg-primary-300 border border-transparent disabled:border-gray-200 disabled:bg-gray-100 disabled:cursor-not-allowed gap-x-1.5 group relative disabled:text-gray-500"
               onClick={onPublish}
               disabled={props.publishing}
             >

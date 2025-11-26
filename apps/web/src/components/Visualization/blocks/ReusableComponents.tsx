@@ -347,7 +347,7 @@ export const SaveConfirmationModal = (props: SaveConfirmationModalProps) => {
                   <button
                     type="button"
                     onClick={props.onUpdate}
-                    className="inline-flex w-full justify-center rounded-sm bg-primary-200 px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm hover:bg-primary-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2"
+                    className="inline-flex w-full justify-center rounded-sm bg-[#C7665C] px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm hover:bg-primary-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2"
                   >
                     Update component
                   </button>

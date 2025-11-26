@@ -384,7 +384,7 @@ const AddLinkButton = (props: {
         />
         <button
           type="submit"
-          className="bg-primary-100 hover:bg-primary-200 h-full px-2 ring-1 ring-primary-400 rounded-sm"
+          className="bg-primary-100 hover:bg-[#C7665C] h-full px-2 ring-1 ring-primary-400 rounded-sm"
         >
           <CheckIcon className="h-4 w-4 text-gray-600" />
         </button>
