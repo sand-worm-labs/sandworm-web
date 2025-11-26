@@ -376,12 +376,13 @@ function DropdownInputBlock(props: Props) {
                     displayValue={(value: string) => value}
                     onChange={e => setQuery(e.target.value)}
                   />
-                  <div
+                  <button
+                    type="button"
                     className="inline-block absolute inset-y-0 right-0 px-2.5 bottom-1/2 transform translate-y-1/2"
                     onClick={() => setQuery("")}
                   >
                     <ChevronDownIcon className="w-5 h-5 text-gray-400" />
-                  </div>
+                  </button>
                 </div>
               </Combobox.Button>
               {ReactDOM.createPortal(

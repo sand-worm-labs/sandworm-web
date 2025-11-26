@@ -218,6 +218,7 @@ export default function Schedules(props: Props) {
       leaveTo="transform translate-x-full"
     >
       <button
+        type="button"
         className="absolute z-10 top-7 transform rounded-full border border-gray-300 text-gray-400 bg-white hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
         onClick={props.onHide}
       >
@@ -283,6 +284,7 @@ function ScheduleList(props: ScheduleListProps) {
               active={props.isLimited || !props.isPublished}
             >
               <button
+                type="button"
                 className={clsx(
                   "text-gray-900 flex items-center justify-center gap-x-2 text-sm px-2 py-1.5 rounded-sm",
                   !props.isLimited && props.isPublished
@@ -322,12 +324,13 @@ function ScheduleList(props: ScheduleListProps) {
                       {getScheduleBlock(scheduledRun)}
                     </div>
                     <div className="w-1/4 flex items-center justify-end">
-                      <div
+                      <button
+                        type="button"
                         className="p-1 hover:cursor-pointer hover:bg-gray-200 hover:text-gray-900 text-gray-400 rounded-sm"
                         onClick={props.onDeleteSchedule(scheduledRun.id)}
                       >
                         <XMarkIcon className="h-4 w-4" />
-                      </div>
+                      </button>
                     </div>
                   </div>
                 </li>
@@ -345,6 +348,7 @@ function ScheduleList(props: ScheduleListProps) {
             </div>
             <div className="flex items-center justify-center">
               <button
+                type="button"
                 className="rounded-sm px-3 py-1 text-sm bg-primary-200 hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50"
                 onClick={props.onPublish}
                 disabled={props.publishing}

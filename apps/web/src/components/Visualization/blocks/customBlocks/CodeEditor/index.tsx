@@ -710,7 +710,7 @@ const CodeEditor = forwardRef<CodeEditorRef, Props>(
       [viewRef, mergeRef]
     );
 
-    return <div onClick={onClick} ref={editorRef} />;
+    return <button type="button" onClick={onClick} ref={editorRef} />;
   }
 );
 

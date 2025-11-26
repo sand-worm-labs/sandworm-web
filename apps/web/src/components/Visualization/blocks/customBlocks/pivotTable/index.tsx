@@ -459,7 +459,8 @@ function PivotTableBlock(props: Props) {
   }
 
   return (
-    <div
+    <button
+      type="button"
       className="relative group/block"
       onClick={onClickWithin}
       data-block-id={attrs.id}
@@ -566,6 +567,7 @@ function PivotTableBlock(props: Props) {
         <TooltipV2<HTMLButtonElement> {...runTooltipContent} active>
           {ref => (
             <button
+              type="button"
               ref={ref}
               className={clsx(
                 {
@@ -606,7 +608,7 @@ function PivotTableBlock(props: Props) {
           />
         )}
       </div>
-    </div>
+    </button>
   );
 }
 
