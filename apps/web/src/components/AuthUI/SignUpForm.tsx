@@ -59,7 +59,7 @@ export default function SignUpForm() {
       <button
         type="submit"
         disabled={isLoading}
-        className="w-full rounded-xl bg-[#C7665C] px-4 py-3 mb-5 text-white text-sm font-medium disabled:bg-orange-300 inline-block"
+        className="w-full rounded-xl bg-[#C7665C]  px-4 py-3 mb-5 text-white text-sm font-medium disabled:bg-orange-300 inline-block"
       >
         {isLoading ? "Signing Up..." : "Sign Up"}
       </button>

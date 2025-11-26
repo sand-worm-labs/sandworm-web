@@ -80,7 +80,7 @@ function RemoveTabDashboardConflictDialog(props: Props) {
                   <button
                     type="button"
                     onClick={onConfirm}
-                    className="mt-3 inline-flex w-full justify-center rounded-sm bg-primary-200 px-3 py-2 text-sm text-gray-900 font-medium hover:bg-primary-300 sm:col-start-1 sm:mt-0"
+                    className="mt-3 inline-flex w-full justify-center rounded-sm bg-[#C7665C] px-3 py-2 text-sm text-gray-900 font-medium hover:bg-primary-300 sm:col-start-1 sm:mt-0"
                   >
                     Continue
                   </button>
