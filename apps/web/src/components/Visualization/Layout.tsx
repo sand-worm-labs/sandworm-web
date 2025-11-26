@@ -139,6 +139,7 @@ export default function Layout({
   hideOnboarding,
 }: Props) {
   const [isSearchOpen, setSearchOpen] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(true);
   useHotkeys(["mod+k"], () => {
     setSearchOpen(prev => !prev);
   });
@@ -377,7 +378,7 @@ export default function Layout({
         <ResizablePanelGroup direction="horizontal" className="h-full">
           <ResizablePanel
             className="overflow-auto"
-            defaultSize={70}
+            defaultSize={isChatOpen ? 70 : 100}
             minSize={40}
             maxSize={100}
           >
@@ -385,17 +386,21 @@ export default function Layout({
               {children}
             </div>
           </ResizablePanel>
+          {isChatOpen && (
+            <>
+              <ResizableHandle withHandle />
 
-          <ResizableHandle withHandle />
-
-          <ResizablePanel
-            className="overflow-auto"
-            defaultSize={30}
-            minSize={0}
-            maxSize={60}
-          >
-            <MiniChat />
-          </ResizablePanel>
+              <ResizablePanel
+                className="overflow-auto"
+                defaultSize={30}
+                minSize={0}
+                maxSize={60}
+                collapsible
+              >
+                <MiniChat onClose={() => setIsChatOpen(false)} />
+              </ResizablePanel>
+            </>
+          )}
         </ResizablePanelGroup>
       </main>
     </div>
