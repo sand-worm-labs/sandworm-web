@@ -5,71 +5,6 @@ import clsx from "clsx";
 
 import useDocument from "../hooks/useDocument";
 
-interface Props {
-  workspaceId: string;
-  documentId: string;
-  visible: boolean;
-  onHide: () => void;
-  yDoc?: Y.Doc;
-}
-
-export default function PageSettingsPanel(props: Props) {
-  const [{ document }, api] = useDocument(props.workspaceId, props.documentId);
-
-  return (
-    <Transition
-      as="div"
-      show={props.visible}
-      className="top-0 right-0 h-full absolute bg-white z-30"
-      enter="transition-transform duration-300"
-      enterFrom="transform translate-x-full"
-      enterTo="transform translate-x-0"
-      leave="transition-transform duration-300"
-      leaveFrom="transform translate-x-0"
-      leaveTo="transform translate-x-full"
-    >
-      <button
-        className="absolute z-10 top-7 transform rounded-full border border-gray-300 text-gray-400 bg-white hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
-        onClick={props.onHide}
-      >
-        <ChevronDoubleRightIcon className="w-3 h-3" />
-      </button>
-      <div className="w-[324px] flex flex-col border-l border-gray-200 h-full bg-white">
-        <div className="flex justify-between border-b p-6 space-x-3">
-          <div>
-            <h3 className="text-lg font-medium leading-6 text-gray-900 pr-1.5">
-              Page settings
-            </h3>
-            <p className="text-gray-500 text-sm pt-1">
-              Configure this page's behavior and default visualization mode.
-            </p>
-          </div>
-        </div>
-        <div className="w-full divide-y divide-gray-200 border-b border-gray-200">
-          <PageSettingToggle
-            name="Auto-run pending blocks"
-            description="Whether sandworm should automatically run unexecuted preceding blocks when a block is executed."
-            enabled={document?.runUnexecutedBlocks ?? false}
-            onToggle={api.toggleRunUnexecutedBlocks}
-          />
-          <PageSettingToggle
-            name="Run selected SQL only"
-            description="Whether sandworm should only run selected code when a SQL block is executed."
-            enabled={document?.runSQLSelection ?? false}
-            onToggle={api.toggleRunSQLSelection}
-          />
-          <PageSettingToggle
-            name="Share links without sidebar"
-            description="Whether the 'copy link' button should include a query parameter to hide the sidebar (open dashboards with the sidebar collapsed)."
-            enabled={document?.shareLinksWithoutSidebar ?? false}
-            onToggle={api.toggleShareLinksWithoutSidebar}
-          />
-        </div>
-      </div>
-    </Transition>
-  );
-}
-
 type PageSettingToggleProps = {
   name: string;
   description: string;
@@ -112,5 +47,71 @@ export function PageSettingToggle(props: PageSettingToggleProps) {
       </span>
       <span className="text-sm text-gray-500">{props.description}</span>
     </Switch.Group>
+  );
+}
+
+interface Props {
+  workspaceId: string;
+  documentId: string;
+  visible: boolean;
+  onHide: () => void;
+  yDoc?: Y.Doc;
+}
+
+export default function PageSettingsPanel(props: Props) {
+  const [{ document }, api] = useDocument(props.workspaceId, props.documentId);
+
+  return (
+    <Transition
+      as="div"
+      show={props.visible}
+      className="top-0 right-0 h-full absolute bg-white z-30"
+      enter="transition-transform duration-300"
+      enterFrom="transform translate-x-full"
+      enterTo="transform translate-x-0"
+      leave="transition-transform duration-300"
+      leaveFrom="transform translate-x-0"
+      leaveTo="transform translate-x-full"
+    >
+      <button
+        type="button"
+        className="absolute z-10 top-7 transform rounded-full border border-gray-300 text-gray-400 bg-white hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
+        onClick={props.onHide}
+      >
+        <ChevronDoubleRightIcon className="w-3 h-3" />
+      </button>
+      <div className="w-[324px] flex flex-col border-l border-gray-200 h-full bg-white">
+        <div className="flex justify-between border-b p-6 space-x-3">
+          <div>
+            <h3 className="text-lg font-medium leading-6 text-gray-900 pr-1.5">
+              Page settings
+            </h3>
+            <p className="text-gray-500 text-sm pt-1">
+              Configure this page's behavior and default visualization mode.
+            </p>
+          </div>
+        </div>
+        <div className="w-full divide-y divide-gray-200 border-b border-gray-200">
+          <PageSettingToggle
+            name="Auto-run pending blocks"
+            description="Whether sandworm should automatically run unexecuted preceding blocks when a block is executed."
+            enabled={document?.runUnexecutedBlocks ?? false}
+            onToggle={api.toggleRunUnexecutedBlocks}
+          />
+          <PageSettingToggle
+            name="Run selected SQL only"
+            description="Whether sandworm should only run selected code when a SQL block is executed."
+            enabled={document?.runSQLSelection ?? false}
+            onToggle={api.toggleRunSQLSelection}
+          />
+          <PageSettingToggle
+            name="Share links without sidebar"
+            description="Whether the 'copy link' button should include a query parameter to hide the sidebar (open dashboards with the sidebar collapsed)."
+            enabled={document?.shareLinksWithoutSidebar ?? false}
+            onToggle={api.toggleShareLinksWithoutSidebar}
+          />
+        </div>
+      </div>
+    </Transition>
   );
 }

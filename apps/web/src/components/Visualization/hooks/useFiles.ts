@@ -1,5 +1,5 @@
 import { uniqBy } from "ramda";
-import type { BrieferFile } from "@sandworm/types";
+import type { SandwormFile } from "@sandworm/types";
 import axios from "axios";
 import qs from "qs";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -38,7 +38,7 @@ export type FileUploadState =
     };
 
 type State = {
-  files: BrieferFile[];
+  files: SandwormFile[];
   deleting: Record<string, boolean>;
   upload: FileUploadState;
 };
@@ -58,7 +58,7 @@ export const useFiles = (
   workspaceId: string,
   refreshInterval?: number
 ): UseFiles => {
-  const { data, mutate } = useSWR<BrieferFile[]>(
+  const { data, mutate } = useSWR<SandwormFile[]>(
     `${NEXT_PUBLIC_API_URL()}/v1/workspaces/${workspaceId}/files`,
     fetcher,
     { refreshInterval: refreshInterval ?? 0, refreshWhenHidden: false }

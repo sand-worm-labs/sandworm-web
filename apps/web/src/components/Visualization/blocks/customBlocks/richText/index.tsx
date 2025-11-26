@@ -190,16 +190,16 @@ const RichTextBlock = (props: Props) => {
 
   const ringColor =
     editor?.isFocused && !props.belongsToMultiTabGroup && props.isEditable
-      ? " border border-[#262A30]"
+      ? " border border-[#EBD7D7]"
       : !editor?.isFocused &&
           !props.belongsToMultiTabGroup &&
           props.isEditable &&
           props.isCursorWithin &&
           !props.isCursorInserting
-        ? " border border-[#262A30]"
+        ? " border border-[#EBD7D7] border-[#262A30]"
         : props.dashboardMode?._tag === "editing" &&
             props.dashboardMode.position === "expanded"
-          ? "border border-[#262A30]"
+          ? "border border-[#EBD7D7]"
           : "";
 
   return (
@@ -209,17 +209,17 @@ const RichTextBlock = (props: Props) => {
         props.dragPreview?.(d);
       }}
       className={clsx(
-        "ring-outline ring-offset-4",
+        "ring-[#EBD7D7] ring-offset-4",
         props.dashboardMode ? "px-4 py-4 h-full overflow-y-auto" : "",
         ringColor,
         {
-          "rounded-tl-none rounded-sm border border-[#262A30] p-2":
+          "rounded-tl-none rounded-lg border border-[#EBD7D7] p-2 px-5":
             props.belongsToMultiTabGroup,
-          "rounded-tl-none rounded-sm border border-blue-400 p-2 ":
+          "rounded-tl-none rounded-lg border border-[#EBD7D7] p-2 px-4 ":
             props.belongsToMultiTabGroup &&
             props.isCursorWithin &&
             !props.isCursorInserting,
-          "rounded-sm": !props.belongsToMultiTabGroup,
+          "rounded-lg": !props.belongsToMultiTabGroup,
         }
       )}
       data-block-id={id}

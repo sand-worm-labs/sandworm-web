@@ -54,7 +54,7 @@ c30,0,30,26.9,60,26.9"
     // Show empty state if no query has been run
     if (!currentTab.result) {
       return (
-        <div className="h-full flex items-center justify-center relative border-t border-[#E9ECEF]">
+        <div className="h-full flex items-center justify-center relative border-t border-[#E9ECEF] dark:border-[#262A30]">
           <div
             className="absolute inset-0"
             style={{
@@ -64,21 +64,20 @@ c30,0,30,26.9,60,26.9"
             }}
           />
 
-          {/* Fade overlay - radial gradient from center */}
           <div
-            className="absolute inset-0"
+            className="absolute inset-0 [--gradient-color:white] dark:[--gradient-color:oklch(0.145_0_0)]"
             style={{
               background:
-                "radial-gradient(ellipse 80% 120% at 50% 0%, transparent 0%, white 70%)",
+                "radial-gradient(ellipse 80% 120% at 50% 0%, transparent 0%, var(--gradient-color) 70%)",
             }}
           />
           <div className="flex flex-col items-center relative z-10">
             <FileX2
               size={48}
-              className="text-[#868E96] mb-4"
+              className="text-[#868E96] dark:text-white mb-4"
               strokeWidth={1.5}
             />
-            <p className="text-sm text-[#868E96] text-center">
+            <p className="text-sm text-[#868E96] dark:text-white text-center">
               There's no data yet! Run a query to get started.
             </p>
           </div>
@@ -89,13 +88,30 @@ c30,0,30,26.9,60,26.9"
     // Show error if query failed
     if (currentTab.result.error) {
       return (
-        <div className="m-4">
-          <Alert variant="destructive">
-            <AlertTitle>Query Error</AlertTitle>
-            <AlertDescription>{currentTab.result.error}</AlertDescription>
-          </Alert>
-          <div className="mt-3 text-xs text-text-gray space-y-1 text-center">
-            <p>
+        <div className="h-full flex items-center justify-center relative border-t border-[#E9ECEF]">
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle, #E2E8F0 4px, transparent 3px)",
+              backgroundSize: "32px 32px",
+            }}
+          />
+
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(ellipse 80% 120% at 50% 0%, transparent 0%, white 70%)",
+            }}
+          />
+          <div className="flex flex-col px-5 w-full relative z-10">
+            <Alert variant="destructive">
+              <AlertTitle>Query Error</AlertTitle>
+              <AlertDescription>{currentTab.result.error}</AlertDescription>
+            </Alert>
+
+            <p className="text-sm text-[#868E96] mt-4 text-center">
               Not sure what went wrong? You can check out our{" "}
               <a
                 href="https://docs.sandwormlabs.xyz/faq"

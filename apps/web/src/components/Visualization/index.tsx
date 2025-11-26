@@ -37,7 +37,7 @@ import {
 } from "@sandworm/types";
 import type { ConnectDragPreview } from "react-dnd";
 import { equals, head, omit } from "ramda";
-import { ChartPie, Check } from "lucide-react";
+import { ChartPie } from "lucide-react";
 
 import { TooltipV2 } from "@/components/Visualization/blocks/ToolTips";
 
@@ -844,7 +844,7 @@ function VisualizationBlockV2(props: Props) {
           props.hasMultipleTabs ? "rounded-2xl" : "rounded-2xl",
 
           props.isCursorWithin
-            ? "border-primary shadow-sm"
+            ? "border-[#EBD7D7] shadow-sm"
             : "border-[#EBD7D7] dark:border-[#262A30]"
         )}
       >
@@ -861,12 +861,12 @@ function VisualizationBlockV2(props: Props) {
             }}
           >
             <div className="flex items-center justify-between px-3 pr-0 gap-x-4 font-primary h-12 divide-x divide-gray-200 dark:divide-[#262A30]">
-              <div className="select-none text-gray-300 text-xs flex items-center w-full h-full gap-x-1.5">
-                <ChartPie className="h-4 w-4 text-gray-400" />
+              <div className="select-none text-gray-300 text-xs flex items-center w-full h-full gap-x-0.5 px-4">
+                <ChartPie className="h-5 w-5 text-[#343330]" />
                 <input
                   type="text"
                   className={clsx(
-                    "text-sm font-primary font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-md border-0 text-gray-800 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-gray-400 dark:placeholder:text-[#868E96]  py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white dark:text-white"
+                    "text-lg font-primary font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-md border-0 text-gray-800 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-gray-400 dark:placeholder:text-[#868E96]  py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white dark:text-white"
                   )}
                   placeholder="Visualization (click to add a title)"
                   value={attrs.title}
@@ -876,6 +876,7 @@ function VisualizationBlockV2(props: Props) {
               </div>
               <div className="print:hidden flex items-center gap-x-0 group-focus/block:opacity-100 h-full divide-x divide-gray-200 dark:divide-[#262A30]">
                 <button
+                  type="button"
                   className={clsx(
                     "font-primary text-xs flex justify-center items-center gap-x-1.5 text-gray-400 px-2.5 whitespace-nowrap disabled:bg-white hover:bg-gray-100 disabled:cursor-not-allowed h-full min-w-[124px] dark:hover:bg-[#181C21]",
                     props.isPublicMode ? "hidden" : "inline-block"
@@ -988,6 +989,7 @@ function VisualizationBlockV2(props: Props) {
           <TooltipV2<HTMLButtonElement> {...runTooltipContent} active>
             {ref => (
               <button
+                type="button"
                 ref={ref}
                 className={clsx(
                   {

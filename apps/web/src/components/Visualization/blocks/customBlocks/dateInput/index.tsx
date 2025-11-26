@@ -1,8 +1,8 @@
 import type * as Y from "yjs";
 import type { ConnectDragPreview } from "react-dnd";
-import type {
-  ExecutionQueue,
-  YBlock,
+import {
+  type ExecutionQueue,
+  type YBlock,
   getDateInputAttributes,
   getDateInputBlockExecStatus,
   isExecutionStatusLoading,
@@ -212,6 +212,7 @@ function DateInput(props: Props) {
                       ) : attrs.error && attrs.error !== "invalid-value" ? (
                         <>
                           <button
+                            type="button"
                             disabled={attrs.error !== "invalid-variable"}
                             onClick={onRun}
                           >

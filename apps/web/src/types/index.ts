@@ -164,7 +164,7 @@ export interface IconProps {
    ║                Api Section                 ║
    ╚════════════════════════════════════════════╝ */
 
-type Document = {
+export type Document = {
   id: string;
   title: string;
   icon: string;
@@ -209,6 +209,13 @@ type Workspace = {
   secretsId: string | null;
   assistantModel: string;
 };
+
+export type EnvironmentStatus =
+  | "Running"
+  | "Stopped"
+  | "Failing"
+  | "Starting"
+  | "Stopping";
 
 export type ApiUser = Omit<User, "passwordDigest" | "confirmedAt">;
 

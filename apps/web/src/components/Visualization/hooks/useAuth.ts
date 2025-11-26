@@ -1,10 +1,9 @@
 "use client";
 
-import type { ApiUser, UserWorkspaceRole } from "@types";
-import { useRouter } from "next/navigation"; // ✅ updated
+import type { ApiUser, UserWorkspaceRole } from "@/types";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
 
 import fetcher, { AuthenticationError } from "../utils/fetcher";
 import { NEXT_PUBLIC_API_URL, NEXT_PUBLIC_PUBLIC_URL } from "../utils/env";

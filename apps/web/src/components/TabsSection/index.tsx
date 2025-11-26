@@ -149,7 +149,7 @@ export const TabsSection: React.FC<TabSectionProps> = ({
   return (
     <div>
       <div className="flex justify-between">
-        <p className="text-[#455768] text-sm mb-8 mt-6">
+        <p className="text-[#455768] dark:text-[#868E96] text-sm mb-8 mt-6">
           See what others are creating using Sandworm
         </p>
         <ViewControl viewMode={viewMode} onViewModeChange={setViewMode} />

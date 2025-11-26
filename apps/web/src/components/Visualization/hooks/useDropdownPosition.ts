@@ -9,7 +9,6 @@ function useDropdownPosition(
   padding: number
 ): [CSSProperties, onToggle: () => void] {
   const [style, setStyle] = useState<CSSProperties>({});
-  const [tick, setTick] = useState(0);
 
   useEffect(() => {
     if (!buttonRef.current || !dropdownRef.current) {

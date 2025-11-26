@@ -4,6 +4,7 @@ import { Listbox, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 import type { ChartType } from "@sandworm/types";
+import Image from "next/image";
 
 import useDropdownPosition from "../hooks/dropdownposition";
 
@@ -77,10 +78,10 @@ interface Props {
 export default function ChartTypeSelector(props: Props) {
   const selected = charts.find(type => type.value === props.value);
   useEffect(() => {
-    if (!selected) {
+    if (!selected && charts[0]) {
       props.onChange(charts[0].value);
     }
-  }, [selected]);
+  }, [selected, charts, props]);
 
   const buttonRef = useRef<HTMLButtonElement>(null);
   const { onOpen, dropdownPosition } = useDropdownPosition(buttonRef);
@@ -102,7 +103,7 @@ export default function ChartTypeSelector(props: Props) {
       disabled={!props.isEditable}
     >
       {({ open }) => (
-        <div className="relative bg-black">
+        <div className="relative bg-white dark:bg-black">
           {!props.compact && (
             <div className="block text-xs font-medium leading-6 text-gray-900 pb-1">
               {props.label}
@@ -113,7 +114,7 @@ export default function ChartTypeSelector(props: Props) {
             ref={buttonRef}
             onClick={onClickButton}
           >
-            <div className="border border-gray-200 rounded-md w-full px-3 flex items-center justify-between gap-x-2 w-full min-h-8">
+            <div className="border border-gray-200 rounded-md  px-3 flex items-center justify-between gap-x-2 w-full min-h-8">
               <div className="flex items-center justify-left gap-x-2 text-left w-full h-6">
                 <div className="h-4 w-6 rounded-sm grayscale">
                   <img src={`/images/charts/${selected.icon}`} alt="" />
@@ -130,75 +131,78 @@ export default function ChartTypeSelector(props: Props) {
               leave="transition ease-in duration-100"
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
-              style={{
-                position: "absolute",
-                top: dropdownPosition.top,
-                right: dropdownPosition.right,
-              }}
-              className="z-[2000] translate-x-1/2"
             >
-              <Listbox.Options
-                as="div"
-                className="w-[30rem] z-20 mt-2 divide-y divide-gray-200 overflow-hidden rounded-md bg-white  dark:bg-black shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none px-5 py-4 dark:border-[#262A30] dark:border "
+              <div
+                style={{
+                  position: "absolute",
+                  top: dropdownPosition.top,
+                  right: dropdownPosition.right,
+                }}
+                className="z-[2000] translate-x-1/2"
               >
-                <div className="grid grid-cols-3 gap-x-4 gap-y-6 items-stretch">
-                  {charts.map(option => (
-                    <Listbox.Option
-                      as="div"
-                      key={option.value}
-                      disabled={option.comingSoon}
-                      className={({ active }) =>
-                        clsx(
-                          active
-                            ? " border-primary"
-                            : "border-gray-200 dark:border-[#262A30]",
-                          option.comingSoon
-                            ? "cursor-not-allowed"
-                            : "cursor-pointer",
-                          "pb-3.5 pt-2.5 select-none rounded-md border flex flex-col justify-center items-center relative"
-                        )
-                      }
-                      value={option.value}
-                    >
-                      {({ active }) => (
-                        <>
-                          <div className="h-12 w-20 rounded-sm">
-                            <img
-                              rel="preload"
-                              src={`/img/charts/${option.icon}`}
-                              alt=""
-                              className={
-                                option.comingSoon
-                                  ? "grayscale opacity-50"
-                                  : "filter hue-rotate-[230deg] saturate-120 brightness-110"
-                              }
-                            />
-                          </div>
-                          <span
-                            className={clsx(
-                              active
-                                ? "text-gray-600 dark:text-white"
-                                : "text-gray-400 dark:text-white",
-                              "text-center px-1.5 text-[10px] absolute bottom-0 translate-y-1/2 bg-white dark:bg-black"
-                            )}
-                          >
-                            {option.label}
-                          </span>
-
-                          {option.comingSoon && (
-                            <div className="absolute h-3/4 w-5/6 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-2 py-1 flex items-center justify-center">
-                              <div className="absolute h-full w-full top-0 left-0 bg-gray-100 opacity-80 rounded-md" />
-                              <div className="relative text-xs text-gray-500 whitespace-nowrap">
-                                Coming soon
-                              </div>
+                <Listbox.Options
+                  as="div"
+                  className="w-[30rem] z-20 mt-2 divide-y divide-gray-200 overflow-hidden rounded-md bg-white  dark:bg-black shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none px-5 py-4 dark:border-[#262A30] dark:border "
+                >
+                  <div className="grid grid-cols-3 gap-x-4 gap-y-6 items-stretch">
+                    {charts.map(option => (
+                      <Listbox.Option
+                        as="div"
+                        key={option.value}
+                        disabled={option.comingSoon}
+                        className={({ active }) =>
+                          clsx(
+                            active
+                              ? " border-primary"
+                              : "border-gray-200 dark:border-[#262A30]",
+                            option.comingSoon
+                              ? "cursor-not-allowed"
+                              : "cursor-pointer",
+                            "pb-3.5 pt-2.5 select-none rounded-md border flex flex-col justify-center items-center relative"
+                          )
+                        }
+                        value={option.value}
+                      >
+                        {({ active }) => (
+                          <>
+                            <div className="h-12 w-20 rounded-sm">
+                              <Image
+                                src={`/img/charts/${option.icon}`}
+                                alt=""
+                                fill
+                                className={
+                                  option.comingSoon
+                                    ? "grayscale opacity-50"
+                                    : "filter hue-rotate-[230deg] saturate-120 brightness-110"
+                                }
+                              />
                             </div>
-                          )}
-                        </>
-                      )}
-                    </Listbox.Option>
-                  ))}
-                </div>
-              </Listbox.Options>
+                            <span
+                              className={clsx(
+                                active
+                                  ? "text-gray-600 dark:text-white"
+                                  : "text-gray-400 dark:text-white",
+                                "text-center px-1.5 text-[10px] absolute bottom-0 translate-y-1/2 bg-white dark:bg-black"
+                              )}
+                            >
+                              {option.label}
+                            </span>
+
+                            {option.comingSoon && (
+                              <div className="absolute h-3/4 w-5/6 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-2 py-1 flex items-center justify-center">
+                                <div className="absolute h-full w-full top-0 left-0 bg-gray-100 opacity-80 rounded-md" />
+                                <div className="relative text-xs text-gray-500 whitespace-nowrap">
+                                  Coming soon
+                                </div>
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </Listbox.Option>
+                    ))}
+                  </div>
+                </Listbox.Options>
+              </div>
             </Transition>,
             document.body
           )}
