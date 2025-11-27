@@ -286,10 +286,11 @@ function ScheduleList(props: ScheduleListProps) {
               active={props.isLimited || !props.isPublished}
             >
               <button
+                type="button"
                 className={clsx(
                   "text-gray-900 flex items-center justify-center gap-x-2 text-sm px-2 py-1.5 rounded-sm",
                   !props.isLimited && props.isPublished
-                    ? "bg-primary-200 hover:bg-primary-300"
+                    ? "bg-[#C7665C] hover:bg-primary-300"
                     : "bg-gray-200 cursor-not-allowed"
                 )}
                 onClick={props.onAddSchedule}
@@ -322,12 +323,13 @@ function ScheduleList(props: ScheduleListProps) {
                       {getScheduleBlock(scheduledRun)}
                     </div>
                     <div className="w-1/4 flex items-center justify-end">
-                      <div
+                      <button
+                        type="button"
                         className="p-1 hover:cursor-pointer hover:bg-gray-200 hover:text-gray-900 text-gray-400 rounded-sm"
                         onClick={props.onDeleteSchedule(scheduledRun.id)}
                       >
                         <XMarkIcon className="h-4 w-4" />
-                      </div>
+                      </button>
                     </div>
                   </div>
                 </li>
@@ -345,7 +347,8 @@ function ScheduleList(props: ScheduleListProps) {
             </div>
             <div className="flex items-center justify-center">
               <button
-                className="rounded-sm px-3 py-1 text-sm bg-primary-200 hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50"
+                type="button"
+                className="rounded-sm px-3 py-1 text-sm bg-[#C7665C] hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50"
                 onClick={props.onPublish}
                 disabled={props.publishing}
               >

@@ -162,7 +162,7 @@ export default function Comments({
                 <div className="absolute inset-x-0 bottom-0 flex justify-end py-2 pl-3 pr-2">
                   <button
                     type="submit"
-                    className="gap-x-2 rounded-sm bg-primary-200 px-3 py-1 text-sm hover:bg-primary-300"
+                    className="gap-x-2 rounded-sm bg-[#C7665C] px-3 py-1 text-sm hover:bg-primary-300"
                   >
                     Comment
                   </button>
