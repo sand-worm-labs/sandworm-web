@@ -395,6 +395,7 @@ function Tab(props: TabProps) {
           <div className="bg-ceramic-100" style={{ width: `${dragSize}px` }} />
         )}
         <button
+          type="button"
           key={props.tabRef.blockId}
           ref={buttonRef}
           onClick={() => props.onSwitchActiveTab(props.tabRef.blockId)}
@@ -607,17 +608,15 @@ const DraggableTabbedBlock = (props: {
 
   const onFileUploadBlockPythonUsage = useCallback(
     (block: Y.XmlElement<FileUploadBlock>, filename: string, type: string) => {
-      const fileExtension =
-        type === "application/json"
-          ? "json"
-          : type === "text/csv"
-            ? "csv"
-            : type === "application/vnd.ms-excel"
-              ? "xls"
-              : type ===
-                  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                ? "xlsx"
-                : "";
+      const extensionMap: Record<string, string> = {
+        "application/json": "json",
+        "text/csv": "csv",
+        "application/vnd.ms-excel": "xls",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+          "xlsx",
+      };
+
+      const fileExtension = extensionMap[type] ?? "";
 
       const source =
         fileExtension !== ""
@@ -1677,6 +1676,7 @@ const Editor = (props: Props) => {
               <p className="text-sm leading-5 text-yellow-700">
                 This document is deleted.{" "}
                 <button
+                  type="button"
                   className="hover:underline text-primary-600 hover:text-primary-800 font-medium"
                   onClick={props.onRestoreDocument}
                 >

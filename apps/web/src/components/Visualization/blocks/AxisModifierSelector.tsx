@@ -18,45 +18,52 @@ interface Props {
   className?: string;
   disabled?: boolean;
 }
-function AxisModifierSelector(props: Props) {
-  const onChange = useCallback(
+function AxisModifierSelector({
+  label,
+  value,
+  onChange,
+  options,
+  disabled,
+  className,
+}: Props) {
+  const handleOnChange = useCallback(
     (v: string) => {
       if (v === "None") {
-        props.onChange(null);
+        onChange(null);
         return;
       }
 
-      props.onChange(v);
+      onChange(v);
     },
-    [props.onChange]
+    [onChange]
   );
 
-  const selectedOption = useMemo(
-    () => props.options.find(o => o.value === props.value) ?? null,
-    [props.options, props.value]
+  const selected = useMemo(
+    () => options.find(o => o.value === value) ?? null,
+    [options, value]
   );
 
   const buttonRef = useRef<HTMLButtonElement>(null);
   const { onOpen, dropdownPosition } = useDropdownPosition(buttonRef);
 
   const onClickButton = useCallback(() => {
-    if (!props.disabled) {
+    if (!disabled) {
       onOpen();
     }
-  }, [props.disabled, onOpen]);
+  }, [disabled, onOpen]);
 
   return (
     <Listbox
-      value={props.value ?? "None"}
-      onChange={onChange}
+      value={value ?? "None"}
+      onChange={handleOnChange}
       as="div"
-      className={clsx(props.className, "flex items-center justify-between")}
-      disabled={props.disabled}
+      className={clsx(className, "flex items-center justify-between")}
+      disabled={disabled}
     >
       {({ open }) => (
         <>
           <Listbox.Label className="block text-xs leading-6 text-gray-500">
-            {props.label}
+            {label}
           </Listbox.Label>
           <div className="relative">
             <Listbox.Button
@@ -90,11 +97,10 @@ function AxisModifierSelector(props: Props) {
                   }}
                   className="z-[2000]"
                 >
-                  <Listbox.Options className="min-w-24 max-w-44 mt-0.5 max-h-60 overflow-auto rounded-md bg-white py-2 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none ">
-                    {props.options.map(option => (
+                  <Listbox.Options className="min-w-24 max-w-44 mt-0.5 max-h-60 overflow-auto rounded-md bg-white py-2 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    {options.map(option => (
                       <Listbox.Option
                         as="div"
-                        key={option.value}
                         className={({ active }) =>
                           clsx(
                             active ? "bg-gray-50" : "",
@@ -104,11 +110,11 @@ function AxisModifierSelector(props: Props) {
                         value={option.value}
                         title={option.name}
                       >
-                        {({ selected }) => (
+                        {({ selected: isSelected }) => (
                           <>
                             <span
                               className={clsx(
-                                selected
+                                isSelected
                                   ? "font-semibold text-gray-800"
                                   : "font-normal text-gray-600",
                                 "block truncate"
@@ -117,7 +123,7 @@ function AxisModifierSelector(props: Props) {
                               {option.name}
                             </span>
 
-                            {selected ? (
+                            {isSelected ? (
                               <CheckIcon
                                 className="h-3 w-3 text-gray-600"
                                 aria-hidden="true"

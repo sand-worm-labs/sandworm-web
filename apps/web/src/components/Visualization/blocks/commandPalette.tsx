@@ -24,17 +24,21 @@ type CommandPaletteProps = {
   setOpen: (open: boolean) => void;
 };
 
-export default function CommandPalette(props: CommandPaletteProps) {
+export default function CommandPalette({
+  workspaceId,
+  isOpen,
+  setOpen,
+}: CommandPaletteProps) {
   const router = useRouter();
   const [query, setQuery] = useState("");
-  const [{ documents }] = useDocuments(props.workspaceId);
+  const [{ documents }] = useDocuments(workspaceId);
 
   const navigateToDocument = useCallback(
     (document: ApiDocument) => {
-      const url = `/workspaces/${props.workspaceId}/documents/${document.id}`;
+      const url = `/workspaces/${workspaceId}/documents/${document.id}`;
       return router.push(url);
     },
-    [router, props.workspaceId]
+    [router, workspaceId]
   );
 
   const fuse = useMemo(
@@ -88,11 +92,11 @@ export default function CommandPalette(props: CommandPaletteProps) {
   );
 
   return (
-    <Transition show={props.isOpen}>
+    <Transition show={isOpen}>
       <Dialog
         className="relative z-[1000]"
         onClose={() => {
-          props.setOpen(false);
+          setOpen(false);
           setQuery("");
         }}
       >
@@ -120,7 +124,7 @@ export default function CommandPalette(props: CommandPaletteProps) {
             <Dialog.Panel className="mx-auto max-w-2xl transform divide-y divide-gray-100 overflow-hidden rounded-xl bg-white shadow-2xl ring-1 ring-black ring-opacity-5 transition-all">
               <Combobox
                 onChange={(item: ApiDocument) => {
-                  navigateToDocument(item);
+                  return navigateToDocument(item);
                 }}
               >
                 {({ activeOption }) => (
@@ -151,7 +155,7 @@ export default function CommandPalette(props: CommandPaletteProps) {
                         >
                           <ul className="text-sm text-gray-700">
                             {searchState.results.map(doc => {
-                              const IconElement = icons[doc.icon];
+                              const IconElement = icons[doc.icon]!;
 
                               return (
                                 <Combobox.Option
@@ -159,7 +163,7 @@ export default function CommandPalette(props: CommandPaletteProps) {
                                   key={doc.id}
                                   value={doc}
                                   className={clsx(
-                                    "group flex  select-none items-center rounded-md px-3 py-2 data-[focus]:bg-gray-600 data-[focus]:text-white cursor-pointer",
+                                    "group flex cursor-default select-none items-center rounded-md px-3 py-2 data-[focus]:bg-gray-600 data-[focus]:text-white",
                                     activeOption === doc && "bg-gray-100"
                                   )}
                                   onClick={() => navigateToDocument(doc)}

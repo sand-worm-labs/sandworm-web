@@ -4,6 +4,7 @@ import clsx from "clsx";
 import { formatDistanceToNow, differenceInSeconds } from "date-fns";
 import Link from "next/link";
 import { Fragment, useCallback, useMemo } from "react";
+import Image from "next/image";
 
 import type { DataSource, DataSourceType } from "@/types";
 
@@ -31,6 +32,8 @@ export const dataSourcePrettyName = (t: DataSourceType): string => {
       return "Snowflake";
     case "databrickssql":
       return "Databricks SQL";
+    default:
+      return t;
   }
 };
 
@@ -56,6 +59,8 @@ export const databaseImages = (t: DataSourceType): string => {
       return "/icons/snowflake.png";
     case "databrickssql":
       return "/icons/databrickssql.png";
+    default:
+      return "";
   }
 };
 
@@ -82,6 +87,8 @@ const databaseUrl = (ds: DataSource): string => {
         return "snowflake://demodb";
       case "databrickssql":
         return "databricks://demodb";
+      default:
+        return "";
     }
   } else {
     switch (ds.type) {
@@ -107,6 +114,8 @@ const databaseUrl = (ds: DataSource): string => {
         return `snowflake://${ds.data.account}/${ds.data.database}?warehouse=${ds.data.warehouse}`;
       case "databrickssql":
         return `databricks://token:dapi*****@${ds.data.hostname}?http_path=${ds.data.http_path}`;
+      default:
+        return "";
     }
   }
 };
@@ -116,13 +125,16 @@ interface LastConnectionProps {
   onOpenOfflineDialog: (id: string) => void;
 }
 
-function LastConnection(props: LastConnectionProps) {
+function LastConnection({
+  dataSource,
+  onOpenOfflineDialog,
+}: LastConnectionProps) {
   const prettyConnStatus = useMemo(() => {
-    if (props.dataSource.data.isDemo) {
+    if (dataSource.data.isDemo) {
       return "Online";
     }
 
-    switch (props.dataSource.data.connStatus) {
+    switch (dataSource.data.connStatus) {
       case "online":
         return "Online";
       case "offline":
@@ -132,27 +144,27 @@ function LastConnection(props: LastConnectionProps) {
       default:
         return "Unknown";
     }
-  }, [props.dataSource.data.connStatus]);
+  }, [dataSource.data.connStatus, dataSource.data.isDemo]);
 
-  const lastConnText = props.dataSource.data.isDemo
+  const lastConnText = dataSource.data.isDemo
     ? "just now"
-    : props.dataSource.data.lastConnection === null
+    : dataSource.data.lastConnection === null
       ? "never"
       : differenceInSeconds(
             new Date(),
-            new Date(props.dataSource.data.lastConnection)
+            new Date(dataSource.data.lastConnection)
           ) < 30
         ? "just now"
-        : formatDistanceToNow(new Date(props.dataSource.data.lastConnection), {
+        : formatDistanceToNow(new Date(dataSource.data.lastConnection), {
             addSuffix: true,
           });
 
   const [statusBallColor, statusBallRippleColor] = useMemo(() => {
-    if (props.dataSource.data.isDemo) {
+    if (dataSource.data.isDemo) {
       return ["bg-emerald-500", "bg-emerald-500/20"];
     }
 
-    switch (props.dataSource.data.connStatus) {
+    switch (dataSource.data.connStatus) {
       case "online":
         return ["bg-emerald-500", "bg-emerald-500/20"];
       case "offline":
@@ -162,13 +174,13 @@ function LastConnection(props: LastConnectionProps) {
       default:
         return ["bg-gray-300", "bg-gray-300/20"];
     }
-  }, [props.dataSource.data.connStatus]);
+  }, [dataSource.data.connStatus, dataSource.data.isDemo]);
 
   const onStatusClick = useCallback(() => {
-    if (props.dataSource.data.connStatus === "offline") {
-      props.onOpenOfflineDialog(props.dataSource.data.id);
+    if (dataSource.data.connStatus === "offline") {
+      onOpenOfflineDialog(dataSource.data.id);
     }
-  }, [props.dataSource.data.connStatus, props.onOpenOfflineDialog]);
+  }, [dataSource.data.connStatus, dataSource.data.id, onOpenOfflineDialog]);
 
   return (
     <div className="mt-1 flex items-center gap-x-1.5">
@@ -184,8 +196,9 @@ function LastConnection(props: LastConnectionProps) {
       </div>
       <p className="text-xs leading-5 text-gray-500 flex space-x-2 items-center">
         <button
+          type="button"
           className={
-            props.dataSource.data.connStatus === "offline"
+            dataSource.data.connStatus === "offline"
               ? "hover:underline cursor-pointer"
               : "cursor-default"
           }
@@ -193,7 +206,7 @@ function LastConnection(props: LastConnectionProps) {
         >
           {prettyConnStatus}
         </button>
-        {props.dataSource.data.lastConnection && (
+        {dataSource.data.lastConnection && (
           <>
             <svg viewBox="0 0 2 2" className="h-0.5 w-0.5 fill-current">
               <circle cx={1} cy={1} r={1} />
@@ -216,31 +229,41 @@ interface Props {
   onMakeDefault: (id: string) => void;
 }
 
-export default function DataSourcesList(props: Props) {
+export default function DataSourcesList({
+  workspaceId,
+  dataSources,
+  onRemoveDataSource,
+  onPingDataSource,
+  onOpenOfflineDialog,
+  onSchemaExplorer,
+  onMakeDefault,
+}: Props) {
   const orderedAPIDataSources = useMemo(() => {
-    return props.dataSources.sort((a, b) => {
+    return dataSources.sort((a, b) => {
       if (a.config.data.name < b.config.data.name) return -1;
       if (a.config.data.name > b.config.data.name) return 1;
       return 0;
     });
-  }, [props.dataSources]);
+  }, [dataSources]);
 
-  if (props.dataSources.size === 0) {
-    return <EmptyAPIDataSources workspaceId={props.workspaceId} />;
+  if (dataSources.size === 0) {
+    return <EmptyAPIDataSources workspaceId={workspaceId} />;
   }
 
   return (
-    <ul role="list" className="divide-y divide-gray-200 pt-1">
+    <ul className="divide-y divide-gray-200 pt-1">
       {orderedAPIDataSources.map(({ config: dataSource }) => (
         <li
           key={dataSource.data.id}
           className="flex justify-between gap-x-6 py-5"
         >
           <div className="flex min-w-0 gap-x-4">
-            <img
+            <Image
               className="h-12 w-12 flex-none"
               src={databaseImages(dataSource.type)}
               alt=""
+              width={48}
+              height={48}
             />
             <div className="min-w-0 flex-auto">
               <p className="text-sm font-semibold leading-6 text-gray-900">
@@ -263,7 +286,7 @@ export default function DataSourcesList(props: Props) {
               </p>
               <LastConnection
                 dataSource={dataSource}
-                onOpenOfflineDialog={props.onOpenOfflineDialog}
+                onOpenOfflineDialog={onOpenOfflineDialog}
               />
             </div>
             <Menu as="div" className="relative flex-none">
@@ -285,7 +308,7 @@ export default function DataSourcesList(props: Props) {
                     <Menu.Item>
                       {({ active }) => (
                         <Link
-                          href={`/workspaces/${props.workspaceId}/data-sources/edit/${dataSource.data.id}`}
+                          href={`/workspaces/${workspaceId}/data-sources/edit/${dataSource.data.id}`}
                           className={clsx(
                             active ? "bg-gray-50" : "",
                             "block px-3 py-1 text-sm leading-6 text-gray-900"
@@ -303,8 +326,9 @@ export default function DataSourcesList(props: Props) {
                     <Menu.Item>
                       {({ active }) => (
                         <button
+                          type="button"
                           onClick={() =>
-                            props.onPingDataSource(
+                            onPingDataSource(
                               dataSource.data.id,
                               dataSource.type
                             )
@@ -326,8 +350,9 @@ export default function DataSourcesList(props: Props) {
                     <Menu.Item>
                       {({ active }) => (
                         <button
+                          type="button"
                           onClick={() => {
-                            props.onMakeDefault(dataSource.data.id);
+                            onMakeDefault(dataSource.data.id);
                           }}
                           className={clsx(
                             active ? "bg-gray-50" : "",
@@ -345,8 +370,9 @@ export default function DataSourcesList(props: Props) {
                   <Menu.Item>
                     {({ active }) => (
                       <button
+                        type="button"
                         onClick={() => {
-                          props.onSchemaExplorer(dataSource.data.id);
+                          onSchemaExplorer(dataSource.data.id);
                         }}
                         className={clsx(
                           active ? "bg-gray-50" : "",
@@ -363,9 +389,8 @@ export default function DataSourcesList(props: Props) {
                   <Menu.Item>
                     {({ active }) => (
                       <button
-                        onClick={() =>
-                          props.onRemoveDataSource(dataSource.data.id)
-                        }
+                        type="button"
+                        onClick={() => onRemoveDataSource(dataSource.data.id)}
                         className={clsx(
                           active ? "bg-gray-50" : "",
                           "text-left w-full px-3 py-1 text-sm leading-6 text-red-600 block"
@@ -392,10 +417,10 @@ interface EmptyAPIDataSourcesProps {
   workspaceId: string;
 }
 
-function EmptyAPIDataSources(props: EmptyAPIDataSourcesProps) {
+function EmptyAPIDataSources({ workspaceId }: EmptyAPIDataSourcesProps) {
   return (
     <div className="py-6">
-      <Link href={`/workspaces/${props.workspaceId}/data-sources/new`}>
+      <Link href={`/workspaces/${workspaceId}/data-sources/new`}>
         <div className="text-center py-12 bg-ceramic-50/60 hover:bg-ceramic-50 rounded-xl">
           <svg
             className="mx-auto h-12 w-12 text-gray-400"

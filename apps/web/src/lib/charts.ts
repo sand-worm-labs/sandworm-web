@@ -16,7 +16,7 @@ export function getDefaultAxis(
   if (!columns || columns.length === 0 || !data || data.length === 0)
     return null;
 
-  const sample = data[0];
+  const sample = data[0]!;
   const numericCols = columns.filter(
     col => typeof sample[col] === "number" || !Number.isNaN(Number(sample[col]))
   );
@@ -25,14 +25,14 @@ export function getDefaultAxis(
     case "bar":
     case "area": {
       if (numericCols.length === 0 || columns.length < 2) return null;
-      const y = numericCols[0];
-      const x = columns.find(col => col !== y) || columns[1];
+      const y = numericCols[0]!;
+      const x = columns.find(col => col !== y) || columns[1]!;
       return { x, y };
     }
     case "pie": {
       if (numericCols.length === 0 || columns.length < 2) return null;
-      const y = numericCols[0];
-      const x = columns.find(col => col !== y) || columns[1];
+      const y = numericCols[0]!;
+      const x = columns.find(col => col !== y) || columns[1]!;
       return { x, y };
     }
     default:
@@ -50,7 +50,7 @@ export function validateChart(
   if (!data || data.length === 0)
     return { isValid: false, reason: "No data to display." };
 
-  const sample = data[0];
+  const sample = data[0]!;
   const numericCols = columns.filter(
     col => typeof sample[col] === "number" || !Number.isNaN(Number(sample[col]))
   );

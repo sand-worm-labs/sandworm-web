@@ -65,7 +65,7 @@ export default function Snapshots(props: Props) {
           </Tooltip>
         </div>
         <ScrollBar className="overflow-auto">
-          <ul role="list" className="flex-1 divide-y divide-solid" />
+          <ul className="flex-1 divide-y divide-solid" />
         </ScrollBar>
       </div>
     </Transition>

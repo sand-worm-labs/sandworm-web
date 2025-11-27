@@ -91,10 +91,7 @@ const MultiEmailInput = <T extends FieldValues>(
         <div className="flex flex-wrap">
           {currentValue.map((email, index) => (
             <div className="px-1 py-1">
-              <div
-                key={index}
-                className="bg-gray-50 border border-gray-200 px-2 py-1 rounded-sm flex items-center gap-x-1 text-xs"
-              >
+              <div className="bg-gray-50 border border-gray-200 px-2 py-1 rounded-sm flex items-center gap-x-1 text-xs">
                 <span>{email}</span>
                 <button
                   type="button"
