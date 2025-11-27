@@ -34,7 +34,7 @@ export const ExecuteButton = ({
       <Button
         onClick={handleClick}
         disabled={isExecuting}
-        className="bg-[#C7665C] text-white h-[2rem] pl-2 pr-2 rounded-lg text-xs flex items-center gap-2 rounded-r-none"
+        className="bg-[#C7665C]  text-white h-[2rem] pl-2 pr-2 rounded-lg text-xs flex items-center gap-2 rounded-r-none"
       >
         {isExecuting ? (
           <Loader2 className="w-4 h-4 animate-spin" />

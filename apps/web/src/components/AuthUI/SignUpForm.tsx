@@ -4,7 +4,6 @@ import { useState } from "react";
 
 export default function SignUpForm() {
   const [formData, setFormData] = useState({
-    name: "",
     email: "",
     password: "",
   });
@@ -35,16 +34,19 @@ export default function SignUpForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mt-4 space-y-4">
-      {["name", "email", "password"].map(field => (
+    <form
+      onSubmit={handleSubmit}
+      className="mt-4 space-y-4 font-primary w-full"
+    >
+      {["email", "password"].map(field => (
         <div key={field}>
-          <label className="block text-sm font-medium text-gray-300">
+          <label className="block text-sm font-medium dark:text-gray-300 text-[#1A1A1A]">
             {field.charAt(0).toUpperCase() + field.slice(1)}
           </label>
           <input
             type={field === "password" ? "password" : "text"}
             name={field}
-            className="mt-1 w-full rounded-md bg-[#1A1A1A] p-2 text-white focus:border-orange-500 focus:ring-orange-500"
+            className="mt-1 w-full rounded-md dark:bg-[#1A1A1A] bg-[#F1F3F4] p-2 text-black dark:text-white focus:border-orange-500 focus:ring-orange-500 border border-[#DEE2E6] font-normal text-[0.9rem] placeholder:text-[#455768]"
             placeholder={`Enter your ${field}`}
             value={formData[field as keyof typeof formData]}
             onChange={handleChange}
@@ -57,7 +59,7 @@ export default function SignUpForm() {
       <button
         type="submit"
         disabled={isLoading}
-        className="w-full rounded-md bg-orange-600 px-4 py-2 text-white font-medium disabled:bg-orange-300"
+        className="w-full rounded-xl bg-[#C7665C]  px-4 py-3 mb-5 text-white text-sm font-medium disabled:bg-orange-300 inline-block"
       >
         {isLoading ? "Signing Up..." : "Sign Up"}
       </button>

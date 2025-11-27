@@ -43,7 +43,7 @@ export const SocialLogin = ({ variant = "signup" }: SocialLoginProps) => {
   };
 
   return (
-    <div className=" w-full">
+    <div className=" w-full mt-4">
       <button
         type="button"
         onClick={handleGoogleSignIn}

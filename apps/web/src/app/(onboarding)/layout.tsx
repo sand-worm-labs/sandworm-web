@@ -18,12 +18,14 @@ export default function OnboardingLayout({
               fill
               className="object-cover"
             />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-center text-white font-primary drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]">
-                <p className="text-2xl md:text-3xl font-semibold">
+            <div className="absolute inset-0 flex flex-col top-[30%]">
+              <div className="text-center text-white font-primary ">
+                <p className="text-3xl md:text-[1.95rem] font-normal">
                   Deep and Insightful Onchain data
                 </p>
-                <p className="text-xl md:text-2xl">for teams and enterprise</p>
+                <p className="text-3xl md:text-[1.95rem] font-normal mt-1">
+                  for teams and enterprise
+                </p>
               </div>
             </div>
           </div>

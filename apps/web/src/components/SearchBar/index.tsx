@@ -172,7 +172,7 @@ export const SearchBar = () => {
                   onClick={() => setActiveFilter(filter.key)}
                   className={`px-3 py-0.5 rounded-md text-[0.75rem] font-medium transition-colors ${
                     activeFilter === filter.key
-                      ? "bg-[#C7665C] text-white"
+                      ? "bg-[#C7665C]  text-white"
                       : "dark:bg-[#21262d] dark:text-gray-300 dark:hover:bg-[#30363d]  text-[#1A1A1A] hover:bg-gray-200 border border-[#E3E5E8] dark:border-[#262A30]"
                   }`}
                 >

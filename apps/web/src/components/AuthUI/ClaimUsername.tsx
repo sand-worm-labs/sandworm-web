@@ -71,10 +71,10 @@ export const ClaimUsername = () => {
       <Username />
 
       <div className="w-full max-w-md mx-auto space-y-4 text-center">
-        <h2 className="text-2xl font-bold font-primarymt-4">
+        <h2 className="text-2xl font-bold font-primary mt-4">
           Claim your Sandworm domain
         </h2>
-        <p className="text-sm font-medium text-[#455768] dark:text-white roobert">
+        <p className="text-sm font-medium text-[#455768] dark:text-white font-primary mb-4">
           Your username is your unique profile URL where all your dashboards,
           queries, and public works live. It represents your identity across
           Sandworm.
@@ -93,14 +93,14 @@ export const ClaimUsername = () => {
             <Button
               disabled={status !== "available"}
               onClick={handleSubmit}
-              className="bg-black text-white rounded-lg ml-2 py-6 roobert"
+              className="bg-black text-white rounded-lg ml-2 py-6 font-primary disabled:bg-[#868E96] disabled:text-[#DEE2E6] disabled:opacity-1"
             >
               Claim handle
             </Button>
           </div>
 
           {/* ═══ Username Preview ═══ */}
-          <span className="text-xl text-[#D0DCE4]  green-gradient py-4 inline-block px-5 rounded-xl font-semibold mt-5 inline-block box-gradient">
+          <span className="text-xl text-[#D0DCE4]  green-gradient py-4  px-5 rounded-xl font-semibold mt-5 inline-block box-gradient">
             {username
               ? `${username}.sandwormlabs.xyz`
               : "username.sandwormlabs.xyz"}

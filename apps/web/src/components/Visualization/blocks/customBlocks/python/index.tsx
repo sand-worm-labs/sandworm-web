@@ -465,19 +465,14 @@ function PythonBlock(props: Props) {
       className="bg-white relative group/block"
       onClick={onClickWithin}
       data-block-id={blockId}
+      role="button"
     >
       <div
         className={clsx(
-          "rounded-2xl border",
+          "rounded-2xl border border-[#EBD7D7]",
           props.isBlockHiddenInPublished && "border-dashed",
-          props.hasMultipleTabs ? "rounded-tl-2xl" : "rounded-tl-2xl",
-          {
-            "border-[#EBD7D7] shadow-sm":
-              isEditorFocused && editorState.mode === "insert",
-            "border-[#EBD7D7] shadow-sm":
-              isEditorFocused && editorState.mode === "normal",
-            "border-[#EBD7D7]": !isEditorFocused,
-          }
+          props.hasMultipleTabs ? "rounded-tl-2xl" : "rounded-tl-xl",
+          isEditorFocused && editorState.mode === "insert" && "shadow-sm"
         )}
       >
         <div

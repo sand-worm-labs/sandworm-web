@@ -75,7 +75,7 @@ export const OnboardingTutorial = () => {
       type="button"
       disabled={!tutorialState.isCompleted}
       onClick={() => dismissTutorial()}
-      className="text-sm w-full flex gap-x-1.5 items-center justify-center font-medium py-1.5 px-2 rounded-sm disabled:opacity-50 bg-primary-200 hover:bg-primary-300 text-primary-800 border border-primary-400 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-800 disabled:border-gray-400"
+      className="text-sm w-full flex gap-x-1.5 items-center justify-center font-medium py-1.5 px-2 rounded-sm disabled:opacity-50 bg-[#C7665C] hover:bg-primary-300 text-primary-800 border border-primary-400 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-800 disabled:border-gray-400"
     >
       <CheckCircleIcon className="h-4 w-4" />
       <span>Finish</span>
