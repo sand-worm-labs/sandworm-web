@@ -5,20 +5,17 @@ interface Props {
   dotColor: string;
   pulseColor: string;
 }
-function BlinkingSignal(props: Props) {
+function BlinkingSignal({ position, dotColor, pulseColor }: Props) {
   return (
-    <span className={clsx("absolute flex h-2 w-2", props.position)}>
+    <span className={clsx("absolute flex h-2 w-2", position)}>
       <span
         className={clsx(
           "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
-          props.pulseColor
+          pulseColor
         )}
       />
       <span
-        className={clsx(
-          "relative inline-flex rounded-full h-2 w-2",
-          props.dotColor
-        )}
+        className={clsx("relative inline-flex rounded-full h-2 w-2", dotColor)}
       />
     </span>
   );

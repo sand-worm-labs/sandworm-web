@@ -1,4 +1,3 @@
-/* eslint-disable react/no-array-index-key */
 import { useEffect } from "react";
 import { useAnimation, motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
@@ -60,7 +59,6 @@ export default function AnimatedTitle({
           <motion.span
             ref={ref}
             aria-hidden="true"
-            key={index}
             initial="hidden"
             animate={ctrls}
             variants={wordAnimation}
@@ -70,11 +68,10 @@ export default function AnimatedTitle({
             }}
             className={`inline-block whitespace-nowrap font-secondary ${wordSpace}`}
           >
-            {word.split("").map((character, idx) => {
+            {word.split("").map(character => {
               return (
                 <motion.span
                   aria-hidden="true"
-                  key={idx}
                   variants={characterAnimation}
                   className={`inline-block ${charSpace}`}
                 >

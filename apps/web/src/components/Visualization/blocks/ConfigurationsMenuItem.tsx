@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import Link from "next/link";
-import router from "next/navigation";
+import { usePathname } from "next/navigation";
 
 import { ConfigurationsMenuBlinkingSignal } from "./BlinkingSignal";
 
@@ -19,49 +19,56 @@ type ConfigurationsMenuButtonProps = BaseConfigurationsMenuProps & {
   onClick: () => void;
 };
 
-const ConfigurationsMenuLink = (props: ConfigurationsMenuLinkProps) => {
+const ConfigurationsMenuLink = ({
+  href,
+  openInNewTab,
+  text,
+  icon: Icon,
+  blink,
+}: ConfigurationsMenuLinkProps) => {
+  const pathname = usePathname();
+
+  const isActive = pathname?.startsWith(href);
+
   return (
     <Link
-      href={props.href}
-      target={props.openInNewTab ? "_blank" : undefined}
+      href={href}
+      target={openInNewTab ? "_blank" : undefined}
       className={clsx(
-        router.pathname.startsWith(props.href)
+        isActive
           ? "text-gray-800 bg-ceramic-100/50"
           : "text-gray-500 hover:bg-ceramic-100/80",
         "group text-sm font-medium leading-6 w-full flex py-1 hover:text-ceramic-600"
       )}
     >
       <div className="w-full flex items-center gap-x-2 px-4 relative">
-        {props.blink && <ConfigurationsMenuBlinkingSignal />}
-        <props.icon
-          strokeWidth={1}
-          className="h-4 w-4 shrink-0"
-          aria-hidden="true"
-        />
-        <span className="mt-0.5">{props.text}</span>
+        {blink && <ConfigurationsMenuBlinkingSignal />}
+        <Icon strokeWidth={1} className="h-4 w-4 shrink-0" aria-hidden="true" />
+        <span className="mt-0.5">{text}</span>
       </div>
     </Link>
   );
 };
 
-const ConfigurationsMenuButton = (props: ConfigurationsMenuButtonProps) => {
+const ConfigurationsMenuButton = ({
+  onClick: handleClick,
+  icon: Icon,
+  text,
+  blink,
+}: ConfigurationsMenuButtonProps) => {
   return (
     <button
       type="button"
-      onClick={props.onClick}
+      onClick={handleClick}
       className={clsx(
         "group text-sm font-medium leading-6 w-full flex py-1 hover:text-ceramic-600",
         "text-gray-500 hover:bg-ceramic-100/80"
       )}
     >
       <div className="w-full flex items-center gap-x-2 px-4 relative">
-        {props.blink && <ConfigurationsMenuBlinkingSignal />}
-        <props.icon
-          strokeWidth={1}
-          className="h-4 w-4 shrink-0"
-          aria-hidden="true"
-        />
-        <span className="mt-0.5">{props.text}</span>
+        {blink && <ConfigurationsMenuBlinkingSignal />}
+        <Icon strokeWidth={1} className="h-4 w-4 shrink-0" aria-hidden="true" />
+        <span className="mt-0.5">{text}</span>
       </div>
     </button>
   );

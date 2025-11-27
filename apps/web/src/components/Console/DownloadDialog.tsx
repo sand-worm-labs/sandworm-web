@@ -82,7 +82,7 @@ export const DownloadDialog: React.FC<DownloadDialogProps> = ({
         );
       }
 
-      const now = new Date().toISOString().split(".")[0].replace(/[:]/g, "-");
+      const now = new Date().toISOString().split(".")[0]!.replace(/[:]/g, "-");
       const exportFilename = `sandworm_${now}`;
 
       if (downloadOption === "clipboard") {

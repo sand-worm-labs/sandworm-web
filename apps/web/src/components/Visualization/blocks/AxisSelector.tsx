@@ -35,17 +35,25 @@ type AxisSelectorProps = {
   disabled?: boolean;
 };
 
-export default function AxisSelector(props: AxisSelectorProps) {
-  const value = useMemo(
-    () => props.columns.find(c => c?.name === props.value?.name) ?? null,
-    [props.columns, props.value]
+export default function AxisSelector({
+  label,
+  value,
+  defaultValue,
+  columns,
+  onChange,
+  disabled,
+}: AxisSelectorProps) {
+  // Use the value from the columns array so that the value equality check works
+  const selectedValue = useMemo(
+    () => columns.find(c => c?.name === value?.name) ?? null,
+    [columns, value]
   );
 
   useEffect(() => {
-    if (value === null && props.defaultValue !== null && !props.disabled) {
-      props.onChange(props.defaultValue);
+    if (selectedValue === null && defaultValue !== null && !disabled) {
+      onChange(defaultValue);
     }
-  }, [props.defaultValue, value, props.onChange, props.disabled]);
+  }, [defaultValue, selectedValue, onChange, disabled]);
 
   const renderIcon = useCallback((column: DataFrameColumn | null) => {
     return column ? (
@@ -55,15 +63,15 @@ export default function AxisSelector(props: AxisSelectorProps) {
 
   return (
     <Combobox<DataFrameColumn | null>
-      label={props.label}
-      value={value}
-      options={props.columns}
-      onChange={props.onChange}
+      label={label}
+      value={selectedValue}
+      options={columns}
+      onChange={onChange}
       search={search}
-      getLabel={col => col?.name.toString() ?? "None"}
+      getLabel={valuex => valuex?.name.toString() ?? "None"}
       icon={renderIcon}
       placeholder="Column"
-      disabled={props.disabled}
+      disabled={disabled}
     />
   );
 }

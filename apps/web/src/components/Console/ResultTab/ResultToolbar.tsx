@@ -55,7 +55,7 @@ export const ResultToolbar = ({
     setSelectedOptions(updatedOptions.length ? updatedOptions : ["Table"]);
 
     if (viewMode === value) {
-      const fallback = updatedOptions.length ? updatedOptions[0] : "Table";
+      const fallback = updatedOptions.length ? updatedOptions[0]! : "Table";
       setViewMode(fallback);
     }
   };

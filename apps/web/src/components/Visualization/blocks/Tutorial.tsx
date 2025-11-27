@@ -521,7 +521,7 @@ const TutorialStep = (props: TutorialStepProps) => {
         isLast={props.isLast ?? false}
       />
 
-      <div className="flex flex-col py-0.5 text-sm w-full flex gap-y-1">
+      <div className="flex flex-col py-0.5 text-sm w-full  gap-y-1">
         <button
           type="button"
           disabled={props.status === "current"}

@@ -100,7 +100,7 @@ export default function ReusableComponents(props: Props) {
               </div>
             )}
             <ScrollBar className="overflow-y-auto">
-              <ul role="list" className="flex-1">
+              <ul className="flex-1">
                 {data.map(component => (
                   <li
                     key={component.id}
