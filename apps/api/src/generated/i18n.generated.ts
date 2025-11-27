@@ -42,6 +42,26 @@ export type I18nTranslations = {
             "not_authorized_to_delete": string;
         };
     };
+    "common": {
+        "confirmEmail": string;
+        "resetPassword": string;
+    };
+    "confirm-email": {
+        "text1": string;
+        "text2": string;
+        "text3": string;
+    };
+    "confirm-new-email": {
+        "text1": string;
+        "text2": string;
+        "text3": string;
+    };
+    "reset-password": {
+        "text1": string;
+        "text2": string;
+        "text3": string;
+        "text4": string;
+    };
 };
 /* prettier-ignore */
 export type I18nPath = Path<I18nTranslations>;
