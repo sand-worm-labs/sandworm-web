@@ -1,5 +1,17 @@
 import { InputType } from '@nestjs/graphql';
-import { UUIDField, StringField, BooleanField } from '@sandworm/graphql';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsString } from 'class-validator';
+import { UUIDField, StringField, BooleanField, } from '@sandworm/graphql';
+
+export class FileDto {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  id: string;
+
+  path: string;
+}
+
 
 @InputType()
 export class ListFilesInput {
