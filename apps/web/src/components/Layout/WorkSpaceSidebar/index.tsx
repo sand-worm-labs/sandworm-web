@@ -36,7 +36,7 @@ const mockUser = {
 
 export const WorkspaceSidebar = () => {
   const pathname = usePathname();
-  const workspaceId = useStringQuery("workspaceId");
+  const workspaceId = pathname.split("/")[2] ?? "";
 
   //note: we replace this with useworkspace hook once ready
   /*   const workspaceId = pathname.split("/")[2] ?? "";
