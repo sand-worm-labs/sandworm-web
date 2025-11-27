@@ -16,6 +16,7 @@ import {
   removeDashboardBlock,
 } from "@sandworm/editor";
 import SimpleBar from "simplebar-react";
+import { useResizeDetector } from "react-resize-detector";
 
 import type { ApiDocument } from "@/types";
 
@@ -334,6 +335,8 @@ interface Props {
   onExpand: (block: YBlock) => void;
 }
 export default function DashboardView(props: Props) {
+  const { width, ref } = useResizeDetector();
+
   return (
     <SimpleBar
       id="dashboard-wrapper"
@@ -348,6 +351,9 @@ export default function DashboardView(props: Props) {
           isEditable={props.isEditing && props.userRole !== "viewer"}
           isPDF={false}
         />
+        <div ref={ref}>
+          {width ? <DashboardViewInner {...props} width={width} /> : <div />}
+        </div>
       </div>
     </SimpleBar>
   );

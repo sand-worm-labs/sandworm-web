@@ -2,8 +2,11 @@ import type { CSSProperties } from "react";
 import { useEffect } from "react";
 import type { XYCoord } from "react-dnd";
 import { useDragLayer } from "react-dnd";
-import { ElementType } from "@sandworm/types";
 
+export enum ElementType {
+  Block = "BLOCK",
+  BlockGroup = "BLOCK_GROUP",
+}
 import IconSelector from "./IconSelector";
 
 function getItemStyles(
