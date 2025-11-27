@@ -57,7 +57,7 @@ export default function Snapshots(props: Props) {
           >
             <button
               type="button"
-              className="flex items-center gap-x-2 rounded-sm bg-primary-200 px-3 py-1 text-sm hover:bg-primary-300 disabled:cursor-not-allowed disabled:bg-gray-200"
+              className="flex items-center gap-x-2 rounded-sm bg-[#C7665C] px-3 py-1 text-sm hover:bg-primary-300 disabled:cursor-not-allowed disabled:bg-gray-200"
               disabled
             >
               Save

@@ -1,47 +1,76 @@
 "use client";
 
-import type { Attachment, Message } from "ai";
-import { useChat } from "ai/react";
 import { useState } from "react";
+import { useRouter, useParams } from "next/navigation";
 
 import { MultimodalInput } from "./multimodal-input";
 import { ExamplePrompts } from "./example-prompts";
+
+type Attachment = {
+  url: string;
+  name: string;
+  contentType: string;
+};
+
+type Message = {
+  id: string;
+  role: string;
+  content: string;
+};
 
 export function Chat({
   id,
   initialMessages,
 }: {
   id: string;
-  initialMessages: Array<Message>;
+  initialMessages?: Array<Message>;
 }) {
-  const { messages, input, setInput, append, isLoading, stop, handleSubmit } =
-    useChat({
-      id,
-      body: { id },
-      initialMessages,
-      api: "/api/chat",
-      streamMode: "text",
-      onFinish: () => {
-        console.log("body", { id }, "finished chat");
-        window.history.replaceState({}, "", `/chat/${id}`);
-      },
-      onError: error => {
-        console.error("🔴 [FRONTEND] useChat onError:", error);
-      },
-    });
+  const router = useRouter();
+  const params = useParams();
+  const workspaceId = params.workspaceId as string;
 
+  const [messages, setMessages] = useState<Array<Message>>(
+    initialMessages || []
+  );
+  const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
 
+  const handleSubmit = (event?: { preventDefault?: () => void }) => {
+    event?.preventDefault?.();
+    if (!input.trim()) return;
+
+    router.push(
+      `/workspace/${workspaceId}/documents/notebook?prompt=${encodeURIComponent(input)}`
+    );
+  };
+
+  const append = async (message: any) => {
+    console.log("Append message:", message);
+    return null;
+  };
+
+  const stop = () => {
+    console.log("Stop generation");
+    setIsLoading(false);
+  };
+
+  const handlePromptSelect = (prompt: string) => {
+    router.push(
+      `/workspace/${workspaceId}/documents/notebook?prompt=${encodeURIComponent(prompt)}`
+    );
+  };
+
   return (
-    <div className="flex flex-row justify-center pb-4 md:pb-8 h-dvh bg-[#F9FAFD] dark:bg-black ">
+    <div className="flex flex-row justify-center pb-4 md:pb-8 h-dvh bg-[#F9FAFD] dark:bg-black">
       <div className="flex flex-col mt-32 items-center gap-2">
         <h1 className="text-3xl lg:text-3xl font-medium text-center tracking-tighter text-pretty font-primary">
           What do you want to explore onchain today?
         </h1>
 
-        <p className="text-[#6C757D]"> Search the blockchain for information</p>
+        <p className="text-[#6C757D]">Search the blockchain for information</p>
 
-        <form className="flex flex-row gap-2 relative items-end w-full md:max-w-[800px] max-w-[calc(100dvw-32px) px-4 md:px-0">
+        <form className="flex flex-row gap-2 relative items-end w-full md:max-w-[800px] max-w-[calc(100dvw-32px)] px-4 md:px-0">
           <MultimodalInput
             input={input}
             setInput={setInput}
@@ -54,9 +83,10 @@ export function Chat({
             append={append}
           />
         </form>
+
         <div className="mt-6">
           <h3 className="mb-4 text-sm">Test Queries</h3>
-          <ExamplePrompts onPromptSelect={() => {}} />
+          <ExamplePrompts onPromptSelect={handlePromptSelect} />
         </div>
       </div>
     </div>

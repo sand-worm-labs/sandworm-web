@@ -7,6 +7,7 @@ import { FooterWrapper } from "@/components/Layout/AppFooter/FooterWrapper";
 import { AppHeader } from "@/components/Layout/AppHeader";
 import { SignInModal } from "@/components/AuthUI/SignInModal";
 import DndBackendProvider from "@/components/Visualization/blocks/DndBackendProvider";
+import { DocumentsProvider } from "@/components/Visualization/hooks/useDocuments";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -18,9 +19,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         shallowRouting
       >
         <AppHeader />
-        <DndBackendProvider>
-          <main> {children}</main>
-        </DndBackendProvider>
+        <DocumentsProvider>
+          <DndBackendProvider>
+            <main> {children}</main>
+          </DndBackendProvider>
+        </DocumentsProvider>
         <FooterWrapper />
         <SignInModal />
         <Toaster

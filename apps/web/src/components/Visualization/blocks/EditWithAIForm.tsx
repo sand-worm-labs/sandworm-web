@@ -130,7 +130,7 @@ function EditWithAIForm(props: Props) {
             className={clsx(
               props.loading || props.disabled
                 ? "bg-gray-200 hover:bg-gray-300 border-gray-400 cursor-not-allowed"
-                : "bg-primary-200 hover:bg-primary-300 border-primary-300",
+                : "bg-[#C7665C] hover:bg-primary-300 border-primary-300",
               "p-1.5 rounded-sm text-primary-600 border"
             )}
           >
