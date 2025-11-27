@@ -457,9 +457,6 @@ export class AuthService {
       .createHash('sha256')
       .update(randomStringGenerator())
       .digest('hex');
-
-    const user = await this.usersService.findById(session.user.id);
-
     
     await this.sessionService.update(session.id, {
       hash,

@@ -7,5 +7,6 @@ import { UserService } from './user.service';
 @Module({
   imports: [TypeOrmModule.forFeature([UserEntity,UserFollowsEntity,UserSettingEntity]), AuthGraphqlModule],
   providers: [UserResolver, UserService],
+  exports: [UserService],
 })
 export class UserModule { }
