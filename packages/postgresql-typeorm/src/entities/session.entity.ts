@@ -1,4 +1,3 @@
-// packages/postgresql-typeorm/src/entities/session.entity.ts
 import {
     Entity,
     PrimaryGeneratedColumn,
@@ -7,11 +6,11 @@ import {
     ManyToOne,
     Index,
   } from 'typeorm';
-  import { UserEntity } from './user.entity';
+import { UserEntity } from './user.entity';
 import { AbstractEntity } from './abstract.entity';
   
-  @Entity({ name: 'sessions' })
-  export class SessionEntity  extends AbstractEntity {
+@Entity({ name: 'sessions' })
+export class SessionEntity  extends AbstractEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
   
@@ -24,4 +23,4 @@ import { AbstractEntity } from './abstract.entity';
 
     @DeleteDateColumn({ nullable: true })
     deletedAt?: Date;
-  }
+}
