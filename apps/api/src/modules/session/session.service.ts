@@ -38,7 +38,7 @@ export class SessionService {
     return session ? this.toSession(session) : null;
   }
 
-  async create( userId:UserResponse['id'] , data: Omit<Session, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>): Promise<Session> {
+  async create( userId:UserResponse['id'] ): Promise<Session> {
     const user = await this.userRepository.findOneBy({ id: userId });
 
     if (!user) {
@@ -84,13 +84,13 @@ export class SessionService {
     });
   }
 
-  async deleteByUserIdWithExclude(
+  async deleteByUserIdWithExclude(conditions:{
     userId: UserResponse['id'],
     excludeSessionId: Session['id']
-  ): Promise<void> {
+  }): Promise<void> {
     await this.sessionRepository.softDelete({
-      user: { id: userId },
-      id: Not(excludeSessionId),
+      user: { id: conditions.userId },
+      id: Not(conditions.excludeSessionId),
     });
   }
 

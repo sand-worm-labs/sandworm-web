@@ -26,6 +26,7 @@ import { Session } from '../session/domain/session';
 import { SessionService } from '../session/session.service';
 import { StatusEnum } from '../statuses/statuses.enum';
 import { UserResponse } from '../user/model/http/user.model';
+import { verifyPassword } from '@sandworm/nest-common';
 
 @Injectable()
 export class AuthService {
@@ -67,7 +68,7 @@ export class AuthService {
       });
     }
 
-    const isValidPassword = await bcrypt.compare(
+    const isValidPassword = await verifyPassword(
       loginDto.password,
       user.password,
     );
@@ -81,20 +82,13 @@ export class AuthService {
       });
     }
 
-    const hash = crypto
-      .createHash('sha256')
-      .update(randomStringGenerator())
-      .digest('hex');
 
-    const session = await this.sessionService.create({
-      user,
-      hash,
-    });
+    const session = await this.sessionService.create(user.id);
 
     const { token, refreshToken, tokenExpires } = await this.getTokensData({
       id: user.id,
       sessionId: session.id,
-      hash,
+      hash: session.hash,
     });
 
     return {
@@ -132,12 +126,6 @@ export class AuthService {
     } else if (userByEmail) {
       user = userByEmail;
     } else if (socialData.id) {
-      const role = {
-        id: RoleEnum.user,
-      };
-      const status = {
-        id: StatusEnum.active,
-      };
 
       user = await this.usersService.create({
         email: socialEmail ?? null,
@@ -145,8 +133,6 @@ export class AuthService {
         lastName: socialData.lastName ?? null,
         socialId: socialData.id,
         provider: authProvider,
-        role,
-        status,
       });
 
       user = await this.usersService.findById(user.id);
@@ -161,9 +147,7 @@ export class AuthService {
       });
     }
 
-    const session = await this.sessionService.create({
-      user
-    });
+    const session = await this.sessionService.create(user.id);
 
     const {
       token: jwtToken,
@@ -171,8 +155,8 @@ export class AuthService {
       tokenExpires,
     } = await this.getTokensData({
       id: user.id,
-      role: user.role,
       sessionId: session.id,
+      hash: session.hash,
     });
 
     return {
@@ -187,22 +171,16 @@ export class AuthService {
     const user = await this.usersService.create({
       ...dto,
       email: dto.email,
-      status: {
-        id: StatusEnum.inactive,
-      },
     });
 
+    const authConfig = this.configService.getOrThrow('auth', { infer: true });
     const hash = await this.jwtService.signAsync(
       {
         confirmEmailUserId: user.id,
       },
       {
-        secret: this.configService.getOrThrow('auth.confirmEmailSecret', {
-          infer: true,
-        }),
-        expiresIn: this.configService.getOrThrow('auth.confirmEmailExpires', {
-          infer: true,
-        }),
+        secret: authConfig.confirmEmailSecret,
+        expiresIn: authConfig.confirmEmailExpires,
       },
     );
 
@@ -217,13 +195,13 @@ export class AuthService {
   async confirmEmail(hash: string): Promise<void> {
     let userId: UserResponse['id'];
 
+    const authConfig = this.configService.getOrThrow('auth', { infer: true });
+
     try {
       const jwtData = await this.jwtService.verifyAsync<{
         confirmEmailUserId: UserResponse['id'];
       }>(hash, {
-        secret: this.configService.getOrThrow('auth.confirmEmailSecret', {
-          infer: true,
-        }),
+        secret: authConfig.confirmEmailSecret,
       });
 
       userId = jwtData.confirmEmailUserId;
@@ -238,20 +216,12 @@ export class AuthService {
 
     const user = await this.usersService.findById(userId);
 
-    if (
-      !user ||
-      user?.status?.id?.toString() !== StatusEnum.inactive.toString()
-    ) {
+    if (!user ) {
       throw new NotFoundException({
         status: HttpStatus.NOT_FOUND,
         error: `notFound`,
       });
     }
-
-    user.status = {
-      id: StatusEnum.active,
-    };
-
     await this.usersService.update(user.id, user);
   }
 
@@ -259,14 +229,14 @@ export class AuthService {
     let userId: UserResponse['id'];
     let newEmail: UserResponse['email'];
 
+    const authConfig = this.configService.getOrThrow('auth', { infer: true });
+
     try {
       const jwtData = await this.jwtService.verifyAsync<{
         confirmEmailUserId: UserResponse['id'];
         newEmail: UserResponse['email'];
       }>(hash, {
-        secret: this.configService.getOrThrow('auth.confirmEmailSecret', {
-          infer: true,
-        }),
+        secret: authConfig.confirmEmailSecret,
       });
 
       userId = jwtData.confirmEmailUserId;
@@ -290,10 +260,6 @@ export class AuthService {
     }
 
     user.email = newEmail;
-    user.status = {
-      id: StatusEnum.active,
-    };
-
     await this.usersService.update(user.id, user);
   }
 
@@ -309,9 +275,8 @@ export class AuthService {
       });
     }
 
-    const tokenExpiresIn = this.configService.getOrThrow('auth.forgotExpires', {
-      infer: true,
-    });
+    const authConfig = this.configService.getOrThrow('auth', { infer: true });
+    const tokenExpiresIn = authConfig.forgotExpires;
 
     const tokenExpires = Date.now() + ms(tokenExpiresIn);
 
@@ -320,9 +285,7 @@ export class AuthService {
         forgotUserId: user.id,
       },
       {
-        secret: this.configService.getOrThrow('auth.forgotSecret', {
-          infer: true,
-        }),
+        secret: authConfig.forgotSecret,
         expiresIn: tokenExpiresIn,
       },
     );
@@ -339,13 +302,13 @@ export class AuthService {
   async resetPassword(hash: string, password: string): Promise<void> {
     let userId: UserResponse['id'];
 
+    const authConfig = this.configService.getOrThrow('auth', { infer: true });
+
     try {
       const jwtData = await this.jwtService.verifyAsync<{
         forgotUserId: UserResponse['id'];
       }>(hash, {
-        secret: this.configService.getOrThrow('auth.forgotSecret', {
-          infer: true,
-        }),
+        secret: authConfig.forgotSecret,
       });
 
       userId = jwtData.forgotUserId;
@@ -416,7 +379,7 @@ export class AuthService {
         });
       }
 
-      const isValidOldPassword = await bcrypt.compare(
+      const isValidOldPassword = await verifyPassword(
         userDto.oldPassword,
         currentUser.password,
       );
@@ -448,18 +411,16 @@ export class AuthService {
         });
       }
 
+      const authConfig = this.configService.getOrThrow('auth', { infer: true });
+
       const hash = await this.jwtService.signAsync(
         {
           confirmEmailUserId: currentUser.id,
           newEmail: userDto.email,
         },
         {
-          secret: this.configService.getOrThrow('auth.confirmEmailSecret', {
-            infer: true,
-          }),
-          expiresIn: this.configService.getOrThrow('auth.confirmEmailExpires', {
-            infer: true,
-          }),
+          secret: authConfig.confirmEmailSecret,
+          expiresIn: authConfig.confirmEmailExpires,
         },
       );
 
@@ -499,19 +460,13 @@ export class AuthService {
 
     const user = await this.usersService.findById(session.user.id);
 
-    if (!user?.role) {
-      throw new UnauthorizedException();
-    }
-
+    
     await this.sessionService.update(session.id, {
       hash,
     });
 
     const { token, refreshToken, tokenExpires } = await this.getTokensData({
       id: session.user.id,
-      role: {
-        id: user.role.id,
-      },
       sessionId: session.id,
       hash,
     });
@@ -536,9 +491,8 @@ export class AuthService {
     sessionId: Session['id'];
     hash: Session['hash'];
   }) {
-    const tokenExpiresIn = this.configService.getOrThrow('auth.expires', {
-      infer: true,
-    });
+    const authConfig = this.configService.getOrThrow('auth', { infer: true });
+    const tokenExpiresIn = authConfig.expires;
 
     const tokenExpires = Date.now() + ms(tokenExpiresIn);
 
@@ -546,11 +500,10 @@ export class AuthService {
       await this.jwtService.signAsync(
         {
           id: data.id,
-          role: data.role,
           sessionId: data.sessionId,
         },
         {
-          secret: this.configService.getOrThrow('auth.secret', { infer: true }),
+          secret: authConfig.secret,
           expiresIn: tokenExpiresIn,
         },
       ),
@@ -560,12 +513,8 @@ export class AuthService {
           hash: data.hash,
         },
         {
-          secret: this.configService.getOrThrow('auth.refreshSecret', {
-            infer: true,
-          }),
-          expiresIn: this.configService.getOrThrow('auth.refreshExpires', {
-            infer: true,
-          }),
+          secret: authConfig.refreshSecret,
+          expiresIn: authConfig.refreshExpires,
         },
       ),
     ]);

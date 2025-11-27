@@ -15,7 +15,7 @@ import {
 } from './dto/user.dto';
 import { User } from './model/graphql/user.model';
 import { UserSetting } from './model/graphql/user-setting.model';
-import { AuthPayload } from '../auth-graphql/model/auth.model';
+import { AuthPayload } from '../auth-graphql/models/auth-payload';
 import { verifyPassword } from '@sandworm/nest-common';
 
 @Injectable()
