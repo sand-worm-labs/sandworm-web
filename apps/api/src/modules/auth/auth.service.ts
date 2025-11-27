@@ -9,31 +9,29 @@ import ms from 'ms';
 import crypto from 'crypto';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import { JwtService } from '@nestjs/jwt';
-import bcrypt from 'bcryptjs';
 import { AuthEmailLoginDto } from './dto/auth-email-login.dto';
 import { AuthUpdateDto } from './dto/auth-update.dto';
 import { AuthProvidersEnum } from './auth-providers.enum';
 import { SocialInterface } from '../social/interfaces/social.interface';
 import { AuthRegisterLoginDto } from './dto/auth-register-login.dto';
-import { NullableType } from '../utils/types/nullable.type';
+import { NullableType } from '@/utils/types/nullable.type';
 import { LoginResponseDto } from './dto/login-response.dto';
 import { ConfigService } from '@nestjs/config';
 import { JwtRefreshPayloadType } from './strategies/types/jwt-refresh-payload.type';
 import { JwtPayloadType } from './strategies/types/jwt-payload.type';
-import { UsersService } from '../users/users.service';
-import { AllConfigType } from '../config/config.type';
+import { UserService } from '@/api/user/user.service';
+import { AllConfigType } from '@/config/config.type';
 import { MailService } from '../mail/mail.service';
-import { RoleEnum } from '../roles/roles.enum';
 import { Session } from '../session/domain/session';
 import { SessionService } from '../session/session.service';
 import { StatusEnum } from '../statuses/statuses.enum';
-import { User } from '../users/domain/user';
+import { UserResponse } from '../user/model/http/user.model';
 
 @Injectable()
 export class AuthService {
   constructor(
     private jwtService: JwtService,
-    private usersService: UsersService,
+    private usersService: UserService,
     private sessionService: SessionService,
     private mailService: MailService,
     private configService: ConfigService<AllConfigType>,
@@ -95,7 +93,6 @@ export class AuthService {
 
     const { token, refreshToken, tokenExpires } = await this.getTokensData({
       id: user.id,
-      role: user.role,
       sessionId: session.id,
       hash,
     });
@@ -112,9 +109,9 @@ export class AuthService {
     authProvider: string,
     socialData: SocialInterface,
   ): Promise<LoginResponseDto> {
-    let user: NullableType<User> = null;
+    let user: NullableType<UserResponse> = null;
     const socialEmail = socialData.email?.toLowerCase();
-    let userByEmail: NullableType<User> = null;
+    let userByEmail: NullableType<UserResponse> = null;
 
     if (socialEmail) {
       userByEmail = await this.usersService.findByEmail(socialEmail);
@@ -164,14 +161,8 @@ export class AuthService {
       });
     }
 
-    const hash = crypto
-      .createHash('sha256')
-      .update(randomStringGenerator())
-      .digest('hex');
-
     const session = await this.sessionService.create({
-      user,
-      hash,
+      user
     });
 
     const {
@@ -182,7 +173,6 @@ export class AuthService {
       id: user.id,
       role: user.role,
       sessionId: session.id,
-      hash,
     });
 
     return {
@@ -197,9 +187,6 @@ export class AuthService {
     const user = await this.usersService.create({
       ...dto,
       email: dto.email,
-      role: {
-        id: RoleEnum.user,
-      },
       status: {
         id: StatusEnum.inactive,
       },
@@ -228,11 +215,11 @@ export class AuthService {
   }
 
   async confirmEmail(hash: string): Promise<void> {
-    let userId: User['id'];
+    let userId: UserResponse['id'];
 
     try {
       const jwtData = await this.jwtService.verifyAsync<{
-        confirmEmailUserId: User['id'];
+        confirmEmailUserId: UserResponse['id'];
       }>(hash, {
         secret: this.configService.getOrThrow('auth.confirmEmailSecret', {
           infer: true,
@@ -269,13 +256,13 @@ export class AuthService {
   }
 
   async confirmNewEmail(hash: string): Promise<void> {
-    let userId: User['id'];
-    let newEmail: User['email'];
+    let userId: UserResponse['id'];
+    let newEmail: UserResponse['email'];
 
     try {
       const jwtData = await this.jwtService.verifyAsync<{
-        confirmEmailUserId: User['id'];
-        newEmail: User['email'];
+        confirmEmailUserId: UserResponse['id'];
+        newEmail: UserResponse['email'];
       }>(hash, {
         secret: this.configService.getOrThrow('auth.confirmEmailSecret', {
           infer: true,
@@ -350,11 +337,11 @@ export class AuthService {
   }
 
   async resetPassword(hash: string, password: string): Promise<void> {
-    let userId: User['id'];
+    let userId: UserResponse['id'];
 
     try {
       const jwtData = await this.jwtService.verifyAsync<{
-        forgotUserId: User['id'];
+        forgotUserId: UserResponse['id'];
       }>(hash, {
         secret: this.configService.getOrThrow('auth.forgotSecret', {
           infer: true,
@@ -391,14 +378,14 @@ export class AuthService {
     await this.usersService.update(user.id, user);
   }
 
-  async me(userJwtPayload: JwtPayloadType): Promise<NullableType<User>> {
+  async me(userJwtPayload: JwtPayloadType): Promise<NullableType<UserResponse>> {
     return this.usersService.findById(userJwtPayload.id);
   }
 
   async update(
     userJwtPayload: JwtPayloadType,
     userDto: AuthUpdateDto,
-  ): Promise<NullableType<User>> {
+  ): Promise<NullableType<UserResponse>> {
     const currentUser = await this.usersService.findById(userJwtPayload.id);
 
     if (!currentUser) {
@@ -536,7 +523,7 @@ export class AuthService {
     };
   }
 
-  async softDelete(user: User): Promise<void> {
+  async softDelete(user: UserResponse): Promise<void> {
     await this.usersService.remove(user.id);
   }
 
@@ -545,8 +532,7 @@ export class AuthService {
   }
 
   private async getTokensData(data: {
-    id: User['id'];
-    role: User['role'];
+    id: UserResponse['id'];
     sessionId: Session['id'];
     hash: Session['hash'];
   }) {

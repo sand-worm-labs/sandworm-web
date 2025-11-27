@@ -9,21 +9,16 @@ import {
 } from '@nestjs/graphql';
 import { CurrentUser } from '@sandworm/graphql';
 import { Public } from '@sandworm/nest-common';
-import { AuthService } from '../graphql_auth/auth.service';
 import { CreateUserInput, UpdateUserInput, GetAllUsersInput } from './dto/user.dto';
-import { User } from './model/user.model';
+import { User } from './model/graphql/user.model';
 import { UserService } from './user.service';
-import { UserSetting } from './model/user-setting.model';
-import { AuthPayload } from '../graphql_auth/models/auth-payload';
+import { UserSetting } from './model/graphql/user-setting.model';
+import { AuthPayload } from '../auth-graphql/models/auth-payload';
 
 @Resolver(() => User)
 export class UserResolver {
-  constructor(
-    private readonly userService: UserService,
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly userService: UserService) {}
 
-  // FIX: return type was wrong (should be AuthPayload)
   @Query(() => AuthPayload, {
     name: 'currentUser',
     description: 'Get current user (from token)',
@@ -40,7 +35,8 @@ export class UserResolver {
     description: 'Register new user',
   })
   async createUser(@Args('input') input: CreateUserInput): Promise<User> {
-    return this.userService.createUser(input);
+    const createdUser = await this.userService.create(input);
+    return User.fromEntity(createdUser);
   }
 
   @Mutation(() => User, {
@@ -51,7 +47,8 @@ export class UserResolver {
     @CurrentUser('id') userId: string,
     @Args('input') input: UpdateUserInput,
   ): Promise<User> {
-    return this.userService.updateUser(userId, input);
+    const updatedUser = await this.userService.update(userId, input);
+    return User.fromEntity(updatedUser);
   }
 
   @Public()
@@ -59,10 +56,9 @@ export class UserResolver {
     name: 'getAllUsers',
     description: 'Get all users',
   })
-  async getAllUsers(
-    @Args('input') input: GetAllUsersInput,
-  ): Promise<User[]> {
-    return this.userService.getAllUsers(input);
+  async getAllUsers(@Args('input') input: GetAllUsersInput): Promise<User[]> {
+    const users = await this.userService.getAllUsers(input);
+    return User.fromEntities(users); 
   }
 
   @Public()
@@ -73,7 +69,8 @@ export class UserResolver {
   async getUserFollowers(
     @Args('userId', { type: () => String }) userId: string,
   ): Promise<User[]> {
-    return this.userService.getUserFollowers(userId);
+    const followers = await this.userService.getUserFollowers(userId);
+    return User.fromEntities(followers); // Transform entities to Users
   }
 
   @Public()
@@ -84,7 +81,8 @@ export class UserResolver {
   async getUserFollowing(
     @Args('userId', { type: () => String }) userId: string,
   ): Promise<User[]> {
-    return this.userService.getUserFollowing(userId);
+    const following = await this.userService.getUserFollowing(userId);
+    return User.fromEntities(following);
   }
 
   @ResolveField(() => UserSetting, { nullable: true })
@@ -95,14 +93,15 @@ export class UserResolver {
 
   @ResolveField(() => [User])
   async followers(@Parent() user: User): Promise<User[]> {
-    return this.userService.getUserFollowers(user.id);
+    const followers = await this.userService.getUserFollowers(user.id);
+    return User.fromEntities(followers); 
   }
 
   @ResolveField(() => [User])
   async following(@Parent() user: User): Promise<User[]> {
-    return this.userService.getUserFollowing(user.id);
+    const following = await this.userService.getUserFollowing(user.id);
+    return User.fromEntities(following); 
   }
-
 
   @ResolveField(() => Int, { name: 'followersCount' })
   async followersCount(@Parent() user: User): Promise<number> {

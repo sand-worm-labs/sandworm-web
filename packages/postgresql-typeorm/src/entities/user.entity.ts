@@ -23,13 +23,22 @@ import { TutorialEntity } from "./tutorial.entity";
 import { YjsDocumentEntity } from "./yjs-document.entity";
 import { YjsAppDocumentEntity } from "./yjs-app-document.entity";
 import { FavoriteEntity } from "./favorite.entity";
+import { Exclude } from "class-transformer";
 
 @Entity("users")
 export class UserEntity extends AbstractEntity {
+  
   @PrimaryGeneratedColumn("uuid", {
     primaryKeyConstraintName: "PK_users_id",
   })
   id!: string;
+
+  @Column({ type: 'varchar', default: 'email' })
+  provider!: string;
+
+  @Column({ name: 'social_id', nullable: true })
+  @Index('IDX_users_social_id')
+  socialId?: string | null;
 
   @Column({ unique: true, nullable: true })
   @Index("UQ_users_username", ["username"], { unique: true })
@@ -69,7 +78,8 @@ export class UserEntity extends AbstractEntity {
   emailVerified?: boolean | null;
 
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, select: false }) // Added select: false for security
+  @Exclude({ toPlainOnly: true }) 
   password?: string;
 
   @BeforeInsert()
@@ -79,7 +89,6 @@ export class UserEntity extends AbstractEntity {
       this.password = await hashPass(this.password);
     }
   }
-
   @OneToOne(() => UserSettingEntity, (userSetting) => userSetting)
   @JoinColumn()
   settings?: Relation<UserSettingEntity>;
@@ -117,4 +126,9 @@ export class UserEntity extends AbstractEntity {
 
   @OneToMany(() => YjsAppDocumentEntity, (yjsAppDoc) => yjsAppDoc.document)
   yjsAppDocuments!: Relation<YjsAppDocumentEntity[]>;
+
+  getDisplayName(): string {
+    return this.fullName || this.username || this.email || 'Anonymous';
+  }
+
 }
