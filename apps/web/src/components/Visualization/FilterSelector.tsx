@@ -33,7 +33,6 @@ import { equals, identity } from "ramda";
 import ReactDOM from "react-dom";
 
 import { Tooltip } from "./blocks/ToolTips";
-
 import useDropdownPosition from "./hooks/dropdownposition";
 import AxisSelector from "./blocks/AxisSelector";
 import MultiComboboxV2 from "./MultiCombobox";
@@ -744,7 +743,7 @@ function FilterSelectorV2({
         >
           <div
             className={clsx(
-              "absolute py-4 px-2 left-0 z-20 mt-2 origin-top-right divide-y divide-gray-100 dark:divide-[#262A30] rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none px-4",
+              "absolute py-4 left-0 z-20 mt-2 origin-top-right divide-y divide-gray-100 dark:divide-[#262A30] rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none px-4",
 
               VisualizationStringFilterMultiValuesOperator.safeParse(operator)
                 .success
