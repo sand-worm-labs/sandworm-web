@@ -9,9 +9,10 @@ import { Repository } from 'typeorm';
 import { AuthPayload } from './models/auth-payload';
 import { LoginInput } from './dto/auth.dto';
 import { JwtPayloadType } from './types/jwt-payload.type';
+import { SocialInterface } from '../social/interfaces/social.interface';
 
 @Injectable()
-export class AuthService {
+export class AuthGraphqlService {
   constructor(
     private readonly configService: ConfigService<AllConfigType>,
     private readonly jwtService: JwtService,
@@ -44,9 +45,12 @@ export class AuthService {
 
   async verifyAccessToken(token: string): Promise<JwtPayloadType> {
     let payload: JwtPayloadType;
+    const auth = this.configService.getOrThrow('auth', {
+      infer: true,
+    })
     try {
       payload = this.jwtService.verify(token, {
-        secret: this.configService.getOrThrow('auth.secret', { infer: true }),
+        secret: auth.secret
       });
     } catch {
       throw new UnauthorizedException();
@@ -56,17 +60,16 @@ export class AuthService {
   }
 
   async createToken(data: { id: string }): Promise<string> {
-    const tokenExpiresIn = this.configService.getOrThrow('auth.expires', {
+    const auth = this.configService.getOrThrow('auth', {
       infer: true,
     });
-    let secret = this.configService.getOrThrow('auth.secret', { infer: true })
     const accessToken = await this.jwtService.signAsync(
       {
         id: data.id,
       },
       {
-        secret,
-        expiresIn: "7D",
+        secret: auth.secret,
+        expiresIn: auth.expires,
       },
     );
 

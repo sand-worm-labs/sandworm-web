@@ -4,7 +4,7 @@ import {
   EnvironmentEntity,
   EnvironmentVariableEntity,
 } from '@sandworm/postgresql-typeorm';
-import { AuthModule } from '../auth-graphql/auth.module';
+import { AuthGraphqlModule } from '../auth-graphql/auth.module';
 import { JupyterModule } from '../../jupyter/jupyter.module';
 import { EnvironmentResolver } from './environment.resolver';
 import { EnvironmentService } from './environment.service';
@@ -12,7 +12,7 @@ import { EnvironmentService } from './environment.service';
 @Module({
   imports: [
     TypeOrmModule.forFeature([EnvironmentEntity, EnvironmentVariableEntity]),
-    AuthModule,
+    AuthGraphqlModule,
     JupyterModule,
   ],
   providers: [EnvironmentResolver, EnvironmentService],

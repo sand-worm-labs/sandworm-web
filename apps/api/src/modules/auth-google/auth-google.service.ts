@@ -14,20 +14,20 @@ export class AuthGoogleService {
   private google: OAuth2Client;
 
   constructor(private configService: ConfigService<AllConfigType>) {
+    const googleService = this.configService.get("google", { infer: true });
     this.google = new OAuth2Client(
-      configService.get('google.clientId', { infer: true }),
-      configService.get('google.clientSecret', { infer: true }),
+      googleService.clientId,
+      googleService.clientSecret,
     );
   }
 
   async getProfileByToken(
     loginDto: AuthGoogleLoginDto,
   ): Promise<SocialInterface> {
+    const googleService = this.configService.getOrThrow("google", { infer: true });
     const ticket = await this.google.verifyIdToken({
       idToken: loginDto.idToken,
-      audience: [
-        this.configService.getOrThrow('google.clientId', { infer: true }),
-      ],
+      audience: [googleService.clientId],
     });
 
     const data = ticket.getPayload();

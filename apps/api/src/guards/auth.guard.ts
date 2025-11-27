@@ -8,13 +8,13 @@ import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { IS_AUTH_OPTIONAL, IS_PUBLIC } from '@sandworm/nest-common';
 import { type FastifyRequest } from 'fastify';
-import { AuthService } from '@/api/auth-graphql/auth.service';
+import { AuthGraphqlService } from '@/api/auth-graphql/auth.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
-    private authService: AuthService,
+    private authService: AuthGraphqlService,
   ) { }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {

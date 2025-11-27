@@ -9,9 +9,10 @@ import { AllConfigType } from '@/config/config.type';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(configService: ConfigService<AllConfigType>) {
+    const authConfig = configService.getOrThrow('auth', { infer: true });
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: configService.getOrThrow('auth.secret', { infer: true }),
+      secretOrKey: authConfig.secret,
     });
   }
 
