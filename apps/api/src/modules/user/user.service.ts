@@ -6,8 +6,8 @@ import { UserEntity, UserSettingEntity, UserFollowsEntity } from '@sandworm/post
 import { Repository } from 'typeorm';
 import { AuthService } from '../graphql_auth/auth.service';
 import { CreateUserInput, GetAllUsersInput, UpdateUserInput } from './dto/user.dto';
-import { User } from './model/graphql/user.model';
-import { UserSetting } from './model/graphql/user-setting.model';
+import { User } from './model/user.model';
+import { UserSetting } from './model/user-setting.model';
 import { AuthPayload } from '../graphql_auth/models/auth-payload';
 import { toGraphQLUserUtils } from "@/utils/models"
 @Injectable()
@@ -15,7 +15,6 @@ export class UserService {
   private readonly logger = new Logger(UserService.name);
 
   constructor(
-    private readonly authService: AuthService,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(UserSettingEntity)

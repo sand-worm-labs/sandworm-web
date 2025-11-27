@@ -1,6 +1,6 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { Public } from '@sandworm/nest-common';
-import { User } from '../user/model/graphql/user.model';
+import { User } from '../user/model/user.model';
 import { AuthService } from './auth.service';
 import { LoginInput } from './dto/auth.dto';
 import { AuthPayload } from './models/auth-payload';
