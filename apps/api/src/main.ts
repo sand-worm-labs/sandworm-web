@@ -76,7 +76,11 @@ async function bootstrap() {
   // Setup security headers
   const devContentSecurityPolicy = {
     directives: {
-      defaultSrc: ["'self'", 'https://sandbox.embed.apollographql.com'],
+      defaultSrc: [
+        "'self'",
+        'https://sandbox.embed.apollographql.com',
+        'https://apollo-server-landing-page.cdn.apollographql.com',
+      ],
       scriptSrc: [
         "'self'",
         "'unsafe-inline'",
