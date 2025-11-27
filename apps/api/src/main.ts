@@ -25,7 +25,7 @@ import { AppModule } from './app.module';
 import { AllConfigType } from './config/config.type';
 import { GlobalGqlExceptionFilter } from './filters/global-gql-exception.filter';
 import { AuthGuard } from './guards/auth.guard';
-import { AuthService } from './modules/auth/auth.service';
+import { AuthService } from './modules/graphql_auth/auth.service';
 
 async function bootstrap() {
   const fastifyAdapter = new FastifyAdapter({

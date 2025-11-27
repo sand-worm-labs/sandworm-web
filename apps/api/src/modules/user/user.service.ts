@@ -4,11 +4,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ValidationException } from '@sandworm/graphql';
 import { UserEntity, UserSettingEntity, UserFollowsEntity } from '@sandworm/postgresql-typeorm';
 import { Repository } from 'typeorm';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from '../graphql_auth/auth.service';
 import { CreateUserInput, GetAllUsersInput, UpdateUserInput } from './dto/user.dto';
-import { User } from './model/user.model';
-import { UserSetting } from './model/user-setting.model';
-import { AuthPayload } from '../auth/models/auth-payload';
+import { User } from './model/graphql/user.model';
+import { UserSetting } from './model/graphql/user-setting.model';
+import { AuthPayload } from '../graphql_auth/models/auth-payload';
 import { toGraphQLUserUtils } from "@/utils/models"
 @Injectable()
 export class UserService {

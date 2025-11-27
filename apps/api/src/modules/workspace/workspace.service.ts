@@ -3,7 +3,7 @@ import { Repository } from 'typeorm';
 import { WorkspaceEntity, UserEntity, DocumentEntity } from '@sandworm/postgresql-typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Workspace } from './model/workspace.model';
-import { User } from '../user/model/user.model';
+import { User } from '../user/model/graphql/user.model';
 import { Document } from '../document/model/document.model';
 import { toGraphQLWorkspaceUtils, toGraphQLUserUtils } from '@/utils/models';
 

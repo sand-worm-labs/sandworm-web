@@ -9,12 +9,12 @@ import {
 } from '@nestjs/graphql';
 import { CurrentUser } from '@sandworm/graphql';
 import { Public } from '@sandworm/nest-common';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from '../graphql_auth/auth.service';
 import { CreateUserInput, UpdateUserInput, GetAllUsersInput } from './dto/user.dto';
-import { User } from './model/user.model';
+import { User } from './model/graphql/user.model';
 import { UserService } from './user.service';
-import { UserSetting } from './model/user-setting.model';
-import { AuthPayload } from '../auth/models/auth-payload';
+import { UserSetting } from './model/graphql/user-setting.model';
+import { AuthPayload } from '../graphql_auth/models/auth-payload';
 
 @Resolver(() => User)
 export class UserResolver {
