@@ -21,7 +21,7 @@ import { DataSource, DataSourceOptions } from 'typeorm';
 import { AppService } from './app.service';
 import { AllConfigType } from './config/config.type';
 import { ApiModule } from './modules/api.module';
-import authConfig from './modules/auth-graphql/config/auth.config';
+import authConfig from './modules/auth/config/auth.config';
 import { BaseContext } from '@apollo/server';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { appConfig } from '@sandworm/graphql';

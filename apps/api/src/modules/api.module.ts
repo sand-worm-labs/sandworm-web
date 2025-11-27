@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AuthModule } from './auth-graphql/auth.module';
+import { AuthGraphqlModule } from './auth-graphql/auth.module';
 import { ProfileModule } from './profile/profile.module';
 import { TagModule } from './tag/tag.module';
 import { UserModule } from './user/user.module';
@@ -11,6 +11,6 @@ import { EnvironmentModule } from './environment/environment.module';
 import { FileModule } from './file/file.module';
 
 @Module({
-  imports: [UserModule, AuthModule, ProfileModule, TagModule, WorkspaceModule, DocumentModule, CommentModule, EnvironmentModule, FileModule],
+  imports: [UserModule, AuthGraphqlModule, ProfileModule, TagModule, WorkspaceModule, DocumentModule, CommentModule, EnvironmentModule, FileModule],
 })
 export class ApiModule {}

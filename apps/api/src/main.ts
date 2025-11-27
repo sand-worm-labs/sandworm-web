@@ -25,7 +25,7 @@ import { AppModule } from './app.module';
 import { AllConfigType } from './config/config.type';
 import { GlobalGqlExceptionFilter } from './filters/global-gql-exception.filter';
 import { AuthGuard } from './guards/auth.guard';
-import { AuthService } from './modules/auth-graphql/auth.service';
+import { AuthGraphqlService } from './modules/auth-graphql/auth.service';
 
 async function bootstrap() {
   const fastifyAdapter = new FastifyAdapter({
@@ -120,7 +120,7 @@ async function bootstrap() {
   });
   logger.log(`CORS Origin: ${corsOrigin.toString()}`);
 
-  app.useGlobalGuards(new AuthGuard(reflector, app.get(AuthService)));
+  app.useGlobalGuards(new AuthGuard(reflector, app.get(AuthGraphqlService)));
 
   app.useGlobalFilters(new GlobalGqlExceptionFilter());
 

@@ -2,14 +2,14 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ExecutionScheduleEntity, DocumentEntity } from '@sandworm/postgresql-typeorm';
-import { AuthModule } from '../auth-graphql/auth.module';
+import { AuthGraphqlModule } from '../auth-graphql/auth.module';
 import { ScheduleResolver } from './schedule.resolver';
 import { ScheduleService } from './schedule.service';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([ExecutionScheduleEntity, DocumentEntity]),
-    AuthModule,
+    AuthGraphqlModule,
   ],
   providers: [ScheduleResolver, ScheduleService],
   exports: [ScheduleService],
