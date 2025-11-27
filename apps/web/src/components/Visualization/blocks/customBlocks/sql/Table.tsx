@@ -56,11 +56,10 @@ function Table(props: Props) {
       >
         <thead className="bg-gray-50 sticky top-0">
           <tr className="divide-x h-10">
-            {props.columns.map((column, index) => {
+            {props.columns.map(column => {
               const Icon = getColumnTypeIcon(column.type);
               return (
                 <th
-                  key={index}
                   scope="col"
                   className={clsx(
                     "p-2 text-gray-500 whitespace-nowrap font-medium border-b hover:bg-gray-100 cursor-pointer",

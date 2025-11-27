@@ -41,6 +41,11 @@ export function computeMenuPosition(
         top: referenceRect.top + referenceRect.height + padding,
         left: referenceRect.left,
       };
+    default:
+      return {
+        top: referenceRect.top,
+        left: referenceRect.left,
+      };
   }
 }
 
@@ -103,6 +108,11 @@ export function computeTooltipPosition(
       return {
         top,
         left,
+      };
+    default:
+      return {
+        top: referenceRect.top,
+        left: referenceRect.left,
       };
   }
 }

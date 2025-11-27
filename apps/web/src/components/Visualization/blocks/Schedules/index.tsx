@@ -179,6 +179,8 @@ const getScheduleBlock = (schedule: ExecutionSchedule) => {
       return <MonthlySchedule schedule={schedule} />;
     case "cron":
       return <CronSchedule schedule={schedule} />;
+    default:
+      return null;
   }
 };
 
@@ -304,10 +306,7 @@ function ScheduleList(props: ScheduleListProps) {
 
       {props.isPublished ? (
         <ScrollBar className="overflow-auto">
-          <ul
-            role="list"
-            className="flex-1 text-xs font-primary overflow-visible"
-          >
+          <ul className="flex-1 text-xs font-primary overflow-visible">
             {props.schedules.map((scheduledRun, i) => {
               return (
                 <li

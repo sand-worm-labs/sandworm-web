@@ -2,6 +2,7 @@ import { Transition } from "@headlessui/react";
 import type { ChangeEventHandler, FormEvent } from "react";
 import { useCallback, useState, useRef, useEffect } from "react";
 import { UserIcon, ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
+import Image from "next/image";
 
 import { timeAgo } from "@/lib";
 
@@ -16,9 +17,14 @@ interface Props {
   visible: boolean;
   onHide: () => void;
 }
-export default function Comments(props: Props) {
+export default function Comments({
+  workspaceId,
+  documentId,
+  visible,
+  onHide,
+}: Props) {
   const session = useSession({ redirectToLogin: true });
-  const [comments, { createComment }] = useComments(props.documentId);
+  const [comments, { createComment }] = useComments(documentId);
   const [content, setContent] = useState("");
 
   const ref = useRef<HTMLDivElement>(null);
@@ -26,15 +32,15 @@ export default function Comments(props: Props) {
     if (ref.current) {
       ref.current.scrollTop = ref.current.scrollHeight;
     }
-  }, [comments.length, props.visible]);
+  }, [comments.length, visible]);
 
   const onComment = useCallback(
     async (e?: FormEvent<HTMLFormElement>) => {
       e?.preventDefault();
-      createComment(props.workspaceId, props.documentId, content);
+      createComment(workspaceId, documentId, content);
       setContent("");
     },
-    [createComment, content, props.documentId]
+    [createComment, content, documentId]
   );
 
   const onChangeContent: ChangeEventHandler<HTMLTextAreaElement> = useCallback(
@@ -57,7 +63,7 @@ export default function Comments(props: Props) {
 
   return (
     <Transition
-      show={props.visible}
+      show={visible}
       as="div"
       className="top-0 right-0 h-full absolute z-30"
       enter="transition ease-in-out duration-300 transform"
@@ -70,7 +76,7 @@ export default function Comments(props: Props) {
       <button
         type="button"
         className="absolute z-10 top-7 transform rounded-full border border-gray-300 text-gray-400 bg-white hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
-        onClick={props.onHide}
+        onClick={onHide}
       >
         <ChevronDoubleRightIcon className="w-3 h-3" />
       </button>
@@ -78,10 +84,10 @@ export default function Comments(props: Props) {
         className="w-[324px] flex flex-col overflow-y-auto border-l border-gray-200 h-full bg-white"
         ref={ref}
       >
-        <h3 className="text-lg font-medium leading-6 text-gray-900 px-2 px-4 pt-6 xl:px-6">
+        <h3 className="text-lg font-medium leading-6 text-gray-900 px-2 pt-6 xl:px-6">
           Comments
         </h3>
-        <ul className="flex-1 space-y-6 pb-6 pt-4 px-2 px-4 pt-6 xl:px-6">
+        <ul className="flex-1 space-y-6 pb-6 pt-4 px-2 xl:px-6">
           {comments.map(comment => {
             return (
               <li key={comment.id} className="relative flex gap-x-4">
@@ -89,7 +95,7 @@ export default function Comments(props: Props) {
                   <div className="flex justify-between gap-x-4">
                     <div className="flex gap-x-1 py-0.5 leading-5 text-gray-500">
                       {comment.user.picture ? (
-                        <img
+                        <Image
                           src={comment.user.picture}
                           alt=""
                           className="relative h-5 w-5 flex-none rounded-full bg-gray-50"
@@ -121,10 +127,10 @@ export default function Comments(props: Props) {
         </ul>
 
         <form className="sticky bottom-0 bg-white" onSubmit={onComment}>
-          <div className="border-t border-gray-200 px-2 px-4 xl:px-6">
+          <div className="border-t border-gray-200 px-4 xl:px-6">
             <div className="py-6 flex gap-x-3">
               {session.data?.picture ? (
-                <img
+                <Image
                   src={session.data?.picture}
                   alt=""
                   className="h-6 w-6 flex-none rounded-full bg-gray-50"

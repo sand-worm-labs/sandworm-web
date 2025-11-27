@@ -16,7 +16,7 @@ type PagePathProps = {
 export default function PagePath({ pages }: PagePathProps) {
   return (
     <nav className="flex h-full items-center" aria-label="Breadcrumb">
-      <ol role="list" className="flex items-center">
+      <ol className="flex items-center">
         <li>
           <div>
             <Link href="/" className="text-gray-400/70 hover:text-gray-500">

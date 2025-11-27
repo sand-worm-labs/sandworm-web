@@ -124,6 +124,8 @@ const getPosClass = (
       return "right-0 top-1/2 translate-x-full -translate-y-1/2";
     case "manual":
       return "";
+    default:
+      return "";
   }
 };
 

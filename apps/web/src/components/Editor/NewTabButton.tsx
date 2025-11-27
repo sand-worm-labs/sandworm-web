@@ -4,8 +4,6 @@ import clsx from "clsx";
 import { PlusIcon } from "@heroicons/react/20/solid";
 import {
   BlockType,
-  YBlock,
-  YBlockGroup,
   addGroupedBlock,
   getBlockFlatPosition,
   getBlocks,
@@ -74,6 +72,7 @@ function NewBlockMenuItem(props: NewBlockMenuItemProps) {
     <Menu.Item>
       {({ active }) => (
         <button
+          type="button"
           className={clsx(
             active ? "bg-gray-100 text-gray-900" : "bg-white text-gray-700",
             "flex items-center gap-x-4 w-full px-4 py-1 leading-4 rounded-md"
