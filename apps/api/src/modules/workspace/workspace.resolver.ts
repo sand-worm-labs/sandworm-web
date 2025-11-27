@@ -11,7 +11,7 @@ import { CurrentUser } from '@sandworm/graphql';
 import { Public } from '@sandworm/nest-common';
 import { WorkspaceService } from './workspace.service';
 import { Workspace } from './model/workspace.model';
-import { User } from '../user/model/graphql/user.model';
+import { User } from '../user/model/user.model';
 import { Document } from '../document/model/document.model';
 
 @Resolver(() => Workspace)
