@@ -1,7 +1,7 @@
 import { UserResponse } from '@/api/user/model/http/user.model';
 
 export class Session {
-  id: string | string;
+  id: string ;
   user: UserResponse;
   hash: string;
   createdAt: Date;
