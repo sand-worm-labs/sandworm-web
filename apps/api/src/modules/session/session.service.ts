@@ -4,7 +4,8 @@ import { Repository, Not } from 'typeorm';
 import { ValidationException } from '@sandworm/graphql';
 import { SessionEntity, UserEntity } from '@sandworm/postgresql-typeorm';
 import { ErrorCode } from '@/constants/error-code.constant';
-import { CreateSessionInput, UpdateSessionInput } from './dto/session.dto';
+import { Session } from './domain/session';
+import { UserResponse } from '../user/model/http/user.model';
 
 @Injectable()
 export class SessionService {
@@ -17,17 +18,28 @@ export class SessionService {
     private readonly userRepository: Repository<UserEntity>,
   ) {}
 
-  async findById(id: string): Promise<SessionEntity | null> {
+  private toSession(sessionEntity: SessionEntity): Session {
+    return {
+      id: sessionEntity.id,
+      hash: sessionEntity.hash,
+      createdAt: sessionEntity.createdAt,
+      updatedAt: sessionEntity.updatedAt,
+      deletedAt: sessionEntity.deletedAt,
+      user: sessionEntity.user
+    };
+  }
+
+  async findById(id: string): Promise<Session | null> {
     const session = await this.sessionRepository.findOne({
       where: { id },
       relations: ['user'],
     });
 
-    return session ? session : null;
+    return session ? this.toSession(session) : null;
   }
 
-  async create(input: CreateSessionInput): Promise<SessionEntity> {
-    const user = await this.userRepository.findOneBy({ id: input.userId });
+  async create( userId:UserResponse['id'] , data: Omit<Session, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>): Promise<Session> {
+    const user = await this.userRepository.findOneBy({ id: userId });
 
     if (!user) {
       throw new ValidationException(ErrorCode.E002); // User not found
@@ -35,44 +47,46 @@ export class SessionService {
 
     const newSession = this.sessionRepository.create({
       user,
-      hash: input.hash,
     });
 
     const savedSession = await this.sessionRepository.save(newSession);
-    return savedSession;
+    return this.toSession(savedSession);
   }
 
-  async update(id: string, input: UpdateSessionInput): Promise<SessionEntity> {
+  async update( id: Session['id'],
+    payload: Partial<
+      Omit<Session, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>
+    >,): Promise<Session> {
     const session = await this.sessionRepository.findOne({
       where: { id },
       relations: ['user'],
     });
 
     if (!session) {
-      throw new ValidationException(ErrorCode.E002); // SessionEntity not found
+      throw new ValidationException(ErrorCode.E002); // Session not found
     }
 
     const updatedSession = await this.sessionRepository.save({
       ...session,
-      ...input,
+      ...payload,
     });
 
-    return updatedSession;
+    return this.toSession(updatedSession);
   }
 
-  async deleteById(id: string): Promise<void> {
+  async deleteById(id: Session['id']): Promise<void> {
     await this.sessionRepository.softDelete({ id });
   }
 
-  async deleteByUserId(userId: string): Promise<void> {
+  async deleteByUserId(conditions: { userId: UserResponse['id'] }): Promise<void> {
     await this.sessionRepository.softDelete({
-      user: { id: userId },
+      user: { id: conditions.userId },
     });
   }
 
   async deleteByUserIdWithExclude(
-    userId: string,
-    excludeSessionId: string,
+    userId: UserResponse['id'],
+    excludeSessionId: Session['id']
   ): Promise<void> {
     await this.sessionRepository.softDelete({
       user: { id: userId },
@@ -80,13 +94,13 @@ export class SessionService {
     });
   }
 
-  async findByUserId(userId: string): Promise<SessionEntity[]> {
+  async findByUserId(userId: string): Promise<Session[]> {
     const sessions = await this.sessionRepository.find({
       where: { user: { id: userId } },
       relations: ['user'],
     });
 
-    return sessions.map(s => s);
+    return sessions.map(s =>  this.toSession(s));
   }
 
 }

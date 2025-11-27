@@ -7,12 +7,12 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { AnonymousStrategy } from './strategies/anonymous.strategy';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 import { MailModule } from '../mail/mail.module';
-import { SessionModule } from '../session/session.module';
-import { UsersModule } from '../users/users.module';
+import { SessionModule } from '@/api/session/session.module';
+import { UserModule } from '@/api/user/user.module';
 
 @Module({
   imports: [
-    UsersModule,
+    UserModule,
     SessionModule,
     PassportModule,
     MailModule,

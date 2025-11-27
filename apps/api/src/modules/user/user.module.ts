@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity,UserFollowsEntity,UserSettingEntity } from '@sandworm/postgresql-typeorm';
-import { AuthModule } from '../graphql_auth/auth.module';
+import { AuthModule } from '../auth-graphql/auth.module';
 import { UserResolver } from './user.resolver';
 import { UserService } from './user.service';
 @Module({

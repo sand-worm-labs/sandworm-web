@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { User } from '../../user/model/graphql/user.model';
+import { UserResponse } from '../../user/model/http/user.model';
 
 export class LoginResponseDto {
   @ApiProperty()
@@ -12,7 +12,7 @@ export class LoginResponseDto {
   tokenExpires: number;
 
   @ApiProperty({
-    type: () => User,
+    type: () => UserResponse,
   })
-  user: User;
+  user: UserResponse;
 }

@@ -62,6 +62,14 @@ class EnvironmentVariablesValidator {
   )
   @IsOptional()
   APP_CORS_ORIGIN: string;
+
+  @IsUrl({ require_tld: false })
+  @IsOptional()
+  FRONTEND_DOMAIN: string;
+
+  @IsUrl({ require_tld: false })
+  @IsOptional()
+  BACKEND_DOMAIN: string;
 }
 
 export default registerAs<AppConfig>('app', () => {
@@ -84,6 +92,8 @@ export default registerAs<AppConfig>('app', () => {
     logLevel: process.env.APP_LOG_LEVEL || 'warn',
     logService: process.env.APP_LOG_SERVICE || LogService.CONSOLE,
     corsOrigin: getCorsOrigin(),
+    frontendDomain: process.env.FRONTEND_DOMAIN,
+    backendDomain: process.env.BACKEND_DOMAIN ?? 'http://localhost',
   };
 });
 

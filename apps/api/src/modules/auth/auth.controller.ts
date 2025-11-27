@@ -21,8 +21,8 @@ import { AuthUpdateDto } from './dto/auth-update.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthRegisterLoginDto } from './dto/auth-register-login.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
-import { NullableType } from '../utils/types/nullable.type';
-import { User } from '../users/domain/user';
+import { NullableType } from '@/utils/types/nullable.type';
+import { UserResponse } from '@/api/user/model/http/user.model';
 import { RefreshResponseDto } from './dto/refresh-response.dto';
 
 @ApiTags('Auth')
@@ -91,10 +91,10 @@ export class AuthController {
   @Get('me')
   @UseGuards(AuthGuard('jwt'))
   @ApiOkResponse({
-    type: User,
+    type: UserResponse,
   })
   @HttpCode(HttpStatus.OK)
-  public me(@Request() request): Promise<NullableType<User>> {
+  public me(@Request() request): Promise<NullableType<UserResponse>> {
     return this.service.me(request.user);
   }
 
@@ -133,12 +133,12 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
-    type: User,
+    type: UserResponse,
   })
   public update(
     @Request() request,
     @Body() userDto: AuthUpdateDto,
-  ): Promise<NullableType<User>> {
+  ): Promise<NullableType<UserResponse>> {
     return this.service.update(request.user, userDto);
   }
 
