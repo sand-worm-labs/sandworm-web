@@ -119,7 +119,7 @@ export default function ChartTypeSelector({
             <div className="border border-gray-200 rounded-md px-3 flex items-center justify-between gap-x-2 w-full min-h-8">
               <div className="flex items-center justify-left gap-x-2 text-left w-full h-6">
                 <div className="h-4 w-6 rounded-sm grayscale">
-                  <Image src={`/images/charts/${selected.icon}`} alt="" />
+                  <img src={`/images/charts/${selected.icon}`} alt="" />
                 </div>
                 {!compact && <span>{selected.label}</span>}
               </div>
@@ -169,6 +169,8 @@ export default function ChartTypeSelector({
                           <>
                             <div className="h-12 w-20 rounded-sm">
                               <Image
+                                width={48}
+                                height={80}
                                 rel="preload"
                                 src={`/img/charts/${option.icon}`}
                                 alt=""

@@ -8,6 +8,10 @@ import { AppHeader } from "@/components/Layout/AppHeader";
 import { SignInModal } from "@/components/AuthUI/SignInModal";
 import DndBackendProvider from "@/components/Visualization/blocks/DndBackendProvider";
 import { DocumentsProvider } from "@/components/Visualization/hooks/useDocuments";
+import { WebsocketProvider } from "@/components/Visualization/hooks/useWebSocket";
+import { EnvironmentStatusProvider } from "@/components/Visualization/hooks/useEnvironmentStatus";
+import { DataSourcesProvider } from "@/components/Visualization/hooks/useDataSources";
+import { ReusableComponentsProvider } from "@/components/Visualization/hooks/useReusableComponents";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -21,7 +25,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <AppHeader />
         <DocumentsProvider>
           <DndBackendProvider>
-            <main> {children}</main>
+            <WebsocketProvider>
+              <EnvironmentStatusProvider>
+                <DataSourcesProvider>
+                  <ReusableComponentsProvider>
+                    <main> {children}</main>
+                  </ReusableComponentsProvider>
+                </DataSourcesProvider>
+              </EnvironmentStatusProvider>
+            </WebsocketProvider>
           </DndBackendProvider>
         </DocumentsProvider>
         <FooterWrapper />

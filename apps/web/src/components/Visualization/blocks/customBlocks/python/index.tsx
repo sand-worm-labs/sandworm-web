@@ -465,7 +465,6 @@ function PythonBlock(props: Props) {
       className="bg-white relative group/block"
       onClick={onClickWithin}
       data-block-id={blockId}
-      role="button"
     >
       <div
         className={clsx(
