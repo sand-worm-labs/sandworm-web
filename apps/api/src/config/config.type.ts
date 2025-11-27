@@ -1,7 +1,7 @@
 import { AppConfig } from '@sandworm/graphql';
 import { DatabaseConfig } from '@sandworm/postgresql-typeorm';
 import {JupyterConfig} from "@sandworm/jupyter";
-import { AuthConfig } from '@/api/graphql_auth/config/auth-config.type';
+import { AuthConfig } from '@/api/auth/config/auth-config.type';
 import { GoogleConfig } from '@/api/auth-google/config/google-config.type';
 import { MailConfig } from '@/api/mail/config/mail-config.type';
 

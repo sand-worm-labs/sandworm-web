@@ -2,14 +2,22 @@ import { ErrorCode } from '@/constants/error-code.constant';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ValidationException } from '@sandworm/graphql';
-import { UserEntity, UserSettingEntity, UserFollowsEntity } from '@sandworm/postgresql-typeorm';
+import {
+  UserEntity,
+  UserSettingEntity,
+  UserFollowsEntity,
+} from '@sandworm/postgresql-typeorm';
 import { Repository } from 'typeorm';
-import { AuthService } from '../graphql_auth/auth.service';
-import { CreateUserInput, GetAllUsersInput, UpdateUserInput } from './dto/user.dto';
-import { User } from './model/user.model';
-import { UserSetting } from './model/user-setting.model';
-import { AuthPayload } from '../graphql_auth/models/auth-payload';
-import { toGraphQLUserUtils } from "@/utils/models"
+import {
+  CreateUserInput,
+  GetAllUsersInput,
+  UpdateUserInput,
+} from './dto/user.dto';
+import { User } from './model/graphql/user.model';
+import { UserSetting } from './model/graphql/user-setting.model';
+import { AuthPayload } from '../auth-graphql/model/auth.model';
+import { verifyPassword } from '@sandworm/nest-common';
+
 @Injectable()
 export class UserService {
   private readonly logger = new Logger(UserService.name);
@@ -20,120 +28,202 @@ export class UserService {
     @InjectRepository(UserSettingEntity)
     private readonly userSettingRepository: Repository<UserSettingEntity>,
     @InjectRepository(UserFollowsEntity)
-    private readonly usersfollowsRepository: Repository<UserFollowsEntity>,
-  ) { }
+    private readonly userFollowsRepository: Repository<UserFollowsEntity>,
+  ) {}
 
-  async getCurrentUser(currentUser: { id: string; token: string }): Promise<AuthPayload> {
-    const user = await this.userRepository.findOneByOrFail({
+  async getCurrentUser(currentUser: {
+    id: string;
+    token: string;
+  }): Promise<AuthPayload> {
+    const user = await this.userRepository.findOneBy({
       id: currentUser.id,
     });
-    
-    let foundUser = this.toGraphQLUser(user);
-    return { id : user.id, user: foundUser, token: currentUser.token };
-  }
 
-  async createUser(input: CreateUserInput): Promise<User> {
-    const { username, email, password } = input;
-
-    const user = await this.userRepository.findOne({
-      where: [{ username }, { email }],
-    });
-
-    if (user) {
-      throw new ValidationException(ErrorCode.E001);
+    if (!user) {
+      throw new ValidationException(ErrorCode.E002);
     }
 
-    const newUser = this.userRepository.create({ username, email, password });
-    const savedUser = await this.userRepository.save(newUser);
-  
-    return this.toGraphQLUser(savedUser);
+    const foundUser = User.fromEntity(user);
+    return { id: user.id, user: foundUser, token: currentUser.token };
   }
 
-  async updateUser(userId: string, input: UpdateUserInput): Promise<User> {
+  async create(input: CreateUserInput | Partial<UserEntity>): Promise<UserEntity> {
+    const { username, email, password } = input;
+
+    if (username || email) {
+      const existingUser = await this.userRepository.findOne({
+        where: [{ username }, { email }],
+      });
+
+      if (existingUser) {
+        throw new ValidationException(ErrorCode.E001);
+      }
+    }
+
+    const newUser = this.userRepository.create({
+      ...input,
+      password: password,
+    });
+
+    const savedUser = await this.userRepository.save(newUser);
+
+    return savedUser;
+  }
+
+  async update(
+    userId: string,
+    input: UpdateUserInput | Partial<UserEntity>,
+  ): Promise<UserEntity> {
     const user = await this.userRepository.findOneBy({ id: userId });
 
     if (!user) {
       throw new ValidationException(ErrorCode.E002);
     }
 
-    const savedUser = await this.userRepository.save({
-      id: userId,
+    const updatedUser = await this.userRepository.save({
+      ...user,
       ...input,
+      id: userId,
     });
 
-    return this.toGraphQLUser(savedUser);
+    return updatedUser;
   }
 
-  async getAllUsers(input: GetAllUsersInput): Promise<User[]> {
-    let { limit = 20, offset = 0, sortBy, sortOrder } = input;
-  
-    const users = await this.userRepository.find({
-      take: limit,
-      skip: offset,
-      relations: ['settings'],
-    });
-  
+  async getAllUsers(input: GetAllUsersInput): Promise<UserEntity[]> {
+    const {
+      limit = 20,
+      offset = 0,
+      sortBy = 'createdAt',
+      sortOrder = 'DESC',
+    } = input;
 
-    const formattedUsers = users.map(u => this.toGraphQLUser(u));
-    formattedUsers.sort((a: any, b: any) => {
-      const A = a[sortBy];
-      const B = b[sortBy];
-      if (typeof A === 'string') return sortOrder === 'ASC'  ? A.localeCompare(B) : B.localeCompare(A);
-      return sortOrder === 'ASC' ? A - B : B - A;
+    const queryBuilder = this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.settings', 'settings')
+      .take(limit)
+      .skip(offset);
+
+    if (sortBy) {
+      queryBuilder.orderBy(`user.${sortBy}`, sortOrder as 'ASC' | 'DESC');
+    }
+
+    const users = await queryBuilder.getMany();
+
+    return users.map((u) => u);
+  }
+
+  async findByEmail(email: string): Promise<UserEntity | null> {
+    const user = await this.userRepository.findOne({
+      where: { email },
     });
-  
-    return formattedUsers;
+
+    return user ? user : null;
+  }
+
+  async findByEmailWithPassword(email: string): Promise<UserEntity | null> {
+    return this.userRepository.findOne({
+      where: { email },
+      select: ['id', 'email', 'password', 'provider'],
+    });
+  }
+
+  async findById(id: string): Promise<UserEntity | null> {
+    const user = await this.userRepository.findOne({
+      where: { id },
+    });
+
+    return user ? user : null;
+  }
+
+  async findBySocialIdAndProvider(data: {
+    socialId: string;
+    provider: string;
+  }): Promise<UserEntity | null> {
+    const user = await this.userRepository.findOne({
+      where: {
+        socialId: data.socialId,
+        provider: data.provider,
+      },
+    });
+
+    return user ? user : null;
+  }
+
+  async verifyPassword(email: string, password: string): Promise<boolean> {
+    const user = await this.findByEmailWithPassword(email);
+
+    if (!user || !user.password) {
+      return false;
+    }
+
+    return verifyPassword(password, user.password);
   }
 
   async getUserSettings(userId: string): Promise<UserSetting> {
     const settings = await this.userSettingRepository.findOneBy({ userId });
+
     if (!settings) {
       throw new ValidationException(ErrorCode.E002);
     }
 
     return settings;
   }
-    
+
   async getUserFollowersCount(userId: string): Promise<number> {
-    return this.usersfollowsRepository.count({ where: { followeeId: userId } }) ?? 0;
-  }
-    
-  async getUserFollowingCount(userId: string): Promise<number> {
-    return this.usersfollowsRepository.count({ where: { followerId: userId } }) ?? 0;
+    return (
+      (await this.userFollowsRepository.count({
+        where: { followeeId: userId },
+      })) ?? 0
+    );
   }
 
-  async getUserFollowers(userId: string): Promise<User[]> {
-    const relations = await this.usersfollowsRepository.find({
+  async getUserFollowingCount(userId: string): Promise<number> {
+    return (
+      (await this.userFollowsRepository.count({
+        where: { followerId: userId },
+      })) ?? 0
+    );
+  }
+
+  async getUserFollowers(userId: string): Promise<UserEntity[]> {
+    const relations = await this.userFollowsRepository.find({
       where: { followeeId: userId },
       relations: ['follower'],
     });
-  
-    return relations.map(r => this.toGraphQLUser(r.follower));
+
+    return relations
+      .filter((r) => r.follower)
+      .map((r) => r.follower);
   }
 
-
-  async getUserFollowing(userId: string): Promise<User[]> {
-    const relations = await this.usersfollowsRepository.find({
+  async getUserFollowing(userId: string): Promise<UserEntity[]> {
+    const relations = await this.userFollowsRepository.find({
       where: { followerId: userId },
       relations: ['followee'],
     });
-  
-    return relations.map(r => this.toGraphQLUser(r.followee));
-  }
-  
-  
 
-  async deleteUser(userId: string) {
+    return relations
+      .filter((r) => r.followee)
+      .map((r) => r.followee);
+  }
+
+  async remove(userId: string): Promise<void> {
     const user = await this.userRepository.findOneBy({ id: userId });
 
     if (!user) {
       throw new ValidationException(ErrorCode.E002);
     }
 
+    await this.userRepository.softRemove(user);
+  }
+
+  async deleteUser(userId: string): Promise<void> {
+    const user = await this.userRepository.findOneBy({ id: userId });
+
+    if (!user) {
+      throw new ValidationException(ErrorCode.E002);
+    }
     await this.userRepository.remove(user);
   }
 
-  private toGraphQLUser(entity: UserEntity): User {
-    return  toGraphQLUserUtils(entity);
-  }
 }
