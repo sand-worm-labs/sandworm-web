@@ -11,4 +11,11 @@ export type AppConfig = {
   workingDirectory: string;
   frontendDomain?: string;
   backendDomain: string;
+  swagger: {
+    enabled: boolean;
+    title: string;
+    description: string;
+    version: string;
+    path: string;
+  };
 };
