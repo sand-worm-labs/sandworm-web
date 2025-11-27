@@ -7,7 +7,6 @@ import { WorkspaceModule } from './workspace/workspace.module';
 import { DocumentModule } from './document/document.module';
 import { CommentModule } from './comment/comment.module';
 import { EnvironmentModule } from './environment/environment.module';
-// import { TutorialModule } from './tutorial/tutorial.module';
 import { FileModule } from './file/file.module';
 
 @Module({

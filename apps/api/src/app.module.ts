@@ -22,6 +22,10 @@ import { AppService } from './app.service';
 import { AllConfigType } from './config/config.type';
 import { ApiModule } from './modules/api.module';
 import authConfig from './modules/auth/config/auth.config';
+import jupyterConfig from '@sandworm/jupyter/config/juypter.config';
+import googleConfig from '@/api/auth-google/config/google.config';
+import mailConfig from '@/api/mail/config/mail.config';
+
 import { BaseContext } from '@apollo/server';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { appConfig } from '@sandworm/graphql';
@@ -30,7 +34,7 @@ import { JupyterModule } from './jupyter/jupyter.module';
 
 const configModule = ConfigModule.forRoot({
   isGlobal: true,
-  load: [appConfig, databaseConfig, authConfig],
+  load: [appConfig, databaseConfig, authConfig, jupyterConfig, mailConfig, googleConfig],
   envFilePath: ['.env'],
 });
 
