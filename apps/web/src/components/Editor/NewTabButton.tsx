@@ -4,8 +4,6 @@ import clsx from "clsx";
 import { PlusIcon } from "@heroicons/react/20/solid";
 import {
   BlockType,
-  YBlock,
-  YBlockGroup,
   addGroupedBlock,
   getBlockFlatPosition,
   getBlocks,

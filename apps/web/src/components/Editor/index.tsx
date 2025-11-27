@@ -608,17 +608,15 @@ const DraggableTabbedBlock = (props: {
 
   const onFileUploadBlockPythonUsage = useCallback(
     (block: Y.XmlElement<FileUploadBlock>, filename: string, type: string) => {
-      const fileExtension =
-        type === "application/json"
-          ? "json"
-          : type === "text/csv"
-            ? "csv"
-            : type === "application/vnd.ms-excel"
-              ? "xls"
-              : type ===
-                  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                ? "xlsx"
-                : "";
+      const extensionMap: Record<string, string> = {
+        "application/json": "json",
+        "text/csv": "csv",
+        "application/vnd.ms-excel": "xls",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+          "xlsx",
+      };
+
+      const fileExtension = extensionMap[type] ?? "";
 
       const source =
         fileExtension !== ""
