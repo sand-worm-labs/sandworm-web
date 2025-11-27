@@ -2,7 +2,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ExecutionScheduleEntity, DocumentEntity } from '@sandworm/postgresql-typeorm';
-import { AuthModule } from '../auth/auth.module';
+import { AuthModule } from '../graphql_auth/auth.module';
 import { ScheduleResolver } from './schedule.resolver';
 import { ScheduleService } from './schedule.service';
 

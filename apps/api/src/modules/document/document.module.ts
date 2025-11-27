@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DocumentEntity, WorkspaceEntity, FavoriteEntity } from '@sandworm/postgresql-typeorm';
-import { AuthModule } from '../auth/auth.module';
+import { AuthModule } from '../graphql_auth/auth.module';
 import { DocumentResolver } from './document.resolver';
 import { DocumentService } from './document.service';
 @Module({
