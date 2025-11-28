@@ -8,4 +8,14 @@ export type AppConfig = {
   logLevel: string;
   logService: string;
   corsOrigin: boolean | string | RegExp | (string | RegExp)[];
+  workingDirectory: string;
+  frontendDomain?: string;
+  backendDomain: string;
+  swagger: {
+    enabled: boolean;
+    title: string;
+    description: string;
+    version: string;
+    path: string;
+  };
 };
