@@ -23,7 +23,7 @@ import { getEmptyImage } from "react-dnd-html5-backend";
 
 import type { ApiDocument, UserWorkspaceRole } from "@/types";
 
-import useDropdownPosition from "../hooks/useDropdownPosition";
+import useDropdownPosition from "../hooks/dropdownposition";
 
 import IconSelector from "./IconSelector";
 
@@ -378,7 +378,7 @@ function NodeComponent(props: NodeComponentProps) {
               />
             )}
           <Link
-            href={`/workspaces/${props.workspaceId}/documents/${props.document.id}`}
+            href={`/workspace/${props.workspaceId}/documents/${props.document.id}`}
             className={clsx(
               props.document.id === props.current
                 ? "text-gray-800 bg-ceramic-100/50"

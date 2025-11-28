@@ -117,7 +117,7 @@ export const WorkspaceSidebar = () => {
       const id = uuidv4();
       try {
         await createDocument({ id, parentId, version: 2 });
-        router.push(`/workspaces/${workspaceId}/documents/${id}`);
+        router.push(`/workspace/${workspaceId}/documents/${id}`);
       } catch (err) {
         console.error(err);
       }
@@ -152,7 +152,7 @@ export const WorkspaceSidebar = () => {
       }
 
       const doc = await duplicateDocument(id);
-      router.push(`/workspaces/${workspaceId}/documents/${doc.id}`);
+      router.push(`/workspace/${workspaceId}/documents/${doc.id}`);
     },
     [documentsState, duplicateDocument, router, workspaceId]
   );
