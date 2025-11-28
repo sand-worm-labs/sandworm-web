@@ -199,7 +199,7 @@ export default function Layout({
       const id = uuidv4();
       try {
         await createDocument({ id, parentId, version: 2 });
-        router.push(`/workspaces/${workspaceId}/documents/${id}`);
+        router.push(`/workspace/${workspaceId}/documents/${id}`);
       } catch (err) {
         console.error(err);
       }
