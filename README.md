@@ -29,7 +29,8 @@ cp .env.example .env.local
 
 ### Applications (Apps)
 
-- `apps/graphql-api`: Graphql backend  Api
+- `app/jupyter`: Jupyter Notbook 
+- `apps/app-api`: Graphql and rest backend  Api
 - `apps/web`: Web frontend application
 
 ### Packages
