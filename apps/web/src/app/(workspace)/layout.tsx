@@ -12,6 +12,7 @@ import { WebsocketProvider } from "@/components/Visualization/hooks/useWebSocket
 import { EnvironmentStatusProvider } from "@/components/Visualization/hooks/useEnvironmentStatus";
 import { DataSourcesProvider } from "@/components/Visualization/hooks/useDataSources";
 import { ReusableComponentsProvider } from "@/components/Visualization/hooks/useReusableComponents";
+import { DocumentsLocalProvider } from "@/components/Visualization/hooks/useDocumentsLocal";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -23,19 +24,21 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         shallowRouting
       >
         <AppHeader />
-        <DocumentsProvider>
-          <DndBackendProvider>
-            <WebsocketProvider>
-              <EnvironmentStatusProvider>
-                <DataSourcesProvider>
-                  <ReusableComponentsProvider>
-                    <main> {children}</main>
-                  </ReusableComponentsProvider>
-                </DataSourcesProvider>
-              </EnvironmentStatusProvider>
-            </WebsocketProvider>
-          </DndBackendProvider>
-        </DocumentsProvider>
+        <DocumentsLocalProvider>
+          <DocumentsProvider>
+            <DndBackendProvider>
+              <WebsocketProvider>
+                <EnvironmentStatusProvider>
+                  <DataSourcesProvider>
+                    <ReusableComponentsProvider>
+                      <main> {children}</main>
+                    </ReusableComponentsProvider>
+                  </DataSourcesProvider>
+                </EnvironmentStatusProvider>
+              </WebsocketProvider>
+            </DndBackendProvider>
+          </DocumentsProvider>
+        </DocumentsLocalProvider>
         <FooterWrapper />
         <SignInModal />
         <Toaster
