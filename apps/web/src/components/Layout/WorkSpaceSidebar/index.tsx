@@ -11,9 +11,9 @@ import DocumentTree from "@/components/Visualization/blocks/DocumentsTree";
 import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
 import { useCallback } from "react";
 import { useDataSources } from "@/components/Visualization/hooks/useDataSources";
-import { useDocuments } from "@/components/Visualization/hooks/useDocuments";
 import { PlusSmallIcon } from "@heroicons/react/24/outline";
 import { useFavorites } from "@/components/Visualization/hooks/useFavorites";
+import { useDocumentsLocal as useDocuments } from "@/components/Visualization/hooks/useDocumentsLocal";
 
 interface NavItem {
   name: string;
@@ -110,6 +110,7 @@ export const WorkspaceSidebar = () => {
   const onCreateDocument = useCallback(
     async (parentId: string | null) => {
       if (documentsState.loading) {
+        console.log("blocked because loading = true");
         return;
       }
 
