@@ -42,7 +42,7 @@
     "@heroicons/react": "^2.2.0",
     "@lezer/highlight": "^1.2.3",
     "@monaco-editor/react": "^4.7.0",
-    "@nanostores/react": "git+https://github.com/ai/react.git",
+    "@nanostores/react": "1.0.0",
     "@next/bundle-analyzer": "^15.0.1",
     "@radix-ui/react-visually-hidden": "^1.2.3",
     "@replit/codemirror-vscode-keymap": "^6.0.2",
