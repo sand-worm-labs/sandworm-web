@@ -22,16 +22,16 @@ interface NavItem {
 }
 
 const mockUser = {
-  createdAt: "2025-10-21T14:03:41.471Z",
+  id: "4a6e71c4-2c06-460b-bb29-f337bf64e0bc",
   email: "dqzxu2gbs@mozmail.com",
-  id: "405498a2-f3cb-4307-bd1e-4daf5b3a1dba",
-  lastVisitedWorkspaceId: "405498a2-f3cb-4307-bd1e-4daf5b3a1dba",
   name: "Si Cy",
   picture: null,
+  lastVisitedWorkspaceId: "405498a2-f3cb-4307-bd1e-4daf5b3a1dbb",
+  createdAt: "2025-10-21T14:03:41.471Z",
+  updatedAt: "2025-11-28T04:59:50.952Z",
   roles: {
-    "405498a2-f3cb-4307-bd1e-4daf5b3a1dba": "admin",
+    "405498a2-f3cb-4307-bd1e-4daf5b3a1dbb": "admin",
   },
-  updatedAt: "2025-11-07T21:32:32.536Z",
 };
 
 export const WorkspaceSidebar = () => {
@@ -82,7 +82,7 @@ export const WorkspaceSidebar = () => {
      }`;
 
   const router = useRouter();
-  const documentId = useStringQuery("documentId");
+  const documentId = useStringQuery("document");
 
   const [{ datasources: allDataSources, isLoading: isLoadingDataSources }] =
     useDataSources(workspaceId);
@@ -110,7 +110,6 @@ export const WorkspaceSidebar = () => {
   const onCreateDocument = useCallback(
     async (parentId: string | null) => {
       if (documentsState.loading) {
-        console.log("blocked because loading = true");
         return;
       }
 
@@ -238,15 +237,19 @@ export const WorkspaceSidebar = () => {
               </li>
             ))}
           </ul>
+          <hr className="border-t-[1px] border-[#E6E0F1] dark:border-[#262A30] mt-4" />
 
           <ul>
             {mockUser.roles[workspaceId] !== "viewer" && (
               <button
+                type="button"
                 id="create-workspace-doc"
                 onClick={onCreateDocumentHandler}
-                className="p-1 hover:text-ceramic-500 hover:bg-ceramic-100/70 rounded-md hover:cursor-pointer"
+                className="p-1 hover:text-ceramic-500 hover:bg-ceramic-100/70 rounded-md hover:cursor-pointer text-sm border mt-3 flex px-5 items-center justify-center w-full border-[#E6E0F1] text-[#6C757D] mb-3 "
               >
-                <PlusSmallIcon className="h-4 w-4 " aria-hidden="true" />
+                {" "}
+                <PlusSmallIcon className="h-4 w-4 mr-3 " aria-hidden="true" />
+                <span>New Project</span>
               </button>
             )}
             <DocumentTree
