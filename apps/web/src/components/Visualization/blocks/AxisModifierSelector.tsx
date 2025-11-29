@@ -71,9 +71,7 @@ function AxisModifierSelector({
               ref={buttonRef}
               onClick={onClickButton}
             >
-              <span className="block truncate">
-                {selectedOption?.name ?? "None"}
-              </span>
+              <span className="block truncate">{options?.name ?? "None"}</span>
               <span className="pointer-events-none flex items-center">
                 <ChevronDownIcon
                   className="h-4 w-4 text-gray-400"

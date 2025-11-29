@@ -11,9 +11,9 @@ import DocumentTree from "@/components/Visualization/blocks/DocumentsTree";
 import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
 import { useCallback } from "react";
 import { useDataSources } from "@/components/Visualization/hooks/useDataSources";
-import { useDocuments } from "@/components/Visualization/hooks/useDocuments";
 import { PlusSmallIcon } from "@heroicons/react/24/outline";
 import { useFavorites } from "@/components/Visualization/hooks/useFavorites";
+import { useDocumentsLocal as useDocuments } from "@/components/Visualization/hooks/useDocumentsLocal";
 
 interface NavItem {
   name: string;
@@ -22,21 +22,21 @@ interface NavItem {
 }
 
 const mockUser = {
-  createdAt: "2025-10-21T14:03:41.471Z",
+  id: "4a6e71c4-2c06-460b-bb29-f337bf64e0bc",
   email: "dqzxu2gbs@mozmail.com",
-  id: "405498a2-f3cb-4307-bd1e-4daf5b3a1dba",
-  lastVisitedWorkspaceId: "405498a2-f3cb-4307-bd1e-4daf5b3a1dba",
   name: "Si Cy",
   picture: null,
+  lastVisitedWorkspaceId: "405498a2-f3cb-4307-bd1e-4daf5b3a1dbb",
+  createdAt: "2025-10-21T14:03:41.471Z",
+  updatedAt: "2025-11-28T04:59:50.952Z",
   roles: {
-    "405498a2-f3cb-4307-bd1e-4daf5b3a1dba": "admin",
+    "405498a2-f3cb-4307-bd1e-4daf5b3a1dbb": "admin",
   },
-  updatedAt: "2025-11-07T21:32:32.536Z",
 };
 
 export const WorkspaceSidebar = () => {
   const pathname = usePathname();
-  const workspaceId = useStringQuery("workspaceId");
+  const workspaceId = pathname.split("/")[2] ?? "";
 
   //note: we replace this with useworkspace hook once ready
   /*   const workspaceId = pathname.split("/")[2] ?? "";
@@ -82,7 +82,7 @@ export const WorkspaceSidebar = () => {
      }`;
 
   const router = useRouter();
-  const documentId = useStringQuery("documentId");
+  const documentId = useStringQuery("document");
 
   const [{ datasources: allDataSources, isLoading: isLoadingDataSources }] =
     useDataSources(workspaceId);
@@ -116,7 +116,7 @@ export const WorkspaceSidebar = () => {
       const id = uuidv4();
       try {
         await createDocument({ id, parentId, version: 2 });
-        router.push(`/workspaces/${workspaceId}/documents/${id}`);
+        router.push(`/workspace/${workspaceId}/documents/${id}`);
       } catch (err) {
         console.error(err);
       }
@@ -151,7 +151,7 @@ export const WorkspaceSidebar = () => {
       }
 
       const doc = await duplicateDocument(id);
-      router.push(`/workspaces/${workspaceId}/documents/${doc.id}`);
+      router.push(`/workspace/${workspaceId}/documents/${doc.id}`);
     },
     [documentsState, duplicateDocument, router, workspaceId]
   );
@@ -237,15 +237,19 @@ export const WorkspaceSidebar = () => {
               </li>
             ))}
           </ul>
+          <hr className="border-t-[1px] border-[#E6E0F1] dark:border-[#262A30] mt-4" />
 
           <ul>
             {mockUser.roles[workspaceId] !== "viewer" && (
               <button
+                type="button"
                 id="create-workspace-doc"
                 onClick={onCreateDocumentHandler}
-                className="p-1 hover:text-ceramic-500 hover:bg-ceramic-100/70 rounded-md hover:cursor-pointer"
+                className="p-1 hover:text-ceramic-500 hover:bg-ceramic-100/70 rounded-md hover:cursor-pointer text-sm border mt-3 flex px-5 items-center justify-center w-full border-[#E6E0F1] text-[#6C757D] mb-3 "
               >
-                <PlusSmallIcon className="h-4 w-4 " aria-hidden="true" />
+                {" "}
+                <PlusSmallIcon className="h-4 w-4 mr-3 " aria-hidden="true" />
+                <span>New Project</span>
               </button>
             )}
             <DocumentTree

@@ -35,7 +35,7 @@ export default function CommandPalette({
 
   const navigateToDocument = useCallback(
     (document: ApiDocument) => {
-      const url = `/workspaces/${workspaceId}/documents/${document.id}`;
+      const url = `/workspace/${workspaceId}/documents/${document.id}`;
       return router.push(url);
     },
     [router, workspaceId]
