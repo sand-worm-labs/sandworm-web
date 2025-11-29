@@ -13,7 +13,6 @@ import type { ApiDocument } from "@/types";
 import { widthClasses } from "@/components/Editor/constants";
 
 import { useDataSources } from "../hooks/useDataSources";
-import useDocument from "../hooks/useDocument";
 import { useDocuments } from "../hooks/useDocuments";
 import useFullScreenDocument from "../hooks/useFullScreenDocument";
 import { NEXT_PUBLIC_PUBLIC_URL } from "../utils/env";
@@ -36,6 +35,7 @@ import ReusableComponents from "./ReusableComponents";
 import PageSettingsPanel from "./PageSettingsPanel";
 import { Tooltip } from "./ToolTips";
 import { ContentSkeleton, TitleSkeleton } from "./ContentSkeleton";
+import useDocument from "../hooks/useDocumentLocal";
 
 // this is needed because this component only works with the browser
 const V2Editor = dynamic(() => import("@/components/Editor"), {
@@ -96,17 +96,17 @@ const mockDocument = {
 
 export default function PrivateDocumentPage(props: Props) {
   console.log("Rendering PrivateDocumentPage");
-  /*   const [{ document, publishing }, { publish }] = useDocument(
+  const [{ document, publishing }, { publish }] = useDocument(
     props.workspaceId,
     props.documentId
   );
- */
-  const document = mockDocument;
+
+  /*   const document = mockDocument;
   const publishing = false;
   const publish = async () => {
     console.log("Mock publish triggered for", document.id);
     await new Promise(r => setTimeout(r, 500));
-  };
+  }; */
 
   console.log("check the structure of document:", document, typeof document);
 
@@ -229,7 +229,7 @@ function PrivateDocumentPageInner(
   const shareLinkWithoutSidebar = props.document.shareLinksWithoutSidebar;
   const copyLink = useMemo(
     () =>
-      `${NEXT_PUBLIC_PUBLIC_URL()}/workspaces/${props.workspaceId}/documents/${
+      `${NEXT_PUBLIC_PUBLIC_URL()}/workspace/${props.workspaceId}/documents/${
         props.documentId
       }/notebook${shareLinkWithoutSidebar ? `?sidebarCollapsed=true` : ""}`,
     [props.workspaceId, props.documentId, shareLinkWithoutSidebar]
@@ -299,13 +299,13 @@ function PrivateDocumentPageInner(
 
     await props.publish();
     router.push(
-      `/workspaces/${props.document.workspaceId}/documents/${props.document.id}/notebook`
+      `/workspace/${props.document.workspaceId}/documents/${props.document.id}/notebook`
     );
   }, [props.publishing, props.publish]);
 
   const onGoToApp = useCallback(() => {
     router.push(
-      `/workspaces/${props.document.workspaceId}/documents/${props.document.id}/notebook`
+      `/workspace/${props.document.workspaceId}/documents/${props.document.id}/notebook`
     );
   }, [router]);
 
@@ -362,7 +362,7 @@ function PrivateDocumentPageInner(
         "viewer" ? null : props.isApp ? (
           <Link
             className="flex gap-x-2 items-center rounded-sm px-3 py-1 text-sm text-gray-500 bg-white hover:bg-gray-100 border border-gray-200 disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 justify-center"
-            href={`/workspaces/${props.document.workspaceId}/documents/${props.document.id}/notebook/edit`}
+            href={`/workspace/${props.document.workspaceId}/documents/${props.document.id}/notebook/edit`}
           >
             <PencilIcon className="w-4 h-4" />
             <span>Edit</span>
@@ -425,7 +425,9 @@ function PrivateDocumentPageInner(
           isPublicViewer={false}
           isDeleted={isDeleted}
           onRestoreDocument={onRestoreDocument}
-          isEditable
+          isEditable={
+            !props.isApp && props.user.roles[props.workspaceId] !== "viewer"
+          }
           isPDF={false}
           isApp={props.isApp}
           userId={props.user.id}
