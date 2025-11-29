@@ -24,7 +24,7 @@ const EnvironmentButton = ({
 }) => {
   return (
     <Link
-      href={`/workspaces/${workspaceId}/environments/current`}
+      href={`/workspace/${workspaceId}/environments/current`}
       className="border border-gray-200 dark:border-[#262A30]  rounded-sm text-sm px-3 py-1 hover:bg-gray-50 cursor-pointer flex items-center gap-x-2"
     >
       <CpuChipIcon className="h-4 w-4 text-gray-600" />

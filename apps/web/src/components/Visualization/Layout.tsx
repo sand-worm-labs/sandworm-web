@@ -160,7 +160,7 @@ export default function Layout({
   const pathname = usePathname();
 
   const workspaceId = useStringQuery("workspaceId");
-  const documentId = useStringQuery("documentId");
+  const documentId = useStringQuery("document");
 
   const [{ datasources: allDataSources, isLoading: isLoadingDataSources }] =
     useDataSources(workspaceId);
@@ -199,7 +199,7 @@ export default function Layout({
       const id = uuidv4();
       try {
         await createDocument({ id, parentId, version: 2 });
-        router.push(`/workspaces/${workspaceId}/documents/${id}`);
+        router.push(`/workspace/${workspaceId}/documents/${id}`);
       } catch (err) {
         console.error(err);
       }

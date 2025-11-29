@@ -1,4 +1,4 @@
-import { usePathname, useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 
 // props to chat gpt
 function extractParamValue(
@@ -18,16 +18,26 @@ function extractParamValue(
 }
 
 export const useStringQuery = (name: string): string => {
-  const pathname = usePathname();
+  const params = useParams();
   const searchParams = useSearchParams();
-
-  const path = typeof window === "undefined" ? "" : window.location.pathname;
 
   // First check URL search params (?key=value)
   const searchParam = searchParams?.get(name);
 
-  // If not in search params, extract from path params ([slug])
-  const arg = searchParam ?? extractParamValue(pathname, path, name);
+  if (searchParam) {
+    return searchParam;
+  }
 
-  return arg ?? "";
+  // Then check dynamic route params
+  const param = params?.[name];
+
+  if (typeof param === "string") {
+    return param;
+  }
+
+  if (Array.isArray(param)) {
+    return param[0] ?? "";
+  }
+
+  return "";
 };

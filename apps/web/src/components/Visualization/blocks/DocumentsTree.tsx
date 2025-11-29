@@ -23,7 +23,7 @@ import { getEmptyImage } from "react-dnd-html5-backend";
 
 import type { ApiDocument, UserWorkspaceRole } from "@/types";
 
-import useDropdownPosition from "../hooks/useDropdownPosition";
+import useDropdownPosition from "../hooks/dropdownposition";
 
 import IconSelector from "./IconSelector";
 
@@ -378,7 +378,7 @@ function NodeComponent(props: NodeComponentProps) {
               />
             )}
           <Link
-            href={`/workspaces/${props.workspaceId}/documents/${props.document.id}`}
+            href={`/workspace/${props.workspaceId}/documents/${props.document.id}`}
             className={clsx(
               props.document.id === props.current
                 ? "text-gray-800 bg-ceramic-100/50"
@@ -532,7 +532,7 @@ function DropDown(props: DropDownProps) {
   );
 
   return (
-    <Menu as="div" className="relative inline-flex text-left">
+    <Menu as="div" className="relative inline-flex text-left font-primary">
       <Menu.Button
         className={clsx(
           (props.isFavoriteDropdown || props.role === "viewer") && "hidden",
@@ -568,6 +568,7 @@ function DropDown(props: DropDownProps) {
               <Menu.Item>
                 {({ active }) => (
                   <button
+                    type="button"
                     onClick={onDeleteHandler}
                     className={clsx(
                       {
@@ -575,7 +576,7 @@ function DropDown(props: DropDownProps) {
                           props.role === "viewer" || props.isFavoriteDropdown,
                       },
                       active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                      "w-full px-4 py-2 text-left text-sm flex items-center gap-x-2 rounded-md"
+                      "w-full px-4 py-2 text-left text-sm flex items-center gap-x-2 rounded-md font-primary"
                     )}
                   >
                     <TrashIcon className="h-4 w-4" />
@@ -586,13 +587,14 @@ function DropDown(props: DropDownProps) {
               <Menu.Item>
                 {({ active }) => (
                   <button
+                    type="button"
                     onClick={onDuplicateHandler}
                     className={clsx(
                       {
                         hidden: props.role === "viewer",
                       },
                       active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                      "w-full px-4 py-2 text-left text-sm flex items-center gap-x-2"
+                      "w-full px-4 py-2 text-left text-sm flex items-center gap-x-2 font-primary"
                     )}
                   >
                     <Square2StackIcon className="h-4 w-4" />
@@ -603,13 +605,14 @@ function DropDown(props: DropDownProps) {
               <Menu.Item>
                 {({ active }) => (
                   <button
+                    type="button"
                     onClick={onFavoriteHandler}
                     className={clsx(
                       {
                         hidden: props.isFavoriteDropdown,
                       },
                       active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                      "w-full px-4 py-2 text-left text-sm flex items-center gap-x-2"
+                      "w-full px-4 py-2 text-left text-sm flex items-center gap-x-2 font-primary"
                     )}
                   >
                     <BookmarkIcon className="h-4 w-4" />
@@ -620,13 +623,14 @@ function DropDown(props: DropDownProps) {
               <Menu.Item>
                 {({ active }) => (
                   <button
+                    type="button"
                     onClick={onUnfavoriteHandler}
                     className={clsx(
                       {
                         hidden: !props.isFavoriteDropdown,
                       },
                       active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                      "w-full px-4 py-2 text-left text-sm flex items-center gap-x-2"
+                      "w-full px-4 py-2 text-left text-sm flex items-center gap-x-2 font-primary"
                     )}
                   >
                     <BookmarkSlashIcon className="h-4 w-4" />
