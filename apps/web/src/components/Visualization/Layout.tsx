@@ -160,7 +160,7 @@ export default function Layout({
   const pathname = usePathname();
 
   const workspaceId = useStringQuery("workspaceId");
-  const documentId = useStringQuery("documentId");
+  const documentId = useStringQuery("document");
 
   const [{ datasources: allDataSources, isLoading: isLoadingDataSources }] =
     useDataSources(workspaceId);

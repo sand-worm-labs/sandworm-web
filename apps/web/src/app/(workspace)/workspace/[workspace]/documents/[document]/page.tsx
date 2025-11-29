@@ -1,6 +1,5 @@
 "use client";
 
-import { useParams, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
@@ -31,63 +30,6 @@ const MOCK_SESSION: SessionUser = {
     "405498a2-f3cb-4307-bd1e-4daf5b3a1dbb": "admin",
   },
 };
-
-export default function DocumentPage() {
-  const session = {
-    data: MOCK_SESSION,
-    isLoading: false,
-  };
-
-  // Change these to match your actual param names from Next.js
-  const workspaceId = useStringQuery("workspace"); // Changed from "workspaceId"
-  const documentId = useStringQuery("document"); // Changed from "documentId"
-
-  const role = session.data?.roles[workspaceId];
-  const router = useRouter();
-
-  console.log("workspaceId from URL:", workspaceId);
-  console.log("documentId from URL:", documentId);
-  console.log("Available roles:", session.data?.roles);
-  console.log("Role for this workspace:", role);
-
-  if (!session.data || !role) {
-    console.log(
-      "❌ doesn't exist - session.data:",
-      !!session.data,
-      "role:",
-      role
-    );
-    return (
-      <div style={{ padding: "20px" }}>
-        <h2>Debug Info:</h2>
-        <p>
-          <strong>Workspace ID from URL:</strong> {workspaceId || "null"}
-        </p>
-        <p>
-          <strong>Document ID from URL:</strong> {documentId || "null"}
-        </p>
-        <p>
-          <strong>Role:</strong> {role || "undefined"}
-        </p>
-        <p>
-          <strong>Available workspace IDs:</strong>{" "}
-          {Object.keys(session.data?.roles || {}).join(", ")}
-        </p>
-        <p style={{ color: "red" }}>No role found for this workspace</p>
-      </div>
-    );
-  }
-
-  console.log("✅ exists - rendering PrivateDocumentPage");
-  return (
-    <PrivateDocumentPage
-      workspaceId={workspaceId}
-      documentId={documentId}
-      user={session.data}
-      role={role}
-    />
-  );
-}
 
 interface PrivateDocumentPageProps {
   workspaceId: string;
@@ -144,5 +86,61 @@ function PrivateDocumentPage(props: PrivateDocumentPageProps) {
     <div style={{ padding: "20px" }}>
       <p>Loading document...</p>
     </div>
+  );
+}
+
+export default function DocumentPage() {
+  const session = {
+    data: MOCK_SESSION,
+    isLoading: false,
+  };
+
+  // Change these to match your actual param names from Next.js
+  const workspaceId = useStringQuery("workspace"); // Changed from "workspaceId"
+  const documentId = useStringQuery("document"); // Changed from "documentId"
+
+  const role = session.data?.roles[workspaceId];
+  const router = useRouter();
+
+  console.log("workspaceId from URL:", workspaceId);
+  console.log("documentId from URL:", documentId);
+  console.log("Available roles:", session.data?.roles);
+  console.log("Role for this workspace:", role);
+
+  if (!session.data || !role) {
+    console.log(
+      "❌ doesn't exist - session.data:",
+      !!session.data,
+      "role:",
+      role
+    );
+    return (
+      <div style={{ padding: "20px" }}>
+        <h2>Debug Info:</h2>
+        <p>
+          <strong>Workspace ID from URL:</strong> {workspaceId || "null"}
+        </p>
+        <p>
+          <strong>Document ID from URL:</strong> {documentId || "null"}
+        </p>
+        <p>
+          <strong>Role:</strong> {role || "undefined"}
+        </p>
+        <p>
+          <strong>Available workspace IDs:</strong>{" "}
+          {Object.keys(session.data?.roles || {}).join(", ")}
+        </p>
+        <p style={{ color: "red" }}>No role found for this workspace</p>
+      </div>
+    );
+  }
+
+  return (
+    <PrivateDocumentPage
+      workspaceId={workspaceId}
+      documentId={documentId}
+      user={session.data}
+      role={role}
+    />
   );
 }

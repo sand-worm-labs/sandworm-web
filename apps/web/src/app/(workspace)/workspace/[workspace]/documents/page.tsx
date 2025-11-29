@@ -7,7 +7,7 @@ import { useEffect, useMemo } from "react";
 
 export default function DocumentsPage() {
   const router = useRouter();
-  const workspaceId = useStringQuery("workspaceId");
+  const workspaceId = useStringQuery("workspace");
   const [state] = useDocuments(workspaceId);
 
   const documents = useMemo(
