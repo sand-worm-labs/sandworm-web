@@ -213,7 +213,7 @@ export const WorkspaceSidebar = () => {
                 <Link href={item.href} className={linkClasses(item.href)}>
                   <item.icon
                     strokeWidth={1.8}
-                    className={`h-4 w-4 text-[#1C3B5A] dark:text-[#868E96]`}
+                    className="h-4 w-4 text-[#1C3B5A] dark:text-[#868E96]"
                   />
                   {item.name}
                 </Link>
@@ -230,7 +230,7 @@ export const WorkspaceSidebar = () => {
                 <Link href={item.href} className={linkClasses(item.href)}>
                   <item.icon
                     strokeWidth={1.8}
-                    className={`h-4 w-4 text-[#1C3B5A] dark:text-[#868E96]`}
+                    className="h-4 w-4 text-[#1C3B5A] dark:text-[#868E96]"
                   />
                   {item.name}
                 </Link>

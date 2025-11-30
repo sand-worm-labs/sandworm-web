@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useCallback, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import { MultimodalInput } from "./multimodal-input";
 import { ExamplePrompts } from "./example-prompts";
+import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
+import { v4 as uuidv4 } from "uuid";
+import { useDocumentsLocal as useDocuments } from "@/components/Visualization/hooks/useDocumentsLocal";
 
 type Attachment = {
   url: string;
@@ -19,44 +22,67 @@ type Message = {
 };
 
 export function Chat({
-  id,
   initialMessages,
 }: {
-  id: string;
   initialMessages?: Array<Message>;
 }) {
   const router = useRouter();
-  const params = useParams();
-  const workspaceId = params.workspaceId as string;
-
-  const [messages, setMessages] = useState<Array<Message>>(
-    initialMessages || []
-  );
+  const workspaceId = useStringQuery("workspace");
+  const [documentsState, { createDocument }] = useDocuments(workspaceId);
+  const [messages] = useState<Array<Message>>(initialMessages || []);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
 
-  const handleSubmit = (event?: { preventDefault?: () => void }) => {
-    event?.preventDefault?.();
-    if (!input.trim()) return;
+  // ⬢ Handle Chat submission and create new Project
+  // =====================================
+  const handleSubmit = useCallback(
+    async (event?: { preventDefault?: () => void }) => {
+      event?.preventDefault?.();
+      const text = input.trim();
+      if (!text) return;
+      if (documentsState.loading) return;
 
-    router.push(
-      `/workspace/${workspaceId}/documents/notebook?prompt=${encodeURIComponent(input)}`
-    );
-  };
+      const id = uuidv4();
 
-  const append = async (message: any) => {
+      try {
+        await createDocument({ id, parentId: null, version: 2 });
+        router.push(
+          `/workspace/${workspaceId}/documents/${id}?prompt=${encodeURIComponent(text)}`
+        );
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    [input, documentsState, createDocument, router, workspaceId]
+  );
+
+  // ⬢ Handle Prompt click and create new Project
+  // =====================================
+  const handlePromptSelect = useCallback(
+    async (prompt: string, parentId: string | null = null) => {
+      if (documentsState.loading) return;
+
+      const id = uuidv4();
+
+      try {
+        await createDocument({ id, parentId, version: 2 });
+        router.push(
+          `/workspace/${workspaceId}/documents/${id}?prompt=${encodeURIComponent(prompt)}`
+        );
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    [documentsState, createDocument, router, workspaceId]
+  );
+
+  const append = async () => {
     return null;
   };
 
   const stop = () => {
     setIsLoading(false);
-  };
-
-  const handlePromptSelect = (prompt: string) => {
-    router.push(
-      `/workspace/${workspaceId}/documents/notebook?prompt=${encodeURIComponent(prompt)}`
-    );
   };
 
   return (
