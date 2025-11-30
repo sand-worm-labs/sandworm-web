@@ -14,6 +14,7 @@ import { useDataSources } from "@/components/Visualization/hooks/useDataSources"
 import { PlusSmallIcon } from "@heroicons/react/24/outline";
 import { useFavorites } from "@/components/Visualization/hooks/useFavorites";
 import { useDocumentsLocal as useDocuments } from "@/components/Visualization/hooks/useDocumentsLocal";
+import { SandwormLogo } from "@/components/Assets";
 
 interface NavItem {
   name: string;
@@ -203,6 +204,15 @@ export const WorkspaceSidebar = () => {
   return (
     <aside className="w-[220px] h-full flex flex-col justify-between dark:bg-[#0C1015] bg-[#F1F3F4] border-r dark:border-[#262A30] border-[#E9ECEF]">
       <div>
+        <Link
+          href="/"
+          className="flex items-center py-[0.69rem] px-3   bg-white border-b border-[#E9ECEF] "
+        >
+          <SandwormLogo width="30" height="30" />
+          <span className="ml-1.5 font-bold text-[1.05rem] uppercase hidden md:inline-block">
+            SandW0rm.
+          </span>
+        </Link>
         <div className="px-4 py-4" />
 
         <nav className="flex-1 px-3">

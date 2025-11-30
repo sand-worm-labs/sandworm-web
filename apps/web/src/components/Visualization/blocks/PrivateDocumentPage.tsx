@@ -438,6 +438,7 @@ function PrivateDocumentPageInner(
       topBarClassname={props.isApp ? "bg-gray-50 " : undefined}
       topBarContent={topBarContent}
       user={props.user}
+      hideChat={props.isApp || props.user.roles[props.workspaceId] === "viewer"}
     >
       <div className="w-full relative flex">
         <V2Editor
