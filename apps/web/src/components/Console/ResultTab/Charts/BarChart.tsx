@@ -12,7 +12,6 @@ export const BarChart: React.FC<BarChartProps> = ({
   title,
   showControls = true,
 }) => {
-  console.log("BarChart result:", result);
   return (
     <Chart
       chartType="bar"

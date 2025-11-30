@@ -2072,7 +2072,6 @@ function TabRef(props: TabRefProps) {
 export default function V2Editor(
   props: Omit<Props, "scrollViewRef"> & { children?: ReactNode }
 ) {
-  console.log("checking structure of props editor", props);
   const scrollViewRef = useRef<HTMLDivElement>(null);
   return (
     <EditorAwarenessProvider scrollViewRef={scrollViewRef} yDoc={props.yDoc}>

@@ -46,12 +46,10 @@ export function Chat({
   };
 
   const append = async (message: any) => {
-    console.log("Append message:", message);
     return null;
   };
 
   const stop = () => {
-    console.log("Stop generation");
     setIsLoading(false);
   };
 
