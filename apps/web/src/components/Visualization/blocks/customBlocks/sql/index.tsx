@@ -97,8 +97,6 @@ interface Props {
 }
 function SQLBlock(props: Props) {
   const properties = useProperties();
-  console.log("SQLBlock props:", props);
-  console.log("SQLBlock document:", props[0]);
 
   const [workspaces] = useWorkspaces();
   const currentWorkspace: ApiWorkspace | undefined = useMemo(() => {
@@ -152,8 +150,6 @@ function SQLBlock(props: Props) {
   const onSQLSelectionChanged = useCallback((selectedCode: string | null) => {
     setSelectedCode(selectedCode);
   }, []);
-
-  console.log(props.block, props.block, "SQLBlock render");
 
   const {
     dataframeName,

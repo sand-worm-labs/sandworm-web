@@ -386,8 +386,6 @@ function BlocksList(props: BlocksListProps) {
   return props.list.map((block, i) => {
     const { id } = getBaseAttributes(block);
 
-    console.log(`Block #${i}`, block);
-
     return (
       <BlockListItem
         className={clsx("mt-6", i === props.list.length - 1 && "mb-6")}

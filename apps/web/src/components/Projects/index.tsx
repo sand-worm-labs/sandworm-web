@@ -68,7 +68,6 @@ export const Projects: React.FC = () => {
   };
 
   const handleMenuAction = (action: MenuAction, projectId: number): void => {
-    console.log(`${action} project ${projectId}`);
     setOpenMenuId(null);
 
     if (action === "trash") {
