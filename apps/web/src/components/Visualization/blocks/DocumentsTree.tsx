@@ -630,7 +630,7 @@ function DropDown(props: DropDownProps) {
                         hidden: !props.isFavoriteDropdown,
                       },
                       active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                      "w-full px-4 py-2 text-left text-sm flex items-center gap-x-2 font-primary"
+                      "w-full px-4 py-2 text-left text-sm flex items-center gap-x-2 font-primary  "
                     )}
                   >
                     <BookmarkSlashIcon className="h-4 w-4" />
