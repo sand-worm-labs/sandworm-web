@@ -253,7 +253,7 @@ export function TooltipV2<T extends Element>(props: TooltipV2Props<T>) {
               <div
                 ref={tooltipRef}
                 className={clsx(
-                  "font-primary pointer-events-none bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1 w-36",
+                  "font-primary pointer-events-none bg-black text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1 w-36",
                   props.className
                 )}
               >

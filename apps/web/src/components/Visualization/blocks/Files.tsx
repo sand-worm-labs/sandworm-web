@@ -227,7 +227,7 @@ file`;
       <Transition
         as="div"
         show={props.visible}
-        className="top-0 right-0 h-full absolute bg-white z-30 font-primary "
+        className="top-0 right-0 h-full absolute bg-white dark:bg-black z-30 font-primary "
         enter="transition-transform duration-300"
         enterFrom="transform translate-x-full"
         enterTo="transform translate-x-0"
@@ -243,13 +243,13 @@ file`;
         />
         <button
           type="button"
-          className="absolute z-10 top-7 transform rounded-full border border-[#E9ECEF]  text-gray-400 bg-white hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
+          className="absolute z-10 top-7 transform rounded-full border border-[#E9ECEF] dark:border-[#262A30]  text-gray-400 bg-white  hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
           onClick={props.onHide}
         >
           <ChevronDoubleRightIcon className="w-3 h-3" />
         </button>
         <div
-          className="w-[324px] flex flex-col border-l border-gray-200 h-full bg-white"
+          className="w-[324px] flex flex-col border-l dark:border-[#262A30] border-gray-200 h-full bg-white dark:bg-black"
           {...getRootProps()}
         >
           <div className="flex justify-between border-b p-6 space-x-3">
@@ -275,13 +275,13 @@ file`;
           </div>
           {(upload._tag === "uploading" || results.length > 0) && (
             <>
-              <div className="relative flex px-4 py-2 text-xs font-medium border-b bg-gray-50 text-gray-600 justify-between">
+              <div className="relative flex px-4 py-2 text-xs font-medium border-b dark:border-[#262A30] border-[#FEFEFF] bg-gray-50 text-gray-600 justify-between">
                 <div className="flex gap-x-1">
                   <CloudArrowUpIconSolid className="w-4 h-4 text-gray-400" />
                   Uploading
                 </div>
               </div>
-              <ul className="divide-y divide-solid overflow-y-auto border-b">
+              <ul className="divide-y divide-solid overflow-y-auto border-b border-[#FEFEFF] dark:border-[#262A30] divide-[#FEFEFF] dark:divide-[#262A30]">
                 {results.map((result, i) => (
                   <li>
                     <UploadResultItem
@@ -307,7 +307,7 @@ file`;
           )}
           {(actualFiles.length > 0 || upload._tag === "idle") && (
             <>
-              <div className="relative flex px-4 py-2 text-xs font-medium border-b bg-gray-50 text-gray-600 justify-between">
+              <div className="relative flex px-4 py-2 text-xs font-medium border-b border-[#FEFEFF] dark:bg-black dark:border-[#262A30] bg-gray-50 text-gray-600 justify-between">
                 <div className="flex gap-x-1">
                   <FolderIcon className="w-4 h-4 text-gray-400" />
                   <span className="font-mono">/home/jupyteruser</span>
@@ -322,7 +322,7 @@ file`;
                   <InformationCircleIcon className="w-4 h-4 text-gray-300" />
                 </Tooltip>
               </div>
-              <div className="px-4 py-0 flex items-center border-b border-gray-200 group focus-within:border-blue-300">
+              <div className="px-4 py-0 flex items-center border-b dark:border-[#262A30] border-gray-200 group focus-within:border-blue-300">
                 <MagnifyingGlassIcon className="h-3.5 w-3.5 text-gray-400 group-focus-within:text-blue-500" />
                 <input
                   type="text"
@@ -353,7 +353,7 @@ file`;
               ) : (
                 !isDragActive && (
                   <div className="flex-1 p-4">
-                    <div className="flex items-center justify-center h-full text-gray-500 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200 p-8 text-center">
+                    <div className="flex items-center justify-center h-full text-gray-500 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200 p-8 text-center dark:bg-[#0C1015] dark:border-[#262A30]">
                       Drag and drop files here to upload them.
                     </div>
                   </div>
@@ -383,8 +383,8 @@ function DragOverlay({ isDragActive }: { isDragActive: boolean }) {
         "absolute top-0 left-0 w-full h-full flex items-center justify-center"
       )}
     >
-      <div className="absolute top-0 left-0 h-full w-full bg-gray-100 opacity-70" />
-      <div className="flex flex-col items-center justify-center gap-y-2 rounded-md bg-gray-50 p-4 relative border-2 border-dashed border-gray-300">
+      <div className="absolute top-0 left-0 h-full w-full bg-gray-100 dark:bg-[#0C1015] opacity-70" />
+      <div className="flex flex-col items-center justify-center gap-y-2 rounded-md bg-gray-50 dark:bg-[#0C1015] p-4 relative border-2 border-dashed border-gray-300 dark:border-[#262A30]">
         <DocumentPlusIcon className="w-10 h-10 text-gray-600" />
         <span className="text-center text-gray-600 font-semibold text-xs">
           Drop files here to upload

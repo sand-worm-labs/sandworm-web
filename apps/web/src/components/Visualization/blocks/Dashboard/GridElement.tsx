@@ -334,11 +334,12 @@ function GridElement(props: Props) {
       {props.isEditingDashboard && (
         <div
           className={clsx(
-            "absolute -top-3 right-3 opacity-0 bg-white group-hover:opacity-100 z-20 border border-gray-200 py-1 rounded-md shadow-sm flex gap-x-3.5 items-center px-3.5"
+            "absolute -top-3 right-3 opacity-0 bg-white group-hover:opacity-100 z-20 border border-gray-200 dark:border-[#262A30] py-1 rounded-md shadow-sm flex gap-x-3.5 items-center px-3.5"
           )}
           onMouseDown={e => e.stopPropagation()}
         >
           <button
+            type="button"
             className="flex items-center jutify-center cursor-pointer text-gray-500 hover:text-primary-600 h-4 w-4 text-xs bg-white"
             onClick={() => {
               if (blockType === BlockType.DashboardHeader) {
@@ -352,6 +353,7 @@ function GridElement(props: Props) {
           </button>
 
           <button
+            type="button"
             className="flex items-center jutify-center cursor-pointer text-gray-500 hover:text-red-600 h-4 w-4 text-xs bg-white"
             onClick={onDelete}
           >

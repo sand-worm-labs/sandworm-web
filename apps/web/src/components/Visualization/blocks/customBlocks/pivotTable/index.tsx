@@ -461,7 +461,7 @@ function PivotTableBlock(props: Props) {
   return (
     <button
       type="button"
-      className="relative group/block"
+      className="relative group/block w-full"
       onClick={onClickWithin}
       data-block-id={attrs.id}
     >
@@ -472,7 +472,7 @@ function PivotTableBlock(props: Props) {
           props.hasMultipleTabs ? "rounded-tl-none" : "rounded-tl-md",
 
           props.isCursorWithin
-            ? "border-blue-400 shadow-sm"
+            ? "border-[#EBD7D7] shadow-sm"
             : "border-gray-200 dark:border-[#262A30]"
         )}
       >
