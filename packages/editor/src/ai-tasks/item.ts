@@ -100,6 +100,21 @@ export type YAITaskItemAttrs = z.infer<typeof AITaskItemAttrs>;
 
 export type YAITaskItem = Y.XmlElement<YAITaskItemAttrs>;
 
+export const AITaskItemAddTextMetadata = z.object({
+  _tag: z.literal("add-text"),
+});
+export type AITaskItemAddTextMetadata = z.infer<typeof AITaskItemAddTextMetadata>;
+
+export const AITaskItemAddInputMetadata = z.object({
+  _tag: z.literal("add-input"),
+});
+export type AITaskItemAddInputMetadata = z.infer<typeof AITaskItemAddInputMetadata>;
+
+export const AITaskItemAddDropdownMetadata = z.object({
+  _tag: z.literal("add-dropdown"),
+});
+export type AITaskItemAddDropdownMetadata = z.infer<typeof AITaskItemAddDropdownMetadata>;
+
 export function createYAITaskItem(
   blockId: string,
   userId: string | null,

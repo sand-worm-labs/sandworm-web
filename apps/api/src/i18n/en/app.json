@@ -14,7 +14,9 @@
       "unique_tag": "Tag already exists",
       "unique_favorite": "Already favorited this article",
       "unique_slug": "Article slug already exists"
-    }
+    },
+    "confirmEmail": "Confirm email",
+    "resetPassword": "Reset password"
   },
   "user": {
     "username_or_email_exists": "Username or email already exists",
@@ -31,7 +33,25 @@
     "not_found": "Article not found"
   },
   "comment": {
-    "not_found": "comment not found",
+    "not_found": "Comment not found",
     "not_authorized_to_delete": "You are not authorized to delete this comment"
+  },
+  "email": {
+    "confirmEmail": {
+      "text1": "Hey!",
+      "text2": "You're almost ready to start enjoying",
+      "text3": "Simply click the big green button below to verify your email address."
+    },
+    "confirmNewEmail": {
+      "text1": "Hey!",
+      "text2": "Confirm your new email address.",
+      "text3": "Simply click the big green button below to verify your email address."
+    },
+    "resetPassword": {
+      "text1": "Trouble signing in?",
+      "text2": "Resetting your password is easy.",
+      "text3": "Just press the button below and follow the instructions. We'll have you up and running in no time.",
+      "text4": "If you did not make this request then please ignore this email."
+    }
   }
 }
