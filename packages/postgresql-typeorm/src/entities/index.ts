@@ -6,6 +6,7 @@ export * from './tag.entity';
 export * from './user-follows.entity';
 export * from './user.entity';
 export * from './user-setting.entity';
+export * from "./user-yjs-app-document.entity"
 export * from  './session.entity';
 export * from './workspace.entity';
 export * from './environment.entity';
