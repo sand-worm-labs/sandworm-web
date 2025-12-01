@@ -65,7 +65,7 @@ export default function Comments({
     <Transition
       show={visible}
       as="div"
-      className="top-0 right-0 h-full absolute z-30"
+      className="top-0 right-0 h-full absolute z-30 font-primary"
       enter="transition ease-in-out duration-300 transform"
       enterFrom="translate-x-full"
       enterTo="translate-x-0"
@@ -75,16 +75,16 @@ export default function Comments({
     >
       <button
         type="button"
-        className="absolute z-10 top-7 transform rounded-full border border-gray-300 text-gray-400 bg-white hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
+        className="absolute z-10 top-7 transform rounded-full border border-gray-300 dark:border-[#262A30] text-gray-400 bg-white hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
         onClick={onHide}
       >
         <ChevronDoubleRightIcon className="w-3 h-3" />
       </button>
       <ScrollBar
-        className="w-[324px] flex flex-col overflow-y-auto border-l border-gray-200 h-full bg-white"
+        className="w-[324px] flex flex-col overflow-y-auto border-l dark:border-[#262A30] border-gray-200 h-full bg-white dark:bg-black "
         ref={ref}
       >
-        <h3 className="text-lg font-medium leading-6 text-gray-900 px-2 pt-6 xl:px-6">
+        <h3 className="text-lg font-medium leading-6 dark:text-white text-gray-900 px-4 pt-6 xl:px-6">
           Comments
         </h3>
         <ul className="flex-1 space-y-6 pb-6 pt-4 px-2 xl:px-6">
@@ -126,8 +126,11 @@ export default function Comments({
           })}
         </ul>
 
-        <form className="sticky bottom-0 bg-white" onSubmit={onComment}>
-          <div className="border-t border-gray-200 px-4 xl:px-6">
+        <form
+          className="sticky bottom-0 bg-white dark:bg-black"
+          onSubmit={onComment}
+        >
+          <div className="border-t dark:border-[#262A30] border-gray-200 px-4 xl:px-6">
             <div className="py-6 flex gap-x-3">
               {session.data?.picture ? (
                 <Image
@@ -143,7 +146,7 @@ export default function Comments({
               )}
 
               <div className="relative flex-auto">
-                <div className="rounded-lg pb-12 shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-ceramic-200/70">
+                <div className="rounded-lg pb-12 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-[#262A30] focus-within:ring-2 focus-within:ring-ceramic-200/70">
                   <label htmlFor="comment" className="sr-only">
                     Add your comment
                   </label>
@@ -151,7 +154,7 @@ export default function Comments({
                     rows={2}
                     name="comment"
                     id="comment"
-                    className="block w-full resize-none border-0 bg-transparent py-1.5 text-gray-900 placeholder:text-gray-400 focus:ring-0 text-sm leading-6"
+                    className="block w-full resize-none border-0 bg-transparent py-1.5 text-gray-900  placeholder:text-gray-400 focus:ring-0 text-sm leading-6 px-4"
                     placeholder="Add your comment..."
                     value={content}
                     onKeyDown={onKeyDown}
@@ -162,7 +165,7 @@ export default function Comments({
                 <div className="absolute inset-x-0 bottom-0 flex justify-end py-2 pl-3 pr-2">
                   <button
                     type="submit"
-                    className="gap-x-2 rounded-sm bg-[#C7665C] px-3 py-1 text-sm hover:bg-primary-300"
+                    className="gap-x-2 rounded-sm bg-[#C7665C] px-3 py-1 text-sm hover:bg-primary-300 text-white"
                   >
                     Comment
                   </button>

@@ -144,7 +144,7 @@ const CronSchedule = ({ schedule }: { schedule: CronSchedule }) => {
     <div>
       <div className="font-medium pb-2 flex items-center gap-x-2">
         <span className="">Cron: </span>
-        <span className="rounded-sm px-2 py-1 font-mono bg-gray-100 border border-gray-200">
+        <span className="rounded-sm px-2 py-1 font-mono bg-gray-100 border border-gray-200 dark:border-[#262A30]">
           {cron}
         </span>
         <span className="group relative">
@@ -221,7 +221,7 @@ export default function Schedules(props: Props) {
     >
       <button
         type="button"
-        className="absolute z-10 top-7 transform rounded-full border border-gray-300 text-gray-400 bg-white hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
+        className="absolute z-10 top-7 transform rounded-full border border-gray-300 text-gray-400 dark:border-[#262A30] bg-white hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
         onClick={props.onHide}
       >
         <ChevronDoubleRightIcon className="w-3 h-3" />
@@ -258,7 +258,7 @@ interface ScheduleListProps {
 }
 function ScheduleList(props: ScheduleListProps) {
   return (
-    <div className="w-[324px] h-full flex flex-col overflow-y-auto border-l border-gray-200">
+    <div className="w-[324px] h-full flex flex-col overflow-y-auto border-l border-gray-200 dark:border-[#262A30] font-primary dark:bg-black">
       <div className="px-4 xl:px-6 pt-6 pb-5">
         <div className="flex justify-between">
           <div>
@@ -288,7 +288,7 @@ function ScheduleList(props: ScheduleListProps) {
               <button
                 type="button"
                 className={clsx(
-                  "text-gray-900 flex items-center justify-center gap-x-2 text-sm px-2 py-1.5 rounded-sm",
+                  "text-gray-900 flex items-center justify-center gap-x-2 text-sm px-2 py-1.5 rounded-sm shrink-0",
                   !props.isLimited && props.isPublished
                     ? "bg-[#C7665C] hover:bg-primary-300"
                     : "bg-gray-200 cursor-not-allowed"
@@ -296,7 +296,7 @@ function ScheduleList(props: ScheduleListProps) {
                 onClick={props.onAddSchedule}
                 disabled={props.isLimited || !props.isPublished}
               >
-                <CalendarDaysIcon className="h-4 w-4 text-gray-900" />
+                <CalendarDaysIcon className="h-4 w-4 text-gray-900 " />
                 <span>Add</span>
               </button>
             </Tooltip>
@@ -315,7 +315,7 @@ function ScheduleList(props: ScheduleListProps) {
                     {
                       "border-b": i === props.schedules.length - 1,
                     },
-                    "flex border-t border-gray-200 px-4 xl:px-6 py-6"
+                    "flex border-t border-gray-200 dark:border-[#262A30] px-4 xl:px-6 py-6"
                   )}
                 >
                   <div className="flex flex-1 items-center justify-between">
@@ -339,7 +339,7 @@ function ScheduleList(props: ScheduleListProps) {
         </ScrollBar>
       ) : (
         <div className="px-4 xl:px-6 py-6">
-          <div className="flex flex-col gap-y-1 bg-ceramic-50/60 p-4 rounded-xl border-2 border-gray-100 border-dashed">
+          <div className="flex flex-col gap-y-1 bg-ceramic-50/60 p-4 rounded-xl border-2 border-gray-100 dark:border-[#262A30] border-dashed">
             <ExclamationTriangleIcon className="w-16 h-16 mx-auto text-yellow-300/40" />
             <div className="text-gray-500 text-center text-sm pb-2">
               <p>{`You haven't saved this page yet.`}</p>
@@ -348,7 +348,7 @@ function ScheduleList(props: ScheduleListProps) {
             <div className="flex items-center justify-center">
               <button
                 type="button"
-                className="rounded-sm px-3 py-1 text-sm bg-[#C7665C] hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-sm px-3 py-1 text-sm bg-[#C7665C] hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50 text-white"
                 onClick={props.onPublish}
                 disabled={props.publishing}
               >

@@ -15,6 +15,7 @@ import { PlusSmallIcon } from "@heroicons/react/24/outline";
 import { useFavorites } from "@/components/Visualization/hooks/useFavorites";
 import { useDocumentsLocal as useDocuments } from "@/components/Visualization/hooks/useDocumentsLocal";
 import { SandwormLogo } from "@/components/Assets";
+import { SidebarIcon } from "@/components/Assets/SidebarIcon";
 
 interface NavItem {
   name: string;
@@ -37,7 +38,8 @@ const mockUser = {
 
 export const WorkspaceSidebar = () => {
   const pathname = usePathname();
-  const workspaceId = pathname.split("/")[2] ?? "";
+
+  const workspaceId = useStringQuery("workspace");
 
   //note: we replace this with useworkspace hook once ready
   /*   const workspaceId = pathname.split("/")[2] ?? "";
@@ -45,7 +47,7 @@ export const WorkspaceSidebar = () => {
   const mainNav: NavItem[] = [
     { name: "Home", href: `/workspace/${workspaceId}`, icon: Home },
     {
-      name: "Sessions",
+      name: "Projects",
       href: `/workspace/${workspaceId}/session`,
       icon: Clock,
     },
@@ -204,15 +206,16 @@ export const WorkspaceSidebar = () => {
   return (
     <aside className="w-[220px] h-full flex flex-col justify-between dark:bg-[#0C1015] bg-[#F1F3F4] border-r dark:border-[#262A30] border-[#E9ECEF]">
       <div>
-        <Link
-          href="/"
-          className="flex items-center py-[0.69rem] px-3   bg-white border-b border-[#E9ECEF] "
-        >
-          <SandwormLogo width="30" height="30" />
-          <span className="ml-1.5 font-bold text-[1.05rem] uppercase hidden md:inline-block">
-            SandW0rm.
-          </span>
-        </Link>
+        <div className="flex justify-between py-[0.69rem] px-3   bg-white dark:bg-black border-b border-[#E9ECEF] dark:border-[#262A30] items-center">
+          <Link href="/" className="flex items-center  ">
+            <SandwormLogo width="30" height="30" />
+            <span className="ml-1.5 font-bold text-[1.05rem] uppercase hidden md:inline-block">
+              SandW0rm.
+            </span>
+          </Link>
+          <SidebarIcon />
+        </div>
+
         <div className="px-4 py-4" />
 
         <nav className="flex-1 px-3">
@@ -255,7 +258,7 @@ export const WorkspaceSidebar = () => {
                 type="button"
                 id="create-workspace-doc"
                 onClick={onCreateDocumentHandler}
-                className="p-1 hover:text-ceramic-500 hover:bg-ceramic-100/70 rounded-md hover:cursor-pointer text-sm border mt-3 flex px-5 items-center justify-center w-full border-[#E6E0F1] text-[#6C757D] mb-3 "
+                className="p-1 hover:text-ceramic-500 hover:bg-white hover:text-black rounded-md hover:cursor-pointer text-sm border mt-3 flex px-5 items-center justify-center w-full border-[#E6E0F1] dark:border-[#262A30] text-[#6C757D] mb-3 "
               >
                 {" "}
                 <PlusSmallIcon className="h-4 w-4 mr-3 " aria-hidden="true" />

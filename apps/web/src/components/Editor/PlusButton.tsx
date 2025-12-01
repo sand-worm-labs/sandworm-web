@@ -154,7 +154,7 @@ function BlockList(props: BlockListProps) {
       <div className="w-full flex justify-center relative z-30">
         <TriangleUp />
       </div>
-      <div className="w-full bg-white dark:bg-[#0C1015] py-1 rounded-md border border-gray-200 dark:border-[#262A30] flex items-center justify-center divide-x divide-gray-200 dark:divide-[#262A30]">
+      <div className="w-full bg-white dark:bg-[#0C1015] py-1 rounded-lg border border-[#CED4DA] dark:border-[#262A30] flex items-center justify-center divide-x divide-[#CED4DA] dark:divide-[#262A30]">
         <BlockSuggestion
           id="add-block-text"
           icon={<Bars3CenterLeftIcon className="w-4 h-4" />}
@@ -236,7 +236,7 @@ function BlockSuggestion(props: BlockSuggestionProps) {
     <div id={props.id} className="w-full text-sm px-1 relative z-30">
       <button
         type="button"
-        className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 rounded-md text-gray-400 bg-white dark:bg-[#0C1015]  hover:bg-gray-100 hover:text-gray-700"
+        className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 rounded-md text-gray-400 bg-white dark:bg-[#0C1015]  hover:bg-[#FDE6EA] hover:text-gray-700"
         onClick={onClick}
       >
         {props.icon}
@@ -255,7 +255,7 @@ interface MultiBlockSuggestionProps {
 function MultiBlockSuggestion(props: MultiBlockSuggestionProps) {
   return (
     <Menu as="div" className="w-full text-sm px-1 relative z-30">
-      <Menu.Button className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 rounded-md text-gray-400 bg-white dark:bg-[#0C1015] hover:bg-gray-100 hover:text-gray-700 relative">
+      <Menu.Button className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 rounded-md text-gray-400 bg-white dark:bg-[#0C1015]  hover:text-gray-700 relative">
         {props.icon}
         <span>{props.text}</span>
         <ChevronDownIcon className="w-4 h-4" />
