@@ -36,6 +36,7 @@ import PageSettingsPanel from "./PageSettingsPanel";
 import { Tooltip } from "./ToolTips";
 import { ContentSkeleton, TitleSkeleton } from "./ContentSkeleton";
 import useDocument from "../hooks/useDocumentLocal";
+import * as Y from "yjs";
 
 // this is needed because this component only works with the browser
 const V2Editor = dynamic(() => import("@/components/Editor"), {
@@ -49,69 +50,69 @@ interface Props {
   isApp: boolean;
 }
 
-const createdAt = new Date("2025-11-10T12:27:06.601Z");
-const updatedAt = new Date("2025-11-11T07:05:48.593Z");
+// ⬢ Persist Ydoc to indexed db
+// =====================================
+function persistYDocToIndexedDB(
+  documentId: string,
+  yDoc: Y.Doc,
+  clock: number,
+  publishedAt: string | null
+) {
+  const data = Y.encodeStateAsUpdate(yDoc);
 
-const mockDocument = {
-  id: "b800552d-a2f2-4396-86eb-70b336821cd3",
-  title: "Mocked Untitled Document",
-  icon: "DocumentIcon",
-  orderIndex: 1,
-  createdAt,
-  updatedAt,
-  deletedAt: null,
-  hasDashboard: false,
-  isSyncedWithYjs: false,
-  parentId: null,
-  appId: "36951d2c-7b7e-4e83-87e9-180fccbda7d1",
-  workspaceId: "405498a2-f3cb-4307-bd1e-4daf5b3a1dba",
-  publishedAt: "2025-11-11T07:06:00.318Z",
-  runSQLSelection: false,
-  runUnexecutedBlocks: false,
-  shareLinksWithoutSidebar: true,
-  clock: 0,
-  appClock: 0,
-  version: 2,
-  userAppClock: {
-    "4a6e71c4-2c06-460b-bb29-f337bf64e0bc": 0,
-  },
-  yjsAppDocuments: [
-    {
-      id: "36951d2c-7b7e-4e83-87e9-180fccbda7d1",
-      clock: 0,
-      hasDashboard: false,
-      createdAt: "2025-11-11T07:06:00.318Z",
-    },
-  ],
-  userYjsAppDocuments: [
-    {
-      userId: "4a6e71c4-2c06-460b-bb29-f337bf64e0bc",
-      clock: 0,
-    },
-  ],
-  yjsDocument: {
-    clock: 0,
-  },
-};
+  const dbRequest = indexedDB.open("YjsDatabase");
+
+  dbRequest.onsuccess = () => {
+    const db = dbRequest.result;
+
+    try {
+      if (!db.objectStoreNames.contains("yDocs")) {
+        console.error(" yDocs object store doesn't exist");
+        db.close();
+        return;
+      }
+
+      const transaction = db.transaction(["yDocs"], "readwrite");
+      const store = transaction.objectStore("yDocs");
+
+      const editId = `${documentId}-false-${clock}`;
+      store.put({ id: editId, data, clock });
+
+      if (publishedAt) {
+        const appId = `${documentId}-true-${clock}-${publishedAt}`;
+        store.put({ id: appId, data, clock });
+
+        const editPublishedId = `${documentId}-false-${clock}-${publishedAt}`;
+        store.put({ id: editPublishedId, data, clock });
+      }
+
+      transaction.oncomplete = () => {
+        db.close();
+      };
+
+      transaction.onerror = event => {
+        console.error("Transaction error:", event);
+        db.close();
+      };
+    } catch (error) {
+      console.error(" Error:", error);
+      db.close();
+    }
+  };
+
+  dbRequest.onerror = event => {
+    const error = (event.target as IDBOpenDBRequest).error;
+    console.error("❌ Error opening IndexedDB:", error?.message || error);
+  };
+}
 
 export default function PrivateDocumentPage(props: Props) {
-  console.log("Rendering PrivateDocumentPage");
   const [{ document, publishing }, { publish }] = useDocument(
     props.workspaceId,
     props.documentId
   );
 
-  /*   const document = mockDocument;
-  const publishing = false;
-  const publish = async () => {
-    console.log("Mock publish triggered for", document.id);
-    await new Promise(r => setTimeout(r, 500));
-  }; */
-
-  console.log("check the structure of document:", document, typeof document);
-
   if (!document) {
-    console.log("Document not found, showing skeleton");
     return (
       <Layout user={props.user}>
         <div className="w-full flex justify-center">
@@ -145,8 +146,6 @@ function PrivateDocumentPageInner(
     () => props.document.title || "Untitled",
     [props.document.title]
   );
-
-  console.log("Document found, rendering content:", documentTitle);
 
   const [selectedSidebar, setSelectedSidebar] = useState<
     | { _tag: "comments" }
@@ -235,12 +234,7 @@ function PrivateDocumentPageInner(
     [props.workspaceId, props.documentId, shareLinkWithoutSidebar]
   );
 
-  console.log("workspaceId:", props.workspaceId);
-  console.log("user roles:", props.user?.roles);
-
   const isViewer = props.user.roles[props.workspaceId] === "viewer";
-
-  console.log("isViewer:", isViewer);
 
   const isDeleted = !isNil(props.document.deletedAt);
 
@@ -292,17 +286,45 @@ function PrivateDocumentPageInner(
   );
   const aiTasks = useMemo(() => AITasks.fromYjs(yDoc), [yDoc]);
 
+  // ⬢ Public document
+  // =====================================
   const onPublish = useCallback(async () => {
     if (props.publishing) {
       return;
     }
 
     await props.publish();
+
+    // 💭 temp Local storage settings
+    const stored = localStorage.getItem(
+      `workspace_documents_local_${props.document.workspaceId}`
+    );
+    if (stored) {
+      const docs = JSON.parse(stored);
+      const updatedDoc = docs.find((d: any) => d.id === props.document.id);
+
+      if (updatedDoc?.publishedAt) {
+        persistYDocToIndexedDB(
+          props.document.id,
+          yDoc,
+          clock,
+          updatedDoc.publishedAt
+        );
+      }
+    }
+
     router.push(
       `/workspace/${props.document.workspaceId}/documents/${props.document.id}/notebook`
     );
-  }, [props.publishing, props.publish]);
-
+  }, [
+    props.publishing,
+    props.publish,
+    yDoc,
+    clock,
+    props.document.id,
+    props.document.workspaceId,
+    router,
+  ]);
   const onGoToApp = useCallback(() => {
     router.push(
       `/workspace/${props.document.workspaceId}/documents/${props.document.id}/notebook`
@@ -416,6 +438,7 @@ function PrivateDocumentPageInner(
       topBarClassname={props.isApp ? "bg-gray-50 " : undefined}
       topBarContent={topBarContent}
       user={props.user}
+      hideChat={props.isApp || props.user.roles[props.workspaceId] === "viewer"}
     >
       <div className="w-full relative flex">
         <V2Editor

@@ -22,7 +22,7 @@ export function PageSettingToggle(props: PageSettingToggleProps) {
       <span className="flex flex-grow items-center justify-between w-full">
         <Switch.Label
           as="span"
-          className="text-sm font-medium leading-6 text-gray-900"
+          className="text-sm font-medium leading-6 text-gray-900 dark:text-white"
           passive
         >
           {props.name}
@@ -40,7 +40,7 @@ export function PageSettingToggle(props: PageSettingToggleProps) {
             aria-hidden="true"
             className={clsx(
               props.enabled ? "translate-x-5" : "translate-x-0",
-              "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+              "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white dark:bg-black shadow ring-0 transition duration-200 ease-in-out"
             )}
           />
         </Switch>
@@ -65,7 +65,7 @@ export default function PageSettingsPanel(props: Props) {
     <Transition
       as="div"
       show={props.visible}
-      className="top-0 right-0 h-full absolute bg-white z-30"
+      className="top-0 right-0 h-full absolute bg-white z-30 font-primary"
       enter="transition-transform duration-300"
       enterFrom="transform translate-x-full"
       enterTo="transform translate-x-0"
@@ -75,15 +75,15 @@ export default function PageSettingsPanel(props: Props) {
     >
       <button
         type="button"
-        className="absolute z-10 top-7 transform rounded-full border border-gray-300 text-gray-400 bg-white hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
+        className="absolute z-10 top-7 transform rounded-full border border-gray-300 text-gray-400 bg-white dark:bg-black hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
         onClick={props.onHide}
       >
         <ChevronDoubleRightIcon className="w-3 h-3" />
       </button>
-      <div className="w-[324px] flex flex-col border-l border-gray-200 h-full bg-white">
+      <div className="w-[324px] flex flex-col border-l dark:border-[#262A30] border-gray-200 h-full bg-white font-primary dark:bg-black">
         <div className="flex justify-between border-b p-6 space-x-3">
           <div>
-            <h3 className="text-lg font-medium leading-6 text-gray-900 pr-1.5">
+            <h3 className="text-lg font-medium leading-6 text-gray-900 dark:text-white pr-1.5">
               Page settings
             </h3>
             <p className="text-gray-500 text-sm pt-1">
@@ -91,7 +91,7 @@ export default function PageSettingsPanel(props: Props) {
             </p>
           </div>
         </div>
-        <div className="w-full divide-y divide-gray-200 border-b border-gray-200">
+        <div className="w-full divide-y divide-gray-200 border-b dark:border-[#262A30] border-gray-200 border dark:divide-[#262A30]">
           <PageSettingToggle
             name="Auto-run pending blocks"
             description="Whether sandworm should automatically run unexecuted preceding blocks when a block is executed."

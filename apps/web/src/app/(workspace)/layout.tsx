@@ -23,7 +23,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         options={{ showSpinner: false }}
         shallowRouting
       >
-        <AppHeader />
         <DocumentsLocalProvider>
           <DocumentsProvider>
             <DndBackendProvider>

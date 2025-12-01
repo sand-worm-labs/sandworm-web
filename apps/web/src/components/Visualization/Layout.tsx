@@ -1,28 +1,9 @@
 import { v4 as uuidv4 } from "uuid";
-import type { MouseEventHandler } from "react";
 import { useCallback, useEffect, useRef, useMemo, useState } from "react";
-import { Menu, Transition } from "@headlessui/react";
 import { Syne } from "next/font/google";
-import {
-  ChevronUpIcon,
-  ArrowLeftOnRectangleIcon,
-  PlusSmallIcon,
-  CircleStackIcon,
-  TrashIcon,
-  UserIcon,
-  ChevronDoubleLeftIcon,
-  ChevronDoubleRightIcon,
-  UsersIcon,
-  AdjustmentsHorizontalIcon,
-  PuzzlePieceIcon,
-  MagnifyingGlassIcon,
-  RocketLaunchIcon,
-  AcademicCapIcon,
-} from "@heroicons/react/24/outline";
+import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { useRouter, usePathname } from "next/navigation";
-import { CpuChipIcon, SparklesIcon } from "@heroicons/react/24/solid";
-import ReactDOM from "react-dom";
 import { useHotkeys } from "react-hotkeys-hook";
 import {
   ResizableHandle,
@@ -35,7 +16,6 @@ import type { UserWorkspaceRole } from "@/types";
 import { MiniChat } from "../Chats/MiniChat";
 
 import { useStringQuery } from "./hooks/useQueryArgs";
-import useDropdownPosition from "./hooks/dropdownposition";
 import useSideBar from "./hooks/useSideBar";
 import { useDataSources } from "./hooks/useDataSources";
 import type { SessionUser } from "./hooks/useAuth";
@@ -61,66 +41,6 @@ type ConfigItem = {
   openInNewTab: boolean;
 };
 
-const configs = (workspaceId: string): ConfigItem[] => [
-  {
-    id: "environments-sidebar-item",
-    name: "Environments",
-    href: `/workspaces/${workspaceId}/environments`,
-    hidden: true,
-    icon: CpuChipIcon,
-    allowedRoles: new Set<UserWorkspaceRole>(["admin"]),
-    openInNewTab: false,
-  },
-  {
-    id: "data-sources-sidebar-item",
-    name: "Data sources",
-    href: `/workspaces/${workspaceId}/data-sources`,
-    icon: CircleStackIcon,
-    allowedRoles: new Set<UserWorkspaceRole>(["admin", "editor"]),
-    openInNewTab: false,
-  },
-  {
-    id: "users-sidebar-item",
-    name: "Users",
-    href: `/workspaces/${workspaceId}/users`,
-    icon: UsersIcon,
-    allowedRoles: new Set<UserWorkspaceRole>(["admin", "editor", "viewer"]),
-    openInNewTab: false,
-  },
-  {
-    id: "integrations-sidebar-item",
-    name: "Integrations",
-    href: `/workspaces/${workspaceId}/integrations`,
-    icon: PuzzlePieceIcon,
-    allowedRoles: new Set<UserWorkspaceRole>(["admin", "editor"]),
-    openInNewTab: false,
-  },
-  {
-    id: "docs-sidebar-item",
-    name: "Documentation",
-    href: `https://docs.sandworm.cloud`,
-    icon: AcademicCapIcon,
-    allowedRoles: new Set<UserWorkspaceRole>(["admin", "editor", "viewer"]),
-    openInNewTab: true,
-  },
-  {
-    id: "settings-sidebar-item",
-    name: "Settings",
-    href: `/workspaces/${workspaceId}/settings`,
-    icon: AdjustmentsHorizontalIcon,
-    allowedRoles: new Set<UserWorkspaceRole>(["admin"]),
-    openInNewTab: false,
-  },
-  {
-    id: "thrash-sidebar-item",
-    name: "Trash",
-    href: `/workspaces/${workspaceId}/trash`,
-    icon: TrashIcon,
-    allowedRoles: new Set<UserWorkspaceRole>(["admin", "editor"]),
-    openInNewTab: false,
-  },
-];
-
 interface Props {
   children: React.ReactNode;
   pagePath?: Page[];
@@ -128,6 +48,7 @@ interface Props {
   topBarContent?: React.ReactNode;
   hideOnboarding?: boolean;
   user: SessionUser;
+  hideChat?: boolean;
 }
 
 export default function Layout({
@@ -137,6 +58,7 @@ export default function Layout({
   topBarContent,
   user,
   hideOnboarding,
+  hideChat,
 }: Props) {
   const [isSearchOpen, setSearchOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(true);
@@ -159,7 +81,7 @@ export default function Layout({
   const router = useRouter();
   const pathname = usePathname();
 
-  const workspaceId = useStringQuery("workspaceId");
+  const workspaceId = useStringQuery("workspace");
   const documentId = useStringQuery("document");
 
   const [{ datasources: allDataSources, isLoading: isLoadingDataSources }] =
@@ -205,82 +127,6 @@ export default function Layout({
       }
     },
     [documentsState, createDocument, router, workspaceId]
-  );
-
-  const onCreateDocumentHandler: MouseEventHandler<HTMLButtonElement> =
-    useCallback(
-      e => {
-        e.preventDefault();
-        onCreateDocument(null);
-      },
-      [onCreateDocument]
-    );
-
-  const onDeleteDocument = useCallback(
-    (id: string) => {
-      if (documentsState.loading) {
-        return;
-      }
-
-      deleteDocument(id);
-    },
-    [documentsState, deleteDocument]
-  );
-
-  const onDuplicateDocument = useCallback(
-    async (id: string) => {
-      if (documentsState.loading) {
-        return;
-      }
-
-      const doc = await duplicateDocument(id);
-      router.push(`/workspaces/${workspaceId}/documents/${doc.id}`);
-    },
-    [documentsState, duplicateDocument, router, workspaceId]
-  );
-
-  const onFavoriteDocument = useCallback(
-    (documentId: string) => {
-      if (documentsState.loading) {
-        return;
-      }
-
-      favoriteDocument(documentId);
-    },
-    [documentsState, workspaceId, favoriteDocument]
-  );
-
-  const onUnfavoriteDocument = useCallback(
-    (documentId: string) => {
-      if (documentsState.loading) {
-        return;
-      }
-
-      unfavoriteDocument(documentId);
-    },
-    [workspaceId, unfavoriteDocument]
-  );
-
-  const onSetIcon = useCallback(
-    (id: string, icon: string) => {
-      if (documentsState.loading) {
-        return;
-      }
-
-      setIcon(id, icon);
-    },
-    [documentsState, setIcon]
-  );
-
-  const onUpdateDocumentParent = useCallback(
-    async (id: string, parentId: string | null, orderIndex: number) => {
-      if (documentsState.loading) {
-        return;
-      }
-
-      await updateDocumentParent(id, parentId, orderIndex);
-    },
-    [documentsState, updateDocumentParent]
   );
 
   const showConfigItem = useCallback(
@@ -386,7 +232,7 @@ export default function Layout({
               {children}
             </div>
           </ResizablePanel>
-          {isChatOpen && (
+          {!hideChat && isChatOpen && (
             <>
               <ResizableHandle withHandle />
 
