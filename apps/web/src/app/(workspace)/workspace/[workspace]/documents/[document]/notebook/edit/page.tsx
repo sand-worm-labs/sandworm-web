@@ -81,8 +81,6 @@ function EditNotebook(props: Props) {
     return null;
   }
 
-  console.log("chec props", document, props.documentId, props.workspaceId);
-
   return (
     <>
       <Head>

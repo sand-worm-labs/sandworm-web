@@ -40,8 +40,7 @@ export async function runQuery(
       );
     }
 
-    const { data, error, type } = await res.json();
-    console.log("response", data, type);
+    const { data, error } = await res.json();
 
     if (error) {
       console.error("API returned error:", error);

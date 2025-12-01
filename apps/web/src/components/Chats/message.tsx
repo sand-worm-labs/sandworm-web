@@ -18,8 +18,6 @@ export const Message = ({
 }) => {
   const isUser = role === "user";
 
-  console.log("🟢 [FRONTEND] Message:", { role, content, attachments });
-
   return (
     <motion.div
       className={`flex w-full md:max-w-3xl px-4 pt-12 md:px-0 gap-4 mb-6 ${

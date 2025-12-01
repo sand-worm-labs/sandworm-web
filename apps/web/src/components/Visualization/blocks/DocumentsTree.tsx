@@ -563,8 +563,8 @@ function DropDown(props: DropDownProps) {
           leaveFrom="transform opacity-100 scale-100"
           leaveTo="transform opacity-0 scale-95"
         >
-          <Menu.Items className="absolute left-2 -top-2 z-20 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-            <div className="py-2 px-2">
+          <Menu.Items className="absolute left-2 -top-2 z-20 w-44 origin-top-right rounded-lg bg-white dark:bg-[#0C1015]  ring-opacity-5 focus:outline-none border-[#0C1015] border dark:border-[#262A30]">
+            <div className="py-2 px-1.5">
               <Menu.Item>
                 {({ active }) => (
                   <button
@@ -576,7 +576,7 @@ function DropDown(props: DropDownProps) {
                           props.role === "viewer" || props.isFavoriteDropdown,
                       },
                       active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                      "w-full px-4 py-2 text-left text-sm flex items-center gap-x-2 rounded-md font-primary"
+                      "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 rounded-md font-primary hover:bg-[#FDE6EA] text-[#455768] dark:text-white"
                     )}
                   >
                     <TrashIcon className="h-4 w-4" />
@@ -594,7 +594,7 @@ function DropDown(props: DropDownProps) {
                         hidden: props.role === "viewer",
                       },
                       active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                      "w-full px-4 py-2 text-left text-sm flex items-center gap-x-2 font-primary"
+                      "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 font-primary hover:bg-[#FDE6EA] rounded-md text-[#455768] dark:text-white"
                     )}
                   >
                     <Square2StackIcon className="h-4 w-4" />
@@ -612,7 +612,7 @@ function DropDown(props: DropDownProps) {
                         hidden: props.isFavoriteDropdown,
                       },
                       active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                      "w-full px-4 py-2 text-left text-sm flex items-center gap-x-2 font-primary"
+                      "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 font-primary hover:bg-[#FDE6EA] rounded-md text-[#455768] dark:text-white"
                     )}
                   >
                     <BookmarkIcon className="h-4 w-4" />
@@ -630,7 +630,7 @@ function DropDown(props: DropDownProps) {
                         hidden: !props.isFavoriteDropdown,
                       },
                       active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                      "w-full px-4 py-2 text-left text-sm flex items-center gap-x-2 font-primary"
+                      "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 font-primary dark:text-white  "
                     )}
                   >
                     <BookmarkSlashIcon className="h-4 w-4" />

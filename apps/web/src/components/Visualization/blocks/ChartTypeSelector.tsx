@@ -105,7 +105,7 @@ export default function ChartTypeSelector({
   return (
     <Listbox value={value} onChange={onChange} disabled={!isEditable}>
       {({ open }) => (
-        <div className="relative bg-black">
+        <div className="relative dark:bg-black">
           {!compact && (
             <div className="block text-xs font-medium leading-6 text-gray-900 pb-1">
               {label}

@@ -42,7 +42,6 @@ export default function NotebookPage() {
   const documentId = useStringQuery("document");
 
   if (session.data) {
-    console.log("NotebookPage session data:", session.data);
     return (
       <Notebook
         workspaceId={workspaceId}

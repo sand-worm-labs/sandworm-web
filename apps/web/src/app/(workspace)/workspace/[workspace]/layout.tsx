@@ -1,9 +1,6 @@
-import "react-grid-layout/css/styles.css";
-import "react-resizable/css/styles.css";
-
 import type { ReactNode } from "react";
-
 import { WorkspaceSidebar } from "@/components/Layout/WorkSpaceSidebar";
+import { AppHeader } from "@/components/Layout/AppHeader";
 
 interface WorkspaceLayoutProps {
   children: ReactNode;
@@ -11,10 +8,14 @@ interface WorkspaceLayoutProps {
 
 export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
   return (
-    <div className="flex h-[94vh]">
+    <div className="flex h-screen w-full bg-background">
       <WorkspaceSidebar />
 
-      <main className="flex-1 overflow-y-auto bg-background ">{children}</main>
+      <div className="flex flex-col flex-1 overflow-hidden">
+        <AppHeader />
+
+        <main className="flex-1 overflow-y-auto ">{children}</main>
+      </div>
     </div>
   );
 }

@@ -293,6 +293,7 @@ function DashboardControls(props: Props) {
     return (
       <div className="pt-3 fixed right-0">
         <button
+          type="button"
           onClick={props.onOpen}
           className="bg-white dark:bg-black flex items-center rounded-l-sm px-3 py-1 text-sm text-gray-500 hover:bg-gray-100 border border-r-0 border-gray-200 group max-w-11 hover:max-w-32 overflow-hidden transition-mw group duration-500"
         >
@@ -308,6 +309,7 @@ function DashboardControls(props: Props) {
   return (
     <div className="relative w-[400px] font-primary h-full">
       <button
+        type="button"
         className="absolute z-10 top-12 transform rounded-full border border-gray-300 text-gray-400 bg-white dark:bg-black hover:bg-ceramic-200 hover:border-ceramic-200 hover:text-ceramic-400 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2 dark:border-[#262A30]"
         onClick={props.onClose}
       >
@@ -385,8 +387,6 @@ interface BlocksListProps {
 function BlocksList(props: BlocksListProps) {
   return props.list.map((block, i) => {
     const { id } = getBaseAttributes(block);
-
-    console.log(`Block #${i}`, block);
 
     return (
       <BlockListItem
