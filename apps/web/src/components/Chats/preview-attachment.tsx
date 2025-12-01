@@ -1,7 +1,14 @@
-/* eslint-disable no-nested-ternary */
-import type { Attachment } from "ai";
+"use client";
 
-import { LoaderIcon } from "./icons";
+import type { Attachment } from "ai";
+import {
+  PiFile,
+  PiFileText,
+  PiFileCsv,
+  PiFilePdf,
+  PiImage,
+} from "react-icons/pi";
+import { Loader2 } from "lucide-react";
 
 export const PreviewAttachment = ({
   attachment,
@@ -12,34 +19,74 @@ export const PreviewAttachment = ({
 }) => {
   const { name, url, contentType } = attachment;
 
-  return (
-    <div className="flex flex-col gap-2 max-w-16">
-      <div className="h-20 w-16 bg-muted rounded-md relative flex flex-col items-center justify-center">
-        {contentType ? (
-          contentType.startsWith("image") ? (
-            // NOTE: it is recommended to use next/image for images
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              key={url}
-              src={url}
-              alt={name ?? "An image attachment"}
-              className="rounded-md size-full object-cover"
-            />
-          ) : (
-            <div className="" />
-          )
-        ) : (
-          <div className="" />
-        )}
+  const getFileIcon = () => {
+    if (!contentType && name) {
+      if (name.endsWith(".csv")) return <PiFileCsv size={24} />;
+      if (name.endsWith(".pdf")) return <PiFilePdf size={24} />;
+      if (name.endsWith(".txt")) return <PiFileText size={24} />;
+    }
 
-        {isUploading && (
-          <div className="animate-spin absolute text-zinc-500">
-            <LoaderIcon />
+    if (contentType?.startsWith("image/")) return <PiImage size={24} />;
+    if (contentType === "text/csv" || name?.endsWith(".csv"))
+      return <PiFileCsv size={24} />;
+    if (contentType === "application/pdf") return <PiFilePdf size={24} />;
+    if (contentType === "text/plain") return <PiFileText size={24} />;
+
+    return <PiFile size={24} />;
+  };
+
+  const getFileName = () => {
+    if (!name) return "Unnamed file";
+    const parts = name.split("/");
+    return parts[parts.length - 1] || name;
+  };
+
+  const isImage = contentType?.startsWith("image/");
+
+  return (
+    <div className="flex flex-col items-center gap-2 min-w-[100px] max-w-[140px] py-5">
+      <div
+        className={`
+          relative flex items-center justify-center
+          w-full aspect-square
+          rounded-xl
+          border-2
+          ${
+            isUploading
+              ? "border-dashed border-gray-300 dark:border-[#262A30] bg-gray-50 dark:bg-[#121417]"
+              : "border-gray-200 dark:border-[#262A30]  bg-white dark:bg-[#121417]"
+          }
+          overflow-hidden
+          transition-all
+          hover:border-[#C7665C]
+          dark:hover:border-[#C7665C]
+        `}
+      >
+        {isUploading ? (
+          <Loader2 className="w-8 h-8 text-gray-400 animate-spin" />
+        ) : isImage && url ? (
+          <img
+            src={url}
+            alt={getFileName()}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="flex items-center justify-center text-gray-600 dark:text-gray-400">
+            {getFileIcon()}
           </div>
         )}
       </div>
 
-      <div className="text-xs text-zinc-500 max-w-16 truncate">{name}</div>
+      <div className="w-full px-1">
+        <p className="text-xs text-center text-gray-700 dark:text-gray-300 truncate w-full">
+          {getFileName()}
+        </p>
+        {!isUploading && contentType && (
+          <p className="text-[10px] text-center text-gray-500 dark:text-gray-500 truncate w-full">
+            {contentType.split("/")[1]?.toUpperCase() || "FILE"}
+          </p>
+        )}
+      </div>
     </div>
   );
 };

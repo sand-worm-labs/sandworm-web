@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   Star,
   MoreHorizontal,
@@ -12,13 +12,16 @@ import {
   Trash2,
 } from "lucide-react";
 import { PiPlus } from "react-icons/pi";
-
-import ProjectControl from "./ProjectControls";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 
+import { useDocumentsLocal as useDocuments } from "@/components/Visualization/hooks/useDocumentsLocal";
+import { useFavorites } from "@/components/Visualization/hooks/useFavorites";
+
+import ProjectControl from "./ProjectControls";
+
 interface Project {
-  id: number;
+  id: string;
   title: string;
   creator: string;
   lastEdited: string;
@@ -29,52 +32,105 @@ interface Project {
 type MenuAction = "duplicate" | "newTab" | "trash";
 
 export const Projects: React.FC = () => {
-  const [projects, setProjects] = useState<Project[]>([
-    {
-      id: 1,
-      title: "Top Base Tokens Analysis",
-      creator: "Sarah Johnson",
-      lastEdited: "2 hours ago",
-      created: "Nov 15, 2025",
-      isFavorite: false,
-    },
-    {
-      id: 2,
-      title: "Moutai Stats",
-      creator: "Michael Chen",
-      lastEdited: "1 day ago",
-      created: "Nov 10, 2025",
-      isFavorite: true,
-    },
-    {
-      id: 3,
-      title: "Farcaster Daily Users",
-      creator: "Emily Rodriguez",
-      lastEdited: "3 days ago",
-      created: "Nov 5, 2025",
-      isFavorite: false,
-    },
-  ]);
-
-  const [openMenuId, setOpenMenuId] = useState<number | null>(null);
-  const [hoveredUser, setHoveredUser] = useState<number | null>(null);
-  const [hoveredSave, setHoveredSave] = useState<number | null>(null);
+  const pathname = usePathname();
+  const workspaceId = pathname.split("/")[2] ?? "";
   const router = useRouter();
 
-  const toggleFavorite = (id: number): void => {
-    setProjects(
-      projects.map(p => (p.id === id ? { ...p, isFavorite: !p.isFavorite } : p))
-    );
+  const [
+    documentsState,
+    {
+      createDocument,
+      duplicateDocument,
+      setIcon,
+      deleteDocument,
+      updateParent: updateDocumentParent,
+    },
+  ] = useDocuments(workspaceId);
+
+  const [favorites, { favoriteDocument, unfavoriteDocument }] =
+    useFavorites(workspaceId);
+
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [hoveredUser, setHoveredUser] = useState<string | null>(null);
+  const [hoveredSave, setHoveredSave] = useState<string | null>(null);
+
+  console.log("Documents State:", documentsState);
+  console.log("Documents:", documentsState.documents);
+  console.log("Favorites:", favorites);
+
+  // Filter documents same way as WorkspaceSidebar
+  const documents = documentsState.documents.filter(
+    doc => doc.deletedAt === null && doc.version > 1
+  );
+
+  // Helper function to format dates
+  const formatDate = (dateString: string): string => {
+    if (!dateString) return "Unknown";
+
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInMs = now.getTime() - date.getTime();
+    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+    if (diffInHours < 24) {
+      if (diffInHours < 1) return "Just now";
+      return `${diffInHours} hour${diffInHours > 1 ? "s" : ""} ago`;
+    }
+    if (diffInDays < 7) {
+      return `${diffInDays} day${diffInDays > 1 ? "s" : ""} ago`;
+    }
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
   };
 
-  const handleMenuAction = (action: MenuAction, projectId: number): void => {
-    console.log(`${action} project ${projectId}`);
+  const projects: Project[] = useMemo(() => {
+    return documents.map(doc => ({
+      id: doc.id,
+      title: doc.title || "Untitled Project",
+      creator: doc.createdBy || "Unknown",
+      lastEdited: formatDate(doc.updatedAt),
+      created: formatDate(doc.createdAt),
+      isFavorite: favorites.has(doc.id),
+    }));
+  }, [documents, favorites]);
+
+  console.log("Transformed Projects:", projects);
+
+  const toggleFavorite = (id: string): void => {
+    const isFavorite = favorites.has(id);
+
+    if (isFavorite) {
+      unfavoriteDocument(id);
+    } else {
+      favoriteDocument(id);
+    }
+  };
+
+  const handleMenuAction = (action: MenuAction, projectId: string): void => {
     setOpenMenuId(null);
 
     if (action === "trash") {
-      setProjects(projects.filter(p => p.id !== projectId));
+      deleteDocument(projectId);
+    } else if (action === "duplicate") {
+      duplicateDocument(projectId);
+    } else if (action === "newTab") {
+      window.open(`/workspace/${workspaceId}/documents/${projectId}`, "_blank");
     }
   };
+
+  if (documentsState.loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-black flex items-center justify-center p-8">
+        <div className="text-center">
+          <p className="text-gray-500">Loading projects...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (projects.length === 0) {
     return (
@@ -89,7 +145,9 @@ export const Projects: React.FC = () => {
           </p>
           <button
             type="button"
-            onClick={() => router.push("/workspace/notebook")}
+            onClick={() =>
+              router.push(`/workspace/${workspaceId}/documents/notebook`)
+            }
             className="px-3  bg-[#C7665C20] hover:bg-[#c7665c30]  border-[#C7665C] border  text-[#C7665C] rounded-lg transition-colors text-sm flex items-center gap-x-2 py-0"
           >
             Create Project
@@ -101,10 +159,7 @@ export const Projects: React.FC = () => {
 
   return (
     <div className="min-h-screen dark:bg-black  p-8">
-      <div
-        className="flex justify-between
-      w-full"
-      >
+      <div className="flex justify-between w-full">
         <div className="flex items-center gap-3 mb-0">
           <span className="bg-[#C7665C20]  rounded-full p-2 flex items-center justify-center">
             <FolderOpen className="w-4 h-4 text-[#C7665C] " />
@@ -114,7 +169,9 @@ export const Projects: React.FC = () => {
         <button
           type="button"
           className="px-3  bg-[#C7665C20] hover:bg-[#c7665c30]  border-[#C7665C] border  text-[#C7665C] rounded-lg transition-colors text-sm flex items-center gap-x-2 py-0 "
-          onClick={() => router.push("/workspace/notebook")}
+          onClick={() =>
+            router.push(`/workspace/${workspaceId}/documents/notebook`)
+          }
         >
           <PiPlus size={18} />
           <span className="inline-block"> Create Project</span>
@@ -132,7 +189,7 @@ export const Projects: React.FC = () => {
             >
               <div className="flex items-start justify-between mb-4">
                 <Link
-                  href={`/workspace/notebook/${project.id}`}
+                  href={`/workspace/${workspaceId}/documents/${project.id}`}
                   className="text-[0.9rem] font-medium text-gray-900 dark:text-white flex-1 pr-2 hover:underline"
                 >
                   {project.title}

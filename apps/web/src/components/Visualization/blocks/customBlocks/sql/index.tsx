@@ -97,8 +97,6 @@ interface Props {
 }
 function SQLBlock(props: Props) {
   const properties = useProperties();
-  console.log("SQLBlock props:", props);
-  console.log("SQLBlock document:", props[0]);
 
   const [workspaces] = useWorkspaces();
   const currentWorkspace: ApiWorkspace | undefined = useMemo(() => {
@@ -152,8 +150,6 @@ function SQLBlock(props: Props) {
   const onSQLSelectionChanged = useCallback((selectedCode: string | null) => {
     setSelectedCode(selectedCode);
   }, []);
-
-  console.log(props.block, props.block, "SQLBlock render");
 
   const {
     dataframeName,
@@ -662,7 +658,7 @@ function SQLBlock(props: Props) {
       return {
         content: (ref: RefObject<HTMLDivElement>) => (
           <div
-            className="font-primary pointer-events-none absolute w-max bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1"
+            className="font-primary pointer-events-none absolute w-max bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 "
             ref={ref}
           >
             <span>Run query</span>
@@ -837,7 +833,7 @@ function SQLBlock(props: Props) {
                 <input
                   type="text"
                   className={clsx(
-                    "text-lg font-primary font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-2xl border-0 text-gray-800 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-gray-400 py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white"
+                    "text-base font-primary font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-2xl border-0 text-gray-800 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-gray-400 py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white"
                   )}
                   placeholder={
                     props.isEditable ? "SQL (click to add a title)" : "SQL"

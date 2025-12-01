@@ -4,6 +4,11 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
 import useDocument from "@/components/Visualization/hooks/useDocumentLocal";
+import Layout from "@/components/Visualization/Layout";
+import {
+  ContentSkeleton,
+  TitleSkeleton,
+} from "@/components/Editor/ContentSkeleton";
 
 type UserWorkspaceRole = "editor" | "viewer" | "admin";
 
@@ -45,24 +50,15 @@ function PrivateDocumentPage(props: PrivateDocumentPageProps) {
   );
   const router = useRouter();
 
-  console.log("PrivateDocumentPage - document:", document, "loading:", loading);
-
   useEffect(() => {
     if (loading) {
-      console.log("Still loading document...");
       return;
     }
 
     if (!document) {
-      console.log("No document found, redirecting to workspace");
       router.replace(`/workspace/${props.workspaceId}`);
       return;
     }
-
-    console.log("Document loaded:", {
-      publishedAt: document.publishedAt,
-      hasDashboard: document.hasDashboard,
-    });
 
     if (document.publishedAt === null) {
       router.replace(
@@ -83,8 +79,11 @@ function PrivateDocumentPage(props: PrivateDocumentPageProps) {
   }, [document, loading, props.workspaceId, props.documentId, router]);
 
   return (
-    <div style={{ padding: "20px" }}>
-      <p>Loading document...</p>
+    <div className="w-full flex justify-center">
+      <div className="py-20">
+        <TitleSkeleton visible />
+        <ContentSkeleton visible />
+      </div>
     </div>
   );
 }
@@ -95,25 +94,13 @@ export default function DocumentPage() {
     isLoading: false,
   };
 
-  // Change these to match your actual param names from Next.js
-  const workspaceId = useStringQuery("workspace"); // Changed from "workspaceId"
-  const documentId = useStringQuery("document"); // Changed from "documentId"
+  const workspaceId = useStringQuery("workspace");
+  const documentId = useStringQuery("document");
 
   const role = session.data?.roles[workspaceId];
   const router = useRouter();
 
-  console.log("workspaceId from URL:", workspaceId);
-  console.log("documentId from URL:", documentId);
-  console.log("Available roles:", session.data?.roles);
-  console.log("Role for this workspace:", role);
-
   if (!session.data || !role) {
-    console.log(
-      "❌ doesn't exist - session.data:",
-      !!session.data,
-      "role:",
-      role
-    );
     return (
       <div style={{ padding: "20px" }}>
         <h2>Debug Info:</h2>

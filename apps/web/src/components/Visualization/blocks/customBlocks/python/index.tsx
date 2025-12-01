@@ -511,7 +511,7 @@ function PythonBlock(props: Props) {
                 <input
                   type="text"
                   className={clsx(
-                    "text-lg font-primary font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-md border-0 text-gray-800 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-gray-400 py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white"
+                    "text-base font-primary font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-md border-0 text-gray-800 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-gray-400 py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white"
                   )}
                   placeholder={
                     props.isEditable
@@ -709,7 +709,7 @@ function PythonBlock(props: Props) {
                     !isRunButtonDisabled &&
                     (status === "enqueued" ||
                       (status === "running" && envStatus !== "Running")),
-                  "bg-primary-200": !isRunButtonDisabled && status === "idle",
+                  "bg-[#C7665C]": !isRunButtonDisabled && status === "idle",
                 },
                 "rounded-sm h-6 min-w-6 flex items-center justify-center relative group disabled:cursor-not-allowed"
               )}
@@ -717,13 +717,13 @@ function PythonBlock(props: Props) {
               {status !== "idle" ? (
                 <div>
                   {status === "enqueued" ? (
-                    <ClockIcon className="w-3 h-3 text-gray-500" />
+                    <ClockIcon className="w-3 h-3 text-[#F8F9FA]" />
                   ) : (
-                    <StopIcon className="w-3 h-3 text-gray-500" />
+                    <StopIcon className="w-3 h-3 text-[#F8F9FA]" />
                   )}
                 </div>
               ) : (
-                <PlayIcon className="w-3 h-3 text-gray-500" />
+                <PlayIcon className="w-3 h-3 text-[#F8F9FA]" />
               )}
             </button>
           )}
