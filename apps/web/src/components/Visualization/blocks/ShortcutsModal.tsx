@@ -65,7 +65,7 @@ const KeyboardKey = (props: {
       "px-1.5 py-0.5 rounded-md font-mono",
       props.mode === "insert"
         ? "bg-[#C7665C20] text-[#C7665C]"
-        : "bg-blue-100 text-blue-700"
+        : "bg-yellow-100 text-yellow-700"
     )}
   >
     {props.children}
@@ -87,7 +87,7 @@ export default function ShortcutsModal(props: ShortcutsModalProps) {
           <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity font-primary" />
         </Transition.Child>
 
-        <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+        <div className="fixed inset-0 z-10 w-screen overflow-y-auto font-primary">
           <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
             <Transition.Child
               as="div"
@@ -100,16 +100,16 @@ export default function ShortcutsModal(props: ShortcutsModalProps) {
             >
               <Dialog.Panel className="relative transform overflow-y-auto rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 px-8 py-6 w-[532px] max-h-[90vh]">
                 <div>
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#C7665C20]">
                     <KeyboardIcon
                       aria-hidden="true"
-                      className="h-6 w-6 text-green-600"
+                      className="h-6 w-6 text-[#C7665C]"
                     />
                   </div>
                   <div className="mt-3 text-center sm:mt-5">
                     <Dialog.Title
                       as="h3"
-                      className="text-base font-semibold leading-6 text-gray-900"
+                      className="text-base font-medium leading-6 text-gray-900"
                     >
                       Keyboard Shortcuts
                     </Dialog.Title>
@@ -117,7 +117,7 @@ export default function ShortcutsModal(props: ShortcutsModalProps) {
                     <div className="mt-2 flex flex-col gap-y-2">
                       <p className="text-sm text-gray-500">
                         When in insert mode, blocks will be highlighted in{" "}
-                        <span className="text-green-600">green</span>. When in
+                        <span className="text-[#C7665C]">yellow</span>. When in
                         command mode, blocks will be highlighted in{" "}
                         <span className="text-[#C7665C]">orange</span>.
                         Shortcuts here are highlighted accordingly.

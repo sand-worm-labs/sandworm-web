@@ -66,7 +66,7 @@ export default function ReusableComponents(props: Props) {
     <Transition
       as="div"
       show={props.visible}
-      className="top-0 right-0 h-full absolute bg-white z-30"
+      className="top-0 right-0 h-full absolute bg-white dark:bg-black z-30 shrink-0"
       enter="transition-transform duration-300"
       enterFrom="transform translate-x-full"
       enterTo="transform translate-x-0"
@@ -76,15 +76,15 @@ export default function ReusableComponents(props: Props) {
     >
       <button
         type="button"
-        className="absolute z-10 top-7 transform rounded-full border border-gray-300 text-gray-400 bg-white hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
+        className="absolute z-10 top-7 transform rounded-full border border-gray-300 dark:border-[#262A30] text-gray-400 bg-white hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
         onClick={props.onHide}
       >
         <ChevronDoubleRightIcon className="w-3 h-3" />
       </button>
-      <div className="w-[324px] flex flex-col border-l border-gray-200 h-full bg-white">
-        <div className="flex justify-between border-b p-6 space-x-3">
+      <div className="w-[324px] flex flex-col border-l border-gray-200 h-full bg-white font-primary dark:bg-black dark:border-[#262A30]">
+        <div className="flex justify-between border-b p-6 space-x-3 border-[#E9ECEF] dark:border-[#262A30]">
           <div>
-            <h3 className="text-lg font-medium leading-6 text-gray-900 pr-1.5">
+            <h3 className="text-lg font-medium leading-6 text-gray-900 dark:text-white pr-1.5">
               Reusable Components
             </h3>
             <p className="text-gray-500 text-sm pt-1">
@@ -104,7 +104,9 @@ export default function ReusableComponents(props: Props) {
                 {data.map(component => (
                   <li
                     key={component.id}
-                    className={clsx("border-gray-200 border-b")}
+                    className={clsx(
+                      "border-gray-200 dark:border-[#262A30] border-b"
+                    )}
                   >
                     <ReusableComponentItem
                       workspaceId={props.workspaceId}
@@ -120,7 +122,7 @@ export default function ReusableComponents(props: Props) {
           </>
         ) : (
           <div className="flex-1 p-4">
-            <div className="flex items-center justify-center h-full text-gray-500 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200 p-8 text-center">
+            <div className="flex items-center justify-center h-full text-gray-500 bg-gray-50 rounded-lg border-2 border-dashed dark:border-[#262A30] border-gray-200 p-8 text-center">
               You have no reusable components. Save a block to create one.
             </div>
           </div>
@@ -263,7 +265,7 @@ export function SaveReusableComponentButton(
           {ref => (
             <button
               type="button"
-              className="rounded-sm h-6 min-w-6 flex items-center justify-center border border-gray-200 text-gray-400 hover:bg-gray-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-300"
+              className="rounded-sm h-6 min-w-6 flex items-center justify-center border border-gray-200 dark:border-[#262A30] text-gray-400 hover:bg-gray-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-300"
               onClick={onSave}
               disabled={props.disabled || props.isComponentInstance}
               ref={ref}

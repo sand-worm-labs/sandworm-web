@@ -29,15 +29,15 @@ export default function Snapshots(props: Props) {
     >
       <button
         type="button"
-        className="absolute z-10 top-7 transform rounded-full border border-gray-300 text-gray-400 bg-white hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
+        className="absolute z-10 top-7 transform rounded-full border border-gray-300 dark:border-[#262A30] text-gray-400 bg-white hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
         onClick={props.onHide}
       >
         <ChevronDoubleRightIcon className="w-3 h-3" />
       </button>
-      <div className="w-[324px] flex flex-col border-l border-gray-200 h-full bg-white">
-        <div className="flex items-center justify-between border-b p-6">
+      <div className="w-[324px] flex flex-col border-l dark:border-[#262A30] border-gray-200 h-full bg-white dark:bg-black">
+        <div className="flex items-center justify-between border-b dark:border-[#262A30] p-6">
           <div className="flex items-center">
-            <h3 className="text-lg font-medium leading-6 text-gray-900 pr-1.5">
+            <h3 className="text-lg font-medium leading-6 text-gray-900  dark:text-white pr-1.5">
               Snapshots
             </h3>
             <div className="group relative">

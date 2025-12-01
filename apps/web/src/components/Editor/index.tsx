@@ -1194,12 +1194,13 @@ const V2EditorRow = (props: {
   );
 };
 
-const NO_DS_TEXT = `-- No data sources connected. Please add one using the "data sources" menu on the bottom left
--- Alternatively, you can upload files using the "Files" button on the bottom bar.`;
+const NO_DS_TEXT = `-- No data sources available yet.
+-- You can query any supported blockchain instantly.
+-- If you want to analyze your own dataset, you can upload a CSV using the "Files" button on the bottom bar.`;
 
-const DEMO_DS_TEXT = `-- We have selected a demo data source. Feel free to query it for testing purposes.
--- Please add your own data source using the "data sources" menu on the bottom left.
--- Alternatively, you can upload files using the "Files" button on the bottom bar.`;
+const DEMO_DS_TEXT = `-- You're currently using a demo blockchain data source.
+-- Feel free to explore and run queries.
+-- To analyze your own dataset, upload a CSV using the "Files" button on the bottom bar.`;
 
 interface Props {
   isPublicViewer: boolean;
