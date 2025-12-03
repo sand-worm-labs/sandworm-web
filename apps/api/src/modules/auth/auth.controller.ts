@@ -1,28 +1,29 @@
+import { UserResponse } from '@/api/user/model/http/user.model';
+import { NullableType } from '@/utils/types/nullable.type';
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
-  Request,
-  Post,
-  UseGuards,
   Patch,
-  Delete,
+  Post,
+  Request,
   SerializeOptions,
+  UseGuards,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Public } from '@sandworm/nest-common';
+import { AuthService } from './auth.service';
+import { AuthConfirmEmailDto } from './dto/auth-confirm-email.dto';
 import { AuthEmailLoginDto } from './dto/auth-email-login.dto';
 import { AuthForgotPasswordDto } from './dto/auth-forgot-password.dto';
-import { AuthConfirmEmailDto } from './dto/auth-confirm-email.dto';
+import { AuthRegisterLoginDto } from './dto/auth-register-login.dto';
 import { AuthResetPasswordDto } from './dto/auth-reset-password.dto';
 import { AuthUpdateDto } from './dto/auth-update.dto';
-import { AuthGuard } from '@nestjs/passport';
-import { AuthRegisterLoginDto } from './dto/auth-register-login.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
-import { NullableType } from '@/utils/types/nullable.type';
-import { UserResponse } from '@/api/user/model/http/user.model';
 import { RefreshResponseDto } from './dto/refresh-response.dto';
 
 @ApiTags('Auth')
@@ -33,6 +34,7 @@ import { RefreshResponseDto } from './dto/refresh-response.dto';
 export class AuthController {
   constructor(private readonly service: AuthService) {}
 
+  @Public()
   @SerializeOptions({
     groups: ['me'],
   })
@@ -45,12 +47,14 @@ export class AuthController {
     return this.service.validateLogin(loginDto);
   }
 
+  @Public()
   @Post('email/register')
   @HttpCode(HttpStatus.NO_CONTENT)
   async register(@Body() createUserDto: AuthRegisterLoginDto): Promise<void> {
     return this.service.register(createUserDto);
   }
 
+  @Public()
   @Post('email/confirm')
   @HttpCode(HttpStatus.NO_CONTENT)
   async confirmEmail(
@@ -59,6 +63,7 @@ export class AuthController {
     return this.service.confirmEmail(confirmEmailDto.hash);
   }
 
+  @Public()
   @Post('email/confirm/new')
   @HttpCode(HttpStatus.NO_CONTENT)
   async confirmNewEmail(
@@ -67,6 +72,7 @@ export class AuthController {
     return this.service.confirmNewEmail(confirmEmailDto.hash);
   }
 
+  @Public()
   @Post('forgot/password')
   @HttpCode(HttpStatus.NO_CONTENT)
   async forgotPassword(

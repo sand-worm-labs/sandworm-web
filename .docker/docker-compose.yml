@@ -30,7 +30,13 @@ services:
       PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: "False"
     depends_on:
       - db
-
+  maildev:
+    build:
+      context: .
+      dockerfile: maildev.Dockerfile
+    ports:
+      - 1080:1080
+      - 1025:1025
 volumes:
   postgres_data:
   pgadmin_data:
