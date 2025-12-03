@@ -27,10 +27,17 @@ import { EntityNotFoundError, QueryFailedError } from 'typeorm';
 export class GlobalGqlExceptionFilter implements GqlExceptionFilter {
   private i18n: I18nContext<I18nTranslations>;
   private readonly logger = new Logger(GlobalGqlExceptionFilter.name);
+  private skipPaths = ['/auth/', '/health'];
 
   catch(exception: any, host: ArgumentsHost) {
     this.i18n = I18nContext.current<I18nTranslations>(host);
     let error: ErrorDto;
+
+    const req = host.switchToHttp().getRequest?.();
+
+    if (req?.url && this.skipPaths.some((path) => req.url.startsWith(path))) {
+      return exception;
+    }
 
     const createGraphQLError = (message: string, error: ErrorDto) =>
       new GraphQLError(message, { extensions: { ...error } });
@@ -91,18 +98,18 @@ export class GlobalGqlExceptionFilter implements GqlExceptionFilter {
     const r = error as QueryFailedError & { constraint?: string };
     const { status, message } = r.constraint?.startsWith('UQ')
       ? {
-        status: HttpStatus.CONFLICT,
-        message: r.constraint
-          ? this.i18n.t(
-            (ConstraintErrors[r.constraint] ||
-              r.constraint) as keyof I18nTranslations,
-          )
-          : undefined,
-      }
+          status: HttpStatus.CONFLICT,
+          message: r.constraint
+            ? this.i18n.t(
+                (ConstraintErrors[r.constraint] ||
+                  r.constraint) as keyof I18nTranslations,
+              )
+            : undefined,
+        }
       : {
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: this.i18n.t('app.common.internal_server_error'),
-      };
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: this.i18n.t('app.common.internal_server_error'),
+        };
     const errorRes = {
       timestamp: new Date().toISOString(),
       statusCode: status,
