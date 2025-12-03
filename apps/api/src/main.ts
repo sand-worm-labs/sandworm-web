@@ -3,19 +3,11 @@
 import compression from '@fastify/compress';
 import helmet from '@fastify/helmet';
 import {
-  AsyncContextProvider,
-  Environment,
-  FastifyLoggerEnv,
-  fastifyPinoOptions,
-  genReqId,
-  REQUEST_ID_HEADER,
-} from '@sandworm/nest-common';
-import {
+  ConsoleLogger,
   HttpStatus,
   UnprocessableEntityException,
   ValidationError,
   ValidationPipe,
-  ConsoleLogger,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory, Reflector } from '@nestjs/core';
@@ -23,12 +15,17 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';  
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import {
+  AsyncContextProvider,
+  Environment,
+  FastifyLoggerEnv,
+  fastifyPinoOptions,
+  genReqId,
+  REQUEST_ID_HEADER,
+} from '@sandworm/nest-common';
 import { AppModule } from './app.module';
 import { AllConfigType } from './config/config.type';
-import { GlobalGqlExceptionFilter } from './filters/global-gql-exception.filter';
-import { AuthGuard } from './guards/auth.guard';
-import { AuthGraphqlService } from './modules/auth-graphql/auth.service';
 
 async function bootstrap() {
   const fastifyAdapter = new FastifyAdapter({
@@ -113,10 +110,7 @@ async function bootstrap() {
         'http://cdn.jsdelivr.net',
         'https://cdn.jsdelivr.net',
       ],
-      connectSrc: [
-        "'self'",
-        'https://sandbox.embed.apollographql.com',
-      ],
+      connectSrc: ["'self'", 'https://sandbox.embed.apollographql.com'],
     },
   };
 
@@ -130,11 +124,12 @@ async function bootstrap() {
     infer: true,
   });
 
-  const origins = typeof corsOrigin === 'string' 
-    ? corsOrigin.split(',').map(o => o.trim())
-    : Array.isArray(corsOrigin) 
-    ? corsOrigin 
-    : [corsOrigin];
+  const origins =
+    typeof corsOrigin === 'string'
+      ? corsOrigin.split(',').map((o) => o.trim())
+      : Array.isArray(corsOrigin)
+        ? corsOrigin
+        : [corsOrigin];
 
   app.enableCors({
     origin: isProduction ? origins : true,
@@ -143,11 +138,13 @@ async function bootstrap() {
     credentials: true,
   });
 
-  logger.log(`CORS Origin: ${isProduction ? origins.join(', ') : 'All origins (development)'}`);
+  logger.log(
+    `CORS Origin: ${isProduction ? origins.join(', ') : 'All origins (development)'}`,
+  );
 
   // Global guards, filters, and pipes
-  app.useGlobalGuards(new AuthGuard(reflector, app.get(AuthGraphqlService)));
-  app.useGlobalFilters(new GlobalGqlExceptionFilter());
+  // app.useGlobalGuards(new AuthGuard(reflector, app.get(AuthGraphqlService)));
+  ///app.useGlobalFilters(new GlobalGqlExceptionFilter());
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
@@ -180,13 +177,14 @@ async function bootstrap() {
         'JWT-auth',
       )
       .addServer(
-        configService.get('app.url', { infer: true }) || 'http://localhost:8003',
+        configService.get('app.url', { infer: true }) ||
+          'http://localhost:8003',
         'Local Development',
       )
       .build();
 
     const document = SwaggerModule.createDocument(app, config);
-    
+
     SwaggerModule.setup(swaggerConfig.path, app, document, {
       swaggerOptions: {
         persistAuthorization: true,
@@ -200,7 +198,9 @@ async function bootstrap() {
     });
 
     const port = configService.get('app.port', { infer: true });
-    logger.log(`📚 Swagger Documentation: http://localhost:${port}/${swaggerConfig.path}`);
+    logger.log(
+      `📚 Swagger Documentation: http://localhost:${port}/${swaggerConfig.path}`,
+    );
   }
 
   // Start server
@@ -211,7 +211,7 @@ async function bootstrap() {
   logger.log(`🚀 Server running at: http://localhost:${port}`);
   logger.log(`📊 GraphQL Playground: http://localhost:${port}/graphql`);
   logger.log(`📖 REST API: http://localhost:${port}/auth`);
-  
+
   if (swaggerConfig?.enabled && !isProduction) {
     logger.log(`📚 API Docs: http://localhost:${port}/${swaggerConfig.path}`);
   }
