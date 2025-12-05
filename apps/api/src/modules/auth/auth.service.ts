@@ -1,3 +1,6 @@
+import { UserService } from '@/api/user/user.service';
+import { AllConfigType } from '@/config/config.type';
+import { NullableType } from '@/utils/types/nullable.type';
 import {
   HttpStatus,
   Injectable,
@@ -5,28 +8,24 @@ import {
   UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import ms from 'ms';
-import crypto from 'crypto';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
-import { JwtService } from '@nestjs/jwt';
-import { AuthEmailLoginDto } from './dto/auth-email-login.dto';
-import { AuthUpdateDto } from './dto/auth-update.dto';
-import { AuthProvidersEnum } from './auth-providers.enum';
-import { SocialInterface } from '../social/interfaces/social.interface';
-import { AuthRegisterLoginDto } from './dto/auth-register-login.dto';
-import { NullableType } from '@/utils/types/nullable.type';
-import { LoginResponseDto } from './dto/login-response.dto';
 import { ConfigService } from '@nestjs/config';
-import { JwtRefreshPayloadType } from './strategies/types/jwt-refresh-payload.type';
-import { JwtPayloadType } from './strategies/types/jwt-payload.type';
-import { UserService } from '@/api/user/user.service';
-import { AllConfigType } from '@/config/config.type';
+import { JwtService } from '@nestjs/jwt';
+import { verifyPassword } from '@sandworm/nest-common';
+import crypto from 'crypto';
+import ms from 'ms';
 import { MailService } from '../mail/mail.service';
 import { Session } from '../session/domain/session';
 import { SessionService } from '../session/session.service';
-import { StatusEnum } from '../statuses/statuses.enum';
+import { SocialInterface } from '../social/interfaces/social.interface';
 import { UserResponse } from '../user/model/http/user.model';
-import { verifyPassword } from '@sandworm/nest-common';
+import { AuthProvidersEnum } from './auth-providers.enum';
+import { AuthEmailLoginDto } from './dto/auth-email-login.dto';
+import { AuthRegisterLoginDto } from './dto/auth-register-login.dto';
+import { AuthUpdateDto } from './dto/auth-update.dto';
+import { LoginResponseDto } from './dto/login-response.dto';
+import { JwtPayloadType } from './strategies/types/jwt-payload.type';
+import { JwtRefreshPayloadType } from './strategies/types/jwt-refresh-payload.type';
 
 @Injectable()
 export class AuthService {
@@ -39,6 +38,7 @@ export class AuthService {
   ) {}
 
   async validateLogin(loginDto: AuthEmailLoginDto): Promise<LoginResponseDto> {
+    console.log('validateLogin', loginDto);
     const user = await this.usersService.findByEmail(loginDto.email);
 
     if (!user) {
@@ -49,7 +49,6 @@ export class AuthService {
         },
       });
     }
-
     if (user.provider !== AuthProvidersEnum.email) {
       throw new UnprocessableEntityException({
         status: HttpStatus.UNPROCESSABLE_ENTITY,
@@ -59,6 +58,7 @@ export class AuthService {
       });
     }
 
+    console.log('user', user.password == undefined || user.password == null);
     if (!user.password) {
       throw new UnprocessableEntityException({
         status: HttpStatus.UNPROCESSABLE_ENTITY,
@@ -81,7 +81,6 @@ export class AuthService {
         },
       });
     }
-
 
     const session = await this.sessionService.create(user.id);
 
@@ -126,7 +125,6 @@ export class AuthService {
     } else if (userByEmail) {
       user = userByEmail;
     } else if (socialData.id) {
-
       user = await this.usersService.create({
         email: socialEmail ?? null,
         firstName: socialData.firstName ?? null,
@@ -168,6 +166,7 @@ export class AuthService {
   }
 
   async register(dto: AuthRegisterLoginDto): Promise<void> {
+    console.log('register', dto);
     const user = await this.usersService.create({
       ...dto,
       email: dto.email,
@@ -216,7 +215,7 @@ export class AuthService {
 
     const user = await this.usersService.findById(userId);
 
-    if (!user ) {
+    if (!user) {
       throw new NotFoundException({
         status: HttpStatus.NOT_FOUND,
         error: `notFound`,
@@ -341,7 +340,9 @@ export class AuthService {
     await this.usersService.update(user.id, user);
   }
 
-  async me(userJwtPayload: JwtPayloadType): Promise<NullableType<UserResponse>> {
+  async me(
+    userJwtPayload: JwtPayloadType,
+  ): Promise<NullableType<UserResponse>> {
     return this.usersService.findById(userJwtPayload.id);
   }
 
@@ -457,7 +458,7 @@ export class AuthService {
       .createHash('sha256')
       .update(randomStringGenerator())
       .digest('hex');
-    
+
     await this.sessionService.update(session.id, {
       hash,
     });
