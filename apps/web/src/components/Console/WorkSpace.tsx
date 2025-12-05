@@ -10,7 +10,6 @@ import { Button } from "@sandworm/ui/components/button";
 
 import { DataExplorer } from "@/components/ExplorerPanels/DataExplorer";
 import { WorkspaceTabs } from "@/components/Console/WorkspaceTabs";
-
 import type { Query } from "@/types";
 
 // =====================================

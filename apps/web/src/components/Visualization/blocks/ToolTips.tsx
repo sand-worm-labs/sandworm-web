@@ -4,7 +4,7 @@ import type { CSSProperties, RefObject } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
-import useDropdownPosition from "../hooks/useDropdownPosition";
+import useDropdownPosition from "../hooks/dropdownposition";
 
 export function computeTooltipPosition(
   commonParent: RefObject<Element>,
@@ -15,7 +15,6 @@ export function computeTooltipPosition(
   isPortal: boolean
 ): CSSProperties {
   if (!reference.current || !tooltip.current || !commonParent.current) {
-    // render tooltip offscreen
     return {
       top: -9999,
       left: -9999,
@@ -47,25 +46,48 @@ export function computeTooltipPosition(
 
   const referenceMiddleX = referenceRect.left + referenceRect.width / 2;
 
-  switch (tooltipPosition) {
+  if (tooltipPosition === "top") {
+    let left = referenceMiddleX - tooltipRect.width / 2;
+    const top = referenceRect.top - tooltipRect.height - padding;
+
+    // if tooltip is out of screen, move it to the left so that its right
+    // edge is aligned with the right edge of referenceRect
+    const safeMargin = 36;
+    const rightEdgeInScreen =
+      (isPortal ? 0 : commonRect.left) + left + tooltipRect.width;
+
+    if (rightEdgeInScreen + safeMargin > window.innerWidth) {
+      left = referenceRect.right - tooltipRect.width;
+    }
+
+    return {
+      top,
+      left,
+    };
+  }
+
+  return {
+    top: referenceRect.top,
+    left: referenceRect.left,
+  };
+}
+
+function getPosClass(
+  position: "top" | "bottom" | "left" | "right" | "manual"
+): string {
+  switch (position) {
     case "top":
-      let left = referenceMiddleX - tooltipRect.width / 2;
-      const top = referenceRect.top - tooltipRect.height - padding;
-
-      // if tooltip is out of screen, move it to the left so that its right
-      // edge is aligned with the right edge of referenceRect
-      const safeMargin = 36;
-      const rightEdgeInScreen =
-        (isPortal ? 0 : commonRect.left) + left + tooltipRect.width;
-
-      if (rightEdgeInScreen + safeMargin > window.innerWidth) {
-        left = referenceRect.right - tooltipRect.width;
-      }
-
-      return {
-        top,
-        left,
-      };
+      return "-top-1 left-1/2 -translate-x-1/2 -translate-y-full";
+    case "bottom":
+      return "-bottom-1 right-1/2 translate-x-1/2 translate-y-full";
+    case "left":
+      return "-left-1 top-1/2 -translate-x-full -translate-y-1/2";
+    case "right":
+      return "right-0 top-1/2 translate-x-full -translate-y-1/2";
+    case "manual":
+      return "";
+    default:
+      return "";
   }
 }
 
@@ -110,25 +132,6 @@ export const Tooltip = ({
   );
 };
 
-const getPosClass = (
-  position: "top" | "bottom" | "left" | "right" | "manual"
-): string => {
-  switch (position) {
-    case "top":
-      return "-top-1 left-1/2 -translate-x-1/2 -translate-y-full";
-    case "bottom":
-      return "-bottom-1 right-1/2 translate-x-1/2 translate-y-full";
-    case "left":
-      return "-left-1 top-1/2 -translate-x-full -translate-y-1/2";
-    case "right":
-      return "right-0 top-1/2 translate-x-full -translate-y-1/2";
-    case "manual":
-      return "";
-    default:
-      return "";
-  }
-};
-
 interface PortalTooltipProps {
   className?: string;
   children: React.ReactNode;
@@ -141,7 +144,6 @@ export function PortalTooltip(props: PortalTooltipProps) {
   const { onOpen, dropdownPosition } = useDropdownPosition(
     ref,
     "top",
-    0,
     0,
     props.ignoreScrollableAncestor
   );
@@ -201,7 +203,7 @@ export function TooltipV2<T extends Element>(props: TooltipV2Props<T>) {
   }, []);
   useEffect(() => {
     if (!parentRef.current || !props.active || !hovering) {
-      return;
+      return () => {};
     }
 
     const cb = () => {
@@ -237,8 +239,6 @@ export function TooltipV2<T extends Element>(props: TooltipV2Props<T>) {
         hovering &&
         createPortal(
           <Transition
-            style={pos}
-            className="absolute z-[2000] rounded-md"
             enter="transition ease-out duration-100"
             enterFrom="transform opacity-0 scale-95"
             enterTo="transform opacity-100 scale-100"
@@ -247,26 +247,36 @@ export function TooltipV2<T extends Element>(props: TooltipV2Props<T>) {
             leaveTo="transform opacity-0 scale-95"
             show
           >
-            {props.content ? (
-              props.content(tooltipRef)
-            ) : props.title || props.message ? (
-              <div
-                ref={tooltipRef}
-                className={clsx(
-                  "font-primary pointer-events-none bg-black text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1 w-36",
-                  props.className
-                )}
-              >
-                {props.title && (
-                  <span className="text-center">{props.title}</span>
-                )}
-                {props.message && (
-                  <span className="inline-flex items-center justify-center text-gray-400 text-center">
-                    {props.message}
-                  </span>
-                )}
-              </div>
-            ) : null}
+            <div style={pos} className="absolute z-[2000] rounded-md">
+              {(() => {
+                if (props.content) {
+                  return props.content(tooltipRef);
+                }
+
+                const shouldShowDefault = props.title || props.message;
+                if (!shouldShowDefault) return null;
+
+                return (
+                  <div
+                    ref={tooltipRef}
+                    className={clsx(
+                      "font-primary pointer-events-none bg-black text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1 w-36",
+                      props.className
+                    )}
+                  >
+                    {props.title && (
+                      <span className="text-center">{props.title}</span>
+                    )}
+
+                    {props.message && (
+                      <span className="inline-flex items-center justify-center text-gray-400 text-center">
+                        {props.message}
+                      </span>
+                    )}
+                  </div>
+                );
+              })()}
+            </div>
           </Transition>,
           document.body
         )}

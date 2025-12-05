@@ -1,6 +1,6 @@
+import React, { createContext, useContext, useState, useMemo } from "react";
 import type { ReactNode } from "react";
-import React, { createContext, useContext, useState } from "react";
-
+// eslint-disable-next-line import/no-cycle
 import TourHighlight from "./TourHighlight";
 
 interface TourHighlightContextType {
@@ -20,30 +20,26 @@ export const TourHighlightProvider: React.FC<{ children: ReactNode }> = ({
   const [selector, setSelector] = useState<string | null>(null);
   const [isTourActive, setTourActive] = useState(false);
 
+  const contextValue = useMemo(
+    () => ({ selector, setSelector, isTourActive, setTourActive }),
+    [selector, isTourActive] // only recreate when these change
+  );
+
   return (
-    <TourHighlightContext.Provider
-      value={{ selector, setSelector, isTourActive, setTourActive }}
-    >
+    <TourHighlightContext.Provider value={contextValue}>
       <TourHighlight />
       {children}
     </TourHighlightContext.Provider>
   );
 };
 
-type UseTourHighlightState = {
-  selector: string | null;
-  isTourActive: boolean;
-};
-
-type UseTourHighlightAPI = {
-  setSelector: (selector: string | null) => void;
-  setTourActive: (active: boolean) => void;
-};
-
-export const useTourHighlight: () => [
-  UseTourHighlightState,
-  UseTourHighlightAPI,
-] = () => {
+export const useTourHighlight = (): [
+  { selector: string | null; isTourActive: boolean },
+  {
+    setSelector: (selector: string | null) => void;
+    setTourActive: (active: boolean) => void;
+  },
+] => {
   const context = useContext(TourHighlightContext);
   if (!context) {
     console.warn(
@@ -56,9 +52,6 @@ export const useTourHighlight: () => [
   }
   return [
     { selector: context.selector, isTourActive: context.isTourActive },
-    {
-      setSelector: context.setSelector,
-      setTourActive: context.setTourActive,
-    },
+    { setSelector: context.setSelector, setTourActive: context.setTourActive },
   ];
 };

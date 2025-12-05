@@ -6,9 +6,6 @@ import Fuse from "fuse.js";
 import clsx from "clsx";
 import ReactDOM from "react-dom";
 
-/* import { FixedSizeGrid as Grid } from "react-window";
-Fixed
- */
 import allLucideIcons from "../utils/lucideIcons";
 import { useDebounce } from "../hooks/useDebounce";
 import useDocument from "../hooks/useDocument";
@@ -33,11 +30,8 @@ function IconSelector(props: Props) {
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const { onOpen, dropdownPosition } = useDropdownPosition(buttonRef, "top");
 
-  const [{ document: doc }, { setIcon }] = useDocument(
-    props.workspaceId,
-    props.documentId
-  );
-  const [filteredIcons, setFilteredIcons] = useState(Object.keys(icons));
+  const [{ document: doc }] = useDocument(props.workspaceId, props.documentId);
+  const [, setFilteredIcons] = useState(Object.keys(icons));
   const Icon = icons[doc?.icon ?? "DocumentIcon"] || (() => null);
 
   const debouncedSearch = useDebounce((search: string) => {
@@ -60,17 +54,6 @@ function IconSelector(props: Props) {
       [debouncedSearch]
     );
 
-  const onIconSelectHandler = useCallback(
-    (icon: string, close: () => void) => {
-      return (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault();
-        setIcon(icon);
-        close();
-      };
-    },
-    [setIcon]
-  );
-
   // Prevent the default behavior only for the space key, otherwise
   // the keydown handler for the `Menu.Items` will close the menu
   const onSearchKeyDownHandler: React.KeyboardEventHandler<HTMLInputElement> =
@@ -83,37 +66,6 @@ function IconSelector(props: Props) {
   const resetFilteredIcons = useCallback(() => {
     setFilteredIcons(Object.keys(icons));
   }, []);
-
-  const IconOption = ({ columnIndex, rowIndex, style }: any) => {
-    const index = rowIndex * 11 + columnIndex;
-    const key = filteredIcons[index];
-    const IconElement = icons[key];
-
-    if (!IconElement) {
-      return null;
-    }
-
-    return (
-      <Menu.Item key={key}>
-        {({ active, close }) => (
-          <button
-            style={style}
-            onClick={onIconSelectHandler(key, close)}
-            className={clsx(
-              active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-              "w-8 h-8 p-2 text-sm rounded-md"
-            )}
-          >
-            <IconElement
-              strokeWidth={1}
-              className="h-4 w-4 shrink-0"
-              aria-hidden="true"
-            />
-          </button>
-        )}
-      </Menu.Item>
-    );
-  };
 
   return (
     <Menu as="div" className="relative flex items-center">
@@ -169,18 +121,6 @@ function IconSelector(props: Props) {
                   onKeyDown={onSearchKeyDownHandler}
                 />
               </div>
-              {/*   <div className="flex flex-wrap pt-4 w-full h-56 content-start">
-                <Grid
-                  columnCount={11}
-                  columnWidth={32}
-                  height={220}
-                  rowCount={Math.ceil(filteredIcons.length / 11)}
-                  rowHeight={32}
-                  width={384}
-                >
-                  {IconOption}
-                </Grid>
-              </div> */}
             </div>
           </Menu.Items>
         </Transition>,

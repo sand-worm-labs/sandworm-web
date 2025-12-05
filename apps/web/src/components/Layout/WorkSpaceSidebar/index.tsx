@@ -5,13 +5,12 @@ import Link from "next/link";
 import { v4 as uuidv4 } from "uuid";
 import { usePathname, useRouter } from "next/navigation";
 import { LuLayoutGrid } from "react-icons/lu";
+import { useCallback, useState } from "react";
+import { PlusSmallIcon } from "@heroicons/react/24/outline";
 
 import { AccountDropdown } from "@/components/AccountDropdown";
 import DocumentTree from "@/components/Visualization/blocks/DocumentsTree";
 import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
-import { useCallback } from "react";
-import { useDataSources } from "@/components/Visualization/hooks/useDataSources";
-import { PlusSmallIcon } from "@heroicons/react/24/outline";
 import { useFavorites } from "@/components/Visualization/hooks/useFavorites";
 import { useDocumentsLocal as useDocuments } from "@/components/Visualization/hooks/useDocumentsLocal";
 import { SandwormLogo } from "@/components/Assets";
@@ -23,27 +22,27 @@ interface NavItem {
   icon: React.ElementType;
 }
 
-const mockUser = {
-  id: "4a6e71c4-2c06-460b-bb29-f337bf64e0bc",
-  email: "dqzxu2gbs@mozmail.com",
-  name: "Si Cy",
-  picture: null,
-  lastVisitedWorkspaceId: "405498a2-f3cb-4307-bd1e-4daf5b3a1dbb",
-  createdAt: "2025-10-21T14:03:41.471Z",
-  updatedAt: "2025-11-28T04:59:50.952Z",
-  roles: {
-    "405498a2-f3cb-4307-bd1e-4daf5b3a1dbb": "admin",
-  },
-};
-
 export const WorkspaceSidebar = () => {
   const pathname = usePathname();
-
   const workspaceId = useStringQuery("workspace");
+  const [collapsed, setCollapsed] = useState(false);
+  const [{ favoriteDocument, unfavoriteDocument }] = useFavorites(workspaceId);
+  const router = useRouter();
+  const documentId = useStringQuery("document");
 
-  //note: we replace this with useworkspace hook once ready
-  /*   const workspaceId = pathname.split("/")[2] ?? "";
-   */
+  const mockUser = {
+    id: "4a6e71c4-2c06-460b-bb29-f337bf64e0bc",
+    email: "dqzxu2gbs@mozmail.com",
+    name: "Si Cy",
+    picture: null,
+    lastVisitedWorkspaceId: "405498a2-f3cb-4307-bd1e-4daf5b3a1dbb",
+    createdAt: "2025-10-21T14:03:41.471Z",
+    updatedAt: "2025-11-28T04:59:50.952Z",
+    roles: {
+      "405498a2-f3cb-4307-bd1e-4daf5b3a1dbb": "admin",
+    },
+  };
+
   const mainNav: NavItem[] = [
     { name: "Home", href: `/workspace/${workspaceId}`, icon: Home },
     {
@@ -84,14 +83,6 @@ export const WorkspaceSidebar = () => {
          : "text-gray-600 dark:text-white hover:bg-[#ffffff] dark:hover:bg-[#181C21] hover:text-black dark:hover:text-white"
      }`;
 
-  const router = useRouter();
-  const documentId = useStringQuery("document");
-
-  const [{ datasources: allDataSources, isLoading: isLoadingDataSources }] =
-    useDataSources(workspaceId);
-  const userDataSources = allDataSources.filter(ds => !ds.config.data.isDemo);
-  const hasUserDataSource = !isLoadingDataSources && userDataSources.size > 0;
-
   const [
     documentsState,
     {
@@ -102,9 +93,6 @@ export const WorkspaceSidebar = () => {
       updateParent: updateDocumentParent,
     },
   ] = useDocuments(workspaceId);
-
-  const [favorites, { favoriteDocument, unfavoriteDocument }] =
-    useFavorites(workspaceId);
 
   const documents = documentsState.documents.filter(
     doc => doc.deletedAt === null && doc.version > 1
@@ -204,16 +192,31 @@ export const WorkspaceSidebar = () => {
   );
 
   return (
-    <aside className="w-[220px] h-full flex flex-col justify-between dark:bg-[#0C1015] bg-[#F1F3F4] border-r dark:border-[#262A30] border-[#E9ECEF]">
+    <aside
+      className={`h-full flex flex-col justify-between dark:bg-[#0C1015] bg-[#F1F3F4] border-r dark:border-[#262A30] border-[#E9ECEF]
+      transition-all duration-300 ease-in-out
+      ${collapsed ? "w-16" : "w-[220px]"}
+      `}
+    >
       <div>
         <div className="flex justify-between py-[0.69rem] px-3   bg-white dark:bg-black border-b border-[#E9ECEF] dark:border-[#262A30] items-center">
-          <Link href="/" className="flex items-center  ">
-            <SandwormLogo width="30" height="30" />
-            <span className="ml-1.5 font-bold text-[1.05rem] uppercase hidden md:inline-block">
-              SandW0rm.
-            </span>
-          </Link>
-          <SidebarIcon />
+          {!collapsed && (
+            <Link href="/" className="flex items-center gap-2">
+              <SandwormLogo width="30" height="30" />
+
+              <span className="ml-1.5 font-bold text-[1.05rem] uppercase">
+                SandW0rm.
+              </span>
+            </Link>
+          )}
+
+          <button
+            type="button"
+            onClick={() => setCollapsed(!collapsed)}
+            className="p-1 rounded hover:bg-gray-200 dark:hover:bg-[#181C21] flex items-center justify-center"
+          >
+            <SidebarIcon />
+          </button>
         </div>
 
         <div className="px-4 py-4" />
@@ -228,7 +231,7 @@ export const WorkspaceSidebar = () => {
                     strokeWidth={1.8}
                     className="h-4 w-4 text-[#1C3B5A] dark:text-[#868E96]"
                   />
-                  {item.name}
+                  {!collapsed && item.name}
                 </Link>
               </li>
             ))}
@@ -245,44 +248,50 @@ export const WorkspaceSidebar = () => {
                     strokeWidth={1.8}
                     className="h-4 w-4 text-[#1C3B5A] dark:text-[#868E96]"
                   />
-                  {item.name}
+                  {!collapsed && item.name}
                 </Link>
               </li>
             ))}
           </ul>
           <hr className="border-t-[1px] border-[#E6E0F1] dark:border-[#262A30] mt-4" />
 
-          <ul>
-            {mockUser.roles[workspaceId] !== "viewer" && (
-              <button
-                type="button"
-                id="create-workspace-doc"
-                onClick={onCreateDocumentHandler}
-                className="p-1 hover:text-ceramic-500 hover:bg-white hover:text-black rounded-md hover:cursor-pointer text-sm border mt-3 flex px-5 items-center justify-center w-full border-[#E6E0F1] dark:border-[#262A30] text-[#6C757D] mb-3 "
-              >
-                {" "}
-                <PlusSmallIcon className="h-4 w-4 mr-3 " aria-hidden="true" />
-                <span>New Project</span>
-              </button>
-            )}
-            <DocumentTree
-              workspaceId={workspaceId}
-              current={documentId}
-              documents={documents}
-              onDuplicate={onDuplicateDocument}
-              onDelete={onDeleteDocument}
-              onFavorite={onFavoriteDocument}
-              onUnfavorite={onUnfavoriteDocument}
-              onSetIcon={onSetIcon}
-              role={mockUser.roles[workspaceId] ?? "viewer"}
-              onCreate={onCreateDocument}
-              onUpdateParent={onUpdateDocumentParent}
-            />
-          </ul>
+          {!collapsed && (
+            <ul>
+              {mockUser.roles[workspaceId] !== "viewer" && (
+                <button
+                  type="button"
+                  id="create-workspace-doc"
+                  onClick={onCreateDocumentHandler}
+                  className="p-1 hover:text-ceramic-500 hover:bg-white hover:text-black rounded-md hover:cursor-pointer text-sm border mt-3 flex px-5 items-center justify-center w-full border-[#E6E0F1] dark:border-[#262A30] text-[#6C757D] mb-3 "
+                >
+                  {" "}
+                  <PlusSmallIcon className="h-4 w-4 mr-3 " aria-hidden="true" />
+                  <span>New Project</span>
+                </button>
+              )}
+              <DocumentTree
+                workspaceId={workspaceId}
+                current={documentId}
+                documents={documents}
+                onDuplicate={onDuplicateDocument}
+                onDelete={onDeleteDocument}
+                onFavorite={onFavoriteDocument}
+                onUnfavorite={onUnfavoriteDocument}
+                onSetIcon={onSetIcon}
+                role={mockUser.roles[workspaceId] ?? "viewer"}
+                onCreate={onCreateDocument}
+                onUpdateParent={onUpdateDocumentParent}
+              />
+            </ul>
+          )}
         </nav>
       </div>
 
-      <AccountDropdown />
+      {!collapsed && (
+        <div className="px-4 py-4">
+          <AccountDropdown />
+        </div>
+      )}
     </aside>
   );
 };

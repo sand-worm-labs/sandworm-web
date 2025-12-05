@@ -15,15 +15,10 @@ import type { UserWorkspaceRole } from "@/types";
 import { Tooltip } from "./ToolTips";
 
 type Props = {
-  workspaceId: string;
-  documentId: string;
-  documentTitle: string;
   isPublic: boolean;
   onTogglePublic: (() => void) | null;
   link: string;
   role: UserWorkspaceRole;
-  isDashboard: boolean;
-  isApp: boolean;
 };
 export default function ShareDropdown(props: Props) {
   const [copied, setCopied] = useState(false);

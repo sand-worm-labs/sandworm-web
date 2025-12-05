@@ -482,9 +482,15 @@ label {
   position: absolute;
   inset: 0;
   z-index: 0;
-  backdrop-filter: blur(0px);
+  backdrop-filter: blur(8px);
   filter: url(#lg-dist);
   isolation: isolate;
+}
+
+@supports not (filter: url(#lg-dist)) {
+  .glass-filter {
+    backdrop-filter: blur(12px) saturate(180%);
+  }
 }
 
 .glass-overlay {
