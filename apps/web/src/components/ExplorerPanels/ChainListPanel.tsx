@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+
 import { FourSquare } from "../Assets/FourSquare";
 
 interface Chain {
@@ -23,7 +24,7 @@ export const ChainListPanel: React.FC<IChainListPanelProps> = ({
         <button
           type="button"
           key={chain.name}
-          className="cursor-pointer py-3 px-3 rounded-none hover:bg-white/15 text-sm text-left flex items-center lowercase  justify-between border-b last:border-b-0 transition-colors border-b-[#E9ECEF] "
+          className="cursor-pointer py-3 px-3 rounded-none hover:bg-white/15 text-sm text-left flex items-center lowercase  justify-between border-b last:border-b-0 transition-colors border-b-[#E9ECEF] dark:border-[#262A30] "
           onClick={() => onSelect(chain.short_code)}
         >
           <span className="flex space-x-2 items-center ">

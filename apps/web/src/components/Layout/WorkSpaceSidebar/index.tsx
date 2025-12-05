@@ -5,12 +5,12 @@ import Link from "next/link";
 import { v4 as uuidv4 } from "uuid";
 import { usePathname, useRouter } from "next/navigation";
 import { LuLayoutGrid } from "react-icons/lu";
+import { useCallback, useState } from "react";
+import { PlusSmallIcon } from "@heroicons/react/24/outline";
 
 import { AccountDropdown } from "@/components/AccountDropdown";
 import DocumentTree from "@/components/Visualization/blocks/DocumentsTree";
 import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
-import { useCallback, useState } from "react";
-import { PlusSmallIcon } from "@heroicons/react/24/outline";
 import { useFavorites } from "@/components/Visualization/hooks/useFavorites";
 import { useDocumentsLocal as useDocuments } from "@/components/Visualization/hooks/useDocumentsLocal";
 import { SandwormLogo } from "@/components/Assets";
@@ -213,7 +213,7 @@ export const WorkspaceSidebar = () => {
           <button
             type="button"
             onClick={() => setCollapsed(!collapsed)}
-            className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center"
+            className="p-1 rounded hover:bg-gray-200 dark:hover:bg-[#181C21] flex items-center justify-center"
           >
             <SidebarIcon />
           </button>

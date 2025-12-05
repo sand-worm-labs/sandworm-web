@@ -2,12 +2,14 @@
 
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
+import { v4 as uuidv4 } from "uuid";
+
+import { useDocumentsLocal as useDocuments } from "@/components/Visualization/hooks/useDocumentsLocal";
+
+import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
 
 import { MultimodalInput } from "./multimodal-input";
 import { ExamplePrompts } from "./example-prompts";
-import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
-import { v4 as uuidv4 } from "uuid";
-import { useDocumentsLocal as useDocuments } from "@/components/Visualization/hooks/useDocumentsLocal";
 
 type Attachment = {
   url: string;

@@ -7,10 +7,9 @@ import {
 import { Transition } from "@headlessui/react";
 import clsx from "clsx";
 import ReactDOM from "react-dom";
+import { useStableKeys } from "@sandworm/ui/lib/utils";
 
 import useDropdownPosition from "./hooks/dropdownposition";
-
-import { useStableKeys } from "@sandworm/ui/lib/utils";
 
 // 🎨 Interface / Props Definition
 // =====================================

@@ -1,12 +1,12 @@
 "use client";
 
-import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
-import PrivateDocumentPage from "@/components/Visualization/blocks/PrivateDocumentPage";
-import useDocument from "@/components/Visualization/hooks/useDocumentLocal";
-
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Head from "next/head";
+
+import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
+import PrivateDocumentPage from "@/components/Visualization/blocks/PrivateDocumentPage";
+import useDocument from "@/components/Visualization/hooks/useDocumentLocal";
 
 type UserWorkspaceRole = "editor" | "viewer" | "admin";
 

@@ -3,22 +3,24 @@
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@sandworm/ui/components/button";
-
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
   TooltipProvider,
-} from "@/components/ui/tooltip";
+} from "@sandworm/ui/components/tooltip";
+
 import { useSandwormStore } from "@/store";
+
+import { useStringQuery } from "../../Visualization/hooks/useQueryArgs";
 
 export const CreateQueryButton = () => {
   const router = useRouter();
   const createTab = useSandwormStore(state => state.createTab);
-
+  const workspaceId = useStringQuery("workspace");
   const handleCreate = () => {
     createTab("New Query", undefined, "sql", "");
-    router.push("/workspace/console");
+    router.push(`/workspace/${workspaceId}/console`);
   };
 
   return (
