@@ -1,9 +1,10 @@
 "use client";
 
-import useDocument from "@/components/Visualization/hooks/useDocumentLocal";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Head from "next/head";
+
+import useDocument from "@/components/Visualization/hooks/useDocumentLocal";
 import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
 import PrivateDocumentPage from "@/components/Visualization/blocks/PrivateDocumentPage";
 
@@ -97,7 +98,7 @@ function Notebook(props: Props) {
         workspaceId={props.workspaceId}
         documentId={props.documentId}
         user={props.user}
-        isApp={true}
+        isApp
       />
     </>
   );

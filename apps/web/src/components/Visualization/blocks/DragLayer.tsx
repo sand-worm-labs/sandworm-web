@@ -3,11 +3,12 @@ import { useEffect } from "react";
 import type { XYCoord } from "react-dnd";
 import { useDragLayer } from "react-dnd";
 
+import IconSelector from "./IconSelector";
+
 export enum ElementType {
   Block = "BLOCK",
   BlockGroup = "BLOCK_GROUP",
 }
-import IconSelector from "./IconSelector";
 
 function getItemStyles(
   initialCursorOffset: XYCoord | null,

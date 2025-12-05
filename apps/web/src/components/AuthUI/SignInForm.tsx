@@ -28,7 +28,7 @@ export const SignInForm = () => {
         <input
           type="email"
           name="email"
-          className="mt-1 w-full rounded-md dark:bg-dark-gray p-2 text-white focus:border-orange-500 focus:ring-orange-500"
+          className="mt-1 w-full rounded-md dark:bg-dark-gray p-2 dark:border-[#262A30] text-white focus:border-orange-500 focus:ring-orange-500"
           placeholder="Enter your email"
           value={formData.email}
           onChange={handleChange}

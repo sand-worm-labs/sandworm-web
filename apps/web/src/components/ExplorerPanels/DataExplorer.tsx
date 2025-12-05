@@ -20,6 +20,7 @@ import {
   EntityListPanel,
   FieldDetailsPanel,
 } from "@/components/ExplorerPanels";
+
 import { Database } from "../Assets/Database";
 
 type EntityType = "raw" | "project" | "decoded";
@@ -105,10 +106,10 @@ export function DataExplorer({ onClose }: { onClose?: () => void }) {
       cancel=".no-drag"
       className="z-[100]"
     >
-      <Card className="h-full overflow-hidden relative border-[#E9ECEF] border-2 gap-y-0">
+      <Card className="h-full overflow-hidden relative border-[#E9ECEF] dark:border-[#262A30] border-2 gap-y-0">
         <div
           aria-label="Drag panel"
-          className="border  rounded drag-handle absolute left-1/2 -translate-x-1/2 top-4 -translate-y-1/2 z-10 p-1 h-6 w-8 shadow-sm cursor-grab active:cursor-grabbing border-[#EFF0F6]"
+          className="border  rounded drag-handle absolute left-1/2 -translate-x-1/2 top-4 -translate-y-1/2 z-10 p-1 h-6 w-8 shadow-sm cursor-grab active:cursor-grabbing border-[#EFF0F6] dark:border-[#262A30]"
         >
           <GripHorizontal className="h-4 w-4" />
         </div>
@@ -118,7 +119,7 @@ export function DataExplorer({ onClose }: { onClose?: () => void }) {
           </div>
         )}
 
-        <CardHeader className="p-4 pt-0 border-b drag-handle cursor-grab active:cursor-grabbing select-none border-[#E9ECEF] mb-0">
+        <CardHeader className="p-4 pt-0 border-b drag-handle cursor-grab active:cursor-grabbing select-none border-[#E9ECEF] dark:border-[#262A30] mb-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center w-full justify-between gap-2">
               <div className="flex items-center gap-2">
