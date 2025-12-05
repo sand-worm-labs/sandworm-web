@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
 import useDocument from "@/components/Visualization/hooks/useDocumentLocal";
-import Layout from "@/components/Visualization/Layout";
 import {
   ContentSkeleton,
   TitleSkeleton,
@@ -40,8 +39,6 @@ const MOCK_SESSION: SessionUser = {
 interface PrivateDocumentPageProps {
   workspaceId: string;
   documentId: string;
-  user: SessionUser;
-  role: UserWorkspaceRole;
 }
 
 function PrivateDocumentPage(props: PrivateDocumentPageProps) {
@@ -50,6 +47,7 @@ function PrivateDocumentPage(props: PrivateDocumentPageProps) {
     props.documentId
   );
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     if (loading) {
@@ -63,18 +61,18 @@ function PrivateDocumentPage(props: PrivateDocumentPageProps) {
 
     if (document.publishedAt === null) {
       router.replace(
-        `/workspace/${props.workspaceId}/documents/${props.documentId}/notebook/edit${location.search}`
+        `/workspace/${props.workspaceId}/documents/${props.documentId}/notebook/edit${searchParams.toString()}`
       );
       return;
     }
 
     if (document.hasDashboard) {
       router.replace(
-        `/workspace/${props.workspaceId}/documents/${props.documentId}/dashboard${location.search}`
+        `/workspace/${props.workspaceId}/documents/${props.documentId}/dashboard${searchParams.toString()}`
       );
     } else {
       router.replace(
-        `/workspace/${props.workspaceId}/documents/${props.documentId}/notebook${location.search}`
+        `/workspace/${props.workspaceId}/documents/${props.documentId}/notebook${searchParams.toString()}`
       );
     }
   }, [document, loading, props.workspaceId, props.documentId, router]);
@@ -99,7 +97,6 @@ export default function DocumentPage() {
   const documentId = useStringQuery("document");
 
   const role = session.data?.roles[workspaceId];
-  const router = useRouter();
 
   if (!session.data || !role) {
     return (
@@ -124,11 +121,6 @@ export default function DocumentPage() {
   }
 
   return (
-    <PrivateDocumentPage
-      workspaceId={workspaceId}
-      documentId={documentId}
-      user={session.data}
-      role={role}
-    />
+    <PrivateDocumentPage workspaceId={workspaceId} documentId={documentId} />
   );
 }

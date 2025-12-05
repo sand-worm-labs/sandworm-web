@@ -1,17 +1,14 @@
 import React, { useState } from "react";
 import { Edit } from "lucide-react";
 import { toast } from "sonner";
-import { useSession } from "next-auth/react";
 import { Button } from "@sandworm/ui/components/button";
 import { Input } from "@sandworm/ui/components/input";
 
 import { cn } from "@/lib/utils";
 import { useSandwormStore } from "@/store";
-import { useForkQuery } from "@/hooks";
 import { SaveModal } from "@/components/Console";
 import { QueryCodeEditor } from "@/components/Console/Editor";
 import type { EditorTab } from "@/store";
-import { useModalStore } from "@/store/auth";
 
 import { ExecuteButton } from "./ExecuteButton";
 
@@ -38,9 +35,6 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
     cancelQueryExecution,
   } = useSandwormStore();
   const editorTheme = useSandwormStore(state => state.settings.editorTheme);
-  const { data: session } = useSession();
-  const { handleFork, loading } = useForkQuery(selectedTab?.id ?? "");
-  const openSignIn = useModalStore(state => state.openSignIn);
 
   const currentTab = tabs.find(tab => tab.id === tabId);
   const currentContent =
@@ -89,11 +83,6 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
       setIsEditingTitle(false);
       toast.error("Title cannot be empty");
     }
-  };
-
-  const handleForkClick = () => {
-    if (!session?.user?.id) return openSignIn();
-    return handleFork();
   };
 
   const handleTitleEdit = () => {

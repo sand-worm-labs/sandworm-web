@@ -24,6 +24,7 @@ import type { APIDataSources } from "../../hooks/useDataSources";
 import { useYDocState } from "../../hooks/useYDocs";
 import Title from "../../../Editor/Title";
 
+// eslint-disable-next-line import/no-cycle
 import GridElement from "./GridElement";
 
 import type { DraggingBlock } from ".";
@@ -90,6 +91,8 @@ export function getMins(t: BlockType): { minW: number; minH: number } {
     case BlockType.Writeback:
     case BlockType.FileUpload:
       return { minW: 0, minH: 0 };
+    default:
+      return { minW: 0, minH: 0 };
   }
 }
 
@@ -111,6 +114,8 @@ export function getDefaults(t: BlockType): { minW: number; minH: number } {
       return { minW: 4, minH: 1 };
     case BlockType.FileUpload:
     case BlockType.Writeback:
+      return { minW: 0, minH: 0 };
+    default:
       return { minW: 0, minH: 0 };
   }
 }
@@ -156,7 +161,8 @@ function DashboardViewInner(props: InnerProps) {
 
   const onLayoutChange = useCallback(
     (_layout: GridLayout.Layout[], allLayouts: GridLayout.Layouts) => {
-      mergeGridLayoutIntoYDashboard(dashboard.value, allLayouts.lg);
+      // eslint-disable-next-line dot-notation
+      mergeGridLayoutIntoYDashboard(dashboard.value, allLayouts["lg"] ?? []);
     },
     [dashboard]
   );
@@ -241,10 +247,10 @@ function DashboardViewInner(props: InnerProps) {
 
   const { cellWidth, cellHeight } = useMemo(() => {
     const marginWidth = MARGIN * (colsCount + 1);
-    const cellWidth = (props.width - marginWidth) / colsCount;
-    const cellHeight = Math.max(50, cellWidth);
+    const calculatedCellWidth = (props.width - marginWidth) / colsCount;
+    const calculatedCellHeight = Math.max(50, calculatedCellWidth);
 
-    return { cellWidth, cellHeight };
+    return { cellWidth: calculatedCellWidth, cellHeight: calculatedCellHeight };
   }, [props.width, colsCount]);
 
   const onDrop = useCallback(
@@ -276,29 +282,28 @@ function DashboardViewInner(props: InnerProps) {
     [cellWidth, props.width]
   );
 
-  const onDropDragOver = useCallback(
-    (_e: GridLayout.DragOverEvent) => {
-      const size = { w: 8, h: 6 };
+  const onDropDragOver = useCallback(() => {
+    const size = { w: 8, h: 6 };
 
-      if (props.draggingBlock) {
-        const mins = getDefaults(props.draggingBlock.type);
-        size.w = Math.max(
-          Math.ceil(props.draggingBlock.width / cellWidth),
-          mins.minW
-        );
-        size.h = Math.max(
-          Math.ceil(props.draggingBlock.height / cellHeight),
-          mins.minH
-        );
-      }
+    if (props.draggingBlock) {
+      const mins = getDefaults(props.draggingBlock.type);
+      size.w = Math.max(
+        Math.ceil(props.draggingBlock.width / cellWidth),
+        mins.minW
+      );
+      size.h = Math.max(
+        Math.ceil(props.draggingBlock.height / cellHeight),
+        mins.minH
+      );
+    }
 
-      return size;
-    },
-    [cellWidth, props.draggingBlock]
-  );
+    return size;
+  }, [cellWidth, props.draggingBlock]);
+
+  const ResponsiveGridLayout = GridLayout.Responsive as any;
 
   return (
-    <GridLayout.Responsive
+    <ResponsiveGridLayout
       rowHeight={cellHeight}
       width={props.width}
       layouts={{ lg: layout }}
@@ -316,7 +321,7 @@ function DashboardViewInner(props: InnerProps) {
       style={props.isEditing ? style : {}}
     >
       {children}
-    </GridLayout.Responsive>
+    </ResponsiveGridLayout>
   );
 }
 
@@ -345,6 +350,7 @@ export default function DashboardView(props: Props) {
     >
       <div className="pb-8 px-1">
         <Title
+          // eslint-disable-next-line react/style-prop-object
           style="font-weight: bold; font-size: 2.5rem;"
           content={props.yDoc.getXmlFragment("title")}
           isLoading={false}
