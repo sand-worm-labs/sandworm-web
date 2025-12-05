@@ -3,10 +3,10 @@ import { ConfigService } from '@nestjs/config';
 import { I18nContext } from 'nestjs-i18n';
 import { MailData } from './interfaces/mail-data.interface';
 
-import { MaybeType } from '@/utils/types/maybe.type';
-import { MailerService } from '../mailer/mailer.service';
-import path from 'path';
 import { AllConfigType } from '@/config/config.type';
+import { MaybeType } from '@/utils/types/maybe.type';
+import path from 'path';
+import { MailerService } from '../mailer/mailer.service';
 
 @Injectable()
 export class MailService {
@@ -47,6 +47,7 @@ export class MailService {
           infer: true,
         }),
         'src',
+        'modules',
         'mail',
         'mail-templates',
         'activation.hbs',
@@ -100,6 +101,7 @@ export class MailService {
           infer: true,
         }),
         'src',
+        'modules',
         'mail',
         'mail-templates',
         'reset-password.hbs',
@@ -151,6 +153,7 @@ export class MailService {
           infer: true,
         }),
         'src',
+        'modules',
         'mail',
         'mail-templates',
         'confirm-new-email.hbs',
