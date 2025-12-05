@@ -1,5 +1,5 @@
-import type {
-  ExecutionQueue,
+import {
+  type ExecutionQueue,
   execStatusIsDisabled,
   getWritebackAttributes,
   getWritebackBlockExecStatus,
