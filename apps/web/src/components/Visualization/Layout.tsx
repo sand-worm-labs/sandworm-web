@@ -1,8 +1,7 @@
-import { v4 as uuidv4 } from "uuid";
-import { useCallback, useEffect, useRef, useMemo, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useHotkeys } from "react-hotkeys-hook";
 import {
   ResizableHandle,
@@ -10,40 +9,22 @@ import {
   ResizablePanelGroup,
 } from "@sandworm/ui/components/resizable";
 
-import type { UserWorkspaceRole } from "@/types";
-
 import { MiniChat } from "../Chats/MiniChat";
 
 import { useStringQuery } from "./hooks/useQueryArgs";
 import useSideBar from "./hooks/useSideBar";
-import { useDataSources } from "./hooks/useDataSources";
-import type { SessionUser } from "./hooks/useAuth";
 import type { Page } from "./blocks/PagePath";
-import { useDocuments } from "./hooks/useDocuments";
 import MobileWarning from "./blocks/MobileWarning";
 import CommandPalette from "./blocks/commandPalette";
 import { FeaturesDialog } from "./blocks/SubscriptionBadge";
 import PagePath from "./blocks/PagePath";
 import DragLayer from "./blocks/DragLayer";
-import { useFavorites } from "./hooks/useFavorites";
-
-type ConfigItem = {
-  id: string;
-  name: string;
-  href: string;
-  icon: React.ComponentType<React.ComponentProps<any>>;
-  hidden?: boolean;
-  allowedRoles: Set<UserWorkspaceRole>;
-  openInNewTab: boolean;
-};
 
 interface Props {
   children: React.ReactNode;
   pagePath?: Page[];
   topBarClassname?: string;
   topBarContent?: React.ReactNode;
-  hideOnboarding?: boolean;
-  user: SessionUser;
   hideChat?: boolean;
 }
 
@@ -52,8 +33,6 @@ export default function Layout({
   pagePath,
   topBarClassname,
   topBarContent,
-  user,
-  hideOnboarding,
   hideChat,
 }: Props) {
   const [isSearchOpen, setSearchOpen] = useState(false);
@@ -63,7 +42,7 @@ export default function Layout({
   });
 
   const {
-    state: { isOpen: isSideBarOpen, width: sideBarWidth },
+    state: { isOpen: isSideBarOpen },
     api: sideBarApi,
   } = useSideBar();
 
@@ -74,72 +53,9 @@ export default function Layout({
     [sideBarApi.toggle]
   );
 
-  const router = useRouter();
   const pathname = usePathname();
 
   const workspaceId = useStringQuery("workspace");
-  const documentId = useStringQuery("document");
-
-  const [{ datasources: allDataSources, isLoading: isLoadingDataSources }] =
-    useDataSources(workspaceId);
-  const userDataSources = allDataSources.filter(ds => !ds.config.data.isDemo);
-  const hasUserDataSource = !isLoadingDataSources && userDataSources.size > 0;
-
-  const [
-    documentsState,
-    {
-      createDocument,
-      duplicateDocument,
-      setIcon,
-      deleteDocument,
-      updateParent: updateDocumentParent,
-    },
-  ] = useDocuments(workspaceId);
-
-  const documents = documentsState.documents.filter(
-    doc => doc.deletedAt === null && doc.version > 1
-  );
-
-  const [favorites, { favoriteDocument, unfavoriteDocument }] =
-    useFavorites(workspaceId);
-
-  const favoriteDocuments = useMemo(
-    () => documents.filter(d => favorites.has(d.id)),
-    [documents]
-  );
-
-  const onCreateDocument = useCallback(
-    async (parentId: string | null) => {
-      if (documentsState.loading) {
-        return;
-      }
-
-      const id = uuidv4();
-      try {
-        await createDocument({ id, parentId, version: 2 });
-        router.push(`/workspace/${workspaceId}/documents/${id}`);
-      } catch (err) {
-        console.error(err);
-      }
-    },
-    [documentsState, createDocument, router, workspaceId]
-  );
-
-  const showConfigItem = useCallback(
-    (item: ConfigItem) => {
-      if (item.hidden) {
-        return false;
-      }
-
-      const role = user.roles[workspaceId];
-      if (!role) {
-        return false;
-      }
-
-      return item.allowedRoles.has(role);
-    },
-    [user, workspaceId]
-  );
 
   const scrollRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -162,7 +78,7 @@ export default function Layout({
   useEffect(() => {
     const scroll = localStorage.getItem(`scroll-${workspaceId}`);
     if (scroll && scrollRef.current) {
-      scrollRef.current.scrollTop = parseInt(scroll);
+      scrollRef.current.scrollTop = parseInt(scroll, 10);
     }
   }, [workspaceId]);
 

@@ -5,95 +5,20 @@ import { Fragment, useCallback, useMemo } from "react";
 
 import type { UserWorkspaceRole, WorkspaceUser } from "@/types";
 
-import useProperties from "../hooks/useProperties";
-
-type Props = {
-  currentUserEmail: string;
-  users: WorkspaceUser[];
-  workspaceId: string;
-  onRemoveUser: (id: string) => void;
-  onChangeRole: (id: string, role: UserWorkspaceRole) => void;
-  onResetPassword: (id: string) => void;
-  role: UserWorkspaceRole;
-};
-function UsersList(props: Props) {
-  const users = useMemo(
-    () =>
-      props.users.sort((a, b) => {
-        if (a.email === props.currentUserEmail) return -1;
-        if (b.email === props.currentUserEmail) return 1;
-
-        if (a.role === "admin" && b.role !== "admin") return -1;
-        if (b.role === "admin" && a.role !== "admin") return 1;
-
-        if (a.role === "editor" && b.role === "viewer") return -1;
-        if (b.role === "editor" && a.role === "viewer") return 1;
-
-        return a.name.localeCompare(b.name);
-      }),
-    [props.users, props.currentUserEmail]
-  );
-
+interface BadgeProps {
+  className?: string;
+  children: React.ReactNode;
+}
+function Badge(props: BadgeProps) {
   return (
-    <div className="flow-root">
-      <div className="overflow-visible">
-        <div className="inline-block min-w-full py-2 align-middle">
-          <table className="min-w-full">
-            <thead className="uppercase text-gray-300 hidden">
-              <tr>
-                <th
-                  scope="col"
-                  className="py-3.5 text-left text-sm font-semibold"
-                >
-                  Name
-                </th>
-                <th
-                  scope="col"
-                  className="py-3.5 text-left text-sm font-semibold"
-                >
-                  Title
-                </th>
-                <th
-                  scope="col"
-                  className="py-3.5 text-left text-sm font-semibold"
-                >
-                  Email
-                </th>
-                <th
-                  scope="col"
-                  className="py-3.5 text-left text-sm font-semibold"
-                >
-                  Role
-                </th>
-                <th
-                  scope="col"
-                  className="relative py-3.5 pl-3 pr-4 sm:pr-6 lg:pr-8"
-                >
-                  <span className="sr-only">Edit</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100 bg-white">
-              {users.map(user => {
-                const isCurrentUser = user.email === props.currentUserEmail;
-
-                return (
-                  <UserItem
-                    key={user.email}
-                    user={user}
-                    isCurrentUser={isCurrentUser}
-                    onRemoveUser={props.onRemoveUser}
-                    onChangeRole={props.onChangeRole}
-                    onResetPassword={props.onResetPassword}
-                    role={props.role}
-                  />
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+    <span
+      className={clsx(
+        props.className,
+        "inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium border"
+      )}
+    >
+      {props.children}
+    </span>
   );
 }
 
@@ -142,48 +67,47 @@ function UserItem(props: UserItemProps) {
             Viewer
           </Badge>
         );
+      default:
+        return null;
     }
   }, [props.user.role]);
 
+  const roleHandlers: Record<string, () => void> = {
+    admin: onMakeAdmin,
+    editor: onMakeEditor,
+    viewer: onMakeViewer,
+  };
+
   const promotions = useMemo(() => {
     return ["admin", "editor", "viewer"]
-      .filter(r => r !== props.user.role)
-      .map(role => {
-        const onClick =
-          role === "admin"
-            ? onMakeAdmin
-            : role === "editor"
-              ? onMakeEditor
-              : onMakeViewer;
+      .filter(role => role !== props.user.role)
+      .map(role => (
+        <Menu.Item key={role}>
+          {({ active }) => {
+            const onClick = roleHandlers[role];
 
-        return (
-          <Menu.Item>
-            {({ active }) => {
-              return (
-                <button
-                  type="button"
-                  onClick={onClick}
-                  className={clsx(
-                    active ? "bg-gray-50" : "",
-                    "text-gray-700 hover:text-gray-900 cursor-pointer",
-                    "text-left w-full px-3 py-1 text-sm leading-6 block"
-                  )}
-                >
-                  Make {role}
-                  <span className="sr-only">, {props.user.name}</span>
-                </button>
-              );
-            }}
-          </Menu.Item>
-        );
-      });
+            return (
+              <button
+                type="button"
+                onClick={onClick}
+                className={clsx(
+                  active ? "bg-gray-50" : "",
+                  "text-gray-700 hover:text-gray-900 cursor-pointer",
+                  "text-left w-full px-3 py-1 text-sm leading-6 block"
+                )}
+              >
+                Make {role}
+                <span className="sr-only">, {props.user.name}</span>
+              </button>
+            );
+          }}
+        </Menu.Item>
+      ));
   }, [props.user.role]);
 
   const onResetPassword = useCallback(() => {
     props.onResetPassword(props.user.id);
   }, [props.onResetPassword, props.user.id]);
-
-  const properties = useProperties();
 
   return (
     <tr>
@@ -269,20 +193,92 @@ function UserItem(props: UserItemProps) {
   );
 }
 
-interface BadgeProps {
-  className?: string;
-  children: React.ReactNode;
-}
-function Badge(props: BadgeProps) {
+type Props = {
+  currentUserEmail: string;
+  users: WorkspaceUser[];
+  onRemoveUser: (id: string) => void;
+  onChangeRole: (id: string, role: UserWorkspaceRole) => void;
+  onResetPassword: (id: string) => void;
+  role: UserWorkspaceRole;
+};
+function UsersList(props: Props) {
+  const users = useMemo(
+    () =>
+      props.users.sort((a, b) => {
+        if (a.email === props.currentUserEmail) return -1;
+        if (b.email === props.currentUserEmail) return 1;
+
+        if (a.role === "admin" && b.role !== "admin") return -1;
+        if (b.role === "admin" && a.role !== "admin") return 1;
+
+        if (a.role === "editor" && b.role === "viewer") return -1;
+        if (b.role === "editor" && a.role === "viewer") return 1;
+
+        return (a.name ?? "").localeCompare(b.name ?? "");
+      }),
+    [props.users, props.currentUserEmail]
+  );
+
   return (
-    <span
-      className={clsx(
-        props.className,
-        "inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium border"
-      )}
-    >
-      {props.children}
-    </span>
+    <div className="flow-root">
+      <div className="overflow-visible">
+        <div className="inline-block min-w-full py-2 align-middle">
+          <table className="min-w-full">
+            <thead className="uppercase text-gray-300 hidden">
+              <tr>
+                <th
+                  scope="col"
+                  className="py-3.5 text-left text-sm font-semibold"
+                >
+                  Name
+                </th>
+                <th
+                  scope="col"
+                  className="py-3.5 text-left text-sm font-semibold"
+                >
+                  Title
+                </th>
+                <th
+                  scope="col"
+                  className="py-3.5 text-left text-sm font-semibold"
+                >
+                  Email
+                </th>
+                <th
+                  scope="col"
+                  className="py-3.5 text-left text-sm font-semibold"
+                >
+                  Role
+                </th>
+                <th
+                  scope="col"
+                  className="relative py-3.5 pl-3 pr-4 sm:pr-6 lg:pr-8"
+                >
+                  <span className="sr-only">Edit</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100 bg-white">
+              {users.map(user => {
+                const isCurrentUser = user.email === props.currentUserEmail;
+
+                return (
+                  <UserItem
+                    key={user.email}
+                    user={user}
+                    isCurrentUser={isCurrentUser}
+                    onRemoveUser={props.onRemoveUser}
+                    onChangeRole={props.onChangeRole}
+                    onResetPassword={props.onResetPassword}
+                    role={props.role}
+                  />
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   );
 }
 

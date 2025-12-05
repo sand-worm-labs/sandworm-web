@@ -293,6 +293,10 @@ type ReusableComponent = {
   instancesCreated: boolean;
 };
 
+export type ApiDeletedDocument = ApiDocument & {
+  deletedAt: Date;
+};
+
 export type APIReusableComponent = Omit<
   ReusableComponent,
   "state" | "createdAt" | "updatedAt"
@@ -308,3 +312,14 @@ export type APIReusableComponent = Omit<
 };
 
 export type ReusableComponentType = "sql" | "python";
+
+export type SessionUser = {
+  id: string;
+  email: string;
+  name: string;
+  picture: string | null;
+  lastVisitedWorkspaceId: string;
+  createdAt: string;
+  updatedAt: string;
+  roles: Record<string, UserWorkspaceRole>;
+};

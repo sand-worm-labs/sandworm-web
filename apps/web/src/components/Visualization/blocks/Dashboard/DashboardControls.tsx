@@ -1,3 +1,4 @@
+/* eslint-disable import/no-cycle */
 import type * as Y from "yjs";
 import {
   Bars3CenterLeftIcon,
@@ -5,6 +6,7 @@ import {
   CircleStackIcon,
   CommandLineIcon,
   PencilSquareIcon,
+  QuestionMarkCircleIcon,
   TableCellsIcon,
 } from "@heroicons/react/24/solid";
 import type {
@@ -76,6 +78,8 @@ function getTypeLabel(t: BlockType) {
       return "Dashboard Header";
     case BlockType.Writeback:
       return "Writeback";
+    default:
+      return "";
   }
 }
 
@@ -99,7 +103,8 @@ function getTypeIcon(t: BlockType): JSX.Element {
     case BlockType.FileUpload:
     case BlockType.DashboardHeader:
     case BlockType.Writeback:
-      return <></>;
+    default:
+      return <QuestionMarkCircleIcon className="w-4 h-4 text-gray-500" />;
   }
 }
 
@@ -120,7 +125,6 @@ interface Props {
   userId: string | null;
   executionQueue: ExecutionQueue;
   aiTasks: AITasks;
-  onToggleSchemaExplorer: (dataSourceId?: string | null) => void;
   onExpand: (block: YBlock) => void;
   isOpen: boolean;
   onOpen: () => void;
@@ -133,15 +137,18 @@ function DashboardControls(props: Props) {
   const { state: dashboard } = useYDocState(props.yDoc, getDashboard);
   const [search, setSearch] = useState("");
   const [types, setTypes] = useState<BlockType[]>([]);
-  const onToggleType = useCallback((t: BlockType) => {
-    setTypes(types => {
-      if (types.includes(t)) {
-        return types.filter(type => type !== t);
-      }
+  const onToggleType = useCallback(
+    (t: BlockType) => {
+      setTypes(currentTypes => {
+        if (currentTypes.includes(t)) {
+          return currentTypes.filter(type => type !== t);
+        }
 
-      return [...types, t];
-    });
-  }, []);
+        return [...currentTypes, t];
+      });
+    },
+    [types]
+  );
 
   const blocksInDashboard = useMemo(
     () =>
@@ -200,7 +207,7 @@ function DashboardControls(props: Props) {
               }
 
               return switchBlockType(block, {
-                onRichText: _ => block,
+                onRichText: () => block,
                 onSQL: sBlock => {
                   const { result } = getSQLAttributes(sBlock, blocks.value);
                   if (!result) {
@@ -217,15 +224,15 @@ function DashboardControls(props: Props) {
 
                   return block;
                 },
-                onVisualization: _ => block,
-                onVisualizationV2: _ => block,
-                onInput: _ => block,
-                onDropdownInput: _ => block,
-                onDateInput: _ => block,
+                onVisualization: () => block,
+                onVisualizationV2: () => block,
+                onInput: () => block,
+                onDropdownInput: () => block,
+                onDateInput: () => block,
                 onPivotTable: block => block,
-                onFileUpload: _ => null,
-                onDashboardHeader: _ => null,
-                onWriteback: _ => null,
+                onFileUpload: () => null,
+                onDashboardHeader: () => null,
+                onWriteback: () => null,
               });
             }) ?? [];
 
@@ -359,6 +366,7 @@ function DashboardControls(props: Props) {
         </SimpleBar>
         <div className="bg-gray-50 dark:bg-black dark:border-[#262A30] p-4 border-t border-gray-200">
           <button
+            type="button"
             className="flex items-center rounded-md px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 border dark:border-[#262A30] border-gray-200 disabled:cursor-not-allowed disabled:opacity-50 gap-x-2 w-full dark:bg-black  bg-white shadow-sm justify-center"
             onClick={addHeading}
           >
@@ -369,43 +377,6 @@ function DashboardControls(props: Props) {
       </div>
     </div>
   );
-}
-
-interface BlocksListProps {
-  document: ApiDocument;
-  dataSources: APIDataSources;
-  dataframes: Y.Map<DataFrame>;
-  list: YBlock[];
-  blocks: Y.Map<YBlock>;
-  layout: Y.Array<YBlockGroup>;
-  onDragStart: (draggingBlock: DraggingBlock) => void;
-  userId: string | null;
-  executionQueue: ExecutionQueue;
-  aiTasks: AITasks;
-  onExpand: (block: YBlock) => void;
-}
-function BlocksList(props: BlocksListProps) {
-  return props.list.map((block, i) => {
-    const { id } = getBaseAttributes(block);
-
-    return (
-      <BlockListItem
-        className={clsx("mt-6", i === props.list.length - 1 && "mb-6")}
-        key={id}
-        document={props.document}
-        dataSources={props.dataSources}
-        dataframes={props.dataframes}
-        block={block}
-        blocks={props.blocks}
-        layout={props.layout}
-        onDragStart={props.onDragStart}
-        userId={props.userId}
-        executionQueue={props.executionQueue}
-        aiTasks={props.aiTasks}
-        onExpand={props.onExpand}
-      />
-    );
-  });
 }
 
 interface BlockListItemProps {
@@ -593,6 +564,43 @@ function BlockListItem(props: BlockListItemProps) {
       </div>
     </div>
   );
+}
+
+interface BlocksListProps {
+  document: ApiDocument;
+  dataSources: APIDataSources;
+  dataframes: Y.Map<DataFrame>;
+  list: YBlock[];
+  blocks: Y.Map<YBlock>;
+  layout: Y.Array<YBlockGroup>;
+  onDragStart: (draggingBlock: DraggingBlock) => void;
+  userId: string | null;
+  executionQueue: ExecutionQueue;
+  aiTasks: AITasks;
+  onExpand: (block: YBlock) => void;
+}
+function BlocksList(props: BlocksListProps) {
+  return props.list.map((block, i) => {
+    const { id } = getBaseAttributes(block);
+
+    return (
+      <BlockListItem
+        className={clsx("mt-6", i === props.list.length - 1 && "mb-6")}
+        key={id}
+        document={props.document}
+        dataSources={props.dataSources}
+        dataframes={props.dataframes}
+        block={block}
+        blocks={props.blocks}
+        layout={props.layout}
+        onDragStart={props.onDragStart}
+        userId={props.userId}
+        executionQueue={props.executionQueue}
+        aiTasks={props.aiTasks}
+        onExpand={props.onExpand}
+      />
+    );
+  });
 }
 
 export default DashboardControls;

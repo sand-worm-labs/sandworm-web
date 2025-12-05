@@ -51,7 +51,6 @@ interface Props {
   content: Y.XmlFragment;
   isEditable: boolean;
   isLoading: boolean;
-  isPDF: boolean;
   style?: string;
 }
 

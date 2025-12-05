@@ -41,7 +41,10 @@ export function ExamplePrompts({ onPromptSelect }: ExamplePromptsProps) {
           ])}
           onClick={() => onPromptSelect(prompt)}
         >
-          {prompt.split("\n")[0].replace("Create ", "").replace("Design ", "")}
+          {prompt
+            ?.split("\n")[0]
+            ?.replace("Create ", "")
+            ?.replace("Design ", "") ?? ""}
           <ArrowUpRightIcon className="h-3 w-3" />
         </button>
       ))}

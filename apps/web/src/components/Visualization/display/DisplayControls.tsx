@@ -115,6 +115,8 @@ function getColorFromSerie(s: Serie): string | null {
       return s.lineStyle?.color ?? null;
     case "scatter":
       return s.itemStyle?.color ?? null;
+    default:
+      return null;
   }
 }
 
@@ -420,6 +422,7 @@ function ColorPicker(props: ColorPickerProps) {
   return (
     <div className={props.className}>
       <button
+        type="button"
         className="w-5 h-5 rounded-full border hover:opacity-90 transition-opacity duration-300"
         style={{ backgroundColor: props.color }}
         onClick={onTogglePickerOpen}
