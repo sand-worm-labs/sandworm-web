@@ -1,6 +1,6 @@
 import { EyeIcon } from "@heroicons/react/24/outline";
 
-import { Tooltip } from "../../Tooltip";
+import { Tooltip } from "./ToolTips";
 
 interface Props {
   onClick: () => void;

@@ -280,3 +280,31 @@ export type ScheduleParams =
 export type ExecutionSchedule = {
   id: string;
 } & ScheduleParams;
+
+type ReusableComponent = {
+  id: string;
+  state: Buffer;
+  type: $Enums.ReusableComponentType;
+  title: string;
+  blockId: string;
+  documentId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  instancesCreated: boolean;
+};
+
+export type APIReusableComponent = Omit<
+  ReusableComponent,
+  "state" | "createdAt" | "updatedAt"
+> & {
+  state: string;
+  createdAt: string;
+  updatedAt: string;
+  document: {
+    id: string;
+    title: string;
+    icon: string;
+  };
+};
+
+export type ReusableComponentType = "sql" | "python";
