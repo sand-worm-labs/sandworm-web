@@ -46,7 +46,6 @@ import {
   getBlockFlatPosition,
 } from "@sandworm/editor";
 import type { DataFrame } from "@sandworm/types";
-
 import {
   Bars3CenterLeftIcon,
   ChartPieIcon,
@@ -102,6 +101,7 @@ import {
   useYDocState,
 } from "../Visualization/hooks/useYDocs";
 import useSideBar from "../Visualization/hooks/useSideBar";
+import { ElementType } from "../Visualization/blocks/DragLayer";
 
 import RemoveBlockDashboardConflictDialog from "./RemoveBlockDashboardConflictDialog";
 import { widthClasses } from "./constants";
@@ -111,7 +111,6 @@ import { ContentSkeleton } from "./ContentSkeleton";
 import PlusButton from "./PlusButton";
 import DragHandle from "./DragHandle";
 import Title from "./Title";
-import { ElementType } from "../Visualization/blocks/DragLayer";
 
 // The react-dnd package does not export this...
 type Identifier = string | symbol;

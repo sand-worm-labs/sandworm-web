@@ -19,18 +19,17 @@ function ScaleChild(props: Props) {
   const [height, setHeight] = useState(null as number | null);
   useEffect(() => {
     if (measureHeight.current) {
-      // wait until height is not changed
-      let height = -1;
+      let prevHeight = -1;
+
       const checkHeight = () => {
-        if (!measureHeight.current) {
-          return;
-        }
+        if (!measureHeight.current) return;
 
         const newHeight = measureHeight.current.getBoundingClientRect().height;
-        if (height === newHeight) {
-          setHeight(height);
+
+        if (prevHeight === newHeight) {
+          setHeight(newHeight);
         } else {
-          height = newHeight;
+          prevHeight = newHeight;
           requestAnimationFrame(checkHeight);
         }
       };

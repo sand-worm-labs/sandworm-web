@@ -17,6 +17,8 @@ import {
   CardTitle,
 } from "@sandworm/ui/components/card";
 
+import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
+
 interface ExampleQuery {
   title: string;
   description: string;
@@ -100,6 +102,7 @@ export const ExamplesModal: React.FC<ExamplesModalProps> = ({
   onClose,
 }) => {
   const router = useRouter();
+  const workspaceId = useStringQuery("workspace");
 
   const handleSelect = (
     query: string,
@@ -107,7 +110,9 @@ export const ExamplesModal: React.FC<ExamplesModalProps> = ({
     executionMethod: "rpc" | "indexed"
   ) => {
     const tabId = createTab(title, undefined, "sql", query, executionMethod);
-    router.push(`/workspace/console/${tabId}`, { showProgress: true });
+    router.push(`/workspace/${workspaceId}/console/${tabId}`, {
+      showProgress: true,
+    });
 
     onClose();
   };

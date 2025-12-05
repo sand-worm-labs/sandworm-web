@@ -123,8 +123,10 @@ export default function CommandPalette({
           >
             <Dialog.Panel className="mx-auto max-w-2xl transform divide-y divide-gray-100 overflow-hidden rounded-xl bg-white shadow-2xl ring-1 ring-black ring-opacity-5 transition-all">
               <Combobox
-                onChange={(item: ApiDocument) => {
-                  return navigateToDocument(item);
+                onChange={(item: ApiDocument | null) => {
+                  if (item) {
+                    navigateToDocument(item);
+                  }
                 }}
               >
                 {({ activeOption }) => (

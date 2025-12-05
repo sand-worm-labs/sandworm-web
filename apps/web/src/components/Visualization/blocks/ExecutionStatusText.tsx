@@ -65,10 +65,11 @@ export const LoadingQueryText = ({
       }, 60000);
       return () => clearInterval(interval);
     }
+    return () => {};
   }, [startExecutionTime]);
 
   return (
-    <span className="font-syne text-gray-400 text-xs flex items-center select-none">
+    <span className="text-gray-400 text-xs flex items-center select-none">
       <CloudArrowDownIcon className="w-4 h-4 mr-1" />
       <span className="pt-0.5">
         Executing query
@@ -85,7 +86,7 @@ export const LoadingQueryText = ({
 
 export const LoadingEnvText = () => {
   return (
-    <span className="font-syne text-gray-400 text-xs flex items-center select-none">
+    <span className=" text-gray-400 text-xs flex items-center select-none">
       <Cog8ToothIcon className="w-4 h-4 mr-1" />
       <span className="pt-0.5">Starting your environment...</span>
     </span>
@@ -103,10 +104,11 @@ export const ExecutingPythonText = ({
       }, 60000);
       return () => clearInterval(interval);
     }
+    return () => {};
   }, [startExecutionTime]);
 
   return (
-    <span className="font-syne text-gray-400 text-xs flex items-center select-none">
+    <span className=" text-gray-400 text-xs flex items-center select-none">
       <CloudArrowDownIcon className="w-4 h-4 mr-1" />
       <span className="pt-0.5">
         Executing Python code

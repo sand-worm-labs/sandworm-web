@@ -30,6 +30,8 @@ import {
 import { useSandwormStore } from "@/store";
 import type { Query } from "@/types";
 
+import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
+
 import { HomeTab } from "./HomeTab";
 import { SortableTab } from "./SortableTab";
 import { QueryTab } from "./QueryTab";
@@ -54,6 +56,7 @@ export const WorkspaceTabs = ({
   const router = useRouter();
   const pathname = usePathname();
   const params = useParams();
+  const workspaceId = useStringQuery("workspace");
   const urlTabId = Array.isArray(params?.id) ? params.id[0] : params?.id;
 
   // this is a bit messy need to clean this up
@@ -122,7 +125,7 @@ export const WorkspaceTabs = ({
   }, [tabs]);
 
   const handleTabChange = (tabId: string) => {
-    const basePath = "/workspace/console";
+    const basePath = `/workspace/${workspaceId}/console`;
     const currentTabId = pathname.split("/")[2];
 
     if (tabId !== currentTabId) {
@@ -134,7 +137,9 @@ export const WorkspaceTabs = ({
 
   const addNewCodeTab = () => {
     const tabId = createTab("New Query");
-    router.push(`/workspace/console/${tabId}`, { showProgress: true });
+    router.push(`/workspace/${workspaceId}/console/${tabId}`, {
+      showProgress: true,
+    });
   };
 
   return (

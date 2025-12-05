@@ -1,6 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
 import { useCallback, useEffect, useRef, useMemo, useState } from "react";
-import { Syne } from "next/font/google";
 import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { useRouter, usePathname } from "next/navigation";
@@ -23,13 +22,10 @@ import type { Page } from "./blocks/PagePath";
 import { useDocuments } from "./hooks/useDocuments";
 import MobileWarning from "./blocks/MobileWarning";
 import CommandPalette from "./blocks/commandPalette";
-
 import { FeaturesDialog } from "./blocks/SubscriptionBadge";
 import PagePath from "./blocks/PagePath";
 import DragLayer from "./blocks/DragLayer";
 import { useFavorites } from "./hooks/useFavorites";
-
-const syne = Syne({ subsets: ["latin"] });
 
 type ConfigItem = {
   id: string;
@@ -173,9 +169,7 @@ export default function Layout({
   const [isUpgradeDialogOpen, setUpgradeDialogOpen] = useState(false);
 
   return (
-    <div
-      className={`flex w-full h-full overflow-hidden ${syne.className} relative`}
-    >
+    <div className="flex w-full h-full overflow-hidden relative">
       <MobileWarning />
 
       <DragLayer />

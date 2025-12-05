@@ -4,8 +4,6 @@ import clsx from "clsx";
 import type { FieldValues, UseControllerProps } from "react-hook-form";
 import { useController } from "react-hook-form";
 
-import { ScheduleFormValues } from "./Schedules/AddScheduleForm";
-
 interface GenericMultiEmailProps<T extends FieldValues>
   extends UseControllerProps<T> {}
 

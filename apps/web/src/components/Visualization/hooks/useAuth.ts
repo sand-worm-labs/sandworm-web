@@ -1,9 +1,10 @@
 "use client";
 
-import type { ApiUser, UserWorkspaceRole } from "@/types";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
+
+import type { ApiUser, UserWorkspaceRole } from "@/types";
 
 import fetcher, { AuthenticationError } from "../utils/fetcher";
 import { NEXT_PUBLIC_API_URL, NEXT_PUBLIC_PUBLIC_URL } from "../utils/env";
@@ -16,7 +17,14 @@ type AuthState = {
   error?: UseAuthError;
 };
 
-type SignupApi = { signupWithEmail: (email: string) => void };
+type SignupApi = {
+  signupWithEmail: (
+    email: string,
+    password: string,
+    firstName: string,
+    lastName: string
+  ) => void;
+};
 type UseSignup = [AuthState, SignupApi];
 
 export const useSignup = (): UseSignup => {
@@ -31,14 +39,17 @@ export const useSignup = (): UseSignup => {
   });
 
   const signupWithEmail = useCallback(
-    (email: string) => {
+    (email: string, password: string, firstName: string, lastName: string) => {
       setState(s => ({ ...s, loading: true }));
-      fetch(`${NEXT_PUBLIC_API_URL()}/auth/sign-up/email`, {
+      fetch(`${NEXT_PUBLIC_API_URL()}/auth/email/register`, {
         credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email,
+          password,
+          firstName,
+          lastName,
           callback: NEXT_PUBLIC_PUBLIC_URL(),
         }),
       })
@@ -126,6 +137,7 @@ export const useLogin = (): UseLogin => {
 export type SessionUser = ApiUser & {
   userHash: string;
   roles: Record<string, UserWorkspaceRole>;
+  picture?: string | null;
 };
 
 export const useSession = ({

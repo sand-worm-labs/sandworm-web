@@ -34,20 +34,20 @@ function EditWithAIForm(props: Props) {
 
       let index = 0; // This keeps track of the current index in the text before any changes.
       let delta = 0;
-      for (const operation of evt.changes.delta) {
+      evt.changes.delta.forEach(operation => {
         if (operation.retain !== undefined) {
           index += operation.retain;
         } else if (operation.insert !== undefined) {
           if (index < currentSelectionStart) {
-            delta += operation.insert.length; // Only modify delta if insert is before the cursor
+            delta += operation.insert.length;
           }
-          index += operation.insert.length; // Move index forward by the length of the inserted text
+          index += operation.insert.length;
         } else if (operation.delete !== undefined) {
           if (index < currentSelectionStart) {
-            delta -= operation.delete; // Only modify delta if delete is before the cursor
+            delta -= operation.delete;
           }
         }
-      }
+      });
 
       currentInput.value = evt.target.toString();
       requestAnimationFrame(() => {

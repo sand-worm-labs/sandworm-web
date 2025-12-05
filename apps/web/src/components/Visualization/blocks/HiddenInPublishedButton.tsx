@@ -15,7 +15,6 @@ import { TooltipV2 } from "./ToolTips";
 interface Props {
   isBlockHiddenInPublished: boolean;
   onToggleIsBlockHiddenInPublished: () => void;
-  hasMultipleTabs: boolean;
   isCodeHidden: boolean;
   onToggleIsCodeHidden?: () => void;
   isOutputHidden: boolean;

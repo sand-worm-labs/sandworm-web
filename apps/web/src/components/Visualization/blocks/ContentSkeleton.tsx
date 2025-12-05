@@ -29,7 +29,7 @@ export function TitleSkeleton({ visible }: Props) {
   const [show, setShow] = useResettableState(() => false, [visible]);
   useEffect(() => {
     if (!visible) {
-      return;
+      return () => {};
     }
 
     const timeout = setTimeout(() => {
@@ -47,72 +47,6 @@ export function TitleSkeleton({ visible }: Props) {
         "animate-pulse-dark w-full h-24 bg-gray-100 mb-4"
       )}
     />
-  );
-}
-
-export function ContentSkeleton({ visible }: Props) {
-  const [show, setShow] = useResettableState(() => false, [visible]);
-  useEffect(() => {
-    if (!visible) {
-      return;
-    }
-
-    const timeout = setTimeout(() => {
-      setShow(true);
-    }, TIMEOUT_TO_SHOW);
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [visible, setShow]);
-
-  // Generate 20 line skeletons
-  const lines = useMemo(() => {
-    const linesList = [];
-    for (let i = 0; i < 20; i++) {
-      linesList.push(<LineSkeleton key={i} />);
-    }
-    return linesList;
-  }, []);
-
-  const type = useMemo(() => {
-    const randomIndex = Math.floor(Math.random() * 2);
-    return randomIndex === 0 ? "quote" : "didYouKnow";
-  }, []);
-
-  const content = useMemo(() => {
-    if (type === "quote") {
-      const randomIndex = Math.floor(Math.random() * quotes.length);
-      return (
-        <QuoteBlock
-          quote={quotes[randomIndex].quote}
-          author={quotes[randomIndex].author}
-        />
-      );
-    }
-    const randomIndex = Math.floor(Math.random() * didYouKnows.length);
-    return <DidYouKnowBlock content={didYouKnows[randomIndex]} />;
-  }, [type]);
-
-  return (
-    <div
-      className={clsx(
-        {
-          hidden: !visible || !show,
-        },
-        "flex items-center justify-center w-full h-full"
-      )}
-    >
-      <div className="w-full h-full">
-        <div className="relative">
-          <div className="animate-pulse-dark flex flex-col space-y-2">
-            {lines}
-          </div>
-          <div className="hidden absolute top-[40%] w-2/5 left-1/2 rounded-md bg-white shadow-lg border border-gray-300 p-4 -translate-y-full -translate-x-1/2">
-            {content}
-          </div>
-        </div>
-      </div>
-    </div>
   );
 }
 
@@ -202,3 +136,73 @@ const QuoteBlock = ({ quote, author }: Quote) => {
     </div>
   );
 };
+
+export function ContentSkeleton({ visible }: Props) {
+  const [show, setShow] = useResettableState(() => false, [visible]);
+  useEffect(() => {
+    if (!visible) {
+      return () => {};
+    }
+
+    const timeout = setTimeout(() => {
+      setShow(true);
+    }, TIMEOUT_TO_SHOW);
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [visible, setShow]);
+
+  // Generate 20 line skeletons
+  const lines = useMemo(() => {
+    const linesList = [];
+    for (let i = 0; i < 20; i++) {
+      linesList.push(<LineSkeleton key={i} />);
+    }
+    return linesList;
+  }, []);
+
+  const type = useMemo(() => {
+    const randomIndex = Math.floor(Math.random() * 2);
+    return randomIndex === 0 ? "quote" : "didYouKnow";
+  }, []);
+
+  const content = useMemo(() => {
+    if (type === "quote") {
+      const randomIndex = Math.floor(Math.random() * quotes.length);
+      const fallback = quotes[0];
+      const selected = quotes[randomIndex] ?? fallback;
+      if (!selected) {
+        return null;
+      }
+      return <QuoteBlock quote={selected.quote} author={selected.author} />;
+    }
+    const randomIndex = Math.floor(Math.random() * didYouKnows.length);
+    const selected = didYouKnows[randomIndex] ?? didYouKnows[0];
+    if (!selected) {
+      return null;
+    }
+    return <DidYouKnowBlock content={selected} />;
+  }, [type]);
+
+  return (
+    <div
+      className={clsx(
+        {
+          hidden: !visible || !show,
+        },
+        "flex items-center justify-center w-full h-full"
+      )}
+    >
+      <div className="w-full h-full">
+        <div className="relative">
+          <div className="animate-pulse-dark flex flex-col space-y-2">
+            {lines}
+          </div>
+          <div className="hidden absolute top-[40%] w-2/5 left-1/2 rounded-md bg-white shadow-lg border border-gray-300 p-4 -translate-y-full -translate-x-1/2">
+            {content}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

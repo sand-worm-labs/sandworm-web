@@ -3,7 +3,6 @@ import type { Editor } from "@tiptap/react";
 import { BubbleMenu } from "@tiptap/react/menus";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
-
 import clsx from "clsx";
 import { CheckIcon, LinkIcon } from "@heroicons/react/24/solid";
 

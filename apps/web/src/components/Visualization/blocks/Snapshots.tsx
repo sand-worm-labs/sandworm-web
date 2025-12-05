@@ -8,12 +8,25 @@ import { Tooltip } from "./ToolTips";
 import ScrollBar from "./ScrollBar";
 
 interface Props {
-  workspaceId: string;
-  documentId: string;
   visible: boolean;
   onHide: () => void;
-  isPublished: boolean;
 }
+
+export function formatSnapshotDate(date: string): string {
+  return dfns.format(new Date(date), "do 'of' MMMM, yyyy 'at' h:mm a");
+}
+
+const DefaultSnapshotsTooltip = () => {
+  return (
+    <div className="scale-0 font-primary pointer-events-none absolute left-1/2 mt-1.5 -translate-x-1/2 opacity-0 transition-opacity group-hover:scale-100 group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 w-44">
+      <div className="flex flex-col items-center justify-center text-gray-400 text-center gap-y-1">
+        <span>Each scheduled run generates a snapshot.</span>
+        <span>Create snapshots manually by clicking the save button.</span>
+      </div>
+    </div>
+  );
+};
+
 export default function Snapshots(props: Props) {
   return (
     <Transition
@@ -71,18 +84,3 @@ export default function Snapshots(props: Props) {
     </Transition>
   );
 }
-
-export function formatSnapshotDate(date: string): string {
-  return dfns.format(new Date(date), "do 'of' MMMM, yyyy 'at' h:mm a");
-}
-
-const DefaultSnapshotsTooltip = () => {
-  return (
-    <div className="scale-0 font-primary pointer-events-none absolute left-1/2 mt-1.5 -translate-x-1/2 opacity-0 transition-opacity group-hover:scale-100 group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 w-44">
-      <div className="flex flex-col items-center justify-center text-gray-400 text-center gap-y-1">
-        <span>Each scheduled run generates a snapshot.</span>
-        <span>Create snapshots manually by clicking the save button.</span>
-      </div>
-    </div>
-  );
-};
