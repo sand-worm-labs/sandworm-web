@@ -86,7 +86,11 @@ function Item(props: ItemProps) {
       // Generally it's better to avoid mutations,
       // but it's good here for the sake of performance
       // to avoid expensive index searches.
-      item.index = hoverIndex;
+      const monitorItem = monitor.getItem<{ index: number }>();
+      if (monitorItem && typeof monitorItem.index === "number") {
+        // Update the cached index on the monitor item to avoid re-scanning arrays
+        monitorItem.index = hoverIndex;
+      }
     },
   });
 
@@ -134,11 +138,16 @@ interface Props<T> {
 export default function DragList<T>(props: Props<T>) {
   const move = useCallback(
     (dragIndex: number, hoverIndex: number) => {
+      const draggedItem = props.items[dragIndex];
+      if (draggedItem === undefined) {
+        return;
+      }
+
       props.onChange(
         update(props.items, {
           $splice: [
             [dragIndex, 1],
-            [hoverIndex, 0, props.items[dragIndex]],
+            [hoverIndex, 0, draggedItem],
           ],
         })
       );
