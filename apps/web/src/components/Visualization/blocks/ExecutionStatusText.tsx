@@ -65,6 +65,7 @@ export const LoadingQueryText = ({
       }, 60000);
       return () => clearInterval(interval);
     }
+    return () => {};
   }, [startExecutionTime]);
 
   return (
@@ -103,6 +104,7 @@ export const ExecutingPythonText = ({
       }, 60000);
       return () => clearInterval(interval);
     }
+    return () => {};
   }, [startExecutionTime]);
 
   return (

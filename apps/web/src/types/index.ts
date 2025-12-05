@@ -190,11 +190,7 @@ export type ApiDocument = Document & {
   hasDashboard: boolean;
 };
 
-export type UserWorkspaceRole = {
-  editor: "editor";
-  viewer: "viewer";
-  admin: "admin";
-};
+export type UserWorkspaceRole = "editor" | "viewer" | "admin";
 
 type Workspace = {
   id: string;
