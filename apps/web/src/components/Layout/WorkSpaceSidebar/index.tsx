@@ -26,7 +26,6 @@ export const WorkspaceSidebar = () => {
   const pathname = usePathname();
   const workspaceId = useStringQuery("workspace");
   const [collapsed, setCollapsed] = useState(false);
-  const [{ favoriteDocument, unfavoriteDocument }] = useFavorites(workspaceId);
   const router = useRouter();
   const documentId = useStringQuery("document");
 

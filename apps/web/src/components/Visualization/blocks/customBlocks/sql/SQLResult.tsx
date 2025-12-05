@@ -16,6 +16,7 @@ import { Transition } from "@headlessui/react";
 
 import { Tooltip, TooltipV2 } from "../../ToolTips";
 import type { DashboardMode } from "../../Dashboard";
+// eslint-disable-next-line import/no-cycle
 import { dashboardModeHasControls } from "../../Dashboard";
 import LargeSpinner from "../../LargeSpinner";
 import { useCSV } from "../../../hooks/useQueryCSV";
@@ -34,90 +35,6 @@ function formatMs(ms: number) {
   }
 
   return `${(ms / 60000).toFixed(2)}m`;
-}
-
-interface Props {
-  blockId: string;
-  documentId: string;
-  workspaceId: string;
-  result: RunQueryResult;
-  page: number;
-  dashboardPage: number;
-  loadingPage: boolean;
-  dataframeName: string;
-  isPublic: boolean;
-  isResultHidden: boolean;
-  toggleResultHidden: () => void;
-  isFixingWithAI: boolean;
-  onFixWithAI: () => void;
-  dashboardMode: DashboardMode | null;
-  canFixWithAI: boolean;
-  sort: TableSort | null;
-  isAddVisualizationDisabled: boolean;
-  onAddVisualization: () => void;
-  onChangeSort: (sort: TableSort | null) => void;
-  onChangePage: (page: number) => void;
-  dashboardPageSize: number;
-  onChangeDashboardPageSize: (size: number) => void;
-  hasTitle: boolean;
-}
-function SQLResult(props: Props) {
-  switch (props.result.type) {
-    case "success":
-      return (
-        <SQLSuccess
-          result={props.result}
-          page={props.page}
-          dashboardPage={props.dashboardPage}
-          isPublic={props.isPublic}
-          documentId={props.documentId}
-          workspaceId={props.workspaceId}
-          dataframeName={props.dataframeName}
-          isResultHidden={props.isResultHidden}
-          toggleResultHidden={props.toggleResultHidden}
-          blockId={props.blockId}
-          dashboardMode={props.dashboardMode}
-          sort={props.sort}
-          onChangeSort={props.onChangeSort}
-          loadingPage={props.loadingPage}
-          onChangePage={props.onChangePage}
-          isAddVisualizationDisabled={props.isAddVisualizationDisabled}
-          onAddVisualization={props.onAddVisualization}
-          dashboardPageSize={props.dashboardPageSize}
-          onChangeDashboardPageSize={props.onChangeDashboardPageSize}
-          hasTitle={props.hasTitle}
-        />
-      );
-    case "abort-error":
-      return (
-        <SQLAborted
-          dashboardMode={props.dashboardMode}
-          toggleResultHidden={props.toggleResultHidden}
-          isResultHidden={props.isResultHidden}
-        />
-      );
-    case "syntax-error":
-      return (
-        <SQLSyntaxError
-          result={props.result}
-          isFixingWithAI={props.isFixingWithAI}
-          onFixWithAI={props.onFixWithAI}
-          canFixWithAI={props.canFixWithAI}
-          dashboardMode={props.dashboardMode}
-          isResultHidden={props.isResultHidden}
-          toggleResultHidden={props.toggleResultHidden}
-        />
-      );
-    case "python-error":
-      return (
-        <SQLPythonError
-          result={props.result}
-          dashboardMode={props.dashboardMode}
-          isResultHidden={props.isResultHidden}
-          toggleResultHidden={props.toggleResultHidden}
-        />
-      );
-  }
 }
 
 interface SQLSuccessProps {
@@ -206,7 +123,7 @@ function SQLSuccess(props: SQLSuccessProps) {
       dashboardModeHasControls(props.dashboardMode) ||
       !containerRef.current
     ) {
-      return;
+      return () => {};
     }
 
     const tableHeaderSize = 40;
@@ -331,12 +248,13 @@ function SQLSuccess(props: SQLSuccessProps) {
           {typeof result.queryDurationMs === "number" &&
             ` · ${formatMs(result.queryDurationMs)}`}
           {props.isResultHidden && (
-            <span
+            <button
+              type="button"
               className="text-gray-300 pl-3 hover:text-gray-400 cursor-pointer"
               onClick={props.toggleResultHidden}
             >
               collapsed
-            </span>
+            </button>
           )}
         </div>
         <div className="flex-1 flex justify-center">
@@ -367,8 +285,9 @@ function SQLSuccess(props: SQLSuccessProps) {
               active
             >
               <button
+                type="button"
                 className={clsx(
-                  "flex items-center bg-white hover:bg-gray-100 border border-gray-300 py-0.5 px-2 rounded-sm text-gray-500 flex items-center gap-x-1 disabled:bg-gray-200 disabled:border-0 disabled:cursor-not-allowed h-full"
+                  " bg-white hover:bg-gray-100 border border-gray-300 py-0.5 px-2 rounded-sm text-gray-500 flex items-center gap-x-1 disabled:bg-gray-200 disabled:border-0 disabled:cursor-not-allowed h-full"
                 )}
                 disabled={props.isAddVisualizationDisabled}
                 onClick={props.onAddVisualization}
@@ -389,6 +308,7 @@ function SQLSuccess(props: SQLSuccessProps) {
           >
             {ref => (
               <button
+                type="button"
                 ref={ref}
                 disabled={csvRes.loading}
                 className={clsx(
@@ -426,6 +346,7 @@ function SQLAborted(props: {
       {!props.dashboardMode && (
         <div className="p-3 text-xs text-gray-300 flex items-center justify-end">
           <button
+            type="button"
             className="inline-flex items-center rounded-md bg-red-50 px-1.5 py-0.5 text-[12px] text-red-700 ring-1 ring-inset ring-red-600/10 hover:bg-red-100"
             onClick={props.toggleResultHidden}
           >
@@ -470,6 +391,7 @@ function SQLSyntaxError(props: {
       {!props.dashboardMode && (
         <div className="p-3 text-xs text-gray-300 flex items-center justify-end">
           <button
+            type="button"
             className="inline-flex items-center rounded-md bg-red-50 px-1.5 py-0.5 text-[12px] text-red-700 ring-1 ring-inset ring-red-600/10 hover:bg-red-100"
             onClick={props.toggleResultHidden}
           >
@@ -511,6 +433,7 @@ function SQLSyntaxError(props: {
                   active={!props.canFixWithAI}
                 >
                   <button
+                    type="button"
                     disabled={!props.canFixWithAI}
                     onClick={props.onFixWithAI}
                     className="mt-4 flex items-center border rounded-sm px-2 py-1 gap-x-2  border-gray-200 hover:bg-gray-50 hover:text-gray-700 disabled:bg-gray-200 disabled:border-0 disabled:cursor-not-allowed"
@@ -548,6 +471,7 @@ function SQLPythonError(props: {
       {!props.dashboardMode && (
         <div className="p-3 text-xs text-gray-300 flex items-center justify-end">
           <button
+            type="button"
             className="inline-flex items-center rounded-md bg-red-50 px-1.5 py-0.5 text-[12px] text-red-700 ring-1 ring-inset ring-red-600/10"
             onClick={props.toggleResultHidden}
           >
@@ -585,6 +509,92 @@ function SQLPythonError(props: {
       </Transition>
     </div>
   );
+}
+
+interface Props {
+  blockId: string;
+  documentId: string;
+  workspaceId: string;
+  result: RunQueryResult;
+  page: number;
+  dashboardPage: number;
+  loadingPage: boolean;
+  dataframeName: string;
+  isPublic: boolean;
+  isResultHidden: boolean;
+  toggleResultHidden: () => void;
+  isFixingWithAI: boolean;
+  onFixWithAI: () => void;
+  dashboardMode: DashboardMode | null;
+  canFixWithAI: boolean;
+  sort: TableSort | null;
+  isAddVisualizationDisabled: boolean;
+  onAddVisualization: () => void;
+  onChangeSort: (sort: TableSort | null) => void;
+  onChangePage: (page: number) => void;
+  dashboardPageSize: number;
+  onChangeDashboardPageSize: (size: number) => void;
+  hasTitle: boolean;
+}
+function SQLResult(props: Props) {
+  switch (props.result.type) {
+    case "success":
+      return (
+        <SQLSuccess
+          result={props.result}
+          page={props.page}
+          dashboardPage={props.dashboardPage}
+          isPublic={props.isPublic}
+          documentId={props.documentId}
+          workspaceId={props.workspaceId}
+          dataframeName={props.dataframeName}
+          isResultHidden={props.isResultHidden}
+          toggleResultHidden={props.toggleResultHidden}
+          blockId={props.blockId}
+          dashboardMode={props.dashboardMode}
+          sort={props.sort}
+          onChangeSort={props.onChangeSort}
+          loadingPage={props.loadingPage}
+          onChangePage={props.onChangePage}
+          isAddVisualizationDisabled={props.isAddVisualizationDisabled}
+          onAddVisualization={props.onAddVisualization}
+          dashboardPageSize={props.dashboardPageSize}
+          onChangeDashboardPageSize={props.onChangeDashboardPageSize}
+          hasTitle={props.hasTitle}
+        />
+      );
+    case "abort-error":
+      return (
+        <SQLAborted
+          dashboardMode={props.dashboardMode}
+          toggleResultHidden={props.toggleResultHidden}
+          isResultHidden={props.isResultHidden}
+        />
+      );
+    case "syntax-error":
+      return (
+        <SQLSyntaxError
+          result={props.result}
+          isFixingWithAI={props.isFixingWithAI}
+          onFixWithAI={props.onFixWithAI}
+          canFixWithAI={props.canFixWithAI}
+          dashboardMode={props.dashboardMode}
+          isResultHidden={props.isResultHidden}
+          toggleResultHidden={props.toggleResultHidden}
+        />
+      );
+    case "python-error":
+      return (
+        <SQLPythonError
+          result={props.result}
+          dashboardMode={props.dashboardMode}
+          isResultHidden={props.isResultHidden}
+          toggleResultHidden={props.toggleResultHidden}
+        />
+      );
+    default:
+      return null;
+  }
 }
 
 export default SQLResult;
