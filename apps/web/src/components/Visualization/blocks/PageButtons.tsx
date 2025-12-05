@@ -20,16 +20,25 @@ const PageButtons: React.FC<PageButtonsProps> = ({
   setPage,
   isPublic,
 }) => {
-  const secondButtonPage =
-    currentPage === 0
-      ? 1
-      : currentPage === totalPages - 1
-        ? totalPages - 2
-        : currentPage + 1;
+  const getSecondButtonPage = () => {
+    if (currentPage === 0) return 1;
+    if (currentPage === totalPages - 1) return totalPages - 2;
+    return currentPage + 1;
+  };
+
+  const getSecondButtonLabel = () => {
+    if (currentPage === 0) return 2;
+    if (currentPage === totalPages - 1) return totalPages - 1;
+    return currentPage + 1;
+  };
+
+  const secondButtonPage = getSecondButtonPage();
+  const secondButtonLabel = getSecondButtonLabel();
   return (
     totalPages > 1 && (
       <div className="flex items-center justify-center left-0 bottom-0 w-full font-primary">
         <button
+          type="button"
           onClick={prevPage}
           disabled={currentPage === 0 || loading}
           className={clsx(
@@ -40,6 +49,7 @@ const PageButtons: React.FC<PageButtonsProps> = ({
           <ChevronLeftIcon className="w-4 h-4" />
         </button>
         <button
+          type="button"
           className={clsx(
             currentPage === 0 ? "bg-gray-100 text-gray-500" : "text-gray-400 ",
             "px-1 rounded-sm h-full text-xs hover:text-gray-500"
@@ -52,31 +62,22 @@ const PageButtons: React.FC<PageButtonsProps> = ({
         </button>
         {totalPages > 2 && (
           <button
+            type="button"
             className={clsx(
               currentPage > 0 && currentPage < totalPages - 1
                 ? "bg-gray-100 text-gray-500"
                 : "text-gray-400",
               "px-1 rounded-sm h-full text-xs hover:text-gray-500"
             )}
-            onClick={() =>
-              setPage(
-                currentPage === 0
-                  ? 1
-                  : currentPage === totalPages - 1
-                    ? totalPages - 2
-                    : currentPage + 1
-              )
-            }
+            onClick={() => setPage(secondButtonPage)}
             disabled={secondButtonPage > 5 && isPublic}
           >
-            {currentPage === 0
-              ? 2
-              : currentPage === totalPages - 1
-                ? totalPages - 1
-                : currentPage + 1}
+            {secondButtonLabel}
           </button>
         )}
+
         <button
+          type="button"
           className={clsx(
             currentPage === totalPages - 1
               ? "bg-gray-100 text-gray-500"
@@ -89,6 +90,7 @@ const PageButtons: React.FC<PageButtonsProps> = ({
           {totalPages}
         </button>
         <button
+          type="button"
           onClick={nextPage}
           disabled={
             currentPage === totalPages - 1 ||

@@ -128,7 +128,7 @@ export default function ShortcutsModal(props: ShortcutsModalProps) {
                         <div key={shortcut.action} className="flex gap-x-4">
                           <div className="flex items-center justify-end w-1/3 gap-x-2 whitespace-nowrap">
                             {shortcut.keys.map((key, i) => (
-                              <Fragment key={i}>
+                              <Fragment key={key}>
                                 <KeyboardKey mode={shortcut.mode}>
                                   {key}
                                 </KeyboardKey>

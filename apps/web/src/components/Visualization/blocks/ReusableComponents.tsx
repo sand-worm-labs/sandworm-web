@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import type * as Y from "yjs";
-import React, { RefObject, useCallback, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { ChevronDoubleRightIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { Transition, Dialog } from "@headlessui/react";
 import { format } from "date-fns";
@@ -23,6 +23,191 @@ const icons: Record<string, React.ComponentType<React.ComponentProps<any>>> = {
   ...allOutlineIcons,
   ...allLucideIcons,
 };
+
+interface SaveConfirmationModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onUpdate: () => void;
+}
+export const SaveConfirmationModal = (props: SaveConfirmationModalProps) => {
+  return (
+    <Transition show={props.isOpen}>
+      <Dialog onClose={props.onClose} className="relative z-[1000]">
+        <Transition.Child
+          enter="ease-out duration-300"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-200"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+        </Transition.Child>
+
+        <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+          <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            <Transition.Child
+              enter="ease-out duration-300"
+              enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              enterTo="opacity-100 translate-y-0 sm:scale-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+              leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            >
+              <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all w-[532px]">
+                <div>
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100">
+                    <SaveIcon
+                      strokeWidth={2}
+                      className="h-6 w-6 text-yellow-600"
+                    />
+                  </div>
+                  <div className="mt-3 text-center sm:mt-5">
+                    <Dialog.Title
+                      as="h3"
+                      className="text-base font-semibold leading-6 text-gray-900"
+                    >
+                      Update existing component
+                    </Dialog.Title>
+                    <div className="mt-2 flex flex-col items-center gap-y-2">
+                      <p className="text-sm text-gray-500">
+                        You have previously saved this block as a reusable
+                        component.
+                      </p>
+
+                      <p className="text-sm text-gray-500">
+                        Saving this component will update all of its instances.
+                      </p>
+
+                      <p className="text-sm text-gray-500">
+                        Do you want to update it?
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
+                  <button
+                    type="button"
+                    onClick={props.onUpdate}
+                    className="inline-flex w-full justify-center rounded-sm bg-[#C7665C] px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm hover:bg-primary-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2"
+                  >
+                    Update component
+                  </button>
+                  <button
+                    type="button"
+                    data-autofocus
+                    onClick={props.onClose}
+                    className="mt-3 inline-flex w-full justify-center rounded-sm bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </Dialog.Panel>
+            </Transition.Child>
+          </div>
+        </div>
+      </Dialog>
+    </Transition>
+  );
+};
+
+function showType(type: ReusableComponentType): string {
+  switch (type) {
+    case "sql":
+      return "SQL";
+    case "python":
+      return "Python";
+    default:
+      return "Unknown";
+  }
+}
+
+interface ReusableComponentItemProps {
+  workspaceId: string;
+  component: APIReusableComponent;
+  onUse: (component: APIReusableComponent) => void;
+  onRemove: (component: APIReusableComponent) => void;
+  canUse: boolean;
+}
+function ReusableComponentItem(props: ReusableComponentItemProps) {
+  const onUse = useCallback(() => {
+    props.onUse(props.component);
+  }, [props.onUse, props.component]);
+
+  const onRemove = useCallback(() => {
+    props.onRemove(props.component);
+  }, [props.onRemove, props.component]);
+
+  const Icon =
+    icons[props.component.document.icon ?? "DocumentIcon"] || (() => null);
+
+  return (
+    <div className="px-4 py-3 font-primary block w-full">
+      <div className="flex flex-col">
+        <div className="flex justify-between">
+          <div
+            className="font-medium pr-2 text-sm break-all"
+            title={props.component.title || "SQL - Untitled"}
+          >
+            {props.component.title || "Untitled"}
+          </div>
+          <div>
+            <button
+              type="button"
+              className="text-gray-500 hover:text-red-500 disabled:cursor-not-allowed"
+              onClick={onRemove}
+            >
+              <TrashIcon className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+        <div className="flex flex-col gap-y-1">
+          <div className="flex items-center gap-x-2 font-medium text-gray-400 text-xs">
+            {showType(props.component.type)}
+
+            <svg viewBox="0 0 2 2" className="h-0.5 w-0.5 fill-current">
+              <circle cx={1} cy={1} r={1} />
+            </svg>
+            <Link
+              href={`/workspaces/${props.workspaceId}/documents/${props.component.document.id}`}
+              className="flex items-center gap-x-1 text-gray-400 hover:text-gray-500"
+            >
+              <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+              {props.component.document.title || "Untitled"}
+            </Link>
+          </div>
+          <div className="flex items-center gap-x-2 font-medium text-gray-400 text-xs">
+            Saved at{" "}
+            {format(
+              new Date(props.component.updatedAt),
+              "h:mm a '-' do MMM, yyyy"
+            )}
+          </div>
+        </div>
+
+        <div className="flex pt-3 text-xs font-medium">
+          <Tooltip
+            position="manual"
+            title=""
+            message="You must be editing a notebook to use this component."
+            active={!props.canUse}
+            tooltipClassname="-top-1 w-44 -translate-y-full"
+          >
+            <button
+              type="button"
+              className="text-gray-500 hover:text-gray-400 disabled:hover:text-gray-500 disabled:cursor-not-allowed"
+              onClick={onUse}
+              disabled={!props.canUse}
+            >
+              Add to notebook
+            </button>
+          </Tooltip>
+          <span className="text-gray-300 px-1">/</span>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 interface Props {
   workspaceId: string;
@@ -132,102 +317,6 @@ export default function ReusableComponents(props: Props) {
   );
 }
 
-function showType(type: ReusableComponentType): string {
-  switch (type) {
-    case "sql":
-      return "SQL";
-    case "python":
-      return "Python";
-  }
-}
-
-interface ReusableComponentItemProps {
-  workspaceId: string;
-  component: APIReusableComponent;
-  onUse: (component: APIReusableComponent) => void;
-  onRemove: (component: APIReusableComponent) => void;
-  canUse: boolean;
-}
-function ReusableComponentItem(props: ReusableComponentItemProps) {
-  const onUse = useCallback(() => {
-    props.onUse(props.component);
-  }, [props.onUse, props.component]);
-
-  const onRemove = useCallback(() => {
-    props.onRemove(props.component);
-  }, [props.onRemove, props.component]);
-
-  const Icon =
-    icons[props.component.document.icon ?? "DocumentIcon"] || (() => null);
-
-  return (
-    <div className="px-4 py-3 font-primary block w-full">
-      <div className="flex flex-col">
-        <div className="flex justify-between">
-          <div
-            className="font-medium pr-2 text-sm break-all"
-            title={props.component.title || "SQL - Untitled"}
-          >
-            {props.component.title || "Untitled"}
-          </div>
-          <div>
-            <button
-              type="button"
-              className="text-gray-500 hover:text-red-500 disabled:cursor-not-allowed"
-              onClick={onRemove}
-            >
-              <TrashIcon className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-        <div className="flex flex-col gap-y-1">
-          <div className="flex items-center gap-x-2 font-medium text-gray-400 text-xs">
-            {showType(props.component.type)}
-
-            <svg viewBox="0 0 2 2" className="h-0.5 w-0.5 fill-current">
-              <circle cx={1} cy={1} r={1} />
-            </svg>
-            <Link
-              href={`/workspaces/${props.workspaceId}/documents/${props.component.document.id}`}
-              className="flex items-center gap-x-1 text-gray-400 hover:text-gray-500"
-            >
-              <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-              {props.component.document.title || "Untitled"}
-            </Link>
-          </div>
-          <div className="flex items-center gap-x-2 font-medium text-gray-400 text-xs">
-            Saved at{" "}
-            {format(
-              new Date(props.component.updatedAt),
-              "h:mm a '-' do MMM, yyyy"
-            )}
-          </div>
-        </div>
-
-        <div className="flex pt-3 text-xs font-medium">
-          <Tooltip
-            position="manual"
-            title=""
-            message="You must be editing a notebook to use this component."
-            active={!props.canUse}
-            tooltipClassname="-top-1 w-44 -translate-y-full"
-          >
-            <button
-              type="button"
-              className="text-gray-500 hover:text-gray-400 disabled:hover:text-gray-500 disabled:cursor-not-allowed"
-              onClick={onUse}
-              disabled={!props.canUse}
-            >
-              Add to notebook
-            </button>
-          </Tooltip>
-          <span className="text-gray-300 px-1">/</span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 interface SaveReusableComponentButtonProps {
   isComponent: boolean;
   onSave: () => void;
@@ -283,90 +372,3 @@ export function SaveReusableComponentButton(
     </>
   );
 }
-
-interface SaveConfirmationModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onUpdate: () => void;
-}
-export const SaveConfirmationModal = (props: SaveConfirmationModalProps) => {
-  return (
-    <Transition show={props.isOpen}>
-      <Dialog onClose={props.onClose} className="relative z-[1000]">
-        <Transition.Child
-          enter="ease-out duration-300"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="ease-in duration-200"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-        </Transition.Child>
-
-        <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-          <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-            <Transition.Child
-              enter="ease-out duration-300"
-              enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-              enterTo="opacity-100 translate-y-0 sm:scale-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100 translate-y-0 sm:scale-100"
-              leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-            >
-              <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all w-[532px]">
-                <div>
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100">
-                    <SaveIcon
-                      strokeWidth={2}
-                      className="h-6 w-6 text-yellow-600"
-                    />
-                  </div>
-                  <div className="mt-3 text-center sm:mt-5">
-                    <Dialog.Title
-                      as="h3"
-                      className="text-base font-semibold leading-6 text-gray-900"
-                    >
-                      Update existing component
-                    </Dialog.Title>
-                    <div className="mt-2 flex flex-col items-center gap-y-2">
-                      <p className="text-sm text-gray-500">
-                        You have previously saved this block as a reusable
-                        component.
-                      </p>
-
-                      <p className="text-sm text-gray-500">
-                        Saving this component will update all of its instances.
-                      </p>
-
-                      <p className="text-sm text-gray-500">
-                        Do you want to update it?
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
-                  <button
-                    type="button"
-                    onClick={props.onUpdate}
-                    className="inline-flex w-full justify-center rounded-sm bg-[#C7665C] px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm hover:bg-primary-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2"
-                  >
-                    Update component
-                  </button>
-                  <button
-                    type="button"
-                    data-autofocus
-                    onClick={props.onClose}
-                    className="mt-3 inline-flex w-full justify-center rounded-sm bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </Dialog.Panel>
-            </Transition.Child>
-          </div>
-        </div>
-      </Dialog>
-    </Transition>
-  );
-};

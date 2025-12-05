@@ -69,7 +69,7 @@ const MonthDaySelector = (props: WeekdaySelectorProps) => {
             >
               <div className="px-1 py-1">
                 {monthDays.map((day, dayIndex) => (
-                  <Menu.Item key={dayIndex}>
+                  <Menu.Item key={day}>
                     {({ active }) => (
                       <button
                         type="button"
