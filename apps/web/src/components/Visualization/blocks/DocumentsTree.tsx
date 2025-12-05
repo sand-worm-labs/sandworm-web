@@ -36,16 +36,14 @@ function useIsDocExpanded(doc: ApiDocument, startsOpen: boolean) {
   const setIsExpanded = useCallback(
     (value: boolean | ((prev: boolean) => boolean)) => {
       _setIsExpanded(prev => {
-        if (typeof value === "function") {
-          value = value(prev);
-        }
+        const nextValue = typeof value === "function" ? value(prev) : value;
 
         localStorage.setItem(
           `sandworm:document:${doc.id}:expanded`,
-          value ? "1" : "0"
+          nextValue ? "1" : "0"
         );
 
-        return value;
+        return nextValue;
       });
     },
     [doc]
@@ -83,9 +81,12 @@ function isDescendant(
   parentId: string,
   documents: List<ApiDocument>
 ): boolean {
+  const findById = (id: string | null) =>
+    id ? documents.find(doc => doc.id === id) : undefined;
+
   let currentId: string | null = childId;
   while (currentId !== null) {
-    const current = documents.find(doc => doc.id === currentId);
+    const current = findById(currentId);
     if (!current) {
       return false;
     }
@@ -118,48 +119,6 @@ interface Props {
   ) => void;
   flat?: boolean;
 }
-function DocumentTree(props: Props) {
-  const trees = useMemo(
-    () =>
-      props.flat
-        ? props.documents.map(d => ({
-            document: d,
-            children: List<Node>(),
-          }))
-        : buildTrees(null, props.documents),
-    [props.flat, props.documents]
-  );
-
-  return (
-    <ul className="space-y-1">
-      {trees.map((node, i) => {
-        const isLast = i === trees.size - 1;
-        return (
-          <NodeComponent
-            key={node.document.id}
-            workspaceId={props.workspaceId}
-            current={props.current}
-            document={node.document}
-            descendants={node.children}
-            role={props.role}
-            onDuplicate={props.onDuplicate}
-            onSetIcon={props.onSetIcon}
-            onFavorite={props.onFavorite}
-            onUnfavorite={props.onUnfavorite}
-            onDelete={props.onDelete}
-            onCreate={props.onCreate}
-            onUpdateParent={props.onUpdateParent}
-            level={0}
-            flat={props.flat}
-            documents={props.documents}
-            isLast={isLast}
-            firstNonLastParentId={isLast ? null : node.document.id}
-          />
-        );
-      })}
-    </ul>
-  );
-}
 
 function computeIsExpanded(current: string, isExpanded: boolean, node: Node) {
   if (current === node.document.id) {
@@ -186,6 +145,170 @@ function computeIsExpanded(current: string, isExpanded: boolean, node: Node) {
   return false;
 }
 
+type DropDownProps = {
+  documentId: string;
+  isFavoriteDropdown: boolean;
+  onDelete: (id: string) => void;
+  onDuplicate: (id: string) => void;
+  onFavorite: (id: string) => void;
+  onUnfavorite: (id: string) => void;
+  onCreate: (parentId: string) => void;
+  role: UserWorkspaceRole;
+};
+
+function DropDown(props: DropDownProps) {
+  const role: UserWorkspaceRole = props.role ?? "viewer";
+  const isViewer = role === "viewer";
+
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const { onOpen, dropdownPosition } = useDropdownPosition(buttonRef);
+
+  const onDeleteHandler: MouseEventHandler<HTMLButtonElement> = useCallback(
+    e => {
+      e.preventDefault();
+      props.onDelete(props.documentId);
+    },
+    [props.onDelete, props.documentId]
+  );
+
+  const onDuplicateHandler: MouseEventHandler<HTMLButtonElement> =
+    useCallback(() => {
+      props.onDuplicate(props.documentId);
+    }, [props.onDuplicate, props.documentId]);
+
+  const onFavoriteHandler: MouseEventHandler<HTMLButtonElement> =
+    useCallback(() => {
+      props.onFavorite(props.documentId);
+    }, [props.onFavorite, props.documentId]);
+
+  const onUnfavoriteHandler: MouseEventHandler<HTMLButtonElement> =
+    useCallback(() => {
+      props.onUnfavorite(props.documentId);
+    }, [props.onUnfavorite, props.documentId]);
+
+  const onCreateHandler: MouseEventHandler<HTMLButtonElement> = useCallback(
+    e => {
+      e.preventDefault();
+      props.onCreate(props.documentId);
+    },
+    [props.onCreate, props.documentId]
+  );
+
+  return (
+    <Menu as="div" className="relative inline-flex text-left font-primary">
+      <Menu.Button
+        className={clsx(
+          (props.isFavoriteDropdown || isViewer) && "hidden",
+          "pr-0.5"
+        )}
+        onClick={onCreateHandler}
+      >
+        <PlusSmallIcon className="invisible group-hover:visible hover:bg-ceramic-200/50 h-6 w-6 shrink-0 rounded-md" />
+      </Menu.Button>
+      <Menu.Button className="pr-0.5" ref={buttonRef} onClick={onOpen}>
+        <EllipsisHorizontalIcon className="invisible group-hover:visible hover:bg-ceramic-200/50 h-6 w-6 shrink-0 rounded-md" />
+      </Menu.Button>
+
+      {ReactDOM.createPortal(
+        <Transition
+          as="div"
+          id="doc-dropdown"
+          style={{
+            position: "absolute",
+            top: dropdownPosition.top,
+            left: dropdownPosition.left,
+          }}
+          className="absolute z-[2000]"
+          enter="transition ease-out duration-100"
+          enterFrom="transform opacity-0 scale-95"
+          enterTo="transform opacity-100 scale-100"
+          leave="transition ease-in duration-75"
+          leaveFrom="transform opacity-100 scale-100"
+          leaveTo="transform opacity-0 scale-95"
+        >
+          <Menu.Items className="absolute left-2 -top-2 z-20 w-44 origin-top-right rounded-lg bg-white dark:bg-[#0C1015]  ring-opacity-5 focus:outline-none border-[#0C1015] border dark:border-[#262A30]">
+            <div className="py-2 px-1.5">
+              <Menu.Item>
+                {({ active }) => (
+                  <button
+                    type="button"
+                    onClick={onDeleteHandler}
+                    className={clsx(
+                      {
+                        hidden: isViewer || props.isFavoriteDropdown,
+                      },
+                      active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                      "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 rounded-md font-primary hover:bg-[#FDE6EA] text-[#455768] dark:text-white"
+                    )}
+                  >
+                    <TrashIcon className="h-4 w-4" />
+                    <span>Delete</span>
+                  </button>
+                )}
+              </Menu.Item>
+              <Menu.Item>
+                {({ active }) => (
+                  <button
+                    type="button"
+                    onClick={onDuplicateHandler}
+                    className={clsx(
+                      {
+                        hidden: isViewer,
+                      },
+                      active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                      "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 font-primary hover:bg-[#FDE6EA] rounded-md text-[#455768] dark:text-white"
+                    )}
+                  >
+                    <Square2StackIcon className="h-4 w-4" />
+                    <span>Duplicate</span>
+                  </button>
+                )}
+              </Menu.Item>
+              <Menu.Item>
+                {({ active }) => (
+                  <button
+                    type="button"
+                    onClick={onFavoriteHandler}
+                    className={clsx(
+                      {
+                        hidden: props.isFavoriteDropdown,
+                      },
+                      active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                      "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 font-primary hover:bg-[#FDE6EA] rounded-md text-[#455768] dark:text-white"
+                    )}
+                  >
+                    <BookmarkIcon className="h-4 w-4" />
+                    <span>Add to favorites</span>
+                  </button>
+                )}
+              </Menu.Item>
+              <Menu.Item>
+                {({ active }) => (
+                  <button
+                    type="button"
+                    onClick={onUnfavoriteHandler}
+                    className={clsx(
+                      {
+                        hidden: !props.isFavoriteDropdown,
+                      },
+                      active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                      "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 font-primary dark:text-white  "
+                    )}
+                  >
+                    <BookmarkSlashIcon className="h-4 w-4" />
+                    <span>Remove from favorites</span>
+                  </button>
+                )}
+              </Menu.Item>
+            </div>
+          </Menu.Items>
+        </Transition>,
+        document.body
+      )}
+    </Menu>
+  );
+}
+
 interface NodeComponentProps {
   workspaceId: string;
   documents: List<ApiDocument>;
@@ -209,7 +332,11 @@ interface NodeComponentProps {
   isLast: boolean;
   firstNonLastParentId: string | null;
 }
+
 function NodeComponent(props: NodeComponentProps) {
+  const role: UserWorkspaceRole = props.role ?? "viewer";
+  const isViewer = role === "viewer";
+
   const [isExpanded, setIsExpanded] = useIsDocExpanded(
     props.document,
     computeIsExpanded(props.current, false, {
@@ -255,12 +382,12 @@ function NodeComponent(props: NodeComponentProps) {
 
   const [{ isDropping }, drop] = useDrop<
     ApiDocument,
-    {},
+    void,
     { isDropping: boolean }
   >(
     {
       accept: "document",
-      drop: (item, monitor) => {
+      drop: (item, monitor): void => {
         if (monitor.didDrop()) {
           return;
         }
@@ -282,7 +409,7 @@ function NodeComponent(props: NodeComponentProps) {
         if (dropHoverState === "center") {
           // when dropped center, we always make it a child
           props.onUpdateParent(item.id, droppedOnDocument.id, -1);
-          return {};
+          return;
         }
 
         if (dropHoverState === "above") {
@@ -292,7 +419,7 @@ function NodeComponent(props: NodeComponentProps) {
             droppedOnDocument.parentId,
             droppedOnDocument.orderIndex
           );
-          return {};
+          return;
         }
 
         // when dropped below we make it a sibling that comes after
@@ -301,7 +428,6 @@ function NodeComponent(props: NodeComponentProps) {
           droppedOnDocument.parentId,
           droppedOnDocument.orderIndex + 1
         );
-        return {};
       },
       canDrop: item => !props.flat && item.id !== props.document.id,
       hover: (_item, monitor) => {
@@ -413,7 +539,7 @@ function NodeComponent(props: NodeComponentProps) {
                 <IconSelector
                   workspaceId={props.workspaceId}
                   documentId={props.document.id}
-                  disabled={props.role === "viewer"}
+                  disabled={isViewer}
                 />
               </div>
               <div className="flex items-center flex-1 overflow-auto">
@@ -485,165 +611,46 @@ function NodeComponent(props: NodeComponentProps) {
   );
 }
 
-type DropDownProps = {
-  documentId: string;
-  isFavoriteDropdown: boolean;
-  onDelete: (id: string) => void;
-  onDuplicate: (id: string) => void;
-  onFavorite: (id: string) => void;
-  onUnfavorite: (id: string) => void;
-  onCreate: (parentId: string) => void;
-  role: UserWorkspaceRole;
-};
-
-function DropDown(props: DropDownProps) {
-  const buttonRef = useRef<HTMLButtonElement | null>(null);
-  const { onOpen, dropdownPosition } = useDropdownPosition(buttonRef);
-
-  const onDeleteHandler: MouseEventHandler<HTMLButtonElement> = useCallback(
-    e => {
-      e.preventDefault();
-      props.onDelete(props.documentId);
-    },
-    [props.onDelete, props.documentId]
-  );
-
-  const onDuplicateHandler: MouseEventHandler<HTMLButtonElement> =
-    useCallback(() => {
-      props.onDuplicate(props.documentId);
-    }, [props.onDuplicate, props.documentId]);
-
-  const onFavoriteHandler: MouseEventHandler<HTMLButtonElement> =
-    useCallback(() => {
-      props.onFavorite(props.documentId);
-    }, [props.onFavorite, props.documentId]);
-
-  const onUnfavoriteHandler: MouseEventHandler<HTMLButtonElement> =
-    useCallback(() => {
-      props.onUnfavorite(props.documentId);
-    }, [props.onUnfavorite, props.documentId]);
-
-  const onCreateHandler: MouseEventHandler<HTMLButtonElement> = useCallback(
-    e => {
-      e.preventDefault();
-      props.onCreate(props.documentId);
-    },
-    [props.onCreate, props.documentId]
+function DocumentTree(props: Props) {
+  const trees = useMemo(
+    () =>
+      props.flat
+        ? props.documents.map(d => ({
+            document: d,
+            children: List<Node>(),
+          }))
+        : buildTrees(null, props.documents),
+    [props.flat, props.documents]
   );
 
   return (
-    <Menu as="div" className="relative inline-flex text-left font-primary">
-      <Menu.Button
-        className={clsx(
-          (props.isFavoriteDropdown || props.role === "viewer") && "hidden",
-          "pr-0.5"
-        )}
-        onClick={onCreateHandler}
-      >
-        <PlusSmallIcon className="invisible group-hover:visible hover:bg-ceramic-200/50 h-6 w-6 shrink-0 rounded-md" />
-      </Menu.Button>
-      <Menu.Button className="pr-0.5" ref={buttonRef} onClick={onOpen}>
-        <EllipsisHorizontalIcon className="invisible group-hover:visible hover:bg-ceramic-200/50 h-6 w-6 shrink-0 rounded-md" />
-      </Menu.Button>
-
-      {ReactDOM.createPortal(
-        <Transition
-          as="div"
-          id="doc-dropdown"
-          style={{
-            position: "absolute",
-            top: dropdownPosition.top,
-            left: dropdownPosition.left,
-          }}
-          className="absolute z-[2000]"
-          enter="transition ease-out duration-100"
-          enterFrom="transform opacity-0 scale-95"
-          enterTo="transform opacity-100 scale-100"
-          leave="transition ease-in duration-75"
-          leaveFrom="transform opacity-100 scale-100"
-          leaveTo="transform opacity-0 scale-95"
-        >
-          <Menu.Items className="absolute left-2 -top-2 z-20 w-44 origin-top-right rounded-lg bg-white dark:bg-[#0C1015]  ring-opacity-5 focus:outline-none border-[#0C1015] border dark:border-[#262A30]">
-            <div className="py-2 px-1.5">
-              <Menu.Item>
-                {({ active }) => (
-                  <button
-                    type="button"
-                    onClick={onDeleteHandler}
-                    className={clsx(
-                      {
-                        hidden:
-                          props.role === "viewer" || props.isFavoriteDropdown,
-                      },
-                      active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                      "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 rounded-md font-primary hover:bg-[#FDE6EA] text-[#455768] dark:text-white"
-                    )}
-                  >
-                    <TrashIcon className="h-4 w-4" />
-                    <span>Delete</span>
-                  </button>
-                )}
-              </Menu.Item>
-              <Menu.Item>
-                {({ active }) => (
-                  <button
-                    type="button"
-                    onClick={onDuplicateHandler}
-                    className={clsx(
-                      {
-                        hidden: props.role === "viewer",
-                      },
-                      active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                      "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 font-primary hover:bg-[#FDE6EA] rounded-md text-[#455768] dark:text-white"
-                    )}
-                  >
-                    <Square2StackIcon className="h-4 w-4" />
-                    <span>Duplicate</span>
-                  </button>
-                )}
-              </Menu.Item>
-              <Menu.Item>
-                {({ active }) => (
-                  <button
-                    type="button"
-                    onClick={onFavoriteHandler}
-                    className={clsx(
-                      {
-                        hidden: props.isFavoriteDropdown,
-                      },
-                      active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                      "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 font-primary hover:bg-[#FDE6EA] rounded-md text-[#455768] dark:text-white"
-                    )}
-                  >
-                    <BookmarkIcon className="h-4 w-4" />
-                    <span>Add to favorites</span>
-                  </button>
-                )}
-              </Menu.Item>
-              <Menu.Item>
-                {({ active }) => (
-                  <button
-                    type="button"
-                    onClick={onUnfavoriteHandler}
-                    className={clsx(
-                      {
-                        hidden: !props.isFavoriteDropdown,
-                      },
-                      active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                      "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 font-primary dark:text-white  "
-                    )}
-                  >
-                    <BookmarkSlashIcon className="h-4 w-4" />
-                    <span>Remove from favorites</span>
-                  </button>
-                )}
-              </Menu.Item>
-            </div>
-          </Menu.Items>
-        </Transition>,
-        document.body
-      )}
-    </Menu>
+    <ul className="space-y-1">
+      {trees.map((node, i) => {
+        const isLast = i === trees.size - 1;
+        return (
+          <NodeComponent
+            key={node.document.id}
+            workspaceId={props.workspaceId}
+            current={props.current}
+            document={node.document}
+            descendants={node.children}
+            role={props.role}
+            onDuplicate={props.onDuplicate}
+            onSetIcon={props.onSetIcon}
+            onFavorite={props.onFavorite}
+            onUnfavorite={props.onUnfavorite}
+            onDelete={props.onDelete}
+            onCreate={props.onCreate}
+            onUpdateParent={props.onUpdateParent}
+            level={0}
+            flat={props.flat}
+            documents={props.documents}
+            isLast={isLast}
+            firstNonLastParentId={isLast ? null : node.document.id}
+          />
+        );
+      })}
+    </ul>
   );
 }
 
