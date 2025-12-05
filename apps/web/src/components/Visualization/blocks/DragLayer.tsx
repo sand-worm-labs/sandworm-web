@@ -3,11 +3,12 @@ import { useEffect } from "react";
 import type { XYCoord } from "react-dnd";
 import { useDragLayer } from "react-dnd";
 
+import IconSelector from "./IconSelector";
+
 export enum ElementType {
   Block = "BLOCK",
   BlockGroup = "BLOCK_GROUP",
 }
-import IconSelector from "./IconSelector";
 
 function getItemStyles(
   initialCursorOffset: XYCoord | null,
@@ -20,8 +21,8 @@ function getItemStyles(
     };
   }
 
-  const x = initialCursorOffset?.x + (currentOffset.x - initialOffset.x);
-  const y = initialCursorOffset?.y + (currentOffset.y - initialOffset.y);
+  const x = initialCursorOffset.x + (currentOffset.x - initialOffset.x);
+  const y = initialCursorOffset.y + (currentOffset.y - initialOffset.y);
   const transform = `translate(${x}px, ${y}px)`;
 
   return {
@@ -63,12 +64,12 @@ const DragLayer = () => {
 
   useEffect(() => {
     if (!isEditorBlock(itemType)) {
-      return;
+      return () => {};
     }
 
     const editorScrollview = document.getElementById("editor-scrollview");
     if (!editorScrollview) {
-      return;
+      return () => {};
     }
 
     let animationFrameId: number | null = null;

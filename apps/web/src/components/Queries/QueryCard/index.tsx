@@ -19,6 +19,8 @@ import { useQueryLike } from "@/hooks/useLikeQuery";
 import { useModalStore } from "@/store/auth";
 import { useForkQuery } from "@/hooks";
 
+import { useStringQuery } from "../../Visualization/hooks/useQueryArgs";
+
 interface QueryCardProps {
   query: Query;
   liked: boolean;
@@ -30,13 +32,13 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
   const openSignIn = useModalStore(state => state.openSignIn);
   const { toggleLike, loading } = useQueryLike(query.id, liked);
   const { handleFork, loading: loadingfork } = useForkQuery(query.id);
-
+  const workspaceId = useStringQuery("workspace");
   const [showFullDesc, setShowFullDesc] = useState<boolean>(false);
 
   const { theme } = useTheme();
 
   const handleQueryClick = () => {
-    router.push(`/workspace/console/${query.id}`);
+    router.push(`/workspace/${workspaceId}/console/${query.id}`);
   };
 
   // we open signin modal if user attempt to like or fork query when not logged in

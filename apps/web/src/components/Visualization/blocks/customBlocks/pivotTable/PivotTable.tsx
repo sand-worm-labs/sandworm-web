@@ -1,8 +1,4 @@
-import type {
-  Json,
-  PivotTableSort,
-  type PivotTableResult,
-} from "@sandworm/types";
+import type { Json, PivotTableSort, PivotTableResult } from "@sandworm/types";
 import {
   ArrowDownIcon,
   ArrowUpIcon,

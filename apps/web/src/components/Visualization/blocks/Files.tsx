@@ -34,345 +34,20 @@ import { useFiles } from "../hooks/useFiles";
 import { Tooltip } from "./ToolTips";
 import Spin from "./Spin";
 
-interface Props {
-  workspaceId: string;
-  visible: boolean;
-  onHide: () => void;
-  userId: string | null;
-  yDoc?: Y.Doc;
-  executionQueue?: ExecutionQueue;
-}
-export default function Files(props: Props) {
-  const { startedAt: environmentStartedAt } = useEnvironmentStatus(
-    props.workspaceId
+function formatBytes(bytes: number, decimals = 2) {
+  if (bytes === 0) return "0 bytes";
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ["bytes", "kb", "mb", "gb", "tb", "pb", "eb", "zb", "yb"];
+  const i = Math.min(
+    Math.floor(Math.log(bytes) / Math.log(k)),
+    sizes.length - 1
   );
-
-  const [search, setSearch] = useState("");
-
-  const onUseInPython = useCallback(
-    (file: sandwormFile) => {
-      if (!props.yDoc || !props.executionQueue) {
-        return;
-      }
-
-      const fileExtension =
-        file.mimeType === "application/json"
-          ? "json"
-          : file.mimeType === "text/csv"
-            ? "csv"
-            : file.mimeType === "application/vnd.ms-excel"
-              ? "xls"
-              : file.mimeType ===
-                  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                ? "xlsx"
-                : "";
-
-      const source =
-        fileExtension !== ""
-          ? `import pandas as pd
-df = pd.read_${fileExtension}('${file.relCwdPath}')
-df`
-          : `file = open('${file.relCwdPath}').read()
-file`;
-
-      const layout = getLayout(props.yDoc);
-      const blocks = getBlocks(props.yDoc);
-      const blockId = addBlockGroup(
-        layout,
-        blocks,
-        {
-          type: BlockType.Python,
-          source,
-        },
-        layout.length
-      );
-
-      const pythonBlock = blocks.get(blockId);
-      if (!pythonBlock) {
-        return;
-      }
-
-      props.executionQueue.enqueueBlock(
-        pythonBlock,
-        props.userId,
-        environmentStartedAt,
-        {
-          _tag: "python",
-          isSuggestion: false,
-        }
-      );
-    },
-    [props.yDoc, props.executionQueue, props.userId, environmentStartedAt]
-  );
-
-  const onUseInSQL = useCallback(
-    (file: sandwormFile) => {
-      if (!props.yDoc || !props.executionQueue) {
-        return;
-      }
-
-      const table = file.relCwdPath
-        // replace `\` with `\\`
-        .replace(/\\/g, "\\\\")
-        // replace `'` with `''`
-        .replace(/'/g, "''")
-        // replace `"` with `\"`
-        .replace(/"/g, '\\"');
-
-      const extension = file.name.split(".").pop();
-      let source = `SELECT * FROM '${table}' LIMIT 1000000`;
-      if (extension === "xlsx") {
-        source = `SELECT * FROM st_read('${table}') LIMIT 1000000`;
-      }
-
-      const layout = getLayout(props.yDoc);
-      const blocks = getBlocks(props.yDoc);
-
-      const blockId = addBlockGroup(
-        layout,
-        blocks,
-        {
-          type: BlockType.SQL,
-          dataSourceId: null,
-          isFileDataSource: true,
-          source,
-        },
-        layout.length
-      );
-
-      const sqlBlock = blocks.get(blockId);
-      if (!sqlBlock) {
-        return;
-      }
-
-      props.executionQueue.enqueueBlock(
-        sqlBlock,
-        props.userId,
-        environmentStartedAt,
-        {
-          _tag: "sql",
-          isSuggestion: false,
-          selectedCode: null,
-        }
-      );
-    },
-    [props.yDoc, props.executionQueue, props.userId, environmentStartedAt]
-  );
-
-  const [
-    { files, deleting, upload },
-    {
-      del,
-      onDrop,
-      onReplaceYes,
-      onReplaceAll,
-      onReplaceNo,
-      onAbort,
-      onRemoveResult,
-    },
-  ] = useFiles(props.workspaceId, props.visible ? 5000 : 0);
-
-  const onRemove = useCallback(
-    (file: sandwormFile) => {
-      del(file.relCwdPath);
-    },
-    [del]
-  );
-
-  const {
-    getRootProps,
-    getInputProps,
-    isDragActive,
-    open: openUpload,
-  } = useDropzone({
-    onDrop,
-    noClick: true,
-  });
-
-  const isAskingReplace =
-    upload._tag === "uploading" && upload.current.status === "asking-replace";
-
-  const actualFiles = useMemo(
-    () =>
-      files.filter(file => {
-        const s = search.trim();
-        if (s !== "") {
-          const name = file.name.trim();
-          return name.toLowerCase().includes(s.toLowerCase());
-        }
-
-        if (upload._tag === "idle") {
-          return true;
-        }
-
-        if (
-          upload.current.file.name === file.relCwdPath &&
-          upload.current.status === "uploading"
-        ) {
-          return false;
-        }
-
-        return true;
-      }),
-    [files, upload, search]
-  );
-
-  const results = useMemo(
-    () => upload.results.filter(f => f.outcome !== "success"),
-    [upload.results]
-  );
-
-  return (
-    <>
-      <Transition
-        as="div"
-        show={props.visible}
-        className="top-0 right-0 h-full absolute bg-white dark:bg-black z-30 font-primary "
-        enter="transition-transform duration-300"
-        enterFrom="transform translate-x-full"
-        enterTo="transform translate-x-0"
-        leave="transition-transform duration-300"
-        leaveFrom="transform translate-x-0"
-        leaveTo="transform translate-x-full"
-      >
-        <input
-          id="file-upload"
-          className="sr-only"
-          type="file"
-          {...getInputProps()}
-        />
-        <button
-          type="button"
-          className="absolute z-10 top-7 transform rounded-full border border-[#E9ECEF] dark:border-[#262A30]  text-gray-400 bg-white  hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
-          onClick={props.onHide}
-        >
-          <ChevronDoubleRightIcon className="w-3 h-3" />
-        </button>
-        <div
-          className="w-[324px] flex flex-col border-l dark:border-[#262A30] border-gray-200 h-full bg-white dark:bg-black"
-          {...getRootProps()}
-        >
-          <div className="flex justify-between border-b p-6 space-x-3">
-            <div>
-              <h3 className="text-lg font-medium leading-6 text-gray-900 pr-1.5">
-                Files
-              </h3>
-              <p className="text-gray-500 text-sm pt-1">
-                Click "add" or drop files into this tab to upload them.
-              </p>
-            </div>
-
-            <div>
-              <button
-                type="button"
-                className="flex items-center gap-x-2 rounded-sm bg-[#C7665C] px-3 py-1 text-sm hover:bg-primary-300 text-white disabled:cursor-not-allowed disabled:bg-gray-200"
-                onClick={openUpload}
-              >
-                <CloudArrowUpIcon className="w-4 h-4" />
-                Add
-              </button>
-            </div>
-          </div>
-          {(upload._tag === "uploading" || results.length > 0) && (
-            <>
-              <div className="relative flex px-4 py-2 text-xs font-medium border-b dark:border-[#262A30] border-[#FEFEFF] bg-gray-50 text-gray-600 justify-between">
-                <div className="flex gap-x-1">
-                  <CloudArrowUpIconSolid className="w-4 h-4 text-gray-400" />
-                  Uploading
-                </div>
-              </div>
-              <ul className="divide-y divide-solid overflow-y-auto border-b border-[#FEFEFF] dark:border-[#262A30] divide-[#FEFEFF] dark:divide-[#262A30]">
-                {results.map((result, i) => (
-                  <li>
-                    <UploadResultItem
-                      key={i}
-                      result={result}
-                      onRemove={onRemoveResult}
-                    />
-                  </li>
-                ))}
-                {upload._tag === "uploading" && (
-                  <li>
-                    <UploadingItem upload={upload.current} onAbort={onAbort} />
-                  </li>
-                )}
-                {upload._tag === "uploading" &&
-                  upload.rest.map((f, i) => (
-                    <li key={i}>
-                      <WaitingItem file={f} onAbort={onAbort} />
-                    </li>
-                  ))}
-              </ul>
-            </>
-          )}
-          {(actualFiles.length > 0 || upload._tag === "idle") && (
-            <>
-              <div className="relative flex px-4 py-2 text-xs font-medium border-b border-[#FEFEFF] dark:bg-black dark:border-[#262A30] bg-gray-50 text-gray-600 justify-between">
-                <div className="flex gap-x-1">
-                  <FolderIcon className="w-4 h-4 text-gray-400" />
-                  <span className="font-mono">/home/jupyteruser</span>
-                </div>
-                <Tooltip
-                  title=""
-                  message="Files will be uploaded to this location. You can read them from disk."
-                  position="left"
-                  active
-                  tooltipClassname="w-44"
-                >
-                  <InformationCircleIcon className="w-4 h-4 text-gray-300" />
-                </Tooltip>
-              </div>
-              <div className="px-4 py-0 flex items-center border-b dark:border-[#262A30] border-gray-200 group focus-within:border-blue-300">
-                <MagnifyingGlassIcon className="h-3.5 w-3.5 text-gray-400 group-focus-within:text-blue-500" />
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  className="w-full h-8 border-0 placeholder-gray-400 text-xs text-gray-600 focus:outline-none focus:ring-0 pl-2"
-                  onChange={e => setSearch(e.target.value)}
-                  value={search}
-                />
-              </div>
-              {actualFiles.length > 0 ? (
-                <ul className="flex-1 divide-y divide-solid overflow-y-auto">
-                  {actualFiles
-                    .filter(f => !f.isDirectory)
-                    .map(file => (
-                      <li key={file.path}>
-                        <FileItem
-                          workspaceId={props.workspaceId}
-                          file={file}
-                          onUseInPython={onUseInPython}
-                          onUseInSQL={onUseInSQL}
-                          onDelete={onRemove}
-                          isDeleting={deleting[file.name]}
-                          canUse={props.yDoc !== undefined}
-                        />
-                      </li>
-                    ))}
-                </ul>
-              ) : (
-                !isDragActive && (
-                  <div className="flex-1 p-4">
-                    <div className="flex items-center justify-center h-full text-gray-500 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200 p-8 text-center dark:bg-[#0C1015] dark:border-[#262A30]">
-                      Drag and drop files here to upload them.
-                    </div>
-                  </div>
-                )
-              )}
-              <DragOverlay isDragActive={isDragActive} />
-            </>
-          )}
-        </div>
-      </Transition>
-      <ReplaceDialog
-        fileName={upload._tag === "uploading" ? upload.current.file.name : ""}
-        open={isAskingReplace}
-        onReplaceYes={onReplaceYes}
-        onReplaceAll={onReplaceAll}
-        onReplaceNo={onReplaceNo}
-      />
-    </>
-  );
+  const sizeLabel = sizes[i];
+  if (!sizeLabel) {
+    return `${bytes} bytes`;
+  }
+  return parseFloat((bytes / k ** i).toFixed(dm)) + sizeLabel;
 }
 
 function DragOverlay({ isDragActive }: { isDragActive: boolean }) {
@@ -430,6 +105,7 @@ function UploadResultItem(props: UploadResultItemProps) {
           </div>
           <div>
             <button
+              type="button"
               className="text-gray-500 disabled:cursor-not-allowed text-xs hover:text-gray-400"
               onClick={onRemove}
             >
@@ -445,10 +121,10 @@ function UploadResultItem(props: UploadResultItemProps) {
 
 interface FileItemProps {
   workspaceId: string;
-  file: sandwormFile;
-  onUseInPython: (file: sandwormFile) => void;
-  onUseInSQL: (file: sandwormFile) => void;
-  onDelete: (file: sandwormFile) => void;
+  file: SandwormFile;
+  onUseInPython: (file: SandwormFile) => void;
+  onUseInSQL: (file: SandwormFile) => void;
+  onDelete: (file: SandwormFile) => void;
   isDeleting: boolean;
   canUse: boolean;
 }
@@ -572,6 +248,7 @@ function UploadingItem(props: UploadingItemProps) {
             {props.upload.file.name}
           </div>
           <button
+            type="button"
             className="text-gray-500 hover:text-red-500 disabled:cursor-not-allowed text-xs"
             onClick={onAbort}
             disabled={props.upload.status !== "uploading"}
@@ -605,6 +282,7 @@ function WaitingItem(props: WaitingItemProps) {
             {props.file.name}
           </div>
           <button
+            type="button"
             className="text-gray-500 hover:text-red-500 disabled:cursor-not-allowed text-xs"
             onClick={onAbort}
           >
@@ -617,15 +295,6 @@ function WaitingItem(props: WaitingItemProps) {
       </div>
     </div>
   );
-}
-
-function formatBytes(bytes: number, decimals = 2) {
-  if (bytes === 0) return "0 bytes";
-  const k = 1024;
-  const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ["bytes", "kb", "mb", "gb", "tb", "pb", "eb", "zb", "yb"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / k ** i).toFixed(dm)) + sizes[i];
 }
 
 interface ReplaceDialogProps {
@@ -719,5 +388,344 @@ function ReplaceDialog(props: ReplaceDialogProps) {
         </div>
       </Dialog>
     </Transition>
+  );
+}
+
+interface Props {
+  workspaceId: string;
+  visible: boolean;
+  onHide: () => void;
+  userId: string | null;
+  yDoc?: Y.Doc;
+  executionQueue?: ExecutionQueue;
+}
+export default function Files(props: Props) {
+  const { startedAt: environmentStartedAt } = useEnvironmentStatus(
+    props.workspaceId
+  );
+
+  const [search, setSearch] = useState("");
+
+  const onUseInPython = useCallback(
+    (file: SandwormFile) => {
+      if (!props.yDoc || !props.executionQueue) {
+        return;
+      }
+      const mimeTypeMap: Record<string, string> = {
+        "application/json": "json",
+        "text/csv": "csv",
+        "application/vnd.ms-excel": "xls",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+          "xlsx",
+      };
+
+      const fileExtension = file.mimeType
+        ? mimeTypeMap[file.mimeType] || ""
+        : "";
+
+      const source =
+        fileExtension !== ""
+          ? `import pandas as pd
+df = pd.read_${fileExtension}('${file.relCwdPath}')
+df`
+          : `file = open('${file.relCwdPath}').read()
+file`;
+
+      const layout = getLayout(props.yDoc);
+      const blocks = getBlocks(props.yDoc);
+      const blockId = addBlockGroup(
+        layout,
+        blocks,
+        {
+          type: BlockType.Python,
+          source,
+        },
+        layout.length
+      );
+
+      const pythonBlock = blocks.get(blockId);
+      if (!pythonBlock) {
+        return;
+      }
+
+      props.executionQueue.enqueueBlock(
+        pythonBlock,
+        props.userId,
+        environmentStartedAt,
+        {
+          _tag: "python",
+          isSuggestion: false,
+        }
+      );
+    },
+    [props.yDoc, props.executionQueue, props.userId, environmentStartedAt]
+  );
+
+  const onUseInSQL = useCallback(
+    (file: SandwormFile) => {
+      if (!props.yDoc || !props.executionQueue) {
+        return;
+      }
+
+      const table = file.relCwdPath
+        // replace `\` with `\\`
+        .replace(/\\/g, "\\\\")
+        // replace `'` with `''`
+        .replace(/'/g, "''")
+        // replace `"` with `\"`
+        .replace(/"/g, '\\"');
+
+      const extension = file.name.split(".").pop();
+      let source = `SELECT * FROM '${table}' LIMIT 1000000`;
+      if (extension === "xlsx") {
+        source = `SELECT * FROM st_read('${table}') LIMIT 1000000`;
+      }
+
+      const layout = getLayout(props.yDoc);
+      const blocks = getBlocks(props.yDoc);
+
+      const blockId = addBlockGroup(
+        layout,
+        blocks,
+        {
+          type: BlockType.SQL,
+          dataSourceId: null,
+          isFileDataSource: true,
+          source,
+        },
+        layout.length
+      );
+
+      const sqlBlock = blocks.get(blockId);
+      if (!sqlBlock) {
+        return;
+      }
+
+      props.executionQueue.enqueueBlock(
+        sqlBlock,
+        props.userId,
+        environmentStartedAt,
+        {
+          _tag: "sql",
+          isSuggestion: false,
+          selectedCode: null,
+        }
+      );
+    },
+    [props.yDoc, props.executionQueue, props.userId, environmentStartedAt]
+  );
+
+  const [
+    { files, deleting, upload },
+    {
+      del,
+      onDrop,
+      onReplaceYes,
+      onReplaceAll,
+      onReplaceNo,
+      onAbort,
+      onRemoveResult,
+    },
+  ] = useFiles(props.workspaceId, props.visible ? 5000 : 0);
+
+  const onRemove = useCallback(
+    (file: SandwormFile) => {
+      del(file.relCwdPath);
+    },
+    [del]
+  );
+
+  const {
+    getRootProps,
+    getInputProps,
+    isDragActive,
+    open: openUpload,
+  } = useDropzone({
+    onDrop,
+    noClick: true,
+  });
+
+  const isAskingReplace =
+    upload._tag === "uploading" && upload.current.status === "asking-replace";
+
+  const actualFiles = useMemo(
+    () =>
+      files.filter(file => {
+        const s = search.trim();
+        if (s !== "") {
+          const name = file.name.trim();
+          return name.toLowerCase().includes(s.toLowerCase());
+        }
+
+        if (upload._tag === "idle") {
+          return true;
+        }
+
+        if (
+          upload.current.file.name === file.relCwdPath &&
+          upload.current.status === "uploading"
+        ) {
+          return false;
+        }
+
+        return true;
+      }),
+    [files, upload, search]
+  );
+
+  const results = useMemo(
+    () => upload.results.filter(f => f.outcome !== "success"),
+    [upload.results]
+  );
+
+  return (
+    <>
+      <Transition
+        as="div"
+        show={props.visible}
+        className="top-0 right-0 h-full absolute bg-white dark:bg-black z-30 font-primary "
+        enter="transition-transform duration-300"
+        enterFrom="transform translate-x-full"
+        enterTo="transform translate-x-0"
+        leave="transition-transform duration-300"
+        leaveFrom="transform translate-x-0"
+        leaveTo="transform translate-x-full"
+      >
+        <input
+          id="file-upload"
+          className="sr-only"
+          type="file"
+          {...getInputProps()}
+        />
+        <button
+          type="button"
+          className="absolute z-10 top-7 transform rounded-full border border-[#E9ECEF] dark:border-[#262A30]  text-gray-400 bg-white  hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
+          onClick={props.onHide}
+        >
+          <ChevronDoubleRightIcon className="w-3 h-3" />
+        </button>
+        <div
+          className="w-[324px] flex flex-col border-l dark:border-[#262A30] border-gray-200 h-full bg-white dark:bg-black"
+          {...getRootProps()}
+        >
+          <div className="flex justify-between border-b p-6 space-x-3">
+            <div>
+              <h3 className="text-lg font-medium leading-6 text-gray-900 pr-1.5">
+                Files
+              </h3>
+              <p className="text-gray-500 text-sm pt-1">
+                Click "add" or drop files into this tab to upload them.
+              </p>
+            </div>
+
+            <div>
+              <button
+                type="button"
+                className="flex items-center gap-x-2 rounded-sm bg-[#C7665C] px-3 py-1 text-sm hover:bg-primary-300 text-white disabled:cursor-not-allowed disabled:bg-gray-200"
+                onClick={openUpload}
+              >
+                <CloudArrowUpIcon className="w-4 h-4" />
+                Add
+              </button>
+            </div>
+          </div>
+          {(upload._tag === "uploading" || results.length > 0) && (
+            <>
+              <div className="relative flex px-4 py-2 text-xs font-medium border-b dark:border-[#262A30] border-[#FEFEFF] bg-gray-50 text-gray-600 justify-between">
+                <div className="flex gap-x-1">
+                  <CloudArrowUpIconSolid className="w-4 h-4 text-gray-400" />
+                  Uploading
+                </div>
+              </div>
+              <ul className="divide-y divide-solid overflow-y-auto border-b border-[#FEFEFF] dark:border-[#262A30] divide-[#FEFEFF] dark:divide-[#262A30]">
+                {results.map(result => (
+                  <li key={result.file.name}>
+                    <UploadResultItem
+                      result={result}
+                      onRemove={onRemoveResult}
+                    />
+                  </li>
+                ))}
+                {upload._tag === "uploading" && (
+                  <li>
+                    <UploadingItem upload={upload.current} onAbort={onAbort} />
+                  </li>
+                )}
+                {upload._tag === "uploading" &&
+                  upload.rest.map(f => (
+                    <li key={f.name}>
+                      <WaitingItem file={f} onAbort={onAbort} />
+                    </li>
+                  ))}
+              </ul>
+            </>
+          )}
+          {(actualFiles.length > 0 || upload._tag === "idle") && (
+            <>
+              <div className="relative flex px-4 py-2 text-xs font-medium border-b border-[#FEFEFF] dark:bg-black dark:border-[#262A30] bg-gray-50 text-gray-600 justify-between">
+                <div className="flex gap-x-1">
+                  <FolderIcon className="w-4 h-4 text-gray-400" />
+                  <span className="font-mono">/home/jupyteruser</span>
+                </div>
+                <Tooltip
+                  title=""
+                  message="Files will be uploaded to this location. You can read them from disk."
+                  position="left"
+                  active
+                  tooltipClassname="w-44"
+                >
+                  <InformationCircleIcon className="w-4 h-4 text-gray-300" />
+                </Tooltip>
+              </div>
+              <div className="px-4 py-0 flex items-center border-b dark:border-[#262A30] border-gray-200 group focus-within:border-blue-300">
+                <MagnifyingGlassIcon className="h-3.5 w-3.5 text-gray-400 group-focus-within:text-blue-500" />
+                <input
+                  type="text"
+                  placeholder="Search..."
+                  className="w-full h-8 border-0 placeholder-gray-400 text-xs text-gray-600 focus:outline-none focus:ring-0 pl-2"
+                  onChange={e => setSearch(e.target.value)}
+                  value={search}
+                />
+              </div>
+              {actualFiles.length > 0 ? (
+                <ul className="flex-1 divide-y divide-solid overflow-y-auto">
+                  {actualFiles
+                    .filter(f => !f.isDirectory)
+                    .map(file => (
+                      <li key={file.path}>
+                        <FileItem
+                          workspaceId={props.workspaceId}
+                          file={file}
+                          onUseInPython={onUseInPython}
+                          onUseInSQL={onUseInSQL}
+                          onDelete={onRemove}
+                          isDeleting={deleting[file.name] ?? false}
+                          canUse={props.yDoc !== undefined}
+                        />
+                      </li>
+                    ))}
+                </ul>
+              ) : (
+                !isDragActive && (
+                  <div className="flex-1 p-4">
+                    <div className="flex items-center justify-center h-full text-gray-500 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200 p-8 text-center dark:bg-[#0C1015] dark:border-[#262A30]">
+                      Drag and drop files here to upload them.
+                    </div>
+                  </div>
+                )
+              )}
+              <DragOverlay isDragActive={isDragActive} />
+            </>
+          )}
+        </div>
+      </Transition>
+      <ReplaceDialog
+        fileName={upload._tag === "uploading" ? upload.current.file.name : ""}
+        open={isAskingReplace}
+        onReplaceYes={onReplaceYes}
+        onReplaceAll={onReplaceAll}
+        onReplaceNo={onReplaceNo}
+      />
+    </>
   );
 }

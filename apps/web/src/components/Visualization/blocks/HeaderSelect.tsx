@@ -30,9 +30,9 @@ export default function HeaderSelect(props: Props) {
     : (props.placeholders?.[1] ?? "No data frames");
 
   const onChange = useCallback(
-    (value: string) => {
+    (newValue: string) => {
       if (!isDisabled) {
-        props.onChange(value);
+        props.onChange(newValue);
       }
     },
     [isDisabled, props.onChange]

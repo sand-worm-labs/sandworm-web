@@ -26,10 +26,10 @@ export const AccountDropdown = () => {
 
   if (!user) {
     return (
-      <div className="w-[90%] mx-auto mb-5 flex justify-center">
+      <div className="w-[95%] mx-auto mb-5 flex justify-center">
         <Button
           onClick={() => openSignIn()}
-          className="px-5 h-11 border-[#E9ECEF] bg-white  dark:bg-neutral-900 text-black dark:text-white font-semibold inline-block w-full"
+          className="px-5 h-11 border-[#E9ECEF] bg-white  dark:bg-[#0D1014] text-black dark:text-white font-semibold inline-block w-full dark:border-[#262A30] border"
         >
           Sign up Today!
         </Button>

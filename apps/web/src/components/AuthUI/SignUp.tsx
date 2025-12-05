@@ -2,9 +2,8 @@
 
 import Link from "next/link";
 
-import { SocialLogin } from "./SocialLogin";
 import { SandwormLogo } from "../Assets";
-import { SignInForm } from "./SignInForm";
+
 import SignUpForm from "./SignUpForm";
 
 export const SignUp = () => {

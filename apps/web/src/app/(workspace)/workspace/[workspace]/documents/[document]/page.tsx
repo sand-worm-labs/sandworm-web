@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+
 import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
 import useDocument from "@/components/Visualization/hooks/useDocumentLocal";
 import Layout from "@/components/Visualization/Layout";

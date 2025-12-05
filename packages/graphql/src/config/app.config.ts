@@ -92,12 +92,15 @@ export default registerAs<AppConfig>('app', () => {
     logLevel: process.env.APP_LOG_LEVEL || 'warn',
     logService: process.env.APP_LOG_SERVICE || LogService.CONSOLE,
     corsOrigin: getCorsOrigin(),
-    workingDirectory: process.cwd(),
+    workingDirectory: process.env.APP_WORKING_DIRECTORY || process.cwd(),
     frontendDomain: process.env.FRONTEND_DOMAIN,
     backendDomain: process.env.BACKEND_DOMAIN ?? 'http://localhost',
     swagger: {
       enabled: process.env.SWAGGER_ENABLED !== 'false',
-      title: process.env.SWAGGER_TITLE || process.env.APP_NAME || 'API Documentation',
+      title:
+        process.env.SWAGGER_TITLE ||
+        process.env.APP_NAME ||
+        'API Documentation',
       description: process.env.SWAGGER_DESCRIPTION || 'API Documentation',
       version: process.env.SWAGGER_VERSION || '1.0.0',
       path: process.env.SWAGGER_PATH || 'api-docs',

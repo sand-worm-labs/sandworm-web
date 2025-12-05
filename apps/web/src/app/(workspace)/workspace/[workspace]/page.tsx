@@ -8,7 +8,7 @@ export default function WorkspacePage() {
 
   return (
     <div>
-      <Chat key={id} id={id} initialMessages={[]} />;
+      <Chat key={id} id={id} initialMessages={[]} />
     </div>
   );
 }

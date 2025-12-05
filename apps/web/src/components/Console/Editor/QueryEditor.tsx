@@ -1,15 +1,8 @@
 import React, { useState } from "react";
 import { Edit } from "lucide-react";
 import { toast } from "sonner";
-import { FaCodeBranch } from "react-icons/fa";
 import { useSession } from "next-auth/react";
 import { Button } from "@sandworm/ui/components/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@sandworm/ui/components/tooltip";
 import { Input } from "@sandworm/ui/components/input";
 
 import { cn } from "@/lib/utils";
@@ -109,7 +102,7 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
 
   return (
     <div className={cn("flex flex-col h-full", className)}>
-      <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#FEFEFF] min-h-[3rem] overflow-x-auto overflow-y-hidden">
+      <div className="flex items-center justify-between px-4 py-2.5 min-h-[3rem] overflow-x-auto overflow-y-hidden">
         <div className="flex items-center gap-2">
           {isEditingTitle ? (
             <Input
@@ -144,25 +137,6 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
           )}
         </div>
         <div className="flex items-center gap-4 ">
-          <div className="flex gap-2 text-sm text-muted-foreground ">
-            <TooltipProvider>
-              <Tooltip delayDuration={200}>
-                <TooltipTrigger
-                  className="hover:bg-muted/50 p-2 rounded-md transition-colors border-white/20 border"
-                  onClick={handleForkClick}
-                  disabled={loading}
-                >
-                  <FaCodeBranch className="h-4 w-4 transition-colors" />
-                </TooltipTrigger>
-                <TooltipContent side="bottom">Fork this Query</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-
-            {/*   @TODO: Add "Star this Query" tooltip here once like count logic is available.
-  This component already exists in /explore, but bringing it here means we also need to fetch and show like counts for proper UX.
-  No need to put it here if it's half baked — users need feedback if they’re gonna star something. */}
-          </div>
-
           <ExecuteButton
             handleExecute={handleExecuteQuery}
             isExecuting={isExecuting}
@@ -174,7 +148,7 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
             <Button
               onClick={() => setIsSaveModalOpen(true)}
               variant="outline"
-              className="flex items-center gap-2 min-w-[100px] text-sm font-medium  h-[2.2rem] rounded-lg bg-[#F8F9FA] border-[#DEE2E6] "
+              className="flex items-center gap-2 min-w-[100px] text-sm font-medium  h-[2.2rem] rounded-lg bg-[#F8F9FA] border-[#DEE2E6] dark:text-black dark:hover:bg-white/90 "
             >
               Save
             </Button>
@@ -182,7 +156,7 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
         </div>
       </div>
 
-      <div className="flex-1 relative border-b border-b-red-500">
+      <div className="flex-1 relative">
         <QueryCodeEditor
           initialValue={currentContent}
           tabId={tabId}

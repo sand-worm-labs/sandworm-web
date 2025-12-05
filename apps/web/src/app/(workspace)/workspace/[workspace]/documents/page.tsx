@@ -1,9 +1,10 @@
 "use client";
 
-import { useDocumentsLocal as useDocuments } from "@/components/Visualization/hooks/useDocumentsLocal";
-import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo } from "react";
+
+import { useDocumentsLocal as useDocuments } from "@/components/Visualization/hooks/useDocumentsLocal";
+import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
 
 export default function DocumentsPage() {
   const router = useRouter();

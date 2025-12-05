@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
+
 import { MiniChatInput } from "./MiniChatInput";
 
 interface MiniChatHeaderProps {
@@ -11,7 +12,7 @@ interface MiniChatHeaderProps {
 export const MiniChatHeader: React.FC<MiniChatHeaderProps> = ({ onCancel }) => {
   return (
     <header className="flex items-center justify-between px-4 py-2 bg-white dark:bg-black border-b border-gray-200 dark:border-slate-800 ">
-      <h3 className="text-sm font-semibold leading-5 text-slate-900 dark:text-slate-100">
+      <h3 className="text-sm font-medium leading-5 text-slate-900 dark:text-slate-100">
         Sandworm agent
       </h3>
 

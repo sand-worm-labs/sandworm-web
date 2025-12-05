@@ -2,21 +2,21 @@ import { ErrorCode } from '@/constants/error-code.constant';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ValidationException } from '@sandworm/graphql';
+import { verifyPassword } from '@sandworm/nest-common';
 import {
   UserEntity,
-  UserSettingEntity,
   UserFollowsEntity,
+  UserSettingEntity,
 } from '@sandworm/postgresql-typeorm';
 import { Repository } from 'typeorm';
+import { AuthPayload } from '../auth-graphql/models/auth-payload';
 import {
   CreateUserInput,
   GetAllUsersInput,
   UpdateUserInput,
 } from './dto/user.dto';
-import { User } from './model/graphql/user.model';
 import { UserSetting } from './model/graphql/user-setting.model';
-import { AuthPayload } from '../auth-graphql/models/auth-payload';
-import { verifyPassword } from '@sandworm/nest-common';
+import { User } from './model/graphql/user.model';
 
 @Injectable()
 export class UserService {
@@ -47,7 +47,9 @@ export class UserService {
     return { id: user.id, user: foundUser, token: currentUser.token };
   }
 
-  async create(input: CreateUserInput | Partial<UserEntity>): Promise<UserEntity> {
+  async create(
+    input: CreateUserInput | Partial<UserEntity>,
+  ): Promise<UserEntity> {
     const { username, email, password } = input;
 
     if (username || email) {
@@ -191,9 +193,7 @@ export class UserService {
       relations: ['follower'],
     });
 
-    return relations
-      .filter((r) => r.follower)
-      .map((r) => r.follower);
+    return relations.filter((r) => r.follower).map((r) => r.follower);
   }
 
   async getUserFollowing(userId: string): Promise<UserEntity[]> {
@@ -202,9 +202,7 @@ export class UserService {
       relations: ['followee'],
     });
 
-    return relations
-      .filter((r) => r.followee)
-      .map((r) => r.followee);
+    return relations.filter((r) => r.followee).map((r) => r.followee);
   }
 
   async remove(userId: string): Promise<void> {
@@ -225,5 +223,4 @@ export class UserService {
     }
     await this.userRepository.remove(user);
   }
-
 }

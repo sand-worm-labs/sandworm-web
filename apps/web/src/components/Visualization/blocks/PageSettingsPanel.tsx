@@ -1,4 +1,3 @@
-import type * as Y from "yjs";
 import { Switch, Transition } from "@headlessui/react";
 import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
@@ -55,7 +54,6 @@ interface Props {
   documentId: string;
   visible: boolean;
   onHide: () => void;
-  yDoc?: Y.Doc;
 }
 
 export default function PageSettingsPanel(props: Props) {

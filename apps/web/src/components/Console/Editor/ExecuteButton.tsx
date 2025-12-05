@@ -61,14 +61,14 @@ export const ExecuteButton = ({
 
           <DropdownMenuItem
             onClick={() => setExecutionType("rpc")}
-            className={executionType === "rpc" ? "font-bold" : ""}
+            className={executionType === "rpc" ? "font-medium" : ""}
           >
             RPC
           </DropdownMenuItem>
 
           <DropdownMenuItem
             onClick={() => setExecutionType("indexed")}
-            className={executionType === "indexed" ? "font-bold" : ""}
+            className={executionType === "indexed" ? "font-medium" : ""}
           >
             Indexer
           </DropdownMenuItem>
