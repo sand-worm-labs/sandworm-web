@@ -513,7 +513,7 @@ function SQLSyntaxError(props: {
                   <button
                     disabled={!props.canFixWithAI}
                     onClick={props.onFixWithAI}
-                    className="mt-4 flex items-center border rounded-sm px-2 py-1 gap-x-2 font-syne border-gray-200 hover:bg-gray-50 hover:text-gray-700 disabled:bg-gray-200 disabled:border-0 disabled:cursor-not-allowed"
+                    className="mt-4 flex items-center border rounded-sm px-2 py-1 gap-x-2  border-gray-200 hover:bg-gray-50 hover:text-gray-700 disabled:bg-gray-200 disabled:border-0 disabled:cursor-not-allowed"
                   >
                     {props.isFixingWithAI ? (
                       <>

@@ -318,7 +318,7 @@ function DashboardControls(props: Props) {
 
       <div className="bg-white dark:bg-black border-l border-gray-200 dark:border-[#262A30] overflow-y-auto relative h-full flex flex-col justify-between">
         <div className="bg-gray-50  dark:bg-black border-b dark:border-[#262A30]  border-gray-200 py-6 px-4 shadow-sm">
-          <h2 className="font-syne text-lg font-medium text-gray-900 dark:text-white pb-4">
+          <h2 className=" text-lg font-medium text-gray-900 dark:text-white pb-4">
             Blocks
           </h2>
           <div className="flex flex-col space-y-3">

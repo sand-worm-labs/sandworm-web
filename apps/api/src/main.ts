@@ -132,9 +132,9 @@ async function bootstrap() {
         : [corsOrigin];
 
   app.enableCors({
-    origin: isProduction ? origins : true,
+    origin: isProduction ? origins : 'http://localhost:3000',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    allowedHeaders: '*',
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   });
 

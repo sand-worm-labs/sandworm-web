@@ -1,5 +1,7 @@
-import type { ApiDocument } from "@/types";
 import { useCallback, useMemo, useState } from "react";
+
+import type { ApiDocument } from "@/types";
+
 import { useDocumentsLocal } from "./useDocumentsLocal";
 
 type API = {
