@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 
+// eslint-disable-next-line import/no-cycle
 import { useTourHighlight } from "./TourHighlightProvider";
 
 interface Position {

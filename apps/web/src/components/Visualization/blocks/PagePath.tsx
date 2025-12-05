@@ -5,7 +5,6 @@ export type Page = {
   name: string;
   href: string;
   current: boolean;
-  // TODO fix this type
   icon?: any;
 };
 
