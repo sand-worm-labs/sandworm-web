@@ -51,6 +51,94 @@ interface Props {
   onChangeAllSeries: (yIndex: number, series: Series[]) => void;
 }
 
+interface ColorPickerProps {
+  color: string;
+  className?: string;
+  onChangeColor: (color: string) => void;
+}
+
+function ColorPicker(props: ColorPickerProps) {
+  const onChangeColor = useCallback(
+    (color: { hex: string }) => {
+      props.onChangeColor(color.hex);
+    },
+    [props.onChangeColor]
+  );
+
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const onTogglePickerOpen = useCallback(() => {
+    setPickerOpen(prev => !prev);
+  }, []);
+
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  const dropdownStyle: CSSProperties = useResizeMemo(
+    rect => ({
+      position: "absolute",
+      top: rect?.bottom,
+      left: rect?.left ?? 0,
+      zIndex: 9001,
+    }),
+    buttonRef.current
+  );
+
+  const pickerContainerRef = useRef<HTMLDivElement>(null);
+  useOnClickOutside2(
+    () => {
+      setPickerOpen(false);
+    },
+    pickerContainerRef,
+    buttonRef,
+    pickerOpen
+  );
+  return (
+    <div className={props.className}>
+      <button
+        type="button"
+        className="w-5 h-5 rounded-full border hover:opacity-90 transition-opacity duration-300"
+        style={{ backgroundColor: props.color }}
+        onClick={onTogglePickerOpen}
+        ref={buttonRef}
+      />
+      {ReactDOM.createPortal(
+        <Transition
+          className="pt-2"
+          show={pickerOpen}
+          enter="transition-opacity duration-300"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="transition-opacity duration-300"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+          style={dropdownStyle}
+          as="div"
+          ref={pickerContainerRef}
+        >
+          <SketchPicker
+            color={props.color}
+            onChange={onChangeColor}
+            presetColors={presetColors}
+          />
+        </Transition>,
+        document.body
+      )}
+    </div>
+  );
+}
+
+function getColorFromSerie(s: Serie): string | null {
+  switch (s.type) {
+    case "bar":
+      return s.color ?? null;
+    case "line":
+      return s.lineStyle?.color ?? null;
+    case "scatter":
+      return s.itemStyle?.color ?? null;
+    default:
+      return null;
+  }
+}
+
 function DisplayControls(props: Props) {
   return (
     <div className="text-xs text-gray-500 flex flex-col space-y-8">
@@ -107,16 +195,83 @@ function DisplayControls(props: Props) {
   );
 }
 
-function getColorFromSerie(s: Serie): string | null {
-  switch (s.type) {
-    case "bar":
-      return s.color ?? null;
-    case "line":
-      return s.lineStyle?.color ?? null;
-    case "scatter":
-      return s.itemStyle?.color ?? null;
-  }
+interface GroupBySeriesDisplayProps {
+  drag: ConnectDragSource;
+  drop: ConnectDropTarget;
+  dragPreview: ConnectDragPreview;
+  isDragging: boolean;
+  group: string;
+  name: string;
+  onChangeName: (group: string, name: string) => void;
+  color: string;
+  onChangeColor: (group: string, color: string) => void;
+  dataframe: DataFrame | null;
+  isEditable: boolean;
 }
+
+const GroupBySeriesDisplay = forwardRef<
+  HTMLDivElement,
+  GroupBySeriesDisplayProps
+>(function GroupBySeriesDisplay(props, ref) {
+  const onChangeColor = useCallback(
+    (color: string) => {
+      props.onChangeColor(props.group, color);
+    },
+    [props.onChangeColor, props.group]
+  );
+
+  const onChangeName = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      props.onChangeName(props.group, e.target.value);
+    },
+    [props.onChangeName, props.group]
+  );
+
+  const onBlur = useCallback(() => {
+    if (props.name.trim() === "") {
+      props.onChangeName(props.group, props.group);
+    }
+  }, [props.group, props.name, props.onChangeName]);
+
+  return (
+    <div
+      className={clsx(props.isDragging ? "opacity-50" : "opacity-100")}
+      ref={d => {
+        props.drop(d);
+      }}
+    >
+      <div className="flex items-center space-x-1 pl-1" ref={ref}>
+        <div
+          className="text-gray-400/60 hover:text-gray-400 cursor-pointer"
+          ref={el => {
+            props.drag(el);
+          }}
+        >
+          <GripVerticalIcon />
+        </div>
+        <div
+          className="relative w-full group"
+          ref={el => {
+            props.dragPreview(el);
+          }}
+        >
+          <input
+            type="text"
+            placeholder={props.group}
+            className="w-full border-0 rounded-md ring-1 ring-inset ring-gray-200 focus:ring-1 focus:ring-inset focus:ring-blue-300 bg-white pr-2.5 pl-10 text-gray-800 text-xs placeholder:text-gray-400 relative"
+            disabled={!props.dataframe || !props.isEditable}
+            value={props.name}
+            onChange={onChangeName}
+            onBlur={onBlur}
+          />
+          <div className="absolute left-2 top-1/2 leading-[0px] transform -translate-y-1/2">
+            <ColorPicker color={props.color} onChangeColor={onChangeColor} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+});
 
 interface DisplayYAxisSeriesProps {
   drag: ConnectDragSource;
@@ -298,157 +453,5 @@ const DisplayYAxisSeries = forwardRef<HTMLDivElement, DisplayYAxisSeriesProps>(
     );
   }
 );
-
-interface GroupBySeriesDisplayProps {
-  drag: ConnectDragSource;
-  drop: ConnectDropTarget;
-  dragPreview: ConnectDragPreview;
-  isDragging: boolean;
-  group: string;
-  name: string;
-  onChangeName: (group: string, name: string) => void;
-  color: string;
-  onChangeColor: (group: string, color: string) => void;
-  dataframe: DataFrame | null;
-  isEditable: boolean;
-}
-
-const GroupBySeriesDisplay = forwardRef<
-  HTMLDivElement,
-  GroupBySeriesDisplayProps
->(function GroupBySeriesDisplay(props, ref) {
-  const onChangeColor = useCallback(
-    (color: string) => {
-      props.onChangeColor(props.group, color);
-    },
-    [props.onChangeColor, props.group]
-  );
-
-  const onChangeName = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      props.onChangeName(props.group, e.target.value);
-    },
-    [props.onChangeName, props.group]
-  );
-
-  const onBlur = useCallback(() => {
-    if (props.name.trim() === "") {
-      props.onChangeName(props.group, props.group);
-    }
-  }, [props.group, props.name, props.onChangeName]);
-
-  return (
-    <div
-      className={clsx(props.isDragging ? "opacity-50" : "opacity-100")}
-      ref={d => {
-        props.drop(d);
-      }}
-    >
-      <div className="flex items-center space-x-1 pl-1" ref={ref}>
-        <div
-          className="text-gray-400/60 hover:text-gray-400 cursor-pointer"
-          ref={el => {
-            props.drag(el);
-          }}
-        >
-          <GripVerticalIcon />
-        </div>
-        <div
-          className="relative w-full group"
-          ref={el => {
-            props.dragPreview(el);
-          }}
-        >
-          <input
-            type="text"
-            placeholder={props.group}
-            className="w-full border-0 rounded-md ring-1 ring-inset ring-gray-200 focus:ring-1 focus:ring-inset focus:ring-blue-300 bg-white pr-2.5 pl-10 text-gray-800 text-xs placeholder:text-gray-400 relative"
-            disabled={!props.dataframe || !props.isEditable}
-            value={props.name}
-            onChange={onChangeName}
-            onBlur={onBlur}
-          />
-          <div className="absolute left-2 top-1/2 leading-[0px] transform -translate-y-1/2">
-            <ColorPicker color={props.color} onChangeColor={onChangeColor} />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-});
-
-interface ColorPickerProps {
-  color: string;
-  className?: string;
-  onChangeColor: (color: string) => void;
-}
-
-function ColorPicker(props: ColorPickerProps) {
-  const onChangeColor = useCallback(
-    (color: { hex: string }) => {
-      props.onChangeColor(color.hex);
-    },
-    [props.onChangeColor]
-  );
-
-  const [pickerOpen, setPickerOpen] = useState(false);
-  const onTogglePickerOpen = useCallback(() => {
-    setPickerOpen(prev => !prev);
-  }, []);
-
-  const buttonRef = useRef<HTMLButtonElement>(null);
-
-  const dropdownStyle: CSSProperties = useResizeMemo(
-    rect => ({
-      position: "absolute",
-      top: rect?.bottom,
-      left: rect?.left ?? 0,
-      zIndex: 9001,
-    }),
-    buttonRef.current
-  );
-
-  const pickerContainerRef = useRef<HTMLDivElement>(null);
-  useOnClickOutside2(
-    () => {
-      setPickerOpen(false);
-    },
-    pickerContainerRef,
-    buttonRef,
-    pickerOpen
-  );
-  return (
-    <div className={props.className}>
-      <button
-        className="w-5 h-5 rounded-full border hover:opacity-90 transition-opacity duration-300"
-        style={{ backgroundColor: props.color }}
-        onClick={onTogglePickerOpen}
-        ref={buttonRef}
-      />
-      {ReactDOM.createPortal(
-        <Transition
-          className="pt-2"
-          show={pickerOpen}
-          enter="transition-opacity duration-300"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="transition-opacity duration-300"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-          style={dropdownStyle}
-          as="div"
-          ref={pickerContainerRef}
-        >
-          <SketchPicker
-            color={props.color}
-            onChange={onChangeColor}
-            presetColors={presetColors}
-          />
-        </Transition>,
-        document.body
-      )}
-    </div>
-  );
-}
 
 export default DisplayControls;

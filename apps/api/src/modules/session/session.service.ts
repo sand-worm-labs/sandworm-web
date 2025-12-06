@@ -1,11 +1,11 @@
+import { ErrorCode } from '@/constants/error-code.constant';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Not } from 'typeorm';
 import { ValidationException } from '@sandworm/graphql';
 import { SessionEntity, UserEntity } from '@sandworm/postgresql-typeorm';
-import { ErrorCode } from '@/constants/error-code.constant';
-import { Session } from './domain/session';
+import { Not, Repository } from 'typeorm';
 import { UserResponse } from '../user/model/http/user.model';
+import { Session } from './domain/session';
 
 @Injectable()
 export class SessionService {
@@ -19,13 +19,14 @@ export class SessionService {
   ) {}
 
   private toSession(sessionEntity: SessionEntity): Session {
+    const { password, ...safeUser } = sessionEntity.user;
     return {
       id: sessionEntity.id,
       hash: sessionEntity.hash,
       createdAt: sessionEntity.createdAt,
       updatedAt: sessionEntity.updatedAt,
       deletedAt: sessionEntity.deletedAt,
-      user: sessionEntity.user
+      user: safeUser,
     };
   }
 
@@ -38,8 +39,11 @@ export class SessionService {
     return session ? this.toSession(session) : null;
   }
 
-  async create( userId:UserResponse['id'] ): Promise<Session> {
-    const user = await this.userRepository.findOneBy({ id: userId });
+  async create(userId: UserResponse['id']): Promise<Session> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      select: ['id', 'email', 'username'],
+    });
 
     if (!user) {
       throw new ValidationException(ErrorCode.E002); // User not found
@@ -53,10 +57,12 @@ export class SessionService {
     return this.toSession(savedSession);
   }
 
-  async update( id: Session['id'],
+  async update(
+    id: Session['id'],
     payload: Partial<
       Omit<Session, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>
-    >,): Promise<Session> {
+    >,
+  ): Promise<Session> {
     const session = await this.sessionRepository.findOne({
       where: { id },
       relations: ['user'],
@@ -78,15 +84,17 @@ export class SessionService {
     await this.sessionRepository.softDelete({ id });
   }
 
-  async deleteByUserId(conditions: { userId: UserResponse['id'] }): Promise<void> {
+  async deleteByUserId(conditions: {
+    userId: UserResponse['id'];
+  }): Promise<void> {
     await this.sessionRepository.softDelete({
       user: { id: conditions.userId },
     });
   }
 
-  async deleteByUserIdWithExclude(conditions:{
-    userId: UserResponse['id'],
-    excludeSessionId: Session['id']
+  async deleteByUserIdWithExclude(conditions: {
+    userId: UserResponse['id'];
+    excludeSessionId: Session['id'];
   }): Promise<void> {
     await this.sessionRepository.softDelete({
       user: { id: conditions.userId },
@@ -100,7 +108,6 @@ export class SessionService {
       relations: ['user'],
     });
 
-    return sessions.map(s =>  this.toSession(s));
+    return sessions.map((s) => this.toSession(s));
   }
-
 }

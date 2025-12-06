@@ -10,4 +10,4 @@ import { AuthGraphqlService } from './auth.service';
   providers: [AuthGraphqlResolver, AuthGraphqlService],
   exports: [AuthGraphqlService],
 })
-export class AuthGraphqlModule { }
+export class AuthGraphqlModule {}

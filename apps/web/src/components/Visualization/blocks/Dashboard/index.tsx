@@ -1,9 +1,10 @@
+/* eslint-disable import/no-cycle */
 import type * as Y from "yjs";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { SquaresPlusIcon } from "@heroicons/react/24/solid";
 import { BookUpIcon } from "lucide-react";
 import { EyeIcon } from "@heroicons/react/24/outline";
-import type { BlockType, YBlock } from "@sandworm/editor";
+import type { BlockType, YBlock, YBlockGroup } from "@sandworm/editor";
 import {
   AITasks,
   ExecutionQueue,
@@ -17,11 +18,12 @@ import Link from "next/link";
 import { isNil } from "ramda";
 import { Transition } from "@headlessui/react";
 import { createPortal } from "react-dom";
-import SimpleBar from "simplebar-react";
 import clsx from "clsx";
 import { useHotkeys } from "react-hotkeys-hook";
 
-import type { SessionUser } from "../../hooks/useAITasks";
+import { DataExplorer } from "@/components/ExplorerPanels/DataExplorer";
+import type { ApiDocument, SessionUser } from "@/types";
+
 import { useDataSources } from "../../hooks/useDataSources";
 import { useLastUpdatedAt, useYDoc, useYDocState } from "../../hooks/useYDocs";
 import Layout from "../../Layout";
@@ -50,6 +52,7 @@ import DropdownInputBlock from "../customBlocks/dropdownInput";
 import DashboardSkeleton from "./DashboardSkeleton";
 import DashboardControls from "./DashboardControls";
 import DashboardView from "./DashboardView";
+import type { DataFrame, UserWorkspaceRole } from "@sandworm/types";
 
 export type DashboardMode =
   | {
@@ -71,8 +74,319 @@ export function dashboardModeHasControls(mode: DashboardMode): boolean {
           return false;
         case "expanded":
           return true;
+        default:
+          return false;
       }
+    default:
+      return false;
   }
+}
+
+export type DraggingBlock = {
+  id: string;
+  type: BlockType;
+  width: number;
+  height: number;
+};
+
+interface ExpandedBlockViewProps {
+  expanded: YBlock;
+  document: ApiDocument;
+  dataframes: Y.Map<DataFrame>;
+  blocks: Y.Map<YBlock>;
+  layout: Y.Array<YBlockGroup>;
+  dataSources: APIDataSources;
+  user: SessionUser;
+  executionQueue: ExecutionQueue;
+  aiTasks: AITasks;
+  onToggleSchemaExplorer: (dataSourceId?: string | null) => void;
+}
+
+function ExpandedBlockView(props: ExpandedBlockViewProps) {
+  return switchBlockType(props.expanded, {
+    onVisualization: block => (
+      <VisualizationBlock
+        document={props.document}
+        dataframes={props.dataframes}
+        block={block}
+        blocks={props.blocks}
+        dragPreview={null}
+        isEditable
+        onAddGroupedBlock={() => {}}
+        dashboardMode={{ _tag: "editing", position: "expanded" }}
+        isPublicMode={false}
+        hasMultipleTabs={false}
+        isBlockHiddenInPublished={false}
+        onToggleIsBlockHiddenInPublished={() => {}}
+        isCursorWithin={false}
+        isCursorInserting={false}
+        userId={props.user.id}
+        executionQueue={props.executionQueue}
+        isFullScreen
+      />
+    ),
+    onRichText: block => (
+      <RichTextBlock
+        block={block}
+        belongsToMultiTabGroup={false}
+        isEditable
+        dragPreview={null}
+        dashboardMode={{ _tag: "editing", position: "expanded" }}
+        isCursorWithin={false}
+        isCursorInserting={false}
+      />
+    ),
+    onSQL: block => (
+      <SQLBlock
+        block={block}
+        blocks={props.blocks}
+        layout={props.layout}
+        document={props.document}
+        dataSources={props.dataSources}
+        isEditable
+        dragPreview={null}
+        dashboardMode={{ _tag: "editing", position: "expanded" }}
+        isPublicMode={false}
+        hasMultipleTabs={false}
+        isBlockHiddenInPublished={false}
+        onToggleIsBlockHiddenInPublished={() => {}}
+        onSchemaExplorer={props.onToggleSchemaExplorer}
+        insertBelow={() => {}}
+        userId={props.user.id}
+        executionQueue={props.executionQueue}
+        aiTasks={props.aiTasks}
+        isFullScreen
+      />
+    ),
+    onPython: block => (
+      <PythonBlock
+        document={props.document}
+        block={block}
+        blocks={props.blocks}
+        isEditable
+        dragPreview={null}
+        isPDF={false}
+        dashboardMode={{ _tag: "editing", position: "expanded" }}
+        isPublicMode={false}
+        hasMultipleTabs={false}
+        isBlockHiddenInPublished={false}
+        onToggleIsBlockHiddenInPublished={() => {}}
+        userId={props.user.id}
+        executionQueue={props.executionQueue}
+        aiTasks={props.aiTasks}
+        isFullScreen
+      />
+    ),
+    onInput: block => (
+      <InputBlock
+        block={block}
+        blocks={props.blocks}
+        dragPreview={null}
+        belongsToMultiTabGroup={false}
+        isEditable
+        isApp={false}
+        dashboardMode={{ _tag: "editing", position: "expanded" }}
+        isCursorWithin={false}
+        isCursorInserting={false}
+        userId={props.user.id}
+        workspaceId={props.document.workspaceId}
+        executionQueue={props.executionQueue}
+      />
+    ),
+    onDropdownInput: block => (
+      <DropdownInputBlock
+        block={block}
+        blocks={props.blocks}
+        dragPreview={null}
+        belongsToMultiTabGroup={false}
+        isEditable
+        isApp={false}
+        dashboardMode={{ _tag: "editing", position: "expanded" }}
+        dataframes={props.dataframes}
+        isCursorWithin={false}
+        isCursorInserting={false}
+        userId={props.user.id}
+        workspaceId={props.document.workspaceId}
+        executionQueue={props.executionQueue}
+      />
+    ),
+    onDateInput: block => (
+      <DateInputBlock
+        block={block}
+        blocks={props.blocks}
+        workspaceId={props.document.workspaceId}
+        dragPreview={null}
+        belongsToMultiTabGroup={false}
+        isEditable
+        isApp={false}
+        dashboardMode={{ _tag: "editing", position: "expanded" }}
+        isCursorWithin={false}
+        isCursorInserting={false}
+        userId={props.user.id}
+        executionQueue={props.executionQueue}
+      />
+    ),
+    onFileUpload: () => null,
+    onDashboardHeader: () => null,
+    onWriteback: () => null,
+    onPivotTable: block => (
+      <PivotTableBlock
+        workspaceId={props.document.workspaceId}
+        dataframes={props.dataframes}
+        block={block}
+        blocks={props.blocks}
+        dragPreview={null}
+        isEditable
+        onAddGroupedBlock={() => {}}
+        dashboardMode={{ _tag: "editing", position: "expanded" }}
+        hasMultipleTabs={false}
+        isBlockHiddenInPublished={false}
+        onToggleIsBlockHiddenInPublished={() => {}}
+        isCursorWithin={false}
+        isCursorInserting={false}
+        userId={props.user.id}
+        executionQueue={props.executionQueue}
+        isFullScreen
+      />
+    ),
+    onVisualizationV2: () => null,
+  });
+}
+function DashboardContent(
+  props: Props & {
+    yDoc: Y.Doc;
+    executionQueue: ExecutionQueue;
+    aiTasks: AITasks;
+    onToggleSchemaExplorer: (dataSourceId?: string | null) => void;
+  }
+) {
+  const [{ datasources: dataSources }] = useDataSources(
+    props.document.workspaceId
+  );
+  const [draggingBlock, setDraggingBlock] = useState<DraggingBlock | null>(
+    null
+  );
+  const [latestBlockId, setLatestBlockId] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState<YBlock | null>(null);
+  const { state: blocks } = useYDocState(props.yDoc, getBlocks);
+  const { state: layout } = useYDocState(props.yDoc, getLayout);
+  const { state: dataframes } = useYDocState(props.yDoc, getDataframes);
+
+  const onDragStart = useCallback((draggingBlock: DraggingBlock) => {
+    setDraggingBlock(draggingBlock);
+  }, []);
+
+  const onAddBlock = useCallback(
+    (blockId: string) => {
+      setLatestBlockId(blockId);
+    },
+    [setLatestBlockId]
+  );
+
+  useEffect(() => {
+    if (!expanded) {
+      return () => {};
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setExpanded(null);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [expanded]);
+
+  const [isControlsOpen, setIsControlsOpen] = useState(true);
+  const onOpenControls = useCallback(() => {
+    setIsControlsOpen(true);
+  }, []);
+  const onCloseControls = useCallback(() => {
+    setIsControlsOpen(false);
+  }, []);
+
+  return (
+    <>
+      <div className="flex h-[calc(100%-47px)]">
+        <DashboardView
+          className={clsx(
+            "flex-grow h-full",
+            props.isEditing && isControlsOpen && "w-[calc(100%-400px)]"
+          )}
+          document={props.document}
+          dataSources={dataSources}
+          yDoc={props.yDoc}
+          draggingBlock={draggingBlock}
+          latestBlockId={latestBlockId}
+          isEditing={props.isEditing}
+          userRole={props.role}
+          userId={props.user.id}
+          executionQueue={props.executionQueue}
+          aiTasks={props.aiTasks}
+          onExpand={setExpanded}
+        />
+        {props.isEditing && (
+          <DashboardControls
+            document={props.document}
+            dataSources={dataSources}
+            yDoc={props.yDoc}
+            onDragStart={onDragStart}
+            onAddBlock={onAddBlock}
+            userId={props.user.id}
+            executionQueue={props.executionQueue}
+            aiTasks={props.aiTasks}
+            onExpand={setExpanded}
+            isOpen={isControlsOpen}
+            onOpen={onOpenControls}
+            onClose={onCloseControls}
+          />
+        )}
+      </div>
+      {createPortal(
+        <Transition
+          as="div"
+          className="fixed inset-0 z-20 flex items-center justify-center py-8"
+          enter="transition ease-out duration-100"
+          enterFrom="transform opacity-0 scale-95"
+          enterTo="transform opacity-100 scale-100"
+          leave="transition ease-in duration-75"
+          leaveFrom="transform opacity-100 scale-100"
+          leaveTo="transform opacity-0 scale-95"
+          show={expanded !== null}
+        >
+          {expanded ? (
+            <button
+              type="button"
+              className="fixed inset-0 bg-black bg-opacity-50"
+              onClick={() => setExpanded(null)} // Close when clicking on backdrop
+            />
+          ) : null}
+
+          {expanded ? (
+            <ScrollBar className="bg-white px-16 py-12 rounded-xl shadow-md max-h-[90vh] min-w-[940px] 2xl:w-[1280px] 3xl:w-[1536px]">
+              <ExpandedBlockView
+                expanded={expanded}
+                document={props.document}
+                dataframes={dataframes.value}
+                blocks={blocks.value}
+                layout={layout.value}
+                dataSources={dataSources}
+                user={props.user}
+                executionQueue={props.executionQueue}
+                aiTasks={props.aiTasks}
+                onToggleSchemaExplorer={props.onToggleSchemaExplorer}
+              />
+            </ScrollBar>
+          ) : null}
+        </Transition>,
+        document.body
+      )}
+    </>
+  );
 }
 
 interface Props {
@@ -80,7 +394,6 @@ interface Props {
   user: SessionUser;
   role: UserWorkspaceRole;
   isEditing: boolean;
-  publish: () => Promise<void>;
   publishing: boolean;
 }
 export default function Dashboard(props: Props) {
@@ -247,12 +560,7 @@ export default function Dashboard(props: Props) {
           link={copyLink}
           isPublic={false}
           onTogglePublic={() => {}}
-          workspaceId={props.document.workspaceId}
-          documentId={props.document.id}
-          documentTitle={documentTitle}
           role={props.role}
-          isDashboard
-          isApp={!props.isEditing}
         />
         {props.role !== "viewer" && props.isEditing && (
           <Tooltip
@@ -282,7 +590,7 @@ export default function Dashboard(props: Props) {
         )}
         {!props.isEditing && props.role !== "viewer" && (
           <Link
-            className="flex gap-x-2 items-center rounded-sm px-3 py-1 text-sm text-gray-500 bg-white hover:bg-gray-100 border border-gray-200 disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 justify-center"
+            className="flex  items-center rounded-sm px-3 py-1 text-sm text-gray-500 bg-white hover:bg-gray-100 border border-gray-200 disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 justify-center"
             href={`/workspaces/${props.document.workspaceId}/documents/${props.document.id}/dashboard/edit`}
           >
             <SquaresPlusIcon className="w-4 h-4" />
@@ -309,7 +617,6 @@ export default function Dashboard(props: Props) {
     <Layout
       topBarClassname={!props.isEditing ? "dark:bg-black" : undefined}
       topBarContent={topBarContent}
-      user={props.user}
     >
       <div className="w-full flex relative subpixel-antialiased bg-dashboard-gray">
         <div className="w-full flex flex-col relative">
@@ -353,14 +660,10 @@ export default function Dashboard(props: Props) {
               visible={selectedSidebar?._tag === "schedules"}
               onHide={onHideSidebar}
               onPublish={onPublish}
-              publishing={props.publishing}
             />
             <Snapshots
-              workspaceId={props.document.workspaceId}
-              documentId={props.document.id}
               visible={selectedSidebar?._tag === "snapshots"}
               onHide={onHideSidebar}
-              isPublished={props.document.publishedAt !== null}
             />
             <Files
               workspaceId={props.document.workspaceId}
@@ -370,324 +673,10 @@ export default function Dashboard(props: Props) {
               yDoc={yDoc}
               executionQueue={executionQueue}
             />
-            {/*    <SchemaExplorer
-              workspaceId={props.document.workspaceId}
-              visible={selectedSidebar?._tag === "schemaExplorer"}
-              onHide={onHideSidebar}
-              dataSourceId={
-                selectedSidebar?._tag === "schemaExplorer"
-                  ? selectedSidebar.dataSourceId
-                  : null
-              }
-              canRetrySchema
-            /> */}
+            <DataExplorer />
           </>
         )}
       </div>
     </Layout>
-  );
-}
-
-export type DraggingBlock = {
-  id: string;
-  type: BlockType;
-  width: number;
-  height: number;
-};
-function DashboardContent(
-  props: Props & {
-    yDoc: Y.Doc;
-    executionQueue: ExecutionQueue;
-    aiTasks: AITasks;
-    onToggleSchemaExplorer: (dataSourceId?: string | null) => void;
-  }
-) {
-  const [{ datasources: dataSources }] = useDataSources(
-    props.document.workspaceId
-  );
-  const [draggingBlock, setDraggingBlock] = useState<DraggingBlock | null>(
-    null
-  );
-  const [latestBlockId, setLatestBlockId] = useState<string | null>(null);
-  const [expanded, setExpanded] = useState<YBlock | null>(null);
-  const { state: blocks } = useYDocState(props.yDoc, getBlocks);
-  const { state: layout } = useYDocState(props.yDoc, getLayout);
-  const { state: dataframes } = useYDocState(props.yDoc, getDataframes);
-
-  const onDragStart = useCallback((draggingBlock: DraggingBlock) => {
-    setDraggingBlock(draggingBlock);
-  }, []);
-
-  const onAddBlock = useCallback(
-    (blockId: string) => {
-      setLatestBlockId(blockId);
-    },
-    [setLatestBlockId]
-  );
-
-  useEffect(() => {
-    if (!expanded) {
-      return;
-    }
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setExpanded(null);
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [expanded]);
-
-  const [isControlsOpen, setIsControlsOpen] = useState(true);
-  const onOpenControls = useCallback(() => {
-    setIsControlsOpen(true);
-  }, []);
-  const onCloseControls = useCallback(() => {
-    setIsControlsOpen(false);
-  }, []);
-
-  return (
-    <>
-      <div className="flex h-[calc(100%-47px)]">
-        <DashboardView
-          className={clsx(
-            "flex-grow h-full",
-            props.isEditing && isControlsOpen && "w-[calc(100%-400px)]"
-          )}
-          document={props.document}
-          dataSources={dataSources}
-          yDoc={props.yDoc}
-          draggingBlock={draggingBlock}
-          latestBlockId={latestBlockId}
-          isEditing={props.isEditing}
-          userRole={props.role}
-          userId={props.user.id}
-          executionQueue={props.executionQueue}
-          aiTasks={props.aiTasks}
-          onExpand={setExpanded}
-        />
-        {props.isEditing && (
-          <DashboardControls
-            document={props.document}
-            dataSources={dataSources}
-            yDoc={props.yDoc}
-            onDragStart={onDragStart}
-            onAddBlock={onAddBlock}
-            userId={props.user.id}
-            executionQueue={props.executionQueue}
-            aiTasks={props.aiTasks}
-            onToggleSchemaExplorer={props.onToggleSchemaExplorer}
-            onExpand={setExpanded}
-            isOpen={isControlsOpen}
-            onOpen={onOpenControls}
-            onClose={onCloseControls}
-          />
-        )}
-      </div>
-      {createPortal(
-        <Transition
-          className="fixed inset-0 z-20 flex items-center justify-center py-8"
-          enter="transition ease-out duration-100"
-          enterFrom="transform opacity-0 scale-95"
-          enterTo="transform opacity-100 scale-100"
-          leave="transition ease-in duration-75"
-          leaveFrom="transform opacity-100 scale-100"
-          leaveTo="transform opacity-0 scale-95"
-          show={expanded !== null}
-        >
-          {expanded ? (
-            <button
-              type="button"
-              className="fixed inset-0 bg-black bg-opacity-50"
-              onClick={() => setExpanded(null)} // Close when clicking on backdrop
-            />
-          ) : null}
-
-          {expanded ? (
-            <ScrollBar className="bg-white px-16 py-12 rounded-xl shadow-md max-h-[90vh] min-w-[940px] 2xl:w-[1280px] 3xl:w-[1536px]">
-              {switchBlockType(expanded, {
-                onVisualization: block => (
-                  <VisualizationBlock
-                    document={props.document}
-                    dataframes={dataframes.value}
-                    block={block}
-                    blocks={blocks.value}
-                    dragPreview={null}
-                    isEditable
-                    onAddGroupedBlock={() => {}}
-                    isDashboard={false}
-                    isPublicMode={false}
-                    hasMultipleTabs={false}
-                    isBlockHiddenInPublished={false}
-                    onToggleIsBlockHiddenInPublished={() => {}}
-                    isCursorWithin={false}
-                    isCursorInserting={false}
-                    userId={props.user.id}
-                    executionQueue={props.executionQueue}
-                    isFullScreen
-                  />
-                ),
-                /*    onVisualizationV2: block => (
-                  <VisualizationV2Block
-                    document={props.document}
-                    dataframes={dataframes.value}
-                    block={block}
-                    blocks={blocks.value}
-                    dragPreview={null}
-                    isEditable
-                    onAddGroupedBlock={() => {}}
-                    dashboardMode={{ _tag: "editing", position: "expanded" }}
-                    isPublicMode={false}
-                    hasMultipleTabs={false}
-                    isBlockHiddenInPublished={false}
-                    onToggleIsBlockHiddenInPublished={() => {}}
-                    isCursorWithin={false}
-                    isCursorInserting={false}
-                    userId={props.user.id}
-                    executionQueue={props.executionQueue}
-                    isFullScreen
-                  />
-                ), */
-                onRichText: block => (
-                  <RichTextBlock
-                    block={block}
-                    belongsToMultiTabGroup={false}
-                    isEditable
-                    dragPreview={null}
-                    dashboardMode={{ _tag: "editing", position: "expanded" }}
-                    isCursorWithin={false}
-                    isCursorInserting={false}
-                  />
-                ),
-                /*     onSQL: block => (
-                  <SQLBlock
-                    block={block}
-                    blocks={blocks.value}
-                    layout={layout.value}
-                    document={props.document}
-                    dataSources={dataSources}
-                    isEditable
-                    dragPreview={null}
-                    dashboardMode={{ _tag: "editing", position: "expanded" }}
-                    isPublicMode={false}
-                    hasMultipleTabs={false}
-                    isBlockHiddenInPublished={false}
-                    onToggleIsBlockHiddenInPublished={() => {}}
-                    onSchemaExplorer={props.onToggleSchemaExplorer}
-                    insertBelow={() => {}}
-                    userId={props.user.id}
-                    executionQueue={props.executionQueue}
-                    aiTasks={props.aiTasks}
-                    isFullScreen
-                  />
-                ), */
-                onPython: block => (
-                  <PythonBlock
-                    document={props.document}
-                    block={block}
-                    blocks={blocks.value}
-                    isEditable
-                    dragPreview={null}
-                    isPDF={false}
-                    dashboardMode={{ _tag: "editing", position: "expanded" }}
-                    isPublicMode={false}
-                    hasMultipleTabs={false}
-                    isBlockHiddenInPublished={false}
-                    onToggleIsBlockHiddenInPublished={() => {}}
-                    userId={props.user.id}
-                    executionQueue={props.executionQueue}
-                    aiTasks={props.aiTasks}
-                    isFullScreen
-                  />
-                ),
-                onInput: block => (
-                  <InputBlock
-                    block={block}
-                    blocks={blocks.value}
-                    dragPreview={null}
-                    belongsToMultiTabGroup={false}
-                    isEditable
-                    isApp={false}
-                    dashboardMode={{ _tag: "editing", position: "expanded" }}
-                    isCursorWithin={false}
-                    isCursorInserting={false}
-                    userId={props.user.id}
-                    workspaceId={props.document.workspaceId}
-                    executionQueue={props.executionQueue}
-                  />
-                ),
-                onDropdownInput: block => (
-                  <DropdownInputBlock
-                    block={block}
-                    blocks={blocks.value}
-                    dragPreview={null}
-                    belongsToMultiTabGroup={false}
-                    isEditable
-                    isApp={false}
-                    dashboardMode={{ _tag: "editing", position: "expanded" }}
-                    dataframes={dataframes.value}
-                    isCursorWithin={false}
-                    isCursorInserting={false}
-                    userId={props.user.id}
-                    workspaceId={props.document.workspaceId}
-                    executionQueue={props.executionQueue}
-                  />
-                ),
-                onDateInput: block => (
-                  <DateInputBlock
-                    block={block}
-                    blocks={blocks.value}
-                    workspaceId={props.document.workspaceId}
-                    dragPreview={null}
-                    belongsToMultiTabGroup={false}
-                    isEditable
-                    isApp={false}
-                    dashboardMode={{ _tag: "editing", position: "expanded" }}
-                    isCursorWithin={false}
-                    isCursorInserting={false}
-                    userId={props.user.id}
-                    executionQueue={props.executionQueue}
-                  />
-                ),
-
-                // FileUpload do not appear in the sidebar
-                onFileUpload: () => null,
-                // DashboardHeader do not appear in the sidebar
-                onDashboardHeader: () => null,
-                // Writeback do not appear in the sidebar
-                onWriteback: () => null,
-
-                onPivotTable: block => (
-                  <PivotTableBlock
-                    workspaceId={props.document.workspaceId}
-                    dataframes={dataframes.value}
-                    block={block}
-                    blocks={blocks.value}
-                    dragPreview={null}
-                    isEditable
-                    onAddGroupedBlock={() => {}}
-                    dashboardMode={{ _tag: "editing", position: "expanded" }}
-                    hasMultipleTabs={false}
-                    isBlockHiddenInPublished={false}
-                    onToggleIsBlockHiddenInPublished={() => {}}
-                    isCursorWithin={false}
-                    isCursorInserting={false}
-                    userId={props.user.id}
-                    executionQueue={props.executionQueue}
-                    isFullScreen
-                  />
-                ),
-              })}
-            </ScrollBar>
-          ) : null}
-        </Transition>,
-        document.body
-      )}
-    </>
   );
 }
