@@ -1,7 +1,7 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { Public } from '@sandworm/nest-common';
-import { AuthGraphqlService } from './auth.service';
-import { LoginInput } from './dto/auth.dto';
+import { AuthGraphqlService } from './auth-graphql.service';
+import { LoginInput } from './dto/auth-graphql.dto';
 import { AuthPayload } from './models/auth-payload';
 
 @Resolver()

@@ -166,7 +166,7 @@ export class DocumentService {
     try {
       await this.documentRepository.save(document);
     } catch (err) {
-      throw new ValidationException(ErrorCode.E006); // better than E005
+      throw new ValidationException(ErrorCode.E006); 
     }
 
     return this.toGraphQLDocument(document);
