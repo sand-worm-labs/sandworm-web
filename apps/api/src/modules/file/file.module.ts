@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { FileResolver } from './file.resolver';
 import { FileService } from './file.service';
-import { AuthGraphqlModule } from '../auth-graphql/auth.module';
+import { AuthGraphqlModule } from '../auth-graphql/auth-graphql.module';
 import { JupyterModule } from '../../jupyter/jupyter.module';
 
 @Module({
