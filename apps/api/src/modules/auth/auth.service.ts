@@ -38,8 +38,9 @@ export class AuthService {
   ) {}
 
   async validateLogin(loginDto: AuthEmailLoginDto): Promise<LoginResponseDto> {
-    console.log('validateLogin', loginDto);
-    const user = await this.usersService.findByEmail(loginDto.email);
+    const user = await this.usersService.findByEmailWithPassword(
+      loginDto.email,
+    );
 
     if (!user) {
       throw new UnprocessableEntityException({
@@ -58,7 +59,6 @@ export class AuthService {
       });
     }
 
-    console.log('user', user.password == undefined || user.password == null);
     if (!user.password) {
       throw new UnprocessableEntityException({
         status: HttpStatus.UNPROCESSABLE_ENTITY,
@@ -89,6 +89,8 @@ export class AuthService {
       sessionId: session.id,
       hash: session.hash,
     });
+
+    delete user.password;
 
     return {
       refreshToken,
