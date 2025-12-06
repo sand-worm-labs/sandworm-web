@@ -93,7 +93,7 @@ export default function MultiSelect<T>(props: Props<T>) {
                         props.onToggle(option);
                       }}
                       className={clsx(
-                        "w-full hover:bg-gray-100 dark:hover:bg-[#181C21] w-full pl-3 pr-4 py-1.5 text-left flex gap-x-2 items-center justify-between whitespace-nowrap",
+                        " hover:bg-gray-100 dark:hover:bg-[#181C21] w-full pl-3 pr-4 py-1.5 text-left flex gap-x-2 items-center justify-between whitespace-nowrap",
                         props.value.includes(option) ? "font-medium" : ""
                       )}
                     >
