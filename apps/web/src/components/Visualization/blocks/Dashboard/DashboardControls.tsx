@@ -116,6 +116,229 @@ const typeOptions = [
   BlockType.Input,
 ];
 
+interface BlockPreviewProps {
+  document: ApiDocument;
+  dataframes: Y.Map<DataFrame>;
+  block: YBlock;
+  blocks: Y.Map<YBlock>;
+  userId: string | null;
+  executionQueue: ExecutionQueue;
+}
+
+function BlockPreview(props: BlockPreviewProps) {
+  return switchBlockType(props.block, {
+    onRichText: () => <div className="w-full h-96" />,
+    onSQL: () => (
+      <div className="w-full h-64">
+        <div className="w-full h-96" />
+      </div>
+    ),
+    onPython: () => <div className="w-full h-96" />,
+    onVisualization: block => (
+      <div className="w-full h-96">
+        <VisualizationBlock
+          document={props.document}
+          dataframes={props.dataframes}
+          block={block}
+          blocks={props.blocks}
+          dragPreview={null}
+          isEditable={false}
+          onAddGroupedBlock={() => {}}
+          dashboardMode={{ _tag: "editing", position: "sidebar" }}
+          isPublicMode={false}
+          hasMultipleTabs={false}
+          isBlockHiddenInPublished={false}
+          onToggleIsBlockHiddenInPublished={() => {}}
+          isCursorWithin={false}
+          isCursorInserting={false}
+          userId={props.userId}
+          executionQueue={props.executionQueue}
+          isFullScreen
+        />
+      </div>
+    ),
+    onVisualizationV2: block => (
+      <div className="w-full h-96">
+        <VisualizationV2Block
+          document={props.document}
+          dataframes={props.dataframes}
+          block={block}
+          blocks={props.blocks}
+          dragPreview={null}
+          isEditable={false}
+          onAddGroupedBlock={() => {}}
+          dashboardMode={{ _tag: "editing", position: "sidebar" }}
+          isPublicMode={false}
+          hasMultipleTabs={false}
+          isBlockHiddenInPublished={false}
+          onToggleIsBlockHiddenInPublished={() => {}}
+          isCursorWithin={false}
+          isCursorInserting={false}
+          userId={props.userId}
+          executionQueue={props.executionQueue}
+          isFullScreen
+        />
+      </div>
+    ),
+    onInput: () => <div className="w-full h-96" />,
+    onDropdownInput: () => <div className="w-full h-96" />,
+    onFileUpload: () => null,
+    onDateInput: () => <div className="w-full h-96" />,
+    onPivotTable: () => (
+      <div className="w-full h-96">
+        <div className="w-full h-96" />
+      </div>
+    ),
+    onDashboardHeader: () => null,
+    onWriteback: () => null,
+  });
+}
+
+interface BlockListItemProps {
+  document: ApiDocument;
+  dataframes: Y.Map<DataFrame>;
+  block: YBlock;
+  blocks: Y.Map<YBlock>;
+  onDragStart: (draggingBlock: DraggingBlock) => void;
+  userId: string | null;
+  executionQueue: ExecutionQueue;
+  onExpand: (block: YBlock) => void;
+  className?: string;
+}
+function BlockListItem(props: BlockListItemProps) {
+  const { id, type } = getBaseAttributes(props.block);
+  const blockRef = useRef<HTMLDivElement>(null);
+
+  const onDragStart = useCallback(
+    (event: React.DragEvent<HTMLDivElement>) => {
+      event.dataTransfer.setData("text/plain", id);
+
+      const width = blockRef.current?.offsetWidth ?? 0;
+      const height = blockRef.current?.offsetHeight ?? 0;
+      props.onDragStart({ id, type, width, height });
+
+      const dragImage = document.createElement("div");
+      dragImage.className = "shadow-md bg-white rounded-md overflow-hidden";
+      dragImage.style.position = "absolute";
+      dragImage.style.top = "-1000px";
+      dragImage.style.left = "-1000px";
+      dragImage.style.width = `${width}px`;
+      dragImage.style.height = `${height}px`;
+      dragImage.style.zIndex = "9999";
+      dragImage.style.pointerEvents = "none";
+      dragImage.innerHTML = blockRef.current?.innerHTML ?? "";
+      document.body.appendChild(dragImage);
+
+      event.dataTransfer.setDragImage(dragImage, 0, 0);
+      setTimeout(() => {
+        document.body.removeChild(dragImage);
+      }, 0);
+    },
+    [id, type, props.onDragStart, blockRef.current]
+  );
+
+  const blockTitle = props.block.getAttribute("title");
+
+  const onPointerUp = useCallback(() => {
+    switch (type) {
+      case BlockType.Visualization:
+      case BlockType.VisualizationV2:
+      case BlockType.SQL:
+      case BlockType.Input:
+      case BlockType.DropdownInput:
+      case BlockType.DateInput:
+      case BlockType.PivotTable:
+      case BlockType.Python:
+      case BlockType.RichText:
+      case BlockType.Writeback:
+        props.onExpand(props.block);
+        break;
+      case BlockType.FileUpload:
+      case BlockType.DashboardHeader:
+        return;
+      default:
+        exhaustiveCheck(type);
+    }
+  }, [props.onExpand, props.block, type]);
+
+  return (
+    <div
+      key={id}
+      className={clsx(
+        "border border-gray-300 hover:border-ceramic-200 rounded-md bg-white relative p-2 overflow-x-hidden select-none",
+        props.className
+      )}
+      draggable
+      onDragStart={onDragStart}
+      onPointerUp={onPointerUp}
+    >
+      <div className="flex flex-col gap-y-6">
+        <span className="text-gray-400 text-md font-medium">
+          {blockTitle || "Untitled"}
+        </span>
+        <ScaleChild
+          width={768}
+          disableScale={
+            props.block.getAttribute("type") === BlockType.VisualizationV2
+          }
+        >
+          <div className="overflow-hidden" ref={blockRef}>
+            <BlockPreview
+              document={props.document}
+              dataframes={props.dataframes}
+              block={props.block}
+              blocks={props.blocks}
+              userId={props.userId}
+              executionQueue={props.executionQueue}
+            />
+          </div>
+        </ScaleChild>
+      </div>
+
+      {/* add a transparent div to prevent any interaction with the block */}
+      <div className="absolute top-0 bottom-0 left-0 right-0 z-10 group hover:bg-ceramic-100/50 hover:cursor-grab">
+        <div className="flex items-center justify-center text-center text-ceramic-600 w-full h-full text-md invisible group-hover:visible font-medium">
+          drag to dashboard or click to expand
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface BlocksListProps {
+  document: ApiDocument;
+  dataSources: APIDataSources;
+  dataframes: Y.Map<DataFrame>;
+  list: YBlock[];
+  blocks: Y.Map<YBlock>;
+  layout: Y.Array<YBlockGroup>;
+  onDragStart: (draggingBlock: DraggingBlock) => void;
+  userId: string | null;
+  executionQueue: ExecutionQueue;
+  aiTasks: AITasks;
+  onExpand: (block: YBlock) => void;
+}
+function BlocksList(props: BlocksListProps) {
+  return props.list.map((block, i) => {
+    const { id } = getBaseAttributes(block);
+
+    return (
+      <BlockListItem
+        className={clsx("mt-6", i === props.list.length - 1 && "mb-6")}
+        key={id}
+        document={props.document}
+        dataframes={props.dataframes}
+        block={block}
+        blocks={props.blocks}
+        onDragStart={props.onDragStart}
+        userId={props.userId}
+        executionQueue={props.executionQueue}
+        onExpand={props.onExpand}
+      />
+    );
+  });
+}
+
 interface Props {
   document: ApiDocument;
   dataSources: APIDataSources;
@@ -229,7 +452,7 @@ function DashboardControls(props: Props) {
                 onInput: () => block,
                 onDropdownInput: () => block,
                 onDateInput: () => block,
-                onPivotTable: block => block,
+                onPivotTable: () => block,
                 onFileUpload: () => null,
                 onDashboardHeader: () => null,
                 onWriteback: () => null,
@@ -377,230 +600,6 @@ function DashboardControls(props: Props) {
       </div>
     </div>
   );
-}
-
-interface BlockListItemProps {
-  document: ApiDocument;
-  dataSources: APIDataSources;
-  dataframes: Y.Map<DataFrame>;
-  block: YBlock;
-  blocks: Y.Map<YBlock>;
-  layout: Y.Array<YBlockGroup>;
-  onDragStart: (draggingBlock: DraggingBlock) => void;
-  userId: string | null;
-  executionQueue: ExecutionQueue;
-  aiTasks: AITasks;
-  onExpand: (block: YBlock) => void;
-  className?: string;
-}
-function BlockListItem(props: BlockListItemProps) {
-  const { id, type } = getBaseAttributes(props.block);
-  const blockRef = useRef<HTMLDivElement>(null);
-
-  const onDragStart = useCallback(
-    (event: React.DragEvent<HTMLDivElement>) => {
-      event.dataTransfer.setData("text/plain", id);
-
-      const width = blockRef.current?.offsetWidth ?? 0;
-      const height = blockRef.current?.offsetHeight ?? 0;
-      props.onDragStart({ id, type, width, height });
-
-      const dragImage = document.createElement("div");
-      dragImage.className = "shadow-md bg-white rounded-md overflow-hidden";
-      dragImage.style.position = "absolute";
-      dragImage.style.top = "-1000px";
-      dragImage.style.left = "-1000px";
-      dragImage.style.width = `${width}px`;
-      dragImage.style.height = `${height}px`;
-      dragImage.style.zIndex = "9999";
-      dragImage.style.pointerEvents = "none";
-      dragImage.innerHTML = blockRef.current?.innerHTML ?? "";
-      document.body.appendChild(dragImage);
-
-      event.dataTransfer.setDragImage(dragImage, 0, 0);
-      setTimeout(() => {
-        document.body.removeChild(dragImage);
-      }, 0);
-    },
-    [id, type, props.onDragStart, blockRef.current]
-  );
-
-  const jsx = useMemo(
-    () =>
-      switchBlockType(props.block, {
-        onRichText: block => <div className="w-full h-96" />,
-        onSQL: block => (
-          <div className="w-full h-64">
-            <div className="w-full h-96" />
-          </div>
-        ),
-        onPython: block => <div className="w-full h-96" />,
-        onVisualization: block => (
-          <div className="w-full h-96">
-            <VisualizationBlock
-              document={props.document}
-              dataframes={props.dataframes}
-              block={block}
-              blocks={props.blocks}
-              dragPreview={null}
-              isEditable={false}
-              onAddGroupedBlock={() => {}}
-              isDashboard
-              renderer="svg"
-              isPublicMode={false}
-              hasMultipleTabs={false}
-              isBlockHiddenInPublished={false}
-              onToggleIsBlockHiddenInPublished={() => {}}
-              isCursorWithin={false}
-              isCursorInserting={false}
-              userId={props.userId}
-              executionQueue={props.executionQueue}
-              isFullScreen
-            />
-          </div>
-        ),
-        onVisualizationV2: block => (
-          <div className="w-full h-96">
-            <VisualizationV2Block
-              document={props.document}
-              dataframes={props.dataframes}
-              block={block}
-              blocks={props.blocks}
-              dragPreview={null}
-              isEditable={false}
-              onAddGroupedBlock={() => {}}
-              dashboardMode={{ _tag: "editing", position: "sidebar" }}
-              isPublicMode={false}
-              hasMultipleTabs={false}
-              isBlockHiddenInPublished={false}
-              onToggleIsBlockHiddenInPublished={() => {}}
-              isCursorWithin={false}
-              isCursorInserting={false}
-              userId={props.userId}
-              executionQueue={props.executionQueue}
-              isFullScreen
-            />
-          </div>
-        ),
-        onInput: block => <div className="w-full h-96" />,
-        onDropdownInput: block => <div className="w-full h-96" />,
-        onFileUpload: () => null,
-        onDateInput: block => <div className="w-full h-96" />,
-        onPivotTable: block => (
-          <div className="w-full h-96">
-            <div className="w-full h-96" />
-          </div>
-        ),
-        onDashboardHeader: () => null,
-        onWriteback: () => null,
-      }),
-    [
-      props.block,
-      props.blocks,
-      props.layout,
-      props.dataSources,
-      props.dataframes,
-      props.document,
-    ]
-  );
-
-  const blockTitle = props.block.getAttribute("title");
-
-  const onPointerUp = useCallback(() => {
-    switch (type) {
-      case BlockType.Visualization:
-      case BlockType.VisualizationV2:
-      case BlockType.SQL:
-      case BlockType.Input:
-      case BlockType.DropdownInput:
-      case BlockType.DateInput:
-      case BlockType.PivotTable:
-      case BlockType.Python:
-      case BlockType.RichText:
-      case BlockType.Writeback:
-        props.onExpand(props.block);
-        break;
-      case BlockType.FileUpload:
-      case BlockType.DashboardHeader:
-        return;
-      default:
-        exhaustiveCheck(type);
-    }
-  }, [props.onExpand, props.block, type]);
-
-  return (
-    <div
-      key={id}
-      className={clsx(
-        "border border-gray-300 hover:border-ceramic-200 rounded-md bg-white relative p-2 overflow-x-hidden",
-        props.className
-      )}
-      draggable
-      onDragStart={onDragStart}
-      unselectable="on"
-      onPointerUp={onPointerUp}
-    >
-      <div className="flex flex-col gap-y-6">
-        <span className="text-gray-400 text-md font-medium">
-          {blockTitle || "Untitled"}
-        </span>
-        <ScaleChild
-          width={768}
-          disableScale={
-            props.block.getAttribute("type") === BlockType.Visualization
-          }
-        >
-          <div className="overflow-hidden" ref={blockRef}>
-            {jsx}
-          </div>
-        </ScaleChild>
-      </div>
-
-      {/* add a transparent div to prevent any interaction with the block */}
-      <div className="absolute top-0 bottom-0 left-0 right-0 z-10 group hover:bg-ceramic-100/50 hover:cursor-grab">
-        <div className="flex items-center justify-center text-center text-ceramic-600 w-full h-full text-md invisible group-hover:visible font-medium">
-          drag to dashboard or click to expand
-        </div>
-      </div>
-    </div>
-  );
-}
-
-interface BlocksListProps {
-  document: ApiDocument;
-  dataSources: APIDataSources;
-  dataframes: Y.Map<DataFrame>;
-  list: YBlock[];
-  blocks: Y.Map<YBlock>;
-  layout: Y.Array<YBlockGroup>;
-  onDragStart: (draggingBlock: DraggingBlock) => void;
-  userId: string | null;
-  executionQueue: ExecutionQueue;
-  aiTasks: AITasks;
-  onExpand: (block: YBlock) => void;
-}
-function BlocksList(props: BlocksListProps) {
-  return props.list.map((block, i) => {
-    const { id } = getBaseAttributes(block);
-
-    return (
-      <BlockListItem
-        className={clsx("mt-6", i === props.list.length - 1 && "mb-6")}
-        key={id}
-        document={props.document}
-        dataSources={props.dataSources}
-        dataframes={props.dataframes}
-        block={block}
-        blocks={props.blocks}
-        layout={props.layout}
-        onDragStart={props.onDragStart}
-        userId={props.userId}
-        executionQueue={props.executionQueue}
-        aiTasks={props.aiTasks}
-        onExpand={props.onExpand}
-      />
-    );
-  });
 }
 
 export default DashboardControls;

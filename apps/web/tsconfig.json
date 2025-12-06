@@ -8,6 +8,7 @@
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
+    "noPropertyAccessFromIndexSignature": false,
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "bundler",
@@ -35,10 +36,10 @@
   ],
   "exclude": ["node_modules"],
 
-   // For GraphQL
-   "esModuleInterop": true,
-   "skipLibCheck": true,
-   "resolveJsonModule": true,
-   "isolatedModules": true,
-   "allowJs": true,
+  // For GraphQL
+  "esModuleInterop": true,
+  "skipLibCheck": true,
+  "resolveJsonModule": true,
+  "isolatedModules": true,
+  "allowJs": true
 }

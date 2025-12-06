@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { SquaresPlusIcon } from "@heroicons/react/24/solid";
 import { BookUpIcon } from "lucide-react";
 import { EyeIcon } from "@heroicons/react/24/outline";
-import type { BlockType, YBlock } from "@sandworm/editor";
+import type { BlockType, YBlock, YBlockGroup } from "@sandworm/editor";
 import {
   AITasks,
   ExecutionQueue,
@@ -52,6 +52,7 @@ import DropdownInputBlock from "../customBlocks/dropdownInput";
 import DashboardSkeleton from "./DashboardSkeleton";
 import DashboardControls from "./DashboardControls";
 import DashboardView from "./DashboardView";
+import type { DataFrame, UserWorkspaceRole } from "@sandworm/types";
 
 export type DashboardMode =
   | {
@@ -393,7 +394,6 @@ interface Props {
   user: SessionUser;
   role: UserWorkspaceRole;
   isEditing: boolean;
-  publish: () => Promise<void>;
   publishing: boolean;
 }
 export default function Dashboard(props: Props) {
@@ -660,7 +660,6 @@ export default function Dashboard(props: Props) {
               visible={selectedSidebar?._tag === "schedules"}
               onHide={onHideSidebar}
               onPublish={onPublish}
-              publishing={props.publishing}
             />
             <Snapshots
               visible={selectedSidebar?._tag === "snapshots"}

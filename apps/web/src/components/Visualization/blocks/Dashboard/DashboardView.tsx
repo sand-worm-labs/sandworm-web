@@ -355,7 +355,6 @@ export default function DashboardView(props: Props) {
           content={props.yDoc.getXmlFragment("title")}
           isLoading={false}
           isEditable={props.isEditing && props.userRole !== "viewer"}
-          isPDF={false}
         />
         <div ref={ref}>
           {width ? <DashboardViewInner {...props} width={width} /> : <div />}
