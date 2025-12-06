@@ -1,38 +1,38 @@
+import { generateSessionHash } from '@sandworm/nest-common';
+import { Exclude } from 'class-transformer';
 import {
-    Entity,
-    PrimaryGeneratedColumn,
-    Column,
-    DeleteDateColumn,
-    ManyToOne,
-    Index,
-    BeforeInsert,
-    BeforeUpdate,
-  } from 'typeorm';
+  BeforeInsert,
+  Column,
+  DeleteDateColumn,
+  Entity,
+  Index,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { AbstractEntity } from './abstract.entity';
 import { UserEntity } from './user.entity';
-import { AbstractEntity } from './abstract.entity';;
-import { generateSessionHash } from "@sandworm/nest-common";
-  
+
 @Entity({ name: 'sessions' })
-export class SessionEntity  extends AbstractEntity {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
-  
-    @ManyToOne(() => UserEntity, { eager: true })
-    @Index()
-    user: UserEntity;
-  
-    
-    @Column()
-    hash: string;
+export class SessionEntity extends AbstractEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @BeforeInsert()
-    async hashSession() {
-      if (this.hash) {
-        let {session,hash} = generateSessionHash();
-        this.hash = hash
-      }
+  @Exclude()
+  @ManyToOne(() => UserEntity, { eager: true })
+  @Index()
+  user: UserEntity;
+
+  @Column()
+  hash: string;
+
+  @BeforeInsert()
+  hashSession() {
+    if (!this.hash) {
+      let { session, hash } = generateSessionHash();
+      this.hash = hash;
     }
+  }
 
-    @DeleteDateColumn({ nullable: true })
-    deletedAt?: Date;
+  @DeleteDateColumn({ nullable: true })
+  deletedAt?: Date;
 }

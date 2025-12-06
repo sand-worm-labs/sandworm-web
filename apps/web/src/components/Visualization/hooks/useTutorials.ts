@@ -41,7 +41,7 @@ const useTutorial = (
 
   useEffect(() => {
     if (!socket) {
-      return;
+      return () => {};
     }
 
     const onTutorialUpdate = (msg: { tutorialState: TutorialState }) => {

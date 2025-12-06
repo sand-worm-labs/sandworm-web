@@ -24,7 +24,6 @@ import useDocument from "../hooks/useDocumentLocal";
 
 import ShareDropdown from "./ShareDropdown";
 import Comments from "./Comments";
-import RunAllV2 from "./RunAllV2";
 import Schedules from "./Schedules";
 import Snapshots from "./Snapshots";
 import DashboardNotebookGroupButton from "./DashboarNotebookGroupButton";
@@ -102,37 +101,8 @@ function persistYDocToIndexedDB(
 
   dbRequest.onerror = event => {
     const { error } = event.target as IDBOpenDBRequest;
-    console.error("❌ Error opening IndexedDB:", error?.message || error);
+    console.error(" Error opening IndexedDB:", error?.message || error);
   };
-}
-
-export default function PrivateDocumentPage(props: Props) {
-  const [{ document, publishing }, { publish }] = useDocument(
-    props.workspaceId,
-    props.documentId
-  );
-
-  if (!document) {
-    return (
-      <Layout user={props.user}>
-        <div className="w-full flex justify-center">
-          <div className={clsx(widthClasses, "py-20")}>
-            <TitleSkeleton visible />
-            <ContentSkeleton visible />
-          </div>
-        </div>
-      </Layout>
-    );
-  }
-
-  return (
-    <PrivateDocumentPageInner
-      {...props}
-      document={document}
-      publish={publish}
-      publishing={publishing}
-    />
-  );
 }
 
 function PrivateDocumentPageInner(
@@ -520,5 +490,34 @@ function PrivateDocumentPageInner(
         )}
       </div>
     </Layout>
+  );
+}
+
+export default function PrivateDocumentPage(props: Props) {
+  const [{ document, publishing }, { publish }] = useDocument(
+    props.workspaceId,
+    props.documentId
+  );
+
+  if (!document) {
+    return (
+      <Layout>
+        <div className="w-full flex justify-center">
+          <div className={clsx(widthClasses, "py-20")}>
+            <TitleSkeleton visible />
+            <ContentSkeleton visible />
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  return (
+    <PrivateDocumentPageInner
+      {...props}
+      document={document}
+      publish={publish}
+      publishing={publishing}
+    />
   );
 }
