@@ -6,10 +6,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { verifyPassword } from '@sandworm/nest-common';
 import { UserEntity } from '@sandworm/postgresql-typeorm';
 import { Repository } from 'typeorm';
-import { AuthPayload } from './models/auth-payload';
 import { LoginInput } from './dto/auth.dto';
+import { AuthPayload } from './models/auth-payload';
 import { JwtPayloadType } from './types/jwt-payload.type';
-import { SocialInterface } from '../social/interfaces/social.interface';
 
 @Injectable()
 export class AuthGraphqlService {
@@ -18,14 +17,16 @@ export class AuthGraphqlService {
     private readonly jwtService: JwtService,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
-  ) { }
+  ) {}
 
   async login(input: LoginInput): Promise<AuthPayload> {
     const { email, password } = input;
 
-    const user = await this.userRepository.findOne({
-      where: { email },
-    });
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .addSelect('user.password')
+      .where('user.email = :email', { email })
+      .getOne();
 
     const isPasswordValid =
       user && (await verifyPassword(password, user.password));
@@ -39,7 +40,7 @@ export class AuthGraphqlService {
     return {
       id: user.id,
       token,
-      user
+      user,
     };
   }
 
@@ -47,10 +48,10 @@ export class AuthGraphqlService {
     let payload: JwtPayloadType;
     const auth = this.configService.getOrThrow('auth', {
       infer: true,
-    })
+    });
     try {
       payload = this.jwtService.verify(token, {
-        secret: auth.secret
+        secret: auth.secret,
       });
     } catch {
       throw new UnauthorizedException();
