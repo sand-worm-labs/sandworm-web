@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AuthGraphqlModule } from './auth-graphql/auth.module';
+import { AuthGraphqlModule } from './auth-graphql/auth-graphql.module';
 import { ProfileModule } from './profile/profile.module';
 import { TagModule } from './tag/tag.module';
 import { UserModule } from './user/user.module';

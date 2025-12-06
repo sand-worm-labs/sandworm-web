@@ -4,7 +4,7 @@ import {
   EnvironmentEntity,
   EnvironmentVariableEntity,
 } from '@sandworm/postgresql-typeorm';
-import { AuthGraphqlModule } from '../auth-graphql/auth.module';
+import { AuthGraphqlModule } from '../auth-graphql/auth-graphql.module';
 import { JupyterModule } from '../../jupyter/jupyter.module';
 import { EnvironmentResolver } from './environment.resolver';
 import { EnvironmentService } from './environment.service';

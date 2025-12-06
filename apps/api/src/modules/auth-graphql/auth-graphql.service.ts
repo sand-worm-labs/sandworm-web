@@ -6,7 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { verifyPassword } from '@sandworm/nest-common';
 import { UserEntity } from '@sandworm/postgresql-typeorm';
 import { Repository } from 'typeorm';
-import { LoginInput } from './dto/auth.dto';
+import { LoginInput } from './dto/auth-graphql.dto';
 import { AuthPayload } from './models/auth-payload';
 import { JwtPayloadType } from './types/jwt-payload.type';
 
@@ -39,6 +39,7 @@ export class AuthGraphqlService {
 
     return {
       id: user.id,
+      tokenExpires: Date.now(),
       token,
       user,
     };
