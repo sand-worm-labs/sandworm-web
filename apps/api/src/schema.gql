@@ -175,7 +175,7 @@ type Mutation {
   ): Profile!
 
   """Sign in"""
-  login(input: LoginInput!): User!
+  login(input: LoginInput!): AuthPayload!
 
   """Unmark a document as a favorite"""
   removeFavoriteDocument(input: FavoriteDocumentInput!): Document!

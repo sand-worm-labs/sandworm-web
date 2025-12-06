@@ -2,7 +2,7 @@ import type { NextPage } from "next";
 import type { AppProps } from "next/app";
 import type { ReactNode } from "react";
 import type { Typesaurus } from "typesaurus";
-import type { Message } from "ai";
+import type { UIMessage } from "ai";
 
 export type NextPageWithLayout = NextPage & {
   getLayout?: () => ReactNode;
@@ -151,7 +151,7 @@ export interface Chat {
   id: string;
   userId: string;
   createdAt: Date;
-  messages: Message[];
+  messages: UIMessage[];
 }
 
 export interface IconProps {
@@ -293,6 +293,10 @@ type ReusableComponent = {
   instancesCreated: boolean;
 };
 
+export type ApiDeletedDocument = ApiDocument & {
+  deletedAt: Date;
+};
+
 export type APIReusableComponent = Omit<
   ReusableComponent,
   "state" | "createdAt" | "updatedAt"
@@ -308,3 +312,14 @@ export type APIReusableComponent = Omit<
 };
 
 export type ReusableComponentType = "sql" | "python";
+
+export type SessionUser = {
+  id: string;
+  email: string;
+  name: string;
+  picture: string | null;
+  lastVisitedWorkspaceId: string;
+  createdAt: string;
+  updatedAt: string;
+  roles: Record<string, UserWorkspaceRole>;
+};

@@ -139,9 +139,9 @@ export const MiniChat: React.FC<MiniChatProps> = ({ onClose }) => {
           <MiniChatEmptyState />
         ) : (
           <div className="flex flex-col w-full gap-4">
-            {messages.map((msg, idx) => (
+            {messages.map(msg => (
               <div
-                key={idx}
+                key={msg.text}
                 className={`flex ${msg.isUser ? "justify-end" : "justify-start"}`}
               >
                 <div
