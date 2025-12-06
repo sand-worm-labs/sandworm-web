@@ -1,22 +1,22 @@
 {
   "common": {
-    "internal_server_error": "Has occurred an internal server error",
+    "internal_server_error": "An internal server error has occurred",
     "entity_not_found": "Entity not found",
     "validation": {
-      "error": "Common validation",
-      "is_empty": "Can't be empty",
-      "is_string": "Must be a string"
+      "error": "Validation error",
+      "is_empty": "This field cannot be empty",
+      "is_string": "This field must be a string"
     },
     "error": {
-      "unique_username": "Username already exists",
-      "unique_email": "Email already exists",
-      "unique_follow": "Already following this user",
-      "unique_tag": "Tag already exists",
-      "unique_favorite": "Already favorited this article",
-      "unique_slug": "Article slug already exists"
+      "unique_username": "This username is already taken",
+      "unique_email": "This email address is already registered",
+      "unique_follow": "You are already following this user",
+      "unique_tag": "This tag already exists",
+      "unique_favorite": "You have already favorited this article",
+      "unique_slug": "This article slug is already in use"
     },
-    "confirmEmail": "Confirm email",
-    "resetPassword": "Reset password"
+    "confirm_email": "Confirm your email",
+    "reset_password": "Reset your password"
   },
   "user": {
     "username_or_email_exists": "Username or email already exists",
@@ -25,9 +25,9 @@
   },
   "profile": {
     "not_found": "Profile not found",
-    "following_self": "You can't follow yourself",
-    "already_followed": "Already following this user",
-    "not_followed": "Not following this user"
+    "following_self": "You cannot follow yourself",
+    "already_followed": "You are already following this user",
+    "not_followed": "You are not following this user"
   },
   "article": {
     "not_found": "Article not found"
@@ -37,21 +37,21 @@
     "not_authorized_to_delete": "You are not authorized to delete this comment"
   },
   "email": {
-    "confirmEmail": {
-      "text1": "Hey!",
-      "text2": "You're almost ready to start enjoying",
-      "text3": "Simply click the big green button below to verify your email address."
+    "confirm_email": {
+      "greeting": "Hey there!",
+      "intro": "You're almost ready to start enjoying our platform.",
+      "instruction": "Simply click the button below to verify your email address."
     },
-    "confirmNewEmail": {
-      "text1": "Hey!",
-      "text2": "Confirm your new email address.",
-      "text3": "Simply click the big green button below to verify your email address."
+    "confirm_new_email": {
+      "greeting": "Hey there!",
+      "message": "Please confirm your new email address.",
+      "instruction": "Simply click the button below to verify your email address."
     },
-    "resetPassword": {
-      "text1": "Trouble signing in?",
-      "text2": "Resetting your password is easy.",
-      "text3": "Just press the button below and follow the instructions. We'll have you up and running in no time.",
-      "text4": "If you did not make this request then please ignore this email."
+    "reset_password": {
+      "subject": "Trouble signing in?",
+      "intro": "Resetting your password is easy.",
+      "instruction": "Just press the button below and follow the instructions. We'll have you up and running in no time.",
+      "disclaimer": "If you did not make this request, please ignore this email."
     }
   }
 }
