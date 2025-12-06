@@ -22,6 +22,8 @@ export type I18nTranslations = {
                 "unique_favorite": string;
                 "unique_slug": string;
             };
+            "confirmEmail": string;
+            "resetPassword": string;
         };
         "user": {
             "username_or_email_exists": string;
@@ -40,6 +42,24 @@ export type I18nTranslations = {
         "comment": {
             "not_found": string;
             "not_authorized_to_delete": string;
+        };
+        "email": {
+            "confirmEmail": {
+                "text1": string;
+                "text2": string;
+                "text3": string;
+            };
+            "confirmNewEmail": {
+                "text1": string;
+                "text2": string;
+                "text3": string;
+            };
+            "resetPassword": {
+                "text1": string;
+                "text2": string;
+                "text3": string;
+                "text4": string;
+            };
         };
     };
     "common": {
