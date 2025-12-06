@@ -203,7 +203,7 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
 
         {query.tags && query.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 text-xs text-orange-500 dark:text-orange-300 justify-end">
-            {query.tags.map((tag, index) => (
+            {query.tags.map(tag => (
               <span className="dark:bg-[#1a1a1a] border dark:border-[#333] border-black/10 px-2 py-0.5 rounded-full">
                 #{tag}
               </span>

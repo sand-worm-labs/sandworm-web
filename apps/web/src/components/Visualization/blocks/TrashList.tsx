@@ -5,7 +5,7 @@ import { Map } from "immutable";
 import { useMemo } from "react";
 
 import type { ApiDeletedDocument } from "@/types";
-import timeAgo from "@/utils/timeAgo";
+import { timeAgo } from "@/lib";
 
 type TrashListProps = {
   workspaceId: string;

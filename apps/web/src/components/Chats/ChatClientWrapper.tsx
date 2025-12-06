@@ -55,5 +55,5 @@ export function ClientChatWrapper({
   // need a better looking loading state
   if (!chat) return <div className="p-4">Loading chat...</div>;
 
-  return <PreviewChat id={chat.id} initialMessages={chat.messages} />;
+  return <PreviewChat initialMessages={chat.messages} />;
 }
