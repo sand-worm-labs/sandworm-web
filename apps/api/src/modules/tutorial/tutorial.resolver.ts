@@ -5,7 +5,7 @@ import {
   AdvanceTutorialInput,
   DismissTutorialInput,
 } from './dto/tutorial.dto';
-import { TutorialState } from './model/tutorial.model';
+import { AdvanceTutorialResult, TutorialState } from './model/tutorial.model';
 import { CurrentUser } from '@sandworm/graphql';
 
 @Resolver()
@@ -23,14 +23,14 @@ export class TutorialResolver {
     return this.tutorialService.getTutorialState(userId,input);
   }
 
-  @Mutation(() => TutorialState, {
+  @Mutation(() => AdvanceTutorialResult, {
     name: 'advanceTutorial',
     description: 'Advance to the next step in the tutorial',
   })
   async advanceTutorial(
     @Args('input') input: AdvanceTutorialInput,
     @CurrentUser('id') userId: string,
-  ): Promise<TutorialState> {
+  ): Promise<AdvanceTutorialResult> {
     return this.tutorialService.advanceTutorial(userId, input);
   }
 
