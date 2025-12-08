@@ -7,7 +7,7 @@ import { AuthGraphqlService } from './auth-graphql.service';
 import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [AuthModule ,JwtModule.register({}), TypeOrmModule.forFeature([UserEntity])],
+  imports: [AuthModule,JwtModule.register({}), TypeOrmModule.forFeature([UserEntity])],
   providers: [AuthGraphqlResolver, AuthGraphqlService],
   exports: [AuthGraphqlService],
 })
