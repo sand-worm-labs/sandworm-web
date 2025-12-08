@@ -168,7 +168,6 @@ export class AuthService {
   }
 
   async register(dto: AuthRegisterLoginDto): Promise<void> {
-    console.log('register', dto);
     const user = await this.usersService.create({
       ...dto,
       email: dto.email,
@@ -485,6 +484,39 @@ export class AuthService {
   async logout(data: Pick<JwtRefreshPayloadType, 'sessionId'>) {
     return this.sessionService.deleteById(data.sessionId);
   }
+  
+  
+   async verifyAccessToken(token: string): Promise<JwtPayloadType> {
+    const authConfig = this.configService.getOrThrow('auth', { infer: true });
+
+    try {
+      const payload = await this.jwtService.verifyAsync<JwtPayloadType>(
+        token,
+        {
+          secret: authConfig.secret,
+        },
+      );
+
+      return payload;
+    } catch {
+      throw new UnauthorizedException('Invalid or expired token');
+    }
+  }
+
+
+  async verifyAccessTokenWithSession(
+    token: string,
+  ): Promise<JwtPayloadType> {
+    const payload = await this.verifyAccessToken(token);
+
+    const session = await this.sessionService.findById(payload.sessionId);
+
+    if (!session) {
+      throw new UnauthorizedException('Session not found or expired');
+    }
+
+    return payload;
+  }
 
   private async getTokensData(data: {
     id: UserResponse['id'];
@@ -525,4 +557,5 @@ export class AuthService {
       tokenExpires,
     };
   }
+
 }
