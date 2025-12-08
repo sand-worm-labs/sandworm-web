@@ -1,11 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity,UserFollowsEntity,UserSettingEntity } from '@sandworm/postgresql-typeorm';
-import { AuthGraphqlModule } from '../auth-graphql/auth-graphql.module';
 import { UserResolver } from './user.resolver';
 import { UserService } from './user.service';
 @Module({
-  imports: [TypeOrmModule.forFeature([UserEntity,UserFollowsEntity,UserSettingEntity]), AuthGraphqlModule],
+  imports: [TypeOrmModule.forFeature([UserEntity,UserFollowsEntity,UserSettingEntity])],
   providers: [UserResolver, UserService],
   exports: [UserService],
 })
