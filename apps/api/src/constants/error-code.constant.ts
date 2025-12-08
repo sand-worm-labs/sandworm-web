@@ -40,6 +40,7 @@ export enum ErrorCode {
   E407 = 'app.environment.variable_save_failed',
   
   // Tutorial Errors
+  E500 = 'app.tutorial.not_started',
   E501 = 'app.tutorial.not_found',
   E502 = 'app.tutorial.invalid_type',
   E503 = 'app.tutorial.state_not_found',
