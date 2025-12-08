@@ -44,7 +44,8 @@ export class UserService {
     }
 
     const foundUser = User.fromEntity(user);
-    return { id: user.id, user: foundUser, token: currentUser.token };
+    
+    return { id: user.id, user: foundUser, token: currentUser.token , tokenExpires: Date.now() + 60 * 60 * 1000};
   }
 
   async create(

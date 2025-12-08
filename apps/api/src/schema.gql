@@ -2,9 +2,22 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+input AdvanceTutorialInput {
+  ifCurrentStep: String
+  tutorialType: String!
+  workspaceId: String!
+}
+
+type AdvanceTutorialResult {
+  currentState: TutorialState
+  didAdvance: Boolean!
+  prevStep: OnboardingTutorialStep
+}
+
 type AuthPayload {
   id: String!
   token: String!
+  tokenExpires: Int!
   user: User!
 }
 
@@ -54,6 +67,11 @@ input DeleteDocumentInput {
 
 input DeleteFileInput {
   path: String!
+  workspaceId: String!
+}
+
+input DismissTutorialInput {
+  tutorialType: String!
   workspaceId: String!
 }
 
@@ -118,6 +136,11 @@ input GetAllUsersInput {
   sortOrder: String! = "DESC"
 }
 
+input GetTutorialStateInput {
+  tutorialType: String!
+  workspaceId: String!
+}
+
 """
 The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
@@ -140,6 +163,9 @@ input LoginInput {
 type Mutation {
   """Mark a document as a favorite"""
   addFavoriteDocument(input: FavoriteDocumentInput!): Document!
+
+  """Advance to the next step in the tutorial"""
+  advanceTutorial(input: AdvanceTutorialInput!): AdvanceTutorialResult!
 
   """Create a new comment on a document"""
   createComment(documentId: String!, input: CreateCommentInput!): Comment!
@@ -164,6 +190,9 @@ type Mutation {
 
   """Delete a file from the workspace"""
   deleteFile(input: DeleteFileInput!): Boolean!
+
+  """Dismiss a completed tutorial"""
+  dismissTutorial(input: DismissTutorialInput!): TutorialState!
 
   """Create a fork/duplicate of a document"""
   duplicateDocument(input: DuplicateDocumentInput!): Document!
@@ -205,6 +234,16 @@ type Mutation {
   updateWorkspace(name: String, workspaceId: String!): Workspace!
 }
 
+"""Steps in the onboarding tutorial"""
+enum OnboardingTutorialStep {
+  CONNECT_DATA_SOURCE
+  CREATE_VISUALIZATION
+  INVITE_TEAM_MEMBERS
+  PUBLISH_DASHBOARD
+  RUN_PYTHON
+  RUN_QUERY
+}
+
 type Profile {
   bio: String!
   following: Boolean!
@@ -239,6 +278,9 @@ type Query {
 
   """Get a single document by ID"""
   getDocument(documentId: String!, workspaceId: String!): Document!
+
+  """Get the current state of a tutorial"""
+  getTutorialState(input: GetTutorialStateInput!): TutorialState!
 
   """Users who follow a given user"""
   getUserFollowers(userId: String!): [User!]!
@@ -287,6 +329,14 @@ type SandwormFile {
 input SetEnvironmentVariablesInput {
   add: [EnvironmentVariableInput!]!
   remove: [String!]!
+}
+
+type TutorialState {
+  currentStep: OnboardingTutorialStep!
+  id: String!
+  isCompleted: Boolean!
+  isDismissed: Boolean!
+  stepStates: JSON
 }
 
 input UpdateDocumentInput {
