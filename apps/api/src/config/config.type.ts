@@ -5,6 +5,7 @@ import { RedisConfig } from '@sandworm/redis';
 import { AuthConfig } from '@/api/auth/config/auth-config.type';
 import { GoogleConfig } from '@/api/auth-google/config/google-config.type';
 import { MailConfig } from '@/api/mail/config/mail-config.type';
+import { GithubConfig } from "@/api/auth-github/config/github-config.type"
 
 export type AllConfigType = {
   app: AppConfig;
@@ -14,4 +15,5 @@ export type AllConfigType = {
   jupyter: JupyterConfig;
   google: GoogleConfig;
   mail: MailConfig;
+  github: GithubConfig
 };
