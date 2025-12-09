@@ -28,6 +28,8 @@ export const WorkspaceSidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const router = useRouter();
   const documentId = useStringQuery("document");
+  const favoriteDocument: any = [];
+  const unfavoriteDocument: any = [];
 
   const mockUser = {
     id: "4a6e71c4-2c06-460b-bb29-f337bf64e0bc",
