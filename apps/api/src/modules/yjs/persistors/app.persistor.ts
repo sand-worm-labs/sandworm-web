@@ -26,7 +26,7 @@ import { Persistor } from '../interfaces/persistor.interface';
 import { LoadStateResult,ReplaceStateResult } from '../interfaces/load-state-result.interface';
 import { TransactionOrigin } from '../interfaces/transaction-origin.interface';
 import { WSSharedDoc} from "../interfaces"
-// import { ILockService } from '@sandworm/redis';
+import { ILockService } from '@sandworm/redis';
 
 const logger = new Logger('Persistors');
 

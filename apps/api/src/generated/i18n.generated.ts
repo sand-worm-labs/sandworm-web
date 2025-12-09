@@ -22,6 +22,8 @@ export type I18nTranslations = {
                 "unique_favorite": string;
                 "unique_slug": string;
             };
+            "confirm_email": string;
+            "reset_password": string;
         };
         "user": {
             "username_or_email_exists": string;
@@ -41,26 +43,24 @@ export type I18nTranslations = {
             "not_found": string;
             "not_authorized_to_delete": string;
         };
-    };
-    "common": {
-        "confirmEmail": string;
-        "resetPassword": string;
-    };
-    "confirm-email": {
-        "text1": string;
-        "text2": string;
-        "text3": string;
-    };
-    "confirm-new-email": {
-        "text1": string;
-        "text2": string;
-        "text3": string;
-    };
-    "reset-password": {
-        "text1": string;
-        "text2": string;
-        "text3": string;
-        "text4": string;
+        "email": {
+            "confirm_email": {
+                "greeting": string;
+                "intro": string;
+                "instruction": string;
+            };
+            "confirm_new_email": {
+                "greeting": string;
+                "message": string;
+                "instruction": string;
+            };
+            "reset_password": {
+                "subject": string;
+                "intro": string;
+                "instruction": string;
+                "disclaimer": string;
+            };
+        };
     };
 };
 /* prettier-ignore */
