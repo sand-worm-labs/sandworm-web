@@ -1,33 +1,48 @@
-import { InputType } from '@nestjs/graphql';
-import {
-  UUIDField,
-  StringField,
-} from '@sandworm/graphql';
-
+// dto/tutorial.dto.ts
+import { InputType, Field } from '@nestjs/graphql';
+import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
+import { OnboardingTutorialStep } from '@sandworm/postgresql-typeorm';
 
 @InputType()
 export class GetTutorialStateInput {
-  @UUIDField()
+  @Field()
+  @IsString()
+  @IsNotEmpty()
   workspaceId: string;
 
-  @StringField()
-  tutorialType: 'onboarding';
+  @Field()
+  @IsString()
+  @IsNotEmpty()
+  tutorialType: string;
 }
 
 @InputType()
 export class AdvanceTutorialInput {
-  @UUIDField()
+  @Field()
+  @IsString()
+  @IsNotEmpty()
   workspaceId: string;
 
-  @StringField()
-  tutorialType: 'onboarding';
+  @Field()
+  @IsString()
+  @IsNotEmpty()
+  tutorialType: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  @IsString()
+  ifCurrentStep?: OnboardingTutorialStep;
 }
 
 @InputType()
 export class DismissTutorialInput {
-  @UUIDField()
+  @Field()
+  @IsString()
+  @IsNotEmpty()
   workspaceId: string;
 
-  @StringField()
-  tutorialType: 'onboarding';
+  @Field()
+  @IsString()
+  @IsNotEmpty()
+  tutorialType: string;
 }

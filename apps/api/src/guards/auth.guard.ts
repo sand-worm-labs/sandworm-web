@@ -8,7 +8,7 @@ import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { IS_AUTH_OPTIONAL, IS_PUBLIC } from '@sandworm/nest-common';
 import { type FastifyRequest } from 'fastify';
-import { AuthGraphqlService } from '@/api/auth-graphql/auth.service';
+import { AuthGraphqlService } from '@/api/auth-graphql/auth-graphql.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -51,6 +51,8 @@ export class AuthGuard implements CanActivate {
 
   private extractTokenFromHeader(request: FastifyRequest): string | undefined {
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
-    return type === 'Token' ? token : undefined;
+    if ((type === 'Bearer' || type === 'Token') && token) {
+      return token;
+    }
   }
 }
