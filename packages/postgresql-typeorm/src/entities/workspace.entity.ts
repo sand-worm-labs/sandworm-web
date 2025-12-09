@@ -35,7 +35,7 @@ export class WorkspaceEntity extends AbstractEntity {
     @Column({ type: "enum", enum: Plan, default: Plan.FREE })
     plan!: Plan;
 
-    @Column()
+    @Column({ nullable: true})
     ownerId!: string;
 
     @ManyToOne(() => UserEntity, (user) => user.workspaces, { onDelete: "CASCADE" })
