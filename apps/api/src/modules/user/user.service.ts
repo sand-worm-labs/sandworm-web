@@ -99,20 +99,21 @@ export class UserService {
       sortBy = 'createdAt',
       sortOrder = 'DESC',
     } = input;
-
+  
+    // ✅ Whitelist of allowed sort columns
+    const allowedSortColumns = ['createdAt', 'username', 'email', 'firstName', 'lastName'];
+    const safeSortBy = allowedSortColumns.includes(sortBy) ? sortBy : 'createdAt';
+  
     const queryBuilder = this.userRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.settings', 'settings')
+      .orderBy(`user.${safeSortBy}`, sortOrder as 'ASC' | 'DESC')  
       .take(limit)
       .skip(offset);
-
-    if (sortBy) {
-      queryBuilder.orderBy(`user.${sortBy}`, sortOrder as 'ASC' | 'DESC');
-    }
-
+  
     const users = await queryBuilder.getMany();
-
-    return users.map((u) => u);
+    
+    return users;
   }
 
   async findByEmail(email: string): Promise<UserEntity | null> {
