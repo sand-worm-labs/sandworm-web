@@ -17,7 +17,7 @@ type AdvanceTutorialResult {
 type AuthPayload {
   id: String!
   token: String!
-  tokenExpires: Int!
+  tokenExpires: Float!
   user: User!
 }
 

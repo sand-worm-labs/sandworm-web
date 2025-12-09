@@ -1,4 +1,4 @@
-import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { Field, Float, ObjectType } from '@nestjs/graphql';
 import { User } from '../../user/model/graphql/user.model';
 
 @ObjectType()
@@ -9,7 +9,7 @@ export class AuthPayload {
   @Field(() => String)
   token!: string;
 
-  @Field(() => Int)
+  @Field(() => Float)
   tokenExpires: number;
 
   @Field(() => User)
