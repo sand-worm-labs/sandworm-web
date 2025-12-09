@@ -26,6 +26,9 @@ import {
 } from '@sandworm/nest-common';
 import { AppModule } from './app.module';
 import { AllConfigType } from './config/config.type';
+import { GlobalGqlExceptionFilter } from './filters/global-gql-exception.filter';
+import { AuthGuard } from './guards/auth.guard';
+import { AuthGraphqlService } from './modules/auth-graphql/auth-graphql.service';
 
 async function bootstrap() {
   const fastifyAdapter = new FastifyAdapter({
@@ -143,8 +146,8 @@ async function bootstrap() {
   );
 
   // Global guards, filters, and pipes
-  // app.useGlobalGuards(new AuthGuard(reflector, app.get(AuthGraphqlService)));
-  ///app.useGlobalFilters(new GlobalGqlExceptionFilter());
+  app.useGlobalGuards(new AuthGuard(reflector, app.get(AuthGraphqlService)));
+  app.useGlobalFilters(new GlobalGqlExceptionFilter());
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CommentEntity, UserEntity } from '@sandworm/postgresql-typeorm';
-import { AuthGraphqlModule } from '../auth-graphql/auth.module';
+import { AuthGraphqlModule } from '../auth-graphql/auth-graphql.module';
 import { CommentResolver } from './comment.resolver';
 import { CommentService } from './comment.service';
 
