@@ -69,7 +69,7 @@ export class SessionService {
     });
 
     if (!session) {
-      throw new ValidationException(ErrorCode.E002); // Session not found
+      throw new ValidationException(ErrorCode.E002);
     }
 
     const updatedSession = await this.sessionRepository.save({

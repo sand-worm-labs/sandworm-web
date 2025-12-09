@@ -18,16 +18,16 @@ export class MailService {
   async userSignUp(mailData: MailData<{ hash: string }>): Promise<void> {
     const i18n = I18nContext.current();
     let emailConfirmTitle: MaybeType<string>;
-    let text1: MaybeType<string>;
-    let text2: MaybeType<string>;
-    let text3: MaybeType<string>;
+    let greeting: MaybeType<string>;
+    let intro: MaybeType<string>;
+    let instruction: MaybeType<string>;
 
     if (i18n) {
-      [emailConfirmTitle, text1, text2, text3] = await Promise.all([
-        i18n.t('common.confirmEmail'),
-        i18n.t('confirm-email.text1'),
-        i18n.t('confirm-email.text2'),
-        i18n.t('confirm-email.text3'),
+      [emailConfirmTitle, greeting, intro, instruction] = await Promise.all([
+        i18n.t('app.common.confirm_email'),
+        i18n.t('app.email.confirm_email.greeting'),
+        i18n.t('app.email.confirm_email.intro'),
+        i18n.t('app.email.confirm_email.instruction'),
       ]);
     }
 
@@ -57,9 +57,9 @@ export class MailService {
         url: url.toString(),
         actionTitle: emailConfirmTitle,
         app_name: this.configService.get('app.name', { infer: true }),
-        text1,
-        text2,
-        text3,
+        greeting,
+        intro,
+        instruction,
       },
     });
   }
@@ -69,18 +69,18 @@ export class MailService {
   ): Promise<void> {
     const i18n = I18nContext.current();
     let resetPasswordTitle: MaybeType<string>;
-    let text1: MaybeType<string>;
-    let text2: MaybeType<string>;
-    let text3: MaybeType<string>;
-    let text4: MaybeType<string>;
+    let subject: MaybeType<string>;
+    let intro: MaybeType<string>;
+    let instruction: MaybeType<string>;
+    let disclaimer: MaybeType<string>;
 
     if (i18n) {
-      [resetPasswordTitle, text1, text2, text3, text4] = await Promise.all([
-        i18n.t('common.resetPassword'),
-        i18n.t('reset-password.text1'),
-        i18n.t('reset-password.text2'),
-        i18n.t('reset-password.text3'),
-        i18n.t('reset-password.text4'),
+      [resetPasswordTitle, subject, intro, instruction, disclaimer] = await Promise.all([
+        i18n.t('app.common.reset_password'),
+        i18n.t('app.email.reset_password.subject'),
+        i18n.t('app.email.reset_password.intro'),
+        i18n.t('app.email.reset_password.instruction'),
+        i18n.t('app.email.reset_password.disclaimer'),
       ]);
     }
 
@@ -113,10 +113,10 @@ export class MailService {
         app_name: this.configService.get('app.name', {
           infer: true,
         }),
-        text1,
-        text2,
-        text3,
-        text4,
+        subject,
+        intro,
+        instruction,
+        disclaimer,
       },
     });
   }
@@ -124,16 +124,16 @@ export class MailService {
   async confirmNewEmail(mailData: MailData<{ hash: string }>): Promise<void> {
     const i18n = I18nContext.current();
     let emailConfirmTitle: MaybeType<string>;
-    let text1: MaybeType<string>;
-    let text2: MaybeType<string>;
-    let text3: MaybeType<string>;
+    let greeting: MaybeType<string>;
+    let message: MaybeType<string>;
+    let instruction: MaybeType<string>;
 
     if (i18n) {
-      [emailConfirmTitle, text1, text2, text3] = await Promise.all([
-        i18n.t('common.confirmEmail'),
-        i18n.t('confirm-new-email.text1'),
-        i18n.t('confirm-new-email.text2'),
-        i18n.t('confirm-new-email.text3'),
+      [emailConfirmTitle, greeting, message, instruction] = await Promise.all([
+        i18n.t('app.common.confirm_email'),
+        i18n.t('app.email.confirm_new_email.greeting'),
+        i18n.t('app.email.confirm_new_email.message'),
+        i18n.t('app.email.confirm_new_email.instruction'),
       ]);
     }
 
@@ -163,9 +163,9 @@ export class MailService {
         url: url.toString(),
         actionTitle: emailConfirmTitle,
         app_name: this.configService.get('app.name', { infer: true }),
-        text1,
-        text2,
-        text3,
+        greeting,
+        message,
+        instruction,
       },
     });
   }

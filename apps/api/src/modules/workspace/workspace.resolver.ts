@@ -28,7 +28,6 @@ export class WorkspaceResolver {
     return this.workspaceService.getWorkspaceById(workspaceId);
   }
 
-  @Public()
   @Query(() => [Workspace], {
     name: 'getUserWorkspaces',
     description: 'Get User workspaces',
@@ -49,6 +48,10 @@ export class WorkspaceResolver {
     @CurrentUser('id') ownerId: string,
     @Args('name', { type: () => String }) name: string,
   ): Promise<Workspace> {
+    if (!ownerId) {
+      throw new Error('ownerId is missing from authentication token');
+    }
+  
     return this.workspaceService.createWorkspace({ ownerId, name });
   }
 
@@ -57,10 +60,11 @@ export class WorkspaceResolver {
     description: 'Update workspace info',
   })
   async updateWorkspace(
+    @CurrentUser('id') ownerId: string,
     @Args('workspaceId', { type: () => String }) workspaceId: string,
     @Args('name', { type: () => String, nullable: true }) name?: string,
   ): Promise<Workspace> {
-    return this.workspaceService.updateWorkspace(workspaceId, { name });
+    return this.workspaceService.updateWorkspace(workspaceId, { name, ownerId });
   }
 
   @ResolveField(() => User)
