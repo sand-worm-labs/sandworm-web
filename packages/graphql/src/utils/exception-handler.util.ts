@@ -97,7 +97,9 @@ export function extractValidationErrorDetails(
       code,
       message,
     }));
-
+    if (!error.children.length) {
+      return currentErrors;
+    }
     const childErrors: ErrorDetailDto[] =
       error.children?.flatMap((childError) =>
         extractErrors(childError, propertyPath),
