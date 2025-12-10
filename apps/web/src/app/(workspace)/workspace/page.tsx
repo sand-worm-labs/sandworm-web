@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo } from "react";
+import { useSession } from "@/components/Visualization/hooks/useAuth";
 
 const dummyUser = {
   id: "user_123",
@@ -25,8 +26,17 @@ export function getUserRedirectWorkspace(
   workspaces: { id: string; name: string; ownerId: string }[],
   user: { id: string; lastVisitedWorkspaceId: string | null }
 ) {
+  if (!workspaces || workspaces.length === 0) {
+    return {
+      id: "405498a2-f3cb-4307-bd1e-4daf5b3a1dba",
+      name: "default-workspace",
+      ownerId: user.id,
+    };
+  }
+
   return (
-    workspaces.find(w => w.id === user.lastVisitedWorkspaceId) ??
+    (user.lastVisitedWorkspaceId &&
+      workspaces.find(w => w.id === user.lastVisitedWorkspaceId)) ??
     workspaces.find(w => w.ownerId === user.id) ??
     workspaces[0]
   );
@@ -34,8 +44,17 @@ export function getUserRedirectWorkspace(
 
 export default function WorkspaceRedirectPage() {
   const router = useRouter();
+  const session = useSession({ redirectToLogin: true });
 
-  const user = dummyUser;
+  const user = useMemo(() => {
+    if (!session.user) return null;
+
+    return {
+      ...session.user,
+      lastVisitedWorkspaceId: session.user.lastVisitedWorkspaceId ?? null,
+    };
+  }, [session.user]);
+
   const workspaces = {
     data: dummyWorkspaces,
     isLoading: false,
@@ -49,18 +68,14 @@ export default function WorkspaceRedirectPage() {
   }, [workspaces.isLoading, workspaces.data, user]);
 
   useEffect(() => {
+    if (session.loading) return;
     if (workspaces.isLoading) return;
+    if (!user) return;
 
     if (workspace) {
       router.replace(`/workspace/${workspace.name}`);
     }
-  }, [workspace, workspaces.isLoading, router]);
-
-  if (!workspaces.isLoading && !workspace) {
-    return (
-      <h4>You do not have access to any workspaces. Contact your admin.</h4>
-    );
-  }
+  }, [workspace, session.loading, workspaces.isLoading, user, router]);
 
   return null;
 }

@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { SandwormDarkLogo } from "../Assets/SandwormDarkLogo";
 
 import { SocialLogin } from "./SocialLogin";
+import { SignInForm } from "./SignInForm";
 
 export const SignIn = () => {
   const params = useSearchParams();
@@ -14,7 +15,7 @@ export const SignIn = () => {
     <div className="w-full max-w-md rounded-lg border border-[#ffffff30] p-6 content flex flex-col justify-center items-center h-full mx-auto">
       <SandwormDarkLogo />
 
-      <h2 className="text-3xl font-medium text-center text-black mb-6 mt-4 roobert">
+      <h2 className="text-3xl font-medium text-center text-black mb-6 mt-4 font-primary">
         Welcome back to <span className="uppercase font-bold">SANDWORM</span>!
       </h2>
 
@@ -23,6 +24,8 @@ export const SignIn = () => {
           No account found. Please sign up first.
         </div>
       )}
+
+      <SignInForm />
 
       <SocialLogin variant="signin" />
 
@@ -39,7 +42,7 @@ export const SignIn = () => {
             Sign Up
           </Link>
         </p>
-        <Link href="#" className="text-red-500 hover:underline">
+        <Link href="/" className="text-red-500 hover:underline">
           Forgot Password
         </Link>
       </div>

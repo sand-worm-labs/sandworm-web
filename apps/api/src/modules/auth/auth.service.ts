@@ -486,18 +486,14 @@ export class AuthService {
   async logout(data: Pick<JwtRefreshPayloadType, 'sessionId'>) {
     return this.sessionService.deleteById(data.sessionId);
   }
-  
-  
-   async verifyAccessToken(token: string): Promise<JwtPayloadType> {
+
+  async verifyAccessToken(token: string): Promise<JwtPayloadType> {
     const authConfig = this.configService.getOrThrow('auth', { infer: true });
 
     try {
-      const payload = await this.jwtService.verifyAsync<JwtPayloadType>(
-        token,
-        {
-          secret: authConfig.secret,
-        },
-      );
+      const payload = await this.jwtService.verifyAsync<JwtPayloadType>(token, {
+        secret: authConfig.secret,
+      });
 
       return payload;
     } catch {
@@ -505,10 +501,7 @@ export class AuthService {
     }
   }
 
-
-  async verifyAccessTokenWithSession(
-    token: string,
-  ): Promise<JwtPayloadType> {
+  async verifyAccessTokenWithSession(token: string): Promise<JwtPayloadType> {
     const payload = await this.verifyAccessToken(token);
 
     const session = await this.sessionService.findById(payload.sessionId);
@@ -559,5 +552,4 @@ export class AuthService {
       tokenExpires,
     };
   }
-
 }
