@@ -10,6 +10,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { HttpAdapterHost } from '@nestjs/core'; // ✅ Add this import
 import { NestFactory, Reflector } from '@nestjs/core';
 import {
   FastifyAdapter,
@@ -26,7 +27,7 @@ import {
 } from '@sandworm/nest-common';
 import { AppModule } from './app.module';
 import { AllConfigType } from './config/config.type';
-import { GlobalGqlExceptionFilter } from './filters/global-gql-exception.filter';
+import { GlobalExceptionFilter } from './filters/global-exception.filter'; 
 import { AuthGuard } from './guards/auth.guard';
 import { AuthGraphqlService } from './modules/auth-graphql/auth-graphql.service';
 
@@ -48,10 +49,12 @@ async function bootstrap() {
   // Get services
   const configService = app.get(ConfigService<AllConfigType>);
   const reflector = app.get(Reflector);
+  const httpAdapterHost = app.get(HttpAdapterHost); // ✅ Get HttpAdapterHost
 
   // ✅ Get environment early to use throughout
   const env = configService.getOrThrow('app.nodeEnv', { infer: true });
   const isProduction = env === Environment.PRODUCTION;
+  const debug = env === Environment.LOCAL || env === Environment.DEVELOPMENT; // ✅ Add debug flag
 
   // Configure the logger
   const asyncContext = app.get(AsyncContextProvider);
@@ -147,7 +150,10 @@ async function bootstrap() {
 
   // Global guards, filters, and pipes
   app.useGlobalGuards(new AuthGuard(reflector, app.get(AuthGraphqlService)));
-  app.useGlobalFilters(new GlobalGqlExceptionFilter());
+  
+  // ✅ Apply unified exception filter with HttpAdapterHost and debug flag
+  app.useGlobalFilters(new GlobalExceptionFilter(httpAdapterHost, debug));
+  
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
