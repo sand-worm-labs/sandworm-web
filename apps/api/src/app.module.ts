@@ -108,6 +108,7 @@ const graphqlModule = GraphQLModule.forRootAsync<ApolloDriverConfig>({
           : false,
 
       context: ({ req, res }) => ({ req, res }),
+    
     };
   },
   inject: [ConfigService],
@@ -119,10 +120,6 @@ const graphqlModule = GraphQLModule.forRootAsync<ApolloDriverConfig>({
     AppService,
     AsyncContextProvider,
     FastifyPinoLogger,
-    // {
-    //   provide: APP_FILTER,
-    //   useClass: GlobalGqlExceptionFilter,
-    // },
   ],
   exports: [AsyncContextProvider],
 })
