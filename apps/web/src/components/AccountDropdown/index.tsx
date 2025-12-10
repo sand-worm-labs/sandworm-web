@@ -2,7 +2,7 @@
 
 import React from "react";
 import { ChevronDown, Share2 } from "lucide-react";
-import { useSession, signOut } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import Link from "next/link";
 import {
   Avatar,
@@ -18,9 +18,11 @@ import {
 import { Button } from "@sandworm/ui/components/button";
 
 import { useModalStore } from "@/store/auth";
+import { useSession } from "../Visualization/hooks/useAuth";
 
 export const AccountDropdown = () => {
-  const { data: session } = useSession();
+  const session = useSession({ redirectToLogin: true });
+  console.log("Session in AccountDropdown:", session);
   const user = session?.user;
   const openSignIn = useModalStore(state => state.openSignIn);
 
