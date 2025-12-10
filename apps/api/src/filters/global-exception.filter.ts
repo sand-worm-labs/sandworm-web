@@ -1,15 +1,18 @@
+// apps/api/src/filters/global-exception.filter.ts
+
 import { ConstraintErrors } from '@/constants/constraint-errors';
 import { ErrorCode } from '@/constants/error-code.constant';
 import { I18nTranslations } from '@/generated/i18n.generated';
 import {
-  type ArgumentsHost,
+  ArgumentsHost,
   Catch,
+  ExceptionFilter,
   HttpException,
   HttpStatus,
   Logger,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { GqlExceptionFilter } from '@nestjs/graphql';
+import { HttpAdapterHost } from '@nestjs/core';
 import {
   ErrorDto,
   GraphqlErrorCode,
@@ -24,23 +27,40 @@ import { I18nContext } from 'nestjs-i18n';
 import { EntityNotFoundError, QueryFailedError } from 'typeorm';
 
 @Catch()
-export class GlobalGqlExceptionFilter implements GqlExceptionFilter {
+export class GlobalExceptionFilter implements ExceptionFilter {
   private i18n: I18nContext<I18nTranslations>;
-  private readonly logger = new Logger(GlobalGqlExceptionFilter.name);
-  private skipPaths = ['/auth/', '/health'];
+  private readonly logger = new Logger(GlobalExceptionFilter.name);
+
+  constructor(
+    private readonly httpAdapterHost: HttpAdapterHost,
+    private readonly debug: boolean,
+  ) {}
 
   catch(exception: any, host: ArgumentsHost) {
     this.i18n = I18nContext.current<I18nTranslations>(host);
-    let error: ErrorDto;
+    const contextType = host.getType<string>();
 
-    const req = host.switchToHttp().getRequest?.();
+    // Process the exception into ErrorDto (common logic)
+    const error = this.processException(exception);
 
-    if (req?.url && this.skipPaths.some((path) => req.url.startsWith(path))) {
-      return exception;
+    // Add debug info if enabled
+    if (this.debug) {
+      this.logger.debug(error);
     }
 
-    const createGraphQLError = (message: string, error: ErrorDto) =>
-      new GraphQLError(message, { extensions: { ...error } });
+    // Format response based on context type
+    if (contextType === 'graphql') {
+      return this.handleGraphQLError(exception, error);
+    } else {
+      return this.handleHttpError(error, host);
+    }
+  }
+
+  /**
+   * Process exception into ErrorDto (shared logic for both HTTP and GraphQL)
+   */
+  private processException(exception: any): ErrorDto {
+    let error: ErrorDto;
 
     if (exception instanceof UnprocessableEntityException) {
       error = handleUnprocessableEntityException(exception);
@@ -59,7 +79,25 @@ export class GlobalGqlExceptionFilter implements GqlExceptionFilter {
       error = handleError(exception);
     }
 
-    return createGraphQLError(exception.message, error);
+    return error;
+  }
+
+  /**
+   * Handle GraphQL errors - return GraphQLError with extensions
+   */
+  private handleGraphQLError(exception: any, error: ErrorDto): GraphQLError {
+    return new GraphQLError(exception.message || error.message, {
+      extensions: { ...error },
+    });
+  }
+
+  /**
+   * Handle HTTP errors - send via HttpAdapter
+   */
+  private handleHttpError(error: ErrorDto, host: ArgumentsHost): void {
+    const { httpAdapter } = this.httpAdapterHost;
+    const ctx = host.switchToHttp();
+    httpAdapter.reply(ctx.getResponse(), error, error.statusCode);
   }
 
   /**
@@ -80,7 +118,7 @@ export class GlobalGqlExceptionFilter implements GqlExceptionFilter {
       error: STATUS_CODES[statusCode],
       errorCode:
         Object.keys(ErrorCode)[Object.values(ErrorCode).indexOf(r.errorCode)],
-      code: GraphqlErrorCode.FAILED_PRECONDITION,
+      code: GraphqlErrorCode.FAILED_PRECONDITION, // Include for GraphQL
       message:
         r.message ||
         this.i18n.t(r.errorCode as unknown as keyof I18nTranslations),
@@ -110,6 +148,7 @@ export class GlobalGqlExceptionFilter implements GqlExceptionFilter {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
           message: this.i18n.t('app.common.internal_server_error'),
         };
+
     const errorRes = {
       timestamp: new Date().toISOString(),
       statusCode: status,
