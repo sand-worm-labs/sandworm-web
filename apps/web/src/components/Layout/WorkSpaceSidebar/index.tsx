@@ -14,6 +14,7 @@ import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
 import { useDocumentsLocal as useDocuments } from "@/components/Visualization/hooks/useDocumentsLocal";
 import { SandwormLogo } from "@/components/Assets";
 import { SidebarIcon } from "@/components/Assets/SidebarIcon";
+import type { MouseEventHandler } from "react";
 
 interface NavItem {
   name: string;

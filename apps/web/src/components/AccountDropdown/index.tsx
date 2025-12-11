@@ -16,6 +16,7 @@ import {
   DropdownMenuSeparator,
 } from "@sandworm/ui/components/dropdown-menu";
 import { Button } from "@sandworm/ui/components/button";
+import { MoreVertical } from "lucide-react";
 
 import { useModalStore } from "@/store/auth";
 import { useSession } from "../Visualization/hooks/useAuth";
@@ -23,8 +24,39 @@ import { useSession } from "../Visualization/hooks/useAuth";
 export const AccountDropdown = () => {
   const session = useSession({ redirectToLogin: true });
   console.log("Session in AccountDropdown:", session);
-  const user = session?.user;
-  const openSignIn = useModalStore(state => state.openSignIn);
+  /*   const user = session?.user;
+   */ const openSignIn = useModalStore(state => state.openSignIn);
+
+  const user = {
+    id: "user_001",
+    name: "johndoe",
+    username: "johndoe",
+    email: "john.doe@example.com",
+
+    picture: null,
+    image: undefined,
+    status: "ACTIVE",
+
+    socialLinks: {
+      twitter: "https://x.com/johndoe",
+      github: "https://github.com/johndoe",
+      website: "https://johndoe.dev",
+    },
+
+    wallets: [],
+    stars: 12,
+    forks: 3,
+
+    createdAt: new Date("2023-08-10"),
+    updatedAt: new Date("2024-11-22"),
+    emailVerified: new Date(),
+
+    userHash: "hash_john_123",
+    lastVisitedWorkspaceId: "42",
+    roles: {
+      "workspace-42": "OWNER",
+    },
+  } as const;
 
   if (!user) {
     return (
@@ -40,12 +72,12 @@ export const AccountDropdown = () => {
   }
 
   return (
-    <div className="w-[90%] mx-auto mb-5 dark:bg-black">
+    <div className="w-full mx-auto mb-5 ">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
-            className="px-3 flex items-center gap-3 bg-white rounded-xl h-12 border border-[#E9ECEF] dark:bg-neutral-900 w-full justify-between"
+            className="px-2 flex items-center gap-3 bg-white rounded-xl h-12 border border-[#E9ECEF] dark:bg-[#0D1014] w-full justify-between dark:border-[#262A30]"
           >
             <div className="flex items-center gap-3">
               <Avatar className="h-9 w-9">
@@ -57,11 +89,11 @@ export const AccountDropdown = () => {
                   {user.name?.split(" ")[0]?.[0] ?? "U"}
                 </AvatarFallback>
               </Avatar>
-              <div className="flex flex-col text-left leading-tight text-base">
-                <span>{user.name ?? "User"}</span>
+              <div className="flex flex-col text-left leading-tight text-[0.9rem] font-primary">
+                <span>@{user.name ?? "User"}</span>
               </div>
             </div>
-            <ChevronDown className="ml-2 h-4 w-4" />
+            <MoreVertical className="ml-2 h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
 

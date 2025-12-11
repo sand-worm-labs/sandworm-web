@@ -8,12 +8,22 @@ import {
   useMemo,
   useState,
 } from "react";
-import type { Comment } from "@sandworm/types";
-
 import { NEXT_PUBLIC_API_URL } from "../utils/env";
-
 import { useSession } from "./useAuth";
 import { useWebsocket } from "./useWebSocket";
+
+export type Comment = {
+  user: {
+    name: string;
+    picture: string | null;
+  };
+  id: string;
+  content: string;
+  documentId: string;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
+};
 
 type API = {
   createComment: (
@@ -27,6 +37,7 @@ type API = {
     commentId: string
   ) => void;
 };
+
 type State = Map<string, Comment[]>;
 
 const Context = createContext<[State, API]>([
@@ -46,6 +57,7 @@ const Context = createContext<[State, API]>([
 ]);
 
 type UseComments = [Comment[], API];
+
 export function useComments(documentId: string): UseComments {
   const [state, api] = useContext(Context);
   const socket = useWebsocket();
@@ -63,46 +75,46 @@ export function useComments(documentId: string): UseComments {
 interface Props {
   children: React.ReactNode;
 }
+
 export function CommentsProvider({ children }: Props) {
   const [state, setState] = useState<State>(Map());
   const socket = useWebsocket();
   const session = useSession({ redirectToLogin: false });
 
   useEffect(() => {
-    if (!socket) {
-      return;
-    }
+    if (!socket) return () => {};
 
     const onComments = (data: { documentId: string; comments: Comment[] }) => {
-      setState(state => state.set(data.documentId, data.comments));
+      setState(prev => prev.set(data.documentId, data.comments));
     };
-    socket.on("document-comments", onComments);
 
     const onComment = (data: { documentId: string; comment: Comment }) => {
-      setState(state => {
-        const comments = state.get(data.comment.documentId) ?? [];
+      setState(prev => {
+        const comments = prev.get(data.comment.documentId) ?? [];
 
-        if (comments.some(({ id }) => id === data.comment.id)) {
-          return state;
+        if (comments.some(c => c.id === data.comment.id)) {
+          return prev;
         }
 
-        return state.set(data.comment.documentId, [...comments, data.comment]);
+        return prev.set(data.comment.documentId, [...comments, data.comment]);
       });
     };
-    socket.on("document-comment", onComment);
 
     const onCommentDeleted = (data: {
       documentId: string;
       commentId: string;
     }) => {
-      setState(state => {
-        const comments = state.get(data.documentId) ?? [];
-        return state.set(
+      setState(prev => {
+        const comments = prev.get(data.documentId) ?? [];
+        return prev.set(
           data.documentId,
           comments.filter(c => c.id !== data.commentId)
         );
       });
     };
+
+    socket.on("document-comments", onComments);
+    socket.on("document-comment", onComment);
     socket.on("document-comment-deleted", onCommentDeleted);
 
     return () => {
@@ -115,16 +127,11 @@ export function CommentsProvider({ children }: Props) {
   const createComment = useCallback(
     async (workspaceId: string, documentId: string, content: string) => {
       const user = session.data;
-      if (!user) {
-        return;
-      }
+      if (!user) return;
 
       const now = new Date().toISOString();
       const comment: Comment = {
-        user: {
-          name: user.name,
-          picture: user.picture,
-        },
+        user: { name: user.name, picture: user.picture },
         id: uuidv4(),
         content,
         documentId,
@@ -133,9 +140,9 @@ export function CommentsProvider({ children }: Props) {
         updatedAt: now,
       };
 
-      setState(state => {
-        const comments = state.get(documentId) ?? [];
-        return state.set(documentId, [...comments, comment]);
+      setState(prev => {
+        const comments = prev.get(documentId) ?? [];
+        return prev.set(documentId, [...comments, comment]);
       });
 
       const res = await fetch(
@@ -147,11 +154,12 @@ export function CommentsProvider({ children }: Props) {
           body: JSON.stringify(comment),
         }
       );
+
       if (!res.ok) {
         alert("Failed to create comment");
-        setState(state => {
-          const comments = state.get(documentId) ?? [];
-          return state.set(
+        setState(prev => {
+          const comments = prev.get(documentId) ?? [];
+          return prev.set(
             documentId,
             comments.filter(c => c.id !== comment.id)
           );
@@ -163,38 +171,35 @@ export function CommentsProvider({ children }: Props) {
 
   const deleteComment = useCallback(
     async (workspaceId: string, documentId: string, commentId: string) => {
-      const comment = state.get(documentId)?.find(c => c.id === commentId);
-      if (!comment) {
-        return;
-      }
+      const existing = state.get(documentId)?.find(c => c.id === commentId);
+      if (!existing) return;
 
-      setState(state => {
-        const comments = state.get(documentId) ?? [];
-        return state.set(
+      setState(prev => {
+        const comments = prev.get(documentId) ?? [];
+        return prev.set(
           documentId,
           comments.filter(c => c.id !== commentId)
         );
       });
+
       const res = await fetch(
         `${NEXT_PUBLIC_API_URL()}/v1/workspaces/${workspaceId}/documents/${documentId}/comments/${commentId}`,
-        {
-          credentials: "include",
-          method: "DELETE",
-        }
+        { credentials: "include", method: "DELETE" }
       );
+
       if (!res.ok) {
         alert("Failed to delete comment");
-        setState(state => {
-          const comments = state.get(documentId) ?? [];
-          return state.set(documentId, [...comments, comment]);
+        setState(prev => {
+          const comments = prev.get(documentId) ?? [];
+          return prev.set(documentId, [...comments, existing]);
         });
       }
     },
-    []
+    [state]
   );
 
-  const value: [State, API] = useMemo(
-    () => [state, { createComment, deleteComment }],
+  const value = useMemo(
+    () => [state, { createComment, deleteComment }] as [State, API],
     [state, createComment, deleteComment]
   );
 

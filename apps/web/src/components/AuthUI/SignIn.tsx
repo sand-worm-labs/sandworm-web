@@ -12,10 +12,10 @@ export const SignIn = () => {
   const params = useSearchParams();
   const error = params?.get("error");
   return (
-    <div className="w-full max-w-md rounded-lg border border-[#ffffff30] p-6 content flex flex-col justify-center items-center h-full mx-auto">
+    <div className="w-full max-w-md rounded-lg  p-6 content flex flex-col justify-center items-center h-full mx-auto">
       <SandwormDarkLogo />
 
-      <h2 className="text-3xl font-medium text-center text-black mb-6 mt-4 font-primary">
+      <h2 className="text-3xl font-medium text-center text-black mb-6 mt-4 font-primary dark:text-white">
         Welcome back to <span className="uppercase font-bold">SANDWORM</span>!
       </h2>
 
@@ -30,9 +30,9 @@ export const SignIn = () => {
       <SocialLogin variant="signin" />
 
       <div className="flex items-center gap-3 w-full my-4">
-        <div className="h-px bg-[#E9ECEF] flex-1" />
+        <div className="h-px bg-[#E9ECEF] dark:bg-[#FFFFFF30] flex-1" />
         <span className="text-xs text-muted-foreground roobert">or</span>
-        <div className="h-px bg-[#E9ECEF] flex-1" />
+        <div className="h-px bg-[#E9ECEF] dark:bg-[#FFFFFF30] flex-1" />
       </div>
 
       <div className="flex justify-between w-full text-sm roobert">
