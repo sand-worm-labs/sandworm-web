@@ -53,13 +53,16 @@ export default function AccountSettings() {
   return (
     <div className="w-full bg-white dark:bg-black h-full">
       <div className="px-4 sm:p-6 lg:p-8">
-        <div className="border-b border-gray-200 dark:border-[#262A30] pb-4 sm:flex sm:items-center sm:justify-between">
-          <h3 className="text-lg font-medium leading-6 dark:text-white">
+        <div className="  pb-4 sm:flex flex-col mb-6">
+          <h3 className="text-2xl font-medium text-gray-900 dark:text-gray-100 mb-2">
             Account settings
           </h3>
+          <p className="text-gray-600 dark:text-gray-400">
+            Manage your account settings
+          </p>
         </div>
 
-        <div>
+        <div className="bg-white dark:bg-black rounded-xl shadow-sm border border-gray-200 dark:border-[#262A30] p-8 mb-6">
           <div className="space-y-8 border-b border-gray-900/10 pb-0 sm:space-y-0 sm:divide-y sm:divide-gray-900/10 ">
             <div className="flex items-center justify-between sm:gap-4 sm:py-6">
               <div className="flex flex-col gap-y-2 justify-left">
