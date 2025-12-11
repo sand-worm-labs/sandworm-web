@@ -4,11 +4,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo } from "react";
 import { useSession } from "@/components/Visualization/hooks/useAuth";
 
-const dummyUser = {
-  id: "user_123",
-  lastVisitedWorkspaceId: "2",
-};
-
 const dummyWorkspaces = [
   {
     id: "1",
