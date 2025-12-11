@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ChevronDown, Share2 } from "lucide-react";
+import { Share2 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 import {
@@ -98,7 +98,7 @@ export const AccountDropdown = () => {
         </DropdownMenuTrigger>
 
         <DropdownMenuContent
-          className="w-64 rounded-xl shadow-lg p-3 ml-6"
+          className="w-[17rem] rounded-2xl border-[#E9ECEF]  shadow-md border p-3 py-4 ml-6"
           align="start"
         >
           <div className="flex items-center justify-between">
@@ -117,22 +117,22 @@ export const AccountDropdown = () => {
               </div>
             </div>
             <Button
-              size="icon"
-              variant="outline"
-              className="h-8 w-8 rounded-full"
+              size="sm"
+              variant="secondary"
+              className="bg-[#E2ECFF] dark:bg-[#C7665C20] dark:text-[#C7665C] text-[#8053FE] hover:bg-[#E2ECFF]/90 text-xs rounded-md font-medium h-6"
             >
-              <Share2 className="h-4 w-4" />
+              Share
             </Button>
           </div>
 
           <Link
             href="/profile"
-            className="block mt-3 text-xs underline text-[#C7665C] hover:text-[#C7665C]"
+            className="block mt-3 text-xs underline text-[#C7665C] hover:text-[#C7665C] mb-4"
           >
             Go to profile page
           </Link>
 
-          <p className="mt-2 text-xs text-muted-foreground">
+          <p className="text-[0.75rem] leading-relaxed border-t border-b border-[#E9ECEF] py-3 text-[#343A40] dark:text-white dark:border-[#262A30]">
             Deep dive into EVM chain data with a focus on trends, adoption, and
             the growth of the Base blockchain.
           </p>
@@ -141,13 +141,16 @@ export const AccountDropdown = () => {
 
           <div className="flex flex-col gap-2">
             <Link href="/settings">
-              <Button variant="outline" className="w-full text-xs">
+              <Button
+                variant="outline"
+                className="w-full bg-[#F8F9FA] dark:bg-[#0C1015] border border-[#DEE2E6] dark:border-[#262A30] text-[0.8rem] py-5 rounded-lg"
+              >
                 Settings
               </Button>
             </Link>
             <Button
               variant="destructive"
-              className="w-full text-xs"
+              className="w-full text-[0.8rem] py-5 bg-[#FF0000]"
               onClick={() => signOut()}
             >
               Sign Out

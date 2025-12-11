@@ -79,7 +79,7 @@ export default function SettingsLayout({
       )}
 
       <div className="flex min-h-screen  md:flex-row flex-col ">
-        <div className=" p-6 border-r dark:border-borderLight my-12 min-w-[30rem] border-[#E9ECEF] bg-[#F1F3F4]">
+        <div className=" p-6 border-r dark:border-borderLight my-12 min-w-[30rem] border-[#E9ECEF] bg-[#F1F3F4] dark:bg-black">
           <ul className="mt-4  flex flex-col w-full ">
             {tabs.map(tab => (
               <li key={tab.href}>
@@ -87,7 +87,7 @@ export default function SettingsLayout({
                   href={tab.href}
                   className={`border-l-4  px-6 py-1.5 text-sm font-medium mb-1 flex space-x-2  items-center rounded-lg  ${
                     pathname === tab.href
-                      ? " bg-white  border-[#E9ECEF] border "
+                      ? " bg-white dark:bg-[#181C21] dark:border-[#262A30] border-[#E9ECEF] border "
                       : "text-text-gray hover:bg-dark-translucent"
                   }`}
                 >
