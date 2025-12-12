@@ -56,15 +56,15 @@ const ThemeCard: React.FC<{
       className={`relative w-full p-6 rounded-2xl border transition-all text-left ${
         selected
           ? "border-[#C7665C]  dark:bg-black"
-          : "border-gray-200 dark:border-[#262A30] hover:border-gray-300 dark:hover:border-gray-600"
+          : "border-[#FEFEFF] dark:border-[#262A30] hover:border-gray-300 dark:hover:border-gray-600"
       }`}
     >
       <div className="flex items-start gap-4">
         <div
           className={`p-3 rounded-full ${
             selected
-              ? "bg-blue-100 dark:bg-[#121417] text-[#C7665C] dark:text-[#C7665C] border border-[#262A30]"
-              : "bg-gray-100 dark:bg-[#121417] text-gray-600 dark:text-gray-400 border border-[#262A30]"
+              ? "bg-white dark:bg-[#121417] text-[#C7665C] dark:text-[#C7665C] border dark:border-[#262A30] border-[#E9ECEF]"
+              : "bg-[#F1F3F4] dark:bg-[#121417] text-gray-600 dark:text-gray-400 border border-[#E9ECEF] dark:border-[#262A30]"
           }`}
         >
           {option.icon}
