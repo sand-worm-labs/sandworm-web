@@ -1,12 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import useSWR from "swr";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 
 import type { ApiUser, UserWorkspaceRole } from "@/types";
 
-import fetcher, { AuthenticationError } from "../utils/fetcher";
 import { NEXT_PUBLIC_API_URL, NEXT_PUBLIC_PUBLIC_URL } from "../utils/env";
 
 type UseAuthError = "unexpected" | "invalid-creds";
@@ -25,7 +23,68 @@ type SignupApi = {
     lastName: string
   ) => void;
 };
+
 type UseSignup = [AuthState, SignupApi];
+
+interface LoginResponse {
+  token: string;
+  refreshToken: string;
+  tokenExpires: number;
+  email: string;
+  user: {
+    id: string;
+    username: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    fullName: string;
+    isOnboarded: boolean;
+    avatar?: string;
+  };
+}
+
+interface SignupResponse extends LoginResponse {}
+
+const TOKEN_KEY = "auth_token";
+const REFRESH_TOKEN_KEY = "auth_refresh_token";
+const TOKEN_EXPIRES_KEY = "auth_token_expires";
+
+const tokenStorage = {
+  setTokens: (token: string, refreshToken: string, expiresIn: number) => {
+    // test: These tokens are stored in plain text in localStorage
+    localStorage.setItem(TOKEN_KEY, token);
+    localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+    localStorage.setItem(TOKEN_EXPIRES_KEY, expiresIn.toString());
+  },
+
+  getToken: (): string | null => {
+    if (typeof window === "undefined") return null;
+    return localStorage.getItem(TOKEN_KEY);
+  },
+
+  getRefreshToken: (): string | null => {
+    if (typeof window === "undefined") return null;
+    return localStorage.getItem(REFRESH_TOKEN_KEY);
+  },
+
+  getTokenExpiry: (): number | null => {
+    if (typeof window === "undefined") return null;
+    const expiry = localStorage.getItem(TOKEN_EXPIRES_KEY);
+    return expiry ? parseInt(expiry, 10) : null;
+  },
+
+  clearTokens: () => {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(REFRESH_TOKEN_KEY);
+    localStorage.removeItem(TOKEN_EXPIRES_KEY);
+  },
+
+  isTokenExpired: (): boolean => {
+    const expiry = tokenStorage.getTokenExpiry();
+    if (!expiry) return true;
+    return Date.now() >= expiry - 60000;
+  },
+};
 
 export const useSignup = (): UseSignup => {
   const [state, setState] = useState<{
@@ -55,6 +114,14 @@ export const useSignup = (): UseSignup => {
       })
         .then(async res => {
           if (res.ok) {
+            const data: SignupResponse = await res.json();
+
+            tokenStorage.setTokens(
+              data.token,
+              data.refreshToken,
+              data.tokenExpires
+            );
+
             setState({
               loading: false,
               data: await res.json(),
@@ -94,8 +161,9 @@ export const useLogin = (): UseLogin => {
 
   const loginWithPassword = useCallback(
     (email: string, password: string, callback?: string) => {
+      console.log(" Login initiated for:", email);
       setState(s => ({ ...s, loading: true }));
-      fetch(`${NEXT_PUBLIC_API_URL()}/auth/sign-in/password`, {
+      fetch(`${NEXT_PUBLIC_API_URL()}/auth/email/login`, {
         credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -103,15 +171,23 @@ export const useLogin = (): UseLogin => {
       })
         .then(async res => {
           if (res.ok) {
+            const data: LoginResponse = await res.json();
+
+            tokenStorage.setTokens(
+              data.token,
+              data.refreshToken,
+              data.tokenExpires
+            );
+
             setState({
               loading: false,
-              data: await res.json(),
+              data,
               error: undefined,
             });
             return;
           }
 
-          if (res.status === 400) {
+          if (res.status === 400 || res.status === 401) {
             setState({
               loading: false,
               error: "invalid-creds",
@@ -121,7 +197,8 @@ export const useLogin = (): UseLogin => {
 
           throw new Error(`Unexpected status ${res.status}`);
         })
-        .catch(() => {
+        .catch(error => {
+          console.error("Login error:", error);
           setState(s => ({ ...s, loading: false, error: "unexpected" }));
         });
     },
@@ -138,45 +215,148 @@ export type SessionUser = ApiUser & {
   userHash: string;
   roles: Record<string, UserWorkspaceRole>;
   picture?: string | null;
+  lastVisitedWorkspaceId?: string | null;
+};
+
+type UseSessionReturn = {
+  user: SessionUser | null;
+  loading: boolean;
+  error: string | null;
+  isAuthenticated: boolean;
 };
 
 export const useSession = ({
-  redirectToLogin,
+  redirectToLogin = false,
 }: {
-  redirectToLogin: boolean;
-}) => {
+  redirectToLogin?: boolean;
+}): UseSessionReturn => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const session = useSWR<SessionUser>(`${NEXT_PUBLIC_API_URL()}/auth/session`, {
-    fetcher,
-    refreshInterval: redirectToLogin ? 1000 * 30 : undefined,
-    dedupingInterval: redirectToLogin ? 1000 * 2 : undefined,
+  const [state, setState] = useState<UseSessionReturn>({
+    user: null,
+    loading: true,
+    error: null,
+    isAuthenticated: false,
   });
 
+  const fetchUserProfile = useCallback(async () => {
+    const token = tokenStorage.getToken();
+
+    if (!token) {
+      setState({
+        user: null,
+        loading: false,
+        error: "No authentication token found",
+        isAuthenticated: false,
+      });
+      return;
+    }
+
+    if (tokenStorage.isTokenExpired()) {
+      console.warn(" Token expired, attempting refresh...");
+
+      // TODO: Implement token refresh logic
+      tokenStorage.clearTokens();
+      setState({
+        user: null,
+        loading: false,
+        error: "Token expired",
+        isAuthenticated: false,
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch(`${NEXT_PUBLIC_API_URL()}/auth/me`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const userData: SessionUser = await response.json();
+        setState({
+          user: userData,
+          loading: false,
+          error: null,
+          isAuthenticated: true,
+        });
+        return;
+      }
+
+      if (response.status === 401) {
+        tokenStorage.clearTokens();
+        setState({
+          user: null,
+          loading: false,
+          error: "Unauthorized",
+          isAuthenticated: false,
+        });
+        return;
+      }
+
+      throw new Error(`Unexpected status ${response.status}`);
+    } catch (error) {
+      console.error("Session fetch error:", error);
+      setState({
+        user: null,
+        loading: false,
+        error: "Failed to fetch user session",
+        isAuthenticated: false,
+      });
+    }
+  }, []);
+
   useEffect(() => {
-    if (
-      session.error &&
-      session.error instanceof AuthenticationError &&
-      redirectToLogin
-    ) {
+    fetchUserProfile();
+  }, [fetchUserProfile]);
+
+  useEffect(() => {
+    if (!state.loading && !state.isAuthenticated && redirectToLogin) {
       const search = searchParams.toString();
       const callback = encodeURIComponent(
         `${pathname}${search ? `?${search}` : ""}`
       );
-      router.replace(`/auth/signin?callback=${callback}`);
-      router.replace(`/auth/signin?callback=${callback}`);
+      router.replace(`/signin?callback=${callback}`);
     }
-  }, [session.error, redirectToLogin, router]);
+  }, [
+    state.loading,
+    state.isAuthenticated,
+    redirectToLogin,
+    router,
+    pathname,
+    searchParams,
+  ]);
 
-  return session;
+  return state;
 };
-
 export const useSignout = () => {
   const router = useRouter();
-  return useCallback(() => {
-    const url = `${NEXT_PUBLIC_API_URL()}/auth/logout`;
-    router.push(url);
+
+  return useCallback(async () => {
+    const token = tokenStorage.getToken();
+    tokenStorage.clearTokens();
+
+    if (token) {
+      try {
+        await fetch(`${NEXT_PUBLIC_API_URL()}/auth/logout`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      } catch (error) {
+        console.error("Logout API call failed:", error);
+      }
+    }
+
+    router.push("/signin");
   }, [router]);
 };
+
+export { tokenStorage };
