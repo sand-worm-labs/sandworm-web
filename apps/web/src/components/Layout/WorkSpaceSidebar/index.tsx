@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { LuLayoutGrid } from "react-icons/lu";
 import { useCallback, useState } from "react";
 import { PlusSmallIcon } from "@heroicons/react/24/outline";
+import type { MouseEventHandler } from "react";
 
 import { AccountDropdown } from "@/components/AccountDropdown";
 import DocumentTree from "@/components/Visualization/blocks/DocumentsTree";
@@ -14,7 +15,6 @@ import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
 import { useDocumentsLocal as useDocuments } from "@/components/Visualization/hooks/useDocumentsLocal";
 import { SandwormLogo } from "@/components/Assets";
 import { SidebarIcon } from "@/components/Assets/SidebarIcon";
-import type { MouseEventHandler } from "react";
 
 interface NavItem {
   name: string;
