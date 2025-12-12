@@ -1,32 +1,49 @@
-import { Field, ObjectType, ID, registerEnumType } from '@nestjs/graphql';
-import { Plan } from '@sandworm/postgresql-typeorm';
-
+import { ObjectType, registerEnumType } from '@nestjs/graphql';
+import { StringField, StringFieldOptional, UUIDField } from '@sandworm/graphql';
+import { Field } from '@nestjs/graphql';
+import { Plan, WorkspaceEntity } from '@sandworm/postgresql-typeorm';
 
 registerEnumType(Plan, {
-    name: 'WorkspacePlan',
-    description: 'Price plan of the workspace',
+  name: 'WorkspacePlan',
+  description: 'Price plan of the workspace',
 });
 
 @ObjectType()
 export class Workspace {
-  @Field(() => ID)
+  @UUIDField()
   id!: string;
 
-  @Field(() => String)
+  @StringField()
   name!: string;
 
-  @Field(() => String, { nullable: true })
+  @StringFieldOptional()
   source?: string;
 
   @Field(() => [String])
   useCases!: string[];
 
-  @Field(() => String, { nullable: true })
+  @StringFieldOptional()
   useContext?: string;
 
-  @Field(() => Plan , { defaultValue: Plan.FREE })
+  @Field(() => Plan)
   plan!: Plan;
 
-  @Field(() => ID)
+  @UUIDField()
   ownerId!: string;
+
+  static fromEntity(entity: WorkspaceEntity): Workspace {
+    const workspace = new Workspace();
+    workspace.id = entity.id;
+    workspace.name = entity.name;
+    workspace.source = entity.source;
+    workspace.useCases = entity.useCases;
+    workspace.useContext = entity.useContext;
+    workspace.plan = entity.plan;
+    workspace.ownerId = entity.ownerId;
+    return workspace;
+  }
+
+  static fromEntities(entities: WorkspaceEntity[]): Workspace[] {
+    return entities.map((entity) => Workspace.fromEntity(entity));
+  }
 }

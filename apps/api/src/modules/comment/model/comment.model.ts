@@ -1,22 +1,39 @@
-import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { ObjectType } from '@nestjs/graphql';
+import { DateField, StringField, UUIDField } from '@sandworm/graphql';
+import { CommentEntity } from '@sandworm/postgresql-typeorm';
 
 @ObjectType()
 export class Comment {
-  @Field(() => ID)
-  id: string;
+  @UUIDField()
+  id!: string;
 
-  @Field()
-  body: string;
+  @StringField()
+  body!: string;
 
-  @Field(() => ID)
-  documentId: string;
+  @UUIDField()
+  documentId!: string;
 
-  @Field(() => ID)
-  authorId: string;
+  @UUIDField()
+  authorId!: string;
 
-  @Field()
-  createdAt: Date;
+  @DateField()
+  createdAt!: Date;
 
-  @Field()
-  updatedAt: Date;
+  @DateField()
+  updatedAt!: Date;
+
+  static fromEntity(entity: CommentEntity): Comment {
+    const comment = new Comment();
+    comment.id = entity.id;
+    comment.body = entity.body;
+    comment.documentId = entity.documentId;
+    comment.authorId = entity.authorId;
+    comment.createdAt = entity.createdAt;
+    comment.updatedAt = entity.updatedAt;
+    return comment;
+  }
+
+  static fromEntities(entities: CommentEntity[]): Comment[] {
+    return entities.map((entity) => Comment.fromEntity(entity));
+  }
 }

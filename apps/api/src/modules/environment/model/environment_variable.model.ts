@@ -1,20 +1,35 @@
-import { Field, ID, ObjectType } from '@nestjs/graphql';
-
+import { ObjectType } from '@nestjs/graphql';
+import { DateField, StringField, UUIDField } from '@sandworm/graphql';
+import { EnvironmentVariableEntity } from '@sandworm/postgresql-typeorm';
 
 @ObjectType()
 export class EnvironmentVariable {
-  @Field(() => ID)
-  id: string;
+  @UUIDField()
+  id!: string;
 
-  @Field()
-  name: string;
+  @StringField()
+  name!: string;
 
-  @Field()
-  value: string; 
+  @StringField()
+  value!: string;
 
-  @Field(() => ID)
-  workspaceId: string;
+  @UUIDField()
+  workspaceId!: string;
 
-  @Field()
-  updatedAt: Date;
+  @DateField()
+  updatedAt!: Date;
+
+  static fromEntity(entity: EnvironmentVariableEntity): EnvironmentVariable {
+    const envVar = new EnvironmentVariable();
+    envVar.id = entity.id;
+    envVar.name = entity.name;
+    envVar.value = entity.value;
+    envVar.workspaceId = entity.workspaceId;
+    envVar.updatedAt = entity.updatedAt;
+    return envVar;
+  }
+
+  static fromEntities(entities: EnvironmentVariableEntity[]): EnvironmentVariable[] {
+    return entities.map((entity) => EnvironmentVariable.fromEntity(entity));
+  }
 }
