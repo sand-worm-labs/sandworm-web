@@ -20,6 +20,7 @@ import { Transition } from "@headlessui/react";
 import { createPortal } from "react-dom";
 import clsx from "clsx";
 import { useHotkeys } from "react-hotkeys-hook";
+import type { DataFrame, UserWorkspaceRole } from "@sandworm/types";
 
 import { DataExplorer } from "@/components/ExplorerPanels/DataExplorer";
 import type { ApiDocument, SessionUser } from "@/types";
@@ -52,7 +53,6 @@ import DropdownInputBlock from "../customBlocks/dropdownInput";
 import DashboardSkeleton from "./DashboardSkeleton";
 import DashboardControls from "./DashboardControls";
 import DashboardView from "./DashboardView";
-import type { DataFrame, UserWorkspaceRole } from "@sandworm/types";
 
 export type DashboardMode =
   | {

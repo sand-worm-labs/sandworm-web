@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Share2 } from "lucide-react";
+import { Share2, MoreVertical } from "lucide-react";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 import {
@@ -16,9 +16,9 @@ import {
   DropdownMenuSeparator,
 } from "@sandworm/ui/components/dropdown-menu";
 import { Button } from "@sandworm/ui/components/button";
-import { MoreVertical } from "lucide-react";
 
 import { useModalStore } from "@/store/auth";
+
 import { useSession } from "../Visualization/hooks/useAuth";
 
 export const AccountDropdown = () => {

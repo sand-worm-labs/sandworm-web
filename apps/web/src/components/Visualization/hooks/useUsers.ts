@@ -1,8 +1,10 @@
-import fetcher from "../utils/fetcher";
-import type { ApiUser, UserWorkspaceRole, WorkspaceUser } from "@/types";
 import { useCallback, useMemo } from "react";
 import useSWR from "swr";
+
+import type { ApiUser, UserWorkspaceRole, WorkspaceUser } from "@/types";
 import type { UserFormValues } from "@/components/forms/user";
+
+import fetcher from "../utils/fetcher";
 import { NEXT_PUBLIC_API_URL } from "../utils/env";
 
 type UpdateUserPayload = {
