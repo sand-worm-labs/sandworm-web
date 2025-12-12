@@ -5,8 +5,9 @@
  */
 
 import React, { useMemo } from "react";
-import { createApolloClient } from "./client";
 import { ApolloProvider } from "@apollo/client/react";
+
+import { createApolloClient } from "./client";
 
 type Props = {
   children: React.ReactNode;
@@ -15,10 +16,16 @@ type Props = {
   refreshAccessToken: () => Promise<string | null>;
 };
 
-export const GraphQLProvider: React.FC<Props> = ({ children, graphqlUrl, getAccessToken, refreshAccessToken }) => {
+export const GraphQLProvider: React.FC<Props> = ({
+  children,
+  graphqlUrl,
+  getAccessToken,
+  refreshAccessToken,
+}) => {
   // memoize client to avoid re-creation on rerenders
   const client = useMemo(
-    () => createApolloClient({ graphqlUrl, getAccessToken, refreshAccessToken }),
+    () =>
+      createApolloClient({ graphqlUrl, getAccessToken, refreshAccessToken }),
     [graphqlUrl]
   );
 

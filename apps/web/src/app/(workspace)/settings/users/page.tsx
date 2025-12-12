@@ -2,11 +2,11 @@
 
 import { UserPlusIcon } from "@heroicons/react/20/solid";
 import React, { useCallback, useState } from "react";
-
-import type { UserWorkspaceRole } from "@/types";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import { ScrollBar } from "@sandworm/ui/components/scroll-area";
+
+import type { UserWorkspaceRole } from "@/types";
 import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
 import { useSession } from "@/components/Visualization/hooks/useAuth";
 import { Tooltip } from "@/components/Visualization/blocks/ToolTips";

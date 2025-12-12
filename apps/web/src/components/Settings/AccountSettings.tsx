@@ -1,15 +1,14 @@
 import { PencilIcon } from "@heroicons/react/24/outline";
 import React, { useMemo, useState } from "react";
-
-import type { ApiWorkspace } from "@/types";
 import clsx from "clsx";
 import { Switch } from "@headlessui/react";
-
 import {
   CheckCircleIcon,
   XMarkIcon,
   XCircleIcon,
 } from "@heroicons/react/24/solid";
+
+import type { ApiWorkspace } from "@/types";
 
 import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
 import { Tooltip } from "../Visualization/blocks/ToolTips";
