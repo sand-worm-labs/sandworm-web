@@ -19,6 +19,7 @@ import { FavoriteEntity } from './favorite.entity';
 import { TutorialEntity } from './tutorial.entity';
 import { UserFollowsEntity } from './user-follows.entity';
 import { UserSettingEntity } from './user-setting.entity';
+import { UserWorkspaceEntity } from './user-workspace.entity';
 import { VoteEntity } from './vote.entity';
 import { WorkspaceEntity } from './workspace.entity';
 import { YjsAppDocumentEntity } from './yjs-app-document.entity';
@@ -85,7 +86,9 @@ export class UserEntity extends AbstractEntity {
       this.password = await hashPass(this.password);
     }
   }
-  @OneToOne(() => UserSettingEntity, (userSetting) => userSetting)
+
+  // Relations
+  @OneToOne(() => UserSettingEntity, (userSetting) => userSetting.user)
   @JoinColumn()
   settings?: Relation<UserSettingEntity>;
 
@@ -111,11 +114,11 @@ export class UserEntity extends AbstractEntity {
   votes!: Relation<VoteEntity[]>;
 
   @OneToMany(() => WorkspaceEntity, (workspace) => workspace.owner)
-  workspaces!: Relation<WorkspaceEntity[]>;
+  ownedWorkspaces!: Relation<WorkspaceEntity[]>;
 
   @OneToMany(
     () => TutorialEntity,
-    (onboarding_tutorial) => onboarding_tutorial.user,
+    (onboardingTutorial) => onboardingTutorial.user,
   )
   onboardingTutorials!: Relation<TutorialEntity[]>;
 
@@ -125,6 +128,12 @@ export class UserEntity extends AbstractEntity {
   @OneToMany(() => YjsAppDocumentEntity, (yjsAppDoc) => yjsAppDoc.document)
   yjsAppDocuments!: Relation<YjsAppDocumentEntity[]>;
 
+  @OneToMany(() => UserWorkspaceEntity, (uw) => uw.user)
+  userWorkspaces!: Relation<UserWorkspaceEntity[]>;
+
+  @OneToMany(() => UserWorkspaceEntity, (uw) => uw.inviter)
+  workspacesInvitees!: Relation<UserWorkspaceEntity[]>;
+  
   getDisplayName(): string {
     return this.fullName || this.username || this.email || 'Anonymous';
   }
