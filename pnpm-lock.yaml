@@ -399,7 +399,11 @@ importers:
       "@bprogress/next":
         specifier: ^3.2.12
         version: 3.2.12(next@15.4.10(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.93.3))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+<<<<<<< HEAD
       "@cocalc/ansi-to-react":
+=======
+      '@cocalc/ansi-to-react':
+>>>>>>> b472b82 (chore(deps): bump next from 15.4.8 to 15.4.10)
         specifier: ^7.0.0
         version: 7.0.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       "@codemirror/autocomplete":
@@ -6068,11 +6072,19 @@ packages:
         integrity: sha512-X9tOAWrgF6rPuI++vs2xfjYPd/+XdsdJzu0rQtjFmOV5qa02uzqGutAAr+qCd0vsB5J3VmnMFfzn2/9xxmM23w==,
       }
 
+<<<<<<< HEAD
   "@next/env@15.4.10":
     resolution:
       {
         integrity: sha512-knhmoJ0Vv7VRf6pZEPSnciUG1S4bIhWx+qTYBW/AjxEtlzsiNORPk8sFDCEvqLfmKuey56UB9FL1UdHEV3uBrg==,
       }
+=======
+  '@next/env@15.4.10':
+    resolution: {integrity: sha512-knhmoJ0Vv7VRf6pZEPSnciUG1S4bIhWx+qTYBW/AjxEtlzsiNORPk8sFDCEvqLfmKuey56UB9FL1UdHEV3uBrg==}
+
+  '@next/env@15.4.8':
+    resolution: {integrity: sha512-LydLa2MDI1NMrOFSkO54mTc8iIHSttj6R6dthITky9ylXV2gCGi0bHQjVCtLGRshdRPjyh2kXbxJukDtBWQZtQ==}
+>>>>>>> b472b82 (chore(deps): bump next from 15.4.8 to 15.4.10)
 
   "@next/env@15.4.8":
     resolution:
@@ -18422,11 +18434,38 @@ packages:
       }
 
   next@15.4.10:
+<<<<<<< HEAD
     resolution:
       {
         integrity: sha512-itVlc79QjpKMFMRhP+kbGKaSG/gZM6RCvwhEbwmCNF06CdDiNaoHcbeg0PqkEa2GOcn8KJ0nnc7+yL7EjoYLHQ==,
       }
     engines: { node: ^18.18.0 || ^19.8.0 || >= 20.0.0 }
+=======
+    resolution: {integrity: sha512-itVlc79QjpKMFMRhP+kbGKaSG/gZM6RCvwhEbwmCNF06CdDiNaoHcbeg0PqkEa2GOcn8KJ0nnc7+yL7EjoYLHQ==}
+    engines: {node: ^18.18.0 || ^19.8.0 || >= 20.0.0}
+    hasBin: true
+    peerDependencies:
+      '@opentelemetry/api': ^1.1.0
+      '@playwright/test': ^1.51.1
+      babel-plugin-react-compiler: '*'
+      react: ^18.2.0 || 19.0.0-rc-de68d2f4-20241204 || ^19.0.0
+      react-dom: ^18.2.0 || 19.0.0-rc-de68d2f4-20241204 || ^19.0.0
+      sass: ^1.3.0
+    peerDependenciesMeta:
+      '@opentelemetry/api':
+        optional: true
+      '@playwright/test':
+        optional: true
+      babel-plugin-react-compiler:
+        optional: true
+      sass:
+        optional: true
+
+  next@15.4.8:
+    resolution: {integrity: sha512-jwOXTz/bo0Pvlf20FSb6VXVeWRssA2vbvq9SdrOPEg9x8E1B27C2rQtvriAn600o9hH61kjrVRexEffv3JybuA==}
+    engines: {node: ^18.18.0 || ^19.8.0 || >= 20.0.0}
+    deprecated: This version has a security vulnerability. Please upgrade to a patched version. See https://nextjs.org/blog/security-update-2025-12-11 for more details.
+>>>>>>> b472b82 (chore(deps): bump next from 15.4.8 to 15.4.10)
     hasBin: true
     peerDependencies:
       "@opentelemetry/api": ^1.1.0
@@ -25088,10 +25127,17 @@ snapshots:
 
   "@bprogress/core@1.3.4": {}
 
+<<<<<<< HEAD
   "@bprogress/next@3.2.12(next@15.4.10(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.93.3))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)":
     dependencies:
       "@bprogress/core": 1.3.4
       "@bprogress/react": 1.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+=======
+  '@bprogress/next@3.2.12(next@15.4.10(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.93.3))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@bprogress/core': 1.3.4
+      '@bprogress/react': 1.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+>>>>>>> b472b82 (chore(deps): bump next from 15.4.8 to 15.4.10)
       next: 15.4.10(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.93.3)
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
@@ -27757,7 +27803,13 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
+<<<<<<< HEAD
   "@next/env@15.4.10": {}
+=======
+  '@next/env@15.4.10': {}
+
+  '@next/env@15.4.8': {}
+>>>>>>> b472b82 (chore(deps): bump next from 15.4.8 to 15.4.10)
 
   "@next/env@15.4.8": {}
 
@@ -36909,7 +36961,11 @@ snapshots:
 
   next-auth@5.0.0-beta.30(next@15.4.10(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.93.3))(react@18.3.1):
     dependencies:
+<<<<<<< HEAD
       "@auth/core": 0.41.0
+=======
+      '@auth/core': 0.41.0
+>>>>>>> b472b82 (chore(deps): bump next from 15.4.8 to 15.4.10)
       next: 15.4.10(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.93.3)
       react: 18.3.1
 
@@ -36926,8 +36982,13 @@ snapshots:
 
   next@15.4.10(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.93.3):
     dependencies:
+<<<<<<< HEAD
       "@next/env": 15.4.10
       "@swc/helpers": 0.5.15
+=======
+      '@next/env': 15.4.10
+      '@swc/helpers': 0.5.15
+>>>>>>> b472b82 (chore(deps): bump next from 15.4.8 to 15.4.10)
       caniuse-lite: 1.0.30001759
       postcss: 8.4.31
       react: 18.3.1
