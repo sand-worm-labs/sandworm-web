@@ -102,7 +102,7 @@ export class AuthController {
     summary: 'Refresh access token',
     type: RefreshResponseDto,
   })
-  public refresh(@CurrentUser() user): Promise<RefreshResponseDto> {
+  public refresh(@CurrentUser() user: { sessionId: string; hash: string }): Promise<RefreshResponseDto> {
     return this.service.refreshToken({
       sessionId: user.sessionId,
       hash: user.hash,
