@@ -4,12 +4,24 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { UserRound, Settings } from "lucide-react";
+import {
+  UserRound,
+  Settings,
+  SlidersHorizontal,
+  Users,
+  ChevronLeft,
+} from "lucide-react";
 import { Avatar, AvatarFallback } from "@sandworm/ui/components/avatar";
 
 const tabs = [
   { name: "Profile", href: "/settings/profile", icon: <UserRound size={16} /> },
   { name: "Account", href: "/settings/account", icon: <Settings size={16} /> },
+  {
+    name: "Preferences",
+    href: "/settings/preferences",
+    icon: <SlidersHorizontal size={16} />,
+  },
+  { name: "Users", href: "/settings/users", icon: <Users size={16} /> },
 ];
 
 export default function SettingsLayout({
@@ -24,6 +36,16 @@ export default function SettingsLayout({
 
   return (
     <div className=" w-full border-t">
+      <div className="flex items-center gap-2 py-3 border-b border-[#E9ECEF] dark:border-[#262A30] px-10 text-[1.1rem]">
+        <Link
+          href="/workspace"
+          className="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition "
+        >
+          <ChevronLeft size={16} />
+        </Link>
+
+        <span>Settings</span>
+      </div>
       {session && (
         <div className="container mx-auto py-6 flex justify-between md:items-center px-6 flex-col md:flex-row  space-y-4 items-start">
           <div className="flex space-x-3 items-center">
@@ -56,16 +78,16 @@ export default function SettingsLayout({
         </div>
       )}
 
-      <div className="flex min-h-screen container mx-auto md:flex-row flex-col ">
-        <div className=" p-6 border-r border-borderLight my-12 w-[35rem]">
+      <div className="flex min-h-screen  md:flex-row flex-col ">
+        <div className=" p-6 border-r dark:border-borderLight my-12 min-w-[30rem] border-[#E9ECEF] bg-[#F1F3F4] dark:bg-black">
           <ul className="mt-4  flex flex-col w-full ">
             {tabs.map(tab => (
               <li key={tab.href}>
                 <Link
                   href={tab.href}
-                  className={`border-l-4  px-12 py-2 rounded-none text-xs font-semibold mb-2 flex space-x-2  items-center  ${
+                  className={`border-l-4  px-6 py-1.5 text-sm font-medium mb-1 flex space-x-2  items-center rounded-lg  ${
                     pathname === tab.href
-                      ? " bg-dark-translucent border-orange-600  "
+                      ? " bg-white dark:bg-[#181C21] dark:border-[#262A30] border-[#E9ECEF] border "
                       : "text-text-gray hover:bg-dark-translucent"
                   }`}
                 >

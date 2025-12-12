@@ -11,10 +11,10 @@ import { PlusSmallIcon } from "@heroicons/react/24/outline";
 import { AccountDropdown } from "@/components/AccountDropdown";
 import DocumentTree from "@/components/Visualization/blocks/DocumentsTree";
 import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
-import { useFavorites } from "@/components/Visualization/hooks/useFavorites";
 import { useDocumentsLocal as useDocuments } from "@/components/Visualization/hooks/useDocumentsLocal";
 import { SandwormLogo } from "@/components/Assets";
 import { SidebarIcon } from "@/components/Assets/SidebarIcon";
+import type { MouseEventHandler } from "react";
 
 interface NavItem {
   name: string;
@@ -28,6 +28,8 @@ export const WorkspaceSidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const router = useRouter();
   const documentId = useStringQuery("document");
+  const favoriteDocument: any = [];
+  const unfavoriteDocument: any = [];
 
   const mockUser = {
     id: "4a6e71c4-2c06-460b-bb29-f337bf64e0bc",

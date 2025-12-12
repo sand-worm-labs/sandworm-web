@@ -12,6 +12,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@sandworm/ui/components/hover-card";
+import Link from "next/link";
 
 // 🎨 Interfaces and Constants
 // =====================================
@@ -61,13 +62,12 @@ export function UserProfileHover({ children }: UserProfileHoverProps) {
             </Button>
           </div>
 
-          <a
-            href="#"
+          <Link
+            href="/"
             className="text-sm text-[#C7665C] hover:text-red-600 underline font-medium inline-block"
-            onClick={e => e.preventDefault()}
           >
             Go to Profile Page
-          </a>
+          </Link>
 
           <div className="flex gap-6 text-sm">
             <div>
