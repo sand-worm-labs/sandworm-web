@@ -23,3 +23,4 @@ export * from './yjs-app-document.entity';
 export * from './yjs-update.entity';
 export * from './pub-sub-payload.entity';
 export * from './socket-io-attachments.entity';
+export * from "./user-workspace.entity"
