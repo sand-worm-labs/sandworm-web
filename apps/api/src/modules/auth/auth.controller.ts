@@ -96,17 +96,6 @@ export class AuthController {
     );
   }
 
-  @Get('me')
-  @SerializeOptions({ groups: ['me'] })
-  @ApiAuth({
-    summary: 'Get current authenticated user',
-    type: UserResponse,
-  })
-  public me(@CurrentUser() user): Promise<NullableType<UserResponse>> {
-    console.log(user);
-    return this.service.me(user);
-  }
-
   @Post('refresh')
   @SerializeOptions({ groups: ['me'] })
   @ApiAuth({
@@ -125,31 +114,9 @@ export class AuthController {
     summary: 'Logout current user',
     statusCode: 204,
   })
-  public async logout(@CurrentUser() user): Promise<void> {
+  public async logout(@CurrentUser("sessionId") sessionId:string): Promise<void> {
     await this.service.logout({
-      sessionId: user.sessionId,
+      sessionId: sessionId,
     });
-  }
-
-  @Patch('me')
-  @SerializeOptions({ groups: ['me'] })
-  @ApiAuth({
-    summary: 'Update current user profile',
-    type: UserResponse,
-  })
-  public update(
-    @Request() request,
-    @Body() userDto: AuthUpdateDto,
-  ): Promise<NullableType<UserResponse>> {
-    return this.service.update(request.user, userDto);
-  }
-
-  @Delete('me')
-  @ApiAuth({
-    summary: 'Delete current user account',
-    statusCode: 204,
-  })
-  public async delete(@Request() request): Promise<void> {
-    return this.service.softDelete(request.user);
   }
 }
