@@ -27,6 +27,7 @@ import { LoadStateResult,ReplaceStateResult } from '../interfaces/load-state-res
 import { TransactionOrigin } from '../interfaces/transaction-origin.interface';
 import { WSSharedDoc} from "../interfaces"
 import { ILockService } from '@sandworm/redis';
+import { readUpdate } from 'y-protocols/sync'; 
 
 const logger = new Logger('Persistors');
 
@@ -37,7 +38,7 @@ export class AppPersistor implements Persistor {
     private readonly userId: string | null,
     private readonly yjsAppDocumentRepository: Repository<YjsAppDocumentEntity>,
     private readonly userYjsAppDocumentRepository: Repository<UserYjsAppDocumentEntity>,
-    private readonly yjsUpdateRepository: Repository<YjsUpdateEntity>,
+    // private readonly yjsUpdateRepository: Repository<YjsUpdateEntity>,b
     private readonly lockService: ILockService
   ) {}
 
@@ -99,7 +100,6 @@ export class AppPersistor implements Persistor {
         clock = userYjsAppDoc.clock;
         clockUpdatedAt = userYjsAppDoc.clockUpdatedAt ?? new Date();
       } else {
-        // User has their own state
         applyUpdateLatency = this.applyUpdate(ydoc, userYjsAppDoc.state);
         byteLength = userYjsAppDoc.state.length;
         clock = userYjsAppDoc.clock;
@@ -173,7 +173,7 @@ export class AppPersistor implements Persistor {
     const nextDoc = new Y.Doc();
 
     this.applyUpdate(nextDoc, prevState);
-    syncProtocol.readUpdate(decoding.clone(decoder), nextDoc, transactionOrigin);
+    readUpdate(decoding.clone(decoder), nextDoc, transactionOrigin);
 
     const layout = doc.layout;
     const nextLayout = getLayout(nextDoc);
