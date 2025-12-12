@@ -35,7 +35,7 @@ export default function AccountSettings() {
     newOpenAIKey: "",
   });
 
-  const isAdmin = session.data?.roles[workspaceId] === "admin";
+  const isAdmin = session.user?.roles[workspaceId] === "admin";
   const [workspaces, { updateSettings }] = useWorkspaces();
   const currentWorkspace: ApiWorkspace | undefined = useMemo(
     () => workspaces.data.find(w => w.id === workspaceId),
