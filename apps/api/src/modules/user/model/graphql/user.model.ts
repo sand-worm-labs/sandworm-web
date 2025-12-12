@@ -1,31 +1,35 @@
 import { Field, ObjectType } from '@nestjs/graphql';
+import { BooleanField, StringField, StringFieldOptional } from '@sandworm/graphql';
 import { UserEntity } from '@sandworm/postgresql-typeorm';
+
 
 @ObjectType()
 export class User {
-  @Field(() => String )
+ @StringField()
   id!: string;
 
-  @Field(() => String, { nullable: true })
+  @StringFieldOptional()
   username?: string;
 
-  @Field(() => String, { nullable: true })
+  @StringFieldOptional()
   email?: string;
 
-  @Field(() => String, { nullable: true })
+  @StringFieldOptional()
   firstName?: string;
 
-  @Field(() => String, { nullable: true })
+  @StringFieldOptional()
   lastName?: string;
 
-  @Field(() => String, { nullable: true })
+  @StringFieldOptional()
   fullName?: string;
 
-  @Field(() => Boolean)
+  @BooleanField()
   isOnboarded!: boolean;
 
-  @Field(() => String, { nullable: true })
+  @StringFieldOptional()
   avater?: string;
+
+
 
   static fromEntity(entity: UserEntity): User {
     const user = new User();

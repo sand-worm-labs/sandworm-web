@@ -1,19 +1,20 @@
-import { Field, HideField, ObjectType } from '@nestjs/graphql';
+import { HideField, ObjectType } from '@nestjs/graphql';
+import { BooleanField, StringField } from '@sandworm/graphql';
 
 @ObjectType()
 export class Profile {
   @HideField()
-  id?: number;
+  id?: string;
 
-  @Field(() => String)
-  username: string;
+  @StringField()
+  username!: string;
 
-  @Field(() => String)
-  bio: string;
+  @StringField()
+  bio!: string;
 
-  @Field(() => String)
-  image: string;
+  @StringField()
+  image!: string;
 
-  @Field(() => Boolean)
-  following: boolean;
+  @BooleanField()
+  following!: boolean;
 }
