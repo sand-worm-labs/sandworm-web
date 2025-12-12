@@ -71,8 +71,13 @@ export function handleError(error: Error): ErrorDto {
  * @returns ErrorDetailDto[]
  */
 export function extractValidationErrorDetails(
-  errors: ValidationError[],
+  errors: ValidationError[] | undefined | null,
 ): ErrorDetailDto[] {
+
+  if (!errors || !Array.isArray(errors)) {
+    return [];
+  }
+  
   const extractErrors = (
     error: ValidationError,
     parentProperty: string = '',
