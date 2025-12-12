@@ -6,6 +6,7 @@ import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import type { ApiUser, UserWorkspaceRole } from "@/types";
 
 import { NEXT_PUBLIC_API_URL, NEXT_PUBLIC_PUBLIC_URL } from "../utils/env";
+import { useCurrentUserQuery } from "@/generated/graphql";
 
 type UseAuthError = "unexpected" | "invalid-creds";
 
@@ -233,106 +234,29 @@ export const useSession = ({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const token = tokenStorage.getToken();
 
-  const [state, setState] = useState<UseSessionReturn>({
-    user: null,
-    loading: true,
-    error: null,
-    isAuthenticated: false,
+  const { data, loading, error, refetch } = useCurrentUserQuery({
+    skip: !token,
+    fetchPolicy: "network-only",
   });
 
-  const fetchUserProfile = useCallback(async () => {
-    const token = tokenStorage.getToken();
-
-    if (!token) {
-      setState({
-        user: null,
-        loading: false,
-        error: "No authentication token found",
-        isAuthenticated: false,
-      });
-      return;
-    }
-
-    if (tokenStorage.isTokenExpired()) {
-      console.warn(" Token expired, attempting refresh...");
-
-      // TODO: Implement token refresh logic
-      tokenStorage.clearTokens();
-      setState({
-        user: null,
-        loading: false,
-        error: "Token expired",
-        isAuthenticated: false,
-      });
-      return;
-    }
-
-    try {
-      const response = await fetch(`${NEXT_PUBLIC_API_URL()}/auth/me`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const userData: SessionUser = await response.json();
-        setState({
-          user: userData,
-          loading: false,
-          error: null,
-          isAuthenticated: true,
-        });
-        return;
-      }
-
-      if (response.status === 401) {
-        tokenStorage.clearTokens();
-        setState({
-          user: null,
-          loading: false,
-          error: "Unauthorized",
-          isAuthenticated: false,
-        });
-        return;
-      }
-
-      throw new Error(`Unexpected status ${response.status}`);
-    } catch (error) {
-      console.error("Session fetch error:", error);
-      setState({
-        user: null,
-        loading: false,
-        error: "Failed to fetch user session",
-        isAuthenticated: false,
-      });
-    }
-  }, []);
-
   useEffect(() => {
-    fetchUserProfile();
-  }, [fetchUserProfile]);
-
-  useEffect(() => {
-    if (!state.loading && !state.isAuthenticated && redirectToLogin) {
-      const search = searchParams.toString();
-      const callback = encodeURIComponent(
-        `${pathname}${search ? `?${search}` : ""}`
-      );
-      router.replace(`/signin?callback=${callback}`);
+    if (!loading && !token && redirectToLogin) {
+      const back = `${pathname}${searchParams.toString() ? `?${searchParams}` : ""}`;
+      router.replace(`/signin?callback=${encodeURIComponent(back)}`);
     }
-  }, [
-    state.loading,
-    state.isAuthenticated,
-    redirectToLogin,
-    router,
-    pathname,
-    searchParams,
-  ]);
+  }, [loading, token, redirectToLogin, router, pathname, searchParams]);
 
-  return state;
+  return useMemo(
+    () => ({
+      user: data?.currentUser ?? null,
+      loading,
+      error: error?.message ?? null,
+      isAuthenticated: !!data?.currentUser,
+    }),
+    [data, loading, error]
+  );
 };
 export const useSignout = () => {
   const router = useRouter();

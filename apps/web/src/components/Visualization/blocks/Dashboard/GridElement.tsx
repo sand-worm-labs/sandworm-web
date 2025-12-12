@@ -16,6 +16,7 @@ import { useCallback, useEffect, useState } from "react";
 import type GridLayout from "react-grid-layout";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
+import type { DataFrame } from "@sandworm/types";
 
 import type { ApiDocument } from "@/types";
 
@@ -31,7 +32,6 @@ import DropdownInputBlock from "../customBlocks/dropdownInput";
 import DashboardHeader from "../customBlocks/dashboardHeader";
 import DateInputBlock from "../customBlocks/dateInput";
 import PivotTableBlock from "../customBlocks/pivotTable";
-import type { DataFrame } from "@sandworm/types";
 
 interface Props {
   item: GridLayout.Layout;
