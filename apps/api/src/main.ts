@@ -1,5 +1,3 @@
-// apps/api/src/main.ts
-
 import compression from '@fastify/compress';
 import helmet from '@fastify/helmet';
 import {
@@ -10,13 +8,11 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { HttpAdapterHost } from '@nestjs/core'; // ✅ Add this import
-import { NestFactory, Reflector } from '@nestjs/core';
+import { HttpAdapterHost, NestFactory, Reflector } from '@nestjs/core';
 import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import {
   AsyncContextProvider,
   Environment,
@@ -27,9 +23,10 @@ import {
 } from '@sandworm/nest-common';
 import { AppModule } from './app.module';
 import { AllConfigType } from './config/config.type';
-import { GlobalExceptionFilter } from './filters/global-exception.filter'; 
+import { GlobalExceptionFilter } from './filters/global-exception.filter';
 import { AuthGuard } from './guards/auth.guard';
 import { AuthGraphqlService } from './modules/auth-graphql/auth-graphql.service';
+import { setupSwagger } from './utils/setup-swagger';
 
 async function bootstrap() {
   const fastifyAdapter = new FastifyAdapter({
@@ -49,12 +46,12 @@ async function bootstrap() {
   // Get services
   const configService = app.get(ConfigService<AllConfigType>);
   const reflector = app.get(Reflector);
-  const httpAdapterHost = app.get(HttpAdapterHost); // ✅ Get HttpAdapterHost
+  const httpAdapterHost = app.get(HttpAdapterHost);
 
-  // ✅ Get environment early to use throughout
+  // Get environment early to use throughout
   const env = configService.getOrThrow('app.nodeEnv', { infer: true });
   const isProduction = env === Environment.PRODUCTION;
-  const debug = env === Environment.LOCAL || env === Environment.DEVELOPMENT; // ✅ Add debug flag
+  const debug = env === Environment.LOCAL || env === Environment.DEVELOPMENT;
 
   // Configure the logger
   const asyncContext = app.get(AsyncContextProvider);
@@ -77,6 +74,7 @@ async function bootstrap() {
     }, new Map());
   });
 
+  // Security headers
   const devContentSecurityPolicy = {
     directives: {
       defaultSrc: [
@@ -126,6 +124,7 @@ async function bootstrap() {
 
   app.register(compression);
 
+  // CORS
   const corsOrigin = configService.getOrThrow('app.corsOrigin', {
     infer: true,
   });
@@ -150,80 +149,37 @@ async function bootstrap() {
 
   // Global guards, filters, and pipes
   app.useGlobalGuards(new AuthGuard(reflector, app.get(AuthGraphqlService)));
-  
-  // ✅ Apply unified exception filter with HttpAdapterHost and debug flag
   app.useGlobalFilters(new GlobalExceptionFilter(httpAdapterHost, debug));
-  
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
       whitelist: true,
       errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
       exceptionFactory: (errors: ValidationError[]) => {
-        return new UnprocessableEntityException(errors);
+        // Pass the full ValidationError objects instead of transforming them
+        return new UnprocessableEntityException({
+          message: errors, // Keep as ValidationError[]
+          error: 'Unprocessable Entity',
+          statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        });
       },
     }),
   );
 
+  // Setup Swagger (handles its own logging)
   const swaggerConfig = configService.get('app.swagger', { infer: true });
-
   if (swaggerConfig?.enabled && !isProduction) {
-    const config = new DocumentBuilder()
-      .setTitle(swaggerConfig.title)
-      .setDescription(swaggerConfig.description)
-      .setVersion(swaggerConfig.version)
-      .addTag('Auth', 'Authentication and authorization endpoints')
-      .addTag('Google OAuth', 'Google OAuth authentication')
-      .addBearerAuth(
-        {
-          type: 'http',
-          scheme: 'bearer',
-          bearerFormat: 'JWT',
-          name: 'Authorization',
-          description: 'Enter JWT token',
-          in: 'header',
-        },
-        'JWT-auth',
-      )
-      .addServer(
-        configService.get('app.url', { infer: true }) ||
-          'http://localhost:8003',
-        'Local Development',
-      )
-      .build();
-
-    const document = SwaggerModule.createDocument(app, config);
-
-    SwaggerModule.setup(swaggerConfig.path, app, document, {
-      swaggerOptions: {
-        persistAuthorization: true,
-        tagsSorter: 'alpha',
-        operationsSorter: 'alpha',
-        docExpansion: 'none',
-        filter: true,
-        showRequestDuration: true,
-      },
-      customSiteTitle: swaggerConfig.title,
-    });
-
-    const port = configService.get('app.port', { infer: true });
-    logger.log(
-      `📚 Swagger Documentation: http://localhost:${port}/${swaggerConfig.path}`,
-    );
+    setupSwagger(app, configService);
   }
 
   // Start server
   const port = configService.getOrThrow('app.port', { infer: true }) as number;
   await app.listen(port, '0.0.0.0');
 
-  // ✅ Startup logs
+  // Startup logs
   logger.log(`🚀 Server running at: http://localhost:${port}`);
   logger.log(`📊 GraphQL Playground: http://localhost:${port}/graphql`);
   logger.log(`📖 REST API: http://localhost:${port}/auth`);
-
-  if (swaggerConfig?.enabled && !isProduction) {
-    logger.log(`📚 API Docs: http://localhost:${port}/${swaggerConfig.path}`);
-  }
 }
 
 bootstrap();
