@@ -1,5 +1,6 @@
-import { Field, ID, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { EnvironmentStatus } from '@sandworm/postgresql-typeorm';
+import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { DateField, NumberField, UUIDField } from '@sandworm/graphql';
+import { EnvironmentEntity, EnvironmentStatus } from '@sandworm/postgresql-typeorm';
 
 registerEnumType(EnvironmentStatus, {
   name: 'EnvironmentStatus',
@@ -8,18 +9,32 @@ registerEnumType(EnvironmentStatus, {
 
 @ObjectType()
 export class Environment {
-  @Field(() => ID)
-  id: string;
+  @UUIDField()
+  id!: string;
 
-  @Field(() => ID)
-  workspaceId: string;
+  @UUIDField()
+  workspaceId!: string;
 
   @Field(() => EnvironmentStatus)
-  status: EnvironmentStatus;
+  status!: EnvironmentStatus;
 
-  @Field()
-  resourceVersion: number;
+  @NumberField()
+  resourceVersion!: number;
 
-  @Field(()=> Date)
-  lastActivityAt: Date
+  @DateField()
+  lastActivityAt!: Date;
+
+  static fromEntity(entity: EnvironmentEntity): Environment {
+    const environment = new Environment();
+    environment.id = entity.id;
+    environment.workspaceId = entity.workspaceId;
+    environment.status = entity.status;
+    environment.resourceVersion = entity.resourceVersion;
+    environment.lastActivityAt = entity.lastActivityAt;
+    return environment;
+  }
+
+  static fromEntities(entities: EnvironmentEntity[]): Environment[] {
+    return entities.map((entity) => Environment.fromEntity(entity));
+  }
 }
