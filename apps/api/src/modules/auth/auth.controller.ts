@@ -1,13 +1,7 @@
-import { UserResponse } from '@/api/user/model/http/user.model';
-import { NullableType } from '@/utils/types/nullable.type';
 import {
   Body,
   Controller,
-  Delete,
-  Get,
-  Patch,
   Post,
-  Request,
   SerializeOptions,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -18,11 +12,9 @@ import { AuthEmailLoginDto } from './dto/auth-email-login.dto';
 import { AuthForgotPasswordDto } from './dto/auth-forgot-password.dto';
 import { AuthRegisterLoginDto } from './dto/auth-register-login.dto';
 import { AuthResetPasswordDto } from './dto/auth-reset-password.dto';
-import { AuthUpdateDto } from './dto/auth-update.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
 import { RefreshResponseDto } from './dto/refresh-response.dto';
 import { CurrentUser } from '@sandworm/api/decorators/current-user.decorator';
-
 
 @ApiTags('Auth')
 @Controller({
