@@ -25,24 +25,6 @@ export class EnvironmentService {
     private readonly jupyterService: JupyterService,
   ) {}
 
-  private toGraphQLEnvironment(entity: EnvironmentEntity): Environment {
-    return {
-      id: entity.id,
-      workspaceId: entity.workspaceId,
-      status: entity.status as EnvironmentStatus,
-      lastActivityAt: entity.lastActivityAt,
-      resourceVersion: entity.resourceVersion,
-    };
-  }
-
-  private toGraphQLEnvironmentVariable(
-    entity: EnvironmentVariableEntity,
-  ): EnvironmentVariable {
-    return {
-     ...entity
-    };
-  }
-
   async getEnvironment(workspaceId: string): Promise<Environment> {
     let entity = await this.environmentRepository.findOne({
       where: { workspaceId },
@@ -57,7 +39,7 @@ export class EnvironmentService {
       await this.environmentRepository.save(entity);
     }
 
-    return this.toGraphQLEnvironment(entity);
+    return Environment.fromEntity(entity);
   }
 
   async getEnvironmentStatus(workspaceId: string): Promise<EnvironmentStatus> {
@@ -86,7 +68,8 @@ export class EnvironmentService {
     environment.status = EnvironmentStatus.RUNNING;
     environment.startedAt = new Date();
     await this.environmentRepository.save(environment);
-    return this.toGraphQLEnvironment(environment);
+
+    return Environment.fromEntity(environment);
   }
 
   async getEnvironmentVariables(
@@ -97,7 +80,7 @@ export class EnvironmentService {
       order: { name: 'ASC' },
     });
 
-    return entities.map(entity => this.toGraphQLEnvironmentVariable(entity));
+    return EnvironmentVariable.fromEntities(entities);
   }
 
   async setEnvironmentVariables(
@@ -108,12 +91,13 @@ export class EnvironmentService {
       `Setting environment variables for workspace ${workspaceId}`,
     );
 
-    const removeNames = input.remove.length > 0 
-      ? await this.envVarRepository.find({
-          where: { id: In(input.remove), workspaceId },
-          select: ['name'],
-        })
-      : [];
+    const removeNames =
+      input.remove.length > 0
+        ? await this.envVarRepository.find({
+            where: { id: In(input.remove), workspaceId },
+            select: ['name'],
+          })
+        : [];
 
     if (input.remove.length > 0) {
       await this.envVarRepository.delete({
@@ -123,10 +107,10 @@ export class EnvironmentService {
     }
 
     if (input.add.length > 0) {
-      const newVars = input.add.map(v =>
+      const newVars = input.add.map((v) =>
         this.envVarRepository.create({
           name: v.name,
-          value: v.value, 
+          value: v.value,
           workspaceId,
         }),
       );
@@ -135,7 +119,7 @@ export class EnvironmentService {
 
     await this.jupyterService.setEnvironmentVariables(workspaceId, {
       add: input.add,
-      remove: removeNames.map(v => v.name),
+      remove: removeNames.map((v) => v.name),
     });
 
     return this.getEnvironmentVariables(workspaceId);

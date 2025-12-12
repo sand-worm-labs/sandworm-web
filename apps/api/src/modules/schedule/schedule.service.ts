@@ -1,7 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ExecutionScheduleType, DocumentEntity, ExecutionScheduleEntity } from '@sandworm/postgresql-typeorm';
+import {
+  DocumentEntity,
+  ExecutionScheduleEntity,
+} from '@sandworm/postgresql-typeorm';
 import { ValidationException } from '@sandworm/graphql';
 import { ErrorCode } from '@/constants/error-code.constant';
 import { Schedule } from './model/schedule.model';
@@ -23,12 +26,6 @@ export class ScheduleService {
     private readonly documentRepository: Repository<DocumentEntity>,
   ) {}
 
-  private toGraphQLSchedule(entity: ExecutionScheduleEntity): Schedule {
-    return {
-     ...entity
-    };
-  }
-
   async getSchedule(scheduleId: string): Promise<Schedule> {
     const schedule = await this.scheduleRepository.findOne({
       where: { id: scheduleId },
@@ -38,7 +35,7 @@ export class ScheduleService {
       throw new ValidationException(ErrorCode.E404, 'Schedule not found');
     }
 
-    return this.toGraphQLSchedule(schedule);
+    return Schedule.fromEntity(schedule);
   }
 
   async listSchedules(input: ListSchedulesInput): Promise<Schedule[]> {
@@ -49,7 +46,7 @@ export class ScheduleService {
       order: { createdAt: 'DESC' },
     });
 
-    return schedules.map(s => this.toGraphQLSchedule(s));
+    return Schedule.fromEntities(schedules);
   }
 
   async createSchedule(
@@ -80,7 +77,7 @@ export class ScheduleService {
       `Schedule created: ${schedule.id} for document ${documentId}`,
     );
 
-    return this.toGraphQLSchedule(schedule);
+    return Schedule.fromEntity(schedule);
   }
 
   async updateSchedule(
@@ -111,7 +108,7 @@ export class ScheduleService {
 
     this.logger.log(`Schedule updated: ${scheduleId}`);
 
-    return this.toGraphQLSchedule(schedule);
+    return Schedule.fromEntity(schedule);
   }
 
   async deleteSchedule(input: DeleteScheduleInput): Promise<boolean> {
@@ -144,6 +141,6 @@ export class ScheduleService {
       order: { createdAt: 'DESC' },
     });
 
-    return schedules.map(s => this.toGraphQLSchedule(s));
+    return Schedule.fromEntities(schedules);
   }
 }

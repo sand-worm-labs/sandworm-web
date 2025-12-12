@@ -1,12 +1,24 @@
-import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { WorkspaceEntity, UserEntity, DocumentEntity } from '@sandworm/postgresql-typeorm';
+import {
+  WorkspaceEntity,
+  UserEntity,
+  DocumentEntity,
+} from '@sandworm/postgresql-typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Workspace } from './model/workspace.model';
 import { User } from '../user/model/graphql/user.model';
 import { Document } from '../document/model/document.model';
-import { toGraphQLWorkspaceUtils } from '@/utils/models';
-import { validateUUID, validateNonEmptyString, validateStringLength } from '@/utils/uuid';
+import {
+  validateUUID,
+  validateNonEmptyString,
+  validateStringLength,
+} from '@/utils/uuid';
 
 interface PaginationOptions {
   limit?: number;
@@ -29,11 +41,14 @@ export class WorkspaceService {
   /**
    * Validates and retrieves a user by ID
    */
-  private async validateAndGetUser(userId: string, fieldName: string = 'User'): Promise<UserEntity> {
+  private async validateAndGetUser(
+    userId: string,
+    fieldName: string = 'User',
+  ): Promise<UserEntity> {
     validateUUID(userId, `${fieldName} ID`);
 
     const user = await this.userRepository.findOne({ where: { id: userId } });
-    
+
     if (!user) {
       throw new NotFoundException(`${fieldName} not found`);
     }
@@ -44,20 +59,25 @@ export class WorkspaceService {
   async getWorkspaceById(workspaceId: string): Promise<Workspace> {
     validateUUID(workspaceId, 'Workspace ID');
 
-    const workspace = await this.workspaceRepository.findOne({ where: { id: workspaceId } });
-    
+    const workspace = await this.workspaceRepository.findOne({
+      where: { id: workspaceId },
+    });
+
     if (!workspace) {
       throw new NotFoundException('Workspace not found');
     }
 
-    return this.toGraphQLWorkspace(workspace);
+    return Workspace.fromEntity(workspace);
   }
 
-  async getAllUserWorkspaces(userId: string, options: PaginationOptions): Promise<Workspace[]> {
+  async getAllUserWorkspaces(
+    userId: string,
+    options: PaginationOptions,
+  ): Promise<Workspace[]> {
     await this.validateAndGetUser(userId, 'User');
 
     const { limit = 20, offset = 0 } = options;
-    
+
     const workspaces = await this.workspaceRepository.find({
       where: { ownerId: userId },
       take: limit,
@@ -69,10 +89,13 @@ export class WorkspaceService {
       throw new NotFoundException('No workspaces found for this user');
     }
 
-    return workspaces.map((ws) => this.toGraphQLWorkspace(ws));
+    return Workspace.fromEntities(workspaces);
   }
 
-  async createWorkspace(data: { ownerId: string; name: string }): Promise<Workspace> {
+  async createWorkspace(data: {
+    ownerId: string;
+    name: string;
+  }): Promise<Workspace> {
     validateUUID(data.ownerId, 'Owner ID');
     validateNonEmptyString(data.name, 'Workspace name');
     validateStringLength(data.name, 'Workspace name', 255);
@@ -86,12 +109,12 @@ export class WorkspaceService {
 
     const savedWorkspace = await this.workspaceRepository.save(workspace);
 
-    return this.toGraphQLWorkspace(savedWorkspace);
+    return Workspace.fromEntity(savedWorkspace);
   }
 
   async updateWorkspace(
-    workspaceId: string, 
-    data: { name?: string; ownerId?: string }
+    workspaceId: string,
+    data: { name?: string; ownerId?: string },
   ): Promise<Workspace> {
     validateUUID(workspaceId, 'Workspace ID');
 
@@ -105,12 +128,14 @@ export class WorkspaceService {
       validateStringLength(data.name, 'Workspace name', 255);
     }
 
-    const workspace = await this.workspaceRepository.findOne({ 
-      where: { id: workspaceId, ownerId: data.ownerId } 
+    const workspace = await this.workspaceRepository.findOne({
+      where: { id: workspaceId, ownerId: data.ownerId },
     });
 
     if (!workspace) {
-      throw new NotFoundException('Workspace not found or you do not have permission to update it');
+      throw new NotFoundException(
+        'Workspace not found or you do not have permission to update it',
+      );
     }
 
     if (data.name) {
@@ -119,7 +144,7 @@ export class WorkspaceService {
 
     const updatedWorkspace = await this.workspaceRepository.save(workspace);
 
-    return this.toGraphQLWorkspace(updatedWorkspace);
+    return Workspace.fromEntity(updatedWorkspace);
   }
 
   async getWorkspaceOwner(ownerId: string): Promise<User> {
@@ -130,12 +155,17 @@ export class WorkspaceService {
   async getWorkspaceDocuments(workspaceId: string): Promise<Document[]> {
     validateUUID(workspaceId, 'Workspace ID');
 
-    const documents = await this.documentRepository.find({ where: { workspaceId } });
+    const documents = await this.documentRepository.find({
+      where: { workspaceId },
+    });
 
-    return [];
+    return Document.fromEntities(documents);
   }
 
-  async getWorkspacesByUser(userId: string, options: PaginationOptions = {}): Promise<Workspace[]> {
+  async getWorkspacesByUser(
+    userId: string,
+    options: PaginationOptions = {},
+  ): Promise<Workspace[]> {
     await this.validateAndGetUser(userId, 'User');
 
     const { limit = 20, offset = 0 } = options;
@@ -147,10 +177,6 @@ export class WorkspaceService {
       order: { createdAt: 'DESC' },
     });
 
-    return workspaces.map((ws) => this.toGraphQLWorkspace(ws));
-  }
-
-  private toGraphQLWorkspace(entity: WorkspaceEntity): Workspace {
-    return toGraphQLWorkspaceUtils(entity);
+    return Workspace.fromEntities(workspaces);
   }
 }

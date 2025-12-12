@@ -18,10 +18,6 @@ export class CommentService {
     private readonly userRepository: Repository<UserEntity>,
   ) {}
 
-  private toGraphQLComment(commentEntity: CommentEntity): Comment {
-    return { ...commentEntity };
-  }
-
   async getCommentsByDocument(documentId: string): Promise<Comment[]> {
     const comments = await this.commentRepository.find({
       where: { documentId },
@@ -29,7 +25,7 @@ export class CommentService {
       order: { createdAt: 'ASC' },
     });
 
-    return comments.map(c => this.toGraphQLComment(c));
+    return comments.map(c => Comment.fromEntity(c));
   }
 
   async getComment(commentId: string): Promise<Comment> {
@@ -42,7 +38,7 @@ export class CommentService {
       throw new ValidationException(ErrorCode.E301); // comment not found
     }
 
-    return this.toGraphQLComment(comment);
+    return Comment.fromEntity(comment);
   }
 
   async createComment(
@@ -69,7 +65,7 @@ export class CommentService {
 
     this.logger.log(`Comment created: ${comment.id} on document ${documentId}`);
 
-    return this.toGraphQLComment(comment);
+    return Comment.fromEntity(comment);
   }
 
   async deleteComment(

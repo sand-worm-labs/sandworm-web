@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ValidationException } from '@sandworm/graphql';
 import {
   DocumentEntity,
-  FavoriteEntity
+  FavoriteEntity,
 } from '@sandworm/postgresql-typeorm';
 import { Not, Repository } from 'typeorm';
 import { Document } from './model/document.model';
@@ -14,7 +14,7 @@ import {
   FavoriteDocumentInput,
   RestoreDocumentInput,
   UpdateDocumentInput,
-  CreateDocumentInput
+  CreateDocumentInput,
 } from './dto/document.dto';
 
 @Injectable()
@@ -28,21 +28,10 @@ export class DocumentService {
     private readonly favoriteRepository: Repository<FavoriteEntity>,
   ) {}
 
-  private toGraphQLDocument(entity: DocumentEntity): Document {
-    return {
-      id: entity.id,
-      slug: entity.slug,
-      title: entity.title,
-      authorId: entity.authorId,
-      workspaceId: entity.workspaceId,
-      parentId: entity.parentId ?? null,
-      runUnexecutedBlocks: entity.runUnexecutedBlocks,
-      runSQLSelection: entity.runSQLSelection,
-      shareLinksWithoutSidebar: entity.shareLinksWithoutSidebar,
-    };
-  }
-
-  async getDocument(documentId: string, workspaceId: string): Promise<Document> {
+  async getDocument(
+    documentId: string,
+    workspaceId: string,
+  ): Promise<Document> {
     const document = await this.documentRepository.findOne({
       where: { id: documentId, workspaceId },
     });
@@ -51,7 +40,7 @@ export class DocumentService {
       throw new ValidationException(ErrorCode.E003);
     }
 
-    return this.toGraphQLDocument(document);
+    return Document.fromEntity(document);
   }
 
   async getWorkspaceDocuments(workspaceId: string): Promise<Document[]> {
@@ -59,7 +48,7 @@ export class DocumentService {
       where: { workspaceId },
     });
 
-    return documentsList.map(doc => this.toGraphQLDocument(doc));
+    return Document.fromEntities(documentsList);
   }
 
   async updateDocument(
@@ -67,7 +56,6 @@ export class DocumentService {
     workspaceId: string,
     input: UpdateDocumentInput,
   ): Promise<Document> {
-
     const document = await this.documentRepository.findOne({
       where: { id: documentId, workspaceId },
     });
@@ -84,7 +72,7 @@ export class DocumentService {
     }
 
     await this.documentRepository.save(document);
-    return this.toGraphQLDocument(document);
+    return Document.fromEntity(document);
   }
 
   async deleteDocument(input: DeleteDocumentInput): Promise<Document> {
@@ -105,7 +93,7 @@ export class DocumentService {
       await this.documentRepository.save(document);
     }
 
-    return this.toGraphQLDocument(document);
+    return Document.fromEntity(document);
   }
 
   async restoreDocument(input: RestoreDocumentInput): Promise<Document> {
@@ -123,12 +111,12 @@ export class DocumentService {
     document.deletedAt = null;
     await this.documentRepository.save(document);
 
-    return this.toGraphQLDocument(document);
+    return Document.fromEntity(document);
   }
 
   async duplicateDocument(
     userId: string,
-    input: DuplicateDocumentInput
+    input: DuplicateDocumentInput,
   ): Promise<Document> {
     const { documentId, workspaceId } = input;
 
@@ -149,7 +137,7 @@ export class DocumentService {
 
     await this.documentRepository.save(duplicate);
 
-    return this.toGraphQLDocument(duplicate);
+    return Document.fromEntity(duplicate);
   }
 
   async createDocument(
@@ -166,15 +154,15 @@ export class DocumentService {
     try {
       await this.documentRepository.save(document);
     } catch (err) {
-      throw new ValidationException(ErrorCode.E006); 
+      throw new ValidationException(ErrorCode.E006);
     }
 
-    return this.toGraphQLDocument(document);
+    return Document.fromEntity(document);
   }
 
   async addFavoriteDocument(
     userId: string,
-    input: FavoriteDocumentInput
+    input: FavoriteDocumentInput,
   ): Promise<Document> {
     const { documentId, workspaceId } = input;
 
@@ -192,12 +180,12 @@ export class DocumentService {
     });
 
     await this.favoriteRepository.save(favorite);
-    return this.toGraphQLDocument(document);
+    return Document.fromEntity(document);
   }
 
   async removeFavoriteDocument(
     userId: string,
-    input: FavoriteDocumentInput
+    input: FavoriteDocumentInput,
   ): Promise<Document> {
     const { documentId, workspaceId } = input;
 
@@ -219,7 +207,7 @@ export class DocumentService {
 
     await this.favoriteRepository.delete({ userId, documentId });
 
-    return this.toGraphQLDocument(document);
+    return Document.fromEntity(document);
   }
 
   async getChildren(parentId: string): Promise<Document[]> {
@@ -227,6 +215,6 @@ export class DocumentService {
       where: { parentId, deletedAt: null },
     });
 
-    return documents.map(d => this.toGraphQLDocument(d));
+    return Document.fromEntities(documents);
   }
 }
