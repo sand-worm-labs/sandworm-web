@@ -1,16 +1,17 @@
-import { Field, Float, ObjectType } from '@nestjs/graphql';
+import { ObjectType, Field, Float } from '@nestjs/graphql';
+import { StringField } from '@sandworm/graphql';
 import { User } from '../../user/model/graphql/user.model';
 
 @ObjectType()
 export class AuthPayload {
-  @Field(() => String )
+  @StringField()
   id!: string;
 
-  @Field(() => String)
+  @StringField()
   token!: string;
 
   @Field(() => Float)
-  tokenExpires: number;
+  tokenExpires!: number;
 
   @Field(() => User)
   user!: User;
