@@ -1,4 +1,6 @@
 import { hashPassword as hashPass } from '@sandworm/nest-common';
+import { Transform } from 'class-transformer';
+import { lowerCaseTransformer } from '@sandworm/nest-common/transformers/lower-case.transformer'
 import {
   BeforeInsert,
   BeforeUpdate,
@@ -44,6 +46,7 @@ export class UserEntity extends AbstractEntity {
   username?: string;
 
   @Column({ nullable: true })
+  @Transform(lowerCaseTransformer)
   @Index('UQ_users_email', ['email'], { unique: true })
   email?: string;
 
