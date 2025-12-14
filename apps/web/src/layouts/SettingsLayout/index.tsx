@@ -35,7 +35,7 @@ export default function SettingsLayout({
   if (status === "loading") return null;
 
   return (
-    <div className=" w-full border-t">
+    <div className=" w-full ">
       <div className="flex items-center gap-2 py-3 border-b border-[#E9ECEF] dark:border-[#262A30] px-10 text-[1.1rem]">
         <Link
           href="/workspace"
