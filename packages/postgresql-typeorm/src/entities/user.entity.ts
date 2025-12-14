@@ -1,4 +1,6 @@
 import { hashPassword as hashPass } from '@sandworm/nest-common';
+import { Transform } from 'class-transformer';
+import { lowerCaseTransformer } from '@sandworm/nest-common/transformers/lower-case.transformer'
 import {
   BeforeInsert,
   BeforeUpdate,
@@ -19,6 +21,7 @@ import { FavoriteEntity } from './favorite.entity';
 import { TutorialEntity } from './tutorial.entity';
 import { UserFollowsEntity } from './user-follows.entity';
 import { UserSettingEntity } from './user-setting.entity';
+import { UserWorkspaceEntity } from './user-workspace.entity';
 import { VoteEntity } from './vote.entity';
 import { WorkspaceEntity } from './workspace.entity';
 import { YjsAppDocumentEntity } from './yjs-app-document.entity';
@@ -43,6 +46,7 @@ export class UserEntity extends AbstractEntity {
   username?: string;
 
   @Column({ nullable: true })
+  @Transform(lowerCaseTransformer)
   @Index('UQ_users_email', ['email'], { unique: true })
   email?: string;
 
@@ -78,6 +82,10 @@ export class UserEntity extends AbstractEntity {
   @Column({ nullable: true, select: false })
   password?: string;
 
+  @Column({ name: 'last_visited_workspace_id', type: 'uuid', nullable: true })
+  @Index('IDX_users_last_visited_workspace_id')
+  lastVisitedWorkspaceId?: string | null;
+
   @BeforeInsert()
   @BeforeUpdate()
   async hashPassword() {
@@ -85,7 +93,9 @@ export class UserEntity extends AbstractEntity {
       this.password = await hashPass(this.password);
     }
   }
-  @OneToOne(() => UserSettingEntity, (userSetting) => userSetting)
+
+  // Relations
+  @OneToOne(() => UserSettingEntity, (userSetting) => userSetting.user)
   @JoinColumn()
   settings?: Relation<UserSettingEntity>;
 
@@ -111,11 +121,11 @@ export class UserEntity extends AbstractEntity {
   votes!: Relation<VoteEntity[]>;
 
   @OneToMany(() => WorkspaceEntity, (workspace) => workspace.owner)
-  workspaces!: Relation<WorkspaceEntity[]>;
+  ownedWorkspaces!: Relation<WorkspaceEntity[]>;
 
   @OneToMany(
     () => TutorialEntity,
-    (onboarding_tutorial) => onboarding_tutorial.user,
+    (onboardingTutorial) => onboardingTutorial.user,
   )
   onboardingTutorials!: Relation<TutorialEntity[]>;
 
@@ -125,7 +135,26 @@ export class UserEntity extends AbstractEntity {
   @OneToMany(() => YjsAppDocumentEntity, (yjsAppDoc) => yjsAppDoc.document)
   yjsAppDocuments!: Relation<YjsAppDocumentEntity[]>;
 
+  @OneToMany(() => UserWorkspaceEntity, (uw) => uw.user)
+  userWorkspaces!: Relation<UserWorkspaceEntity[]>;
+
+  @OneToMany(() => UserWorkspaceEntity, (uw) => uw.inviter)
+  workspacesInvitees!: Relation<UserWorkspaceEntity[]>;
+
   getDisplayName(): string {
     return this.fullName || this.username || this.email || 'Anonymous';
+  }
+
+  getTeamName(): string {
+    return [
+      this.firstName && this.lastName ? `${this.firstName} ${this.lastName}` : null,
+      this.fullName,
+      this.username,
+      this.firstName,
+      this.lastName,
+      this.email?.split('@')[0],
+      this.id ? `User ${this.id.substring(0, 8)}` : null,
+      'My'
+    ].find(name => name?.trim())?.trim() + "'s Team";
   }
 }

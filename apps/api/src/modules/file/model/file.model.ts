@@ -1,22 +1,23 @@
-import { ObjectType, Field, ID } from '@nestjs/graphql';
+import { ObjectType } from '@nestjs/graphql';
+import { BooleanField, NumberField, StringField, StringFieldOptional } from '@sandworm/graphql';
 
 @ObjectType()
 export class SandwormFile {
-  @Field()
-  name: string;
+  @StringField()
+  name!: string;
 
-  @Field()
-  path: string;
+  @StringField()
+  path!: string;
 
-  @Field()
-  relCwdPath: string;
+  @StringField()
+  relCwdPath!: string;
 
-  @Field()
-  size: number;
+  @NumberField()
+  size!: number;
 
-  @Field({ nullable: true })
+  @StringFieldOptional()
   mimeType?: string;
 
-  @Field()
-  isDirectory: boolean;
+  @BooleanField()
+  isDirectory!: boolean;
 }

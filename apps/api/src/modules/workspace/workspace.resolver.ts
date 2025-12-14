@@ -13,6 +13,7 @@ import { WorkspaceService } from './workspace.service';
 import { Workspace } from './model/workspace.model';
 import { User } from '../user/model/graphql/user.model';
 import { Document } from '../document/model/document.model';
+import { WorkspaceInfo } from './model/workspace-info.model';
 
 @Resolver(() => Workspace)
 export class WorkspaceResolver {
@@ -38,6 +39,17 @@ export class WorkspaceResolver {
     @Args('offset', { type: () => Int, nullable: true }) offset?: number,
   ): Promise<Workspace[]> {
     return this.workspaceService.getAllUserWorkspaces(userId,{ limit, offset });
+  }
+
+  @Query(() => WorkspaceInfo, {
+    name: 'getUserWorkspaceInfo',
+    description: 'Get user workspace info with roles',
+  })
+  async getUserWorkspaceInfo(
+    @CurrentUser('id') userId: string,
+  ): Promise<WorkspaceInfo> {
+    console.log('getUserWorkspaceInfo', userId);
+    return this.workspaceService.getUserWorkspaceInfo(userId);
   }
 
   @Mutation(() => Workspace, {
