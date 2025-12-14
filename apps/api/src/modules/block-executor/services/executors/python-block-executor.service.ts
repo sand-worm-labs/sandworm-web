@@ -13,18 +13,17 @@ import {
 import { DataFrame } from '@sandworm/types';
 import { WorkspaceEntity } from '@sandworm/postgresql-typeorm';
 import { DataframeService } from '../dataframe.service';
-import { ExecutionContext } from "../../interfaces/execution-context.interface"
-import { executeCode as executePython } from '../../../../python/index.js';
-import { listDataFrames } from '../../../../python/query/index.js';
-import { advanceTutorial } from '../../../../tutorials.js';
-import { broadcastTutorialStepStates } from '../../../../websocket/workspace/tutorial.js';
+import { ExecutionContext } from "../../interfaces/execution-context.interface";
 
+// import { executeCode as executePython } from '../../../../python/index.js';
+// import { listDataFrames } from '../../../../python/query/index.js';
+// import { advanceTutorial } from '../../../../tutorials.js';
+// import { broadcastTutorialStepStates } from '../../../../websocket/workspace/tutorial.js';
 
-
-export interface PythonEvents {
-  pythonRun(): void;
-  advanceOnboarding(step: string): void;
-}
+// export interface PythonEvents {
+//   pythonRun(): void;
+//   advanceOnboarding(step: string): void;
+// }
 
 @Injectable()
 export class PythonExecutorService {
