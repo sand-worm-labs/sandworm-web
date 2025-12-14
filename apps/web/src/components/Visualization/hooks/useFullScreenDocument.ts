@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useLocalStorage } from "@uidotdev/usehooks";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/components/Visualization/hooks/useAuth";
 
 type UseFullScreenDocument = [
   boolean,
@@ -9,7 +9,8 @@ type UseFullScreenDocument = [
   },
 ];
 function useFullScreenDocument(documentId: string): UseFullScreenDocument {
-  const { data: user } = useSession({ redirectToLogin: true });
+  const session = useSession({ redirectToLogin: true });
+  const user = session?.user;
   const [isFullScreen, setIsFullScreen] = useLocalStorage(
     `sandworm-user-${user?.id}-doc-${documentId}-fullscreen`,
     true
