@@ -48,7 +48,6 @@ export class WorkspaceResolver {
   async getUserWorkspaceInfo(
     @CurrentUser('id') userId: string,
   ): Promise<WorkspaceInfo> {
-    console.log('getUserWorkspaceInfo', userId);
     return this.workspaceService.getUserWorkspaceInfo(userId);
   }
 
