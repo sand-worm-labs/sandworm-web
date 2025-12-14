@@ -20,7 +20,6 @@ export class CommentSeeder1732031567099 implements Seeder {
       .skip(randomOffset)
       .take(10)
       .getMany();
-    console.log(users[0].id === undefined);
 
     // Get random Documents
     const documentsRepository = dataSource.getRepository(DocumentEntity);
@@ -35,7 +34,6 @@ export class CommentSeeder1732031567099 implements Seeder {
 
     const commentFactory = factoryManager.get(CommentEntity);
     for (const user of users) {
-      console.log(user, documents);
       const randomDocumentsNumber = getRandomInt(0, documents.length - 1);
       await commentFactory.saveMany(5, {
         authorId: user.id,

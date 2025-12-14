@@ -132,7 +132,6 @@ export class WorkspaceService {
   
     const user = await this.validateAndGetUser(userId, 'User');
     let workspaceId = user.lastVisitedWorkspaceId;
-    console.log('getUserWorkspaceInfo', workspaceId, userId);
   
     if (!workspaceId) {
       const userWorkspaces = await this.workspaceRepository.find({
