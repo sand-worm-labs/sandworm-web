@@ -102,25 +102,38 @@ export class WorkspaceService {
     validateUUID(data.ownerId, 'Owner ID');
     validateNonEmptyString(data.name, 'Workspace name');
     validateStringLength(data.name, 'Workspace name', 255);
-
+  
     await this.validateAndGetUser(data.ownerId, 'Owner');
-
+  
     const workspace = this.workspaceRepository.create({
       name: data.name.trim(),
       ownerId: data.ownerId,
     });
-
+  
     const savedWorkspace = await this.workspaceRepository.save(workspace);
-
+  
+    const userWorkspace = this.workspaceMembersRepository.create({
+      userId: data.ownerId,
+      workspaceId: savedWorkspace.id,
+      role: UserWorkspaceRole.ADMIN,
+      inviterId: null, 
+    });
+  
+    await this.workspaceMembersRepository.save(userWorkspace);
+  
+    this.logger.log(
+      `Created workspace ${savedWorkspace.id} with ADMIN role for user ${data.ownerId}`,
+    );
+  
     return Workspace.fromEntity(savedWorkspace);
   }
-
   async getUserWorkspaceInfo(userId: string): Promise<WorkspaceInfo> {
     validateUUID(userId, 'User ID');
   
     const user = await this.validateAndGetUser(userId, 'User');
     let workspaceId = user.lastVisitedWorkspaceId;
-    console.log('getUserWorkspaceInfo', workspaceId,userId);
+    console.log('getUserWorkspaceInfo', workspaceId, userId);
+  
     if (!workspaceId) {
       const userWorkspaces = await this.workspaceRepository.find({
         where: { ownerId: userId },
@@ -133,7 +146,7 @@ export class WorkspaceService {
         user.lastVisitedWorkspaceId = workspaceId;
         await this.userRepository.save(user);
       } else {
-  
+        // Create workspace (this now automatically creates UserWorkspace with ADMIN role)
         const newWorkspace = await this.createWorkspace({
           ownerId: userId,
           name: user.getTeamName(),
@@ -142,14 +155,6 @@ export class WorkspaceService {
         workspaceId = newWorkspace.id;
         user.lastVisitedWorkspaceId = workspaceId;
         await this.userRepository.save(user);
-  
-        const member = this.workspaceMembersRepository.create({
-          workspaceId,
-          userId,
-          role: UserWorkspaceRole.ADMIN,
-        });
-  
-        await this.workspaceMembersRepository.save(member);
   
         this.logger.log(
           `Created default workspace ${workspaceId} for user ${userId}`,
@@ -166,7 +171,7 @@ export class WorkspaceService {
     }
   
     const currentUserWorkspaces = await this.workspaceMembersRepository.find({
-      where: { userId: userId , workspaceId: workspaceId },
+      where: { userId: userId, workspaceId: workspaceId },
     });
   
     return {
