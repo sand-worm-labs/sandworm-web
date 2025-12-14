@@ -1,12 +1,27 @@
-import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { WorkspaceEntity, UserEntity, DocumentEntity } from '@sandworm/postgresql-typeorm';
+import {
+  WorkspaceEntity,
+  UserWorkspaceEntity,
+  UserEntity,
+  DocumentEntity,
+  UserWorkspaceRole,
+} from '@sandworm/postgresql-typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Workspace } from './model/workspace.model';
 import { User } from '../user/model/graphql/user.model';
 import { Document } from '../document/model/document.model';
-import { toGraphQLWorkspaceUtils } from '@/utils/models';
-import { validateUUID, validateNonEmptyString, validateStringLength } from '@/utils/uuid';
+import {
+  validateUUID,
+  validateNonEmptyString,
+  validateStringLength,
+} from '@/utils/uuid';
+import { WorkspaceInfo } from './model/workspace-info.model';
 
 interface PaginationOptions {
   limit?: number;
@@ -18,22 +33,25 @@ export class WorkspaceService {
   private readonly logger = new Logger(WorkspaceService.name);
 
   constructor(
-    @InjectRepository(WorkspaceEntity)
-    private readonly workspaceRepository: Repository<WorkspaceEntity>,
-    @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>,
-    @InjectRepository(DocumentEntity)
-    private readonly documentRepository: Repository<DocumentEntity>,
+      @InjectRepository(WorkspaceEntity)
+      private readonly workspaceRepository: Repository<WorkspaceEntity>,
+      @InjectRepository(UserWorkspaceEntity)  // Changed from WorkspaceEntity
+      private readonly workspaceMembersRepository: Repository<UserWorkspaceEntity>,
+      @InjectRepository(UserEntity)
+      private readonly userRepository: Repository<UserEntity>,
+      @InjectRepository(DocumentEntity)
+      private readonly documentRepository: Repository<DocumentEntity>,
   ) {}
 
-  /**
-   * Validates and retrieves a user by ID
-   */
-  private async validateAndGetUser(userId: string, fieldName: string = 'User'): Promise<UserEntity> {
+ 
+  private async validateAndGetUser(
+    userId: string,
+    fieldName: string = 'User',
+  ): Promise<UserEntity> {
     validateUUID(userId, `${fieldName} ID`);
 
     const user = await this.userRepository.findOne({ where: { id: userId } });
-    
+
     if (!user) {
       throw new NotFoundException(`${fieldName} not found`);
     }
@@ -44,20 +62,25 @@ export class WorkspaceService {
   async getWorkspaceById(workspaceId: string): Promise<Workspace> {
     validateUUID(workspaceId, 'Workspace ID');
 
-    const workspace = await this.workspaceRepository.findOne({ where: { id: workspaceId } });
-    
+    const workspace = await this.workspaceRepository.findOne({
+      where: { id: workspaceId },
+    });
+
     if (!workspace) {
       throw new NotFoundException('Workspace not found');
     }
 
-    return this.toGraphQLWorkspace(workspace);
+    return Workspace.fromEntity(workspace);
   }
 
-  async getAllUserWorkspaces(userId: string, options: PaginationOptions): Promise<Workspace[]> {
+  async getAllUserWorkspaces(
+    userId: string,
+    options: PaginationOptions,
+  ): Promise<Workspace[]> {
     await this.validateAndGetUser(userId, 'User');
 
     const { limit = 20, offset = 0 } = options;
-    
+
     const workspaces = await this.workspaceRepository.find({
       where: { ownerId: userId },
       take: limit,
@@ -69,29 +92,105 @@ export class WorkspaceService {
       throw new NotFoundException('No workspaces found for this user');
     }
 
-    return workspaces.map((ws) => this.toGraphQLWorkspace(ws));
+    return Workspace.fromEntities(workspaces);
   }
 
-  async createWorkspace(data: { ownerId: string; name: string }): Promise<Workspace> {
+  async createWorkspace(data: {
+    ownerId: string;
+    name: string;
+  }): Promise<Workspace> {
     validateUUID(data.ownerId, 'Owner ID');
     validateNonEmptyString(data.name, 'Workspace name');
     validateStringLength(data.name, 'Workspace name', 255);
-
+  
     await this.validateAndGetUser(data.ownerId, 'Owner');
-
+  
     const workspace = this.workspaceRepository.create({
       name: data.name.trim(),
       ownerId: data.ownerId,
     });
-
+  
     const savedWorkspace = await this.workspaceRepository.save(workspace);
-
-    return this.toGraphQLWorkspace(savedWorkspace);
+  
+    const userWorkspace = this.workspaceMembersRepository.create({
+      userId: data.ownerId,
+      workspaceId: savedWorkspace.id,
+      role: UserWorkspaceRole.ADMIN,
+      inviterId: null, 
+    });
+  
+    await this.workspaceMembersRepository.save(userWorkspace);
+  
+    this.logger.log(
+      `Created workspace ${savedWorkspace.id} with ADMIN role for user ${data.ownerId}`,
+    );
+  
+    return Workspace.fromEntity(savedWorkspace);
+  }
+  async getUserWorkspaceInfo(userId: string): Promise<WorkspaceInfo> {
+    validateUUID(userId, 'User ID');
+  
+    const user = await this.validateAndGetUser(userId, 'User');
+    let workspaceId = user.lastVisitedWorkspaceId;
+    console.log('getUserWorkspaceInfo', workspaceId, userId);
+  
+    if (!workspaceId) {
+      const userWorkspaces = await this.workspaceRepository.find({
+        where: { ownerId: userId },
+        order: { createdAt: 'ASC' },
+        take: 1,
+      });
+  
+      if (userWorkspaces.length > 0) {
+        workspaceId = userWorkspaces[0].id;
+        user.lastVisitedWorkspaceId = workspaceId;
+        await this.userRepository.save(user);
+      } else {
+        // Create workspace (this now automatically creates UserWorkspace with ADMIN role)
+        const newWorkspace = await this.createWorkspace({
+          ownerId: userId,
+          name: user.getTeamName(),
+        });
+  
+        workspaceId = newWorkspace.id;
+        user.lastVisitedWorkspaceId = workspaceId;
+        await this.userRepository.save(user);
+  
+        this.logger.log(
+          `Created default workspace ${workspaceId} for user ${userId}`,
+        );
+      }
+    }
+  
+    const workspace = await this.workspaceRepository.findOne({
+      where: { id: workspaceId },
+    });
+  
+    if (!workspace) {
+      throw new NotFoundException('Workspace not found');
+    }
+  
+    const currentUserWorkspaces = await this.workspaceMembersRepository.find({
+      where: { userId: userId, workspaceId: workspaceId },
+    });
+  
+    return {
+      id: workspace.id,
+      name: workspace.name,
+      ownerId: workspace.ownerId,
+      createdAt: workspace.createdAt,
+      updatedAt: workspace.updatedAt,
+      roles: currentUserWorkspaces.map((member) => ({
+        userId: member.userId,
+        role: member.role,
+      })),
+    };
   }
 
+
   async updateWorkspace(
-    workspaceId: string, 
-    data: { name?: string; ownerId?: string }
+    workspaceId: string,
+    data: { name?: string; ownerId?: string },
   ): Promise<Workspace> {
     validateUUID(workspaceId, 'Workspace ID');
 
@@ -105,12 +204,14 @@ export class WorkspaceService {
       validateStringLength(data.name, 'Workspace name', 255);
     }
 
-    const workspace = await this.workspaceRepository.findOne({ 
-      where: { id: workspaceId, ownerId: data.ownerId } 
+    const workspace = await this.workspaceRepository.findOne({
+      where: { id: workspaceId, ownerId: data.ownerId },
     });
 
     if (!workspace) {
-      throw new NotFoundException('Workspace not found or you do not have permission to update it');
+      throw new NotFoundException(
+        'Workspace not found or you do not have permission to update it',
+      );
     }
 
     if (data.name) {
@@ -119,7 +220,7 @@ export class WorkspaceService {
 
     const updatedWorkspace = await this.workspaceRepository.save(workspace);
 
-    return this.toGraphQLWorkspace(updatedWorkspace);
+    return Workspace.fromEntity(updatedWorkspace);
   }
 
   async getWorkspaceOwner(ownerId: string): Promise<User> {
@@ -130,12 +231,17 @@ export class WorkspaceService {
   async getWorkspaceDocuments(workspaceId: string): Promise<Document[]> {
     validateUUID(workspaceId, 'Workspace ID');
 
-    const documents = await this.documentRepository.find({ where: { workspaceId } });
+    const documents = await this.documentRepository.find({
+      where: { workspaceId },
+    });
 
-    return [];
+    return Document.fromEntities(documents);
   }
 
-  async getWorkspacesByUser(userId: string, options: PaginationOptions = {}): Promise<Workspace[]> {
+  async getWorkspacesByUser(
+    userId: string,
+    options: PaginationOptions = {},
+  ): Promise<Workspace[]> {
     await this.validateAndGetUser(userId, 'User');
 
     const { limit = 20, offset = 0 } = options;
@@ -147,10 +253,6 @@ export class WorkspaceService {
       order: { createdAt: 'DESC' },
     });
 
-    return workspaces.map((ws) => this.toGraphQLWorkspace(ws));
-  }
-
-  private toGraphQLWorkspace(entity: WorkspaceEntity): Workspace {
-    return toGraphQLWorkspaceUtils(entity);
+    return Workspace.fromEntities(workspaces);
   }
 }

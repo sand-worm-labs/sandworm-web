@@ -42,6 +42,8 @@ export class AuthService {
       loginDto.email,
     );
 
+    console.log('test change', loginDto);
+
     if (!user) {
       throw new UnprocessableEntityException({
         status: HttpStatus.UNPROCESSABLE_ENTITY,

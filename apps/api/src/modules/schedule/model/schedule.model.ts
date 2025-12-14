@@ -1,13 +1,12 @@
-// apps/graphql_api/src/modules/schedule/model/schedule.model.ts
-import { Field, ID, ObjectType, registerEnumType, Int } from '@nestjs/graphql';
-
-export enum ExecutionScheduleType {
-  HOURLY = 'hourly',
-  DAILY = 'daily',
-  WEEKLY = 'weekly',
-  MONTHLY = 'monthly',
-  CRON = 'cron',
-}
+import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
+import {
+  BooleanField,
+  DateFieldOptional,
+  NumberFieldOptional,
+  StringFieldOptional,
+  UUIDField,
+} from '@sandworm/graphql';
+import { ExecutionScheduleEntity, ExecutionScheduleType } from '@sandworm/postgresql-typeorm';
 
 registerEnumType(ExecutionScheduleType, {
   name: 'ExecutionScheduleType',
@@ -16,39 +15,60 @@ registerEnumType(ExecutionScheduleType, {
 
 @ObjectType()
 export class Schedule {
-  @Field(() => ID)
-  id: string;
+  @UUIDField()
+  id!: string;
 
   @Field(() => ExecutionScheduleType)
-  type: ExecutionScheduleType;
+  type!: ExecutionScheduleType;
 
-  @Field(() => Int, { nullable: true })
+  @NumberFieldOptional()
   hour?: number;
 
-  @Field(() => Int, { nullable: true })
+  @NumberFieldOptional()
   minute?: number;
 
-  @Field({ nullable: true })
+  @StringFieldOptional()
   cron?: string;
 
-  @Field({ nullable: true })
-  weekdays?: string; // Serialized array of integers
+  @StringFieldOptional()
+  weekdays?: string;
 
-  @Field({ nullable: true })
-  days?: string; // Serialized array of integers
+  @StringFieldOptional()
+  days?: string;
 
-  @Field()
-  timezone: string;
+  @StringFieldOptional()
+  timezone!: string;
 
-  @Field(() => Boolean)
-  isActive: boolean;
+  @BooleanField()
+  isActive!: boolean;
 
-  @Field({ nullable: true })
+  @DateFieldOptional()
   lastExecutedAt?: Date;
 
-  @Field({ nullable: true })
+  @DateFieldOptional()
   nextExecutionAt?: Date;
 
-  @Field(() => ID)
-  documentId: string;
+  @UUIDField()
+  documentId!: string;
+
+  static fromEntity(entity: ExecutionScheduleEntity): Schedule {
+    const schedule = new Schedule();
+    schedule.id = entity.id;
+    schedule.type = entity.type as ExecutionScheduleType;
+    schedule.hour = entity.hour;
+    schedule.minute = entity.minute;
+    schedule.cron = entity.cron;
+    schedule.weekdays = entity.weekdays;
+    schedule.days = entity.days;
+    schedule.timezone = entity.timezone;
+    schedule.isActive = entity.isActive;
+    schedule.lastExecutedAt = entity.lastExecutedAt;
+    schedule.nextExecutionAt = entity.nextExecutionAt;
+    schedule.documentId = entity.documentId;
+    return schedule;
+  }
+
+  static fromEntities(entities: ExecutionScheduleEntity[]): Schedule[] {
+    return entities.map((entity) => Schedule.fromEntity(entity));
+  }
 }

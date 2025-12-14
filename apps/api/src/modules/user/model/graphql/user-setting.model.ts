@@ -1,5 +1,7 @@
 import { ObjectType, Field, ID } from '@nestjs/graphql';
+import { DateFieldOptional, StringFieldOptional } from '@sandworm/graphql';
 import { GraphQLJSON } from 'graphql-type-json';
+
 @ObjectType('UserSetting')
 export class UserSetting {
   @Field(() => ID)
@@ -18,13 +20,13 @@ export class UserSetting {
     warpcast?: string;
   };
 
-  @Field(() => String)
+  @StringFieldOptional()
   statusText!: string;
 
-  @Field(() => Date)
+  @DateFieldOptional()
   statusUpdatedAt!: Date;
 
-  @Field(() => String)
+  @StringFieldOptional()
   theme!: 'light' | 'dark';
 
   @Field(() => [GraphQLJSON])

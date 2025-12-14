@@ -1,22 +1,38 @@
-import { registerEnumType,Field, ObjectType, ID } from '@nestjs/graphql';
-import { OnboardingTutorialStep } from '@sandworm/postgresql-typeorm';
+// apps/api/src/modules/workspace/model/onboarding_tutorial.model.ts
+import { registerEnumType, ObjectType } from '@nestjs/graphql';
+import { Field } from '@nestjs/graphql';
+import { BooleanField, UUIDField } from '@sandworm/graphql';
+import { OnboardingTutorialStep, TutorialEntity } from '@sandworm/postgresql-typeorm';
 
 registerEnumType(OnboardingTutorialStep, {
-    name: 'OnboardingTutorialStep',
-    description: 'Steps of the onboarding tutorial',
+  name: 'OnboardingTutorialStep',
+  description: 'Steps of the onboarding tutorial',
 });
 
 @ObjectType()
 export class OnboardingTutorial {
-  @Field(() => ID)
+  @UUIDField()
   id!: string;
 
-  @Field(() => OnboardingTutorialStep, { defaultValue : OnboardingTutorialStep.INVITE_TEAM_MEMBERS })
+  @Field(() => OnboardingTutorialStep)
   currentStep!: OnboardingTutorialStep;
 
-  @Field(() => Boolean)
+  @BooleanField()
   isComplete!: boolean;
 
-  @Field(() => Boolean)
+  @BooleanField()
   isDismissed!: boolean;
+
+  static fromEntity(entity: TutorialEntity): OnboardingTutorial {
+    const tutorial = new OnboardingTutorial();
+    tutorial.id = entity.id;
+    tutorial.currentStep = entity.currentStep;
+    tutorial.isComplete = entity.isComplete;
+    tutorial.isDismissed = entity.isDismissed;
+    return tutorial;
+  }
+
+  static fromEntities(entities: TutorialEntity[]): OnboardingTutorial[] {
+    return entities.map((entity) => OnboardingTutorial.fromEntity(entity));
+  }
 }
