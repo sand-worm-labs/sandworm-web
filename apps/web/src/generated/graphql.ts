@@ -42,11 +42,11 @@ export type AuthPayload = {
 
 export type Comment = {
   __typename?: 'Comment';
-  authorId: Scalars['ID']['output'];
+  authorId: Scalars['String']['output'];
   body: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
-  documentId: Scalars['ID']['output'];
-  id: Scalars['ID']['output'];
+  documentId: Scalars['String']['output'];
+  id: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -92,17 +92,17 @@ export type DismissTutorialInput = {
 
 export type Document = {
   __typename?: 'Document';
-  authorId: Scalars['ID']['output'];
+  authorId: Scalars['String']['output'];
   children: Array<Document>;
-  id: Scalars['ID']['output'];
+  id: Scalars['String']['output'];
   parent?: Maybe<Document>;
-  parentId: Scalars['ID']['output'];
+  parentId: Scalars['String']['output'];
   runSQLSelection: Scalars['Boolean']['output'];
   runUnexecutedBlocks: Scalars['Boolean']['output'];
   shareLinksWithoutSidebar: Scalars['Boolean']['output'];
   slug: Scalars['String']['output'];
   title: Scalars['String']['output'];
-  workspaceId: Scalars['ID']['output'];
+  workspaceId: Scalars['String']['output'];
 };
 
 export type DuplicateDocumentInput = {
@@ -112,11 +112,11 @@ export type DuplicateDocumentInput = {
 
 export type Environment = {
   __typename?: 'Environment';
-  id: Scalars['ID']['output'];
+  id: Scalars['String']['output'];
   lastActivityAt: Scalars['DateTime']['output'];
   resourceVersion: Scalars['Float']['output'];
   status: EnvironmentStatus;
-  workspaceId: Scalars['ID']['output'];
+  workspaceId: Scalars['String']['output'];
 };
 
 /** The status of the Jupyter environment */
@@ -130,11 +130,11 @@ export enum EnvironmentStatus {
 
 export type EnvironmentVariable = {
   __typename?: 'EnvironmentVariable';
-  id: Scalars['ID']['output'];
+  id: Scalars['String']['output'];
   name: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
   value: Scalars['String']['output'];
-  workspaceId: Scalars['ID']['output'];
+  workspaceId: Scalars['String']['output'];
 };
 
 export type EnvironmentVariableInput = {
@@ -381,6 +381,8 @@ export type Query = {
   getUserFollowers: Array<User>;
   /** Users that a given user is following */
   getUserFollowing: Array<User>;
+  /** Get user workspace info with roles */
+  getUserWorkspaceInfo: WorkspaceInfo;
   /** Get User workspaces */
   getUserWorkspaces: Array<Workspace>;
   /** Get workspace by ID */
@@ -449,12 +451,6 @@ export type QueryGetUserFollowersArgs = {
 
 export type QueryGetUserFollowingArgs = {
   userId: Scalars['String']['input'];
-};
-
-
-export type QueryGetUserWorkspacesArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -543,9 +539,9 @@ export type UserSetting = {
   __typename?: 'UserSetting';
   id: Scalars['ID']['output'];
   socialLinks?: Maybe<Scalars['JSON']['output']>;
-  statusText: Scalars['String']['output'];
-  statusUpdatedAt: Scalars['DateTime']['output'];
-  theme: Scalars['String']['output'];
+  statusText?: Maybe<Scalars['String']['output']>;
+  statusUpdatedAt?: Maybe<Scalars['DateTime']['output']>;
+  theme?: Maybe<Scalars['String']['output']>;
   userId: Scalars['ID']['output'];
   wallets: Array<Scalars['JSON']['output']>;
 };
@@ -553,14 +549,30 @@ export type UserSetting = {
 export type Workspace = {
   __typename?: 'Workspace';
   documents: Array<Document>;
-  id: Scalars['ID']['output'];
+  id: Scalars['String']['output'];
   name: Scalars['String']['output'];
   owner: User;
-  ownerId: Scalars['ID']['output'];
+  ownerId: Scalars['String']['output'];
   plan: WorkspacePlan;
   source?: Maybe<Scalars['String']['output']>;
   useCases: Array<Scalars['String']['output']>;
   useContext?: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkspaceInfo = {
+  __typename?: 'WorkspaceInfo';
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  ownerId: Scalars['String']['output'];
+  roles: Array<WorkspaceMember>;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type WorkspaceMember = {
+  __typename?: 'WorkspaceMember';
+  role: Scalars['String']['output'];
+  userId: Scalars['String']['output'];
 };
 
 /** Price plan of the workspace */
@@ -583,7 +595,7 @@ export type UpdateUserMutationVariables = Exact<{
 }>;
 
 
-export type UpdateUserMutation = { __typename?: 'Mutation', updateUser: { __typename?: 'User', id: string, email?: string | null, username?: string | null, firstName?: string | null, lastName?: string | null, fullName?: string | null, avater?: string | null, isOnboarded: boolean, settings?: { __typename?: 'UserSetting', id: string, theme: string, statusText: string, statusUpdatedAt: any, socialLinks?: any | null, wallets: Array<any> } | null } };
+export type UpdateUserMutation = { __typename?: 'Mutation', updateUser: { __typename?: 'User', id: string, email?: string | null, username?: string | null, firstName?: string | null, lastName?: string | null, fullName?: string | null, avater?: string | null, isOnboarded: boolean, settings?: { __typename?: 'UserSetting', id: string, theme?: string | null, statusText?: string | null, statusUpdatedAt?: any | null, socialLinks?: any | null, wallets: Array<any> } | null } };
 
 export type FollowUserMutationVariables = Exact<{
   username: Scalars['String']['input'];
@@ -802,10 +814,12 @@ export type FileExistsQueryVariables = Exact<{
 
 export type FileExistsQuery = { __typename?: 'Query', fileExists: boolean };
 
-export type GetUserWorkspacesQueryVariables = Exact<{
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-}>;
+export type GetUserWorkspaceInfoQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetUserWorkspaceInfoQuery = { __typename?: 'Query', getUserWorkspaceInfo: { __typename?: 'WorkspaceInfo', id: string, name: string, ownerId: string, createdAt: any, updatedAt: any, roles: Array<{ __typename?: 'WorkspaceMember', role: string, userId: string }> } };
+
+export type GetUserWorkspacesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetUserWorkspacesQuery = { __typename?: 'Query', getUserWorkspaces: Array<{ __typename?: 'Workspace', id: string, name: string, plan: WorkspacePlan, source?: string | null, useCases: Array<string>, useContext?: string | null, ownerId: string, owner: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null } }> };
@@ -2139,9 +2153,56 @@ export type FileExistsQueryHookResult = ReturnType<typeof useFileExistsQuery>;
 export type FileExistsLazyQueryHookResult = ReturnType<typeof useFileExistsLazyQuery>;
 export type FileExistsSuspenseQueryHookResult = ReturnType<typeof useFileExistsSuspenseQuery>;
 export type FileExistsQueryResult = Apollo.QueryResult<FileExistsQuery, FileExistsQueryVariables>;
+export const GetUserWorkspaceInfoDocument = gql`
+    query GetUserWorkspaceInfo {
+  getUserWorkspaceInfo {
+    id
+    name
+    ownerId
+    createdAt
+    updatedAt
+    roles {
+      role
+      userId
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetUserWorkspaceInfoQuery__
+ *
+ * To run a query within a React component, call `useGetUserWorkspaceInfoQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUserWorkspaceInfoQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUserWorkspaceInfoQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetUserWorkspaceInfoQuery(baseOptions?: Apollo.QueryHookOptions<GetUserWorkspaceInfoQuery, GetUserWorkspaceInfoQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetUserWorkspaceInfoQuery, GetUserWorkspaceInfoQueryVariables>(GetUserWorkspaceInfoDocument, options);
+      }
+export function useGetUserWorkspaceInfoLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserWorkspaceInfoQuery, GetUserWorkspaceInfoQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetUserWorkspaceInfoQuery, GetUserWorkspaceInfoQueryVariables>(GetUserWorkspaceInfoDocument, options);
+        }
+export function useGetUserWorkspaceInfoSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetUserWorkspaceInfoQuery, GetUserWorkspaceInfoQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetUserWorkspaceInfoQuery, GetUserWorkspaceInfoQueryVariables>(GetUserWorkspaceInfoDocument, options);
+        }
+export type GetUserWorkspaceInfoQueryHookResult = ReturnType<typeof useGetUserWorkspaceInfoQuery>;
+export type GetUserWorkspaceInfoLazyQueryHookResult = ReturnType<typeof useGetUserWorkspaceInfoLazyQuery>;
+export type GetUserWorkspaceInfoSuspenseQueryHookResult = ReturnType<typeof useGetUserWorkspaceInfoSuspenseQuery>;
+export type GetUserWorkspaceInfoQueryResult = Apollo.QueryResult<GetUserWorkspaceInfoQuery, GetUserWorkspaceInfoQueryVariables>;
 export const GetUserWorkspacesDocument = gql`
-    query GetUserWorkspaces($limit: Int, $offset: Int) {
-  getUserWorkspaces(limit: $limit, offset: $offset) {
+    query GetUserWorkspaces {
+  getUserWorkspaces {
     id
     name
     plan
@@ -2172,8 +2233,6 @@ export const GetUserWorkspacesDocument = gql`
  * @example
  * const { data, loading, error } = useGetUserWorkspacesQuery({
  *   variables: {
- *      limit: // value for 'limit'
- *      offset: // value for 'offset'
  *   },
  * });
  */

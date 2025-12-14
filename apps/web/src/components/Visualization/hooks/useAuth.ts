@@ -162,7 +162,6 @@ export const useLogin = (): UseLogin => {
 
   const loginWithPassword = useCallback(
     (email: string, password: string, callback?: string) => {
-      console.log(" Login initiated for:", email);
       setState(s => ({ ...s, loading: true }));
       fetch(`${NEXT_PUBLIC_API_URL()}/auth/email/login`, {
         credentials: "include",
@@ -186,7 +185,7 @@ export const useLogin = (): UseLogin => {
               error: undefined,
             });
 
-            window.location.href = callback || "/";
+            window.location.href = callback || "/workspace";
 
             return;
           }
@@ -259,7 +258,7 @@ export const useSession = ({
 
   return useMemo(
     () => ({
-      user: data?.currentUser ?? null,
+      user: data?.currentUser?.user ?? null,
       loading,
       error: error?.message ?? null,
       isAuthenticated: !!data?.currentUser,

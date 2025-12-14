@@ -292,7 +292,7 @@ type Query {
   getUserWorkspaceInfo: WorkspaceInfo!
 
   """Get User workspaces"""
-  getUserWorkspaces(limit: Int, offset: Int): [Workspace!]!
+  getUserWorkspaces: [Workspace!]!
 
   """Get workspace by ID"""
   getWorkspace(workspaceId: String!): Workspace!
