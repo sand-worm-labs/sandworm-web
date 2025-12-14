@@ -7,8 +7,10 @@ import {
 import { Repository } from 'typeorm';
 import {
   WorkspaceEntity,
+  UserWorkspaceEntity,
   UserEntity,
   DocumentEntity,
+  UserWorkspaceRole,
 } from '@sandworm/postgresql-typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Workspace } from './model/workspace.model';
@@ -19,6 +21,7 @@ import {
   validateNonEmptyString,
   validateStringLength,
 } from '@/utils/uuid';
+import { WorkspaceInfo } from './model/workspace-info.model';
 
 interface PaginationOptions {
   limit?: number;
@@ -30,17 +33,17 @@ export class WorkspaceService {
   private readonly logger = new Logger(WorkspaceService.name);
 
   constructor(
-    @InjectRepository(WorkspaceEntity)
-    private readonly workspaceRepository: Repository<WorkspaceEntity>,
-    @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>,
-    @InjectRepository(DocumentEntity)
-    private readonly documentRepository: Repository<DocumentEntity>,
+      @InjectRepository(WorkspaceEntity)
+      private readonly workspaceRepository: Repository<WorkspaceEntity>,
+      @InjectRepository(UserWorkspaceEntity)  // Changed from WorkspaceEntity
+      private readonly workspaceMembersRepository: Repository<UserWorkspaceEntity>,
+      @InjectRepository(UserEntity)
+      private readonly userRepository: Repository<UserEntity>,
+      @InjectRepository(DocumentEntity)
+      private readonly documentRepository: Repository<DocumentEntity>,
   ) {}
 
-  /**
-   * Validates and retrieves a user by ID
-   */
+ 
   private async validateAndGetUser(
     userId: string,
     fieldName: string = 'User',
@@ -111,6 +114,74 @@ export class WorkspaceService {
 
     return Workspace.fromEntity(savedWorkspace);
   }
+
+  async getUserWorkspaceInfo(userId: string): Promise<WorkspaceInfo> {
+    validateUUID(userId, 'User ID');
+  
+    const user = await this.validateAndGetUser(userId, 'User');
+    let workspaceId = user.lastVisitedWorkspaceId;
+    console.log('getUserWorkspaceInfo', workspaceId,userId);
+    if (!workspaceId) {
+      const userWorkspaces = await this.workspaceRepository.find({
+        where: { ownerId: userId },
+        order: { createdAt: 'ASC' },
+        take: 1,
+      });
+  
+      if (userWorkspaces.length > 0) {
+        workspaceId = userWorkspaces[0].id;
+        user.lastVisitedWorkspaceId = workspaceId;
+        await this.userRepository.save(user);
+      } else {
+  
+        const newWorkspace = await this.createWorkspace({
+          ownerId: userId,
+          name: user.getTeamName(),
+        });
+  
+        workspaceId = newWorkspace.id;
+        user.lastVisitedWorkspaceId = workspaceId;
+        await this.userRepository.save(user);
+  
+        const member = this.workspaceMembersRepository.create({
+          workspaceId,
+          userId,
+          role: UserWorkspaceRole.ADMIN,
+        });
+  
+        await this.workspaceMembersRepository.save(member);
+  
+        this.logger.log(
+          `Created default workspace ${workspaceId} for user ${userId}`,
+        );
+      }
+    }
+  
+    const workspace = await this.workspaceRepository.findOne({
+      where: { id: workspaceId },
+    });
+  
+    if (!workspace) {
+      throw new NotFoundException('Workspace not found');
+    }
+  
+    const currentUserWorkspaces = await this.workspaceMembersRepository.find({
+      where: { userId: userId , workspaceId: workspaceId },
+    });
+  
+    return {
+      id: workspace.id,
+      name: workspace.name,
+      ownerId: workspace.ownerId,
+      createdAt: workspace.createdAt,
+      updatedAt: workspace.updatedAt,
+      roles: currentUserWorkspaces.map((member) => ({
+        userId: member.userId,
+        role: member.role,
+      })),
+    };
+  }
+
 
   async updateWorkspace(
     workspaceId: string,

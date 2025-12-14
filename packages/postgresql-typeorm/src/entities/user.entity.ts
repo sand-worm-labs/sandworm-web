@@ -79,6 +79,10 @@ export class UserEntity extends AbstractEntity {
   @Column({ nullable: true, select: false })
   password?: string;
 
+  @Column({ name: 'last_visited_workspace_id', type: 'uuid', nullable: true })
+  @Index('IDX_users_last_visited_workspace_id')
+  lastVisitedWorkspaceId?: string | null;
+
   @BeforeInsert()
   @BeforeUpdate()
   async hashPassword() {
@@ -133,8 +137,21 @@ export class UserEntity extends AbstractEntity {
 
   @OneToMany(() => UserWorkspaceEntity, (uw) => uw.inviter)
   workspacesInvitees!: Relation<UserWorkspaceEntity[]>;
-  
+
   getDisplayName(): string {
     return this.fullName || this.username || this.email || 'Anonymous';
+  }
+
+  getTeamName(): string {
+    return [
+      this.firstName && this.lastName ? `${this.firstName} ${this.lastName}` : null,
+      this.fullName,
+      this.username,
+      this.firstName,
+      this.lastName,
+      this.email?.split('@')[0],
+      this.id ? `User ${this.id.substring(0, 8)}` : null,
+      'My'
+    ].find(name => name?.trim())?.trim() + "'s Team";
   }
 }
