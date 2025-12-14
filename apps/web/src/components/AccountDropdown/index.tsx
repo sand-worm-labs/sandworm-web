@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import { Share2, MoreVertical } from "lucide-react";
-import { signOut } from "next-auth/react";
+import { MoreVertical } from "lucide-react";
 import Link from "next/link";
+
 import {
   Avatar,
   AvatarImage,
@@ -19,44 +19,16 @@ import { Button } from "@sandworm/ui/components/button";
 
 import { useModalStore } from "@/store/auth";
 
-import { useSession } from "../Visualization/hooks/useAuth";
+import { useSession, useSignout } from "../Visualization/hooks/useAuth";
 
 export const AccountDropdown = () => {
   const session = useSession({ redirectToLogin: true });
-  console.log("Session in AccountDropdown:", session);
-  /*   const user = session?.user;
-   */ const openSignIn = useModalStore(state => state.openSignIn);
+  const openSignIn = useModalStore(state => state.openSignIn);
+  const signout = useSignout();
 
-  const user = {
-    id: "user_001",
-    name: "johndoe",
-    username: "johndoe",
-    email: "john.doe@example.com",
+  const user = session?.user;
 
-    picture: null,
-    image: undefined,
-    status: "ACTIVE",
-
-    socialLinks: {
-      twitter: "https://x.com/johndoe",
-      github: "https://github.com/johndoe",
-      website: "https://johndoe.dev",
-    },
-
-    wallets: [],
-    stars: 12,
-    forks: 3,
-
-    createdAt: new Date("2023-08-10"),
-    updatedAt: new Date("2024-11-22"),
-    emailVerified: new Date(),
-
-    userHash: "hash_john_123",
-    lastVisitedWorkspaceId: "42",
-    roles: {
-      "workspace-42": "OWNER",
-    },
-  } as const;
+  console.log(session);
 
   if (!user) {
     return (
@@ -82,15 +54,15 @@ export const AccountDropdown = () => {
             <div className="flex items-center gap-3">
               <Avatar className="h-9 w-9">
                 <AvatarImage
-                  src={user.image ?? undefined}
-                  alt={user.name ?? "User"}
+                  src={user.avater ?? undefined}
+                  alt={user.firstName ?? "User"}
                 />
                 <AvatarFallback>
-                  {user.name?.split(" ")[0]?.[0] ?? "U"}
+                  {user.firstName?.split(" ")[0]?.[0] ?? "U"}
                 </AvatarFallback>
               </Avatar>
               <div className="flex flex-col text-left leading-tight text-[0.9rem] font-primary">
-                <span>@{user.name ?? "User"}</span>
+                <span>@{user.firstName ?? "User"}</span>
               </div>
             </div>
             <MoreVertical className="ml-2 h-4 w-4" />
@@ -105,15 +77,20 @@ export const AccountDropdown = () => {
             <div className="flex items-center gap-3">
               <Avatar className="h-10 w-10">
                 <AvatarImage
-                  src={user.image ?? undefined}
-                  alt={user.name ?? "User"}
+                  src={user.avater ?? undefined}
+                  alt={user.firstName ?? "User"}
                 />
                 <AvatarFallback>
-                  {user.name?.split(" ")[0]?.[0] ?? "U"}
+                  {user.firstName?.split(" ")[0]?.[0] ?? "U"}
                 </AvatarFallback>
               </Avatar>
               <div>
-                <p className="font-medium text-sm">@{user.name ?? "Guest"}</p>
+                <p className="font-medium text-sm">
+                  {user.firstName ?? "Guest"}
+                </p>
+                <p className="font-medium text-xs text-[#6C757D]">
+                  @{user.email ?? ""}
+                </p>
               </div>
             </div>
             <Button
@@ -151,7 +128,7 @@ export const AccountDropdown = () => {
             <Button
               variant="destructive"
               className="w-full text-[0.8rem] py-5 bg-[#FF0000]"
-              onClick={() => signOut()}
+              onClick={signout}
             >
               Sign Out
             </Button>

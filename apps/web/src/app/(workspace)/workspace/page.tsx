@@ -1,77 +1,43 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 
 import { useSession } from "@/components/Visualization/hooks/useAuth";
-
-const dummyWorkspaces = [
-  {
-    id: "1",
-    name: "405498a2-f3cb-4307-bd1e-4daf5b3a1dba",
-    ownerId: "user_123",
-  },
-  {
-    id: "2",
-    name: "405498a2-f3cb-4307-bd1e-4daf5b3a1dbb",
-    ownerId: "user_999",
-  },
-];
-
-export function getUserRedirectWorkspace(
-  workspaces: { id: string; name: string; ownerId: string }[],
-  user: { id: string; lastVisitedWorkspaceId: string | null }
-) {
-  if (!workspaces || workspaces.length === 0) {
-    return {
-      id: "405498a2-f3cb-4307-bd1e-4daf5b3a1dba",
-      name: "default-workspace",
-      ownerId: user.id,
-    };
-  }
-
-  return (
-    (user.lastVisitedWorkspaceId &&
-      workspaces.find(w => w.id === user.lastVisitedWorkspaceId)) ??
-    workspaces.find(w => w.ownerId === user.id) ??
-    workspaces[0]
-  );
-}
+import { useCurrentWorkspaceInfo } from "@/components/Visualization/hooks/useWorkspaces";
 
 export default function WorkspaceRedirectPage() {
   const router = useRouter();
-  const session = useSession({ redirectToLogin: true });
-
-  const user = useMemo(() => {
-    if (!session.user) return null;
-
-    return {
-      ...session.user,
-      lastVisitedWorkspaceId: session.user.lastVisitedWorkspaceId ?? null,
-    };
-  }, [session.user]);
-
-  const workspaces = {
-    data: dummyWorkspaces,
-    isLoading: false,
-  };
-
-  const workspace = useMemo(() => {
-    if (!workspaces.isLoading && user) {
-      return getUserRedirectWorkspace(workspaces.data, user);
-    }
-    return null;
-  }, [workspaces.isLoading, workspaces.data, user]);
+  const { user, loading: sessionLoading } = useSession({
+    redirectToLogin: true,
+  });
+  const { workspaceInfo, isLoading: workspaceLoading } =
+    useCurrentWorkspaceInfo();
+  // which of the user workspace does this return?
+  //  how does this handle a workspace user has no access to?
 
   useEffect(() => {
-    if (session.loading) return;
-    if (workspaces.isLoading) return;
+    if (sessionLoading || workspaceLoading) return;
     if (!user) return;
 
-    if (workspace) {
-      router.replace(`/workspace/${workspace.name}`);
+    if (workspaceInfo) {
+      router.replace(`/workspace/${workspaceInfo.id}`);
+    } else {
+      // we need to handle edge case where user has no workspace. also need to handle workspace permissions later
+      router.replace("/workspace/new");
     }
-  }, [workspace, session.loading, workspaces.isLoading, user, router]);
+  }, [workspaceInfo, sessionLoading, workspaceLoading, user, router]);
+
+  if (sessionLoading || workspaceLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4" />
+          <p className="text-sm text-gray-600">Loading workspace...</p>
+        </div>
+      </div>
+    );
+  }
 
   return null;
 }
