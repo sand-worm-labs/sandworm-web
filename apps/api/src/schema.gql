@@ -22,11 +22,11 @@ type AuthPayload {
 }
 
 type Comment {
-  authorId: ID!
+  authorId: String!
   body: String!
   createdAt: DateTime!
-  documentId: ID!
-  id: ID!
+  documentId: String!
+  id: String!
   updatedAt: DateTime!
 }
 
@@ -76,17 +76,17 @@ input DismissTutorialInput {
 }
 
 type Document {
-  authorId: ID!
+  authorId: String!
   children: [Document!]!
-  id: ID!
+  id: String!
   parent: Document
-  parentId: ID!
+  parentId: String!
   runSQLSelection: Boolean!
   runUnexecutedBlocks: Boolean!
   shareLinksWithoutSidebar: Boolean!
   slug: String!
   title: String!
-  workspaceId: ID!
+  workspaceId: String!
 }
 
 input DuplicateDocumentInput {
@@ -95,11 +95,11 @@ input DuplicateDocumentInput {
 }
 
 type Environment {
-  id: ID!
+  id: String!
   lastActivityAt: DateTime!
   resourceVersion: Float!
   status: EnvironmentStatus!
-  workspaceId: ID!
+  workspaceId: String!
 }
 
 """The status of the Jupyter environment"""
@@ -112,11 +112,11 @@ enum EnvironmentStatus {
 }
 
 type EnvironmentVariable {
-  id: ID!
+  id: String!
   name: String!
   updatedAt: DateTime!
   value: String!
-  workspaceId: ID!
+  workspaceId: String!
 }
 
 input EnvironmentVariableInput {
@@ -288,6 +288,9 @@ type Query {
   """Users that a given user is following"""
   getUserFollowing(userId: String!): [User!]!
 
+  """Get user workspace info with roles"""
+  getUserWorkspaceInfo: WorkspaceInfo!
+
   """Get User workspaces"""
   getUserWorkspaces(limit: Int, offset: Int): [Workspace!]!
 
@@ -370,23 +373,37 @@ type User {
 type UserSetting {
   id: ID!
   socialLinks: JSON
-  statusText: String!
-  statusUpdatedAt: DateTime!
-  theme: String!
+  statusText: String
+  statusUpdatedAt: DateTime
+  theme: String
   userId: ID!
   wallets: [JSON!]!
 }
 
 type Workspace {
   documents: [Document!]!
-  id: ID!
+  id: String!
   name: String!
   owner: User!
-  ownerId: ID!
+  ownerId: String!
   plan: WorkspacePlan!
   source: String
   useCases: [String!]!
   useContext: String
+}
+
+type WorkspaceInfo {
+  createdAt: DateTime!
+  id: String!
+  name: String!
+  ownerId: String!
+  roles: [WorkspaceMember!]!
+  updatedAt: DateTime!
+}
+
+type WorkspaceMember {
+  role: String!
+  userId: String!
 }
 
 """Price plan of the workspace"""
