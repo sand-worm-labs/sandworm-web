@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
+import { useSession } from "@/components/Visualization/hooks/useAuth";
 
 export default function ProfileSettings() {
   const [formData, setFormData] = useState({
@@ -18,7 +18,9 @@ export default function ProfileSettings() {
   ) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
-  const { data: session } = useSession();
+  const session = useSession({ redirectToLogin: true });
+
+  console.log("Session data:", session);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

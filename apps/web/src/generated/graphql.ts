@@ -19,10 +19,24 @@ export type Scalars = {
   JSON: { input: any; output: any; }
 };
 
+export type AdvanceTutorialInput = {
+  ifCurrentStep?: InputMaybe<Scalars['String']['input']>;
+  tutorialType: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
+};
+
+export type AdvanceTutorialResult = {
+  __typename?: 'AdvanceTutorialResult';
+  currentState?: Maybe<TutorialState>;
+  didAdvance: Scalars['Boolean']['output'];
+  prevStep?: Maybe<OnboardingTutorialStep>;
+};
+
 export type AuthPayload = {
   __typename?: 'AuthPayload';
   id: Scalars['String']['output'];
   token: Scalars['String']['output'];
+  tokenExpires: Scalars['Float']['output'];
   user: User;
 };
 
@@ -68,6 +82,11 @@ export type DeleteDocumentInput = {
 
 export type DeleteFileInput = {
   path: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
+};
+
+export type DismissTutorialInput = {
+  tutorialType: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
 };
 
@@ -135,6 +154,11 @@ export type GetAllUsersInput = {
   sortOrder?: Scalars['String']['input'];
 };
 
+export type GetTutorialStateInput = {
+  tutorialType: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
+};
+
 export type ListFilesInput = {
   path?: InputMaybe<Scalars['String']['input']>;
   workspaceId: Scalars['String']['input'];
@@ -152,6 +176,8 @@ export type Mutation = {
   __typename?: 'Mutation';
   /** Mark a document as a favorite */
   addFavoriteDocument: Document;
+  /** Advance to the next step in the tutorial */
+  advanceTutorial: AdvanceTutorialResult;
   /** Create a new comment on a document */
   createComment: Comment;
   /** Create a new document in a workspace */
@@ -168,12 +194,14 @@ export type Mutation = {
   deleteEnvironmentVariable: Scalars['Boolean']['output'];
   /** Delete a file from the workspace */
   deleteFile: Scalars['Boolean']['output'];
+  /** Dismiss a completed tutorial */
+  dismissTutorial: TutorialState;
   /** Create a fork/duplicate of a document */
   duplicateDocument: Document;
   /** Follow User */
   followUser: Profile;
   /** Sign in */
-  login: User;
+  login: AuthPayload;
   /** Unmark a document as a favorite */
   removeFavoriteDocument: Document;
   /** Restart the Jupyter environment */
@@ -195,6 +223,11 @@ export type Mutation = {
 
 export type MutationAddFavoriteDocumentArgs = {
   input: FavoriteDocumentInput;
+};
+
+
+export type MutationAdvanceTutorialArgs = {
+  input: AdvanceTutorialInput;
 };
 
 
@@ -238,6 +271,11 @@ export type MutationDeleteEnvironmentVariableArgs = {
 
 export type MutationDeleteFileArgs = {
   input: DeleteFileInput;
+};
+
+
+export type MutationDismissTutorialArgs = {
+  input: DismissTutorialInput;
 };
 
 
@@ -299,6 +337,16 @@ export type MutationUpdateWorkspaceArgs = {
   workspaceId: Scalars['String']['input'];
 };
 
+/** Steps in the onboarding tutorial */
+export enum OnboardingTutorialStep {
+  ConnectDataSource = 'CONNECT_DATA_SOURCE',
+  CreateVisualization = 'CREATE_VISUALIZATION',
+  InviteTeamMembers = 'INVITE_TEAM_MEMBERS',
+  PublishDashboard = 'PUBLISH_DASHBOARD',
+  RunPython = 'RUN_PYTHON',
+  RunQuery = 'RUN_QUERY'
+}
+
 export type Profile = {
   __typename?: 'Profile';
   bio: Scalars['String']['output'];
@@ -327,6 +375,8 @@ export type Query = {
   getAllUsers: Array<User>;
   /** Get a single document by ID */
   getDocument: Document;
+  /** Get the current state of a tutorial */
+  getTutorialState: TutorialState;
   /** Users who follow a given user */
   getUserFollowers: Array<User>;
   /** Users that a given user is following */
@@ -384,6 +434,11 @@ export type QueryGetAllUsersArgs = {
 export type QueryGetDocumentArgs = {
   documentId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
+};
+
+
+export type QueryGetTutorialStateArgs = {
+  input: GetTutorialStateInput;
 };
 
 
@@ -446,6 +501,15 @@ export type SetEnvironmentVariablesInput = {
   remove: Array<Scalars['String']['input']>;
 };
 
+export type TutorialState = {
+  __typename?: 'TutorialState';
+  currentStep: OnboardingTutorialStep;
+  id: Scalars['String']['output'];
+  isCompleted: Scalars['Boolean']['output'];
+  isDismissed: Scalars['Boolean']['output'];
+  stepStates?: Maybe<Scalars['JSON']['output']>;
+};
+
 export type UpdateDocumentInput = {
   title?: InputMaybe<Scalars['String']['input']>;
 };
@@ -506,13 +570,6 @@ export enum WorkspacePlan {
   Pro = 'PRO',
   Trial = 'TRIAL'
 }
-
-export type LoginMutationVariables = Exact<{
-  input: LoginInput;
-}>;
-
-
-export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'User', id: string, email?: string | null, username?: string | null, firstName?: string | null, lastName?: string | null, fullName?: string | null, avater?: string | null, isOnboarded: boolean, followersCount: number, followingCount: number, settings?: { __typename?: 'UserSetting', id: string, theme: string, statusText: string, statusUpdatedAt: any, socialLinks?: any | null, wallets: Array<any>, userId: string } | null } };
 
 export type CreateUserMutationVariables = Exact<{
   input: CreateUserInput;
@@ -657,7 +714,7 @@ export type UpdateWorkspaceMutation = { __typename?: 'Mutation', updateWorkspace
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentUserQuery = { __typename?: 'Query', currentUser: { __typename?: 'AuthPayload', id: string, token: string, user: { __typename?: 'User', id: string, email?: string | null, username?: string | null, firstName?: string | null, lastName?: string | null, fullName?: string | null, avater?: string | null, isOnboarded: boolean, followersCount: number, followingCount: number, settings?: { __typename?: 'UserSetting', id: string, theme: string, statusText: string, statusUpdatedAt: any, socialLinks?: any | null, wallets: Array<any>, userId: string } | null } } };
+export type CurrentUserQuery = { __typename?: 'Query', currentUser: { __typename: 'AuthPayload', id: string, token: string, tokenExpires: number, user: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, fullName?: string | null, isOnboarded: boolean, avater?: string | null, followersCount: number, followingCount: number } } };
 
 export type GetProfileQueryVariables = Exact<{
   username: Scalars['String']['input'];
@@ -745,11 +802,6 @@ export type FileExistsQueryVariables = Exact<{
 
 export type FileExistsQuery = { __typename?: 'Query', fileExists: boolean };
 
-export type GetTagsQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetTagsQuery = { __typename?: 'Query', tags: Array<string> };
-
 export type GetUserWorkspacesQueryVariables = Exact<{
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -773,57 +825,6 @@ export type GetWorkspaceDocumentsQueryVariables = Exact<{
 export type GetWorkspaceDocumentsQuery = { __typename?: 'Query', getWorkspaceDocuments: Array<{ __typename?: 'Document', id: string, title: string, slug: string, authorId: string, workspaceId: string, parentId: string, runSQLSelection: boolean, runUnexecutedBlocks: boolean, shareLinksWithoutSidebar: boolean, children: Array<{ __typename?: 'Document', id: string, title: string, slug: string }> }> };
 
 
-export const LoginDocument = gql`
-    mutation Login($input: LoginInput!) {
-  login(input: $input) {
-    id
-    email
-    username
-    firstName
-    lastName
-    fullName
-    avater
-    isOnboarded
-    followersCount
-    followingCount
-    settings {
-      id
-      theme
-      statusText
-      statusUpdatedAt
-      socialLinks
-      wallets
-      userId
-    }
-  }
-}
-    `;
-export type LoginMutationFn = Apollo.MutationFunction<LoginMutation, LoginMutationVariables>;
-
-/**
- * __useLoginMutation__
- *
- * To run a mutation, you first call `useLoginMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useLoginMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [loginMutation, { data, loading, error }] = useLoginMutation({
- *   variables: {
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useLoginMutation(baseOptions?: Apollo.MutationHookOptions<LoginMutation, LoginMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<LoginMutation, LoginMutationVariables>(LoginDocument, options);
-      }
-export type LoginMutationHookResult = ReturnType<typeof useLoginMutation>;
-export type LoginMutationResult = Apollo.MutationResult<LoginMutation>;
-export type LoginMutationOptions = Apollo.BaseMutationOptions<LoginMutation, LoginMutationVariables>;
 export const CreateUserDocument = gql`
     mutation CreateUser($input: CreateUserInput!) {
   createUser(input: $input) {
@@ -1543,27 +1544,20 @@ export const CurrentUserDocument = gql`
   currentUser {
     id
     token
+    tokenExpires
     user {
       id
-      email
       username
+      email
       firstName
       lastName
       fullName
-      avater
       isOnboarded
+      avater
       followersCount
       followingCount
-      settings {
-        id
-        theme
-        statusText
-        statusUpdatedAt
-        socialLinks
-        wallets
-        userId
-      }
     }
+    __typename
   }
 }
     `;
@@ -2145,43 +2139,6 @@ export type FileExistsQueryHookResult = ReturnType<typeof useFileExistsQuery>;
 export type FileExistsLazyQueryHookResult = ReturnType<typeof useFileExistsLazyQuery>;
 export type FileExistsSuspenseQueryHookResult = ReturnType<typeof useFileExistsSuspenseQuery>;
 export type FileExistsQueryResult = Apollo.QueryResult<FileExistsQuery, FileExistsQueryVariables>;
-export const GetTagsDocument = gql`
-    query GetTags {
-  tags
-}
-    `;
-
-/**
- * __useGetTagsQuery__
- *
- * To run a query within a React component, call `useGetTagsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetTagsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetTagsQuery({
- *   variables: {
- *   },
- * });
- */
-export function useGetTagsQuery(baseOptions?: Apollo.QueryHookOptions<GetTagsQuery, GetTagsQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetTagsQuery, GetTagsQueryVariables>(GetTagsDocument, options);
-      }
-export function useGetTagsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetTagsQuery, GetTagsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetTagsQuery, GetTagsQueryVariables>(GetTagsDocument, options);
-        }
-export function useGetTagsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetTagsQuery, GetTagsQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetTagsQuery, GetTagsQueryVariables>(GetTagsDocument, options);
-        }
-export type GetTagsQueryHookResult = ReturnType<typeof useGetTagsQuery>;
-export type GetTagsLazyQueryHookResult = ReturnType<typeof useGetTagsLazyQuery>;
-export type GetTagsSuspenseQueryHookResult = ReturnType<typeof useGetTagsSuspenseQuery>;
-export type GetTagsQueryResult = Apollo.QueryResult<GetTagsQuery, GetTagsQueryVariables>;
 export const GetUserWorkspacesDocument = gql`
     query GetUserWorkspaces($limit: Int, $offset: Int) {
   getUserWorkspaces(limit: $limit, offset: $offset) {
