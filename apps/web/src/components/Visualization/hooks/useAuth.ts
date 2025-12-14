@@ -185,6 +185,9 @@ export const useLogin = (): UseLogin => {
               data,
               error: undefined,
             });
+
+            window.location.href = callback || "/";
+
             return;
           }
 
@@ -240,6 +243,12 @@ export const useSession = ({
     skip: !token,
     fetchPolicy: "network-only",
   });
+
+  useEffect(() => {
+    if (token) {
+      refetch();
+    }
+  }, [token, refetch]);
 
   useEffect(() => {
     if (!loading && !token && redirectToLogin) {

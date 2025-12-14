@@ -1,29 +1,6 @@
 # Authentication Mutations
 
 # Sign in with email and password
-mutation Login($input: LoginInput!) {
-  login(input: $input) {
-    id
-    email
-    username
-    firstName
-    lastName
-    fullName
-    avater
-    isOnboarded
-    followersCount
-    followingCount
-    settings {
-      id
-      theme
-      statusText
-      statusUpdatedAt
-      socialLinks
-      wallets
-      userId
-    }
-  }
-}
 
 # Register a new user
 mutation CreateUser($input: CreateUserInput!) {

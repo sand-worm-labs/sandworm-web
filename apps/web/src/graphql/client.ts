@@ -1,7 +1,7 @@
 /**
  * Creates a configured ApolloClient instance.
  * - TypeScript typed
- * - Batch requests to reduce HTTP overhead
+ * - Regular HTTP requests (batching disabled to fix 400 error)
  * - Retry on transient network errors
  * - Centralized error handling (GraphQL + Network)
  * - Auth header injection and refresh token handling with request queueing
@@ -13,8 +13,9 @@ import {
   ApolloLink,
   from,
   type NormalizedCacheObject,
+  Observable,
+  HttpLink,
 } from "@apollo/client";
-import { BatchHttpLink } from "@apollo/client/link/batch-http";
 import { onError } from "@apollo/client/link/error";
 import { RetryLink } from "@apollo/client/link/retry";
 import { setContext } from "@apollo/client/link/context";
@@ -52,22 +53,37 @@ export const createApolloClient = ({
   getAccessToken,
   refreshAccessToken,
 }: CreateClientOpts): ApolloClient<NormalizedCacheObject> => {
+  console.log("🚀 Initializing Apollo Client with URL:", graphqlUrl);
+
   // 1) Error handling link (GraphQL errors / Network errors)
   const errorLink = onError(
     ({ graphQLErrors, networkError, operation, forward, response }) => {
       if (graphQLErrors) {
-        for (const err of graphQLErrors) {
-          // Example: handle authentication errors centrally
-          // Adjust the message/code check to match your server
-          if ((err.extensions as any)?.code === "UNAUTHENTICATED") {
-            // We don't retry here directly - authLink will attempt refresh if needed
+        graphQLErrors.forEach(({ message, locations, path, extensions }) => {
+          console.error(
+            `[GraphQL error]: Message: ${message}, Location: ${JSON.stringify(locations)}, Path: ${path}`,
+            extensions
+          );
+
+          // Handle authentication errors
+          if ((extensions as any)?.code === "UNAUTHENTICATED") {
+            console.warn(
+              "UNAUTHENTICATED error detected - token may need refresh"
+            );
           }
-        }
+        });
       }
 
-      // optionally log network errors / report to monitoring
       if (networkError) {
-        // console.warn("Network error:", networkError);
+        console.error(`[Network error]: ${networkError.message}`, networkError);
+        // Log more details for 400 errors
+        if ("statusCode" in networkError && networkError.statusCode === 400) {
+          console.error(
+            "400 Bad Request - Check request format and server logs"
+          );
+          console.error("Operation:", operation.operationName);
+          console.error("Variables:", operation.variables);
+        }
       }
     }
   );
@@ -76,7 +92,13 @@ export const createApolloClient = ({
   const retryLink = new RetryLink({
     attempts: {
       max: 3,
-      retryIf: (error, _operation) => !!error,
+      retryIf: (error, _operation) => {
+        // Don't retry on 400 errors (bad request)
+        if (error && "statusCode" in error && error.statusCode === 400) {
+          return false;
+        }
+        return !!error;
+      },
     },
     delay: {
       initial: 300,
@@ -88,55 +110,69 @@ export const createApolloClient = ({
   // 3) Auth link with refresh logic and request queueing to avoid multiple refreshes
   const authLink = setContext((operation, { headers }) => {
     const token = getAccessToken();
+
+    console.log("🔑 Auth Link - Token:", token ? "Present" : "Missing");
+
     return {
       headers: {
         ...headers,
-        Authorization: token ? `Bearer ${token}` : "",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
     };
   });
 
   /**
    * Special link which intercepts responses for 401-like issues and tries refresh.
-   * We implement a short link that will:
-   * - If a request gets UNAUTHENTICATED GraphQL error or 401 network response, attempt refresh
-   * - Queue subsequent requests until refresh finishes
-   *
-   * This uses ApolloLink to intercept operation/forward pipeline.
+   * This properly returns an Observable that Apollo can subscribe to.
    */
   const refreshLink = new ApolloLink((operation, forward) => {
-    return new ApolloLink((op, fwd) => {
-      return new Promise((resolve, reject) => {
-        let handled = false;
+    // If a token refresh is ongoing, wait for it before forwarding
+    if (refreshingPromise) {
+      return new Observable(observer => {
+        let sub: any;
 
-        const tryForward = () => {
-          if (handled) return;
-          handled = true;
-          const sub = fwd(op).subscribe({
-            next: resolve,
-            error: reject,
-            complete: () => {},
+        addPendingRequest(() => {
+          // After refresh completes, forward the operation
+          sub = forward(operation).subscribe({
+            next: observer.next.bind(observer),
+            error: observer.error.bind(observer),
+            complete: observer.complete.bind(observer),
           });
+        });
+
+        // Cleanup function
+        return () => {
+          if (sub) sub.unsubscribe();
         };
-
-        // If a token refresh is ongoing, wait for it before forwarding
-        if (refreshingPromise) {
-          addPendingRequest(() => {
-            tryForward();
-          });
-        } else {
-          tryForward();
-        }
       });
-    }).request(operation, forward);
+    }
+
+    // No refresh in progress, forward normally
+    return forward(operation);
   });
 
-  // 4) HTTP link (batching)
-  const batchHttpLink = new BatchHttpLink({
+  // 4) HTTP link (REGULAR - not batched to avoid 400 errors)
+  const httpLink = new HttpLink({
     uri: graphqlUrl,
-    batchMax: 10, // max ops per batch
-    batchInterval: 20, // ms to wait to collect batch
-    // fetchOptions: { credentials: 'include' } // if you need cookies
+    credentials: "include", // Include cookies if needed
+    fetch: (uri, options) => {
+      console.log("📤 GraphQL Request:", {
+        uri,
+        method: options?.method,
+        headers: options?.headers,
+        bodyPreview: options?.body ? JSON.parse(options.body as string) : null,
+      });
+
+      return fetch(uri, options).then(response => {
+        console.log("📥 GraphQL Response:", {
+          status: response.status,
+          statusText: response.statusText,
+          headers: Object.fromEntries(response.headers.entries()),
+        });
+
+        return response;
+      });
+    },
   });
 
   // 5) InMemoryCache with typePolicies for pagination and merging
@@ -144,6 +180,11 @@ export const createApolloClient = ({
     typePolicies: {
       Query: {
         fields: {
+          currentUser: {
+            merge(existing, incoming) {
+              return incoming;
+            },
+          },
           // example for cursor-based list field 'items'
           items: {
             keyArgs: false,
@@ -167,7 +208,7 @@ export const createApolloClient = ({
     retryLink,
     authLink,
     refreshLink,
-    batchHttpLink,
+    httpLink,
   ]);
 
   const client = new ApolloClient({
@@ -186,7 +227,7 @@ export const createApolloClient = ({
         errorPolicy: "all",
       },
     },
-    // connectToDevTools: process.env.NODE_ENV !== 'production', // enable in dev if you want
+    connectToDevTools: process.env.NODE_ENV !== "production", // enable in dev
   });
 
   /**
