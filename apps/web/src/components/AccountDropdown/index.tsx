@@ -16,6 +16,7 @@ import {
   DropdownMenuSeparator,
 } from "@sandworm/ui/components/dropdown-menu";
 import { Button } from "@sandworm/ui/components/button";
+import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
 
 import { useModalStore } from "@/store/auth";
 
@@ -25,6 +26,7 @@ export const AccountDropdown = () => {
   const session = useSession({ redirectToLogin: true });
   const openSignIn = useModalStore(state => state.openSignIn);
   const signout = useSignout();
+  const workspaceId = useStringQuery("workspace");
 
   const user = session?.user;
 
@@ -117,7 +119,7 @@ export const AccountDropdown = () => {
           <DropdownMenuSeparator className="my-3" />
 
           <div className="flex flex-col gap-2">
-            <Link href="/settings">
+            <Link href={`${workspaceId}/settings`}>
               <Button
                 variant="outline"
                 className="w-full bg-[#F8F9FA] dark:bg-[#0C1015] border border-[#DEE2E6] dark:border-[#262A30] text-[0.8rem] py-5 rounded-lg"
