@@ -58,7 +58,7 @@ export class GetAllUsersInput {
 
 @InputType()
 export class UpdateUserSettingInput {
-  @Field(() => GraphQLJSON, { nullable: true, defaultValue: {} })
+  @Field(() => GraphQLJSON, { nullable: true })
   socialLinks?: {
     telegram?: string;
     twitter?: string;
@@ -68,7 +68,7 @@ export class UpdateUserSettingInput {
     warpcast?: string;
   };
 
-  @StringFieldOptional({ defaultValue: "Just joined Sandworm!" })
+  @StringFieldOptional()
   statusText?: string;
 
   @Field(() => [GraphQLJSON], { nullable: true, defaultValue: [] })
