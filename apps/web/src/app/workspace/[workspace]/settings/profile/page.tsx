@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSession } from "@/components/Visualization/hooks/useAuth";
+import { Pencil } from "lucide-react";
 
 export default function ProfileSettings() {
   const session = useSession({ redirectToLogin: true });
@@ -61,19 +62,19 @@ export default function ProfileSettings() {
         <div className="flex-1 space-y-6">
           {/* Account Information Section */}
           <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+            <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300">
               Account Information
             </h3>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 ">
                 Email
               </label>
               <input
                 type="email"
                 value={session.user?.email || ""}
                 disabled
-                className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 p-2.5 text-sm text-gray-500 dark:text-gray-400 max-w-[30rem] cursor-not-allowed"
+                className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4] cursor-not-allowed max-w-[30rem]"
               />
               <span className="text-xs text-gray-500 dark:text-gray-400 mt-1 block">
                 Email cannot be changed
@@ -89,7 +90,7 @@ export default function ProfileSettings() {
                   type="text"
                   name="firstName"
                   placeholder="First name"
-                  className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-2.5 text-gray-900 dark:text-white text-sm placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-600 focus:border-transparent"
+                  className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4]"
                   value={formData.firstName}
                   onChange={handleChange}
                 />
@@ -103,7 +104,7 @@ export default function ProfileSettings() {
                   type="text"
                   name="lastName"
                   placeholder="Last name"
-                  className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-2.5 text-gray-900 dark:text-white text-sm placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-600 focus:border-transparent"
+                  className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4]"
                   value={formData.lastName}
                   onChange={handleChange}
                 />
@@ -118,7 +119,7 @@ export default function ProfileSettings() {
                 type="text"
                 name="username"
                 placeholder="Username"
-                className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-2.5 text-gray-900 dark:text-white text-sm max-w-[30rem] placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-600 focus:border-transparent"
+                className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4] max-w-[30rem]"
                 value={formData.username}
                 onChange={handleChange}
               />
@@ -131,7 +132,7 @@ export default function ProfileSettings() {
 
           {/* Profile Details Section */}
           <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+            <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300">
               Profile Details
             </h3>
 
@@ -142,7 +143,7 @@ export default function ProfileSettings() {
               <textarea
                 name="bio"
                 placeholder="Tell us about yourself..."
-                className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-2.5 text-gray-900 dark:text-white text-sm min-h-[6rem] max-w-[30rem] placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-600 focus:border-transparent resize-none"
+                className="w-full px-3 py-1.5  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4] max-w-[30rem] min-h-[6rem] resize-none"
                 value={formData.bio}
                 onChange={handleChange}
               />
@@ -155,7 +156,7 @@ export default function ProfileSettings() {
 
           {/* Social Accounts Section */}
           <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+            <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300">
               Social Accounts
             </h3>
 
@@ -164,7 +165,7 @@ export default function ProfileSettings() {
                 type="text"
                 name="github"
                 placeholder="GitHub Profile"
-                className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-2.5 text-gray-900 dark:text-white text-sm placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-600 focus:border-transparent"
+                className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4]"
                 value={formData.github}
                 onChange={handleChange}
               />
@@ -172,7 +173,7 @@ export default function ProfileSettings() {
                 type="text"
                 name="discord"
                 placeholder="Discord Username"
-                className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-2.5 text-gray-900 dark:text-white text-sm placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-600 focus:border-transparent"
+                className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4]"
                 value={formData.discord}
                 onChange={handleChange}
               />
@@ -180,7 +181,7 @@ export default function ProfileSettings() {
                 type="text"
                 name="telegram"
                 placeholder="Telegram Handle"
-                className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-2.5 text-gray-900 dark:text-white text-sm placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-600 focus:border-transparent"
+                className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4]"
                 value={formData.telegram}
                 onChange={handleChange}
               />
@@ -208,7 +209,7 @@ export default function ProfileSettings() {
         </div>
 
         {/* Avatar Section */}
-        <div className="flex flex-col items-center md:items-start">
+        <div className="flex flex-col items-center md:items-start relative">
           <div className="relative">
             {session.user?.avatar ? (
               <Image
@@ -236,8 +237,9 @@ export default function ProfileSettings() {
           </div>
           <button
             type="button"
-            className="mt-4 text-xs font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+            className="mt-4 text-xs font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors flex items-center border-[#E6E0F1] border bg-[#F1F3F4] px-3 rounded-lg py-1.5 absolute left-[-2.5rem] top-[7.5rem]"
           >
+            <Pencil className="inline-block mr-2" size={14} />
             Change Avatar
           </button>
         </div>

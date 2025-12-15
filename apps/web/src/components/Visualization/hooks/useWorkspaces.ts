@@ -5,8 +5,11 @@ import {
   useGetUserWorkspacesQuery,
   useGetWorkspaceQuery,
   useGetUserWorkspaceInfoQuery,
+  useUpdateWorkspaceMutation,
 } from "@/generated/graphql";
+
 import { NEXT_PUBLIC_API_URL } from "../utils/env";
+import { useSession } from "./useAuth";
 
 // 1. Get all user workspaces
 type UseWorkspacesAPI = {
@@ -84,5 +87,81 @@ export const useCurrentWorkspaceInfo = () => {
     isLoading: loading,
     error,
     refetch,
+  };
+};
+
+// 3. Update workspace wrapper with admin check
+type UseUpdateWorkspaceReturn = {
+  updateWorkspace: (workspaceId: string, name: string) => Promise<void>;
+  loading: boolean;
+  error: Error | null;
+  isAdmin: boolean;
+};
+
+export const useUpdateWorkspace = (
+  workspaceId?: string
+): UseUpdateWorkspaceReturn => {
+  const session = useSession({ redirectToLogin: false });
+  const { workspaceInfo, refetch: refetchWorkspaceInfo } =
+    useCurrentWorkspaceInfo();
+
+  // ✅ FIX: useWorkspaces returns [data, api], not { data, refetch }
+  const {
+    data: workspacesData,
+    loading: workspacesLoading,
+    refetch: refetchWorkspaces,
+  } = useGetUserWorkspacesQuery({
+    fetchPolicy: "cache-and-network",
+  });
+
+  const [updateWorkspaceMutation, { loading, error }] =
+    useUpdateWorkspaceMutation();
+
+  // Check if current user is admin
+  const isAdmin = useMemo(() => {
+    if (!workspaceInfo || !session?.user?.id) return false;
+
+    const targetWorkspaceId = workspaceId || workspaceInfo.id;
+    if (workspaceInfo.id !== targetWorkspaceId) return false;
+
+    return workspaceInfo.roles?.some(
+      r => r.userId === session?.user.id && r.role === "admin"
+    );
+  }, [workspaceInfo, session?.user?.id, workspaceId]);
+
+  const updateWorkspace = useCallback(
+    async (targetWorkspaceId: string, name: string) => {
+      if (!isAdmin) {
+        throw new Error("You must be an admin to update workspace settings");
+      }
+
+      try {
+        const result = await updateWorkspaceMutation({
+          variables: {
+            workspaceId: targetWorkspaceId,
+            name,
+          },
+        });
+
+        if (result.data?.updateWorkspace) {
+          // Refetch workspace info to get updated data
+          await refetchWorkspaceInfo();
+          await refetchWorkspaces();
+        }
+
+        return result.data?.updateWorkspace;
+      } catch (err) {
+        console.error("Failed to update workspace:", err);
+        throw err;
+      }
+    },
+    [isAdmin, updateWorkspaceMutation, refetchWorkspaceInfo, refetchWorkspaces]
+  );
+
+  return {
+    updateWorkspace,
+    loading,
+    error: error as Error | null,
+    isAdmin,
   };
 };

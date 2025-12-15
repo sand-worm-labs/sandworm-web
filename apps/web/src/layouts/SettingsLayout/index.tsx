@@ -12,17 +12,7 @@ import {
   ChevronLeft,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@sandworm/ui/components/avatar";
-
-const tabs = [
-  { name: "Profile", href: "/settings/profile", icon: <UserRound size={16} /> },
-  { name: "Account", href: "/settings/account", icon: <Settings size={16} /> },
-  {
-    name: "Preferences",
-    href: "/settings/preferences",
-    icon: <SlidersHorizontal size={16} />,
-  },
-  { name: "Users", href: "/settings/users", icon: <Users size={16} /> },
-];
+import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
 
 export default function SettingsLayout({
   children,
@@ -31,6 +21,30 @@ export default function SettingsLayout({
 }) {
   const { data: session, status } = useSession();
   const pathname = usePathname();
+  const workspaceId = useStringQuery("workspace");
+
+  const tabs = [
+    {
+      name: "Profile",
+      href: `/workspace/${workspaceId}/settings/profile`,
+      icon: <UserRound size={16} />,
+    },
+    {
+      name: "Account",
+      href: `/workspace/${workspaceId}/settings/account`,
+      icon: <Settings size={16} />,
+    },
+    {
+      name: "Preferences",
+      href: `/workspace/${workspaceId}/settings/preferences`,
+      icon: <SlidersHorizontal size={16} />,
+    },
+    {
+      name: "Users",
+      href: `/workspace/${workspaceId}/settings/users`,
+      icon: <Users size={16} />,
+    },
+  ];
 
   if (status === "loading") return null;
 

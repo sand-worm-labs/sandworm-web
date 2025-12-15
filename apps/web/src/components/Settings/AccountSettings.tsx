@@ -10,20 +10,32 @@ import {
   ArrowsRightLeftIcon,
 } from "@heroicons/react/24/solid";
 import { useRouter } from "next/navigation";
+import CreateTeamModal from "./CreateTeam";
 
 import {
   useCurrentWorkspaceInfo,
+  useUpdateWorkspace,
   useWorkspaces,
 } from "../Visualization/hooks/useWorkspaces";
 import useProperties from "../Visualization/hooks/useProperties";
 import { useSession } from "../Visualization/hooks/useAuth";
+import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
 
 export default function WorkspaceSettings() {
   const router = useRouter();
+
+  const workspaceId = useStringQuery("workspace"); // this should work without issues but for safety we can choose to fetch from current workspace info
+
   const session = useSession({ redirectToLogin: true });
   const properties = useProperties();
   const { workspaceInfo } = useCurrentWorkspaceInfo();
   const [{ data: allWorkspaces }] = useWorkspaces();
+  const {
+    updateWorkspace,
+    loading: isUpdating,
+    error: updateError,
+    isAdmin: isAdminFromHook,
+  } = useUpdateWorkspace(workspaceId);
 
   const [state, setState] = useState({
     isEditingName: false,
@@ -31,12 +43,36 @@ export default function WorkspaceSettings() {
     newName: "",
     newOpenAIKey: "",
     showWorkspaceSwitcher: false,
+    showCreateModal: false,
   });
 
   const currentWorkspace = workspaceInfo;
   const isAdmin = currentWorkspace?.roles?.some(
     r => r.userId === session.user?.id && r.role === "admin"
   );
+
+  const handleUpdateName = async () => {
+    if (!isAdmin) {
+      alert("Only admins can update workspace settings");
+      return;
+    }
+
+    if (!state.newName.trim()) {
+      alert("Team name cannot be empty");
+      return;
+    }
+
+    try {
+      await updateWorkspace(
+        currentWorkspace?.id || workspaceId,
+        state.newName.trim()
+      );
+      setState(s => ({ ...s, isEditingName: false, newName: "" }));
+    } catch (err) {
+      console.error("Failed to update workspace name:", err);
+      alert("Failed to update team name. Please try again.");
+    }
+  };
 
   return (
     <div className="w-full bg-white dark:bg-black h-full">
@@ -100,7 +136,13 @@ export default function WorkspaceSettings() {
 
                 <button
                   type="button"
-                  onClick={() => router.push("/workspace/new")}
+                  onClick={() =>
+                    setState(s => ({
+                      ...s,
+                      showCreateModal: true,
+                      showWorkspaceSwitcher: false,
+                    }))
+                  }
                   className="w-full text-left px-3 py-2 rounded-md text-sm border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 text-gray-600 dark:text-gray-400 transition-colors"
                 >
                   + Create New Team
@@ -129,8 +171,7 @@ export default function WorkspaceSettings() {
                   <form
                     onSubmit={e => {
                       e.preventDefault();
-                      // updateSettings(currentWorkspace.id, { name: state.newName });
-                      setState(s => ({ ...s, isEditingName: false }));
+                      handleUpdateName();
                     }}
                     className="flex gap-x-2 items-center w-full"
                   >
@@ -154,9 +195,36 @@ export default function WorkspaceSettings() {
                     </button>
                     <button
                       type="submit"
-                      className="px-6 py-2 bg-[#C7665C] text-white rounded-xl hover:bg-[#C7665C] text-sm"
+                      disabled={isUpdating || !state.newName.trim()}
+                      className="px-6 py-2 bg-[#C7665C] text-white rounded-xl hover:bg-[#b55a51] text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                     >
-                      Save
+                      {isUpdating ? (
+                        <>
+                          <svg
+                            className="animate-spin h-4 w-4"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            />
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            />
+                          </svg>
+                          Saving...
+                        </>
+                      ) : (
+                        "Save"
+                      )}
                     </button>
                   </form>
                 ) : (
@@ -343,6 +411,14 @@ export default function WorkspaceSettings() {
 
         {/* Todo: We need to handle workspace deletion */}
       </div>
+
+      <CreateTeamModal
+        isOpen={state.showCreateModal}
+        onClose={() => setState(s => ({ ...s, showCreateModal: false }))}
+        onSuccess={workspaceId => {
+          router.push(`/workspace/${workspaceId}/settings`);
+        }}
+      />
     </div>
   );
 }
