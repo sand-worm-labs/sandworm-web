@@ -29,7 +29,7 @@ export class UserService {
     private readonly userSettingRepository: Repository<UserSettingEntity>,
     @InjectRepository(UserFollowsEntity)
     private readonly userFollowsRepository: Repository<UserFollowsEntity>,
-  ) {}
+  ) { }
 
   async getCurrentUser(currentUser: {
     id: string;
@@ -44,8 +44,8 @@ export class UserService {
     }
 
     const foundUser = User.fromEntity(user);
-    
-    return { id: user.id, user: foundUser, token: currentUser.token , tokenExpires: Date.now() + 60 * 60 * 1000};
+
+    return { id: user.id, user: foundUser, token: currentUser.token, tokenExpires: Date.now() + 60 * 60 * 1000 };
   }
 
   async create(
@@ -70,6 +70,11 @@ export class UserService {
 
     const savedUser = await this.userRepository.save(newUser);
 
+    let userSetting = this.userSettingRepository.create({
+      statusText: "Just joined Sandworm!",
+      userId: savedUser.id,
+    });
+    await this.userSettingRepository.save(userSetting);
     return savedUser;
   }
 
@@ -99,20 +104,20 @@ export class UserService {
       sortBy = 'createdAt',
       sortOrder = 'DESC',
     } = input;
-  
+
     // ✅ Whitelist of allowed sort columns
     const allowedSortColumns = ['createdAt', 'username', 'email', 'firstName', 'lastName'];
     const safeSortBy = allowedSortColumns.includes(sortBy) ? sortBy : 'createdAt';
-  
+
     const queryBuilder = this.userRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.settings', 'settings')
-      .orderBy(`user.${safeSortBy}`, sortOrder as 'ASC' | 'DESC')  
+      .orderBy(`user.${safeSortBy}`, sortOrder as 'ASC' | 'DESC')
       .take(limit)
       .skip(offset);
-  
+
     const users = await queryBuilder.getMany();
-    
+
     return users;
   }
 
