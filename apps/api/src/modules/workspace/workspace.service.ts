@@ -389,4 +389,40 @@ export class WorkspaceService {
 
     await this.workspaceMembersRepository.save(userWorkspace);
   }
+
+  async removeUserFromWorkspace(
+    workspaceId: string,
+    userIdToRemove: string,
+    adminId: string,
+  ): Promise<void> {
+    validateUUID(workspaceId, 'Workspace ID');
+    validateUUID(userIdToRemove, 'User ID to remove');
+    validateUUID(adminId, 'Admin ID');
+
+    const adminMembership = await this.workspaceMembersRepository.findOne({
+      where: { workspaceId, userId: adminId },
+    });
+
+    if (!adminMembership || adminMembership.role !== UserWorkspaceRole.ADMIN) {
+      throw new BadRequestException('Only workspace admins can remove users');
+    }
+
+    const workspace = await this.workspaceRepository.findOne({
+      where: { id: workspaceId },
+    });
+
+    if (workspace?.ownerId === userIdToRemove) {
+      throw new BadRequestException('Cannot remove workspace owner');
+    }
+
+    const membership = await this.workspaceMembersRepository.findOne({
+      where: { workspaceId, userId: userIdToRemove },
+    });
+
+    if (!membership) {
+      throw new NotFoundException('User is not a member of this workspace');
+    }
+
+    await this.workspaceMembersRepository.remove(membership);
+  }
 }

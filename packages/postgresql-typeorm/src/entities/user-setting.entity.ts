@@ -51,13 +51,6 @@ export class UserSettingEntity extends AbstractEntity {
   statusUpdatedAt: Date;
 
   @Column({
-    type: "varchar",
-    name: "theme",
-    default: "dark",
-  })
-  theme: 'light' | 'dark';
-
-  @Column({
     type: "jsonb",
     name: "wallets",
     default: () => `'[]'::jsonb`,

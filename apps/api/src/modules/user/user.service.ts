@@ -14,6 +14,7 @@ import {
   CreateUserInput,
   GetAllUsersInput,
   UpdateUserInput,
+  UpdateUserSettingInput,
 } from './dto/user.dto';
 import { UserSetting } from './model/graphql/user-setting.model';
 import { User } from './model/graphql/user.model';
@@ -67,7 +68,6 @@ export class UserService {
       ...input,
       password: password,
     });
-
     const savedUser = await this.userRepository.save(newUser);
 
     let userSetting = this.userSettingRepository.create({
@@ -210,6 +210,26 @@ export class UserService {
     });
 
     return relations.filter((r) => r.followee).map((r) => r.followee);
+  }
+
+  async updateUserSettings(
+    userId: string,
+    input: UpdateUserSettingInput,
+  ): Promise<boolean> {
+    let settings = await this.userSettingRepository.findOneBy({ userId });
+
+    if (!settings) {
+      settings = this.userSettingRepository.create({
+        userId,
+        statusText: "Just joined Sandworm!",
+        ...input,
+      });
+    } else {
+      Object.assign(settings, input);
+    }
+
+    await this.userSettingRepository.save(settings);
+    return true;
   }
 
   async remove(userId: string): Promise<void> {
