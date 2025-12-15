@@ -75,16 +75,12 @@ export class WorkspaceService {
 
   async getAllUserWorkspaces(
     userId: string,
-    options: PaginationOptions,
   ): Promise<Workspace[]> {
     await this.validateAndGetUser(userId, 'User');
 
-    const { limit = 20, offset = 0 } = options;
 
     const workspaces = await this.workspaceRepository.find({
       where: { ownerId: userId },
-      take: limit,
-      skip: offset,
       order: { createdAt: 'DESC' },
     });
 

@@ -34,11 +34,9 @@ export class WorkspaceResolver {
     description: 'Get User workspaces',
   })
   async getUserWorkspaces(
-    @CurrentUser('id') userId: string,
-    @Args('limit', { type: () => Int, nullable: true }) limit?: number,
-    @Args('offset', { type: () => Int, nullable: true }) offset?: number,
+    @CurrentUser('id') userId: string
   ): Promise<Workspace[]> {
-    return this.workspaceService.getAllUserWorkspaces(userId,{ limit, offset });
+    return this.workspaceService.getAllUserWorkspaces(userId);
   }
 
   @Query(() => WorkspaceInfo, {

@@ -1,8 +1,22 @@
 # Workspace Queries
+# Get current workspace for the current user
+query GetUserWorkspaceInfo {
+  getUserWorkspaceInfo {
+    id
+    name
+    ownerId
+    createdAt
+    updatedAt
+    roles {
+      role
+      userId
+    }
+  }
+}
 
 # Get all workspaces for the current user
-query GetUserWorkspaces($limit: Int, $offset: Int) {
-  getUserWorkspaces(limit: $limit, offset: $offset) {
+query GetUserWorkspaces {
+  getUserWorkspaces {
     id
     name
     plan
