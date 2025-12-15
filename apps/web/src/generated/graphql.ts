@@ -210,6 +210,8 @@ export type Mutation = {
   restoreDocument: Document;
   /** Add or remove environment variables */
   setEnvironmentVariables: Array<EnvironmentVariable>;
+  /** Switch to a different workspace */
+  switchWorkspace: Scalars['Boolean']['output'];
   /** Unfollow User */
   unfollowUser: Profile;
   /** Update document metadata */
@@ -315,6 +317,11 @@ export type MutationSetEnvironmentVariablesArgs = {
 };
 
 
+export type MutationSwitchWorkspaceArgs = {
+  workspaceId: Scalars['String']['input'];
+};
+
+
 export type MutationUnfollowUserArgs = {
   username: Scalars['String']['input'];
 };
@@ -381,7 +388,7 @@ export type Query = {
   getUserFollowers: Array<User>;
   /** Users that a given user is following */
   getUserFollowing: Array<User>;
-  /** Get user workspace info with roles */
+  /** Get user workspace info with role */
   getUserWorkspaceInfo: WorkspaceInfo;
   /** Get User workspaces */
   getUserWorkspaces: Array<Workspace>;
@@ -557,6 +564,7 @@ export type Workspace = {
   source?: Maybe<Scalars['String']['output']>;
   useCases: Array<Scalars['String']['output']>;
   useContext?: Maybe<Scalars['String']['output']>;
+  users: Array<User>;
 };
 
 export type WorkspaceInfo = {
@@ -565,14 +573,8 @@ export type WorkspaceInfo = {
   id: Scalars['String']['output'];
   name: Scalars['String']['output'];
   ownerId: Scalars['String']['output'];
-  roles: Array<WorkspaceMember>;
-  updatedAt: Scalars['DateTime']['output'];
-};
-
-export type WorkspaceMember = {
-  __typename?: 'WorkspaceMember';
   role: Scalars['String']['output'];
-  userId: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
 };
 
 /** Price plan of the workspace */
@@ -723,6 +725,13 @@ export type UpdateWorkspaceMutationVariables = Exact<{
 
 export type UpdateWorkspaceMutation = { __typename?: 'Mutation', updateWorkspace: { __typename?: 'Workspace', id: string, name: string, plan: WorkspacePlan, source?: string | null, useCases: Array<string>, useContext?: string | null } };
 
+export type SwitchWorkspaceMutationVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+}>;
+
+
+export type SwitchWorkspaceMutation = { __typename?: 'Mutation', switchWorkspace: boolean };
+
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -817,7 +826,7 @@ export type FileExistsQuery = { __typename?: 'Query', fileExists: boolean };
 export type GetUserWorkspaceInfoQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetUserWorkspaceInfoQuery = { __typename?: 'Query', getUserWorkspaceInfo: { __typename?: 'WorkspaceInfo', id: string, name: string, ownerId: string, createdAt: any, updatedAt: any, roles: Array<{ __typename?: 'WorkspaceMember', role: string, userId: string }> } };
+export type GetUserWorkspaceInfoQuery = { __typename?: 'Query', getUserWorkspaceInfo: { __typename?: 'WorkspaceInfo', id: string, name: string, ownerId: string, createdAt: any, updatedAt: any, role: string } };
 
 export type GetUserWorkspacesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1553,6 +1562,37 @@ export function useUpdateWorkspaceMutation(baseOptions?: Apollo.MutationHookOpti
 export type UpdateWorkspaceMutationHookResult = ReturnType<typeof useUpdateWorkspaceMutation>;
 export type UpdateWorkspaceMutationResult = Apollo.MutationResult<UpdateWorkspaceMutation>;
 export type UpdateWorkspaceMutationOptions = Apollo.BaseMutationOptions<UpdateWorkspaceMutation, UpdateWorkspaceMutationVariables>;
+export const SwitchWorkspaceDocument = gql`
+    mutation SwitchWorkspace($workspaceId: String!) {
+  switchWorkspace(workspaceId: $workspaceId)
+}
+    `;
+export type SwitchWorkspaceMutationFn = Apollo.MutationFunction<SwitchWorkspaceMutation, SwitchWorkspaceMutationVariables>;
+
+/**
+ * __useSwitchWorkspaceMutation__
+ *
+ * To run a mutation, you first call `useSwitchWorkspaceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSwitchWorkspaceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [switchWorkspaceMutation, { data, loading, error }] = useSwitchWorkspaceMutation({
+ *   variables: {
+ *      workspaceId: // value for 'workspaceId'
+ *   },
+ * });
+ */
+export function useSwitchWorkspaceMutation(baseOptions?: Apollo.MutationHookOptions<SwitchWorkspaceMutation, SwitchWorkspaceMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SwitchWorkspaceMutation, SwitchWorkspaceMutationVariables>(SwitchWorkspaceDocument, options);
+      }
+export type SwitchWorkspaceMutationHookResult = ReturnType<typeof useSwitchWorkspaceMutation>;
+export type SwitchWorkspaceMutationResult = Apollo.MutationResult<SwitchWorkspaceMutation>;
+export type SwitchWorkspaceMutationOptions = Apollo.BaseMutationOptions<SwitchWorkspaceMutation, SwitchWorkspaceMutationVariables>;
 export const CurrentUserDocument = gql`
     query CurrentUser {
   currentUser {
@@ -2161,10 +2201,7 @@ export const GetUserWorkspaceInfoDocument = gql`
     ownerId
     createdAt
     updatedAt
-    roles {
-      role
-      userId
-    }
+    role
   }
 }
     `;
