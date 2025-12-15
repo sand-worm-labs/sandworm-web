@@ -84,6 +84,14 @@ export class WorkspaceResolver {
     return this.workspaceService.switchWorkspace(userId, workspaceId);
   }
 
+  @ResolveField(() => [User])
+  async users(
+    @Parent() workspace: Workspace,
+    @CurrentUser('id') userId: string,
+  ): Promise<User[]> {
+    return this.workspaceService.getWorkspaceUsers(workspace.id, userId);
+  }
+
   @ResolveField(() => User)
   async owner(@Parent() workspace: Workspace): Promise<User> {
     return this.workspaceService.getWorkspaceOwner(workspace.ownerId);
