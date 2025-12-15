@@ -161,6 +161,9 @@ input LoginInput {
 }
 
 type Mutation {
+  """Accept workspace invitation with hash from email"""
+  acceptWorkspaceInvitation(hash: String!): Boolean!
+
   """Mark a document as a favorite"""
   addFavoriteDocument(input: FavoriteDocumentInput!): Document!
 
@@ -203,11 +206,17 @@ type Mutation {
     username: String!
   ): Profile!
 
+  """Invite a user to workspace by email"""
+  inviteUserToWorkspace(email: String!, role: String, workspaceId: String!): Boolean!
+
   """Sign in"""
   login(input: LoginInput!): AuthPayload!
 
   """Unmark a document as a favorite"""
   removeFavoriteDocument(input: FavoriteDocumentInput!): Document!
+
+  """Remove a user from workspace"""
+  removeUserFromWorkspace(userId: String!, workspaceId: String!): Boolean!
 
   """Restart the Jupyter environment"""
   restartEnvironment(input: RestartEnvironmentInput!): Environment!
@@ -232,6 +241,9 @@ type Mutation {
 
   """Update current user"""
   updateUser(input: UpdateUserInput!): User!
+
+  """Update user settings"""
+  updateUserSettings(input: UpdateUserSettingInput!): Boolean!
 
   """Update workspace info"""
   updateWorkspace(name: String, workspaceId: String!): Workspace!
@@ -277,7 +289,7 @@ type Query {
   fileExists(fileName: String!, workspaceId: String!): Boolean!
 
   """Get all users"""
-  getAllUsers(input: GetAllUsersInput!): [User!]!
+  getAllUsers(input: GetAllUsersInput!): Int!
 
   """Get a single document by ID"""
   getDocument(documentId: String!, workspaceId: String!): Document!
@@ -357,6 +369,12 @@ input UpdateUserInput {
   username: String
 }
 
+input UpdateUserSettingInput {
+  socialLinks: JSON
+  statusText: String
+  wallets: [JSON!] = []
+}
+
 type User {
   avater: String
   email: String
@@ -378,7 +396,6 @@ type UserSetting {
   socialLinks: JSON
   statusText: String
   statusUpdatedAt: DateTime
-  theme: String
   userId: ID!
   wallets: [JSON!]!
 }
