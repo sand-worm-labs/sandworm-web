@@ -26,9 +26,6 @@ export class UserSetting {
   @DateFieldOptional()
   statusUpdatedAt!: Date;
 
-  @StringFieldOptional()
-  theme!: 'light' | 'dark';
-
   @Field(() => [GraphQLJSON])
   wallets!: { chain: string; address: string }[];
 }
