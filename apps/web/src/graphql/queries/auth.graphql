@@ -5,27 +5,20 @@ query CurrentUser {
   currentUser {
     id
     token
+    tokenExpires
     user {
       id
-      email
       username
+      email
       firstName
       lastName
       fullName
-      avater
       isOnboarded
+      avater
       followersCount
       followingCount
-      settings {
-        id
-        theme
-        statusText
-        statusUpdatedAt
-        socialLinks
-        wallets
-        userId
-      }
     }
+    __typename
   }
 }
 

@@ -162,7 +162,6 @@ export const useLogin = (): UseLogin => {
 
   const loginWithPassword = useCallback(
     (email: string, password: string, callback?: string) => {
-      console.log(" Login initiated for:", email);
       setState(s => ({ ...s, loading: true }));
       fetch(`${NEXT_PUBLIC_API_URL()}/auth/email/login`, {
         credentials: "include",
@@ -185,6 +184,9 @@ export const useLogin = (): UseLogin => {
               data,
               error: undefined,
             });
+
+            window.location.href = callback || "/workspace";
+
             return;
           }
 
@@ -242,6 +244,12 @@ export const useSession = ({
   });
 
   useEffect(() => {
+    if (token) {
+      refetch();
+    }
+  }, [token, refetch]);
+
+  useEffect(() => {
     if (!loading && !token && redirectToLogin) {
       const back = `${pathname}${searchParams.toString() ? `?${searchParams}` : ""}`;
       router.replace(`/signin?callback=${encodeURIComponent(back)}`);
@@ -250,7 +258,7 @@ export const useSession = ({
 
   return useMemo(
     () => ({
-      user: data?.currentUser ?? null,
+      user: data?.currentUser?.user ?? null,
       loading,
       error: error?.message ?? null,
       isAuthenticated: !!data?.currentUser,

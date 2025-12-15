@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FC } from "react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/components/Visualization/hooks/useAuth";
 import { X, Search } from "lucide-react";
 
 import { ThemeTogggle } from "@/components/Theme/ThemeToggle";
@@ -10,7 +10,7 @@ import { ProfileMenu } from "../../ProfileMenu";
 import { SearchBar } from "../../SearchBar";
 
 export const AppHeader: FC = () => {
-  const { data: session } = useSession();
+  const session = useSession({ redirectToLogin: true });
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (

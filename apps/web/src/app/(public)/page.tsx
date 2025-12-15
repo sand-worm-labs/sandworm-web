@@ -1,3 +1,5 @@
+"use client";
+
 import MainLayout from "@/layouts/MainLayout/MainLayout";
 import { SectionHero } from "@/components/Sections/SectionHero";
 import { SectionOnboard } from "@/components/Sections/SectionOnboard";

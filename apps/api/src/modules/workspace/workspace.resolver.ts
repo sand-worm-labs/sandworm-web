@@ -32,7 +32,7 @@ export class WorkspaceResolver {
     description: 'Get User workspaces',
   })
   async getUserWorkspaces(
-    @CurrentUser('id') userId: string,
+    @CurrentUser('id') userId: string
   ): Promise<Workspace[]> {
     return this.workspaceService.getAllUserWorkspaces(userId);
   }

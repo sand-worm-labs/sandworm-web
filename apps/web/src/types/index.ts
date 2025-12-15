@@ -107,18 +107,16 @@ export interface Wallet {
 
 export interface User {
   id: string;
-  username: string;
-  email: string;
-  socialLinks?: SocialLinks;
-  status?: Status;
-  wallets?: Wallet[];
-  stars: number;
-  forks: number;
-  createdAt: Date;
-  updatedAt: Date;
-  name?: string;
-  emailVerified?: Date;
-  image?: string;
+  email: string | null;
+  username: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  fullName: string | null;
+  avater: string | null;
+  isOnboarded: boolean;
+  followersCount: number;
+  followingCount: number;
+  __typename?: string;
 }
 
 export type FieldType = "string" | "integer" | "bigint";

@@ -38,7 +38,7 @@ export const ProfileMenu: FC<CurrentUserProps> = ({ currentUser }) => {
                 alt={`${currentUser.name} image`}
               />
             ) : (
-              <Avatar className="h-64 w-64">
+              <Avatar className="h-10 w-10">
                 <AvatarFallback>
                   {currentUser?.name?.split(" ")[0]?.[0] ?? "U"}
                 </AvatarFallback>
