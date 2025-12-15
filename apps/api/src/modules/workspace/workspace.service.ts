@@ -3,6 +3,7 @@ import {
   Logger,
   NotFoundException,
   BadRequestException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import {
@@ -13,6 +14,10 @@ import {
   UserWorkspaceRole,
 } from '@sandworm/postgresql-typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import { AllConfigType } from '@/config/config.type';
+import { MailService } from '../mail/mail.service';
 import { Workspace } from './model/workspace.model';
 import { User } from '../user/model/graphql/user.model';
 import { Document } from '../document/model/document.model';
@@ -36,6 +41,9 @@ export class WorkspaceService {
     private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(DocumentEntity)
     private readonly documentRepository: Repository<DocumentEntity>,
+    private readonly jwtService: JwtService,
+    private readonly mailService: MailService,
+    private readonly configService: ConfigService<AllConfigType>,
   ) { }
 
   private async validateAndGetUser(
@@ -116,7 +124,6 @@ export class WorkspaceService {
 
     const user = await this.validateAndGetUser(userId, 'User');
 
-    // Check membership (validates both workspace exists and user has access)
     const membership = await this.workspaceMembersRepository.findOne({
       where: { userId, workspaceId },
     });
@@ -147,7 +154,6 @@ export class WorkspaceService {
       if (userWorkspaces.length > 0) {
         workspaceId = userWorkspaces[0].id;
       } else {
-        // Create default workspace
         const newWorkspace = await this.createWorkspace({
           ownerId: userId,
           name: user.getTeamName(),
@@ -155,12 +161,10 @@ export class WorkspaceService {
         workspaceId = newWorkspace.id;
       }
 
-      // Update user's last visited workspace
       user.lastVisitedWorkspaceId = workspaceId;
       await this.userRepository.save(user);
     }
 
-    // Get workspace with user's membership in one query
     const membership = await this.workspaceMembersRepository.findOne({
       where: { userId, workspaceId },
       relations: ['workspace'],
@@ -266,5 +270,123 @@ export class WorkspaceService {
     });
 
     return Workspace.fromEntities(workspaces);
+  }
+
+  async inviteUserToWorkspace(
+    workspaceId: string,
+    email: string,
+    inviterId: string,
+    role: UserWorkspaceRole = UserWorkspaceRole.VIEWER,
+  ): Promise<void> {
+    validateUUID(workspaceId, 'Workspace ID');
+    validateUUID(inviterId, 'Inviter ID');
+    validateNonEmptyString(email, 'Email');
+
+    const workspace = await this.workspaceRepository.findOne({
+      where: { id: workspaceId },
+    });
+
+    if (!workspace) {
+      throw new NotFoundException('Workspace not found');
+    }
+
+    const inviterMembership = await this.workspaceMembersRepository.findOne({
+      where: { workspaceId, userId: inviterId },
+    });
+
+    if (!inviterMembership || inviterMembership.role !== UserWorkspaceRole.ADMIN) {
+      throw new BadRequestException('Only workspace admins can invite users');
+    }
+
+    const invitedUser = await this.userRepository.findOne({
+      where: { email: email.toLowerCase() },
+    });
+
+    if (!invitedUser) {
+      throw new NotFoundException('User with this email does not exist');
+    }
+
+    const existingMembership = await this.workspaceMembersRepository.findOne({
+      where: { workspaceId, userId: invitedUser.id },
+    });
+
+    if (existingMembership) {
+      throw new BadRequestException('User is already a member of this workspace');
+    }
+
+    const authConfig = this.configService.getOrThrow('auth', { infer: true });
+    const hash = await this.jwtService.signAsync(
+      {
+        workspaceId,
+        userId: invitedUser.id,
+        inviterId,
+        role,
+      },
+      {
+        secret: authConfig.confirmEmailSecret,
+        expiresIn: '7d',
+      },
+    );
+
+    await this.mailService.workspaceInvitation({
+      to: email,
+      data: {
+        hash,
+        workspaceName: workspace.name,
+        inviterName: (await this.userRepository.findOne({ where: { id: inviterId } }))?.firstName || 'Someone',
+      },
+    });
+  }
+
+  async acceptWorkspaceInvitation(hash: string): Promise<void> {
+    const authConfig = this.configService.getOrThrow('auth', { infer: true });
+
+    let workspaceId: string;
+    let userId: string;
+    let inviterId: string;
+    let role: UserWorkspaceRole;
+
+    try {
+      const jwtData = await this.jwtService.verifyAsync<{
+        workspaceId: string;
+        userId: string;
+        inviterId: string;
+        role: UserWorkspaceRole;
+      }>(hash, {
+        secret: authConfig.confirmEmailSecret,
+      });
+
+      workspaceId = jwtData.workspaceId;
+      userId = jwtData.userId;
+      inviterId = jwtData.inviterId;
+      role = jwtData.role;
+    } catch {
+      throw new UnprocessableEntityException('Invalid or expired invitation');
+    }
+
+    const workspace = await this.workspaceRepository.findOne({
+      where: { id: workspaceId },
+    });
+
+    if (!workspace) {
+      throw new NotFoundException('Workspace not found');
+    }
+
+    const existingMembership = await this.workspaceMembersRepository.findOne({
+      where: { workspaceId, userId },
+    });
+
+    if (existingMembership) {
+      throw new BadRequestException('User is already a member of this workspace');
+    }
+
+    const userWorkspace = this.workspaceMembersRepository.create({
+      userId,
+      workspaceId,
+      role,
+      inviterId,
+    });
+
+    await this.workspaceMembersRepository.save(userWorkspace);
   }
 }
