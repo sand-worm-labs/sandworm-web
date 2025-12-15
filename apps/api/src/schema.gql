@@ -215,6 +215,9 @@ type Mutation {
   """Unmark a document as a favorite"""
   removeFavoriteDocument(input: FavoriteDocumentInput!): Document!
 
+  """Remove a user from workspace"""
+  removeUserFromWorkspace(userId: String!, workspaceId: String!): Boolean!
+
   """Restart the Jupyter environment"""
   restartEnvironment(input: RestartEnvironmentInput!): Environment!
 

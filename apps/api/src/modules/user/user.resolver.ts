@@ -9,7 +9,11 @@ import {
 } from '@nestjs/graphql';
 import { CurrentUser } from '@sandworm/graphql';
 import { Public } from '@sandworm/nest-common';
-import { CreateUserInput, UpdateUserInput, GetAllUsersInput } from './dto/user.dto';
+import {
+  CreateUserInput,
+  UpdateUserInput,
+  GetAllUsersInput,
+} from './dto/user.dto';
 import { User } from './model/graphql/user.model';
 import { UserService } from './user.service';
 import { UserSetting } from './model/graphql/user-setting.model';
@@ -17,7 +21,7 @@ import { AuthPayload } from '../auth-graphql/models/auth-payload';
 
 @Resolver(() => User)
 export class UserResolver {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   @Query(() => AuthPayload, {
     name: 'currentUser',
@@ -51,14 +55,26 @@ export class UserResolver {
     return User.fromEntity(updatedUser);
   }
 
+  @Mutation(() => Boolean, {
+    name: 'updateUserSettings',
+    description: 'Update user settings',
+  })
+  async updateUserSettings(
+    @CurrentUser('id') userId: string,
+    @Args('input') input: UserSetting,
+  ): Promise<boolean> {
+    await this.userService.updateUserSettings(userId, input);
+    return true;
+  }
+
   @Public()
-  @Query(() => [User], {
+  @Query(() => Int, {
     name: 'getAllUsers',
     description: 'Get all users',
   })
-  async getAllUsers(@Args('input') input: GetAllUsersInput): Promise<User[]> {
+  async getAllUsers(@Args('input') input: GetAllUsersInput): Promise<number> {
     const users = await this.userService.getAllUsers(input);
-    return User.fromEntities(users); 
+    return users.length;
   }
 
   @Public()
@@ -70,7 +86,7 @@ export class UserResolver {
     @Args('userId', { type: () => String }) userId: string,
   ): Promise<User[]> {
     const followers = await this.userService.getUserFollowers(userId);
-    return User.fromEntities(followers); // Transform entities to Users
+    return User.fromEntities(followers);
   }
 
   @Public()
@@ -94,13 +110,13 @@ export class UserResolver {
   @ResolveField(() => [User])
   async followers(@Parent() user: User): Promise<User[]> {
     const followers = await this.userService.getUserFollowers(user.id);
-    return User.fromEntities(followers); 
+    return User.fromEntities(followers);
   }
 
   @ResolveField(() => [User])
   async following(@Parent() user: User): Promise<User[]> {
     const following = await this.userService.getUserFollowing(user.id);
-    return User.fromEntities(following); 
+    return User.fromEntities(following);
   }
 
   @ResolveField(() => Int, { name: 'followersCount' })
