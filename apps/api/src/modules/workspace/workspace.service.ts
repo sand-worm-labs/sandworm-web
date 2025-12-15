@@ -137,7 +137,6 @@ export class WorkspaceService {
     const user = await this.validateAndGetUser(userId, 'User');
     let workspaceId = user.lastVisitedWorkspaceId;
 
-    // If no last visited workspace, find or create one
     if (!workspaceId) {
       const userWorkspaces = await this.workspaceRepository.find({
         where: { ownerId: userId },

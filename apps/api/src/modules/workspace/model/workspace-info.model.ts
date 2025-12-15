@@ -31,7 +31,7 @@ export class WorkspaceInfo {
   @DateField()
   updatedAt!: Date;
 
-  @StringField() // Changed from WorkspaceMember object to string
+  @StringField()
   role!: string;
 
   static fromService(data: {
@@ -40,7 +40,7 @@ export class WorkspaceInfo {
     ownerId: string;
     createdAt: Date;
     updatedAt: Date;
-    role: string; // Changed from members array to single role
+    role: string;
   }): WorkspaceInfo {
     const workspaceInfo = new WorkspaceInfo();
     workspaceInfo.id = data.id;
