@@ -13,6 +13,7 @@ import {
   CreateUserInput,
   UpdateUserInput,
   GetAllUsersInput,
+  UpdateUserSettingInput,
 } from './dto/user.dto';
 import { User } from './model/graphql/user.model';
 import { UserService } from './user.service';
@@ -61,9 +62,14 @@ export class UserResolver {
   })
   async updateUserSettings(
     @CurrentUser('id') userId: string,
-    @Args('input') input: UserSetting,
+    @Args('input') input: UpdateUserSettingInput,
   ): Promise<boolean> {
-    await this.userService.updateUserSettings(userId, input);
+    const inputWithDefaults = {
+      wallets: input.wallets ?? [],
+      socialLinks: input.socialLinks ?? {},
+      ...input,
+    };
+    await this.userService.updateUserSettings(userId, inputWithDefaults);
     return true;
   }
 
