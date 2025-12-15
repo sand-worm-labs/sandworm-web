@@ -183,6 +183,31 @@ export class WorkspaceService {
     };
   }
 
+  async getWorkspaceUsers(workspaceId: string, userId: string): Promise<User[]> {
+    validateUUID(workspaceId, 'Workspace ID');
+    validateUUID(userId, 'User ID');
+
+    await this.validateAndGetUser(userId, 'User');
+
+    const userMembership = await this.workspaceMembersRepository.findOne({
+      where: { workspaceId, userId },
+    });
+
+    if (!userMembership) {
+      throw new BadRequestException(
+        'You must be a member of this workspace to view its users',
+      );
+    }
+
+    const memberships = await this.workspaceMembersRepository.find({
+      where: { workspaceId },
+      relations: ['user'],
+    });
+
+    const users = memberships.map(membership => membership.user);
+    return User.fromEntities(users);
+  }
+
   async updateWorkspace(
     workspaceId: string,
     data: { name?: string; ownerId?: string },
