@@ -7,10 +7,7 @@ query GetUserWorkspaceInfo {
     ownerId
     createdAt
     updatedAt
-    roles {
-      role
-      userId
-    }
+    role
   }
 }
 

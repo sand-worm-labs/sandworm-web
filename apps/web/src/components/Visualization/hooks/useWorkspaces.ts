@@ -1,14 +1,17 @@
 import { useCallback, useMemo } from "react";
 import type { WorkspaceEditFormValues } from "@sandworm/types";
+
 import type { ApiWorkspace } from "@/types";
 import {
   useGetUserWorkspacesQuery,
   useGetWorkspaceQuery,
   useGetUserWorkspaceInfoQuery,
   useUpdateWorkspaceMutation,
+  useSwitchWorkspaceMutation,
 } from "@/generated/graphql";
 
 import { NEXT_PUBLIC_API_URL } from "../utils/env";
+
 import { useSession } from "./useAuth";
 
 // 1. Get all user workspaces
@@ -123,9 +126,7 @@ export const useUpdateWorkspace = (
     const targetWorkspaceId = workspaceId || workspaceInfo.id;
     if (workspaceInfo.id !== targetWorkspaceId) return false;
 
-    return workspaceInfo.roles?.some(
-      r => r.userId === session?.user.id && r.role === "admin"
-    );
+    return workspaceInfo.role === "admin";
   }, [workspaceInfo, session?.user?.id, workspaceId]);
 
   const updateWorkspace = useCallback(
@@ -162,5 +163,51 @@ export const useUpdateWorkspace = (
     loading,
     error: error as Error | null,
     isAdmin,
+  };
+};
+
+// 4. Switch workspace hook
+type UseSwitchWorkspaceReturn = {
+  switchWorkspace: (workspaceId: string) => Promise<boolean>;
+  loading: boolean;
+  error: Error | null;
+};
+
+export const useSwitchWorkspace = (): UseSwitchWorkspaceReturn => {
+  const { refetch: refetchWorkspaceInfo } = useCurrentWorkspaceInfo();
+  const { refetch: refetchWorkspaces } = useGetUserWorkspacesQuery({
+    fetchPolicy: "cache-and-network",
+  });
+
+  const [switchWorkspaceMutation, { loading, error }] =
+    useSwitchWorkspaceMutation();
+
+  const switchWorkspace = useCallback(
+    async (workspaceId: string) => {
+      try {
+        const result = await switchWorkspaceMutation({
+          variables: { workspaceId },
+        });
+
+        if (result.data?.switchWorkspace) {
+          // Refetch workspace info to get the new current workspace
+          await refetchWorkspaceInfo();
+          await refetchWorkspaces();
+          return true;
+        }
+
+        return false;
+      } catch (err) {
+        console.error("Failed to switch workspace:", err);
+        throw err;
+      }
+    },
+    [switchWorkspaceMutation, refetchWorkspaceInfo, refetchWorkspaces]
+  );
+
+  return {
+    switchWorkspace,
+    loading,
+    error: error as Error | null,
   };
 };
