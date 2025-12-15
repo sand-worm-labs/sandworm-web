@@ -105,7 +105,6 @@ export const useUpdateWorkspace = (
   const { workspaceInfo, refetch: refetchWorkspaceInfo } =
     useCurrentWorkspaceInfo();
 
-  // ✅ FIX: useWorkspaces returns [data, api], not { data, refetch }
   const {
     data: workspacesData,
     loading: workspacesLoading,
