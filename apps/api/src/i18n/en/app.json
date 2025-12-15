@@ -52,6 +52,14 @@
       "intro": "Resetting your password is easy.",
       "instruction": "Just press the button below and follow the instructions. We'll have you up and running in no time.",
       "disclaimer": "If you did not make this request, please ignore this email."
+    },
+    "workspace_invitation": {
+      "title": "Workspace Invitation",
+      "greeting": "Hey there!",
+      "intro": "{inviterName} has invited you to join the workspace \"{workspaceName}\".",
+      "instruction": "Click the button below to accept the invitation and start collaborating.",
+      "expiry_note": "This invitation will expire in 7 days. If you didn't expect this invitation, you can safely ignore this email.",
+      "action_title": "Accept Invitation"
     }
   }
 }
