@@ -47,7 +47,7 @@ const ThemeCard: React.FC<{
   const bgMap: Record<string, string> = {
     light: "bg-white",
     dark: "bg-[#0C1015]",
-    default: "bg-gradient-to-br from-white via-gray-100 to-gray-900",
+    default: "bg-[#0C1015]",
   };
 
   return (

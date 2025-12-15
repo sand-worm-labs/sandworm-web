@@ -4,7 +4,6 @@ import { UserPlusIcon } from "@heroicons/react/20/solid";
 import React, { useCallback, useState } from "react";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
-import { ScrollBar } from "@sandworm/ui/components/scroll-area";
 
 import type { UserWorkspaceRole } from "@/types";
 import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
@@ -12,13 +11,14 @@ import { useSession } from "@/components/Visualization/hooks/useAuth";
 import { Tooltip } from "@/components/Visualization/blocks/ToolTips";
 import UsersList from "@/components/Visualization/blocks/UsersList";
 import { useUsers } from "@/components/Visualization/hooks/useUsers";
+import ScrollBar from "@/components/Visualization/blocks/ScrollBar";
 
 export default function UsersPage() {
   const workspaceId = useStringQuery("workspaceId");
   const session = useSession({ redirectToLogin: true });
   const router = useRouter();
 
-  const isAdmin = session.data?.roles[workspaceId] === "admin";
+  const isAdmin = session.user?.roles === "admin";
 
   const [users, { removeUser, updateUser, resetPassword }] =
     useUsers(workspaceId);

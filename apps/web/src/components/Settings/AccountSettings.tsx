@@ -10,16 +10,18 @@ import {
   ArrowsRightLeftIcon,
 } from "@heroicons/react/24/solid";
 import { useRouter } from "next/navigation";
-import CreateTeamModal from "./CreateTeam";
 
 import {
   useCurrentWorkspaceInfo,
+  useSwitchWorkspace,
   useUpdateWorkspace,
   useWorkspaces,
 } from "../Visualization/hooks/useWorkspaces";
 import useProperties from "../Visualization/hooks/useProperties";
 import { useSession } from "../Visualization/hooks/useAuth";
 import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
+
+import CreateTeamModal from "./CreateTeam";
 
 export default function WorkspaceSettings() {
   const router = useRouter();
@@ -37,6 +39,12 @@ export default function WorkspaceSettings() {
     isAdmin: isAdminFromHook,
   } = useUpdateWorkspace(workspaceId);
 
+  const {
+    switchWorkspace,
+    loading: isSwitching,
+    error: switchError,
+  } = useSwitchWorkspace();
+
   const [state, setState] = useState({
     isEditingName: false,
     isEditingOpenAIKey: false,
@@ -47,9 +55,7 @@ export default function WorkspaceSettings() {
   });
 
   const currentWorkspace = workspaceInfo;
-  const isAdmin = currentWorkspace?.roles?.some(
-    r => r.userId === session.user?.id && r.role === "admin"
-  );
+  const isAdmin = currentWorkspace?.role === "admin";
 
   const handleUpdateName = async () => {
     if (!isAdmin) {
@@ -74,82 +80,104 @@ export default function WorkspaceSettings() {
     }
   };
 
+  const handleSwitchWorkspace = async (targetWorkspaceId: string) => {
+    try {
+      const success = await switchWorkspace(targetWorkspaceId);
+      if (success) {
+        // Navigate to the new workspace settings page
+        router.push(`/workspace/${targetWorkspaceId}/settings/account`);
+        setState(s => ({ ...s, showWorkspaceSwitcher: false }));
+      }
+    } catch (err) {
+      console.error("Failed to switch workspace:", err);
+      alert("Failed to switch team. Please try again.");
+    }
+  };
+
   return (
     <div className="w-full bg-white dark:bg-black h-full">
       <div className="px-4 sm:p-6 lg:p-8">
-        <div className="pb-4 sm:flex flex-col mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="text-2xl font-medium text-gray-900 dark:text-gray-100 mb-2">
-                Team Settings
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400">
-                Manage your team workspace settings
-              </p>
+        <div className="">
+          <div className="pb-4 sm:flex flex-col mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-2xl font-medium text-gray-900 dark:text-gray-100 mb-2">
+                  Team Settings
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Manage your team workspace settings
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setState(s => ({
+                    ...s,
+                    showWorkspaceSwitcher: !s.showWorkspaceSwitcher,
+                  }))
+                }
+                className="flex items-center gap-2 px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              >
+                <ArrowsRightLeftIcon className="h-4 w-4" />
+                <span className="text-sm font-medium">Switch Team</span>
+              </button>
             </div>
 
-            <button
-              type="button"
-              onClick={() =>
-                setState(s => ({
-                  ...s,
-                  showWorkspaceSwitcher: !s.showWorkspaceSwitcher,
-                }))
-              }
-              className="flex items-center gap-2 px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+            <div
+              className={clsx(
+                "transition-all duration-300 ease-in-out overflow-hidden",
+                state.showWorkspaceSwitcher
+                  ? "max-h-96 opacity-100 mb-4"
+                  : "max-h-0 opacity-0 mb-0"
+              )}
             >
-              <ArrowsRightLeftIcon className="h-4 w-4" />
-              <span className="text-sm font-medium">Switch Team</span>
-            </button>
-          </div>
+              <div className="p-4 border border-[#E9ECEF] dark:border-gray-700 rounded-xl dark:bg-gray-900">
+                <h4 className="text-sm font-medium mb-3 dark:text-white">
+                  Your Teams
+                </h4>
+                <div className="space-y-2">
+                  {allWorkspaces.map(workspace => (
+                    <button
+                      type="button"
+                      key={workspace.id}
+                      onClick={() => handleSwitchWorkspace(workspace.id)}
+                      disabled={
+                        isSwitching || workspace.id === currentWorkspace?.id
+                      }
+                      className={clsx(
+                        "w-full text-left px-3 py-2 rounded-md text-sm transition-colors",
+                        workspace.id === currentWorkspace?.id
+                          ? "bg-[#C7665C20] dark:bg-blue-900 text-[#C7665C] dark:text-white"
+                          : "hover:bg-[#C7665C30] dark:hover:bg-gray-800"
+                      )}
+                    >
+                      <div className="font-medium">{workspace.name}</div>
+                      <div className="text-xs text-gray-500">
+                        {workspace.ownerId === session.user?.id
+                          ? "Owner"
+                          : "Member"}
+                      </div>
+                    </button>
+                  ))}
 
-          {/* Team Switcher Dropdown */}
-          {state.showWorkspaceSwitcher && (
-            <div className="mb-4 p-4 border border-[#E9ECEF] dark:border-gray-700 rounded-xl bg-[#F2F3F4] dark:bg-gray-900">
-              <h4 className="text-sm font-medium mb-3 dark:text-white">
-                Your Teams
-              </h4>
-              <div className="space-y-2">
-                {allWorkspaces.map(workspace => (
                   <button
                     type="button"
-                    key={workspace.id}
-                    onClick={() => {
-                      router.push(`/workspace/${workspace.id}/settings`);
-                      setState(s => ({ ...s, showWorkspaceSwitcher: false }));
-                    }}
-                    className={clsx(
-                      "w-full text-left px-3 py-2 rounded-md text-sm transition-colors",
-                      workspace.id === currentWorkspace?.id
-                        ? "bg-[#C7665C20] dark:bg-blue-900 text-[#C7665C] dark:text-white"
-                        : "hover:bg-[#C7665C30] dark:hover:bg-gray-800"
-                    )}
+                    onClick={() =>
+                      setState(s => ({
+                        ...s,
+                        showCreateModal: true,
+                        showWorkspaceSwitcher: false,
+                      }))
+                    }
+                    className="w-full text-left px-3 py-2 rounded-md text-sm border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 text-gray-600 dark:text-gray-400 transition-colors"
                   >
-                    <div className="font-medium">{workspace.name}</div>
-                    <div className="text-xs text-gray-500">
-                      {workspace.ownerId === session.user?.id
-                        ? "Owner"
-                        : "Member"}
-                    </div>
+                    + Create New Team
                   </button>
-                ))}
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    setState(s => ({
-                      ...s,
-                      showCreateModal: true,
-                      showWorkspaceSwitcher: false,
-                    }))
-                  }
-                  className="w-full text-left px-3 py-2 rounded-md text-sm border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 text-gray-600 dark:text-gray-400 transition-colors"
-                >
-                  + Create New Team
-                </button>
+                </div>
               </div>
             </div>
-          )}
+          </div>
         </div>
 
         <div className="bg-white dark:bg-black rounded-xl shadow-sm border border-gray-200 dark:border-[#262A30] p-8 mb-6">

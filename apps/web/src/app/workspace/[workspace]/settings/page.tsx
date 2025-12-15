@@ -1,7 +1,8 @@
 "use client";
 
-import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
 import { redirect } from "next/navigation";
+
+import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
 
 export default function SettingsPage() {
   const workspaceId = useStringQuery("workspace");

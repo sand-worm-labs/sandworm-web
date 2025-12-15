@@ -19,6 +19,7 @@ import {
 import { onError } from "@apollo/client/link/error";
 import { RetryLink } from "@apollo/client/link/retry";
 import { setContext } from "@apollo/client/link/context";
+
 import { tokenStorage } from "@/components/Visualization/hooks/useAuth";
 
 type CreateClientOpts = {
