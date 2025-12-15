@@ -1,21 +1,28 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { WorkspaceEntity, UserEntity, DocumentEntity, UserWorkspaceEntity } from '@sandworm/postgresql-typeorm';
-import { AuthGraphqlModule } from '../auth-graphql/auth-graphql.module';
-import { WorkspaceResolver } from './workspace.resolver';
+import { JwtModule } from '@nestjs/jwt';
+import {
+  WorkspaceEntity,
+  UserWorkspaceEntity,
+  UserEntity,
+  DocumentEntity,
+} from '@sandworm/postgresql-typeorm';
 import { WorkspaceService } from './workspace.service';
+import { WorkspaceResolver } from './workspace.resolver';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
+      WorkspaceEntity,
+      UserWorkspaceEntity,
       UserEntity,
-      WorkspaceEntity, 
-      DocumentEntity, 
-      UserWorkspaceEntity
-    ]), 
-    forwardRef(() => AuthGraphqlModule), 
+      DocumentEntity,
+    ]),
+    JwtModule.register({}),
+    MailModule,
   ],
-  providers: [WorkspaceResolver, WorkspaceService],
-  exports: [WorkspaceService], 
+  providers: [WorkspaceService, WorkspaceResolver],
+  exports: [WorkspaceService],
 })
-export class WorkspaceModule {}
+export class WorkspaceModule { }
