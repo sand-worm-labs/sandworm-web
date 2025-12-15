@@ -13,7 +13,7 @@ export class MailService {
   constructor(
     private readonly mailerService: MailerService,
     private readonly configService: ConfigService<AllConfigType>,
-  ) {}
+  ) { }
 
   async userSignUp(mailData: MailData<{ hash: string }>): Promise<void> {
     const i18n = I18nContext.current();
@@ -169,4 +169,65 @@ export class MailService {
       },
     });
   }
+
+  async workspaceInvitation(
+    mailData: MailData<{ hash: string; workspaceName: string; inviterName: string }>,
+  ): Promise<void> {
+    const i18n = I18nContext.current();
+    let invitationTitle: MaybeType<string>;
+    let greeting: MaybeType<string>;
+    let intro: MaybeType<string>;
+    let instruction: MaybeType<string>;
+    let expiryNote: MaybeType<string>;
+    let actionTitle: MaybeType<string>;
+
+    if (i18n) {
+      [invitationTitle, greeting, intro, instruction, expiryNote, actionTitle] = await Promise.all([
+        i18n.t('app.email.workspace_invitation.title'),
+        i18n.t('app.email.workspace_invitation.greeting'),
+        i18n.t('app.email.workspace_invitation.intro', {
+          args: { inviterName: mailData.data.inviterName, workspaceName: mailData.data.workspaceName },
+        }),
+        i18n.t('app.email.workspace_invitation.instruction'),
+        i18n.t('app.email.workspace_invitation.expiry_note'),
+        i18n.t('app.email.workspace_invitation.action_title'),
+      ]);
+    }
+
+    const url = new URL(
+      this.configService.getOrThrow('app.frontendDomain', {
+        infer: true,
+      }) + '/workspace/accept-invitation',
+    );
+    url.searchParams.set('hash', mailData.data.hash);
+
+    await this.mailerService.sendMail({
+      to: mailData.to,
+      subject: invitationTitle || `Invitation to join ${mailData.data.workspaceName}`,
+      text: `${url.toString()} - You've been invited to join ${mailData.data.workspaceName}`,
+      templatePath: path.join(
+        this.configService.getOrThrow('app.workingDirectory', {
+          infer: true,
+        }),
+        'src',
+        'modules',
+        'mail',
+        'mail-templates',
+        'workspace-invitation.hbs',
+      ),
+      context: {
+        title: invitationTitle || 'Workspace Invitation',
+        url: url.toString(),
+        actionTitle: actionTitle || 'Accept Invitation',
+        app_name: this.configService.get('app.name', { infer: true }),
+        workspaceName: mailData.data.workspaceName,
+        inviterName: mailData.data.inviterName,
+        greeting,
+        intro,
+        instruction,
+        expiryNote,
+      },
+    });
+  }
+
 }
