@@ -7,11 +7,13 @@ import {
   Resolver,
 } from '@nestjs/graphql';
 import { CurrentUser } from '@sandworm/graphql';
+import { UserWorkspaceRole } from '@sandworm/postgresql-typeorm';
 import { WorkspaceService } from './workspace.service';
 import { Workspace } from './model/workspace.model';
 import { User } from '../user/model/graphql/user.model';
 import { Document } from '../document/model/document.model';
 import { WorkspaceInfo } from './model/workspace-info.model';
+import { Public } from '@sandworm/nest-common';
 
 @Resolver(() => Workspace)
 export class WorkspaceResolver {
@@ -82,6 +84,38 @@ export class WorkspaceResolver {
     @Args('workspaceId', { type: () => String }) workspaceId: string,
   ): Promise<boolean> {
     return this.workspaceService.switchWorkspace(userId, workspaceId);
+  }
+
+  @Mutation(() => Boolean, {
+    name: 'inviteUserToWorkspace',
+    description: 'Invite a user to workspace by email',
+  })
+  async inviteUserToWorkspace(
+    @CurrentUser('id') inviterId: string,
+    @Args('workspaceId', { type: () => String }) workspaceId: string,
+    @Args('email', { type: () => String }) email: string,
+    @Args('role', { type: () => String, nullable: true }) role?: string,
+  ): Promise<boolean> {
+    const userRole = (role as UserWorkspaceRole) || UserWorkspaceRole.VIEWER;
+    await this.workspaceService.inviteUserToWorkspace(
+      workspaceId,
+      email,
+      inviterId,
+      userRole,
+    );
+    return true;
+  }
+
+  @Public()
+  @Mutation(() => Boolean, {
+    name: 'acceptWorkspaceInvitation',
+    description: 'Accept workspace invitation with hash from email',
+  })
+  async acceptWorkspaceInvitation(
+    @Args('hash', { type: () => String }) hash: string,
+  ): Promise<boolean> {
+    await this.workspaceService.acceptWorkspaceInvitation(hash);
+    return true;
   }
 
   @ResolveField(() => [User])
