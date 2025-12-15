@@ -4,9 +4,9 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 
 import type { ApiUser, UserWorkspaceRole } from "@/types";
+import { useCurrentUserQuery } from "@/generated/graphql";
 
 import { NEXT_PUBLIC_API_URL, NEXT_PUBLIC_PUBLIC_URL } from "../utils/env";
-import { useCurrentUserQuery } from "@/generated/graphql";
 
 type UseAuthError = "unexpected" | "invalid-creds";
 

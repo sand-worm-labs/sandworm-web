@@ -3,7 +3,6 @@
 import React from "react";
 import { MoreVertical } from "lucide-react";
 import Link from "next/link";
-
 import {
   Avatar,
   AvatarImage,
@@ -16,10 +15,10 @@ import {
   DropdownMenuSeparator,
 } from "@sandworm/ui/components/dropdown-menu";
 import { Button } from "@sandworm/ui/components/button";
-import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
 
 import { useModalStore } from "@/store/auth";
 
+import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
 import { useSession, useSignout } from "../Visualization/hooks/useAuth";
 
 export const AccountDropdown = () => {

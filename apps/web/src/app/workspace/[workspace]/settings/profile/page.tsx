@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useSession } from "@/components/Visualization/hooks/useAuth";
 import { Pencil } from "lucide-react";
+
+import { useSession } from "@/components/Visualization/hooks/useAuth";
 
 export default function ProfileSettings() {
   const session = useSession({ redirectToLogin: true });
@@ -211,9 +212,9 @@ export default function ProfileSettings() {
         {/* Avatar Section */}
         <div className="flex flex-col items-center md:items-start relative">
           <div className="relative">
-            {session.user?.avatar ? (
+            {session.user?.avater ? (
               <Image
-                src={session.user.avatar}
+                src={session.user.avater}
                 width={160}
                 height={160}
                 alt={

@@ -2,11 +2,12 @@
 
 import type { ReactNode } from "react";
 
+import { GraphQLProvider } from "@/graphql/provider";
+import { tokenStorage } from "@/components/Visualization/hooks/useAuth";
+
 import { ThemeProvider } from "./ThemeProvider";
 import { QueryProvider } from "./query";
 import AppProvider from "./AppProvider";
-import { GraphQLProvider } from "@/graphql/provider";
-import { tokenStorage } from "@/components/Visualization/hooks/useAuth";
 
 const GRAPHQL_URL = "http://localhost:8003/graphql";
 
