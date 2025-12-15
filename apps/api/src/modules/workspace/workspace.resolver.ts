@@ -87,6 +87,23 @@ export class WorkspaceResolver {
   }
 
   @Mutation(() => Boolean, {
+    name: 'removeUserFromWorkspace',
+    description: 'Remove a user from workspace',
+  })
+  async removeUserFromWorkspace(
+    @CurrentUser('id') adminId: string,
+    @Args('workspaceId', { type: () => String }) workspaceId: string,
+    @Args('userId', { type: () => String }) userIdtoRemove: string,
+  ): Promise<boolean> {
+    await this.workspaceService.removeUserFromWorkspace(
+      workspaceId,
+      userIdtoRemove,
+      adminId,
+    );
+    return true;
+  }
+
+  @Mutation(() => Boolean, {
     name: 'inviteUserToWorkspace',
     description: 'Invite a user to workspace by email',
   })

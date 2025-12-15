@@ -10,6 +10,7 @@ import {
 import { WorkspaceService } from './workspace.service';
 import { WorkspaceResolver } from './workspace.resolver';
 import { MailModule } from '../mail/mail.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { MailModule } from '../mail/mail.module';
       DocumentEntity,
     ]),
     JwtModule.register({}),
+    ConfigModule,
     MailModule,
   ],
   providers: [WorkspaceService, WorkspaceResolver],
