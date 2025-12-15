@@ -218,6 +218,9 @@ type Mutation {
   """Add or remove environment variables"""
   setEnvironmentVariables(input: SetEnvironmentVariablesInput!, workspaceId: String!): [EnvironmentVariable!]!
 
+  """Switch to a different workspace"""
+  switchWorkspace(workspaceId: String!): Boolean!
+
   """Unfollow User"""
   unfollowUser(
     """Username of the profile"""
@@ -288,7 +291,7 @@ type Query {
   """Users that a given user is following"""
   getUserFollowing(userId: String!): [User!]!
 
-  """Get user workspace info with roles"""
+  """Get user workspace info with role"""
   getUserWorkspaceInfo: WorkspaceInfo!
 
   """Get User workspaces"""
@@ -390,6 +393,7 @@ type Workspace {
   source: String
   useCases: [String!]!
   useContext: String
+  users: [User!]!
 }
 
 type WorkspaceInfo {
@@ -397,13 +401,8 @@ type WorkspaceInfo {
   id: String!
   name: String!
   ownerId: String!
-  roles: [WorkspaceMember!]!
-  updatedAt: DateTime!
-}
-
-type WorkspaceMember {
   role: String!
-  userId: String!
+  updatedAt: DateTime!
 }
 
 """Price plan of the workspace"""
