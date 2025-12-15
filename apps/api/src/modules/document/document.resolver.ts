@@ -21,7 +21,7 @@ import {
 
 @Resolver(() => Document)
 export class DocumentResolver {
-  constructor(private readonly documentService: DocumentService) {}
+  constructor(private readonly documentService: DocumentService) { }
 
   @Query(() => Document, {
     name: 'getDocument',
@@ -96,7 +96,7 @@ export class DocumentResolver {
     @Args('input') input: DuplicateDocumentInput,
     @CurrentUser('id') userId: string,
   ): Promise<Document> {
-    return this.documentService.duplicateDocument(userId,input);
+    return this.documentService.duplicateDocument(userId, input);
   }
 
   @Mutation(() => Document, {
@@ -107,9 +107,9 @@ export class DocumentResolver {
     @Args('input') input: FavoriteDocumentInput,
     @CurrentUser('id') userId: string,
   ): Promise<Document> {
-    return this.documentService.addFavoriteDocument(userId,input);
+    return this.documentService.addFavoriteDocument(userId, input);
   }
-  
+
   @Mutation(() => Document, {
     name: 'removeFavoriteDocument',
     description: 'Unmark a document as a favorite',
@@ -118,9 +118,9 @@ export class DocumentResolver {
     @Args('input') input: FavoriteDocumentInput,
     @CurrentUser('id') userId: string,
   ): Promise<Document> {
-    return this.documentService.removeFavoriteDocument(userId,input);
+    return this.documentService.removeFavoriteDocument(userId, input);
   }
-  
+
 
   @ResolveField(() => [Document], {
     name: 'children',
