@@ -1,8 +1,8 @@
 import { ObjectType, Field } from '@nestjs/graphql';
-import { 
-  StringField, 
-  UUIDField, 
-  DateField 
+import {
+  StringField,
+  UUIDField,
+  DateField
 } from '@sandworm/graphql';
 
 @ObjectType()
@@ -31,8 +31,8 @@ export class WorkspaceInfo {
   @DateField()
   updatedAt!: Date;
 
-  @Field(() => [WorkspaceMember])
-  roles!: WorkspaceMember[];
+  @StringField() // Changed from WorkspaceMember object to string
+  role!: string;
 
   static fromService(data: {
     id: string;
@@ -40,7 +40,7 @@ export class WorkspaceInfo {
     ownerId: string;
     createdAt: Date;
     updatedAt: Date;
-    members: Array<{ userId: string; role: string }>;
+    role: string; // Changed from members array to single role
   }): WorkspaceInfo {
     const workspaceInfo = new WorkspaceInfo();
     workspaceInfo.id = data.id;
@@ -48,12 +48,8 @@ export class WorkspaceInfo {
     workspaceInfo.ownerId = data.ownerId;
     workspaceInfo.createdAt = data.createdAt;
     workspaceInfo.updatedAt = data.updatedAt;
-    workspaceInfo.roles = data.members.map((member) => {
-      const workspaceMember = new WorkspaceMember();
-      workspaceMember.userId = member.userId;
-      workspaceMember.role = member.role;
-      return workspaceMember;
-    });
+    workspaceInfo.role = data.role;
+
     return workspaceInfo;
   }
 }

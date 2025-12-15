@@ -1,6 +1,5 @@
 import {
   Args,
-  Int,
   Mutation,
   Parent,
   Query,
@@ -8,7 +7,6 @@ import {
   Resolver,
 } from '@nestjs/graphql';
 import { CurrentUser } from '@sandworm/graphql';
-import { Public } from '@sandworm/nest-common';
 import { WorkspaceService } from './workspace.service';
 import { Workspace } from './model/workspace.model';
 import { User } from '../user/model/graphql/user.model';
@@ -17,7 +15,7 @@ import { WorkspaceInfo } from './model/workspace-info.model';
 
 @Resolver(() => Workspace)
 export class WorkspaceResolver {
-  constructor(private readonly workspaceService: WorkspaceService) {}
+  constructor(private readonly workspaceService: WorkspaceService) { }
 
   @Query(() => Workspace, {
     name: 'getWorkspace',
@@ -35,15 +33,13 @@ export class WorkspaceResolver {
   })
   async getUserWorkspaces(
     @CurrentUser('id') userId: string,
-    @Args('limit', { type: () => Int, nullable: true }) limit?: number,
-    @Args('offset', { type: () => Int, nullable: true }) offset?: number,
   ): Promise<Workspace[]> {
-    return this.workspaceService.getAllUserWorkspaces(userId,{ limit, offset });
+    return this.workspaceService.getAllUserWorkspaces(userId);
   }
 
   @Query(() => WorkspaceInfo, {
     name: 'getUserWorkspaceInfo',
-    description: 'Get user workspace info with roles',
+    description: 'Get user workspace info with role',
   })
   async getUserWorkspaceInfo(
     @CurrentUser('id') userId: string,
@@ -62,7 +58,6 @@ export class WorkspaceResolver {
     if (!ownerId) {
       throw new Error('ownerId is missing from authentication token');
     }
-  
     return this.workspaceService.createWorkspace({ ownerId, name });
   }
 
@@ -76,6 +71,17 @@ export class WorkspaceResolver {
     @Args('name', { type: () => String, nullable: true }) name?: string,
   ): Promise<Workspace> {
     return this.workspaceService.updateWorkspace(workspaceId, { name, ownerId });
+  }
+
+  @Mutation(() => Boolean, {
+    name: 'switchWorkspace',
+    description: 'Switch to a different workspace',
+  })
+  async switchWorkspace(
+    @CurrentUser('id') userId: string,
+    @Args('workspaceId', { type: () => String }) workspaceId: string,
+  ): Promise<boolean> {
+    return this.workspaceService.switchWorkspace(userId, workspaceId);
   }
 
   @ResolveField(() => User)

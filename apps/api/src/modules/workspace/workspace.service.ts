@@ -23,27 +23,21 @@ import {
 } from '@/utils/uuid';
 import { WorkspaceInfo } from './model/workspace-info.model';
 
-interface PaginationOptions {
-  limit?: number;
-  offset?: number;
-}
-
 @Injectable()
 export class WorkspaceService {
   private readonly logger = new Logger(WorkspaceService.name);
 
   constructor(
-      @InjectRepository(WorkspaceEntity)
-      private readonly workspaceRepository: Repository<WorkspaceEntity>,
-      @InjectRepository(UserWorkspaceEntity)  // Changed from WorkspaceEntity
-      private readonly workspaceMembersRepository: Repository<UserWorkspaceEntity>,
-      @InjectRepository(UserEntity)
-      private readonly userRepository: Repository<UserEntity>,
-      @InjectRepository(DocumentEntity)
-      private readonly documentRepository: Repository<DocumentEntity>,
-  ) {}
+    @InjectRepository(WorkspaceEntity)
+    private readonly workspaceRepository: Repository<WorkspaceEntity>,
+    @InjectRepository(UserWorkspaceEntity)
+    private readonly workspaceMembersRepository: Repository<UserWorkspaceEntity>,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(DocumentEntity)
+    private readonly documentRepository: Repository<DocumentEntity>,
+  ) { }
 
- 
   private async validateAndGetUser(
     userId: string,
     fieldName: string = 'User',
@@ -73,24 +67,13 @@ export class WorkspaceService {
     return Workspace.fromEntity(workspace);
   }
 
-  async getAllUserWorkspaces(
-    userId: string,
-    options: PaginationOptions,
-  ): Promise<Workspace[]> {
+  async getAllUserWorkspaces(userId: string): Promise<Workspace[]> {
     await this.validateAndGetUser(userId, 'User');
-
-    const { limit = 20, offset = 0 } = options;
 
     const workspaces = await this.workspaceRepository.find({
       where: { ownerId: userId },
-      take: limit,
-      skip: offset,
       order: { createdAt: 'DESC' },
     });
-
-    if (!workspaces.length) {
-      throw new NotFoundException('No workspaces found for this user');
-    }
 
     return Workspace.fromEntities(workspaces);
   }
@@ -102,90 +85,103 @@ export class WorkspaceService {
     validateUUID(data.ownerId, 'Owner ID');
     validateNonEmptyString(data.name, 'Workspace name');
     validateStringLength(data.name, 'Workspace name', 255);
-  
+
     await this.validateAndGetUser(data.ownerId, 'Owner');
-  
+
     const workspace = this.workspaceRepository.create({
       name: data.name.trim(),
       ownerId: data.ownerId,
     });
-  
+
     const savedWorkspace = await this.workspaceRepository.save(workspace);
-  
+
     const userWorkspace = this.workspaceMembersRepository.create({
       userId: data.ownerId,
       workspaceId: savedWorkspace.id,
       role: UserWorkspaceRole.ADMIN,
-      inviterId: null, 
+      inviterId: null,
     });
-  
+
     await this.workspaceMembersRepository.save(userWorkspace);
-  
-    this.logger.log(
-      `Created workspace ${savedWorkspace.id} with ADMIN role for user ${data.ownerId}`,
-    );
-  
+
     return Workspace.fromEntity(savedWorkspace);
   }
+
+  async switchWorkspace(
+    userId: string,
+    workspaceId: string,
+  ): Promise<boolean> {
+    validateUUID(userId, 'User ID');
+    validateUUID(workspaceId, 'Workspace ID');
+
+    const user = await this.validateAndGetUser(userId, 'User');
+
+    // Check membership (validates both workspace exists and user has access)
+    const membership = await this.workspaceMembersRepository.findOne({
+      where: { userId, workspaceId },
+    });
+
+    if (!membership) {
+      return false;
+    }
+
+    user.lastVisitedWorkspaceId = workspaceId;
+    await this.userRepository.save(user);
+
+    return true;
+  }
+
   async getUserWorkspaceInfo(userId: string): Promise<WorkspaceInfo> {
     validateUUID(userId, 'User ID');
-  
+
     const user = await this.validateAndGetUser(userId, 'User');
     let workspaceId = user.lastVisitedWorkspaceId;
-  
+
+    // If no last visited workspace, find or create one
     if (!workspaceId) {
       const userWorkspaces = await this.workspaceRepository.find({
         where: { ownerId: userId },
         order: { createdAt: 'ASC' },
         take: 1,
       });
-  
+
       if (userWorkspaces.length > 0) {
         workspaceId = userWorkspaces[0].id;
-        user.lastVisitedWorkspaceId = workspaceId;
-        await this.userRepository.save(user);
       } else {
-        // Create workspace (this now automatically creates UserWorkspace with ADMIN role)
+        // Create default workspace
         const newWorkspace = await this.createWorkspace({
           ownerId: userId,
           name: user.getTeamName(),
         });
-  
         workspaceId = newWorkspace.id;
-        user.lastVisitedWorkspaceId = workspaceId;
-        await this.userRepository.save(user);
-  
-        this.logger.log(
-          `Created default workspace ${workspaceId} for user ${userId}`,
-        );
       }
+
+      // Update user's last visited workspace
+      user.lastVisitedWorkspaceId = workspaceId;
+      await this.userRepository.save(user);
     }
-  
-    const workspace = await this.workspaceRepository.findOne({
-      where: { id: workspaceId },
+
+    // Get workspace with user's membership in one query
+    const membership = await this.workspaceMembersRepository.findOne({
+      where: { userId, workspaceId },
+      relations: ['workspace'],
     });
-  
-    if (!workspace) {
-      throw new NotFoundException('Workspace not found');
+
+    if (!membership || !membership.workspace) {
+      throw new NotFoundException('Workspace not found or user not a member');
     }
-  
-    const currentUserWorkspaces = await this.workspaceMembersRepository.find({
-      where: { userId: userId, workspaceId: workspaceId },
-    });
-  
+
+    const workspace = membership.workspace;
+
     return {
       id: workspace.id,
       name: workspace.name,
       ownerId: workspace.ownerId,
       createdAt: workspace.createdAt,
       updatedAt: workspace.updatedAt,
-      roles: currentUserWorkspaces.map((member) => ({
-        userId: member.userId,
-        role: member.role,
-      })),
+      role: membership.role,
     };
   }
-
 
   async updateWorkspace(
     workspaceId: string,
@@ -237,18 +233,11 @@ export class WorkspaceService {
     return Document.fromEntities(documents);
   }
 
-  async getWorkspacesByUser(
-    userId: string,
-    options: PaginationOptions = {},
-  ): Promise<Workspace[]> {
+  async getWorkspacesByUser(userId: string): Promise<Workspace[]> {
     await this.validateAndGetUser(userId, 'User');
-
-    const { limit = 20, offset = 0 } = options;
 
     const workspaces = await this.workspaceRepository.find({
       where: { ownerId: userId },
-      take: limit,
-      skip: offset,
       order: { createdAt: 'DESC' },
     });
 
