@@ -161,6 +161,9 @@ input LoginInput {
 }
 
 type Mutation {
+  """Accept workspace invitation with hash from email"""
+  acceptWorkspaceInvitation(hash: String!): Boolean!
+
   """Mark a document as a favorite"""
   addFavoriteDocument(input: FavoriteDocumentInput!): Document!
 
@@ -202,6 +205,9 @@ type Mutation {
     """Username of the profile"""
     username: String!
   ): Profile!
+
+  """Invite a user to workspace by email"""
+  inviteUserToWorkspace(email: String!, role: String, workspaceId: String!): Boolean!
 
   """Sign in"""
   login(input: LoginInput!): AuthPayload!
