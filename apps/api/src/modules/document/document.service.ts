@@ -26,7 +26,7 @@ export class DocumentService {
     private readonly documentRepository: Repository<DocumentEntity>,
     @InjectRepository(FavoriteEntity)
     private readonly favoriteRepository: Repository<FavoriteEntity>,
-  ) {}
+  ) { }
 
   async getDocument(
     documentId: string,
