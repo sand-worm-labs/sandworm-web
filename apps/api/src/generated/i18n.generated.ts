@@ -60,6 +60,14 @@ export type I18nTranslations = {
                 "instruction": string;
                 "disclaimer": string;
             };
+            "workspace_invitation": {
+                "title": string;
+                "greeting": string;
+                "intro": string;
+                "instruction": string;
+                "expiry_note": string;
+                "action_title": string;
+            };
         };
     };
 };
