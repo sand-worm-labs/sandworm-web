@@ -11,6 +11,7 @@ import {
   Palette,
   Database,
 } from "lucide-react";
+import { useTheme } from "next-themes";
 
 type Theme = "system" | "light" | "dark";
 type EditorTheme =
@@ -168,7 +169,7 @@ const EditorThemeCard: React.FC<{
 };
 
 const Preferences: React.FC = () => {
-  const [selectedTheme, setSelectedTheme] = useState<Theme>("system");
+  const { theme, setTheme } = useTheme();
   const [editorTheme, setEditorTheme] = useState<EditorTheme>("monokai");
   const [fontSize, setFontSize] = useState<FontSize>("medium");
   const [dateFormat, setDateFormat] = useState<DateFormat>("us");
@@ -246,27 +247,8 @@ const Preferences: React.FC = () => {
   ];
 
   const handleThemeChange = (theme: Theme) => {
-    setSelectedTheme(theme);
-
-    if (theme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else if (theme === "light") {
-      document.documentElement.classList.remove("dark");
-    } else {
-      const systemDark = window.matchMedia(
-        "(prefers-color-scheme: dark)"
-      ).matches;
-      if (systemDark) {
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-      }
-    }
+    setTheme(theme);
   };
-
-  React.useEffect(() => {
-    handleThemeChange(selectedTheme);
-  }, []);
 
   return (
     <div className="min-h-screen  dark:bg-black transition-colors">
@@ -300,7 +282,7 @@ const Preferences: React.FC = () => {
               <ThemeCard
                 key={option.id}
                 option={option}
-                selected={selectedTheme === option.id}
+                selected={theme === option.id}
                 onClick={() => handleThemeChange(option.id)}
               />
             ))}
@@ -358,10 +340,10 @@ const Preferences: React.FC = () => {
                     type="button"
                     key={size}
                     onClick={() => setFontSize(size)}
-                    className={`px-6 py-1 rounded-lg font-medium text-sm transition-all capitalize ${
+                    className={`px-4 py-0.5 rounded-lg font-medium text-sm transition-all capitalize ${
                       fontSize === size
                         ? "bg-[#C7665C] text-white"
-                        : "bg-gray-100 dark:bg-[#181C21] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 border border-[#262A30]"
+                        : "bg-gray-100 dark:bg-[#181C21] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 border dark:border-[#262A30] border-[#E9ECEF]"
                     }`}
                   >
                     {size}
@@ -406,7 +388,7 @@ const Preferences: React.FC = () => {
                   onChange={e => setAutoSave(e.target.checked)}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-[#C7665C] rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#C7665C]" />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-[#C7665C] rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#C7665C] " />
               </label>
             </div>
           </div>
@@ -454,7 +436,7 @@ const Preferences: React.FC = () => {
                   step="10"
                   value={queryTimeout}
                   onChange={e => setQueryTimeout(Number(e.target.value))}
-                  className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-[#121417] border border-[#262A30]"
+                  className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-[#121417] border dark:border-[#262A30] border-[#EBD7D7]"
                 />
                 <span className="text-lg font-medium text-gray-900 dark:text-gray-100 w-12 text-right">
                   {queryTimeout}s
