@@ -20,8 +20,6 @@ import { onError } from "@apollo/client/link/error";
 import { RetryLink } from "@apollo/client/link/retry";
 import { setContext } from "@apollo/client/link/context";
 
-import { tokenStorage } from "@/components/Visualization/hooks/useAuth";
-
 type CreateClientOpts = {
   graphqlUrl: string;
   getAccessToken: () => string | null;
@@ -54,30 +52,93 @@ export const createApolloClient = ({
   getAccessToken,
   refreshAccessToken,
 }: CreateClientOpts): ApolloClient<NormalizedCacheObject> => {
-  console.log("🚀 Initializing Apollo Client with URL:", graphqlUrl);
+  console.log("Initializing Apollo Client with URL:", graphqlUrl);
 
   // 1) Error handling link (GraphQL errors / Network errors)
   const errorLink = onError(
-    ({ graphQLErrors, networkError, operation, forward, response }) => {
+    ({ graphQLErrors, networkError, operation, forward }) => {
       if (graphQLErrors) {
-        graphQLErrors.forEach(({ message, locations, path, extensions }) => {
+        for (const err of graphQLErrors) {
           console.error(
-            `[GraphQL error]: Message: ${message}, Location: ${JSON.stringify(locations)}, Path: ${path}`,
-            extensions
+            `[GraphQL error]: Message: ${err.message}, Location: ${JSON.stringify(err.locations)}, Path: ${err.path}`,
+            err.extensions
           );
 
           // Handle authentication errors
-          if ((extensions as any)?.code === "UNAUTHENTICATED") {
-            console.warn(
-              "UNAUTHENTICATED error detected - token may need refresh"
-            );
+          const code = (err.extensions as any)?.code;
+          if (
+            code === "UNAUTHENTICATED" ||
+            (code === "INTERNAL_SERVER_ERROR" &&
+              err.message.includes("Invalid or expired token"))
+          ) {
+            console.warn(" Token expired - attempting refresh");
+
+            // Check if already refreshing
+            if (refreshingPromise) {
+              console.log(" Refresh already in progress, queuing request");
+              return new Observable(observer => {
+                addPendingRequest(() => {
+                  forward(operation).subscribe({
+                    next: observer.next.bind(observer),
+                    error: observer.error.bind(observer),
+                    complete: observer.complete.bind(observer),
+                  });
+                });
+              });
+            }
+
+            // Start refresh
+            refreshingPromise = (async () => {
+              try {
+                console.log("🔄 Calling refreshAccessToken...");
+                const newToken = await refreshAccessToken();
+
+                if (newToken) {
+                  console.log("✅ Token refreshed, retrying requests");
+                  onRefreshed(newToken);
+                  return newToken;
+                } else {
+                  console.log("Refresh failed - no new token");
+                  onRefreshed(null);
+                  // Redirect to login
+                  if (typeof window !== "undefined") {
+                    window.location.href = "/signin";
+                  }
+                  return null;
+                }
+              } catch (e) {
+                console.error("Refresh error:", e);
+                onRefreshed(null);
+                if (typeof window !== "undefined") {
+                  window.location.href = "/signin";
+                }
+                return null;
+              } finally {
+                refreshingPromise = null;
+              }
+            })();
+
+            // Return observable that waits for refresh then retries
+            return new Observable(observer => {
+              refreshingPromise!.then(newToken => {
+                if (newToken) {
+                  // Retry the operation with new token
+                  forward(operation).subscribe({
+                    next: observer.next.bind(observer),
+                    error: observer.error.bind(observer),
+                    complete: observer.complete.bind(observer),
+                  });
+                } else {
+                  observer.error(new Error("Token refresh failed"));
+                }
+              });
+            });
           }
-        });
+        }
       }
 
       if (networkError) {
         console.error(`[Network error]: ${networkError.message}`, networkError);
-        // Log more details for 400 errors
         if ("statusCode" in networkError && networkError.statusCode === 400) {
           console.error(
             "400 Bad Request - Check request format and server logs"
@@ -157,7 +218,7 @@ export const createApolloClient = ({
     uri: graphqlUrl,
     credentials: "include", // Include cookies if needed
     fetch: (uri, options) => {
-      console.log("📤 GraphQL Request:", {
+      console.log(" GraphQL Request:", {
         uri,
         method: options?.method,
         headers: options?.headers,
@@ -165,7 +226,7 @@ export const createApolloClient = ({
       });
 
       return fetch(uri, options).then(response => {
-        console.log("📥 GraphQL Response:", {
+        console.log("GraphQL Response:", {
           status: response.status,
           statusText: response.statusText,
           headers: Object.fromEntries(response.headers.entries()),

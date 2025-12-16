@@ -16,14 +16,17 @@ const getAccessToken = () => {
 };
 
 const refreshAccessToken = async (): Promise<string | null> => {
+  console.log(" Starting token refresh...");
   const refreshToken = tokenStorage.getRefreshToken();
 
   if (!refreshToken) {
+    console.log(" No refresh token found");
     tokenStorage.clearTokens();
     return null;
   }
 
   try {
+    console.log("Calling refresh endpoint...");
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`,
       {
@@ -36,10 +39,12 @@ const refreshAccessToken = async (): Promise<string | null> => {
     );
 
     if (!response.ok) {
+      console.log("Refresh failed with status:", response.status);
       throw new Error("Refresh failed");
     }
 
     const data = await response.json();
+    console.log(" Token refreshed successfully");
 
     // Store new tokens
     tokenStorage.setTokens(data.token, data.refreshToken, data.tokenExpires);

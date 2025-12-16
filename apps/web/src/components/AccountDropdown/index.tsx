@@ -117,7 +117,7 @@ export const AccountDropdown = () => {
           <DropdownMenuSeparator className="my-3" />
 
           <div className="flex flex-col gap-2">
-            <Link href={`${workspaceId}/settings`}>
+            <Link href={`/workspace/${workspaceId}/settings`}>
               <Button
                 variant="outline"
                 className="w-full bg-[#F8F9FA] dark:bg-[#0C1015] border border-[#DEE2E6] dark:border-[#262A30] text-[0.8rem] py-5 rounded-lg"

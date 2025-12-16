@@ -12,7 +12,7 @@ import { Tooltip } from "@/components/Visualization/blocks/ToolTips";
 import UsersList from "@/components/Visualization/blocks/UsersList";
 import { useUsers } from "@/components/Visualization/hooks/useUsers";
 import ScrollBar from "@/components/Visualization/blocks/ScrollBar";
-import { useGetWorkspaceQuery } from "@/generated/graphql"; // Adjust path
+import { useGetWorkspaceQuery } from "@/generated/graphql";
 
 export default function UsersPage() {
   const workspaceId = useStringQuery("workspace");
@@ -25,7 +25,7 @@ export default function UsersPage() {
       skip: !workspaceId,
     });
 
-  const isAdmin = session.user?.roles === "admin";
+  const isAdmin = session.user?.role === "admin";
 
   const [users, { removeUser, updateUser, resetPassword }] =
     useUsers(workspaceId);
@@ -75,7 +75,7 @@ export default function UsersPage() {
     <ScrollBar className="w-full bg-white h-full overflow-auto">
       <div className="px-4 sm:p-6 lg:p-8">
         <div className="border-b border-gray-200 pb-4 mb-6">
-          <h2 className="text-2xl font-semibold text-gray-900">
+          <h2 className="text-xl font-medium text-gray-900 dark:text-white mb-6">
             {workspace?.name}
           </h2>
           <div className="mt-2 flex items-center gap-4 text-sm text-gray-600">
@@ -108,9 +108,9 @@ export default function UsersPage() {
               disabled={!isAddEnabled}
               className={clsx(
                 isAddEnabled
-                  ? "bg-primary-200 hover:bg-primary-300"
-                  : "bg-gray-300 cursor-not-allowed",
-                "flex items-center gap-x-2 rounded-sm shadow-sm px-3.5 py-2.5 text-sm font-semibold border-stone-950"
+                  ? "bg-[#C7665C] hover:bg-primary-300"
+                  : "bg-[#C7665CDD] cursor-not-allowed",
+                "px-6 py-2 bg-[#C7665C] text-white rounded-xl hover:bg-[#B55A50] text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
               )}
             >
               <UserPlusIcon className="h-4 w-4" /> Add user
@@ -119,13 +119,13 @@ export default function UsersPage() {
         </div>
 
         <UsersList
-          currentUserEmail={session.data?.email ?? ""}
+          currentUserEmail={session.user?.email ?? ""}
           users={users}
           workspaceId={workspaceId}
           onRemoveUser={removeUser}
           onChangeRole={onChangeRole}
           onResetPassword={onResetPassword}
-          role={session.data?.roles[workspaceId] ?? "viewer"}
+          role={session.user?.role ?? "viewer"}
         />
       </div>
     </ScrollBar>
