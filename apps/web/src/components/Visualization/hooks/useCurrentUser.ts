@@ -1,43 +1,45 @@
 import { useCallback, useMemo } from "react";
-
 import {
   useUpdateUserMutation,
+  useUpdateUserSettingsMutation,
   useCurrentUserQuery as useGetCurrentUserQuery,
   type UpdateUserInput,
+  type UpdateUserSettingInput,
+  type UserSetting,
 } from "@/generated/graphql";
 
-type UseUpdateUserReturn = {
+type UseCurrentUserReturn = {
   updateUser: (input: UpdateUserInput) => Promise<void>;
+  updateUserSettings: (
+    input: Omit<UpdateUserSettingInput, "id">
+  ) => Promise<void>;
   loading: boolean;
   error: Error | null;
   currentUser: any;
+  settings: UserSetting | null;
   refetch: () => void;
 };
 
-export const useCurrentUser = (): UseUpdateUserReturn => {
+export const useCurrentUser = (): UseCurrentUserReturn => {
   const {
     data,
     loading: queryLoading,
     error: queryError,
     refetch,
-  } = useGetCurrentUserQuery({
-    fetchPolicy: "cache-and-network",
-  });
+  } = useGetCurrentUserQuery({ fetchPolicy: "cache-and-network" });
 
-  const [updateUserMutation, { loading: updateLoading, error: updateError }] =
+  const [updateUserMutation, { loading: userLoading, error: userError }] =
     useUpdateUserMutation();
+  const [
+    updateUserSettingsMutation,
+    { loading: settingsLoading, error: settingsError },
+  ] = useUpdateUserSettingsMutation();
 
   const updateUser = useCallback(
     async (input: UpdateUserInput) => {
       try {
-        const result = await updateUserMutation({
-          variables: { input },
-        });
-
-        if (result.data?.updateUser) {
-          // Refetch user data to get updated info
-          await refetch();
-        }
+        await updateUserMutation({ variables: { input } });
+        await refetch();
       } catch (err) {
         console.error("Failed to update user:", err);
         throw err;
@@ -46,20 +48,38 @@ export const useCurrentUser = (): UseUpdateUserReturn => {
     [updateUserMutation, refetch]
   );
 
+  const updateUserSettings = useCallback(
+    async (input: Omit<UpdateUserSettingInput, "id">) => {
+      try {
+        await updateUserSettingsMutation({ variables: input });
+        await refetch();
+      } catch (err) {
+        console.error("Failed to update user settings:", err);
+        throw err;
+      }
+    },
+    [updateUserSettingsMutation, refetch]
+  );
+
   return useMemo(
     () => ({
       updateUser,
-      loading: queryLoading || updateLoading,
-      error: (queryError || updateError) as Error | null,
+      updateUserSettings,
+      loading: queryLoading || userLoading || settingsLoading,
+      error: (queryError || userError || settingsError) as Error | null,
       currentUser: data?.currentUser.user,
+      settings: data?.currentUser.user.settings ?? null,
       refetch,
     }),
     [
       updateUser,
+      updateUserSettings,
       queryLoading,
-      updateLoading,
+      userLoading,
+      settingsLoading,
       queryError,
-      updateError,
+      userError,
+      settingsError,
       data,
       refetch,
     ]

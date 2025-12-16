@@ -174,6 +174,8 @@ export type LoginInput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  /** Accept workspace invitation with hash from email */
+  acceptWorkspaceInvitation: Scalars['Boolean']['output'];
   /** Mark a document as a favorite */
   addFavoriteDocument: Document;
   /** Advance to the next step in the tutorial */
@@ -200,10 +202,14 @@ export type Mutation = {
   duplicateDocument: Document;
   /** Follow User */
   followUser: Profile;
+  /** Invite a user to workspace by email */
+  inviteUserToWorkspace: Scalars['Boolean']['output'];
   /** Sign in */
   login: AuthPayload;
   /** Unmark a document as a favorite */
   removeFavoriteDocument: Document;
+  /** Remove a user from workspace */
+  removeUserFromWorkspace: Scalars['Boolean']['output'];
   /** Restart the Jupyter environment */
   restartEnvironment: Environment;
   /** Restore a previously deleted document */
@@ -218,8 +224,15 @@ export type Mutation = {
   updateDocument: Document;
   /** Update current user */
   updateUser: User;
+  /** Update user settings */
+  updateUserSettings: Scalars['Boolean']['output'];
   /** Update workspace info */
   updateWorkspace: Workspace;
+};
+
+
+export type MutationAcceptWorkspaceInvitationArgs = {
+  hash: Scalars['String']['input'];
 };
 
 
@@ -291,6 +304,13 @@ export type MutationFollowUserArgs = {
 };
 
 
+export type MutationInviteUserToWorkspaceArgs = {
+  email: Scalars['String']['input'];
+  role?: InputMaybe<Scalars['String']['input']>;
+  workspaceId: Scalars['String']['input'];
+};
+
+
 export type MutationLoginArgs = {
   input: LoginInput;
 };
@@ -298,6 +318,12 @@ export type MutationLoginArgs = {
 
 export type MutationRemoveFavoriteDocumentArgs = {
   input: FavoriteDocumentInput;
+};
+
+
+export type MutationRemoveUserFromWorkspaceArgs = {
+  userId: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
 };
 
 
@@ -336,6 +362,11 @@ export type MutationUpdateDocumentArgs = {
 
 export type MutationUpdateUserArgs = {
   input: UpdateUserInput;
+};
+
+
+export type MutationUpdateUserSettingsArgs = {
+  input: UpdateUserSettingInput;
 };
 
 
@@ -379,7 +410,7 @@ export type Query = {
   /** Check if a file exists */
   fileExists: Scalars['Boolean']['output'];
   /** Get all users */
-  getAllUsers: Array<User>;
+  getAllUsers: Scalars['Int']['output'];
   /** Get a single document by ID */
   getDocument: Document;
   /** Get the current state of a tutorial */
@@ -525,6 +556,12 @@ export type UpdateUserInput = {
   username?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UpdateUserSettingInput = {
+  socialLinks?: InputMaybe<Scalars['JSON']['input']>;
+  statusText?: InputMaybe<Scalars['String']['input']>;
+  wallets?: InputMaybe<Array<Scalars['JSON']['input']>>;
+};
+
 export type User = {
   __typename?: 'User';
   avater?: Maybe<Scalars['String']['output']>;
@@ -548,7 +585,6 @@ export type UserSetting = {
   socialLinks?: Maybe<Scalars['JSON']['output']>;
   statusText?: Maybe<Scalars['String']['output']>;
   statusUpdatedAt?: Maybe<Scalars['DateTime']['output']>;
-  theme?: Maybe<Scalars['String']['output']>;
   userId: Scalars['ID']['output'];
   wallets: Array<Scalars['JSON']['output']>;
 };
@@ -597,7 +633,16 @@ export type UpdateUserMutationVariables = Exact<{
 }>;
 
 
-export type UpdateUserMutation = { __typename?: 'Mutation', updateUser: { __typename?: 'User', id: string, email?: string | null, username?: string | null, firstName?: string | null, lastName?: string | null, fullName?: string | null, avater?: string | null, isOnboarded: boolean, settings?: { __typename?: 'UserSetting', id: string, theme?: string | null, statusText?: string | null, statusUpdatedAt?: any | null, socialLinks?: any | null, wallets: Array<any> } | null } };
+export type UpdateUserMutation = { __typename?: 'Mutation', updateUser: { __typename?: 'User', id: string, email?: string | null, username?: string | null, firstName?: string | null, lastName?: string | null, fullName?: string | null, avater?: string | null, isOnboarded: boolean } };
+
+export type UpdateUserSettingsMutationVariables = Exact<{
+  statusText?: InputMaybe<Scalars['String']['input']>;
+  socialLinks?: InputMaybe<Scalars['JSON']['input']>;
+  wallets?: InputMaybe<Array<Scalars['JSON']['input']> | Scalars['JSON']['input']>;
+}>;
+
+
+export type UpdateUserSettingsMutation = { __typename?: 'Mutation', updateUserSettings: boolean };
 
 export type FollowUserMutationVariables = Exact<{
   username: Scalars['String']['input'];
@@ -735,7 +780,7 @@ export type SwitchWorkspaceMutation = { __typename?: 'Mutation', switchWorkspace
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentUserQuery = { __typename?: 'Query', currentUser: { __typename: 'AuthPayload', id: string, token: string, tokenExpires: number, user: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, fullName?: string | null, isOnboarded: boolean, avater?: string | null, followersCount: number, followingCount: number } } };
+export type CurrentUserQuery = { __typename?: 'Query', currentUser: { __typename: 'AuthPayload', id: string, token: string, tokenExpires: number, user: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, fullName?: string | null, isOnboarded: boolean, avater?: string | null, followersCount: number, followingCount: number, settings?: { __typename?: 'UserSetting', statusText?: string | null, statusUpdatedAt?: any | null, socialLinks?: any | null, wallets: Array<any> } | null } } };
 
 export type GetProfileQueryVariables = Exact<{
   username: Scalars['String']['input'];
@@ -743,13 +788,6 @@ export type GetProfileQueryVariables = Exact<{
 
 
 export type GetProfileQuery = { __typename?: 'Query', profile: { __typename?: 'Profile', username: string, bio: string, image: string, following: boolean } };
-
-export type GetAllUsersQueryVariables = Exact<{
-  input: GetAllUsersInput;
-}>;
-
-
-export type GetAllUsersQuery = { __typename?: 'Query', getAllUsers: Array<{ __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, fullName?: string | null, avater?: string | null, followersCount: number, followingCount: number, isOnboarded: boolean }> };
 
 export type GetUserFollowersQueryVariables = Exact<{
   userId: Scalars['String']['input'];
@@ -838,7 +876,7 @@ export type GetWorkspaceQueryVariables = Exact<{
 }>;
 
 
-export type GetWorkspaceQuery = { __typename?: 'Query', getWorkspace: { __typename?: 'Workspace', id: string, name: string, plan: WorkspacePlan, source?: string | null, useCases: Array<string>, useContext?: string | null, ownerId: string, owner: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null }, documents: Array<{ __typename?: 'Document', id: string, title: string, slug: string, authorId: string, parentId: string }> } };
+export type GetWorkspaceQuery = { __typename?: 'Query', getWorkspace: { __typename?: 'Workspace', id: string, name: string, plan: WorkspacePlan, source?: string | null, useCases: Array<string>, useContext?: string | null, ownerId: string, owner: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null }, users: Array<{ __typename?: 'User', id: string, firstName?: string | null, lastName?: string | null, email?: string | null, avater?: string | null }>, documents: Array<{ __typename?: 'Document', id: string, title: string, slug: string, authorId: string, parentId: string }> } };
 
 export type GetWorkspaceDocumentsQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
@@ -898,14 +936,6 @@ export const UpdateUserDocument = gql`
     fullName
     avater
     isOnboarded
-    settings {
-      id
-      theme
-      statusText
-      statusUpdatedAt
-      socialLinks
-      wallets
-    }
   }
 }
     `;
@@ -935,6 +965,41 @@ export function useUpdateUserMutation(baseOptions?: Apollo.MutationHookOptions<U
 export type UpdateUserMutationHookResult = ReturnType<typeof useUpdateUserMutation>;
 export type UpdateUserMutationResult = Apollo.MutationResult<UpdateUserMutation>;
 export type UpdateUserMutationOptions = Apollo.BaseMutationOptions<UpdateUserMutation, UpdateUserMutationVariables>;
+export const UpdateUserSettingsDocument = gql`
+    mutation UpdateUserSettings($statusText: String, $socialLinks: JSON, $wallets: [JSON!]) {
+  updateUserSettings(
+    input: {statusText: $statusText, socialLinks: $socialLinks, wallets: $wallets}
+  )
+}
+    `;
+export type UpdateUserSettingsMutationFn = Apollo.MutationFunction<UpdateUserSettingsMutation, UpdateUserSettingsMutationVariables>;
+
+/**
+ * __useUpdateUserSettingsMutation__
+ *
+ * To run a mutation, you first call `useUpdateUserSettingsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateUserSettingsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateUserSettingsMutation, { data, loading, error }] = useUpdateUserSettingsMutation({
+ *   variables: {
+ *      statusText: // value for 'statusText'
+ *      socialLinks: // value for 'socialLinks'
+ *      wallets: // value for 'wallets'
+ *   },
+ * });
+ */
+export function useUpdateUserSettingsMutation(baseOptions?: Apollo.MutationHookOptions<UpdateUserSettingsMutation, UpdateUserSettingsMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateUserSettingsMutation, UpdateUserSettingsMutationVariables>(UpdateUserSettingsDocument, options);
+      }
+export type UpdateUserSettingsMutationHookResult = ReturnType<typeof useUpdateUserSettingsMutation>;
+export type UpdateUserSettingsMutationResult = Apollo.MutationResult<UpdateUserSettingsMutation>;
+export type UpdateUserSettingsMutationOptions = Apollo.BaseMutationOptions<UpdateUserSettingsMutation, UpdateUserSettingsMutationVariables>;
 export const FollowUserDocument = gql`
     mutation FollowUser($username: String!) {
   followUser(username: $username) {
@@ -1610,6 +1675,12 @@ export const CurrentUserDocument = gql`
       avater
       followersCount
       followingCount
+      settings {
+        statusText
+        statusUpdatedAt
+        socialLinks
+        wallets
+      }
     }
     __typename
   }
@@ -1690,55 +1761,6 @@ export type GetProfileQueryHookResult = ReturnType<typeof useGetProfileQuery>;
 export type GetProfileLazyQueryHookResult = ReturnType<typeof useGetProfileLazyQuery>;
 export type GetProfileSuspenseQueryHookResult = ReturnType<typeof useGetProfileSuspenseQuery>;
 export type GetProfileQueryResult = Apollo.QueryResult<GetProfileQuery, GetProfileQueryVariables>;
-export const GetAllUsersDocument = gql`
-    query GetAllUsers($input: GetAllUsersInput!) {
-  getAllUsers(input: $input) {
-    id
-    username
-    email
-    firstName
-    lastName
-    fullName
-    avater
-    followersCount
-    followingCount
-    isOnboarded
-  }
-}
-    `;
-
-/**
- * __useGetAllUsersQuery__
- *
- * To run a query within a React component, call `useGetAllUsersQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetAllUsersQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetAllUsersQuery({
- *   variables: {
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useGetAllUsersQuery(baseOptions: Apollo.QueryHookOptions<GetAllUsersQuery, GetAllUsersQueryVariables> & ({ variables: GetAllUsersQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetAllUsersQuery, GetAllUsersQueryVariables>(GetAllUsersDocument, options);
-      }
-export function useGetAllUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAllUsersQuery, GetAllUsersQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetAllUsersQuery, GetAllUsersQueryVariables>(GetAllUsersDocument, options);
-        }
-export function useGetAllUsersSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetAllUsersQuery, GetAllUsersQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetAllUsersQuery, GetAllUsersQueryVariables>(GetAllUsersDocument, options);
-        }
-export type GetAllUsersQueryHookResult = ReturnType<typeof useGetAllUsersQuery>;
-export type GetAllUsersLazyQueryHookResult = ReturnType<typeof useGetAllUsersLazyQuery>;
-export type GetAllUsersSuspenseQueryHookResult = ReturnType<typeof useGetAllUsersSuspenseQuery>;
-export type GetAllUsersQueryResult = Apollo.QueryResult<GetAllUsersQuery, GetAllUsersQueryVariables>;
 export const GetUserFollowersDocument = gql`
     query GetUserFollowers($userId: String!) {
   getUserFollowers(userId: $userId) {
@@ -2305,6 +2327,13 @@ export const GetWorkspaceDocument = gql`
       email
       firstName
       lastName
+    }
+    users {
+      id
+      firstName
+      lastName
+      email
+      avater
     }
     documents {
       id
