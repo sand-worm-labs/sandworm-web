@@ -38,16 +38,16 @@ export class ScheduleExecutorService implements OnModuleInit, OnModuleDestroy {
     ) { }
 
     async onModuleInit() {
-        this.startExecutionEngine();
+        this.updateLoop = this.startExecutionEngine();
+
+        this.updateLoop.catch((err) => {
+            this.logger.error('Critical error in schedule execution engine', err);
+        });
     }
 
     async onModuleDestroy() {
         await this.stopExecutionEngine();
     }
-
-    // ============================================================================
-    // Execution Engine
-    // ============================================================================
 
     private convertToCron(schedule: ExecutionScheduleEntity): string {
         switch (schedule.type) {
@@ -79,12 +79,18 @@ export class ScheduleExecutorService implements OnModuleInit, OnModuleDestroy {
         }
     }
 
-    private startExecutionEngine() {
+    private async startExecutionEngine(): Promise<void> {
         this.logger.log('Starting schedule execution engine');
-        this.updateLoop = this.runUpdateLoop();
+
+        try {
+            await this.runUpdateLoop();
+        } catch (err) {
+            this.logger.error('Schedule execution engine failed', err);
+            throw err;
+        }
     }
 
-    private async stopExecutionEngine() {
+    private async stopExecutionEngine(): Promise<void> {
         this.logger.log('[shutdown] Stopping schedule execution engine');
 
         this.stopRequested = true;
@@ -108,32 +114,34 @@ export class ScheduleExecutorService implements OnModuleInit, OnModuleDestroy {
     }
 
     private async runUpdateLoop(): Promise<void> {
-        this.logger.debug('Acquiring lock to be the schedule executor');
+        try {
+            await this.lockService.acquireLock('schedule-executor', async () => {
+                this.lockAcquired = true;
 
-        await this.lockService.acquireLock('schedule-executor', async () => {
-            this.lockAcquired = true;
-
-            if (this.stopRequested) {
-                this.logger.debug('Lock acquired but server is shutting down');
-                return;
-            }
-
-            this.logger.log(
-                '✓ Schedule executor lock acquired - this instance will execute schedules',
-            );
-
-            while (!this.stopRequested) {
-                try {
-                    await this.syncSchedules();
-                } catch (err) {
-                    this.logger.error('Failed to sync schedules', err);
+                if (this.stopRequested) {
+                    return;
                 }
 
-                if (this.stopRequested) break;
+                this.logger.log(
+                    'Schedule executor lock acquired - this instance will execute schedules',
+                );
 
-                await this.sleep(5000);
-            }
-        });
+                while (!this.stopRequested) {
+                    try {
+                        await this.syncSchedules();
+                    } catch (err) {
+                        this.logger.error('Failed to sync schedules', err);
+                    }
+
+                    if (this.stopRequested) break;
+
+                    await this.sleep(5000);
+                }
+            });
+        } catch (err) {
+            this.logger.error('Failed to run schedule update loop', err);
+            throw err;
+        }
     }
 
     private async syncSchedules(): Promise<void> {
@@ -158,7 +166,7 @@ export class ScheduleExecutorService implements OnModuleInit, OnModuleDestroy {
                     }
 
                     this.logger.log(
-                        `Schedule changed: ${schedule.id} (${existingJob.cron} → ${cron})`,
+                        `Schedule ${schedule.id} changed: ${existingJob.cron} → ${cron}`,
                     );
                     existingJob.job.stop();
                     counters.updated++;
@@ -167,7 +175,7 @@ export class ScheduleExecutorService implements OnModuleInit, OnModuleDestroy {
                 }
 
                 this.logger.log(
-                    `Creating cron job for schedule ${schedule.id} (document ${schedule.documentId}): ${cron}`,
+                    `Creating schedule ${schedule.id} for document ${schedule.documentId}: ${cron}`,
                 );
 
                 const job = CronJob.from({
@@ -178,18 +186,14 @@ export class ScheduleExecutorService implements OnModuleInit, OnModuleDestroy {
                     context: schedule.documentId,
                 });
 
-                let jobInfo: JobInfo = {
-                    job,
-                    cron,
-                };
-                this.jobs.set(schedule.id, jobInfo)
+                this.jobs.set(schedule.id, { job, cron });
             } catch (err) {
                 this.logger.error(`Failed to sync schedule ${schedule.id}`, err);
             }
         }
 
         for (const scheduleId of schedulesToDelete) {
-            this.logger.log(`Removing cron job for schedule ${scheduleId}`);
+            this.logger.log(`Removing schedule ${scheduleId}`);
             this.jobs.get(scheduleId)?.job.stop();
             this.jobs.delete(scheduleId);
             counters.deleted++;
@@ -220,11 +224,9 @@ export class ScheduleExecutorService implements OnModuleInit, OnModuleDestroy {
         schedule: ExecutionScheduleEntity,
     ): Promise<void> {
         this.logger.log(
-            `🚀 Starting schedule tick for Document(${schedule.documentId})`,
-            { scheduleId: schedule.id, documentId: schedule.documentId },
+            `Starting execution for document ${schedule.documentId}`,
         );
 
-        // Update lastExecutedAt
         await this.scheduleRepository.update(schedule.id, {
             lastExecutedAt: new Date(),
         });
@@ -235,28 +237,24 @@ export class ScheduleExecutorService implements OnModuleInit, OnModuleDestroy {
 
         if (!document) {
             this.logger.warn(
-                `Document(${schedule.documentId}) not found, skipping execution`,
+                `Document ${schedule.documentId} not found, skipping execution`,
             );
             return;
         }
 
         if (document.deletedAt !== null) {
             this.logger.log(
-                `Document(${schedule.documentId}) is soft deleted, skipping execution`,
+                `Document ${schedule.documentId} is soft deleted, skipping execution`,
             );
             return;
         }
 
-        this.logger.log(`Executing schedule for Document(${schedule.documentId})`);
-
         try {
             await this.executeDocument(schedule, document);
-            this.logger.log(
-                `✅ Finished Document(${schedule.documentId}) execution`,
-            );
+            this.logger.log(`Finished execution for document ${schedule.documentId}`);
         } catch (err) {
             this.logger.error(
-                `❌ Failed to execute schedule for Document(${schedule.documentId})`,
+                `Failed execution for document ${schedule.documentId}`,
                 err,
             );
         }
@@ -273,7 +271,7 @@ export class ScheduleExecutorService implements OnModuleInit, OnModuleDestroy {
 
         if (!yjsApp) {
             throw new Error(
-                'Trying to run a schedule for a never saved document',
+                `No YjsAppDocument found for document ${document.id}`,
             );
         }
 
@@ -285,49 +283,17 @@ export class ScheduleExecutorService implements OnModuleInit, OnModuleDestroy {
         document: DocumentEntity,
         yjsApp: YjsAppDocumentEntity,
     ): Promise<void> {
-        let emptyLayout = true;
-        let retryCount = 0;
-        const maxRetries = 5;
+        // TODO: Integrate with Yjs service
+        // Implementation should:
+        // 1. Load Yjs document
+        // 2. Create ExecutionQueue
+        // 3. Run all blocks with scheduleId
+        // 4. Wait for completion
+        // 5. Update app state
 
-        while (emptyLayout && retryCount < maxRetries) {
-            // TODO: Implement Yjs document execution
-            // This should call your Yjs service to:
-            // 1. Load the Yjs document
-            // 2. Get ExecutionQueue from Yjs
-            // 3. Run all blocks: executionQueue.enqueueRunAll(layout, blocks, { _tag: 'schedule', scheduleId })
-            // 4. Wait for completion: await batch.waitForCompletion()
-            // 5. Update app state
-
-            this.logger.warn(
-                `TODO: Implement Yjs execution for document ${document.id}`,
-                { scheduleId, documentId: document.id, yjsAppId: yjsApp.id },
-            );
-
-            // For now, just exit the loop
-            emptyLayout = false;
-
-            if (emptyLayout) {
-                retryCount++;
-                this.logger.error(
-                    `Document(${document.id}) had empty layout, retry ${retryCount}/${maxRetries}`,
-                    {
-                        documentId: document.id,
-                        yjsAppDocumentId: yjsApp.id,
-                        scheduleId,
-                    },
-                );
-
-                if (retryCount < maxRetries) {
-                    await this.sleep(1000);
-                }
-            }
-        }
-
-        if (emptyLayout) {
-            throw new Error(
-                `Document(${document.id}) had empty layout after ${maxRetries} retries`,
-            );
-        }
+        this.logger.warn(
+            `Yjs execution not implemented for document ${document.id}`,
+        );
     }
 
     private sleep(ms: number): Promise<void> {
