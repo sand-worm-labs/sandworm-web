@@ -48,6 +48,13 @@ query GetWorkspace($workspaceId: String!) {
       firstName
       lastName
     }
+    users {
+      id
+      firstName
+      lastName
+      email
+      avater
+    }
     documents {
       id
       title

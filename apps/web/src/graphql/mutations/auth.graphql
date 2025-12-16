@@ -26,15 +26,21 @@ mutation UpdateUser($input: UpdateUserInput!) {
     fullName
     avater
     isOnboarded
-    settings {
-      id
-      theme
-      statusText
-      statusUpdatedAt
-      socialLinks
-      wallets
-    }
   }
+}
+
+mutation UpdateUserSettings(
+  $statusText: String
+  $socialLinks: JSON
+  $wallets: [JSON!]
+) {
+  updateUserSettings(
+    input: {
+      statusText: $statusText
+      socialLinks: $socialLinks
+      wallets: $wallets
+    }
+  )
 }
 
 # Follow a user
