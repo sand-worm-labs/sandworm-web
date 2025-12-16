@@ -66,8 +66,6 @@ export class DocumentEntity extends AbstractEntity {
 
   @Column({ default: true })
   shareLinksWithoutSidebar!: boolean;
-  
-
 
   @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.documents, {
     onDelete: "CASCADE",
@@ -78,7 +76,7 @@ export class DocumentEntity extends AbstractEntity {
     foreignKeyConstraintName: "FK_document_workspace",
   })
   workspace!: Relation<WorkspaceEntity>;
-  
+
   @ManyToOne(() => UserEntity, (user) => user.documents, { onDelete: "CASCADE" })
   @JoinColumn({
     name: "author_id",
