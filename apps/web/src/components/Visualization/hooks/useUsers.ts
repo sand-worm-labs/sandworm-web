@@ -1,11 +1,10 @@
 import { useCallback, useMemo } from "react";
-import useSWR from "swr";
 
 import type { ApiUser, UserWorkspaceRole, WorkspaceUser } from "@/types";
-import type { UserFormValues } from "@/components/forms/user";
 
-import fetcher from "../utils/fetcher";
 import { NEXT_PUBLIC_API_URL } from "../utils/env";
+import { useGetWorkspaceQuery } from "@/generated/graphql"; // Adjust path to your codegen
+import { UserFormValues } from "../blocks/forms/user";
 
 type UpdateUserPayload = {
   name?: string;
@@ -13,6 +12,7 @@ type UpdateUserPayload = {
   currentPassword?: string;
   newPassword?: string;
 };
+
 type API = {
   createUser: (
     payload: UserFormValues
@@ -28,12 +28,24 @@ type API = {
 type UseUsers = [WorkspaceUser[], API];
 
 export const useUsers = (workspaceId: string): UseUsers => {
-  const { data, mutate } = useSWR<WorkspaceUser[]>(
-    `${NEXT_PUBLIC_API_URL()}/v1/workspaces/${workspaceId}/users`,
-    fetcher
-  );
+  const { data, refetch } = useGetWorkspaceQuery({
+    variables: { workspaceId },
+    skip: !workspaceId,
+  });
 
-  const users = useMemo(() => data ?? [], [data]);
+  const users = useMemo(() => {
+    if (!data?.getWorkspace?.users) return [];
+
+    // Map GraphQL users to WorkspaceUser format
+    return data.getWorkspace.users.map(user => ({
+      id: user.id,
+      email: user.email || "",
+      name: `${user.firstName || ""} ${user.lastName || ""}`.trim(),
+      firstName: user.firstName,
+      lastName: user.lastName,
+      avater: user.avater,
+    })) as WorkspaceUser[];
+  }, [data]);
 
   const createUser = useCallback(
     async (payload: UserFormValues) => {
@@ -57,10 +69,10 @@ export const useUsers = (workspaceId: string): UseUsers => {
       }
 
       const user = await res.json();
-      mutate([...users, user]);
+      await refetch();
       return user;
     },
-    [workspaceId]
+    [workspaceId, refetch]
   );
 
   const updateUser = useCallback(
@@ -85,24 +97,15 @@ export const useUsers = (workspaceId: string): UseUsers => {
         return reason;
       }
 
-      const user = await res.json();
-      mutate(
-        users.map(u => {
-          if (u.id === id) {
-            return user;
-          }
-
-          return u;
-        })
-      );
+      await refetch();
       return null;
     },
-    [mutate, users, workspaceId]
+    [workspaceId, refetch]
   );
 
   const removeUser = useCallback(
     async (id: string) => {
-      const data = await fetch(
+      const res = await fetch(
         `${NEXT_PUBLIC_API_URL()}/v1/workspaces/${workspaceId}/users/${id}`,
         {
           credentials: "include",
@@ -110,14 +113,14 @@ export const useUsers = (workspaceId: string): UseUsers => {
         }
       );
 
-      if (data.ok) {
-        mutate(users.filter(u => u.id !== id));
+      if (res.ok) {
+        await refetch();
       } else {
         // TODO proper error handling
         alert("Failed to remove user");
       }
     },
-    [mutate, users, workspaceId]
+    [workspaceId, refetch]
   );
 
   const resetPassword = useCallback(
@@ -147,6 +150,6 @@ export const useUsers = (workspaceId: string): UseUsers => {
 
   return useMemo(
     () => [users, { createUser, updateUser, resetPassword, removeUser }],
-    [createUser, removeUser, resetPassword, users]
+    [createUser, removeUser, resetPassword, updateUser, users]
   );
 };

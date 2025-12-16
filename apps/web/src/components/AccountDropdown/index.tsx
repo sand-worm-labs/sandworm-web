@@ -111,8 +111,7 @@ export const AccountDropdown = () => {
           </Link>
 
           <p className="text-[0.75rem] leading-relaxed border-t border-b border-[#E9ECEF] py-3 text-[#343A40] dark:text-white dark:border-[#262A30]">
-            Deep dive into EVM chain data with a focus on trends, adoption, and
-            the growth of the Base blockchain.
+            {user.settings?.statusText ?? "No bio available."}
           </p>
 
           <DropdownMenuSeparator className="my-3" />

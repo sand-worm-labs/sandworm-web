@@ -12,11 +12,18 @@ import { Tooltip } from "@/components/Visualization/blocks/ToolTips";
 import UsersList from "@/components/Visualization/blocks/UsersList";
 import { useUsers } from "@/components/Visualization/hooks/useUsers";
 import ScrollBar from "@/components/Visualization/blocks/ScrollBar";
+import { useGetWorkspaceQuery } from "@/generated/graphql"; // Adjust path
 
 export default function UsersPage() {
-  const workspaceId = useStringQuery("workspaceId");
+  const workspaceId = useStringQuery("workspace");
   const session = useSession({ redirectToLogin: true });
   const router = useRouter();
+
+  const { data: workspaceData, loading: workspaceLoading } =
+    useGetWorkspaceQuery({
+      variables: { workspaceId },
+      skip: !workspaceId,
+    });
 
   const isAdmin = session.user?.roles === "admin";
 
@@ -54,9 +61,34 @@ export default function UsersPage() {
     setNewPassword(null);
   }, []);
 
+  const workspace = workspaceData?.getWorkspace;
+
+  if (workspaceLoading) {
+    return (
+      <div className="w-full h-full flex items-center justify-center">
+        <div className="text-gray-500">Loading workspace...</div>
+      </div>
+    );
+  }
+
   return (
     <ScrollBar className="w-full bg-white h-full overflow-auto">
       <div className="px-4 sm:p-6 lg:p-8">
+        <div className="border-b border-gray-200 pb-4 mb-6">
+          <h2 className="text-2xl font-semibold text-gray-900">
+            {workspace?.name}
+          </h2>
+          <div className="mt-2 flex items-center gap-4 text-sm text-gray-600">
+            <span className="font-medium">
+              Plan: <span className="text-gray-900">{workspace?.plan}</span>
+            </span>
+            <span>•</span>
+            <span>
+              {users.length} {users.length === 1 ? "user" : "users"}
+            </span>
+          </div>
+        </div>
+
         <div className="border-b border-gray-200 pb-4 sm:flex sm:items-center sm:justify-between">
           <h3 className="text-lg font-medium leading-6 text-gray-900">Users</h3>
           <Tooltip
