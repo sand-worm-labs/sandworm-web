@@ -26,7 +26,7 @@ import {
   validateNonEmptyString,
   validateStringLength,
 } from '@/utils/uuid';
-import { WorkspaceInfo } from './model/workspace-info.model';
+import { WorkspaceInfo, WorkspaceMember } from './model/workspace-info.model';
 
 @Injectable()
 export class WorkspaceService {
@@ -424,5 +424,34 @@ export class WorkspaceService {
     }
 
     await this.workspaceMembersRepository.remove(membership);
+  }
+
+  async getWorkspaceMembers(
+    workspaceId: string,
+    userId: string,
+  ): Promise<WorkspaceMember[]> {
+    validateUUID(workspaceId, 'Workspace ID');
+    validateUUID(userId, 'User ID');
+
+    const membership = await this.workspaceMembersRepository.findOne({
+      where: { workspaceId, userId },
+    });
+
+    if (!membership) {
+      return [];
+    }
+
+    const memberships = await this.workspaceMembersRepository.find({
+      where: { workspaceId },
+      relations: ['user'],
+    });
+
+    return memberships.map(membership => {
+      const workspaceMember = new WorkspaceMember();
+      workspaceMember.userId = membership.userId;
+      workspaceMember.role = membership.role;
+      workspaceMember.user = membership.user ? User.fromEntity(membership.user) : undefined;
+      return workspaceMember;
+    });
   }
 }
