@@ -209,20 +209,25 @@ h6 {
 }
 
 /* ════════════ Resets ════════════ */
-/* input:-webkit-autofill,
+input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
-textarea:-webkit-autofill,
-textarea:-webkit-autofill:hover,
-textarea:-webkit-autofill:focus,
-select:-webkit-autofill,
-select:-webkit-autofill:hover,
-select:-webkit-autofill:focus {
-  background-color: black !important;
-  color: white !important;
-  -webkit-text-fill-color: white !important;
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px #fdf5f4 inset !important;
+  -webkit-text-fill-color: #1a1a1a !important;
+  border: 1px solid #e8d4d1 !important;
   transition: background-color 5000s ease-in-out 0s;
-} */
+}
+
+.dark input:-webkit-autofill,
+.dark input:-webkit-autofill:hover,
+.dark input:-webkit-autofill:focus,
+.dark input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px #1f1614 inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  border: 1px solid #3d2824 !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
 
 [type="text"],
 input:where(:not([type])),

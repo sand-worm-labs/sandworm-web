@@ -3,6 +3,7 @@
 import { useState, Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+
 import { useCreateWorkspaceMutation } from "@/generated/graphql";
 
 interface CreateTeamModalProps {
@@ -71,7 +72,7 @@ export default function CreateTeamModal({
           <div className="fixed inset-0 bg-black/50 dark:bg-black/70" />
         </Transition.Child>
 
-        <div className="fixed inset-0 overflow-y-auto">
+        <div className="fixed inset-0 overflow-y-auto font-primary">
           <div className="flex min-h-full items-center justify-center p-4">
             <Transition.Child
               as={Fragment}
@@ -82,10 +83,9 @@ export default function CreateTeamModal({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-xl bg-white dark:bg-gray-900 shadow-xl transition-all">
-                {/* Header */}
+              <Dialog.Panel className="w-full max-w-lg transform overflow-hidden rounded-xl bg-white dark:bg-gray-900 shadow-xl transition-all lg:min-w-[37rem]">
                 <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 px-6 py-4">
-                  <Dialog.Title className="text-lg font-semibold text-gray-900 dark:text-white">
+                  <Dialog.Title className="text-lg font-medium text-gray-900 dark:text-white">
                     Create New Team
                   </Dialog.Title>
                   <button
@@ -112,13 +112,13 @@ export default function CreateTeamModal({
                       id="team-name"
                       type="text"
                       required
-                      placeholder="e.g., Data Analytics Team"
+                      placeholder="e.g., Defi Team"
                       value={formData.name}
                       onChange={e =>
                         setFormData(prev => ({ ...prev, name: e.target.value }))
                       }
                       disabled={loading}
-                      className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3.5 py-2.5 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-600 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4]"
                     />
                   </div>
 
@@ -142,7 +142,7 @@ export default function CreateTeamModal({
                         }))
                       }
                       disabled={loading}
-                      className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3.5 py-2.5 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-600 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4]"
                     />
                     <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                       Optional: How or why this team was formed
@@ -169,7 +169,7 @@ export default function CreateTeamModal({
                         }))
                       }
                       disabled={loading}
-                      className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3.5 py-2.5 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-600 focus:border-transparent resize-none disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full px-3 py-1.5  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4] min-h-[6rem] resize-none "
                     />
                     <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                       Optional: Primary goals and use cases
@@ -196,7 +196,7 @@ export default function CreateTeamModal({
                         }))
                       }
                       disabled={loading}
-                      className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3.5 py-2.5 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-600 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4] "
                     />
                     <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                       Optional: Context of where/how it will be used
@@ -204,19 +204,11 @@ export default function CreateTeamModal({
                   </div>
 
                   {/* Actions */}
-                  <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-                    <button
-                      type="button"
-                      onClick={handleClose}
-                      disabled={loading}
-                      className="px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      Cancel
-                    </button>
+                  <div className="flex items-center gap-3 pt-4 ">
                     <button
                       type="submit"
                       disabled={loading || !formData.name.trim()}
-                      className="px-4 py-2.5 text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 dark:bg-orange-700 dark:hover:bg-orange-800 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                      className="px-4 py-3 text-sm font-medium text-white bg-[#C7665C] hover:bg-[#C7665C] dark:bg-[#C7665C] dark:hover:bg-[#C7665C] rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 w-full text-center justify-center"
                     >
                       {loading ? (
                         <>

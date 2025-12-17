@@ -60,11 +60,6 @@ export const WorkspaceSidebar = () => {
 
   const toolsNav: NavItem[] = [
     {
-      name: "Ask a question",
-      href: `/workspace/${workspaceId}/documents/notebook`,
-      icon: Bot,
-    },
-    {
       name: "Console",
       href: `/workspace/${workspaceId}/console`,
       icon: Terminal,

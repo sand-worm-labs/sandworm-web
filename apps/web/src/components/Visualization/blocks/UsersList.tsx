@@ -119,7 +119,7 @@ function UserItem(props: UserItemProps) {
         {props.user.email}
       </td>
       <td className="whitespace-nowrap py-4 text-sm text-gray-500">
-        {new Date(props.user.createdAt).toISOString()}
+        {/*  {new Date(props.user.createdAt).toISOString()} */}
       </td>
       <td className="whitespace-nowrap py-4 text-sm text-gray-500">{badge}</td>
       <td className="whitespace-nowrap py-4 text-sm font-medium sm:pl-6 lg:pl-8 pr-4">

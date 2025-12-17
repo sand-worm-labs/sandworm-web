@@ -29,3 +29,7 @@ mutation UpdateWorkspace($workspaceId: String!, $name: String) {
     useContext
   }
 }
+
+mutation SwitchWorkspace($workspaceId: String!) {
+  switchWorkspace(workspaceId: $workspaceId)
+}

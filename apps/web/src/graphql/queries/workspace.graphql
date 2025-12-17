@@ -7,10 +7,7 @@ query GetUserWorkspaceInfo {
     ownerId
     createdAt
     updatedAt
-    roles {
-      role
-      userId
-    }
+    role
   }
 }
 
@@ -50,6 +47,13 @@ query GetWorkspace($workspaceId: String!) {
       email
       firstName
       lastName
+    }
+    users {
+      id
+      firstName
+      lastName
+      email
+      avater
     }
     documents {
       id

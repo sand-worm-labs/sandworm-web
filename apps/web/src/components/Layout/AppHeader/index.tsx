@@ -1,12 +1,11 @@
 "use client";
 
 import { useState, type FC } from "react";
-import { useSession } from "@/components/Visualization/hooks/useAuth";
 import { X, Search } from "lucide-react";
 
+import { useSession } from "@/components/Visualization/hooks/useAuth";
 import { ThemeTogggle } from "@/components/Theme/ThemeToggle";
 
-import { ProfileMenu } from "../../ProfileMenu";
 import { SearchBar } from "../../SearchBar";
 
 export const AppHeader: FC = () => {
@@ -35,9 +34,6 @@ export const AppHeader: FC = () => {
         </button>
 
         <ThemeTogggle />
-        {session?.user ? (
-          <ProfileMenu currentUser={{ ...session.user }} />
-        ) : null}
       </div>
     </header>
   );

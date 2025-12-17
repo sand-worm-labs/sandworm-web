@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import { useLocalStorage } from "@uidotdev/usehooks";
+
 import { useSession } from "@/components/Visualization/hooks/useAuth";
 
 type UseFullScreenDocument = [

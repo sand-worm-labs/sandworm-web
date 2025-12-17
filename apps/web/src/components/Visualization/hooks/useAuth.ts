@@ -4,11 +4,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 
 import type { ApiUser, UserWorkspaceRole } from "@/types";
-
-import { NEXT_PUBLIC_API_URL, NEXT_PUBLIC_PUBLIC_URL } from "../utils/env";
 import { useCurrentUserQuery } from "@/generated/graphql";
 
-type UseAuthError = "unexpected" | "invalid-creds";
+import { NEXT_PUBLIC_API_URL, NEXT_PUBLIC_PUBLIC_URL } from "../utils/env";
+
+type UseAuthError = "unexpected" | "invalid-creds" | "network-error";
 
 type AuthState = {
   loading: boolean;
@@ -32,6 +32,7 @@ interface LoginResponse {
   refreshToken: string;
   tokenExpires: number;
   email: string;
+  roles?: Record<string, UserWorkspaceRole>; // Added roles from AuthPayload
   user: {
     id: string;
     username: string;
@@ -41,21 +42,36 @@ interface LoginResponse {
     fullName: string;
     isOnboarded: boolean;
     avatar?: string;
+    role: Record<string, UserWorkspaceRole>;
   };
 }
+
+type ForgotPasswordAPI = {
+  sendResetEmail: (email: string) => void;
+};
+
+type UseForgotPassword = [AuthState, ForgotPasswordAPI];
 
 interface SignupResponse extends LoginResponse {}
 
 const TOKEN_KEY = "auth_token";
 const REFRESH_TOKEN_KEY = "auth_refresh_token";
 const TOKEN_EXPIRES_KEY = "auth_token_expires";
+const USER_ROLES_KEY = "auth_user_roles";
 
 const tokenStorage = {
-  setTokens: (token: string, refreshToken: string, expiresIn: number) => {
-    // test: These tokens are stored in plain text in localStorage
+  setTokens: (
+    token: string,
+    refreshToken: string,
+    expiresIn: number,
+    roles?: Record<string, UserWorkspaceRole>
+  ) => {
     localStorage.setItem(TOKEN_KEY, token);
     localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
     localStorage.setItem(TOKEN_EXPIRES_KEY, expiresIn.toString());
+    if (roles) {
+      localStorage.setItem(USER_ROLES_KEY, JSON.stringify(roles));
+    }
   },
 
   getToken: (): string | null => {
@@ -74,10 +90,17 @@ const tokenStorage = {
     return expiry ? parseInt(expiry, 10) : null;
   },
 
+  getRoles: (): Record<string, UserWorkspaceRole> | null => {
+    if (typeof window === "undefined") return null;
+    const roles = localStorage.getItem(USER_ROLES_KEY);
+    return roles ? JSON.parse(roles) : null;
+  },
+
   clearTokens: () => {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(REFRESH_TOKEN_KEY);
     localStorage.removeItem(TOKEN_EXPIRES_KEY);
+    localStorage.removeItem(USER_ROLES_KEY);
   },
 
   isTokenExpired: (): boolean => {
@@ -120,12 +143,13 @@ export const useSignup = (): UseSignup => {
             tokenStorage.setTokens(
               data.token,
               data.refreshToken,
-              data.tokenExpires
+              data.tokenExpires,
+              data.roles
             );
 
             setState({
               loading: false,
-              data: await res.json(),
+              data: { email: data.email },
               error: undefined,
             });
             return;
@@ -176,7 +200,8 @@ export const useLogin = (): UseLogin => {
             tokenStorage.setTokens(
               data.token,
               data.refreshToken,
-              data.tokenExpires
+              data.tokenExpires,
+              data.roles
             );
 
             setState({
@@ -190,7 +215,28 @@ export const useLogin = (): UseLogin => {
             return;
           }
 
-          if (res.status === 400 || res.status === 401) {
+          if (res.status === 400 || res.status === 401 || res.status === 422) {
+            const errorData = await res.json();
+
+            if (
+              errorData.trace?.response?.errors?.password ===
+              "incorrectPassword"
+            ) {
+              setState({
+                loading: false,
+                error: "invalid-creds",
+              });
+              return;
+            }
+
+            if (errorData.trace?.response?.errors?.email) {
+              setState({
+                loading: false,
+                error: "invalid-creds",
+              });
+              return;
+            }
+
             setState({
               loading: false,
               error: "invalid-creds",
@@ -201,11 +247,10 @@ export const useLogin = (): UseLogin => {
           throw new Error(`Unexpected status ${res.status}`);
         })
         .catch(error => {
-          console.error("Login error:", error);
-          setState(s => ({ ...s, loading: false, error: "unexpected" }));
+          setState(s => ({ ...s, loading: false, error: "network-error" }));
         });
     },
-    [setState]
+    []
   );
 
   return useMemo(
@@ -216,7 +261,7 @@ export const useLogin = (): UseLogin => {
 
 export type SessionUser = ApiUser & {
   userHash: string;
-  roles: Record<string, UserWorkspaceRole>;
+  role: Record<string, UserWorkspaceRole>;
   picture?: string | null;
   lastVisitedWorkspaceId?: string | null;
 };
@@ -237,7 +282,7 @@ export const useSession = ({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const token = tokenStorage.getToken();
-
+  const storedRoles = tokenStorage.getRoles();
   const { data, loading, error, refetch } = useCurrentUserQuery({
     skip: !token,
     fetchPolicy: "network-only",
@@ -258,14 +303,20 @@ export const useSession = ({
 
   return useMemo(
     () => ({
-      user: data?.currentUser?.user ?? null,
+      user: data?.currentUser?.user
+        ? {
+            ...data.currentUser.user,
+            role: storedRoles || data.currentUser.user.role || {},
+          }
+        : null,
       loading,
       error: error?.message ?? null,
       isAuthenticated: !!data?.currentUser,
     }),
-    [data, loading, error]
+    [data, loading, error, storedRoles]
   );
 };
+
 export const useSignout = () => {
   const router = useRouter();
 
@@ -289,6 +340,49 @@ export const useSignout = () => {
 
     router.push("/signin");
   }, [router]);
+};
+
+export const useForgotPassword = (): UseForgotPassword => {
+  const [state, setState] = useState<AuthState>({
+    loading: false,
+    data: undefined,
+    error: undefined,
+  });
+
+  const sendResetEmail = useCallback((email: string) => {
+    setState(s => ({ ...s, loading: true }));
+    fetch(`${NEXT_PUBLIC_API_URL()}/auth/forgot/password`, {
+      credentials: "include",
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    })
+      .then(async res => {
+        if (res.ok) {
+          setState({
+            loading: false,
+            data: { email },
+            error: undefined,
+          });
+          return;
+        }
+
+        if (res.status === 404) {
+          setState({
+            loading: false,
+            error: "invalid-creds",
+          });
+          return;
+        }
+
+        throw new Error(`Unexpected status ${res.status}`);
+      })
+      .catch(() => {
+        setState(s => ({ ...s, loading: false, error: "unexpected" }));
+      });
+  }, []);
+
+  return useMemo(() => [state, { sendResetEmail }], [state, sendResetEmail]);
 };
 
 export { tokenStorage };

@@ -1,17 +1,13 @@
-import type { Metadata } from "next";
+"use client";
 
 import { WorkSpace } from "@/components/Console/WorkSpace";
 import { useSession } from "@/components/Visualization/hooks/useAuth";
 
-export const metadata: Metadata = {
-  title: "Query Workspace IDE – Sandworm",
-  description:
-    "Write and run real-time WQL queries in your own workspace. Analyze onchain data with ease.",
-};
-
-export default async function ConsolePage() {
-  const session = await useSession({ redirectToLogin: true });
+export default function ConsolePage() {
+  const session = useSession({ redirectToLogin: true });
   const currentUserId = session?.user?.id || "";
+
+  if (!session) return null;
 
   return <WorkSpace initialQuery={undefined} currentUserId={currentUserId} />;
 }

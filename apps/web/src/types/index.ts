@@ -3,6 +3,7 @@ import type { AppProps } from "next/app";
 import type { ReactNode } from "react";
 import type { Typesaurus } from "typesaurus";
 import type { UIMessage } from "ai";
+import { type UserSetting } from "@/generated/graphql";
 
 export type NextPageWithLayout = NextPage & {
   getLayout?: () => ReactNode;
@@ -117,6 +118,7 @@ export interface User {
   followersCount: number;
   followingCount: number;
   __typename?: string;
+  settings?: UserSetting;
 }
 
 export type FieldType = "string" | "integer" | "bigint";
