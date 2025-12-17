@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { useLogin, tokenStorage } from "../Visualization/hooks/useAuth";
@@ -32,19 +32,17 @@ export const SignInForm = () => {
       setLocalError("An unexpected error occurred. Please try again.");
     }
 
-    if (state.data && state.data.user) {
-      console.log("Login successful:", state.data);
+    if (state.data && state.data.loginLink) {
       const callbackUrl = searchParams.get("callback") || "/workspace";
-      setTimeout(() => {
-        router.push(decodeURIComponent(callbackUrl));
-      }, 100);
+      router.push(decodeURIComponent(callbackUrl));
     }
-  }, [state]);
+  }, [state, router, searchParams]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
-    if (localError) setLocalError("");
-  };
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    setLocalError("");
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,11 +52,9 @@ export const SignInForm = () => {
 
     if (!email.trim() || !password.trim()) {
       setLocalError("All fields are required.");
-      console.warn("Form validation failed: Empty fields");
       return;
     }
 
-    console.log("Attempting login with:", { email });
     loginWithPassword(email, password);
   };
 
@@ -74,7 +70,7 @@ export const SignInForm = () => {
         <input
           type="email"
           name="email"
-          className="mt-1 w-full rounded-md dark:bg-[#121417] bg-[#F1F3F4] p-2 text-black dark:text-white border border-[#DEE2E6] dark:border-[#262A30] focus:border-[#C7665C] focus:ring-1 focus:ring-[#C7665C]  outline-none font-normal text-[0.9rem] placeholder:text-[#455768] dark:placeholder:text-[#868E96]"
+          className="mt-1 w-full rounded-md dark:bg-[#121417] bg-[#F1F3F4] p-2 text-black dark:text-white border border-[#DEE2E6] dark:border-[#262A30] focus:border-[#C7665C] focus:ring-1 focus:ring-[#C7665C] outline-none font-normal text-[0.9rem] placeholder:text-[#455768] dark:placeholder:text-[#868E96]"
           placeholder="Enter your email"
           value={formData.email}
           onChange={handleChange}
@@ -88,12 +84,14 @@ export const SignInForm = () => {
         <input
           type="password"
           name="password"
-          className="mt-1 w-full rounded-md dark:bg-[#121417] bg-[#F1F3F4] p-2 text-black dark:text-white border border-[#DEE2E6] dark:border-[#262A30] focus:border-[#C7665C] focus:ring-1 focus:ring-[#C7665C]  outline-none font-normal text-[0.9rem] placeholder:text-[#455768] dark:placeholder:text-[#868E96] "
+          className="mt-1 w-full rounded-md dark:bg-[#121417] bg-[#F1F3F4] p-2 text-black dark:text-white border border-[#DEE2E6] dark:border-[#262A30] focus:border-[#C7665C] focus:ring-1 focus:ring-[#C7665C] outline-none font-normal text-[0.9rem] placeholder:text-[#455768] dark:placeholder:text-[#868E96]"
           placeholder="Enter your password"
           value={formData.password}
           onChange={handleChange}
         />
       </div>
+
+      {localError && <p className="text-sm text-red-500">{localError}</p>}
 
       <button
         type="submit"

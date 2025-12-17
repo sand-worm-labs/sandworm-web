@@ -8,7 +8,7 @@ import { useCurrentUserQuery } from "@/generated/graphql";
 
 import { NEXT_PUBLIC_API_URL, NEXT_PUBLIC_PUBLIC_URL } from "../utils/env";
 
-type UseAuthError = "unexpected" | "invalid-creds";
+type UseAuthError = "unexpected" | "invalid-creds" | "network-error";
 
 type AuthState = {
   loading: boolean;
