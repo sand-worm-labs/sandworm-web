@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import { MoreVertical } from "lucide-react";
+import React, { useState } from "react";
+import { Check, MoreVertical, Share2 } from "lucide-react";
 import Link from "next/link";
 import {
   Avatar,
@@ -21,15 +21,51 @@ import { useModalStore } from "@/store/auth";
 import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
 import { useSession, useSignout } from "../Visualization/hooks/useAuth";
 
+const useShareProfile = (username: string) => {
+  const [copied, setCopied] = useState(false);
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy:", err);
+    }
+  };
+
+  const shareProfile = async () => {
+    const profileUrl = `${window.location.origin}/profile/${username}`;
+    const shareData = {
+      title: `${username}'s Profile`,
+      text: `Check out ${username}'s profile on Sandworm Labs`,
+      url: profileUrl,
+    };
+
+    if (navigator.share && navigator.canShare?.(shareData)) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        if ((err as Error).name !== "AbortError") {
+          await copyToClipboard(profileUrl);
+        }
+      }
+    } else {
+      await copyToClipboard(profileUrl);
+    }
+  };
+
+  return { shareProfile, copied };
+};
+
 export const AccountDropdown = () => {
   const session = useSession({ redirectToLogin: true });
   const openSignIn = useModalStore(state => state.openSignIn);
   const signout = useSignout();
   const workspaceId = useStringQuery("workspace");
-
   const user = session?.user;
 
-  console.log(session);
+  const { shareProfile, copied } = useShareProfile(user?.firstName ?? "user");
 
   if (!user) {
     return (
@@ -97,9 +133,17 @@ export const AccountDropdown = () => {
             <Button
               size="sm"
               variant="secondary"
-              className="bg-[#E2ECFF] dark:bg-[#C7665C20] dark:text-[#C7665C] text-[#8053FE] hover:bg-[#E2ECFF]/90 text-xs rounded-md font-medium h-6"
+              onClick={shareProfile}
+              className="bg-[#E2ECFF] dark:bg-[#C7665C20] dark:text-[#C7665C] text-[#8053FE] hover:bg-[#E2ECFF]/90 text-xs rounded-md font-medium h-6 gap-1.5"
             >
-              Share
+              {copied ? (
+                <>
+                  <Check className="w-3 h-3" />
+                  Copied!
+                </>
+              ) : (
+                <>Share</>
+              )}
             </Button>
           </div>
 
