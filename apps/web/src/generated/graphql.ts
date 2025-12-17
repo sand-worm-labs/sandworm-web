@@ -35,6 +35,7 @@ export type AdvanceTutorialResult = {
 export type AuthPayload = {
   __typename?: 'AuthPayload';
   id: Scalars['String']['output'];
+  roles?: Maybe<Scalars['JSON']['output']>;
   token: Scalars['String']['output'];
   tokenExpires: Scalars['Float']['output'];
   user: User;
@@ -427,6 +428,8 @@ export type Query = {
   getWorkspace: Workspace;
   /** Get all documents in a workspace */
   getWorkspaceDocuments: Array<Document>;
+  /** Get workspace members */
+  getWorkspaceMembers: Array<WorkspaceMember>;
   /** List all files in a workspace */
   listFiles: Array<SandwormFile>;
   /** Get Profile */
@@ -498,6 +501,11 @@ export type QueryGetWorkspaceArgs = {
 
 
 export type QueryGetWorkspaceDocumentsArgs = {
+  workspaceId: Scalars['String']['input'];
+};
+
+
+export type QueryGetWorkspaceMembersArgs = {
   workspaceId: Scalars['String']['input'];
 };
 
@@ -611,6 +619,13 @@ export type WorkspaceInfo = {
   ownerId: Scalars['String']['output'];
   role: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
+};
+
+export type WorkspaceMember = {
+  __typename?: 'WorkspaceMember';
+  role: Scalars['String']['output'];
+  user?: Maybe<User>;
+  userId: Scalars['String']['output'];
 };
 
 /** Price plan of the workspace */
@@ -823,7 +838,7 @@ export type GetDocumentQueryVariables = Exact<{
 }>;
 
 
-export type GetDocumentQuery = { __typename?: 'Query', getDocument: { __typename?: 'Document', id: string, title: string, slug: string, authorId: string, workspaceId: string, parentId: string, runSQLSelection: boolean, runUnexecutedBlocks: boolean, shareLinksWithoutSidebar: boolean, parent?: { __typename?: 'Document', id: string, title: string, slug: string } | null, children: Array<{ __typename?: 'Document', id: string, title: string, slug: string, authorId: string }> } };
+export type GetDocumentQuery = { __typename?: 'Query', getDocument: { __typename?: 'Document', id: string, title: string, slug: string, parentId: string, authorId: string, workspaceId: string, runSQLSelection: boolean, runUnexecutedBlocks: boolean, shareLinksWithoutSidebar: boolean } };
 
 export type GetEnvironmentQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
@@ -1951,23 +1966,12 @@ export const GetDocumentDocument = gql`
     id
     title
     slug
+    parentId
     authorId
     workspaceId
-    parentId
     runSQLSelection
     runUnexecutedBlocks
     shareLinksWithoutSidebar
-    parent {
-      id
-      title
-      slug
-    }
-    children {
-      id
-      title
-      slug
-      authorId
-    }
   }
 }
     `;
