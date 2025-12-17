@@ -107,7 +107,7 @@ function SQLBlock(props: Props) {
   const hasOaiKey = useMemo(() => {
     return (
       !properties.data?.disableCustomOpenAiKey &&
-      (currentWorkspace?.secrets.hasOpenAiApiKey ?? false)
+      (currentWorkspace?.secrets?.hasOpenAiApiKey ?? false)
     );
   }, [currentWorkspace, properties.data]);
 
