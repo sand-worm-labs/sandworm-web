@@ -23,7 +23,7 @@ export class EnvironmentService {
     @InjectRepository(EnvironmentVariableEntity)
     private readonly envVarRepository: Repository<EnvironmentVariableEntity>,
     private readonly jupyterService: JupyterService,
-  ) {}
+  ) { }
 
   async getEnvironment(workspaceId: string): Promise<Environment> {
     let entity = await this.environmentRepository.findOne({
@@ -94,9 +94,9 @@ export class EnvironmentService {
     const removeNames =
       input.remove.length > 0
         ? await this.envVarRepository.find({
-            where: { id: In(input.remove), workspaceId },
-            select: ['name'],
-          })
+          where: { id: In(input.remove), workspaceId },
+          select: ['name'],
+        })
         : [];
 
     if (input.remove.length > 0) {
@@ -135,5 +135,37 @@ export class EnvironmentService {
     });
 
     return result.affected ? result.affected > 0 : false;
+  }
+
+  async registerLastActivity(
+    workspaceId: string,
+    lastActivityAt: Date,
+  ): Promise<Environment> {
+    this.logger.debug(
+      `Registering last activity for workspace ${workspaceId} at ${lastActivityAt.toISOString()}`,
+    );
+
+    const result = await this.environmentRepository.update(
+      { workspaceId },
+      { lastActivityAt },
+    );
+
+    if (!result.affected || result.affected === 0) {
+      throw new NotFoundException(
+        `Environment not found for workspace ${workspaceId}`,
+      );
+    }
+
+    const environment = await this.environmentRepository.findOne({
+      where: { workspaceId },
+    });
+
+    if (!environment) {
+      throw new NotFoundException(
+        `Environment not found for workspace ${workspaceId}`,
+      );
+    }
+
+    return Environment.fromEntity(environment);
   }
 }

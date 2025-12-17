@@ -16,6 +16,7 @@ type AdvanceTutorialResult {
 
 type AuthPayload {
   id: String!
+  roles: JSON
   token: String!
   tokenExpires: Float!
   user: User!
@@ -315,6 +316,9 @@ type Query {
   """Get all documents in a workspace"""
   getWorkspaceDocuments(workspaceId: String!): [Document!]!
 
+  """Get workspace members"""
+  getWorkspaceMembers(workspaceId: String!): [WorkspaceMember!]!
+
   """List all files in a workspace"""
   listFiles(input: ListFilesInput!): [SandwormFile!]!
 
@@ -420,6 +424,12 @@ type WorkspaceInfo {
   ownerId: String!
   role: String!
   updatedAt: DateTime!
+}
+
+type WorkspaceMember {
+  role: String!
+  user: User
+  userId: String!
 }
 
 """Price plan of the workspace"""

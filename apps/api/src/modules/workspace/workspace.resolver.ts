@@ -12,7 +12,7 @@ import { WorkspaceService } from './workspace.service';
 import { Workspace } from './model/workspace.model';
 import { User } from '../user/model/graphql/user.model';
 import { Document } from '../document/model/document.model';
-import { WorkspaceInfo } from './model/workspace-info.model';
+import { WorkspaceInfo, WorkspaceMember } from './model/workspace-info.model';
 import { Public } from '@sandworm/nest-common';
 
 @Resolver(() => Workspace)
@@ -47,6 +47,17 @@ export class WorkspaceResolver {
     @CurrentUser('id') userId: string,
   ): Promise<WorkspaceInfo> {
     return this.workspaceService.getUserWorkspaceInfo(userId);
+  }
+
+  @Query(() => [WorkspaceMember], {
+    name: 'getWorkspaceMembers',
+    description: 'Get workspace members',
+  })
+  async getWorkspaceMembers(
+    @Args('workspaceId', { type: () => String }) workspaceId: string,
+    @CurrentUser('id') userId: string
+  ): Promise<WorkspaceMember[]> {
+    return this.workspaceService.getWorkspaceMembers(workspaceId, userId);
   }
 
   @Mutation(() => Workspace, {

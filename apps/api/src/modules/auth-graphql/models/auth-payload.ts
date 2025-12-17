@@ -1,6 +1,7 @@
 import { ObjectType, Field, Float } from '@nestjs/graphql';
 import { StringField } from '@sandworm/graphql';
 import { User } from '../../user/model/graphql/user.model';
+import GraphQLJSON from 'graphql-type-json';
 
 @ObjectType()
 export class AuthPayload {
@@ -15,4 +16,7 @@ export class AuthPayload {
 
   @Field(() => User)
   user!: User;
+
+  @Field(() => GraphQLJSON, { nullable: true })
+  roles?: Record<string, string>[];
 }
