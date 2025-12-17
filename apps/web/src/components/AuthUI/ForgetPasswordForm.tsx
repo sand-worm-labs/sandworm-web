@@ -1,0 +1,71 @@
+"use client";
+
+import { useState, useCallback, useEffect } from "react";
+import { useForgotPassword } from "../Visualization/hooks/useAuth";
+
+type ForgotPasswordFormProps = {
+  onSuccess?: (email: string) => void;
+};
+
+export const ForgotPasswordForm = ({ onSuccess }: ForgotPasswordFormProps) => {
+  const [email, setEmail] = useState("");
+  const [state, { sendResetEmail }] = useForgotPassword();
+
+  useEffect(() => {
+    if (state.data && state.data.email) {
+      onSuccess?.(state.data.email);
+    }
+  }, [state.data, onSuccess]);
+
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!email.trim()) {
+      return;
+    }
+
+    sendResetEmail(email);
+  };
+
+  const errorMessage =
+    state.error === "invalid-creds"
+      ? "Email not found. Please check and try again."
+      : state.error === "unexpected"
+        ? "An unexpected error occurred. Please try again."
+        : "";
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="mt-4 space-y-4 w-full font-primary"
+    >
+      <div>
+        <label className="block text-sm font-medium dark:text-gray-300 text-[#455768]">
+          What&apos;s your username or email?
+        </label>
+        <input
+          type="email"
+          name="email"
+          className="mt-1 w-full rounded-md dark:bg-[#121417] bg-[#F1F3F4] p-2 text-black dark:text-white border border-[#DEE2E6] dark:border-[#262A30] focus:border-[#C7665C] focus:ring-1 focus:ring-[#C7665C] outline-none font-normal text-[0.9rem] placeholder:text-[#455768] dark:placeholder:text-[#868E96]"
+          placeholder="Enter your email"
+          value={email}
+          onChange={handleChange}
+        />
+      </div>
+
+      {errorMessage && <p className="text-sm text-red-500">{errorMessage}</p>}
+
+      <button
+        type="submit"
+        disabled={state.loading}
+        className="w-full rounded-xl bg-[#C7665C] px-4 py-3 text-white font-medium disabled:bg-[#C7665C]/40 text-sm"
+      >
+        {state.loading ? "Sending..." : "Send reset email"}
+      </button>
+    </form>
+  );
+};

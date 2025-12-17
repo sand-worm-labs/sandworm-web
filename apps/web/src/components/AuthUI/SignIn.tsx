@@ -42,7 +42,7 @@ export const SignIn = () => {
             Sign Up
           </Link>
         </p>
-        <Link href="/" className="text-[#FF0000] hover:underline">
+        <Link href="/reset" className="text-[#FF0000] hover:underline">
           Forgot Password
         </Link>
       </div>

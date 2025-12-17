@@ -46,6 +46,12 @@ interface LoginResponse {
   };
 }
 
+type ForgotPasswordAPI = {
+  sendResetEmail: (email: string) => void;
+};
+
+type UseForgotPassword = [AuthState, ForgotPasswordAPI];
+
 interface SignupResponse extends LoginResponse {}
 
 const TOKEN_KEY = "auth_token";
@@ -314,6 +320,49 @@ export const useSignout = () => {
 
     router.push("/signin");
   }, [router]);
+};
+
+export const useForgotPassword = (): UseForgotPassword => {
+  const [state, setState] = useState<AuthState>({
+    loading: false,
+    data: undefined,
+    error: undefined,
+  });
+
+  const sendResetEmail = useCallback((email: string) => {
+    setState(s => ({ ...s, loading: true }));
+    fetch(`${NEXT_PUBLIC_API_URL()}/auth/forgot/password`, {
+      credentials: "include",
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    })
+      .then(async res => {
+        if (res.ok) {
+          setState({
+            loading: false,
+            data: { email },
+            error: undefined,
+          });
+          return;
+        }
+
+        if (res.status === 404) {
+          setState({
+            loading: false,
+            error: "invalid-creds",
+          });
+          return;
+        }
+
+        throw new Error(`Unexpected status ${res.status}`);
+      })
+      .catch(() => {
+        setState(s => ({ ...s, loading: false, error: "unexpected" }));
+      });
+  }, []);
+
+  return useMemo(() => [state, { sendResetEmail }], [state, sendResetEmail]);
 };
 
 export { tokenStorage };
