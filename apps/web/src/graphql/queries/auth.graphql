@@ -15,7 +15,6 @@ query CurrentUser {
       fullName
       isOnboarded
       avater
-      role
       followersCount
       followingCount
       settings {

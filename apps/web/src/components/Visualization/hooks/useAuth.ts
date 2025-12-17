@@ -32,6 +32,7 @@ interface LoginResponse {
   refreshToken: string;
   tokenExpires: number;
   email: string;
+  roles?: Record<string, UserWorkspaceRole>; // Added roles from AuthPayload
   user: {
     id: string;
     username: string;
@@ -50,13 +51,21 @@ interface SignupResponse extends LoginResponse {}
 const TOKEN_KEY = "auth_token";
 const REFRESH_TOKEN_KEY = "auth_refresh_token";
 const TOKEN_EXPIRES_KEY = "auth_token_expires";
+const USER_ROLES_KEY = "auth_user_roles";
 
 const tokenStorage = {
-  setTokens: (token: string, refreshToken: string, expiresIn: number) => {
-    // test: These tokens are stored in plain text in localStorage
+  setTokens: (
+    token: string,
+    refreshToken: string,
+    expiresIn: number,
+    roles?: Record<string, UserWorkspaceRole>
+  ) => {
     localStorage.setItem(TOKEN_KEY, token);
     localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
     localStorage.setItem(TOKEN_EXPIRES_KEY, expiresIn.toString());
+    if (roles) {
+      localStorage.setItem(USER_ROLES_KEY, JSON.stringify(roles));
+    }
   },
 
   getToken: (): string | null => {
@@ -75,10 +84,17 @@ const tokenStorage = {
     return expiry ? parseInt(expiry, 10) : null;
   },
 
+  getRoles: (): Record<string, UserWorkspaceRole> | null => {
+    if (typeof window === "undefined") return null;
+    const roles = localStorage.getItem(USER_ROLES_KEY);
+    return roles ? JSON.parse(roles) : null;
+  },
+
   clearTokens: () => {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(REFRESH_TOKEN_KEY);
     localStorage.removeItem(TOKEN_EXPIRES_KEY);
+    localStorage.removeItem(USER_ROLES_KEY);
   },
 
   isTokenExpired: (): boolean => {
@@ -121,12 +137,13 @@ export const useSignup = (): UseSignup => {
             tokenStorage.setTokens(
               data.token,
               data.refreshToken,
-              data.tokenExpires
+              data.tokenExpires,
+              data.roles
             );
 
             setState({
               loading: false,
-              data: await res.json(),
+              data: { email: data.email },
               error: undefined,
             });
             return;
@@ -177,7 +194,8 @@ export const useLogin = (): UseLogin => {
             tokenStorage.setTokens(
               data.token,
               data.refreshToken,
-              data.tokenExpires
+              data.tokenExpires,
+              data.roles
             );
 
             setState({
@@ -238,7 +256,7 @@ export const useSession = ({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const token = tokenStorage.getToken();
-
+  const storedRoles = tokenStorage.getRoles();
   const { data, loading, error, refetch } = useCurrentUserQuery({
     skip: !token,
     fetchPolicy: "network-only",
@@ -259,14 +277,20 @@ export const useSession = ({
 
   return useMemo(
     () => ({
-      user: data?.currentUser?.user ?? null,
+      user: data?.currentUser?.user
+        ? {
+            ...data.currentUser.user,
+            role: storedRoles || data.currentUser.user.role || {}, // Use stored roles, fallback to GraphQL or empty object
+          }
+        : null,
       loading,
       error: error?.message ?? null,
       isAuthenticated: !!data?.currentUser,
     }),
-    [data, loading, error]
+    [data, loading, error, storedRoles]
   );
 };
+
 export const useSignout = () => {
   const router = useRouter();
 

@@ -39,7 +39,15 @@ export default function ProfileSettings() {
         telegram: settings?.socialLinks?.telegram || "",
       }));
     }
-  }, [session?.user, settings]);
+  }, [
+    session?.user?.firstName,
+    session?.user?.lastName,
+    session?.user?.username,
+    settings?.statusText,
+    settings?.socialLinks?.github,
+    settings?.socialLinks?.discord,
+    settings?.socialLinks?.telegram,
+  ]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -274,7 +282,7 @@ export default function ProfileSettings() {
                 className="rounded-full border-2 border-gray-200 dark:border-gray-700"
               />
             ) : (
-              <div className="w-40 h-40 rounded-full border-2 border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+              <div className="w-40 h-40 rounded-full border-2 border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-[#363C46] flex items-center justify-center">
                 <span className="text-4xl font-medium text-gray-400 dark:text-gray-500">
                   {(
                     session.user?.firstName?.[0] ||
@@ -288,7 +296,7 @@ export default function ProfileSettings() {
           <button
             type="button"
             disabled
-            className="mt-4 text-xs font-medium text-gray-400 dark:text-gray-500 cursor-not-allowed flex items-center border-[#E6E0F1] border bg-[#F1F3F4] dark:bg-gray-800 px-3 rounded-lg py-1.5 absolute left-[-2.5rem] top-[7.5rem] opacity-50"
+            className="mt-4 text-xs font-medium text-gray-400 dark:text-[#8696A6] cursor-not-allowed  flex items-center border-[#E6E0F1] border bg-[#F1F3F4] dark:bg-[#121417] px-3 rounded-lg py-1.5 absolute left-[-2.5rem] top-[7.5rem] opacity-50 dark:border-[#262A30]"
           >
             <Pencil className="inline-block mr-2" size={14} />
             Change Avatar
