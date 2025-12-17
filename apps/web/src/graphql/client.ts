@@ -32,7 +32,7 @@ let pendingRequests: Array<() => void> = [];
 /**
  * Ensures all pending requests are resumed after token refresh.
  */
-const onRefreshed = (newToken: string | null) => {
+const onRefreshed = () => {
   pendingRequests.forEach(cb => cb());
   pendingRequests = [];
 };
@@ -58,82 +58,87 @@ export const createApolloClient = ({
   const errorLink = onError(
     ({ graphQLErrors, networkError, operation, forward }) => {
       if (graphQLErrors) {
-        for (const err of graphQLErrors) {
+        // Use forEach instead of for...of
+        graphQLErrors.forEach(err => {
           console.error(
             `[GraphQL error]: Message: ${err.message}, Location: ${JSON.stringify(err.locations)}, Path: ${err.path}`,
             err.extensions
           );
+        });
 
-          // Handle authentication errors
+        // Check if any error is an authentication error
+        const authError = graphQLErrors.find(err => {
           const code = (err.extensions as any)?.code;
-          if (
+          return (
             code === "UNAUTHENTICATED" ||
             (code === "INTERNAL_SERVER_ERROR" &&
               err.message.includes("Invalid or expired token"))
-          ) {
-            console.warn(" Token expired - attempting refresh");
+          );
+        });
 
-            // Check if already refreshing
-            if (refreshingPromise) {
-              console.log(" Refresh already in progress, queuing request");
-              return new Observable(observer => {
-                addPendingRequest(() => {
-                  forward(operation).subscribe({
-                    next: observer.next.bind(observer),
-                    error: observer.error.bind(observer),
-                    complete: observer.complete.bind(observer),
-                  });
+        if (authError) {
+          console.warn("⚠️ Token expired - attempting refresh");
+
+          // Check if already refreshing
+          if (refreshingPromise) {
+            console.log("⏳ Refresh already in progress, queuing request");
+            return new Observable(observer => {
+              addPendingRequest(() => {
+                forward(operation).subscribe({
+                  next: observer.next.bind(observer),
+                  error: observer.error.bind(observer),
+                  complete: observer.complete.bind(observer),
                 });
               });
-            }
+            });
+          }
 
-            // Start refresh
-            refreshingPromise = (async () => {
-              try {
-                console.log("🔄 Calling refreshAccessToken...");
-                const newToken = await refreshAccessToken();
+          // Start refresh
+          refreshingPromise = (async () => {
+            try {
+              console.log("🔄 Calling refreshAccessToken...");
+              const newToken = await refreshAccessToken();
 
-                if (newToken) {
-                  console.log("✅ Token refreshed, retrying requests");
-                  onRefreshed(newToken);
-                  return newToken;
-                } else {
-                  console.log("Refresh failed - no new token");
-                  onRefreshed(null);
-                  // Redirect to login
-                  if (typeof window !== "undefined") {
-                    window.location.href = "/signin";
-                  }
-                  return null;
-                }
-              } catch (e) {
-                console.error("Refresh error:", e);
+              if (newToken) {
+                console.log("✅ Token refreshed, retrying requests");
+                onRefreshed(newToken);
+                return newToken;
+              } else {
+                console.log("❌ Refresh failed - no new token");
                 onRefreshed(null);
+                // Redirect to login
                 if (typeof window !== "undefined") {
                   window.location.href = "/signin";
                 }
                 return null;
-              } finally {
-                refreshingPromise = null;
               }
-            })();
+            } catch (e) {
+              console.error("❌ Refresh error:", e);
+              onRefreshed(null);
+              if (typeof window !== "undefined") {
+                window.location.href = "/signin";
+              }
+              return null;
+            } finally {
+              refreshingPromise = null;
+            }
+          })();
 
-            // Return observable that waits for refresh then retries
-            return new Observable(observer => {
-              refreshingPromise!.then(newToken => {
-                if (newToken) {
-                  // Retry the operation with new token
-                  forward(operation).subscribe({
-                    next: observer.next.bind(observer),
-                    error: observer.error.bind(observer),
-                    complete: observer.complete.bind(observer),
-                  });
-                } else {
-                  observer.error(new Error("Token refresh failed"));
-                }
-              });
+          // Return observable that waits for refresh then retries
+          return new Observable(observer => {
+            refreshingPromise!.then(newToken => {
+              if (newToken) {
+                // Retry the operation with new token
+                forward(operation).subscribe({
+                  next: observer.next.bind(observer),
+                  error: observer.error.bind(observer),
+                  complete: observer.complete.bind(observer),
+                });
+              } else {
+                observer.error(new Error("Token refresh failed"));
+              }
             });
-          }
+          });
         }
       }
 
@@ -154,7 +159,7 @@ export const createApolloClient = ({
   const retryLink = new RetryLink({
     attempts: {
       max: 3,
-      retryIf: (error, _operation) => {
+      retryIf: error => {
         // Don't retry on 400 errors (bad request)
         if (error && "statusCode" in error && error.statusCode === 400) {
           return false;
@@ -250,7 +255,7 @@ export const createApolloClient = ({
           // example for cursor-based list field 'items'
           items: {
             keyArgs: false,
-            merge(existing = { edges: [] }, incoming: any) {
+            merge(incoming: any, existing = { edges: [] }) {
               // naive merge; adapt to your schema (cursor-based or offset-based)
               const merged = {
                 ...incoming,
@@ -306,10 +311,10 @@ export const createApolloClient = ({
       refreshingPromise = (async () => {
         try {
           const newToken = await refreshAccessToken();
-          onRefreshed(newToken);
+          onRefreshed();
           return newToken;
         } catch (e) {
-          onRefreshed(null);
+          onRefreshed();
           return null;
         } finally {
           refreshingPromise = null;
