@@ -166,7 +166,6 @@ export const useUpdateWorkspace = (
   };
 };
 
-// 4. Switch workspace hook
 type UseSwitchWorkspaceReturn = {
   switchWorkspace: (workspaceId: string) => Promise<boolean>;
   loading: boolean;

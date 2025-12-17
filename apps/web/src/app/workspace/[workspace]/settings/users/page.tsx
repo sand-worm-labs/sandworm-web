@@ -72,7 +72,7 @@ export default function UsersPage() {
   }
 
   return (
-    <ScrollBar className="w-full bg-white h-full overflow-auto">
+    <ScrollBar className="w-full bg-white h-full overflow-auto dark:bg-black">
       <div className="px-4 sm:p-6 lg:p-8">
         <div className="border-b border-gray-200 pb-4 mb-6">
           <h2 className="text-xl font-medium text-gray-900 dark:text-white mb-6">

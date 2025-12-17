@@ -104,7 +104,7 @@ export const AccountDropdown = () => {
           </div>
 
           <Link
-            href="/profile"
+            href={`/workspace/${workspaceId}/profile/me`}
             className="block mt-3 text-xs underline text-[#C7665C] hover:text-[#C7665C] mb-4"
           >
             Go to profile page

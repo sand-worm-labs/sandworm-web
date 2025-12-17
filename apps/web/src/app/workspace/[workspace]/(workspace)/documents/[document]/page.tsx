@@ -67,9 +67,9 @@ export default function DocumentPage() {
   const workspaceId = useStringQuery("workspace");
   const documentId = useStringQuery("document");
 
-  const role = session.user?.role;
+  const roles = session?.user?.role;
 
-  if (!session.user || !role) {
+  if (!session.user || !roles) {
     return (
       <div style={{ padding: "20px" }}>
         <h2>Debug Info:</h2>
@@ -80,7 +80,7 @@ export default function DocumentPage() {
           <strong>Document ID from URL:</strong> {documentId || "null"}
         </p>
         <p>
-          <strong>Role:</strong> {role || "undefined"}
+          <strong>Role:</strong> {roles || "undefined"}
         </p>
         <p>
           <strong>Available workspace IDs:</strong>{" "}
