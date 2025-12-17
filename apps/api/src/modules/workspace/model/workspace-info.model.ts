@@ -4,6 +4,7 @@ import {
   UUIDField,
   DateField
 } from '@sandworm/graphql';
+import { User } from '../../user/model/graphql/user.model';
 
 @ObjectType()
 export class WorkspaceMember {
@@ -12,6 +13,9 @@ export class WorkspaceMember {
 
   @StringField()
   role!: string;
+
+  @Field(() => User, { nullable: true })
+  user?: User;
 }
 
 @ObjectType()
@@ -41,6 +45,7 @@ export class WorkspaceInfo {
     createdAt: Date;
     updatedAt: Date;
     role: string;
+    owner?: User;
   }): WorkspaceInfo {
     const workspaceInfo = new WorkspaceInfo();
     workspaceInfo.id = data.id;
@@ -49,7 +54,6 @@ export class WorkspaceInfo {
     workspaceInfo.createdAt = data.createdAt;
     workspaceInfo.updatedAt = data.updatedAt;
     workspaceInfo.role = data.role;
-
     return workspaceInfo;
   }
 }
