@@ -215,7 +215,28 @@ export const useLogin = (): UseLogin => {
             return;
           }
 
-          if (res.status === 400 || res.status === 401) {
+          if (res.status === 400 || res.status === 401 || res.status === 422) {
+            const errorData = await res.json();
+
+            if (
+              errorData.trace?.response?.errors?.password ===
+              "incorrectPassword"
+            ) {
+              setState({
+                loading: false,
+                error: "invalid-creds",
+              });
+              return;
+            }
+
+            if (errorData.trace?.response?.errors?.email) {
+              setState({
+                loading: false,
+                error: "invalid-creds",
+              });
+              return;
+            }
+
             setState({
               loading: false,
               error: "invalid-creds",
@@ -226,11 +247,10 @@ export const useLogin = (): UseLogin => {
           throw new Error(`Unexpected status ${res.status}`);
         })
         .catch(error => {
-          console.error("Login error:", error);
-          setState(s => ({ ...s, loading: false, error: "unexpected" }));
+          setState(s => ({ ...s, loading: false, error: "network-error" }));
         });
     },
-    [setState]
+    []
   );
 
   return useMemo(
@@ -286,7 +306,7 @@ export const useSession = ({
       user: data?.currentUser?.user
         ? {
             ...data.currentUser.user,
-            role: storedRoles || data.currentUser.user.role || {}, // Use stored roles, fallback to GraphQL or empty object
+            role: storedRoles || data.currentUser.user.role || {},
           }
         : null,
       loading,

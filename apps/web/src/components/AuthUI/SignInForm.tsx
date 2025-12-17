@@ -23,7 +23,7 @@ export const SignInForm = () => {
 
   useEffect(() => {
     if (state.error === "invalid-creds") {
-      setLocalError("Invalid email or password. Please try again");
+      setLocalError("Invalid email or password. Please try again.");
     } else if (state.error === "network-error") {
       setLocalError(
         "Network error. Please check your connection and try again."
@@ -31,6 +31,8 @@ export const SignInForm = () => {
     } else if (state.error === "unexpected") {
       setLocalError("An unexpected error occurred. Please try again.");
     }
+
+    // todo on multiple invalid creds redirect to reset password page
 
     if (state.data && state.data.loginLink) {
       const callbackUrl = searchParams.get("callback") || "/workspace";
