@@ -204,7 +204,9 @@ function PrivateDocumentPageInner(
     [props.workspaceId, props.documentId, shareLinkWithoutSidebar]
   );
 
-  const isViewer = props.user.roles[props.workspaceId] === "viewer";
+  console.log("isViewer", props.user, props.workspaceId);
+
+  const isViewer = props?.user?.role?.[props.workspaceId] === "viewer";
 
   const isDeleted = !isNil(props.document.deletedAt);
 
@@ -304,14 +306,15 @@ function PrivateDocumentPageInner(
   const topBarContent = (
     <div className="flex items-center w-full justify-between gap-x-6">
       <div className="w-full overflow-hidden flex items-center gap-x-1.5 text-sm text-gray-400 dark:text-[#868E96] font-primary">
-        {props.isApp || props.user.roles[props.workspaceId] === "viewer" ? (
+        {props.isApp || props?.user?.role?.[props.workspaceId] === "viewer" ? (
           <EyeIcon className="w-4 h-4" />
         ) : (
           <PencilIcon className="w-4 h-4" />
         )}
         <span className="w-full truncate">
           <span className="font-semibold">
-            {props.isApp || props.user.roles[props.workspaceId] === "viewer" ? (
+            {props.isApp ||
+            props?.user?.role?.[props.workspaceId] === "viewer" ? (
               <span className="text-ceramic-500">Viewing</span>
             ) : (
               "Editing"
@@ -325,7 +328,7 @@ function PrivateDocumentPageInner(
         documentId={props.documentId}
         current="notebook"
         isEditing={!props.isApp}
-        userRole={props.user.roles[props.workspaceId]}
+        userRole={props?.user?.role?.[props.workspaceId]}
         isPublished={props.document.publishedAt !== null}
       />
 
@@ -345,12 +348,12 @@ function PrivateDocumentPageInner(
           workspaceId={props.workspaceId}
           documentId={props.documentId}
           documentTitle={documentTitle}
-          role={props.user.roles[props.workspaceId]}
+          role={props?.user?.role?.[props.workspaceId]}
           isDashboard={false}
           isApp={props.isApp}
         />
 
-        {props.user.roles[props.workspaceId] ===
+        {props?.user?.role?.[props.workspaceId] ===
         "viewer" ? null : props.isApp ? (
           <Link
             className="flex gap-x-2 items-center rounded-sm px-3 py-1 text-sm text-gray-500 bg-white hover:bg-gray-100 border border-gray-200 disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 justify-center"
@@ -408,7 +411,9 @@ function PrivateDocumentPageInner(
       topBarClassname={props.isApp ? "bg-gray-50 " : undefined}
       topBarContent={topBarContent}
       user={props.user}
-      hideChat={props.isApp || props.user.roles[props.workspaceId] === "viewer"}
+      hideChat={
+        props.isApp || props?.user?.role?.[props.workspaceId] === "viewer"
+      }
     >
       <div className="w-full relative flex">
         <V2Editor
@@ -419,12 +424,12 @@ function PrivateDocumentPageInner(
           isDeleted={isDeleted}
           onRestoreDocument={onRestoreDocument}
           isEditable={
-            !props.isApp && props.user.roles[props.workspaceId] !== "viewer"
+            !props.isApp && props.user.role[props.workspaceId] !== "viewer"
           }
           isPDF={false}
           isApp={props.isApp}
           userId={props.user.id}
-          role={props.user.roles[props.workspaceId]}
+          role={props?.user?.role?.[props.workspaceId]}
           isFullScreen={isFullScreen}
           yDoc={yDoc}
           executionQueue={executionQueue}
