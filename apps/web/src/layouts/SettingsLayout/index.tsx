@@ -12,6 +12,7 @@ import {
   ChevronLeft,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@sandworm/ui/components/avatar";
+
 import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
 
 export default function SettingsLayout({

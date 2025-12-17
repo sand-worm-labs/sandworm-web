@@ -1,9 +1,8 @@
 "use client";
 
-import React from "react";
-import { MoreVertical } from "lucide-react";
+import React, { useState } from "react";
+import { Check, MoreVertical, Share2 } from "lucide-react";
 import Link from "next/link";
-
 import {
   Avatar,
   AvatarImage,
@@ -16,21 +15,57 @@ import {
   DropdownMenuSeparator,
 } from "@sandworm/ui/components/dropdown-menu";
 import { Button } from "@sandworm/ui/components/button";
-import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
 
 import { useModalStore } from "@/store/auth";
 
+import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
 import { useSession, useSignout } from "../Visualization/hooks/useAuth";
+
+const useShareProfile = (username: string) => {
+  const [copied, setCopied] = useState(false);
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy:", err);
+    }
+  };
+
+  const shareProfile = async () => {
+    const profileUrl = `${window.location.origin}/profile/${username}`;
+    const shareData = {
+      title: `${username}'s Profile`,
+      text: `Check out ${username}'s profile on Sandworm Labs`,
+      url: profileUrl,
+    };
+
+    if (navigator.share && navigator.canShare?.(shareData)) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        if ((err as Error).name !== "AbortError") {
+          await copyToClipboard(profileUrl);
+        }
+      }
+    } else {
+      await copyToClipboard(profileUrl);
+    }
+  };
+
+  return { shareProfile, copied };
+};
 
 export const AccountDropdown = () => {
   const session = useSession({ redirectToLogin: true });
   const openSignIn = useModalStore(state => state.openSignIn);
   const signout = useSignout();
   const workspaceId = useStringQuery("workspace");
-
   const user = session?.user;
 
-  console.log(session);
+  const { shareProfile, copied } = useShareProfile(user?.firstName ?? "user");
 
   if (!user) {
     return (
@@ -98,28 +133,35 @@ export const AccountDropdown = () => {
             <Button
               size="sm"
               variant="secondary"
-              className="bg-[#E2ECFF] dark:bg-[#C7665C20] dark:text-[#C7665C] text-[#8053FE] hover:bg-[#E2ECFF]/90 text-xs rounded-md font-medium h-6"
+              onClick={shareProfile}
+              className="bg-[#E2ECFF] dark:bg-[#C7665C20] dark:text-[#C7665C] text-[#8053FE] hover:bg-[#E2ECFF]/90 text-xs rounded-md font-medium h-6 gap-1.5"
             >
-              Share
+              {copied ? (
+                <>
+                  <Check className="w-3 h-3" />
+                  Copied!
+                </>
+              ) : (
+                <>Share</>
+              )}
             </Button>
           </div>
 
           <Link
-            href="/profile"
+            href={`/workspace/${workspaceId}/profile/me`}
             className="block mt-3 text-xs underline text-[#C7665C] hover:text-[#C7665C] mb-4"
           >
             Go to profile page
           </Link>
 
           <p className="text-[0.75rem] leading-relaxed border-t border-b border-[#E9ECEF] py-3 text-[#343A40] dark:text-white dark:border-[#262A30]">
-            Deep dive into EVM chain data with a focus on trends, adoption, and
-            the growth of the Base blockchain.
+            {user.settings?.statusText ?? "No bio available."}
           </p>
 
           <DropdownMenuSeparator className="my-3" />
 
           <div className="flex flex-col gap-2">
-            <Link href={`${workspaceId}/settings`}>
+            <Link href={`/workspace/${workspaceId}/settings`}>
               <Button
                 variant="outline"
                 className="w-full bg-[#F8F9FA] dark:bg-[#0C1015] border border-[#DEE2E6] dark:border-[#262A30] text-[0.8rem] py-5 rounded-lg"

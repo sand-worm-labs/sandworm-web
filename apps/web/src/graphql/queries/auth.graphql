@@ -17,6 +17,12 @@ query CurrentUser {
       avater
       followersCount
       followingCount
+      settings {
+        statusText
+        statusUpdatedAt
+        socialLinks
+        wallets
+      }
     }
     __typename
   }
@@ -29,22 +35,6 @@ query GetProfile($username: String!) {
     bio
     image
     following
-  }
-}
-
-# Get all users with pagination and sorting
-query GetAllUsers($input: GetAllUsersInput!) {
-  getAllUsers(input: $input) {
-    id
-    username
-    email
-    firstName
-    lastName
-    fullName
-    avater
-    followersCount
-    followingCount
-    isOnboarded
   }
 }
 
