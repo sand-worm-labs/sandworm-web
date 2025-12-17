@@ -9,7 +9,7 @@ import {
 import { CurrentUser } from '@sandworm/graphql';
 import { UserWorkspaceRole } from '@sandworm/postgresql-typeorm';
 import { WorkspaceService } from './workspace.service';
-import { Workspace } from './model/workspace.model';
+import { Workspace, WorkspaceSecrets } from './model/workspace.model';
 import { User } from '../user/model/graphql/user.model';
 import { Document } from '../document/model/document.model';
 import { WorkspaceInfo, WorkspaceMember } from './model/workspace-info.model';
@@ -162,5 +162,10 @@ export class WorkspaceResolver {
   @ResolveField(() => [Document])
   async documents(@Parent() workspace: Workspace): Promise<Document[]> {
     return this.workspaceService.getWorkspaceDocuments(workspace.id);
+  }
+
+  @ResolveField(() => WorkspaceSecrets)
+  async secrets(@Parent() workspace: Workspace): Promise<WorkspaceSecrets> {
+    return { hasExternalModelApiKey: false };
   }
 }

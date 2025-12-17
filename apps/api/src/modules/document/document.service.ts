@@ -5,6 +5,7 @@ import { ValidationException } from '@sandworm/graphql';
 import {
   DocumentEntity,
   FavoriteEntity,
+  YjsDocumentEntity,
 } from '@sandworm/postgresql-typeorm';
 import { Not, Repository } from 'typeorm';
 import { Document } from './model/document.model';
@@ -16,6 +17,7 @@ import {
   UpdateDocumentInput,
   CreateDocumentInput,
 } from './dto/document.dto';
+import { Doc, encodeStateAsUpdate } from 'yjs';
 
 @Injectable()
 export class DocumentService {
@@ -26,6 +28,8 @@ export class DocumentService {
     private readonly documentRepository: Repository<DocumentEntity>,
     @InjectRepository(FavoriteEntity)
     private readonly favoriteRepository: Repository<FavoriteEntity>,
+    @InjectRepository(YjsDocumentEntity)
+    private readonly yjsDocumentRepository: Repository<YjsDocumentEntity>,
   ) { }
 
   async getDocument(
@@ -145,14 +149,25 @@ export class DocumentService {
     userId: string,
     input: CreateDocumentInput,
   ): Promise<Document> {
+    const yDoc = new Doc();
+    const initialState = encodeStateAsUpdate(yDoc);
     const document = this.documentRepository.create({
       ...input,
       workspaceId,
       authorId: userId,
     });
 
+    const yjsDocument = this.yjsDocumentRepository.create({
+      documentId: document.id,
+      state: Buffer.from(initialState),
+      clock: 0,
+      clockUpdatedAt: new Date(),
+    });
+
+    document.yjsDocuments = [yjsDocument];
     try {
       await this.documentRepository.save(document);
+      await this.yjsDocumentRepository.save(yjsDocument);
     } catch (err) {
       throw new ValidationException(ErrorCode.E006);
     }
