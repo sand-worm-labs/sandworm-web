@@ -18,6 +18,12 @@ const config: Config = {
         xl: "1536px",
       },
       colors: {
+        primary: "#C7665C",
+        "light-border": "#E9ECEF",
+        "light-text": "#455768",
+        "light-main": "#1A1A1A",
+        "dark-border": "#262A30",
+        "dark-bg": "#010100",
         brand: {
           accent: "#5AD769",
           main: "#324BC3",
@@ -44,10 +50,7 @@ const config: Config = {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
         },
-        primary: {
-          DEFAULT: "#FF887A",
-          foreground: "hsl(var(--primary-foreground))",
-        },
+
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
