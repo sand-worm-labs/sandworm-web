@@ -9,32 +9,7 @@ import {
   ContentSkeleton,
   TitleSkeleton,
 } from "@/components/Editor/ContentSkeleton";
-
-type UserWorkspaceRole = "editor" | "viewer" | "admin";
-
-type SessionUser = {
-  id: string;
-  email: string;
-  name: string;
-  picture: string | null;
-  lastVisitedWorkspaceId: string;
-  createdAt: string;
-  updatedAt: string;
-  roles: Record<string, UserWorkspaceRole>;
-};
-
-const MOCK_SESSION: SessionUser = {
-  id: "4a6e71c4-2c06-460b-bb29-f337bf64e0bc",
-  email: "dqzxu2gbs@mozmail.com",
-  name: "Si Cy",
-  picture: null,
-  lastVisitedWorkspaceId: "405498a2-f3cb-4307-bd1e-4daf5b3a1dbb",
-  createdAt: "2025-10-21T14:03:41.471Z",
-  updatedAt: "2025-11-28T04:59:50.952Z",
-  roles: {
-    "405498a2-f3cb-4307-bd1e-4daf5b3a1dbb": "admin",
-  },
-};
+import { useSession } from "@/components/Visualization/hooks/useAuth";
 
 interface PrivateDocumentPageProps {
   workspaceId: string;
@@ -88,17 +63,13 @@ function PrivateDocumentPage(props: PrivateDocumentPageProps) {
 }
 
 export default function DocumentPage() {
-  const session = {
-    data: MOCK_SESSION,
-    isLoading: false,
-  };
-
+  const session = useSession({ redirectToLogin: true });
   const workspaceId = useStringQuery("workspace");
   const documentId = useStringQuery("document");
 
-  const role = session.data?.roles[workspaceId];
+  const role = session.user?.role;
 
-  if (!session.data || !role) {
+  if (!session.user || !role) {
     return (
       <div style={{ padding: "20px" }}>
         <h2>Debug Info:</h2>
@@ -113,7 +84,7 @@ export default function DocumentPage() {
         </p>
         <p>
           <strong>Available workspace IDs:</strong>{" "}
-          {Object.keys(session.data?.roles || {}).join(", ")}
+          {Object.keys(session.user?.role || {}).join(", ")}
         </p>
         <p style={{ color: "red" }}>No role found for this workspace</p>
       </div>

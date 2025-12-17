@@ -41,6 +41,7 @@ interface LoginResponse {
     fullName: string;
     isOnboarded: boolean;
     avatar?: string;
+    role: Record<string, UserWorkspaceRole>;
   };
 }
 
@@ -216,7 +217,7 @@ export const useLogin = (): UseLogin => {
 
 export type SessionUser = ApiUser & {
   userHash: string;
-  roles: Record<string, UserWorkspaceRole>;
+  role: Record<string, UserWorkspaceRole>;
   picture?: string | null;
   lastVisitedWorkspaceId?: string | null;
 };
