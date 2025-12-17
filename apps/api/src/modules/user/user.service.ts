@@ -5,8 +5,9 @@ import { ValidationException } from '@sandworm/graphql';
 import { verifyPassword } from '@sandworm/nest-common';
 import {
   UserEntity,
-  UserFollowsEntity,
   UserSettingEntity,
+  UserWorkspaceEntity,
+  UserFollowsEntity,
 } from '@sandworm/postgresql-typeorm';
 import { Repository } from 'typeorm';
 import { AuthPayload } from '../auth-graphql/models/auth-payload';
@@ -30,6 +31,8 @@ export class UserService {
     private readonly userSettingRepository: Repository<UserSettingEntity>,
     @InjectRepository(UserFollowsEntity)
     private readonly userFollowsRepository: Repository<UserFollowsEntity>,
+    @InjectRepository(UserWorkspaceEntity)
+    private readonly userWorkspaceRepository: Repository<UserWorkspaceEntity>,
   ) { }
 
   async getCurrentUser(currentUser: {
@@ -70,7 +73,7 @@ export class UserService {
     });
     const savedUser = await this.userRepository.save(newUser);
 
-    let userSetting = this.userSettingRepository.create({
+    const userSetting = this.userSettingRepository.create({
       statusText: "Just joined Sandworm!",
       userId: savedUser.id,
     });
@@ -105,7 +108,6 @@ export class UserService {
       sortOrder = 'DESC',
     } = input;
 
-    // ✅ Whitelist of allowed sort columns
     const allowedSortColumns = ['createdAt', 'username', 'email', 'firstName', 'lastName'];
     const safeSortBy = allowedSortColumns.includes(sortBy) ? sortBy : 'createdAt';
 
@@ -249,5 +251,16 @@ export class UserService {
       throw new ValidationException(ErrorCode.E002);
     }
     await this.userRepository.remove(user);
+  }
+
+  async getUserWorkspaceRoles(userId: string): Promise<Record<string, string>[]> {
+    const workspaceUsers = await this.userWorkspaceRepository.find({
+      where: { userId },
+      select: ['workspaceId', 'role'],
+    });
+
+    return workspaceUsers.map(wu => ({
+      [wu.workspaceId]: wu.role
+    }));
   }
 }

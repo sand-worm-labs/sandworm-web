@@ -35,7 +35,7 @@ export class AuthService {
     private sessionService: SessionService,
     private mailService: MailService,
     private configService: ConfigService<AllConfigType>,
-  ) {}
+  ) { }
 
   async validateLogin(loginDto: AuthEmailLoginDto): Promise<LoginResponseDto> {
     const user = await this.usersService.findByEmailWithPassword(
@@ -93,11 +93,13 @@ export class AuthService {
 
     delete user.password;
 
+    const user_workspace = await this.usersService.getUserWorkspaceRoles(user.id);
     return {
       refreshToken,
       token,
       tokenExpires,
       user,
+      roles: user_workspace,
     };
   }
 
