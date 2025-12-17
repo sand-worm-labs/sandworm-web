@@ -27,22 +27,22 @@ export const SignIn = () => {
 
       <SignInForm />
 
-      <SocialLogin variant="signin" />
-
       <div className="flex items-center gap-3 w-full my-4">
         <div className="h-px bg-[#E9ECEF] dark:bg-[#FFFFFF30] flex-1" />
         <span className="text-xs text-muted-foreground roobert">or</span>
         <div className="h-px bg-[#E9ECEF] dark:bg-[#FFFFFF30] flex-1" />
       </div>
 
-      <div className="flex justify-between w-full text-sm roobert">
+      <SocialLogin variant="signin" />
+
+      <div className="flex justify-between w-full text-sm font-primary mt-4">
         <p className="text-muted-foreground">
           Need an account?{" "}
           <Link href="/signup" className="text-[#8053FE] hover:underline">
             Sign Up
           </Link>
         </p>
-        <Link href="/" className="text-red-500 hover:underline">
+        <Link href="/" className="text-[#FF0000] hover:underline">
           Forgot Password
         </Link>
       </div>

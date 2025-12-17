@@ -1,10 +1,11 @@
 import type { Socket } from "socket.io-client";
 import { io } from "socket.io-client";
-import { useSession } from "next-auth/react";
+
 import { useContext, createContext, useEffect, useState } from "react";
 import { validate } from "uuid";
 
 import { useStringQuery } from "./useQueryArgs";
+import { useSession } from "./useAuth";
 
 const Context = createContext<Socket | null>(null);
 
@@ -16,7 +17,7 @@ export function useWebsocket() {
   const session = useSession({ redirectToLogin: false });
   const workspaceId = useStringQuery("workspaceId");
   useEffect(() => {
-    if (session.data?.id) {
+    if (session.user?.id) {
       const url = new URL(
         process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"
       );
