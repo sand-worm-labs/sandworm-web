@@ -37,9 +37,6 @@ export class Workspace {
   @UUIDField()
   ownerId!: string;
 
-  @Field(() => WorkspaceSecrets)
-  secrets!: WorkspaceSecrets;
-
   static fromEntity(entity: WorkspaceEntity): Workspace {
     const workspace = new Workspace();
     workspace.id = entity.id;
