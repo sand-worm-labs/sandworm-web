@@ -78,11 +78,11 @@ input DismissTutorialInput {
 }
 
 type Document {
-  appClock: Int!
+  appClock: Float!
   appId: String!
   authorId: String!
   children: [Document!]!
-  clock: Int!
+  clock: Float!
   createdAt: DateTime!
   deletedAt: DateTime
   hasDashboard: Boolean!
