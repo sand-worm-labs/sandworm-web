@@ -40,6 +40,7 @@ input CreateDocumentInput {
   icon: String
   parentId: String
   title: String
+  version: Float!
 }
 
 """User register request"""
@@ -79,14 +80,20 @@ input DismissTutorialInput {
 type Document {
   authorId: String!
   children: [Document!]!
+  createdAt: DateTime!
+  deletedAt: DateTime
+  icon: String!
   id: String!
+  orderIndex: Float!
   parent: Document
-  parentId: String!
+  parentId: String
   runSQLSelection: Boolean!
   runUnexecutedBlocks: Boolean!
   shareLinksWithoutSidebar: Boolean!
   slug: String!
   title: String!
+  updatedAt: DateTime!
+  version: Float!
   workspaceId: String!
 }
 

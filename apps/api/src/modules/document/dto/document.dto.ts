@@ -18,6 +18,9 @@ export class CreateDocumentInput {
 
   @UUIDFieldOptional()
   parentId?: string;
+
+  @NumberField()
+  version: number;
 }
 
 @InputType()
