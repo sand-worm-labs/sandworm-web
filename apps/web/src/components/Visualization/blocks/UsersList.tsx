@@ -219,6 +219,12 @@ function UsersList(props: Props) {
     [props.users, props.currentUserEmail]
   );
 
+  console.log(
+    "Rendering UsersList with users:",
+    props.currentUserEmail,
+    props.users
+  );
+
   return (
     <div className="flow-root">
       <div className="overflow-visible">

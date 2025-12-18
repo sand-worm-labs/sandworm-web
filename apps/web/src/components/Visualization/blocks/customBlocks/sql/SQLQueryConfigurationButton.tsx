@@ -147,6 +147,7 @@ function SQLQueryConfigurationButton(props: Props) {
   return (
     <div className="relative">
       <button
+        type="button"
         ref={buttonRef}
         className="rounded-sm h-6 min-w-6 flex items-center justify-center border border-gray-200 text-gray-400 hover:bg-gray-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-300"
         disabled={props.disabled}
