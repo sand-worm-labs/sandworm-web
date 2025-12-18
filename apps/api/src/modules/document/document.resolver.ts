@@ -140,43 +140,4 @@ export class DocumentResolver {
     return this.documentService.getDocument(doc.parentId, doc.workspaceId);
   }
 
-  @ResolveField(() => Date, { name: 'publishedAt', nullable: true })
-  publishedAt(@Parent() doc: Document): Date | null {
-    return null;
-  }
-
-  @ResolveField(() => Boolean, { name: 'isDataApp' })
-  isDataApp(@Parent() doc: Document): boolean {
-    return false;
-  }
-
-  @ResolveField(() => Boolean, { name: 'isSyncedWithYjs' })
-  isSyncedWithYjs(@Parent() doc: Document): boolean {
-    return true;
-  }
-
-  @ResolveField(() => Boolean, { name: 'hasDashboard' })
-  hasDashboard(@Parent() doc: Document): boolean {
-    return false;
-  }
-
-  @ResolveField(() => String, { name: 'appId' })
-  appId(@Parent() doc: Document): string {
-    return '';
-  }
-
-  @ResolveField(() => Int, { name: 'clock' })
-  clock(@Parent() doc: Document): number {
-    return 0;
-  }
-
-  @ResolveField(() => Int, { name: 'appClock' })
-  appClock(@Parent() doc: Document): number {
-    return 0;
-  }
-
-  @ResolveField(() => GraphQLJSON, { name: 'userAppClock' })
-  userAppClock(@Parent() doc: Document): Record<string, number> {
-    return {};
-  }
 }

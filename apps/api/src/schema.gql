@@ -78,21 +78,29 @@ input DismissTutorialInput {
 }
 
 type Document {
+  appClock: Int!
+  appId: String!
   authorId: String!
   children: [Document!]!
+  clock: Int!
   createdAt: DateTime!
   deletedAt: DateTime
+  hasDashboard: Boolean!
   icon: String!
   id: String!
+  isDataApp: Boolean!
+  isSyncedWithYjs: Boolean!
   orderIndex: Float!
   parent: Document
   parentId: String
+  publishedAt: DateTime
   runSQLSelection: Boolean!
   runUnexecutedBlocks: Boolean!
   shareLinksWithoutSidebar: Boolean!
   slug: String!
   title: String!
   updatedAt: DateTime!
+  userAppClock: JSON!
   version: Float!
   workspaceId: String!
 }
