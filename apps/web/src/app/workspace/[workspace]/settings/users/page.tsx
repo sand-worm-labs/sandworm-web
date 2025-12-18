@@ -17,19 +17,19 @@ import {
   UserControl,
   type RoleFilter,
 } from "@/components/Visualization/UserControl";
+import InviteUserModal from "@/components/InviteUser";
 
 export default function UsersPage() {
   const workspaceId = useStringQuery("workspace");
   const session = useSession({ redirectToLogin: true });
   const router = useRouter();
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
   const { data: workspaceData, loading: workspaceLoading } =
     useGetWorkspaceQuery({
       variables: { workspaceId },
       skip: !workspaceId,
     });
-
-  console.log("workspaceData:", workspaceData, session.user?.role);
 
   function getWorkspaceRole(
     roles: Array<Record<string, UserWorkspaceRole>> | undefined,
@@ -159,6 +159,17 @@ export default function UsersPage() {
     [resetPassword, users]
   );
 
+  const handleInviteUser = useCallback(
+    async (email: string) => {
+      // TODO: Implement your invite user logic here
+      console.log("Inviting user:", email, "to workspace:", workspaceId);
+
+      // await inviteUserMutation({ variables: { workspaceId, email } });
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    },
+    [workspaceId]
+  );
+
   const isAddEnabled = isAdmin;
 
   const workspace = workspaceData?.getWorkspace;
@@ -172,65 +183,71 @@ export default function UsersPage() {
   }
 
   return (
-    <ScrollBar className="w-full  h-full overflow-auto  ">
-      <div className="px-4 sm:p-6 lg:p-8 min-h-[100vh]">
-        <div className="border-b border-gray-200 dark:border-gray-800 pb-4 mb-6 flex justify-between items-center">
-          <div>
-            <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-1">
-              Users
-            </h2>
-            <p className="mb-6 text-[#6C757D] dark:text-gray-400">
-              List of users in {workspace?.name} team
-            </p>
+    <>
+      <ScrollBar className="w-full  h-full overflow-auto  ">
+        <div className="px-4 sm:p-6 lg:p-8 min-h-[100vh]">
+          <div className="border-b border-gray-200 dark:border-gray-800 pb-4 mb-6 flex justify-between items-center">
+            <div>
+              <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-1">
+                Users
+              </h2>
+              <p className="mb-6 text-[#6C757D] dark:text-gray-400">
+                List of users in {workspace?.name} team
+              </p>
+            </div>
+
+            <Tooltip
+              title="You've hit the free limit"
+              message="Upgrade to the professional plan to add more users."
+              className="flex"
+              tooltipClassname="w-48"
+              position="left"
+              active={false}
+            >
+              <button
+                type="button"
+                id="add-user-button"
+                onClick={() => setIsInviteModalOpen(true)}
+                disabled={!isAddEnabled}
+                className={clsx(
+                  isAddEnabled
+                    ? "bg-[#C7665C] hover:bg-primary-300"
+                    : "bg-[#C7665CDD] cursor-not-allowed",
+                  "px-6 py-2 bg-[#C7665C] text-white rounded-xl hover:bg-[#B55A50] text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                )}
+              >
+                <UserPlusIcon className="h-4 w-4" /> Invite user
+              </button>
+            </Tooltip>
           </div>
 
-          <Tooltip
-            title="You've hit the free limit"
-            message="Upgrade to the professional plan to add more users."
-            className="flex"
-            tooltipClassname="w-48"
-            position="left"
-            active={false}
-          >
-            <button
-              type="button"
-              id="add-user-button"
-              onClick={() => {
-                router.push(`/workspaces/${workspaceId}/users/new`);
-              }}
-              disabled={!isAddEnabled}
-              className={clsx(
-                isAddEnabled
-                  ? "bg-[#C7665C] hover:bg-primary-300"
-                  : "bg-[#C7665CDD] cursor-not-allowed",
-                "px-6 py-2 bg-[#C7665C] text-white rounded-xl hover:bg-[#B55A50] text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
-              )}
-            >
-              <UserPlusIcon className="h-4 w-4" /> Invite user
-            </button>
-          </Tooltip>
-        </div>
+          <div className="mb-6">
+            <UserControl
+              searchValue={searchValue}
+              onSearchChange={setSearchValue}
+              roleFilters={roleFilters}
+              onRoleFilterChange={handleRoleFilterChange}
+              onResetFilters={handleResetFilters}
+              totalUsers={filteredUsers.length}
+            />
+          </div>
 
-        <div className="mb-6">
-          <UserControl
-            searchValue={searchValue}
-            onSearchChange={setSearchValue}
-            roleFilters={roleFilters}
-            onRoleFilterChange={handleRoleFilterChange}
-            onResetFilters={handleResetFilters}
-            totalUsers={filteredUsers.length}
+          <UsersList
+            currentUserEmail={session.user?.email ?? ""}
+            users={filteredUsers}
+            onRemoveUser={removeUser}
+            onChangeRole={onChangeRole}
+            onResetPassword={onResetPassword}
+            role={role ?? "viewer"}
           />
         </div>
-
-        <UsersList
-          currentUserEmail={session.user?.email ?? ""}
-          users={filteredUsers}
-          onRemoveUser={removeUser}
-          onChangeRole={onChangeRole}
-          onResetPassword={onResetPassword}
-          role={role ?? "viewer"}
-        />
-      </div>
-    </ScrollBar>
+      </ScrollBar>
+      <InviteUserModal
+        isOpen={isInviteModalOpen}
+        onClose={() => setIsInviteModalOpen(false)}
+        workspaceName={workspace?.name || "workspace"}
+        onInvite={handleInviteUser}
+      />
+    </>
   );
 }
