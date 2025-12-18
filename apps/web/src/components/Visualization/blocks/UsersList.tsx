@@ -47,6 +47,8 @@ function UserItem(props: UserItemProps) {
     props.onRemoveUser(props.user.id);
   }, [props.onRemoveUser, props.user.id]);
 
+  console.log("Rendering UserItem for user:", props.user.role);
+
   const badge = useMemo(() => {
     switch (props.user.role) {
       case "admin":
@@ -110,19 +112,19 @@ function UserItem(props: UserItemProps) {
   }, [props.onResetPassword, props.user.id]);
 
   return (
-    <tr>
-      <td className="whitespace-nowrap py-4 text-sm font-medium text-gray-900">
+    <tr className="border-b border-[#CED4DA] dark:border-[#262A30] hover:bg-gray-50 dark:hover:bg-[#0D0F12] transition-colors">
+      <td className="whitespace-nowrap p-4 text-sm font-medium text-gray-900 dark:text-white">
         <span>{props.user.name}</span>{" "}
         {props.isCurrentUser && <span className="text-gray-400">(You)</span>}
       </td>
-      <td className="whitespace-nowrap py-4 text-sm text-gray-500">
+      <td className="whitespace-nowrap p-4  text-sm text-gray-500">
         {props.user.email}
       </td>
-      <td className="whitespace-nowrap py-4 text-sm text-gray-500">
+      <td className="whitespace-nowrap p-4  text-sm text-gray-500">
         {/*  {new Date(props.user.createdAt).toISOString()} */}
       </td>
-      <td className="whitespace-nowrap py-4 text-sm text-gray-500">{badge}</td>
-      <td className="whitespace-nowrap py-4 text-sm font-medium sm:pl-6 lg:pl-8 pr-4">
+      <td className="whitespace-nowrap p-4  text-sm text-gray-500">{badge}</td>
+      <td className="whitespace-nowrap p-4  text-sm font-medium sm:pl-6 lg:pl-8 pr-4">
         <Menu as="div" className="flex items-center justify-end relative">
           <Menu.Button
             as="span"
@@ -226,33 +228,33 @@ function UsersList(props: Props) {
   );
 
   return (
-    <div className="flow-root">
+    <div className="h-full">
       <div className="overflow-visible">
-        <div className="inline-block min-w-full py-2 align-middle">
-          <table className="min-w-full">
-            <thead className="uppercase text-gray-300 hidden">
+        <div className="w-full overflow-x-auto border border-[#E9ECEF] rounded-t-2xl dark:border-[#262A30] border-b-0">
+          <table className="min-w-full border-collapse ">
+            <thead className=" bg-[#F1F3F4] dark:bg-[#0D0F12] rounded-t-2xl  sticky top-0 z-10">
               <tr>
                 <th
                   scope="col"
-                  className="py-3.5 text-left text-sm font-semibold"
+                  className="text-left p-4 text-xs font-medium text-[#6C757D] dark:text-[#868E96] sticky left-0 bg-[#F1F3F4] dark:bg-[#0D0F12] min-w-[250px]"
                 >
                   Name
                 </th>
                 <th
                   scope="col"
-                  className="py-3.5 text-left text-sm font-semibold"
+                  className="text-left p-4 text-xs font-medium text-[#6C757D] dark:text-[#868E96] min-w-[120px]"
                 >
                   Title
                 </th>
                 <th
                   scope="col"
-                  className="py-3.5 text-left text-sm font-semibold"
+                  className="text-left p-4 text-xs font-medium text-[#6C757D] dark:text-[#868E96] min-w-[120px]"
                 >
                   Email
                 </th>
                 <th
                   scope="col"
-                  className="py-3.5 text-left text-sm font-semibold"
+                  className="text-left p-4 text-xs font-medium text-[#6C757D] dark:text-[#868E96] min-w-[120px]"
                 >
                   Role
                 </th>
@@ -264,7 +266,7 @@ function UsersList(props: Props) {
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 bg-white">
+            <tbody className="divide-y">
               {users.map(user => {
                 const isCurrentUser = user.email === props.currentUserEmail;
 
