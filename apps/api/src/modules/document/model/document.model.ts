@@ -1,5 +1,13 @@
 import { ObjectType } from '@nestjs/graphql';
-import { BooleanField, StringField, UUIDField } from '@sandworm/graphql';
+import {
+  BooleanField,
+  StringField,
+  UUIDField,
+  NumberField,
+  DateField,
+  DateFieldOptional,
+  UUIDFieldOptional,
+} from '@sandworm/graphql';
 import { DocumentEntity } from '@sandworm/postgresql-typeorm';
 
 @ObjectType()
@@ -19,8 +27,8 @@ export class Document {
   @UUIDField()
   workspaceId!: string;
 
-  @UUIDField()
-  parentId!: string;
+  @UUIDFieldOptional()
+  parentId!: string | null;
 
   @BooleanField()
   runUnexecutedBlocks!: boolean;
@@ -30,6 +38,24 @@ export class Document {
 
   @BooleanField()
   shareLinksWithoutSidebar!: boolean;
+
+  @StringField()
+  icon!: string;
+
+  @NumberField()
+  orderIndex!: number;
+
+  @DateFieldOptional()
+  deletedAt!: Date | null;
+
+  @DateField()
+  createdAt!: Date;
+
+  @DateField()
+  updatedAt!: Date;
+
+  @NumberField()
+  version!: number;
 
   static fromEntity(entity: DocumentEntity): Document {
     const document = new Document();
@@ -42,6 +68,11 @@ export class Document {
     document.runUnexecutedBlocks = entity.runUnexecutedBlocks;
     document.runSQLSelection = entity.runSQLSelection;
     document.shareLinksWithoutSidebar = entity.shareLinksWithoutSidebar;
+    document.orderIndex = entity.orderIndex;
+    document.deletedAt = entity.deletedAt;
+    document.createdAt = entity.createdAt;
+    document.updatedAt = entity.updatedAt;
+    document.version = entity.version;
     return document;
   }
 
