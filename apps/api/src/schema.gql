@@ -377,6 +377,11 @@ type TutorialState {
 }
 
 input UpdateDocumentInput {
+  orderIndex: Float!
+  parentId: String
+  runSQLSelection: Boolean
+  runUnexecutedBlocks: Boolean
+  shareLinksWithoutSidebar: Boolean
   title: String
 }
 

@@ -24,19 +24,24 @@ export class CreateDocumentInput {
 }
 
 @InputType()
-export class DocumentRelationsInput {
+export class UpdateDocumentInput {
+  @StringFieldOptional()
+  title?: string;
+
   @UUIDFieldOptional()
   parentId?: string | null;
 
   @NumberField()
   orderIndex: number;
-}
 
-@InputType()
-export class UpdateDocumentInput {
-  @StringFieldOptional()
-  title?: string;
-  relations?: DocumentRelationsInput;
+  @BooleanFieldOptional()
+  runUnexecutedBlocks?: boolean;
+
+  @BooleanFieldOptional()
+  runSQLSelection?: boolean;
+
+  @BooleanFieldOptional()
+  shareLinksWithoutSidebar?: boolean;
 }
 
 @InputType()

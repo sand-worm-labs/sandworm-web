@@ -68,12 +68,12 @@ export class DocumentService {
       throw new ValidationException(ErrorCode.E003);
     }
 
-    document.title = input.title ?? '';
-
-    if (input.relations) {
-      document.parentId = input.relations.parentId ?? null;
-      document.orderIndex = input.relations.orderIndex;
-    }
+    document.title = input.title ?? document.title;
+    document.parentId = input.parentId ?? document.parentId;
+    document.orderIndex = input.orderIndex ?? document.orderIndex;
+    document.runUnexecutedBlocks = input.runUnexecutedBlocks ?? document.runUnexecutedBlocks ?? false;
+    document.runSQLSelection = input.runSQLSelection ?? document.runSQLSelection ?? false;
+    document.shareLinksWithoutSidebar = input.shareLinksWithoutSidebar ?? document.shareLinksWithoutSidebar ?? false;
 
     await this.documentRepository.save(document);
     return Document.fromEntity(document);
