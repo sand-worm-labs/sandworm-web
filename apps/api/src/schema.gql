@@ -411,6 +411,7 @@ type Workspace {
   owner: User!
   ownerId: String!
   plan: WorkspacePlan!
+  secrets: WorkspaceSecrets!
   source: String
   useCases: [String!]!
   useContext: String
@@ -438,4 +439,8 @@ enum WorkspacePlan {
   FREE
   PRO
   TRIAL
+}
+
+type WorkspaceSecrets {
+  hasExternalModelApiKey: Boolean!
 }

@@ -1,5 +1,5 @@
 import { ObjectType, registerEnumType } from '@nestjs/graphql';
-import { StringField, StringFieldOptional, UUIDField } from '@sandworm/graphql';
+import { BooleanField, StringField, StringFieldOptional, UUIDField } from '@sandworm/graphql';
 import { Field } from '@nestjs/graphql';
 import { Plan, WorkspaceEntity } from '@sandworm/postgresql-typeorm';
 
@@ -7,6 +7,12 @@ registerEnumType(Plan, {
   name: 'WorkspacePlan',
   description: 'Price plan of the workspace',
 });
+
+@ObjectType()
+export class WorkspaceSecrets {
+  @BooleanField()
+  hasExternalModelApiKey!: boolean;
+}
 
 @ObjectType()
 export class Workspace {
