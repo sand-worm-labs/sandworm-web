@@ -111,6 +111,7 @@ export interface User {
   email: string | null;
   username: string | null;
   firstName: string | null;
+  name: string | null;
   lastName: string | null;
   fullName: string | null;
   avater: string | null;

@@ -150,7 +150,7 @@ export const SearchBar = () => {
           }}
           onKeyDown={handleKeyDown}
           onFocus={() => setIsActive(true)}
-          className="w-full pl-10 pr-16 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none focus:ring focus:ring-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4] "
+          className="w-full pl-10 pr-16 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none focus:ring focus:ring-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4] font-primary"
         />
         <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-text-gray select-none font-medium">
           Press{" "}

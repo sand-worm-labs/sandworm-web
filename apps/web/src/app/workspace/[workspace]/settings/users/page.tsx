@@ -1,7 +1,7 @@
 "use client";
 
 import { UserPlusIcon } from "@heroicons/react/20/solid";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useMemo } from "react";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
 
@@ -13,6 +13,10 @@ import UsersList from "@/components/Visualization/blocks/UsersList";
 import { useUsers } from "@/components/Visualization/hooks/useUsers";
 import ScrollBar from "@/components/Visualization/blocks/ScrollBar";
 import { useGetWorkspaceQuery } from "@/generated/graphql";
+import {
+  UserControl,
+  type RoleFilter,
+} from "@/components/Visualization/UserControl";
 
 export default function UsersPage() {
   const workspaceId = useStringQuery("workspace");
@@ -25,6 +29,8 @@ export default function UsersPage() {
       skip: !workspaceId,
     });
 
+  console.log("workspaceData:", workspaceData, session.user?.role);
+
   function getWorkspaceRole(
     roles: Array<Record<string, UserWorkspaceRole>> | undefined,
     workspaceId?: string
@@ -34,10 +40,96 @@ export default function UsersPage() {
   }
 
   const role = getWorkspaceRole(session.user?.role, workspaceId);
+
   const isAdmin = role === "admin";
 
   const [users, { removeUser, updateUser, resetPassword }] =
     useUsers(workspaceId);
+
+  // Search and filter state
+  const [searchValue, setSearchValue] = useState("");
+  const [roleFilters, setRoleFilters] = useState<RoleFilter[]>([
+    { role: "admin", label: "Admin", count: 0, enabled: false },
+    { role: "manager", label: "Manager", count: 0, enabled: false },
+    { role: "editor", label: "Editor", count: 0, enabled: false },
+    { role: "viewer", label: "Viewer", count: 0, enabled: false },
+    { role: "guest", label: "Guest", count: 0, enabled: false },
+  ]);
+
+  // Calculate role counts and update filters
+  useMemo(() => {
+    const roleCounts: Record<string, number> = {
+      admin: 0,
+      manager: 0,
+      editor: 0,
+      viewer: 0,
+      guest: 0,
+    };
+
+    users.forEach(user => {
+      if (user.role && roleCounts[user.role] !== undefined) {
+        roleCounts[user.role]++;
+      }
+    });
+
+    setRoleFilters(prev =>
+      prev.map(filter => ({
+        ...filter,
+        count: roleCounts[filter.role] || 0,
+      }))
+    );
+  }, [users]);
+
+  // Filter users based on search and role filters
+  const filteredUsers = useMemo(() => {
+    let filtered = users;
+
+    // Apply search filter
+    if (searchValue.trim()) {
+      const searchLower = searchValue.toLowerCase();
+      filtered = filtered.filter(user => {
+        const fullName = user.fullName?.toLowerCase() || "";
+        const firstName = user.firstName?.toLowerCase() || "";
+        const lastName = user.lastName?.toLowerCase() || "";
+        const username = user.username?.toLowerCase() || "";
+        const email = user.email?.toLowerCase() || "";
+
+        return (
+          fullName.includes(searchLower) ||
+          firstName.includes(searchLower) ||
+          lastName.includes(searchLower) ||
+          username.includes(searchLower) ||
+          email.includes(searchLower)
+        );
+      });
+    }
+
+    // Apply role filters (if any are enabled)
+    const enabledRoles = roleFilters.filter(f => f.enabled).map(f => f.role);
+
+    if (enabledRoles.length > 0) {
+      filtered = filtered.filter(
+        user => user.role && enabledRoles.includes(user.role as any)
+      );
+    }
+
+    return filtered;
+  }, [users, searchValue, roleFilters]);
+
+  const handleRoleFilterChange = useCallback(
+    (role: string, enabled: boolean) => {
+      setRoleFilters(prev =>
+        prev.map(filter =>
+          filter.role === role ? { ...filter, enabled } : filter
+        )
+      );
+    },
+    []
+  );
+
+  const handleResetFilters = useCallback(() => {
+    setRoleFilters(prev => prev.map(filter => ({ ...filter, enabled: false })));
+  }, []);
 
   const onChangeRole = useCallback(
     (id: string, role: UserWorkspaceRole) => {
@@ -46,7 +138,7 @@ export default function UsersPage() {
     [updateUser]
   );
 
-  const [newPassword, setNewPassword] = useState<{
+  const [, setNewPassword] = useState<{
     name: string;
     password: string;
   } | null>(null);
@@ -59,16 +151,15 @@ export default function UsersPage() {
       }
 
       const newPassword = await resetPassword(id);
-      setNewPassword({ name: user.name, password: newPassword });
+      setNewPassword({
+        name: user.fullName || user.username || "User",
+        password: newPassword,
+      });
     },
     [resetPassword, users]
   );
 
   const isAddEnabled = isAdmin;
-
-  const onClosePasswordDialog = useCallback(() => {
-    setNewPassword(null);
-  }, []);
 
   const workspace = workspaceData?.getWorkspace;
 
@@ -81,33 +172,17 @@ export default function UsersPage() {
   }
 
   return (
-    <ScrollBar className="w-full bg-white h-full overflow-auto dark:bg-black">
-      <div className="px-4 sm:p-6 lg:p-8">
-        <div className="border-b border-gray-200 pb-4 mb-6">
-          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-1">
-            Users
-          </h2>
-          <p className="mb-6 text-[#6C757D]">
-            List of users in {workspace?.name} team
-          </p>
-          <div className="mt-2 flex items-center gap-4 text-sm text-gray-600">
-            <span className="font-medium">
-              Plan: <span className="text-gray-900">{workspace?.plan}</span>
-            </span>
-            <span>•</span>
-            <span>
-              {users.length} {users.length === 1 ? "user" : "users"}
-            </span>
+    <ScrollBar className="w-full  h-full overflow-auto  ">
+      <div className="px-4 sm:p-6 lg:p-8 min-h-[100vh]">
+        <div className="border-b border-gray-200 dark:border-gray-800 pb-4 mb-6 flex justify-between items-center">
+          <div>
+            <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-1">
+              Users
+            </h2>
+            <p className="mb-6 text-[#6C757D] dark:text-gray-400">
+              List of users in {workspace?.name} team
+            </p>
           </div>
-        </div>
-
-        <div className="border-b border-gray-200 pb-4 sm:flex sm:items-center sm:justify-between">
-          <h3 className="text-lg font-medium leading-6 text-gray-900">
-            Users{" "}
-            <span>
-              ( {users.length} {users.length === 1 ? "" : ""})
-            </span>
-          </h3>
 
           <Tooltip
             title="You've hit the free limit"
@@ -131,15 +206,25 @@ export default function UsersPage() {
                 "px-6 py-2 bg-[#C7665C] text-white rounded-xl hover:bg-[#B55A50] text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
               )}
             >
-              <UserPlusIcon className="h-4 w-4" /> Add user
+              <UserPlusIcon className="h-4 w-4" /> Invite user
             </button>
           </Tooltip>
         </div>
 
+        <div className="mb-6">
+          <UserControl
+            searchValue={searchValue}
+            onSearchChange={setSearchValue}
+            roleFilters={roleFilters}
+            onRoleFilterChange={handleRoleFilterChange}
+            onResetFilters={handleResetFilters}
+            totalUsers={filteredUsers.length}
+          />
+        </div>
+
         <UsersList
           currentUserEmail={session.user?.email ?? ""}
-          users={users}
-          workspaceId={workspaceId}
+          users={filteredUsers}
           onRemoveUser={removeUser}
           onChangeRole={onChangeRole}
           onResetPassword={onResetPassword}
