@@ -875,6 +875,7 @@ function SQLBlock(props: Props) {
                 />
               </Transition>
               <Transition
+                as="div"
                 className="print:hidden flex items-center gap-x-1 text-[10px] text-gray-400 whitespace-nowrap pr-3"
                 show={!(!isCodeHidden && dataframeName?.value)}
                 enter="transition-opacity ease-in duration-300"
@@ -904,6 +905,7 @@ function SQLBlock(props: Props) {
           </div>
           <Transition
             show={!isCodeHidden}
+            as="div"
             enter="transition-all ease-in duration-300 overflow-hidden"
             enterFrom="max-h-0"
             enterTo="max-h-[var(--dynamic-height)]"

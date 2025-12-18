@@ -25,7 +25,16 @@ export default function UsersPage() {
       skip: !workspaceId,
     });
 
-  const isAdmin = session.user?.role === "admin";
+  function getWorkspaceRole(
+    roles: Array<Record<string, UserWorkspaceRole>> | undefined,
+    workspaceId?: string
+  ) {
+    if (!roles || !workspaceId) return null;
+    return roles.find(r => r[workspaceId])?.[workspaceId] ?? null;
+  }
+
+  const role = getWorkspaceRole(session.user?.role, workspaceId);
+  const isAdmin = role === "admin";
 
   const [users, { removeUser, updateUser, resetPassword }] =
     useUsers(workspaceId);
@@ -75,9 +84,12 @@ export default function UsersPage() {
     <ScrollBar className="w-full bg-white h-full overflow-auto dark:bg-black">
       <div className="px-4 sm:p-6 lg:p-8">
         <div className="border-b border-gray-200 pb-4 mb-6">
-          <h2 className="text-xl font-medium text-gray-900 dark:text-white mb-6">
-            {workspace?.name}
+          <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-1">
+            Users
           </h2>
+          <p className="mb-6 text-[#6C757D]">
+            List of users in {workspace?.name} team
+          </p>
           <div className="mt-2 flex items-center gap-4 text-sm text-gray-600">
             <span className="font-medium">
               Plan: <span className="text-gray-900">{workspace?.plan}</span>
@@ -90,7 +102,13 @@ export default function UsersPage() {
         </div>
 
         <div className="border-b border-gray-200 pb-4 sm:flex sm:items-center sm:justify-between">
-          <h3 className="text-lg font-medium leading-6 text-gray-900">Users</h3>
+          <h3 className="text-lg font-medium leading-6 text-gray-900">
+            Users{" "}
+            <span>
+              ( {users.length} {users.length === 1 ? "" : ""})
+            </span>
+          </h3>
+
           <Tooltip
             title="You've hit the free limit"
             message="Upgrade to the professional plan to add more users."
@@ -125,7 +143,7 @@ export default function UsersPage() {
           onRemoveUser={removeUser}
           onChangeRole={onChangeRole}
           onResetPassword={onResetPassword}
-          role={session.user?.role ?? "viewer"}
+          role={role ?? "viewer"}
         />
       </div>
     </ScrollBar>
