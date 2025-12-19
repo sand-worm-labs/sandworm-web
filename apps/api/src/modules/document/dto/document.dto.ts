@@ -13,8 +13,6 @@ export class CreateDocumentInput {
   @StringFieldOptional()
   title: string;
 
-  @StringFieldOptional()
-  icon?: string;
 
   @UUIDFieldOptional()
   parentId?: string;
