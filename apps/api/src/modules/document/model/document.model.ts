@@ -1,6 +1,15 @@
-import { ObjectType } from '@nestjs/graphql';
-import { BooleanField, StringField, UUIDField } from '@sandworm/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
+import {
+  BooleanField,
+  StringField,
+  UUIDField,
+  NumberField,
+  DateField,
+  DateFieldOptional,
+  UUIDFieldOptional,
+} from '@sandworm/graphql';
 import { DocumentEntity } from '@sandworm/postgresql-typeorm';
+import { GraphQLJSON } from 'graphql-type-json';
 
 @ObjectType()
 export class Document {
@@ -19,8 +28,8 @@ export class Document {
   @UUIDField()
   workspaceId!: string;
 
-  @UUIDField()
-  parentId!: string;
+  @UUIDFieldOptional()
+  parentId!: string | null;
 
   @BooleanField()
   runUnexecutedBlocks!: boolean;
@@ -30,6 +39,49 @@ export class Document {
 
   @BooleanField()
   shareLinksWithoutSidebar!: boolean;
+
+  @StringField()
+  icon!: string;
+
+  @NumberField()
+  orderIndex!: number;
+
+  @DateFieldOptional()
+  deletedAt!: Date | null;
+
+  @DateField()
+  createdAt!: Date;
+
+  @DateField()
+  updatedAt!: Date;
+
+  @NumberField()
+  version!: number;
+
+  // Publish feature fields
+  @DateFieldOptional()
+  publishedAt!: Date | null;
+
+  @BooleanField({ defaultValue: false })
+  isDataApp: boolean = false;
+
+  @BooleanField({ defaultValue: true })
+  isSyncedWithYjs: boolean = true;
+
+  @BooleanField({ defaultValue: false })
+  hasDashboard: boolean = false;
+
+  @StringField({ defaultValue: '' })
+  appId: string = '';
+
+  @NumberField({ defaultValue: 0 })
+  clock: number = 0;
+
+  @NumberField({ defaultValue: 0 })
+  appClock: number = 0;
+
+  @Field(() => GraphQLJSON, { defaultValue: {} })
+  userAppClock: Record<string, number> = {};
 
   static fromEntity(entity: DocumentEntity): Document {
     const document = new Document();
@@ -42,6 +94,22 @@ export class Document {
     document.runUnexecutedBlocks = entity.runUnexecutedBlocks;
     document.runSQLSelection = entity.runSQLSelection;
     document.shareLinksWithoutSidebar = entity.shareLinksWithoutSidebar;
+    document.orderIndex = entity.orderIndex;
+    document.deletedAt = entity.deletedAt;
+    document.createdAt = entity.createdAt;
+    document.updatedAt = entity.updatedAt;
+    document.version = entity.version;
+
+    // Publish feature defaults
+    document.publishedAt = (entity as any).publishedAt ?? null;
+    document.isDataApp = (entity as any).isDataApp ?? false;
+    document.isSyncedWithYjs = true;
+    document.hasDashboard = false;
+    document.appId = '';
+    document.clock = 0;
+    document.appClock = 0;
+    document.userAppClock = {};
+
     return document;
   }
 
