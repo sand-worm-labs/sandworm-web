@@ -57,9 +57,9 @@ export type CreateCommentInput = {
 };
 
 export type CreateDocumentInput = {
-  icon?: InputMaybe<Scalars['String']['input']>;
   parentId?: InputMaybe<Scalars['String']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
+  version: Scalars['Float']['input'];
 };
 
 /** User register request */
@@ -93,16 +93,30 @@ export type DismissTutorialInput = {
 
 export type Document = {
   __typename?: 'Document';
+  appClock: Scalars['Float']['output'];
+  appId: Scalars['String']['output'];
   authorId: Scalars['String']['output'];
   children: Array<Document>;
+  clock: Scalars['Float']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  deletedAt?: Maybe<Scalars['DateTime']['output']>;
+  hasDashboard: Scalars['Boolean']['output'];
+  icon: Scalars['String']['output'];
   id: Scalars['String']['output'];
+  isDataApp: Scalars['Boolean']['output'];
+  isSyncedWithYjs: Scalars['Boolean']['output'];
+  orderIndex: Scalars['Float']['output'];
   parent?: Maybe<Document>;
-  parentId: Scalars['String']['output'];
+  parentId?: Maybe<Scalars['String']['output']>;
+  publishedAt?: Maybe<Scalars['DateTime']['output']>;
   runSQLSelection: Scalars['Boolean']['output'];
   runUnexecutedBlocks: Scalars['Boolean']['output'];
   shareLinksWithoutSidebar: Scalars['Boolean']['output'];
   slug: Scalars['String']['output'];
   title: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+  userAppClock: Scalars['JSON']['output'];
+  version: Scalars['Float']['output'];
   workspaceId: Scalars['String']['output'];
 };
 
@@ -207,6 +221,8 @@ export type Mutation = {
   inviteUserToWorkspace: Scalars['Boolean']['output'];
   /** Sign in */
   login: AuthPayload;
+  /** Publish a document */
+  publishDocument: Document;
   /** Unmark a document as a favorite */
   removeFavoriteDocument: Document;
   /** Remove a user from workspace */
@@ -221,6 +237,8 @@ export type Mutation = {
   switchWorkspace: Scalars['Boolean']['output'];
   /** Unfollow User */
   unfollowUser: Profile;
+  /** Unpublish a document */
+  unpublishDocument: Document;
   /** Update document metadata */
   updateDocument: Document;
   /** Update current user */
@@ -317,6 +335,12 @@ export type MutationLoginArgs = {
 };
 
 
+export type MutationPublishDocumentArgs = {
+  documentId: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
+};
+
+
 export type MutationRemoveFavoriteDocumentArgs = {
   input: FavoriteDocumentInput;
 };
@@ -351,6 +375,12 @@ export type MutationSwitchWorkspaceArgs = {
 
 export type MutationUnfollowUserArgs = {
   username: Scalars['String']['input'];
+};
+
+
+export type MutationUnpublishDocumentArgs = {
+  documentId: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
 };
 
 
@@ -553,6 +583,11 @@ export type TutorialState = {
 };
 
 export type UpdateDocumentInput = {
+  orderIndex: Scalars['Float']['input'];
+  parentId?: InputMaybe<Scalars['String']['input']>;
+  runSQLSelection?: InputMaybe<Scalars['Boolean']['input']>;
+  runUnexecutedBlocks?: InputMaybe<Scalars['Boolean']['input']>;
+  shareLinksWithoutSidebar?: InputMaybe<Scalars['Boolean']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -605,6 +640,7 @@ export type Workspace = {
   owner: User;
   ownerId: Scalars['String']['output'];
   plan: WorkspacePlan;
+  secrets: WorkspaceSecrets;
   source?: Maybe<Scalars['String']['output']>;
   useCases: Array<Scalars['String']['output']>;
   useContext?: Maybe<Scalars['String']['output']>;
@@ -635,6 +671,11 @@ export enum WorkspacePlan {
   Pro = 'PRO',
   Trial = 'TRIAL'
 }
+
+export type WorkspaceSecrets = {
+  __typename?: 'WorkspaceSecrets';
+  hasExternalModelApiKey: Scalars['Boolean']['output'];
+};
 
 export type CreateUserMutationVariables = Exact<{
   input: CreateUserInput;
@@ -694,7 +735,7 @@ export type CreateDocumentMutationVariables = Exact<{
 }>;
 
 
-export type CreateDocumentMutation = { __typename?: 'Mutation', createDocument: { __typename?: 'Document', id: string, title: string, slug: string, authorId: string, workspaceId: string, parentId: string, runSQLSelection: boolean, runUnexecutedBlocks: boolean, shareLinksWithoutSidebar: boolean } };
+export type CreateDocumentMutation = { __typename?: 'Mutation', createDocument: { __typename?: 'Document', id: string, title: string, slug: string, icon: string, parentId?: string | null, orderIndex: number, authorId: string, workspaceId: string, createdAt: any, updatedAt: any, deletedAt?: any | null, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, runSQLSelection: boolean, runUnexecutedBlocks: boolean, shareLinksWithoutSidebar: boolean } };
 
 export type UpdateDocumentMutationVariables = Exact<{
   workspaceId: Scalars['String']['input'];
@@ -703,42 +744,50 @@ export type UpdateDocumentMutationVariables = Exact<{
 }>;
 
 
-export type UpdateDocumentMutation = { __typename?: 'Mutation', updateDocument: { __typename?: 'Document', id: string, title: string, slug: string, authorId: string, workspaceId: string } };
+export type UpdateDocumentMutation = { __typename?: 'Mutation', updateDocument: { __typename?: 'Document', id: string, title: string, slug: string, icon: string, parentId?: string | null, orderIndex: number, authorId: string, workspaceId: string, createdAt: any, updatedAt: any, deletedAt?: any | null, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, runSQLSelection: boolean, runUnexecutedBlocks: boolean, shareLinksWithoutSidebar: boolean } };
 
 export type DeleteDocumentMutationVariables = Exact<{
   input: DeleteDocumentInput;
 }>;
 
 
-export type DeleteDocumentMutation = { __typename?: 'Mutation', deleteDocument: { __typename?: 'Document', id: string, title: string, slug: string } };
+export type DeleteDocumentMutation = { __typename?: 'Mutation', deleteDocument: { __typename?: 'Document', id: string, title: string, slug: string, icon: string, parentId?: string | null, orderIndex: number, authorId: string, workspaceId: string, createdAt: any, updatedAt: any, deletedAt?: any | null, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, runSQLSelection: boolean, runUnexecutedBlocks: boolean, shareLinksWithoutSidebar: boolean } };
 
 export type RestoreDocumentMutationVariables = Exact<{
   input: RestoreDocumentInput;
 }>;
 
 
-export type RestoreDocumentMutation = { __typename?: 'Mutation', restoreDocument: { __typename?: 'Document', id: string, title: string, slug: string, authorId: string, workspaceId: string } };
+export type RestoreDocumentMutation = { __typename?: 'Mutation', restoreDocument: { __typename?: 'Document', id: string, title: string, slug: string, icon: string, parentId?: string | null, orderIndex: number, authorId: string, workspaceId: string, createdAt: any, updatedAt: any, deletedAt?: any | null, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, runSQLSelection: boolean, runUnexecutedBlocks: boolean, shareLinksWithoutSidebar: boolean } };
 
 export type DuplicateDocumentMutationVariables = Exact<{
   input: DuplicateDocumentInput;
 }>;
 
 
-export type DuplicateDocumentMutation = { __typename?: 'Mutation', duplicateDocument: { __typename?: 'Document', id: string, title: string, slug: string, authorId: string, workspaceId: string } };
+export type DuplicateDocumentMutation = { __typename?: 'Mutation', duplicateDocument: { __typename?: 'Document', id: string, title: string, slug: string, icon: string, parentId?: string | null, orderIndex: number, authorId: string, workspaceId: string, createdAt: any, updatedAt: any, deletedAt?: any | null, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, runSQLSelection: boolean, runUnexecutedBlocks: boolean, shareLinksWithoutSidebar: boolean } };
+
+export type PublishDocumentMutationVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+  documentId: Scalars['String']['input'];
+}>;
+
+
+export type PublishDocumentMutation = { __typename?: 'Mutation', publishDocument: { __typename?: 'Document', id: string, title: string, slug: string, icon: string, parentId?: string | null, orderIndex: number, authorId: string, workspaceId: string, createdAt: any, updatedAt: any, deletedAt?: any | null, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, runSQLSelection: boolean, runUnexecutedBlocks: boolean, shareLinksWithoutSidebar: boolean } };
 
 export type AddFavoriteDocumentMutationVariables = Exact<{
   input: FavoriteDocumentInput;
 }>;
 
 
-export type AddFavoriteDocumentMutation = { __typename?: 'Mutation', addFavoriteDocument: { __typename?: 'Document', id: string, title: string, slug: string } };
+export type AddFavoriteDocumentMutation = { __typename?: 'Mutation', addFavoriteDocument: { __typename?: 'Document', id: string, title: string, slug: string, icon: string, parentId?: string | null, orderIndex: number, authorId: string, workspaceId: string, createdAt: any, updatedAt: any, deletedAt?: any | null, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, runSQLSelection: boolean, runUnexecutedBlocks: boolean, shareLinksWithoutSidebar: boolean } };
 
 export type RemoveFavoriteDocumentMutationVariables = Exact<{
   input: FavoriteDocumentInput;
 }>;
 
 
-export type RemoveFavoriteDocumentMutation = { __typename?: 'Mutation', removeFavoriteDocument: { __typename?: 'Document', id: string, title: string, slug: string } };
+export type RemoveFavoriteDocumentMutation = { __typename?: 'Mutation', removeFavoriteDocument: { __typename?: 'Document', id: string, title: string, slug: string, icon: string, parentId?: string | null, orderIndex: number, authorId: string, workspaceId: string, createdAt: any, updatedAt: any, deletedAt?: any | null, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, runSQLSelection: boolean, runUnexecutedBlocks: boolean, shareLinksWithoutSidebar: boolean } };
 
 export type RestartEnvironmentMutationVariables = Exact<{
   input: RestartEnvironmentInput;
@@ -838,7 +887,7 @@ export type GetDocumentQueryVariables = Exact<{
 }>;
 
 
-export type GetDocumentQuery = { __typename?: 'Query', getDocument: { __typename?: 'Document', id: string, title: string, slug: string, parentId: string, authorId: string, workspaceId: string, runSQLSelection: boolean, runUnexecutedBlocks: boolean, shareLinksWithoutSidebar: boolean } };
+export type GetDocumentQuery = { __typename?: 'Query', getDocument: { __typename?: 'Document', id: string, title: string, slug: string, icon: string, parentId?: string | null, orderIndex: number, authorId: string, workspaceId: string, createdAt: any, updatedAt: any, deletedAt?: any | null, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, runSQLSelection: boolean, runUnexecutedBlocks: boolean, shareLinksWithoutSidebar: boolean } };
 
 export type GetEnvironmentQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
@@ -891,14 +940,14 @@ export type GetWorkspaceQueryVariables = Exact<{
 }>;
 
 
-export type GetWorkspaceQuery = { __typename?: 'Query', getWorkspace: { __typename?: 'Workspace', id: string, name: string, plan: WorkspacePlan, source?: string | null, useCases: Array<string>, useContext?: string | null, ownerId: string, owner: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null }, users: Array<{ __typename?: 'User', id: string, firstName?: string | null, lastName?: string | null, email?: string | null, avater?: string | null }>, documents: Array<{ __typename?: 'Document', id: string, title: string, slug: string, authorId: string, parentId: string }> } };
+export type GetWorkspaceQuery = { __typename?: 'Query', getWorkspace: { __typename?: 'Workspace', id: string, name: string, plan: WorkspacePlan, source?: string | null, useCases: Array<string>, useContext?: string | null, ownerId: string, owner: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null }, users: Array<{ __typename?: 'User', id: string, firstName?: string | null, lastName?: string | null, email?: string | null, avater?: string | null }>, documents: Array<{ __typename?: 'Document', id: string, title: string, slug: string, authorId: string, parentId?: string | null }> } };
 
 export type GetWorkspaceDocumentsQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
 }>;
 
 
-export type GetWorkspaceDocumentsQuery = { __typename?: 'Query', getWorkspaceDocuments: Array<{ __typename?: 'Document', id: string, title: string, slug: string, authorId: string, workspaceId: string, parentId: string, runSQLSelection: boolean, runUnexecutedBlocks: boolean, shareLinksWithoutSidebar: boolean, children: Array<{ __typename?: 'Document', id: string, title: string, slug: string }> }> };
+export type GetWorkspaceDocumentsQuery = { __typename?: 'Query', getWorkspaceDocuments: Array<{ __typename?: 'Document', id: string, title: string, slug: string, icon: string, parentId?: string | null, orderIndex: number, authorId: string, workspaceId: string, createdAt: any, updatedAt: any, deletedAt?: any | null, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, runSQLSelection: boolean, runUnexecutedBlocks: boolean, shareLinksWithoutSidebar: boolean }> };
 
 
 export const CreateUserDocument = gql`
@@ -1163,9 +1212,23 @@ export const CreateDocumentDocument = gql`
     id
     title
     slug
+    icon
+    parentId
+    orderIndex
     authorId
     workspaceId
-    parentId
+    createdAt
+    updatedAt
+    deletedAt
+    version
+    publishedAt
+    isDataApp
+    isSyncedWithYjs
+    hasDashboard
+    appId
+    clock
+    appClock
+    userAppClock
     runSQLSelection
     runUnexecutedBlocks
     shareLinksWithoutSidebar
@@ -1209,8 +1272,26 @@ export const UpdateDocumentDocument = gql`
     id
     title
     slug
+    icon
+    parentId
+    orderIndex
     authorId
     workspaceId
+    createdAt
+    updatedAt
+    deletedAt
+    version
+    publishedAt
+    isDataApp
+    isSyncedWithYjs
+    hasDashboard
+    appId
+    clock
+    appClock
+    userAppClock
+    runSQLSelection
+    runUnexecutedBlocks
+    shareLinksWithoutSidebar
   }
 }
     `;
@@ -1248,6 +1329,26 @@ export const DeleteDocumentDocument = gql`
     id
     title
     slug
+    icon
+    parentId
+    orderIndex
+    authorId
+    workspaceId
+    createdAt
+    updatedAt
+    deletedAt
+    version
+    publishedAt
+    isDataApp
+    isSyncedWithYjs
+    hasDashboard
+    appId
+    clock
+    appClock
+    userAppClock
+    runSQLSelection
+    runUnexecutedBlocks
+    shareLinksWithoutSidebar
   }
 }
     `;
@@ -1283,8 +1384,26 @@ export const RestoreDocumentDocument = gql`
     id
     title
     slug
+    icon
+    parentId
+    orderIndex
     authorId
     workspaceId
+    createdAt
+    updatedAt
+    deletedAt
+    version
+    publishedAt
+    isDataApp
+    isSyncedWithYjs
+    hasDashboard
+    appId
+    clock
+    appClock
+    userAppClock
+    runSQLSelection
+    runUnexecutedBlocks
+    shareLinksWithoutSidebar
   }
 }
     `;
@@ -1320,8 +1439,26 @@ export const DuplicateDocumentDocument = gql`
     id
     title
     slug
+    icon
+    parentId
+    orderIndex
     authorId
     workspaceId
+    createdAt
+    updatedAt
+    deletedAt
+    version
+    publishedAt
+    isDataApp
+    isSyncedWithYjs
+    hasDashboard
+    appId
+    clock
+    appClock
+    userAppClock
+    runSQLSelection
+    runUnexecutedBlocks
+    shareLinksWithoutSidebar
   }
 }
     `;
@@ -1351,12 +1488,88 @@ export function useDuplicateDocumentMutation(baseOptions?: Apollo.MutationHookOp
 export type DuplicateDocumentMutationHookResult = ReturnType<typeof useDuplicateDocumentMutation>;
 export type DuplicateDocumentMutationResult = Apollo.MutationResult<DuplicateDocumentMutation>;
 export type DuplicateDocumentMutationOptions = Apollo.BaseMutationOptions<DuplicateDocumentMutation, DuplicateDocumentMutationVariables>;
+export const PublishDocumentDocument = gql`
+    mutation PublishDocument($workspaceId: String!, $documentId: String!) {
+  publishDocument(workspaceId: $workspaceId, documentId: $documentId) {
+    id
+    title
+    slug
+    icon
+    parentId
+    orderIndex
+    authorId
+    workspaceId
+    createdAt
+    updatedAt
+    deletedAt
+    version
+    publishedAt
+    isDataApp
+    isSyncedWithYjs
+    hasDashboard
+    appId
+    clock
+    appClock
+    userAppClock
+    runSQLSelection
+    runUnexecutedBlocks
+    shareLinksWithoutSidebar
+  }
+}
+    `;
+export type PublishDocumentMutationFn = Apollo.MutationFunction<PublishDocumentMutation, PublishDocumentMutationVariables>;
+
+/**
+ * __usePublishDocumentMutation__
+ *
+ * To run a mutation, you first call `usePublishDocumentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `usePublishDocumentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [publishDocumentMutation, { data, loading, error }] = usePublishDocumentMutation({
+ *   variables: {
+ *      workspaceId: // value for 'workspaceId'
+ *      documentId: // value for 'documentId'
+ *   },
+ * });
+ */
+export function usePublishDocumentMutation(baseOptions?: Apollo.MutationHookOptions<PublishDocumentMutation, PublishDocumentMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<PublishDocumentMutation, PublishDocumentMutationVariables>(PublishDocumentDocument, options);
+      }
+export type PublishDocumentMutationHookResult = ReturnType<typeof usePublishDocumentMutation>;
+export type PublishDocumentMutationResult = Apollo.MutationResult<PublishDocumentMutation>;
+export type PublishDocumentMutationOptions = Apollo.BaseMutationOptions<PublishDocumentMutation, PublishDocumentMutationVariables>;
 export const AddFavoriteDocumentDocument = gql`
     mutation AddFavoriteDocument($input: FavoriteDocumentInput!) {
   addFavoriteDocument(input: $input) {
     id
     title
     slug
+    icon
+    parentId
+    orderIndex
+    authorId
+    workspaceId
+    createdAt
+    updatedAt
+    deletedAt
+    version
+    publishedAt
+    isDataApp
+    isSyncedWithYjs
+    hasDashboard
+    appId
+    clock
+    appClock
+    userAppClock
+    runSQLSelection
+    runUnexecutedBlocks
+    shareLinksWithoutSidebar
   }
 }
     `;
@@ -1392,6 +1605,26 @@ export const RemoveFavoriteDocumentDocument = gql`
     id
     title
     slug
+    icon
+    parentId
+    orderIndex
+    authorId
+    workspaceId
+    createdAt
+    updatedAt
+    deletedAt
+    version
+    publishedAt
+    isDataApp
+    isSyncedWithYjs
+    hasDashboard
+    appId
+    clock
+    appClock
+    userAppClock
+    runSQLSelection
+    runUnexecutedBlocks
+    shareLinksWithoutSidebar
   }
 }
     `;
@@ -1966,9 +2199,23 @@ export const GetDocumentDocument = gql`
     id
     title
     slug
+    icon
     parentId
+    orderIndex
     authorId
     workspaceId
+    createdAt
+    updatedAt
+    deletedAt
+    version
+    publishedAt
+    isDataApp
+    isSyncedWithYjs
+    hasDashboard
+    appId
+    clock
+    appClock
+    userAppClock
     runSQLSelection
     runUnexecutedBlocks
     shareLinksWithoutSidebar
@@ -2388,17 +2635,26 @@ export const GetWorkspaceDocumentsDocument = gql`
     id
     title
     slug
+    icon
+    parentId
+    orderIndex
     authorId
     workspaceId
-    parentId
+    createdAt
+    updatedAt
+    deletedAt
+    version
+    publishedAt
+    isDataApp
+    isSyncedWithYjs
+    hasDashboard
+    appId
+    clock
+    appClock
+    userAppClock
     runSQLSelection
     runUnexecutedBlocks
     shareLinksWithoutSidebar
-    children {
-      id
-      title
-      slug
-    }
   }
 }
     `;

@@ -71,16 +71,25 @@ query GetWorkspaceDocuments($workspaceId: String!) {
     id
     title
     slug
+    icon
+    parentId
+    orderIndex
     authorId
     workspaceId
-    parentId
+    createdAt
+    updatedAt
+    deletedAt
+    version
+    publishedAt
+    isDataApp
+    isSyncedWithYjs
+    hasDashboard
+    appId
+    clock
+    appClock
+    userAppClock
     runSQLSelection
     runUnexecutedBlocks
     shareLinksWithoutSidebar
-    children {
-      id
-      title
-      slug
-    }
   }
 }
