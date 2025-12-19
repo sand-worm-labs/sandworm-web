@@ -13,27 +13,33 @@ export class CreateDocumentInput {
   @StringFieldOptional()
   title: string;
 
-  @StringFieldOptional()
-  icon?: string;
 
   @UUIDFieldOptional()
   parentId?: string;
-}
-
-@InputType()
-export class DocumentRelationsInput {
-  @UUIDFieldOptional()
-  parentId?: string | null;
 
   @NumberField()
-  orderIndex: number;
+  version: number;
 }
 
 @InputType()
 export class UpdateDocumentInput {
   @StringFieldOptional()
   title?: string;
-  relations?: DocumentRelationsInput;
+
+  @UUIDFieldOptional()
+  parentId?: string | null;
+
+  @NumberField()
+  orderIndex: number;
+
+  @BooleanFieldOptional()
+  runUnexecutedBlocks?: boolean;
+
+  @BooleanFieldOptional()
+  runSQLSelection?: boolean;
+
+  @BooleanFieldOptional()
+  shareLinksWithoutSidebar?: boolean;
 }
 
 @InputType()

@@ -40,6 +40,7 @@ input CreateDocumentInput {
   icon: String
   parentId: String
   title: String
+  version: Float!
 }
 
 """User register request"""
@@ -77,16 +78,30 @@ input DismissTutorialInput {
 }
 
 type Document {
+  appClock: Float!
+  appId: String!
   authorId: String!
   children: [Document!]!
+  clock: Float!
+  createdAt: DateTime!
+  deletedAt: DateTime
+  hasDashboard: Boolean!
+  icon: String!
   id: String!
+  isDataApp: Boolean!
+  isSyncedWithYjs: Boolean!
+  orderIndex: Float!
   parent: Document
-  parentId: String!
+  parentId: String
+  publishedAt: DateTime
   runSQLSelection: Boolean!
   runUnexecutedBlocks: Boolean!
   shareLinksWithoutSidebar: Boolean!
   slug: String!
   title: String!
+  updatedAt: DateTime!
+  userAppClock: JSON!
+  version: Float!
   workspaceId: String!
 }
 
@@ -362,6 +377,11 @@ type TutorialState {
 }
 
 input UpdateDocumentInput {
+  orderIndex: Float!
+  parentId: String
+  runSQLSelection: Boolean
+  runUnexecutedBlocks: Boolean
+  shareLinksWithoutSidebar: Boolean
   title: String
 }
 
