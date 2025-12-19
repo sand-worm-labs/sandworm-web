@@ -132,7 +132,7 @@ export default function WorkspaceSettings() {
                   : "max-h-0 opacity-0 mb-0"
               )}
             >
-              <div className="p-4 border border-[#E9ECEF] dark:border-gray-700 rounded-xl dark:bg-gray-900">
+              <div className="p-4 border border-[#E9ECEF] dark:border-[#262A30] rounded-xl dark:bg-[0C1015]">
                 <h4 className="text-sm font-medium mb-3 dark:text-white">
                   Your Teams
                 </h4>
@@ -146,17 +146,27 @@ export default function WorkspaceSettings() {
                         isSwitching || workspace.id === currentWorkspace?.id
                       }
                       className={clsx(
-                        "w-full text-left px-3 py-2 rounded-md text-sm transition-colors",
+                        "w-full text-left px-3 py-2 rounded-xl text-sm transition-colors cursor-pointer flex gap-5 items-center pl-5",
                         workspace.id === currentWorkspace?.id
-                          ? "bg-[#C7665C20] dark:bg-blue-900 text-[#C7665C] dark:text-white"
-                          : "hover:bg-[#C7665C30] dark:hover:bg-gray-800"
+                          ? "bg-[#C7665C20] dark:bg-[#121417] text-[#C7665C] dark:text-white"
+                          : "hover:bg-[#C7665C30] dark:hover:bg-[#181C21]"
                       )}
                     >
-                      <div className="font-medium">{workspace.name}</div>
-                      <div className="text-xs text-gray-500">
-                        {workspace.ownerId === session.user?.id
-                          ? "Owner"
-                          : "Member"}
+                      <div
+                        className={clsx(
+                          "h-3 w-3 rounded-full transition-all",
+                          workspace.id === currentWorkspace?.id
+                            ? "bg-[#C7665C] ring-[6px] ring-[#C7665C30] border-[#C7665C] border"
+                            : "bg-gray-400/60"
+                        )}
+                      />
+                      <div>
+                        <div className="font-medium">{workspace.name}</div>
+                        <div className="text-xs text-gray-500">
+                          {workspace.ownerId === session.user?.id
+                            ? "Owner"
+                            : "Member"}
+                        </div>
                       </div>
                     </button>
                   ))}
@@ -336,7 +346,7 @@ export default function WorkspaceSettings() {
               <div className="flex items-center justify-between sm:gap-4 sm:py-6">
                 <div className="flex flex-col gap-y-2 justify-left">
                   <label className="block text-md font-medium leading-6 dark:text-white sm:pt-1.5">
-                    Custom OpenAI API Key
+                    Custom AI API Key
                   </label>
                   <span className="text-xs text-gray-400">
                     Use your own API key for this team workspace.

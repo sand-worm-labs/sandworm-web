@@ -239,6 +239,7 @@ export function TooltipV2<T extends Element>(props: TooltipV2Props<T>) {
         hovering &&
         createPortal(
           <Transition
+            show={props.active && hovering}
             enter="transition ease-out duration-100"
             enterFrom="transform opacity-0 scale-95"
             enterTo="transform opacity-100 scale-100"

@@ -58,7 +58,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
             <th className="text-left p-4 text-xs font-medium text-[#6C757D] dark:text-[#868E96] min-w-[100px]">
               Reviews
             </th>
-            <th className="w-12 p-4"></th>
+            <th className="w-12 p-4" />
           </tr>
         </thead>
         <tbody>
