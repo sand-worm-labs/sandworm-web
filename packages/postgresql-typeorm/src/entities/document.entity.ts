@@ -67,6 +67,10 @@ export class DocumentEntity extends AbstractEntity {
   @Column({ default: true })
   shareLinksWithoutSidebar!: boolean;
 
+  @Column({ type: "timestamp", nullable: true })
+  publishedAt!: Date | null;
+
+
   @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.documents, {
     onDelete: "CASCADE",
   })
