@@ -68,12 +68,12 @@ export class DocumentService {
       throw new ValidationException(ErrorCode.E003);
     }
 
-    document.title = input.title ?? '';
-
-    if (input.relations) {
-      document.parentId = input.relations.parentId ?? null;
-      document.orderIndex = input.relations.orderIndex;
-    }
+    document.title = input.title ?? document.title;
+    document.parentId = input.parentId ?? document.parentId;
+    document.orderIndex = input.orderIndex ?? document.orderIndex;
+    document.runUnexecutedBlocks = input.runUnexecutedBlocks ?? document.runUnexecutedBlocks ?? false;
+    document.runSQLSelection = input.runSQLSelection ?? document.runSQLSelection ?? false;
+    document.shareLinksWithoutSidebar = input.shareLinksWithoutSidebar ?? document.shareLinksWithoutSidebar ?? false;
 
     await this.documentRepository.save(document);
     return Document.fromEntity(document);
@@ -232,4 +232,42 @@ export class DocumentService {
 
     return Document.fromEntities(documents);
   }
+
+  async publishDocument(
+    documentId: string,
+    workspaceId: string,
+  ): Promise<Document> {
+    const document = await this.documentRepository.findOne({
+      where: { id: documentId, workspaceId },
+    });
+
+    if (!document) {
+      throw new ValidationException(ErrorCode.E003);
+    }
+
+    document.publishedAt = new Date();
+
+    await this.documentRepository.save(document);
+    return Document.fromEntity(document);
+  }
+
+  async unpublishDocument(
+    documentId: string,
+    workspaceId: string,
+  ): Promise<Document> {
+    const document = await this.documentRepository.findOne({
+      where: { id: documentId, workspaceId },
+    });
+
+    if (!document) {
+      throw new ValidationException(ErrorCode.E003);
+    }
+
+
+    document.publishedAt = null;
+
+    await this.documentRepository.save(document);
+    return Document.fromEntity(document);
+  }
+
 }
