@@ -1,6 +1,5 @@
 import {
   Args,
-  Int,
   Mutation,
   Parent,
   Query,
@@ -8,7 +7,6 @@ import {
   Resolver,
 } from '@nestjs/graphql';
 import { CurrentUser } from '@sandworm/graphql';
-
 import { DocumentService } from './document.service';
 import { Document } from './model/document.model';
 import {
@@ -19,7 +17,6 @@ import {
   DuplicateDocumentInput,
   FavoriteDocumentInput,
 } from './dto/document.dto';
-import GraphQLJSON from 'graphql-type-json';
 
 @Resolver(() => Document)
 export class DocumentResolver {
@@ -123,6 +120,27 @@ export class DocumentResolver {
     return this.documentService.removeFavoriteDocument(userId, input);
   }
 
+  @Mutation(() => Document, {
+    name: 'publishDocument',
+    description: 'Publish a document',
+  })
+  async publishDocument(
+    @Args('workspaceId') workspaceId: string,
+    @Args('documentId') documentId: string,
+  ): Promise<Document> {
+    return this.documentService.publishDocument(documentId, workspaceId);
+  }
+
+  @Mutation(() => Document, {
+    name: 'unpublishDocument',
+    description: 'Unpublish a document',
+  })
+  async unpublishDocument(
+    @Args('workspaceId') workspaceId: string,
+    @Args('documentId') documentId: string,
+  ): Promise<Document> {
+    return this.documentService.unpublishDocument(documentId, workspaceId);
+  }
 
   @ResolveField(() => [Document], {
     name: 'children',
@@ -139,5 +157,4 @@ export class DocumentResolver {
     if (!doc.parentId) return null;
     return this.documentService.getDocument(doc.parentId, doc.workspaceId);
   }
-
 }

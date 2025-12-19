@@ -232,4 +232,42 @@ export class DocumentService {
 
     return Document.fromEntities(documents);
   }
+
+  async publishDocument(
+    documentId: string,
+    workspaceId: string,
+  ): Promise<Document> {
+    const document = await this.documentRepository.findOne({
+      where: { id: documentId, workspaceId },
+    });
+
+    if (!document) {
+      throw new ValidationException(ErrorCode.E003);
+    }
+
+    document.publishedAt = new Date();
+
+    await this.documentRepository.save(document);
+    return Document.fromEntity(document);
+  }
+
+  async unpublishDocument(
+    documentId: string,
+    workspaceId: string,
+  ): Promise<Document> {
+    const document = await this.documentRepository.findOne({
+      where: { id: documentId, workspaceId },
+    });
+
+    if (!document) {
+      throw new ValidationException(ErrorCode.E003);
+    }
+
+
+    document.publishedAt = null;
+
+    await this.documentRepository.save(document);
+    return Document.fromEntity(document);
+  }
+
 }
