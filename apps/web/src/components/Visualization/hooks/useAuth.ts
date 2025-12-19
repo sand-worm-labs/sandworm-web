@@ -261,7 +261,7 @@ export const useLogin = (): UseLogin => {
 
 export type SessionUser = ApiUser & {
   userHash: string;
-  role: Record<string, UserWorkspaceRole>;
+  role?: Array<Record<string, UserWorkspaceRole>>;
   picture?: string | null;
   lastVisitedWorkspaceId?: string | null;
 };

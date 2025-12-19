@@ -7,11 +7,13 @@ import { Pencil } from "lucide-react";
 
 import { useSession } from "@/components/Visualization/hooks/useAuth";
 import { useCurrentUser } from "@/components/Visualization/hooks/useCurrentUser";
+import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
 
 export default function ProfileSettings() {
   const session = useSession({ redirectToLogin: true });
   const { updateUser, updateUserSettings, loading, error, settings } =
     useCurrentUser();
+  const workspace = useStringQuery("workspace");
 
   const [formData, setFormData] = useState({
     username: "",
@@ -257,8 +259,8 @@ export default function ProfileSettings() {
 
             {session.user?.username && (
               <Link
-                href={`/@${session.user.username}`}
-                className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white py-2.5 px-5 rounded-md border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                href={`/workspace/${workspace}/profile/me`}
+                className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white py-2 px-6 rounded-xl border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
               >
                 View Public Profile
               </Link>

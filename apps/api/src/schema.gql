@@ -37,7 +37,6 @@ input CreateCommentInput {
 }
 
 input CreateDocumentInput {
-  icon: String
   parentId: String
   title: String
   version: Float!
@@ -228,6 +227,9 @@ type Mutation {
   """Sign in"""
   login(input: LoginInput!): AuthPayload!
 
+  """Publish a document"""
+  publishDocument(documentId: String!, workspaceId: String!): Document!
+
   """Unmark a document as a favorite"""
   removeFavoriteDocument(input: FavoriteDocumentInput!): Document!
 
@@ -251,6 +253,9 @@ type Mutation {
     """Username of the profile"""
     username: String!
   ): Profile!
+
+  """Unpublish a document"""
+  unpublishDocument(documentId: String!, workspaceId: String!): Document!
 
   """Update document metadata"""
   updateDocument(documentId: String!, input: UpdateDocumentInput!, workspaceId: String!): Document!

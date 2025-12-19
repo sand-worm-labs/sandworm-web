@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Filter, Settings, Grid3x3, List, X, Check } from "lucide-react";
+import { Settings, Grid3x3, List, X, Check } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,7 +40,7 @@ const ProjectControl: React.FC<ProjectControlProps> = ({
 }) => {
   const [activeView, setActiveView] = useState<ViewType>("grid");
   const [selectedFilters, setSelectedFilters] = useState<FilterOption[]>([]);
-  const [selectedSort, setSelectedSort] = useState<SortOption>("Last Modified");
+  const [, setSelectedSort] = useState<SortOption>("Last Modified");
 
   const filterOptions: FilterOption[] = [
     "All Projects",
