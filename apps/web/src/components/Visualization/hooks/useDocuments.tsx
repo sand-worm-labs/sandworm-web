@@ -23,6 +23,7 @@ import {
   useRestoreDocumentMutation,
   useUpdateDocumentMutation,
   usePublishDocumentMutation,
+  useGetWorkspaceDocumentsQuery,
 } from "@/generated/graphql";
 
 function upsertDocumentInMemory(
@@ -335,11 +336,6 @@ export function DocumentsProvider(props: Props) {
 export function useDocuments(workspaceId: string): UseDocuments {
   const [state, setState] = useContext(Context);
   const [_, { unfavoriteDocument }] = useFavorites(workspaceId);
-  const { documents, loading } = useMemo(
-    (): StateValue =>
-      state.get(workspaceId) ?? { loading: true, documents: List() },
-    [state, workspaceId]
-  );
 
   const [createDocumentMutation] = useCreateDocumentMutation();
   const [deleteDocumentMutation] = useDeleteDocumentMutation();
@@ -347,6 +343,49 @@ export function useDocuments(workspaceId: string): UseDocuments {
   const [restoreDocumentMutation] = useRestoreDocumentMutation();
   const [updateDocumentMutation] = useUpdateDocumentMutation();
   const [publishDocumentMutation] = usePublishDocumentMutation();
+
+  const {
+    data: queryData,
+    loading: queryLoading,
+    error: queryError,
+  } = useGetWorkspaceDocumentsQuery({
+    variables: { workspaceId },
+    skip: !workspaceId,
+  });
+
+  useEffect(() => {
+    if (queryData?.getWorkspaceDocuments && !queryLoading) {
+      setState(s => {
+        const current = s.get(workspaceId);
+
+        // Initialize with GraphQL data if we don't have data yet
+        if (!current || current.loading) {
+          return s.set(workspaceId, {
+            loading: false,
+            documents: List(queryData.getWorkspaceDocuments as ApiDocument[]),
+          });
+        }
+
+        return s;
+      });
+    }
+  }, [queryData, queryLoading, workspaceId, setState]);
+
+  const { documents, loading } = useMemo((): StateValue => {
+    const currentState = state.get(workspaceId);
+
+    // If we have GraphQL data, use it even if websocket hasn't loaded
+    if (queryData?.getWorkspaceDocuments && !queryLoading) {
+      return {
+        loading: false,
+        documents:
+          currentState?.documents ??
+          List(queryData.getWorkspaceDocuments as ApiDocument[]),
+      };
+    }
+
+    return currentState ?? { loading: true, documents: List() };
+  }, [state, workspaceId, queryData, queryLoading]);
 
   const createDocument = useCallback(
     async (data: {
@@ -359,6 +398,7 @@ export function useDocuments(workspaceId: string): UseDocuments {
       }
 
       const id = data?.id ?? uuidv4();
+
       const body = {
         id,
         parentId: data?.parentId ?? null,
@@ -368,7 +408,7 @@ export function useDocuments(workspaceId: string): UseDocuments {
 
       setState(s => {
         const { loading, documents } = s.get(workspaceId) ?? {
-          loading: true,
+          loading: false,
           documents: List(),
         };
 
@@ -383,7 +423,7 @@ export function useDocuments(workspaceId: string): UseDocuments {
           variables: {
             workspaceId,
             input: {
-              title: "",
+              title: "Untitled",
               parentId: body.parentId,
               version: body.version,
             },

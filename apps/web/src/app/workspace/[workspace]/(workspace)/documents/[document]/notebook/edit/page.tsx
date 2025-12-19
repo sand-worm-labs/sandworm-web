@@ -6,8 +6,9 @@ import Head from "next/head";
 
 import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
 import PrivateDocumentPage from "@/components/Visualization/blocks/PrivateDocumentPage";
-import useDocument from "@/components/Visualization/hooks/useDocumentLocal";
+
 import { useSession } from "@/components/Visualization/hooks/useAuth";
+import useDocument from "@/components/Visualization/hooks/useDocument";
 
 type UserWorkspaceRole = "editor" | "viewer" | "admin";
 

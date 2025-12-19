@@ -71,7 +71,7 @@ query GetWorkspaceDocuments($workspaceId: String!) {
     id
     title
     slug
-    icon
+
     parentId
     orderIndex
     authorId

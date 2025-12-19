@@ -8,16 +8,16 @@ import {
   YjsDocumentEntity,
 } from '@sandworm/postgresql-typeorm';
 import { Not, Repository } from 'typeorm';
-import { Document } from './model/document.model';
+import { Doc, encodeStateAsUpdate } from 'yjs';
 import {
+  CreateDocumentInput,
   DeleteDocumentInput,
   DuplicateDocumentInput,
   FavoriteDocumentInput,
   RestoreDocumentInput,
   UpdateDocumentInput,
-  CreateDocumentInput,
 } from './dto/document.dto';
-import { Doc, encodeStateAsUpdate } from 'yjs';
+import { Document } from './model/document.model';
 
 @Injectable()
 export class DocumentService {
@@ -30,7 +30,7 @@ export class DocumentService {
     private readonly favoriteRepository: Repository<FavoriteEntity>,
     @InjectRepository(YjsDocumentEntity)
     private readonly yjsDocumentRepository: Repository<YjsDocumentEntity>,
-  ) { }
+  ) {}
 
   async getDocument(
     documentId: string,
@@ -71,9 +71,14 @@ export class DocumentService {
     document.title = input.title ?? document.title;
     document.parentId = input.parentId ?? document.parentId;
     document.orderIndex = input.orderIndex ?? document.orderIndex;
-    document.runUnexecutedBlocks = input.runUnexecutedBlocks ?? document.runUnexecutedBlocks ?? false;
-    document.runSQLSelection = input.runSQLSelection ?? document.runSQLSelection ?? false;
-    document.shareLinksWithoutSidebar = input.shareLinksWithoutSidebar ?? document.shareLinksWithoutSidebar ?? false;
+    document.runUnexecutedBlocks =
+      input.runUnexecutedBlocks ?? document.runUnexecutedBlocks ?? false;
+    document.runSQLSelection =
+      input.runSQLSelection ?? document.runSQLSelection ?? false;
+    document.shareLinksWithoutSidebar =
+      input.shareLinksWithoutSidebar ??
+      document.shareLinksWithoutSidebar ??
+      false;
 
     await this.documentRepository.save(document);
     return Document.fromEntity(document);
@@ -151,24 +156,26 @@ export class DocumentService {
   ): Promise<Document> {
     const yDoc = new Doc();
     const initialState = encodeStateAsUpdate(yDoc);
+
     const document = this.documentRepository.create({
       ...input,
       workspaceId,
       authorId: userId,
     });
 
-    const yjsDocument = this.yjsDocumentRepository.create({
-      documentId: document.id,
-      state: Buffer.from(initialState),
-      clock: 0,
-      clockUpdatedAt: new Date(),
-    });
-
-    document.yjsDocuments = [yjsDocument];
     try {
       await this.documentRepository.save(document);
+      const yjsDocument = this.yjsDocumentRepository.create({
+        documentId: document.id,
+        state: Buffer.from(initialState),
+        clock: 0,
+        clockUpdatedAt: new Date(),
+      });
+
       await this.yjsDocumentRepository.save(yjsDocument);
+      document.yjsDocuments = [yjsDocument];
     } catch (err) {
+      console.log(err);
       throw new ValidationException(ErrorCode.E006);
     }
 
@@ -263,11 +270,9 @@ export class DocumentService {
       throw new ValidationException(ErrorCode.E003);
     }
 
-
     document.publishedAt = null;
 
     await this.documentRepository.save(document);
     return Document.fromEntity(document);
   }
-
 }

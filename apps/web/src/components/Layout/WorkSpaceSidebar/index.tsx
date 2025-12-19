@@ -12,9 +12,11 @@ import type { MouseEventHandler } from "react";
 import { AccountDropdown } from "@/components/AccountDropdown";
 import DocumentTree from "@/components/Visualization/blocks/DocumentsTree";
 import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
-import { useDocumentsLocal as useDocuments } from "@/components/Visualization/hooks/useDocumentsLocal";
+
 import { SandwormLogo } from "@/components/Assets";
 import { SidebarIcon } from "@/components/Assets/SidebarIcon";
+import { useDocuments } from "@/components/Visualization/hooks/useDocuments";
+import { useSession } from "@/components/Visualization/hooks/useAuth";
 
 interface NavItem {
   name: string;
@@ -30,19 +32,8 @@ export const WorkspaceSidebar = () => {
   const documentId = useStringQuery("document");
   const favoriteDocument: any = [];
   const unfavoriteDocument: any = [];
-
-  const mockUser = {
-    id: "4a6e71c4-2c06-460b-bb29-f337bf64e0bc",
-    email: "dqzxu2gbs@mozmail.com",
-    name: "Si Cy",
-    picture: null,
-    lastVisitedWorkspaceId: "405498a2-f3cb-4307-bd1e-4daf5b3a1dbb",
-    createdAt: "2025-10-21T14:03:41.471Z",
-    updatedAt: "2025-11-28T04:59:50.952Z",
-    roles: {
-      "405498a2-f3cb-4307-bd1e-4daf5b3a1dbb": "admin",
-    },
-  };
+  const session = useSession({ redirectToLogin: true });
+  const user = session?.user;
 
   const mainNav: NavItem[] = [
     { name: "Home", href: `/workspace/${workspaceId}`, icon: Home },
@@ -96,12 +87,19 @@ export const WorkspaceSidebar = () => {
 
   const onCreateDocument = useCallback(
     async (parentId: string | null) => {
+      console.log(documentsState.loading, "loading state");
       if (documentsState.loading) {
         return;
       }
 
       const id = uuidv4();
       try {
+        console.log(
+          "Creating document with id:",
+          id,
+          "and parentId:",
+          parentId
+        );
         await createDocument({ id, parentId, version: 2 });
         router.push(`/workspace/${workspaceId}/documents/${id}`);
       } catch (err) {
@@ -253,7 +251,7 @@ export const WorkspaceSidebar = () => {
 
           {!collapsed && (
             <ul>
-              {mockUser.roles[workspaceId] !== "viewer" && (
+              {user?.role?.[workspaceId] !== "viewer" && (
                 <button
                   type="button"
                   id="create-workspace-doc"
@@ -274,7 +272,7 @@ export const WorkspaceSidebar = () => {
                 onFavorite={onFavoriteDocument}
                 onUnfavorite={onUnfavoriteDocument}
                 onSetIcon={onSetIcon}
-                role={mockUser.roles[workspaceId] ?? "viewer"}
+                role={user?.role?.[workspaceId] ?? "viewer"}
                 onCreate={onCreateDocument}
                 onUpdateParent={onUpdateDocumentParent}
               />

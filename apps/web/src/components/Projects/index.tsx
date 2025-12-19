@@ -15,11 +15,11 @@ import { PiPlus } from "react-icons/pi";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 
-import { useDocumentsLocal as useDocuments } from "@/components/Visualization/hooks/useDocumentsLocal";
 import { useFavorites } from "@/components/Visualization/hooks/useFavorites";
 
 import ProjectControl from "./ProjectControls";
 import { ProjectsTable } from "./ProjectTable";
+import { useDocuments } from "../Visualization/hooks/useDocuments";
 
 interface Project {
   id: string;
