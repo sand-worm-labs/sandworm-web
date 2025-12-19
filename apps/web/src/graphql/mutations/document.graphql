@@ -3,7 +3,6 @@ mutation CreateDocument($workspaceId: String!, $input: CreateDocumentInput!) {
     id
     title
     slug
-    icon
     parentId
     orderIndex
     authorId
@@ -39,7 +38,6 @@ mutation UpdateDocument(
     id
     title
     slug
-    icon
     parentId
     orderIndex
     authorId
@@ -67,7 +65,7 @@ mutation DeleteDocument($input: DeleteDocumentInput!) {
     id
     title
     slug
-    icon
+
     parentId
     orderIndex
     authorId
@@ -95,7 +93,7 @@ mutation RestoreDocument($input: RestoreDocumentInput!) {
     id
     title
     slug
-    icon
+
     parentId
     orderIndex
     authorId
@@ -123,7 +121,7 @@ mutation DuplicateDocument($input: DuplicateDocumentInput!) {
     id
     title
     slug
-    icon
+
     parentId
     orderIndex
     authorId
@@ -151,7 +149,6 @@ mutation PublishDocument($workspaceId: String!, $documentId: String!) {
     id
     title
     slug
-    icon
     parentId
     orderIndex
     authorId
@@ -179,7 +176,7 @@ mutation AddFavoriteDocument($input: FavoriteDocumentInput!) {
     id
     title
     slug
-    icon
+
     parentId
     orderIndex
     authorId
@@ -207,7 +204,7 @@ mutation RemoveFavoriteDocument($input: FavoriteDocumentInput!) {
     id
     title
     slug
-    icon
+
     parentId
     orderIndex
     authorId

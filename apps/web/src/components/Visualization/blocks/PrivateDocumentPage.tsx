@@ -20,7 +20,6 @@ import { NEXT_PUBLIC_PUBLIC_URL } from "../utils/env";
 import type { SessionUser } from "../hooks/useAuth";
 import Layout from "../Layout";
 import { useYDoc } from "../hooks/useYDocs";
-import useDocument from "../hooks/useDocumentLocal";
 
 import ShareDropdown from "./ShareDropdown";
 import Comments from "./Comments";
@@ -36,6 +35,7 @@ import ReusableComponents from "./ReusableComponents";
 import PageSettingsPanel from "./PageSettingsPanel";
 import { Tooltip } from "./ToolTips";
 import { ContentSkeleton, TitleSkeleton } from "./ContentSkeleton";
+import useDocument from "../hooks/useDocument";
 
 // this is needed because this component only works with the browser
 const V2Editor = dynamic(() => import("@/components/Editor"), {

@@ -37,6 +37,7 @@ input CreateCommentInput {
 }
 
 input CreateDocumentInput {
+  orderIndex: Float! = 0
   parentId: String
   title: String
   version: Float!

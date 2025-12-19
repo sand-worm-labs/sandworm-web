@@ -1,11 +1,10 @@
 import { InputType } from '@nestjs/graphql';
 import {
-  StringFieldOptional,
+  BooleanFieldOptional,
   NumberField,
-  NumberFieldOptional,
+  StringFieldOptional,
   UUIDField,
   UUIDFieldOptional,
-  BooleanFieldOptional,
 } from '@sandworm/graphql';
 
 @InputType()
@@ -13,12 +12,14 @@ export class CreateDocumentInput {
   @StringFieldOptional()
   title: string;
 
-
   @UUIDFieldOptional()
   parentId?: string;
 
   @NumberField()
   version: number;
+
+  @NumberField({ defaultValue: 0 })
+  orderIndex: number;
 }
 
 @InputType()
