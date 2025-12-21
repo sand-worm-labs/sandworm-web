@@ -388,35 +388,10 @@ export function useDocuments(workspaceId: string): UseDocuments {
   }, [state, workspaceId, queryData, queryLoading]);
 
   const createDocument = useCallback(
-    async (data: {
-      id?: string;
-      parentId?: string | null;
-      version: number;
-    }) => {
+    async (data: { parentId?: string | null; version: number }) => {
       if (loading) {
         throw new Error("Cannot create document while loading");
       }
-
-      const id = data?.id ?? uuidv4();
-
-      const body = {
-        id,
-        parentId: data?.parentId ?? null,
-        version: data.version,
-      };
-      const previousStateValue = state.get(workspaceId);
-
-      setState(s => {
-        const { loading, documents } = s.get(workspaceId) ?? {
-          loading: false,
-          documents: List(),
-        };
-
-        return s.set(workspaceId, {
-          loading,
-          documents: upsertDocumentInMemory(documents, workspaceId, body),
-        });
-      });
 
       try {
         const result = await createDocumentMutation({
@@ -424,8 +399,8 @@ export function useDocuments(workspaceId: string): UseDocuments {
             workspaceId,
             input: {
               title: "Untitled",
-              parentId: body.parentId,
-              version: body.version,
+              parentId: data.parentId ?? null,
+              version: data.version,
             },
           },
         });
@@ -434,18 +409,27 @@ export function useDocuments(workspaceId: string): UseDocuments {
           throw new Error("Failed to create document");
         }
 
-        return result.data.createDocument as Document;
+        const newDoc = result.data.createDocument as ApiDocument;
+
+        setState(s => {
+          const { loading, documents } = s.get(workspaceId) ?? {
+            loading: false,
+            documents: List(),
+          };
+
+          return s.set(workspaceId, {
+            loading,
+            documents: documents.push(newDoc),
+          });
+        });
+
+        return newDoc as Document;
       } catch (e) {
         alert("Something went wrong");
-        if (previousStateValue) {
-          setState(s => s.set(workspaceId, previousStateValue));
-        } else {
-          setState(s => s.delete(workspaceId));
-        }
         throw e;
       }
     },
-    [documents, workspaceId, loading, setState, state, createDocumentMutation]
+    [loading, workspaceId, setState, createDocumentMutation]
   );
 
   const deleteDocument = useCallback(

@@ -87,21 +87,11 @@ export const WorkspaceSidebar = () => {
 
   const onCreateDocument = useCallback(
     async (parentId: string | null) => {
-      console.log(documentsState.loading, "loading state");
-      if (documentsState.loading) {
-        return;
-      }
+      if (documentsState.loading) return;
 
-      const id = uuidv4();
       try {
-        console.log(
-          "Creating document with id:",
-          id,
-          "and parentId:",
-          parentId
-        );
-        await createDocument({ id, parentId, version: 2 });
-        router.push(`/workspace/${workspaceId}/documents/${id}`);
+        const doc = await createDocument({ parentId, version: 2 });
+        router.push(`/workspace/${workspaceId}/documents/${doc.id}`);
       } catch (err) {
         console.error(err);
       }
