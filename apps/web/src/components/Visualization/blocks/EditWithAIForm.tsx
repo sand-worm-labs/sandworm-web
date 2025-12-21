@@ -104,7 +104,7 @@ function EditWithAIForm(props: Props) {
             ? "bg-gray-300 border-gray-400"
             : "bg-primary-50 border-primary-400 focus-within:bg-primary-100 focus-within:border-primary-500",
           props.hasOutput ? "" : "rounded-b-md",
-          "w-full h-full mt-[-1px] border-t flex items-center px-3 py-1 gap-x-2"
+          "w-full h-full mt-[-1px]  flex items-center px-3 py-1 gap-x-2"
         )}
       >
         <button
@@ -119,7 +119,7 @@ function EditWithAIForm(props: Props) {
             ref={inputRef}
             disabled={props.disabled}
             defaultValue={props.value.toString()}
-            className="h-full w-full border-0 text-xs font-syne bg-transparent focus:ring-0 px-0  placeholder-gray-400"
+            className="h-full w-full border-0 text-xs font-syne bg-transparent px-0  placeholder-gray-400 outline-primary border-primary ring-primary"
             placeholder="My code does X. It must do Y instead."
             onChange={onChange}
             onKeyDown={onKeyDown}
@@ -129,15 +129,15 @@ function EditWithAIForm(props: Props) {
             disabled={props.disabled}
             className={clsx(
               props.loading || props.disabled
-                ? "bg-gray-200 hover:bg-gray-300 border-gray-400 cursor-not-allowed"
+                ? "bg-gray-200 hover:bg-gray-300 cursor-not-allowed"
                 : "bg-[#C7665C] hover:bg-primary-300 border-primary-300",
-              "p-1.5 rounded-sm text-primary-600 border"
+              "p-1.5 rounded-sm text-primary-600 "
             )}
           >
             {props.loading ? (
               <Spin />
             ) : (
-              <SparklesIcon className="h-3 w-3 text-gray-500" />
+              <SparklesIcon className="h-3 w-3 text-white" />
             )}
           </button>
         </div>

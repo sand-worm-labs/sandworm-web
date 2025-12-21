@@ -8,6 +8,8 @@ import { format } from "sql-formatter";
 import type { editor } from "monaco-editor";
 
 import { keyCombo } from "@/lib/utils";
+import EditWithAIForm from "@/components/Visualization/blocks/EditWithAIForm";
+import * as Y from "yjs";
 
 type ExecutionType = "rpc" | "indexer";
 
@@ -32,6 +34,8 @@ export const QueryCodeEditor = ({
 }: QueryCodeEditorProps) => {
   const [, setValue] = useState(initialValue);
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+  const defaultYText = new Y.Text();
+  defaultYText.insert(0, "");
 
   const executeQuery = async () => {
     if (!editorRef.current) return;
@@ -197,6 +201,17 @@ export const QueryCodeEditor = ({
 
   return (
     <div className=" rounded-xl overflow-auto relative border-b  mb-20">
+      <div className="absolute bottom-0 left-0 w-full z-10">
+        <EditWithAIForm
+          loading={false}
+          disabled={false}
+          onSubmit={() => {}}
+          onClose={() => {}}
+          value={defaultYText}
+          hasOutput={false}
+        />
+      </div>
+
       <Editor
         height={height}
         defaultLanguage="sql"
