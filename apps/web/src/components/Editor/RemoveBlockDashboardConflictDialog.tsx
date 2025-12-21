@@ -2,11 +2,7 @@ import type * as Y from "yjs";
 import { useCallback, useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import * as R from "ramda";
-import {
-  ExclamationTriangleIcon,
-  InformationCircleIcon,
-  Squares2X2Icon,
-} from "@heroicons/react/24/outline";
+import { Squares2X2Icon } from "@heroicons/react/24/outline";
 import type { RemoveBlockGroupDashboardConflictResult } from "@sandworm/editor";
 import { removeBlockGroup } from "@sandworm/editor";
 

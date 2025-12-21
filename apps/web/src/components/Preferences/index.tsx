@@ -246,8 +246,8 @@ const Preferences: React.FC = () => {
     },
   ];
 
-  const handleThemeChange = (theme: Theme) => {
-    setTheme(theme);
+  const handleThemeChange = (newTheme: Theme) => {
+    setTheme(newTheme);
   };
 
   return (
@@ -304,12 +304,12 @@ const Preferences: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {editorThemes.map(theme => (
+            {editorThemes.map(editorThemeOption => (
               <EditorThemeCard
-                key={theme.id}
-                theme={theme}
-                selected={editorTheme === theme.id}
-                onClick={() => setEditorTheme(theme.id)}
+                key={editorThemeOption.id}
+                theme={editorThemeOption}
+                selected={editorTheme === editorThemeOption.id}
+                onClick={() => setEditorTheme(editorThemeOption.id)}
               />
             ))}
           </div>

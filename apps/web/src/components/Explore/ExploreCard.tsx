@@ -15,7 +15,6 @@ type ViewMode = "compact" | "detailed";
 interface ExploreCardProps {
   query: Query;
   viewMode: ViewMode;
-  liked: boolean;
 }
 
 export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
