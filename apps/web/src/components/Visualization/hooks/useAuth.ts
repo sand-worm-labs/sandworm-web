@@ -247,6 +247,7 @@ export const useLogin = (): UseLogin => {
           throw new Error(`Unexpected status ${res.status}`);
         })
         .catch(error => {
+          console.log(error);
           setState(s => ({ ...s, loading: false, error: "network-error" }));
         });
     },
@@ -306,7 +307,12 @@ export const useSession = ({
       user: data?.currentUser?.user
         ? {
             ...data.currentUser.user,
-            role: storedRoles || data.currentUser.user.role || {},
+            role: storedRoles || {},
+            name:
+              data.currentUser.user.fullName ||
+              `${data.currentUser.user.firstName || ""} ${data.currentUser.user.lastName || ""}`.trim() ||
+              data.currentUser.user.username ||
+              "Unknown User",
           }
         : null,
       loading,
