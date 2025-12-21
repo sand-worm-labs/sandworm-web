@@ -5,10 +5,10 @@ import { useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
 
 import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
+import { useDocuments } from "../Visualization/hooks/useDocuments";
 
 import { MultimodalInput } from "./multimodal-input";
 import { ExamplePrompts } from "./example-prompts";
-import { useDocuments } from "../Visualization/hooks/useDocuments";
 
 type Attachment = {
   url: string;

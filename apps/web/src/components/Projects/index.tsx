@@ -17,9 +17,10 @@ import Link from "next/link";
 
 import { useFavorites } from "@/components/Visualization/hooks/useFavorites";
 
+import { useDocuments } from "../Visualization/hooks/useDocuments";
+
 import ProjectControl from "./ProjectControls";
 import { ProjectsTable } from "./ProjectTable";
-import { useDocuments } from "../Visualization/hooks/useDocuments";
 
 interface Project {
   id: string;

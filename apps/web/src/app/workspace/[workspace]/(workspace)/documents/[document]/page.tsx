@@ -70,7 +70,7 @@ export default function DocumentPage() {
   const roles = session?.user?.role;
 
   if (!session.user || !roles) {
-    return <div></div>;
+    return <div />;
   }
 
   return (

@@ -132,9 +132,9 @@ export default function Comments({
         >
           <div className="border-t dark:border-[#262A30] border-gray-200 px-4 xl:px-6">
             <div className="py-6 flex gap-x-3">
-              {session.data?.picture ? (
+              {session.user?.avater ? (
                 <Image
-                  src={session.data?.picture}
+                  src={session.user?.avater}
                   alt=""
                   className="h-6 w-6 flex-none rounded-full bg-gray-50"
                   referrerPolicy="no-referrer"

@@ -1,11 +1,11 @@
+import { ErrorCode } from '@/constants/error-code.constant';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { CommentEntity, UserEntity } from '@sandworm/postgresql-typeorm';
-import { Comment } from './model/comment.model';
-import { CreateCommentInput, DeleteCommentInput } from './dto/comment.dto';
 import { ValidationException } from '@sandworm/graphql';
-import { ErrorCode } from '@/constants/error-code.constant';
+import { CommentEntity, UserEntity } from '@sandworm/postgresql-typeorm';
+import { Repository } from 'typeorm';
+import { CreateCommentInput, DeleteCommentInput } from './dto/comment.dto';
+import { Comment } from './model/comment.model';
 
 @Injectable()
 export class CommentService {
@@ -21,17 +21,15 @@ export class CommentService {
   async getCommentsByDocument(documentId: string): Promise<Comment[]> {
     const comments = await this.commentRepository.find({
       where: { documentId },
-      relations: ['user'],
       order: { createdAt: 'ASC' },
     });
 
-    return comments.map(c => Comment.fromEntity(c));
+    return comments.map((c) => Comment.fromEntity(c));
   }
 
   async getComment(commentId: string): Promise<Comment> {
     const comment = await this.commentRepository.findOne({
       where: { id: commentId },
-      relations: ['user'],
     });
 
     if (!comment) {
@@ -77,7 +75,7 @@ export class CommentService {
     });
 
     if (!comment) {
-      throw new ValidationException(ErrorCode.E301); 
+      throw new ValidationException(ErrorCode.E301);
     }
 
     if (comment.authorId !== currentUserId) {

@@ -3,6 +3,7 @@ import type { AppProps } from "next/app";
 import type { ReactNode } from "react";
 import type { Typesaurus } from "typesaurus";
 import type { UIMessage } from "ai";
+
 import { type UserSetting } from "@/generated/graphql";
 
 export type NextPageWithLayout = NextPage & {

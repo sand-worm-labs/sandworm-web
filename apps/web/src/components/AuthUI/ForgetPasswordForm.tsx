@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
+
 import { useForgotPassword } from "../Visualization/hooks/useAuth";
+import type { UseAuthError } from "../Visualization/hooks/useAuth";
 
 type ForgotPasswordFormProps = {
   onSuccess?: (email: string) => void;
@@ -31,13 +33,15 @@ export const ForgotPasswordForm = ({ onSuccess }: ForgotPasswordFormProps) => {
     sendResetEmail(email);
   };
 
-  const errorMessage =
-    state.error === "invalid-creds"
-      ? "Email not found. Please check and try again."
-      : state.error === "unexpected"
-        ? "An unexpected error occurred. Please try again."
-        : "";
+  const getErrorMessage = (error: UseAuthError | undefined) => {
+    if (error === "invalid-creds")
+      return "Email not found. Please check and try again.";
+    if (error === "unexpected")
+      return "An unexpected error occurred. Please try again.";
+    return "";
+  };
 
+  const errorMessage = getErrorMessage(state.error);
   return (
     <form
       onSubmit={handleSubmit}

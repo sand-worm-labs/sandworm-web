@@ -1,10 +1,10 @@
 import { useCallback, useMemo } from "react";
 
 import type { ApiUser, UserWorkspaceRole, WorkspaceUser } from "@/types";
+import { useGetWorkspaceQuery } from "@/generated/graphql"; // Adjust path to your codegen
 
 import { NEXT_PUBLIC_API_URL } from "../utils/env";
-import { useGetWorkspaceQuery } from "@/generated/graphql"; // Adjust path to your codegen
-import { UserFormValues } from "../blocks/forms/user";
+import type { UserFormValues } from "../blocks/forms/user";
 
 type UpdateUserPayload = {
   name?: string;

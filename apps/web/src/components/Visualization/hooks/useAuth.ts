@@ -8,7 +8,7 @@ import { useCurrentUserQuery } from "@/generated/graphql";
 
 import { NEXT_PUBLIC_API_URL, NEXT_PUBLIC_PUBLIC_URL } from "../utils/env";
 
-type UseAuthError = "unexpected" | "invalid-creds" | "network-error";
+export type UseAuthError = "unexpected" | "invalid-creds" | "network-error";
 
 type AuthState = {
   loading: boolean;
@@ -32,7 +32,7 @@ interface LoginResponse {
   refreshToken: string;
   tokenExpires: number;
   email: string;
-  roles?: Record<string, UserWorkspaceRole>; // Added roles from AuthPayload
+  roles?: Record<string, UserWorkspaceRole>;
   user: {
     id: string;
     username: string;

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Check, MoreVertical, Share2 } from "lucide-react";
+import { Check, MoreVertical } from "lucide-react";
 import Link from "next/link";
 import {
   Avatar,
@@ -24,6 +24,8 @@ import { useSession, useSignout } from "../Visualization/hooks/useAuth";
 const useShareProfile = (username: string) => {
   const [copied, setCopied] = useState(false);
 
+  // Handle Copy to Clipboard
+  // =====================================
   const copyToClipboard = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -34,6 +36,8 @@ const useShareProfile = (username: string) => {
     }
   };
 
+  // Handle Share Profile
+  // =====================================
   const shareProfile = async () => {
     const profileUrl = `${window.location.origin}/profile/${username}`;
     const shareData = {

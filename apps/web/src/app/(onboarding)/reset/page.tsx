@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+
 import { CheckMail } from "@/components/AuthUI/CheckMail";
 import { ForgotPasswordForm } from "@/components/AuthUI/ForgetPasswordForm";
 import { SandwormDarkLogo } from "@/components/Assets/SandwormDarkLogo";
@@ -9,11 +10,15 @@ export default function ForgotPasswordPage() {
   const [emailSent, setEmailSent] = useState(false);
   const [email, setEmail] = useState("");
 
+  // ⬢ Handle Success
+  // =====================================
   const handleSuccess = (userEmail: string) => {
     setEmail(userEmail);
     setEmailSent(true);
   };
 
+  // ⬢ Handle Resend
+  // =====================================
   const handleResend = async () => {};
 
   if (emailSent) {
