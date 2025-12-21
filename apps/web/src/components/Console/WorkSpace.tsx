@@ -70,7 +70,6 @@ export const WorkSpace = ({ initialQuery, currentUserId }: WorkSpaceProps) => {
         </ResizablePanelGroup>
       </div>
 
-      {/* Moved OUTSIDE the ResizablePanelGroup */}
       {!showExplorer && (
         <Button
           onClick={() => setShowExplorer(true)}
