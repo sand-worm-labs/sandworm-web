@@ -1,5 +1,5 @@
 import type { RefObject } from "react";
-import { DependencyList, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const useScrollDetection = (containerRef: RefObject<HTMLDivElement>) => {
   const [isScrollable, setIsScrollable] = useState(

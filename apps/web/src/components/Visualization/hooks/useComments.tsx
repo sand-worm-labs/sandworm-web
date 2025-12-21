@@ -143,7 +143,7 @@ export function CommentsProvider({ children }: Props) {
 
   const createComment = useCallback(
     async (workspaceId: string, documentId: string, content: string) => {
-      const user = session.data;
+      const user = session?.user;
       if (!user) return;
 
       const commentId = uuidv4();
@@ -151,7 +151,7 @@ export function CommentsProvider({ children }: Props) {
 
       // Optimistic update with current user data
       const optimisticComment: Comment = {
-        user: { name: user.name, picture: user.picture },
+        user: { name: user.firstName, picture: user.avatar || null },
         id: commentId,
         content,
         documentId,
