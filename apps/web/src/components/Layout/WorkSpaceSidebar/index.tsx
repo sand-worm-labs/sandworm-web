@@ -12,7 +12,6 @@ import type { MouseEventHandler } from "react";
 import { AccountDropdown } from "@/components/AccountDropdown";
 import DocumentTree from "@/components/Visualization/blocks/DocumentsTree";
 import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
-
 import { SandwormLogo } from "@/components/Assets";
 import { SidebarIcon } from "@/components/Assets/SidebarIcon";
 import { useDocuments } from "@/components/Visualization/hooks/useDocuments";

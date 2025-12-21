@@ -11,6 +11,7 @@ import { WebsocketProvider } from "@/components/Visualization/hooks/useWebSocket
 import { EnvironmentStatusProvider } from "@/components/Visualization/hooks/useEnvironmentStatus";
 import { DataSourcesProvider } from "@/components/Visualization/hooks/useDataSources";
 import { ReusableComponentsProvider } from "@/components/Visualization/hooks/useReusableComponents";
+import { CommentsProvider } from "@/components/Visualization/hooks/useComments";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -22,17 +23,19 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         shallowRouting
       >
         <DocumentsProvider>
-          <DndBackendProvider>
-            <WebsocketProvider>
-              <EnvironmentStatusProvider>
-                <DataSourcesProvider>
-                  <ReusableComponentsProvider>
-                    <main> {children}</main>
-                  </ReusableComponentsProvider>
-                </DataSourcesProvider>
-              </EnvironmentStatusProvider>
-            </WebsocketProvider>
-          </DndBackendProvider>
+          <CommentsProvider>
+            <DndBackendProvider>
+              <WebsocketProvider>
+                <EnvironmentStatusProvider>
+                  <DataSourcesProvider>
+                    <ReusableComponentsProvider>
+                      <main> {children}</main>
+                    </ReusableComponentsProvider>
+                  </DataSourcesProvider>
+                </EnvironmentStatusProvider>
+              </WebsocketProvider>
+            </DndBackendProvider>
+          </CommentsProvider>
         </DocumentsProvider>
         <FooterWrapper />
         <SignInModal />

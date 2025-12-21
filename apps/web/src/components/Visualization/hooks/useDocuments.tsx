@@ -11,11 +11,6 @@ import React, {
 import { equals } from "ramda";
 
 import type { Document, ApiDocument } from "@/types";
-
-import { NEXT_PUBLIC_API_URL } from "../utils/env";
-
-import { useFavorites } from "./useFavorites";
-import { useWebsocket } from "./useWebSocket";
 import {
   useCreateDocumentMutation,
   useDeleteDocumentMutation,
@@ -25,6 +20,11 @@ import {
   usePublishDocumentMutation,
   useGetWorkspaceDocumentsQuery,
 } from "@/generated/graphql";
+
+import { NEXT_PUBLIC_API_URL } from "../utils/env";
+
+import { useFavorites } from "./useFavorites";
+import { useWebsocket } from "./useWebSocket";
 
 function upsertDocumentInMemory(
   documents: List<ApiDocument>,

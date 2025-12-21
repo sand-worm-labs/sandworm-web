@@ -1,4 +1,5 @@
 /* eslint-disable no-nested-ternary */
+
 "use client";
 
 import { useState } from "react";
@@ -20,6 +21,7 @@ import {
   BarChart3,
 } from "lucide-react";
 import { ActivityCalendar } from "react-activity-calendar";
+
 import { useCurrentUser } from "../Visualization/hooks/useCurrentUser";
 
 interface SocialLinks {

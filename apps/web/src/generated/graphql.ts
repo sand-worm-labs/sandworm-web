@@ -721,7 +721,7 @@ export type CreateCommentMutationVariables = Exact<{
 }>;
 
 
-export type CreateCommentMutation = { __typename?: 'Mutation', createComment: { __typename?: 'Comment', id: string, body: string, authorId: string, documentId: string, createdAt: any, updatedAt: any } };
+export type CreateCommentMutation = { __typename?: 'Mutation', createComment: { __typename?: 'Comment', id: string, documentId: string, authorId: string, body: string, createdAt: any, updatedAt: any } };
 
 export type DeleteCommentMutationVariables = Exact<{
   input: DeleteCommentInput;
@@ -868,19 +868,19 @@ export type GetUserFollowingQueryVariables = Exact<{
 
 export type GetUserFollowingQuery = { __typename?: 'Query', getUserFollowing: Array<{ __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, avater?: string | null, followersCount: number, followingCount: number }> };
 
-export type GetCommentsQueryVariables = Exact<{
-  documentId: Scalars['String']['input'];
-}>;
-
-
-export type GetCommentsQuery = { __typename?: 'Query', comments: Array<{ __typename?: 'Comment', id: string, body: string, authorId: string, documentId: string, createdAt: any, updatedAt: any }> };
-
 export type GetCommentQueryVariables = Exact<{
   commentId: Scalars['String']['input'];
 }>;
 
 
-export type GetCommentQuery = { __typename?: 'Query', comment: { __typename?: 'Comment', id: string, body: string, authorId: string, documentId: string, createdAt: any, updatedAt: any } };
+export type GetCommentQuery = { __typename?: 'Query', comment: { __typename?: 'Comment', id: string, documentId: string, authorId: string, body: string, createdAt: any, updatedAt: any } };
+
+export type GetDocumentCommentsQueryVariables = Exact<{
+  documentId: Scalars['String']['input'];
+}>;
+
+
+export type GetDocumentCommentsQuery = { __typename?: 'Query', comments: Array<{ __typename?: 'Comment', id: string, documentId: string, authorId: string, body: string, createdAt: any, updatedAt: any }> };
 
 export type GetDocumentQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
@@ -1141,9 +1141,9 @@ export const CreateCommentDocument = gql`
     mutation CreateComment($documentId: String!, $input: CreateCommentInput!) {
   createComment(documentId: $documentId, input: $input) {
     id
-    body
-    authorId
     documentId
+    authorId
+    body
     createdAt
     updatedAt
   }
@@ -2096,58 +2096,13 @@ export type GetUserFollowingQueryHookResult = ReturnType<typeof useGetUserFollow
 export type GetUserFollowingLazyQueryHookResult = ReturnType<typeof useGetUserFollowingLazyQuery>;
 export type GetUserFollowingSuspenseQueryHookResult = ReturnType<typeof useGetUserFollowingSuspenseQuery>;
 export type GetUserFollowingQueryResult = Apollo.QueryResult<GetUserFollowingQuery, GetUserFollowingQueryVariables>;
-export const GetCommentsDocument = gql`
-    query GetComments($documentId: String!) {
-  comments(documentId: $documentId) {
-    id
-    body
-    authorId
-    documentId
-    createdAt
-    updatedAt
-  }
-}
-    `;
-
-/**
- * __useGetCommentsQuery__
- *
- * To run a query within a React component, call `useGetCommentsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetCommentsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetCommentsQuery({
- *   variables: {
- *      documentId: // value for 'documentId'
- *   },
- * });
- */
-export function useGetCommentsQuery(baseOptions: Apollo.QueryHookOptions<GetCommentsQuery, GetCommentsQueryVariables> & ({ variables: GetCommentsQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetCommentsQuery, GetCommentsQueryVariables>(GetCommentsDocument, options);
-      }
-export function useGetCommentsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCommentsQuery, GetCommentsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetCommentsQuery, GetCommentsQueryVariables>(GetCommentsDocument, options);
-        }
-export function useGetCommentsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetCommentsQuery, GetCommentsQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetCommentsQuery, GetCommentsQueryVariables>(GetCommentsDocument, options);
-        }
-export type GetCommentsQueryHookResult = ReturnType<typeof useGetCommentsQuery>;
-export type GetCommentsLazyQueryHookResult = ReturnType<typeof useGetCommentsLazyQuery>;
-export type GetCommentsSuspenseQueryHookResult = ReturnType<typeof useGetCommentsSuspenseQuery>;
-export type GetCommentsQueryResult = Apollo.QueryResult<GetCommentsQuery, GetCommentsQueryVariables>;
 export const GetCommentDocument = gql`
     query GetComment($commentId: String!) {
   comment(commentId: $commentId) {
     id
-    body
-    authorId
     documentId
+    authorId
+    body
     createdAt
     updatedAt
   }
@@ -2186,6 +2141,51 @@ export type GetCommentQueryHookResult = ReturnType<typeof useGetCommentQuery>;
 export type GetCommentLazyQueryHookResult = ReturnType<typeof useGetCommentLazyQuery>;
 export type GetCommentSuspenseQueryHookResult = ReturnType<typeof useGetCommentSuspenseQuery>;
 export type GetCommentQueryResult = Apollo.QueryResult<GetCommentQuery, GetCommentQueryVariables>;
+export const GetDocumentCommentsDocument = gql`
+    query GetDocumentComments($documentId: String!) {
+  comments(documentId: $documentId) {
+    id
+    documentId
+    authorId
+    body
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useGetDocumentCommentsQuery__
+ *
+ * To run a query within a React component, call `useGetDocumentCommentsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetDocumentCommentsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetDocumentCommentsQuery({
+ *   variables: {
+ *      documentId: // value for 'documentId'
+ *   },
+ * });
+ */
+export function useGetDocumentCommentsQuery(baseOptions: Apollo.QueryHookOptions<GetDocumentCommentsQuery, GetDocumentCommentsQueryVariables> & ({ variables: GetDocumentCommentsQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetDocumentCommentsQuery, GetDocumentCommentsQueryVariables>(GetDocumentCommentsDocument, options);
+      }
+export function useGetDocumentCommentsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetDocumentCommentsQuery, GetDocumentCommentsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetDocumentCommentsQuery, GetDocumentCommentsQueryVariables>(GetDocumentCommentsDocument, options);
+        }
+export function useGetDocumentCommentsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetDocumentCommentsQuery, GetDocumentCommentsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetDocumentCommentsQuery, GetDocumentCommentsQueryVariables>(GetDocumentCommentsDocument, options);
+        }
+export type GetDocumentCommentsQueryHookResult = ReturnType<typeof useGetDocumentCommentsQuery>;
+export type GetDocumentCommentsLazyQueryHookResult = ReturnType<typeof useGetDocumentCommentsLazyQuery>;
+export type GetDocumentCommentsSuspenseQueryHookResult = ReturnType<typeof useGetDocumentCommentsSuspenseQuery>;
+export type GetDocumentCommentsQueryResult = Apollo.QueryResult<GetDocumentCommentsQuery, GetDocumentCommentsQueryVariables>;
 export const GetDocumentDocument = gql`
     query GetDocument($workspaceId: String!, $documentId: String!) {
   getDocument(workspaceId: $workspaceId, documentId: $documentId) {

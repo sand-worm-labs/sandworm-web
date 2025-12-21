@@ -46,6 +46,7 @@ import {
   getBlockFlatPosition,
 } from "@sandworm/editor";
 import type { DataFrame } from "@sandworm/types";
+
 import {
   Bars3CenterLeftIcon,
   ChartPieIcon,
@@ -111,6 +112,7 @@ import { ContentSkeleton } from "./ContentSkeleton";
 import PlusButton from "./PlusButton";
 import DragHandle from "./DragHandle";
 import Title from "./Title";
+import { DocumentIcon } from "@heroicons/react/24/solid";
 
 // The react-dnd package does not export this...
 type Identifier = string | symbol;
@@ -217,6 +219,8 @@ export function getTabIcon(
       return ArrowUpTrayIcon;
     case BlockType.PivotTable:
       return Bars3CenterLeftIcon;
+    default:
+      return DocumentIcon;
   }
 }
 
@@ -520,7 +524,6 @@ const DraggableTabbedBlock = (props: {
   ) => void;
   onRemoveBlockGroup: (id: string) => void;
   onRemoveBlock: (blockGroupId: string, id: string) => void;
-  awareness: Awareness;
   dataSources: APIDataSources;
   dataframes: Y.Map<DataFrame>;
   isPublicViewer: boolean;
@@ -1003,7 +1006,6 @@ file`;
           onDuplicateBlock={onDuplicateBlockGroup}
           onDeleteTab={hasMultipleTabs ? onDeleteCurrentTab : null}
           onDeleteBlock={onRemoveBlockGroup}
-          targetRef={popupContainerRef}
           onHideAllTabs={onHideAllTabs}
           menuPosition={isSideBarOpen ? "left" : "right"}
         />
@@ -1071,11 +1073,10 @@ file`;
           <div
             className={clsx(
               "absolute top-0 left-0 h-full w-full z-30 opacity-50 pointer-events-none",
-              isOver && canDrop
-                ? "bg-ceramic-100"
-                : isDragging
-                  ? "opacity-50"
-                  : ""
+              {
+                "bg-ceramic-100": isOver && canDrop,
+                "opacity-50": isDragging && !(isOver && canDrop),
+              }
             )}
           />
           {props.isPDF ? (
@@ -1162,7 +1163,6 @@ const V2EditorRow = (props: {
         onRemoveBlock={props.onRemoveBlock}
         onRemoveBlockGroup={props.onRemoveBlockGroup}
         onGroup={props.onGroup}
-        awareness={props.awareness}
         dataSources={props.dataSources}
         dataframes={props.dataframes}
         isPublicViewer={props.isPublicViewer}
@@ -1727,7 +1727,6 @@ const Editor = (props: Props) => {
                 isEditable={
                   props.isEditable && !props.isApp && props.role !== "viewer"
                 }
-                isPDF={props.isPDF}
               />
             </div>
 

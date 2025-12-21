@@ -6,7 +6,6 @@ import Head from "next/head";
 
 import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
 import PrivateDocumentPage from "@/components/Visualization/blocks/PrivateDocumentPage";
-
 import { useSession } from "@/components/Visualization/hooks/useAuth";
 import useDocument from "@/components/Visualization/hooks/useDocument";
 
