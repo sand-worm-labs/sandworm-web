@@ -32,18 +32,10 @@ export default function WorkspaceSettings() {
   const properties = useProperties();
   const { workspaceInfo } = useCurrentWorkspaceInfo();
   const [{ data: allWorkspaces }] = useWorkspaces();
-  const {
-    updateWorkspace,
-    loading: isUpdating,
-    error: updateError,
-    isAdmin: isAdminFromHook,
-  } = useUpdateWorkspace(workspaceId);
+  const { updateWorkspace, loading: isUpdating } =
+    useUpdateWorkspace(workspaceId);
 
-  const {
-    switchWorkspace,
-    loading: isSwitching,
-    error: switchError,
-  } = useSwitchWorkspace();
+  const { switchWorkspace, loading: isSwitching } = useSwitchWorkspace();
 
   const [state, setState] = useState({
     isEditingName: false,
@@ -299,9 +291,7 @@ export default function WorkspaceSettings() {
                 </label>
                 <span className="text-xs text-gray-400">
                   Current plan:{" "}
-                  <span className="font-medium capitalize">
-                    {currentWorkspace?.plan || "Free"}
-                  </span>
+                  <span className="font-medium capitalize">Free</span>
                 </span>
               </div>
 

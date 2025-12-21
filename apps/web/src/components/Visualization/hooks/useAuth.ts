@@ -42,7 +42,7 @@ interface LoginResponse {
     fullName: string;
     isOnboarded: boolean;
     avatar?: string;
-    role: Record<string, UserWorkspaceRole>;
+    role: Array<Record<string, UserWorkspaceRole>>;
   };
 }
 

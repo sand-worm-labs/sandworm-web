@@ -17,99 +17,93 @@ import { Table2Icon } from "lucide-react";
 
 import useFeatureFlags from "../Visualization/hooks/useFeatureFlags";
 
-const useClickOutside = (
-  ref: React.RefObject<HTMLDivElement>,
-  callback: () => void
-) => {
-  const handleClickOutside = useCallback(
-    (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        callback();
-      }
-    },
-    [ref, callback]
-  );
-
-  useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [handleClickOutside]);
-};
-
-interface Props {
-  workspaceId: string;
-  alwaysOpen: boolean;
-  onAddBlock: (type: BlockType) => void;
-  isEditable: boolean;
-  writebackEnabled: boolean;
-  isLast: boolean;
-}
-
-function PlusButton(props: Props) {
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const [showOptions, setShowOptions] = useState(false);
-
-  const toggleOptions = useCallback(() => {
-    setShowOptions(prev => !prev);
-  }, [setShowOptions]);
-
-  useClickOutside(wrapperRef, () => {
-    setShowOptions(false);
-  });
-
-  const addBlockHandler = useCallback(
-    (type: BlockType) => {
-      props.onAddBlock(type);
-      setShowOptions(false);
-    },
-    [props.onAddBlock]
-  );
-
-  const btnDivProps = props.isLast ? { id: "last-plus-button" } : {};
-
-  return (
-    <div
-      {...btnDivProps}
-      className="w-full group relative py-2"
-      ref={wrapperRef}
-    >
-      <button
-        type="button"
-        className={clsx(
-          "flex items-center justify-center gap-x-2 group-hover:opacity-100 transition-opacity duration-200 w-full h-6",
-          !props.isEditable && "invisible",
-          props.alwaysOpen || showOptions || props.isLast
-            ? "opacity-100"
-            : "opacity-0"
-        )}
-        onClick={toggleOptions}
-      >
-        <div className="w-full h-[1px] bg-gray-200 dark:bg-[#181C21]" />
-        <div className="flex text-gray-400 justify-center items-center gap-x-1 text-[10px] whitespace-nowrap">
-          <PlusIcon className="h-3 w-3 text-gray-400 dark:text-[#868E96]" />
-          <span>Add block</span>
-        </div>
-        <div className="w-full h-[1px] bg-gray-200 dark:bg-[#181C21]" />
-      </button>
-
-      {props.isEditable && (showOptions || props.alwaysOpen) && (
-        <BlockList
-          workspaceId={props.workspaceId}
-          onAddBlock={addBlockHandler}
-          writebackEnabled={props.writebackEnabled}
-        />
-      )}
-    </div>
-  );
-}
-
 const TriangleUp = () => {
   return (
     <div className="h-3 w-3 bg-white border-t border-l border-gray-200 rotate-45 translate-y-1/2" />
   );
 };
+
+type BlockSuggestionProps = {
+  id: string;
+  icon: JSX.Element;
+  text: string;
+  onAdd: () => void;
+};
+
+function BlockSuggestion(props: BlockSuggestionProps) {
+  const onClick = useCallback(() => {
+    props.onAdd();
+  }, [props.onAdd]);
+
+  return (
+    <div id={props.id} className="w-full text-sm px-1 relative z-30">
+      <button
+        type="button"
+        className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 rounded-md text-gray-400 bg-white dark:bg-[#0C1015]  hover:bg-[#FDE6EA] hover:text-gray-700"
+        onClick={onClick}
+      >
+        {props.icon}
+        <span>{props.text}</span>
+      </button>
+    </div>
+  );
+}
+
+interface MultiBlockSuggestionProps {
+  icon: JSX.Element;
+  text: string;
+  onAdd: () => void;
+  options: { icon: JSX.Element; text: string; onClick: () => void }[];
+}
+
+function MultiBlockSuggestion(props: MultiBlockSuggestionProps) {
+  console.log(props.onAdd);
+
+  return (
+    <Menu as="div" className="w-full text-sm px-1 relative z-30">
+      <Menu.Button className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 rounded-md text-gray-400 bg-white dark:bg-[#0C1015]  hover:text-gray-700 relative">
+        {props.icon}
+        <span>{props.text}</span>
+        <ChevronDownIcon className="w-4 h-4" />
+      </Menu.Button>
+      <Transition
+        as="div"
+        className="absolute z-40 right-0"
+        enter="transition-opacity duration-300"
+        enterFrom="opacity-0"
+        enterTo="opacity-100"
+        leave="transition-opacity duration-300"
+        leaveFrom="opacity-100"
+        leaveTo="opacity-0"
+      >
+        <Menu.Items
+          as="div"
+          className="w-44 mt-2 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none font-primary divide-y divide-gray-200"
+        >
+          {props.options.map((option, index) => (
+            <Menu.Item>
+              {({ active }) => (
+                <button
+                  type="button"
+                  className={clsx(
+                    active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                    index === 0 ? "rounded-t-md" : "",
+                    index === props.options.length - 1 ? "rounded-b-md" : "",
+                    "flex items-center gap-x-2 w-full text-sm px-4 py-3"
+                  )}
+                  onClick={option.onClick}
+                >
+                  {option.icon}
+                  {option.text}
+                </button>
+              )}
+            </Menu.Item>
+          ))}
+        </Menu.Items>
+      </Transition>
+    </Menu>
+  );
+}
 
 interface BlockListProps {
   workspaceId: string;
@@ -220,82 +214,91 @@ function BlockList(props: BlockListProps) {
   );
 }
 
-type BlockSuggestionProps = {
-  id: string;
-  icon: JSX.Element;
-  text: string;
-  onAdd: () => void;
+const useClickOutside = (
+  ref: React.RefObject<HTMLDivElement>,
+  callback: () => void
+) => {
+  const handleClickOutside = useCallback(
+    (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        callback();
+      }
+    },
+    [ref, callback]
+  );
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [handleClickOutside]);
 };
 
-function BlockSuggestion(props: BlockSuggestionProps) {
-  const onClick = useCallback(() => {
-    props.onAdd();
-  }, [props.onAdd]);
+interface Props {
+  workspaceId: string;
+  alwaysOpen: boolean;
+  onAddBlock: (type: BlockType) => void;
+  isEditable: boolean;
+  writebackEnabled: boolean;
+  isLast: boolean;
+}
+
+function PlusButton(props: Props) {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const [showOptions, setShowOptions] = useState(false);
+
+  const toggleOptions = useCallback(() => {
+    setShowOptions(prev => !prev);
+  }, [setShowOptions]);
+
+  useClickOutside(wrapperRef, () => {
+    setShowOptions(false);
+  });
+
+  const addBlockHandler = useCallback(
+    (type: BlockType) => {
+      props.onAddBlock(type);
+      setShowOptions(false);
+    },
+    [props.onAddBlock]
+  );
+
+  const btnDivProps = props.isLast ? { id: "last-plus-button" } : {};
 
   return (
-    <div id={props.id} className="w-full text-sm px-1 relative z-30">
+    <div
+      {...btnDivProps}
+      className="w-full group relative py-2"
+      ref={wrapperRef}
+    >
       <button
         type="button"
-        className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 rounded-md text-gray-400 bg-white dark:bg-[#0C1015]  hover:bg-[#FDE6EA] hover:text-gray-700"
-        onClick={onClick}
+        className={clsx(
+          "flex items-center justify-center gap-x-2 group-hover:opacity-100 transition-opacity duration-200 w-full h-6",
+          !props.isEditable && "invisible",
+          props.alwaysOpen || showOptions || props.isLast
+            ? "opacity-100"
+            : "opacity-0"
+        )}
+        onClick={toggleOptions}
       >
-        {props.icon}
-        <span>{props.text}</span>
+        <div className="w-full h-[1px] bg-gray-200 dark:bg-[#181C21]" />
+        <div className="flex text-gray-400 justify-center items-center gap-x-1 text-[10px] whitespace-nowrap">
+          <PlusIcon className="h-3 w-3 text-gray-400 dark:text-[#868E96]" />
+          <span>Add block</span>
+        </div>
+        <div className="w-full h-[1px] bg-gray-200 dark:bg-[#181C21]" />
       </button>
-    </div>
-  );
-}
 
-interface MultiBlockSuggestionProps {
-  icon: JSX.Element;
-  text: string;
-  onAdd: () => void;
-  options: { icon: JSX.Element; text: string; onClick: () => void }[];
-}
-function MultiBlockSuggestion(props: MultiBlockSuggestionProps) {
-  return (
-    <Menu as="div" className="w-full text-sm px-1 relative z-30">
-      <Menu.Button className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 rounded-md text-gray-400 bg-white dark:bg-[#0C1015]  hover:text-gray-700 relative">
-        {props.icon}
-        <span>{props.text}</span>
-        <ChevronDownIcon className="w-4 h-4" />
-      </Menu.Button>
-      <Transition
-        as="div"
-        className="absolute z-40 right-0"
-        enter="transition-opacity duration-300"
-        enterFrom="opacity-0"
-        enterTo="opacity-100"
-        leave="transition-opacity duration-300"
-        leaveFrom="opacity-100"
-        leaveTo="opacity-0"
-      >
-        <Menu.Items
-          as="div"
-          className="w-44 mt-2 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none font-primary divide-y divide-gray-200"
-        >
-          {props.options.map((option, index) => (
-            <Menu.Item>
-              {({ active }) => (
-                <button
-                  type="button"
-                  className={clsx(
-                    active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                    index === 0 ? "rounded-t-md" : "",
-                    index === props.options.length - 1 ? "rounded-b-md" : "",
-                    "flex items-center gap-x-2 w-full text-sm px-4 py-3"
-                  )}
-                  onClick={option.onClick}
-                >
-                  {option.icon}
-                  {option.text}
-                </button>
-              )}
-            </Menu.Item>
-          ))}
-        </Menu.Items>
-      </Transition>
-    </Menu>
+      {props.isEditable && (showOptions || props.alwaysOpen) && (
+        <BlockList
+          workspaceId={props.workspaceId}
+          onAddBlock={addBlockHandler}
+          writebackEnabled={props.writebackEnabled}
+        />
+      )}
+    </div>
   );
 }
 

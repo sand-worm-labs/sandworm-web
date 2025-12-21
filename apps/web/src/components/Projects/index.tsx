@@ -39,16 +39,8 @@ export const Projects: React.FC = () => {
   const router = useRouter();
   const [activeView, setActiveView] = useState<"grid" | "table">("grid");
 
-  const [
-    documentsState,
-    {
-      createDocument,
-      duplicateDocument,
-      setIcon,
-      deleteDocument,
-      updateParent: updateDocumentParent,
-    },
-  ] = useDocuments(workspaceId);
+  const [documentsState, { duplicateDocument, deleteDocument }] =
+    useDocuments(workspaceId);
 
   const [favorites, { favoriteDocument, unfavoriteDocument }] =
     useFavorites(workspaceId);
@@ -67,7 +59,7 @@ export const Projects: React.FC = () => {
   );
 
   // Helper function to format dates
-  const formatDate = (dateString: string): string => {
+  const formatDate = (dateString: string | Date): string => {
     if (!dateString) return "Unknown";
 
     const date = new Date(dateString);
@@ -91,12 +83,12 @@ export const Projects: React.FC = () => {
   };
 
   const projects: Project[] = useMemo(() => {
-    return documents.map(doc => ({
+    return documents.toArray().map(doc => ({
       id: doc.id,
       title: doc.title || "Untitled Project",
       creator: doc.createdBy || "Unknown",
-      lastEdited: formatDate(doc.updatedAt),
-      created: formatDate(doc.createdAt),
+      lastEdited: formatDate(doc.updatedAt.toISOString()),
+      created: formatDate(doc.createdAt.toISOString()),
       isFavorite: favorites.has(doc.id),
     }));
   }, [documents, favorites]);

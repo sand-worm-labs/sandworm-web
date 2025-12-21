@@ -1,8 +1,7 @@
 "use client";
 
-import { Home, Search, Clock, Bot, Terminal } from "lucide-react";
+import { Home, Search, Clock, Terminal } from "lucide-react";
 import Link from "next/link";
-import { v4 as uuidv4 } from "uuid";
 import { usePathname, useRouter } from "next/navigation";
 import { LuLayoutGrid } from "react-icons/lu";
 import { useCallback, useState } from "react";
@@ -131,23 +130,23 @@ export const WorkspaceSidebar = () => {
   );
 
   const onFavoriteDocument = useCallback(
-    (documentId: string) => {
+    (docId: string) => {
       if (documentsState.loading) {
         return;
       }
 
-      favoriteDocument(documentId);
+      favoriteDocument(docId);
     },
     [documentsState, workspaceId, favoriteDocument]
   );
 
   const onUnfavoriteDocument = useCallback(
-    (documentId: string) => {
+    (docId: string) => {
       if (documentsState.loading) {
         return;
       }
 
-      unfavoriteDocument(documentId);
+      unfavoriteDocument(docId);
     },
     [workspaceId, unfavoriteDocument]
   );
@@ -173,6 +172,8 @@ export const WorkspaceSidebar = () => {
     },
     [documentsState, updateDocumentParent]
   );
+
+  console.log(session?.user);
 
   return (
     <aside
@@ -240,7 +241,7 @@ export const WorkspaceSidebar = () => {
 
           {!collapsed && (
             <ul>
-              {user?.role?.[workspaceId] !== "viewer" && (
+              {user?.role?.[0]?.[workspaceId] !== "viewer" && (
                 <button
                   type="button"
                   id="create-workspace-doc"
@@ -261,7 +262,7 @@ export const WorkspaceSidebar = () => {
                 onFavorite={onFavoriteDocument}
                 onUnfavorite={onUnfavoriteDocument}
                 onSetIcon={onSetIcon}
-                role={user?.role?.[workspaceId] ?? "viewer"}
+                role={user?.role?.[0]?.[workspaceId] ?? "viewer"}
                 onCreate={onCreateDocument}
                 onUpdateParent={onUpdateDocumentParent}
               />

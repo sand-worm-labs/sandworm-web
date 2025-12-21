@@ -181,6 +181,7 @@ export type Document = {
   runUnexecutedBlocks: boolean;
   runSQLSelection: boolean;
   shareLinksWithoutSidebar: boolean;
+  createdBy?: string;
 };
 
 export type ApiDocument = Document & {

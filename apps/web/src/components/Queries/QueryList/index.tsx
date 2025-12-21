@@ -52,12 +52,7 @@ export const QueryList: React.FC<IQueryListProps> = ({
     <div className="mb-16 h-full justify-between flex flex-col">
       <div className="grid grid-cols-1 gap-2 mb-8">
         {queriesWithLikeStatus.map(query => (
-          <ExploreCard
-            key={query.id}
-            query={query}
-            liked={query.liked}
-            viewMode="compact"
-          />
+          <ExploreCard key={query.id} query={query} viewMode="compact" />
         ))}
       </div>
 

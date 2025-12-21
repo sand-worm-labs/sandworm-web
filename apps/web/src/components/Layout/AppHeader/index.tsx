@@ -3,13 +3,11 @@
 import { useState, type FC } from "react";
 import { X, Search } from "lucide-react";
 
-import { useSession } from "@/components/Visualization/hooks/useAuth";
 import { ThemeTogggle } from "@/components/Theme/ThemeToggle";
 
 import { SearchBar } from "../../SearchBar";
 
 export const AppHeader: FC = () => {
-  const session = useSession({ redirectToLogin: true });
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
