@@ -122,7 +122,7 @@ const blocksGetter = (yDoc: Y.Doc) => yDoc.getMap<YBlock>("blocks");
 const dataframesGetter = (yDoc: Y.Doc) => yDoc.getMap<DataFrame>("dataframes");
 
 const Dropzone = ({
-  index,
+  dropIndex,
   isLast,
   isEditable,
   onDropItem,
@@ -131,7 +131,7 @@ const Dropzone = ({
   writebackEnabled,
   workspaceId,
 }: {
-  index: number;
+  dropIndex: number;
   isLast: boolean;
   isEditable: boolean;
   onDropItem: (
@@ -155,22 +155,22 @@ const Dropzone = ({
       drop: (
         { blockGroupId, blockId }: { blockGroupId: string; blockId: string },
         monitor
-      ) => onDropItem(blockGroupId, blockId, index, monitor.getItemType()),
+      ) => onDropItem(blockGroupId, blockId, dropIndex, monitor.getItemType()),
       canDrop: ({ blockGroupId }, monitor) =>
-        onCheckCanDrop(blockGroupId, index, monitor.getItemType()),
+        onCheckCanDrop(blockGroupId, dropIndex, monitor.getItemType()),
       collect: monitor => ({
         isOver: monitor.isOver() ?? false,
         canDrop: monitor.canDrop() ?? false,
       }),
     }),
-    [index, updateOrder, onCheckCanDrop, onDropItem]
+    [dropIndex, updateOrder, onCheckCanDrop, onDropItem]
   );
 
   const addBlockHandler = useCallback(
     (type: BlockType) => {
-      onAddBlock(type, index);
+      onAddBlock(type, dropIndex);
     },
-    [onAddBlock, index]
+    [onAddBlock, dropIndex]
   );
 
   return (
@@ -602,7 +602,7 @@ const DraggableTabbedBlock = (props: {
     [props.id, props.onGroup]
   );
 
-  const addGroupedBlock = useCallback(
+  const handleAddGroupedBlock = useCallback(
     (blockId: string, blockType: BlockType, position: "before" | "after") => {
       return props.onAddGroupedBlock(blockType, props.id, blockId, position);
     },
@@ -736,7 +736,7 @@ file`;
         onSchemaExplorer={props.onSchemaExplorer}
         insertBelow={props.insertBelow}
         isPDF={props.isPDF}
-        addGroupedBlock={addGroupedBlock}
+        addGroupedBlock={handleAddGroupedBlock}
         dataframes={props.dataframes}
         isApp={props.isApp}
         onFileUploadBlockPythonUsage={onFileUploadBlockPythonUsage}
@@ -1145,7 +1145,7 @@ const V2EditorRow = (props: {
       {props.index === 0 && (
         <Dropzone
           workspaceId={props.document.workspaceId}
-          index={props.index}
+          dropIndex={props.index}
           isLast={false}
           isEditable={props.isEditable && !props.isApp}
           onAddBlock={props.onAddBlock}
@@ -1180,7 +1180,7 @@ const V2EditorRow = (props: {
       <div className={clsx(isLast ? "pt-2" : "")}>
         <Dropzone
           workspaceId={props.document.workspaceId}
-          index={props.index + 1}
+          dropIndex={props.index + 1}
           isLast={isLast}
           isEditable={props.isEditable && !props.isApp}
           onAddBlock={props.onAddBlock}
