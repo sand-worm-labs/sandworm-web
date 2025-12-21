@@ -25,9 +25,26 @@ import { Database } from "../Assets/Database";
 
 type EntityType = "raw" | "project" | "decoded";
 
+const getInitialPosition = () => {
+  if (typeof window === "undefined") {
+    return { x: 0, y: 0 };
+  }
+
+  const panelWidth = 620;
+  const panelHeight = 650;
+  const margin = 20;
+
+  return {
+    x: window.innerWidth - panelWidth - margin,
+    y: window.innerHeight - panelHeight - margin,
+  };
+};
+
 export function DataExplorer({ onClose }: { onClose?: () => void }) {
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
+  const initialPos = getInitialPosition();
+
   const searchParams = useSearchParams();
   const selectedChain = searchParams.get("namespace");
   const selectedEntity = searchParams.get("id");
@@ -53,20 +70,6 @@ export function DataExplorer({ onClose }: { onClose?: () => void }) {
 
   const handleSelectChain = (chainId: string) => {
     router.push(`?namespace=${chainId}`);
-  };
-
-  const getInitialPosition = () => {
-    if (typeof window === "undefined") {
-      return { x: 400, y: 50 };
-    }
-
-    const panelWidth = 400;
-    const margin = 20;
-
-    const x = Math.max(margin, window.innerWidth - panelWidth - margin);
-    const y = margin;
-
-    return { x, y };
   };
 
   const renderExplorer = () => {
@@ -95,7 +98,7 @@ export function DataExplorer({ onClose }: { onClose?: () => void }) {
   return (
     <Rnd
       default={{
-        ...getInitialPosition(),
+        ...initialPos,
         width: 400,
         height: 600,
       }}
