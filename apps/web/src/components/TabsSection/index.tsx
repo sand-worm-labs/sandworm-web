@@ -36,6 +36,95 @@ interface TabSectionProps {
   defaultTab?: string;
 }
 
+// =====================================
+// ⬢ Tabs Header Component
+// =====================================
+const TabsHeader: React.FC<{
+  tab: string;
+  sortBy: SortOption;
+  onSortChange: (sort: SortOption) => void;
+}> = ({ tab, sortBy, onSortChange }) => (
+  <div className="flex justify-between items-center">
+    <TabsList className="flex border-b border-borderLight">
+      <TabsTrigger
+        value="all"
+        className={`px-2 py-2 flex items-center space-x-2 ${
+          tab === "all" ? "text-[#A6554D]" : "text-[#868E96]"
+        }`}
+      >
+        <HiOutlineCommandLine size={18} className="flex-shrink-0" />
+        <span className="text-sm">All Insights</span>
+      </TabsTrigger>
+
+      <TabsTrigger
+        value="forked"
+        className={`px-2 py-2 flex items-center space-x-2 ${
+          tab === "forked" ? "text-[#A6554D]" : "text-[#868E96]"
+        }`}
+      >
+        <VscRepoForked size={16} className="flex-shrink-0" />
+        <span className="text-sm">Dashboards</span>
+      </TabsTrigger>
+
+      <TabsTrigger
+        value="starred"
+        className={`px-2 py-2 flex items-center space-x-2 ${
+          tab === "starred" ? "text-[#A6554D]" : "text-[#868E96]"
+        }`}
+      >
+        <FaRegStar size={16} className="flex-shrink-0" />
+        <span className="text-sm">Reports</span>
+      </TabsTrigger>
+    </TabsList>
+
+    <SortControl sortBy={sortBy} onSortChange={onSortChange} />
+  </div>
+);
+
+// =====================================
+// ⬢ Tab Content Component
+// =====================================
+const TabContentArea: React.FC<{
+  queries: QueryResponse | null;
+  forkedQueries: QueryResponse | null;
+  starredQueries: QueryResponse | null;
+}> = ({ queries, forkedQueries, starredQueries }) => (
+  <div className="container mx-auto">
+    <TabsContent value="all">
+      {queries ? (
+        <QueryList
+          queries={queries.page_items}
+          pagination={queries.pagination}
+        />
+      ) : (
+        <EmptyQueryState message="No queries available." />
+      )}
+    </TabsContent>
+
+    <TabsContent value="forked">
+      {forkedQueries ? (
+        <QueryList
+          queries={forkedQueries.page_items}
+          pagination={forkedQueries.pagination}
+        />
+      ) : (
+        <EmptyQueryState message="No forked queries found." />
+      )}
+    </TabsContent>
+
+    <TabsContent value="starred">
+      {starredQueries ? (
+        <QueryList
+          queries={starredQueries.page_items}
+          pagination={starredQueries.pagination}
+        />
+      ) : (
+        <EmptyQueryState message="No starred queries yet." />
+      )}
+    </TabsContent>
+  </div>
+);
+
 // TAB SECTION COMPONENT
 // =====================================
 export const TabsSection: React.FC<TabSectionProps> = ({
@@ -59,92 +148,7 @@ export const TabsSection: React.FC<TabSectionProps> = ({
       router.replace(`?${params.toString()}`);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
-  }, [tab]);
-
-  // =====================================
-  // ⬢ Tabs Header
-  // =====================================
-  const TabsHeader = () => (
-    <div className="flex justify-between items-center">
-      <TabsList className="flex border-b border-borderLight">
-        <TabsTrigger
-          value="all"
-          className={`px-2 py-2 flex items-center space-x-2 ${
-            tab === "all" ? "text-[#A6554D]" : "text-[#868E96]"
-          }`}
-        >
-          <HiOutlineCommandLine size={18} className="flex-shrink-0" />
-          <span className="text-sm">All Insights</span>
-        </TabsTrigger>
-
-        <TabsTrigger
-          value="forked"
-          className={`px-2 py-2 flex items-center space-x-2 ${
-            tab === "forked" ? "text-[#A6554D]" : "text-[#868E96]"
-          }`}
-        >
-          <VscRepoForked size={16} className="flex-shrink-0" />
-          <span className="text-sm">Dashboards</span>
-        </TabsTrigger>
-
-        <TabsTrigger
-          value="starred"
-          className={`px-2 py-2 flex items-center space-x-2 ${
-            tab === "starred" ? "text-[#A6554D]" : "text-[#868E96]"
-          }`}
-        >
-          <FaRegStar size={16} className="flex-shrink-0" />
-          <span className="text-sm">Reports</span>
-        </TabsTrigger>
-      </TabsList>
-
-      <SortControl sortBy={sortBy} onSortChange={setSortBy} />
-    </div>
-  );
-
-  // =====================================
-  // ⬢ Render Tab Content
-  // =====================================
-  const RenderTabContent = () => (
-    <div className="container mx-auto">
-      <TabsContent value="all">
-        {queries ? (
-          <QueryList
-            queries={queries.page_items}
-            pagination={queries.pagination}
-          />
-        ) : (
-          <EmptyQueryState message="No queries available." />
-        )}
-      </TabsContent>
-
-      <TabsContent value="forked">
-        {forkedQueries ? (
-          <QueryList
-            queries={forkedQueries.page_items}
-            pagination={forkedQueries.pagination}
-          />
-        ) : (
-          <EmptyQueryState message="No forked queries found." />
-        )}
-      </TabsContent>
-
-      <TabsContent value="starred">
-        {starredQueries ? (
-          <QueryList
-            queries={starredQueries.page_items}
-            pagination={starredQueries.pagination}
-          />
-        ) : (
-          <EmptyQueryState message="No starred queries yet." />
-        )}
-      </TabsContent>
-    </div>
-  );
-
-  // =====================================
-  // ⬢ Main Component
-  // =====================================
+  }, [tab, searchParams, router]);
 
   return (
     <div>
@@ -156,8 +160,12 @@ export const TabsSection: React.FC<TabSectionProps> = ({
       </div>
 
       <Tabs value={tab} onValueChange={setTab} className="w-full">
-        <TabsHeader />
-        <RenderTabContent />
+        <TabsHeader tab={tab} sortBy={sortBy} onSortChange={setSortBy} />
+        <TabContentArea
+          queries={queries}
+          forkedQueries={forkedQueries}
+          starredQueries={starredQueries}
+        />
       </Tabs>
     </div>
   );

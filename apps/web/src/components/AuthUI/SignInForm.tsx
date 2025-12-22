@@ -31,8 +31,7 @@ export const SignInForm = () => {
     } else if (state.error === "unexpected") {
       setLocalError("An unexpected error occurred. Please try again.");
     }
-
-    // todo on multiple invalid creds redirect to reset password page
+    // 💭 todo on multiple invalid creds redirect to reset password page
 
     if (state.data && state.data.loginLink) {
       const callbackUrl = searchParams.get("callback") || "/workspace";
@@ -40,12 +39,16 @@ export const SignInForm = () => {
     }
   }, [state, router, searchParams]);
 
+  // ⬢ Handle Input Change
+  // =====================================
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     setLocalError("");
   }, []);
 
+  // ⬢ Handle Form Submission
+  // =====================================
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLocalError("");

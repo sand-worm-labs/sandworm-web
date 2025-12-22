@@ -80,15 +80,15 @@ export const SaveModal = ({
 
   return (
     <Dialog open={open} onOpenChange={setOpenAction}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg font-primary rounded-2xl">
         <DialogHeader>
-          <DialogTitle>Save Query</DialogTitle>
+          <DialogTitle className="font-medium">Save Query</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div>
             <Label
               htmlFor="title"
-              className="block text-sm font-medium text-gray-300 mb-1"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"
             >
               Title
             </Label>
@@ -96,12 +96,13 @@ export const SaveModal = ({
               id="title"
               value={formTitle}
               onChange={e => setFormTitle(e.target.value)}
+              className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4]"
             />
           </div>
           <div>
             <Label
               htmlFor="description"
-              className="block text-sm font-medium text-gray-300 mb-1"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"
             >
               Description
             </Label>
@@ -110,12 +111,13 @@ export const SaveModal = ({
               value={description}
               onChange={e => setDescription(e.target.value)}
               placeholder="Enter description"
+              className="w-full px-3 py-1.5  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4] min-h-[6rem] resize-none "
             />
           </div>
           <div>
             <Label
               htmlFor="tags"
-              className="block text-sm font-medium text-gray-300 mb-1"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"
             >
               Tags (comma-separated)
             </Label>
@@ -124,6 +126,7 @@ export const SaveModal = ({
               value={tags}
               onChange={e => setTags(e.target.value)}
               placeholder="e.g. sql, database, analytics"
+              className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4]"
             />
           </div>
           <div className="flex items-center space-x-2">
@@ -131,13 +134,14 @@ export const SaveModal = ({
               id="private"
               checked={isPrivate}
               onCheckedChange={checked => setIsPrivate(checked === true)}
+              className="w-5 h-5"
             />
             <Label htmlFor="private">Make Private</Label>
           </div>
           <Button
             disabled={loading}
             onClick={handleSave}
-            className="w-full bg-white text-black font-medium py-5 text-base"
+            className="px-4 py-3 text-sm font-medium text-white bg-[#C7665C] hover:bg-[#C7665C] dark:bg-[#C7665C] dark:hover:bg-[#C7665C] rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 w-full text-center justify-center"
           >
             {loading || saving ? "Saving..." : "Save Query"}
           </Button>

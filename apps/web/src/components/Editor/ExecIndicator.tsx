@@ -39,7 +39,11 @@ function ExecIndicator(props: Props) {
           return <ExclamationTriangleIcon className="h-3 w-3 text-red-500" />;
         case "success":
           return <CheckIcon className="h-3 w-3 text-green-500" />;
+        default:
+          return null;
       }
+    default:
+      return null;
   }
 }
 

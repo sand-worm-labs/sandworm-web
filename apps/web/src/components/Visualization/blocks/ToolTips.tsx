@@ -246,7 +246,6 @@ export function TooltipV2<T extends Element>(props: TooltipV2Props<T>) {
             leave="transition ease-in duration-75"
             leaveFrom="transform opacity-100 scale-100"
             leaveTo="transform opacity-0 scale-95"
-            show
           >
             <div style={pos} className="absolute z-[2000] rounded-md">
               {(() => {

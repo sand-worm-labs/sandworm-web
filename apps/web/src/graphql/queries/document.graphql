@@ -1,13 +1,25 @@
-# Document Queries
-
 query GetDocument($workspaceId: String!, $documentId: String!) {
   getDocument(workspaceId: $workspaceId, documentId: $documentId) {
     id
     title
     slug
+    icon
     parentId
+    orderIndex
     authorId
     workspaceId
+    createdAt
+    updatedAt
+    deletedAt
+    version
+    publishedAt
+    isDataApp
+    isSyncedWithYjs
+    hasDashboard
+    appId
+    clock
+    appClock
+    userAppClock
     runSQLSelection
     runUnexecutedBlocks
     shareLinksWithoutSidebar

@@ -45,6 +45,7 @@ function ScheduleConfigForm({
           Add scheduled run
         </h3>
         <button
+          type="button"
           className="text-gray-500 hover:bg-gray-100 hover:text-gray-700 flex items-center justify-center gap-x-2 text-sm p-1 rounded-sm"
           onClick={onClose}
         >
@@ -64,7 +65,7 @@ function ScheduleConfigForm({
             <select
               {...form.register("type")}
               defaultValue="monthly"
-              className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-gray-300 focus:ring-2 focus:ring-primary-400 sm:text-sm sm:leading-6"
+              className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-gray-300 focus-visible:outline-primary focus:ring-1 focus:ring-primary sm:text-sm sm:leading-6 "
             >
               <option value="hourly">Hourly</option>
               <option value="daily">Daily</option>
@@ -84,7 +85,7 @@ function ScheduleConfigForm({
             </label>
             <select
               {...form.register("timezone", { required: true })}
-              className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-gray-300 focus:ring-2 focus:ring-primary-400 sm:text-sm sm:leading-6"
+              className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-gray-300 focus:ring-2 focus:ring-primary focus-visible:outline-primary sm:text-sm sm:leading-6"
               defaultValue={userTimezone}
             >
               {tzList.map(timezone => (
@@ -133,14 +134,11 @@ function ScheduleConfigForm({
             />
           )}
 
-          <hr />
-
           <div className="pt-2 flex flex-col space-y-6">
             <div className="flex items-center justify-between pt-2">
               <h4 className="pt-0.5">Notifications</h4>
               <div className="flex items-center justify-end gap-x-2">
                 <Tooltip
-                  title="Notifications are not available in the open-source version"
                   message="Upgrade to sandworm cloud’s professional tier to use it."
                   active
                   position="left"
@@ -148,7 +146,7 @@ function ScheduleConfigForm({
                 >
                   <button
                     type="button"
-                    className="flex items-center gap-x-2 rounded-sm px-2.5 py-1 text-gray-500 text-sm hover:bg-gray-100 border border-gray-200 disabled:cursor-not-allowed"
+                    className="flex items-center gap-x-2 px-4 py-1 text-white text-sm rounded-lg disabled:cursor-not-allowed bg-primary"
                     disabled
                   >
                     Add

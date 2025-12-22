@@ -8,6 +8,7 @@ import {
   useGetUserWorkspaceInfoQuery,
   useUpdateWorkspaceMutation,
   useSwitchWorkspaceMutation,
+  useInviteUserToWorkspaceMutation,
 } from "@/generated/graphql";
 
 import { NEXT_PUBLIC_API_URL } from "../utils/env";
@@ -208,5 +209,77 @@ export const useSwitchWorkspace = (): UseSwitchWorkspaceReturn => {
     switchWorkspace,
     loading,
     error: error as Error | null,
+  };
+};
+
+// 4. Invite user to workspace
+type UseInviteUserToWorkspaceReturn = {
+  inviteUser: (
+    email: string,
+    workspaceId: string,
+    role?: string
+  ) => Promise<boolean>;
+  loading: boolean;
+  error: Error | null;
+  isAdmin: boolean;
+};
+
+export const useInviteUserToWorkspace = (
+  workspaceId?: string
+): UseInviteUserToWorkspaceReturn => {
+  const session = useSession({ redirectToLogin: false });
+  const { workspaceInfo, refetch: refetchWorkspaceInfo } =
+    useCurrentWorkspaceInfo();
+
+  const [inviteUserMutation, { loading, error }] =
+    useInviteUserToWorkspaceMutation();
+
+  // Check if current user is admin
+  const isAdmin = useMemo(() => {
+    if (!workspaceInfo || !session?.user?.id) return false;
+
+    const targetWorkspaceId = workspaceId || workspaceInfo.id;
+    if (workspaceInfo.id !== targetWorkspaceId) return false;
+
+    return workspaceInfo.role === "admin";
+  }, [workspaceInfo, session?.user?.id, workspaceId]);
+
+  const inviteUser = useCallback(
+    async (email: string, targetWorkspaceId: string, role?: string) => {
+      if (!isAdmin) {
+        throw new Error(
+          "You must be an admin to invite users to the workspace"
+        );
+      }
+
+      try {
+        const result = await inviteUserMutation({
+          variables: {
+            email,
+            workspaceId: targetWorkspaceId,
+            role,
+          },
+        });
+
+        if (result.data?.inviteUserToWorkspace) {
+          // Optionally refetch workspace info to get updated members list
+          await refetchWorkspaceInfo();
+          return true;
+        }
+
+        return false;
+      } catch (err) {
+        console.error("Failed to invite user:", err);
+        throw err;
+      }
+    },
+    [isAdmin, inviteUserMutation, refetchWorkspaceInfo]
+  );
+
+  return {
+    inviteUser,
+    loading,
+    error: error as Error | null,
+    isAdmin,
   };
 };

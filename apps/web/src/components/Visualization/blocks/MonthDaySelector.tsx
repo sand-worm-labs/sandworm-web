@@ -30,7 +30,7 @@ const MonthDaySelector = (props: WeekdaySelectorProps) => {
     <Menu>
       {({ open }) => (
         <>
-          <Menu.Button className="inline-flex justify-between w-full px-2 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300">
+          <Menu.Button className="inline-flex justify-between w-full px-2 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-primary">
             {currentValue.length > 0 ? (
               <div className="flex justify-start items-center gap-x-2 gap-y-2 flex-wrap">
                 {currentValue.map(dayIndex => (
@@ -65,7 +65,7 @@ const MonthDaySelector = (props: WeekdaySelectorProps) => {
           >
             <Menu.Items
               static
-              className="absolute w-56 mt-2 origin-top-right bg-white border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none  max-h-56 overflow-y-auto"
+              className="absolute w-56 mt-2 origin-top-right bg-white border border-[#E9ECEF] divide-y divide-gray-100 rounded-xl   focus:outline-none  max-h-56 overflow-y-auto"
             >
               <div className="px-1 py-1">
                 {monthDays.map((day, dayIndex) => (
@@ -74,13 +74,13 @@ const MonthDaySelector = (props: WeekdaySelectorProps) => {
                       <button
                         type="button"
                         className={`${
-                          active ? "bg-gray-100" : ""
-                        } group flex items-center px-2 py-2 text-sm cursor-pointer`}
+                          active ? "bg-primary/10" : ""
+                        } group flex items-center px-2 py-2 text-sm cursor-pointer w-full rounded-lg`}
                         onClick={() => toggleDay(dayIndex)}
                       >
                         <div className="flex items-center gap-x-2">
                           {currentValue.includes(dayIndex) ? (
-                            <CheckIcon className="h-4 w-4 text-green-500" />
+                            <CheckIcon className="h-4 w-4 text-primary" />
                           ) : (
                             <div className="w-4 h-4" />
                           )}

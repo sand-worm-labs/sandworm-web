@@ -1,5 +1,4 @@
 import { Map, List, Set } from "immutable";
-import { v4 as uuidv4 } from "uuid";
 import React, {
   createContext,
   useContext,
@@ -11,6 +10,15 @@ import React, {
 import { equals } from "ramda";
 
 import type { Document, ApiDocument } from "@/types";
+import {
+  useCreateDocumentMutation,
+  useDeleteDocumentMutation,
+  useDuplicateDocumentMutation,
+  useRestoreDocumentMutation,
+  useUpdateDocumentMutation,
+  usePublishDocumentMutation,
+  useGetWorkspaceDocumentsQuery,
+} from "@/generated/graphql";
 
 import { NEXT_PUBLIC_API_URL } from "../utils/env";
 
@@ -327,66 +335,100 @@ export function DocumentsProvider(props: Props) {
 export function useDocuments(workspaceId: string): UseDocuments {
   const [state, setState] = useContext(Context);
   const [_, { unfavoriteDocument }] = useFavorites(workspaceId);
-  const { documents, loading } = useMemo(
-    (): StateValue =>
-      state.get(workspaceId) ?? { loading: true, documents: List() },
-    [state, workspaceId]
-  );
+
+  const [createDocumentMutation] = useCreateDocumentMutation();
+  const [deleteDocumentMutation] = useDeleteDocumentMutation();
+  const [duplicateDocumentMutation] = useDuplicateDocumentMutation();
+  const [restoreDocumentMutation] = useRestoreDocumentMutation();
+  const [updateDocumentMutation] = useUpdateDocumentMutation();
+  const [publishDocumentMutation] = usePublishDocumentMutation();
+
+  const {
+    data: queryData,
+    loading: queryLoading,
+    error: queryError,
+  } = useGetWorkspaceDocumentsQuery({
+    variables: { workspaceId },
+    skip: !workspaceId,
+  });
+
+  useEffect(() => {
+    if (queryData?.getWorkspaceDocuments && !queryLoading) {
+      setState(s => {
+        const current = s.get(workspaceId);
+
+        // Initialize with GraphQL data if we don't have data yet
+        if (!current || current.loading) {
+          return s.set(workspaceId, {
+            loading: false,
+            documents: List(queryData.getWorkspaceDocuments as ApiDocument[]),
+          });
+        }
+
+        return s;
+      });
+    }
+  }, [queryData, queryLoading, workspaceId, setState]);
+
+  const { documents, loading } = useMemo((): StateValue => {
+    const currentState = state.get(workspaceId);
+
+    // If we have GraphQL data, use it even if websocket hasn't loaded
+    if (queryData?.getWorkspaceDocuments && !queryLoading) {
+      return {
+        loading: false,
+        documents:
+          currentState?.documents ??
+          List(queryData.getWorkspaceDocuments as ApiDocument[]),
+      };
+    }
+
+    return currentState ?? { loading: true, documents: List() };
+  }, [state, workspaceId, queryData, queryLoading]);
 
   const createDocument = useCallback(
-    async (data: {
-      id?: string;
-      parentId?: string | null;
-      version: number;
-    }) => {
+    async (data: { parentId?: string | null; version: number }) => {
       if (loading) {
         throw new Error("Cannot create document while loading");
       }
 
-      const id = data?.id ?? uuidv4();
-      const body = {
-        id,
-        parentId: data?.parentId ?? null,
-        version: data.version,
-      };
-      const previousStateValue = state.get(workspaceId);
-      setState(s => {
-        const { loading, documents } = s.get(workspaceId) ?? {
-          loading: true,
-          documents: List(),
-        };
-
-        return s.set(workspaceId, {
-          loading,
-          documents: upsertDocumentInMemory(documents, workspaceId, body),
-        });
-      });
-
       try {
-        const res = await fetch(
-          `${NEXT_PUBLIC_API_URL()}/v1/workspaces/${workspaceId}/documents`,
-          {
-            credentials: "include",
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
+        const result = await createDocumentMutation({
+          variables: {
+            workspaceId,
+            input: {
+              title: "Untitled",
+              parentId: data.parentId ?? null,
+              version: data.version,
             },
-            body: JSON.stringify(body),
-          }
-        );
-        const doc: Document = await res.json();
-        return doc;
+          },
+        });
+
+        if (!result.data?.createDocument) {
+          throw new Error("Failed to create document");
+        }
+
+        const newDoc = result.data.createDocument as ApiDocument;
+
+        setState(s => {
+          const { loading, documents } = s.get(workspaceId) ?? {
+            loading: false,
+            documents: List(),
+          };
+
+          return s.set(workspaceId, {
+            loading,
+            documents: documents.push(newDoc),
+          });
+        });
+
+        return newDoc as Document;
       } catch (e) {
         alert("Something went wrong");
-        if (previousStateValue) {
-          setState(s => s.set(workspaceId, previousStateValue));
-        } else {
-          setState(s => s.delete(workspaceId));
-        }
         throw e;
       }
     },
-    [documents, workspaceId, loading, setState]
+    [loading, workspaceId, setState, createDocumentMutation]
   );
 
   const deleteDocument = useCallback(
@@ -402,7 +444,6 @@ export function useDocuments(workspaceId: string): UseDocuments {
         );
 
         if (rootNonDeletedDocuments.size === 1) {
-          // prevent deleting the last root document
           return;
         }
       }
@@ -421,30 +462,40 @@ export function useDocuments(workspaceId: string): UseDocuments {
         });
       });
 
-      const deletedDocRes = await fetch(
-        `${NEXT_PUBLIC_API_URL()}/v1/workspaces/${workspaceId}/documents/${id}?isPermanent=${isPermanent}`,
-        {
-          credentials: "include",
-          method: "DELETE",
-        }
-      );
+      try {
+        const result = await deleteDocumentMutation({
+          variables: {
+            input: {
+              workspaceId,
+              documentId: id,
+              isPermanent: isPermanent ?? false,
+            },
+          },
+        });
 
-      if (deletedDocRes.status > 299) {
-        if (deletedDocRes.status >= 500) {
-          alert("Something went wrong");
+        if (!result.data?.deleteDocument) {
+          throw new Error("Failed to delete document");
         }
 
+        unfavoriteDocument(id);
+      } catch (e) {
         if (previousStateValue) {
           setState(s => s.set(workspaceId, previousStateValue));
         } else {
           setState(s => s.delete(workspaceId));
         }
-        return;
+        alert("Something went wrong");
       }
-
-      unfavoriteDocument(id);
     },
-    [documents, workspaceId, loading, setState, unfavoriteDocument]
+    [
+      documents,
+      workspaceId,
+      loading,
+      setState,
+      unfavoriteDocument,
+      state,
+      deleteDocumentMutation,
+    ]
   );
 
   const duplicateDocument = useCallback(
@@ -459,15 +510,22 @@ export function useDocuments(workspaceId: string): UseDocuments {
           documents: s.get(workspaceId)?.documents ?? List(),
         })
       );
+
       try {
-        const res = await fetch(
-          `${NEXT_PUBLIC_API_URL()}/v1/workspaces/${workspaceId}/documents/${id}/duplicate`,
-          {
-            credentials: "include",
-            method: "POST",
-          }
-        );
-        const doc: ApiDocument = await res.json();
+        const result = await duplicateDocumentMutation({
+          variables: {
+            input: {
+              workspaceId,
+              documentId: id,
+            },
+          },
+        });
+
+        if (!result.data?.duplicateDocument) {
+          throw new Error("Failed to duplicate document");
+        }
+
+        const doc = result.data.duplicateDocument as ApiDocument;
 
         setState(s => {
           const documents = s.get(workspaceId)?.documents ?? List();
@@ -478,7 +536,6 @@ export function useDocuments(workspaceId: string): UseDocuments {
               updated = true;
               return doc;
             }
-
             return d;
           });
 
@@ -487,7 +544,7 @@ export function useDocuments(workspaceId: string): UseDocuments {
           }
 
           return s.set(workspaceId, {
-            loading,
+            loading: false,
             documents: newDocuments,
           });
         });
@@ -504,7 +561,7 @@ export function useDocuments(workspaceId: string): UseDocuments {
         throw e;
       }
     },
-    [workspaceId, documents, loading]
+    [workspaceId, loading, setState, duplicateDocumentMutation]
   );
 
   const restoreDocument = useCallback(
@@ -513,20 +570,25 @@ export function useDocuments(workspaceId: string): UseDocuments {
         throw new Error("Cannot restore document while loading");
       }
 
-      const restoreDocRes = await fetch(
-        `${NEXT_PUBLIC_API_URL()}/v1/workspaces/${workspaceId}/documents/${id}/restore`,
-        {
-          credentials: "include",
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
+      try {
+        const result = await restoreDocumentMutation({
+          variables: {
+            input: {
+              workspaceId,
+              documentId: id,
+            },
           },
-        }
-      );
+        });
 
-      await restoreDocRes.json();
+        if (!result.data?.restoreDocument) {
+          throw new Error("Failed to restore document");
+        }
+      } catch (e) {
+        alert("Something went wrong");
+        throw e;
+      }
     },
-    [workspaceId, documents, loading]
+    [workspaceId, loading, restoreDocumentMutation]
   );
 
   const setIcon = useCallback(
@@ -551,6 +613,7 @@ export function useDocuments(workspaceId: string): UseDocuments {
       });
 
       try {
+        // TODO: Convert to GraphQL once backend adds 'icon' to UpdateDocumentInput
         await fetch(
           `${NEXT_PUBLIC_API_URL()}/v1/workspaces/${workspaceId}/documents/${id}/icon`,
           {
@@ -572,7 +635,7 @@ export function useDocuments(workspaceId: string): UseDocuments {
         throw e;
       }
     },
-    [state, workspaceId, loading]
+    [state, workspaceId, loading, setState]
   );
 
   const updateParent = useCallback(
@@ -595,9 +658,7 @@ export function useDocuments(workspaceId: string): UseDocuments {
 
       let affectedDocuments = Map<string, ApiDocument>();
       documents.forEach(doc => {
-        // if changing parentId
         if (document.parentId !== futureParentId) {
-          // we need to decrement orderIndex of all documents that belongs to the previous parent and comes after the current document
           if (
             doc.parentId === document.parentId &&
             doc.orderIndex > document.orderIndex
@@ -608,7 +669,6 @@ export function useDocuments(workspaceId: string): UseDocuments {
             });
           }
 
-          // we need to increment orderIndex of all documents that belongs to the future parent and comes after the future orderIndex
           if (
             doc.parentId === futureParentId &&
             doc.orderIndex >= futureOrderIndex &&
@@ -623,9 +683,7 @@ export function useDocuments(workspaceId: string): UseDocuments {
           document.orderIndex !== futureOrderIndex &&
           futureOrderIndex !== -1
         ) {
-          // if changing orderIndex
           if (doc.parentId === document.parentId) {
-            // we ned to increment orderIndex of all documents that comes after futureOrderIndex
             if (doc.orderIndex >= futureOrderIndex) {
               affectedDocuments = affectedDocuments.set(doc.id, {
                 ...doc,
@@ -638,7 +696,6 @@ export function useDocuments(workspaceId: string): UseDocuments {
 
       let actualOrderIndex = futureOrderIndex;
       if (futureOrderIndex === -1) {
-        // find the actual order index, the last one
         actualOrderIndex = documents.filter(
           doc => doc.parentId === futureParentId
         ).size;
@@ -673,23 +730,20 @@ export function useDocuments(workspaceId: string): UseDocuments {
       });
 
       try {
-        const res = await fetch(
-          `${NEXT_PUBLIC_API_URL()}/v1/workspaces/${workspaceId}/documents/${id}`,
-          {
-            credentials: "include",
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
+        const result = await updateDocumentMutation({
+          variables: {
+            workspaceId,
+            documentId: id,
+            input: {
+              parentId: futureParentId,
+              orderIndex: actualOrderIndex,
             },
-            body: JSON.stringify({
-              relations: {
-                parentId: futureParentId,
-                orderIndex: futureOrderIndex,
-              },
-            }),
-          }
-        );
-        await res.json();
+          },
+        });
+
+        if (!result.data?.updateDocument) {
+          throw new Error("Failed to update document parent");
+        }
       } catch (e) {
         alert("Something went wrong");
         if (previousStateValue) {
@@ -700,7 +754,7 @@ export function useDocuments(workspaceId: string): UseDocuments {
         throw e;
       }
     },
-    [documents, workspaceId, state, setState]
+    [documents, workspaceId, state, setState, updateDocumentMutation]
   );
 
   const publish = useCallback(
@@ -710,51 +764,59 @@ export function useDocuments(workspaceId: string): UseDocuments {
         return;
       }
 
-      const res = await fetch(
-        `${NEXT_PUBLIC_API_URL()}/v1/workspaces/${workspaceId}/documents/${id}/publish`,
-        {
-          credentials: "include",
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
+      try {
+        const result = await publishDocumentMutation({
+          variables: {
+            workspaceId,
+            documentId: id,
           },
-        }
-      );
-      if (!res.ok) {
-        throw new Error(`Error saving Document(${id})`);
-      }
-
-      setState(s => {
-        const { loading, documents } = s.get(workspaceId) ?? {
-          loading: true,
-          documents: List(),
-        };
-        return s.set(workspaceId, {
-          loading,
-          documents: documents.map(doc =>
-            doc.id === id
-              ? {
-                  ...doc,
-                  isDataApp: true,
-                  publishedAt: new Date().toISOString(),
-                }
-              : doc
-          ),
         });
-      });
+
+        if (!result.data?.publishDocument) {
+          throw new Error(`Error publishing Document(${id})`);
+        }
+
+        setState(s => {
+          const { loading, documents } = s.get(workspaceId) ?? {
+            loading: true,
+            documents: List(),
+          };
+          return s.set(workspaceId, {
+            loading,
+            documents: documents.map(doc =>
+              doc.id === id
+                ? {
+                    ...doc,
+                    isDataApp: true,
+                    publishedAt: new Date().toISOString(),
+                  }
+                : doc
+            ),
+          });
+        });
+      } catch (e) {
+        alert("Failed to publish document");
+        throw e;
+      }
     },
-    [documents, workspaceId, state, setState]
+    [documents, workspaceId, setState, publishDocumentMutation]
   );
 
   const updateDocumentSettings = useCallback(
     async (
       id: string,
-      settings: { runUnexecutedBlocks?: boolean; runSQLSelection?: boolean }
+      settings: {
+        runUnexecutedBlocks?: boolean;
+        runSQLSelection?: boolean;
+        shareLinksWithoutSidebar?: boolean;
+      }
     ) => {
       const document = documents.find(doc => doc.id === id);
       if (!document) {
         return;
       }
+
+      const previousStateValue = state.get(workspaceId);
 
       setState(s => {
         const { loading, documents } = s.get(workspaceId) ?? {
@@ -775,23 +837,29 @@ export function useDocuments(workspaceId: string): UseDocuments {
         });
       });
 
-      const res = await fetch(
-        `${NEXT_PUBLIC_API_URL()}/v1/workspaces/${workspaceId}/documents/${id}/settings`,
-        {
-          credentials: "include",
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
+      try {
+        const result = await updateDocumentMutation({
+          variables: {
+            workspaceId,
+            documentId: id,
+            input: settings,
           },
-          body: JSON.stringify(settings),
-        }
-      );
+        });
 
-      if (!res.ok) {
-        throw new Error(`Error changing settings for Document(${id})`);
+        if (!result.data?.updateDocument) {
+          throw new Error(`Error changing settings for Document(${id})`);
+        }
+      } catch (e) {
+        alert("Something went wrong");
+        if (previousStateValue) {
+          setState(s => s.set(workspaceId, previousStateValue));
+        } else {
+          setState(s => s.delete(workspaceId));
+        }
+        throw e;
       }
     },
-    [documents, workspaceId, state, setState]
+    [documents, workspaceId, state, setState, updateDocumentMutation]
   );
 
   return useMemo(

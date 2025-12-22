@@ -46,6 +46,7 @@ import {
   getBlockFlatPosition,
 } from "@sandworm/editor";
 import type { DataFrame } from "@sandworm/types";
+
 import {
   Bars3CenterLeftIcon,
   ChartPieIcon,
@@ -111,6 +112,7 @@ import { ContentSkeleton } from "./ContentSkeleton";
 import PlusButton from "./PlusButton";
 import DragHandle from "./DragHandle";
 import Title from "./Title";
+import { DocumentIcon } from "@heroicons/react/24/solid";
 
 // The react-dnd package does not export this...
 type Identifier = string | symbol;
@@ -120,7 +122,7 @@ const blocksGetter = (yDoc: Y.Doc) => yDoc.getMap<YBlock>("blocks");
 const dataframesGetter = (yDoc: Y.Doc) => yDoc.getMap<DataFrame>("dataframes");
 
 const Dropzone = ({
-  index,
+  dropIndex,
   isLast,
   isEditable,
   onDropItem,
@@ -129,7 +131,7 @@ const Dropzone = ({
   writebackEnabled,
   workspaceId,
 }: {
-  index: number;
+  dropIndex: number;
   isLast: boolean;
   isEditable: boolean;
   onDropItem: (
@@ -153,22 +155,22 @@ const Dropzone = ({
       drop: (
         { blockGroupId, blockId }: { blockGroupId: string; blockId: string },
         monitor
-      ) => onDropItem(blockGroupId, blockId, index, monitor.getItemType()),
+      ) => onDropItem(blockGroupId, blockId, dropIndex, monitor.getItemType()),
       canDrop: ({ blockGroupId }, monitor) =>
-        onCheckCanDrop(blockGroupId, index, monitor.getItemType()),
+        onCheckCanDrop(blockGroupId, dropIndex, monitor.getItemType()),
       collect: monitor => ({
         isOver: monitor.isOver() ?? false,
         canDrop: monitor.canDrop() ?? false,
       }),
     }),
-    [index, updateOrder, onCheckCanDrop, onDropItem]
+    [dropIndex, updateOrder, onCheckCanDrop, onDropItem]
   );
 
   const addBlockHandler = useCallback(
     (type: BlockType) => {
-      onAddBlock(type, index);
+      onAddBlock(type, dropIndex);
     },
-    [onAddBlock, index]
+    [onAddBlock, dropIndex]
   );
 
   return (
@@ -217,6 +219,8 @@ export function getTabIcon(
       return ArrowUpTrayIcon;
     case BlockType.PivotTable:
       return Bars3CenterLeftIcon;
+    default:
+      return DocumentIcon;
   }
 }
 
@@ -520,7 +524,6 @@ const DraggableTabbedBlock = (props: {
   ) => void;
   onRemoveBlockGroup: (id: string) => void;
   onRemoveBlock: (blockGroupId: string, id: string) => void;
-  awareness: Awareness;
   dataSources: APIDataSources;
   dataframes: Y.Map<DataFrame>;
   isPublicViewer: boolean;
@@ -599,7 +602,7 @@ const DraggableTabbedBlock = (props: {
     [props.id, props.onGroup]
   );
 
-  const addGroupedBlock = useCallback(
+  const handleAddGroupedBlock = useCallback(
     (blockId: string, blockType: BlockType, position: "before" | "after") => {
       return props.onAddGroupedBlock(blockType, props.id, blockId, position);
     },
@@ -733,7 +736,7 @@ file`;
         onSchemaExplorer={props.onSchemaExplorer}
         insertBelow={props.insertBelow}
         isPDF={props.isPDF}
-        addGroupedBlock={addGroupedBlock}
+        addGroupedBlock={handleAddGroupedBlock}
         dataframes={props.dataframes}
         isApp={props.isApp}
         onFileUploadBlockPythonUsage={onFileUploadBlockPythonUsage}
@@ -1003,7 +1006,6 @@ file`;
           onDuplicateBlock={onDuplicateBlockGroup}
           onDeleteTab={hasMultipleTabs ? onDeleteCurrentTab : null}
           onDeleteBlock={onRemoveBlockGroup}
-          targetRef={popupContainerRef}
           onHideAllTabs={onHideAllTabs}
           menuPosition={isSideBarOpen ? "left" : "right"}
         />
@@ -1071,11 +1073,10 @@ file`;
           <div
             className={clsx(
               "absolute top-0 left-0 h-full w-full z-30 opacity-50 pointer-events-none",
-              isOver && canDrop
-                ? "bg-ceramic-100"
-                : isDragging
-                  ? "opacity-50"
-                  : ""
+              {
+                "bg-ceramic-100": isOver && canDrop,
+                "opacity-50": isDragging && !(isOver && canDrop),
+              }
             )}
           />
           {props.isPDF ? (
@@ -1144,7 +1145,7 @@ const V2EditorRow = (props: {
       {props.index === 0 && (
         <Dropzone
           workspaceId={props.document.workspaceId}
-          index={props.index}
+          dropIndex={props.index}
           isLast={false}
           isEditable={props.isEditable && !props.isApp}
           onAddBlock={props.onAddBlock}
@@ -1162,7 +1163,6 @@ const V2EditorRow = (props: {
         onRemoveBlock={props.onRemoveBlock}
         onRemoveBlockGroup={props.onRemoveBlockGroup}
         onGroup={props.onGroup}
-        awareness={props.awareness}
         dataSources={props.dataSources}
         dataframes={props.dataframes}
         isPublicViewer={props.isPublicViewer}
@@ -1180,7 +1180,7 @@ const V2EditorRow = (props: {
       <div className={clsx(isLast ? "pt-2" : "")}>
         <Dropzone
           workspaceId={props.document.workspaceId}
-          index={props.index + 1}
+          dropIndex={props.index + 1}
           isLast={isLast}
           isEditable={props.isEditable && !props.isApp}
           onAddBlock={props.onAddBlock}
@@ -1727,7 +1727,6 @@ const Editor = (props: Props) => {
                 isEditable={
                   props.isEditable && !props.isApp && props.role !== "viewer"
                 }
-                isPDF={props.isPDF}
               />
             </div>
 

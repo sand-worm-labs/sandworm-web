@@ -9,7 +9,7 @@ interface InviteUserModalProps {
   isOpen: boolean;
   onClose: () => void;
   workspaceName: string;
-  onInvite: (email: string) => Promise<void>;
+  onInvite: (email: string, role?: string) => Promise<void>;
 }
 
 export default function InviteUserModal({
@@ -19,12 +19,14 @@ export default function InviteUserModal({
   onInvite,
 }: InviteUserModalProps) {
   const [email, setEmail] = useState("");
+  const [role, setRole] = useState<string>("member");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
 
   const handleClose = useCallback(() => {
     if (!isSubmitting) {
       setEmail("");
+      setRole("member");
       setError("");
       onClose();
     }
@@ -50,8 +52,9 @@ export default function InviteUserModal({
       setError("");
 
       try {
-        await onInvite(email);
+        await onInvite(email, role);
         setEmail("");
+        setRole("member");
         onClose();
       } catch (err) {
         setError(
@@ -61,7 +64,7 @@ export default function InviteUserModal({
         setIsSubmitting(false);
       }
     },
-    [email, onInvite, onClose]
+    [email, role, onInvite, onClose]
   );
 
   return (
@@ -130,15 +133,35 @@ export default function InviteUserModal({
                         }}
                         placeholder="colleague@example.com"
                         disabled={isSubmitting}
-                        className="w-full pl-10 pr-16 py-1.5  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none focus:ring focus:ring-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4]"
+                        className="w-full pl-10 pr-16 py-1.5 rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none focus:ring focus:ring-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4]"
                       />
                     </div>
-                    {error && (
-                      <p className="mt-2 text-sm text-red-600 dark:text-red-400">
-                        {error}
-                      </p>
-                    )}
                   </div>
+
+                  <div className="mb-4">
+                    <label
+                      htmlFor="role"
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                    >
+                      Role
+                    </label>
+                    <select
+                      id="role"
+                      value={role}
+                      onChange={e => setRole(e.target.value)}
+                      disabled={isSubmitting}
+                      className="w-full px-3 py-1.5 rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white focus:outline-none focus:ring focus:ring-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4]"
+                    >
+                      <option value="member">Member</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                  </div>
+
+                  {error && (
+                    <p className="mb-4 text-sm text-red-600 dark:text-red-400">
+                      {error}
+                    </p>
+                  )}
 
                   <div className="mt-6 flex gap-3">
                     <button

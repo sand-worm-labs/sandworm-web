@@ -161,17 +161,17 @@ export const HomeTab = () => {
             transition={{ delay: index * 0.05 }}
           >
             <Card
-              className="hover:bg-accent/50 cursor-pointer transition-colors rounded-none"
+              className="hover:bg-accent/50 bg-transparent transition-colors rounded-3xl border-[#CED4DA] dark:border-[#262A30]"
               onClick={() => handleNewAction("sql", item.cleaned_query)}
             >
               <CardHeader>
                 <CardTitle className="text-sm font-medium flex items-center space-x-2">
-                  <Database className="w-4 h-4 text-muted-foreground" />
+                  <Database className="w-4 h-4 text-muted-foreground " />
                   <span className="text-muted-foreground">
                     {item.query_kind || "Query"}
                   </span>
                 </CardTitle>
-                <CardDescription className="text-xs font-mono text-muted-foreground truncate">
+                <CardDescription className="text-xs text-muted-foreground truncate">
                   {truncateQuery(item.cleaned_query)}
                 </CardDescription>
               </CardHeader>
@@ -217,7 +217,7 @@ export const HomeTab = () => {
               onClick={() => handleNewAction(action.action)}
             >
               <div className="flex items-center space-x-2 dark:text-white text-black font-primary break-words">
-                <div className="p-2 rounded-full bg-primary/10 group-hover:bg-primary/20 ">
+                <div className="p-2 rounded-full bg-primary/10 group-hover:bg-primary/20 text-primary">
                   {action.icon}
                 </div>
                 <p className="font-medium text-base">{action.title}</p>
@@ -273,7 +273,7 @@ export const HomeTab = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
               >
-                <Card className="hover:bg-accent/50 transition-colors rounded-none">
+                <Card className="hover:bg-accent/50 bg-transparent transition-colors rounded-3xl border-[#CED4DA] dark:border-[#262A30]">
                   <CardHeader>
                     <CardTitle className="text-sm font-medium flex items-center space-x-2">
                       <div className="p-2 rounded-full bg-primary/10">
@@ -293,7 +293,10 @@ export const HomeTab = () => {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      <Button variant="ghost" className="w-full justify-start">
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start text-primary border-b border-primary rounded-none"
+                      >
                         {card.action}
                       </Button>
                     </a>
