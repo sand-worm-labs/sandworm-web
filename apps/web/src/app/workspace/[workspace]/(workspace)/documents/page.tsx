@@ -3,8 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo } from "react";
 
-import { useDocumentsLocal as useDocuments } from "@/components/Visualization/hooks/useDocumentsLocal";
 import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
+import { useDocuments } from "@/components/Visualization/hooks/useDocuments";
 
 export default function DocumentsPage() {
   const router = useRouter();

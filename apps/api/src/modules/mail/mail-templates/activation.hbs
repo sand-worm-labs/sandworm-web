@@ -3,28 +3,258 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>{{title}}</title>
+    <style>
+        /* Reset styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f4f7fa;
+        }
+
+        table {
+            border-spacing: 0;
+            border-collapse: collapse;
+        }
+
+        img {
+            border: 0;
+            outline: none;
+            text-decoration: none;
+            display: block;
+        }
+
+        /* Container styles */
+        .email-wrapper {
+            width: 100%;
+            background-color: #f4f7fa;
+            padding: 20px 0;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Header styles */
+        .email-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .email-header h1 {
+            margin: 0;
+            color: #ffffff;
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        /* Body styles */
+        .email-body {
+            padding: 40px 30px;
+            color: #333333;
+        }
+
+        .email-body h2 {
+            margin: 0 0 20px 0;
+            color: #1a1a1a;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .email-body p {
+            margin: 0 0 16px 0;
+            color: #555555;
+            font-size: 16px;
+            line-height: 1.7;
+        }
+
+        /* Button styles */
+        .button-container {
+            text-align: center;
+            margin: 35px 0;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 16px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff !important;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 16px;
+            letter-spacing: 0.5px;
+            transition: transform 0.2s ease;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Info box styles */
+        .info-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+
+        .info-box p {
+            margin: 0;
+            font-size: 14px;
+            color: #666666;
+        }
+
+        /* Link fallback */
+        .link-fallback {
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px solid #e5e5e5;
+        }
+
+        .link-fallback p {
+            font-size: 13px;
+            color: #999999;
+            margin-bottom: 10px;
+        }
+
+        .link-fallback a {
+            color: #667eea;
+            word-break: break-all;
+            font-size: 13px;
+        }
+
+        /* Footer styles */
+        .email-footer {
+            background-color: #f8f9fa;
+            padding: 30px;
+            text-align: center;
+            border-top: 1px solid #e5e5e5;
+        }
+
+        .email-footer p {
+            margin: 0 0 8px 0;
+            color: #999999;
+            font-size: 13px;
+        }
+
+        .email-footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        /* Social links */
+        .social-links {
+            margin: 20px 0 0 0;
+        }
+
+        .social-links a {
+            display: inline-block;
+            margin: 0 8px;
+            color: #999999;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        /* Responsive */
+        @media only screen and (max-width: 600px) {
+            .email-container {
+                width: 100% !important;
+                border-radius: 0 !important;
+            }
+
+            .email-header h1 {
+                font-size: 26px !important;
+            }
+
+            .email-body {
+                padding: 30px 20px !important;
+            }
+
+            .email-body h2 {
+                font-size: 20px !important;
+            }
+
+            .button {
+                padding: 14px 30px !important;
+                font-size: 15px !important;
+            }
+        }
+    </style>
 </head>
 
-<body style="margin:0;font-family:arial">
-    <table style="border:0;width:100%">
-        <tr style="background:#eeeeee">
-            <td style="padding:20px;color:#808080;text-align:center;font-size:40px;font-weight:600">
-                {{app_name}}
-            </td>
-        </tr>
+<body>
+    <table class="email-wrapper" width="100%" cellpadding="0" cellspacing="0" role="presentation">
         <tr>
-            <td style="padding:20px;color:#808080;font-size:16px;font-weight:100">
-                {{greeting}}<br>
-                {{intro}} {{app_name}}.<br>
-                {{instruction}}
-            </td>
-        </tr>
-        <tr>
-            <td style="text-align:center;padding:20px">
-                <a href="{{url}}"
-                    style="display:inline-block;padding:20px;background:#00838f;text-decoration:none;color:#ffffff">{{actionTitle}}</a>
+            <td align="center">
+                <table class="email-container" width="600" cellpadding="0" cellspacing="0" role="presentation">
+                    <!-- Header -->
+                    <tr>
+                        <td class="email-header">
+                            <h1>{{app_name}}</h1>
+                        </td>
+                    </tr>
+
+                    <!-- Body -->
+                    <tr>
+                        <td class="email-body">
+                            <h2>{{greeting}}</h2>
+                            
+                            <p>{{intro}}</p>
+                            
+                            <p>{{instruction}}</p>
+
+                            <div class="info-box">
+                                <p><strong>⏰ Important:</strong> This verification link will expire in 24 hours for security reasons.</p>
+                            </div>
+
+                            <div class="button-container">
+                                <a href="{{url}}" class="button">{{actionTitle}}</a>
+                            </div>
+
+                            <div class="link-fallback">
+                                <p>If the button above doesn't work, copy and paste this link into your browser:</p>
+                                <a href="{{url}}">{{url}}</a>
+                            </div>
+
+                            <p style="margin-top: 30px; color: #999999; font-size: 14px;">
+                                If you didn't create an account with {{app_name}}, you can safely ignore this email.
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td class="email-footer">
+                            <p><strong>{{app_name}}</strong></p>
+                            <p>Building amazing experiences together</p>
+                            
+                            <div class="social-links">
+                                <a href="#">Privacy Policy</a> • 
+                                <a href="#">Terms of Service</a> • 
+                                <a href="#">Contact Us</a>
+                            </div>
+                            
+                            <p style="margin-top: 20px;">
+                                &copy;  {{app_name}}. All rights reserved.
+                            </p>
+                        </td>
+                    </tr>
+                </table>
             </td>
         </tr>
     </table>

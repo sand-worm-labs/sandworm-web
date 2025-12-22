@@ -1,8 +1,7 @@
 "use client";
 
-import { Home, Search, Clock, Bot, Terminal } from "lucide-react";
+import { Home, Search, Clock, Terminal, Heart } from "lucide-react";
 import Link from "next/link";
-import { v4 as uuidv4 } from "uuid";
 import { usePathname, useRouter } from "next/navigation";
 import { LuLayoutGrid } from "react-icons/lu";
 import { useCallback, useState } from "react";
@@ -12,9 +11,10 @@ import type { MouseEventHandler } from "react";
 import { AccountDropdown } from "@/components/AccountDropdown";
 import DocumentTree from "@/components/Visualization/blocks/DocumentsTree";
 import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
-import { useDocumentsLocal as useDocuments } from "@/components/Visualization/hooks/useDocumentsLocal";
 import { SandwormLogo } from "@/components/Assets";
 import { SidebarIcon } from "@/components/Assets/SidebarIcon";
+import { useDocuments } from "@/components/Visualization/hooks/useDocuments";
+import { useSession } from "@/components/Visualization/hooks/useAuth";
 
 interface NavItem {
   name: string;
@@ -30,19 +30,8 @@ export const WorkspaceSidebar = () => {
   const documentId = useStringQuery("document");
   const favoriteDocument: any = [];
   const unfavoriteDocument: any = [];
-
-  const mockUser = {
-    id: "4a6e71c4-2c06-460b-bb29-f337bf64e0bc",
-    email: "dqzxu2gbs@mozmail.com",
-    name: "Si Cy",
-    picture: null,
-    lastVisitedWorkspaceId: "405498a2-f3cb-4307-bd1e-4daf5b3a1dbb",
-    createdAt: "2025-10-21T14:03:41.471Z",
-    updatedAt: "2025-11-28T04:59:50.952Z",
-    roles: {
-      "405498a2-f3cb-4307-bd1e-4daf5b3a1dbb": "admin",
-    },
-  };
+  const session = useSession({ redirectToLogin: true });
+  const user = session?.user;
 
   const mainNav: NavItem[] = [
     { name: "Home", href: `/workspace/${workspaceId}`, icon: Home },
@@ -59,6 +48,11 @@ export const WorkspaceSidebar = () => {
   ];
 
   const toolsNav: NavItem[] = [
+    {
+      name: "Favorites",
+      href: `/workspace/${workspaceId}/favorites`,
+      icon: Heart,
+    },
     {
       name: "Console",
       href: `/workspace/${workspaceId}/console`,
@@ -96,14 +90,11 @@ export const WorkspaceSidebar = () => {
 
   const onCreateDocument = useCallback(
     async (parentId: string | null) => {
-      if (documentsState.loading) {
-        return;
-      }
+      if (documentsState.loading) return;
 
-      const id = uuidv4();
       try {
-        await createDocument({ id, parentId, version: 2 });
-        router.push(`/workspace/${workspaceId}/documents/${id}`);
+        const doc = await createDocument({ parentId, version: 2 });
+        router.push(`/workspace/${workspaceId}/documents/${doc.id}`);
       } catch (err) {
         console.error(err);
       }
@@ -144,23 +135,23 @@ export const WorkspaceSidebar = () => {
   );
 
   const onFavoriteDocument = useCallback(
-    (documentId: string) => {
+    (docId: string) => {
       if (documentsState.loading) {
         return;
       }
 
-      favoriteDocument(documentId);
+      favoriteDocument(docId);
     },
     [documentsState, workspaceId, favoriteDocument]
   );
 
   const onUnfavoriteDocument = useCallback(
-    (documentId: string) => {
+    (docId: string) => {
       if (documentsState.loading) {
         return;
       }
 
-      unfavoriteDocument(documentId);
+      unfavoriteDocument(docId);
     },
     [workspaceId, unfavoriteDocument]
   );
@@ -186,6 +177,8 @@ export const WorkspaceSidebar = () => {
     },
     [documentsState, updateDocumentParent]
   );
+
+  console.log(session?.user);
 
   return (
     <aside
@@ -253,7 +246,7 @@ export const WorkspaceSidebar = () => {
 
           {!collapsed && (
             <ul>
-              {mockUser.roles[workspaceId] !== "viewer" && (
+              {user?.role?.[0]?.[workspaceId] !== "viewer" && (
                 <button
                   type="button"
                   id="create-workspace-doc"
@@ -274,7 +267,7 @@ export const WorkspaceSidebar = () => {
                 onFavorite={onFavoriteDocument}
                 onUnfavorite={onUnfavoriteDocument}
                 onSetIcon={onSetIcon}
-                role={mockUser.roles[workspaceId] ?? "viewer"}
+                role={user?.role?.[0]?.[workspaceId] ?? "viewer"}
                 onCreate={onCreateDocument}
                 onUpdateParent={onUpdateDocumentParent}
               />

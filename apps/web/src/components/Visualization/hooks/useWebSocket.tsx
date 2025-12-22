@@ -1,6 +1,5 @@
 import type { Socket } from "socket.io-client";
 import { io } from "socket.io-client";
-
 import { useContext, createContext, useEffect, useState } from "react";
 import { validate } from "uuid";
 

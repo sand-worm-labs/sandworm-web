@@ -89,7 +89,7 @@ export const SearchBar = () => {
     } else if (e.key === "Enter") {
       e.preventDefault();
       const finalQuery =
-        highlightIndex >= 0
+        highlightIndex >= 0 && allSuggestions[highlightIndex]
           ? allSuggestions[highlightIndex].title
           : query.trim();
 

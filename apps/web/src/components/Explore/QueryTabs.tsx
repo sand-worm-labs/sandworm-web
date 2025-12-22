@@ -40,6 +40,7 @@ export function QueryTabs() {
         const isActive = activeTab === tab.id;
         return (
           <button
+            type="button"
             key={tab.id}
             onClick={() => handleSelectTab(tab.id)}
             className={cn(

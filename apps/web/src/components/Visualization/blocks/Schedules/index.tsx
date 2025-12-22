@@ -288,7 +288,7 @@ function ScheduleList(props: ScheduleListProps) {
               <button
                 type="button"
                 className={clsx(
-                  "text-gray-900 flex items-center justify-center gap-x-2 text-sm px-2 py-1.5 rounded-sm shrink-0",
+                  "text-white flex items-center justify-center gap-x-2 text-sm px-4 py-1.5 rounded-lg shrink-0",
                   !props.isLimited && props.isPublished
                     ? "bg-[#C7665C] hover:bg-primary-300"
                     : "bg-gray-200 cursor-not-allowed"
@@ -296,7 +296,6 @@ function ScheduleList(props: ScheduleListProps) {
                 onClick={props.onAddSchedule}
                 disabled={props.isLimited || !props.isPublished}
               >
-                <CalendarDaysIcon className="h-4 w-4 text-gray-900 " />
                 <span>Add</span>
               </button>
             </Tooltip>

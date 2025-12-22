@@ -1094,3 +1094,7 @@ export function migrateSuccessSQLResult(
       return current;
   }
 }
+
+export type FeatureFlags = {
+  visualizationsV2: boolean;
+};

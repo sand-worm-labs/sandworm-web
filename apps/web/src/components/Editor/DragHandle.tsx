@@ -10,7 +10,7 @@ import {
   PlayIcon,
 } from "@heroicons/react/24/outline";
 import clsx from "clsx";
-import { CSSProperties, useRef } from "react";
+import { useRef } from "react";
 import { createPortal } from "react-dom";
 
 import { computeMenuPosition } from "../Visualization/utils/dom";
@@ -26,7 +26,6 @@ const DragHandle = ({
   onDuplicateTab,
   onDuplicateBlock,
   onHideAllTabs,
-  targetRef,
   menuPosition,
 }: {
   isDragging: boolean;
@@ -39,7 +38,6 @@ const DragHandle = ({
   onDuplicateTab: (() => void) | null;
   onDuplicateBlock: () => void;
   onHideAllTabs: () => void;
-  targetRef: React.RefObject<HTMLDivElement>;
   menuPosition: "left" | "right";
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);

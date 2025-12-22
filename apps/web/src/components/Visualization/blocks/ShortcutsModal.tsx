@@ -98,7 +98,7 @@ export default function ShortcutsModal(props: ShortcutsModalProps) {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-y-auto rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 px-8 py-6 w-[532px] max-h-[90vh]">
+              <Dialog.Panel className="relative transform overflow-y-auto rounded-2xl bg-white text-left  transition-all sm:my-8 px-8 py-6 w-[582px] max-h-[90vh]">
                 <div>
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#C7665C20]">
                     <KeyboardIcon
@@ -151,7 +151,7 @@ export default function ShortcutsModal(props: ShortcutsModalProps) {
                     type="button"
                     data-autofocus
                     onClick={props.onHide}
-                    className="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 mt-0 w-1/3"
+                    className="rounded-xl bg-primary px-3 py-2 text-sm font-medium text-white   mt-0 w-1/3"
                   >
                     Close
                   </button>

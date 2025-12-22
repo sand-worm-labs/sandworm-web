@@ -103,15 +103,14 @@ export const createApolloClient = ({
                 console.log("✅ Token refreshed, retrying requests");
                 onRefreshed(newToken);
                 return newToken;
-              } else {
-                console.log("❌ Refresh failed - no new token");
-                onRefreshed(null);
-                // Redirect to login
-                if (typeof window !== "undefined") {
-                  window.location.href = "/signin";
-                }
-                return null;
               }
+              console.log("❌ Refresh failed - no new token");
+              onRefreshed(null);
+              // Redirect to login
+              if (typeof window !== "undefined") {
+                window.location.href = "/signin";
+              }
+              return null;
             } catch (e) {
               console.error("❌ Refresh error:", e);
               onRefreshed(null);

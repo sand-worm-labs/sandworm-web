@@ -56,7 +56,7 @@ export const HourlyScheduleFields = ({
             validate: minuteValidator,
           })}
           required
-          className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-gray-300 focus:ring-2 focus:ring-primary-400 sm:text-sm sm:leading-6"
+          className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-gray-300 focus:ring-2 focus:ring-primary focus-visible:outline-primary sm:text-sm sm:leading-6"
         />
         <FormError msg={formErrors.minute?.message} />
       </div>
@@ -92,7 +92,7 @@ export const DailyScheduleFields = ({
               },
               validate: hourValidator,
             })}
-            className="pt-2 rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-gray-300 focus:ring-2 focus:ring-primary-400 sm:text-sm sm:leading-6 w-full text-right"
+            className="pt-2 rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-gray-300 focus:ring-1 focus:ring-primary focus-visible:outline-primary sm:text-sm sm:leading-6 w-full text-right"
           />
 
           <span className="text-gray-700">:</span>
@@ -155,7 +155,7 @@ export const WeeklyScheduleFields = ({
                 },
                 validate: hourValidator,
               })}
-              className="pt-2 rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-gray-300 focus:ring-2 focus:ring-primary-400 sm:text-sm sm:leading-6 w-full text-right"
+              className="pt-2 rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-gray-300 focus:ring-2  sm:text-sm sm:leading-6 w-full text-right focus:ring-primary focus-visible:outline-primary"
             />
 
             <span className="text-gray-700">:</span>
@@ -240,7 +240,7 @@ export const MonthlyScheduleFields = ({
                 },
                 validate: hourValidator,
               })}
-              className="pt-2 rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-gray-300 focus:ring-2 focus:ring-primary-400 sm:text-sm sm:leading-6 w-full text-right"
+              className="pt-2 rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-gray-300 focus:ring-2 focus:ring-primary focus-visible:outline-primarysm:text-sm sm:leading-6 w-full text-right"
             />
 
             <span className="text-gray-700">:</span>
@@ -326,7 +326,7 @@ export const CronScheduleFields = ({
             },
           })}
           required
-          className="font-mono block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-gray-300 focus:ring-2 focus:ring-primary-400 sm:text-sm sm:leading-6"
+          className="font-mono block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-gray-300 focus:ring-2 focus:ring-primary-400 sm:text-sm sm:leading-6 focus:ring-primary focus-visible:outline-primary"
         />
         <FormError msg={formErrors.cron?.message} />
       </div>

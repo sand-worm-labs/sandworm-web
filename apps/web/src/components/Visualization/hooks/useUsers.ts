@@ -1,10 +1,10 @@
 import { useCallback, useMemo } from "react";
 
 import type { ApiUser, UserWorkspaceRole, WorkspaceUser } from "@/types";
+import { useGetWorkspaceQuery } from "@/generated/graphql"; // Adjust path to your codegen
 
 import { NEXT_PUBLIC_API_URL } from "../utils/env";
-import { useGetWorkspaceQuery } from "@/generated/graphql"; // Adjust path to your codegen
-import { UserFormValues } from "../blocks/forms/user";
+import type { UserFormValues } from "../blocks/forms/user";
 
 type UpdateUserPayload = {
   name?: string;
@@ -36,7 +36,6 @@ export const useUsers = (workspaceId: string): UseUsers => {
   const users = useMemo(() => {
     if (!data?.getWorkspace?.users) return [];
 
-    // Map GraphQL users to WorkspaceUser format
     return data.getWorkspace.users.map(user => ({
       id: user.id,
       email: user.email || "",
@@ -140,7 +139,7 @@ export const useUsers = (workspaceId: string): UseUsers => {
 
       if (res.status === 403) {
         alert("You are not allowed to reset this user password");
-        return;
+        return "";
       }
 
       alert("Failed to reset password");

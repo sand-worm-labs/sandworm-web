@@ -30,7 +30,7 @@ export const ExecuteButton = ({
   const executionLabel = executionType === "rpc" ? "RPC" : "Indexer";
 
   return (
-    <div className="flex items-center dark">
+    <div className="flex items-center ">
       <Button
         onClick={handleClick}
         disabled={isExecuting}
@@ -54,21 +54,23 @@ export const ExecuteButton = ({
           </Button>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent align="end" className="w-[180px] p-1 dark">
+        <DropdownMenuContent align="end" className="w-[180px] p-1">
           <DropdownMenuLabel className="text-xs text-muted-foreground">
             Execution method
           </DropdownMenuLabel>
 
           <DropdownMenuItem
             onClick={() => setExecutionType("rpc")}
-            className={executionType === "rpc" ? "font-medium" : ""}
+            className={executionType === "rpc" ? "font-medium" : "text-black"}
           >
             RPC
           </DropdownMenuItem>
 
           <DropdownMenuItem
             onClick={() => setExecutionType("indexed")}
-            className={executionType === "indexed" ? "font-medium" : ""}
+            className={
+              executionType === "indexed" ? "font-medium" : "text-black"
+            }
           >
             Indexer
           </DropdownMenuItem>

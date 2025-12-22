@@ -1,21 +1,30 @@
-# Document Mutations
-
-# Create a new document in a workspace
 mutation CreateDocument($workspaceId: String!, $input: CreateDocumentInput!) {
   createDocument(workspaceId: $workspaceId, input: $input) {
     id
     title
     slug
+    parentId
+    orderIndex
     authorId
     workspaceId
-    parentId
+    createdAt
+    updatedAt
+    deletedAt
+    version
+    publishedAt
+    isDataApp
+    isSyncedWithYjs
+    hasDashboard
+    appId
+    clock
+    appClock
+    userAppClock
     runSQLSelection
     runUnexecutedBlocks
     shareLinksWithoutSidebar
   }
 }
 
-# Update document metadata
 mutation UpdateDocument(
   $workspaceId: String!
   $documentId: String!
@@ -29,56 +38,191 @@ mutation UpdateDocument(
     id
     title
     slug
+    parentId
+    orderIndex
     authorId
     workspaceId
+    createdAt
+    updatedAt
+    deletedAt
+    version
+    publishedAt
+    isDataApp
+    isSyncedWithYjs
+    hasDashboard
+    appId
+    clock
+    appClock
+    userAppClock
+    runSQLSelection
+    runUnexecutedBlocks
+    shareLinksWithoutSidebar
   }
 }
 
-# Soft delete or permanently delete a document
 mutation DeleteDocument($input: DeleteDocumentInput!) {
   deleteDocument(input: $input) {
     id
     title
     slug
+
+    parentId
+    orderIndex
+    authorId
+    workspaceId
+    createdAt
+    updatedAt
+    deletedAt
+    version
+    publishedAt
+    isDataApp
+    isSyncedWithYjs
+    hasDashboard
+    appId
+    clock
+    appClock
+    userAppClock
+    runSQLSelection
+    runUnexecutedBlocks
+    shareLinksWithoutSidebar
   }
 }
 
-# Restore a previously deleted document
 mutation RestoreDocument($input: RestoreDocumentInput!) {
   restoreDocument(input: $input) {
     id
     title
     slug
+
+    parentId
+    orderIndex
     authorId
     workspaceId
+    createdAt
+    updatedAt
+    deletedAt
+    version
+    publishedAt
+    isDataApp
+    isSyncedWithYjs
+    hasDashboard
+    appId
+    clock
+    appClock
+    userAppClock
+    runSQLSelection
+    runUnexecutedBlocks
+    shareLinksWithoutSidebar
   }
 }
 
-# Create a fork/duplicate of a document
 mutation DuplicateDocument($input: DuplicateDocumentInput!) {
   duplicateDocument(input: $input) {
     id
     title
     slug
+
+    parentId
+    orderIndex
     authorId
     workspaceId
+    createdAt
+    updatedAt
+    deletedAt
+    version
+    publishedAt
+    isDataApp
+    isSyncedWithYjs
+    hasDashboard
+    appId
+    clock
+    appClock
+    userAppClock
+    runSQLSelection
+    runUnexecutedBlocks
+    shareLinksWithoutSidebar
   }
 }
 
-# Mark a document as a favorite
+mutation PublishDocument($workspaceId: String!, $documentId: String!) {
+  publishDocument(workspaceId: $workspaceId, documentId: $documentId) {
+    id
+    title
+    slug
+    parentId
+    orderIndex
+    authorId
+    workspaceId
+    createdAt
+    updatedAt
+    deletedAt
+    version
+    publishedAt
+    isDataApp
+    isSyncedWithYjs
+    hasDashboard
+    appId
+    clock
+    appClock
+    userAppClock
+    runSQLSelection
+    runUnexecutedBlocks
+    shareLinksWithoutSidebar
+  }
+}
+
 mutation AddFavoriteDocument($input: FavoriteDocumentInput!) {
   addFavoriteDocument(input: $input) {
     id
     title
     slug
+
+    parentId
+    orderIndex
+    authorId
+    workspaceId
+    createdAt
+    updatedAt
+    deletedAt
+    version
+    publishedAt
+    isDataApp
+    isSyncedWithYjs
+    hasDashboard
+    appId
+    clock
+    appClock
+    userAppClock
+    runSQLSelection
+    runUnexecutedBlocks
+    shareLinksWithoutSidebar
   }
 }
 
-# Unmark a document as a favorite
 mutation RemoveFavoriteDocument($input: FavoriteDocumentInput!) {
   removeFavoriteDocument(input: $input) {
     id
     title
     slug
+
+    parentId
+    orderIndex
+    authorId
+    workspaceId
+    createdAt
+    updatedAt
+    deletedAt
+    version
+    publishedAt
+    isDataApp
+    isSyncedWithYjs
+    hasDashboard
+    appId
+    clock
+    appClock
+    userAppClock
+    runSQLSelection
+    runUnexecutedBlocks
+    shareLinksWithoutSidebar
   }
 }

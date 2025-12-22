@@ -44,7 +44,6 @@ export const ClaimUsername = () => {
     setStatus("checking");
     setError(null);
 
-    // fix: wrap in braces so nothing is returned inside the executor
     await new Promise<void>(resolve => {
       setTimeout(resolve, 500);
     });
