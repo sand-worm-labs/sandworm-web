@@ -43,6 +43,13 @@ input CreateDocumentInput {
   version: Float!
 }
 
+input CreateScheduleInput {
+  cron: String!
+  documentId: String!
+  isActive: Boolean
+  timezone: String!
+}
+
 """User register request"""
 input CreateUserInput {
   email: String!
@@ -69,6 +76,12 @@ input DeleteDocumentInput {
 
 input DeleteFileInput {
   path: String!
+  workspaceId: String!
+}
+
+input DeleteScheduleInput {
+  documentId: String!
+  scheduleId: String!
   workspaceId: String!
 }
 
@@ -140,6 +153,15 @@ input EnvironmentVariableInput {
   value: String!
 }
 
+"""The type of execution schedule"""
+enum ExecutionScheduleType {
+  CRON
+  DAILY
+  HOURLY
+  MONTHLY
+  WEEKLY
+}
+
 input FavoriteDocumentInput {
   documentId: String!
   workspaceId: String!
@@ -167,6 +189,10 @@ input ListFilesInput {
   workspaceId: String!
 }
 
+input ListSchedulesInput {
+  documentId: String!
+}
+
 """Login input"""
 input LoginInput {
   """Email address"""
@@ -192,6 +218,9 @@ type Mutation {
   """Create a new document in a workspace"""
   createDocument(input: CreateDocumentInput!, workspaceId: String!): Document!
 
+  """Create a new execution schedule for a document"""
+  createSchedule(input: CreateScheduleInput!, workspaceId: String!): Schedule!
+
   """Register new user"""
   createUser(input: CreateUserInput!): User!
 
@@ -209,6 +238,9 @@ type Mutation {
 
   """Delete a file from the workspace"""
   deleteFile(input: DeleteFileInput!): Boolean!
+
+  """Delete a schedule"""
+  deleteSchedule(input: DeleteScheduleInput!): Boolean!
 
   """Dismiss a completed tutorial"""
   dismissTutorial(input: DismissTutorialInput!): TutorialState!
@@ -260,6 +292,9 @@ type Mutation {
 
   """Update document metadata"""
   updateDocument(documentId: String!, input: UpdateDocumentInput!, workspaceId: String!): Document!
+
+  """Update an existing schedule"""
+  updateSchedule(input: UpdateScheduleInput!, scheduleId: String!): Schedule!
 
   """Update current user"""
   updateUser(input: UpdateUserInput!): User!
@@ -348,6 +383,12 @@ type Query {
     """Username of the profile"""
     username: String!
   ): Profile!
+
+  """Get a single schedule by ID"""
+  schedule(scheduleId: String!): Schedule!
+
+  """Get all schedules for a document"""
+  schedules(input: ListSchedulesInput!): [Schedule!]!
   tags: [String!]!
 }
 
@@ -367,6 +408,21 @@ type SandwormFile {
   path: String!
   relCwdPath: String!
   size: Float!
+}
+
+type Schedule {
+  cron: String
+  days: String
+  documentId: String!
+  hour: Float
+  id: String!
+  isActive: Boolean!
+  lastExecutedAt: DateTime
+  minute: Float
+  nextExecutionAt: DateTime
+  timezone: String
+  type: ExecutionScheduleType!
+  weekdays: String
 }
 
 input SetEnvironmentVariablesInput {
@@ -389,6 +445,12 @@ input UpdateDocumentInput {
   runUnexecutedBlocks: Boolean
   shareLinksWithoutSidebar: Boolean
   title: String
+}
+
+input UpdateScheduleInput {
+  cron: String
+  isActive: Boolean
+  timezone: String
 }
 
 """User update request"""
