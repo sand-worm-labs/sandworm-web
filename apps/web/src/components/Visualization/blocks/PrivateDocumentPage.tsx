@@ -36,6 +36,7 @@ import ReusableComponents from "./ReusableComponents";
 import PageSettingsPanel from "./PageSettingsPanel";
 import { Tooltip } from "./ToolTips";
 import { ContentSkeleton, TitleSkeleton } from "./ContentSkeleton";
+import { DataExplorerContent } from "@/components/ExplorerPanels/DataExplorerContent";
 
 // this is needed because this component only works with the browser
 const V2Editor = dynamic(() => import("@/components/Editor"), {
@@ -490,6 +491,9 @@ function PrivateDocumentPageInner(
               documentId={props.documentId}
               visible={selectedSidebar?._tag === "pageSettings"}
               onHide={onHideSidebar}
+            />
+            <DataExplorerContent
+              visible={selectedSidebar?._tag === "schemaExplorer"}
             />
           </>
         )}

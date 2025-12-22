@@ -842,6 +842,15 @@ export type SwitchWorkspaceMutationVariables = Exact<{
 
 export type SwitchWorkspaceMutation = { __typename?: 'Mutation', switchWorkspace: boolean };
 
+export type InviteUserToWorkspaceMutationVariables = Exact<{
+  email: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
+  role?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type InviteUserToWorkspaceMutation = { __typename?: 'Mutation', inviteUserToWorkspace: boolean };
+
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -1899,6 +1908,39 @@ export function useSwitchWorkspaceMutation(baseOptions?: Apollo.MutationHookOpti
 export type SwitchWorkspaceMutationHookResult = ReturnType<typeof useSwitchWorkspaceMutation>;
 export type SwitchWorkspaceMutationResult = Apollo.MutationResult<SwitchWorkspaceMutation>;
 export type SwitchWorkspaceMutationOptions = Apollo.BaseMutationOptions<SwitchWorkspaceMutation, SwitchWorkspaceMutationVariables>;
+export const InviteUserToWorkspaceDocument = gql`
+    mutation InviteUserToWorkspace($email: String!, $workspaceId: String!, $role: String) {
+  inviteUserToWorkspace(email: $email, workspaceId: $workspaceId, role: $role)
+}
+    `;
+export type InviteUserToWorkspaceMutationFn = Apollo.MutationFunction<InviteUserToWorkspaceMutation, InviteUserToWorkspaceMutationVariables>;
+
+/**
+ * __useInviteUserToWorkspaceMutation__
+ *
+ * To run a mutation, you first call `useInviteUserToWorkspaceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useInviteUserToWorkspaceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [inviteUserToWorkspaceMutation, { data, loading, error }] = useInviteUserToWorkspaceMutation({
+ *   variables: {
+ *      email: // value for 'email'
+ *      workspaceId: // value for 'workspaceId'
+ *      role: // value for 'role'
+ *   },
+ * });
+ */
+export function useInviteUserToWorkspaceMutation(baseOptions?: Apollo.MutationHookOptions<InviteUserToWorkspaceMutation, InviteUserToWorkspaceMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<InviteUserToWorkspaceMutation, InviteUserToWorkspaceMutationVariables>(InviteUserToWorkspaceDocument, options);
+      }
+export type InviteUserToWorkspaceMutationHookResult = ReturnType<typeof useInviteUserToWorkspaceMutation>;
+export type InviteUserToWorkspaceMutationResult = Apollo.MutationResult<InviteUserToWorkspaceMutation>;
+export type InviteUserToWorkspaceMutationOptions = Apollo.BaseMutationOptions<InviteUserToWorkspaceMutation, InviteUserToWorkspaceMutationVariables>;
 export const CurrentUserDocument = gql`
     query CurrentUser {
   currentUser {
