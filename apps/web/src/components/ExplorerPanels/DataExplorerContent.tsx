@@ -25,12 +25,14 @@ import { Database } from "../Assets/Database";
 type EntityType = "raw" | "project" | "decoded";
 
 interface DataExplorerContentProps {
-  onClose?: () => void;
+  visible?: boolean;
+  onHide?: () => void;
   showDragHandle?: boolean;
 }
 
 export function DataExplorerContent({
-  onClose,
+  visible = true,
+  onHide,
   showDragHandle = true,
 }: DataExplorerContentProps) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -84,6 +86,8 @@ export function DataExplorerContent({
     );
   };
 
+  if (!visible) return null;
+
   return (
     <Card className="h-full overflow-hidden relative border-[#E9ECEF] dark:border-[#262A30] border-2 gap-y-0">
       {showDragHandle && (
@@ -109,11 +113,11 @@ export function DataExplorerContent({
               <CardTitle className="font-medium">Data Explorer</CardTitle>
             </div>
 
-            {onClose && (
+            {onHide && (
               <Button
                 variant="ghost"
                 aria-label="Close data explorer"
-                onClick={onClose}
+                onClick={onHide}
                 className="no-drag"
               >
                 <X className="w-5 h-5 text-[#1C3B5A]" strokeWidth={1.4} />

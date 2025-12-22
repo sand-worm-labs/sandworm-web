@@ -608,7 +608,7 @@ file`;
           className="w-[324px] flex flex-col border-l dark:border-[#262A30] border-gray-200 h-full bg-white dark:bg-black"
           {...getRootProps()}
         >
-          <div className="flex justify-between border-b p-6 space-x-3">
+          <div className="flex justify-between border-b p-6 space-x-3 border-[#E9ECEF]">
             <div>
               <h3 className="text-lg font-medium leading-6 text-gray-900 pr-1.5">
                 Files
@@ -621,10 +621,9 @@ file`;
             <div>
               <button
                 type="button"
-                className="flex items-center gap-x-2 rounded-sm bg-[#C7665C] px-3 py-1 text-sm hover:bg-primary-300 text-white disabled:cursor-not-allowed disabled:bg-gray-200"
+                className="flex items-center gap-x-2 rounded-lg bg-[#C7665C] px-3 py-1 text-sm hover:bg-primary-300 text-white disabled:cursor-not-allowed disabled:bg-gray-200"
                 onClick={openUpload}
               >
-                <CloudArrowUpIcon className="w-4 h-4" />
                 Add
               </button>
             </div>

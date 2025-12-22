@@ -33,3 +33,11 @@ mutation UpdateWorkspace($workspaceId: String!, $name: String) {
 mutation SwitchWorkspace($workspaceId: String!) {
   switchWorkspace(workspaceId: $workspaceId)
 }
+
+mutation InviteUserToWorkspace(
+  $email: String!
+  $workspaceId: String!
+  $role: String
+) {
+  inviteUserToWorkspace(email: $email, workspaceId: $workspaceId, role: $role)
+}

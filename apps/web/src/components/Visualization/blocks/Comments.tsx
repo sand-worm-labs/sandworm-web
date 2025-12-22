@@ -146,7 +146,7 @@ export default function Comments({
               )}
 
               <div className="relative flex-auto">
-                <div className="rounded-lg pb-12 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-[#262A30] focus-within:ring-2 focus-within:ring-ceramic-200/70">
+                <div className="rounded-lg  dark:ring-[#262A30] focus-within:ring-2 dark:bg-[#1A1A1A] bg-[#F1F3F4] border  dark:border-[#262A30] border-[#DEE2E6] ring-primary">
                   <label htmlFor="comment" className="sr-only">
                     Add your comment
                   </label>
@@ -154,21 +154,21 @@ export default function Comments({
                     rows={2}
                     name="comment"
                     id="comment"
-                    className="block w-full resize-none border-0 bg-transparent py-1.5 text-gray-900  placeholder:text-gray-400 focus:ring-0 text-sm leading-6 px-4"
+                    className="w-full px-3 py-1.5 pt-2 pb-12 rounded-lg dark:bg-[#1A1A1A] bg-[#F1F3F4] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none transition text-xs md:text-sm min-h-[7rem] resize-none border-0"
                     placeholder="Add your comment..."
                     value={content}
                     onKeyDown={onKeyDown}
                     onChange={onChangeContent}
                   />
-                </div>
 
-                <div className="absolute inset-x-0 bottom-0 flex justify-end py-2 pl-3 pr-2">
-                  <button
-                    type="submit"
-                    className="gap-x-2 rounded-sm bg-[#C7665C] px-3 py-1 text-sm hover:bg-primary-300 text-white"
-                  >
-                    Comment
-                  </button>
+                  <div className="absolute inset-x-0 bottom-0 flex justify-end py-2 pl-3 pr-2">
+                    <button
+                      type="submit"
+                      className="gap-x-2 rounded-md bg-[#C7665C] px-3 py-1 text-sm hover:bg-primary-300 text-white"
+                    >
+                      Comment
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

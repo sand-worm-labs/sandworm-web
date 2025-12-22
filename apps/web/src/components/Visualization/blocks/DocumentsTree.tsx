@@ -226,7 +226,7 @@ function DropDown(props: DropDownProps) {
           leaveFrom="transform opacity-100 scale-100"
           leaveTo="transform opacity-0 scale-95"
         >
-          <Menu.Items className="absolute left-2 -top-2 z-20 w-44 origin-top-right rounded-lg bg-white dark:bg-[#0C1015]  ring-opacity-5 focus:outline-none border-[#0C1015] border dark:border-[#262A30]">
+          <Menu.Items className="absolute left-2 -top-2 z-20 w-44 origin-top-right rounded-lg bg-white dark:bg-[#0C1015]  ring-opacity-5 focus:outline-none border-[#CED4DA] border dark:border-[#262A30]">
             <div className="py-2 px-1.5">
               <Menu.Item>
                 {({ active }) => (

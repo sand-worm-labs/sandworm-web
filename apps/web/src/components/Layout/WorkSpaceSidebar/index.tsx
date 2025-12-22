@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, Search, Clock, Terminal } from "lucide-react";
+import { Home, Search, Clock, Terminal, Heart } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { LuLayoutGrid } from "react-icons/lu";
@@ -48,6 +48,11 @@ export const WorkspaceSidebar = () => {
   ];
 
   const toolsNav: NavItem[] = [
+    {
+      name: "Favorites",
+      href: `/workspace/${workspaceId}/favorites`,
+      icon: Heart,
+    },
     {
       name: "Console",
       href: `/workspace/${workspaceId}/console`,

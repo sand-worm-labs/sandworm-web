@@ -18,12 +18,14 @@ import {
   type RoleFilter,
 } from "@/components/Visualization/UserControl";
 import InviteUserModal from "@/components/InviteUser";
+import { useInviteUserToWorkspace } from "@/components/Visualization/hooks/useWorkspaces";
+import toast from "react-hot-toast";
 
 export default function UsersPage() {
   const workspaceId = useStringQuery("workspace");
   const session = useSession({ redirectToLogin: true });
-  const router = useRouter();
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const { inviteUser, loading, error } = useInviteUserToWorkspace(workspaceId);
 
   const { data: workspaceData, loading: workspaceLoading } =
     useGetWorkspaceQuery({
@@ -159,16 +161,22 @@ export default function UsersPage() {
     [resetPassword, users]
   );
 
-  const handleInviteUser = useCallback(
-    async (email: string) => {
-      // TODO: Implement your invite user logic here
-      console.log("Inviting user:", email, "to workspace:", workspaceId);
+  const handleInviteUser = async (email: string, role?: string) => {
+    try {
+      const success = await inviteUser(email, workspaceId, role);
 
-      // await inviteUserMutation({ variables: { workspaceId, email } });
-      await new Promise(resolve => setTimeout(resolve, 1000));
-    },
-    [workspaceId]
-  );
+      if (success) {
+        toast.success(`Invitation sent to ${email}`);
+      } else {
+        toast.error("Failed to send invitation");
+      }
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to send invitation";
+      toast.error(errorMessage);
+      throw err;
+    }
+  };
 
   const isAddEnabled = isAdmin;
 
