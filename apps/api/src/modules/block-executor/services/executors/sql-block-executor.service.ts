@@ -1,112 +1,134 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import * as Y from 'yjs';
 import {
   ExecutionQueueItem,
-  getSQLAttributes,
-  SQLBlock,
   ExecutionQueueItemSQLMetadata,
+  ExecutionQueueItemSQLLoadPageMetadata,
+  ExecutionQueueItemSQLRenameDataframeMetadata,
+  SQLBlock,
+  getSQLAttributes,
 } from '@sandworm/editor';
-import { WorkspaceEntity, DataSourceEntity } from '@sandworm/postgresql-typeorm';
-import { DataframeService } from '../dataframe.service';
-
-export interface ExecutionContext {
-  sessionId: string;
-  workspaceId: string;
-  documentId: string;
-  userId: string;
-}
+import { RunQueryResult } from '@sandworm/types';
+import { DocumentContext } from './types';
+import { updateDataframes, VARIABLE_NAME_REGEX } from './utils';
+import { makeSQLQuery, readDataframePage, renameDataFrame, listDataFrames } from '../python/query';
 
 @Injectable()
 export class SqlBlockExecutorService {
   private readonly logger = new Logger(SqlBlockExecutorService.name);
 
-  constructor(
-    @InjectRepository(WorkspaceEntity)
-    private readonly workspaceRepo: Repository<WorkspaceEntity>,
-    @InjectRepository(DataSourceEntity)
-    private readonly dataSourceRepo: Repository<DataSourceEntity>,
-    private readonly dataframeService: DataframeService,
-    private readonly eventEmitter: EventEmitter2,
-  ) {}
+  constructor(private readonly eventEmitter: EventEmitter2) { }
 
   async run(
     executionItem: ExecutionQueueItem,
     block: Y.XmlElement<SQLBlock>,
+    ctx: DocumentContext,
     metadata: ExecutionQueueItemSQLMetadata,
-    context: ExecutionContext,
   ): Promise<void> {
-    block.setAttribute('result', null);
-    block.setAttribute('resultError', null);
+    this.eventEmitter.emit('sql.run', { ...ctx.execution, blockId: block.getAttribute('id') });
 
     try {
-      const blockId = block.getAttribute('id');
       block.setAttribute('startQueryTime', new Date().toISOString());
-      
-      this.logger.debug(`Executing SQL block ${blockId}`);
 
-      const attrs = getSQLAttributes(block);
-      const { source, dataSourceId } = attrs;
-      const query = source?.toJSON() ?? '';
-
-      if (!query.trim()) {
-        throw new Error('SQL query is empty');
-      }
-
-      // Get data source
-      const dataSource = await this.dataSourceRepo.findOne({
-        where: { id: dataSourceId, workspaceId: context.workspaceId },
+      let aborted = false;
+      let cleanup = executionItem.observeStatus((status) => {
+        if (status._tag === 'aborting') aborted = true;
       });
 
-      if (!dataSource) {
-        throw new Error(`Data source ${dataSourceId} not found`);
+      const { id: blockId, aiSuggestions, source, configuration, dataframeName } = getSQLAttributes(block, ctx.blocks);
+
+      if (!dataframeName) {
+        executionItem.setCompleted('error');
+        cleanup();
+        return;
       }
 
-      // Execute SQL query
-      // TODO: Implement actual SQL execution based on data source type
-      const result = await this.executeQuery(dataSource, query, context);
-
-      // Store results in block
-      block.setAttribute('result', result.rows);
-      block.setAttribute('resultColumns', result.columns);
-      block.setAttribute('resultCount', result.count);
-      block.setAttribute('lastQuery', query);
-      block.setAttribute('lastQueryTime', new Date().toISOString());
-
-      // Create dataframe from results
-      const dataframeName = attrs.dataframeName || `sql_${blockId}`;
-      const dataframe = {
-        name: dataframeName,
-        columns: result.columns,
-        rowCount: result.count,
-        blockId,
-      };
-
-      // Update dataframes map
-      const dataframes = block.doc?.getMap('dataframes');
-      if (dataframes) {
-        dataframes.set(dataframeName, dataframe);
+      if (aborted) {
+        executionItem.setCompleted('aborted');
+        block.setAttribute('result', { type: 'abort-error', message: 'Query aborted' });
+        cleanup();
+        return;
       }
 
-      this.logger.debug(`SQL block ${blockId} executed successfully`);
-      executionItem.setCompleted('success');
+      block.setAttribute('result', null);
+      block.setAttribute('page', 0);
+      block.setAttribute('sort', null);
 
-      // Emit event
-      this.eventEmitter.emit('sql.executed', {
-        workspaceId: context.workspaceId,
-        documentId: context.documentId,
-        blockId,
-        userId: context.userId,
-        rowCount: result.count,
-      });
-    } catch (err) {
-      this.logger.error(
-        `Error executing SQL block ${block.getAttribute('id')}:`,
-        err
+      let actualSource = (metadata.isSuggestion ? aiSuggestions : source)?.toJSON().trim() ?? '';
+      if (metadata.selectedCode) {
+        actualSource = metadata.selectedCode;
+      }
+
+      let resultType: RunQueryResult['type'] | 'empty-query' = 'empty-query';
+
+      if (actualSource !== '') {
+        const [promise, abort] = await makeSQLQuery(
+          ctx.execution.workspaceId,
+          ctx.execution.sessionId,
+          blockId,
+          dataframeName.value,
+          'duckdb',
+          actualSource,
+          { pageSize: 50 },
+          (result) => block.setAttribute('result', result),
+          configuration,
+        );
+        cleanup();
+
+        if (aborted) {
+          executionItem.setCompleted('aborted');
+          await abort();
+          await promise;
+          block.setAttribute('result', { type: 'abort-error', message: 'Query aborted' });
+          return;
+        }
+
+        let abortP = Promise.resolve(false);
+        cleanup = executionItem.observeStatus((status) => {
+          if (status._tag === 'aborting') {
+            abortP = abort().then(() => true);
+          }
+        });
+
+        const result = await promise;
+        aborted = await abortP;
+
+        if (aborted) {
+          executionItem.setCompleted('aborted');
+          cleanup();
+          block.setAttribute('result', { type: 'abort-error', message: 'Query aborted' });
+          return;
+        }
+
+        block.setAttribute('lastQuery', actualSource);
+        block.setAttribute('lastQueryTime', new Date().toISOString());
+
+        if (result.type === 'python-error') {
+          block.setAttribute('result', { ...result, traceback: [] });
+        }
+
+        block.setAttribute('result', result);
+
+        if (result.type === 'success') {
+          ctx.dataframes.set(dataframeName.value, {
+            id: blockId,
+            name: dataframeName.value,
+            columns: result.columns,
+            blockId,
+            updatedAt: new Date().toISOString(),
+          });
+        }
+
+        resultType = result.type;
+      }
+
+      executionItem.setCompleted(
+        resultType === 'success' ? 'success' : resultType === 'abort-error' ? 'aborted' : 'error',
       );
-      block.setAttribute('resultError', err.message);
+      cleanup();
+    } catch (err) {
+      this.logger.error({ ...ctx.execution, blockId: block.getAttribute('id'), err }, 'SQL execution error');
       executionItem.setCompleted('error');
     }
   }
@@ -114,38 +136,65 @@ export class SqlBlockExecutorService {
   async loadPage(
     executionItem: ExecutionQueueItem,
     block: Y.XmlElement<SQLBlock>,
-    page: number,
-    context: ExecutionContext,
+    ctx: DocumentContext,
   ): Promise<void> {
     try {
-      const blockId = block.getAttribute('id');
-      this.logger.debug(`Loading page ${page} for SQL block ${blockId}`);
+      const attrs = getSQLAttributes(block, ctx.blocks);
+      const prevResult = attrs.result?.type === 'success' ? attrs.result : null;
 
-      // Update page attribute
-      block.setAttribute('page', page);
+      const nextResult = await readDataframePage(
+        ctx.execution.workspaceId,
+        ctx.execution.sessionId,
+        attrs.id,
+        attrs.dataframeName.value,
+        { page: attrs.page, pageSize: 50 },
+        attrs.sort,
+      );
 
-      // TODO: Implement pagination logic
-      // This might re-query with LIMIT/OFFSET or load from cached results
-
-      executionItem.setCompleted('success');
+      block.setAttribute('result', { ...nextResult, queryDurationMs: prevResult?.queryDurationMs });
+      executionItem.setCompleted(nextResult.type === 'success' ? 'success' : 'error');
     } catch (err) {
-      this.logger.error(`Error loading page for SQL block:`, err);
+      this.logger.error({ ...ctx.execution, blockId: block.getAttribute('id'), err }, 'Load page error');
       executionItem.setCompleted('error');
     }
   }
 
-  private async executeQuery(
-    dataSource: DataSourceEntity,
-    query: string,
-    context: ExecutionContext,
-  ): Promise<{ rows: any[]; columns: any[]; count: number }> {
-    // TODO: Implement based on dataSource.type
-    // - PostgreSQL
-    // - MySQL
-    // - BigQuery
-    // - Snowflake
-    // etc.
+  async renameDataframe(
+    executionItem: ExecutionQueueItem,
+    block: Y.XmlElement<SQLBlock>,
+    ctx: DocumentContext,
+  ): Promise<void> {
+    const { id: blockId, dataframeName, result } = getSQLAttributes(block, ctx.blocks);
 
-    throw new Error('SQL execution not yet implemented');
+    if (!VARIABLE_NAME_REGEX.test(dataframeName.newValue)) {
+      block.setAttribute('dataframeName', { ...dataframeName, error: 'invalid-name' });
+      executionItem.setCompleted('error');
+      return;
+    }
+
+    if (result?.type !== 'success') {
+      block.setAttribute('dataframeName', { ...dataframeName, value: dataframeName.newValue });
+      executionItem.setCompleted('error');
+      return;
+    }
+
+    try {
+      await renameDataFrame(
+        ctx.execution.workspaceId,
+        ctx.execution.sessionId,
+        dataframeName.value,
+        dataframeName.newValue,
+      );
+
+      const dataframes = await listDataFrames(ctx.execution.workspaceId, ctx.execution.sessionId);
+      const blocks = new Set(Array.from(ctx.blocks.keys()));
+      updateDataframes(ctx.dataframes, dataframes, blockId, blocks);
+
+      block.setAttribute('dataframeName', { ...dataframeName, value: dataframeName.newValue, error: undefined });
+      executionItem.setCompleted('success');
+    } catch (err) {
+      this.logger.error({ ...ctx.execution, blockId, err }, 'Rename dataframe error');
+      executionItem.setCompleted('error');
+    }
   }
 }

@@ -3,27 +3,21 @@ import { ExecutionQueueItem, PivotTableBlock } from '@sandworm/editor';
 import { ExecutionContext } from './execution-context.interface';
 
 export interface IPivotTableBlockExecutor {
-  /**
-   * Execute pivot table computation
-   */
+
+
   run(
     executionItem: ExecutionQueueItem,
     block: Y.XmlElement<PivotTableBlock>,
     context: ExecutionContext,
   ): Promise<void>;
 
-  /**
-   * Load a specific page of pivot results
-   */
+
   loadPage(
     executionItem: ExecutionQueueItem,
     block: Y.XmlElement<PivotTableBlock>,
     page: number,
   ): Promise<void>;
 
-  /**
-   * Update sort configuration
-   */
   updateSort(
     executionItem: ExecutionQueueItem,
     block: Y.XmlElement<PivotTableBlock>,
