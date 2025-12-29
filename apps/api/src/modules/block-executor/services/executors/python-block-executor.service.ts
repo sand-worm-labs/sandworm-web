@@ -1,87 +1,50 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import * as Y from 'yjs';
 import {
   ExecutionQueueItem,
-  getPythonAttributes,
-  PythonBlock,
   ExecutionQueueItemPythonMetadata,
-  YBlock,
+  PythonBlock,
+  getPythonAttributes,
 } from '@sandworm/editor';
-import { DataFrame } from '@sandworm/types';
-import { WorkspaceEntity } from '@sandworm/postgresql-typeorm';
-import { DataframeService } from '../dataframe.service';
-import { ExecutionContext } from "../../interfaces/execution-context.interface";
-
-// import { executeCode as executePython } from '../../../../python/index.js';
-// import { listDataFrames } from '../../../../python/query/index.js';
-// import { advanceTutorial } from '../../../../tutorials.js';
-// import { broadcastTutorialStepStates } from '../../../../websocket/workspace/tutorial.js';
-
-// export interface PythonEvents {
-//   pythonRun(): void;
-//   advanceOnboarding(step: string): void;
-// }
+import { DocumentContext } from './types';
+import { updateDataframes } from './utils';
+import { executeCode, listDataFrames } from '../python';
 
 @Injectable()
-export class PythonExecutorService {
-  private readonly logger = new Logger(PythonExecutorService.name);
+export class PythonBlockExecutorService {
+  private readonly logger = new Logger(PythonBlockExecutorService.name);
 
-  constructor(
-    @InjectRepository(WorkspaceEntity)
-    private readonly workspaceRepo: Repository<WorkspaceEntity>,
-    private readonly dataframeService: DataframeService,
-    private readonly eventEmitter: EventEmitter2,
-  ) {}
+  constructor(private readonly eventEmitter: EventEmitter2) { }
 
   async run(
     executionItem: ExecutionQueueItem,
     block: Y.XmlElement<PythonBlock>,
+    ctx: DocumentContext,
     metadata: ExecutionQueueItemPythonMetadata,
-    context: ExecutionContext,
-    events: PythonEvents,
   ): Promise<void> {
-    events.pythonRun();
+    this.eventEmitter.emit('python.run', { ...ctx.execution, blockId: block.getAttribute('id') });
     block.setAttribute('result', []);
 
     try {
       block.setAttribute('startQueryTime', new Date().toISOString());
 
-      this.logger.trace(
-        {
-          sessionId: context.sessionId,
-          workspaceId: context.workspaceId,
-          documentId: context.documentId,
-          blockId: block.getAttribute('id'),
-        },
-        'executing python block'
-      );
-
       const { aiSuggestions, source, id: blockId } = getPythonAttributes(block);
-
-      const actualSource =
-        (metadata.isSuggestion ? aiSuggestions : source)?.toJSON() ?? '';
+      const actualSource = (metadata.isSuggestion ? aiSuggestions : source)?.toJSON() ?? '';
 
       let errored = false;
-      const { promise, abort } = await executePython(
-        context.workspaceId,
-        context.sessionId,
+      const { promise, abort } = await executeCode(
+        ctx.execution.workspaceId,
+        ctx.execution.sessionId,
         actualSource,
         (outputs) => {
           const prevOutputs = block.getAttribute('result') ?? [];
           block.setAttribute('result', prevOutputs.concat(outputs));
-          if (!errored) {
-            for (const output of outputs) {
-              if (output.type === 'error') {
-                errored = true;
-                break;
-              }
-            }
+          if (!errored && outputs.some((o) => o.type === 'error')) {
+            errored = true;
           }
         },
-        { storeHistory: true }
+        { storeHistory: true },
       );
 
       let abortP = Promise.resolve(false);
@@ -100,67 +63,21 @@ export class PythonExecutorService {
         return;
       }
 
-      // Update dataframes
-      const newDataframes = await listDataFrames(
-        context.workspaceId,
-        context.sessionId
-      );
+      await this.updateDataFrames(blockId, ctx);
 
-      const blocks = block.doc?.getMap('blocks');
-      const blockIds = blocks ? new Set(Array.from(blocks.keys())) : new Set();
-
-      const dataframes = block.doc?.getMap('dataframes') as Y.Map<DataFrame>;
-      if (dataframes) {
-        this.dataframeService.updateDataframesInMap(
-          dataframes,
-          newDataframes,
-          blockId,
-          blockIds
-        );
-      }
-
-      block.setAttribute('lastQuery', block.getAttribute('source')?.toJSON());
+      block.setAttribute('lastQuery', block.getAttribute('source')!.toJSON());
       block.setAttribute('lastQueryTime', new Date().toISOString());
-
-      this.logger.trace(
-        {
-          sessionId: context.sessionId,
-          workspaceId: context.workspaceId,
-          documentId: context.documentId,
-          blockId: block.getAttribute('id'),
-        },
-        'python block executed'
-      );
-
       executionItem.setCompleted(errored ? 'error' : 'success');
-
-      // Tutorial advancement
-      const tutorialState = await advanceTutorial(
-        context.workspaceId,
-        'onboarding',
-        'runPython'
-      );
-
-      // Broadcast tutorial state (you'll need to inject socketServer)
-      // await broadcastTutorialStepStates(socketServer, context.workspaceId, 'onboarding');
-
-      if (tutorialState.didAdvance) {
-        events.advanceOnboarding('runPython');
-      }
-
       cleanup();
     } catch (err) {
-      this.logger.error(
-        {
-          sessionId: context.sessionId,
-          workspaceId: context.workspaceId,
-          documentId: context.documentId,
-          blockId: block.getAttribute('id'),
-          err,
-        },
-        'Error while executing python block'
-      );
+      this.logger.error({ ...ctx.execution, blockId: block.getAttribute('id'), err }, 'Python execution error');
       executionItem.setCompleted('error');
     }
+  }
+
+  private async updateDataFrames(blockId: string, ctx: DocumentContext): Promise<void> {
+    const newDataframes = await listDataFrames(ctx.execution.workspaceId, ctx.execution.sessionId);
+    const blocks = new Set(Array.from(ctx.blocks.keys()));
+    updateDataframes(ctx.dataframes, newDataframes, blockId, blocks);
   }
 }
