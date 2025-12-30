@@ -10,7 +10,7 @@ import {
   getSQLAttributes,
 } from '@sandworm/editor';
 import { RunQueryResult } from '@sandworm/types';
-import { DocumentContext } from './types';
+import { DocumentContext } from '../../interfaces';
 import { updateDataframes, VARIABLE_NAME_REGEX } from './utils';
 import { makeSQLQuery, readDataframePage, renameDataFrame, listDataFrames } from '../python/query';
 

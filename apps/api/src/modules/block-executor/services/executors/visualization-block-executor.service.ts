@@ -7,7 +7,7 @@ import {
     getVisualizationV2Attributes,
 } from '@sandworm/editor';
 import { isInvalidVisualizationFilter } from '@sandworm/types';
-import { DocumentContext } from './types';
+import { DocumentContext } from '../../interfaces';
 import { createVisualization } from '../python/visualizations';
 
 @Injectable()
