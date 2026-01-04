@@ -5,10 +5,10 @@ import {
     ExecutionQueueItem,
     VisualizationV2Block,
     getVisualizationV2Attributes,
+    setVisualizationV2Input,
 } from '@sandworm/editor';
-import { isInvalidVisualizationFilter } from '@sandworm/types';
 import { DocumentContext } from '../../interfaces';
-import { createVisualization } from '../python/visualizations';
+import { createVisualizationV2 } from '../python/visualizations-v2';
 
 @Injectable()
 export class VisualizationBlockExecutorService {
@@ -21,54 +21,40 @@ export class VisualizationBlockExecutorService {
         block: Y.XmlElement<VisualizationV2Block>,
         ctx: DocumentContext,
     ): Promise<void> {
-        block.removeAttribute('result');
-
         try {
             const attrs = getVisualizationV2Attributes(block);
-            const { chartType, xAxis, xAxisName, xAxisGroupFunction, xAxisSort, yAxes, histogramBin, histogramFormat, showDataLabels, numberValuesFormat, filters, dataframeName } = attrs;
 
-            if (!dataframeName) {
+            if (!attrs.input.dataframeName) {
+                block.setAttribute('output', null);
+                block.setAttribute('error', 'dataframe-not-set');
                 executionItem.setCompleted('error');
                 return;
             }
 
-            const dataframe = ctx.dataframes.get(dataframeName);
-            const hasAValidYAxis = yAxes.some((yAxis) => yAxis.series.some((s) => s.column !== null));
-
-            if (!dataframe || (!xAxis && chartType !== 'number' && chartType !== 'trend') || (!hasAValidYAxis && chartType !== 'histogram')) {
+            const dataframe = ctx.dataframes.get(attrs.input.dataframeName);
+            if (!dataframe) {
+                block.setAttribute('output', null);
+                block.setAttribute('error', 'dataframe-not-found');
                 executionItem.setCompleted('error');
                 return;
             }
-
-            const validFilters = filters.filter(
-                (f) => dataframe.columns.some((c) => c.name === f.column?.name) && !isInvalidVisualizationFilter(f, dataframe),
-            );
 
             let aborted = false;
             let cleanup = executionItem.observeStatus((status) => {
                 if (status._tag === 'aborting') aborted = true;
             });
 
-            this.eventEmitter.emit('visualization.run', { ...ctx.execution, chartType });
+            this.eventEmitter.emit('visualization.run', {
+                ...ctx.execution,
+                chartType: attrs.input.chartType,
+            });
 
-            const { promise, abort } = await createVisualization(
+            const { promise, abort } = await createVisualizationV2(
                 ctx.execution.workspaceId,
                 ctx.execution.sessionId,
                 dataframe,
-                chartType,
-                xAxis,
-                xAxisName,
-                xAxisGroupFunction,
-                xAxisSort,
-                yAxes,
-                histogramFormat,
-                histogramBin,
-                showDataLabels,
-                numberValuesFormat,
-                validFilters,
+                attrs.input,
             );
-
-            if (aborted) await abort();
 
             let abortP = Promise.resolve(aborted);
             cleanup();
@@ -82,32 +68,42 @@ export class VisualizationBlockExecutorService {
             aborted = await abortP;
             cleanup();
 
-            if (Object.keys(result.filterResults).length > 0) {
-                const nextFilters = filters.map((f) => result.filterResults[f.id] ?? f);
-                block.setAttribute('filters', nextFilters);
-            }
-
             if (aborted) {
                 executionItem.setCompleted('aborted');
-                block.setAttribute('spec', null);
                 return;
             }
 
-            if (!result.success) {
-                if (result.reason !== 'aborted') block.setAttribute('error', result.reason);
-                executionItem.setCompleted(result.reason === 'aborted' ? 'aborted' : 'error');
-                block.setAttribute('spec', null);
-                return;
-            }
+            if (result.success) {
+                block.setAttribute('output', {
+                    executedAt: new Date().toISOString(),
+                    result: result.data,
+                    tooManyDataPoints: result.tooManyDataPoints,
+                });
+                block.setAttribute('error', null);
 
-            block.setAttribute('spec', result.spec);
-            block.setAttribute('updatedAt', new Date().toISOString());
-            block.setAttribute('error', null);
-            executionItem.setCompleted('success');
+                // Update filters from result
+                const filters = attrs.input.filters.map((f) => {
+                    const resultFilter = result.filters.find((rf) => rf.id === f.id);
+                    return resultFilter ?? f;
+                });
+                setVisualizationV2Input(block, { filters });
+                executionItem.setCompleted('success');
+            } else {
+                if (result.reason === 'aborted') {
+                    executionItem.setCompleted('aborted');
+                } else {
+                    block.setAttribute('output', null);
+                    block.setAttribute('error', result.reason);
+                    executionItem.setCompleted('error');
+                }
+            }
         } catch (err) {
-            this.logger.error({ ...ctx.execution, blockId: block.getAttribute('id'), err }, 'Visualization error');
+            this.logger.error(
+                { ...ctx.execution, blockId: block.getAttribute('id'), err },
+                'Visualization error',
+            );
+            block.setAttribute('output', null);
             block.setAttribute('error', 'unknown');
-            block.setAttribute('spec', null);
             executionItem.setCompleted('error');
         }
     }
