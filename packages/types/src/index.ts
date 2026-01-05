@@ -323,12 +323,12 @@ export type Series = {
   name: string | null;
   color: string | null;
   groups:
-    | {
-        group: string;
-        name: string;
-        color: string;
-      }[]
-    | null;
+  | {
+    group: string;
+    name: string;
+    color: string;
+  }[]
+  | null;
   dateFormat: DateFormat | null;
   numberFormat: NumberFormat | null;
 };
@@ -371,6 +371,42 @@ export type HistogramBin = z.infer<typeof HistogramBin>;
 // ═══════════════════════════════════════════════
 // JSON
 // ═══════════════════════════════════════════════
+
+export const jsonString = z
+  .string()
+  .transform((str, ctx) => {
+    try {
+      return JSON.parse(str) as unknown;
+    } catch {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Invalid JSON',
+      });
+      return z.NEVER;
+    }
+  });
+
+export function parseOrElse<T>(
+  schema: z.Schema<T>,
+  value: unknown,
+  defaultValue: T
+): T {
+  const result = schema.safeParse(value)
+  if (result.success) {
+    return result.data
+  }
+
+  return defaultValue
+}
+
+
+export function parseJSONOrElse<T>(
+  schema: z.ZodType<T, any>,
+  value: string,
+  defaultValue: T
+): T {
+  return parseOrElse(jsonString.pipe(schema), value, defaultValue)
+}
 
 export const JsonLiteral = z.union([
   z.string(),
@@ -630,16 +666,16 @@ export type PivotTableResult = z.infer<typeof PivotTableResult>;
 
 export type PivotTableSort =
   | {
-      _tag: 'column';
-      metric: string;
-      order: 'asc' | 'desc';
-      columnValues: Json[];
-    }
+    _tag: 'column';
+    metric: string;
+    order: 'asc' | 'desc';
+    columnValues: Json[];
+  }
   | {
-      _tag: 'row';
-      row: string;
-      order: 'asc' | 'desc';
-    };
+    _tag: 'row';
+    row: string;
+    order: 'asc' | 'desc';
+  };
 
 // ═══════════════════════════════════════════════
 // Write Back
@@ -855,7 +891,7 @@ export function isInvalidVisualizationFilter(
   );
 }
 
-export function exhaustiveCheck(_param: never) {}
+export function exhaustiveCheck(_param: never) { }
 
 // ═══════════════════════════════════════════════
 // Queries and Sqls
@@ -984,13 +1020,13 @@ export type TableSort = z.infer<typeof TableSort>;
 
 export type InvalidReason =
   | {
-      type: 'simple';
-      reason: 'invalid-column' | 'empty-value' | 'invalid-value';
-    }
+    type: 'simple';
+    reason: 'invalid-column' | 'empty-value' | 'invalid-value';
+  }
   | {
-      type: 'render';
-      reason: PythonErrorOutput;
-    };
+    type: 'render';
+    reason: PythonErrorOutput;
+  };
 
 export const SandwormFile = z.object({
   name: z.string().min(1),
