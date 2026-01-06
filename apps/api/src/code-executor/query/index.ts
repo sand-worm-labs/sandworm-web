@@ -1,4 +1,4 @@
-import { executeCode } from '../index.js'
+import { PythonExecutorService } from '../python-executor.service.js'
 import {
     AbortErrorRunQueryResult,
     DataFrame,
@@ -14,10 +14,11 @@ import {
     jsonString,
 } from '@sandworm/types'
 import { z } from 'zod'
-
 import { makeDuckDBQuery } from './duckdb.js'
 import { Logger } from '@nestjs/common'
+
 export async function makeSQLQuery(
+    pythonExecutor: PythonExecutorService,
     workspaceId: string,
     sessionId: string,
     queryId: string,
@@ -31,6 +32,7 @@ export async function makeSQLQuery(
 ): Promise<[Promise<RunQueryResult>, () => Promise<void>]> {
     if (datasource === 'duckdb') {
         return makeDuckDBQuery(
+            pythonExecutor,
             workspaceId,
             sessionId,
             queryId,
@@ -59,6 +61,7 @@ export async function makeSQLQuery(
 }
 
 export async function makeQuery(
+    pythonExecutor: PythonExecutorService,
     workspaceId: string,
     sessionId: string,
     dataframeName: string,
@@ -73,7 +76,7 @@ export async function makeQuery(
     let aborted = false
 
     const abortFns: (() => Promise<void>)[] = []
-    const { promise: queryPromise, abort: abortQuery } = await executeCode(
+    const { promise: queryPromise, abort: abortQuery } = await pythonExecutor.executeCode(
         workspaceId,
         sessionId,
         code,
@@ -176,7 +179,7 @@ ${dataframeName} = _sandworm_read_query()
 del _sandworm_read_query`
 
         const { promise: dataframePromise, abort: abortDataframe } =
-            await executeCode(
+            await pythonExecutor.executeCode(
                 workspaceId,
                 sessionId,
                 code,
@@ -229,6 +232,7 @@ export type ReadDataFramePageResult =
     | PythonErrorRunQueryResult
 
 export async function readDataframePage(
+    pythonExecutor: PythonExecutorService,
     workspaceId: string,
     sessionId: string,
     queryId: string,
@@ -304,7 +308,7 @@ if "${dataframeName}" in globals():
     let result: ReadDataFramePageResult | null = null
     let error: Error | null = null
     await (
-        await executeCode(
+        await pythonExecutor.executeCode(
             workspaceId,
             sessionId,
             code,
@@ -357,6 +361,7 @@ if "${dataframeName}" in globals():
 }
 
 export async function renameDataFrame(
+    pythonExecutor: PythonExecutorService,
     workspaceId: string,
     sessionId: string,
     currentName: string,
@@ -367,13 +372,14 @@ export async function renameDataFrame(
     del ${currentName}`
 
     return (
-        await executeCode(workspaceId, sessionId, code, () => { }, {
+        await pythonExecutor.executeCode(workspaceId, sessionId, code, () => { }, {
             storeHistory: false,
         })
     ).promise
 }
 
 export async function listDataFrames(
+    pythonExecutor: PythonExecutorService,
     workspaceId: string,
     sessionId: string
 ): Promise<DataFrame[]> {
@@ -419,7 +425,7 @@ del _sandworm_list_dataframes`
     let dataframes: DataFrame[] = []
     let error: Error | null = null
     await (
-        await executeCode(
+        await pythonExecutor.executeCode(
             workspaceId,
             sessionId,
             code,

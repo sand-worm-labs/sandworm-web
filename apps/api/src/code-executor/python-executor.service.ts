@@ -1,15 +1,23 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ConfigService } from '@nestjs/config';
+import { Repository } from 'typeorm';
+import { decrypt } from "@sandworm/nest-common";
+import { EnvironmentVariableEntity } from '@sandworm/postgresql-typeorm';
 import { PythonErrorOutput, Output } from '@sandworm/types';
 import * as services from '@jupyterlab/services';
-import { ConfigService } from '@nestjs/config';
 import { isDisplayDataMessage, isErrorMessage, isExecuteResultMessage, isStatusMessage, isStreamMessage } from './helpers/jupyter'
-import { JupyterManagerService } from '../jupyter/jupyter-manager.service';
+import { JupyterService } from '../jupyter/jupyter.service';
 import { LockService } from '../lock/lock.service';
-import { decrypt } from '../../utils/encryption';
 
 type Jupyter = {
     session: services.Session.ISessionConnection;
     kernel: services.Kernel.IKernelConnection;
+};
+
+type ExecutionController = {
+    aborted: boolean;
+    kernel: services.Kernel.IKernelConnection | null;
 };
 
 @Injectable()
@@ -17,10 +25,11 @@ export class PythonExecutorService {
     private readonly sessions = new Map<string, Jupyter>();
     private readonly logger = new Logger(PythonExecutorService.name);
 
-
     constructor(
+        @InjectRepository(EnvironmentVariableEntity)
+        private readonly environmentVariableRepository: Repository<EnvironmentVariableEntity>,
         private readonly config: ConfigService,
-        private readonly jupyterManager: JupyterManagerService,
+        private readonly jupyterManager: JupyterService,
         private readonly lockService: LockService,
     ) { }
 
@@ -31,32 +40,59 @@ export class PythonExecutorService {
         onOutputs: (outputs: Output[]) => void,
         opts: { storeHistory: boolean }
     ) {
-        let aborted = false;
-        let executing = false;
+        const controller: ExecutionController = {
+            aborted: false,
+            kernel: null,
+        };
+
         const promise = this.lockService.acquireLock(
             `executeCode:${workspaceId}:${sessionId}`,
             async () => {
-                if (aborted) {
+                if (controller.aborted) {
+                    this.logger.debug({ workspaceId, sessionId }, 'Execution aborted before starting');
                     return;
                 }
 
-                executing = true;
-                await this.innerExecuteCode(workspaceId, sessionId, code, onOutputs, opts);
+                const { kernel } = await this.getSession(workspaceId, sessionId);
+                controller.kernel = kernel;
+
+                // Check again after getting kernel (in case abort was called during getSession)
+                if (controller.aborted) {
+                    this.logger.debug({ workspaceId, sessionId }, 'Execution aborted after getting kernel');
+                    await kernel.interrupt();
+                    return;
+                }
+
+                try {
+                    await this.innerExecuteCode(workspaceId, sessionId, code, onOutputs, opts);
+                } finally {
+                    controller.kernel = null;
+                }
             }
         );
 
         return {
-            async abort() {
-                aborted = true;
+            abort: async () => {
+                if (controller.aborted) {
+                    this.logger.debug({ workspaceId, sessionId }, 'Abort called multiple times, ignoring');
+                    return;
+                }
 
-                if (executing) {
-                    const { kernel } = await this.getSession(workspaceId, sessionId);
-                    await this.waitForKernelToBecomeIdle(
-                        workspaceId,
-                        sessionId,
-                        kernel,
-                        'abortion'
-                    );
+                controller.aborted = true;
+                this.logger.log({ workspaceId, sessionId }, 'Aborting execution');
+
+                if (controller.kernel) {
+                    try {
+                        await controller.kernel.interrupt();
+                        await this.waitForKernelToBecomeIdle(
+                            workspaceId,
+                            sessionId,
+                            controller.kernel,
+                            'abortion'
+                        );
+                    } catch (err) {
+                        this.logger.error({ workspaceId, sessionId, err }, 'Error during abort');
+                    }
                 }
             },
             promise,
@@ -70,22 +106,18 @@ export class PythonExecutorService {
         onOutputs: (outputs: Output[]) => void,
         { storeHistory }: { storeHistory: boolean }
     ): Promise<void> {
-        this.logger.log(
-            { workspaceId, sessionId },
-            'Starting Jupyter for code execution.'
-        );
+        this.logger.log({ workspaceId, sessionId }, 'Starting Jupyter for code execution.');
 
         await this.jupyterManager.ensureRunning(workspaceId);
         this.logger.log({ workspaceId, sessionId }, 'Jupyter is up.');
 
         const { kernel } = await this.getSession(workspaceId, sessionId);
-
         await this.waitForKernelToBecomeIdle(workspaceId, sessionId, kernel, 'execution');
 
         const future = kernel.requestExecute({
             code,
             allow_stdin: true,
-            store_history: storeHistory,
+            store_history: storeHistory
         });
 
         let kernelRestarted = false;
@@ -97,113 +129,95 @@ export class PythonExecutorService {
                 kernelRestarted = true;
             }
         };
-        kernel.statusChanged.connect(onKernelRestarted);
 
+        kernel.statusChanged.connect(onKernelRestarted);
         future.onIOPub = (message) => this.decodeIOPubMessage(message, onOutputs);
 
         this.logger.debug({ workspaceId, sessionId }, 'Waiting for code to execute');
+
         try {
-            let timeout: NodeJS.Timeout | null = null;
-            let done = false;
-            let status = kernel.status;
-
-            this.logger.log(
-                { workspaceId, sessionId, status },
-                'Waiting for kernel to become idle'
-            );
-
-            const idlePromise = new Promise<void>((resolve) => {
-                function onStatusChanged(
-                    _: services.Kernel.IKernelConnection,
-                    newStatus: services.Kernel.Status
-                ) {
-                    if (done) {
-                        return;
-                    }
-
-                    this.logger.log(
-                        { workspaceId, sessionId, status: newStatus },
-                        'Kernel status changed'
-                    );
-
-                    if (status === newStatus) {
-                        return;
-                    }
-
-                    if (timeout) {
-                        this.logger.log(
-                            { workspaceId, sessionId, status, newStatus },
-                            'Clearing timeout'
-                        );
-                        clearTimeout(timeout);
-                    }
-
-                    if (newStatus === 'idle') {
-                        this.logger.log(
-                            { workspaceId, sessionId, status, newStatus },
-                            'Setting timeout'
-                        );
-                        timeout = setTimeout(() => {
-                            if (!done) {
-                                this.logger.log(
-                                    { workspaceId, sessionId, status, newStatus },
-                                    'Timeout reached'
-                                );
-                                done = true;
-                            }
-
-                            kernel.statusChanged.disconnect(onStatusChanged);
-                            resolve();
-                        }, 60000);
-                    }
-                    status = newStatus;
-                }
-
-                kernel.statusChanged.connect(onStatusChanged);
-                if (status === 'idle') {
-                    this.logger.log(
-                        { workspaceId, sessionId, status },
-                        'Initial idle status, setting timeout'
-                    );
-                    timeout = setTimeout(() => {
-                        if (!done) {
-                            done = true;
-                        }
-
-                        kernel.statusChanged.disconnect(onStatusChanged);
-                        resolve();
-                    }, 60000);
-                }
-            });
-
+            const idlePromise = this.waitForKernelIdle(kernel, workspaceId, sessionId);
             try {
                 await Promise.race([future.done, idlePromise]);
-                done = true;
             } finally {
                 kernel.statusChanged.disconnect(onKernelRestarted);
             }
         } catch (err) {
             if (kernelRestarted) {
-                onOutputs([
-                    {
-                        type: 'error',
-                        ename: 'KernelRestarted',
-                        evalue: 'Kernel restarted during execution. Ran out of memory.',
-                        traceback: [],
-                    },
-                ]);
+                onOutputs([{
+                    type: 'error',
+                    ename: 'KernelRestarted',
+                    evalue: 'Kernel restarted during execution. Ran out of memory.',
+                    traceback: [],
+                }]);
                 return;
             }
             throw err;
         }
+
         this.logger.debug({ workspaceId, sessionId }, 'Code finished executing');
+    }
+
+    private waitForKernelIdle(
+        kernel: services.Kernel.IKernelConnection,
+        workspaceId: string,
+        sessionId: string,
+        timeoutMs: number = 60000
+    ): Promise<void> {
+        return new Promise<void>((resolve) => {
+            let timeout: NodeJS.Timeout | null = null;
+            let done = false;
+            let status = kernel.status;
+
+            this.logger.log({ workspaceId, sessionId, status }, 'Waiting for kernel to become idle');
+
+            const onStatusChanged = (
+                _: services.Kernel.IKernelConnection,
+                newStatus: services.Kernel.Status
+            ) => {
+                if (done || status === newStatus) return;
+
+                this.logger.log({ workspaceId, sessionId, status: newStatus }, 'Kernel status changed');
+
+                if (timeout) {
+                    this.logger.log({ workspaceId, sessionId, status, newStatus }, 'Clearing timeout');
+                    clearTimeout(timeout);
+                    timeout = null;
+                }
+
+                if (newStatus === 'idle') {
+                    this.logger.log({ workspaceId, sessionId, status, newStatus }, 'Setting timeout');
+                    timeout = setTimeout(() => {
+                        if (!done) {
+                            this.logger.log({ workspaceId, sessionId, status, newStatus }, 'Timeout reached');
+                            done = true;
+                            kernel.statusChanged.disconnect(onStatusChanged);
+                            resolve();
+                        }
+                    }, timeoutMs);
+                }
+                status = newStatus;
+            };
+
+            kernel.statusChanged.connect(onStatusChanged);
+
+            if (status === 'idle') {
+                this.logger.log({ workspaceId, sessionId, status }, 'Initial idle status, setting timeout');
+                timeout = setTimeout(() => {
+                    if (!done) {
+                        done = true;
+                        kernel.statusChanged.disconnect(onStatusChanged);
+                        resolve();
+                    }
+                }, timeoutMs);
+            }
+        });
     }
 
     private decodeIOPubMessage(
         message: services.KernelMessage.IIOPubMessage,
         onOutputs: (outputs: Output[]) => void
     ): void {
-
         if (isStatusMessage(message)) {
             const { execution_state } = message.content;
             if (execution_state !== 'idle' && execution_state !== 'busy') {
@@ -250,10 +264,7 @@ export class PythonExecutorService {
                 return;
             }
 
-            this.logger.warn(
-                { mimeTypes: Object.keys(data) },
-                'Unsupported display data'
-            );
+            this.logger.warn({ mimeTypes: Object.keys(data) }, 'Unsupported display data');
             return;
         }
 
@@ -268,12 +279,11 @@ export class PythonExecutorService {
         }
 
         if (message.header.msg_type !== 'execute_input') {
-            this.logger.warn({ message }, 'Got unsupported message type');
+            this.logger.warn({ msgType: message.header.msg_type }, 'Got unsupported message type');
         }
     }
 
-
-    async renderJinja(
+    public async renderJinja(
         workspaceId: string,
         sessionId: string,
         template: string
@@ -282,9 +292,7 @@ export class PythonExecutorService {
 def _sandworm_render_template():
   from jinja2 import Template
   import json
-  result = json.dumps({"type": "success", "result": Template(${JSON.stringify(
-            template
-        )}).render(**globals())})
+  result = json.dumps({"type": "success", "result": Template(${JSON.stringify(template)}).render(**globals())})
   print(result)
 
 _sandworm_render_template()
@@ -301,12 +309,10 @@ del _sandworm_render_template`;
                         const lines = output.text.trim().split('\n');
                         for (const line of lines) {
                             const parsed = JSON.parse(line.trim());
-                            switch (parsed.type) {
-                                case 'success':
-                                    result = parsed.result;
-                                    break;
-                                default:
-                                    throw new Error('Unexpected output: ' + line);
+                            if (parsed.type === 'success') {
+                                result = parsed.result;
+                            } else {
+                                throw new Error('Unexpected output: ' + line);
                             }
                         }
                     } else if (output.type === 'error') {
@@ -364,17 +370,34 @@ del _sandworm_render_template`;
     }
 
     async disposeAll(workspaceId: string) {
+        const keysToDelete: string[] = [];
+
         await Promise.all(
             Array.from(this.sessions.entries()).map(async ([key, { kernel, session }]) => {
                 if (key.startsWith(workspaceId)) {
-                    await session.shutdown();
-                    await kernel.shutdown();
-                    session.dispose();
-                    kernel.dispose();
+                    keysToDelete.push(key);
+                    try {
+                        await session.shutdown();
+                        await kernel.shutdown();
+                        session.dispose();
+                        kernel.dispose();
+                    } catch (err) {
+                        this.logger.error({ workspaceId, key, err }, 'Error disposing session');
+                    }
                 }
             })
         );
-        this.sessions.clear();
+
+        keysToDelete.forEach(key => this.sessions.delete(key));
+    }
+
+    private escapePythonString(str: string): string {
+        return str
+            .replace(/\\/g, '\\\\')
+            .replace(/'/g, "\\'")
+            .replace(/\n/g, '\\n')
+            .replace(/\r/g, '\\r')
+            .replace(/\t/g, '\\t');
     }
 
     private async setEnvironmentVariables(
@@ -382,8 +405,8 @@ del _sandworm_render_template`;
         variables: { add: { name: string; value: string }[]; remove: string[] }
     ) {
         const code = ['import os']
-            .concat(variables.remove.map((v) => `os.environ.pop('${v}', None)`))
-            .concat(variables.add.map((v) => `os.environ['${v.name}'] = '${v.value}'`))
+            .concat(variables.remove.map((v) => `os.environ.pop('${this.escapePythonString(v)}', None)`))
+            .concat(variables.add.map((v) => `os.environ['${this.escapePythonString(v.name)}'] = '${this.escapePythonString(v.value)}'`))
             .join('\n');
 
         await kernel.requestExecute({
@@ -410,7 +433,7 @@ del _sandworm_render_template`;
             throw new Error('session.kernel is null');
         }
 
-        const encryptedVariables = await this.prisma.environmentVariable.findMany({
+        const encryptedVariables = await this.environmentVariableRepository.find({
             where: { workspaceId },
         });
 
@@ -428,10 +451,7 @@ del _sandworm_render_template`;
         return session;
     }
 
-    private async getSession(
-        workspaceId: string,
-        sessionId: string
-    ): Promise<Jupyter> {
+    private async getSession(workspaceId: string, sessionId: string): Promise<Jupyter> {
         const key = `${workspaceId}-${sessionId}`;
         let jupyter = this.sessions.get(key);
 
@@ -446,7 +466,7 @@ del _sandworm_render_template`;
         }
 
         const { sessionManager } = await this.getManager(workspaceId);
-        let sessionModel = await sessionManager.findByPath(sessionId);
+        const sessionModel = await sessionManager.findByPath(sessionId);
 
         const session = sessionModel
             ? sessionManager.connectTo({ model: sessionModel })
@@ -458,7 +478,7 @@ del _sandworm_render_template`;
             throw new Error('session.kernel is null');
         }
 
-        jupyter = { session: session, kernel: session.kernel };
+        jupyter = { session, kernel: session.kernel };
         this.sessions.set(key, jupyter);
         return jupyter;
     }
@@ -514,51 +534,40 @@ del _sandworm_render_template`;
         ) => {
             kernelStatus = status;
         };
+
         kernel.statusChanged.connect(onStatusChanged);
 
-        while (kernelStatus !== 'idle') {
-            if (Date.now() - startTime > 60000) {
-                this.logger.error(
-                    {
-                        workspaceId,
-                        sessionId,
-                        kernelStatus: kernel.status,
-                        reason,
-                    },
-                    'Spent more than 1 minute attempting to make the kernel be idle. Crashing.'
-                );
-                throw new Error('Failed to get an idle kernel');
-            }
+        try {
+            while (kernelStatus !== 'idle') {
+                if (Date.now() - startTime > 60000) {
+                    this.logger.error(
+                        { workspaceId, sessionId, kernelStatus, reason },
+                        'Spent more than 1 minute attempting to make the kernel be idle. Crashing.'
+                    );
+                    throw new Error('Failed to get an idle kernel');
+                }
 
-            if (Date.now() - startTime > 10000) {
+                if (Date.now() - startTime > 10000) {
+                    this.logger.warn(
+                        { workspaceId, sessionId, kernelStatus, reason },
+                        'Spent more than 10 seconds trying to interrupt a non idle kernel. Restarting kernel instead.'
+                    );
+                    await kernel.restart();
+                    await new Promise((resolve) => setTimeout(resolve, 500));
+                    continue;
+                }
+
                 this.logger.warn(
-                    {
-                        workspaceId,
-                        sessionId,
-                        kernelStatus: kernel.status,
-                        reason,
-                    },
-                    'Spent more than 10 seconds trying to interrupt a non idle kernel. Restarting kernel instead.'
+                    { workspaceId, sessionId, kernelStatus, reason },
+                    reason === 'abortion'
+                        ? 'Interrupting kernel because of abortion'
+                        : 'Found non idle kernel before attempting to execute code. Interrupting first.'
                 );
-                await kernel.restart();
+                await kernel.interrupt();
                 await new Promise((resolve) => setTimeout(resolve, 500));
-                continue;
             }
-
-            this.logger.warn(
-                {
-                    workspaceId,
-                    sessionId,
-                    kernelStatus: kernel.status,
-                    reason,
-                },
-                reason === 'abortion'
-                    ? 'Interrupting kernel because of abortion'
-                    : 'Found non idle kernel before attempting to execute code. Interrupting first.'
-            );
-            await kernel.interrupt();
-            await new Promise((resolve) => setTimeout(resolve, 500));
+        } finally {
+            kernel.statusChanged.disconnect(onStatusChanged);
         }
-        kernel.statusChanged.disconnect(onStatusChanged);
     }
 }
