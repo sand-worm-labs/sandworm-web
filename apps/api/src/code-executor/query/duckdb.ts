@@ -1,8 +1,9 @@
 import { RunQueryResult, SuccessRunQueryResult } from '@sandworm/types'
 import { makeQuery } from './index.js'
-import { renderJinja } from '../index.js'
+import { PythonExecutorService } from '../python-executor.service.js'
 
 export async function makeDuckDBQuery(
+    pythonExecutor: PythonExecutorService,
     workspaceId: string,
     sessionId: string,
     queryId: string,
@@ -11,7 +12,11 @@ export async function makeDuckDBQuery(
     resultOptions: { pageSize: number; dashboardPageSize: number },
     onProgress: (result: SuccessRunQueryResult) => void
 ): Promise<[Promise<RunQueryResult>, () => Promise<void>]> {
-    const renderedQuery = await renderJinja(workspaceId, sessionId, sql)
+    const renderedQuery = await pythonExecutor.renderJinja(
+        workspaceId,
+        sessionId,
+        sql
+    );
     if (typeof renderedQuery !== 'string') {
         return [
             Promise.resolve({
