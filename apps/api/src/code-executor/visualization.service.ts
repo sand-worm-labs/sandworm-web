@@ -6,16 +6,17 @@ import {
     jsonString,
     VisualizationFilter,
     isUnfinishedVisualizationFilter,
-} from '@sandworm/types'
-import { PythonExecutionError } from './python-executor.errors'
-import { IJupyterManager } from '../jupyter/index.js'
+} from '@sandworm/types';
+import { PythonExecutionError } from './python-executor.errors';
 import {
     VisualizationV2BlockInput,
     VisualizationV2BlockOutputResult,
-} from '@sandworm/editor'
-import AggregateError from 'aggregate-error'
-import { z } from 'zod'
-import { Logger } from '@nestjs/common'
+} from '@sandworm/editor';
+import AggregateError from 'aggregate-error';
+import { z } from 'zod';
+import { Logger } from '@nestjs/common';
+import { JupyterService } from '../jupyter/jupyter.service';
+import { PythonExecutorService } from './python-executor.service';
 
 
 const CreateVisualizationResult = z.union([
@@ -51,6 +52,8 @@ interface VisualizationConfig {
 export class VisualizationService {
 
     private readonly logger = new Logger(VisualizationService.name)
+    private readonly jupyterManager: JupyterService;
+    private readonly executorService: PythonExecutorService;
 
     constructor(
         private readonly workspaceId: string,
@@ -66,7 +69,7 @@ export class VisualizationService {
         const code = this.generateVisualizationCode(config)
         let outputs: Output[] = []
 
-        const { promise: execute, abort } = await this.executePython(
+        const { promise: execute, abort } = await this.executorService.executeCode(
             this.workspaceId,
             this.sessionId,
             code,

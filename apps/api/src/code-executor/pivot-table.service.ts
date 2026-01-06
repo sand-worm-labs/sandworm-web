@@ -14,8 +14,8 @@ import {
 } from '@sandworm/types'
 import { PythonExecutionError, PythonStderrError } from "./python-executor.errors"
 import {
-    executeCode,
-} from './index.js'
+    PythonExecutorService,
+} from './python-executor.service'
 import { z } from 'zod'
 import AggregateError from 'aggregate-error'
 
@@ -60,6 +60,7 @@ export interface CreatePivotTableResult {
 export class PivotTableService {
     private static readonly PAGE_SIZE = 50
     private readonly logger = new Logger(PivotTableService.name);
+    private readonly executor: PythonExecutorService;
 
     constructor(
         private readonly workspaceId: string,
@@ -73,7 +74,7 @@ export class PivotTableService {
         const code = this.generatePythonCode(config)
         let outputs: Output[] = []
 
-        const { abort, promise } = await executeCode(
+        const { abort, promise } = await this.executor.executeCode(
             this.workspaceId,
             this.sessionId,
             code,

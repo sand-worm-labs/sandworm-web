@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common'
 import { DateInputValue } from '@sandworm/editor'
 import { Output } from '@sandworm/types'
-import { executeCode } from './index.js'
+import { PythonExecutorService } from './python-executor.service'
 
 type DateType = 'date' | 'datetime'
 
@@ -18,6 +18,7 @@ interface VariableSetResult {
 
 export class VariableService {
     private readonly logger = new Logger(VariableService.name)
+    private readonly executor: PythonExecutorService;
 
     constructor(
         private readonly workspaceId: string,
@@ -31,7 +32,7 @@ export class VariableService {
     ): Promise<VariableSetResult> {
         const code = this.generateVariableCode(variable, value)
 
-        return executeCode(
+        return this.executor.executeCode(
             this.workspaceId,
             this.sessionId,
             code,
@@ -45,7 +46,7 @@ export class VariableService {
         const code = this.generateDateTimeCode(config)
         let error: Error | null = null
 
-        const { promise } = await executeCode(
+        const { promise } = await this.executor.executeCode(
             this.workspaceId,
             this.sessionId,
             code,
