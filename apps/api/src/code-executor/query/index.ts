@@ -16,15 +16,16 @@ import {
 import { z } from 'zod'
 import { makeDuckDBQuery } from './duckdb.js'
 import { Logger } from '@nestjs/common'
+import { JupyterService } from 'src/jupyter/jupyter.service.js'
 
 export async function makeSQLQuery(
     pythonExecutor: PythonExecutorService,
+    jupyterManager: JupyterService,
     workspaceId: string,
     sessionId: string,
     queryId: string,
     dataframeName: string,
     datasource: 'duckdb',
-    encryptionKey: string,
     sql: string,
     resultOptions: { pageSize: number; dashboardPageSize: number },
     onProgress: (result: SuccessRunQueryResult) => void,
@@ -33,6 +34,7 @@ export async function makeSQLQuery(
     if (datasource === 'duckdb') {
         return makeDuckDBQuery(
             pythonExecutor,
+            jupyterManager,
             workspaceId,
             sessionId,
             queryId,
@@ -62,6 +64,7 @@ export async function makeSQLQuery(
 
 export async function makeQuery(
     pythonExecutor: PythonExecutorService,
+    jupyterManager: JupyterService,
     workspaceId: string,
     sessionId: string,
     dataframeName: string,
@@ -215,7 +218,7 @@ del _sandworm_read_query`
     const abortFunction = async () => {
         aborted = true
         await Promise.all([
-            getJupyterManager().deleteFile(workspaceId, flagFilePath),
+            jupyterManager.deleteFile(workspaceId, flagFilePath),
             ...abortFns.map((fn) => fn()),
         ])
 

@@ -1,9 +1,11 @@
 import { RunQueryResult, SuccessRunQueryResult } from '@sandworm/types'
 import { makeQuery } from './index.js'
 import { PythonExecutorService } from '../python-executor.service.js'
+import { JupyterService } from 'src/jupyter/jupyter.service.js';
 
 export async function makeDuckDBQuery(
     pythonExecutor: PythonExecutorService,
+    jupyterManager: JupyterService,
     workspaceId: string,
     sessionId: string,
     queryId: string,
@@ -126,6 +128,8 @@ def _sandworm_make_duckdb_query():
 _sandworm_make_duckdb_query()`
 
     return makeQuery(
+        pythonExecutor,
+        jupyterManager,
         workspaceId,
         sessionId,
         dataframeName,
