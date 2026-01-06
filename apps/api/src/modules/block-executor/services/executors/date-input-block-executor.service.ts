@@ -5,7 +5,7 @@ import {
     DateInputBlock,
     getDateInputAttributes,
 } from '@sandworm/editor';
-import { DocumentContext } from './types';
+import { DocumentContext } from '../../interfaces';
 import { VARIABLE_NAME_REGEX } from './utils';
 import { setDateTimeVariable } from '../python/input';
 

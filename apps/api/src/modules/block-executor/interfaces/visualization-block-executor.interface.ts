@@ -3,9 +3,7 @@ import { ExecutionQueueItem, VisualizationV2Block } from '@sandworm/editor';
 import { ExecutionContext } from './execution-context.interface';
 
 export interface IVisualizationBlockExecutor {
-  /**
-   * Validate and prepare visualization block
-   */
+
   run(
     executionItem: ExecutionQueueItem,
     block: Y.XmlElement<VisualizationV2Block>,
@@ -13,7 +11,7 @@ export interface IVisualizationBlockExecutor {
   ): Promise<void>;
 }
 
-export type ChartType = 
+export type ChartType =
   | 'line'
   | 'bar'
   | 'scatter'

@@ -1,45 +1,98 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import * as Y from 'yjs';
 import {
     ExecutionQueueItem,
-    DateInputBlock,
-    getDateInputAttributes,
+    WritebackBlock,
+    getWritebackAttributes,
 } from '@sandworm/editor';
-import { DocumentContext } from './types';
-import { VARIABLE_NAME_REGEX } from './utils';
-import { setDateTimeVariable } from '../python/input';
+import { DocumentContext } from '../../interfaces';
+import { writeback } from '../../python/writeback';
 
 @Injectable()
-export class DateInputBlockExecutorService {
-    private readonly logger = new Logger(DateInputBlockExecutorService.name);
+export class WritebackBlockExecutorService {
+    private readonly logger = new Logger(WritebackBlockExecutorService.name);
 
-    async save(
+    constructor(private readonly eventEmitter: EventEmitter2) { }
+
+    async run(
         executionItem: ExecutionQueueItem,
-        block: Y.XmlElement<DateInputBlock>,
+        block: Y.XmlElement<WritebackBlock>,
         ctx: DocumentContext,
     ): Promise<void> {
-        const { id: blockId, variable, value, dateType } = getDateInputAttributes(block, ctx.blocks);
+        this.eventEmitter.emit('writeback.run', {
+            ...ctx.execution,
+            blockId: block.getAttribute('id'),
+        });
 
-        if (!VARIABLE_NAME_REGEX.test(variable)) {
-            block.setAttribute('error', 'invalid-variable');
-            executionItem.setCompleted('error');
-            return;
-        }
+        block.setAttribute('result', null);
 
         try {
-            await setDateTimeVariable(
+            const executedAt = new Date();
+            const attrs = getWritebackAttributes(block);
+
+            let aborted = false;
+            let cleanup = executionItem.observeStatus((status) => {
+                if (status._tag === 'aborting') {
+                    aborted = true;
+                }
+            });
+
+            if (aborted) {
+                cleanup();
+                executionItem.setCompleted('aborted');
+                return;
+            }
+
+            if (!attrs.dataframeName) {
+                block.setAttribute('result', {
+                    _tag: 'error',
+                    step: 'validation',
+                    reason: 'dataframe-not-found',
+                    executedAt: executedAt.toISOString(),
+                });
+                executionItem.setCompleted('error');
+                cleanup();
+                return;
+            }
+
+            const tableName = attrs.tableName.toJSON();
+
+            const { promise, abort } = await writeback(
                 ctx.execution.workspaceId,
                 ctx.execution.sessionId,
-                variable,
-                value,
-                dateType,
+                attrs.dataframeName,
+                tableName,
+                attrs.overwriteTable,
+                attrs.onConflict,
+                attrs.onConflictColumns,
             );
 
-            block.setAttribute('executedAt', new Date().toISOString());
-            executionItem.setCompleted('success');
+            if (aborted) {
+                await abort();
+            }
+
+            let abortP = Promise.resolve(aborted);
+            cleanup();
+            cleanup = executionItem.observeStatus((status) => {
+                if (status._tag === 'aborting') {
+                    abortP = abort().then(() => true);
+                }
+            });
+
+            const result = await promise;
+            aborted = await abortP;
+            cleanup();
+
+            block.setAttribute('result', result);
+            executionItem.setCompleted(
+                aborted ? 'aborted' : result._tag === 'success' ? 'success' : 'error',
+            );
         } catch (err) {
-            this.logger.error({ ...ctx.execution, blockId, err }, 'Save date input error');
-            block.setAttribute('error', 'unexpected-error');
+            this.logger.error(
+                { ...ctx.execution, blockId: block.getAttribute('id'), err },
+                'Writeback error',
+            );
             executionItem.setCompleted('error');
         }
     }

@@ -7,16 +7,52 @@ import { GetFileResult, IJupyterService, EnvironmentVariables } from './jupyter.
 export class JupyterService implements IJupyterService, OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(JupyterService.name)
 
+  private readonly managers = new Map<
+    string,
+    {
+      kernelManager: services.KernelManager;
+      sessionManager: services.SessionManager;
+    }
+  >();
+
   constructor() {
     // empty constructor
   }
 
+
   async onModuleInit(): Promise<void> {
-    return
+    this.logger.log('JupyterService initialized');
   }
 
   async onModuleDestroy(): Promise<void> {
-    return
+    this.logger.log('JupyterService shutting down');
+
+    for (const { kernelManager, sessionManager } of this.managers.values()) {
+      sessionManager.dispose();
+      kernelManager.dispose();
+    }
+
+    this.managers.clear();
+  }
+
+  async getManager(workspaceId: string) {
+    const cached = this.managers.get(workspaceId);
+    if (cached) {
+      return cached;
+    }
+
+    const serverSettings = await this.getServerSettings(workspaceId);
+
+    const kernelManager = new services.KernelManager({ serverSettings });
+    const sessionManager = new services.SessionManager({
+      kernelManager,
+      serverSettings,
+    });
+
+    const managers = { kernelManager, sessionManager };
+    this.managers.set(workspaceId, managers);
+
+    return managers;
   }
 
   private get baseURL(): string {

@@ -5,7 +5,7 @@ import {
     PivotTableBlock,
     getPivotTableAttributes,
 } from '@sandworm/editor';
-import { DocumentContext } from './types';
+import { DocumentContext } from '../../interfaces';
 import { createPivotTable } from '../python/pivot-table';
 
 @Injectable()

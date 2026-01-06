@@ -7,7 +7,7 @@ import {
   PythonBlock,
   getPythonAttributes,
 } from '@sandworm/editor';
-import { DocumentContext } from './types';
+import { DocumentContext } from '../../interfaces';
 import { updateDataframes } from './utils';
 import { executeCode, listDataFrames } from '../python';
 
