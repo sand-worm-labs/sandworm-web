@@ -671,9 +671,7 @@ else:
                 case 'stdio':
                     this.handleStdioOutput(
                         output,
-                        result,
-                        outputParsingErrors,
-                        config
+                        result
                     )
                     if (output.name === 'stdout') {
                         const parsed = this.parseVisualizationOutput(output.text)
@@ -717,8 +715,6 @@ else:
     private handleStdioOutput(
         output: Extract<Output, { type: 'stdio' }>,
         result: CreateVisualizationResult | null,
-        outputParsingErrors: Error[],
-        config: VisualizationConfig
     ): void {
         switch (output.name) {
             case 'stdout':
