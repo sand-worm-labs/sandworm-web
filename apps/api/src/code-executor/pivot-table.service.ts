@@ -19,7 +19,7 @@ import {
 import { z } from 'zod'
 import AggregateError from 'aggregate-error'
 
-// Types
+
 interface PivotTableConfig {
     dataframe: DataFrame
     rows: PivotTableRow[]
@@ -54,9 +54,7 @@ export interface CreatePivotTableResult {
     abort: () => Promise<void>
 }
 
-/**
- * Service for creating and managing pivot tables from DataFrames
- */
+
 export class PivotTableService {
     private static readonly PAGE_SIZE = 50
     private readonly logger = new Logger(PivotTableService.name);
@@ -67,9 +65,6 @@ export class PivotTableService {
         private readonly sessionId: string
     ) { }
 
-    /**
-     * Creates or reads a pivot table based on the provided configuration
-     */
     async createPivotTable(config: PivotTableConfig): Promise<CreatePivotTableResult> {
         const code = this.generatePythonCode(config)
         let outputs: Output[] = []
@@ -94,9 +89,6 @@ export class PivotTableService {
         }
     }
 
-    /**
-     * Generates Python code for pivot table operations
-     */
     private generatePythonCode(config: PivotTableConfig): string {
         const rowNames = this.extractColumnNames(config.rows)
         const colNames = this.extractColumnNames(config.columns)
@@ -220,9 +212,6 @@ def _sandworm_pivot_table_run():
 _sandworm_pivot_table_run()`
     }
 
-    /**
-     * Extracts column names from rows or columns configuration
-     */
     private extractColumnNames(
         items: PivotTableRow[] | PivotTableColumn[]
     ): string[] {
@@ -231,9 +220,6 @@ _sandworm_pivot_table_run()`
             .filter((name): name is string => name !== undefined)
     }
 
-    /**
-     * Extracts metric information from metrics configuration
-     */
     private extractMetricInfo(metrics: PivotTableMetric[]): MetricInfo[] {
         return metrics.reduce<MetricInfo[]>((acc, m) => {
             if (m.column) {
@@ -248,9 +234,6 @@ _sandworm_pivot_table_run()`
         }, [])
     }
 
-    /**
-     * Processes outputs from Python execution
-     */
     private processOutputs(
         outputs: Output[],
         varName: string,
@@ -307,9 +290,6 @@ _sandworm_pivot_table_run()`
         )
     }
 
-    /**
-     * Parses stdout output from Python execution
-     */
     private parseStdoutOutput(text: string): CreatePivotTableOutput | null {
         for (const line of text.split('\n')) {
             const result = jsonString
@@ -344,30 +324,4 @@ _sandworm_pivot_table_run()`
 
         return null
     }
-}
-
-// Convenience function for backward compatibility
-export async function createPivotTable(
-    workspaceId: string,
-    sessionId: string,
-    dataframe: DataFrame,
-    rows: PivotTableRow[],
-    columns: PivotTableColumn[],
-    metrics: PivotTableMetric[],
-    sort: PivotTableSort | null,
-    varName: string,
-    page: number,
-    operation: 'create' | 'read'
-): Promise<CreatePivotTableResult> {
-    const service = new PivotTableService(workspaceId, sessionId)
-    return service.createPivotTable({
-        dataframe,
-        rows,
-        columns,
-        metrics,
-        sort,
-        varName,
-        page,
-        operation,
-    })
 }
