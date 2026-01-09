@@ -19,7 +19,7 @@ import {
 } from 'nestjs-i18n';
 import path, { join } from 'path';
 import { DataSource, DataSourceOptions } from 'typeorm';
-// import { AppResolver } from './app.resolver';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { jupyterConfig } from '@sandworm/jupyter';
 import { AppService } from './app.service';
 import { AllConfigType } from './config/config.type';
@@ -101,21 +101,38 @@ const graphqlModule = GraphQLModule.forRootAsync<ApolloDriverConfig>({
       playground:
         isLocal || isDevelopment
           ? {
-              settings: {
-                'request.credentials': 'include',
-              },
-            }
+            settings: {
+              'request.credentials': 'include',
+            },
+          }
           : false,
 
       context: ({ req, res }) => ({ req, res }),
-    
+
     };
   },
   inject: [ConfigService],
 });
 
+const eventEmitterModule = EventEmitterModule.forRoot({
+  wildcard: false,
+  delimiter: '.',
+  newListener: false,
+  removeListener: false,
+  maxListeners: 10,
+  verboseMemoryLeak: false,
+  ignoreErrors: false,
+});
+
 @Module({
-  imports: [configModule, dbModule, i18nModule, ApiModule, graphqlModule],
+  imports: [
+    configModule,
+    dbModule,
+    i18nModule,
+    ApiModule,
+    graphqlModule,
+    eventEmitterModule,
+  ],
   providers: [
     AppService,
     AsyncContextProvider,
