@@ -7,7 +7,7 @@ import {
   Resolver,
 } from '@nestjs/graphql';
 import { CurrentUser } from '@sandworm/graphql';
-import { DocumentService } from './document.service';
+import { DocumentService } from './service/document.service';
 import { Document } from './model/document.model';
 import {
   UpdateDocumentInput,

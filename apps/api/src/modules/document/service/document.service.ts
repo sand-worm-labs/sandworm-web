@@ -16,8 +16,8 @@ import {
   FavoriteDocumentInput,
   RestoreDocumentInput,
   UpdateDocumentInput,
-} from './dto/document.dto';
-import { Document } from './model/document.model';
+} from '../dto/document.dto';
+import { Document } from '../model/document.model';
 
 @Injectable()
 export class DocumentService {
@@ -30,7 +30,7 @@ export class DocumentService {
     private readonly favoriteRepository: Repository<FavoriteEntity>,
     @InjectRepository(YjsDocumentEntity)
     private readonly yjsDocumentRepository: Repository<YjsDocumentEntity>,
-  ) {}
+  ) { }
 
   async getDocument(
     documentId: string,
