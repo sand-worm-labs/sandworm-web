@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { DataSource } from '@briefer/database';
+import { DataSource } from '@sandworm/database';
 import { WriteBackResult } from '@sandworm/types';
 import { PythonExecutorService } from '../python-executor.service';
 import { BigQueryWritebackAdapter } from './adapters/bigquery.adapter';
