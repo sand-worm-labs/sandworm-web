@@ -42,7 +42,6 @@ export class BigQueryWritebackAdapter {
             credentials,
         );
 
-        // Execute
         return this.executeWriteback(
             workspaceId,
             sessionId,

@@ -1,5 +1,3 @@
-// apps/api/src/code-executor/writeback/handlers/postgres.handler.ts
-
 import { Injectable, Logger } from '@nestjs/common';
 import { DataSource, getDatabaseURL } from '@sandworm/database';
 import { WriteBackResult, jsonString } from '@sandworm/types';

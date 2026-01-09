@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { PythonQueryRunnerService } from '../python/python-query-runner.service';
 import { RunQueryResult, SuccessRunQueryResult } from '@sandworm/types';
-import { PythonRenderService } from 'src/code-executor/python-template.service';
+import { PythonExecutorService } from '../../python-executor.service';
 
 @Injectable()
 export class DuckDBQueryService {
     constructor(
-        private readonly pythonRenderer: PythonRenderService,
+        private readonly pythonExecutor: PythonExecutorService,
         private readonly queryRunner: PythonQueryRunnerService,
     ) { }
 
@@ -19,7 +19,7 @@ export class DuckDBQueryService {
         resultOptions: { pageSize: number; dashboardPageSize: number },
         onProgress: (result: SuccessRunQueryResult) => void,
     ): Promise<[Promise<RunQueryResult>, () => Promise<void>]> {
-        const rendered = await this.pythonRenderer.renderJinja(
+        const rendered = await this.pythonExecutor.renderJinja(
             workspaceId,
             sessionId,
             sql,
