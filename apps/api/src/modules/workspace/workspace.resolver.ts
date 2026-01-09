@@ -8,7 +8,7 @@ import {
 } from '@nestjs/graphql';
 import { CurrentUser } from '@sandworm/graphql';
 import { UserWorkspaceRole } from '@sandworm/postgresql-typeorm';
-import { WorkspaceService } from './workspace.service';
+import { WorkspaceService } from './service/workspace.service';
 import { Workspace, WorkspaceSecrets } from './model/workspace.model';
 import { User } from '../user/model/graphql/user.model';
 import { Document } from '../document/model/document.model';
