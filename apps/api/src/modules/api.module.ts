@@ -14,10 +14,9 @@ import { MailModule } from './mail/mail.module';
 import { SessionModule } from './session/session.module';
 import { MailerModule } from './mailer/mailer.module'
 import { AuthGithubModule } from './auth-github/auth-github.module';
-import { TutorialModule } from './tutorial/tutorial.module';
 import { ScheduleModule } from './schedule/schedule.module';
 
 @Module({
-  imports: [UserModule, AuthGraphqlModule, AuthModule, AuthGoogleModule, AuthGithubModule, MailModule, ScheduleModule, SessionModule, MailerModule, ProfileModule, TagModule, WorkspaceModule, DocumentModule, TutorialModule, CommentModule, EnvironmentModule, FileModule],
+  imports: [UserModule, AuthGraphqlModule, AuthModule, AuthGoogleModule, AuthGithubModule, MailModule, ScheduleModule, SessionModule, MailerModule, ProfileModule, TagModule, WorkspaceModule, DocumentModule, CommentModule, EnvironmentModule, FileModule],
 })
 export class ApiModule { }

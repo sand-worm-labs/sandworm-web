@@ -7,7 +7,7 @@ import {
   UserEntity,
   DocumentEntity,
 } from '@sandworm/postgresql-typeorm';
-import { WorkspaceService } from './workspace.service';
+import { WorkspaceService } from './service/workspace.service';
 import { WorkspaceResolver } from './workspace.resolver';
 import { MailModule } from '../mail/mail.module';
 import { ConfigModule } from '@nestjs/config';

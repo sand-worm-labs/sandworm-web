@@ -17,16 +17,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AllConfigType } from '@/config/config.type';
-import { MailService } from '../mail/mail.service';
-import { Workspace } from './model/workspace.model';
-import { User } from '../user/model/graphql/user.model';
-import { Document } from '../document/model/document.model';
+import { MailService } from '../../mail/mail.service';
+import { Workspace } from '../model/workspace.model';
+import { User } from '../../user/model/graphql/user.model';
+import { Document } from '../../document/model/document.model';
 import {
   validateUUID,
   validateNonEmptyString,
   validateStringLength,
 } from '@/utils/uuid';
-import { WorkspaceInfo, WorkspaceMember } from './model/workspace-info.model';
+import { WorkspaceInfo, WorkspaceMember } from '../model/workspace-info.model';
 
 @Injectable()
 export class WorkspaceService {
