@@ -17,6 +17,9 @@ import { VariableService } from '@/features/code-execution/variable.service';
 export class DropdownInputBlockExecutorService {
     private readonly logger = new Logger(DropdownInputBlockExecutorService.name);
 
+    constructor(private readonly variableService: VariableService) {
+
+    }
     async saveValue(
         executionItem: ExecutionQueueItem,
         block: Y.XmlElement<DropdownInputBlock>,
@@ -33,10 +36,7 @@ export class DropdownInputBlockExecutorService {
         }
 
         try {
-            await setVariable(ctx.execution.workspaceId, ctx.execution.sessionId, variableName, newValue).then(
-                ({ promise }) => promise,
-            );
-
+            await this.variableService.setVariable(variableName, newValue);
             updateDropdownInputValue(block, { value: newValue, error: null });
             updateDropdownInputBlockExecutedAt(block, new Date());
             executionItem.setCompleted('success');
@@ -76,9 +76,7 @@ export class DropdownInputBlockExecutorService {
                 }
             });
 
-            const { promise, abort } = await setVariable(
-                ctx.execution.workspaceId,
-                ctx.execution.sessionId,
+            const { promise, abort } = await this.variableService.setVariable(
                 newVariableName,
                 value,
             );
