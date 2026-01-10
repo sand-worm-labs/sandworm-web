@@ -1,7 +1,7 @@
 // apps/api/src/modules/auth-github/config/github.config.ts
 import { registerAs } from '@nestjs/config';
 import { IsOptional, IsString } from 'class-validator';
-import validateConfig from '@/utils/validate-config';
+import validateConfig from '@/common/utils/validate-config';
 import { GithubConfig } from './github-config.type';
 
 class EnvironmentVariablesValidator {
