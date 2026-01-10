@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Output, PythonErrorOutput } from '@sandworm/types';
-import { JupyterSessionService } from './jupyter/jupyter-session.service';
-import { KernelLifecycleService } from './kernel/kernel-lifecycle.service';
-import { decodeIOPubMessage } from './iopub-decoder';
+import { JupyterSessionService } from './jupyter-session/jupyter-session.service';
+import { KernelLifecycleService } from './jupyter-session/kernel-lifecycle.service';
+import { decodeIOPubMessage } from './jupyter-session/iopub-decoder';
 
 type ExecutionHandle = {
     abort: () => Promise<void>;
