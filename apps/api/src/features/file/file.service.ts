@@ -1,19 +1,19 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ValidationException } from '@sandworm/graphql';
 import { ErrorCode } from '@/constants/error-code.constant';
-import { JupyterService } from '../../jupyter/jupyter.service';
 import { SandwormFile } from './model/file.model';
 import {
   ListFilesInput,
   GetFileInput,
   DeleteFileInput,
 } from './dto/file.dto';
+import { JupyterService } from '@/infrastructure/jupyter/jupyter.service';
 
 @Injectable()
 export class FileService {
   private readonly logger = new Logger(FileService.name);
 
-  constructor(private readonly jupyterService: JupyterService) {}
+  constructor(private readonly jupyterService: JupyterService) { }
 
   async listFiles(input: ListFilesInput): Promise<SandwormFile[]> {
     const { workspaceId, path } = input;

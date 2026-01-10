@@ -18,7 +18,7 @@ import {
 import { User } from './model/graphql/user.model';
 import { UserService } from './user.service';
 import { UserSetting } from './model/graphql/user-setting.model';
-import { AuthPayload } from '../auth-graphql/models/auth-payload';
+import { AuthPayload } from '../auth/graphql/models/auth-payload';
 
 @Resolver(() => User)
 export class UserResolver {

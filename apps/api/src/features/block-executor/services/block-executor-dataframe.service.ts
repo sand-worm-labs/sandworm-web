@@ -2,11 +2,11 @@ import { Injectable, Logger } from '@nestjs/common';
 import { DataFrame } from '@sandworm/types';
 import { equals } from 'ramda';
 import * as Y from 'yjs';
-import { listDataFrames } from '../../python/query';
+import { DataFrameService } from '@/features/code-execution/query-engine/dataframe/dataframe.service';
 
 @Injectable()
-export class DataframeService {
-  private readonly logger = new Logger(DataframeService.name);
+export class BlockExecutorDataframeService {
+  private readonly logger = new Logger(BlockExecutorDataframeService.name);
 
   async updateDataframes(
     workspaceId: string,

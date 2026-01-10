@@ -22,19 +22,18 @@ import { I18nContext } from 'nestjs-i18n';
 import { EntityNotFoundError, QueryFailedError } from 'typeorm';
 import { ConstraintErrors } from '../constants/constraint-errors';
 import { ErrorCode } from '../constants/error-code.constant';
-import { I18nTranslations } from '../generated/i18n.generated';
+import { I18nTranslations } from '@/generated/i18n.generated';
 
 @Catch()
 export class GlobalExceptionFilter
-  implements ExceptionFilter, GqlExceptionFilter
-{
+  implements ExceptionFilter, GqlExceptionFilter {
   private i18n: I18nContext<I18nTranslations>;
   private readonly logger = new Logger(GlobalExceptionFilter.name);
 
   constructor(
     private readonly httpAdapterHost: HttpAdapterHost,
     private readonly debug: boolean,
-  ) {}
+  ) { }
 
   catch(exception: any, host: ArgumentsHost) {
     this.i18n = I18nContext.current<I18nTranslations>(host);
@@ -97,18 +96,18 @@ export class GlobalExceptionFilter
     const r = error as QueryFailedError & { constraint?: string };
     const { status, message } = r.constraint?.startsWith('UQ')
       ? {
-          status: HttpStatus.CONFLICT,
-          message: r.constraint
-            ? this.i18n.t(
-                (ConstraintErrors[r.constraint] ||
-                  r.constraint) as keyof I18nTranslations,
-              )
-            : undefined,
-        }
+        status: HttpStatus.CONFLICT,
+        message: r.constraint
+          ? this.i18n.t(
+            (ConstraintErrors[r.constraint] ||
+              r.constraint) as keyof I18nTranslations,
+          )
+          : undefined,
+      }
       : {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: this.i18n.t('app.common.internal_server_error'),
-        };
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: this.i18n.t('app.common.internal_server_error'),
+      };
 
     return {
       timestamp: new Date().toISOString(),

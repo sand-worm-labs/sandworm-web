@@ -5,13 +5,13 @@ import {
   EnvironmentEntity,
   EnvironmentStatus,
   EnvironmentVariableEntity,
-} from '@sandworm/postgresql-typeorm';
-import { JupyterService } from '../../jupyter/jupyter.service';
+} from '@sandworm/postgresql-typeorm';;
 import { Environment } from './model/environment.model';
 import { EnvironmentVariable } from './model/environment_variable.model';
 import { SetEnvironmentVariablesInput } from './dto/environment.dto';
 import { ValidationException } from '@sandworm/graphql';
 import { ErrorCode } from '@/constants/error-code.constant';
+import { JupyterService } from '@/infrastructure/jupyter/jupyter.service';
 
 @Injectable()
 export class EnvironmentService {

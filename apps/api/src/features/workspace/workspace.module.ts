@@ -9,8 +9,8 @@ import {
 } from '@sandworm/postgresql-typeorm';
 import { WorkspaceService } from './service/workspace.service';
 import { WorkspaceResolver } from './workspace.resolver';
-import { MailModule } from '../mail/mail.module';
 import { ConfigModule } from '@nestjs/config';
+import { MailModule } from '@/infrastructure/mail/mail.module';
 
 @Module({
   imports: [
