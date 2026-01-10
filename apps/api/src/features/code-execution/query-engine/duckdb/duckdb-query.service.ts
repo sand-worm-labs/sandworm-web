@@ -20,8 +20,6 @@ export class DuckDBQueryService {
         onProgress: (result: SuccessRunQueryResult) => void,
     ): Promise<[Promise<RunQueryResult>, () => Promise<void>]> {
         const rendered = await this.pythonExecutor.renderJinja(
-            workspaceId,
-            sessionId,
             sql,
         );
 

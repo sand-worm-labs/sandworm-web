@@ -8,11 +8,12 @@ import {
     setVisualizationV2Input,
 } from '@sandworm/editor';
 import { DocumentContext } from '../../interfaces';
-import { createVisualizationV2 } from '../python/visualizations-v2';
+import { VisualizationService } from '@/features/code-execution/visualization/visualization.service';
 
 @Injectable()
 export class VisualizationBlockExecutorService {
     private readonly logger = new Logger(VisualizationBlockExecutorService.name);
+    private readonly visualizationService: VisualizationService;
 
     constructor(private readonly eventEmitter: EventEmitter2) { }
 
@@ -49,12 +50,10 @@ export class VisualizationBlockExecutorService {
                 chartType: attrs.input.chartType,
             });
 
-            const { promise, abort } = await createVisualizationV2(
-                ctx.execution.workspaceId,
-                ctx.execution.sessionId,
+            const { promise, abort } = await this.visualizationService.createVisualization({
                 dataframe,
-                attrs.input,
-            );
+                input: attrs.input,
+            });
 
             let abortP = Promise.resolve(aborted);
             cleanup();
