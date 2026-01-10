@@ -5,10 +5,7 @@ import { DataFrame } from '@sandworm/types';
 @Injectable()
 export class DataFrameService {
     constructor(private readonly pythonExecutor: PythonExecutorService) { }
-
     async rename(
-        workspaceId: string,
-        sessionId: string,
         from: string,
         to: string,
     ) {
@@ -17,8 +14,6 @@ export class DataFrameService {
     del ${from}`;
         await (
             await this.pythonExecutor.executeCode(
-                workspaceId,
-                sessionId,
                 code,
                 () => { },
                 { storeHistory: false },
@@ -27,8 +22,6 @@ export class DataFrameService {
     }
 
     async list(
-        workspaceId: string,
-        sessionId: string,
     ): Promise<DataFrame[]> {
         const code = `
             import pandas as pd, json
@@ -42,8 +35,6 @@ export class DataFrameService {
 
         await (
             await this.pythonExecutor.executeCode(
-                workspaceId,
-                sessionId,
                 code,
                 (outputs) => {
                     for (const o of outputs) {

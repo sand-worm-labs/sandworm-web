@@ -1,4 +1,4 @@
-import { JupyterService } from "../../jupyter/jupyter.service";
+import { JupyterService } from "@/infrastructure/jupyter/jupyter.service";
 import { JupyterSessionService } from "./jupyter-session.service";
 import { Injectable } from "@nestjs/common";
 

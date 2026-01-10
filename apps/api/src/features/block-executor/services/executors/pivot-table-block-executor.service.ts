@@ -12,6 +12,8 @@ import { PivotTableService } from '@/features/code-execution/pivot-table/pivot-t
 export class PivotTableBlockExecutorService {
     private readonly logger = new Logger(PivotTableBlockExecutorService.name);
 
+    constructor(private readonly pivotTableService: PivotTableService) { }
+
     async run(executionItem: ExecutionQueueItem, block: Y.XmlElement<PivotTableBlock>, ctx: DocumentContext): Promise<void> {
         return this.execute(executionItem, block, ctx, 'create');
     }
@@ -69,18 +71,16 @@ export class PivotTableBlockExecutorService {
                 if (status._tag === 'aborting') aborted = true;
             });
 
-            const { promise, abort } = await createPivotTable(
-                ctx.execution.workspaceId,
-                ctx.execution.sessionId,
+            const { promise, abort } = await this.pivotTableService.createPivotTable({
                 dataframe,
-                attrs.rows,
-                attrs.columns,
-                attrs.metrics,
+                rows: attrs.rows,
+                columns: attrs.columns,
+                matrics: attrs.metrics,
                 attrs.sort,
                 attrs.variable.value,
                 attrs.page,
                 operation,
-            );
+            });
 
             if (aborted) await abort();
 
