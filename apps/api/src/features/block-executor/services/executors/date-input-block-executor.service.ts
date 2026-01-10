@@ -6,8 +6,8 @@ import {
     getDateInputAttributes,
 } from '@sandworm/editor';
 import { DocumentContext } from '../../interfaces';
-import { VARIABLE_NAME_REGEX } from './utils';
-import { setDateTimeVariable } from '../python/input';
+import { VARIABLE_NAME_REGEX } from '@/features/code-execution/utils';
+import { VariableService } from '@/features/code-execution/variable.service';
 
 @Injectable()
 export class DateInputBlockExecutorService {

@@ -6,7 +6,7 @@ import {
     getPivotTableAttributes,
 } from '@sandworm/editor';
 import { DocumentContext } from '../../interfaces';
-import { createPivotTable } from '../python/pivot-table';
+import { PivotTableService } from '@/features/code-execution/pivot-table/pivot-table.service';
 
 @Injectable()
 export class PivotTableBlockExecutorService {

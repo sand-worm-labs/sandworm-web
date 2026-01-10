@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ConfigModule } from '@nestjs/config';
 import blockExecutorConfig from './config/block-executor.config';
-import { DataframeService } from './services/dataframe.service';
+import { DataframeService } from './services/block-executor-dataframe.service';
 import { PythonBlockExecutorService } from './services/executors/python-block-executor.service';
 import { SqlBlockExecutorService } from './services/executors/sql-block-executor.service';
 import { InputBlockExecutorService } from './services/executors/input-block-executor.service';
