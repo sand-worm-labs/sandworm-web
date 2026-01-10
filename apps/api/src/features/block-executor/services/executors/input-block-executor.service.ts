@@ -23,7 +23,9 @@ import { VariableService } from '@/features/code-execution/variable.service';
 export class InputBlockExecutorService {
     private readonly logger = new Logger(InputBlockExecutorService.name);
 
-    // Text Input
+    constructor(private readonly variableService: VariableService) { }
+
+
     async saveTextValue(
         executionItem: ExecutionQueueItem,
         block: Y.XmlElement<InputBlock>,
@@ -34,9 +36,7 @@ export class InputBlockExecutorService {
             const { value: variableName } = attrs.variable;
             const { newValue } = attrs.value;
 
-            await setVariable(ctx.execution.workspaceId, ctx.execution.sessionId, variableName, newValue).then(
-                ({ promise }) => promise,
-            );
+            await this.variableService.setVariable(variableName, newValue);
 
             updateInputValue(block, { value: newValue, error: null });
             updateInputBlockExecutedAt(block, new Date());
@@ -64,9 +64,7 @@ export class InputBlockExecutorService {
                 return;
             }
 
-            const { promise, abort } = await setVariable(
-                ctx.execution.workspaceId,
-                ctx.execution.sessionId,
+            const { promise, abort } = await this.variableService.setVariable(
                 newVariableName,
                 value,
             );
@@ -108,7 +106,7 @@ export class InputBlockExecutorService {
         }
 
         try {
-            await setDateTimeVariable(ctx.execution.workspaceId, ctx.execution.sessionId, variable, value, dateType);
+            await this.variableService.setDateTimeVariable({ variable, value, dateType });
             block.setAttribute('executedAt', new Date().toISOString());
             executionItem.setCompleted('success');
         } catch (err) {
@@ -135,10 +133,7 @@ export class InputBlockExecutorService {
         }
 
         try {
-            await setVariable(ctx.execution.workspaceId, ctx.execution.sessionId, variableName, newValue).then(
-                ({ promise }) => promise,
-            );
-
+            await this.variableService.setVariable(variableName, newValue);
             updateDropdownInputValue(block, { value: newValue, error: null });
             updateDropdownInputBlockExecutedAt(block, new Date());
             executionItem.setCompleted('success');
@@ -171,9 +166,7 @@ export class InputBlockExecutorService {
         }
 
         try {
-            const { promise, abort } = await setVariable(
-                ctx.execution.workspaceId,
-                ctx.execution.sessionId,
+            const { promise, abort } = await this.variableService.setVariable(
                 newVariableName,
                 value,
             );
