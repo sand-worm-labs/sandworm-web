@@ -19,15 +19,15 @@ import {
 } from 'nestjs-i18n';
 import path, { join } from 'path';
 import { DataSource, DataSourceOptions } from 'typeorm';
-// import { AppResolver } from './app.resolver';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { jupyterConfig } from '@sandworm/jupyter';
 import { AppService } from './app.service';
-import { AllConfigType } from './config/config.type';
-import { TypeOrmConfigService } from './database/typeorm-config.service';
-import { ApiModule } from './modules/api.module';
-import googleConfig from './modules/auth-google/config/google.config';
-import authConfig from './modules/auth/config/auth.config';
-import mailConfig from './modules/mail/config/mail.config';
+import { AllConfigType } from './core/config/config.type';
+import { TypeOrmConfigService } from './infrastructure/database/typeorm-config.service';
+import googleConfig from './features/auth/google/config/google.config';
+import mailConfig from './infrastructure/mail/config/mail.config';
+import authConfig from './features/auth/core/config/auth.config';
+import { ApiModule } from './api.module';
 
 const configModule = ConfigModule.forRoot({
   isGlobal: true,
@@ -101,21 +101,38 @@ const graphqlModule = GraphQLModule.forRootAsync<ApolloDriverConfig>({
       playground:
         isLocal || isDevelopment
           ? {
-              settings: {
-                'request.credentials': 'include',
-              },
-            }
+            settings: {
+              'request.credentials': 'include',
+            },
+          }
           : false,
 
       context: ({ req, res }) => ({ req, res }),
-    
+
     };
   },
   inject: [ConfigService],
 });
 
+const eventEmitterModule = EventEmitterModule.forRoot({
+  wildcard: false,
+  delimiter: '.',
+  newListener: false,
+  removeListener: false,
+  maxListeners: 10,
+  verboseMemoryLeak: false,
+  ignoreErrors: false,
+});
+
 @Module({
-  imports: [configModule, dbModule, i18nModule, ApiModule, graphqlModule],
+  imports: [
+    configModule,
+    dbModule,
+    i18nModule,
+    ApiModule,
+    graphqlModule,
+    eventEmitterModule,
+  ],
   providers: [
     AppService,
     AsyncContextProvider,

@@ -22,11 +22,12 @@ import {
   REQUEST_ID_HEADER,
 } from '@sandworm/nest-common';
 import { AppModule } from './app.module';
-import { AllConfigType } from './config/config.type';
-import { GlobalExceptionFilter } from './filters/global-exception.filter';
-import { AuthGuard } from './guards/auth.guard';
-import { AuthGraphqlService } from './modules/auth-graphql/auth-graphql.service';
-import { setupSwagger } from './utils/setup-swagger';
+import { AllConfigType } from './core/config/config.type';
+import { GlobalExceptionFilter } from './core/filters/global-exception.filter';
+import { AuthGuard } from './core/guards/auth.guard';
+import { setupSwagger } from './common/utils/setup-swagger';
+import { AuthGraphqlService } from './features/auth/graphql/auth-graphql.service';
+
 
 async function bootstrap() {
   const fastifyAdapter = new FastifyAdapter({

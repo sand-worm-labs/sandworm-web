@@ -4,41 +4,39 @@
     "baseUrl": "./",
     "outDir": "./dist",
     "paths": {
-      "@/api/*": [
-        "src/modules/*"
-      ],
       "@/common/*": [
         "src/common/*"
       ],
-      "@/config/*": [
-        "src/config/*"
+      "@/core/*": [
+        "src/core/*"
       ],
-      "@/constants/*": [
-        "src/constants/*"
+      "@/features/*": [
+        "src/features/*"
       ],
-      "@/database/*": [
-        "src/database/*"
+      "@/infrastructure/*": [
+        "src/infrastructure/*"
       ],
-      "@/decorators/*": [
-        "src/decorators/*"
-      ],
-      "@/exceptions/*": [
-        "src/exceptions/*"
-      ],
-      "@/filters/*": [
-        "src/filters/*"
+      "@/events/*": [
+        "src/events/*"
       ],
       "@/generated/*": [
         "src/generated/*"
       ],
+      "@/i18n/*": [
+        "src/i18n/*"
+      ],
+      // core subfolders
+      "@/config/*": [
+        "src/core/config/*"
+      ],
+      "@/constants/*": [
+        "src/core/constants/*"
+      ],
+      "@/filters/*": [
+        "src/core/filters/*"
+      ],
       "@/guards/*": [
-        "src/guards/*"
-      ],
-      "@/interceptors/*": [
-        "src/interceptors/*"
-      ],
-      "@/utils/*": [
-        "src/utils/*"
+        "src/core/guards/*"
       ]
     }
   }
