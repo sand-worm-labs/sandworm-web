@@ -1,11 +1,20 @@
 {
-  "moduleFileExtensions": ["js", "json", "ts"],
+  "moduleFileExtensions": [
+    "js",
+    "json",
+    "ts"
+  ],
   "rootDir": "src",
   "testRegex": ".*\\.spec\\.ts$",
   "transform": {
-    "^.+\\.(t|j)s$": ["@swc/jest"]
+    "^.+\\.(t|j)s$": [
+      "@swc/jest"
+    ]
   },
-  "collectCoverageFrom": ["**/*.(t|j)s", "!**/*.spec.(t|j)s"],
+  "collectCoverageFrom": [
+    "**/*.(t|j)s",
+    "!**/*.spec.(t|j)s"
+  ],
   "coveragePathIgnorePatterns": [
     "/node_modules/",
     "<rootDir>/main.ts",
@@ -14,20 +23,22 @@
   "coverageDirectory": "../coverage",
   "testEnvironment": "node",
   "moduleNameMapper": {
-    "^@/api(.*)$": "<rootDir>/api$1",
-    "^@/config(.*)$": "<rootDir>/config$1",
-    "^@/constants(.*)$": "<rootDir>/constants$1",
-    "^@/database(.*)$": "<rootDir>/database$1",
-    "^@/decorators(.*)$": "<rootDir>/decorators$1",
-    "^@/exceptions(.*)$": "<rootDir>/exceptions$1",
-    "^@/filters(.*)$": "<rootDir>/filters$1",
+    "^@/common(.*)$": "<rootDir>/common$1",
+    "^@/core(.*)$": "<rootDir>/core$1",
+    "^@/features(.*)$": "<rootDir>/features$1",
+    "^@/infrastructure(.*)$": "<rootDir>/infrastructure$1",
+    "^@/events(.*)$": "<rootDir>/events$1",
     "^@/generated(.*)$": "<rootDir>/generated$1",
-    "^@/guards(.*)$": "<rootDir>/guards$1",
-    "^@/interceptors(.*)$": "<rootDir>/interceptors$1",
-    "^@/modules(.*)$": "<rootDir>/modules$1",
-    "^@/utils(.*)$": "<rootDir>/utils$1"
+    "^@/i18n(.*)$": "<rootDir>/i18n$1",
+    "^@/config(.*)$": "<rootDir>/core/config$1",
+    "^@/constants(.*)$": "<rootDir>/core/constants$1",
+    "^@/filters(.*)$": "<rootDir>/core/filters$1",
+    "^@/guards(.*)$": "<rootDir>/core/guards$1",
+    "^@/utils(.*)$": "<rootDir>/common/utils$1"
   },
-  "setupFiles": ["../setup-jest.mjs"],
+  "setupFiles": [
+    "../setup-jest.mjs"
+  ],
   "cacheDirectory": "../.jest-cache",
   "testTimeout": 120000
 }

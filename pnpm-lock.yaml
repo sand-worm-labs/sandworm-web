@@ -207,6 +207,9 @@ importers:
       '@sandworm/types':
         specifier: workspace:*
         version: link:../../packages/types
+      aggregate-error:
+        specifier: ^5.0.0
+        version: 5.0.0
       axios:
         specifier: ^1.12.2
         version: 1.12.2
@@ -222,6 +225,9 @@ importers:
       dataloader:
         specifier: ^2.2.3
         version: 2.2.3
+      date-fns:
+        specifier: ^4.1.0
+        version: 4.1.0
       fastify:
         specifier: 5.4.0
         version: 5.4.0
@@ -7150,6 +7156,10 @@ packages:
     resolution: {integrity: sha512-4I7Td01quW/RpocfNayFdFVk1qSuoh0E7JrbRJ16nH01HhKFQ88INq9Sd+nd72zqRySlr9BmDA8xlEJ6vJMrYA==}
     engines: {node: '>=8'}
 
+  aggregate-error@5.0.0:
+    resolution: {integrity: sha512-gOsf2YwSlleG6IjRYG2A7k0HmBMEo6qVNk9Bp/EaLgAJT5ngH6PXbqa4ItvnEwCm/velL5jAnQgsHsWnjhGmvw==}
+    engines: {node: '>=18'}
+
   ai@5.0.52:
     resolution: {integrity: sha512-GLlRHjMlvN9+w7UYGxCpUQ8GgCRv5Z+JCprRH3Q8YbXJ/JyIc6EP9+YRUmQsyExX/qQsuehe7y/LLygarbSTOw==}
     engines: {node: '>=18'}
@@ -7821,6 +7831,10 @@ packages:
   clean-stack@2.2.0:
     resolution: {integrity: sha512-4diC9HaTE+KRAMWhDhrGOECgWZxoevMc5TlkObMqNSsVU62PYzXZ/SMTjzyGAFF1YusgxGcSWTEXBhp0CPwQ1A==}
     engines: {node: '>=6'}
+
+  clean-stack@5.3.0:
+    resolution: {integrity: sha512-9ngPTOhYGQqNVSfeJkYXHmF7AGWp4/nN5D/QqNQs3Dvxd1Kk/WpjHfNujKHYUQ/5CoGyOyFNoWSPk5afzP0QVg==}
+    engines: {node: '>=14.16'}
 
   cli-cursor@3.1.0:
     resolution: {integrity: sha512-I/zHAwsKf9FqGoXM4WWRACob9+SNukZTd94DWF57E4toouRulbCxcUh6RKUEOQlYTHJnzkPMySvPNaaSLNfLZw==}
@@ -10225,6 +10239,10 @@ packages:
   indent-string@4.0.0:
     resolution: {integrity: sha512-EdDDZu4A2OyIK7Lr/2zG+w5jmbuk1DVBnEwREQvBzspBJkCEbRa8GxU1lghYcaGJCnRWibjDXlq779X1/y5xwg==}
     engines: {node: '>=8'}
+
+  indent-string@5.0.0:
+    resolution: {integrity: sha512-m6FAo/spmsW2Ab2fU35JTYwtOKa2yAwXSwgjSv1TJzh4Mh7mC3lzAOVLBprb72XsTrgkEIsl7YrFNAiDiRhIGg==}
+    engines: {node: '>=12'}
 
   inflight@1.0.6:
     resolution: {integrity: sha512-k92I/b08q4wvFscXCLvqfsHCrjrF7yiXsQuIVvVE7N82W3+aqpzuUdBbfhWcy/FZR3/4IgflMgKLOsvPDrGCJA==}
@@ -21972,6 +21990,11 @@ snapshots:
       clean-stack: 2.2.0
       indent-string: 4.0.0
 
+  aggregate-error@5.0.0:
+    dependencies:
+      clean-stack: 5.3.0
+      indent-string: 5.0.0
+
   ai@5.0.52(zod@3.25.76):
     dependencies:
       '@ai-sdk/gateway': 1.0.29(zod@3.25.76)
@@ -22725,6 +22748,10 @@ snapshots:
       escape-string-regexp: 1.0.5
 
   clean-stack@2.2.0: {}
+
+  clean-stack@5.3.0:
+    dependencies:
+      escape-string-regexp: 5.0.0
 
   cli-cursor@3.1.0:
     dependencies:
@@ -25849,6 +25876,8 @@ snapshots:
   imurmurhash@0.1.4: {}
 
   indent-string@4.0.0: {}
+
+  indent-string@5.0.0: {}
 
   inflight@1.0.6:
     dependencies:
