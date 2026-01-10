@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PythonExecutorService } from '../../python-executor.service';
-import { JupyterService } from 'src/jupyter/jupyter.service';
+import { JupyterService } from '@/infrastructure/jupyter/jupyter.service';
 import { RunQueryResult, SuccessRunQueryResult } from '@sandworm/types';
 
 interface ParseState {

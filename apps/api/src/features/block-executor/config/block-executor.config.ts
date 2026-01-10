@@ -1,7 +1,7 @@
 // apps/api/src/modules/block-executor/block-executor.config.ts
 import { registerAs } from '@nestjs/config';
 import { IsInt, IsOptional, Min, Max } from 'class-validator';
-import validateConfig from '@/utils/validate-config';
+import validateConfig from '@/common/utils/validate-config';
 import { BlockExecutorConfig } from './block-executor-config.type';
 
 class EnvironmentVariablesValidator {
