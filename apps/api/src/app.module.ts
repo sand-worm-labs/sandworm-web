@@ -27,6 +27,7 @@ import { TypeOrmConfigService } from './infrastructure/database/typeorm-config.s
 import googleConfig from './features/auth/google/config/google.config';
 import mailConfig from './infrastructure/mail/config/mail.config';
 import authConfig from './features/auth/core/config/auth.config';
+import { ApiModule } from './api.module';
 
 const configModule = ConfigModule.forRoot({
   isGlobal: true,
