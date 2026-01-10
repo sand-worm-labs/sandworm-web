@@ -11,13 +11,11 @@ import {
     PivotTableResult,
     PivotTableSort,
     jsonString,
-} from '@sandworm/types'
-import { PythonExecutionError, PythonStderrError } from "./python-executor.errors"
-import {
-    PythonExecutorService,
-} from './python-executor.service'
+} from '@sandworm/types';
+import { PythonExecutionError, PythonStderrError } from "../python-executor.errors";
 import { z } from 'zod'
 import AggregateError from 'aggregate-error'
+import { PythonExecutorService } from "../python-executor.service";
 
 
 interface PivotTableConfig {
@@ -70,12 +68,8 @@ export class PivotTableService {
         let outputs: Output[] = []
 
         const { abort, promise } = await this.executor.executeCode(
-            this.workspaceId,
-            this.sessionId,
             code,
-            (otps) => {
-                outputs = outputs.concat(otps)
-            },
+            (otps) => outputs = outputs.concat(otps),
             { storeHistory: true }
         )
 

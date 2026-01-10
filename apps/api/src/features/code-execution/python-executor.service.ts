@@ -12,20 +12,21 @@ type ExecutionHandle = {
 @Injectable()
 export class PythonExecutorService {
     private readonly logger = new Logger(PythonExecutorService.name);
+    private readonly sessionService: JupyterSessionService;
+    private readonly kernelLifecycle: KernelLifecycleService;
+
 
     constructor(
-        private readonly sessionService: JupyterSessionService,
-        private readonly kernelLifecycle: KernelLifecycleService,
+        private readonly workspaceId: string,
+        private readonly sessionId: string
     ) { }
 
     async executeCode(
-        workspaceId: string,
-        sessionId: string,
         code: string,
         onOutputs: (outputs: Output[]) => void,
         opts: { storeHistory: boolean },
     ): Promise<ExecutionHandle> {
-        const { kernel } = await this.sessionService.getSession(workspaceId, sessionId);
+        const { kernel } = await this.sessionService.getSession(this.workspaceId, this.sessionId);
 
         let aborted = false;
 
@@ -59,18 +60,17 @@ export class PythonExecutorService {
                 if (aborted) return;
                 aborted = true;
 
-                this.logger.warn({ workspaceId, sessionId }, 'Execution aborted');
+                this.logger.warn({ workspaceId: this.workspaceId, sessionId: this.sessionId }, 'Execution aborted');
                 await this.kernelLifecycle.interrupt(kernel, 'user-abort');
             },
         };
     }
 
     async renderJinja(
-        workspaceId: string,
-        sessionId: string,
         template: string,
     ): Promise<string | PythonErrorOutput> {
-
+        const workspaceId = this.workspaceId;
+        const sessionId = this.sessionId;
         const code = `
     from jinja2 import Template
     import json
@@ -94,8 +94,6 @@ export class PythonExecutorService {
         let result: string | PythonErrorOutput | null = null;
 
         const { promise } = await this.executeCode(
-            workspaceId,
-            sessionId,
             code,
             (outputs) => {
                 for (const output of outputs) {

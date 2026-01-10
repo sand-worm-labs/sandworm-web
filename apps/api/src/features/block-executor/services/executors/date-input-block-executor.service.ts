@@ -13,6 +13,8 @@ import { VariableService } from '@/features/code-execution/variable.service';
 export class DateInputBlockExecutorService {
     private readonly logger = new Logger(DateInputBlockExecutorService.name);
 
+    constructor(private readonly variableService: VariableService) { }
+
     async save(
         executionItem: ExecutionQueueItem,
         block: Y.XmlElement<DateInputBlock>,
@@ -27,13 +29,11 @@ export class DateInputBlockExecutorService {
         }
 
         try {
-            await setDateTimeVariable(
-                ctx.execution.workspaceId,
-                ctx.execution.sessionId,
+            await this.variableService.setDateTimeVariable({
                 variable,
                 value,
                 dateType,
-            );
+            });
 
             block.setAttribute('executedAt', new Date().toISOString());
             executionItem.setCompleted('success');

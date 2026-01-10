@@ -15,7 +15,7 @@ import { PythonExecutorService } from '@/features/code-execution/python-executor
 export class PythonBlockExecutorService {
   private readonly logger = new Logger(PythonBlockExecutorService.name);
 
-  constructor(private readonly eventEmitter: EventEmitter2) { }
+  constructor(private readonly eventEmitter: EventEmitter2, private readonly dataframeService: DataFrameService, private readonly pythonExecutorService: PythonExecutorService) { }
 
   async run(
     executionItem: ExecutionQueueItem,
@@ -33,9 +33,7 @@ export class PythonBlockExecutorService {
       const actualSource = (metadata.isSuggestion ? aiSuggestions : source)?.toJSON() ?? '';
 
       let errored = false;
-      const { promise, abort } = await executeCode(
-        ctx.execution.workspaceId,
-        ctx.execution.sessionId,
+      const { promise, abort } = await this.pythonExecutorService.executeCode(
         actualSource,
         (outputs) => {
           const prevOutputs = block.getAttribute('result') ?? [];
