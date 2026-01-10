@@ -11,11 +11,15 @@ import { exhaustiveCheck, RunQueryResult } from '@sandworm/types';
 import { DocumentContext } from '../../interfaces';
 import { DataFrameService } from '@/features/code-execution/query-engine/dataframe/dataframe.service';
 import { QueryExecutionService } from '@/features/code-execution/query-engine/query-execution.service';
+import { VARIABLE_NAME_REGEX } from '@/features/code-execution/utils';
 
 
 @Injectable()
 export class SqlBlockExecutorService {
   private readonly logger = new Logger(SqlBlockExecutorService.name);
+  private readonly dataFrameService: DataFrameService;
+  private readonly queryExecutionService: QueryExecutionService;
+
 
   constructor(private readonly eventEmitter: EventEmitter2) { }
 
@@ -68,7 +72,7 @@ export class SqlBlockExecutorService {
       let resultType: RunQueryResult['type'] | 'empty-query' = 'empty-query';
 
       if (actualSource !== '') {
-        const [promise, abort] = await makeSQLQuery(
+        const [promise, abort] = await this.queryExecutionService.makeSQLQuery(
           ctx.execution.workspaceId,
           ctx.execution.sessionId,
           blockId,
@@ -225,7 +229,7 @@ export class SqlBlockExecutorService {
         dataframeName.newValue,
       );
 
-      const dataframes = await listDataFrames(ctx.execution.workspaceId, ctx.execution.sessionId);
+      const dataframes = await this.dataFrameService.list(ctx.execution.workspaceId, ctx.execution.sessionId);
       const blocks = new Set(Array.from(ctx.blocks.keys()));
       updateDataframes(ctx.dataframes, dataframes, blockId, blocks);
 

@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import * as services from '@jupyterlab/services';
 import { decrypt } from '@sandworm/nest-common';
 import { EnvironmentVariableEntity } from '@sandworm/postgresql-typeorm';
-import { JupyterService } from 'src/jupyter/jupyter.service';
+import { JupyterService } from '@/infrastructure/jupyter/jupyter.service';
 
 export type Jupyter = {
     session: services.Session.ISessionConnection;

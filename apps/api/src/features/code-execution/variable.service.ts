@@ -33,8 +33,6 @@ export class VariableService {
         const code = this.generateVariableCode(variable, value)
 
         return this.executor.executeCode(
-            this.workspaceId,
-            this.sessionId,
             code,
             () => { },
             { storeHistory: false }
@@ -47,8 +45,6 @@ export class VariableService {
         let error: Error | null = null
 
         const { promise } = await this.executor.executeCode(
-            this.workspaceId,
-            this.sessionId,
             code,
             (outputs) => {
                 error = this.handleDateTimeOutputs(outputs, config)

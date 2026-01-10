@@ -7,7 +7,7 @@ import {
     VisualizationFilter,
     isUnfinishedVisualizationFilter,
 } from '@sandworm/types';
-import { PythonExecutionError } from './python-executor.errors';
+import { PythonExecutionError } from '../python-executor.errors';
 import {
     VisualizationV2BlockInput,
     VisualizationV2BlockOutputResult,
@@ -15,9 +15,8 @@ import {
 import AggregateError from 'aggregate-error';
 import { z } from 'zod';
 import { Logger } from '@nestjs/common';
-import { JupyterService } from '../jupyter/jupyter.service';
-import { PythonExecutorService } from './python-executor.service';
-
+import { JupyterService } from '@/infrastructure/jupyter/jupyter.service';
+import { PythonExecutorService } from '../python-executor.service';
 
 const CreateVisualizationResult = z.union([
     z.object({
@@ -70,12 +69,8 @@ export class VisualizationService {
         let outputs: Output[] = []
 
         const { promise: execute, abort } = await this.executorService.executeCode(
-            this.workspaceId,
-            this.sessionId,
             code,
-            (newOutputs) => {
-                outputs = outputs.concat(newOutputs)
-            },
+            (newOutputs) => outputs = outputs.concat(newOutputs),
             { storeHistory: false }
         )
 
