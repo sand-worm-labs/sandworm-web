@@ -9,8 +9,9 @@ import {
 } from '@sandworm/editor';
 import { exhaustiveCheck, RunQueryResult } from '@sandworm/types';
 import { DocumentContext } from '../../interfaces';
-import { updateDataframes, VARIABLE_NAME_REGEX } from './utils';
-import { makeSQLQuery, readDataframePage, renameDataFrame, listDataFrames } from '../python/query';
+import { DataFrameService } from '@/features/code-execution/query-engine/dataframe/dataframe.service';
+import { QueryExecutionService } from '@/features/code-execution/query-engine/query-execution.service';
+
 
 @Injectable()
 export class SqlBlockExecutorService {

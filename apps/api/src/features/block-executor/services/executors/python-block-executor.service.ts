@@ -8,8 +8,8 @@ import {
   getPythonAttributes,
 } from '@sandworm/editor';
 import { DocumentContext } from '../../interfaces';
-import { updateDataframes } from './utils';
-import { executeCode, listDataFrames } from '../python';
+import { DataFrameService } from '@/features/code-execution/query-engine/dataframe/dataframe.service';
+import { PythonExecutorService } from '@/features/code-execution/python-executor.service';
 
 @Injectable()
 export class PythonBlockExecutorService {
