@@ -22,7 +22,7 @@ import {
   REQUEST_ID_HEADER,
 } from '@sandworm/nest-common';
 import { AppModule } from './app.module';
-import { AllConfigType } from './config/config.type';
+import { AllConfigType } from './core/config/config.type';
 import { GlobalExceptionFilter } from './filters/global-exception.filter';
 import { AuthGuard } from './guards/auth.guard';
 import { AuthGraphqlService } from './modules/auth-graphql/auth-graphql.service';

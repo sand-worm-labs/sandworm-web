@@ -1,6 +1,6 @@
 import { ObjectType, Field, Float } from '@nestjs/graphql';
 import { StringField } from '@sandworm/graphql';
-import { User } from '../../user/model/graphql/user.model';
+import { User } from '@/features/user/model/graphql/user.model';
 import GraphQLJSON from 'graphql-type-json';
 
 @ObjectType()

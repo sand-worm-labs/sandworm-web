@@ -1,6 +1,6 @@
-import { UserService } from '@/api/user/user.service';
+import { UserService } from '@/features/user/user.service';
 import { AllConfigType } from '@/config/config.type';
-import { NullableType } from '@/utils/types/nullable.type';
+import { NullableType } from '@/common/types/nullable.type';
 import {
   HttpStatus,
   Injectable,
@@ -14,12 +14,12 @@ import { JwtService } from '@nestjs/jwt';
 import { verifyPassword } from '@sandworm/nest-common';
 import crypto from 'crypto';
 import ms from 'ms';
-import { MailService } from '../mail/mail.service';
-import { Session } from '../session/domain/session';
-import { SessionService } from '../session/session.service';
-import { SocialInterface } from '../social/interfaces/social.interface';
-import { UserResponse } from '../user/model/http/user.model';
-import { AuthProvidersEnum } from './auth-providers.enum';
+import { MailService } from '@/infrastructure/mail/mail.service';
+import { Session } from '@/features/session/domain/session';
+import { SessionService } from '@/features/session/session.service';
+import { SocialInterface } from '@/features/social/interface/social.interface';
+import { UserResponse } from '@/features/user/model/http/user.model';
+import { AuthProvidersEnum } from '@/common/enums/auth-providers.enum';
 import { AuthEmailLoginDto } from './dto/auth-email-login.dto';
 import { AuthRegisterLoginDto } from './dto/auth-register-login.dto';
 import { AuthUpdateDto } from './dto/auth-update.dto';

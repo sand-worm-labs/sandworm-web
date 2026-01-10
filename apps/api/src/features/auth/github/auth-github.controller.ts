@@ -7,10 +7,11 @@ import {
   SerializeOptions,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from '@/features/auth/core/auth.service';
 import { AuthGithubService } from './auth-github.service';
 import { AuthGithubLoginDto } from './dto/auth-github-login.dto';
-import { LoginResponseDto } from '../auth/dto/login-response.dto';
+import { LoginResponseDto } from '@/features/auth/core/dto/login-response.dto';
+
 
 @ApiTags('Auth')
 @Controller({
@@ -21,7 +22,7 @@ export class AuthGithubController {
   constructor(
     private readonly authService: AuthService,
     private readonly authGithubService: AuthGithubService,
-  ) {}
+  ) { }
 
   @ApiOkResponse({
     type: LoginResponseDto,

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { LoginInput } from './dto/auth-graphql.dto';
 import { AuthPayload } from './models/auth-payload';
-import { JwtPayloadType } from '../auth/strategies/types/jwt-payload.type';
-import { AuthService } from '../auth/auth.service';
+import { JwtPayloadType } from '@/features/auth/core/strategies/types/jwt-payload.type';
+import { AuthService } from '@/features/auth/core/auth.service';
 
 
 @Injectable()

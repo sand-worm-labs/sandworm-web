@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { AuthGithubService } from './auth-github.service';
 import { ConfigModule } from '@nestjs/config';
-import { AuthGithubController } from './auth-github.controller';
-import { AuthModule } from '../auth/auth.module';
+import { AuthGithubService } from '@/features/auth/github/auth-github.service';
+import { AuthGithubController } from '@/features/auth/github/auth-github.controller';
+import { AuthModule } from '@/features/auth/core/auth.module';
 
 @Module({
   imports: [ConfigModule, AuthModule],
@@ -10,4 +10,4 @@ import { AuthModule } from '../auth/auth.module';
   exports: [AuthGithubService],
   controllers: [AuthGithubController],
 })
-export class AuthGithubModule {}
+export class AuthGithubModule { }

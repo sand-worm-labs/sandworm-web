@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { OAuth2Client } from 'google-auth-library';
-import { SocialInterface } from '../social/interfaces/social.interface';
+import { SocialInterface } from '@/features/social/interface/social.interface';
 import { AuthGoogleLoginDto } from './dto/auth-google-login.dto';
 import { AllConfigType } from '@/config/config.type';
 
