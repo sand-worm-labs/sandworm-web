@@ -11,6 +11,7 @@ import { exhaustiveCheck, RunQueryResult } from '@sandworm/types';
 import { DocumentContext } from '../../interfaces';
 import { DataFrameService } from '@/features/code-execution/query-engine/dataframe/dataframe.service';
 import { QueryExecutionService } from '@/features/code-execution/query-engine/query-execution.service';
+import { VARIABLE_NAME_REGEX } from '@/features/code-execution/utils';
 
 
 @Injectable()
