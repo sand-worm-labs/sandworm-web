@@ -10,7 +10,6 @@ import {
   UserFollowsEntity,
 } from '@sandworm/postgresql-typeorm';
 import { Repository } from 'typeorm';
-import { AuthPayload } from '../auth-graphql/models/auth-payload';
 import {
   CreateUserInput,
   GetAllUsersInput,
@@ -19,6 +18,7 @@ import {
 } from './dto/user.dto';
 import { UserSetting } from './model/graphql/user-setting.model';
 import { User } from './model/graphql/user.model';
+import { AuthPayload } from '../auth/graphql/models/auth-payload';
 
 @Injectable()
 export class UserService {

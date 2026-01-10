@@ -1,5 +1,3 @@
-// apps/api/src/modules/schedule/schedule-executor.service.ts
-
 import { Injectable, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';

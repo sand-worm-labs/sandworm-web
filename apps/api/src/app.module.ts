@@ -22,12 +22,11 @@ import { DataSource, DataSourceOptions } from 'typeorm';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { jupyterConfig } from '@sandworm/jupyter';
 import { AppService } from './app.service';
-import { AllConfigType } from './config/config.type';
-import { TypeOrmConfigService } from './database/typeorm-config.service';
-import { ApiModule } from './modules/api.module';
-import googleConfig from './modules/auth-google/config/google.config';
-import authConfig from './modules/auth/config/auth.config';
-import mailConfig from './modules/mail/config/mail.config';
+import { AllConfigType } from './core/config/config.type';
+import { TypeOrmConfigService } from './infrastructure/database/typeorm-config.service';
+import googleConfig from './features/auth/google/config/google.config';
+import mailConfig from './infrastructure/mail/config/mail.config';
+import authConfig from './features/auth/core/config/auth.config';
 
 const configModule = ConfigModule.forRoot({
   isGlobal: true,

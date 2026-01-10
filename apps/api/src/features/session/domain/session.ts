@@ -1,7 +1,7 @@
-import { UserResponse } from '@/api/user/model/http/user.model';
+import { UserResponse } from "@/features/user/model/http/user.model";
 
 export class Session {
-  id: string ;
+  id: string;
   user: UserResponse;
   hash: string;
   createdAt: Date;
