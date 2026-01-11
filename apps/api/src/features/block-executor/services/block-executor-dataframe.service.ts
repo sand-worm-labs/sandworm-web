@@ -3,6 +3,7 @@ import { DataFrame } from '@sandworm/types';
 import { equals } from 'ramda';
 import * as Y from 'yjs';
 import { DataFrameService } from '@/features/code-execution/query-engine/dataframe/dataframe.service';
+import { VARIABLE_NAME_REGEX } from '@/features/code-execution/utils';
 
 @Injectable()
 export class BlockExecutorDataframeService {
@@ -190,6 +191,6 @@ export class BlockExecutorDataframeService {
   }
 
   isValidDataframeName(name: string): boolean {
-    return /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name);
+    return VARIABLE_NAME_REGEX.test(name);
   }
 }
