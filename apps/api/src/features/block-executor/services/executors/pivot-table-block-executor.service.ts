@@ -66,50 +66,51 @@ export class PivotTableBlockExecutorService {
                 }
             }
 
-            let aborted = false;
-            let cleanup = executionItem.observeStatus((status) => {
-                if (status._tag === 'aborting') aborted = true;
-            });
+            // Check if aborted before starting
+            const initialStatus = executionItem.getStatus();
+            if (initialStatus._tag === 'aborting') {
+                executionItem.setCompleted('aborted');
+                return;
+            }
 
             const { promise, abort } = await this.pivotTableService.createPivotTable({
                 dataframe,
                 rows: attrs.rows,
                 columns: attrs.columns,
-                matrics: attrs.metrics,
-                attrs.sort,
-                attrs.variable.value,
-                attrs.page,
+                metrics: attrs.metrics,
+                sort: attrs.sort,
+                varName: attrs.variable.value,
+                page: attrs.page,
                 operation,
             });
 
-            if (aborted) await abort();
-
-            let abortP = Promise.resolve(aborted);
-            cleanup();
-            cleanup = executionItem.observeStatus((status) => {
+            // Set up abort handler
+            const unsubscribe = executionItem.observeStatus((status) => {
                 if (status._tag === 'aborting') {
-                    abortP = abort().then(() => true);
+                    abort();
                 }
             });
 
-            const result = await promise;
-            aborted = await abortP;
-            cleanup();
+            try {
+                const result = await promise;
 
-            if (aborted) {
-                executionItem.setCompleted('aborted');
-                return;
-            }
+                if (result.success === false) {
+                    if (result.reason !== 'aborted') {
+                        block.setAttribute('error', result.reason);
+                    }
 
-            if (!result.success) {
-                if (result.reason !== 'aborted') block.setAttribute('error', result.reason);
-                executionItem.setCompleted(result.reason === 'aborted' ? 'aborted' : 'error');
-            } else {
-                block.setAttribute('updatedAt', new Date().toISOString());
-                block.setAttribute('error', null);
-                block.setAttribute('result', result.result);
-                block.setAttribute('page', result.result.page);
-                executionItem.setCompleted('success');
+                    executionItem.setCompleted(
+                        result.reason === 'aborted' ? 'aborted' : 'error'
+                    );
+                } else {
+                    block.setAttribute('updatedAt', new Date().toISOString());
+                    block.setAttribute('error', null);
+                    block.setAttribute('result', result.result);
+                    block.setAttribute('page', result.result.page);
+                    executionItem.setCompleted('success');
+                }
+            } finally {
+                unsubscribe();
             }
         } catch (err) {
             this.logger.error({ ...ctx.execution, blockId: block.getAttribute('id'), err }, 'Pivot table error');
