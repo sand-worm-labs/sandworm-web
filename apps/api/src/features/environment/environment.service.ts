@@ -55,7 +55,7 @@ export class EnvironmentService {
       { status: EnvironmentStatus.STOPPING },
     );
 
-    await this.jupyterService.restart(workspaceId);
+    await this.jupyterService.restart();
 
     const environment = await this.environmentRepository.findOne({
       where: { workspaceId },
@@ -117,7 +117,7 @@ export class EnvironmentService {
       await this.envVarRepository.save(newVars);
     }
 
-    await this.jupyterService.setEnvironmentVariables(workspaceId, {
+    await this.jupyterService.setEnvironmentVariables({
       add: input.add,
       remove: removeNames.map((v) => v.name),
     });
