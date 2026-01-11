@@ -1,4 +1,4 @@
-from .handlers import setup_handlers
+from .handler import setup_handlers
 
 def _jupyter_server_extension_points():
     return [{
