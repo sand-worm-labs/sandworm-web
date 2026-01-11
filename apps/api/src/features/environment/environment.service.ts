@@ -55,7 +55,7 @@ export class EnvironmentService {
       { status: EnvironmentStatus.STOPPING },
     );
 
-    await this.jupyterService.restart();
+    await this.jupyterService.restart(workspaceId);
 
     const environment = await this.environmentRepository.findOne({
       where: { workspaceId },
@@ -117,11 +117,10 @@ export class EnvironmentService {
       await this.envVarRepository.save(newVars);
     }
 
-    await this.jupyterService.setEnvironmentVariables({
+    await this.jupyterService.setEnvironmentVariables(workspaceId, {
       add: input.add,
       remove: removeNames.map((v) => v.name),
     });
-
     return this.getEnvironmentVariables(workspaceId);
   }
 
@@ -168,4 +167,4 @@ export class EnvironmentService {
 
     return Environment.fromEntity(environment);
   }
-}
+}  

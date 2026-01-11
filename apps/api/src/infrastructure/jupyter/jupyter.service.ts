@@ -8,73 +8,115 @@ import services from '@jupyterlab/services';
 import { EnvironmentEntity, EnvironmentStatus } from '@sandworm/postgresql-typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { EnvironmentService } from '@/features/environment/environment.service.js';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class JupyterService implements IJupyterService, OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(JupyterService.name);
-
-  private workspaceId?: string;
-  private kernelManager?: services.KernelManager;
-  private sessionManager?: services.SessionManager;
-  private jupyterExtension?: SandwormJupyterExtension;
-
-  private watchTimeout?: NodeJS.Timeout;
+  private readonly kernelManagers = new Map<string, services.KernelManager>();
+  private readonly sessionManagers = new Map<string, services.SessionManager>();
+  private readonly jupyterExtensions = new Map<string, SandwormJupyterExtension>();
+  private readonly watchTimeouts = new Map<string, NodeJS.Timeout>();
+  private readonly protocol: string;
+  private readonly host: string;
+  private readonly port: number;
+  private readonly token: string;
 
   constructor(
     @InjectRepository(EnvironmentEntity)
     private readonly environmentRepository: Repository<EnvironmentEntity>,
-    private readonly environmentService: EnvironmentService,
-    private readonly protocol = 'http',
-    private readonly host = 'localhost',
-    private readonly port = 8888,
-    private readonly token = ''
-  ) { }
+    private readonly configService: ConfigService
+  ) {
+    this.protocol = this.configService.get('JUPYTER_PROTOCOL') || 'http';
+    this.host = this.configService.get('JUPYTER_HOST') || 'localhost';
+    this.port = this.configService.get('JUPYTER_PORT') || 8888;
+    this.token = this.configService.get('JUPYTER_TOKEN') || '';
+  }
+  deploy(): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
 
   async onModuleInit(): Promise<void> {
     this.logger.log('JupyterService initialized');
-    this.startPolling();
   }
 
   async onModuleDestroy(): Promise<void> {
     this.logger.log('JupyterService shutting down');
-    if (this.watchTimeout) clearTimeout(this.watchTimeout);
-    this.disposeAll();
+    for (const timeout of this.watchTimeouts.values()) {
+      clearTimeout(timeout);
+    }
+    for (const sm of this.sessionManagers.values()) sm.dispose();
+    for (const km of this.kernelManagers.values()) km.dispose();
+    this.sessionManagers.clear();
+    this.kernelManagers.clear();
+    this.jupyterExtensions.clear();
+    this.watchTimeouts.clear();
   }
 
-  private get baseURL(): string {
+  private getBaseURL(): string {
     return `${this.protocol}://${this.host}:${this.port}`;
   }
 
-  async bindWorkspace(workspaceId: string) {
-    this.workspaceId = workspaceId;
-    const serverSettings = await this.getServerSettings();
-
-    this.kernelManager = new services.KernelManager({ serverSettings });
-    this.sessionManager = new services.SessionManager({ kernelManager: this.kernelManager, serverSettings });
-    this.jupyterExtension = new SandwormJupyterExtension(this.protocol, this.host, this.port, this.token);
+  private getExtension(workspaceId: string): SandwormJupyterExtension {
+    if (!this.jupyterExtensions.has(workspaceId)) {
+      this.jupyterExtensions.set(
+        workspaceId,
+        new SandwormJupyterExtension(this.protocol, this.host, this.port, this.token)
+      );
+    }
+    return this.jupyterExtensions.get(workspaceId)!;
   }
 
-  private async startPolling(): Promise<void> {
-    const poll = async () => {
-      if (!this.workspaceId) return;
+  async getServerSettings(workspaceId?: string): Promise<services.ServerConnection.ISettings> {
+    const wsUrl = this.getBaseURL().replace(this.protocol, this.protocol === 'https' ? 'wss' : 'ws');
+    return {
+      baseUrl: this.getBaseURL(),
+      appUrl: this.getBaseURL(),
+      wsUrl,
+      token: this.token,
+      appendToken: true,
+      // @ts-ignore
+      serializer: services.serialize,
+      fetch,
+      Request,
+      Headers,
+      // @ts-ignore
+      WebSocket,
+      init: {},
+    } as services.ServerConnection.ISettings;
+  }
 
-      let env = await this.environmentRepository.findOne({ where: { workspaceId: this.workspaceId } });
+  async bindWorkspace(workspaceId: string) {
+    if (!this.kernelManagers.has(workspaceId)) {
+      const serverSettings = await this.getServerSettings();
+      this.kernelManagers.set(workspaceId, new services.KernelManager({ serverSettings }));
+      this.sessionManagers.set(workspaceId, new services.SessionManager({
+        kernelManager: this.kernelManagers.get(workspaceId)!,
+        serverSettings
+      }));
+      this.getExtension(workspaceId); // ensure extension exists
+      this.startPolling(workspaceId);
+    }
+  }
+
+  private async startPolling(workspaceId: string) {
+    const poll = async () => {
+      let env = await this.environmentRepository.findOne({ where: { workspaceId } });
       if (!env) {
         env = await this.environmentRepository.save({
-          workspaceId: this.workspaceId,
+          workspaceId,
           status: EnvironmentStatus.STOPPED,
           resourceVersion: 0,
         });
       }
 
       try {
-        const res = await fetch(`${this.baseURL}/api/status`, {
+        const res = await fetch(`${this.getBaseURL()}/api/status`, {
           headers: { Authorization: `token ${this.token}` },
         });
 
         if (res.ok) {
-          if (env.status !== 'Running') {
+          if (env.status !== EnvironmentStatus.RUNNING) {
             env.status = EnvironmentStatus.RUNNING;
             env.startedAt = new Date();
             await this.environmentRepository.save(env);
@@ -84,35 +126,35 @@ export class JupyterService implements IJupyterService, OnModuleInit, OnModuleDe
           await this.environmentRepository.save(env);
         }
       } catch (err) {
-        this.logger.error({ workspaceId: this.workspaceId, err }, 'Failed to check Jupyter status');
+        this.logger.error({ workspaceId, err }, 'Failed to check Jupyter status');
       }
 
-      this.watchTimeout = setTimeout(poll, 5000);
+      this.watchTimeouts.set(workspaceId, setTimeout(poll, 5000));
     };
 
     await poll();
   }
 
   async start(): Promise<void> { }
-  async stop(): Promise<void> {
-    if (this.watchTimeout) clearTimeout(this.watchTimeout);
+  async stop(workspaceId: string): Promise<void> {
+    const timeout = this.watchTimeouts.get(workspaceId);
+    if (timeout) clearTimeout(timeout);
   }
-  async deploy(): Promise<void> { }
-  async restart(): Promise<void> {
-    if (!this.workspaceId) throw new Error('No workspace bound');
-    this.disposeAll();
+  async restart(workspaceId: string): Promise<void> {
+    this.stop(workspaceId);
+    this.kernelManagers.get(workspaceId)?.dispose();
+    this.sessionManagers.get(workspaceId)?.dispose();
+    this.kernelManagers.delete(workspaceId);
+    this.sessionManagers.delete(workspaceId);
+    this.jupyterExtensions.delete(workspaceId);
   }
 
-  async ensureRunning(): Promise<void> { }
-  async isRunning(): Promise<boolean> {
-    return true;
-  }
+  async ensureRunning(workspaceId: string): Promise<void> { }
+  async isRunning(workspaceId: string): Promise<boolean> { return true; }
 
-  async fileExists(fileName: string): Promise<boolean> {
-    if (!this.jupyterExtension) throw new Error('Workspace not bound');
-    const actualPath = await this.getFilepath(fileName);
-    const result = await this.jupyterExtension.statFile(actualPath);
-
+  async fileExists(workspaceId: string, fileName: string): Promise<boolean> {
+    const ext = this.getExtension(workspaceId);
+    const result = await ext.statFile(await this.getFilepath(workspaceId, fileName));
     if (result._tag === 'error') {
       if (result.reason === 'not-found') return false;
       throw new Error(`Failed to stat file: ${result.reason}`);
@@ -120,11 +162,9 @@ export class JupyterService implements IJupyterService, OnModuleInit, OnModuleDe
     return true;
   }
 
-  async getFile(fileName: string): Promise<GetFileResult | null> {
-    if (!this.jupyterExtension) throw new Error('Workspace not bound');
-    const actualPath = await this.getFilepath(fileName);
-    const result = await this.jupyterExtension.readFile(actualPath);
-
+  async getFile(workspaceId: string, fileName: string): Promise<GetFileResult | null> {
+    const ext = this.getExtension(workspaceId);
+    const result = await ext.readFile(await this.getFilepath(workspaceId, fileName));
     if (result._tag === 'error') {
       if (result.reason === 'not-found') return null;
       throw new Error(`Failed to read file: ${result.reason}`);
@@ -140,36 +180,29 @@ export class JupyterService implements IJupyterService, OnModuleInit, OnModuleDe
     };
   }
 
-  async putFile(fileName: string, replace: boolean, file: Readable): Promise<'success' | 'already-exists'> {
-    if (!this.jupyterExtension) throw new Error('Workspace not bound');
-    const actualPath = await this.getFilepath(fileName);
-    const statResult = await this.jupyterExtension.statFile(actualPath);
-
-    if (statResult._tag === 'error' && statResult.reason !== 'not-found') {
-      throw new Error(`Failed to stat file: ${statResult.reason}`);
-    }
+  async putFile(workspaceId: string, fileName: string, replace: boolean, file: Readable): Promise<'success' | 'already-exists'> {
+    const ext = this.getExtension(workspaceId);
+    const actualPath = await this.getFilepath(workspaceId, fileName);
+    const statResult = await ext.statFile(actualPath);
+    if (statResult._tag === 'error' && statResult.reason !== 'not-found') throw new Error(`Failed to stat file: ${statResult.reason}`);
     if (statResult._tag === 'success' && !replace) return 'already-exists';
-
-    const result = await this.jupyterExtension.writeFile(actualPath, file);
+    const result = await ext.writeFile(actualPath, file);
     if (result._tag === 'error') throw new Error(`Failed to write file: ${result.reason}`);
     return 'success';
   }
 
-  async deleteFile(fileName: string): Promise<void> {
-    if (!this.jupyterExtension) throw new Error('Workspace not bound');
-    const result = await this.jupyterExtension.deleteFile(await this.getFilepath(fileName));
-    if (result._tag === 'error' && result.reason !== 'not-found') {
-      throw new Error(`Failed to delete file: ${result.reason}`);
-    }
+  async deleteFile(workspaceId: string, fileName: string): Promise<void> {
+    const ext = this.getExtension(workspaceId);
+    const result = await ext.deleteFile(await this.getFilepath(workspaceId, fileName));
+    if (result._tag === 'error' && result.reason !== 'not-found') throw new Error(`Failed to delete file: ${result.reason}`);
   }
 
-  async listFiles(): Promise<SandwormFile[]> {
-    if (!this.jupyterExtension) throw new Error('Workspace not bound');
-    const cwd = await this.jupyterExtension.getCWD();
-    const result = await this.jupyterExtension.listFiles(cwd);
+  async listFiles(workspaceId: string): Promise<SandwormFile[]> {
+    const ext = this.getExtension(workspaceId);
+    const cwd = await ext.getCWD();
+    const result = await ext.listFiles(cwd);
     if (result._tag === 'error') throw new Error(`Failed to list files: ${result.reason}`);
-
-    return result.files.map((f) => ({
+    return result.files.map(f => ({
       name: f.name,
       path: f.path,
       relCwdPath: path.relative(cwd, f.path),
@@ -180,49 +213,18 @@ export class JupyterService implements IJupyterService, OnModuleInit, OnModuleDe
     }));
   }
 
-  async getServerSettings(): Promise<services.ServerConnection.ISettings> {
-    const wsUrl = this.baseURL.replace(this.protocol, this.protocol === 'https' ? 'wss' : 'ws');
-    return {
-      baseUrl: this.baseURL,
-      appUrl: this.baseURL,
-      wsUrl,
-      token: this.token,
-      appendToken: true,
-      // @ts-ignore
-      serializer: services.serialize,
-      fetch,
-      Request,
-      Headers,
-      // @ts-ignore
-      WebSocket,
-      init: {},
-    } as services.ServerConnection.ISettings;
+  async setEnvironmentVariables(workspaceId: string, variables: EnvironmentVariables): Promise<void> {
+    // await this.environmentService.setEnvironmentVariables(workspaceId, variables);
   }
 
-  async setEnvironmentVariables(variables: EnvironmentVariables): Promise<void> {
-    if (!this.workspaceId) throw new Error('Workspace not bound');
-    await this.environmentService.setEnvironmentVariables(this.workspaceId, variables);
-  }
-
-  async getEnvironmentStatus(): Promise<{ status: string; startedAt: Date | null }> {
-    if (!this.workspaceId) throw new Error('Workspace not bound');
-    const env = await this.environmentRepository.findOne({ where: { workspaceId: this.workspaceId } });
+  async getEnvironmentStatus(workspaceId: string): Promise<{ status: string; startedAt: Date | null }> {
+    const env = await this.environmentRepository.findOne({ where: { workspaceId } });
     return { status: env?.status ?? 'Stopped', startedAt: env?.startedAt ?? null };
   }
 
-  private async getFilepath(fileName: string): Promise<string> {
-    if (!this.jupyterExtension) throw new Error('Workspace not bound');
-    const cwd = await this.jupyterExtension.getCWD();
+  private async getFilepath(workspaceId: string, fileName: string): Promise<string> {
+    const ext = this.getExtension(workspaceId);
+    const cwd = await ext.getCWD();
     return path.join(cwd, path.join('/', fileName));
-  }
-
-  private disposeAll() {
-    if (this.sessionManager) this.sessionManager.dispose();
-    if (this.kernelManager) this.kernelManager.dispose();
-
-    this.jupyterExtension = undefined;
-    this.sessionManager = undefined;
-    this.kernelManager = undefined;
-    this.workspaceId = undefined;
   }
 }

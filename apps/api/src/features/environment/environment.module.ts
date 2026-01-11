@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import {
   EnvironmentEntity,
@@ -9,12 +9,11 @@ import { JupyterModule } from '@/infrastructure/jupyter/jupyter.module';
 import { EnvironmentResolver } from './environment.resolver';
 import { EnvironmentService } from './environment.service';
 
-
 @Module({
   imports: [
     TypeOrmModule.forFeature([EnvironmentEntity, EnvironmentVariableEntity]),
     AuthGraphqlModule,
-    JupyterModule,
+    forwardRef(() => JupyterModule),
   ],
   providers: [EnvironmentResolver, EnvironmentService],
   exports: [EnvironmentService],
