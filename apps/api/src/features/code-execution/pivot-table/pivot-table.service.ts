@@ -284,7 +284,7 @@ _sandworm_pivot_table_run()`
         )
     }
 
-    private parseStdoutOutput(text: string): CreatePivotTableOutput | null {
+    private parseStdoutOutput(text: string): CreatePivotTableOutput {
         for (const line of text.split('\n')) {
             const result = jsonString
                 .pipe(

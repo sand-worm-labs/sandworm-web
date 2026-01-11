@@ -10,12 +10,18 @@ import {
 import { DocumentContext } from '../../interfaces';
 import { DataFrameService } from '@/features/code-execution/query-engine/dataframe/dataframe.service';
 import { PythonExecutorService } from '@/features/code-execution/python-executor.service';
+import { BlockExecutorDataframeService } from '../block-executor-dataframe.service';
 
 @Injectable()
 export class PythonBlockExecutorService {
   private readonly logger = new Logger(PythonBlockExecutorService.name);
 
-  constructor(private readonly eventEmitter: EventEmitter2, private readonly dataframeService: DataFrameService, private readonly pythonExecutorService: PythonExecutorService) { }
+  constructor(
+    private readonly eventEmitter: EventEmitter2,
+    private readonly dataframeService: DataFrameService,
+    private readonly pythonExecutorService: PythonExecutorService,
+    private readonly blockExecutorDataframeService: BlockExecutorDataframeService,
+  ) { }
 
   async run(
     executionItem: ExecutionQueueItem,
@@ -74,8 +80,8 @@ export class PythonBlockExecutorService {
   }
 
   private async updateDataFrames(blockId: string, ctx: DocumentContext): Promise<void> {
-    const newDataframes = await listDataFrames(ctx.execution.workspaceId, ctx.execution.sessionId);
+    const newDataframes = await this.dataframeService.list();
     const blocks = new Set(Array.from(ctx.blocks.keys()));
-    updateDataframes(ctx.dataframes, newDataframes, blockId, blocks);
+    await this.blockExecutorDataframeService.updateDataframes(blockId, blocks, ctx.dataframes);
   }
 }
