@@ -72,7 +72,7 @@ export class VisualizationBlockExecutorService {
                 return;
             }
 
-            if (result.success) {
+            if (result.success === true) {
                 block.setAttribute('output', {
                     executedAt: new Date().toISOString(),
                     result: result.data,
@@ -80,11 +80,11 @@ export class VisualizationBlockExecutorService {
                 });
                 block.setAttribute('error', null);
 
-                // Update filters from result
                 const filters = attrs.input.filters.map((f) => {
                     const resultFilter = result.filters.find((rf) => rf.id === f.id);
                     return resultFilter ?? f;
                 });
+
                 setVisualizationV2Input(block, { filters });
                 executionItem.setCompleted('success');
             } else {
@@ -96,6 +96,7 @@ export class VisualizationBlockExecutorService {
                     executionItem.setCompleted('error');
                 }
             }
+
         } catch (err) {
             this.logger.error(
                 { ...ctx.execution, blockId: block.getAttribute('id'), err },
