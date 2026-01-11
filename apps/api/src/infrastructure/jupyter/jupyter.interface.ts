@@ -17,32 +17,29 @@ export interface IJupyterService {
   start(): Promise<void>
   stop(): Promise<void>
   deploy(): Promise<void>
-  restart(workspaceId: string): Promise<void>
-  ensureRunning(workspaceId: string): Promise<void>
-  isRunning(workspaceId: string): Promise<boolean>
-  fileExists(workspaceId: string, fileName: string): Promise<boolean>
-  listFiles(workspaceId: string): Promise<SandwormFile[]>
-  getFile(workspaceId: string, fileName: string): Promise<GetFileResult | null>
+  restart(): Promise<void>
+  ensureRunning(): Promise<void>
+  isRunning(): Promise<boolean>
+  fileExists(fileName: string): Promise<boolean>
+  listFiles(): Promise<SandwormFile[]>
+  getFile(fileName: string): Promise<GetFileResult | null>
 
   putFile(
-    workspaceId: string,
     fileName: string,
     replace: boolean,
     file: Readable
   ): Promise<'success' | 'already-exists'>
 
-  deleteFile(workspaceId: string, fileName: string): Promise<void>
+  deleteFile(fileName: string): Promise<void>
 
   getServerSettings(
-    workspaceId: string
   ): Promise<services.ServerConnection.ISettings>
 
   setEnvironmentVariables(
-    workspaceId: string,
     variables: EnvironmentVariables
   ): Promise<void>
 
-  getEnvironmentStatus(workspaceId: string): Promise<{
+  getEnvironmentStatus(): Promise<{
     status: string
     startedAt: Date | null
   }>
