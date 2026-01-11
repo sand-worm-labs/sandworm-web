@@ -8,26 +8,30 @@ import { DataFrameService } from '@/features/code-execution/query-engine/datafra
 export class BlockExecutorDataframeService {
   private readonly logger = new Logger(BlockExecutorDataframeService.name);
 
+  constructor(
+    private readonly dataframeService: DataFrameService,
+    private readonly workspaceId: string,
+    private readonly sessionId: string,
+  ) { }
+
   async updateDataframes(
-    workspaceId: string,
-    sessionId: string,
     currentBlockId: string,
     blocks: Set<string>,
     dataframes: Y.Map<DataFrame>,
   ): Promise<void> {
     try {
       this.logger.debug(
-        `Updating dataframes for block ${currentBlockId} in workspace ${workspaceId}`,
+        `Updating dataframes for block ${currentBlockId} in workspace ${this.workspaceId}`,
       );
 
-      const newDataframes = await listDataFrames(workspaceId, sessionId);
+      const newDataframes = await this.dataframeService.list();
 
       this.logger.debug(`Found ${newDataframes.length} dataframes in Python session`);
 
       this.updateDataframesInMap(dataframes, newDataframes, currentBlockId, blocks);
     } catch (err) {
       this.logger.error(
-        { workspaceId, sessionId, currentBlockId, err },
+        { workspaceId: this.workspaceId, sessionId: this.sessionId, currentBlockId, err },
         'Error updating dataframes',
       );
       throw err;

@@ -98,7 +98,7 @@ import numpy as np
 import math
 from jinja2 import Template
 
-class _BrieferNpEncoder(json.JSONEncoder):
+class _sandwormNpEncoder(json.JSONEncoder):
     def default(self, obj):
         if pd.api.types.is_integer_dtype(obj):
             return int(obj)
@@ -107,11 +107,11 @@ class _BrieferNpEncoder(json.JSONEncoder):
         if isinstance(obj, np.ndarray):
             return obj.tolist()
         try:
-            return super(_BrieferNpEncoder, self).default(obj)
+            return super(_sandwormNpEncoder, self).default(obj)
         except:
             return str(obj)
 
-def _briefer_render_filter_value(filter):
+def _sandworm_render_filter_value(filter):
     try:
         if isinstance(filter["value"], list):
             value = list(map(lambda x: Template(x).render(**globals()), filter["value"]))
@@ -128,7 +128,7 @@ def _briefer_render_filter_value(filter):
         }
         return None
 
-def _briefer_convert_to_utc_safe(datetime_series, comparison_value):
+def _sandworm_convert_to_utc_safe(datetime_series, comparison_value):
     # Localize timezone-naive datetimes to UTC
     if datetime_series.dt.tz is None:
         localized_series = datetime_series.dt.tz_localize('UTC')
@@ -143,7 +143,7 @@ def _briefer_convert_to_utc_safe(datetime_series, comparison_value):
 
     return localized_series, comparison_value_utc
 
-def _briefer_create_visualization(df, options):
+def _sandworm_create_visualization(df, options):
     colors = [
         "#5470c6",
         "#91cc75",
@@ -158,11 +158,11 @@ def _briefer_create_visualization(df, options):
 
     def extract_chart_type(chart_type):
         """
-        Transforms the chart type from Briefer input to one that is supported by ECharts
+        Transforms the chart type from sandworm input to one that is supported by ECharts
         It also returns whether the chart is an area chart and if it should be stacked.
 
         Parameters:
-        chart_type (str): The chart type from Briefer input
+        chart_type (str): The chart type from sandworm input
 
         Returns:
         tuple: The transformed chart type, whether it is an area chart, whether it should be stacked and wheather it should be normalized
@@ -282,7 +282,7 @@ def _briefer_create_visualization(df, options):
             column_name = filter['column']['name']
             operator = filter['operator']
 
-            value = _briefer_render_filter_value(filter)
+            value = _sandworm_render_filter_value(filter)
 
             # if the value is None, rendering failed, skip this filter
             if value == None:
@@ -332,7 +332,7 @@ def _briefer_create_visualization(df, options):
                     df = df[df[column_name].notnull()]
             elif pd.api.types.is_datetime64_any_dtype(df[column_name]):
                 # Convert both DataFrame column and value to UTC safely
-                df_column_utc, value_utc = _briefer_convert_to_utc_safe(df[column_name], pd.to_datetime(value))
+                df_column_utc, value_utc = _sandworm_convert_to_utc_safe(df[column_name], pd.to_datetime(value))
 
                 # Perform comparisons using the safely converted UTC values
                 if operator == 'eq':
@@ -622,7 +622,7 @@ def _briefer_create_visualization(df, options):
             "tooManyDataPoints": too_many_data_points,
             "filters": options["filters"]
         }
-    }, cls=_BrieferNpEncoder)
+    }, cls=_sandwormNpEncoder)
 
     print(output)
 
@@ -630,7 +630,7 @@ def _briefer_create_visualization(df, options):
 if "${dataframe.name}" in globals():
     df = ${dataframe.name}.copy()
     options = json.loads(${JSON.stringify(strInput)})
-    _briefer_create_visualization(df, options)
+    _sandworm_create_visualization(df, options)
 else:
     output = json.dumps({
         "type":"result",
