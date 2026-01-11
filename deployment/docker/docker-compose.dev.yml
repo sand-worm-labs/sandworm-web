@@ -1,42 +1,76 @@
-version: "3"
+version: "3.9"
 
+volumes:
+  sandworm-postgres-data:
+  sandworm-pgadmin-data:
+  sandworm-jupyter-notebooks:
+
+    ###########################
+    # Services
+    ###########################
 services:
+
+  ###########################
+  # PostgreSQL Database
+  ###########################
   db:
     container_name: sandworm-postgres
     image: postgres:17
     restart: always
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "25432:5432" # host:container
     environment:
       POSTGRES_DB: sandworm
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       TZ: "UTC"
-    ports:
-      - "25432:5432"
+    volumes:
+      - sandworm-postgres-data:/var/lib/postgresql/data
 
+  ###########################
+  # PGAdmin Web UI
+  ###########################
   pgadmin:
-    container_name: pgadmin
+    container_name: sandworm-pgadmin
     image: dpage/pgadmin4
     restart: always
     ports:
       - "18080:80"
-    volumes:
-      - pgadmin_data:/root/.pgadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@example.com
       PGADMIN_DEFAULT_PASSWORD: 12345678
       PGADMIN_CONFIG_WTF_CSRF_ENABLED: "False"
       PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: "False"
+    volumes:
+      - sandworm-pgadmin-data:/root/.pgadmin
     depends_on:
       - db
+
+  ###########################
+  # MailDev SMTP & Web
+  ###########################
   maildev:
+    container_name: sandworm-maildev
     build:
       context: .
       dockerfile: maildev.Dockerfile
     ports:
-      - 1080:1080
-      - 1025:1025
-volumes:
-  postgres_data:
-  pgadmin_data:
+      - "1025:1025" # SMTP
+      - "1080:1080" # Web UI
+
+  ###########################
+  # Jupyter Notebook / App
+  ###########################
+  jupyter:
+    container_name: sandworm-jupyter
+    build:
+      context: ../../apps/jupyter
+      dockerfile: Dockerfile
+      args:
+        TARGETARCH: amd64
+    restart: always
+    ports:
+      - "8888:8888"
+    volumes:
+      - sandworm-jupyter-notebooks:/home/jovyan/work
+    command: jupyter server --ip=0.0.0.0 --port=8888 --no-browser
