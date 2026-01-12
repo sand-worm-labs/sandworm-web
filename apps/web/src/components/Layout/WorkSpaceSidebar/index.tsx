@@ -67,11 +67,10 @@ export const WorkspaceSidebar = () => {
 
   const linkClasses = (href: string) =>
     `flex items-center gap-3 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors
-     ${
-       pathname === href
-         ? "bg-white dark:bg-[#181C21] shadow-[0_0.5px_4px_#2516660A] text-black dark:text-white "
-         : "text-gray-600 dark:text-white hover:bg-[#ffffff] dark:hover:bg-[#181C21] hover:text-black dark:hover:text-white"
-     }`;
+     ${pathname === href
+      ? "bg-white dark:bg-[#181C21] shadow-[0_0.5px_4px_#2516660A] text-black dark:text-white "
+      : "text-gray-600 dark:text-white hover:bg-[#ffffff] dark:hover:bg-[#181C21] hover:text-black dark:hover:text-white"
+    }`;
 
   const [
     documentsState,
@@ -85,7 +84,7 @@ export const WorkspaceSidebar = () => {
   ] = useDocuments(workspaceId);
 
   const documents = documentsState.documents.filter(
-    doc => doc.deletedAt === null && doc.version > 1
+    doc => doc.deletedAt === null && doc.version >= 1
   );
 
   const onCreateDocument = useCallback(
@@ -177,8 +176,6 @@ export const WorkspaceSidebar = () => {
     },
     [documentsState, updateDocumentParent]
   );
-
-  console.log(session?.user);
 
   return (
     <aside
