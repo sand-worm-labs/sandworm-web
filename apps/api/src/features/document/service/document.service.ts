@@ -18,6 +18,7 @@ import {
   UpdateDocumentInput,
 } from '../dto/document.dto';
 import { Document } from '../model/document.model';
+import { DocumentTreeService } from './document-tree.service';
 
 @Injectable()
 export class DocumentService {
@@ -30,6 +31,7 @@ export class DocumentService {
     private readonly favoriteRepository: Repository<FavoriteEntity>,
     @InjectRepository(YjsDocumentEntity)
     private readonly yjsDocumentRepository: Repository<YjsDocumentEntity>,
+    private readonly documentTreeService: DocumentTreeService,
   ) { }
 
   async getDocument(
@@ -48,13 +50,42 @@ export class DocumentService {
   }
 
   async getWorkspaceDocuments(workspaceId: string): Promise<Document[]> {
-    const documentsList = await this.documentRepository.find({
+    const documents = await this.documentRepository.find({
       where: { workspaceId },
     });
 
-    return Document.fromEntities(documentsList);
+    return Document.fromEntities(documents);
   }
 
+  async getChildren(parentId: string): Promise<Document[]> {
+    const documents = await this.documentRepository.find({
+      where: { parentId, deletedAt: null },
+      order: { orderIndex: 'ASC' },
+    });
+
+    return Document.fromEntities(documents);
+  }
+
+  async createDocument(
+    workspaceId: string,
+    userId: string,
+    input: CreateDocumentInput,
+  ): Promise<Document> {
+    const document = await this.documentTreeService.createDocument(
+      workspaceId,
+      userId,
+      input.title ?? '',
+      input.parentId ?? null,
+      input.orderIndex ?? -1,
+      1,
+    );
+
+    return Document.fromEntity(document);
+  }
+
+  // ========================================
+  // UPDATE - Uses tree service for position changes
+  // ========================================
   async updateDocument(
     documentId: string,
     workspaceId: string,
@@ -68,22 +99,59 @@ export class DocumentService {
       throw new ValidationException(ErrorCode.E003);
     }
 
-    document.title = input.title ?? document.title;
-    document.parentId = input.parentId ?? document.parentId;
-    document.orderIndex = input.orderIndex ?? document.orderIndex;
-    document.runUnexecutedBlocks =
-      input.runUnexecutedBlocks ?? document.runUnexecutedBlocks ?? false;
-    document.runSQLSelection =
-      input.runSQLSelection ?? document.runSQLSelection ?? false;
-    document.shareLinksWithoutSidebar =
-      input.shareLinksWithoutSidebar ??
-      document.shareLinksWithoutSidebar ??
-      false;
+    // Handle tree position changes
+    if (input.parentId !== undefined || input.orderIndex !== undefined) {
+      const newParentId = input.parentId ?? document.parentId;
+      const newOrderIndex = input.orderIndex ?? document.orderIndex;
 
-    await this.documentRepository.save(document);
-    return Document.fromEntity(document);
+      if (newParentId !== document.parentId || newOrderIndex !== document.orderIndex) {
+        // USE TREE SERVICE FOR MOVE
+        await this.documentTreeService.moveDocument(
+          documentId,
+          workspaceId,
+          newParentId,
+          newOrderIndex,
+        );
+      }
+    }
+
+    // Handle title update
+    if (input.title !== undefined && input.title !== document.title) {
+      // USE TREE SERVICE FOR TITLE UPDATE
+      await this.documentTreeService.updateDocument(
+        documentId,
+        workspaceId,
+        input.title,
+      );
+    }
+
+    // Reload to get tree service changes
+    const updatedDocument = await this.documentRepository.findOne({
+      where: { id: documentId, workspaceId },
+    });
+
+    if (!updatedDocument) {
+      throw new ValidationException(ErrorCode.E003);
+    }
+
+    // Update non-tree fields directly
+    if (input.runUnexecutedBlocks !== undefined) {
+      updatedDocument.runUnexecutedBlocks = input.runUnexecutedBlocks;
+    }
+    if (input.runSQLSelection !== undefined) {
+      updatedDocument.runSQLSelection = input.runSQLSelection;
+    }
+    if (input.shareLinksWithoutSidebar !== undefined) {
+      updatedDocument.shareLinksWithoutSidebar = input.shareLinksWithoutSidebar;
+    }
+
+    await this.documentRepository.save(updatedDocument);
+    return Document.fromEntity(updatedDocument);
   }
 
+  // ========================================
+  // DELETE - Uses tree service
+  // ========================================
   async deleteDocument(input: DeleteDocumentInput): Promise<Document> {
     const { documentId, workspaceId, isPermanent } = input;
 
@@ -95,16 +163,19 @@ export class DocumentService {
       throw new ValidationException(ErrorCode.E003);
     }
 
-    if (isPermanent) {
-      await this.documentRepository.softRemove(document);
-    } else {
-      document.deletedAt = new Date();
-      await this.documentRepository.save(document);
-    }
+    // USE TREE SERVICE (handles children + order cleanup)
+    const deletedDocument = await this.documentTreeService.deleteDocument(
+      documentId,
+      workspaceId,
+      !isPermanent, // softDelete = !isPermanent
+    );
 
-    return Document.fromEntity(document);
+    return Document.fromEntity(deletedDocument);
   }
 
+  // ========================================
+  // RESTORE - Uses tree service
+  // ========================================
   async restoreDocument(input: RestoreDocumentInput): Promise<Document> {
     const { documentId, workspaceId } = input;
 
@@ -117,12 +188,18 @@ export class DocumentService {
       throw new ValidationException(ErrorCode.E003);
     }
 
-    document.deletedAt = null;
-    await this.documentRepository.save(document);
+    // USE TREE SERVICE (handles children restoration)
+    const restoredDocument = await this.documentTreeService.restoreDocument(
+      documentId,
+      workspaceId,
+    );
 
-    return Document.fromEntity(document);
+    return Document.fromEntity(restoredDocument);
   }
 
+  // ========================================
+  // DUPLICATE - Uses tree service
+  // ========================================
   async duplicateDocument(
     userId: string,
     input: DuplicateDocumentInput,
@@ -137,51 +214,18 @@ export class DocumentService {
       throw new ValidationException(ErrorCode.E003);
     }
 
-    const duplicate = this.documentRepository.create({
-      ...original,
-      id: undefined,
-      authorId: userId,
-      title: `${original.title} Fork`,
-    });
-
-    await this.documentRepository.save(duplicate);
-
-    return Document.fromEntity(duplicate);
-  }
-
-  async createDocument(
-    workspaceId: string,
-    userId: string,
-    input: CreateDocumentInput,
-  ): Promise<Document> {
-    const yDoc = new Doc();
-    const initialState = encodeStateAsUpdate(yDoc);
-
-    const document = this.documentRepository.create({
-      ...input,
+    // USE TREE SERVICE (handles children + YJS duplication)
+    const duplicatedDocument = await this.documentTreeService.duplicateDocument(
+      documentId,
       workspaceId,
-      authorId: userId,
-    });
+    );
 
-    try {
-      await this.documentRepository.save(document);
-      const yjsDocument = this.yjsDocumentRepository.create({
-        documentId: document.id,
-        state: Buffer.from(initialState),
-        clock: 0,
-        clockUpdatedAt: new Date(),
-      });
-
-      await this.yjsDocumentRepository.save(yjsDocument);
-      document.yjsDocuments = [yjsDocument];
-    } catch (err) {
-      console.log(err);
-      throw new ValidationException(ErrorCode.E006);
-    }
-
-    return Document.fromEntity(document);
+    return Document.fromEntity(duplicatedDocument);
   }
 
+  // ========================================
+  // FAVORITES - Direct operations
+  // ========================================
   async addFavoriteDocument(
     userId: string,
     input: FavoriteDocumentInput,
@@ -224,22 +268,16 @@ export class DocumentService {
     });
 
     if (!favorite) {
-      throw new ValidationException(ErrorCode.E004); // favorite does not exist
+      throw new ValidationException(ErrorCode.E004);
     }
 
     await this.favoriteRepository.delete({ userId, documentId });
-
     return Document.fromEntity(document);
   }
 
-  async getChildren(parentId: string): Promise<Document[]> {
-    const documents = await this.documentRepository.find({
-      where: { parentId, deletedAt: null },
-    });
-
-    return Document.fromEntities(documents);
-  }
-
+  // ========================================
+  // PUBLISHING - Direct operations
+  // ========================================
   async publishDocument(
     documentId: string,
     workspaceId: string,
@@ -253,8 +291,8 @@ export class DocumentService {
     }
 
     document.publishedAt = new Date();
-
     await this.documentRepository.save(document);
+
     return Document.fromEntity(document);
   }
 
@@ -271,8 +309,8 @@ export class DocumentService {
     }
 
     document.publishedAt = null;
-
     await this.documentRepository.save(document);
+
     return Document.fromEntity(document);
   }
 }

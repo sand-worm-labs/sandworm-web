@@ -12,6 +12,8 @@ import { DocumentContext } from '../../interfaces';
 import { DataFrameService } from '@/features/code-execution/query-engine/dataframe/dataframe.service';
 import { QueryExecutionService } from '@/features/code-execution/query-engine/query-execution.service';
 import { VARIABLE_NAME_REGEX } from '@/features/code-execution/utils';
+import { BlockExecutorDataframeService } from '../block-executor-dataframe.service';
+import { getQueryDuration } from '@/common/utils/validation';
 
 
 @Injectable()
@@ -19,6 +21,7 @@ export class SqlBlockExecutorService {
   private readonly logger = new Logger(SqlBlockExecutorService.name);
   private readonly dataFrameService: DataFrameService;
   private readonly queryExecutionService: QueryExecutionService;
+  private readonly blockExecutorDataframeService: BlockExecutorDataframeService;
 
 
   constructor(private readonly eventEmitter: EventEmitter2) { }
@@ -79,7 +82,10 @@ export class SqlBlockExecutorService {
           dataframeName.value,
           'duckdb',
           actualSource,
-          { pageSize: 50 },
+          {
+            pageSize: 50,
+            dashboardPageSize: 0
+          },
           (result) => block.setAttribute('result', result),
           configuration,
         );
@@ -165,14 +171,12 @@ export class SqlBlockExecutorService {
     try {
       const attrs = getSQLAttributes(block, ctx.blocks);
       const prevResult = attrs.result?.type === 'success' ? attrs.result : null;
-      const queryDurationMs = prevResult?.queryDurationMs;
+      const queryDurationMs = getQueryDuration(prevResult);
 
-      const nextResult = await readDataframePage(
-        ctx.execution.workspaceId,
-        ctx.execution.sessionId,
+      const nextResult = await this.dataFrameService.readPage(
         attrs.id,
         attrs.dataframeName.value,
-        { page: attrs.page, pageSize: 50 },
+        { page: attrs.page, pageSize: 50, dashboardPage: 0, dashboardPageSize: 0 },
         attrs.sort,
       );
 
@@ -222,16 +226,14 @@ export class SqlBlockExecutorService {
     }
 
     try {
-      await renameDataFrame(
-        ctx.execution.workspaceId,
-        ctx.execution.sessionId,
+      await this.dataFrameService.rename(
         dataframeName.value,
         dataframeName.newValue,
       );
 
-      const dataframes = await this.dataFrameService.list(ctx.execution.workspaceId, ctx.execution.sessionId);
+      const dataframes = await this.dataFrameService.list();
       const blocks = new Set(Array.from(ctx.blocks.keys()));
-      updateDataframes(ctx.dataframes, dataframes, blockId, blocks);
+      this.blockExecutorDataframeService.updateDataframesInMap(ctx.dataframes, dataframes, blockId, blocks);
 
       block.setAttribute('dataframeName', {
         ...dataframeName,

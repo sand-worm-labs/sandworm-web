@@ -3,7 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DocumentEntity, YjsDocumentEntity } from '@sandworm/postgresql-typeorm';
 import PQueue from 'p-queue';
-import * as dfns from 'date-fns';
+import { ValidationException } from '@sandworm/graphql';
+import { Doc, encodeStateAsUpdate } from 'yjs';
+import { ErrorCode } from '@/core/constants/error-code.constant';
 
 const queues = new Map<string, PQueue>();
 
@@ -27,80 +29,166 @@ export class DocumentTreeService {
             queue = new PQueue({ concurrency: 1 });
             queues.set(workspaceId, queue);
         }
-        return queue.add(fn).catch(() => null);
+
+        return new Promise<T>((resolve, reject) => {
+            queue!.add(async () => {
+                try {
+                    const result = await fn();
+                    resolve(result);
+                } catch (error) {
+                    reject(error);
+                }
+            }).catch(reject);
+        });
     }
 
-    async upsertDocument(
-        id: string,
-        title: string,
+    // ========================================
+    // ORDER INDEX MANAGEMENT
+    // ========================================
+
+    // Shift documents down (increment order) to make space
+    // Example: [0,1,2] -> insert at 1 -> [0,_,2,3]
+    private async shiftDocumentsDown(
         workspaceId: string,
         parentId: string | null,
-        orderIndex: number,
-        version: number,
-    ): Promise<{ created: boolean; document: DocumentEntity }> {
-        return this.wrapInQueue(workspaceId, async () => {
-            // Count children
-            const childrenCount = await this.documentRepository.count({
-                where: { workspaceId, parentId, deletedAt: null },
-            });
+        fromIndex: number,
+    ): Promise<void> {
+        await this.documentRepository
+            .createQueryBuilder()
+            .update(DocumentEntity)
+            .set({ orderIndex: () => '"order_index" + 1' })
+            .where('workspaceId = :workspaceId', { workspaceId })
+            .andWhere(
+                parentId !== null ? 'parentId = :parentId' : 'parentId IS NULL',
+                parentId !== null ? { parentId } : {},
+            )
+            .andWhere('orderIndex >= :fromIndex', { fromIndex })
+            .execute();
+    }
 
-            // Find last child
+    // Shift documents up (decrement order) to close gap
+    // Example: [0,1,2,3] -> delete 1 -> [0,1,2]
+    private async shiftDocumentsUp(
+        workspaceId: string,
+        parentId: string | null,
+        fromIndex: number,
+    ): Promise<void> {
+        await this.documentRepository
+            .createQueryBuilder()
+            .update(DocumentEntity)
+            .set({ orderIndex: () => '"order_index" - 1' })
+            .where('workspaceId = :workspaceId', { workspaceId })
+            .andWhere(
+                parentId !== null ? 'parentId = :parentId' : 'parentId IS NULL',
+                parentId !== null ? { parentId } : {},
+            )
+            .andWhere('orderIndex > :fromIndex', { fromIndex })
+            .execute();
+    }
+
+    // Calculate where to actually put the document
+    // -1 or too large = append to end
+    private async calculateOrderIndex(
+        workspaceId: string,
+        parentId: string | null,
+        requestedIndex: number,
+    ): Promise<number> {
+        const childrenCount = await this.documentRepository.count({
+            where: { workspaceId, parentId, deletedAt: null },
+        });
+
+        if (requestedIndex === -1 || requestedIndex > childrenCount) {
             const lastChild = await this.documentRepository.findOne({
                 where: { workspaceId, parentId, deletedAt: null },
                 order: { orderIndex: 'DESC' },
                 select: ['orderIndex'],
             });
 
-            // Calculate final order index
-            const finalOrderIndex =
-                orderIndex === -1 || orderIndex > childrenCount
-                    ? (lastChild?.orderIndex ?? childrenCount - 1) + 1
-                    : orderIndex;
+            return (lastChild?.orderIndex ?? childrenCount - 1) + 1;
+        }
 
-            // Shift existing documents
-            await this.documentRepository
-                .createQueryBuilder()
-                .update(DocumentEntity)
-                .set({ orderIndex: () => '"orderIndex" + 1' })
-                .where('workspaceId = :workspaceId', { workspaceId })
-                .andWhere(
-                    parentId !== null ? 'parentId = :parentId' : 'parentId IS NULL',
-                    parentId !== null ? { parentId } : {},
-                )
-                .andWhere('orderIndex >= :finalOrderIndex', { finalOrderIndex })
-                .execute();
+        return requestedIndex;
+    }
 
-            // Check if document exists
-            const existing = await this.documentRepository.findOne({
-                where: { id, workspaceId },
+    async createDocument(
+        workspaceId: string,
+        authorId: string,
+        title: string,
+        parentId: string | null = null,
+        orderIndex: number = 0,
+        version: number = 1,
+    ): Promise<DocumentEntity> {
+        return this.wrapInQueue(workspaceId, async () => {
+            // --- STEP 1: Calculate order index and shift siblings
+            const finalOrderIndex = await this.calculateOrderIndex(
+                workspaceId,
+                parentId,
+                orderIndex,
+            );
+            await this.shiftDocumentsDown(workspaceId, parentId, finalOrderIndex);
+
+            // --- STEP 2: Create document entity
+            const document = this.documentRepository.create({
+                title,
+                workspaceId,
+                parentId,
+                orderIndex: finalOrderIndex,
+                version,
+                authorId,
             });
 
-            let document: DocumentEntity;
+            await this.documentRepository.save(document);
+            this.logger.log(`Created document ${document.id} in workspace ${workspaceId}`);
 
-            if (existing) {
-                // Update existing
-                existing.title = title;
-                existing.parentId = parentId;
-                existing.orderIndex = finalOrderIndex;
-                document = await this.documentRepository.save(existing);
-            } else {
-                // Create new
-                document = this.documentRepository.create({
-                    id,
-                    title,
-                    workspaceId,
-                    parentId,
-                    orderIndex: finalOrderIndex,
-                    version,
+            // --- STEP 3: Attempt to create YJS document, but do not fail main creation
+            try {
+                const yDoc = new Doc();
+                const initialState = encodeStateAsUpdate(yDoc);
+
+                const yjsDocument = this.yjsDocumentRepository.create({
+                    documentId: document.id,
+                    state: Buffer.from(initialState),
+                    clock: 0,
+                    clockUpdatedAt: new Date(),
                 });
-                document = await this.documentRepository.save(document);
+
+                await this.yjsDocumentRepository.save(yjsDocument);
+                this.logger.log(`Created YJS document for document ${document.id}`);
+            } catch (err) {
+                this.logger.warn(
+                    { err, workspaceId, authorId, documentId: document.id },
+                    'Failed to create YJS document, continuing without it',
+                );
+                // Do NOT delete the main document
             }
 
-            return {
-                created: dfns.isEqual(document.createdAt, document.updatedAt),
-                document,
-            };
+            // --- STEP 4: Reload with relations (GraphQL-ready)
+            const reloaded = await this.documentRepository.findOne({
+                where: { id: document.id },
+                relations: ['yjsDocuments', 'author', 'parent'],
+            });
+
+            return reloaded || document;
         });
+    }
+
+    async updateDocument(
+        id: string,
+        workspaceId: string,
+        title: string,
+    ): Promise<DocumentEntity> {
+        const document = await this.documentRepository.findOne({
+            where: { id, workspaceId },
+        });
+
+        if (!document) {
+            throw new NotFoundException('Document not found');
+        }
+
+        document.title = title;
+        await this.documentRepository.save(document);
+
+        return document;
     }
 
     async moveDocument(
@@ -110,59 +198,34 @@ export class DocumentTreeService {
         newOrderIndex: number,
     ): Promise<DocumentEntity> {
         return this.wrapInQueue(workspaceId, async () => {
-            const documentToUpdate = await this.documentRepository.findOne({
+            const document = await this.documentRepository.findOne({
                 where: { id, workspaceId },
             });
 
-            if (!documentToUpdate) {
+            if (!document) {
                 throw new NotFoundException('Document not found');
             }
 
-            const oldParentId = documentToUpdate.parentId;
-            const oldOrderIndex = documentToUpdate.orderIndex;
+            const oldParentId = document.parentId;
+            const oldOrderIndex = document.orderIndex;
 
-            // Calculate new order index
-            const childrenCount = await this.documentRepository.count({
-                where: { workspaceId, parentId: newParentId, deletedAt: null },
-            });
-
-            if (newOrderIndex === -1 || newOrderIndex > childrenCount) {
-                newOrderIndex = childrenCount;
-            }
+            const finalOrderIndex = await this.calculateOrderIndex(
+                workspaceId,
+                newParentId,
+                newOrderIndex,
+            );
 
             // Make space in new location
-            await this.documentRepository
-                .createQueryBuilder()
-                .update(DocumentEntity)
-                .set({ orderIndex: () => '"orderIndex" + 1' })
-                .where('workspaceId = :workspaceId', { workspaceId })
-                .andWhere(
-                    newParentId !== null ? 'parentId = :parentId' : 'parentId IS NULL',
-                    newParentId !== null ? { parentId: newParentId } : {},
-                )
-                .andWhere('orderIndex >= :newOrderIndex', { newOrderIndex })
-                .execute();
+            await this.shiftDocumentsDown(workspaceId, newParentId, finalOrderIndex);
 
             // Update document
-            documentToUpdate.parentId = newParentId;
-            documentToUpdate.orderIndex = newOrderIndex;
-            const document = await this.documentRepository.save(documentToUpdate);
+            document.parentId = newParentId;
+            document.orderIndex = finalOrderIndex;
+            await this.documentRepository.save(document);
 
-            // Close gap in old location
-            if (oldParentId !== newParentId || oldOrderIndex > newOrderIndex) {
-                await this.documentRepository
-                    .createQueryBuilder()
-                    .update(DocumentEntity)
-                    .set({ orderIndex: () => '"orderIndex" - 1' })
-                    .where('workspaceId = :workspaceId', { workspaceId })
-                    .andWhere(
-                        oldParentId !== null
-                            ? 'parentId = :parentId'
-                            : 'parentId IS NULL',
-                        oldParentId !== null ? { parentId: oldParentId } : {},
-                    )
-                    .andWhere('orderIndex > :oldOrderIndex', { oldOrderIndex })
-                    .execute();
+            // Close gap in old location (only if actually moved)
+            if (oldParentId !== newParentId || oldOrderIndex > finalOrderIndex) {
+                await this.shiftDocumentsUp(workspaceId, oldParentId, oldOrderIndex);
             }
 
             return document;
@@ -173,7 +236,6 @@ export class DocumentTreeService {
         parentId: string,
         workspaceId: string,
     ): Promise<void> {
-        // Restore immediate children
         await this.documentRepository
             .createQueryBuilder()
             .update(DocumentEntity)
@@ -182,7 +244,6 @@ export class DocumentTreeService {
             .andWhere('workspaceId = :workspaceId', { workspaceId })
             .execute();
 
-        // Get children to restore their descendants
         const children = await this.documentRepository.find({
             where: { parentId, workspaceId },
             select: ['id'],
@@ -193,24 +254,27 @@ export class DocumentTreeService {
         }
     }
 
+    // Restore deleted document (undelete)
+    // If parent is also deleted, restores to root
+    // Appends to end of sibling list
     async restoreDocument(
         id: string,
         workspaceId: string,
     ): Promise<DocumentEntity> {
         return this.wrapInQueue(workspaceId, async () => {
-            const documentToRestore = await this.documentRepository.findOne({
+            const document = await this.documentRepository.findOne({
                 where: { id, workspaceId },
                 relations: ['parent'],
                 withDeleted: true,
             });
 
-            if (!documentToRestore || !documentToRestore.deletedAt) {
+            if (!document || !document.deletedAt) {
                 throw new NotFoundException('Deleted document not found');
             }
 
-            let parent = documentToRestore.parent;
+            let parent = document.parent;
             if (parent?.deletedAt) {
-                parent = null;
+                parent = null; // Parent deleted, restore to root
             }
 
             // Find max order index among siblings
@@ -227,25 +291,27 @@ export class DocumentTreeService {
 
             const newOrderIndex = (maxOrderResult?.max ?? 0) + 1;
 
-            // Restore document
-            documentToRestore.parentId = parent?.id ?? null;
-            documentToRestore.deletedAt = null;
-            documentToRestore.orderIndex = newOrderIndex;
-            const document = await this.documentRepository.save(documentToRestore);
+            document.parentId = parent?.id ?? null;
+            document.deletedAt = null;
+            document.orderIndex = newOrderIndex;
+            await this.documentRepository.save(document);
 
-            // Restore children
             await this.restoreChildrenRecursive(document.id, workspaceId);
 
             return document;
         });
     }
 
+    // ========================================
+    // DELETE DOCUMENT
+    // ========================================
+
+    // Recursively soft-delete all children
     private async softDeleteChildrenRecursive(
         parentId: string,
         workspaceId: string,
         deletedAt: Date,
     ): Promise<void> {
-        // Soft delete immediate children
         await this.documentRepository
             .createQueryBuilder()
             .update(DocumentEntity)
@@ -254,7 +320,6 @@ export class DocumentTreeService {
             .andWhere('workspaceId = :workspaceId', { workspaceId })
             .execute();
 
-        // Get children to soft delete their descendants
         const children = await this.documentRepository.find({
             where: { parentId, workspaceId },
             select: ['id'],
@@ -265,6 +330,10 @@ export class DocumentTreeService {
         }
     }
 
+    // Delete document (soft or hard)
+    // Soft delete: marks as deleted, keeps in DB
+    // Hard delete: removes from DB permanently
+    // Both close the gap in sibling order
     async deleteDocument(
         id: string,
         workspaceId: string,
@@ -279,163 +348,122 @@ export class DocumentTreeService {
                 throw new NotFoundException('Document not found');
             }
 
-            if (!softDelete) {
-                // Hard delete
-                if (!document.deletedAt) {
-                    // Adjust sibling order indices
-                    await this.documentRepository
-                        .createQueryBuilder()
-                        .update(DocumentEntity)
-                        .set({ orderIndex: () => '"orderIndex" - 1' })
-                        .where(
-                            document.parentId !== null
-                                ? 'parentId = :parentId'
-                                : 'parentId IS NULL',
-                            document.parentId !== null
-                                ? { parentId: document.parentId }
-                                : {},
-                        )
-                        .andWhere('orderIndex > :orderIndex', {
-                            orderIndex: document.orderIndex,
-                        })
-                        .andWhere('workspaceId = :workspaceId', { workspaceId })
-                        .execute();
-                }
+            const wasDeleted = !!document.deletedAt;
 
+            if (softDelete) {
+                const deletedAt = new Date();
+                document.deletedAt = deletedAt;
+                await this.documentRepository.save(document);
+                await this.softDeleteChildrenRecursive(id, workspaceId, deletedAt);
+            } else {
                 await this.documentRepository.remove(document);
-                return document;
             }
 
-            // Soft delete
-            const deletedAt = new Date();
-            document.deletedAt = deletedAt;
-            await this.documentRepository.save(document);
-
-            // Soft delete children
-            await this.softDeleteChildrenRecursive(id, workspaceId, deletedAt);
-
-            // Adjust sibling order indices
-            await this.documentRepository
-                .createQueryBuilder()
-                .update(DocumentEntity)
-                .set({ orderIndex: () => '"orderIndex" - 1' })
-                .where(
-                    document.parentId !== null
-                        ? 'parentId = :parentId'
-                        : 'parentId IS NULL',
-                    document.parentId !== null ? { parentId: document.parentId } : {},
-                )
-                .andWhere('orderIndex > :orderIndex', {
-                    orderIndex: document.orderIndex,
-                })
-                .andWhere('workspaceId = :workspaceId', { workspaceId })
-                .execute();
+            // Only shift siblings if wasn't already deleted
+            if (!wasDeleted) {
+                await this.shiftDocumentsUp(
+                    workspaceId,
+                    document.parentId,
+                    document.orderIndex,
+                );
+            }
 
             return document;
         });
     }
 
-    private getDuplicatedTitle(prevTitle: string): string {
-        return prevTitle === '' ? '' : `${prevTitle} copy`;
-    }
+    // ========================================
+    // DUPLICATE DOCUMENT
+    // ========================================
 
-    async duplicateDocument(
-        id: string,
+    // Recursively duplicate children
+    private async duplicateChildren(
+        oldParentId: string,
+        newParentId: string,
         workspaceId: string,
-    ): Promise<DocumentEntity> {
-        return this.wrapInQueue(workspaceId, async () => {
-            const documentToDuplicate = await this.documentRepository.findOne({
-                where: { id, workspaceId },
-            });
-
-            if (!documentToDuplicate) {
-                throw new NotFoundException('Document not found');
-            }
-
-            const orderIndex = documentToDuplicate.orderIndex + 1;
-
-            // Make space for duplicated document
-            await this.documentRepository
-                .createQueryBuilder()
-                .update(DocumentEntity)
-                .set({ orderIndex: () => '"orderIndex" + 1' })
-                .where(
-                    documentToDuplicate.parentId !== null
-                        ? 'parentId = :parentId'
-                        : 'parentId IS NULL',
-                    documentToDuplicate.parentId !== null
-                        ? { parentId: documentToDuplicate.parentId }
-                        : {},
-                )
-                .andWhere('workspaceId = :workspaceId', { workspaceId })
-                .andWhere('orderIndex >= :orderIndex', { orderIndex })
-                .execute();
-
-            // Create duplicated document
-            const duplicatedTitle = this.getDuplicatedTitle(
-                documentToDuplicate.title,
-            );
-            const duplicatedDocument = this.documentRepository.create({
-                title: duplicatedTitle,
-                workspaceId,
-                parentId: documentToDuplicate.parentId,
-                version: documentToDuplicate.version,
-                orderIndex
-            });
-            await this.documentRepository.save(duplicatedDocument);
-
-            // Duplicate children recursively
-            const parentsToDuplicateChildren: {
-                old: DocumentEntity;
-                new: DocumentEntity;
-            }[] = [{ old: documentToDuplicate, new: duplicatedDocument }];
-
-            while (parentsToDuplicateChildren.length > 0) {
-                const currentParent = parentsToDuplicateChildren.pop()!;
-
-                const children = await this.documentRepository.find({
-                    where: { parentId: currentParent.old.id, workspaceId },
-                });
-
-                for (const child of children) {
-                    const duplicatedChild = this.documentRepository.create({
-                        title: child.title,
-                        workspaceId: child.workspaceId,
-                        parentId: currentParent.new.id,
-                        orderIndex: child.orderIndex,
-                        version: child.version,
-                    });
-                    await this.documentRepository.save(duplicatedChild);
-                    parentsToDuplicateChildren.push({
-                        old: child,
-                        new: duplicatedChild,
-                    });
-                }
-
-                // Duplicate YJS document content
-                await this.duplicateYjsDocumentContent(currentParent.old, currentParent.new);
-            }
-
-            return duplicatedDocument;
+    ): Promise<void> {
+        const children = await this.documentRepository.find({
+            where: { parentId: oldParentId, workspaceId },
+            order: { orderIndex: 'ASC' },
         });
+
+        for (const child of children) {
+            const duplicatedChild = this.documentRepository.create({
+                title: child.title,
+                workspaceId: child.workspaceId,
+                parentId: newParentId,
+                orderIndex: child.orderIndex,
+                version: child.version,
+                authorId: child.authorId,
+            });
+            await this.documentRepository.save(duplicatedChild);
+
+            await this.duplicateChildren(child.id, duplicatedChild.id, workspaceId);
+            await this.duplicateYjsContent(child.id, duplicatedChild.id);
+        }
     }
 
-    private async duplicateYjsDocumentContent(
-        oldDoc: DocumentEntity,
-        newDoc: DocumentEntity,
+    // Copy YJS collaborative editing data
+    private async duplicateYjsContent(
+        oldDocId: string,
+        newDocId: string,
     ): Promise<void> {
         const oldYjsDoc = await this.yjsDocumentRepository.findOne({
-            where: { documentId: oldDoc.id },
+            where: { documentId: oldDocId },
         });
 
         if (oldYjsDoc) {
             const newYjsDoc = this.yjsDocumentRepository.create({
-                documentId: newDoc.id,
+                documentId: newDocId,
                 state: oldYjsDoc.state,
                 clock: 0,
                 clockUpdatedAt: new Date(),
             });
             await this.yjsDocumentRepository.save(newYjsDoc);
         }
+    }
+
+    // Duplicate document and all its children
+    // Inserts right after original
+    // Adds " copy" to title
+    async duplicateDocument(
+        id: string,
+        workspaceId: string,
+    ): Promise<DocumentEntity> {
+        return this.wrapInQueue(workspaceId, async () => {
+            const original = await this.documentRepository.findOne({
+                where: { id, workspaceId },
+            });
+
+            if (!original) {
+                throw new NotFoundException('Document not found');
+            }
+
+            const orderIndex = original.orderIndex + 1;
+
+            await this.shiftDocumentsDown(workspaceId, original.parentId, orderIndex);
+
+            const duplicatedTitle = original.title === ''
+                ? ''
+                : `${original.title} copy`;
+
+            const duplicate = this.documentRepository.create({
+                title: duplicatedTitle,
+                workspaceId,
+                parentId: original.parentId,
+                version: original.version,
+                orderIndex,
+                authorId: original.authorId,
+            });
+            await this.documentRepository.save(duplicate);
+
+            // Duplicate entire tree
+            await this.duplicateChildren(original.id, duplicate.id, workspaceId);
+
+            // Copy content
+            await this.duplicateYjsContent(original.id, duplicate.id);
+
+            return duplicate;
+        });
     }
 }

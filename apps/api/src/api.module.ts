@@ -15,6 +15,7 @@ import { SessionModule } from '@/features/session/session.module';
 import { MailerModule } from '@/infrastructure/mailer/mailer.module';
 import { AuthGithubModule } from '@/features/auth/github/auth-github.module';
 import { ScheduleModule } from '@/features/schedule/schedule.module';
+import { JupyterModule } from './infrastructure/jupyter/jupyter.module';
 
 @Module({
     imports: [
@@ -32,6 +33,7 @@ import { ScheduleModule } from '@/features/schedule/schedule.module';
         MailModule,
         MailerModule,
         SessionModule,
+        JupyterModule,
 
         // Features
         WorkspaceModule,

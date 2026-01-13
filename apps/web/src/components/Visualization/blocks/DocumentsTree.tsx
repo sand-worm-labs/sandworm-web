@@ -30,7 +30,7 @@ import IconSelector from "./IconSelector";
 function useIsDocExpanded(doc: ApiDocument, startsOpen: boolean) {
   const [isExpanded, _setIsExpanded] = useState(
     localStorage.getItem(`sandworm:document:${doc.id}:expanded`) === "1" ||
-      startsOpen
+    startsOpen
   );
 
   const setIsExpanded = useCallback(
@@ -148,6 +148,7 @@ function computeIsExpanded(current: string, isExpanded: boolean, node: Node) {
 type DropDownProps = {
   documentId: string;
   isFavoriteDropdown: boolean;
+  isFavorited: boolean;
   onDelete: (id: string) => void;
   onDuplicate: (id: string) => void;
   onFavorite: (id: string) => void;
@@ -159,6 +160,7 @@ type DropDownProps = {
 function DropDown(props: DropDownProps) {
   const role: UserWorkspaceRole = props.role ?? "viewer";
   const isViewer = role === "viewer";
+  console.log("is virwer", isViewer);
 
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const { onOpen, dropdownPosition } = useDropdownPosition(buttonRef);
@@ -195,8 +197,10 @@ function DropDown(props: DropDownProps) {
   );
 
   return (
-    <Menu as="div" className="relative inline-flex text-left font-primary">
-      <Menu.Button
+    <>
+      {/* Separate Plus Button (not part of Menu) */}
+      <button
+        type="button"
         className={clsx(
           (props.isFavoriteDropdown || isViewer) && "hidden",
           "pr-0.5"
@@ -204,108 +208,110 @@ function DropDown(props: DropDownProps) {
         onClick={onCreateHandler}
       >
         <PlusSmallIcon className="invisible group-hover:visible hover:bg-ceramic-200/50 h-6 w-6 shrink-0 rounded-md" />
-      </Menu.Button>
-      <Menu.Button className="pr-0.5" ref={buttonRef} onClick={onOpen}>
-        <EllipsisHorizontalIcon className="invisible group-hover:visible hover:bg-ceramic-200/50 h-6 w-6 shrink-0 rounded-md" />
-      </Menu.Button>
+      </button>
+      <Menu as="div" className="relative inline-flex text-left font-primary">
+        <Menu.Button className="pr-0.5" ref={buttonRef} onClick={onOpen}>
+          <EllipsisHorizontalIcon className="invisible group-hover:visible hover:bg-ceramic-200/50 h-6 w-6 shrink-0 rounded-md" />
+        </Menu.Button>
 
-      {ReactDOM.createPortal(
-        <Transition
-          as="div"
-          id="doc-dropdown"
-          style={{
-            position: "absolute",
-            top: dropdownPosition.top,
-            left: dropdownPosition.left,
-          }}
-          className="absolute z-[2000]"
-          enter="transition ease-out duration-100"
-          enterFrom="transform opacity-0 scale-95"
-          enterTo="transform opacity-100 scale-100"
-          leave="transition ease-in duration-75"
-          leaveFrom="transform opacity-100 scale-100"
-          leaveTo="transform opacity-0 scale-95"
-        >
-          <Menu.Items className="absolute left-2 -top-2 z-20 w-44 origin-top-right rounded-lg bg-white dark:bg-[#0C1015]  ring-opacity-5 focus:outline-none border-[#CED4DA] border dark:border-[#262A30]">
-            <div className="py-2 px-1.5">
-              <Menu.Item>
-                {({ active }) => (
-                  <button
-                    type="button"
-                    onClick={onDeleteHandler}
-                    className={clsx(
-                      {
-                        hidden: isViewer || props.isFavoriteDropdown,
-                      },
-                      active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                      "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 rounded-md font-primary hover:bg-[#FDE6EA] text-[#455768] dark:text-white"
-                    )}
-                  >
-                    <TrashIcon className="h-4 w-4" />
-                    <span>Delete</span>
-                  </button>
-                )}
-              </Menu.Item>
-              <Menu.Item>
-                {({ active }) => (
-                  <button
-                    type="button"
-                    onClick={onDuplicateHandler}
-                    className={clsx(
-                      {
-                        hidden: isViewer,
-                      },
-                      active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                      "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 font-primary hover:bg-[#FDE6EA] rounded-md text-[#455768] dark:text-white"
-                    )}
-                  >
-                    <Square2StackIcon className="h-4 w-4" />
-                    <span>Duplicate</span>
-                  </button>
-                )}
-              </Menu.Item>
-              <Menu.Item>
-                {({ active }) => (
-                  <button
-                    type="button"
-                    onClick={onFavoriteHandler}
-                    className={clsx(
-                      {
-                        hidden: props.isFavoriteDropdown,
-                      },
-                      active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                      "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 font-primary hover:bg-[#FDE6EA] rounded-md text-[#455768] dark:text-white"
-                    )}
-                  >
-                    <BookmarkIcon className="h-4 w-4" />
-                    <span>Add to favorites</span>
-                  </button>
-                )}
-              </Menu.Item>
-              <Menu.Item>
-                {({ active }) => (
-                  <button
-                    type="button"
-                    onClick={onUnfavoriteHandler}
-                    className={clsx(
-                      {
-                        hidden: !props.isFavoriteDropdown,
-                      },
-                      active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                      "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 font-primary dark:text-white  "
-                    )}
-                  >
-                    <BookmarkSlashIcon className="h-4 w-4" />
-                    <span>Remove from favorites</span>
-                  </button>
-                )}
-              </Menu.Item>
-            </div>
-          </Menu.Items>
-        </Transition>,
-        document.body
-      )}
-    </Menu>
+        {ReactDOM.createPortal(
+          <Transition
+            as="div"
+            id="doc-dropdown"
+            style={{
+              position: "absolute",
+              top: dropdownPosition.top,
+              left: dropdownPosition.left,
+            }}
+            className="absolute z-[2000]"
+            enter="transition ease-out duration-100"
+            enterFrom="transform opacity-0 scale-95"
+            enterTo="transform opacity-100 scale-100"
+            leave="transition ease-in duration-75"
+            leaveFrom="transform opacity-100 scale-100"
+            leaveTo="transform opacity-0 scale-95"
+          >
+            <Menu.Items className="absolute left-2 -top-2 z-20 w-44 origin-top-right rounded-lg bg-white dark:bg-[#0C1015]  ring-opacity-5 focus:outline-none border-[#CED4DA] border dark:border-[#262A30]">
+              <div className="py-2 px-1.5">
+                <Menu.Item>
+                  {({ active }) => (
+                    <button
+                      type="button"
+                      onClick={onDeleteHandler}
+                      className={clsx(
+                        {
+                          hidden: isViewer || props.isFavoriteDropdown,
+                        },
+                        active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                        "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 rounded-md font-primary hover:bg-[#FDE6EA] text-[#455768] dark:text-white"
+                      )}
+                    >
+                      <TrashIcon className="h-4 w-4" />
+                      <span>Delete</span>
+                    </button>
+                  )}
+                </Menu.Item>
+                <Menu.Item>
+                  {({ active }) => (
+                    <button
+                      type="button"
+                      onClick={onDuplicateHandler}
+                      className={clsx(
+                        {
+                          hidden: isViewer,
+                        },
+                        active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                        "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 font-primary hover:bg-[#FDE6EA] rounded-md text-[#455768] dark:text-white"
+                      )}
+                    >
+                      <Square2StackIcon className="h-4 w-4" />
+                      <span>Duplicate</span>
+                    </button>
+                  )}
+                </Menu.Item>
+                <Menu.Item>
+                  {({ active }) => (
+                    <button
+                      type="button"
+                      onClick={onFavoriteHandler}
+                      className={clsx(
+                        {
+                          hidden: props.isFavorited,
+                        },
+                        active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                        "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 font-primary hover:bg-[#FDE6EA] rounded-md text-[#455768] dark:text-white"
+                      )}
+                    >
+                      <BookmarkIcon className="h-4 w-4" />
+                      <span>Add to favorites</span>
+                    </button>
+                  )}
+                </Menu.Item>
+                <Menu.Item>
+                  {({ active }) => (
+                    <button
+                      type="button"
+                      onClick={onUnfavoriteHandler}
+                      className={clsx(
+                        {
+                          hidden: !props.isFavorited,
+                        },
+                        active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                        "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 font-primary hover:bg-[#FDE6EA] rounded-md text-[#455768] dark:text-white"
+                      )}
+                    >
+                      <BookmarkSlashIcon className="h-4 w-4" />
+                      <span>Remove from favorites</span>
+                    </button>
+                  )}
+                </Menu.Item>
+              </div>
+            </Menu.Items>
+          </Transition>,
+          document.body
+        )}
+      </Menu>
+    </>
   );
 }
 
@@ -395,7 +401,6 @@ function NodeComponent(props: NodeComponentProps) {
         const droppedOnDocument = props.document;
         const droppedDocument = item;
 
-        // if dropped on document is a descendant of the document that was dropped we do nothing
         if (
           isDescendant(
             droppedOnDocument.id,
@@ -407,13 +412,11 @@ function NodeComponent(props: NodeComponentProps) {
         }
 
         if (dropHoverState === "center") {
-          // when dropped center, we always make it a child
           props.onUpdateParent(item.id, droppedOnDocument.id, -1);
           return;
         }
 
         if (dropHoverState === "above") {
-          // when dropped above we make it a sibling that comes before
           props.onUpdateParent(
             item.id,
             droppedOnDocument.parentId,
@@ -422,7 +425,6 @@ function NodeComponent(props: NodeComponentProps) {
           return;
         }
 
-        // when dropped below we make it a sibling that comes after
         props.onUpdateParent(
           item.id,
           droppedOnDocument.parentId,
@@ -446,7 +448,6 @@ function NodeComponent(props: NodeComponentProps) {
             : linkRef.current.getBoundingClientRect();
         const hoverClientY = clientOffset.y - componentRect.top;
 
-        // if 1/3 top set above else if 1/3 bottom set below else set center
         if (hoverClientY < componentRect.height / 3) {
           setDropHoverState("above");
         } else if (hoverClientY > (2 * componentRect.height) / 3) {
@@ -510,8 +511,8 @@ function NodeComponent(props: NodeComponentProps) {
                 ? "text-gray-800 bg-ceramic-100/50"
                 : "text-gray-500 hover:bg-ceramic-100/80",
               isDropping &&
-                dropHoverState === "center" &&
-                "bg-ceramic-200 border-ceramic-200",
+              dropHoverState === "center" &&
+              "bg-ceramic-200 border-ceramic-200",
               "group text-sm font-medium leading-6 w-full flex py-1 rounded-sm hover:text-ceramic-600"
             )}
             style={{
@@ -550,6 +551,7 @@ function NodeComponent(props: NodeComponentProps) {
               <DropDown
                 documentId={props.document.id}
                 isFavoriteDropdown={Boolean(props.flat)}
+                isFavorited={props.document.isFavorited || props.flat}
                 onDelete={props.onDelete}
                 onDuplicate={props.onDuplicate}
                 onFavorite={props.onFavorite}
@@ -563,8 +565,8 @@ function NodeComponent(props: NodeComponentProps) {
             <ul
               className={clsx(
                 isDropping &&
-                  dropHoverState === "center" &&
-                  "bg-ceramic-200 border-ceramic-200",
+                dropHoverState === "center" &&
+                "bg-ceramic-200 border-ceramic-200",
                 "space-y-1"
               )}
             >
@@ -616,9 +618,9 @@ function DocumentTree(props: Props) {
     () =>
       props.flat
         ? props.documents.map(d => ({
-            document: d,
-            children: List<Node>(),
-          }))
+          document: d,
+          children: List<Node>(),
+        }))
         : buildTrees(null, props.documents),
     [props.flat, props.documents]
   );

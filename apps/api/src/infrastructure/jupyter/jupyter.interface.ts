@@ -15,7 +15,7 @@ export interface EnvironmentVariables {
 
 export interface IJupyterService {
   start(): Promise<void>
-  stop(): Promise<void>
+  stop(workspaceId: string): Promise<void>
   deploy(): Promise<void>
   restart(workspaceId: string): Promise<void>
   ensureRunning(workspaceId: string): Promise<void>
@@ -33,9 +33,7 @@ export interface IJupyterService {
 
   deleteFile(workspaceId: string, fileName: string): Promise<void>
 
-  getServerSettings(
-    workspaceId: string
-  ): Promise<services.ServerConnection.ISettings>
+  getServerSettings(): Promise<services.ServerConnection.ISettings>
 
   setEnvironmentVariables(
     workspaceId: string,

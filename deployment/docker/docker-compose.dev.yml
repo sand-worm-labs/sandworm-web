@@ -1,0 +1,81 @@
+version: "3.9"
+
+volumes:
+  sandworm-postgres-data:
+  sandworm-pgadmin-data:
+  sandworm-jupyter-notebooks:
+
+    ###########################
+    # Services
+    ###########################
+services:
+
+  ###########################
+  # PostgreSQL Database
+  ###########################
+  db:
+    container_name: sandworm-postgres
+    image: postgres:17
+    restart: always
+    ports:
+      - "25432:5432" # host:container
+    environment:
+      POSTGRES_DB: sandworm
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      TZ: "UTC"
+    volumes:
+      - sandworm-postgres-data:/var/lib/postgresql/data
+
+  ###########################
+  # PGAdmin Web UI
+  ###########################
+  pgadmin:
+    container_name: sandworm-pgadmin
+    image: dpage/pgadmin4
+    restart: always
+    ports:
+      - "18080:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: 12345678
+      PGADMIN_CONFIG_WTF_CSRF_ENABLED: "False"
+      PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: "False"
+    volumes:
+      - sandworm-pgadmin-data:/root/.pgadmin
+    depends_on:
+      - db
+
+  ###########################
+  # MailDev SMTP & Web
+  ###########################
+  maildev:
+    container_name: sandworm-maildev
+    build:
+      context: .
+      dockerfile: maildev.Dockerfile
+    ports:
+      - "1025:1025" # SMTP
+      - "1080:1080" # Web UI
+  jupyter:
+    container_name: sandworm-jupyter
+    build:
+      context: ../../apps/jupyter
+      dockerfile: Dockerfile
+      args:
+        TARGETARCH: amd64
+    restart: always
+    ports:
+      - "8888:8888"
+    environment:
+      JUPYTER_TOKEN: ${JUPYTER_TOKEN:?error}
+    volumes:
+      - sandworm-jupyter-notebooks:/home/sandwormuser/work
+      - ./jupyterfiles:/home/sandwormuser/files
+    command: >
+      jupyter server --ip=0.0.0.0 --ZMQChannelsWebsocketConnection.iopub_data_rate_limit=1.0e10 --ZMQChannelsWebsocketConnection.iopub_msg_rate_limit=1.0e6 --ServerApp.max_body_size=107374182400 --no-browser
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8888/api || exit 1" ]
+      interval: 5s
+      timeout: 10s
+      retries: 5
