@@ -48,7 +48,7 @@ export default function SignUpForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="mt-4 space-y-4 font-primary w-full"
+      className="mt-4 space-y-2 font-primary w-full"
     >
       {[
         { field: "firstName", label: "First Name", type: "text" },
@@ -60,8 +60,8 @@ export default function SignUpForm() {
           <input
             type={type}
             name={field}
-            className="mt-1 w-full rounded-md dark:bg-[#121417] bg-[#F1F3F4] p-2 text-black dark:text-white focus:border-orange-500 focus:ring-orange-500 border border-[#DEE2E6] dark:border-[#262A30] font-normal text-[0.9rem] placeholder:text-[#455768] dark:placeholder:text-[#868E96]"
-            placeholder={`Enter your ${label.toLowerCase()}`}
+            className="mt-1 w-full rounded-3xl dark:bg-[#121417] bg-[#FFFFFF] p-2.5 px-5 text-black dark:text-white border border-[#DEE2E6] dark:border-[#262A30] focus:border-[#A308F0] focus:ring-1 focus:ring-[#A308F0] outline-none font-normal text-[0.9rem] placeholder:text-muted-foreground dark:placeholder:text-[#868E96]"
+            placeholder={`${label}`}
             value={formData[field as keyof typeof formData]}
             onChange={handleChange}
           />
@@ -79,7 +79,7 @@ export default function SignUpForm() {
       <button
         type="submit"
         disabled={state.loading}
-        className="w-full rounded-xl bg-[#A308F0] px-4 py-3 mb-5 text-white text-sm font-medium disabled:bg-orange-600 inline-block"
+        className="w-full rounded-3xl bg-[#0F0F0F] px-4 py-3.5 mb-5 text-white text-sm font-medium disabled:bg-[#868E96] text-sm"
       >
         {state.loading ? "Signing Up..." : "Sign Up"}
       </button>

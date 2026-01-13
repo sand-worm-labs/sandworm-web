@@ -14,6 +14,7 @@ const nextConfig = {
       "avatars.githubusercontent.com",
       "raw.githubusercontent.com",
       "lh3.googleusercontent.com",
+      "cdn.jsdelivr.net",
     ],
     remotePatterns: [
       {
