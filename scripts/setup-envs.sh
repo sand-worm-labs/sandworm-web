@@ -3,6 +3,7 @@ set -e
 
 API_ENV="./apps/api/.env"
 WEB_ENV="./apps/web/.env"
+POSTGRES_ENV="./packages/postgresql-typeorm/.env"
 
 echo "▶ Running env setup..."
 
@@ -99,6 +100,29 @@ NEXT_PUBLIC_URL=http://localhost:3000
 NEXT_PUBLIC_PUBLIC_URL=http://localhost:3000
 EOL
   echo "✅ Created $WEB_ENV"
+fi
+
+# === POSTGRES .env ===
+if [ ! -f "$POSTGRES_ENV" ]; then
+  echo "Creating Postgres .env..."
+  cat > "$POSTGRES_ENV" <<EOL
+DATABASE_TYPE=postgres
+DATABASE_HOST=localhost
+DATABASE_PORT=25432
+DATABASE_USERNAME=postgres
+DATABASE_PASSWORD=postgres
+DATABASE_NAME=sandworm
+DATABASE_SCHEMA=public
+DATABASE_LOGGING=true
+DATABASE_SYNCHRONIZE=false
+DATABASE_MAX_CONNECTIONS=100
+DATABASE_SSL_ENABLED=false
+DATABASE_REJECT_UNAUTHORIZED=false
+DATABASE_CA=
+DATABASE_KEY=
+DATABASE_CERT=
+EOL
+  echo "✅ Created $POSTGRES_ENV"
 fi
 
 echo "▶ Env setup complete."
