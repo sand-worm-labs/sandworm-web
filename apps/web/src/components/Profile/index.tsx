@@ -163,10 +163,10 @@ const ProfileComponent = () => {
                     <img
                       src={mockProfile.avatar}
                       alt={mockProfile.username}
-                      className="w-32 h-32 rounded-full border-4 border-[#C7665C]"
+                      className="w-32 h-32 rounded-full border-4 border-[#A308F0]"
                     />
                   ) : (
-                    <div className="w-32 h-32 rounded-full bg-[#C7665C] flex items-center justify-center">
+                    <div className="w-32 h-32 rounded-full bg-[#A308F0] flex items-center justify-center">
                       <User className="w-16 h-16 text-white" />
                     </div>
                   )}
@@ -189,7 +189,7 @@ const ProfileComponent = () => {
                       className={`flex items-center gap-2 px-6 py-2 rounded-xl font-medium transition-color text-sm ${
                         isFollowing
                           ? "bg-[#E9ECEF] dark:bg-[#262A30] text-[#1A1A1A] dark:text-white hover:bg-opacity-80"
-                          : "bg-[#C7665C] text-white hover:bg-opacity-90"
+                          : "bg-[#A308F0] text-white hover:bg-opacity-90"
                       }`}
                     >
                       {isFollowing ? (
@@ -260,7 +260,7 @@ const ProfileComponent = () => {
                               href={url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="p-2 rounded-lg border border-[#E9ECEF] dark:border-[#262A30] hover:bg-[#C7665C] hover:border-[#C7665C] hover:text-white transition-colors text-[#455768] dark:text-gray-400"
+                              className="p-2 rounded-lg border border-[#E9ECEF] dark:border-[#262A30] hover:bg-[#A308F0] hover:border-[#A308F0] hover:text-white transition-colors text-[#455768] dark:text-gray-400"
                             >
                               {getSocialIcon(platform)}
                             </a>
@@ -275,8 +275,8 @@ const ProfileComponent = () => {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="bg-white dark:bg-[#010100] border border-[#E9ECEF] dark:border-[#262A30] rounded-2xl p-6">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 rounded-lg bg-[#C7665C] bg-opacity-10">
-                    <Zap strokeWidth={1.2} className="w-5 h-5 text-[#C7665C]" />
+                  <div className="p-2 rounded-lg bg-[#A308F0] bg-opacity-10">
+                    <Zap strokeWidth={1.2} className="w-5 h-5 text-[#A308F0]" />
                   </div>
                   <div>
                     <p className="text-2xl font-medium text-[#1A1A1A] dark:text-white">
@@ -291,9 +291,9 @@ const ProfileComponent = () => {
 
               <div className="bg-white dark:bg-[#010100] border border-[#E9ECEF] dark:border-[#262A30] rounded-2xl p-6">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 rounded-lg bg-[#C7665C] bg-opacity-10">
+                  <div className="p-2 rounded-lg bg-[#A308F0] bg-opacity-10">
                     <Database
-                      className="w-5 h-5 text-[#C7665C]"
+                      className="w-5 h-5 text-[#A308F0]"
                       strokeWidth={1.2}
                     />
                   </div>
@@ -310,9 +310,9 @@ const ProfileComponent = () => {
 
               <div className="bg-white dark:bg-[#010100] border border-[#E9ECEF] dark:border-[#262A30] rounded-2xl p-6">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 rounded-lg bg-[#C7665C] bg-opacity-10">
+                  <div className="p-2 rounded-lg bg-[#A308F0] bg-opacity-10">
                     <TrendingUp
-                      className="w-5 h-5 text-[#C7665C]"
+                      className="w-5 h-5 text-[#A308F0]"
                       strokeWidth={1.2}
                     />
                   </div>
@@ -329,9 +329,9 @@ const ProfileComponent = () => {
 
               <div className="bg-white dark:bg-[#010100] border border-[#E9ECEF] dark:border-[#262A30] rounded-2xl p-6">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 rounded-lg bg-[#C7665C] bg-opacity-10">
+                  <div className="p-2 rounded-lg bg-[#A308F0] bg-opacity-10">
                     <BarChart3
-                      className="w-5 h-5 text-[#C7665C]"
+                      className="w-5 h-5 text-[#A308F0]"
                       strokeWidth={1.2}
                     />
                   </div>
@@ -356,7 +356,7 @@ const ProfileComponent = () => {
                   {mockProfile.wallets.map((wallet, index) => (
                     <div
                       key={index}
-                      className="flex items-center justify-between p-4 rounded-lg border border-[#E9ECEF] dark:border-[#262A30] hover:border-[#C7665C] transition-colors"
+                      className="flex items-center justify-between p-4 rounded-lg border border-[#E9ECEF] dark:border-[#262A30] hover:border-[#A308F0] transition-colors"
                     >
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
@@ -366,7 +366,7 @@ const ProfileComponent = () => {
                             </span>
                           )}
                           {wallet.chain && (
-                            <span className="text-xs px-2 py-0.5 rounded-full bg-[#C7665C] bg-opacity-10 text-[#C7665C]">
+                            <span className="text-xs px-2 py-0.5 rounded-full bg-[#A308F0] bg-opacity-10 text-[#A308F0]">
                               {wallet.chain}
                             </span>
                           )}
@@ -381,7 +381,7 @@ const ProfileComponent = () => {
                         className="p-2 rounded-lg hover:bg-[#E9ECEF] dark:hover:bg-[#262A30] transition-colors"
                       >
                         {copiedWallet === wallet.address ? (
-                          <Check className="w-4 h-4 text-[#C7665C]" />
+                          <Check className="w-4 h-4 text-[#A308F0]" />
                         ) : (
                           <Copy className="w-4 h-4 text-[#455768] dark:text-gray-400" />
                         )}
@@ -405,14 +405,14 @@ const ProfileComponent = () => {
                       "#fab8b3",
                       "#f59489",
                       "#ef7066",
-                      "#C7665C",
+                      "#A308F0",
                     ],
                     dark: [
                       "#262A30",
                       "#8a5854",
                       "#a66862",
                       "#c2786f",
-                      "#C7665C",
+                      "#A308F0",
                     ],
                   }}
                   blockSize={12}

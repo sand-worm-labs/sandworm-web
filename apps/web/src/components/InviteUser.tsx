@@ -133,7 +133,7 @@ export default function InviteUserModal({
                         }}
                         placeholder="colleague@example.com"
                         disabled={isSubmitting}
-                        className="w-full pl-10 pr-16 py-1.5 rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none focus:ring focus:ring-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4]"
+                        className="w-full pl-10 pr-16 py-1.5 rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none focus:ring focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4]"
                       />
                     </div>
                   </div>
@@ -150,7 +150,7 @@ export default function InviteUserModal({
                       value={role}
                       onChange={e => setRole(e.target.value)}
                       disabled={isSubmitting}
-                      className="w-full px-3 py-1.5 rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white focus:outline-none focus:ring focus:ring-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4]"
+                      className="w-full px-3 py-1.5 rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white focus:outline-none focus:ring focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4]"
                     >
                       <option value="member">Member</option>
                       <option value="admin">Admin</option>
@@ -175,7 +175,7 @@ export default function InviteUserModal({
                     <button
                       type="submit"
                       disabled={isSubmitting || !email.trim()}
-                      className="flex-1 px-4 py-2 text-sm font-medium text-white bg-[#C7665C] hover:bg-[#B55A50] rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex-1 px-4 py-2 text-sm font-medium text-white bg-[#A308F0] hover:bg-[#B55A50] rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isSubmitting ? "Sending..." : "Invite"}
                     </button>

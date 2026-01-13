@@ -113,7 +113,7 @@ const ProjectControl: React.FC<ProjectControlProps> = ({
                   >
                     <span>{filter}</span>
                     {selectedFilters.includes(filter) && (
-                      <div className="w-4 h-4 bg-[#C7665C]  rounded flex items-center justify-center">
+                      <div className="w-4 h-4 bg-[#A308F0]  rounded flex items-center justify-center">
                         <Check className="w-3 h-3 text-white" />
                       </div>
                     )}

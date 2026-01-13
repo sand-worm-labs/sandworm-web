@@ -110,8 +110,8 @@ export default function ToolsPage() {
   return (
     <div>
       <div className="flex items-center gap-3  mt-10 px-8 mb-5">
-        <span className="bg-[#C7665C20]  rounded-full p-2 flex items-center justify-center">
-          <LuLayoutGrid className="w-4 h-4 text-[#C7665C] " />
+        <span className="bg-[#A308F020]  rounded-full p-2 flex items-center justify-center">
+          <LuLayoutGrid className="w-4 h-4 text-[#A308F0] " />
         </span>
         <h2 className="text-xl font-medium ">Tools</h2>
       </div>

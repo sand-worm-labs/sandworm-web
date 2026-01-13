@@ -287,7 +287,7 @@ export default function MySQLForm({
         </Link>
         <button
           type="submit"
-          className="flex items-center justify-center gap-x-2 rounded-sm shadow-sm bg-[#C7665C] px-6 py-2.5 text-sm font-semibold hover:bg-primary-300 border-stone-950 disabled:bg-gray-300 disabled:cursor-not-allowed"
+          className="flex items-center justify-center gap-x-2 rounded-sm shadow-sm bg-[#A308F0] px-6 py-2.5 text-sm font-semibold hover:bg-primary-300 border-stone-950 disabled:bg-gray-300 disabled:cursor-not-allowed"
           disabled={formState.isSubmitting}
         >
           {formState.isSubmitting ? (

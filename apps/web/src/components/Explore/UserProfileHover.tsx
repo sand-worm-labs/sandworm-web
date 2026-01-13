@@ -56,7 +56,7 @@ export function UserProfileHover({ children }: UserProfileHoverProps) {
             <Button
               size="sm"
               variant="secondary"
-              className="bg-[#E2ECFF] dark:bg-[#C7665C20] dark:text-[#C7665C] text-[#8053FE] hover:bg-[#E2ECFF]/90 text-sm rounded-md font-medium h-6"
+              className="bg-[#E2ECFF] dark:bg-[#A308F020] dark:text-[#A308F0] text-[#8053FE] hover:bg-[#E2ECFF]/90 text-sm rounded-md font-medium h-6"
             >
               Share
             </Button>
@@ -64,7 +64,7 @@ export function UserProfileHover({ children }: UserProfileHoverProps) {
 
           <Link
             href="/"
-            className="text-sm text-[#C7665C] hover:text-red-600 underline font-medium inline-block"
+            className="text-sm text-[#A308F0] hover:text-red-600 underline font-medium inline-block"
           >
             Go to Profile Page
           </Link>

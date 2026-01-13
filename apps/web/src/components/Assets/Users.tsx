@@ -23,14 +23,14 @@ export const Users = () => {
         />
         <path
           d="M27 93C30.3137 93 33 90.3137 33 87C33 83.6863 30.3137 81 27 81C23.6863 81 21 83.6863 21 87C21 90.3137 23.6863 93 27 93Z"
-          stroke="#C7665C"
+          stroke="#A308F0"
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
         <path
           d="M18 98.25C19.8159 95.1122 23.1141 93 27 93C30.8859 93 34.1841 95.1122 36 98.25"
-          stroke="#C7665C"
+          stroke="#A308F0"
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -50,14 +50,14 @@ export const Users = () => {
         />
         <path
           d="M92 93C95.3137 93 98 90.3137 98 87C98 83.6863 95.3137 81 92 81C88.6863 81 86 83.6863 86 87C86 90.3137 88.6863 93 92 93Z"
-          stroke="#C7665C"
+          stroke="#A308F0"
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
         <path
           d="M83 98.25C84.8159 95.1122 88.1141 93 92 93C95.8859 93 99.1841 95.1122 101 98.25"
-          stroke="#C7665C"
+          stroke="#A308F0"
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -77,14 +77,14 @@ export const Users = () => {
         />
         <path
           d="M92 29C95.3137 29 98 26.3137 98 23C98 19.6863 95.3137 17 92 17C88.6863 17 86 19.6863 86 23C86 26.3137 88.6863 29 92 29Z"
-          stroke="#C7665C"
+          stroke="#A308F0"
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
         <path
           d="M83 34.25C84.8159 31.1122 88.1141 29 92 29C95.8859 29 99.1841 31.1122 101 34.25"
-          stroke="#C7665C"
+          stroke="#A308F0"
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"

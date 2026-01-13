@@ -138,7 +138,7 @@ export const AccountDropdown = () => {
               size="sm"
               variant="secondary"
               onClick={shareProfile}
-              className="bg-[#E2ECFF] dark:bg-[#C7665C20] dark:text-[#C7665C] text-[#8053FE] hover:bg-[#E2ECFF]/90 text-xs rounded-md font-medium h-6 gap-1.5"
+              className="bg-[#E2ECFF] dark:bg-[#A308F020] dark:text-[#A308F0] text-[#8053FE] hover:bg-[#E2ECFF]/90 text-xs rounded-md font-medium h-6 gap-1.5"
             >
               {copied ? (
                 <>
@@ -153,7 +153,7 @@ export const AccountDropdown = () => {
 
           <Link
             href={`/workspace/${workspaceId}/profile/me`}
-            className="block mt-3 text-xs underline text-[#C7665C] hover:text-[#C7665C] mb-4"
+            className="block mt-3 text-xs underline text-[#A308F0] hover:text-[#A308F0] mb-4"
           >
             Go to profile page
           </Link>

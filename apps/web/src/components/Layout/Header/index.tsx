@@ -43,7 +43,7 @@ const navItem = {
     y: 0,
     transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] },
   },
-  hover: { scale: 1.05, color: "#C7665C", transition: { duration: 0.2 } },
+  hover: { scale: 1.05, color: "#A308F0", transition: { duration: 0.2 } },
 };
 
 export const MainHeader = () => {
