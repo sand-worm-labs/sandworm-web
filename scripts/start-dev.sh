@@ -42,6 +42,19 @@ fi
 JUPYTER_TOKEN=$JUPYTER_TOKEN $COMPOSE_CMD -f "$ROOT_DIR/deployment/docker/docker-compose.dev.yml" up -d --build --remove-orphans
 
 echo
+echo "▶ Checking node_modules..."
+if [ ! -d "$ROOT_DIR/node_modules" ]; then
+  echo "node_modules not found, running pnpm install..."
+  pnpm install
+else
+  echo "node_modules already present, skipping pnpm install"
+fi
+
+# echo "▶ Building local packages..."
+# pnpm -r run build
+
+
+echo
 echo "▶ Waiting for Postgres..."
 until docker exec sandworm-postgres pg_isready -U postgres > /dev/null 2>&1; do
   echo "Postgres not ready yet..."
@@ -57,6 +70,7 @@ pnpm run migration:up
 echo
 echo "▶ Seeding database..."
 pnpm run seed:run
+
 
 echo
 echo "▶ Starting dev server..."
