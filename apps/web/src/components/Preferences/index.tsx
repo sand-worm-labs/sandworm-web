@@ -56,7 +56,7 @@ const ThemeCard: React.FC<{
       onClick={onClick}
       className={`relative w-full p-6 rounded-2xl border transition-all text-left ${
         selected
-          ? "border-[#C7665C]  dark:bg-black"
+          ? "border-[#A308F0]  dark:bg-black"
           : "border-[#FEFEFF] dark:border-[#262A30] hover:border-gray-300 dark:hover:border-gray-600"
       }`}
     >
@@ -64,7 +64,7 @@ const ThemeCard: React.FC<{
         <div
           className={`p-3 rounded-full ${
             selected
-              ? "bg-white dark:bg-[#121417] text-[#C7665C] dark:text-[#C7665C] border dark:border-[#262A30] border-[#E9ECEF]"
+              ? "bg-white dark:bg-[#121417] text-[#A308F0] dark:text-[#A308F0] border dark:border-[#262A30] border-[#E9ECEF]"
               : "bg-[#F1F3F4] dark:bg-[#121417] text-gray-600 dark:text-gray-400 border border-[#E9ECEF] dark:border-[#262A30]"
           }`}
         >
@@ -75,7 +75,7 @@ const ThemeCard: React.FC<{
             <h3 className="font-medium text-gray-900 dark:text-gray-100">
               {option.label}
             </h3>
-            {selected && <div className="w-2 h-2 rounded-full bg-[#C7665C]" />}
+            {selected && <div className="w-2 h-2 rounded-full bg-[#A308F0]" />}
           </div>
           <p className="text-sm text-gray-600 dark:text-gray-400">
             {option.description}
@@ -140,7 +140,7 @@ const EditorThemeCard: React.FC<{
       onClick={onClick}
       className={`relative p-4 rounded-2xl border transition-all text-left ${
         selected
-          ? "border-[#C7665C]   dark:ring-[#C7665C]"
+          ? "border-[#A308F0]   dark:ring-[#A308F0]"
           : "border-gray-200 dark:border-[#262A30] hover:border-gray-300 dark:hover:border-[#262A30]"
       }`}
     >
@@ -148,7 +148,7 @@ const EditorThemeCard: React.FC<{
         <h4 className="font-medium text-gray-900 dark:text-gray-100 capitalize">
           {theme.name}
         </h4>
-        {selected && <div className="w-2 h-2 rounded-full bg-[#C7665C]" />}
+        {selected && <div className="w-2 h-2 rounded-full bg-[#A308F0]" />}
       </div>
       <div
         className="rounded-md p-3 font-mono text-xs leading-relaxed"
@@ -342,7 +342,7 @@ const Preferences: React.FC = () => {
                     onClick={() => setFontSize(size)}
                     className={`px-4 py-0.5 rounded-lg font-medium text-sm transition-all capitalize ${
                       fontSize === size
-                        ? "bg-[#C7665C] text-white"
+                        ? "bg-[#A308F0] text-white"
                         : "bg-gray-100 dark:bg-[#181C21] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 border dark:border-[#262A30] border-[#E9ECEF]"
                     }`}
                   >
@@ -368,7 +368,7 @@ const Preferences: React.FC = () => {
                   onChange={e => setLineNumbers(e.target.checked)}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-[#C7665C] rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-[#262A30] peer-checked:bg-[#C7665C]" />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-[#A308F0] rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-[#262A30] peer-checked:bg-[#A308F0]" />
               </label>
             </div>
 
@@ -388,7 +388,7 @@ const Preferences: React.FC = () => {
                   onChange={e => setAutoSave(e.target.checked)}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-[#C7665C] rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#C7665C] " />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-[#A308F0] rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#A308F0] " />
               </label>
             </div>
           </div>
@@ -416,7 +416,7 @@ const Preferences: React.FC = () => {
               <select
                 value={dateFormat}
                 onChange={e => setDateFormat(e.target.value as DateFormat)}
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-[#262A30] bg-white dark:bg-[#121417] text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#C7665C] focus:border-transparent"
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-[#262A30] bg-white dark:bg-[#121417] text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#A308F0] focus:border-transparent"
               >
                 <option value="us">US (MM/DD/YYYY)</option>
                 <option value="eu">European (DD/MM/YYYY)</option>
@@ -480,7 +480,7 @@ const Preferences: React.FC = () => {
                   onChange={e => setNotifications(e.target.checked)}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-[#C7665C] rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#C7665C]" />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-[#A308F0] rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#A308F0]" />
               </label>
             </div>
 
@@ -500,7 +500,7 @@ const Preferences: React.FC = () => {
                   onChange={e => setSoundEffects(e.target.checked)}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#C7665C]" />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#A308F0]" />
               </label>
             </div>
 
@@ -520,7 +520,7 @@ const Preferences: React.FC = () => {
                   onChange={e => setCompactMode(e.target.checked)}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-[#C7665C] rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-[#262A30] peer-checked:bg-[#C7665C]" />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-[#A308F0] rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-[#262A30] peer-checked:bg-[#A308F0]" />
               </label>
             </div>
           </div>
@@ -530,7 +530,7 @@ const Preferences: React.FC = () => {
         <div className="mt-8 flex justify-end">
           <button
             type="button"
-            className="px-4 text-sm py-2 bg-[#C7665C] hover:bg-[#C7665C] text-white font-medium rounded-xl transition-colors shadow-sm"
+            className="px-4 text-sm py-2 bg-[#A308F0] hover:bg-[#A308F0] text-white font-medium rounded-xl transition-colors shadow-sm"
           >
             Save Preferences
           </button>

@@ -168,7 +168,7 @@ function ScheduleConfigForm({
         </button>
         <button
           type="submit"
-          className="flex items-center gap-x-2 rounded-sm bg-[#C7665C] px-3 py-1 text-sm hover:bg-primary-300"
+          className="flex items-center gap-x-2 rounded-sm bg-[#A308F0] px-3 py-1 text-sm hover:bg-primary-300"
         >
           Schedule run
         </button>

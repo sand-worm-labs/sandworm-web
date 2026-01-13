@@ -621,7 +621,7 @@ file`;
             <div>
               <button
                 type="button"
-                className="flex items-center gap-x-2 rounded-lg bg-[#C7665C] px-3 py-1 text-sm hover:bg-primary-300 text-white disabled:cursor-not-allowed disabled:bg-gray-200"
+                className="flex items-center gap-x-2 rounded-lg bg-[#A308F0] px-3 py-1 text-sm hover:bg-primary-300 text-white disabled:cursor-not-allowed disabled:bg-gray-200"
                 onClick={openUpload}
               >
                 Add

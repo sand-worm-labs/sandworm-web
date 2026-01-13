@@ -123,7 +123,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
             disabled={!message.trim() && files.length === 0}
             className={`flex items-center justify-center w-8 h-8 rounded-lg transition-colors ${
               message.trim() || files.length > 0
-                ? "bg-[#C7665C]  hover:bg-[#C7665C]  text-white"
+                ? "bg-[#A308F0]  hover:bg-[#A308F0]  text-white"
                 : "bg-gray-100 text-gray-400 cursor-not-allowed"
             }`}
             title="Send message"

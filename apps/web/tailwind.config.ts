@@ -18,7 +18,7 @@ const config: Config = {
         xl: "1536px",
       },
       colors: {
-        primary: "#C7665C",
+        primary: "#A308F0",
         "light-border": "#E9ECEF",
         "light-text": "#455768",
         "light-main": "#1A1A1A",

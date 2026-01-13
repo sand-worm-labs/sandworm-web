@@ -64,7 +64,7 @@ const KeyboardKey = (props: {
     className={clsx(
       "px-1.5 py-0.5 rounded-md font-mono",
       props.mode === "insert"
-        ? "bg-[#C7665C20] text-[#C7665C]"
+        ? "bg-[#A308F020] text-[#A308F0]"
         : "bg-yellow-100 text-yellow-700"
     )}
   >
@@ -100,10 +100,10 @@ export default function ShortcutsModal(props: ShortcutsModalProps) {
             >
               <Dialog.Panel className="relative transform overflow-y-auto rounded-2xl bg-white text-left  transition-all sm:my-8 px-8 py-6 w-[582px] max-h-[90vh]">
                 <div>
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#C7665C20]">
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#A308F020]">
                     <KeyboardIcon
                       aria-hidden="true"
-                      className="h-6 w-6 text-[#C7665C]"
+                      className="h-6 w-6 text-[#A308F0]"
                     />
                   </div>
                   <div className="mt-3 text-center sm:mt-5">
@@ -117,9 +117,9 @@ export default function ShortcutsModal(props: ShortcutsModalProps) {
                     <div className="mt-2 flex flex-col gap-y-2">
                       <p className="text-sm text-gray-500">
                         When in insert mode, blocks will be highlighted in{" "}
-                        <span className="text-[#C7665C]">yellow</span>. When in
+                        <span className="text-[#A308F0]">yellow</span>. When in
                         command mode, blocks will be highlighted in{" "}
-                        <span className="text-[#C7665C]">orange</span>.
+                        <span className="text-[#A308F0]">orange</span>.
                         Shortcuts here are highlighted accordingly.
                       </p>
                     </div>

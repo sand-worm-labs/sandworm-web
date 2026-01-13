@@ -83,8 +83,8 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                     <Star
                       className={`w-4 h-4 ${
                         project.isFavorite
-                          ? "fill-[#C7665C] text-[#C7665C]"
-                          : "text-gray-400 hover:text-[#C7665C]"
+                          ? "fill-[#A308F0] text-[#A308F0]"
+                          : "text-gray-400 hover:text-[#A308F0]"
                       }`}
                     />
                   </button>

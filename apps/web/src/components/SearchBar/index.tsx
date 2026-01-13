@@ -150,7 +150,7 @@ export const SearchBar = () => {
           }}
           onKeyDown={handleKeyDown}
           onFocus={() => setIsActive(true)}
-          className="w-full pl-10 pr-16 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none focus:ring focus:ring-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4] font-primary"
+          className="w-full pl-10 pr-16 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none focus:ring focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4] font-primary"
         />
         <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-text-gray select-none font-medium">
           Press{" "}
@@ -172,7 +172,7 @@ export const SearchBar = () => {
                   onClick={() => setActiveFilter(filter.key)}
                   className={`px-3 py-0.5 rounded-md text-[0.75rem] font-medium transition-colors ${
                     activeFilter === filter.key
-                      ? "bg-[#C7665C]  text-white"
+                      ? "bg-[#A308F0]  text-white"
                       : "dark:bg-[#21262d] dark:text-gray-300 dark:hover:bg-[#30363d]  text-[#1A1A1A] hover:bg-gray-200 border border-[#E3E5E8] dark:border-[#262A30]"
                   }`}
                 >
@@ -190,7 +190,7 @@ export const SearchBar = () => {
 
             {/* Dashboards */}
             <div>
-              <div className="px-4 py-2 text-[0.8rem]  font-medium text-[#C7665C]">
+              <div className="px-4 py-2 text-[0.8rem]  font-medium text-[#A308F0]">
                 Dashboards
               </div>
               {suggestionsByCategory.dashboards.map(item => {
@@ -237,7 +237,7 @@ export const SearchBar = () => {
 
             {/* Creators */}
             <div>
-              <div className="px-4 py-2 text-[0.8rem] font-medium text-[#C7665C]">
+              <div className="px-4 py-2 text-[0.8rem] font-medium text-[#A308F0]">
                 Creators
               </div>
               {suggestionsByCategory.creators.map(item => {
@@ -284,7 +284,7 @@ export const SearchBar = () => {
 
             {/* Reports */}
             <div>
-              <div className="px-4 py-2 text-[0.8rem]  font-medium text-[#C7665C]">
+              <div className="px-4 py-2 text-[0.8rem]  font-medium text-[#A308F0]">
                 Reports
               </div>
               {suggestionsByCategory.reports.map(item => {

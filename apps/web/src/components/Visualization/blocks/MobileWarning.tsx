@@ -61,7 +61,7 @@ export default function MobileWarning() {
                 <div className="mt-6">
                   <button
                     type="button"
-                    className="border border-primary-400 inline-flex w-full justify-center rounded-sm bg-[#C7665C] px-3 py-2 text-sm font-semibold shadow-sm hover:bg-primary-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-400 text-gray-700"
+                    className="border border-primary-400 inline-flex w-full justify-center rounded-sm bg-[#A308F0] px-3 py-2 text-sm font-semibold shadow-sm hover:bg-primary-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-400 text-gray-700"
                     onClick={() => setOpen(false)}
                   >
                     I want to stay on mobile

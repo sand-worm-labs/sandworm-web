@@ -82,7 +82,7 @@ export default function SignUpForm() {
       <button
         type="submit"
         disabled={state.loading}
-        className="w-full rounded-xl bg-[#C7665C] px-4 py-3 mb-5 text-white text-sm font-medium disabled:bg-orange-600 inline-block"
+        className="w-full rounded-xl bg-[#A308F0] px-4 py-3 mb-5 text-white text-sm font-medium disabled:bg-orange-600 inline-block"
       >
         {state.loading ? "Signing Up..." : "Sign Up"}
       </button>

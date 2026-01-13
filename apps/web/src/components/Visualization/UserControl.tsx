@@ -49,7 +49,7 @@ export function UserControl({
             placeholder="Name or email..."
             value={searchValue}
             onChange={e => onSearchChange(e.target.value)}
-            className="w-full pl-10 pr-16 py-1 h-8  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none focus:ring focus:ring-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4]"
+            className="w-full pl-10 pr-16 py-1 h-8  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none focus:ring focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4]"
           />
         </div>
 
@@ -88,7 +88,7 @@ export function UserControl({
                       <button
                         type="button"
                         onClick={onResetFilters}
-                        className="text-xs font-medium text-[#C7665C]  hover:text-[#C7665C] focus:outline-none"
+                        className="text-xs font-medium text-[#A308F0]  hover:text-[#A308F0] focus:outline-none"
                       >
                         Reset filters
                       </button>
@@ -111,7 +111,7 @@ export function UserControl({
                                   e.target.checked
                                 )
                               }
-                              className="h-4 w-4 cursor-pointer appearance-none rounded border-2 border-[#CED4DA] bg-white transition-colors checked:border-[#C7665C] checked:bg-[#C7665C] focus:outline-none focus:ring-2 focus:ring-[#C7665C] focus:ring-offset-2 focus:ring-none dark:border-gray-500 dark:bg-gray-700"
+                              className="h-4 w-4 cursor-pointer appearance-none rounded border-2 border-[#CED4DA] bg-white transition-colors checked:border-[#A308F0] checked:bg-[#A308F0] focus:outline-none focus:ring-2 focus:ring-[#A308F0] focus:ring-offset-2 focus:ring-none dark:border-gray-500 dark:bg-gray-700"
                             />
                             {filter.enabled && (
                               <svg
