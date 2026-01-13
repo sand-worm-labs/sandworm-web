@@ -39,19 +39,17 @@ export const SignIn = () => {
 
       <SignInForm />
 
-      <div className="flex justify-between w-full text-sm font-primary mt-4">
-        <p className="text-muted-foreground">
-          Need an account?{" "}
-          <Link href="/signup" className="text-[#8053FE] hover:underline">
-            Sign Up
-          </Link>
-        </p>
+      <div className="flex justify-between w-full text-sm font-primary mt-3">
+        <Link href="/signup" className="text-[#8053FE] hover:underline">
+          Sign Up
+        </Link>
+
         <Link href="/reset" className="text-[#FF0000] hover:underline">
-          Forgot Password
+          Reset Password
         </Link>
       </div>
 
-      <div className="flex-col  gap-2 absolute bottom-[4rem] w-full flex items-center justify-center">
+      <div className="flex-col  gap-2 absolute bottom-[2rem] w-full flex items-center justify-center">
         <p className="text-base text-[#455768] font-primary mb-4">
           Trusted by teams at
         </p>

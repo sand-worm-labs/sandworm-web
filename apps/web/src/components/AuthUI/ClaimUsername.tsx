@@ -99,19 +99,24 @@ export const ClaimUsername = () => {
           </div>
 
           {/* ═══ Username Preview ═══ */}
-          <span className="text-xl text-[#D0DCE4]  green-gradient py-4  px-5 rounded-xl font-semibold mt-5 inline-block box-gradient">
+          {/* ═══ Username Preview ═══ */}
+          <span
+            className="
+    text-xl text-[#D0DCE4] green-gradient
+    py-4 px-5 rounded-xl font-semibold mt-5
+    inline-block box-gradient
+    max-w-full truncate whitespace-nowrap overflow-hidden
+  "
+            title={
+              username
+                ? `${username}.sandwormlabs.xyz`
+                : "username.sandwormlabs.xyz"
+            }
+          >
             {username
               ? `${username}.sandwormlabs.xyz`
               : "username.sandwormlabs.xyz"}
           </span>
-
-          {/* ═══ Validation Feedback ═══ */}
-          {error && <p className="text-xs text-destructive roobert">{error}</p>}
-          {status === "available" && (
-            <p className="text-xs text-green-500 roobert">
-              Username is available!
-            </p>
-          )}
 
           <ul className="text-xs font-primary space-y-1 list-disc pl-4 text-left">
             <li
@@ -136,17 +141,19 @@ export const ClaimUsername = () => {
         </div>
       </div>
 
-      <p className="font-primary text-center text-xs text-muted-foreground mt-6">
-        By creating an account you agree to the{" "}
-        <Link href="/terms" className="underline">
-          Terms
-        </Link>{" "}
-        and confirm that you have read the{" "}
-        <Link href="privacy" className="underline">
-          Privacy Policy
-        </Link>
-        .
-      </p>
+      <div className="flex-col  gap-2 absolute bottom-[4rem] w-full flex items-center justify-center">
+        <p className="font-primary text-center text-xs text-[#6C757D] md:max-w-[300px] mt-6">
+          By creating an account you agree to the{" "}
+          <Link href="/terms" className="underline">
+            Terms
+          </Link>{" "}
+          and confirm that you have read the{" "}
+          <Link href="privacy" className="underline">
+            Privacy Policy
+          </Link>
+          .
+        </p>
+      </div>
     </div>
   );
 };
