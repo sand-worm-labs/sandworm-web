@@ -55,10 +55,9 @@ export const Projects: React.FC = () => {
 
   // Filter documents same way as WorkspaceSidebar
   const documents = documentsState.documents.filter(
-    doc => doc.deletedAt === null && doc.version > 1
+    doc => doc.deletedAt === null && doc.version >= 1
   );
 
-  // Helper function to format dates
   const formatDate = (dateString: string | Date): string => {
     if (!dateString) return "Unknown";
 
@@ -195,16 +194,14 @@ export const Projects: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => toggleFavorite(project.id)}
-                      className={`opacity-0 group-hover:opacity-100 transition-opacity ${
-                        project.isFavorite ? "opacity-100" : ""
-                      }`}
+                      className={`opacity-0 group-hover:opacity-100 transition-opacity ${project.isFavorite ? "opacity-100" : ""
+                        }`}
                     >
                       <Star
-                        className={`w-4 h-4 ${
-                          project.isFavorite
+                        className={`w-4 h-4 ${project.isFavorite
                             ? "fill-[#C7665C] text-[#C7665C]"
                             : "text-gray-400 hover:text-[#C7665C]"
-                        }`}
+                          }`}
                       />
                     </button>
 

@@ -121,7 +121,6 @@ export class EnvironmentService {
       add: input.add,
       remove: removeNames.map((v) => v.name),
     });
-
     return this.getEnvironmentVariables(workspaceId);
   }
 
@@ -168,4 +167,4 @@ export class EnvironmentService {
 
     return Environment.fromEntity(environment);
   }
-}
+}  

@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+  db:
+    container_name: sandworm-postgres
+    image: postgres:17
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: sandworm
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      TZ: "UTC"
+    ports:
+      - "25432:5432"
+volumes:
+  postgres_data:
