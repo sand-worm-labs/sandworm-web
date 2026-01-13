@@ -14,16 +14,16 @@ export default function OnboardingLayout({
           <div className="relative h-full w-full rounded-2xl overflow-hidden shadow-lg">
             <Image
               alt="banner image"
-              src="/img/sample.png"
+              src="/img/abstract.png"
               fill
               className="object-cover"
             />
-            <div className="absolute inset-0 flex flex-col top-[30%]">
-              <div className="text-center text-white font-primary ">
-                <p className="text-3xl md:text-[1.95rem] font-normal">
+            <div className="absolute inset-0 flex flex-col top-[85%]">
+              <div className="text-center text-[#B4CACE] font-primary ">
+                <p className="text-lg md:text-lg font-normal">
                   Deep and Insightful Onchain data
                 </p>
-                <p className="text-3xl md:text-[1.95rem] font-normal mt-1">
+                <p className="text-lg md:text-lg font-normal mt-1">
                   for teams and enterprise
                 </p>
               </div>
