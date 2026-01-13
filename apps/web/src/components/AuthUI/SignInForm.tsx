@@ -69,13 +69,10 @@ export const SignInForm = () => {
       className="mt-4 space-y-4 w-full font-primary"
     >
       <div>
-        <label className="block text-sm font-medium dark:text-gray-300 text-[#455768]">
-          Email
-        </label>
         <input
           type="email"
           name="email"
-          className="mt-1 w-full rounded-md dark:bg-[#121417] bg-[#F1F3F4] p-2 text-black dark:text-white border border-[#DEE2E6] dark:border-[#262A30] focus:border-[#A308F0] focus:ring-1 focus:ring-[#A308F0] outline-none font-normal text-[0.9rem] placeholder:text-[#455768] dark:placeholder:text-[#868E96]"
+          className="mt-1 w-full rounded-3xl dark:bg-[#121417] bg-[#F1F3F4] p-2.5 px-5 text-black dark:text-white border border-[#DEE2E6] dark:border-[#262A30] focus:border-[#A308F0] focus:ring-1 focus:ring-[#A308F0] outline-none font-normal text-[0.9rem] placeholder:text-[#455768] dark:placeholder:text-[#868E96]"
           placeholder="Enter your email"
           value={formData.email}
           onChange={handleChange}
@@ -83,13 +80,10 @@ export const SignInForm = () => {
       </div>
 
       <div>
-        <label className="block text-sm font-medium dark:text-gray-300 text-[#455768]">
-          Password
-        </label>
         <input
           type="password"
           name="password"
-          className="mt-1 w-full rounded-md dark:bg-[#121417] bg-[#F1F3F4] p-2 text-black dark:text-white border border-[#DEE2E6] dark:border-[#262A30] focus:border-[#A308F0] focus:ring-1 focus:ring-[#A308F0] outline-none font-normal text-[0.9rem] placeholder:text-[#455768] dark:placeholder:text-[#868E96]"
+          className="mt-1 w-full rounded-3xl dark:bg-[#121417] bg-[#F1F3F4] p-2.5 px-5 text-black dark:text-white border border-[#DEE2E6] dark:border-[#262A30] focus:border-[#A308F0] focus:ring-1 focus:ring-[#A308F0] outline-none font-normal text-[0.9rem] placeholder:text-[#455768] dark:placeholder:text-[#868E96]"
           placeholder="Enter your password"
           value={formData.password}
           onChange={handleChange}
@@ -101,7 +95,7 @@ export const SignInForm = () => {
       <button
         type="submit"
         disabled={state.loading}
-        className="w-full rounded-xl bg-[#A308F0] px-4 py-3 text-white font-medium disabled:bg-[#A308F0]/40 text-sm"
+        className="w-full rounded-3xl bg-[#0F0F0F] px-4 py-3.5 text-white font-medium disabled:bg-[#868E96] text-sm"
       >
         {state.loading ? "Signing In..." : "Sign in"}
       </button>

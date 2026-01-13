@@ -57,9 +57,6 @@ export default function SignUpForm() {
         { field: "password", label: "Password", type: "password" },
       ].map(({ field, label, type }) => (
         <div key={field}>
-          <label className="block text-sm font-medium dark:text-gray-300 text-[#1A1A1A]">
-            {label}
-          </label>
           <input
             type={type}
             name={field}

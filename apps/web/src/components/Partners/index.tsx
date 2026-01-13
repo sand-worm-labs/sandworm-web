@@ -5,15 +5,13 @@ import Image from "next/image";
 
 export const PartnersSection = () => {
   return (
-    <div className="w-full max-w-5xl mx-auto text-left mt-8">
-      <h4 className="text-sm font-medium mb-3 font-primary">Trusted by</h4>
-
-      <div className="flex flex-wrap  items-center gap-8">
+    <div className="w-full max-w-5xl mx-auto text-left ">
+      <div className="flex flex-wrap justify-center items-center gap-8">
         <Image
           src="/img/base-white.svg"
           alt="Base logo"
-          width={49}
-          height={16}
+          width={56}
+          height={24}
           className="object-contain opacity-80 hover:opacity-100 transition"
         />
         <Image
