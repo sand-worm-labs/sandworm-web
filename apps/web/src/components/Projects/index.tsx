@@ -142,7 +142,7 @@ export const Projects: React.FC = () => {
             onClick={() =>
               router.push(`/workspace/${workspaceId}/documents/notebook`)
             }
-            className="px-3  bg-[#C7665C20] hover:bg-[#c7665c30]  border-[#C7665C] border  text-[#C7665C] rounded-lg transition-colors text-sm flex items-center gap-x-2 py-0"
+            className="px-3  bg-[#A308F020] hover:bg-[#A308F030]  border-[#A308F0] border  text-[#A308F0] rounded-lg transition-colors text-sm flex items-center gap-x-2 py-0"
           >
             Create Project
           </button>
@@ -155,14 +155,14 @@ export const Projects: React.FC = () => {
     <div className="min-h-screen dark:bg-black  p-8">
       <div className="flex justify-between w-full">
         <div className="flex items-center gap-3 mb-0">
-          <span className="bg-[#C7665C20]  rounded-full p-2 flex items-center justify-center">
-            <FolderOpen className="w-4 h-4 text-[#C7665C] " />
+          <span className="bg-[#A308F020]  rounded-full p-2 flex items-center justify-center">
+            <FolderOpen className="w-4 h-4 text-[#A308F0] " />
           </span>
           <h2 className="text-xl font-medium ">Projects</h2>
         </div>
         <button
           type="button"
-          className="px-3  bg-[#C7665C20] hover:bg-[#c7665c30]  border-[#C7665C] border  text-[#C7665C] rounded-lg transition-colors text-sm flex items-center gap-x-2 py-0 "
+          className="px-3  bg-[#A308F020] hover:bg-[#A308F030]  border-[#A308F0] border  text-[#A308F0] rounded-lg transition-colors text-sm flex items-center gap-x-2 py-0 "
           onClick={() =>
             router.push(`/workspace/${workspaceId}/documents/notebook`)
           }
@@ -194,14 +194,16 @@ export const Projects: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => toggleFavorite(project.id)}
-                      className={`opacity-0 group-hover:opacity-100 transition-opacity ${project.isFavorite ? "opacity-100" : ""
-                        }`}
+                      className={`opacity-0 group-hover:opacity-100 transition-opacity ${
+                        project.isFavorite ? "opacity-100" : ""
+                      }`}
                     >
                       <Star
-                        className={`w-4 h-4 ${project.isFavorite
-                            ? "fill-[#C7665C] text-[#C7665C]"
-                            : "text-gray-400 hover:text-[#C7665C]"
-                          }`}
+                        className={`w-4 h-4 ${
+                          project.isFavorite
+                            ? "fill-[#A308F0] text-[#A308F0]"
+                            : "text-gray-400 hover:text-[#A308F0]"
+                        }`}
                       />
                     </button>
 

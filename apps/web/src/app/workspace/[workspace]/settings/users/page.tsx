@@ -219,9 +219,9 @@ export default function UsersPage() {
                 disabled={!isAddEnabled}
                 className={clsx(
                   isAddEnabled
-                    ? "bg-[#C7665C] hover:bg-primary-300"
-                    : "bg-[#C7665CDD] cursor-not-allowed",
-                  "px-6 py-2 bg-[#C7665C] text-white rounded-xl hover:bg-[#B55A50] text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                    ? "bg-[#A308F0] hover:bg-primary-300"
+                    : "bg-[#A308F0DD] cursor-not-allowed",
+                  "px-6 py-2 bg-[#A308F0] text-white rounded-xl hover:bg-[#B55A50] text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
                 )}
               >
                 <UserPlusIcon className="h-4 w-4" /> Invite user

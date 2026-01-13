@@ -118,7 +118,7 @@ export default function CreateTeamModal({
                         setFormData(prev => ({ ...prev, name: e.target.value }))
                       }
                       disabled={loading}
-                      className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4]"
+                      className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4]"
                     />
                   </div>
 
@@ -142,7 +142,7 @@ export default function CreateTeamModal({
                         }))
                       }
                       disabled={loading}
-                      className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4]"
+                      className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4]"
                     />
                     <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                       Optional: How or why this team was formed
@@ -169,7 +169,7 @@ export default function CreateTeamModal({
                         }))
                       }
                       disabled={loading}
-                      className="w-full px-3 py-1.5  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4] min-h-[6rem] resize-none "
+                      className="w-full px-3 py-1.5  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4] min-h-[6rem] resize-none "
                     />
                     <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                       Optional: Primary goals and use cases
@@ -196,7 +196,7 @@ export default function CreateTeamModal({
                         }))
                       }
                       disabled={loading}
-                      className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4] "
+                      className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4] "
                     />
                     <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                       Optional: Context of where/how it will be used
@@ -208,7 +208,7 @@ export default function CreateTeamModal({
                     <button
                       type="submit"
                       disabled={loading || !formData.name.trim()}
-                      className="px-4 py-3 text-sm font-medium text-white bg-[#C7665C] hover:bg-[#C7665C] dark:bg-[#C7665C] dark:hover:bg-[#C7665C] rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 w-full text-center justify-center"
+                      className="px-4 py-3 text-sm font-medium text-white bg-[#A308F0] hover:bg-[#A308F0] dark:bg-[#A308F0] dark:hover:bg-[#A308F0] rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 w-full text-center justify-center"
                     >
                       {loading ? (
                         <>

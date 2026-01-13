@@ -34,7 +34,7 @@ export const Stepper: React.FC<StepperProps> = ({ steps, currentStep }) => {
                   {index + 1}.
                 </span>
                 <span
-                  className={`${active ? "text-[#C7665C]" : "text-muted-foreground"}`}
+                  className={`${active ? "text-[#A308F0]" : "text-muted-foreground"}`}
                 >
                   {step.name}
                 </span>
