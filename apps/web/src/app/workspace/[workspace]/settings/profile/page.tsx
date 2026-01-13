@@ -133,7 +133,7 @@ export default function ProfileSettings() {
                 type="email"
                 value={session.user?.email || ""}
                 disabled
-                className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4] cursor-not-allowed max-w-[30rem]"
+                className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4] cursor-not-allowed max-w-[30rem]"
               />
               <span className="text-xs text-gray-500 dark:text-gray-400 mt-1 block">
                 Email cannot be changed
@@ -149,7 +149,7 @@ export default function ProfileSettings() {
                   type="text"
                   name="firstName"
                   placeholder="First name"
-                  className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4]"
+                  className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4]"
                   value={formData.firstName}
                   onChange={handleChange}
                 />
@@ -163,7 +163,7 @@ export default function ProfileSettings() {
                   type="text"
                   name="lastName"
                   placeholder="Last name"
-                  className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4]"
+                  className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4]"
                   value={formData.lastName}
                   onChange={handleChange}
                 />
@@ -178,7 +178,7 @@ export default function ProfileSettings() {
                 type="text"
                 name="username"
                 placeholder="Username"
-                className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4] max-w-[30rem]"
+                className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4] max-w-[30rem]"
                 value={formData.username}
                 onChange={handleChange}
               />
@@ -202,7 +202,7 @@ export default function ProfileSettings() {
               <textarea
                 name="bio"
                 placeholder="Tell us about yourself..."
-                className="w-full px-3 py-1.5  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4] max-w-[30rem] min-h-[6rem] resize-none"
+                className="w-full px-3 py-1.5  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4] max-w-[30rem] min-h-[6rem] resize-none"
                 value={formData.bio}
                 onChange={handleChange}
               />
@@ -224,7 +224,7 @@ export default function ProfileSettings() {
                 type="text"
                 name="github"
                 placeholder="GitHub Profile"
-                className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4]"
+                className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4]"
                 value={formData.github}
                 onChange={handleChange}
               />
@@ -232,7 +232,7 @@ export default function ProfileSettings() {
                 type="text"
                 name="discord"
                 placeholder="Discord Username"
-                className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4]"
+                className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4]"
                 value={formData.discord}
                 onChange={handleChange}
               />
@@ -240,7 +240,7 @@ export default function ProfileSettings() {
                 type="text"
                 name="telegram"
                 placeholder="Telegram Handle"
-                className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4]"
+                className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4]"
                 value={formData.telegram}
                 onChange={handleChange}
               />
@@ -252,7 +252,7 @@ export default function ProfileSettings() {
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2 bg-[#C7665C] text-white rounded-xl hover:bg-[#B55A50] text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-6 py-2 bg-[#A308F0] text-white rounded-xl hover:bg-[#B55A50] text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {loading ? "Updating..." : "Update Profile"}
             </button>

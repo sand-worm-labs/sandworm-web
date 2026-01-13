@@ -709,7 +709,7 @@ function PythonBlock(props: Props) {
                     !isRunButtonDisabled &&
                     (status === "enqueued" ||
                       (status === "running" && envStatus !== "Running")),
-                  "bg-[#C7665C]": !isRunButtonDisabled && status === "idle",
+                  "bg-[#A308F0]": !isRunButtonDisabled && status === "idle",
                 },
                 "rounded-sm h-6 min-w-6 flex items-center justify-center relative group disabled:cursor-not-allowed"
               )}

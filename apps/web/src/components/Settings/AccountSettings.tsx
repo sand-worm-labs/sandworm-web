@@ -140,15 +140,15 @@ export default function WorkspaceSettings() {
                       className={clsx(
                         "w-full text-left px-3 py-2 rounded-xl text-sm transition-colors cursor-pointer flex gap-5 items-center pl-5",
                         workspace.id === currentWorkspace?.id
-                          ? "bg-[#C7665C20] dark:bg-[#121417] text-[#C7665C] dark:text-white"
-                          : "hover:bg-[#C7665C30] dark:hover:bg-[#181C21]"
+                          ? "bg-[#A308F020] dark:bg-[#121417] text-[#A308F0] dark:text-white"
+                          : "hover:bg-[#A308F030] dark:hover:bg-[#181C21]"
                       )}
                     >
                       <div
                         className={clsx(
                           "h-3 w-3 rounded-full transition-all",
                           workspace.id === currentWorkspace?.id
-                            ? "bg-[#C7665C] ring-[6px] ring-[#C7665C30] border-[#C7665C] border"
+                            ? "bg-[#A308F0] ring-[6px] ring-[#A308F030] border-[#A308F0] border"
                             : "bg-gray-400/60"
                         )}
                       />
@@ -207,7 +207,7 @@ export default function WorkspaceSettings() {
                   >
                     <input
                       type="text"
-                      className=" w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4]"
+                      className=" w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4]"
                       value={state.newName}
                       onChange={e =>
                         setState(s => ({ ...s, newName: e.target.value }))
@@ -226,7 +226,7 @@ export default function WorkspaceSettings() {
                     <button
                       type="submit"
                       disabled={isUpdating || !state.newName.trim()}
-                      className="px-6 py-2 bg-[#C7665C] text-white rounded-xl hover:bg-[#b55a51] text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                      className="px-6 py-2 bg-[#A308F0] text-white rounded-xl hover:bg-[#b55a51] text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                     >
                       {isUpdating ? (
                         <>
@@ -405,7 +405,7 @@ export default function WorkspaceSettings() {
                         type="password"
                         placeholder="sk-..."
                         name="openAIKey"
-                        className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#C7665C] transition text-xs md:text-sm bg-[#F1F3F4]"
+                        className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4]"
                         value={state.newOpenAIKey}
                         onChange={e =>
                           setState(s => ({
@@ -425,7 +425,7 @@ export default function WorkspaceSettings() {
                       </button>
                       <button
                         type="submit"
-                        className="px-6 py-2 bg-[#C7665C] text-white rounded-xl hover:bg-[#C7665C] text-sm"
+                        className="px-6 py-2 bg-[#A308F0] text-white rounded-xl hover:bg-[#A308F0] text-sm"
                       >
                         Save
                       </button>

@@ -58,8 +58,8 @@ export const PreviewAttachment = ({
           }
           overflow-hidden
           transition-all
-          hover:border-[#C7665C]
-          dark:hover:border-[#C7665C]
+          hover:border-[#A308F0]
+          dark:hover:border-[#A308F0]
         `}
       >
         {isUploading ? (
