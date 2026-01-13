@@ -121,7 +121,7 @@ export const MainHeader = () => {
           {/* Launch App Button */}
           <motion.div variants={navItem} whileHover={{ scale: 1.05 }}>
             <Link
-              className="hidden md:flex border py-2 bg-primary text-black rounded-2xl px-4 text-[0.9rem] font-medium"
+              className="hidden md:flex  py-2 bg-primary text-white rounded-2xl px-4 text-[0.9rem] font-medium"
               href="/workspace"
             >
               Launch App

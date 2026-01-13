@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { Mail } from "../Assets/Mail";
 
 type CheckMailProps = {
   variant?: "signup" | "reset-password";
@@ -43,13 +43,15 @@ export const CheckMail = ({
   return (
     <div className="flex flex-col items-center justify-center h-full w-full px-10 py-6 overflow-hidden text-center">
       <div className="w-12 h-12 rounded-xl bg-[#EDE7FF] flex items-center justify-center mb-4">
-        <Image src="/img/mail.png" width={24} height={24} alt="mail" />
+        <Mail />
       </div>
-      <h2 className="text-xl font-semibold roobert">{title}</h2>
-      <p className="text-sm font-medium text-muted-foreground dark:text-white font-primary max-w-md mt-2">
+      <h2 className="text-xl font-primary mb-1 ">{title}</h2>
+      <p className="text-sm font-medium text-[#6C757D] dark:text-white font-primary max-w-md mt-2">
         {description}
       </p>
-      <p className="text-sm font-primary mt-2">
+
+      <div className="bg-[#E9ECEF] h-[1px]  w-48 mt-2.5" />
+      <p className="text-sm font-primary text-[#6C757D] mt-2">
         {resendText}{" "}
         <button
           type="button"
@@ -59,8 +61,9 @@ export const CheckMail = ({
           Resend
         </button>
       </p>
+
       {variant === "signup" && (
-        <p className="font-primary text-center text-xs text-muted-foreground mt-6">
+        <p className="font-primary text-center text-xs text-[#6C757D] mt-6">
           By creating an account you agree to the{" "}
           <span className="underline">Terms</span> and confirm that you have
           read the <span className="underline">Privacy Policy</span>.

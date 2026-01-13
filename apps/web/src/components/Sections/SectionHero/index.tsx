@@ -161,7 +161,7 @@ export const SectionHero = () => {
             >
               <Button
                 type="button"
-                className="rounded-2xl p-2.5 h-fit m-0.5 text-black bg-primary px-5 font-medium"
+                className="rounded-2xl p-2.5 h-fit m-0.5 text-white  bg-primary px-5 font-medium"
                 onClick={() => router.push("/waitlist")}
               >
                 Explore Worm AI
