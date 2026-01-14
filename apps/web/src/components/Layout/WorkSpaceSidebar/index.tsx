@@ -15,6 +15,7 @@ import { SandwormLogo } from "@/components/Assets";
 import { SidebarIcon } from "@/components/Assets/SidebarIcon";
 import { useDocuments } from "@/components/Visualization/hooks/useDocuments";
 import { useSession } from "@/components/Visualization/hooks/useAuth";
+import { ProjectIcon } from "@/components/Assets/ProjectIcon";
 
 interface NavItem {
   name: string;
@@ -34,11 +35,11 @@ export const WorkspaceSidebar = () => {
   const user = session?.user;
 
   const mainNav: NavItem[] = [
-    { name: "Home", href: `/workspace/${workspaceId}`, icon: Home },
+    { name: " Home", href: `/workspace/${workspaceId}`, icon: Home },
     {
       name: "Projects",
       href: `/workspace/${workspaceId}/session`,
-      icon: Clock,
+      icon: ProjectIcon,
     },
     {
       name: "Explore",
@@ -67,10 +68,11 @@ export const WorkspaceSidebar = () => {
 
   const linkClasses = (href: string) =>
     `flex items-center gap-3 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors
-     ${pathname === href
-      ? "bg-white dark:bg-[#181C21] shadow-[0_0.5px_4px_#2516660A] text-black dark:text-white "
-      : "text-gray-600 dark:text-white hover:bg-[#ffffff] dark:hover:bg-[#181C21] hover:text-black dark:hover:text-white"
-    }`;
+     ${
+       pathname === href
+         ? "bg-white dark:bg-[#181C21] shadow-[0_0.5px_4px_#2516660A] text-[#A308F0] dark:text-[#A308F0]"
+         : "text-gray-600 dark:text-white hover:bg-[#ffffff] dark:hover:bg-[#181C21] hover:text-black dark:hover:text-white"
+     }`;
 
   const [
     documentsState,

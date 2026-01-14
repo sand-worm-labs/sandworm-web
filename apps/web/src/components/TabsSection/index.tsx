@@ -48,32 +48,32 @@ const TabsHeader: React.FC<{
     <TabsList className="flex border-b border-borderLight">
       <TabsTrigger
         value="all"
-        className={`px-2 py-2 flex items-center space-x-2 ${
-          tab === "all" ? "text-[#A6554D]" : "text-[#868E96]"
+        className={`px-3 py-1 flex items-center space-x-1.5 rounded-lg ${
+          tab === "all" ? "text-[#A308F0] bg-[#E7F3F6]" : "text-[#868E96]"
         }`}
       >
         <HiOutlineCommandLine size={18} className="flex-shrink-0" />
-        <span className="text-sm">All Insights</span>
+        <span className="text-sm">All Notebooks</span>
       </TabsTrigger>
 
       <TabsTrigger
         value="forked"
-        className={`px-2 py-2 flex items-center space-x-2 ${
-          tab === "forked" ? "text-[#A6554D]" : "text-[#868E96]"
+        className={`px-3 py-1 flex items-center space-x-1.5 rounded-lg ${
+          tab === "forked" ? "text-[#A308F0] bg-[#E7F3F6]" : "text-[#868E96]"
         }`}
       >
         <VscRepoForked size={16} className="flex-shrink-0" />
-        <span className="text-sm">Dashboards</span>
+        <span className="text-sm">Forked </span>
       </TabsTrigger>
 
       <TabsTrigger
         value="starred"
-        className={`px-2 py-2 flex items-center space-x-2 ${
-          tab === "starred" ? "text-[#A6554D]" : "text-[#868E96]"
+        className={`px-3 py-1 flex items-center space-x-1.5 rounded-lg ${
+          tab === "starred" ? "text-[#A308F0] bg-[#E7F3F6]" : "text-[#868E96]"
         }`}
       >
         <FaRegStar size={16} className="flex-shrink-0" />
-        <span className="text-sm">Reports</span>
+        <span className="text-sm">Starred</span>
       </TabsTrigger>
     </TabsList>
 
@@ -153,7 +153,7 @@ export const TabsSection: React.FC<TabSectionProps> = ({
   return (
     <div>
       <div className="flex justify-between">
-        <p className="text-[#455768] dark:text-[#868E96] text-sm mb-8 mt-6">
+        <p className="text-[#455768] dark:text-[#868E96] text-sm mb-6 mt-4">
           See what others are creating using Sandworm
         </p>
         <ViewControl viewMode={viewMode} onViewModeChange={setViewMode} />

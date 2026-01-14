@@ -5,10 +5,9 @@ import type { ExecutionQueue } from "@sandworm/editor";
 import { isExecutionStatusLoading } from "@sandworm/editor";
 import clsx from "clsx";
 
-import useRunAll from "@/hooks/useRunAll";
-import usePreviousEffect from "@/hooks/usePreviousEffect";
-
 import useEditorAwareness from "../hooks/useEditorAwareness";
+import useRunAll from "../hooks/useRunAll";
+import usePreviousEffect from "../hooks/usePreviousEffect";
 
 interface Props {
   disabled: boolean;
@@ -57,12 +56,12 @@ export default function RunAllV2(props: Props) {
             props.disabled || status === "aborting",
           "bg-[#A308F0] hover:bg-primary-300":
             !props.disabled && !loading && props.primary,
-          "bg-white hover:bg-gray-100 ring-1 ring-gray-200 text-gray-500":
+          "bg-[#A308F0] ring-gray-200 text-white":
             !props.disabled && !loading && !props.primary,
           "bg-red-200 hover:bg-red-300":
             !props.disabled && loading && status !== "aborting",
         },
-        "flex items-center rounded-sm px-3 py-1 text-sm gap-x-1.5 absolute top-3 right-8 z-10"
+        "flex items-center rounded-lg px-3.5 py-1 text-sm gap-x-1.5 absolute top-3 right-8 z-10 font-primary font-medium"
       )}
       onClick={onClick}
       disabled={props.disabled}

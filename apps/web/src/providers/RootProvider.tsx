@@ -6,7 +6,6 @@ import { GraphQLProvider } from "@/graphql/provider";
 import { tokenStorage } from "@/components/Visualization/hooks/useAuth";
 
 import { ThemeProvider } from "./ThemeProvider";
-import { QueryProvider } from "./query";
 import AppProvider from "./AppProvider";
 
 const GRAPHQL_URL = "http://localhost:8003/graphql";
@@ -61,7 +60,7 @@ export function RootProvider({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider
       attribute="class"
-      defaultTheme="dark"
+      defaultTheme="light"
       enableSystem
       disableTransitionOnChange
     >
@@ -70,9 +69,7 @@ export function RootProvider({ children }: { children: ReactNode }) {
         getAccessToken={getAccessToken}
         refreshAccessToken={refreshAccessToken}
       >
-        <QueryProvider>
-          <AppProvider>{children}</AppProvider>
-        </QueryProvider>
+        <AppProvider>{children}</AppProvider>
       </GraphQLProvider>
     </ThemeProvider>
   );

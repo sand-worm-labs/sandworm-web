@@ -35,11 +35,19 @@ export const SearchBar = () => {
   const [activeFilter, setActiveFilter] = useState<Filter>("all");
   const [highlightIndex, setHighlightIndex] = useState<number>(-1);
   const searchContainerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // 🔁 Effects / Subscriptions
   useEffect(() => {
     setQuery(currentSearch);
   }, [currentSearch]);
+
+  // Focus input when dropdown opens
+  useEffect(() => {
+    if (isActive && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isActive]);
 
   // ⬢ Mock Suggestions Data
   // =====================================
@@ -131,37 +139,47 @@ export const SearchBar = () => {
   //  // ⬢ Render Component
   // =====================================
   return (
-    <div
-      className="relative w-full max-w-md min-w-[26rem] mx-auto"
-      ref={searchContainerRef}
-    >
-      <Search
-        size={16}
-        className="absolute left-4 top-1/2 z-10 -translate-y-1/2 text-text-gray"
-      />
-      <div className="relative">
-        <Input
-          type="text"
-          placeholder="Search Queries, Dashboards, Users"
-          value={query}
-          onChange={e => {
-            setQuery(e.target.value);
-            setHighlightIndex(-1);
-          }}
-          onKeyDown={handleKeyDown}
-          onFocus={() => setIsActive(true)}
-          className="w-full pl-10 pr-16 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none focus:ring focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4] font-primary"
-        />
-        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-text-gray select-none font-medium">
-          Press{" "}
-          <kbd className="dark:bg-white dark:text-[#455768] text-[#455768] bg-[#E0EAF1] px-1 py-0.5 rounded ml-1">
-            Enter
-          </kbd>
-        </div>
-      </div>
+    <div className="relative" ref={searchContainerRef}>
+      {/* Search Icon Button Trigger */}
+      <button
+        type="button"
+        onClick={() => setIsActive(true)}
+        className="p-2 rounded-lg dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white text-[#455768] hover:bg-gray-100 dark:hover:bg-[#21262d] transition-colors bg-[#F1F3F4]"
+        aria-label="Open search"
+      >
+        <Search size={18} />
+      </button>
 
       {isActive && (
-        <div className="absolute z-50 top-full mt-5 w-[150%] translate-x-[-20%] dark:bg-[#0C1015] bg-white border dark:border-[#262A30] rounded-xl shadow-md overflow-hidden border-[#E3E5E8]">
+        <div className="absolute z-50 top-full mt-4 left-[0px] min-w-[32rem] dark:bg-[#0C1015] bg-white border dark:border-[#262A30] rounded-xl shadow-md overflow-hidden border-[#E3E5E8]">
+          {/* Search Input Inside Dropdown */}
+          <div className="px-4 py-3 border-b dark:border-[#262A30] border-gray-200">
+            <div className="relative">
+              <Search
+                size={16}
+                className="absolute left-3 top-1/2 z-10 -translate-y-1/2 text-text-gray"
+              />
+              <Input
+                ref={inputRef}
+                type="text"
+                placeholder="Search Queries, Dashboards, Users"
+                value={query}
+                onChange={e => {
+                  setQuery(e.target.value);
+                  setHighlightIndex(-1);
+                }}
+                onKeyDown={handleKeyDown}
+                className="w-full pl-10 pr-16 py-1 rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none focus:ring-[1p] focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4] font-primary"
+              />
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-text-gray select-none font-medium">
+                Press{" "}
+                <kbd className="dark:bg-white dark:text-[#455768] text-[#455768] bg-[#E0EAF1] px-1 py-0.5 rounded ml-1">
+                  Enter
+                </kbd>
+              </div>
+            </div>
+          </div>
+
           {/* Filters Section */}
           <div className="px-4 py-3 border-b dark:border-[#262A30] border-gray-200">
             <div className="flex flex-wrap gap-2">
@@ -170,11 +188,10 @@ export const SearchBar = () => {
                   type="button"
                   key={filter.key}
                   onClick={() => setActiveFilter(filter.key)}
-                  className={`px-3 py-0.5 rounded-md text-[0.75rem] font-medium transition-colors ${
-                    activeFilter === filter.key
+                  className={`px-3 py-0.5 rounded-md text-[0.75rem] font-medium transition-colors ${activeFilter === filter.key
                       ? "bg-[#A308F0]  text-white"
                       : "dark:bg-[#21262d] dark:text-gray-300 dark:hover:bg-[#30363d]  text-[#1A1A1A] hover:bg-gray-200 border border-[#E3E5E8] dark:border-[#262A30]"
-                  }`}
+                    }`}
                 >
                   {filter.label}
                 </button>
@@ -201,11 +218,10 @@ export const SearchBar = () => {
                   <button
                     type="button"
                     key={item.id}
-                    className={`w-full px-4 py-2 flex items-center gap-3 transition-colors ${
-                      highlightIndex === globalIndex
+                    className={`w-full px-4 py-2 flex items-center gap-3 transition-colors ${highlightIndex === globalIndex
                         ? "dark:bg-[#161b22] bg-gray-100"
                         : "dark:hover:bg-[#161b22] hover:bg-gray-50"
-                    }`}
+                      }`}
                     onMouseEnter={() => setHighlightIndex(globalIndex)}
                     onClick={() => {
                       setQuery(item.title);
@@ -248,11 +264,10 @@ export const SearchBar = () => {
                   <button
                     type="button"
                     key={item.id}
-                    className={`w-full px-4 py-2 flex items-center gap-3 transition-colors ${
-                      highlightIndex === globalIndex
+                    className={`w-full px-4 py-2 flex items-center gap-3 transition-colors ${highlightIndex === globalIndex
                         ? "dark:bg-[#161b22] bg-gray-100"
                         : "dark:hover:bg-[#161b22] hover:bg-gray-50"
-                    }`}
+                      }`}
                     onMouseEnter={() => setHighlightIndex(globalIndex)}
                     onClick={() => {
                       setQuery(item.title);
@@ -295,11 +310,10 @@ export const SearchBar = () => {
                   <button
                     type="button"
                     key={item.id}
-                    className={`w-full px-4 py-2 flex items-center gap-3 transition-colors ${
-                      highlightIndex === globalIndex
+                    className={`w-full px-4 py-2 flex items-center gap-3 transition-colors ${highlightIndex === globalIndex
                         ? "dark:bg-[#161b22] bg-gray-100"
                         : "dark:hover:bg-[#161b22] hover:bg-gray-50"
-                    }`}
+                      }`}
                     onMouseEnter={() => setHighlightIndex(globalIndex)}
                     onClick={() => {
                       setQuery(item.title);

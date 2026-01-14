@@ -19,6 +19,7 @@ import CommandPalette from "./blocks/commandPalette";
 import { FeaturesDialog } from "./blocks/SubscriptionBadge";
 import PagePath from "./blocks/PagePath";
 import DragLayer from "./blocks/DragLayer";
+import NotebookPanel from "../Layout/NotebookPanel";
 
 interface Props {
   children: React.ReactNode;
@@ -26,6 +27,7 @@ interface Props {
   topBarClassname?: string;
   topBarContent?: React.ReactNode;
   hideChat?: boolean;
+  sidebarContent?: React.ReactNode;
 }
 
 export default function Layout({
@@ -34,6 +36,7 @@ export default function Layout({
   topBarClassname,
   topBarContent,
   hideChat,
+  sidebarContent,
 }: Props) {
   const [isSearchOpen, setSearchOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(true);
@@ -116,7 +119,6 @@ export default function Layout({
           )}
         >
           <div className="flex w-full">
-            {/* Original expand sidebar button (visible when sidebar is closed) */}
             <button
               type="button"
               className={clsx(
@@ -142,7 +144,7 @@ export default function Layout({
               {children}
             </div>
           </ResizablePanel>
-          {!hideChat && isChatOpen && (
+          {/*   {!hideChat && isChatOpen && (
             <>
               <ResizableHandle withHandle />
 
@@ -156,7 +158,8 @@ export default function Layout({
                 <MiniChat onClose={() => setIsChatOpen(false)} />
               </ResizablePanel>
             </>
-          )}
+          )} */}
+          <NotebookPanel sidebarContent={sidebarContent} />
         </ResizablePanelGroup>
       </main>
     </div>

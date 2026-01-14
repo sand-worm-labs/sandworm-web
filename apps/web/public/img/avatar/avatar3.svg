@@ -1,0 +1,19 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_2085_42607)">
+<path d="M32 16C32 24.8366 24.8366 32 16 32C7.16345 32 1.90735e-06 24.8366 1.90735e-06 16C1.90735e-06 7.16345 7.16345 1.90735e-06 16 1.90735e-06C24.8366 1.90735e-06 32 7.16345 32 16Z" fill="#FF0004"/>
+<rect x="26.668" y="19.333" width="5.33333" height="5.33333" transform="rotate(180 26.668 19.333)" fill="black"/>
+<rect x="26.668" y="14" width="5.33333" height="5.33333" transform="rotate(180 26.668 14)" fill="black"/>
+<rect x="21.332" y="14" width="5.33333" height="5.33333" transform="rotate(180 21.332 14)" fill="black"/>
+<rect x="16" y="8.66699" width="5.33333" height="5.33333" transform="rotate(180 16 8.66699)" fill="black"/>
+<rect x="26.668" y="3.33301" width="5.33333" height="5.33333" transform="rotate(180 26.668 3.33301)" fill="black"/>
+<rect x="10.668" y="24.667" width="5.33333" height="5.33333" transform="rotate(180 10.668 24.667)" fill="black"/>
+<rect x="10.668" y="14" width="5.33333" height="5.33333" transform="rotate(180 10.668 14)" fill="black"/>
+<rect x="10.668" y="3.33301" width="5.33333" height="5.33333" transform="rotate(180 10.668 3.33301)" fill="black"/>
+<rect x="5.33203" y="24.667" width="5.33333" height="5.33333" transform="rotate(180 5.33203 24.667)" fill="black"/>
+</g>
+<defs>
+<clipPath id="clip0_2085_42607">
+<path d="M32 16C32 24.8366 24.8366 32 16 32C7.16345 32 1.90735e-06 24.8366 1.90735e-06 16C1.90735e-06 7.16345 7.16345 1.90735e-06 16 1.90735e-06C24.8366 1.90735e-06 32 7.16345 32 16Z" fill="white"/>
+</clipPath>
+</defs>
+</svg>
