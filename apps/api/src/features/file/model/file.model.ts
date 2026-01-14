@@ -20,4 +20,7 @@ export class SandwormFile {
 
   @BooleanField()
   isDirectory!: boolean;
+
+  @NumberField()
+  createdAt!: number;
 }
