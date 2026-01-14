@@ -54,7 +54,7 @@ run_jupyter() {
         error "Jupyter not found at /app/jupyter/venv/bin/jupyter"
     fi
     
-    cd /home/jupyteruser || error "Failed to change to /home/jupyteruser"
+    cd /home/sandwormuser || error "Failed to change to /home/sandwormuser"
     
     exec /app/jupyter/venv/bin/jupyter server \
         --ip=0.0.0.0 \

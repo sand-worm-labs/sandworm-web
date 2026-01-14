@@ -2,7 +2,7 @@
 set -e
 
 APPS_CONFIG_DIR="/home/sandworm/.config/sandworm"
-JUPYTER_CONFIG_DIR="/home/jupyteruser/.config/sandworm"
+JUPYTER_CONFIG_DIR="/home/sandwormuser/.config/sandworm"
 CONFIG_FILE="$APPS_CONFIG_DIR/sandworm.json"
 SETUP_MARKER_APPS="$APPS_CONFIG_DIR/setup"
 SETUP_MARKER_JUPYTER="$JUPYTER_CONFIG_DIR/setup"
@@ -163,8 +163,8 @@ setup_jupyter() {
 }
 EOF
     
-    chown -R jupyteruser:jupyteruser /home/jupyteruser
-    chmod -R 700 /home/jupyteruser
+    chown -R jupyteruser:jupyteruser /home/sandwormuser
+    chmod -R 700 /home/sandwormuser
     
     log "Jupyter configuration created"
 }

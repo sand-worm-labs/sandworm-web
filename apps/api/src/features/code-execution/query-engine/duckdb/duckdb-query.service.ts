@@ -1,71 +1,62 @@
 import { Injectable } from '@nestjs/common';
-import { PythonQueryRunnerService } from '../python/python-query-runner.service';
 import { RunQueryResult, SuccessRunQueryResult } from '@sandworm/types';
 import { PythonExecutorService } from '../../python-executor.service';
+import { PythonQueryRunnerService } from '../python/python-query-runner.service';
 
 @Injectable()
 export class DuckDBQueryService {
-    constructor(
-        private readonly pythonExecutor: PythonExecutorService,
-        private readonly queryRunner: PythonQueryRunnerService,
-    ) { }
+  constructor(
+    private readonly pythonExecutor: PythonExecutorService,
+    private readonly queryRunner: PythonQueryRunnerService,
+  ) {}
 
-    async execute(
-        workspaceId: string,
-        sessionId: string,
-        queryId: string,
-        dataframeName: string,
-        sql: string,
-        resultOptions: { pageSize: number; dashboardPageSize: number },
-        onProgress: (result: SuccessRunQueryResult) => void,
-    ): Promise<[Promise<RunQueryResult>, () => Promise<void>]> {
-        const rendered = await this.pythonExecutor.renderJinja(
-            sql,
-        );
+  async execute(
+    workspaceId: string,
+    sessionId: string,
+    queryId: string,
+    dataframeName: string,
+    sql: string,
+    resultOptions: { pageSize: number; dashboardPageSize: number },
+    onProgress: (result: SuccessRunQueryResult) => void,
+  ): Promise<[Promise<RunQueryResult>, () => Promise<void>]> {
+    const rendered = await this.pythonExecutor.renderJinja(sql);
 
-        if (typeof rendered !== 'string') {
-            return [
-                Promise.resolve({ ...rendered, type: 'python-error' }),
-                async () => { },
-            ];
-        }
-
-        const queryCode = this.buildQueryCode(
-            queryId,
-            rendered,
-            resultOptions,
-        );
-
-        const loadCode = this.buildLoadDataframeCode(
-            queryId,
-            dataframeName,
-        );
-
-        const flagFilePath = `/home/jupyteruser/.sandworm/query-${queryId}.flag`;
-
-        return this.queryRunner.runQuery(
-            workspaceId,
-            sessionId,
-            queryCode,
-            loadCode,
-            flagFilePath,
-            onProgress,
-        );
+    if (typeof rendered !== 'string') {
+      return [
+        Promise.resolve({ ...rendered, type: 'python-error' }),
+        async () => {},
+      ];
     }
 
-    buildQueryCode(
-        queryId: string,
-        sql: string,
-        resultOptions: { pageSize: number; dashboardPageSize: number },
-    ): string {
-        return `
+    const queryCode = this.buildQueryCode(queryId, rendered, resultOptions);
+
+    const loadCode = this.buildLoadDataframeCode(queryId, dataframeName);
+
+    const flagFilePath = `/home/sandwormuser/.sandworm/query-${queryId}.flag`;
+
+    return this.queryRunner.runQuery(
+      workspaceId,
+      sessionId,
+      queryCode,
+      loadCode,
+      flagFilePath,
+      onProgress,
+    );
+  }
+
+  buildQueryCode(
+    queryId: string,
+    sql: string,
+    resultOptions: { pageSize: number; dashboardPageSize: number },
+  ): string {
+    return `
 def _sandworm_make_duckdb_query():
     import duckdb, json, pandas as pd, os
 
-    base = "/home/jupyteruser/.sandworm/query-${queryId}"
+    base = "/home/sandwormuser/.sandworm/query-${queryId}"
     parquet = base + ".parquet.gzip"
     csv = base + ".csv"
-    os.makedirs("/home/jupyteruser/.sandworm", exist_ok=True)
+    os.makedirs("/home/sandwormuser/.sandworm", exist_ok=True)
 
     page_size = ${resultOptions.pageSize}
     dashboard_page_size = ${resultOptions.dashboardPageSize}
@@ -111,34 +102,34 @@ def _sandworm_make_duckdb_query():
 
 _sandworm_make_duckdb_query()
 `;
-    }
+  }
 
-    buildLoadDataframeCode(queryId: string, dataframeName: string): string {
-        return `
+  buildLoadDataframeCode(queryId: string, dataframeName: string): string {
+    return `
 import pandas as pd, time
 
 for _ in range(3):
     try:
-        ${dataframeName} = pd.read_parquet("/home/jupyteruser/.sandworm/query-${queryId}.parquet.gzip")
+        ${dataframeName} = pd.read_parquet("/home/sandwormuser/.sandworm/query-${queryId}.parquet.gzip")
         break
     except:
         time.sleep(1)
 `;
-    }
+  }
 
-    buildReadPageCode(
-        queryId: string,
-        dataframeName: string,
-        pageOptions: any,
-        sort: any,
-    ): string {
-        return `
+  buildReadPageCode(
+    queryId: string,
+    dataframeName: string,
+    pageOptions: any,
+    sort: any,
+  ): string {
+    return `
 import json, pandas as pd
 sort_config = json.loads(${JSON.stringify(JSON.stringify(sort))})
 
 if "${dataframeName}" not in globals():
     try:
-        ${dataframeName} = pd.read_parquet("/home/jupyteruser/.sandworm/query-${queryId}.parquet.gzip")
+        ${dataframeName} = pd.read_parquet("/home/sandwormuser/.sandworm/query-${queryId}.parquet.gzip")
     except:
         print(json.dumps({"type": "not-found"}))
         raise SystemExit
@@ -165,5 +156,5 @@ print(json.dumps({
     "count": len(df),
 }))
 `;
-    }
+  }
 }
