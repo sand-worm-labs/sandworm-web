@@ -188,11 +188,10 @@ export const SearchBar = () => {
                   type="button"
                   key={filter.key}
                   onClick={() => setActiveFilter(filter.key)}
-                  className={`px-3 py-0.5 rounded-md text-[0.75rem] font-medium transition-colors ${
-                    activeFilter === filter.key
+                  className={`px-3 py-0.5 rounded-md text-[0.75rem] font-medium transition-colors ${activeFilter === filter.key
                       ? "bg-[#A308F0]  text-white"
                       : "dark:bg-[#21262d] dark:text-gray-300 dark:hover:bg-[#30363d]  text-[#1A1A1A] hover:bg-gray-200 border border-[#E3E5E8] dark:border-[#262A30]"
-                  }`}
+                    }`}
                 >
                   {filter.label}
                 </button>
@@ -219,11 +218,10 @@ export const SearchBar = () => {
                   <button
                     type="button"
                     key={item.id}
-                    className={`w-full px-4 py-2 flex items-center gap-3 transition-colors ${
-                      highlightIndex === globalIndex
+                    className={`w-full px-4 py-2 flex items-center gap-3 transition-colors ${highlightIndex === globalIndex
                         ? "dark:bg-[#161b22] bg-gray-100"
                         : "dark:hover:bg-[#161b22] hover:bg-gray-50"
-                    }`}
+                      }`}
                     onMouseEnter={() => setHighlightIndex(globalIndex)}
                     onClick={() => {
                       setQuery(item.title);
@@ -266,11 +264,10 @@ export const SearchBar = () => {
                   <button
                     type="button"
                     key={item.id}
-                    className={`w-full px-4 py-2 flex items-center gap-3 transition-colors ${
-                      highlightIndex === globalIndex
+                    className={`w-full px-4 py-2 flex items-center gap-3 transition-colors ${highlightIndex === globalIndex
                         ? "dark:bg-[#161b22] bg-gray-100"
                         : "dark:hover:bg-[#161b22] hover:bg-gray-50"
-                    }`}
+                      }`}
                     onMouseEnter={() => setHighlightIndex(globalIndex)}
                     onClick={() => {
                       setQuery(item.title);
@@ -313,11 +310,10 @@ export const SearchBar = () => {
                   <button
                     type="button"
                     key={item.id}
-                    className={`w-full px-4 py-2 flex items-center gap-3 transition-colors ${
-                      highlightIndex === globalIndex
+                    className={`w-full px-4 py-2 flex items-center gap-3 transition-colors ${highlightIndex === globalIndex
                         ? "dark:bg-[#161b22] bg-gray-100"
                         : "dark:hover:bg-[#161b22] hover:bg-gray-50"
-                    }`}
+                      }`}
                     onMouseEnter={() => setHighlightIndex(globalIndex)}
                     onClick={() => {
                       setQuery(item.title);
