@@ -1,15 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Sun,
-  Grid2X2,
-  List,
-  MoreHorizontal,
-  GitBranch,
-  Clock,
-  Sparkles,
-} from "lucide-react";
+import { Grid2X2, List, GitBranch, Clock } from "lucide-react";
+import { SparkleAI } from "@/components/Assets/SparkleAI";
 import { cn } from "@sandworm/ui/lib/utils";
 
 // =====================================
@@ -76,28 +69,25 @@ const AIAssistantButton = ({ onClick }: { onClick?: () => void }) => (
   <button
     type="button"
     onClick={onClick}
-    className={cn(
-      "p-2.5 rounded-xl transition-all flex items-center justify-center",
-      "bg-gradient-to-br from-[#A308F0]/10 via-[#005DE7]/10 to-[#00D4AA]/10",
-      "border border-[#A308F0]/30 dark:border-[#A308F0]/40",
-      "hover:from-[#A308F0]/20 hover:via-[#005DE7]/20 hover:to-[#00D4AA]/20",
-      "hover:border-[#A308F0]/50 hover:shadow-lg hover:shadow-[#A308F0]/10",
-      "group"
-    )}
+    className=""
     aria-label="AI Assistant"
     title="AI Assistant"
   >
-    <Sparkles
-      size={20}
-      className="text-[#A308F0] group-hover:scale-110 transition-transform"
-    />
+    <SparkleAI />
   </button>
 );
 
 // =====================================
+// Props
+// =====================================
+interface NotebookPanelProps {
+  sidebarContent?: React.ReactNode;
+}
+
+// =====================================
 // Notebook Panel Component
 // =====================================
-export const NotebookPanel = () => {
+export const NotebookPanel = ({ sidebarContent }: NotebookPanelProps) => {
   const [activeItem, setActiveItem] = useState<string | null>(null);
 
   // Panel configuration - easily extensible
@@ -114,16 +104,6 @@ export const NotebookPanel = () => {
           id: "list-view",
           icon: List,
           label: "List View",
-        },
-      ],
-    },
-    {
-      id: "actions",
-      items: [
-        {
-          id: "more-options",
-          icon: MoreHorizontal,
-          label: "More Options",
         },
       ],
     },
@@ -174,6 +154,16 @@ export const NotebookPanel = () => {
             )}
           </div>
         ))}
+
+        {/* Sidebar Content (EllipsisDropdown) */}
+        {sidebarContent && (
+          <>
+            <div className="py-2">
+              <PanelDivider />
+            </div>
+            {sidebarContent}
+          </>
+        )}
       </div>
 
       {/* Spacer */}
