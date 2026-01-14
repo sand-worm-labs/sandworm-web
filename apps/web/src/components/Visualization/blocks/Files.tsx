@@ -4,7 +4,6 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ExclamationTriangleIcon,
   ChevronDoubleRightIcon,
-  CloudArrowUpIcon,
   DocumentPlusIcon,
   TrashIcon,
   MagnifyingGlassIcon,
@@ -21,7 +20,6 @@ import {
   getLayout,
 } from "@sandworm/editor";
 import {
-  FolderIcon,
   InformationCircleIcon,
   CloudArrowUpIcon as CloudArrowUpIconSolid,
 } from "@heroicons/react/20/solid";
@@ -34,6 +32,8 @@ import { useFiles } from "../hooks/useFiles";
 import { Tooltip } from "./ToolTips";
 import Spin from "./Spin";
 import { UploadIcon } from "@/components/Assets/UploadIcon";
+import { Trash } from "@/components/Assets/Trash";
+import { Info } from "@/components/Assets/Info";
 
 function formatBytes(bytes: number, decimals = 2) {
   if (bytes === 0) return "0 bytes";
@@ -143,7 +143,7 @@ function FileItem(props: FileItemProps) {
   }, [props.onDelete, props.file]);
 
   return (
-    <div className="px-4 py-3 font-primary">
+    <div className="px-4 py-3 font-primary border border-[#E9ECEF] rounded-xl my-2 bg-[#FBFBFB]">
       <div>
         <div className="flex justify-between pb-0.5">
           <div
@@ -159,11 +159,11 @@ function FileItem(props: FileItemProps) {
               onClick={onRemove}
               disabled={props.isDeleting}
             >
-              {props.isDeleting ? <Spin /> : <TrashIcon className="w-4 h-4" />}
+              {props.isDeleting ? <Spin /> : <Trash />}
             </button>
           </div>
         </div>
-        <div className="flex items-center gap-x-2 font-medium text-gray-400 text-xs">
+        <div className="flex items-center gap-x-2 font-medium text-gray-[#6C757D] text-xs">
           {formatBytes(props.file.size)}
           <svg viewBox="0 0 2 2" className="h-0.5 w-0.5 fill-current">
             <circle cx={1} cy={1} r={1} />
@@ -171,7 +171,7 @@ function FileItem(props: FileItemProps) {
           {props.file.mimeType ?? "unknown"}
         </div>
       </div>
-      <div className="flex pt-3 text-xs font-medium">
+      <div className="flex pt-3 text-[0.7rem] font-medium space-x-2.5">
         <Tooltip
           position="manual"
           title=""
@@ -181,14 +181,13 @@ function FileItem(props: FileItemProps) {
         >
           <button
             type="button"
-            className="text-gray-500 hover:text-gray-400 disabled:hover:text-gray-500 disabled:cursor-not-allowed"
+            className="text-[#6C757D] hover:text-gray-400 disabled:hover:text-gray-500 disabled:cursor-not-allowed bg-[#F7E8FF] rounded-md px-1.5 py-0.5"
             onClick={onUseInPython}
             disabled={props.isDeleting || !props.canUse}
           >
             Use in Python
           </button>
         </Tooltip>
-        <span className="text-gray-300 px-1">/</span>
         <Tooltip
           title=""
           message="You must be editing a notebook to use this file."
@@ -197,17 +196,16 @@ function FileItem(props: FileItemProps) {
         >
           <button
             type="button"
-            className="text-gray-500 hover:text-gray-400 disabled:hover:text-gray-500 disabled:cursor-not-allowed"
+            className="text-[#6C757D] hover:text-gray-400 disabled:hover:text-gray-500 disabled:cursor-not-allowed  bg-[#F7E8FF] rounded-md px-1.5 py-0.5"
             onClick={onUseInSQL}
             disabled={props.isDeleting || !props.canUse}
           >
             Query in SQL
           </button>
         </Tooltip>
-        <span className="text-gray-300 px-1">/</span>
         <div
           className={clsx(
-            "text-gray-500",
+            "text-[#6C757D]  bg-[#F7E8FF] rounded-md px-1.5 py-0.5",
             props.isDeleting ? "cursor-not-allowed" : "hover:text-gray-400"
           )}
         >
@@ -215,8 +213,9 @@ function FileItem(props: FileItemProps) {
             "Download"
           ) : (
             <Link
-              href={`${NEXT_PUBLIC_API_URL()}/workspaces/${props.workspaceId
-                }/files/file?path=${encodeURIComponent(props.file.relCwdPath)}`}
+              href={`${NEXT_PUBLIC_API_URL()}/workspaces/${
+                props.workspaceId
+              }/files/file?path=${encodeURIComponent(props.file.relCwdPath)}`}
               target="_blank"
             >
               Download
@@ -322,7 +321,7 @@ function ReplaceDialog(props: ReplaceDialogProps) {
           enterTo="opacity-100"
           leave="ease-in duration-200"
           leaveFrom="opacity-100"
-          leaveTo="opacity-0"
+          leaveTo="opacity-0 font-primary"
         >
           <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
         </Transition.Child>
@@ -338,7 +337,7 @@ function ReplaceDialog(props: ReplaceDialogProps) {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg sm:p-6 data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95">
+              <Dialog.Panel className="relative transform overflow-hidden rounded-xl bg-white px-4 pb-4 pt-5 text-left  transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg sm:p-6 data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95 border-[#E9ECEF]">
                 <div>
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100">
                     <ExclamationTriangleIcon
@@ -350,7 +349,7 @@ function ReplaceDialog(props: ReplaceDialogProps) {
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
                         File{" "}
-                        <span className="font-mono bg-gray-100 px-1">
+                        <span className="font-primary bg-gray-100 px-1">
                           {fileName}
                         </span>{" "}
                         already exists. Do you want to replace it?
@@ -362,14 +361,14 @@ function ReplaceDialog(props: ReplaceDialogProps) {
                   <button
                     type="button"
                     onClick={props.onReplaceYes}
-                    className="mt-3 inline-flex w-full justify-center rounded-sm bg-white px-3 py-2 text-sm text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
+                    className="mt-3 inline-flex w-full justify-center rounded-lg bg-[#A308F0] px-3 py-2 text-sm text-white  hover:bg-[#A308F0] sm:col-start-1 sm:mt-0 font-primary"
                   >
                     Yes
                   </button>
                   <button
                     type="button"
                     onClick={props.onReplaceAll}
-                    className="mt-3 inline-flex w-full justify-center rounded-sm bg-white px-3 py-2 text-sm text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-2 sm:mt-0"
+                    className="mt-3 inline-flex w-full justify-center rounded-lg bg-white px-3 py-2 text-sm text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-2 sm:mt-0 font-primary"
                   >
                     Yes to all
                   </button>
@@ -377,7 +376,7 @@ function ReplaceDialog(props: ReplaceDialogProps) {
                     type="button"
                     data-autofocus
                     onClick={props.onReplaceNo}
-                    className="mt-3 inline-flex w-full justify-center rounded-sm bg-white px-3 py-2 text-sm text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-3 sm:mt-0"
+                    className="mt-3 inline-flex w-full justify-center rounded-lg bg-white px-3 py-2 text-sm text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-3 sm:mt-0 font-primary"
                   >
                     No
                   </button>
@@ -672,21 +671,21 @@ file`;
                   active
                   tooltipClassname="w-44"
                 >
-                  <InformationCircleIcon className="w-4 h-4 text-gray-300" />
+                  <Info />
                 </Tooltip>
               </div>
-              <div className="px-4 py-0 flex items-center border-b dark:border-[#262A30] border-gray-200 group focus-within:border-blue-300">
-                <MagnifyingGlassIcon className="h-3.5 w-3.5 text-gray-400 group-focus-within:text-blue-500" />
+              <div className="px-4 py-0 flex items-center border-b dark:border-[#262A30] border-gray-200 group focus-within:border-[#7104A8]">
+                <MagnifyingGlassIcon className="h-4 w-4 text-[#868E96] group-focus-within:text-[#7104A8]" />
                 <input
                   type="text"
                   placeholder="Search..."
-                  className="w-full h-8 border-0 placeholder-gray-400 text-xs text-gray-600 focus:outline-none focus:ring-0 pl-2"
+                  className="w-full h-8 border-0 placeholder-[#868E96] text-sm text-gray-600 focus:outline-none focus:ring-0 pl-2"
                   onChange={e => setSearch(e.target.value)}
                   value={search}
                 />
               </div>
               {actualFiles.length > 0 ? (
-                <ul className="flex-1 divide-y divide-solid overflow-y-auto">
+                <ul className="flex-1  overflow-y-auto px-3">
                   {actualFiles
                     .filter(f => !f.isDirectory)
                     .map(file => (
