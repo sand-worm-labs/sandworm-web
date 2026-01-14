@@ -1,23 +1,20 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { CurrentUser } from '@sandworm/graphql';
+import { Args, Query, Mutation, Resolver } from '@nestjs/graphql';
 import { FileService } from './file.service';
+import { ListFilesInput, DeleteFileInput } from './dto/file.dto';
 import { SandwormFile } from './model/file.model';
-import {
-  ListFilesInput,
-  GetFileInput,
-  DeleteFileInput,
-} from './dto/file.dto';
 
 @Resolver(() => SandwormFile)
 export class FileResolver {
-  constructor(private readonly fileService: FileService) {}
+  constructor(private readonly fileService: FileService) { }
 
   @Query(() => [SandwormFile], {
     name: 'listFiles',
     description: 'List all files in a workspace',
   })
-  async listFiles(@Args('input') input: ListFilesInput): Promise<SandwormFile[]> {
-    return this.fileService.listFiles(input);
+  async listFiles(
+    @Args('input', { type: () => ListFilesInput }) input: ListFilesInput,
+  ): Promise<SandwormFile[]> {
+    return this.fileService.listFiles({ workspaceId: input.workspaceId, path: input.path })
   }
 
   @Query(() => Boolean, {
@@ -25,8 +22,8 @@ export class FileResolver {
     description: 'Check if a file exists',
   })
   async fileExists(
-    @Args('workspaceId') workspaceId: string,
-    @Args('fileName') fileName: string,
+    @Args('workspaceId', { type: () => String }) workspaceId: string,
+    @Args('fileName', { type: () => String }) fileName: string,
   ): Promise<boolean> {
     return this.fileService.fileExists(workspaceId, fileName);
   }
@@ -36,13 +33,9 @@ export class FileResolver {
     description: 'Delete a file from the workspace',
   })
   async deleteFile(
-    @Args('input') input: DeleteFileInput,
-    @CurrentUser('id') userId: string,
+    @Args('input', { type: () => DeleteFileInput }) input: DeleteFileInput,
   ): Promise<boolean> {
-    return this.fileService.deleteFile(input);
+    await this.fileService.deleteFile({ workspaceId: input.workspaceId, path: input.path });
+    return true;
   }
-
-  // Note: File upload and download would typically be handled via REST endpoints
-  // due to multipart/form-data and streaming requirements
-  // See apps/api/src/v1/workspaces/workspace/files.ts for REST implementation
 }
