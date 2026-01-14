@@ -1,7 +1,7 @@
 "use client";
 
-import { LayoutGrid, List } from "lucide-react";
 import { Button } from "@sandworm/ui/components/button";
+import { PiSquareSplitVerticalFill, PiListThin } from "react-icons/pi";
 
 import { cn } from "@/lib/utils";
 
@@ -14,17 +14,17 @@ interface ViewControlProps {
 
 export function ViewControl({ viewMode, onViewModeChange }: ViewControlProps) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-1.5">
       <Button
         variant="ghost"
         size="icon"
         onClick={() => onViewModeChange("grid")}
         className={cn(
           "h-8 w-8 rounded-md",
-          viewMode === "grid" && "bg-accent text-[#A6554D]"
+          viewMode === "grid" && "bg-accent text-[#A308F0]"
         )}
       >
-        <LayoutGrid className="h-4 w-4" strokeWidth={2} />
+        <PiSquareSplitVerticalFill className="text-xl" />
       </Button>
 
       <Button
@@ -33,10 +33,10 @@ export function ViewControl({ viewMode, onViewModeChange }: ViewControlProps) {
         onClick={() => onViewModeChange("list")}
         className={cn(
           "h-8 w-8 rounded-md",
-          viewMode === "list" && "bg-accent text-[#A6554D]"
+          viewMode === "list" && "bg-accent text-[#A308F0]"
         )}
       >
-        <List className="h-5 w-5" strokeWidth={1.5} />
+        <PiListThin className="text-xl" />
       </Button>
     </div>
   );
