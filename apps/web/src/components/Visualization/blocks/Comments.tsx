@@ -98,6 +98,8 @@ export default function Comments({
                         <Image
                           src={comment.user.picture}
                           alt=""
+                          width={20}
+                          height={20}
                           className="relative h-5 w-5 flex-none rounded-full bg-gray-50"
                           referrerPolicy="no-referrer"
                         />
@@ -136,6 +138,8 @@ export default function Comments({
                 <Image
                   src={session.user?.avater}
                   alt=""
+                  width={20}
+                  height={20}
                   className="h-6 w-6 flex-none rounded-full bg-gray-50"
                   referrerPolicy="no-referrer"
                 />

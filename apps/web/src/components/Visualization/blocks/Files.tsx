@@ -33,6 +33,7 @@ import { useFiles } from "../hooks/useFiles";
 
 import { Tooltip } from "./ToolTips";
 import Spin from "./Spin";
+import { UploadIcon } from "@/components/Assets/UploadIcon";
 
 function formatBytes(bytes: number, decimals = 2) {
   if (bytes === 0) return "0 bytes";
@@ -58,7 +59,7 @@ function DragOverlay({ isDragActive }: { isDragActive: boolean }) {
         "absolute top-0 left-0 w-full h-full flex items-center justify-center"
       )}
     >
-      <div className="absolute top-0 left-0 h-full w-full bg-gray-100 dark:bg-[#0C1015] opacity-70" />
+      <div className="absolute top-0 left-0 h-full w-full bg-[#FBFBFB] dark:bg-[#0C1015] opacity-70" />
       <div className="flex flex-col items-center justify-center gap-y-2 rounded-md bg-gray-50 dark:bg-[#0C1015] p-4 relative border-2 border-dashed border-gray-300 dark:border-[#262A30]">
         <DocumentPlusIcon className="w-10 h-10 text-gray-600" />
         <span className="text-center text-gray-600 font-semibold text-xs">
@@ -604,7 +605,7 @@ file`;
           <ChevronDoubleRightIcon className="w-3 h-3" />
         </button>
         <div
-          className="w-[324px] flex flex-col border-l dark:border-[#262A30] border-gray-200 h-full bg-white dark:bg-black"
+          className="w-[374px] flex flex-col border-l dark:border-[#262A30] border-gray-200 h-full bg-white dark:bg-black"
           {...getRootProps()}
         >
           <div className="flex justify-between border-b p-6 space-x-3 border-[#E9ECEF]">
@@ -660,9 +661,8 @@ file`;
           )}
           {(actualFiles.length > 0 || upload._tag === "idle") && (
             <>
-              <div className="relative flex px-4 py-2 text-xs font-medium border-b border-[#FEFEFF] dark:bg-black dark:border-[#262A30] bg-gray-50 text-gray-600 justify-between">
+              <div className="relative flex px-4 py-2 text-xs font-medium border-b border-[#E9ECEF] dark:bg-black dark:border-[#262A30]  text-[#6C757D] justify-between">
                 <div className="flex gap-x-1">
-                  <FolderIcon className="w-4 h-4 text-gray-400" />
                   <span className="font-mono">/home/jupyteruser</span>
                 </div>
                 <Tooltip
@@ -706,8 +706,11 @@ file`;
               ) : (
                 !isDragActive && (
                   <div className="flex-1 p-4">
-                    <div className="flex items-center justify-center h-full text-gray-500 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200 p-8 text-center dark:bg-[#0C1015] dark:border-[#262A30]">
-                      Drag and drop files here to upload them.
+                    <div className="flex items-center flex-col justify-center h-full text-[#868E96] bg-[#FBFBFB] rounded-lg border-2 border-dashed border-[#E9ECEF] p-8 text-center dark:bg-[#0C1015] dark:border-[#262A30]">
+                      <UploadIcon />
+                      <span className="mt-2">
+                        Click or drag and drop files here to upload them
+                      </span>
                     </div>
                   </div>
                 )

@@ -22,8 +22,8 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
     <div
       className={`${
         viewMode === "detailed"
-          ? "bg-background "
-          : "border border-[#D4DCDF] rounded-lg bg-card  transition-shadow mb-1 dark:border-[#262A30] "
+          ? " "
+          : "border-b border-[#E9ECEF] pb-3  transition-shadow mb-1 dark:border-[#262A30] "
       }`}
     >
       <div className="p-2 px-5">
@@ -31,10 +31,10 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
           {/* ✦ Profile Info ✦ */}
           <div className="flex flex-col items-start gap-2 flex-1 min-w-0">
             <div className="flex space-x-3 items-center">
-              <Avatar className="h-7 w-7 flex-shrink-0">
+              <Avatar className="h-8 w-8 flex-shrink-0">
                 {" "}
                 {query.creator ? (
-                  <AvatarImage src="/img/avatar.svg" />
+                  <AvatarImage src={query.image} />
                 ) : (
                   <AvatarFallback>
                     <img src="/img/avatar.svg" alt="fallback avatar" />
@@ -42,16 +42,19 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
                 )}
               </Avatar>
               <div className="flex-1 min-w-0">
+                <p className="text-[0.8rem] mb-1 text-[#6C757D]">
+                  @{query.creator}
+                </p>
                 <UserProfileHover>
-                  <h3 className="text-[0.9rem] font-medium truncate cursor-pointer hover:underline">
-                    @ {query.creator} - {query.title}
+                  <h3 className="text-[0.95rem] font-medium truncate cursor-pointer hover:underline">
+                    {query.title}
                   </h3>
                 </UserProfileHover>
+                <p className="text-xs  text-[#6C757D] ">
+                  Created {query.createdAt.toLocaleDateString("en-US")}
+                </p>
               </div>
             </div>
-            <p className="text-xs  text-[#6C757D] ">
-              Created {query.createdAt.toLocaleDateString("en-US")}
-            </p>
           </div>
 
           {/* ✦ Actions + tags ✦ */}
@@ -78,7 +81,7 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
                 <Badge
                   key={tag}
                   variant="secondary"
-                  className="text-xs dark:bg-[#262A30] bg-[#E0EAF1] text-muted-foreground dark:text-[#8696A6]"
+                  className="text-xs dark:bg-[#262A30] bg-[#E0EAF1] text-muted-foreground dark:text-[#8696A6] py-0"
                 >
                   #{tag}
                 </Badge>

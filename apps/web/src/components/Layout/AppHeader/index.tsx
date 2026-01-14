@@ -11,10 +11,10 @@ export const AppHeader: FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <header className="bg-background px-8 py-2 flex justify-between items-center border-b border-[#E9ECEF] dark:border-[#262A30] ">
-      <span className="text-lg font-medium">Home</span>
-      <div className="hidden md:block">
+    <header className="bg-[#FBFBFB] dark:bg-[#1A1A1A] px-8 py-2 flex justify-between items-center  border-[#E9ECEF] dark:border-[#262A30] ">
+      <div className="hidden md:flex items-center gap-4">
         <SearchBar />
+        <span className="text-lg font-medium">Home</span>
       </div>
 
       <div className="flex items-center">

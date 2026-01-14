@@ -118,6 +118,16 @@ export const ClaimUsername = () => {
               : "username.sandwormlabs.xyz"}
           </span>
 
+          {/* ═══ Validation Feedback ═══ */}
+          {error && (
+            <p className="text-xs text-destructive font-primary">{error}</p>
+          )}
+          {status === "available" && (
+            <p className="text-xs text-green-500 font-primary">
+              Username is available!
+            </p>
+          )}
+
           <ul className="text-xs font-primary space-y-1 list-disc pl-4 text-left">
             <li
               className={

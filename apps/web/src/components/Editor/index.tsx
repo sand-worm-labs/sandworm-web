@@ -46,6 +46,7 @@ import {
   getBlockFlatPosition,
 } from "@sandworm/editor";
 import type { DataFrame } from "@sandworm/types";
+import RunAllV2 from "../Visualization/blocks/RunAllV2";
 
 import {
   Bars3CenterLeftIcon,
@@ -1689,7 +1690,7 @@ const Editor = (props: Props) => {
         </div>
       )}
 
-      {/*       {props.role !== "viewer" && props.userId && (
+      {props.role !== "viewer" && props.userId && (
         <RunAllV2
           disabled={false}
           yDoc={props.yDoc}
@@ -1697,7 +1698,7 @@ const Editor = (props: Props) => {
           userId={props.userId}
           executionQueue={props.executionQueue}
         />
-      )} */}
+      )}
 
       <SimpleBar
         id="editor-scrollview"

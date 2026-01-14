@@ -304,6 +304,42 @@ function PrivateDocumentPageInner(
     );
   }, [router]);
 
+  // ⬢ Sidebar content for NotebookPanel
+  // =====================================
+  const sidebarContent = useMemo(
+    () => (
+      <EllipsisDropdown
+        onToggleSchedules={onToggleSchedules}
+        onToggleSnapshots={onToggleSnapshots}
+        onToggleComments={onToggleComments}
+        onToggleFullScreen={onToggleFullScreen}
+        onToggleFiles={onToggleFiles}
+        onToggleSchemaExplorer={onToggleSchemaExplorerEllipsis}
+        onToggleReusableComponents={onToggleReusableComponents}
+        onToggleShortcuts={onToggleShortcuts}
+        onTogglePageSettings={onTogglePageSettings}
+        isViewer={isViewer}
+        isDeleted={isDeleted}
+        isFullScreen={isFullScreen}
+        position="sidebar"
+      />
+    ),
+    [
+      onToggleSchedules,
+      onToggleSnapshots,
+      onToggleComments,
+      onToggleFullScreen,
+      onToggleFiles,
+      onToggleSchemaExplorerEllipsis,
+      onToggleReusableComponents,
+      onToggleShortcuts,
+      onTogglePageSettings,
+      isViewer,
+      isDeleted,
+      isFullScreen,
+    ]
+  );
+
   const topBarContent = (
     <div className="flex items-center w-full justify-between gap-x-6">
       <div className="w-full overflow-hidden flex items-center gap-x-1.5 text-sm text-gray-400 dark:text-[#868E96] font-primary">
@@ -412,6 +448,7 @@ function PrivateDocumentPageInner(
       topBarClassname={props.isApp ? "bg-gray-50 " : undefined}
       topBarContent={topBarContent}
       user={props.user}
+      sidebarContent={sidebarContent}
       hideChat={
         props.isApp || props?.user?.role?.[props.workspaceId] === "viewer"
       }
