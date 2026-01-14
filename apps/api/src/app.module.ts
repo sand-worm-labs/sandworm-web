@@ -93,7 +93,6 @@ const graphqlModule = GraphQLModule.forRootAsync<ApolloDriverConfig>({
       includeStacktraceInErrorResponses: isLocal || isDevelopment,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
-
       // ✅ Enable introspection
       introspection: true,
 

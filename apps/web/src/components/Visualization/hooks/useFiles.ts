@@ -83,7 +83,7 @@ export const useFiles = (
      ======================================== */
 
   const { data, refetch } = useListFilesQuery({
-    variables: { input: { workspaceId } },
+    variables: { input: { path: "./", workspaceId } },
     pollInterval:
       refreshInterval && refreshInterval > 0 ? refreshInterval : undefined,
   });
