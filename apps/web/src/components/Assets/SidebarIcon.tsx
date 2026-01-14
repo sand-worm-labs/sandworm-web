@@ -23,6 +23,27 @@ export const SidebarIcon = () => {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
+      <path
+        d="M3 7.5H5.25"
+        stroke="#868E96"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M3 10.5H5.25"
+        stroke="#868E96"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M3 13.5H5.25"
+        stroke="#868E96"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 };
