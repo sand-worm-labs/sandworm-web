@@ -24,6 +24,10 @@ import {
   CloudArrowUpIcon as CloudArrowUpIconSolid,
 } from "@heroicons/react/20/solid";
 
+import { UploadIcon } from "@/components/Assets/UploadIcon";
+import { Trash } from "@/components/Assets/Trash";
+import { Info } from "@/components/Assets/Info";
+
 import type { UploadResult, UploadFile } from "../hooks/useFiles";
 import { NEXT_PUBLIC_API_URL } from "../utils/env";
 import { useEnvironmentStatus } from "../hooks/useEnvironmentStatus";
@@ -31,9 +35,6 @@ import { useFiles } from "../hooks/useFiles";
 
 import { Tooltip } from "./ToolTips";
 import Spin from "./Spin";
-import { UploadIcon } from "@/components/Assets/UploadIcon";
-import { Trash } from "@/components/Assets/Trash";
-import { Info } from "@/components/Assets/Info";
 
 function formatBytes(bytes: number, decimals = 2) {
   if (bytes === 0) return "0 bytes";
@@ -662,7 +663,7 @@ file`;
             <>
               <div className="relative flex px-4 py-2 text-xs font-medium border-b border-[#E9ECEF] dark:bg-black dark:border-[#262A30]  text-[#6C757D] justify-between">
                 <div className="flex gap-x-1">
-                  <span className="font-mono">/home/jupyteruser</span>
+                  <span className="font-mono">/home/sandwormuser</span>
                 </div>
                 <Tooltip
                   title=""

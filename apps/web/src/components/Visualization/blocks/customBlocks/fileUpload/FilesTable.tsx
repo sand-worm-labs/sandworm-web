@@ -185,7 +185,7 @@ function FilesTable(props: Props) {
         <div>
           {okFiles} {okFiles < totalFiles ? `out of ${totalFiles} ` : ""}
           {okFiles === 1 ? "file" : "files"} uploaded into{" "}
-          <span className="font-mono">/home/jupyteruser</span>.{" "}
+          <span className="font-mono">/home/sandwormuser</span>.{" "}
           {errFiles > 0 && (
             <>
               {errFiles} {errFiles === 1 ? "error" : "errors"}.
@@ -210,7 +210,7 @@ function FilesTable(props: Props) {
               <span className="text-white">These files are in your disk.</span>
               <span className="text-gray-400">
                 Your files are available in your filesystem at
-                /home/jupyteruser. Use this path in your Python code to read
+                /home/sandwormuser. Use this path in your Python code to read
                 them.
               </span>
             </div>{" "}
