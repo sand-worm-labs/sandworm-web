@@ -790,8 +790,8 @@ function SQLBlock(props: Props) {
             !(isResultHidden || !result) &&
               !isCodeHidden &&
               "border-b border-gray-200 dark:border-[#262A30]",
-            (isResultHidden || !result) && !isCodeHidden && "rounded-b-md",
-            (isResultHidden || !result) && isCodeHidden && "rounded-b-md"
+            (isResultHidden || !result) && !isCodeHidden && "rounded-b-2xl",
+            (isResultHidden || !result) && isCodeHidden && "rounded-b-2xl"
           )}
         >
           <div

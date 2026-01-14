@@ -19,6 +19,7 @@ import CommandPalette from "./blocks/commandPalette";
 import { FeaturesDialog } from "./blocks/SubscriptionBadge";
 import PagePath from "./blocks/PagePath";
 import DragLayer from "./blocks/DragLayer";
+import NotebookPanel from "../Layout/NotebookPanel";
 
 interface Props {
   children: React.ReactNode;
@@ -142,7 +143,7 @@ export default function Layout({
               {children}
             </div>
           </ResizablePanel>
-          {!hideChat && isChatOpen && (
+          {/*   {!hideChat && isChatOpen && (
             <>
               <ResizableHandle withHandle />
 
@@ -156,7 +157,8 @@ export default function Layout({
                 <MiniChat onClose={() => setIsChatOpen(false)} />
               </ResizablePanel>
             </>
-          )}
+          )} */}
+          <NotebookPanel />
         </ResizablePanelGroup>
       </main>
     </div>
