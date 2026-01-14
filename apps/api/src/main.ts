@@ -27,7 +27,7 @@ import { GlobalExceptionFilter } from './core/filters/global-exception.filter';
 import { AuthGuard } from './core/guards/auth.guard';
 import { setupSwagger } from './common/utils/setup-swagger';
 import { AuthGraphqlService } from './features/auth/graphql/auth-graphql.service';
-
+import multipart from '@fastify/multipart';
 
 async function bootstrap() {
   const fastifyAdapter = new FastifyAdapter({
@@ -75,6 +75,15 @@ async function bootstrap() {
     }, new Map());
   });
 
+  fastifyAdapter.getInstance().addContentTypeParser(
+    ["application/octet-stream"],
+    { parseAs: 'buffer' },
+    (req, body, done) => {
+      done(null, body);
+    },
+  );
+
+
   // Security headers
   const devContentSecurityPolicy = {
     directives: {
@@ -118,6 +127,7 @@ async function bootstrap() {
       connectSrc: ["'self'", 'https://sandbox.embed.apollographql.com'],
     },
   };
+  app.useGlobalPipes(new ValidationPipe());
 
   app.register(helmet, {
     contentSecurityPolicy: isProduction ? undefined : devContentSecurityPolicy,
@@ -140,7 +150,12 @@ async function bootstrap() {
   app.enableCors({
     origin: isProduction ? origins : 'http://localhost:3000',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'X-File-Name',
+      'X-File-Size',
+    ],
     credentials: true,
   });
 

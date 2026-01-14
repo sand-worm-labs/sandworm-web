@@ -132,12 +132,18 @@ importers:
       '@as-integrations/fastify':
         specifier: ^3.0.0
         version: 3.1.0(@apollo/server@5.0.0(graphql@16.11.0))(fastify@5.4.0)
+      '@blazity/nest-file-fastify':
+        specifier: ^1.0.0
+        version: 1.0.0
       '@fastify/compress':
         specifier: ^8.1.0
         version: 8.1.0
       '@fastify/helmet':
         specifier: ^13.0.2
         version: 13.0.2
+      '@fastify/multipart':
+        specifier: ^9.3.0
+        version: 9.3.0
       '@fastify/static':
         specifier: ^8.3.0
         version: 8.3.0
@@ -234,6 +240,9 @@ importers:
       fastify:
         specifier: 5.4.0
         version: 5.4.0
+      fastify-multer:
+        specifier: ^2.0.3
+        version: 2.0.3
       google-auth-library:
         specifier: ^10.5.0
         version: 10.5.0
@@ -2393,6 +2402,9 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@blazity/nest-file-fastify@1.0.0':
+    resolution: {integrity: sha512-Vs3AzEd5/JgT6eakn1pvwV3PeYZCFKpsNglwIqE/U9vLQQSrGpEuMuGUa7263d9X9od3KVrDHJ0n7ouMSzFQUA==}
+
   '@borewit/text-codec@0.1.1':
     resolution: {integrity: sha512-5L/uBxmjaCIX5h8Z+uu+kA9BQLkc/Wl06UGR5ajNRxu+/XjonB5i8JpgFMrPj3LXTCPA0pv8yxUvbUi+QthGGA==}
 
@@ -3106,6 +3118,10 @@ packages:
   '@fastify/ajv-compiler@4.0.3':
     resolution: {integrity: sha512-BlVD6YGUTDEl0b5B8TDrvl7JkFNc6LOSybeMB+/bIDA0xaJlBUTeBaGLgjvaviLRNAcBMIXDCHaxOJ8LdlzEKw==}
 
+  '@fastify/busboy@1.2.1':
+    resolution: {integrity: sha512-7PQA7EH43S0CxcOa9OeAnaeA0oQ+e/DHNPZwSQM9CQHW76jle5+OvLdibRp/Aafs9KXbLhxyjOTkRjWUbQEd3Q==}
+    engines: {node: '>=14'}
+
   '@fastify/busboy@3.2.0':
     resolution: {integrity: sha512-m9FVDXU3GT2ITSe0UaMA5rU3QkfC/UXtCU8y0gSN/GugTqtVldOBWIB5V6V3sbmenVZUIpU6f+mPEO2+m5iTaA==}
 
@@ -3114,6 +3130,9 @@ packages:
 
   '@fastify/cors@11.1.0':
     resolution: {integrity: sha512-sUw8ed8wP2SouWZTIbA7V2OQtMNpLj2W6qJOYhNdcmINTu6gsxVYXjQiM9mdi8UUDlcoDDJ/W2syPo1WB2QjYA==}
+
+  '@fastify/deepmerge@3.1.0':
+    resolution: {integrity: sha512-lCVONBQINyNhM6LLezB6+2afusgEYR4G8xenMsfe+AT+iZ7Ca6upM5Ha8UkZuYSnuMw3GWl/BiPXnLMi/gSxuQ==}
 
   '@fastify/error@4.2.0':
     resolution: {integrity: sha512-RSo3sVDXfHskiBZKBPRgnQTtIqpi/7zhJOEmAxCiBcM7d0uwdGdxLlsCaLzGs8v8NnxIRlfG0N51p5yFaOentQ==}
@@ -3135,6 +3154,9 @@ packages:
 
   '@fastify/middie@9.0.3':
     resolution: {integrity: sha512-7OYovKXp9UKYeVMcjcFLMcSpoMkmcZmfnG+eAvtdiatN35W7c+r9y1dRfpA+pfFVNuHGGqI3W+vDTmjvcfLcMA==}
+
+  '@fastify/multipart@9.3.0':
+    resolution: {integrity: sha512-NpeKipTOjjL1dA7SSlRMrOWWtrE8/0yKOmeudkdQoEaz4sVDJw5MVdZIahsWhvpc3YTN7f04f9ep/Y65RKoOWA==}
 
   '@fastify/proxy-addr@5.1.0':
     resolution: {integrity: sha512-INS+6gh91cLUjB+PVHfu1UqcB76Sqtpyp7bnL+FYojhjygvOPA9ctiD/JDKsyD9Xgu4hUhCSJBPig/w7duNajw==}
@@ -9509,6 +9531,13 @@ packages:
   fastest-stable-stringify@2.0.2:
     resolution: {integrity: sha512-bijHueCGd0LqqNK9b5oCMHc0MluJAx0cwqASgbWMvkO01lCYgIhacVRLcaDz3QnyYIRNJRDwMb41VuT6pHJ91Q==}
 
+  fastify-multer@2.0.3:
+    resolution: {integrity: sha512-QnFqrRgxmUwWHTgX9uyQSu0C/hmVCfcxopqjApZ4uaZD5W9MJ+nHUlW4+9q7Yd3BRxDIuHvgiM5mjrh6XG8cAA==}
+    engines: {node: '>=10.17.0'}
+
+  fastify-plugin@2.3.4:
+    resolution: {integrity: sha512-I+Oaj6p9oiRozbam30sh39BiuiqBda7yK2nmSPVwDCfIBlKnT8YB3MY+pRQc2Fcd07bf6KPGklHJaQ2Qu81TYQ==}
+
   fastify-plugin@5.1.0:
     resolution: {integrity: sha512-FAIDA8eovSt5qcDgcBvDuX/v0Cjz0ohGhENZ/wpc3y+oZCY2afZ9Baqql3g/lC+OHRnciQol4ww7tuthOb9idw==}
 
@@ -14161,6 +14190,9 @@ packages:
   text-decoder@1.2.3:
     resolution: {integrity: sha512-3/o9z3X0X0fTupwsYvR03pJ/DjWuqqrfwBgTQzdWDiQSm9KitAyz/9WqsT2JQW7KV2m+bC2ol/zqpW37NHxLaA==}
 
+  text-decoding@1.0.0:
+    resolution: {integrity: sha512-/0TJD42KDnVwKmDK6jj3xP7E2MG7SHAOG4tyTgyUCRPdHwvkquYNLEQltmdMa3owq3TkddCVcTsoctJI8VQNKA==}
+
   text-extensions@2.4.0:
     resolution: {integrity: sha512-te/NtwBwfiNRLf9Ijqx3T0nlqZiQ2XrrtBvu+cLL8ZRrGkO0NHTug8MYFKyoSrv/sHTaSKfilUkizV6XhxMJ3g==}
     engines: {node: '>=8'}
@@ -16378,6 +16410,8 @@ snapshots:
   '@biomejs/cli-win32-x64@2.2.5':
     optional: true
 
+  '@blazity/nest-file-fastify@1.0.0': {}
+
   '@borewit/text-codec@0.1.1': {}
 
   '@bprogress/core@1.3.4': {}
@@ -17011,6 +17045,10 @@ snapshots:
       ajv-formats: 3.0.1(ajv@8.17.1)
       fast-uri: 3.1.0
 
+  '@fastify/busboy@1.2.1':
+    dependencies:
+      text-decoding: 1.0.0
+
   '@fastify/busboy@3.2.0': {}
 
   '@fastify/compress@8.1.0':
@@ -17028,6 +17066,8 @@ snapshots:
     dependencies:
       fastify-plugin: 5.1.0
       toad-cache: 3.7.0
+
+  '@fastify/deepmerge@3.1.0': {}
 
   '@fastify/error@4.2.0': {}
 
@@ -17057,6 +17097,14 @@ snapshots:
       fastify-plugin: 5.1.0
       path-to-regexp: 8.3.0
       reusify: 1.1.0
+
+  '@fastify/multipart@9.3.0':
+    dependencies:
+      '@fastify/busboy': 3.2.0
+      '@fastify/deepmerge': 3.1.0
+      '@fastify/error': 4.2.0
+      fastify-plugin: 5.1.0
+      secure-json-parse: 4.1.0
 
   '@fastify/proxy-addr@5.1.0':
     dependencies:
@@ -25172,6 +25220,21 @@ snapshots:
 
   fastest-stable-stringify@2.0.2: {}
 
+  fastify-multer@2.0.3:
+    dependencies:
+      '@fastify/busboy': 1.2.1
+      append-field: 1.0.0
+      concat-stream: 2.0.0
+      fastify-plugin: 2.3.4
+      mkdirp: 1.0.4
+      on-finished: 2.4.1
+      type-is: 1.6.18
+      xtend: 4.0.2
+
+  fastify-plugin@2.3.4:
+    dependencies:
+      semver: 7.7.3
+
   fastify-plugin@5.1.0: {}
 
   fastify@5.4.0:
@@ -31207,6 +31270,8 @@ snapshots:
       b4a: 1.7.3
     transitivePeerDependencies:
       - react-native-b4a
+
+  text-decoding@1.0.0: {}
 
   text-extensions@2.4.0: {}
 

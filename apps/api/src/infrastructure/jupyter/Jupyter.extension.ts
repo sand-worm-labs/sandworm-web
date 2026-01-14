@@ -17,52 +17,52 @@ export type FileStat = z.infer<typeof FileStat>
 
 export type ReadFileResult =
   | {
-      _tag: 'success'
-      size: number
-      stream: Readable
-    }
+    _tag: 'success'
+    size: number
+    stream: Readable
+  }
   | {
-      _tag: 'error'
-      reason: 'not-found' | 'is-directory'
-    }
+    _tag: 'error'
+    reason: 'not-found' | 'is-directory'
+  }
 
 export type StatFileResult =
   | {
-      _tag: 'success'
-      file: FileStat
-    }
+    _tag: 'success'
+    file: FileStat
+  }
   | {
-      _tag: 'error'
-      reason: 'is-directory' | 'not-found'
-    }
+    _tag: 'error'
+    reason: 'is-directory' | 'not-found'
+  }
 
 export type ListFilesResult =
   | {
-      _tag: 'success'
-      files: FileStat[]
-    }
+    _tag: 'success'
+    files: FileStat[]
+  }
   | {
-      _tag: 'error'
-      reason: 'not-found' | 'not-directory'
-    }
+    _tag: 'error'
+    reason: 'not-found' | 'not-directory'
+  }
 
 export type WriteFileResult =
   | {
-      _tag: 'success'
-    }
+    _tag: 'success'
+  }
   | {
-      _tag: 'error'
-      reason: 'is-directory'
-    }
+    _tag: 'error'
+    reason: 'is-directory'
+  }
 
 export type DeleteFileResult =
   | {
-      _tag: 'success'
-    }
+    _tag: 'success'
+  }
   | {
-      _tag: 'error'
-      reason: 'not-found' | 'is-directory'
-    }
+    _tag: 'error'
+    reason: 'not-found' | 'is-directory'
+  }
 
 export class SandwormJupyterExtension {
   public constructor(
@@ -70,7 +70,7 @@ export class SandwormJupyterExtension {
     private readonly host: string,
     private readonly port: number | null,
     private readonly token: string
-  ) {}
+  ) { }
 
   private get baseURL(): string {
     if (this.port === null) {
