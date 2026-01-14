@@ -606,7 +606,7 @@ file`;
           <ChevronDoubleRightIcon className="w-3 h-3" />
         </button>
         <div
-          className="w-[324px] flex flex-col border-l dark:border-[#262A30] border-gray-200 h-full bg-white dark:bg-black"
+          className="w-[374px] flex flex-col border-l dark:border-[#262A30] border-gray-200 h-full bg-white dark:bg-black"
           {...getRootProps()}
         >
           <div className="flex justify-between border-b p-6 space-x-3 border-[#E9ECEF]">

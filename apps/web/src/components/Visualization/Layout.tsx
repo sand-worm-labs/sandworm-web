@@ -27,6 +27,7 @@ interface Props {
   topBarClassname?: string;
   topBarContent?: React.ReactNode;
   hideChat?: boolean;
+  sidebarContent?: React.ReactNode;
 }
 
 export default function Layout({
@@ -35,6 +36,7 @@ export default function Layout({
   topBarClassname,
   topBarContent,
   hideChat,
+  sidebarContent,
 }: Props) {
   const [isSearchOpen, setSearchOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(true);
@@ -117,7 +119,6 @@ export default function Layout({
           )}
         >
           <div className="flex w-full">
-            {/* Original expand sidebar button (visible when sidebar is closed) */}
             <button
               type="button"
               className={clsx(
@@ -158,7 +159,7 @@ export default function Layout({
               </ResizablePanel>
             </>
           )} */}
-          <NotebookPanel />
+          <NotebookPanel sidebarContent={sidebarContent} />
         </ResizablePanelGroup>
       </main>
     </div>
