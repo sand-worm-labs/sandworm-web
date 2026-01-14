@@ -3,79 +3,32 @@ import { useEffect, useMemo } from "react";
 
 import useResettableState from "../Visualization/hooks/useResettableState";
 
-const possibleOffset = ["left-1/4", "left-1/2", "left-3/4"];
-
-const getRandomOffset = () => {
-  const randomIndex = Math.floor(Math.random() * possibleOffset.length);
-  return possibleOffset[randomIndex];
-};
-
-const LineSkeleton = () => {
-  const offset = useMemo(() => getRandomOffset(), []);
-  return (
-    <div className="bg-gray-100 h-8 relative">
-      <div className={`absolute ${offset} bg-white w-2 h-full`} />
-    </div>
-  );
-};
-
 const TIMEOUT_TO_SHOW = 200;
 
-type Quote = {
-  quote: string;
-  author: string;
-};
-
-const quotes: Quote[] = [
-  {
-    quote:
-      "If we have data, let’s look at data. If all we have are opinions, let’s go with mine.",
-    author: "Jim Barksdale",
-  },
-  {
-    quote: "The plural of anecdote is not data.",
-    author: "Marc Bekoff",
-  },
-  {
-    quote: "It is a capital mistake to theorize before one has data.",
-    author: `Sherlock Holmes`,
-  },
-  {
-    quote: "The best writing is rewriting.",
-    author: "E.B. White",
-  },
-  {
-    quote: `A lot of problems can be debugged with "well, have you verified this personally?"`,
-    author: "Dalton Caldwell",
-  },
+const rowPatterns = [
+  ["w-full"],
+  ["w-3/4", "w-1/2"],
+  ["w-1/3", "w-2/5", "w-1/4"],
+  ["w-full"],
+  ["w-2/3", "w-3/4"],
+  ["w-1/4", "w-1/2", "w-1/3"],
+  ["w-4/5"],
+  ["w-1/2", "w-2/3"],
+  ["w-2/5", "w-3/5", "w-1/2"],
+  ["w-full"],
+  ["w-3/4", "w-1/3"],
+  ["w-1/3", "w-2/5", "w-1/4"],
 ];
 
-type DidYouKnowProps = {
-  content: React.ReactNode;
-};
-
-const DidYouKnowBlock = ({ content }: DidYouKnowProps) => {
+const SkeletonRow = ({ pattern }: { pattern: string[] }) => {
   return (
-    <div className="flex flex-col items-center justify-center space-y-4 p-2 text-center">
-      <span className="text-[10px] font-bold text-hunter-500 uppercase">
-        Did you know?
-      </span>
-      <div className="text-sm flex flex-col items-center space-y-4 text-neutral-600">
-        {content}
-      </div>
-    </div>
-  );
-};
-
-const QuoteBlock = ({ quote, author }: Quote) => {
-  return (
-    <div className="flex flex-col items-center justify-center space-y-4 p-2">
-      <div className="text-sm flex flex-col items-center space-y-4 text-neutral-600 text-center">
-        <p>{quote}</p>
-      </div>
-      <span className="w-full text-[10px] font-bold text-hunter-500 uppercase text-right">
-        — {author}
-      </span>
+    <div className="flex gap-3 w-full">
+      {pattern.map((width, i) => (
+        <div
+          key={i}
+          className={clsx("h-3.5 bg-gray-100/80 rounded-full", width)}
+        />
+      ))}
     </div>
   );
 };
@@ -84,121 +37,59 @@ interface Props {
   visible: boolean;
 }
 
-export function TitleSkeleton(props: Props) {
-  const [show, setShow] = useResettableState(() => false, [props.visible]);
-  useEffect(() => {
-    if (!props.visible) {
-      return () => {};
-    }
+export function TitleSkeleton({ visible }: Props) {
+  const [show, setShow] = useResettableState(() => false, [visible]);
 
-    const timeout = setTimeout(() => {
-      setShow(true);
-    }, TIMEOUT_TO_SHOW);
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [props.visible, setShow]);
+  useEffect(() => {
+    if (!visible) return;
+    const t = setTimeout(() => setShow(true), TIMEOUT_TO_SHOW);
+    return () => clearTimeout(t);
+  }, [visible, setShow]);
+
+  if (!visible || !show) return null;
 
   return (
-    <div
-      className={clsx(
-        {
-          hidden: !props.visible || !show,
-        },
-        "animate-pulse-dark w-full h-24 bg-gray-100 mb-4"
-      )}
-    />
+    <div className="animate-pulse w-full h-24 bg-gray-100 rounded-lg mb-4" />
   );
 }
 
-const didYouKnows = [
-  <>
-    <p>You can add CSV files to your project by using the file upload block.</p>
-    <p>
-      Add one by typing <code>/upload</code> and pressing <code>Enter</code>.
-    </p>
-  </>,
-  <p>
-    You can invite other users to your workspace using the <code>Users</code>{" "}
-    menu on the bottom left.
-  </p>,
-  <>
-    <p>
-      You can automatically rerun and update your document on a fixed schedule.
-    </p>
-    <p>
-      For that, use the <code>Scheduled runs</code> button on the top right.
-    </p>
-  </>,
-  <>
-    <p>You can use your SQL query results as data frames in Python blocks.</p>
-    <p>
-      For that, use the name on the top right of the SQL block as a variable in
-      your code.
-    </p>
-  </>,
-];
+export function ContentSkeleton({ visible }: Props) {
+  const [show, setShow] = useResettableState(() => false, [visible]);
 
-export function ContentSkeleton(props: Props) {
-  const [show, setShow] = useResettableState(() => false, [props.visible]);
   useEffect(() => {
-    if (!props.visible) {
-      return () => {};
-    }
+    if (!visible) return;
+    const t = setTimeout(() => setShow(true), TIMEOUT_TO_SHOW);
+    return () => clearTimeout(t);
+  }, [visible, setShow]);
 
-    const timeout = setTimeout(() => {
-      setShow(true);
-    }, TIMEOUT_TO_SHOW);
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [props.visible, setShow]);
+  const rows = useMemo(() => {
+    const ROW_HEIGHT = 22; // px incl gap
+    const viewportHeight =
+      typeof window !== "undefined" ? window.innerHeight : 800;
+    const rowsNeeded = Math.ceil(viewportHeight / ROW_HEIGHT) * 2;
 
-  // Generate 20 line skeletons
-  const lines = useMemo(() => {
-    const lineElements = []; // Changed from 'lines'
-    for (let i = 0; i < 20; i++) {
-      lineElements.push(<LineSkeleton key={i} />);
-    }
-    return lineElements;
+    return Array.from({ length: rowsNeeded }).map((_, i) => {
+      const pattern = rowPatterns[i % rowPatterns.length];
+      return <SkeletonRow key={i} pattern={pattern} />;
+    });
   }, []);
 
-  const type = useMemo(() => {
-    const randomIndex = Math.floor(Math.random() * 2);
-    return randomIndex === 0 ? "quote" : "didYouKnow";
-  }, []);
-
-  const content = useMemo(() => {
-    if (type === "quote") {
-      const randomIndex = Math.floor(Math.random() * quotes.length);
-      const quote = quotes[randomIndex];
-      if (!quote) return null;
-      return <QuoteBlock quote={quote.quote} author={quote.author} />;
-    }
-    const randomIndex = Math.floor(Math.random() * didYouKnows.length);
-    const didYouKnow = didYouKnows[randomIndex];
-    if (!didYouKnow) return null;
-    return <DidYouKnowBlock content={didYouKnow} />;
-  }, [type]);
+  if (!visible || !show) return null;
 
   return (
-    <div
-      className={clsx(
-        {
-          hidden: !props.visible || !show,
-        },
-        "flex items-center justify-center w-full h-full"
-      )}
-    >
-      <div className="w-full h-full">
-        <div className="relative">
-          <div className="animate-pulse-dark flex flex-col space-y-2">
-            {lines}
-          </div>
-          <div className="hidden absolute top-[40%] w-2/5 left-1/2 rounded-md bg-white shadow-lg border border-gray-300 p-4 -translate-y-full -translate-x-1/2">
-            {content}
-          </div>
-        </div>
+    <div className="relative w-full min-h-[100dvh] p-6">
+      {/* Skeleton grid */}
+      <div
+        className="
+          animate-pulse
+          grid
+          grid-cols-1
+          lg:grid-cols-2
+          gap-x-8
+          gap-y-3
+        "
+      >
+        {rows}
       </div>
     </div>
   );

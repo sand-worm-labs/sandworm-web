@@ -1,32 +1,37 @@
 import { Injectable } from '@nestjs/common';
+import {
+  AbortErrorRunQueryResult,
+  DataFrame,
+  PythonErrorRunQueryResult,
+  SuccessRunQueryResultV2,
+  SyntaxErrorRunQueryResult,
+  TableSort,
+} from '@sandworm/types';
 import { PythonExecutorService } from '../../python-executor.service';
-import { AbortErrorRunQueryResult, DataFrame, PythonErrorRunQueryResult, SuccessRunQueryResultV2, SyntaxErrorRunQueryResult, TableSort } from '@sandworm/types';
 
 export type ReadDataFramePageResult =
-    | Omit<SuccessRunQueryResultV2, 'queryDurationMs'>
-    | SyntaxErrorRunQueryResult
-    | AbortErrorRunQueryResult
-    | PythonErrorRunQueryResult;
+  | Omit<SuccessRunQueryResultV2, 'queryDurationMs'>
+  | SyntaxErrorRunQueryResult
+  | AbortErrorRunQueryResult
+  | PythonErrorRunQueryResult;
 
 @Injectable()
 export class DataFrameService {
-    constructor(private readonly pythonExecutor: PythonExecutorService) { }
+  constructor(private readonly pythonExecutor: PythonExecutorService) {}
 
-    async rename(from: string, to: string): Promise<void> {
-        const code = `if "${from}" in globals():
+  async rename(from: string, to: string): Promise<void> {
+    const code = `if "${from}" in globals():
     ${to} = ${from}
     del ${from}`;
-        await (
-            await this.pythonExecutor.executeCode(
-                code,
-                () => { },
-                { storeHistory: false },
-            )
-        ).promise;
-    }
+    await (
+      await this.pythonExecutor.executeCode(code, () => {}, {
+        storeHistory: false,
+      })
+    ).promise;
+  }
 
-    async list(): Promise<DataFrame[]> {
-        const code = `
+  async list(): Promise<DataFrame[]> {
+    const code = `
             import pandas as pd, json
             dfs = []
             for k,v in globals().items():
@@ -34,97 +39,97 @@ export class DataFrameService {
                     dfs.append({"name": k})
             print(json.dumps(dfs))
         `;
-        let result: DataFrame[] = [];
+    let result: DataFrame[] = [];
 
-        await (
-            await this.pythonExecutor.executeCode(
-                code,
-                (outputs) => {
-                    for (const o of outputs) {
-                        if (o.type === 'stdio') {
-                            result = JSON.parse(o.text);
-                        }
-                    }
-                },
-                { storeHistory: false },
-            )
-        ).promise;
-
-        return result;
-    }
-
-    private handleStdoutOutput(
-        line: string,
-        result: { value: ReadDataFramePageResult | null },
-        error: { value: Error | null }
-    ): void {
-        const parsed = JSON.parse(line.trim());
-        switch (parsed.type) {
-            case 'success':
-                result.value = parsed;
-                break;
-            case 'not-found':
-                result.value = null;
-                break;
-            default:
-                error.value = new Error('Unexpected output: ' + line);
-        }
-    }
-
-    private handleErrorOutput(
-        output: any,
-        result: { value: ReadDataFramePageResult | null }
-    ): void {
-        result.value = {
-            type: 'python-error',
-            ename: output.ename,
-            evalue: output.evalue,
-            traceback: output.traceback,
-        };
-    }
-
-    private processOutputs(
-        outputs: any[],
-        result: { value: ReadDataFramePageResult | null },
-        error: { value: Error | null }
-    ): void {
-        if (error.value) {
-            return;
-        }
-
-        for (const output of outputs) {
-            if (output.type === 'stdio' && output.name === 'stdout') {
-                const lines = output.text.trim().split('\n');
-                for (const line of lines) {
-                    this.handleStdoutOutput(line, result, error);
-                }
+    await (
+      await this.pythonExecutor.executeCode(
+        code,
+        (outputs) => {
+          for (const o of outputs) {
+            if (o.type === 'stdio') {
+              result = JSON.parse(o.text);
             }
-
-            if (output.type === 'error') {
-                this.handleErrorOutput(output, result);
-            }
-        }
-    }
-
-    async readPage(
-        queryId: string,
-        dataframeName: string,
-        pageOptions: {
-            page: number;
-            pageSize: number;
-            dashboardPage: number;
-            dashboardPageSize: number;
+          }
         },
-        sort: TableSort | null
-    ): Promise<ReadDataFramePageResult> {
-        const code = `import json
+        { storeHistory: false },
+      )
+    ).promise;
+
+    return result;
+  }
+
+  private handleStdoutOutput(
+    line: string,
+    result: { value: ReadDataFramePageResult | null },
+    error: { value: Error | null },
+  ): void {
+    const parsed = JSON.parse(line.trim());
+    switch (parsed.type) {
+      case 'success':
+        result.value = parsed;
+        break;
+      case 'not-found':
+        result.value = null;
+        break;
+      default:
+        error.value = new Error('Unexpected output: ' + line);
+    }
+  }
+
+  private handleErrorOutput(
+    output: any,
+    result: { value: ReadDataFramePageResult | null },
+  ): void {
+    result.value = {
+      type: 'python-error',
+      ename: output.ename,
+      evalue: output.evalue,
+      traceback: output.traceback,
+    };
+  }
+
+  private processOutputs(
+    outputs: any[],
+    result: { value: ReadDataFramePageResult | null },
+    error: { value: Error | null },
+  ): void {
+    if (error.value) {
+      return;
+    }
+
+    for (const output of outputs) {
+      if (output.type === 'stdio' && output.name === 'stdout') {
+        const lines = output.text.trim().split('\n');
+        for (const line of lines) {
+          this.handleStdoutOutput(line, result, error);
+        }
+      }
+
+      if (output.type === 'error') {
+        this.handleErrorOutput(output, result);
+      }
+    }
+  }
+
+  async readPage(
+    queryId: string,
+    dataframeName: string,
+    pageOptions: {
+      page: number;
+      pageSize: number;
+      dashboardPage: number;
+      dashboardPageSize: number;
+    },
+    sort: TableSort | null,
+  ): Promise<ReadDataFramePageResult> {
+    const code = `import json
 
 sort_config = json.loads(${JSON.stringify(JSON.stringify(sort))})
 
 if not ("${dataframeName}" in globals()):
     import pandas as pd
     try:
-      ${dataframeName} = pd.read_parquet("/home/jupyteruser/.briefer/query-${queryId}.parquet.gzip")
+      ${dataframeName} = pd.read_parquet("/home/sandwormuser/.briefer/query-${queryId}.parquet.gzip")
     except:
       print(json.dumps({"type": "not-found"}))
 
@@ -174,25 +179,25 @@ if "${dataframeName}" in globals():
     }
     print(json.dumps(result))`;
 
-        const result = { value: null as ReadDataFramePageResult | null };
-        const error = { value: null as Error | null };
+    const result = { value: null as ReadDataFramePageResult | null };
+    const error = { value: null as Error | null };
 
-        await (
-            await this.pythonExecutor.executeCode(
-                code,
-                (outputs) => this.processOutputs(outputs, result, error),
-                { storeHistory: false }
-            )
-        ).promise;
+    await (
+      await this.pythonExecutor.executeCode(
+        code,
+        (outputs) => this.processOutputs(outputs, result, error),
+        { storeHistory: false },
+      )
+    ).promise;
 
-        if (error.value) {
-            throw error.value;
-        }
-
-        if (!result.value) {
-            throw new Error('No result');
-        }
-
-        return result.value;
+    if (error.value) {
+      throw error.value;
     }
+
+    if (!result.value) {
+      throw new Error('No result');
+    }
+
+    return result.value;
+  }
 }

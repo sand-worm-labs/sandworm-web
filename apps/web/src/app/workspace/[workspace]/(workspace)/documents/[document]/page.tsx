@@ -21,6 +21,7 @@ function PrivateDocumentPage(props: PrivateDocumentPageProps) {
     props.workspaceId,
     props.documentId
   );
+
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -54,7 +55,7 @@ function PrivateDocumentPage(props: PrivateDocumentPageProps) {
 
   return (
     <div className="w-full flex justify-center">
-      <div className="py-20">
+      <div className=" px-12 py-20 w-full">
         <TitleSkeleton visible />
         <ContentSkeleton visible />
       </div>
