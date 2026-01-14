@@ -39,7 +39,7 @@ function BlockSuggestion(props: BlockSuggestionProps) {
     <div id={props.id} className="w-full text-sm px-1 relative z-30">
       <button
         type="button"
-        className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 rounded-md text-gray-400 bg-white dark:bg-[#0C1015]  hover:bg-[#FDE6EA] hover:text-gray-700"
+        className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 rounded-md text-gray-400 bg-white dark:bg-[#0C1015]  hover:bg-[#A308F015] hover:text-gray-700"
         onClick={onClick}
       >
         {props.icon}
