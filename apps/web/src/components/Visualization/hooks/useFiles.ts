@@ -7,6 +7,19 @@ import { useListFilesQuery, useDeleteFileMutation } from "@/generated/graphql";
 
 import { NEXT_PUBLIC_API_URL } from "../utils/env";
 
+import { tokenStorage } from "./useAuth";
+
+function createNewUploadFile(file: File): UploadFile {
+  return {
+    status: "enqueued", // Waiting to start
+    replace: false, // Don't replace by default
+    file, // The actual File object
+    abortController: new AbortController(), // Can cancel later
+    uploaded: 0, // Bytes uploaded so far
+    total: file.size, // Total bytes to upload
+  };
+}
+
 export type UploadFile = {
   status: "enqueued" | "uploading" | "asking-replace";
   replace: boolean;
@@ -16,298 +29,369 @@ export type UploadFile = {
   total: number;
 };
 
+// What happened to a file after upload
 export type UploadResult = {
   outcome: "unexpected" | "file-exists" | "aborted" | "success";
   file: File;
 };
 
-export type UploadingFileUploadState = {
+// Upload system states
+type UploadingState = {
   _tag: "uploading";
-  results: UploadResult[];
-  current: UploadFile;
-  rest: File[];
-  replaceAll: boolean;
+  results: UploadResult[]; // Files already processed
+  current: UploadFile; // File being uploaded now
+  rest: File[]; // Files waiting in queue
+  replaceAll: boolean; // Auto-replace all conflicts
 };
 
-export type FileUploadState =
-  | UploadingFileUploadState
-  | {
-    _tag: "idle";
-    results: UploadResult[];
-  };
+type IdleState = {
+  _tag: "idle";
+  results: UploadResult[]; // Past upload results
+};
 
+export type FileUploadState = UploadingState | IdleState;
+
+// What the hook returns
 type State = {
-  files: SandwormFile[];
-  deleting: Record<string, boolean>;
-  upload: FileUploadState;
+  files: SandwormFile[]; // Current files in workspace
+  deleting: Record<string, boolean>; // Which files are being deleted
+  upload: FileUploadState; // Upload system state
 };
 
 type API = {
-  del: (path: string) => Promise<void>;
-  onDrop: (files: File[]) => void;
-  onReplaceYes: () => void;
-  onReplaceAll: () => void;
-  onReplaceNo: () => void;
-  onAbort: (file: File) => void;
-  onRemoveResult: (file: File) => void;
+  del: (path: string) => Promise<void>; // Delete a file
+  onDrop: (files: File[]) => void; // User drops files
+  onReplaceYes: () => void; // User clicks "Replace"
+  onReplaceAll: () => void; // User clicks "Replace All"
+  onReplaceNo: () => void; // User clicks "Skip"
+  onAbort: (file: File) => void; // Cancel upload
+  onRemoveResult: (file: File) => void; // Clear upload result
 };
 
 type UseFiles = [State, API];
 
 /* =======================
-   Hook
+   MAIN HOOK
 ======================= */
 
 export const useFiles = (
   workspaceId: string,
   refreshInterval?: number
 ): UseFiles => {
-  /* ---------- GraphQL ---------- */
+  /* ========================================
+     STEP 1: Fetch existing files from server
+     ======================================== */
 
   const { data, refetch } = useListFilesQuery({
-    variables: { input: { workspaceId } },
+    variables: { input: { path: "./", workspaceId } },
     pollInterval:
       refreshInterval && refreshInterval > 0 ? refreshInterval : undefined,
   });
 
-  const [deleteFileMutation] = useDeleteFileMutation();
-
   const files = useMemo(() => data?.listFiles ?? [], [data]);
-  console.log("useFiles files:", files);
+
+  /* ========================================
+     STEP 2: Delete functionality
+     ======================================== */
+
+  const [deleteFileMutation] = useDeleteFileMutation();
   const [deleting, setDeleting] = useState<Record<string, boolean>>({});
 
-  const del = useCallback(
+  const deleteFile = useCallback(
     async (path: string) => {
-      setDeleting(d => ({ ...d, [path]: true }));
+      // Mark as deleting
+      setDeleting(prev => ({ ...prev, [path]: true }));
+
       try {
+        // Delete on server
         await deleteFileMutation({
           variables: { input: { workspaceId, path } },
         });
+        // Refresh file list
         await refetch();
       } finally {
-        setDeleting(d => ({ ...d, [path]: false }));
+        // Mark as done
+        setDeleting(prev => ({ ...prev, [path]: false }));
       }
     },
     [workspaceId, deleteFileMutation, refetch]
   );
+
+  /* ========================================
+     STEP 3: Upload system state
+     ======================================== */
 
   const [uploadState, setUploadState] = useState<FileUploadState>({
     _tag: "idle",
     results: [],
   });
 
-  const onReplaceYes = useCallback(() => {
-    setUploadState(s =>
-      s._tag === "uploading" && s.current.status === "asking-replace"
-        ? {
-          ...s,
-          current: { ...s.current, replace: true, status: "enqueued" },
-        }
-        : s
-    );
-  }, []);
+  /* ========================================
+     STEP 4: User answers "file exists" dialog
+     ======================================== */
 
-  const onReplaceAll = useCallback(() => {
-    setUploadState(s => {
-      if (s._tag !== "uploading") return s;
-      if (s.current.status !== "asking-replace") {
-        return { ...s, replaceAll: true };
-      }
+  // User clicks "Replace"
+  const handleReplaceYes = useCallback(() => {
+    setUploadState(currentState => {
+      if (currentState._tag !== "uploading") return currentState;
+      if (currentState.current.status !== "asking-replace") return currentState;
+
+      // Mark current file for replacement and continue
       return {
-        ...s,
-        replaceAll: true,
-        current: { ...s.current, replace: true, status: "enqueued" },
+        ...currentState,
+        current: {
+          ...currentState.current,
+          replace: true,
+          status: "enqueued",
+        },
       };
     });
   }, []);
 
-  const onReplaceNo = useCallback(() => {
-    setUploadState(s => {
-      if (s._tag !== "uploading") return s;
-      if (s.current.status !== "asking-replace") return s;
+  // User clicks "Replace All"
+  const handleReplaceAll = useCallback(() => {
+    setUploadState(currentState => {
+      if (currentState._tag !== "uploading") return currentState;
 
-      const [next, ...rest] = s.rest;
-      const results = [
-        ...s.results,
-        { outcome: "file-exists" as const, file: s.current.file },
+      // Set replaceAll flag for all future files
+      const newState = { ...currentState, replaceAll: true };
+
+      // If currently asking, also approve current file
+      if (currentState.current.status === "asking-replace") {
+        newState.current = {
+          ...currentState.current,
+          replace: true,
+          status: "enqueued",
+        };
+      }
+
+      return newState;
+    });
+  }, []);
+
+  // User clicks "Skip"
+  const handleReplaceNo = useCallback(() => {
+    setUploadState(currentState => {
+      if (currentState._tag !== "uploading") return currentState;
+      if (currentState.current.status !== "asking-replace") return currentState;
+
+      // Record that we skipped this file
+      const newResults = [
+        ...currentState.results,
+        { outcome: "file-exists" as const, file: currentState.current.file },
       ];
 
-      if (!next) {
-        return { _tag: "idle", results };
+      // Get next file from queue
+      const [nextFile, ...remainingFiles] = currentState.rest;
+
+      // No more files? Go idle
+      if (!nextFile) {
+        return { _tag: "idle", results: newResults };
       }
 
+      // Continue with next file
       return {
-        ...s,
-        results,
-        current: {
-          status: "enqueued",
-          replace: false,
-          file: next,
-          abortController: new AbortController(),
-          uploaded: 0,
-          total: next.size,
-        },
-        rest,
+        ...currentState,
+        results: newResults,
+        current: createNewUploadFile(nextFile),
+        rest: remainingFiles,
       };
     });
   }, []);
 
-  /* ---------- Upload Effect ---------- */
+  const moveToNextFile = (outcome: "success") => {
+    setUploadState(currentState => {
+      if (currentState._tag !== "uploading") return currentState;
 
-  useEffect(() => {
-    if (uploadState._tag !== "uploading") return;
-    if (uploadState.current.status !== "enqueued") return;
+      // Record what happened
+      const newResults = [
+        ...currentState.results,
+        { outcome, file: currentState.current.file },
+      ];
 
-    const fileExists = files.some(
-      f => f.name === uploadState.current.file.name
-    );
+      // Get next file from queue
+      const [nextFile, ...remainingFiles] = currentState.rest;
 
-    if (!uploadState.current.replace && !uploadState.replaceAll && fileExists) {
-      setUploadState(s =>
-        s._tag === "uploading"
-          ? { ...s, current: { ...s.current, status: "asking-replace" } }
-          : s
-      );
-      return;
-    }
+      // No more files? We're done!
+      if (!nextFile) {
+        return { _tag: "idle", results: newResults };
+      }
 
-    setUploadState(s =>
-      s._tag === "uploading"
-        ? { ...s, current: { ...s.current, status: "uploading" } }
-        : s
-    );
+      // Continue with next file
+      return {
+        ...currentState,
+        results: newResults,
+        current: createNewUploadFile(nextFile),
+        rest: remainingFiles,
+      };
+    });
+  };
 
-    const replace = uploadState.current.replace || uploadState.replaceAll;
+  const handleUploadFailure = (error: any) => {
+    console.error("Upload failed:", error);
+    setUploadState(currentState => {
+      if (currentState._tag !== "uploading") return currentState;
 
-    axios({
-      url: `${NEXT_PUBLIC_API_URL()}/workspaces/${workspaceId}/files?replace=${replace}`,
-      method: "POST",
-      withCredentials: true,
-      signal: uploadState.current.abortController.signal,
-      headers: {
-        "Content-Type": "application/octet-stream",
-        "X-File-Name": uploadState.current.file.name,
-        "X-File-Size": uploadState.current.file.size.toString(),
-      },
-      data: uploadState.current.file,
-      onUploadProgress: e => {
-        console.log("Upload progress:", e);
-        setUploadState(s =>
-          s._tag === "uploading" && s.current.status === "uploading"
-            ? { ...s, current: { ...s.current, uploaded: e.loaded } }
-            : s
-        );
-      },
-    })
-      .then(() => {
-        setUploadState(s => {
-          if (s._tag !== "uploading") return s;
+      // Figure out what went wrong
+      const outcome = error.name === "CanceledError" ? "aborted" : "unexpected";
 
-          const [next, ...rest] = s.rest;
-          const results = [
-            ...s.results,
-            { outcome: "success" as const, file: s.current.file },
-          ];
+      // Record the failure
+      const newResults = [
+        ...currentState.results,
+        { outcome, file: currentState.current.file },
+      ];
 
-          if (!next) {
-            return { _tag: "idle", results };
-          }
+      // Stop uploading, show results
+      return { _tag: "idle", results: newResults };
+    });
+  };
 
-          return {
-            ...s,
-            results,
-            current: {
-              status: "enqueued",
-              replace: false,
-              file: next,
-              abortController: new AbortController(),
-              uploaded: 0,
-              total: next.size,
-            },
-            rest,
-          };
-        });
-      })
-      .catch(err => {
-        if (err.name === "CanceledError") {
-          setUploadState(s =>
-            s._tag === "uploading"
-              ? {
-                _tag: "idle",
-                results: [
-                  ...s.results,
-                  { outcome: "aborted" as const, file: s.current.file },
-                ],
-              }
-              : s
-          );
-        }
-      })
-      .finally(() => {
-        refetch();
-      });
-  }, [uploadState, files, workspaceId, refetch]);
+  const handleFileDrop = useCallback((droppedFiles: File[]) => {
+    // Remove duplicates (same filename)
+    const uniqueFiles = uniqBy(f => f.name, droppedFiles);
+    const [firstFile, ...restOfFiles] = uniqueFiles;
 
-  /* ---------- Drop / Abort / Cleanup ---------- */
+    if (!firstFile) return; // No files? Do nothing
 
-  const onDrop = useCallback((incoming: File[]) => {
-    const files = uniqBy(f => f.name, incoming);
-    const [first, ...rest] = files;
-    if (!first) return;
-
-    setUploadState(s =>
-      s._tag === "idle"
-        ? {
+    setUploadState(currentState => {
+      // Not uploading? Start fresh
+      if (currentState._tag === "idle") {
+        return {
           _tag: "uploading",
-          current: {
-            status: "enqueued",
-            file: first,
-            abortController: new AbortController(),
-            uploaded: 0,
-            total: first.size,
-            replace: false,
-          },
-          rest,
-          results: s.results,
+          current: createNewUploadFile(firstFile),
+          rest: restOfFiles,
+          results: currentState.results,
           replaceAll: false,
-        }
-        : { ...s, rest: [...s.rest, ...files] }
-    );
+        };
+      }
+
+      // Already uploading? Add to queue
+      return {
+        ...currentState,
+        rest: [...currentState.rest, ...uniqueFiles],
+      };
+    });
   }, []);
 
-  const onAbort = useCallback(
-    (file: File) => {
+  const handleAbort = useCallback(
+    (fileToAbort: File) => {
       if (uploadState._tag !== "uploading") return;
-      if (uploadState.current.file === file) {
+
+      // Aborting current upload?
+      if (uploadState.current.file === fileToAbort) {
         uploadState.current.abortController.abort();
-      } else {
-        setUploadState(s =>
-          s._tag === "uploading"
-            ? { ...s, rest: s.rest.filter(f => f !== file) }
-            : s
-        );
+        return;
       }
+
+      // Remove from queue
+      setUploadState(state =>
+        state._tag === "uploading"
+          ? { ...state, rest: state.rest.filter(f => f !== fileToAbort) }
+          : state
+      );
     },
     [uploadState]
   );
 
-  const onRemoveResult = useCallback((file: File) => {
-    setUploadState(s => ({
-      ...s,
-      results: s.results.filter(r => r.file !== file),
+  const clearUploadResult = useCallback((file: File) => {
+    setUploadState(state => ({
+      ...state,
+      results: state.results.filter(result => result.file !== file),
     }));
   }, []);
 
+  const performUpload = (file: File, replace: boolean) => {
+    // Update UI to show "uploading"
+    setUploadState(state =>
+      state._tag === "uploading"
+        ? { ...state, current: { ...state.current, status: "uploading" } }
+        : state
+    );
+
+    // Get abort controller from current state
+    const abortController =
+      uploadState._tag === "uploading"
+        ? uploadState.current.abortController
+        : new AbortController();
+    const token = tokenStorage.getToken();
+    // Upload to server
+    axios({
+      url: `${NEXT_PUBLIC_API_URL()}/workspaces/${workspaceId}/files?replace=${replace}`,
+      method: "POST",
+      withCredentials: true,
+      signal: abortController.signal,
+      headers: {
+        "Content-Type": "application/octet-stream",
+        "X-File-Name": file.name,
+        "X-File-Size": file.size.toString(),
+        Authorization: `Bearer ${token}`,
+      },
+      data: file,
+
+      // Update progress bar
+      onUploadProgress: progressEvent => {
+        setUploadState(state =>
+          state._tag === "uploading" && state.current.status === "uploading"
+            ? {
+              ...state,
+              current: { ...state.current, uploaded: progressEvent.loaded },
+            }
+            : state
+        );
+      },
+    })
+      .then(() => moveToNextFile("success"))
+      .catch(err => handleUploadFailure(err))
+      .finally(() => refetch()); // Always refresh file list
+  };
+
+  useEffect(() => {
+    // Only run if we're uploading
+    if (uploadState._tag !== "uploading") return;
+
+    // Only run if current file is waiting to start
+    if (uploadState.current.status !== "enqueued") return;
+
+    const currentFile = uploadState.current.file;
+    const shouldReplace = uploadState.current.replace || uploadState.replaceAll;
+    const fileAlreadyExists = files.some(f => f.name === currentFile.name);
+
+    // File exists and we haven't decided what to do? Ask user
+    if (fileAlreadyExists && !shouldReplace) {
+      setUploadState(state =>
+        state._tag === "uploading"
+          ? {
+            ...state,
+            current: { ...state.current, status: "asking-replace" },
+          }
+          : state
+      );
+      return;
+    }
+
+    // File doesn't exist OR user approved replacement? Start upload!
+    performUpload(currentFile, shouldReplace);
+  }, [uploadState, files, workspaceId, refetch]);
+
   return [
-    { files, deleting, upload: uploadState },
     {
-      del,
-      onDrop,
-      onReplaceYes,
-      onReplaceAll,
-      onReplaceNo,
-      onAbort,
-      onRemoveResult,
+      files,
+      deleting,
+      upload: uploadState,
+    },
+    {
+      del: deleteFile,
+      onDrop: handleFileDrop,
+      onReplaceYes: handleReplaceYes,
+      onReplaceAll: handleReplaceAll,
+      onReplaceNo: handleReplaceNo,
+      onAbort: handleAbort,
+      onRemoveResult: clearUploadResult,
     },
   ];
 };
+
+/* =======================
+   HELPER FUNCTION
+   Creates a fresh upload file object
+======================= */

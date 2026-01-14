@@ -155,6 +155,7 @@ export class JupyterService implements IJupyterService, OnModuleInit, OnModuleDe
   async fileExists(workspaceId: string, fileName: string): Promise<boolean> {
     const ext = this.getExtension(workspaceId);
     const result = await ext.statFile(await this.getFilepath(workspaceId, fileName));
+    console.log('fileExists result:', result);
     if (result._tag === 'error') {
       if (result.reason === 'not-found') return false;
       throw new Error(`Failed to stat file: ${result.reason}`);

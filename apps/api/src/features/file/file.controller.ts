@@ -5,18 +5,20 @@ import {
     Delete,
     Param,
     Query,
-    UploadedFile,
-    UseInterceptors,
     Res,
     HttpStatus,
+    HttpException,
+    UseInterceptors,
+    UploadedFile,
+    Req,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
-import { ApiAuth } from '@sandworm/api/decorators/http.decorators';
+import { ApiAuth, ApiPublic } from '@sandworm/api/decorators/http.decorators';
 import { FileService } from './file.service';
+import type { FastifyReply, FastifyRequest } from 'fastify';
+import path from 'path';
 import { Readable } from 'stream';
-import type { FastifyReply } from 'fastify';
-import * as path from 'path';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Files')
 @Controller({
@@ -41,11 +43,9 @@ export class FileController {
     /**
      * Download a file
      * GET /v1/workspaces/:workspaceId/files/file?path=/some/file.txt
-     * 
-     * IMPORTANT: Using Fastify instead of Express
      */
     @Get('file')
-    @ApiAuth({
+    @ApiPublic({
         summary: 'Download file from workspace',
     })
     async downloadFile(
@@ -65,64 +65,45 @@ export class FileController {
 
         const fileName = path.basename(filePath);
 
-        // Fastify way of setting headers and streaming
         reply
             .header('Content-Disposition', `attachment; filename="${fileName}"`)
             .header('Content-Length', fileResult.size)
-            .header('Content-Type', 'application/octet-stream')
             .type('application/octet-stream');
 
-        // Send the stream using Fastify's reply.send()
-        // Fastify automatically handles readable streams
         return reply.send(fileResult.stream);
     }
 
     /**
-     * Upload a file
+     * Upload a file (multipart/form-data)
      * POST /v1/workspaces/:workspaceId/files?replace=true
+     * Form field: 'file'
      */
-    @Post()
     @UseInterceptors(FileInterceptor('file'))
-    @ApiAuth({
-        summary: 'Upload file to workspace',
-        statusCode: 204,
-    })
+    @Post()
     async uploadFile(
         @Param('workspaceId') workspaceId: string,
         @Query('replace') replace: string,
-        @UploadedFile() file: Express.Multer.File,
+        @Req() req: FastifyRequest,
         @Res() reply: FastifyReply,
     ): Promise<void> {
-        if (!file) {
+        const buffer = req.body as Buffer;
+        let filename = req.headers['x-file-name'] as string;
+        console.log('Received upload request. Headers:', req.headers);
+        if (!filename) {
             return reply.status(HttpStatus.BAD_REQUEST).send();
         }
-
-        const fileStream = Readable.from(file.buffer);
-
-        try {
-            await this.fileService.uploadFile(
-                workspaceId,
-                file.originalname,
-                replace === 'true',
-                fileStream,
-            );
-
-            // Fastify way: reply.code() instead of res.sendStatus()
-            return reply.code(HttpStatus.NO_CONTENT).send();
-        } catch (error: any) {
-            // 409 Conflict if file exists
-            if (error.message === 'File already exists') {
-                return reply.code(HttpStatus.CONFLICT).send();
-            } else {
-                throw error;
-            }
-        }
+        const fileStream = Readable.from(buffer);
+        console.log('Uploading file:', filename, 'Replace:', replace);
+        await this.fileService.uploadFile(
+            workspaceId,
+            filename,
+            replace === 'true',
+            fileStream,
+        );
+        return reply.code(HttpStatus.NO_CONTENT).send();
     }
 
-    /**
-     * Delete a file
-     * DELETE /v1/workspaces/:workspaceId/files?path=/some/file.txt
-     */
+
     @Delete()
     @ApiAuth({
         summary: 'Delete file from workspace',
@@ -133,9 +114,10 @@ export class FileController {
         @Query('path') filePath: string,
     ): Promise<void> {
         if (!filePath) {
-            throw new Error('File path is required');
+            throw new HttpException('File path is required', HttpStatus.BAD_REQUEST);
         }
 
         await this.fileService.deleteFile({ workspaceId, path: filePath });
     }
 }
+

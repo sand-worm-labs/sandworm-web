@@ -9,6 +9,7 @@ query ListFiles($input: ListFilesInput!) {
     size
     isDirectory
     mimeType
+    createdAt
   }
 }
 
