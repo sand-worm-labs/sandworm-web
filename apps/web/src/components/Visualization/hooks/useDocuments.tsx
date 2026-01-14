@@ -236,7 +236,7 @@ type UseDocuments = [UseDocumentsState, API];
 
 const Context = createContext<
   [State, React.Dispatch<React.SetStateAction<State>>]
->([Map(), () => {}]);
+>([Map(), () => { }]);
 
 type Props = {
   children: React.ReactNode;
@@ -591,53 +591,6 @@ export function useDocuments(workspaceId: string): UseDocuments {
     [workspaceId, loading, restoreDocumentMutation]
   );
 
-  const setIcon = useCallback(
-    async (id: string, icon: string) => {
-      if (loading) {
-        throw new Error("Cannot set icon while loading");
-      }
-
-      const previousStateValue = state.get(workspaceId);
-      setState(s => {
-        const { loading, documents } = s.get(workspaceId) ?? {
-          loading: true,
-          documents: List(),
-        };
-
-        return s.set(workspaceId, {
-          loading,
-          documents: documents.map(doc =>
-            doc.id === id ? { ...doc, icon } : doc
-          ),
-        });
-      });
-
-      try {
-        // TODO: Convert to GraphQL once backend adds 'icon' to UpdateDocumentInput
-        await fetch(
-          `${NEXT_PUBLIC_API_URL()}/v1/workspaces/${workspaceId}/documents/${id}/icon`,
-          {
-            credentials: "include",
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ icon }),
-          }
-        );
-      } catch (e) {
-        alert("Something went wrong");
-        if (previousStateValue) {
-          setState(s => s.set(workspaceId, previousStateValue));
-        } else {
-          setState(s => s.delete(workspaceId));
-        }
-        throw e;
-      }
-    },
-    [state, workspaceId, loading, setState]
-  );
-
   const updateParent = useCallback(
     async (
       id: string,
@@ -786,10 +739,10 @@ export function useDocuments(workspaceId: string): UseDocuments {
             documents: documents.map(doc =>
               doc.id === id
                 ? {
-                    ...doc,
-                    isDataApp: true,
-                    publishedAt: new Date().toISOString(),
-                  }
+                  ...doc,
+                  isDataApp: true,
+                  publishedAt: new Date().toISOString(),
+                }
                 : doc
             ),
           });
@@ -829,9 +782,9 @@ export function useDocuments(workspaceId: string): UseDocuments {
           documents: documents.map(doc =>
             doc.id === id
               ? {
-                  ...doc,
-                  ...settings,
-                }
+                ...doc,
+                ...settings,
+              }
               : doc
           ),
         });
@@ -870,7 +823,6 @@ export function useDocuments(workspaceId: string): UseDocuments {
         duplicateDocument,
         deleteDocument,
         restoreDocument,
-        setIcon,
         updateParent,
         publish,
         updateDocumentSettings,
@@ -883,7 +835,6 @@ export function useDocuments(workspaceId: string): UseDocuments {
       duplicateDocument,
       deleteDocument,
       restoreDocument,
-      setIcon,
       updateParent,
       publish,
       updateDocumentSettings,

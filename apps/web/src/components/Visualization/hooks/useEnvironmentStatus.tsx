@@ -34,8 +34,8 @@ type ContextValue = [State, API];
 const Context = createContext<ContextValue>([
   Map(),
   {
-    getEnvironmentStatus: () => {},
-    restart: () => {},
+    getEnvironmentStatus: () => { },
+    restart: () => { },
   },
 ]);
 
