@@ -13,7 +13,7 @@ import {
     Req,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ApiAuth } from '@sandworm/api/decorators/http.decorators';
+import { ApiAuth, ApiPublic } from '@sandworm/api/decorators/http.decorators';
 import { FileService } from './file.service';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import path from 'path';
@@ -45,7 +45,7 @@ export class FileController {
      * GET /v1/workspaces/:workspaceId/files/file?path=/some/file.txt
      */
     @Get('file')
-    @ApiAuth({
+    @ApiPublic({
         summary: 'Download file from workspace',
     })
     async downloadFile(

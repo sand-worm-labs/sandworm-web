@@ -214,9 +214,8 @@ function FileItem(props: FileItemProps) {
             "Download"
           ) : (
             <Link
-              href={`${NEXT_PUBLIC_API_URL()}/v1/workspaces/${
-                props.workspaceId
-              }/files/file?path=${encodeURIComponent(props.file.relCwdPath)}`}
+              href={`${NEXT_PUBLIC_API_URL()}/workspaces/${props.workspaceId
+                }/files/file?path=${encodeURIComponent(props.file.relCwdPath)}`}
               target="_blank"
             >
               Download
