@@ -361,6 +361,7 @@ input RestoreDocumentInput {
 }
 
 type SandwormFile {
+  createdAt: Float!
   isDirectory: Boolean!
   mimeType: String
   name: String!
