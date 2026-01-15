@@ -1,5 +1,6 @@
 "use client";
 
+import "react-day-picker/style.css";
 import type { ReactNode } from "react";
 
 import { GraphQLProvider } from "@/graphql/provider";
