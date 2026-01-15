@@ -21,6 +21,7 @@ import { WorkspaceGatewayService } from './services/workspace.gateway';
 import { EnvironmentGatewayService } from './services/environment.gateway';
 import { PythonCompletionService } from './services/python-completion.service';
 import { CommentGatewayService } from './services/comments.gateway';
+import { DataSource } from 'typeorm';
 
 @WebSocketGateway({
   cors: {
@@ -46,11 +47,21 @@ export class AppGateway
     private readonly environmentGatewayService: EnvironmentGatewayService,
     private readonly pythonCompletionService: PythonCompletionService,
     private readonly commentGatewayService: CommentGatewayService,
+    private readonly dataSource: DataSource
   ) { }
 
   async afterInit(server: Server): Promise<void> {
     try {
-      const { pool } = await getPGInstance();
+      if (!this.dataSource.isInitialized) {
+        await this.dataSource.initialize();
+      }
+
+      const pool = (this.dataSource.driver as any).master;
+
+      if (!pool) {
+        throw new Error('PostgreSQL pool not available from TypeORM');
+      }
+
       server.adapter(
         createAdapter(pool, {
           tableName: 'socket_io_attachments',
