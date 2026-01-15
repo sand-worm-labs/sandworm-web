@@ -19,13 +19,30 @@ const logger = new Logger('DocumentPersistor');
 
 export class DocumentPersistor implements Persistor {
 
-  private readonly documentId: string;
-  private readonly yjsDocumentRepository: Repository<YjsDocumentEntity>;
-  private readonly yjsUpdateRepository: Repository<YjsUpdateEntity>;
-  private readonly lockService: ILockService
   constructor(
-    private readonly docId: string,
+    private readonly documentId: string,
+    private readonly yjsDocumentRepository: Repository<YjsDocumentEntity>,
+    private readonly yjsUpdateRepository: Repository<YjsUpdateEntity>,
+    private readonly lockService: ILockService,
   ) { }
+
+
+  static create(
+    documentId: string,
+    yjsDocumentRepository: Repository<YjsDocumentEntity>,
+    yjsUpdateRepository: Repository<YjsUpdateEntity>,
+    lockService: ILockService
+  ): DocumentPersistor {
+    return new DocumentPersistor(
+      documentId,
+      yjsDocumentRepository,
+      yjsUpdateRepository,
+      lockService
+    );
+  }
+
+
+
 
   private applyUpdate(ydoc: Y.Doc, update: Buffer | Uint8Array): number {
     const start = Date.now();
@@ -84,7 +101,7 @@ export class DocumentPersistor implements Persistor {
   }
 
   public async persist(ydoc: WSSharedDoc, tx?: EntityManager): Promise<void> {
-    return this.lockService.acquireLock(`document-persistor:${this.docId}`, async () => {
+    return this.lockService.acquireLock(`document-persistor:${this.documentId}`, async () => {
       const repo = tx ? tx.getRepository(YjsDocumentEntity) : this.yjsDocumentRepository;
 
       let dbDoc = await repo.findOne({

@@ -23,11 +23,11 @@ import {
   getDateInputAttributes,
 } from '@sandworm/editor';
 import { Persistor } from '../interfaces/persistor.interface';
-import { LoadStateResult,ReplaceStateResult } from '../interfaces/load-state-result.interface';
+import { LoadStateResult, ReplaceStateResult } from '../interfaces/load-state-result.interface';
 import { TransactionOrigin } from '../interfaces/transaction-origin.interface';
-import { WSSharedDoc} from "../interfaces"
+import { WSSharedDoc } from "../interfaces"
 import { ILockService } from '@sandworm/redis';
-import { readUpdate } from 'y-protocols/sync'; 
+import { readUpdate } from 'y-protocols/sync';
 
 const logger = new Logger('Persistors');
 
@@ -40,7 +40,26 @@ export class AppPersistor implements Persistor {
     private readonly userYjsAppDocumentRepository: Repository<UserYjsAppDocumentEntity>,
     // private readonly yjsUpdateRepository: Repository<YjsUpdateEntity>,b
     private readonly lockService: ILockService
-  ) {}
+  ) { }
+
+
+  static create(
+    docId: string,
+    yjsAppDocumentId: string,
+    userId: string | null,
+    yjsAppDocumentRepository: Repository<YjsAppDocumentEntity>,
+    userYjsAppDocumentRepository: Repository<UserYjsAppDocumentEntity>,
+    lockService: ILockService
+  ): AppPersistor {
+    return new AppPersistor(
+      docId,
+      yjsAppDocumentId,
+      userId,
+      yjsAppDocumentRepository,
+      userYjsAppDocumentRepository,
+      lockService
+    );
+  }
 
   private applyUpdate(ydoc: Y.Doc, update: Buffer | Uint8Array): number {
     const start = Date.now();
@@ -94,7 +113,7 @@ export class AppPersistor implements Persistor {
           clock: yjsAppDoc.clock,
         });
         await userRepo.save(userYjsAppDoc);
-        
+
         applyUpdateLatency = this.applyUpdate(ydoc, userYjsAppDoc.state);
         byteLength = userYjsAppDoc.state.length;
         clock = userYjsAppDoc.clock;
@@ -128,7 +147,7 @@ export class AppPersistor implements Persistor {
 
       if (this.userId) {
         const repo = tx ? tx.getRepository(UserYjsAppDocumentEntity) : this.userYjsAppDocumentRepository;
-        
+
         const existing = await repo.findOne({
           where: {
             yjsAppDocumentId: this.yjsAppDocumentId,
@@ -155,7 +174,7 @@ export class AppPersistor implements Persistor {
         }
       } else {
         const repo = tx ? tx.getRepository(YjsAppDocumentEntity) : this.yjsAppDocumentRepository;
-        
+
         await repo.update(
           { id: this.yjsAppDocumentId },
           { state }
@@ -178,7 +197,7 @@ export class AppPersistor implements Persistor {
     const layout = doc.layout;
     const nextLayout = getLayout(nextDoc);
     const isLayoutEqual = this.isLayoutEqual(layout, nextLayout);
-    
+
     if (!isLayoutEqual) {
       return false;
     }
@@ -218,7 +237,7 @@ export class AppPersistor implements Persistor {
 
     const prevCurrent = prevGroup.getAttribute('current');
     const nextCurrent = nextGroup.getAttribute('current');
-    
+
     if (prevCurrent?.getAttribute('id') !== nextCurrent?.getAttribute('id')) {
       return false;
     }
@@ -253,7 +272,7 @@ export class AppPersistor implements Persistor {
 
       const prevType = prevBlock.getAttribute('type');
       const nextType = nextBlock.getAttribute('type');
-      
+
       if (prevType !== nextType) {
         return false;
       }
@@ -449,11 +468,11 @@ export class AppPersistor implements Persistor {
           onWriteback: (nextBlock) => {
             const prevAttrs = prevBlock.getAttributes();
             const nextAttrs = nextBlock.getAttributes();
-            
+
             if (compareText(prevAttrs.tableName, nextAttrs.tableName) !== 0) {
               return false;
             }
-            
+
             return equals(omit(['tableName'], prevAttrs), omit(['tableName'], nextAttrs));
           },
           onInput: () => false,

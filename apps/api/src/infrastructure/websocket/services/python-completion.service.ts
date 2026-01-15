@@ -1,4 +1,5 @@
 // apps/api/src/infrastructure/websocket/services/python-completion.service.ts
+
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -8,7 +9,7 @@ import { PythonSuggestion, PythonSuggestionsResult } from '@sandworm/types';
 import { getDocumentSourceWithBlockStartPos } from '@sandworm/editor';
 import { Session } from '@/features/session/domain/session';
 import { YjsDocumentService } from '@/features/collaboration/yjs/yjs-document.service';
-import { DocumentPersistor } from '@/features/collaboration/yjs/persistors/document.persistor';
+import { PersistorFactory } from '@/features/collaboration/yjs/persistor.factory';
 import { JupyterCompletionService } from '@/features/code-execution/jupyter-session/jupyter-completion.service';
 import { DocumentEntity } from '@sandworm/postgresql-typeorm';
 
@@ -20,6 +21,7 @@ export class PythonCompletionService {
         @InjectRepository(DocumentEntity)
         private readonly documentRepository: Repository<DocumentEntity>,
         private readonly yjsDocumentService: YjsDocumentService,
+        private readonly persistorFactory: PersistorFactory,
         private readonly jupyterCompletionService: JupyterCompletionService,
     ) { }
 
@@ -44,7 +46,6 @@ export class PythonCompletionService {
         const { blockId, documentId, position } = parsedData.data;
 
         try {
-
             const doc = await this.documentRepository.findOne({
                 where: { id: documentId },
                 select: ['id', 'workspaceId'],
@@ -60,6 +61,9 @@ export class PythonCompletionService {
                 client.disconnect(true);
                 return { status: 'invalid-payload' };
             }
+
+            // Create persistor using factory
+            const persistor = this.persistorFactory.createDocumentPersistor(documentId);
 
             // Get YDoc and compute completion
             const result = await this.yjsDocumentService.getYDocForUpdate(
@@ -83,7 +87,7 @@ export class PythonCompletionService {
 
                     return this.parseCompletionResult(completion, documentId, blockId);
                 },
-                new DocumentPersistor(documentId),
+                persistor,
             );
 
             return result;
@@ -119,7 +123,6 @@ export class PythonCompletionService {
         const suggestions: PythonSuggestion[] = [];
         const matches = new Set(completion.content.matches);
 
-        // Parse Jupyter types experimental
         const metadata = z
             .object({
                 _jupyter_types_experimental: z.array(z.record(z.string(), z.unknown())),
@@ -136,7 +139,6 @@ export class PythonCompletionService {
             }
         }
 
-        // Add remaining matches as text suggestions
         for (const match of matches) {
             suggestions.push({
                 start: completion.content.cursor_start,

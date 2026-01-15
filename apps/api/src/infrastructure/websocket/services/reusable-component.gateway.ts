@@ -1,9 +1,24 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { ReusableComponentService } from '@/features/collaboration/component/reusable-component.service';
-import { DocumentEntity } from '@sandworm/postgresql-typeorm';
+import { DocumentEntity, ReusableComponentEntity } from '@sandworm/postgresql-typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
+export type APIReusableComponent = Omit<
+    ReusableComponentEntity,
+    'state' | 'createdAt' | 'updatedAt'
+> & {
+    state: string
+    createdAt: string
+    updatedAt: string
+    document: {
+        id: string
+        title: string
+        icon: string
+    }
+}
+
 
 @Injectable()
 export class ComponentGatewayService {
