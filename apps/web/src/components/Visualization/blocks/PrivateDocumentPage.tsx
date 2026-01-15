@@ -424,21 +424,6 @@ function PrivateDocumentPageInner(
             </button>
           </Tooltip>
         )}
-
-        <EllipsisDropdown
-          onToggleSchedules={onToggleSchedules}
-          onToggleSnapshots={onToggleSnapshots}
-          onToggleComments={onToggleComments}
-          onToggleFullScreen={onToggleFullScreen}
-          onToggleFiles={onToggleFiles}
-          onToggleSchemaExplorer={onToggleSchemaExplorerEllipsis}
-          onToggleReusableComponents={onToggleReusableComponents}
-          onToggleShortcuts={onToggleShortcuts}
-          onTogglePageSettings={onTogglePageSettings}
-          isViewer={isViewer}
-          isDeleted={isDeleted}
-          isFullScreen={isFullScreen}
-        />
       </div>
     </div>
   );

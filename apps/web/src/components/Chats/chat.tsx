@@ -2,7 +2,6 @@
 
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
-import { v4 as uuidv4 } from "uuid";
 
 import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
 import { useDocuments } from "../Visualization/hooks/useDocuments";
@@ -44,12 +43,10 @@ export function Chat({
       if (!text) return;
       if (documentsState.loading) return;
 
-      const id = uuidv4();
-
       try {
-        await createDocument({ id, parentId: null, version: 2 });
+        const doc = await createDocument({ parentId: null, version: 2 });
         router.push(
-          `/workspace/${workspaceId}/documents/${id}/notebook/edit?prompt=${encodeURIComponent(text)}`
+          `/workspace/${workspaceId}/documents/${doc.id}/notebook/edit?prompt=${encodeURIComponent(text)}`
         );
       } catch (err) {
         console.error(err);
@@ -64,12 +61,10 @@ export function Chat({
     async (prompt: string, parentId: string | null = null) => {
       if (documentsState.loading) return;
 
-      const id = uuidv4();
-
       try {
-        await createDocument({ id, parentId, version: 2 });
+        const doc = await createDocument({ parentId, version: 2 });
         router.push(
-          `/workspace/${workspaceId}/documents/${id}/notebook/edit?prompt=${encodeURIComponent(prompt)}`
+          `/workspace/${workspaceId}/documents/${doc.id}/notebook/edit?prompt=${encodeURIComponent(prompt)}`
         );
       } catch (err) {
         console.error(err);

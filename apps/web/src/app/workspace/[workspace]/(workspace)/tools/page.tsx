@@ -8,14 +8,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@sandworm/ui/components/card";
-import { LuLayoutGrid } from "react-icons/lu";
 import { ArrowRight } from "lucide-react";
+import SquareFour from "@/components/Assets/SquareFour";
 
 type Tool = {
   id: string;
   name: string;
   description: string;
   href: string;
+  color?: string;
 };
 
 const tools: Tool[] = [
@@ -25,6 +26,7 @@ const tools: Tool[] = [
     description:
       "Ask questions in plain English and explore onchain data with AI-powered insights.",
     href: "/chats",
+    color: "#A8FB63",
   },
   {
     id: "report",
@@ -32,6 +34,7 @@ const tools: Tool[] = [
     description:
       "Generate clear, structured summaries and narratives from blockchain data in seconds.",
     href: "/tools/report",
+    color: "#F863FB",
   },
   {
     id: "visualization",
@@ -39,6 +42,7 @@ const tools: Tool[] = [
     description:
       "Turn raw data into interactive charts and graphs — customize or let AI handle it.",
     href: "/tools/visualization",
+    color: "#BAD2A7",
   },
   {
     id: "query-console",
@@ -46,6 +50,7 @@ const tools: Tool[] = [
     description:
       "Write and refine queries directly, with AI suggestions to guide you when needed.",
     href: "/tools/query-console",
+    color: "#ED2D64",
   },
   {
     id: "notebook",
@@ -53,6 +58,7 @@ const tools: Tool[] = [
     description:
       "Combine queries, charts, and notes into a single shareable workspace.",
     href: "/tools/notebook",
+    color: "#FFADE4",
   },
   {
     id: "dashboards",
@@ -60,6 +66,7 @@ const tools: Tool[] = [
     description:
       "Build live dashboards to track metrics, monitor activity, and collaborate in real time.",
     href: "/tools/dashboards",
+    color: "#FFADE4",
   },
 ];
 
@@ -77,6 +84,7 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool }) => {
           transition-all duration-200 ease-out
         "
       >
+        <SquareFour color={tool.color} />
         <span
           className="
             absolute top-4 right-4 opacity-0
@@ -109,11 +117,14 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool }) => {
 export default function ToolsPage() {
   return (
     <div>
-      <div className="flex items-center gap-3  mt-10 px-8 mb-5">
-        <span className="bg-[#A308F020]  rounded-full p-2 flex items-center justify-center">
-          <LuLayoutGrid className="w-4 h-4 text-[#A308F0] " />
-        </span>
-        <h2 className="text-xl font-medium ">Tools</h2>
+      <div className="flex flex-col items-center gap-3  mt-10 px-8 mb-5 text-center">
+        <h2 className="text-xl font-medium ">
+          Explore Tools for specific Functionalities
+        </h2>
+        <p className="text-sm max-w-[35rem]">
+          These Tools help you quickly jump into specific workflows without
+          needing the full data analysis workflow in the main product.
+        </p>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
         {tools.map(tool => (

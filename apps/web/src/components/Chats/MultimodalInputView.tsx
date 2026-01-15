@@ -65,8 +65,8 @@ export const MultimodalInputView = forwardRef<
     focus:outline-none
     focus:border-transparent
     focus:ring-4
-    focus:ring-[rgba(139,69,19,0.2)]
-dark:focus:ring-[rgba(255,165,79,0.3)]
+   focus:ring-[rgba(163,8,240,0.2)]
+dark:focus:ring-[rgba(163,8,240,0.3)]
     transition-all
     duration-300
     ease-in-out
