@@ -2,6 +2,13 @@
 
 import dynamic from "next/dynamic";
 import Head from "next/head";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+
+import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
+import { useSession } from "@/components/Visualization/hooks/useAuth";
+import useDocument from "@/components/Visualization/hooks/useDocument";
+import type { SessionUser } from "@/types";
 
 const Dashboard = dynamic(
   () => import("@/components/Visualization/blocks/Dashboard"),
@@ -10,59 +17,78 @@ const Dashboard = dynamic(
   }
 );
 
-export default function DashboardPage() {
-  const mockDocument = {
-    id: "mock-doc-id",
-    title: "Test Dashboard",
-    clock: 0,
-    appClock: 456,
-    userAppClock: {},
-    yjsDocument: { clock: 0 },
-    appId: "",
-    workspaceId: "mock-workspace-id",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    deletedAt: null,
-    hasDashboard: true,
-    orderIndex: 0,
-    version: 1,
-    isSyncedWithYjs: false,
-    runSQLSelection: false,
-    runUnexecutedBlocks: false,
-    shareLinksWithoutSidebar: true,
-  };
+interface Props {
+  workspaceId: string;
+  documentId: string;
+  user: SessionUser;
+}
 
-  const mockUser = {
-    createdAt: "2025-10-21T14:03:41.471Z",
-    email: "dqzxu2gbs@mozmail.com",
-    id: "4a6e71c4-2c06-460b-bb29-f337bf64e0bc",
-    lastVisitedWorkspaceId: "405498a2-f3cb-4307-bd1e-4daf5b3a1dba",
-    name: "Si Cy",
-    picture: null,
-    roles: {
-      "4a6e71c4-2c06-460b-bb29-f337bf64e0bc": "admin",
-    },
-    updatedAt: "2025-11-07T21:32:32.536Z",
-  };
+export function DashboardEdit(props: Props) {
+  const [{ document, loading }] = useDocument(
+    props.workspaceId,
+    props.documentId
+  );
+  const router = useRouter();
+  const role = props.user.roles?.[props.workspaceId] || "viewer";
+  useEffect(() => {
+    if (loading) {
+      return;
+    }
 
-  const mockRole = "admin";
+    if (!document) {
+      router.replace(`/workspace/${props.workspaceId}`);
+      return;
+    }
+
+    if (!document.hasDashboard) {
+      router.replace(
+        `/workspace/${props.workspaceId}/documents/${props.documentId}/dashboard/edit${window.location.search}`
+      );
+      return;
+    }
+
+    if (role === "viewer") {
+      router.replace(
+        `/workspace/${props.workspaceId}/documents/${props.documentId}/dashboard${window.location.search}`
+      );
+    }
+  }, [document, loading, role, props.workspaceId, props.documentId, router]);
+
+  if (loading || !document || role === "viewer") {
+    return null;
+  }
 
   return (
     <>
       <Head>
-        <title>{mockDocument.title}</title>
+        <title>{document.title || "Untitled"} - Dashboard Edit</title>
       </Head>
-
-      <main className="min-h-screen">
+      <main className="min-h-screen dark:bg-neutral-950 dark:text-white">
         <Dashboard
-          document={mockDocument}
-          role={mockRole}
-          user={mockUser}
-          isEditing={false}
+          document={document}
+          role={role}
+          user={props.user}
+          isEditing
           publish={() => Promise.resolve()}
           publishing={false}
         />
       </main>
     </>
   );
+}
+
+export default function DashboardPage() {
+  const session = useSession({ redirectToLogin: true });
+  const workspaceId = useStringQuery("workspace");
+  const documentId = useStringQuery("document");
+
+  if (session.user) {
+    return (
+      <DashboardEdit
+        workspaceId={workspaceId}
+        documentId={documentId}
+        user={session.user}
+      />
+    );
+  }
 }
