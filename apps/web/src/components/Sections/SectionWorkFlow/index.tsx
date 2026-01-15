@@ -5,7 +5,6 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 
 import { Dots } from "@/components/Assets/Dots";
-import AnimatedTitle from "@/components/Animations/AnimatedTitle";
 
 // 🎨 Workflow steps
 // =====================================
@@ -72,15 +71,12 @@ export const SectionWorkFlow = () => {
       </div>
 
       <div className="container mx-auto px-6 bg-black pt-6 relative">
-        <h3 className="uppercase mb-5 text-sm font-medium mt-5 text-white text-center">
+        <h1 className="uppercase mb-5 text-sm font-medium mt-5 text-white text-center">
           How Sandworm works
-        </h3>
-        <AnimatedTitle
-          text="Get started in 3 easy steps"
-          className="lg:text-[4.5rem] text-4xl text-primary mb-4 uppercase  leading-[1.3] text-center font-secondary font-black"
-          wordSpace="mr-[14px]"
-          charSpace="mr-[0.0005em]"
-        />
+        </h1>
+        <h1 className="lg:text-[4.5rem] text-4xl text-primary mb-4 uppercase leading-[1.3] text-center font-secondary font-black">
+          Get started in 3 easy steps
+        </h1>
 
         <div className="flex justify-center mb-16">
           <Dots />

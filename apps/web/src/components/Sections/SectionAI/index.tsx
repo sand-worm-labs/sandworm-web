@@ -10,7 +10,6 @@ import { BarChart } from "@/components/Assets/BarChart";
 import { Ellipse } from "@/components/Assets/Ellipse";
 import { Wave } from "@/components/Assets/Wave";
 import { Dots } from "@/components/Assets/Dots";
-import AnimatedTitle from "@/components/Animations/AnimatedTitle";
 
 import { Users } from "../../Assets/Users";
 
@@ -69,18 +68,13 @@ export const SectionAI = () => {
           ● Let's talk worm AI ●
         </h3>
 
-        <AnimatedTitle
-          text="complex Onchain "
-          className="mx-auto  leading-[1] px-3 lg:px-0 text-primary uppercase font-black lg:text-[4rem]   text-4xl text-center"
-          wordSpace="mr-[14px]"
-          charSpace="mr-[0.0005em]"
-        />
-        <AnimatedTitle
-          text="insight made easy"
-          className="mx-auto  leading-[1] px-3 lg:px-0 text-primary uppercase font-bold lg:text-[4rem] text-4xl text-center"
-          wordSpace="mr-[14px]"
-          charSpace="mr-[0.0005em]"
-        />
+        <h1 className="mx-auto leading-[1] px-3 lg:px-0 text-primary uppercase font-black lg:text-[4rem] text-4xl text-center">
+          complex onchain
+        </h1>
+
+        <h1 className="mx-auto leading-[1] px-3 lg:px-0 text-primary uppercase font-bold lg:text-[4rem] text-4xl text-center">
+          insight made easy
+        </h1>
 
         <div className="flex justify-center mb-8 mt-8">
           <Dots />

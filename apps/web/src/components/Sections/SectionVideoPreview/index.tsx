@@ -5,8 +5,6 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { Button } from "@sandworm/ui/components/button";
 
-import AnimatedTitle from "@/components/Animations/AnimatedTitle";
-
 export const SectionVideoPreview: React.FC = () => {
   const videoSrc = "/img/preview.png";
 
@@ -106,7 +104,7 @@ export const SectionVideoPreview: React.FC = () => {
 
       {/* ════════════ Text Content Overlay ════════════ */}
       <motion.div
-        className="lg:absolute bottom-20 grid lg:grid-cols-[65%,35%]  lg:px-16 px-2 lg:pt-20 pt-16 z-10 bg-gradient-to-b from-transparent to-black/90 backdrop-blur-[0.2rem] w-full"
+        className="lg:absolute bottom-0 grid lg:grid-cols-[65%,35%]  lg:px-16 px-2 lg:pt-20 pt-16 z-10 bg-gradient-to-b from-transparent to-black/90 backdrop-blur-[0.2rem] w-full"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.5 }}
@@ -123,26 +121,13 @@ export const SectionVideoPreview: React.FC = () => {
             ● Easy intelligence
           </motion.h3>
 
-          <AnimatedTitle
-            text="Unlock Clear,"
-            className="lg:text-[2.5rem] text-3xl leading-[1.4]  font-secondary"
-            wordSpace="mr-[14px]"
-            charSpace="mr-[0.0005em]"
-          />
-
-          <AnimatedTitle
-            text="Actionable Data for"
-            className="lg:text-[2.5rem] text-3xl  leading-[1.4]  font-secondary"
-            wordSpace="mr-[14px]"
-            charSpace="mr-[0.0005em]"
-          />
-
-          <AnimatedTitle
-            text="Smarter Decisions."
-            className="lg:text-[2.5rem] text-3xl  leading-[1.4]  font-secondary"
-            wordSpace="mr-[14px]"
-            charSpace="mr-[0.0005em]"
-          />
+          <h1 className="lg:text-[2.5rem] text-3xl leading-[1.4] font-secondary">
+            Unlock clear,
+            <br />
+            actionable data for
+            <br />
+            smarter decisions.
+          </h1>
         </motion.div>
 
         <motion.div
