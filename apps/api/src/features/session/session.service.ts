@@ -113,6 +113,80 @@ export class SessionService {
     return this.toSession(session);
   }
 
+  private parseCookieString(cookieString: string): Record<string, string> {
+    return cookieString.split(';').reduce(
+      (acc, cookie) => {
+        const [key, value] = cookie.trim().split('=');
+        if (key && value) {
+          acc[key] = decodeURIComponent(value);
+        }
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
+  }
+
+  async validateSessionFromCookies(
+    cookies: string | Record<string, string>,
+  ): Promise<Session | null> {
+    let parsedCookies: Record<string, string>;
+
+    if (typeof cookies === 'string') {
+      parsedCookies = this.parseCookieString(cookies);
+    } else {
+      parsedCookies = cookies;
+    }
+
+    const sessionId = parsedCookies['sessionId'] ?? parsedCookies['session_id'];
+    const sessionHash =
+      parsedCookies['sessionHash'] ?? parsedCookies['session_hash'];
+
+    if (!sessionId || !sessionHash) {
+      this.logger.debug('Missing sessionId or sessionHash in cookies');
+      return null;
+    }
+
+    return this.validateSession(sessionId, sessionHash);
+  }
+
+  async validateSessionFromCookiesOrThrow(
+    cookies: string | Record<string, string>,
+  ): Promise<Session> {
+    const session = await this.validateSessionFromCookies(cookies);
+
+    if (!session) {
+      throw new ValidationException(ErrorCode.E001);
+    }
+
+    return session;
+  }
+
+  async validateSession(
+    sessionId: string,
+    hash: string,
+  ): Promise<Session | null> {
+    const session = await this.sessionRepository.findOne({
+      where: {
+        id: sessionId,
+        hash,
+        deletedAt: IsNull(),
+      },
+      relations: ['user', 'user.userWorkspaces'],
+    });
+
+    if (!session) {
+      this.logger.debug(`Session validation failed for id: ${sessionId}`);
+      return null;
+    }
+
+    if (!session.user || session.deletedAt) {
+      this.logger.debug(`Session user is deleted for session: ${sessionId}`);
+      return null;
+    }
+
+    return this.toSession(session);
+  }
+
   async findById(id: string): Promise<Session | null> {
     const session = await this.sessionRepository.findOne({
       where: { id },
