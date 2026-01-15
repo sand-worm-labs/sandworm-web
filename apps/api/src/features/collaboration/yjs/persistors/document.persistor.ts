@@ -7,24 +7,25 @@ import {
   YjsUpdateEntity,
 } from '@sandworm/postgresql-typeorm';
 import { ILockService } from '@sandworm/redis';
-import { 
-  Persistor, 
+import {
+  Persistor,
   ReplaceStateResult,
   LoadStateResult,
-  TransactionOrigin, 
+  TransactionOrigin,
   WSSharedDoc
 } from '../interfaces';
 
 const logger = new Logger('DocumentPersistor');
 
 export class DocumentPersistor implements Persistor {
+
+  private readonly documentId: string;
+  private readonly yjsDocumentRepository: Repository<YjsDocumentEntity>;
+  private readonly yjsUpdateRepository: Repository<YjsUpdateEntity>;
+  private readonly lockService: ILockService
   constructor(
     private readonly docId: string,
-    private readonly documentId: string,
-    private readonly yjsDocumentRepository: Repository<YjsDocumentEntity>,
-    private readonly yjsUpdateRepository: Repository<YjsUpdateEntity>,
-    private readonly lockService: ILockService
-  ) {}
+  ) { }
 
   private applyUpdate(ydoc: Y.Doc, update: Buffer | Uint8Array): number {
     const start = Date.now();
@@ -120,7 +121,7 @@ export class DocumentPersistor implements Persistor {
 
     if (updatesCount > 100) {
       logger.debug(`Cleaning up old updates for document ${this.documentId}. Current count: ${updatesCount}`);
-      
+
       const deleted = await this.yjsUpdateRepository.delete({
         yjsDocumentId,
         createdAt: LessThan(new Date()),

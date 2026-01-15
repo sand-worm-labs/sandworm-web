@@ -1,35 +1,214 @@
 import {
   WebSocketGateway,
   WebSocketServer,
+  SubscribeMessage,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+  ConnectedSocket,
+  MessageBody,
   OnGatewayInit,
-} from '@nestjs/websockets'
-import { Server } from 'socket.io'
-import { JupyterService } from '../jupyter/jupyter.service'
-import { SocketIOAdapter } from '@/core/adapters/socket-io.adapter'
+} from '@nestjs/websockets';
+import { Server, Socket } from 'socket.io';
+import { UseGuards, Logger, UseFilters } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { WsJwtGuard } from '@/core/guards/ws-jwt.guard';
+import { CurrentSession } from '@/core/decorators/session.decorator';
+import { Session } from '@/features/session/domain/session';
+import { WsExceptionFilter } from '@/core/filters/ws-exception.filter';
+import { v4 as uuidv4 } from 'uuid';
+import { createAdapter } from '@socket.io/postgres-adapter';
+import { WorkspaceGatewayService } from './services/workspace.gateway';
+import { EnvironmentGatewayService } from './services/environment.gateway';
+import { PythonCompletionService } from './services/python-completion.service';
+import { CommentGatewayService } from './services/comments.gateway';
 
-@WebSocketGateway()
-export class AppGateway implements OnGatewayInit {
+@WebSocketGateway({
+  cors: {
+    credentials: true,
+    origin: (origin, callback) => callback(null, true),
+  },
+  transports: ['websocket', 'polling'],
+  pingTimeout: 60000,
+  pingInterval: 25000,
+})
+@UseFilters(WsExceptionFilter)
+export class AppGateway
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
-  server: Server
+  server: Server;
+
+  private readonly logger = new Logger(AppGateway.name);
+  private workInProgress = new Map<string, Promise<void>>();
 
   constructor(
-    private jupyterService: JupyterService,
-    private socketIOAdapter: SocketIOAdapter
+    private readonly configService: ConfigService,
+    private readonly workspaceGatewayService: WorkspaceGatewayService,
+    private readonly environmentGatewayService: EnvironmentGatewayService,
+    private readonly pythonCompletionService: PythonCompletionService,
+    private readonly commentGatewayService: CommentGatewayService,
   ) { }
 
-  afterInit(server: Server) {
-    this.socketIOAdapter.setServer(server)
-    //this.jupyterService.setSocketAdapter(this.socketIOAdapter)
+  async afterInit(server: Server): Promise<void> {
+    try {
+      const { pool } = await getPGInstance();
+      server.adapter(
+        createAdapter(pool, {
+          tableName: 'socket_io_attachments',
+          errorHandler: (err) => {
+            this.logger.error('PostgreSQL adapter error', err);
+          },
+        })
+      );
 
-    this.jupyterService.start()
-      .catch(err => console.error('Failed to start Jupyter service', err))
+      server.engine.on('connection_error', (err) => {
+        this.logger.error('Socket.IO connection error', {
+          code: err.code,
+          message: err.message,
+        });
+      });
+
+      this.logger.log('WebSocket Gateway initialized successfully');
+    } catch (error) {
+      this.logger.error('Failed to initialize WebSocket Gateway', error);
+      throw error;
+    }
   }
 
-  handleDisconnect(client: any) {
-    console.log(`Client ${client.id} disconnected`)
+  handleConnection(client: Socket): void {
+    this.logger.log(`Client connected: ${client.id}`);
+
+    client.on('error', (error) => {
+      this.logger.error(`Socket error for client ${client.id}`, error);
+    });
   }
 
-  handleConnection(client: any) {
-    console.log(`Client ${client.id} connected`)
+  async handleDisconnect(client: Socket): Promise<void> {
+    this.logger.log(`Client disconnected: ${client.id}`);
+
+    // Wait for ongoing work to finish
+    while (this.workInProgress.size > 0) {
+      this.logger.log(`Waiting for ${this.workInProgress.size} operations to complete`);
+      await Promise.all(this.workInProgress.values());
+    }
+  }
+
+
+  @UseGuards(WsJwtGuard)
+  @SubscribeMessage('join-workspace')
+  async handleJoinWorkspace(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { workspaceId: string },
+    @CurrentSession() session: Session,
+  ): Promise<void> {
+    await this.trackWork(() =>
+      this.workspaceGatewayService.joinWorkspace(client, data, session)
+    );
+  }
+
+  @UseGuards(WsJwtGuard)
+  @SubscribeMessage('leave-workspace')
+  async handleLeaveWorkspace(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { workspaceId: string },
+    @CurrentSession() session: Session,
+  ): Promise<void> {
+    await this.trackWork(() =>
+      this.workspaceGatewayService.leaveWorkspace(client, data, session)
+    );
+  }
+
+  @UseGuards(WsJwtGuard)
+  @SubscribeMessage('get-environment-status')
+  async handleGetEnvironmentStatus(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { workspaceId: string },
+    @CurrentSession() session: Session,
+  ): Promise<void> {
+    await this.trackWork(() =>
+      this.environmentGatewayService.getEnvironmentStatus(client, data, session)
+    );
+  }
+
+  @UseGuards(WsJwtGuard)
+  @SubscribeMessage('restart-environment')
+  async handleRestartEnvironment(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { workspaceId: string },
+    @CurrentSession() session: Session,
+  ): Promise<void> {
+    await this.trackWork(() =>
+      this.environmentGatewayService.restartEnvironment(client, data, session)
+    );
+  }
+
+  @UseGuards(WsJwtGuard)
+  @SubscribeMessage('complete-python')
+  async handleCompletePython(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { documentId: string; blockId: string; position: number },
+    @CurrentSession() session: Session,
+  ): Promise<void> {
+    await this.trackWork(() =>
+      this.pythonCompletionService.completePython(this.server, client, data, session)
+    );
+  }
+
+  // @UseGuards(WsJwtGuard)
+  // @SubscribeMessage('workspace-datasources-refresh-all')
+  // async handleRefreshAllDataSources(
+  //   @ConnectedSocket() client: Socket,
+  //   @MessageBody() data: { workspaceId: string },
+  //   @CurrentSession() session: Session,
+  // ): Promise<void> {
+  //   await this.trackWork(() =>
+  //     this.dataSourceGatewayService.refreshAllDataSources(this.server, client, data, session)
+  //   );
+  // }
+
+  // @UseGuards(WsJwtGuard)
+  // @SubscribeMessage('workspace-datasources-refresh-one')
+  // async handleRefreshOneDataSource(
+  //   @ConnectedSocket() client: Socket,
+  //   @MessageBody() data: {
+  //     workspaceId: string;
+  //     dataSourceId: string;
+  //     dataSourceType: string;
+  //   },
+  //   @CurrentSession() session: Session,
+  // ): Promise<void> {
+  //   await this.trackWork(() =>
+  //     this.dataSourceGatewayService.refreshOneDataSource(this.server, client, data, session)
+  //   );
+  // }
+
+  @UseGuards(WsJwtGuard)
+  @SubscribeMessage('fetch-document-comments')
+  async handleFetchDocumentComments(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { documentId: string },
+    @CurrentSession() session: Session,
+  ): Promise<void> {
+    await this.trackWork(() =>
+      this.commentGatewayService.fetchDocumentComments(client, data, session)
+    );
+  }
+
+  // ============================================
+  // Helper Methods
+  // ============================================
+
+  private async trackWork<T>(fn: () => Promise<T>): Promise<T> {
+    const id = uuidv4();
+    try {
+      const promise = fn();
+      this.workInProgress.set(id, promise as Promise<void>);
+      return await promise;
+    } finally {
+      this.workInProgress.delete(id);
+    }
+  }
+
+  getServer(): Server {
+    return this.server;
   }
 }

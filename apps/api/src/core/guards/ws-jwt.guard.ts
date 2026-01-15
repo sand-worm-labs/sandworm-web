@@ -1,53 +1,47 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+import { CanActivate, ExecutionContext, Injectable, Logger } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
+import cookie from 'cookie';
+import { SessionService } from '@/features/session/session.service';
 
 @Injectable()
 export class WsJwtGuard implements CanActivate {
-  constructor(private jwtService: JwtService) {}
+  private readonly logger = new Logger(WsJwtGuard.name);
+
+  constructor(private readonly sessionService: SessionService) { }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    try {
-      const client: Socket = context.switchToWs().getClient();
-      const token = this.extractTokenFromHandshake(client);
+    const client: Socket = context.switchToWs().getClient();
 
-      if (!token) {
+    try {
+      // Check if session is already attached (from previous calls)
+      if (client.data.session) {
+        return true;
+      }
+
+      const cookiesHeader = client.handshake.headers.cookie;
+      if (!cookiesHeader) {
+        throw new WsException('No cookies provided');
+      }
+
+      const cookies = cookie.parse(cookiesHeader);
+
+      // Use your existing session service to validate
+      const session = await this.sessionService.validateSessionFromCookies(cookies);
+
+      if (!session) {
         throw new WsException('Unauthorized');
       }
 
-      const payload = await this.jwtService.verifyAsync(token);
-      
-      // Attach user to the socket/client object for later use
-      client.data.user = payload;
-      
+      // Attach session to socket data for reuse
+      client.data.session = session;
       return true;
-    } catch (error) {
+    } catch (err) {
+      this.logger.error(
+        `WebSocket authentication failed for socket ${client.id}`,
+        err
+      );
       throw new WsException('Unauthorized');
     }
-  }
-
-  private extractTokenFromHandshake(client: Socket): string | undefined {
-    // Extract from handshake auth
-    const token = client.handshake?.auth?.token;
-    
-    if (token) {
-      return token;
-    }
-
-    // Alternative: Extract from query parameters
-    const queryToken = client.handshake?.query?.token;
-    if (queryToken && typeof queryToken === 'string') {
-      return queryToken;
-    }
-
-    // Alternative: Extract from headers (Authorization: Bearer <token>)
-    const authHeader = client.handshake?.headers?.authorization;
-    if (authHeader) {
-      const [type, tokenValue] = authHeader.split(' ');
-      return type === 'Bearer' ? tokenValue : undefined;
-    }
-
-    return undefined;
   }
 }

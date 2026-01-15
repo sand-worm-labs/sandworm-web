@@ -16,17 +16,23 @@ export class SessionService {
     private readonly sessionRepository: Repository<SessionEntity>,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
-  ) {}
+  ) { }
 
   private toSession(sessionEntity: SessionEntity): Session {
-    const { password, ...safeUser } = sessionEntity.user;
+    const { password, userWorkspaces, ...safeUser } = sessionEntity.user;
+    const workspeAnceRoles = userWorkspaces.reduce((acc, workspace) => {
+      acc[workspace.workspaceId] = { role: workspace.role };
+      return acc;
+    }, {} as Record<string, { role: string }>);
+
     return {
       id: sessionEntity.id,
       hash: sessionEntity.hash,
       createdAt: sessionEntity.createdAt,
       updatedAt: sessionEntity.updatedAt,
       deletedAt: sessionEntity.deletedAt,
-      user: safeUser,
+      user: { ...safeUser } as UserResponse,
+      userWorkspaces: workspeAnceRoles,
     };
   }
 
@@ -73,8 +79,12 @@ export class SessionService {
     }
 
     const updatedSession = await this.sessionRepository.save({
-      ...session,
-      ...payload,
+      id: session.id,
+      hash: payload.hash ?? session.hash,
+      deletedAt: session.deletedAt,
+      user: session.user,
+      createdAt: session.createdAt,
+      updatedAt: session.updatedAt,
     });
 
     return this.toSession(updatedSession);
