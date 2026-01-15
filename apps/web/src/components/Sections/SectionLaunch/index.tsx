@@ -10,7 +10,6 @@ import { CircuitIcon } from "@/components/Assets/Circuit";
 import { Dots } from "@/components/Assets/Dots";
 import { Boxes } from "@/components/Assets/Boxes";
 import { Blur } from "@/components/Assets/Blur";
-import AnimatedTitle from "@/components/Animations/AnimatedTitle";
 
 interface FeatureCardProps {
   children: React.ReactNode;
@@ -56,15 +55,13 @@ export const SectionFeatures = () => {
   return (
     <section className="lg:py-32 py-16 bg-black text-white">
       <div className="container mx-auto px-5 py-16">
-        <h3 className="uppercase mb-5 text-xs font-semibold mt-5 text-center">
+        <h1 className="uppercase mb-5 text-xs font-semibold mt-5 text-center">
           ● Built to Last ●
-        </h3>
-        <AnimatedTitle
-          wordSpace="mr-[14px]"
-          charSpace="mr-[0.0005em]"
-          text="Built for the future"
-          className="lg:text-[4.5rem] text-4xl text-primary mb-4 uppercase font-black leading-[1.3] text-center"
-        />
+        </h1>
+        <h1 className="lg:text-[4.5rem] text-4xl text-primary mb-4 uppercase font-black leading-[1.3] text-center">
+          Built for the future
+        </h1>
+
         <div className="flex justify-center mb-16">
           <Dots />
         </div>

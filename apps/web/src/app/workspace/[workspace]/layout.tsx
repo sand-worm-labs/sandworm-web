@@ -18,7 +18,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <div className="font-primary">
       <ProgressProvider
         height="1px"
-        color="#FF7F4F"
+        color="#A308F0"
         options={{ showSpinner: false }}
         shallowRouting
       >
