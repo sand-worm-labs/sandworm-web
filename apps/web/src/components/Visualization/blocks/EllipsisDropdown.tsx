@@ -48,8 +48,8 @@ interface Props {
 function EllipsisDropdown(props: Props) {
   return (
     <Menu as="div" className="relative h-full">
-      <Menu.Button className="flex items-center rounded-sm px-3 py-1 text-sm text-gray-500 hover:bg-gray-100 dark:bg-black  border border-gray-200 dark:border-[#262A30] h-full bg-white">
-        <EllipsisHorizontalIcon className="w-4 h-4" />
+      <Menu.Button className="flex items-center rounded-sm px-3 py-1 text-sm text-gray-500 hover:bg-gray-100 dark:bg-black   h-full bg-white">
+        <EllipsisHorizontalIcon className="w-5 h-4" />
       </Menu.Button>
       <Transition
         as="div"
