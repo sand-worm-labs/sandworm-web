@@ -2,42 +2,71 @@
 
 import dynamic from "next/dynamic";
 import Head from "next/head";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-import { useSession } from "@/components/Visualization/hooks/useAuth";
 import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
+import { useSession } from "@/components/Visualization/hooks/useAuth";
 import useDocument from "@/components/Visualization/hooks/useDocument";
+import type { SessionUser } from "@/types";
 
 const Dashboard = dynamic(
   () => import("@/components/Visualization/blocks/Dashboard"),
   { ssr: false }
 );
 
-export default function DashboardPage() {
-  const session = useSession({ redirectToLogin: true });
+interface Props {
+  workspaceId: string;
+  documentId: string;
+  user: SessionUser;
+}
 
-  const workspaceId = useStringQuery("workspace");
-  const documentId = useStringQuery("document");
+export function DashboardEdit(props: Props) {
+  const [{ document, loading }] = useDocument(
+    props.workspaceId,
+    props.documentId
+  );
+  const router = useRouter();
+  const role = props.user.roles?.[props.workspaceId] || "viewer";
+  useEffect(() => {
+    if (loading) {
+      return;
+    }
 
-  const [{ document, loading }] = useDocument(workspaceId, documentId);
+    if (!document) {
+      router.replace(`/workspace/${props.workspaceId}`);
+      return;
+    }
 
-  // Wait until everything is ready
-  if (!session.user || loading || !document) {
+    if (!document.hasDashboard) {
+      router.replace(
+        `/workspace/${props.workspaceId}/documents/${props.documentId}/dashboard/edit${window.location.search}`
+      );
+      return;
+    }
+
+    if (role === "viewer") {
+      router.replace(
+        `/workspace/${props.workspaceId}/documents/${props.documentId}/dashboard${window.location.search}`
+      );
+    }
+  }, [document, loading, role, props.workspaceId, props.documentId, router]);
+
+  if (loading || !document || role === "viewer") {
     return null;
   }
-
-  const role = session.user.roles?.[workspaceId] ?? "viewer";
 
   return (
     <>
       <Head>
-        <title>{document.title || "Untitled"} - Dashboard</title>
+        <title>{document.title || "Untitled"} - Dashboard Edit</title>
       </Head>
       <main className="min-h-screen dark:bg-neutral-950 dark:text-white">
         <Dashboard
           document={document}
           role={role}
-          user={session.user}
-          isEditing={false}
+          user={props.user}
+          isEditing
           publish={() => Promise.resolve()}
           publishing={false}
         />
