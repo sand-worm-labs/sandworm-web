@@ -1,6 +1,6 @@
 export * from './document.entity';
 export * from './message.entity';
-export * from './favorite.entity'; 
+export * from './favorite.entity';
 export * from './comment.entity';
 export * from './tag.entity';
 export * from './user-follows.entity';
@@ -8,7 +8,7 @@ export * from './user.entity';
 export * from './user-setting.entity';
 export * from "./user-yjs-app-document.entity"
 export * from "./user-workspace.entity";
-export * from  './session.entity';
+export * from './session.entity';
 export * from './workspace.entity';
 export * from './environment.entity';
 export * from './environment_variable.entity';
@@ -24,4 +24,5 @@ export * from './yjs-app-document.entity';
 export * from './yjs-update.entity';
 export * from './pub-sub-payload.entity';
 export * from './socket-io-attachments.entity';
-export * from "./user-workspace.entity"
+export * from "./user-workspace.entity";
+

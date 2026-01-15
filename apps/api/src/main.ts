@@ -27,6 +27,7 @@ import { GlobalExceptionFilter } from './core/filters/global-exception.filter';
 import { AuthGuard } from './core/guards/auth.guard';
 import { setupSwagger } from './common/utils/setup-swagger';
 import { AuthGraphqlService } from './features/auth/graphql/auth-graphql.service';
+
 async function bootstrap() {
   const fastifyAdapter = new FastifyAdapter({
     requestIdHeader: REQUEST_ID_HEADER,
