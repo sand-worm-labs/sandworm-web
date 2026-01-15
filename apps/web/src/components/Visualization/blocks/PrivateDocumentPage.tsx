@@ -267,37 +267,17 @@ function PrivateDocumentPageInner(
     }
 
     await props.publish();
-
-    // 💭 temp Local storage settings
-    const stored = localStorage.getItem(
-      `workspace_documents_local_${props.document.workspaceId}`
-    );
-    if (stored) {
-      const docs = JSON.parse(stored);
-      const updatedDoc = docs.find((d: any) => d.id === props.document.id);
-
-      if (updatedDoc?.publishedAt) {
-        persistYDocToIndexedDB(
-          props.document.id,
-          yDoc,
-          clock,
-          updatedDoc.publishedAt
-        );
-      }
-    }
-
     router.push(
       `/workspace/${props.document.workspaceId}/documents/${props.document.id}/notebook`
     );
   }, [
     props.publishing,
     props.publish,
-    yDoc,
-    clock,
-    props.document.id,
     props.document.workspaceId,
+    props.document.id,
     router,
   ]);
+
   const onGoToApp = useCallback(() => {
     router.push(
       `/workspace/${props.document.workspaceId}/documents/${props.document.id}/notebook`

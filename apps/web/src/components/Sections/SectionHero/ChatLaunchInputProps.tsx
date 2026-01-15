@@ -72,7 +72,7 @@ export const ChatLaunchInput = forwardRef<
             value={input}
             onChange={onInputChange}
             onKeyDown={undefined}
-            className="min-h-[40px] overflow-hidden resize-none  bg-custom-dark-gray  text-sm placeholder:text-[13px] font-medium focus:ring-0 focus:outline-none   scrollbar-thin scrollbar-thumb-rounded-md scrollbar-thumb-zinc-700 py-4 px-6 placeholder:text-neutral-500 placeholder:tracking-wide rounded-[23px] "
+            className="min-h-[40px] overflow-hidden resize-none  bg-custom-dark-gray  text-sm placeholder:text-[13px] font-medium focus:ring-0 focus:outline-none   scrollbar-thin scrollbar-thumb-rounded-md scrollbar-thumb-zinc-700 py-4 px-6 placeholder:text-neutral-500 placeholder:tracking-wide rounded-[23px] border-0 "
             rows={4}
           />
         </div>
