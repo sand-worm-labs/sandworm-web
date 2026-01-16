@@ -181,13 +181,13 @@ export const WorkspaceSidebar = () => {
 
   return (
     <aside
-      className={`h-full flex flex-col justify-between dark:bg-[#0C1015] bg-[#F1F3F4] border-r dark:border-[#262A30] border-[#E9ECEF]
+      className={`h-full flex flex-col justify-between dark:bg-[#0C1015] bg-[#FBFBFB] border-r dark:border-[#262A30] border-[#E9ECEF] font-body
       transition-all duration-300 ease-in-out
-      ${collapsed ? "w-16" : "w-[220px]"}
+      ${collapsed ? "w-16" : "w-[300px]"}
       `}
     >
       <div>
-        <div className="flex justify-between py-[0.69rem] px-3   bg-white dark:bg-black border-b border-[#E9ECEF] dark:border-[#262A30] items-center">
+        <div className="flex justify-between py-[0.69rem] px-3   bg-[#F9F9F9] dark:bg-black items-center">
           {!collapsed && (
             <Link href="/" className="flex items-center gap-2">
               <SandwormLogo width="30" height="30" />
@@ -250,7 +250,7 @@ export const WorkspaceSidebar = () => {
                   type="button"
                   id="create-workspace-doc"
                   onClick={onCreateDocumentHandler}
-                  className="p-1 hover:text-ceramic-500 hover:bg-white hover:text-black rounded-md hover:cursor-pointer text-sm border mt-3 flex px-5 items-center justify-center w-full border-[#E6E0F1] dark:border-[#262A30] text-[#6C757D] mb-3 "
+                  className="p-1.5 hover:text-ceramic-500 hover:bg-white bg-[#F3F3FA] hover:text-black rounded-lg hover:cursor-pointer text-sm border mt-3 flex px-5 items-center justify-center w-full border-[#D000FF]  text-[#A308F0] mb-3 "
                 >
                   {" "}
                   <PlusSmallIcon className="h-4 w-4 mr-3 " aria-hidden="true" />
