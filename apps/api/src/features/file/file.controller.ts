@@ -9,7 +9,6 @@ import {
     HttpStatus,
     HttpException,
     UseInterceptors,
-    UploadedFile,
     Req,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -28,10 +27,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 export class FileController {
     constructor(private readonly fileService: FileService) { }
 
-    /**
-     * List all files in workspace
-     * GET /v1/workspaces/:workspaceId/files
-     */
+
     @Get()
     @ApiAuth({
         summary: 'List files in workspace',
@@ -40,10 +36,7 @@ export class FileController {
         return this.fileService.listFiles({ workspaceId });
     }
 
-    /**
-     * Download a file
-     * GET /v1/workspaces/:workspaceId/files/file?path=/some/file.txt
-     */
+
     @Get('file')
     @ApiPublic({
         summary: 'Download file from workspace',
@@ -73,11 +66,6 @@ export class FileController {
         return reply.send(fileResult.stream);
     }
 
-    /**
-     * Upload a file (multipart/form-data)
-     * POST /v1/workspaces/:workspaceId/files?replace=true
-     * Form field: 'file'
-     */
     @UseInterceptors(FileInterceptor('file'))
     @Post()
     async uploadFile(
