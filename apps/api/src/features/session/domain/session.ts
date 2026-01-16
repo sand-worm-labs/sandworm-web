@@ -7,4 +7,5 @@ export class Session {
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date;
+  userWorkspaces?: Record<string, { role: string }>;
 }
