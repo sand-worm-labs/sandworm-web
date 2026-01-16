@@ -21,6 +21,7 @@ import {
   genReqId,
   REQUEST_ID_HEADER,
 } from '@sandworm/nest-common';
+import { Logger } from 'nestjs-pino';
 import { AppModule } from './app.module';
 import { AllConfigType } from './core/config/config.type';
 import { GlobalExceptionFilter } from './core/filters/global-exception.filter';
@@ -43,6 +44,7 @@ async function bootstrap() {
   );
 
   // Get services
+  app.useLogger(app.get(Logger));
   const configService = app.get(ConfigService<AllConfigType>);
   const reflector = app.get(Reflector);
   const httpAdapterHost = app.get(HttpAdapterHost);
