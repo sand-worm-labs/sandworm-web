@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Grid2X2, List, GitBranch, Clock } from "lucide-react";
 import { SparkleAI } from "@/components/Assets/SparkleAI";
 import { cn } from "@sandworm/ui/lib/utils";
+import { Dashboard } from "@/components/Assets/Dashboard";
+import { Notebook } from "@/components/Assets/Notebook";
 
 // =====================================
 // Types
@@ -48,7 +50,7 @@ const PanelItem = ({
       aria-label={action.label}
       title={action.label}
     >
-      <Icon size={20} />
+      <Icon size={18} />
     </button>
   );
 };
@@ -97,12 +99,12 @@ export const NotebookPanel = ({ sidebarContent }: NotebookPanelProps) => {
       items: [
         {
           id: "grid-view",
-          icon: Grid2X2,
+          icon: Dashboard,
           label: "Grid View",
         },
         {
           id: "list-view",
-          icon: List,
+          icon: Notebook,
           label: "List View",
         },
       ],
