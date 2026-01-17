@@ -6,7 +6,6 @@ import {
   YjsDocumentEntity,
   YjsUpdateEntity,
 } from '@sandworm/postgresql-typeorm';
-import { ILockService } from '@sandworm/redis';
 import {
   Persistor,
   ReplaceStateResult,
@@ -14,7 +13,7 @@ import {
   TransactionOrigin,
   WSSharedDoc
 } from '../interfaces';
-
+import { LockService } from '@/infrastructure/lock/lock.services';
 
 export class DocumentPersistor implements Persistor {
 
@@ -24,14 +23,14 @@ export class DocumentPersistor implements Persistor {
     private readonly documentId: string,
     private readonly yjsDocumentRepository: Repository<YjsDocumentEntity>,
     private readonly yjsUpdateRepository: Repository<YjsUpdateEntity>,
-    private readonly lockService: ILockService,
+    private readonly lockService: LockService,
   ) { }
 
   static create(
     documentId: string,
     yjsDocumentRepository: Repository<YjsDocumentEntity>,
     yjsUpdateRepository: Repository<YjsUpdateEntity>,
-    lockService: ILockService
+    lockService: LockService
   ): DocumentPersistor {
     return new DocumentPersistor(
       documentId,
