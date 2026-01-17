@@ -8,7 +8,7 @@ import {
 import { AbstractEntity } from './abstract.entity'
 
 @Entity('lock')
-export class Lock extends AbstractEntity {
+export class LockEntity extends AbstractEntity {
     @PrimaryGeneratedColumn('uuid')
     id!: string
 

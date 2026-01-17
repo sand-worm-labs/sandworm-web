@@ -1,330 +1,221 @@
-import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
-import PQueue from 'p-queue';
-import { z } from 'zod';
-import { exhaustiveCheck } from '@sandworm/types';
-import { PubSubService } from '../pubsub/service/pubsub.service';
-import { LOCK_CONFIG } from './lock.constants';
-import { AlreadyAcquiredError } from './lock.errors';
-import { getChannel } from './lock.utils';
-import { LockEntity } from "@sandworm/postgresql-typeorm"
+import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { Repository } from 'typeorm'
+import { v4 as uuidv4 } from 'uuid'
+import PQueue from 'p-queue'
+import { z } from 'zod'
+import { exhaustiveCheck } from '@sandworm/types'
+import { PubSubService } from '../pubsub/service/pubsub.service'
+import { LOCK_CONFIG } from './lock.constants'
+import { AlreadyAcquiredError } from './lock.errors'
+import { getChannel } from './lock.utils'
+import { LockEntity } from '@sandworm/postgresql-typeorm'
 
 @Injectable()
 export class LockService implements OnModuleDestroy {
-    private readonly logger = new Logger(LockService.name);
-    private readonly queues = new Map<string, PQueue>();
+    private readonly logger = new Logger(LockService.name)
+    private readonly queues = new Map<string, PQueue>()
 
     constructor(
         private readonly pubsub: PubSubService,
+        @InjectRepository(LockEntity)
+        private readonly lockRepository: Repository<LockEntity>,
     ) { }
 
-    async acquireLock<T>(name: string, cb: () => Promise<T>): Promise<T> {
-        let lockQueue = this.queues.get(name);
-
-        if (!lockQueue) {
-            lockQueue = new PQueue({ concurrency: 1 });
-            this.queues.set(name, lockQueue);
-        }
-
-        if (this.logger.isLevelEnabled('debug')) {
-            this.logger.debug(
-                `Enqueueing lock acquisition: ${name} (queue: ${lockQueue.size}, pending: ${lockQueue.pending})`,
-            );
-        }
-
-        const result = await lockQueue.add(() => this.acquireLockInternal(name, cb));
-        return result as T;
+    private debugEnabled() {
+        return Logger.isLevelEnabled('debug')
     }
 
-    private async acquireLockInternal<T>(
+    async acquireLock<T>(name: string, cb: () => Promise<T>): Promise<T> {
+        let queue = this.queues.get(name)
+
+        if (!queue) {
+            queue = new PQueue({ concurrency: 1 })
+            this.queues.set(name, queue)
+        }
+
+        if (this.debugEnabled()) {
+            this.logger.debug(
+                `Enqueue lock: ${name} (size=${queue.size}, pending=${queue.pending})`,
+            )
+        }
+
+        return queue.add(() => this.acquireInternal(name, cb)) as Promise<T>
+    }
+
+    private async acquireInternal<T>(
         name: string,
         cb: () => Promise<T>,
     ): Promise<T> {
-        const acquisitionQueue = new PQueue({ concurrency: 1 });
-        const ownerId = uuidv4();
-        const channel = getChannel(name);
+        const acquisitionQueue = new PQueue({ concurrency: 1 })
+        const ownerId = uuidv4()
+        const channel = getChannel(name)
 
-        let acquired = false;
-        let failed = false;
-        let attempt = 0;
-        let timeout: NodeJS.Timeout | null = null;
+        let acquired = false
+        let finished = false
+        let timeout: NodeJS.Timeout | null = null
 
-        return new Promise<T>(async (resolve, reject) => {
-            let cleanSubscription: () => Promise<void> = async () => { };
+        let unsubscribe: () => Promise<void> = async () => { }
 
-            const tryAcquire = async () => {
-                if (acquired || failed) {
-                    return;
-                }
+        const tryAcquire = async () => {
+            if (acquired || finished) return
 
-                attempt++;
+            if (this.debugEnabled()) {
+                this.logger.debug(`Trying lock: ${name} (${ownerId})`)
+            }
 
-                if (this.logger.isLevelEnabled('debug')) {
-                    this.logger.debug(
-                        `Acquiring lock: ${name} (owner: ${ownerId}, attempt: ${attempt}, channel: ${channel})`,
-                    );
-                }
+            try {
+                await this.attemptLockAcquisition(name, ownerId)
 
-                try {
-                    await this.attemptLockAcquisition(name, ownerId);
-                } catch (err) {
-                    const shouldRetry = this.handleAcquisitionError(
-                        err,
-                        name,
-                        ownerId,
-                        attempt,
-                        channel,
-                    );
+                acquired = true
+                await unsubscribe()
 
-                    if (shouldRetry) {
-                        if (timeout) {
-                            clearTimeout(timeout);
-                        }
-                        timeout = setTimeout(
-                            () => acquisitionQueue.add(tryAcquire),
-                            LOCK_CONFIG.RETRY_TIMEOUT,
-                        );
-                        return;
-                    }
+                this.logger.log(`Lock acquired: ${name} (${ownerId})`)
 
-                    this.logger.error(
-                        `Failed to acquire lock: ${name} (owner: ${ownerId})`,
-                        err instanceof Error ? err.stack : String(err),
-                    );
-
-                    failed = true;
-
-                    try {
-                        await cleanSubscription();
-                    } catch (cleanErr) {
-                        this.logger.error(
-                            `Failed to clean subscription: ${name}`,
-                            cleanErr instanceof Error ? cleanErr.stack : String(cleanErr),
-                        );
-                    }
-
-                    reject(err);
-                    return;
-                }
-
-                // Lock acquired successfully
-                const extendExpirationInterval = this.startExpirationExtension(
-                    name,
-                    ownerId,
-                    channel,
-                    attempt,
-                );
-
-                this.logger.log(`Lock acquired: ${name} (owner: ${ownerId}, attempt: ${attempt})`);
-                acquired = true;
+                const extender = this.startExpirationExtension(name, ownerId)
 
                 try {
-                    await cleanSubscription();
-                } catch (err) {
-                    this.logger.error(
-                        `Failed to clean subscription: ${name}`,
-                        err instanceof Error ? err.stack : String(err),
-                    );
+                    return await cb()
+                } finally {
+                    clearInterval(extender)
+                    await this.releaseLock(name, ownerId, channel)
+                }
+            } catch (err) {
+                if (this.shouldRetry(err)) {
+                    if (timeout) clearTimeout(timeout)
+                    timeout = setTimeout(
+                        () => acquisitionQueue.add(tryAcquire),
+                        LOCK_CONFIG.RETRY_TIMEOUT,
+                    )
+                    return
                 }
 
-                // Execute callback
-                let result:
-                    | { success: true; data: T }
-                    | { success: false; error: unknown }
-                    | null = null;
+                finished = true
+                await unsubscribe()
+                throw err
+            }
+        }
 
-                try {
-                    const data = await cb();
-                    result = { success: true, data };
-                } catch (err) {
-                    result = { success: false, error: err };
-                }
+        unsubscribe = await this.pubsub.subscribe(channel, (event) => {
+            if (!acquired && event === name) {
+                acquisitionQueue.clear()
+                acquisitionQueue.add(tryAcquire)
+            }
+        })
 
-                // Release lock
-                if (this.logger.isLevelEnabled('debug')) {
-                    this.logger.debug(`Releasing lock: ${name} (owner: ${ownerId})`);
-                }
-
-                clearInterval(extendExpirationInterval);
-
-                await this.releaseLock(name, ownerId, channel, attempt);
-
-                if (result.success) {
-                    resolve(result.data);
-                } else {
-                    failed = true;
-                    reject(result.error);
-                }
-            };
-
-            // Setup pub/sub subscription
-            cleanSubscription = await this.pubsub.subscribe(
-                channel,
-                async (event) => {
-                    if (acquired || failed) {
-                        await cleanSubscription();
-                        return;
-                    }
-
-                    if (event === name) {
-                        if (this.logger.isLevelEnabled('debug')) {
-                            this.logger.debug(
-                                `Lock released notification: ${name} (queue: ${acquisitionQueue.size})`,
-                            );
-                        }
-
-                        acquisitionQueue.clear();
-                        acquisitionQueue.add(tryAcquire);
-                    }
-                },
-            );
-
-            acquisitionQueue.add(tryAcquire);
-        });
+        return acquisitionQueue.add(tryAcquire) as Promise<T>
     }
 
     private async attemptLockAcquisition(
         name: string,
         ownerId: string,
     ): Promise<void> {
-        const lock = await this.prisma.lock.findFirst({
-            where: { name },
-        });
+        const lock = await this.lockRepository.findOne({ where: { name } })
+        const expiresAt = new Date(Date.now() + LOCK_CONFIG.EXPIRATION_TIME)
 
         if (!lock) {
-            // Create new lock
-            await this.prisma.lock.create({
-                data: {
-                    name,
-                    isLocked: true,
-                    ownerId,
-                    expiresAt: new Date(Date.now() + LOCK_CONFIG.EXPIRATION_TIME),
-                    acquiredAt: new Date(),
-                },
-            });
-        } else if (!lock.isLocked || lock.expiresAt < new Date()) {
-            // Update existing expired/unlocked lock
-            await this.prisma.lock.update({
-                where: {
-                    id: lock.id,
-                    clock: lock.clock,
-                },
-                data: {
-                    isLocked: true,
-                    ownerId,
-                    expiresAt: new Date(Date.now() + LOCK_CONFIG.EXPIRATION_TIME),
-                    acquiredAt: new Date(),
-                    clock: { increment: 1 },
-                },
-            });
-        } else {
-            // Lock is already acquired
-            throw new AlreadyAcquiredError(name);
+            await this.lockRepository.insert({
+                name,
+                isLocked: true,
+                ownerId,
+                expiresAt,
+                acquiredAt: new Date(),
+                clock: '0',
+            })
+            return
         }
+
+        if (!lock.isLocked || lock.expiresAt < new Date()) {
+            const result = await this.lockRepository.update(
+                { id: lock.id, clock: lock.clock },
+                {
+                    isLocked: true,
+                    ownerId,
+                    expiresAt,
+                    acquiredAt: new Date(),
+                    clock: String(BigInt(lock.clock) + 1n),
+                },
+            )
+
+            if (result.affected === 0) {
+                throw new AlreadyAcquiredError(name)
+            }
+
+            return
+        }
+
+        throw new AlreadyAcquiredError(name)
     }
 
-    private handleAcquisitionError(
-        err: unknown,
-        name: string,
-        ownerId: string,
-        attempt: number,
-        channel: string,
-    ): boolean {
-        let code = '';
+    private shouldRetry(err: unknown): boolean {
+        if (err instanceof AlreadyAcquiredError) return true
 
-        if (err instanceof AlreadyAcquiredError) {
-            code = 'AlreadyAcquiredError';
-        } else {
-            const parsed = z
-                .object({ code: z.union([z.literal('P2002'), z.literal('P2025')]) })
-                .safeParse(err);
+        const parsed = z
+            .object({ code: z.union([z.literal('P2002'), z.literal('P2025')]) })
+            .safeParse(err)
 
-            if (parsed.success) {
-                switch (parsed.data.code) {
-                    case 'P2002':
-                        code = 'UniqueConstraintError';
-                        break;
-                    case 'P2025':
-                        code = 'NotFound';
-                        break;
-                    default:
-                        exhaustiveCheck(parsed.data.code);
-                }
-            }
+        if (!parsed.success) return false
+
+        switch (parsed.data.code) {
+            case 'P2002':
+            case 'P2025':
+                return true
+            default:
+                exhaustiveCheck(parsed.data.code)
+                return false
         }
-
-        if (code !== '') {
-            if (this.logger.isLevelEnabled('debug')) {
-                this.logger.debug(
-                    `Lock already acquired: ${name} (code: ${code}, retry: ${LOCK_CONFIG.RETRY_TIMEOUT}ms)`,
-                );
-            }
-            return true;
-        }
-
-        return false;
     }
 
     private startExpirationExtension(
         name: string,
         ownerId: string,
-        channel: string,
-        attempt: number,
     ): NodeJS.Timeout {
         return setInterval(async () => {
             try {
-                await this.prisma.lock.updateMany({
-                    where: { name, ownerId },
-                    data: {
-                        expiresAt: new Date(Date.now() + LOCK_CONFIG.EXPIRATION_TIME),
-                    },
-                });
+                await this.lockRepository.update(
+                    { name, ownerId },
+                    { expiresAt: new Date(Date.now() + LOCK_CONFIG.EXPIRATION_TIME) },
+                )
             } catch (err) {
                 this.logger.error(
-                    `Failed to extend lock expiration: ${name}`,
+                    `Failed to extend lock: ${name}`,
                     err instanceof Error ? err.stack : String(err),
-                );
+                )
             }
-        }, LOCK_CONFIG.EXPIRATION_TIME / 3);
+        }, LOCK_CONFIG.EXPIRATION_TIME / 3)
     }
 
     private async releaseLock(
         name: string,
         ownerId: string,
         channel: string,
-        attempt: number,
     ): Promise<void> {
         try {
-            await this.prisma.lock.updateMany({
-                where: { name, ownerId },
-                data: { isLocked: false },
-            });
-
-            this.logger.log(`Lock released: ${name} (owner: ${ownerId})`);
+            await this.lockRepository.update(
+                { name, ownerId },
+                { isLocked: false },
+            )
+            this.logger.log(`Lock released: ${name} (${ownerId})`)
         } catch (err) {
             this.logger.error(
                 `Failed to release lock: ${name}`,
                 err instanceof Error ? err.stack : String(err),
-            );
+            )
         }
 
         try {
-            await this.pubsub.publish(channel, name);
+            await this.pubsub.publish(channel, name)
         } catch (err) {
             this.logger.error(
                 `Failed to publish lock release: ${name}`,
                 err instanceof Error ? err.stack : String(err),
-            );
+            )
         }
     }
 
-    async onModuleDestroy() {
-        this.logger.log('Clearing all lock queues');
-
-        for (const [name, queue] of this.queues) {
-            queue.clear();
-        }
-
-        this.queues.clear();
+    onModuleDestroy() {
+        this.logger.log('Clearing lock queues')
+        for (const queue of this.queues.values()) queue.clear()
+        this.queues.clear()
     }
 }

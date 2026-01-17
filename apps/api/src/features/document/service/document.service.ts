@@ -8,7 +8,6 @@ import {
   YjsDocumentEntity,
 } from '@sandworm/postgresql-typeorm';
 import { Not, Repository, In } from 'typeorm';
-import { Doc, encodeStateAsUpdate } from 'yjs';
 import {
   CreateDocumentInput,
   DeleteDocumentInput,
