@@ -34,6 +34,17 @@ export class DocumentResolver {
   }
 
   @Query(() => [Document], {
+    name: 'getFavoriteDocuments',
+    description: 'Get User favorite documents',
+  })
+  async getFavoriteDocuments(
+    @Args('workspaceId') workspaceId: string,
+    @CurrentUser('id') userId: string,
+  ): Promise<Document[]> {
+    return this.documentService.getFavoriteDocuments(userId, workspaceId);
+  }
+
+  @Query(() => [Document], {
     name: 'getWorkspaceDocuments',
     description: 'Get all documents in a workspace',
   })

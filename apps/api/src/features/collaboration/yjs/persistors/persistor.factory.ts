@@ -7,7 +7,7 @@ import {
     YjsAppDocumentEntity,
     UserYjsAppDocumentEntity,
 } from '@sandworm/postgresql-typeorm';
-import { LockService } from '@sandworm/redis';
+import { LockService } from '@/infrastructure/lock/lock.services';
 import { DocumentPersistor } from './document.persistor';
 import { AppPersistor } from './app.persistor';
 import { Persistor } from '../interfaces/persistor.interface';
