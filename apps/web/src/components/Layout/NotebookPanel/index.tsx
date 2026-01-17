@@ -111,18 +111,7 @@ export const NotebookPanel = ({ sidebarContent }: NotebookPanelProps) => {
     },
   ];
 
-  const bottomActions: PanelAction[] = [
-    {
-      id: "version-control",
-      icon: GitBranch,
-      label: "Version Control",
-    },
-    {
-      id: "history",
-      icon: Clock,
-      label: "History",
-    },
-  ];
+  const bottomActions: PanelAction[] = [];
 
   const handleItemClick = (itemId: string) => {
     setActiveItem(prev => (prev === itemId ? null : itemId));
