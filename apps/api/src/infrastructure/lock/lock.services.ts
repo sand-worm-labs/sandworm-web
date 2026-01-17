@@ -7,6 +7,7 @@ import { PubSubService } from '../pubsub/service/pubsub.service';
 import { LOCK_CONFIG } from './lock.constants';
 import { AlreadyAcquiredError } from './lock.errors';
 import { getChannel } from './lock.utils';
+import { LockEntity } from "@sandworm/postgresql-typeorm"
 
 @Injectable()
 export class LockService implements OnModuleDestroy {
@@ -14,7 +15,6 @@ export class LockService implements OnModuleDestroy {
     private readonly queues = new Map<string, PQueue>();
 
     constructor(
-        private readonly prisma: PrismaService,
         private readonly pubsub: PubSubService,
     ) { }
 
