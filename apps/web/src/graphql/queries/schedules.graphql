@@ -1,0 +1,33 @@
+query GetSchedules($input: ListSchedulesInput!) {
+  schedules(input: $input) {
+    id
+    documentId
+    cron
+    type
+    isActive
+    hour
+    minute
+    timezone
+    days
+    weekdays
+    lastExecutedAt
+    nextExecutionAt
+  }
+}
+
+query GetSchedule($scheduleId: String!) {
+  schedule(scheduleId: $scheduleId) {
+    id
+    documentId
+    cron
+    type
+    isActive
+    hour
+    minute
+    timezone
+    days
+    weekdays
+    lastExecutedAt
+    nextExecutionAt
+  }
+}
