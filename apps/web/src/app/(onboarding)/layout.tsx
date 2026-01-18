@@ -1,4 +1,5 @@
 import Image from "next/image";
+
 import { SandwormLogo } from "@/components/Assets";
 
 export default function OnboardingLayout({
@@ -13,12 +14,17 @@ export default function OnboardingLayout({
 
         <div className="relative h-full w-full ">
           <div className="relative h-full w-full rounded-none overflow-hidden shadow-lg">
-            <Image
-              alt="banner image"
-              src="/img/abstract.png"
-              fill
-              className="object-cover"
-            />
+            <div className="relative h-full w-full min-h-[100dvh]">
+              <Image
+                alt="banner image"
+                src="/img/abstract.png"
+                fill
+                priority
+                sizes="50vw"
+                className="object-cover"
+              />
+            </div>
+
             <div className="absolute inset-0 flex items-center justify-center flex-col bottom-[-76%]">
               <SandwormLogo width="50" height="50" />
               <h2 className="text-3xl font-medium text-center text-white mb-1 mt-3 font-primary ">
