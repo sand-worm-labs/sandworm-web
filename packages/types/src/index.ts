@@ -8,6 +8,29 @@ import { isValid, parse, parseISO, parseJSON } from 'date-fns';
 import { validate as validateUUID } from 'uuid';
 import { z } from 'zod';
 
+export const PythonSuggestion = z.object({
+  start: z.number(),
+  end: z.number(),
+  text: z.string(),
+  type: z.string(),
+  signature: z.string(),
+})
+
+export type PythonSuggestion = z.infer<typeof PythonSuggestion>
+
+export type PythonSuggestionsResult =
+  | {
+    status: 'success'
+    suggestions: PythonSuggestion[]
+  }
+  | {
+    status: 'invalid-payload'
+  }
+  | {
+    status: 'unexpected-error'
+  }
+
+
 // ═══════════════════════════════════════════════
 //  UUID Schema
 // ═══════════════════════════════════════════════

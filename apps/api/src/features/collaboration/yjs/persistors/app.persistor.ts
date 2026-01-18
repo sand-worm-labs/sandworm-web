@@ -26,8 +26,8 @@ import { Persistor } from '../interfaces/persistor.interface';
 import { LoadStateResult, ReplaceStateResult } from '../interfaces/load-state-result.interface';
 import { TransactionOrigin } from '../interfaces/transaction-origin.interface';
 import { WSSharedDoc } from "../interfaces"
-import { ILockService } from '@sandworm/redis';
 import { readUpdate } from 'y-protocols/sync';
+import { LockService } from '@/infrastructure/lock/lock.services';
 
 export class AppPersistor implements Persistor {
 
@@ -40,7 +40,7 @@ export class AppPersistor implements Persistor {
     private readonly yjsAppDocumentRepository: Repository<YjsAppDocumentEntity>,
     private readonly userYjsAppDocumentRepository: Repository<UserYjsAppDocumentEntity>,
     // private readonly yjsUpdateRepository: Repository<YjsUpdateEntity>,b
-    private readonly lockService: ILockService
+    private readonly lockService: LockService
   ) { }
 
 
@@ -50,7 +50,7 @@ export class AppPersistor implements Persistor {
     userId: string | null,
     yjsAppDocumentRepository: Repository<YjsAppDocumentEntity>,
     userYjsAppDocumentRepository: Repository<UserYjsAppDocumentEntity>,
-    lockService: ILockService
+    lockService: LockService
   ): AppPersistor {
     return new AppPersistor(
       docId,

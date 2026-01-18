@@ -33,13 +33,7 @@
     "JUPYTER_PROTOCOL",
     "JUPYTER_HOST",
     "JUPYTER_PORT",
-    "JUPYTER_TOKEN",
-    "REDIS_HOST",
-    "REDIS_PORT",
-    "REDIS_USERNAME",
-    "REDIS_PASSWORD",
-    "REDIS_DB",
-    "REDIS_URL"
+    "JUPYTER_TOKEN"
   ],
   "tasks": {
     "clean": {

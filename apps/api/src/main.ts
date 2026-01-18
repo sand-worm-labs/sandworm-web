@@ -21,14 +21,15 @@ import {
   genReqId,
   REQUEST_ID_HEADER,
 } from '@sandworm/nest-common';
-import { Logger } from 'nestjs-pino';
 import { AppModule } from './app.module';
 import { AllConfigType } from './core/config/config.type';
 import { GlobalExceptionFilter } from './core/filters/global-exception.filter';
 import { AuthGuard } from './core/guards/auth.guard';
 import { setupSwagger } from './common/utils/setup-swagger';
 import { AuthGraphqlService } from './features/auth/graphql/auth-graphql.service';
+
 async function bootstrap() {
+  // Fastify adapter with pino logging
   const fastifyAdapter = new FastifyAdapter({
     requestIdHeader: REQUEST_ID_HEADER,
     genReqId: genReqId(),
@@ -43,31 +44,25 @@ async function bootstrap() {
     },
   );
 
-  // Get services
-  app.useLogger(app.get(Logger));
+  // Config & reflector
   const configService = app.get(ConfigService<AllConfigType>);
   const reflector = app.get(Reflector);
   const httpAdapterHost = app.get(HttpAdapterHost);
+  const asyncContext = app.get(AsyncContextProvider);
 
-  // Get environment early to use throughout
+  // Environment flags
   const env = configService.getOrThrow('app.nodeEnv', { infer: true });
   const isProduction = env === Environment.PRODUCTION;
   const debug = env === Environment.LOCAL || env === Environment.DEVELOPMENT;
 
-  // Configure the logger
-  const asyncContext = app.get(AsyncContextProvider);
-
+  // Nest logger
   const logger = new ConsoleLogger({
-    ...(env === Environment.LOCAL && {
-      colors: true,
-    }),
-    ...(env !== Environment.LOCAL && {
-      json: true,
-    }),
+    ...(env === Environment.LOCAL && { colors: true }),
+    ...(env !== Environment.LOCAL && { json: true }),
   });
-
   app.useLogger(logger);
 
+  // Async context hook for request-level logging
   fastifyAdapter.getInstance().addHook('onRequest', (request, reply, done) => {
     asyncContext.run(() => {
       asyncContext.set('log', request.log);
@@ -75,14 +70,12 @@ async function bootstrap() {
     }, new Map());
   });
 
+  // Raw content parser
   fastifyAdapter.getInstance().addContentTypeParser(
-    ["application/octet-stream"],
+    ['application/octet-stream'],
     { parseAs: 'buffer' },
-    (req, body, done) => {
-      done(null, body);
-    },
+    (req, body, done) => done(null, body),
   );
-
 
   // Security headers
   const devContentSecurityPolicy = {
@@ -127,19 +120,14 @@ async function bootstrap() {
       connectSrc: ["'self'", 'https://sandbox.embed.apollographql.com'],
     },
   };
-  app.useGlobalPipes(new ValidationPipe());
 
   app.register(helmet, {
     contentSecurityPolicy: isProduction ? undefined : devContentSecurityPolicy,
   });
-
   app.register(compression);
 
-  // CORS
-  const corsOrigin = configService.getOrThrow('app.corsOrigin', {
-    infer: true,
-  });
-
+  // CORS setup
+  const corsOrigin = configService.getOrThrow('app.corsOrigin', { infer: true });
   const origins =
     typeof corsOrigin === 'string'
       ? corsOrigin.split(',').map((o) => o.trim())
@@ -150,31 +138,26 @@ async function bootstrap() {
   app.enableCors({
     origin: isProduction ? origins : 'http://localhost:3000',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    allowedHeaders: [
-      'Content-Type',
-      'Authorization',
-      'X-File-Name',
-      'X-File-Size',
-    ],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-File-Name', 'X-File-Size'],
     credentials: true,
   });
 
   logger.log(
-    `CORS Origin: ${isProduction ? origins.join(', ') : 'All origins (development)'}`,
+    `CORS Origin: ${isProduction ? origins.join(', ') : 'All origins (development)'}`
   );
 
   // Global guards, filters, and pipes
   app.useGlobalGuards(new AuthGuard(reflector, app.get(AuthGraphqlService)));
   app.useGlobalFilters(new GlobalExceptionFilter(httpAdapterHost, debug));
+
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
       whitelist: true,
       errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
       exceptionFactory: (errors: ValidationError[]) => {
-        // Pass the full ValidationError objects instead of transforming them
         return new UnprocessableEntityException({
-          message: errors, // Keep as ValidationError[]
+          message: errors,
           error: 'Unprocessable Entity',
           statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
         });
@@ -182,7 +165,7 @@ async function bootstrap() {
     }),
   );
 
-  // Setup Swagger (handles its own logging)
+  // Swagger
   const swaggerConfig = configService.get('app.swagger', { infer: true });
   if (swaggerConfig?.enabled && !isProduction) {
     setupSwagger(app, configService);
