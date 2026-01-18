@@ -3,13 +3,9 @@ import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
 import { useHotkeys } from "react-hotkeys-hook";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@sandworm/ui/components/resizable";
 
-import { MiniChat } from "../Chats/MiniChat";
+
+import NotebookPanel from "../Layout/NotebookPanel";
 
 import { useStringQuery } from "./hooks/useQueryArgs";
 import useSideBar from "./hooks/useSideBar";
@@ -19,15 +15,14 @@ import CommandPalette from "./blocks/commandPalette";
 import { FeaturesDialog } from "./blocks/SubscriptionBadge";
 import PagePath from "./blocks/PagePath";
 import DragLayer from "./blocks/DragLayer";
-import NotebookPanel from "../Layout/NotebookPanel";
 
 interface Props {
   children: React.ReactNode;
   pagePath?: Page[];
   topBarClassname?: string;
   topBarContent?: React.ReactNode;
-  hideChat?: boolean;
   sidebarContent?: React.ReactNode;
+  onToggleChat?: () => void;
 }
 
 export default function Layout({
@@ -35,11 +30,10 @@ export default function Layout({
   pagePath,
   topBarClassname,
   topBarContent,
-  hideChat,
   sidebarContent,
+  onToggleChat,
 }: Props) {
   const [isSearchOpen, setSearchOpen] = useState(false);
-  const [isChatOpen, setIsChatOpen] = useState(true);
   useHotkeys(["mod+k"], () => {
     setSearchOpen(prev => !prev);
   });
@@ -132,35 +126,14 @@ export default function Layout({
             {pagePath && <PagePath pages={pagePath} />}
             {topBarContent}
           </div>
-        </div>
-        <ResizablePanelGroup direction="horizontal" className="h-full">
-          <ResizablePanel
-            className="overflow-auto"
-            defaultSize={isChatOpen ? 70 : 100}
-            minSize={40}
-            maxSize={100}
-          >
-            <div className="h-full flex-grow flex overflow-hidden">
+             <div className="h-full flex-grow flex overflow-hidden">
               {children}
             </div>
-          </ResizablePanel>
-          {/*   {!hideChat && isChatOpen && (
-            <>
-              <ResizableHandle withHandle />
-
-              <ResizablePanel
-                className="overflow-auto"
-                defaultSize={30}
-                minSize={0}
-                maxSize={60}
-                collapsible
-              >
-                <MiniChat onClose={() => setIsChatOpen(false)} />
-              </ResizablePanel>
-            </>
-          )} */}
-          <NotebookPanel sidebarContent={sidebarContent} />
-        </ResizablePanelGroup>
+          <NotebookPanel
+            sidebarContent={sidebarContent}
+            onToggleChat={onToggleChat}
+          />
+        </div>
       </main>
     </div>
   );
