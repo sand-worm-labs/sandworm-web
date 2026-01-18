@@ -9,7 +9,7 @@ import { PythonSuggestion, PythonSuggestionsResult } from '@sandworm/types';
 import { getDocumentSourceWithBlockStartPos } from '@sandworm/editor';
 import { Session } from '@/features/session/domain/session';
 import { YjsDocumentService } from '@/features/collaboration/yjs/yjs-document.service';
-import { PersistorFactory } from '@/features/collaboration/yjs/persistor.factory';
+import { PersistorFactory } from '@/features/collaboration/yjs/persistors/persistor.factory';
 import { JupyterCompletionService } from '@/features/code-execution/jupyter-session/jupyter-completion.service';
 import { DocumentEntity } from '@sandworm/postgresql-typeorm';
 

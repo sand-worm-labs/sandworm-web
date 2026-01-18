@@ -313,6 +313,9 @@ type Query {
   """Get a single document by ID"""
   getDocument(documentId: String!, workspaceId: String!): Document!
 
+  """Get User favorite documents"""
+  getFavoriteDocuments(workspaceId: String!): [Document!]!
+
   """Users who follow a given user"""
   getUserFollowers(userId: String!): [User!]!
 
