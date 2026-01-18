@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { Transition } from "@headlessui/react";
 
+import ScrollBar from "../Visualization/blocks/ScrollBar";
+
 import { MiniChatInput } from "./MiniChatInput";
 
 interface MiniChatHeaderProps {
@@ -140,15 +142,15 @@ export const MiniChat: React.FC<MiniChatProps> = ({ visible, onClose }) => {
     <Transition
       as="div"
       show={visible}
-      className="fixed top-0 right-0 h-full z-30 bg-white dark:bg-black"
-      enter="transition-transform duration-300"
-      enterFrom="transform translate-x-full"
-      enterTo="transform translate-x-0"
-      leave="transition-transform duration-300"
-      leaveFrom="transform translate-x-0"
+      className="top-0 right-0 h-full absolute z-30 font-primary"
+      enter="transition ease-in-out duration-300 transform"
+      enterFrom="translate-x-full"
+      enterTo="translate-x-0"
+      leave="transition ease-in-out duration-300 transform"
+      leaveFrom="translate-x-0"
       leaveTo="transform translate-x-full"
     >
-      <div className="flex flex-col h-full w-full md:max-w-[800px] max-w-[calc(100dvw-32px)] border-l dark:border-[#262A30] border-[#E9ECEF] text-sm">
+      <div className="w-[324px] flex flex-col overflow-y-auto border-l dark:border-[#262A30] border-gray-200 h-full bg-white dark:bg-black ">
         <MiniChatHeader onCancel={onClose} />
 
         <div className="flex-1 overflow-y-auto py-6 px-4">
