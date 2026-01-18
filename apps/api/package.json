@@ -47,7 +47,6 @@
     "@sandworm/jupyter": "workspace:*",
     "@sandworm/nest-common": "workspace:*",
     "@sandworm/postgresql-typeorm": "workspace:*",
-    "@sandworm/redis": "workspace:*",
     "@sandworm/types": "workspace:*",
     "@socket.io/postgres-adapter": "^0.5.0",
     "aggregate-error": "^5.0.0",

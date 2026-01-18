@@ -1,5 +1,3 @@
-// apps/api/src/infrastructure/websocket/services/python-completion.service.ts
-
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
