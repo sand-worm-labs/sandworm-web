@@ -1,5 +1,5 @@
 import { Injectable, OnModuleDestroy, Logger } from '@nestjs/common';
-import { publish, subscribe } from '@briefer/database';
+import { publish, subscribe } from '@sandworm/postgresql-typeorm';
 
 @Injectable()
 export class PubSubService implements OnModuleDestroy {
