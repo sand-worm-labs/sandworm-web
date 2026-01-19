@@ -12,9 +12,9 @@ export class CommentGatewayService {
     private readonly logger = new Logger(CommentGatewayService.name);
 
     constructor(
-        @InjectRepository(Comment)
+        @InjectRepository(CommentEntity)
         private readonly commentRepository: Repository<CommentEntity>,
-        @InjectRepository(Document)
+        @InjectRepository(DocumentEntity)
         private readonly documentRepository: Repository<DocumentEntity>,
         @InjectRepository(UserWorkspaceEntity)
         private readonly userWorkspaceRepository: Repository<UserWorkspaceEntity>,
