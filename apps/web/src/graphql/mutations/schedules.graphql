@@ -1,0 +1,20 @@
+mutation CreateSchedule($workspaceId: String!, $input: CreateScheduleInput!) {
+  createSchedule(workspaceId: $workspaceId, input: $input) {
+    id
+    documentId
+    cron
+    type
+    isActive
+    hour
+    minute
+    timezone
+    days
+    weekdays
+    lastExecutedAt
+    nextExecutionAt
+  }
+}
+
+mutation DeleteSchedule($input: DeleteScheduleInput!) {
+  deleteSchedule(input: $input)
+}

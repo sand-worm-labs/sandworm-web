@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Grid2X2, List, GitBranch, Clock } from "lucide-react";
-import { SparkleAI } from "@/components/Assets/SparkleAI";
+import { GitBranch, Clock } from "lucide-react";
 import { cn } from "@sandworm/ui/lib/utils";
+
+import { SparkleAI } from "@/components/Assets/SparkleAI";
 import { Dashboard } from "@/components/Assets/Dashboard";
 import { Notebook } from "@/components/Assets/Notebook";
 
@@ -45,7 +46,7 @@ const PanelItem = ({
         "text-[#6C757D] hover:text-[#1A1A1A] dark:text-[#868E96] dark:hover:text-white",
         "hover:bg-[#F1F3F4] dark:hover:bg-[#21262d]",
         isActive &&
-          "bg-[#F1F3F4] dark:bg-[#21262d] text-[#1A1A1A] dark:text-white"
+        "bg-[#F1F3F4] dark:bg-[#21262d] text-[#1A1A1A] dark:text-white"
       )}
       aria-label={action.label}
       title={action.label}
@@ -84,12 +85,16 @@ const AIAssistantButton = ({ onClick }: { onClick?: () => void }) => (
 // =====================================
 interface NotebookPanelProps {
   sidebarContent?: React.ReactNode;
+  onToggleChat?: () => void;
 }
 
 // =====================================
 // Notebook Panel Component
 // =====================================
-export const NotebookPanel = ({ sidebarContent }: NotebookPanelProps) => {
+export const NotebookPanel = ({
+  sidebarContent,
+  onToggleChat,
+}: NotebookPanelProps) => {
   const [activeItem, setActiveItem] = useState<string | null>(null);
 
   // Panel configuration - easily extensible
@@ -173,7 +178,7 @@ export const NotebookPanel = ({ sidebarContent }: NotebookPanelProps) => {
 
         {/* AI Assistant Button */}
         <div className="pt-2">
-          <AIAssistantButton onClick={() => handleItemClick("ai-assistant")} />
+          <AIAssistantButton onClick={onToggleChat} />
         </div>
       </div>
     </aside>

@@ -19,19 +19,6 @@ export type Scalars = {
   JSON: { input: any; output: any; }
 };
 
-export type AdvanceTutorialInput = {
-  ifCurrentStep?: InputMaybe<Scalars['String']['input']>;
-  tutorialType: Scalars['String']['input'];
-  workspaceId: Scalars['String']['input'];
-};
-
-export type AdvanceTutorialResult = {
-  __typename?: 'AdvanceTutorialResult';
-  currentState?: Maybe<TutorialState>;
-  didAdvance: Scalars['Boolean']['output'];
-  prevStep?: Maybe<OnboardingTutorialStep>;
-};
-
 export type AuthPayload = {
   __typename?: 'AuthPayload';
   id: Scalars['String']['output'];
@@ -63,6 +50,13 @@ export type CreateDocumentInput = {
   version: Scalars['Float']['input'];
 };
 
+export type CreateScheduleInput = {
+  cron: Scalars['String']['input'];
+  documentId: Scalars['String']['input'];
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  timezone: Scalars['String']['input'];
+};
+
 /** User register request */
 export type CreateUserInput = {
   email: Scalars['String']['input'];
@@ -87,8 +81,9 @@ export type DeleteFileInput = {
   workspaceId: Scalars['String']['input'];
 };
 
-export type DismissTutorialInput = {
-  tutorialType: Scalars['String']['input'];
+export type DeleteScheduleInput = {
+  documentId: Scalars['String']['input'];
+  scheduleId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
 };
 
@@ -158,6 +153,15 @@ export type EnvironmentVariableInput = {
   value: Scalars['String']['input'];
 };
 
+/** The type of execution schedule */
+export enum ExecutionScheduleType {
+  Cron = 'CRON',
+  Daily = 'DAILY',
+  Hourly = 'HOURLY',
+  Monthly = 'MONTHLY',
+  Weekly = 'WEEKLY'
+}
+
 export type FavoriteDocumentInput = {
   documentId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
@@ -170,14 +174,13 @@ export type GetAllUsersInput = {
   sortOrder?: Scalars['String']['input'];
 };
 
-export type GetTutorialStateInput = {
-  tutorialType: Scalars['String']['input'];
-  workspaceId: Scalars['String']['input'];
-};
-
 export type ListFilesInput = {
   path?: InputMaybe<Scalars['String']['input']>;
   workspaceId: Scalars['String']['input'];
+};
+
+export type ListSchedulesInput = {
+  documentId: Scalars['String']['input'];
 };
 
 /** Login input */
@@ -194,12 +197,12 @@ export type Mutation = {
   acceptWorkspaceInvitation: Scalars['Boolean']['output'];
   /** Mark a document as a favorite */
   addFavoriteDocument: Document;
-  /** Advance to the next step in the tutorial */
-  advanceTutorial: AdvanceTutorialResult;
   /** Create a new comment on a document */
   createComment: Comment;
   /** Create a new document in a workspace */
   createDocument: Document;
+  /** Create a new execution schedule for a document */
+  createSchedule: Schedule;
   /** Register new user */
   createUser: User;
   /** Create a new workspace */
@@ -212,8 +215,8 @@ export type Mutation = {
   deleteEnvironmentVariable: Scalars['Boolean']['output'];
   /** Delete a file from the workspace */
   deleteFile: Scalars['Boolean']['output'];
-  /** Dismiss a completed tutorial */
-  dismissTutorial: TutorialState;
+  /** Delete a schedule */
+  deleteSchedule: Scalars['Boolean']['output'];
   /** Create a fork/duplicate of a document */
   duplicateDocument: Document;
   /** Follow User */
@@ -242,6 +245,8 @@ export type Mutation = {
   unpublishDocument: Document;
   /** Update document metadata */
   updateDocument: Document;
+  /** Update an existing schedule */
+  updateSchedule: Schedule;
   /** Update current user */
   updateUser: User;
   /** Update user settings */
@@ -261,11 +266,6 @@ export type MutationAddFavoriteDocumentArgs = {
 };
 
 
-export type MutationAdvanceTutorialArgs = {
-  input: AdvanceTutorialInput;
-};
-
-
 export type MutationCreateCommentArgs = {
   documentId: Scalars['String']['input'];
   input: CreateCommentInput;
@@ -274,6 +274,12 @@ export type MutationCreateCommentArgs = {
 
 export type MutationCreateDocumentArgs = {
   input: CreateDocumentInput;
+  workspaceId: Scalars['String']['input'];
+};
+
+
+export type MutationCreateScheduleArgs = {
+  input: CreateScheduleInput;
   workspaceId: Scalars['String']['input'];
 };
 
@@ -309,8 +315,8 @@ export type MutationDeleteFileArgs = {
 };
 
 
-export type MutationDismissTutorialArgs = {
-  input: DismissTutorialInput;
+export type MutationDeleteScheduleArgs = {
+  input: DeleteScheduleInput;
 };
 
 
@@ -392,6 +398,12 @@ export type MutationUpdateDocumentArgs = {
 };
 
 
+export type MutationUpdateScheduleArgs = {
+  input: UpdateScheduleInput;
+  scheduleId: Scalars['String']['input'];
+};
+
+
 export type MutationUpdateUserArgs = {
   input: UpdateUserInput;
 };
@@ -406,16 +418,6 @@ export type MutationUpdateWorkspaceArgs = {
   name?: InputMaybe<Scalars['String']['input']>;
   workspaceId: Scalars['String']['input'];
 };
-
-/** Steps in the onboarding tutorial */
-export enum OnboardingTutorialStep {
-  ConnectDataSource = 'CONNECT_DATA_SOURCE',
-  CreateVisualization = 'CREATE_VISUALIZATION',
-  InviteTeamMembers = 'INVITE_TEAM_MEMBERS',
-  PublishDashboard = 'PUBLISH_DASHBOARD',
-  RunPython = 'RUN_PYTHON',
-  RunQuery = 'RUN_QUERY'
-}
 
 export type Profile = {
   __typename?: 'Profile';
@@ -445,8 +447,6 @@ export type Query = {
   getAllUsers: Scalars['Int']['output'];
   /** Get a single document by ID */
   getDocument: Document;
-  /** Get the current state of a tutorial */
-  getTutorialState: TutorialState;
   /** Users who follow a given user */
   getUserFollowers: Array<User>;
   /** Users that a given user is following */
@@ -465,6 +465,10 @@ export type Query = {
   listFiles: Array<SandwormFile>;
   /** Get Profile */
   profile: Profile;
+  /** Get a single schedule by ID */
+  schedule: Schedule;
+  /** Get all schedules for a document */
+  schedules: Array<Schedule>;
   tags: Array<Scalars['String']['output']>;
 };
 
@@ -511,11 +515,6 @@ export type QueryGetDocumentArgs = {
 };
 
 
-export type QueryGetTutorialStateArgs = {
-  input: GetTutorialStateInput;
-};
-
-
 export type QueryGetUserFollowersArgs = {
   userId: Scalars['String']['input'];
 };
@@ -550,6 +549,16 @@ export type QueryProfileArgs = {
   username: Scalars['String']['input'];
 };
 
+
+export type QueryScheduleArgs = {
+  scheduleId: Scalars['String']['input'];
+};
+
+
+export type QuerySchedulesArgs = {
+  input: ListSchedulesInput;
+};
+
 export type RestartEnvironmentInput = {
   workspaceId: Scalars['String']['input'];
 };
@@ -561,6 +570,7 @@ export type RestoreDocumentInput = {
 
 export type SandwormFile = {
   __typename?: 'SandwormFile';
+  createdAt: Scalars['Float']['output'];
   isDirectory: Scalars['Boolean']['output'];
   mimeType?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
@@ -569,18 +579,25 @@ export type SandwormFile = {
   size: Scalars['Float']['output'];
 };
 
+export type Schedule = {
+  __typename?: 'Schedule';
+  cron?: Maybe<Scalars['String']['output']>;
+  days?: Maybe<Scalars['String']['output']>;
+  documentId: Scalars['String']['output'];
+  hour?: Maybe<Scalars['Float']['output']>;
+  id: Scalars['String']['output'];
+  isActive: Scalars['Boolean']['output'];
+  lastExecutedAt?: Maybe<Scalars['DateTime']['output']>;
+  minute?: Maybe<Scalars['Float']['output']>;
+  nextExecutionAt?: Maybe<Scalars['DateTime']['output']>;
+  timezone?: Maybe<Scalars['String']['output']>;
+  type: ExecutionScheduleType;
+  weekdays?: Maybe<Scalars['String']['output']>;
+};
+
 export type SetEnvironmentVariablesInput = {
   add: Array<EnvironmentVariableInput>;
   remove: Array<Scalars['String']['input']>;
-};
-
-export type TutorialState = {
-  __typename?: 'TutorialState';
-  currentStep: OnboardingTutorialStep;
-  id: Scalars['String']['output'];
-  isCompleted: Scalars['Boolean']['output'];
-  isDismissed: Scalars['Boolean']['output'];
-  stepStates?: Maybe<Scalars['JSON']['output']>;
 };
 
 export type UpdateDocumentInput = {
@@ -590,6 +607,12 @@ export type UpdateDocumentInput = {
   runUnexecutedBlocks?: InputMaybe<Scalars['Boolean']['input']>;
   shareLinksWithoutSidebar?: InputMaybe<Scalars['Boolean']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateScheduleInput = {
+  cron?: InputMaybe<Scalars['String']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  timezone?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** User update request */
@@ -820,6 +843,21 @@ export type DeleteFileMutationVariables = Exact<{
 
 export type DeleteFileMutation = { __typename?: 'Mutation', deleteFile: boolean };
 
+export type CreateScheduleMutationVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+  input: CreateScheduleInput;
+}>;
+
+
+export type CreateScheduleMutation = { __typename?: 'Mutation', createSchedule: { __typename?: 'Schedule', id: string, documentId: string, cron?: string | null, type: ExecutionScheduleType, isActive: boolean, hour?: number | null, minute?: number | null, timezone?: string | null, days?: string | null, weekdays?: string | null, lastExecutedAt?: any | null, nextExecutionAt?: any | null } };
+
+export type DeleteScheduleMutationVariables = Exact<{
+  input: DeleteScheduleInput;
+}>;
+
+
+export type DeleteScheduleMutation = { __typename?: 'Mutation', deleteSchedule: boolean };
+
 export type CreateWorkspaceMutationVariables = Exact<{
   name: Scalars['String']['input'];
 }>;
@@ -925,7 +963,7 @@ export type ListFilesQueryVariables = Exact<{
 }>;
 
 
-export type ListFilesQuery = { __typename?: 'Query', listFiles: Array<{ __typename?: 'SandwormFile', name: string, path: string, relCwdPath: string, size: number, isDirectory: boolean, mimeType?: string | null }> };
+export type ListFilesQuery = { __typename?: 'Query', listFiles: Array<{ __typename?: 'SandwormFile', name: string, path: string, relCwdPath: string, size: number, isDirectory: boolean, mimeType?: string | null, createdAt: number }> };
 
 export type FileExistsQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
@@ -934,6 +972,20 @@ export type FileExistsQueryVariables = Exact<{
 
 
 export type FileExistsQuery = { __typename?: 'Query', fileExists: boolean };
+
+export type GetSchedulesQueryVariables = Exact<{
+  input: ListSchedulesInput;
+}>;
+
+
+export type GetSchedulesQuery = { __typename?: 'Query', schedules: Array<{ __typename?: 'Schedule', id: string, documentId: string, cron?: string | null, type: ExecutionScheduleType, isActive: boolean, hour?: number | null, minute?: number | null, timezone?: string | null, days?: string | null, weekdays?: string | null, lastExecutedAt?: any | null, nextExecutionAt?: any | null }> };
+
+export type GetScheduleQueryVariables = Exact<{
+  scheduleId: Scalars['String']['input'];
+}>;
+
+
+export type GetScheduleQuery = { __typename?: 'Query', schedule: { __typename?: 'Schedule', id: string, documentId: string, cron?: string | null, type: ExecutionScheduleType, isActive: boolean, hour?: number | null, minute?: number | null, timezone?: string | null, days?: string | null, weekdays?: string | null, lastExecutedAt?: any | null, nextExecutionAt?: any | null } };
 
 export type GetUserWorkspaceInfoQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1794,6 +1846,82 @@ export function useDeleteFileMutation(baseOptions?: Apollo.MutationHookOptions<D
 export type DeleteFileMutationHookResult = ReturnType<typeof useDeleteFileMutation>;
 export type DeleteFileMutationResult = Apollo.MutationResult<DeleteFileMutation>;
 export type DeleteFileMutationOptions = Apollo.BaseMutationOptions<DeleteFileMutation, DeleteFileMutationVariables>;
+export const CreateScheduleDocument = gql`
+    mutation CreateSchedule($workspaceId: String!, $input: CreateScheduleInput!) {
+  createSchedule(workspaceId: $workspaceId, input: $input) {
+    id
+    documentId
+    cron
+    type
+    isActive
+    hour
+    minute
+    timezone
+    days
+    weekdays
+    lastExecutedAt
+    nextExecutionAt
+  }
+}
+    `;
+export type CreateScheduleMutationFn = Apollo.MutationFunction<CreateScheduleMutation, CreateScheduleMutationVariables>;
+
+/**
+ * __useCreateScheduleMutation__
+ *
+ * To run a mutation, you first call `useCreateScheduleMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateScheduleMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createScheduleMutation, { data, loading, error }] = useCreateScheduleMutation({
+ *   variables: {
+ *      workspaceId: // value for 'workspaceId'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateScheduleMutation(baseOptions?: Apollo.MutationHookOptions<CreateScheduleMutation, CreateScheduleMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateScheduleMutation, CreateScheduleMutationVariables>(CreateScheduleDocument, options);
+      }
+export type CreateScheduleMutationHookResult = ReturnType<typeof useCreateScheduleMutation>;
+export type CreateScheduleMutationResult = Apollo.MutationResult<CreateScheduleMutation>;
+export type CreateScheduleMutationOptions = Apollo.BaseMutationOptions<CreateScheduleMutation, CreateScheduleMutationVariables>;
+export const DeleteScheduleDocument = gql`
+    mutation DeleteSchedule($input: DeleteScheduleInput!) {
+  deleteSchedule(input: $input)
+}
+    `;
+export type DeleteScheduleMutationFn = Apollo.MutationFunction<DeleteScheduleMutation, DeleteScheduleMutationVariables>;
+
+/**
+ * __useDeleteScheduleMutation__
+ *
+ * To run a mutation, you first call `useDeleteScheduleMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteScheduleMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteScheduleMutation, { data, loading, error }] = useDeleteScheduleMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useDeleteScheduleMutation(baseOptions?: Apollo.MutationHookOptions<DeleteScheduleMutation, DeleteScheduleMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteScheduleMutation, DeleteScheduleMutationVariables>(DeleteScheduleDocument, options);
+      }
+export type DeleteScheduleMutationHookResult = ReturnType<typeof useDeleteScheduleMutation>;
+export type DeleteScheduleMutationResult = Apollo.MutationResult<DeleteScheduleMutation>;
+export type DeleteScheduleMutationOptions = Apollo.BaseMutationOptions<DeleteScheduleMutation, DeleteScheduleMutationVariables>;
 export const CreateWorkspaceDocument = gql`
     mutation CreateWorkspace($name: String!) {
   createWorkspace(name: $name) {
@@ -2426,6 +2554,7 @@ export const ListFilesDocument = gql`
     size
     isDirectory
     mimeType
+    createdAt
   }
 }
     `;
@@ -2501,6 +2630,108 @@ export type FileExistsQueryHookResult = ReturnType<typeof useFileExistsQuery>;
 export type FileExistsLazyQueryHookResult = ReturnType<typeof useFileExistsLazyQuery>;
 export type FileExistsSuspenseQueryHookResult = ReturnType<typeof useFileExistsSuspenseQuery>;
 export type FileExistsQueryResult = Apollo.QueryResult<FileExistsQuery, FileExistsQueryVariables>;
+export const GetSchedulesDocument = gql`
+    query GetSchedules($input: ListSchedulesInput!) {
+  schedules(input: $input) {
+    id
+    documentId
+    cron
+    type
+    isActive
+    hour
+    minute
+    timezone
+    days
+    weekdays
+    lastExecutedAt
+    nextExecutionAt
+  }
+}
+    `;
+
+/**
+ * __useGetSchedulesQuery__
+ *
+ * To run a query within a React component, call `useGetSchedulesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSchedulesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetSchedulesQuery({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useGetSchedulesQuery(baseOptions: Apollo.QueryHookOptions<GetSchedulesQuery, GetSchedulesQueryVariables> & ({ variables: GetSchedulesQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetSchedulesQuery, GetSchedulesQueryVariables>(GetSchedulesDocument, options);
+      }
+export function useGetSchedulesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetSchedulesQuery, GetSchedulesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetSchedulesQuery, GetSchedulesQueryVariables>(GetSchedulesDocument, options);
+        }
+export function useGetSchedulesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetSchedulesQuery, GetSchedulesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetSchedulesQuery, GetSchedulesQueryVariables>(GetSchedulesDocument, options);
+        }
+export type GetSchedulesQueryHookResult = ReturnType<typeof useGetSchedulesQuery>;
+export type GetSchedulesLazyQueryHookResult = ReturnType<typeof useGetSchedulesLazyQuery>;
+export type GetSchedulesSuspenseQueryHookResult = ReturnType<typeof useGetSchedulesSuspenseQuery>;
+export type GetSchedulesQueryResult = Apollo.QueryResult<GetSchedulesQuery, GetSchedulesQueryVariables>;
+export const GetScheduleDocument = gql`
+    query GetSchedule($scheduleId: String!) {
+  schedule(scheduleId: $scheduleId) {
+    id
+    documentId
+    cron
+    type
+    isActive
+    hour
+    minute
+    timezone
+    days
+    weekdays
+    lastExecutedAt
+    nextExecutionAt
+  }
+}
+    `;
+
+/**
+ * __useGetScheduleQuery__
+ *
+ * To run a query within a React component, call `useGetScheduleQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetScheduleQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetScheduleQuery({
+ *   variables: {
+ *      scheduleId: // value for 'scheduleId'
+ *   },
+ * });
+ */
+export function useGetScheduleQuery(baseOptions: Apollo.QueryHookOptions<GetScheduleQuery, GetScheduleQueryVariables> & ({ variables: GetScheduleQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetScheduleQuery, GetScheduleQueryVariables>(GetScheduleDocument, options);
+      }
+export function useGetScheduleLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetScheduleQuery, GetScheduleQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetScheduleQuery, GetScheduleQueryVariables>(GetScheduleDocument, options);
+        }
+export function useGetScheduleSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetScheduleQuery, GetScheduleQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetScheduleQuery, GetScheduleQueryVariables>(GetScheduleDocument, options);
+        }
+export type GetScheduleQueryHookResult = ReturnType<typeof useGetScheduleQuery>;
+export type GetScheduleLazyQueryHookResult = ReturnType<typeof useGetScheduleLazyQuery>;
+export type GetScheduleSuspenseQueryHookResult = ReturnType<typeof useGetScheduleSuspenseQuery>;
+export type GetScheduleQueryResult = Apollo.QueryResult<GetScheduleQuery, GetScheduleQueryVariables>;
 export const GetUserWorkspaceInfoDocument = gql`
     query GetUserWorkspaceInfo {
   getUserWorkspaceInfo {
