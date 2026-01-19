@@ -39,10 +39,10 @@ const Context = createContext<[InteractionState, InteractionAPI]>([
     scrollIntoView: false,
   },
   {
-    insert: () => {},
-    focus: () => {},
-    blur: () => {},
-    move: () => {},
+    insert: () => { },
+    focus: () => { },
+    blur: () => { },
+    move: () => { },
   },
 ]);
 
@@ -130,6 +130,8 @@ export function EditorAwarenessProvider(props: Props) {
           break;
         case "insert":
           insert(nextCursorBlockId, { scrollIntoView: true });
+          break;
+        default:
           break;
       }
     },
