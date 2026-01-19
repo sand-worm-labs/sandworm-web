@@ -24,11 +24,24 @@ input CreateCommentInput {
   id: String!
 }
 
+input CreateComponentInstanceInput {
+  blockId: String!
+  documentId: String!
+}
+
 input CreateDocumentInput {
   orderIndex: Float! = 0
   parentId: String
   title: String
   version: Float!
+}
+
+input CreateReusableComponentInput {
+  blockId: String!
+  documentId: String!
+  state: String!
+  title: String!
+  type: ReusableComponentType!
 }
 
 input CreateScheduleInput {
@@ -190,6 +203,12 @@ type Mutation {
   """Create a new comment on a document"""
   createComment(documentId: String!, input: CreateCommentInput!): Comment!
 
+  """Create a new reusable component"""
+  createComponent(input: CreateReusableComponentInput!, workspaceId: String!): ReusableComponent!
+
+  """Create a component instance"""
+  createComponentInstance(componentId: String!, input: CreateComponentInstanceInput!, workspaceId: String!): ReusableComponentInstance!
+
   """Create a new document in a workspace"""
   createDocument(input: CreateDocumentInput!, workspaceId: String!): Document!
 
@@ -204,6 +223,12 @@ type Mutation {
 
   """Delete a comment (only by comment author)"""
   deleteComment(input: DeleteCommentInput!): Boolean!
+
+  """Delete a reusable component"""
+  deleteComponent(componentId: String!, workspaceId: String!): Boolean!
+
+  """Delete a component instance"""
+  deleteComponentInstance(blockId: String!, componentId: String!, workspaceId: String!): Boolean!
 
   """Soft delete or permanently delete a document"""
   deleteDocument(input: DeleteDocumentInput!): Document!
@@ -262,6 +287,9 @@ type Mutation {
   """Unpublish a document"""
   unpublishDocument(documentId: String!, workspaceId: String!): Document!
 
+  """Update a reusable component"""
+  updateComponent(componentId: String!, input: UpdateReusableComponentInput!, workspaceId: String!): ReusableComponent!
+
   """Update document metadata"""
   updateDocument(documentId: String!, input: UpdateDocumentInput!, workspaceId: String!): Document!
 
@@ -310,6 +338,9 @@ type Query {
   """Get all users"""
   getAllUsers(input: GetAllUsersInput!): Int!
 
+  """Get a reusable component by ID"""
+  getComponent(componentId: String!, workspaceId: String!): ReusableComponent!
+
   """Get a single document by ID"""
   getDocument(documentId: String!, workspaceId: String!): Document!
 
@@ -330,6 +361,9 @@ type Query {
 
   """Get workspace by ID"""
   getWorkspace(workspaceId: String!): Workspace!
+
+  """Get all reusable components in a workspace"""
+  getWorkspaceComponents(workspaceId: String!): [ReusableComponent!]!
 
   """Get all documents in a workspace"""
   getWorkspaceDocuments(workspaceId: String!): [Document!]!
@@ -361,6 +395,33 @@ input RestartEnvironmentInput {
 input RestoreDocumentInput {
   documentId: String!
   workspaceId: String!
+}
+
+type ReusableComponent {
+  blockId: String!
+  createdAt: DateTime!
+  documentId: String!
+  id: String!
+  instances: [ReusableComponentInstance!]!
+  instancesCreated: Boolean!
+  state: String!
+  title: String!
+  type: ReusableComponentType!
+  updatedAt: DateTime!
+}
+
+type ReusableComponentInstance {
+  blockId: String!
+  createdAt: DateTime!
+  documentId: String!
+  id: String!
+  reusableComponentId: String!
+  updatedAt: DateTime!
+}
+
+enum ReusableComponentType {
+  PYTHON
+  SQL
 }
 
 type SandwormFile {
@@ -399,6 +460,11 @@ input UpdateDocumentInput {
   runSQLSelection: Boolean
   runUnexecutedBlocks: Boolean
   shareLinksWithoutSidebar: Boolean
+  title: String
+}
+
+input UpdateReusableComponentInput {
+  state: String
   title: String
 }
 
