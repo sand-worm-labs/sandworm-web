@@ -1,5 +1,4 @@
 import type { Config } from "tailwindcss";
-import defaultTheme from "tailwindcss/defaultTheme";
 import tailwindcssAnimate from "tailwindcss-animate";
 
 const config: Config = {
@@ -17,88 +16,69 @@ const config: Config = {
         lg: "1200px",
         xl: "1536px",
       },
+
       colors: {
-        primary: "#A308F0",
-        "light-border": "#E9ECEF",
-        "light-text": "#455768",
-        "light-main": "#1A1A1A",
-        "dark-border": "#262A30",
-        "dark-bg": "#010100",
-        brand: {
-          accent: "#5AD769",
-          main: "#324BC3",
-          orange: "#FF7F4F",
-        },
-        text: {
-          primary: "#FFF",
-          secondary: "#0C0F19",
-          gray: "#888888",
-        },
+        /* ======================
+           Design Tokens (NEW)
+           ====================== */
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
-        customgray: "#18181B",
-        borderLight: "hsla(0, 100%, 100%, 0.14)",
-        borderHover: "rgba(255, 255, 255, 0.15)",
-        btnHover: "hsla(0, 0%, 100%, 0.09)",
-        "dark-translucent": "#ffffff20",
-        "dark-gray": "#1A1A1A",
-        card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
-        },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
+
+        primary: "hsl(var(--primary))",
+        primaryForeground: "hsl(var(--primary-foreground))",
+
+        accent: "hsl(var(--accent))",
+        accentForeground: "hsl(var(--accent-foreground))",
+
+        error: "hsl(var(--error))",
+
+        base: {
+          100: "hsl(var(--base-100))",
+          200: "hsl(var(--base-200))",
+          300: "hsl(var(--base-300))",
         },
 
-        secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
+        ink: {
+          100: "var(--ink-100)",
+          200: "var(--ink-200)",
+          300: "var(--ink-300)",
+          400: "var(--ink-400)",
         },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
-        },
-        accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
-        },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
-        },
+
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        chart: {
-          "1": "hsl(var(--chart-1))",
-          "2": "hsl(var(--chart-2))",
-          "3": "hsl(var(--chart-3))",
-          "4": "hsl(var(--chart-4))",
-          "5": "hsl(var(--chart-5))",
-        },
+        inputBg: "hsl(var(--bg-input))",
 
-        /* -----  ------ */
-        "hero-bg": "#000",
-        "custom-gray": "#8A919E",
-        "custom-light-gray": "#DFE1E6",
-        "custom-dark-gray": "#141B1F",
-        "custom-medium-gray": "#363C46",
-        "custom-black": "#0B0B12",
-        "custom-black-200": "#0A0B13",
-        "neutral-500": "#868E96",
-      },
-      fontFamily: {
-        sans: ["var(--font-inter)", ...defaultTheme.fontFamily.sans],
-        mono: [...defaultTheme.fontFamily.mono],
-        poppins: ["var(--font-poppins)"],
-      },
-      borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
-        "3.5xl": "2.2rem",
-        "4xl": "2.5rem",
+        disabled: "hsl(var(--btn-disabled))",
+
+        /* ======================
+           Legacy Colors (OLD)
+           ====================== */
+        ring: "hsl(var(--ring))",
+
+        legacy: {
+          primary: "#A308F0",
+          lightBorder: "#E9ECEF",
+          lightText: "#455768",
+          lightMain: "#1A1A1A",
+
+          darkBorder: "#262A30",
+          darkBg: "#010100",
+
+          brand: {
+            accent: "#5AD769",
+            main: "#324BC3",
+            orange: "#FF7F4F",
+          },
+
+          text: {
+            secondary: "#0C0F19",
+            gray: "#888888",
+          },
+
+          heroBg: "#000",
+          neutral500: "#868E96",
+        },
       },
     },
   },

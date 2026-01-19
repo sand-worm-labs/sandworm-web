@@ -32,7 +32,7 @@ export const FieldDetailsPanel = ({ entities }: IFieldDetailsPanelProps) => {
             className="cursor-pointer py-1.5 px-2 rounded-md hover:bg-primary/10 text-[0.8rem] font-medium text-left flex justify-between"
           >
             {name}
-            <span className="dark:bg-dark-translucent bg-[#E0EAF1] px-1.5 py-0 rounded  text-[#455768]">
+            <span className="dark:bg-dark-translucent bg-[#E0EAF1] px-1.5 py-0 rounded  text-ink-200">
               {type}
             </span>
           </li>

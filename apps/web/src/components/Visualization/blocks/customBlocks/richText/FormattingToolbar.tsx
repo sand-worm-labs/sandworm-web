@@ -114,7 +114,7 @@ const NodeTypeDropdown = ({ editor }: { editor: Editor }) => {
                       onClick={() => setNodeType(item.type)}
                       className={clsx(
                         active
-                          ? "bg-gray-100 dark:bg-[#0C1015] text-gray-900 dark:text-[#868E96] "
+                          ? "bg-gray-100 dark:bg-[#0C1015] text-gray-900 dark:text-ink-300  "
                           : "text-gray-700 dark:text-[#8B8A9D]",
                         "block w-full px-4 py-2 text-left dark:hover:bg-[#181C21]"
                       )}

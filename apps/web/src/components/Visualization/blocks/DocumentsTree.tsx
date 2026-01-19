@@ -30,7 +30,7 @@ import IconSelector from "./IconSelector";
 function useIsDocExpanded(doc: ApiDocument, startsOpen: boolean) {
   const [isExpanded, _setIsExpanded] = useState(
     localStorage.getItem(`sandworm:document:${doc.id}:expanded`) === "1" ||
-    startsOpen
+      startsOpen
   );
 
   const setIsExpanded = useCallback(
@@ -243,7 +243,7 @@ function DropDown(props: DropDownProps) {
                           hidden: isViewer || props.isFavoriteDropdown,
                         },
                         active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                        "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 rounded-md font-primary hover:bg-[#FDE6EA] text-[#455768] dark:text-white"
+                        "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 rounded-md font-primary hover:bg-[#FDE6EA] text-ink-200 dark:text-white"
                       )}
                     >
                       <TrashIcon className="h-4 w-4" />
@@ -261,7 +261,7 @@ function DropDown(props: DropDownProps) {
                           hidden: isViewer,
                         },
                         active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                        "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 font-primary hover:bg-[#FDE6EA] rounded-md text-[#455768] dark:text-white"
+                        "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 font-primary hover:bg-[#FDE6EA] rounded-md text-ink-200 dark:text-white"
                       )}
                     >
                       <Square2StackIcon className="h-4 w-4" />
@@ -279,7 +279,7 @@ function DropDown(props: DropDownProps) {
                           hidden: props.isFavorited,
                         },
                         active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                        "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 font-primary hover:bg-[#FDE6EA] rounded-md text-[#455768] dark:text-white"
+                        "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 font-primary hover:bg-[#FDE6EA] rounded-md text-ink-200 dark:text-white"
                       )}
                     >
                       <BookmarkIcon className="h-4 w-4" />
@@ -297,7 +297,7 @@ function DropDown(props: DropDownProps) {
                           hidden: !props.isFavorited,
                         },
                         active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                        "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 font-primary hover:bg-[#FDE6EA] rounded-md text-[#455768] dark:text-white"
+                        "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 font-primary hover:bg-[#FDE6EA] rounded-md text-ink-200 dark:text-white"
                       )}
                     >
                       <BookmarkSlashIcon className="h-4 w-4" />
@@ -511,8 +511,8 @@ function NodeComponent(props: NodeComponentProps) {
                 ? "text-gray-800 bg-ceramic-100/50"
                 : "text-gray-500 hover:bg-ceramic-100/80",
               isDropping &&
-              dropHoverState === "center" &&
-              "bg-ceramic-200 border-ceramic-200",
+                dropHoverState === "center" &&
+                "bg-ceramic-200 border-ceramic-200",
               "group text-sm font-medium leading-6 w-full flex py-1 rounded-sm hover:text-ceramic-600"
             )}
             style={{
@@ -565,8 +565,8 @@ function NodeComponent(props: NodeComponentProps) {
             <ul
               className={clsx(
                 isDropping &&
-                dropHoverState === "center" &&
-                "bg-ceramic-200 border-ceramic-200",
+                  dropHoverState === "center" &&
+                  "bg-ceramic-200 border-ceramic-200",
                 "space-y-1"
               )}
             >
@@ -618,9 +618,9 @@ function DocumentTree(props: Props) {
     () =>
       props.flat
         ? props.documents.map(d => ({
-          document: d,
-          children: List<Node>(),
-        }))
+            document: d,
+            children: List<Node>(),
+          }))
         : buildTrees(null, props.documents),
     [props.flat, props.documents]
   );

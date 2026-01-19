@@ -49,7 +49,7 @@ const TabsHeader: React.FC<{
       <TabsTrigger
         value="all"
         className={`px-3 py-1 flex items-center space-x-1.5 rounded-lg ${
-          tab === "all" ? "text-[#A308F0] bg-[#E7F3F6]" : "text-[#868E96]"
+          tab === "all" ? "text-primary bg-[#E7F3F6]" : "text-ink-300 "
         }`}
       >
         <HiOutlineCommandLine size={18} className="flex-shrink-0" />
@@ -59,7 +59,7 @@ const TabsHeader: React.FC<{
       <TabsTrigger
         value="forked"
         className={`px-3 py-1 flex items-center space-x-1.5 rounded-lg ${
-          tab === "forked" ? "text-[#A308F0] bg-[#E7F3F6]" : "text-[#868E96]"
+          tab === "forked" ? "text-primary bg-[#E7F3F6]" : "text-ink-300 "
         }`}
       >
         <VscRepoForked size={16} className="flex-shrink-0" />
@@ -69,7 +69,7 @@ const TabsHeader: React.FC<{
       <TabsTrigger
         value="starred"
         className={`px-3 py-1 flex items-center space-x-1.5 rounded-lg ${
-          tab === "starred" ? "text-[#A308F0] bg-[#E7F3F6]" : "text-[#868E96]"
+          tab === "starred" ? "text-primary bg-[#E7F3F6]" : "text-ink-300 "
         }`}
       >
         <FaRegStar size={16} className="flex-shrink-0" />
@@ -153,7 +153,7 @@ export const TabsSection: React.FC<TabSectionProps> = ({
   return (
     <div>
       <div className="flex justify-between">
-        <p className="text-[#455768] dark:text-[#868E96] text-sm mb-6 mt-4">
+        <p className="text-ink-200 dark:text-ink-300  text-sm mb-6 mt-4">
           See what others are creating using Sandworm
         </p>
         <ViewControl viewMode={viewMode} onViewModeChange={setViewMode} />

@@ -182,7 +182,7 @@ function FileItem(props: FileItemProps) {
         >
           <button
             type="button"
-            className="text-[#6C757D] hover:text-gray-400 disabled:hover:text-gray-500 disabled:cursor-not-allowed bg-[#F7E8FF] rounded-md px-1.5 py-0.5"
+            className="text-ink-400 hover:text-gray-400 disabled:hover:text-gray-500 disabled:cursor-not-allowed bg-[#F7E8FF] rounded-md px-1.5 py-0.5"
             onClick={onUseInPython}
             disabled={props.isDeleting || !props.canUse}
           >
@@ -197,7 +197,7 @@ function FileItem(props: FileItemProps) {
         >
           <button
             type="button"
-            className="text-[#6C757D] hover:text-gray-400 disabled:hover:text-gray-500 disabled:cursor-not-allowed  bg-[#F7E8FF] rounded-md px-1.5 py-0.5"
+            className="text-ink-400 hover:text-gray-400 disabled:hover:text-gray-500 disabled:cursor-not-allowed  bg-[#F7E8FF] rounded-md px-1.5 py-0.5"
             onClick={onUseInSQL}
             disabled={props.isDeleting || !props.canUse}
           >
@@ -206,7 +206,7 @@ function FileItem(props: FileItemProps) {
         </Tooltip>
         <div
           className={clsx(
-            "text-[#6C757D]  bg-[#F7E8FF] rounded-md px-1.5 py-0.5",
+            "text-ink-400  bg-[#F7E8FF] rounded-md px-1.5 py-0.5",
             props.isDeleting ? "cursor-not-allowed" : "hover:text-gray-400"
           )}
         >
@@ -661,7 +661,7 @@ file`;
           )}
           {(actualFiles.length > 0 || upload._tag === "idle") && (
             <>
-              <div className="relative flex px-4 py-2 text-xs font-medium border-b border-[#E9ECEF] dark:bg-black dark:border-[#262A30]  text-[#6C757D] justify-between">
+              <div className="relative flex px-4 py-2 text-xs font-medium border-b border-[#E9ECEF] dark:bg-black dark:border-[#262A30]  text-ink-400 justify-between">
                 <div className="flex gap-x-1">
                   <span className="font-mono">/home/sandwormuser</span>
                 </div>
@@ -676,7 +676,7 @@ file`;
                 </Tooltip>
               </div>
               <div className="px-4 py-0 flex items-center border-b dark:border-[#262A30] border-gray-200 group focus-within:border-[#7104A8]">
-                <MagnifyingGlassIcon className="h-4 w-4 text-[#868E96] group-focus-within:text-[#7104A8]" />
+                <MagnifyingGlassIcon className="h-4 w-4 text-ink-300  group-focus-within:text-[#7104A8]" />
                 <input
                   type="text"
                   placeholder="Search..."
@@ -706,7 +706,7 @@ file`;
               ) : (
                 !isDragActive && (
                   <div className="flex-1 p-4">
-                    <div className="flex items-center flex-col justify-center h-full text-[#868E96] bg-[#FBFBFB] rounded-lg border-2 border-dashed border-[#E9ECEF] p-8 text-center dark:bg-[#0C1015] dark:border-[#262A30]">
+                    <div className="flex items-center flex-col justify-center h-full text-ink-300  bg-[#FBFBFB] rounded-lg border-2 border-dashed border-[#E9ECEF] p-8 text-center dark:bg-[#0C1015] dark:border-[#262A30]">
                       <UploadIcon />
                       <span className="mt-2">
                         Click or drag and drop files here to upload them

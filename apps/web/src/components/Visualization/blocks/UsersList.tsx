@@ -236,25 +236,25 @@ function UsersList(props: Props) {
               <tr>
                 <th
                   scope="col"
-                  className="text-left p-4 text-xs font-medium text-[#6C757D] dark:text-[#868E96] sticky left-0 bg-[#F1F3F4] dark:bg-[#0D0F12] min-w-[250px]"
+                  className="text-left p-4 text-xs font-medium text-ink-400 dark:text-ink-300  sticky left-0 bg-[#F1F3F4] dark:bg-[#0D0F12] min-w-[250px]"
                 >
                   Name
                 </th>
                 <th
                   scope="col"
-                  className="text-left p-4 text-xs font-medium text-[#6C757D] dark:text-[#868E96] min-w-[120px]"
+                  className="text-left p-4 text-xs font-medium text-ink-400 dark:text-ink-300  min-w-[120px]"
                 >
                   Title
                 </th>
                 <th
                   scope="col"
-                  className="text-left p-4 text-xs font-medium text-[#6C757D] dark:text-[#868E96] min-w-[120px]"
+                  className="text-left p-4 text-xs font-medium text-ink-400 dark:text-ink-300  min-w-[120px]"
                 >
                   Email
                 </th>
                 <th
                   scope="col"
-                  className="text-left p-4 text-xs font-medium text-[#6C757D] dark:text-[#868E96] min-w-[120px]"
+                  className="text-left p-4 text-xs font-medium text-ink-400 dark:text-ink-300  min-w-[120px]"
                 >
                   Role
                 </th>

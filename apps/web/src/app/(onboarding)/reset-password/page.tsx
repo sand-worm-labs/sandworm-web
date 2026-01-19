@@ -26,7 +26,7 @@ export default function ResetPasswordPage() {
         <h2 className="mt-4 text-xl font-medium text-black dark:text-white">
           Invalid or expired link
         </h2>
-        <p className="mt-2 text-sm text-[#455768]">
+        <p className="mt-2 text-sm text-ink-200">
           This password reset link is no longer valid.
         </p>
         <Link href="/forgot-password" className="text-sm mt-6">
@@ -43,7 +43,7 @@ export default function ResetPasswordPage() {
         <h2 className="mt-4 text-2xl font-medium text-black dark:text-white">
           Password updated
         </h2>
-        <p className="mt-2 text-sm text-[#455768]">
+        <p className="mt-2 text-sm text-ink-200">
           You can now log in with your new password.
         </p>
         <Link href="/login" className="inline-block mt-6 text-sm underline">
@@ -59,7 +59,7 @@ export default function ResetPasswordPage() {
       <h2 className="text-2xl font-medium text-center text-black mb-2 mt-4 dark:text-white">
         Reset your Password
       </h2>
-      <p className="mb-6 text-[#455768] text-sm text-center">
+      <p className="mb-6 text-ink-200 text-sm text-center">
         Please create a new password, please note your new password cannot be
         the same as your old password.
       </p>

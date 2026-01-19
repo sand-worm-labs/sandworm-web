@@ -143,13 +143,13 @@ const ProfileComponent = () => {
     <div className="min-h-screen bg-white dark:bg-[#010100] transition-colors">
       {loading ? (
         <div className="max-w-6xl mx-auto px-4 py-8">
-          <p className="text-center text-[#455768] dark:text-gray-400">
+          <p className="text-center text-ink-200 dark:text-gray-400">
             Loading...
           </p>
         </div>
       ) : !currentUser ? (
         <div className="max-w-6xl mx-auto px-4 py-8">
-          <p className="text-center text-[#455768] dark:text-gray-400">
+          <p className="text-center text-ink-200 dark:text-gray-400">
             No user found
           </p>
         </div>
@@ -175,10 +175,10 @@ const ProfileComponent = () => {
                 <div className="flex-1 space-y-4">
                   <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                     <div>
-                      <p className="text-xl font-medium text-[#1A1A1A] dark:text-white">
+                      <p className="text-xl font-medium text-ink-100  dark:text-white">
                         {currentUser.firstName || currentUser.username}
                       </p>
-                      <p className="text-[#455768] dark:text-gray-400">
+                      <p className="text-ink-200 dark:text-gray-400">
                         @{currentUser.username}
                       </p>
                     </div>
@@ -188,7 +188,7 @@ const ProfileComponent = () => {
                       onClick={() => setIsFollowing(!isFollowing)}
                       className={`flex items-center gap-2 px-6 py-2 rounded-xl font-medium transition-color text-sm ${
                         isFollowing
-                          ? "bg-[#E9ECEF] dark:bg-[#262A30] text-[#1A1A1A] dark:text-white hover:bg-opacity-80"
+                          ? "bg-[#E9ECEF] dark:bg-[#262A30] text-ink-100  dark:text-white hover:bg-opacity-80"
                           : "bg-[#A308F0] text-white hover:bg-opacity-90"
                       }`}
                     >
@@ -212,7 +212,7 @@ const ProfileComponent = () => {
                     </p>
                   )}
 
-                  <div className="flex flex-wrap gap-4 text-sm text-[#455768] dark:text-gray-400">
+                  <div className="flex flex-wrap gap-4 text-sm text-ink-200 dark:text-gray-400">
                     {mockProfile.location && (
                       <div className="flex items-center gap-1">
                         <MapPin className="w-4 h-4" />
@@ -233,18 +233,18 @@ const ProfileComponent = () => {
 
                   <div className="flex gap-6 text-[0.95rem]">
                     <div>
-                      <span className="font-medium text-[#1A1A1A] dark:text-white">
+                      <span className="font-medium text-ink-100  dark:text-white">
                         {mockProfile.followersCount}
                       </span>{" "}
-                      <span className="text-[#6C757D] dark:text-gray-400 ml-1">
+                      <span className="text-ink-400 dark:text-gray-400 ml-1">
                         Followers
                       </span>
                     </div>
                     <div>
-                      <span className="font-medium text-[#1A1A1A] dark:text-white">
+                      <span className="font-medium text-ink-100  dark:text-white">
                         {mockProfile.followingCount}
                       </span>{" "}
-                      <span className="text-[#6C757D] dark:text-gray-400 ml-1">
+                      <span className="text-ink-400 dark:text-gray-400 ml-1">
                         Following
                       </span>
                     </div>
@@ -260,7 +260,7 @@ const ProfileComponent = () => {
                               href={url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="p-2 rounded-lg border border-[#E9ECEF] dark:border-[#262A30] hover:bg-[#A308F0] hover:border-[#A308F0] hover:text-white transition-colors text-[#455768] dark:text-gray-400"
+                              className="p-2 rounded-lg border border-[#E9ECEF] dark:border-[#262A30] hover:bg-[#A308F0] hover:border-[#A308F0] hover:text-white transition-colors text-ink-200 dark:text-gray-400"
                             >
                               {getSocialIcon(platform)}
                             </a>
@@ -276,13 +276,13 @@ const ProfileComponent = () => {
               <div className="bg-white dark:bg-[#010100] border border-[#E9ECEF] dark:border-[#262A30] rounded-2xl p-6">
                 <div className="flex items-center gap-3 mb-2">
                   <div className="p-2 rounded-lg bg-[#A308F0] bg-opacity-10">
-                    <Zap strokeWidth={1.2} className="w-5 h-5 text-[#A308F0]" />
+                    <Zap strokeWidth={1.2} className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <p className="text-2xl font-medium text-[#1A1A1A] dark:text-white">
+                    <p className="text-2xl font-medium text-ink-100  dark:text-white">
                       {mockProfile.stats?.queriesRun.toLocaleString()}
                     </p>
-                    <p className="text-sm text-[#455768] dark:text-gray-400">
+                    <p className="text-sm text-ink-200 dark:text-gray-400">
                       Queries Run
                     </p>
                   </div>
@@ -293,15 +293,15 @@ const ProfileComponent = () => {
                 <div className="flex items-center gap-3 mb-2">
                   <div className="p-2 rounded-lg bg-[#A308F0] bg-opacity-10">
                     <Database
-                      className="w-5 h-5 text-[#A308F0]"
+                      className="w-5 h-5 text-primary"
                       strokeWidth={1.2}
                     />
                   </div>
                   <div>
-                    <p className="text-2xl font-medium text-[#1A1A1A] dark:text-white">
+                    <p className="text-2xl font-medium text-ink-100  dark:text-white">
                       {mockProfile.stats?.datasetsAnalyzed}
                     </p>
-                    <p className="text-sm text-[#455768] dark:text-gray-400">
+                    <p className="text-sm text-ink-200 dark:text-gray-400">
                       Datasets Analyzed
                     </p>
                   </div>
@@ -312,15 +312,15 @@ const ProfileComponent = () => {
                 <div className="flex items-center gap-3 mb-2">
                   <div className="p-2 rounded-lg bg-[#A308F0] bg-opacity-10">
                     <TrendingUp
-                      className="w-5 h-5 text-[#A308F0]"
+                      className="w-5 h-5 text-primary"
                       strokeWidth={1.2}
                     />
                   </div>
                   <div>
-                    <p className="text-2xl font-medium text-[#1A1A1A] dark:text-white">
+                    <p className="text-2xl font-medium text-ink-100  dark:text-white">
                       {mockProfile.stats?.chainsTracked}
                     </p>
-                    <p className="text-sm text-[#455768] dark:text-gray-400">
+                    <p className="text-sm text-ink-200 dark:text-gray-400">
                       Chains Tracked
                     </p>
                   </div>
@@ -331,15 +331,15 @@ const ProfileComponent = () => {
                 <div className="flex items-center gap-3 mb-2">
                   <div className="p-2 rounded-lg bg-[#A308F0] bg-opacity-10">
                     <BarChart3
-                      className="w-5 h-5 text-[#A308F0]"
+                      className="w-5 h-5 text-primary"
                       strokeWidth={1.2}
                     />
                   </div>
                   <div>
-                    <p className="text-2xl font-medium text-[#1A1A1A] dark:text-white">
+                    <p className="text-2xl font-medium text-ink-100  dark:text-white">
                       {mockProfile.stats?.totalViews.toLocaleString()}
                     </p>
-                    <p className="text-sm text-[#455768] dark:text-gray-400">
+                    <p className="text-sm text-ink-200 dark:text-gray-400">
                       Total Views
                     </p>
                   </div>
@@ -349,7 +349,7 @@ const ProfileComponent = () => {
 
             {mockProfile.wallets && mockProfile.wallets.length > 0 && (
               <div className="bg-white dark:bg-[#010100] border border-[#E9ECEF] dark:border-[#262A30] rounded-2xl p-6">
-                <h2 className="text-xl font-medium text-[#1A1A1A] dark:text-white mb-4">
+                <h2 className="text-xl font-medium text-ink-100  dark:text-white mb-4">
                   Wallets
                 </h2>
                 <div className="space-y-3">
@@ -361,17 +361,17 @@ const ProfileComponent = () => {
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
                           {wallet.label && (
-                            <span className="text-sm font-medium text-[#1A1A1A] dark:text-white">
+                            <span className="text-sm font-medium text-ink-100  dark:text-white">
                               {wallet.label}
                             </span>
                           )}
                           {wallet.chain && (
-                            <span className="text-xs px-2 py-0.5 rounded-full bg-[#A308F0] bg-opacity-10 text-[#A308F0]">
+                            <span className="text-xs px-2 py-0.5 rounded-full bg-[#A308F0] bg-opacity-10 text-primary">
                               {wallet.chain}
                             </span>
                           )}
                         </div>
-                        <code className="text-sm text-[#455768] dark:text-gray-400 font-mono">
+                        <code className="text-sm text-ink-200 dark:text-gray-400 font-mono">
                           {truncateAddress(wallet.address)}
                         </code>
                       </div>
@@ -381,9 +381,9 @@ const ProfileComponent = () => {
                         className="p-2 rounded-lg hover:bg-[#E9ECEF] dark:hover:bg-[#262A30] transition-colors"
                       >
                         {copiedWallet === wallet.address ? (
-                          <Check className="w-4 h-4 text-[#A308F0]" />
+                          <Check className="w-4 h-4 text-primary" />
                         ) : (
-                          <Copy className="w-4 h-4 text-[#455768] dark:text-gray-400" />
+                          <Copy className="w-4 h-4 text-ink-200 dark:text-gray-400" />
                         )}
                       </button>
                     </div>
@@ -393,7 +393,7 @@ const ProfileComponent = () => {
             )}
 
             <div className="bg-white dark:bg-[#010100] border border-[#E9ECEF] dark:border-[#262A30] rounded-2xl p-6">
-              <h2 className="text-xl font-medium text-[#1A1A1A] dark:text-white mb-4">
+              <h2 className="text-xl font-medium text-ink-100  dark:text-white mb-4">
                 Activity
               </h2>
               <div className="overflow-x-auto w-full">
@@ -432,15 +432,15 @@ const ProfileComponent = () => {
             </div>
 
             <div className="bg-white dark:bg-[#010100] border border-[#E9ECEF] dark:border-[#262A30] rounded-2xl p-6">
-              <h2 className="text-xl font-medium text-[#1A1A1A] dark:text-white mb-4">
+              <h2 className="text-xl font-medium text-ink-100  dark:text-white mb-4">
                 Projects
               </h2>
               <div className="text-center py-12">
                 <Database
-                  className="w-12 h-12 text-[#455768] dark:text-gray-400 mx-auto mb-3"
+                  className="w-12 h-12 text-ink-200 dark:text-gray-400 mx-auto mb-3"
                   strokeWidth={1.2}
                 />
-                <p className="text-[#455768] dark:text-gray-400">
+                <p className="text-ink-200 dark:text-gray-400">
                   No projects yet
                 </p>
               </div>

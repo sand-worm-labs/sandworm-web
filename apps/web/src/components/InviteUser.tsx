@@ -133,7 +133,7 @@ export default function InviteUserModal({
                         }}
                         placeholder="colleague@example.com"
                         disabled={isSubmitting}
-                        className="w-full pl-10 pr-16 py-1.5 rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none focus:ring focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4]"
+                        className="w-full pl-10 pr-16 py-1.5 rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-ink-300  placeholder-[#455768] focus:outline-none focus:ring focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4]"
                       />
                     </div>
                   </div>

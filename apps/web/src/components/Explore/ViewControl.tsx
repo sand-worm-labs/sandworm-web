@@ -21,7 +21,7 @@ export function ViewControl({ viewMode, onViewModeChange }: ViewControlProps) {
         onClick={() => onViewModeChange("grid")}
         className={cn(
           "h-8 w-8 rounded-md",
-          viewMode === "grid" && "bg-accent text-[#A308F0]"
+          viewMode === "grid" && "bg-accent text-primary"
         )}
       >
         <PiSquareSplitVerticalFill className="text-xl" />
@@ -33,7 +33,7 @@ export function ViewControl({ viewMode, onViewModeChange }: ViewControlProps) {
         onClick={() => onViewModeChange("list")}
         className={cn(
           "h-8 w-8 rounded-md",
-          viewMode === "list" && "bg-accent text-[#A308F0]"
+          viewMode === "list" && "bg-accent text-primary"
         )}
       >
         <PiListThin className="text-xl" />

@@ -37,25 +37,25 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
       <table className="w-full border-collapse">
         <thead className="bg-[#F1F3F4] dark:bg-[#0D0F12] sticky top-0 z-10">
           <tr className="border-b border-[#CED4DA] dark:border-[#262A30]">
-            <th className="text-left p-4 text-xs font-medium text-[#6C757D] dark:text-[#868E96] sticky left-0 bg-[#F1F3F4] dark:bg-[#0D0F12] min-w-[250px]">
+            <th className="text-left p-4 text-xs font-medium text-ink-400 dark:text-ink-300  sticky left-0 bg-[#F1F3F4] dark:bg-[#0D0F12] min-w-[250px]">
               Title
             </th>
-            <th className="text-left p-4 text-xs font-medium text-[#6C757D] dark:text-[#868E96] min-w-[120px]">
+            <th className="text-left p-4 text-xs font-medium text-ink-400 dark:text-ink-300  min-w-[120px]">
               Creator
             </th>
-            <th className="text-left p-4 text-xs font-medium text-[#6C757D] dark:text-[#868E96] min-w-[120px]">
+            <th className="text-left p-4 text-xs font-medium text-ink-400 dark:text-ink-300  min-w-[120px]">
               Last Edited
             </th>
-            <th className="text-left p-4 text-xs font-medium text-[#6C757D] dark:text-[#868E96] min-w-[120px]">
+            <th className="text-left p-4 text-xs font-medium text-ink-400 dark:text-ink-300  min-w-[120px]">
               Created
             </th>
-            <th className="text-left p-4 text-xs font-medium text-[#6C757D] dark:text-[#868E96] min-w-[140px]">
+            <th className="text-left p-4 text-xs font-medium text-ink-400 dark:text-ink-300  min-w-[140px]">
               App Published At
             </th>
-            <th className="text-left p-4 text-xs font-medium text-[#6C757D] dark:text-[#868E96] min-w-[120px]">
+            <th className="text-left p-4 text-xs font-medium text-ink-400 dark:text-ink-300  min-w-[120px]">
               Your Access
             </th>
-            <th className="text-left p-4 text-xs font-medium text-[#6C757D] dark:text-[#868E96] min-w-[100px]">
+            <th className="text-left p-4 text-xs font-medium text-ink-400 dark:text-ink-300  min-w-[100px]">
               Reviews
             </th>
             <th className="w-12 p-4" />
@@ -83,8 +83,8 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                     <Star
                       className={`w-4 h-4 ${
                         project.isFavorite
-                          ? "fill-[#A308F0] text-[#A308F0]"
-                          : "text-gray-400 hover:text-[#A308F0]"
+                          ? "fill-[#A308F0] text-primary"
+                          : "text-gray-400 hover:text-primary"
                       }`}
                     />
                   </button>
@@ -96,24 +96,20 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                   </Link>
                 </div>
               </td>
-              <td className="p-4 text-sm text-[#455768] dark:text-[#868E96]">
+              <td className="p-4 text-sm text-ink-200 dark:text-ink-300 ">
                 {project.creator}
               </td>
-              <td className="p-4 text-sm text-[#455768] dark:text-[#868E96]">
+              <td className="p-4 text-sm text-ink-200 dark:text-ink-300 ">
                 {project.lastEdited}
               </td>
-              <td className="p-4 text-sm text-[#455768] dark:text-[#868E96]">
+              <td className="p-4 text-sm text-ink-200 dark:text-ink-300 ">
                 {project.created}
               </td>
-              <td className="p-4 text-sm text-[#455768] dark:text-[#868E96]">
-                -
-              </td>
-              <td className="p-4 text-sm text-[#455768] dark:text-[#868E96]">
+              <td className="p-4 text-sm text-ink-200 dark:text-ink-300 ">-</td>
+              <td className="p-4 text-sm text-ink-200 dark:text-ink-300 ">
                 Owner
               </td>
-              <td className="p-4 text-sm text-[#455768] dark:text-[#868E96]">
-                -
-              </td>
+              <td className="p-4 text-sm text-ink-200 dark:text-ink-300 ">-</td>
               <td className="p-4">
                 <div className="relative">
                   <button
@@ -136,7 +132,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                           onMenuAction("duplicate", project.id);
                           setOpenMenuId(null);
                         }}
-                        className="w-full px-4 py-2 text-left text-sm flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-[#181C21] text-[#455768] dark:text-white"
+                        className="w-full px-4 py-2 text-left text-sm flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-[#181C21] text-ink-200 dark:text-white"
                       >
                         <Copy className="w-3.5 h-3.5" strokeWidth={1.4} />
                         Duplicate
@@ -147,7 +143,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                           onMenuAction("newTab", project.id);
                           setOpenMenuId(null);
                         }}
-                        className="w-full px-4 py-2 text-left text-sm flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-[#181C21] text-[#455768] dark:text-white"
+                        className="w-full px-4 py-2 text-left text-sm flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-[#181C21] text-ink-200 dark:text-white"
                       >
                         <ExternalLink
                           className="w-3.5 h-3.5"
@@ -161,7 +157,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                           onMenuAction("trash", project.id);
                           setOpenMenuId(null);
                         }}
-                        className="w-full px-4 py-2 text-left text-sm flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-[#181C21] text-[#455768] dark:text-white"
+                        className="w-full px-4 py-2 text-left text-sm flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-[#181C21] text-ink-200 dark:text-white"
                       >
                         <Trash2 className="w-3.5 h-3.5" strokeWidth={1.4} />
                         Move to trash

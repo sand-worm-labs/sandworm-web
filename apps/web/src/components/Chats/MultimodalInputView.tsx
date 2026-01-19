@@ -59,7 +59,7 @@ export const MultimodalInputView = forwardRef<
     dark:bg-[#121417]
     dark:text-white
     text-sm
-    placeholder:text-[#868E96]
+    placeholder:text-ink-300 
     placeholder:tracking-wide
     py-4 px-5
     focus:outline-none

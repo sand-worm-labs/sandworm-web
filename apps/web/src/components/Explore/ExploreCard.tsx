@@ -42,7 +42,7 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
                 )}
               </Avatar>
               <div className="flex-1 min-w-0">
-                <p className="text-[0.8rem] mb-1 text-[#6C757D]">
+                <p className="text-[0.8rem] mb-1 text-ink-400">
                   @{query.creator}
                 </p>
                 <UserProfileHover>
@@ -50,7 +50,7 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
                     {query.title}
                   </h3>
                 </UserProfileHover>
-                <p className="text-xs  text-[#6C757D] ">
+                <p className="text-xs  text-ink-400 ">
                   Created {query.createdAt.toLocaleDateString("en-US")}
                 </p>
               </div>
@@ -63,14 +63,14 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
               <span className="flex items-center gap-1">
                 {query.stared_by.length || 0}
                 <Star
-                  className="h-4 w-4 font-light text-[#1C3B5A] dark:text-[#868E96]"
+                  className="h-4 w-4 font-light text-[#1C3B5A] dark:text-ink-300 "
                   strokeWidth={1.2}
                 />
               </span>
               <span className="flex items-center gap-1">
                 {query.forked_by.length || 0}
                 <GitFork
-                  className="h-4 w-4 font-light text-[#1C3B5A] dark:text-[#868E96]"
+                  className="h-4 w-4 font-light text-[#1C3B5A] dark:text-ink-300 "
                   strokeWidth={1.2}
                 />
               </span>

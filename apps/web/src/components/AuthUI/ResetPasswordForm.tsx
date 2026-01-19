@@ -89,7 +89,7 @@ export const ResetPasswordForm = ({
       className="mt-4 space-y-4 w-full font-primary"
     >
       <div>
-        <label className="block text-sm font-medium text-[#455768] dark:text-gray-300">
+        <label className="block text-sm font-medium text-ink-200 dark:text-gray-300">
           New Password
         </label>
         <input
@@ -101,7 +101,7 @@ export const ResetPasswordForm = ({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-[#455768] dark:text-gray-300">
+        <label className="block text-sm font-medium text-ink-200 dark:text-gray-300">
           Confirm Password
         </label>
         <input

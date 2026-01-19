@@ -28,7 +28,7 @@ export const SignUp = () => {
       </p>
 
       <div className="flex-col  gap-2 absolute bottom-[4rem] w-full flex items-center justify-center">
-        <p className="text-base text-[#455768] font-primary mb-4">
+        <p className="text-base text-ink-200 font-primary mb-4">
           Trusted by teams at
         </p>
         <PartnersSection />

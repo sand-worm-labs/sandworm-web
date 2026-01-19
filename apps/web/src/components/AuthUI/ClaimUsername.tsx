@@ -73,7 +73,7 @@ export const ClaimUsername = () => {
         <h2 className="text-2xl font-bold font-primary mt-4">
           Claim your Sandworm domain
         </h2>
-        <p className="text-sm font-medium text-[#455768] dark:text-white font-primary mb-4">
+        <p className="text-sm font-medium text-ink-200 dark:text-white font-primary mb-4">
           Your username is your unique profile URL where all your dashboards,
           queries, and public works live. It represents your identity across
           Sandworm.
@@ -152,7 +152,7 @@ export const ClaimUsername = () => {
       </div>
 
       <div className="flex-col  gap-2 absolute bottom-[4rem] w-full flex items-center justify-center">
-        <p className="font-primary text-center text-xs text-[#6C757D] md:max-w-[300px] mt-6">
+        <p className="font-primary text-center text-xs text-ink-400 md:max-w-[300px] mt-6">
           By creating an account you agree to the{" "}
           <Link href="/terms" className="underline">
             Terms

@@ -48,7 +48,7 @@ export function UserProfileHover({ children }: UserProfileHoverProps) {
               </Avatar>
               <div>
                 <p className="font-semibold text-sm">{dummyUser.name}</p>
-                <p className="text-sm text-[#6C757D] font-primary">
+                <p className="text-sm text-ink-400 font-primary">
                   @{dummyUser.username}
                 </p>
               </div>
@@ -56,7 +56,7 @@ export function UserProfileHover({ children }: UserProfileHoverProps) {
             <Button
               size="sm"
               variant="secondary"
-              className="bg-[#E2ECFF] dark:bg-[#A308F020] dark:text-[#A308F0] text-[#8053FE] hover:bg-[#E2ECFF]/90 text-sm rounded-md font-medium h-6"
+              className="bg-[#E2ECFF] dark:bg-[#A308F020] dark:text-primary text-[#8053FE] hover:bg-[#E2ECFF]/90 text-sm rounded-md font-medium h-6"
             >
               Share
             </Button>
@@ -64,7 +64,7 @@ export function UserProfileHover({ children }: UserProfileHoverProps) {
 
           <Link
             href="/"
-            className="text-sm text-[#A308F0] hover:text-red-600 underline font-medium inline-block"
+            className="text-sm text-primary hover:text-red-600 underline font-medium inline-block"
           >
             Go to Profile Page
           </Link>
@@ -72,11 +72,11 @@ export function UserProfileHover({ children }: UserProfileHoverProps) {
           <div className="flex gap-6 text-sm">
             <div>
               <span className="font-medium">{dummyUser.queriesCount}</span>{" "}
-              <span className="text-[#6C757D] font-medium">Queries</span>
+              <span className="text-ink-400 font-medium">Queries</span>
             </div>
             <div>
               <span className="font-medium">{dummyUser.dashboardsCount}</span>{" "}
-              <span className="text-[#6C757D] font-medium">Dashboards</span>
+              <span className="text-ink-400 font-medium">Dashboards</span>
             </div>
           </div>
 

@@ -145,7 +145,7 @@ export const HomeTab = () => {
 
     if (recentItems.length === 0) {
       return (
-        <Card className="p-4 text-center rounded-none min-h-32 flex items-center justify-center flex-col bg-transparent border-none shadow-none text-[#868E96]">
+        <Card className="p-4 text-center rounded-none min-h-32 flex items-center justify-center flex-col bg-transparent border-none shadow-none text-ink-300 ">
           No Recent Queries Found
         </Card>
       );

@@ -285,7 +285,7 @@ function PlusButton(props: Props) {
       >
         <div className="w-full h-[1px] bg-gray-200 dark:bg-[#181C21]" />
         <div className="flex text-gray-400 justify-center items-center gap-x-1 text-[10px] whitespace-nowrap">
-          <PlusIcon className="h-3 w-3 text-gray-400 dark:text-[#868E96]" />
+          <PlusIcon className="h-3 w-3 text-gray-400 dark:text-ink-300 " />
           <span>Add block</span>
         </div>
         <div className="w-full h-[1px] bg-gray-200 dark:bg-[#181C21]" />

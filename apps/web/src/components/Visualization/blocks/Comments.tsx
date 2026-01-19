@@ -158,7 +158,7 @@ export default function Comments({
                     rows={2}
                     name="comment"
                     id="comment"
-                    className="w-full px-3 py-1.5 pt-2 pb-12 rounded-lg dark:bg-[#1A1A1A] bg-[#F1F3F4] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none transition text-xs md:text-sm min-h-[7rem] resize-none border-0"
+                    className="w-full px-3 py-1.5 pt-2 pb-12 rounded-lg dark:bg-[#1A1A1A] bg-[#F1F3F4] dark:text-white placeholder:dark:text-ink-300  placeholder-[#455768] focus:outline-none transition text-xs md:text-sm min-h-[7rem] resize-none border-0"
                     placeholder="Add your comment..."
                     value={content}
                     onKeyDown={onKeyDown}

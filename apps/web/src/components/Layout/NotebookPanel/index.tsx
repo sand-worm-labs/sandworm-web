@@ -43,10 +43,10 @@ const PanelItem = ({
       onClick={onClick ?? action.onClick}
       className={cn(
         "p-2 rounded-lg transition-colors flex items-center justify-center",
-        "text-[#6C757D] hover:text-[#1A1A1A] dark:text-[#868E96] dark:hover:text-white",
+        "text-ink-400 hover:text-ink-100  dark:text-ink-300  dark:hover:text-white",
         "hover:bg-[#F1F3F4] dark:hover:bg-[#21262d]",
         isActive &&
-        "bg-[#F1F3F4] dark:bg-[#21262d] text-[#1A1A1A] dark:text-white"
+          "bg-[#F1F3F4] dark:bg-[#21262d] text-ink-100  dark:text-white"
       )}
       aria-label={action.label}
       title={action.label}

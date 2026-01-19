@@ -74,10 +74,10 @@ c30,0,30,26.9,60,26.9"
           <div className="flex flex-col items-center relative z-10">
             <FileX2
               size={48}
-              className="text-[#868E96] dark:text-white mb-4"
+              className="text-ink-300  dark:text-white mb-4"
               strokeWidth={1.5}
             />
-            <p className="text-sm text-[#868E96] dark:text-white text-center">
+            <p className="text-sm text-ink-300  dark:text-white text-center">
               There's no data yet! Run a query to get started.
             </p>
           </div>
@@ -111,7 +111,7 @@ c30,0,30,26.9,60,26.9"
               <AlertDescription>{currentTab.result.error}</AlertDescription>
             </Alert>
 
-            <p className="text-sm text-[#868E96] mt-4 text-center">
+            <p className="text-sm text-ink-300  mt-4 text-center">
               Not sure what went wrong? You can check out our{" "}
               <a
                 href="https://docs.sandwormlabs.xyz/faq"

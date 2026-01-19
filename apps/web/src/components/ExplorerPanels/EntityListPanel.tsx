@@ -28,7 +28,7 @@ export const EntityListPanel: React.FC<IEntityListPanelProps> = ({
 
         return (
           <div key={key}>
-            <p className="text-xs text-[#6C757D] mb-2 font-medium">{label}</p>
+            <p className="text-xs text-ink-400 mb-2 font-medium">{label}</p>
             {list.map(entity => (
               <button
                 type="button"
