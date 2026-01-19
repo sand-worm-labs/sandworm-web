@@ -56,25 +56,24 @@ export interface CreatePivotTableResult {
 export class PivotTableService {
     private static readonly PAGE_SIZE = 50
     private readonly logger = new Logger(PivotTableService.name);
-    private readonly executor: PythonExecutorService;
 
     constructor(
-        private readonly workspaceId: string,
-        private readonly sessionId: string
+        private readonly executor: PythonExecutorService
     ) { }
 
-    async createPivotTable(config: PivotTableConfig): Promise<CreatePivotTableResult> {
+    async createPivotTable(context: { workspaceId: string; sessionId: string }, config: PivotTableConfig): Promise<CreatePivotTableResult> {
         const code = this.generatePythonCode(config)
         let outputs: Output[] = []
 
         const { abort, promise } = await this.executor.executeCode(
+            context,
             code,
             (otps) => outputs = outputs.concat(otps),
             { storeHistory: true }
         )
 
         const processedPromise = promise.then(() =>
-            this.processOutputs(outputs, config.varName, config.dataframe.name)
+            this.processOutputs(context, outputs, config.varName, config.dataframe.name)
         )
 
         return {
@@ -229,6 +228,7 @@ _sandworm_pivot_table_run()`
     }
 
     private processOutputs(
+        context: { workspaceId: string; sessionId: string },
         outputs: Output[],
         varName: string,
         dataframeName: string
@@ -257,8 +257,8 @@ _sandworm_pivot_table_run()`
                 if (output.name === 'stderr') {
                     errors.push(
                         new PythonStderrError(
-                            this.workspaceId,
-                            this.sessionId,
+                            context.workspaceId,
+                            context.sessionId,
                             output.text,
                             `Got stderr while creating pivot table "${varName}" from dataframe "${dataframeName}"`
                         )
@@ -266,7 +266,7 @@ _sandworm_pivot_table_run()`
                     continue
                 }
 
-                const result = this.parseStdoutOutput(output.text)
+                const result = this.parseStdoutOutput(context, output.text)
                 if (result) {
                     return result
                 }
@@ -284,7 +284,7 @@ _sandworm_pivot_table_run()`
         )
     }
 
-    private parseStdoutOutput(text: string): CreatePivotTableOutput {
+    private parseStdoutOutput(context: { workspaceId: string; sessionId: string }, text: string): CreatePivotTableOutput {
         for (const line of text.split('\n')) {
             const result = jsonString
                 .pipe(
@@ -302,8 +302,8 @@ _sandworm_pivot_table_run()`
                 if ('log' in result.data) {
                     this.logger.error(
                         {
-                            workspaceId: this.workspaceId,
-                            sessionId: this.sessionId,
+                            workspaceId: context.workspaceId,
+                            sessionId: context.sessionId,
                             error: result.data.error,
                             log: result.data.log,
                         },

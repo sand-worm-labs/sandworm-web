@@ -19,7 +19,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { createAdapter } from '@socket.io/postgres-adapter';
 import { WorkspaceGatewayService } from './services/workspace.gateway';
 import { EnvironmentGatewayService } from './services/environment.gateway';
-import { PythonCompletionService } from './services/python-completion.service';
+import { PythonCompletionService } from '../../features/code-execution/python-completion.service';
 import { CommentGatewayService } from './services/comments.gateway';
 import { DataSource } from 'typeorm';
 

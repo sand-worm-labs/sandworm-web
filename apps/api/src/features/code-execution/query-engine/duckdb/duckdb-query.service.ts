@@ -8,7 +8,7 @@ export class DuckDBQueryService {
   constructor(
     private readonly pythonExecutor: PythonExecutorService,
     private readonly queryRunner: PythonQueryRunnerService,
-  ) {}
+  ) { }
 
   async execute(
     workspaceId: string,
@@ -19,12 +19,12 @@ export class DuckDBQueryService {
     resultOptions: { pageSize: number; dashboardPageSize: number },
     onProgress: (result: SuccessRunQueryResult) => void,
   ): Promise<[Promise<RunQueryResult>, () => Promise<void>]> {
-    const rendered = await this.pythonExecutor.renderJinja(sql);
+    const rendered = await this.pythonExecutor.renderJinja({ workspaceId, sessionId }, sql);
 
     if (typeof rendered !== 'string') {
       return [
         Promise.resolve({ ...rendered, type: 'python-error' }),
-        async () => {},
+        async () => { },
       ];
     }
 

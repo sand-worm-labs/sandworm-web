@@ -29,24 +29,23 @@ export class VariableService {
 
     constructor(
         private readonly executor: PythonExecutorService,
-        private readonly workspaceId: string,
-        private readonly sessionId: string
     ) { }
 
-    async setVariable(variable: string, value: string): Promise<VariableSetResult> {
+    async setVariable(context: { workspaceId: string; sessionId: string }, variable: string, value: string): Promise<VariableSetResult> {
         const code = this.buildVariableAssignment(variable, value);
 
-        return this.executor.executeCode(code, this.noOpOutputHandler, {
+        return this.executor.executeCode(context, code, this.noOpOutputHandler, {
             storeHistory: false,
         });
     }
 
-    async setDateTimeVariable(config: DateTimeConfig): Promise<void> {
+    async setDateTimeVariable(context: { workspaceId: string; sessionId: string }, config: DateTimeConfig): Promise<void> {
         const code = this.buildDateTimeCode(config);
-        const errorCollector = this.createErrorCollector();
+        const errorCollector = this.createErrorCollector(context);
 
         await this.executor
             .executeCode(
+                context,
                 code,
                 (outputs) => errorCollector.collect(outputs, config),
                 { storeHistory: false }
@@ -58,12 +57,12 @@ export class VariableService {
 
     private noOpOutputHandler = (): void => { };
 
-    private createErrorCollector() {
+    private createErrorCollector(context: { workspaceId: string; sessionId: string }) {
         let capturedError: Error | null = null;
 
         return {
             collect: (outputs: Output[], config: DateTimeConfig) => {
-                const error = this.extractError(outputs, config);
+                const error = this.extractError(context.workspaceId, context.sessionId, outputs, config);
                 if (error) capturedError = error;
             },
             throwIfError: () => {
@@ -104,10 +103,10 @@ ${variable} = pytz.timezone('${timezone}').localize(
 )`;
     }
 
-    private extractError(outputs: Output[], config: DateTimeConfig): Error | null {
+    private extractError(workspaceId: string, sessionId: string, outputs: Output[], config: DateTimeConfig): Error | null {
         for (const output of outputs) {
             if (this.isErrorOutput(output)) {
-                this.logError(output, config);
+                this.logError(workspaceId, sessionId, output, config);
                 return new Error(`${output.ename}: ${output.evalue}`);
             }
         }
@@ -119,12 +118,12 @@ ${variable} = pytz.timezone('${timezone}').localize(
         return output.type === 'error';
     }
 
-    private logError(error: PythonError, config: DateTimeConfig): void {
+    private logError(workspaceId: string, sessionId: string, error: PythonError, config: DateTimeConfig): void {
         this.logger.error(
             {
                 pythonError: error,
-                workspaceId: this.workspaceId,
-                sessionId: this.sessionId,
+                workspaceId: workspaceId,
+                sessionId: sessionId,
                 variable: config.variable,
                 value: config.value,
             },
