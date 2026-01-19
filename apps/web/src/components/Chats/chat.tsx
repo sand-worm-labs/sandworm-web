@@ -88,7 +88,7 @@ export function Chat({
           What do you want to explore onchain today?
         </h1>
 
-        <p className="text-[#6C757D]">Search the blockchain for information</p>
+        <p className="text-ink-400">Search the blockchain for information</p>
 
         <form className="flex flex-row gap-2 relative items-end w-full md:max-w-[800px] max-w-[calc(100dvw-32px)] px-4 md:px-0 min-w-[760px]">
           <MultimodalInput

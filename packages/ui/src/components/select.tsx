@@ -44,7 +44,7 @@ function SelectTrigger({
     >
       {children}
       <SelectPrimitive.Icon asChild>
-        <ChevronDownIcon className="w-5 h-5 text-[#868E96] " />
+        <ChevronDownIcon className="w-5 h-5 text-ink-300  " />
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
   );
@@ -116,7 +116,7 @@ function SelectItem({
     >
       <span className="absolute right-2 flex size-3.5 items-center justify-center">
         <SelectPrimitive.ItemIndicator>
-          <CheckIcon className="w-4 h-4 text-[#868E96]" />
+          <CheckIcon className="w-4 h-4 text-ink-300 " />
         </SelectPrimitive.ItemIndicator>
       </span>
       <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>

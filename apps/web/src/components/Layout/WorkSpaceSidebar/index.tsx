@@ -70,7 +70,7 @@ export const WorkspaceSidebar = () => {
     `flex items-center gap-3 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors
      ${
        pathname === href
-         ? "bg-white dark:bg-[#181C21] shadow-[0_0.5px_4px_#2516660A] text-[#A308F0] dark:text-[#A308F0]"
+         ? "bg-white dark:bg-[#181C21] shadow-[0_0.5px_4px_#2516660A] text-primary dark:text-primary"
          : "text-gray-600 dark:text-white hover:bg-[#ffffff] dark:hover:bg-[#181C21] hover:text-black dark:hover:text-white"
      }`;
 
@@ -217,7 +217,7 @@ export const WorkspaceSidebar = () => {
                 <Link href={item.href} className={linkClasses(item.href)}>
                   <item.icon
                     strokeWidth={1.8}
-                    className="h-4 w-4 text-[#1C3B5A] dark:text-[#868E96]"
+                    className="h-4 w-4 text-[#1C3B5A] dark:text-ink-300 "
                   />
                   {!collapsed && item.name}
                 </Link>
@@ -234,7 +234,7 @@ export const WorkspaceSidebar = () => {
                 <Link href={item.href} className={linkClasses(item.href)}>
                   <item.icon
                     strokeWidth={1.8}
-                    className="h-4 w-4 text-[#1C3B5A] dark:text-[#868E96]"
+                    className="h-4 w-4 text-[#1C3B5A] dark:text-ink-300 "
                   />
                   {!collapsed && item.name}
                 </Link>
@@ -250,7 +250,7 @@ export const WorkspaceSidebar = () => {
                   type="button"
                   id="create-workspace-doc"
                   onClick={onCreateDocumentHandler}
-                  className="p-1.5 hover:text-ceramic-500 hover:bg-white bg-[#F3F3FA] hover:text-black rounded-lg hover:cursor-pointer text-sm border mt-3 flex px-5 items-center justify-center w-full border-[#D000FF]  text-[#A308F0] mb-3 "
+                  className="p-1.5 hover:text-ceramic-500 hover:bg-white bg-[#F3F3FA] hover:text-black rounded-lg hover:cursor-pointer text-sm border mt-3 flex px-5 items-center justify-center w-full border-[#D000FF]  text-primary mb-3 "
                 >
                   {" "}
                   <PlusSmallIcon className="h-4 w-4 mr-3 " aria-hidden="true" />

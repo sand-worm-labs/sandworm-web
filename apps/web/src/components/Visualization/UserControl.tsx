@@ -49,7 +49,7 @@ export function UserControl({
             placeholder="Name or email..."
             value={searchValue}
             onChange={e => onSearchChange(e.target.value)}
-            className="w-full pl-10 pr-16 py-1 h-8  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none focus:ring focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4]"
+            className="w-full pl-10 pr-16 py-1 h-8  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-ink-300  placeholder-[#455768] focus:outline-none focus:ring focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4]"
           />
         </div>
 
@@ -88,7 +88,7 @@ export function UserControl({
                       <button
                         type="button"
                         onClick={onResetFilters}
-                        className="text-xs font-medium text-[#A308F0]  hover:text-[#A308F0] focus:outline-none"
+                        className="text-xs font-medium text-primary  hover:text-primary focus:outline-none"
                       >
                         Reset filters
                       </button>
@@ -129,7 +129,7 @@ export function UserControl({
                               </svg>
                             )}
                           </div>
-                          <span className="flex-1 text-sm font-medium text-[#455768] dark:text-gray-100">
+                          <span className="flex-1 text-sm font-medium text-ink-200 dark:text-gray-100">
                             {filter.label}
                           </span>
                           <span className="text-sm text-gray-400 dark:text-gray-400">

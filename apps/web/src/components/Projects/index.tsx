@@ -142,7 +142,7 @@ export const Projects: React.FC = () => {
             onClick={() =>
               router.push(`/workspace/${workspaceId}/documents/notebook`)
             }
-            className="px-3  bg-[#A308F020] hover:bg-[#A308F030]  border-[#A308F0] border  text-[#A308F0] rounded-lg transition-colors text-sm flex items-center gap-x-2 py-0"
+            className="px-3  bg-[#A308F020] hover:bg-[#A308F030]  border-[#A308F0] border  text-primary rounded-lg transition-colors text-sm flex items-center gap-x-2 py-0"
           >
             Create Project
           </button>
@@ -156,13 +156,13 @@ export const Projects: React.FC = () => {
       <div className="flex justify-between w-full">
         <div className="flex items-center gap-3 mb-0">
           <span className="bg-[#A308F020]  rounded-full p-2 flex items-center justify-center">
-            <FolderOpen className="w-4 h-4 text-[#A308F0] " />
+            <FolderOpen className="w-4 h-4 text-primary " />
           </span>
           <h2 className="text-xl font-medium ">Projects</h2>
         </div>
         <button
           type="button"
-          className="px-3  bg-[#A308F020] hover:bg-[#A308F030]  border-[#A308F0] border  text-[#A308F0] rounded-lg transition-colors text-sm flex items-center gap-x-2 py-0 "
+          className="px-3  bg-[#A308F020] hover:bg-[#A308F030]  border-[#A308F0] border  text-primary rounded-lg transition-colors text-sm flex items-center gap-x-2 py-0 "
           onClick={() =>
             router.push(`/workspace/${workspaceId}/documents/notebook`)
           }
@@ -201,8 +201,8 @@ export const Projects: React.FC = () => {
                       <Star
                         className={`w-4 h-4 ${
                           project.isFavorite
-                            ? "fill-[#A308F0] text-[#A308F0]"
-                            : "text-gray-400 hover:text-[#A308F0]"
+                            ? "fill-[#A308F0] text-primary"
+                            : "text-gray-400 hover:text-primary"
                         }`}
                       />
                     </button>
@@ -221,7 +221,7 @@ export const Projects: React.FC = () => {
                       </button>
 
                       {openMenuId === project.id && (
-                        <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-black rounded-xl shadow-lg border border-[#CED4DA] dark:border-[#262A30] pb-1 z-10 text-[#455768] dark:text-white">
+                        <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-black rounded-xl shadow-lg border border-[#CED4DA] dark:border-[#262A30] pb-1 z-10 text-ink-200 dark:text-white">
                           <button
                             type="button"
                             onClick={() =>
@@ -275,7 +275,7 @@ export const Projects: React.FC = () => {
                     </button>
 
                     {hoveredUser === project.id && (
-                      <div className="absolute bottom-full left-0 mb-2 px-3 py-1 dark:bg-black bg-white text-[#6C757D] border-[#E9ECEF] dark:border-[#262A30] border dark:text-white text-xs rounded shadow-[0_0.5px_4px_#2516660A] whitespace-nowrap z-20">
+                      <div className="absolute bottom-full left-0 mb-2 px-3 py-1 dark:bg-black bg-white text-ink-400 border-[#E9ECEF] dark:border-[#262A30] border dark:text-white text-xs rounded shadow-[0_0.5px_4px_#2516660A] whitespace-nowrap z-20">
                         Creator: {project.creator}
                       </div>
                     )}
@@ -295,19 +295,19 @@ export const Projects: React.FC = () => {
                       <div className="absolute bottom-full right-0 mb-2 px-4 py-1.5 dark:bg-black bg-white text-[#343A40] border-[#E9ECEF] dark:border-[#262A30] border dark:text-white text-xs rounded shadow-[0_0.5px_4px_#2516660A] whitespace-nowrap z-20">
                         <div className="space-y-1">
                           <div>
-                            <span className="font-medium text-[#6C757D] dark:text-white">
+                            <span className="font-medium text-ink-400 dark:text-white">
                               Creator:
                             </span>{" "}
                             {project.creator}
                           </div>
                           <div>
-                            <span className="font-medium text-[#6C757D] dark:text-white">
+                            <span className="font-medium text-ink-400 dark:text-white">
                               Last edited:
                             </span>{" "}
                             {project.lastEdited}
                           </div>
                           <div>
-                            <span className="font-medium text-[#6C757D]  dark:text-white ">
+                            <span className="font-medium text-ink-400  dark:text-white ">
                               Created:
                             </span>{" "}
                             {project.created}

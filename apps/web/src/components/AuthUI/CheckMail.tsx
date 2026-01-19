@@ -46,12 +46,12 @@ export const CheckMail = ({
         <Mail />
       </div>
       <h2 className="text-xl font-primary mb-1 ">{title}</h2>
-      <p className="text-sm font-medium text-[#6C757D] dark:text-white font-primary max-w-md mt-2">
+      <p className="text-sm font-medium text-ink-400 dark:text-white font-primary max-w-md mt-2">
         {description}
       </p>
 
       <div className="bg-[#E9ECEF] h-[1px]  w-48 mt-2.5" />
-      <p className="text-sm font-primary text-[#6C757D] mt-2">
+      <p className="text-sm font-primary text-ink-400 mt-2">
         {resendText}{" "}
         <button
           type="button"
@@ -63,7 +63,7 @@ export const CheckMail = ({
       </p>
 
       {variant === "signup" && (
-        <p className="font-primary text-center text-xs text-[#6C757D] mt-6">
+        <p className="font-primary text-center text-xs text-ink-400 mt-6">
           By creating an account you agree to the{" "}
           <span className="underline">Terms</span> and confirm that you have
           read the <span className="underline">Privacy Policy</span>.

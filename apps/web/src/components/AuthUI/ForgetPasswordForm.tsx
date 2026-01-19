@@ -48,13 +48,13 @@ export const ForgotPasswordForm = ({ onSuccess }: ForgotPasswordFormProps) => {
       className="mt-4 space-y-4 w-full font-primary"
     >
       <div>
-        <label className="block text-sm font-medium dark:text-gray-300 text-[#455768]">
+        <label className="block text-sm font-medium dark:text-gray-300 text-ink-200">
           Email
         </label>
         <input
           type="email"
           name="email"
-          className="mt-1 w-full rounded-3xl dark:bg-[#121417] bg-[#FFFFFF] p-2.5 px-5 text-black dark:text-white border border-[#DEE2E6] dark:border-[#262A30] focus:border-[#A308F0] focus:ring-1 focus:ring-[#A308F0] outline-none font-medium text-[0.9rem] placeholder:text-muted-foreground dark:placeholder:text-[#868E96]"
+          className="mt-1 w-full rounded-3xl dark:bg-[#121417] bg-[#FFFFFF] p-2.5 px-5 text-black dark:text-white border border-[#DEE2E6] dark:border-[#262A30] focus:border-[#A308F0] focus:ring-1 focus:ring-[#A308F0] outline-none font-medium text-[0.9rem] placeholder:text-muted-foreground dark:placeholder:text-ink-300 "
           placeholder="Enter your email"
           value={email}
           onChange={handleChange}

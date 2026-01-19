@@ -27,12 +27,12 @@ export function SortControl({ sortBy, onSortChange }: SortControlProps) {
         value={sortBy}
         onValueChange={value => onSortChange(value as SortOption)}
       >
-        <SelectTrigger className="w-[180px] border-[#CED4DA]  dark:border-[#262A30] bg-white dark:bg-black text-[#455768] dark:text-white h-8 rounded-lg cursor-pointer text-[0.8rem]">
+        <SelectTrigger className="w-[180px] border-[#CED4DA]  dark:border-[#262A30] bg-white dark:bg-black text-ink-200 dark:text-white h-8 rounded-lg cursor-pointer text-[0.8rem]">
           <TrendingUp className="h-3 w-4 mr-2" />
           <SelectValue />
         </SelectTrigger>
 
-        <SelectContent className="bg-white dark:bg-black border-[#CED4DA] font-primary mt-2 text-[#455768] dark:text-[#868E96] dark:border-[#262A30] rounded-xl">
+        <SelectContent className="bg-white dark:bg-black border-[#CED4DA] font-primary mt-2 text-ink-200 dark:text-ink-300  dark:border-[#262A30] rounded-xl">
           <SelectItem
             className="hover:border-none hover:outline-none hover:bg-primary/20 dark:hover:text-white"
             value="trending"

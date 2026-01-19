@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@sandworm/ui/components/card";
 import { ArrowRight } from "lucide-react";
+
 import SquareFour from "@/components/Assets/SquareFour";
 
 type Tool = {
@@ -91,7 +92,7 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool }) => {
             group-hover:opacity-100 group-hover:translate-x-0 group-hover:-translate-y-0
             -translate-x-1 -translate-y-1
             transition-all duration-200 ease-out
-            dark:text-white text-[#1A1A1A] 
+            dark:text-white text-ink-100  
             text-xs font-bold
           "
         >
@@ -99,13 +100,13 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool }) => {
         </span>
 
         <CardHeader className="p-0 mb-0">
-          <CardTitle className="text-[0.90rem] dark:text-white text-[#1A1A1A] font-medium">
+          <CardTitle className="text-[0.90rem] dark:text-white text-ink-100  font-medium">
             {tool.name}
           </CardTitle>
         </CardHeader>
 
         <CardContent className="p-0">
-          <p className="text-[#6C757D] dark:text-gray-300 text-[0.85rem] leading-relaxed font-medium">
+          <p className="text-ink-400 dark:text-gray-300 text-[0.85rem] leading-relaxed font-medium">
             {tool.description}
           </p>
         </CardContent>

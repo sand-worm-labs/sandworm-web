@@ -206,7 +206,8 @@ function PrivateDocumentPageInner(
   const shareLinkWithoutSidebar = props.document.shareLinksWithoutSidebar;
   const copyLink = useMemo(
     () =>
-      `${NEXT_PUBLIC_PUBLIC_URL()}/workspace/${props.workspaceId}/documents/${props.documentId
+      `${NEXT_PUBLIC_PUBLIC_URL()}/workspace/${props.workspaceId}/documents/${
+        props.documentId
       }/notebook${shareLinkWithoutSidebar ? `?sidebarCollapsed=true` : ""}`,
     [props.workspaceId, props.documentId, shareLinkWithoutSidebar]
   );
@@ -328,7 +329,7 @@ function PrivateDocumentPageInner(
 
   const topBarContent = (
     <div className="flex items-center w-full justify-between gap-x-6">
-      <div className="w-full overflow-hidden flex items-center gap-x-1.5 text-sm text-gray-400 dark:text-[#868E96] font-primary">
+      <div className="w-full overflow-hidden flex items-center gap-x-1.5 text-sm text-gray-400 dark:text-ink-300  font-primary">
         {props.isApp || props?.user?.role?.[props.workspaceId] === "viewer" ? (
           <EyeIcon className="w-4 h-4" />
         ) : (
@@ -337,7 +338,7 @@ function PrivateDocumentPageInner(
         <span className="w-full truncate">
           <span className="font-semibold">
             {props.isApp ||
-              props?.user?.role?.[props.workspaceId] === "viewer" ? (
+            props?.user?.role?.[props.workspaceId] === "viewer" ? (
               <span className="text-ceramic-500">Viewing</span>
             ) : (
               "Editing"
@@ -367,7 +368,7 @@ function PrivateDocumentPageInner(
         <ShareDropdown
           link={copyLink}
           isPublic={false}
-          onTogglePublic={() => { }}
+          onTogglePublic={() => {}}
           workspaceId={props.workspaceId}
           documentId={props.documentId}
           documentTitle={documentTitle}
@@ -377,15 +378,15 @@ function PrivateDocumentPageInner(
         />
 
         {props?.user?.role?.[props.workspaceId] ===
-          "viewer" ? null : props.isApp ? (
-            <Link
-              className="flex gap-x-2 items-center rounded-sm px-3 py-1 text-sm text-gray-500 bg-white hover:bg-gray-100 border border-gray-200 disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 justify-center"
-              href={`/workspace/${props.document.workspaceId}/documents/${props.document.id}/notebook/edit`}
-            >
-              <PencilIcon className="w-4 h-4" />
-              <span>Edit</span>
-            </Link>
-          ) : (
+        "viewer" ? null : props.isApp ? (
+          <Link
+            className="flex gap-x-2 items-center rounded-sm px-3 py-1 text-sm text-gray-500 bg-white hover:bg-gray-100 border border-gray-200 disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 justify-center"
+            href={`/workspace/${props.document.workspaceId}/documents/${props.document.id}/notebook/edit`}
+          >
+            <PencilIcon className="w-4 h-4" />
+            <span>Edit</span>
+          </Link>
+        ) : (
           <Tooltip
             title="Click to save"
             message="This notebook has unsaved changes."
@@ -395,7 +396,7 @@ function PrivateDocumentPageInner(
           >
             <button
               type="button"
-              className="flex items-center rounded-sm px-3 py-1 text-sm bg-white dark:bg-black dark:border-[#262A30] dark:text-[#868E96] hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 group relative border border-[#E9ECEF]"
+              className="flex items-center rounded-sm px-3 py-1 text-sm bg-white dark:bg-black dark:border-[#262A30] dark:text-ink-300  hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 group relative border border-[#E9ECEF]"
               onClick={onPublish}
               disabled={props.publishing}
             >
@@ -420,7 +421,6 @@ function PrivateDocumentPageInner(
       topBarContent={topBarContent}
       user={props.user}
       sidebarContent={sidebarContent}
-   
       onToggleChat={onToggleChat}
     >
       <div className="w-full relative flex">

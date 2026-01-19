@@ -31,12 +31,12 @@ export const Stepper: React.FC<StepperProps> = ({ steps, currentStep }) => {
               />
               <div className="flex items-center gap-2 text-sm px-1">
                 <span
-                  className={`${active ? "text-[#455768]" : "text-[#868E96]"}`}
+                  className={`${active ? "text-ink-200" : "text-ink-300 "}`}
                 >
                   {index + 1}.
                 </span>
                 <span
-                  className={`${active ? "text-[#455768]" : "text-[#868E96]"}`}
+                  className={`${active ? "text-ink-200" : "text-ink-300 "}`}
                 >
                   {step.name}
                 </span>

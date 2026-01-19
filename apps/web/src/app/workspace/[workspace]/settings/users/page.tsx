@@ -199,7 +199,7 @@ export default function UsersPage() {
               <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-1">
                 Users
               </h2>
-              <p className="mb-6 text-[#6C757D] dark:text-gray-400">
+              <p className="mb-6 text-ink-400 dark:text-gray-400">
                 List of users in {workspace?.name} team
               </p>
             </div>

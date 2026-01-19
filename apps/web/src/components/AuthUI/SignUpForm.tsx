@@ -60,7 +60,7 @@ export default function SignUpForm() {
           <input
             type={type}
             name={field}
-            className="mt-1 w-full rounded-3xl dark:bg-[#121417] bg-[#FFFFFF] p-2.5 px-5 text-black dark:text-white border border-[#DEE2E6] dark:border-[#262A30] focus:border-[#A308F0] focus:ring-1 focus:ring-[#A308F0] outline-none font-normal text-[0.9rem] placeholder:text-muted-foreground dark:placeholder:text-[#868E96]"
+            className="mt-1 w-full rounded-3xl dark:bg-[#121417] bg-[#FFFFFF] p-2.5 px-5 text-black dark:text-white border border-[#DEE2E6] dark:border-[#262A30] focus:border-[#A308F0] focus:ring-1 focus:ring-[#A308F0] outline-none font-normal text-[0.9rem] placeholder:text-muted-foreground dark:placeholder:text-ink-300 "
             placeholder={`${label}`}
             value={formData[field as keyof typeof formData]}
             onChange={handleChange}

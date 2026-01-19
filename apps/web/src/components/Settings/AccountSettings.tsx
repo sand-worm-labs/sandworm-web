@@ -140,7 +140,7 @@ export default function WorkspaceSettings() {
                       className={clsx(
                         "w-full text-left px-3 py-2 rounded-xl text-sm transition-colors cursor-pointer flex gap-5 items-center pl-5",
                         workspace.id === currentWorkspace?.id
-                          ? "bg-[#A308F020] dark:bg-[#121417] text-[#A308F0] dark:text-white"
+                          ? "bg-[#A308F020] dark:bg-[#121417] text-primary dark:text-white"
                           : "hover:bg-[#A308F030] dark:hover:bg-[#181C21]"
                       )}
                     >
@@ -207,7 +207,7 @@ export default function WorkspaceSettings() {
                   >
                     <input
                       type="text"
-                      className=" w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4]"
+                      className=" w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-ink-300  placeholder-[#455768] focus:outline-none  focus:border-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4]"
                       value={state.newName}
                       onChange={e =>
                         setState(s => ({ ...s, newName: e.target.value }))
@@ -259,7 +259,7 @@ export default function WorkspaceSettings() {
                   </form>
                 ) : (
                   <div className="flex items-center gap-x-6">
-                    <span className="text-lg dark:text-white text-[#6C757D]">
+                    <span className="text-lg dark:text-white text-ink-400">
                       {currentWorkspace?.name}
                     </span>
                     {isAdmin && (
@@ -405,7 +405,7 @@ export default function WorkspaceSettings() {
                         type="password"
                         placeholder="sk-..."
                         name="openAIKey"
-                        className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none  focus:border-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4]"
+                        className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-ink-300  placeholder-[#455768] focus:outline-none  focus:border-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4]"
                         value={state.newOpenAIKey}
                         onChange={e =>
                           setState(s => ({

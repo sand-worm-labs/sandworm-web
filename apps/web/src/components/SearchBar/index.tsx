@@ -144,7 +144,7 @@ export const SearchBar = () => {
       <button
         type="button"
         onClick={() => setIsActive(true)}
-        className="p-2 rounded-lg dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white text-[#455768] hover:bg-gray-100 dark:hover:bg-[#21262d] transition-colors bg-[#F1F3F4]"
+        className="p-2 rounded-lg dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white text-ink-200 hover:bg-gray-100 dark:hover:bg-[#21262d] transition-colors bg-[#F1F3F4]"
         aria-label="Open search"
       >
         <Search size={18} />
@@ -169,11 +169,11 @@ export const SearchBar = () => {
                   setHighlightIndex(-1);
                 }}
                 onKeyDown={handleKeyDown}
-                className="w-full pl-10 pr-16 py-1 rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-[#868E96] placeholder-[#455768] focus:outline-none focus:ring-[1p] focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4] font-primary"
+                className="w-full pl-10 pr-16 py-1 rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-ink-300  placeholder-[#455768] focus:outline-none focus:ring-[1p] focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4] font-primary"
               />
               <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-text-gray select-none font-medium">
                 Press{" "}
-                <kbd className="dark:bg-white dark:text-[#455768] text-[#455768] bg-[#E0EAF1] px-1 py-0.5 rounded ml-1">
+                <kbd className="dark:bg-white dark:text-ink-200 text-ink-200 bg-[#E0EAF1] px-1 py-0.5 rounded ml-1">
                   Enter
                 </kbd>
               </div>
@@ -188,10 +188,11 @@ export const SearchBar = () => {
                   type="button"
                   key={filter.key}
                   onClick={() => setActiveFilter(filter.key)}
-                  className={`px-3 py-0.5 rounded-md text-[0.75rem] font-medium transition-colors ${activeFilter === filter.key
+                  className={`px-3 py-0.5 rounded-md text-[0.75rem] font-medium transition-colors ${
+                    activeFilter === filter.key
                       ? "bg-[#A308F0]  text-white"
-                      : "dark:bg-[#21262d] dark:text-gray-300 dark:hover:bg-[#30363d]  text-[#1A1A1A] hover:bg-gray-200 border border-[#E3E5E8] dark:border-[#262A30]"
-                    }`}
+                      : "dark:bg-[#21262d] dark:text-gray-300 dark:hover:bg-[#30363d]  text-ink-100  hover:bg-gray-200 border border-[#E3E5E8] dark:border-[#262A30]"
+                  }`}
                 >
                   {filter.label}
                 </button>
@@ -201,13 +202,13 @@ export const SearchBar = () => {
 
           {/* Suggestions Section */}
           <div className="py-2">
-            <div className="px-4 py-2 text-[0.7rem] font-semibold uppercase tracking-wide text-[#6C757D]">
+            <div className="px-4 py-2 text-[0.7rem] font-semibold uppercase tracking-wide text-ink-400">
               Suggestions
             </div>
 
             {/* Dashboards */}
             <div>
-              <div className="px-4 py-2 text-[0.8rem]  font-medium text-[#A308F0]">
+              <div className="px-4 py-2 text-[0.8rem]  font-medium text-primary">
                 Dashboards
               </div>
               {suggestionsByCategory.dashboards.map(item => {
@@ -218,10 +219,11 @@ export const SearchBar = () => {
                   <button
                     type="button"
                     key={item.id}
-                    className={`w-full px-4 py-2 flex items-center gap-3 transition-colors ${highlightIndex === globalIndex
+                    className={`w-full px-4 py-2 flex items-center gap-3 transition-colors ${
+                      highlightIndex === globalIndex
                         ? "dark:bg-[#161b22] bg-gray-100"
                         : "dark:hover:bg-[#161b22] hover:bg-gray-50"
-                      }`}
+                    }`}
                     onMouseEnter={() => setHighlightIndex(globalIndex)}
                     onClick={() => {
                       setQuery(item.title);
@@ -240,7 +242,7 @@ export const SearchBar = () => {
                       <LucideBox size={18} className="text-[#005DE7]" />
                     </span>
                     <div className="flex-1 text-left">
-                      <div className="font-medium dark:text-gray-200 text-[#455768] text-sm ">
+                      <div className="font-medium dark:text-gray-200 text-ink-200 text-sm ">
                         {item.title}
                       </div>
                     </div>
@@ -253,7 +255,7 @@ export const SearchBar = () => {
 
             {/* Creators */}
             <div>
-              <div className="px-4 py-2 text-[0.8rem] font-medium text-[#A308F0]">
+              <div className="px-4 py-2 text-[0.8rem] font-medium text-primary">
                 Creators
               </div>
               {suggestionsByCategory.creators.map(item => {
@@ -264,10 +266,11 @@ export const SearchBar = () => {
                   <button
                     type="button"
                     key={item.id}
-                    className={`w-full px-4 py-2 flex items-center gap-3 transition-colors ${highlightIndex === globalIndex
+                    className={`w-full px-4 py-2 flex items-center gap-3 transition-colors ${
+                      highlightIndex === globalIndex
                         ? "dark:bg-[#161b22] bg-gray-100"
                         : "dark:hover:bg-[#161b22] hover:bg-gray-50"
-                      }`}
+                    }`}
                     onMouseEnter={() => setHighlightIndex(globalIndex)}
                     onClick={() => {
                       setQuery(item.title);
@@ -286,7 +289,7 @@ export const SearchBar = () => {
                       <User2Icon size={18} className="text-[#005DE7]" />
                     </span>
                     <div className="flex-1 text-left">
-                      <div className="font-medium text-sm dark:text-gray-200 text-[#455768]">
+                      <div className="font-medium text-sm dark:text-gray-200 text-ink-200">
                         @{item.title}
                       </div>
                     </div>
@@ -299,7 +302,7 @@ export const SearchBar = () => {
 
             {/* Reports */}
             <div>
-              <div className="px-4 py-2 text-[0.8rem]  font-medium text-[#A308F0]">
+              <div className="px-4 py-2 text-[0.8rem]  font-medium text-primary">
                 Reports
               </div>
               {suggestionsByCategory.reports.map(item => {
@@ -310,10 +313,11 @@ export const SearchBar = () => {
                   <button
                     type="button"
                     key={item.id}
-                    className={`w-full px-4 py-2 flex items-center gap-3 transition-colors ${highlightIndex === globalIndex
+                    className={`w-full px-4 py-2 flex items-center gap-3 transition-colors ${
+                      highlightIndex === globalIndex
                         ? "dark:bg-[#161b22] bg-gray-100"
                         : "dark:hover:bg-[#161b22] hover:bg-gray-50"
-                      }`}
+                    }`}
                     onMouseEnter={() => setHighlightIndex(globalIndex)}
                     onClick={() => {
                       setQuery(item.title);
@@ -332,7 +336,7 @@ export const SearchBar = () => {
                       <File size={18} className="text-[#005DE7]" />
                     </span>
                     <div className="flex-1 text-left">
-                      <div className="font-medium dark:text-gray-200 text-[#455768] text-sm">
+                      <div className="font-medium dark:text-gray-200 text-ink-200 text-sm">
                         {item.title}
                       </div>
                     </div>
@@ -364,7 +368,7 @@ export const SearchBar = () => {
               </div>
             </div>
             <div className="flex items-center gap-1.5">
-              <kbd className="px-2 py-0.5 rounded text-[0.8rem] font-medium dark:bg-[#21262d] dark:text-gray-300 dark:border-[#262A30] bg-white text-[#1A1A1A] border border-gray-300">
+              <kbd className="px-2 py-0.5 rounded text-[0.8rem] font-medium dark:bg-[#21262d] dark:text-gray-300 dark:border-[#262A30] bg-white text-ink-100  border border-gray-300">
                 esc
               </kbd>
               <span>to close</span>

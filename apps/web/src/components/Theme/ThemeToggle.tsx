@@ -29,19 +29,19 @@ export function ThemeTogggle() {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem
-            className="px-5 text-[#6C757D]  "
+            className="px-5 text-ink-400  "
             onClick={() => setTheme("light")}
           >
             Light
           </DropdownMenuItem>
           <DropdownMenuItem
-            className="px-5 text-[#6C757D] "
+            className="px-5 text-ink-400 "
             onClick={() => setTheme("dark")}
           >
             Dark
           </DropdownMenuItem>
           <DropdownMenuItem
-            className="px-5 text-[#6C757D] "
+            className="px-5 text-ink-400 "
             onClick={() => setTheme("system")}
           >
             System

@@ -128,7 +128,7 @@ const ProjectControl: React.FC<ProjectControlProps> = ({
                   <Badge
                     key={filter}
                     variant="secondary"
-                    className="gap-1 px-2 py-0.5 bg-[rgba(177,182,196,0.1)] text-[#6C757D] font-edium "
+                    className="gap-1 px-2 py-0.5 bg-[rgba(177,182,196,0.1)] text-ink-400 font-edium "
                   >
                     <span>{filter}</span>
                     <button

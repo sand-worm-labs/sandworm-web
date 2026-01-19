@@ -64,7 +64,7 @@ const ThemeCard: React.FC<{
         <div
           className={`p-3 rounded-full ${
             selected
-              ? "bg-white dark:bg-[#121417] text-[#A308F0] dark:text-[#A308F0] border dark:border-[#262A30] border-[#E9ECEF]"
+              ? "bg-white dark:bg-[#121417] text-primary dark:text-primary border dark:border-[#262A30] border-[#E9ECEF]"
               : "bg-[#F1F3F4] dark:bg-[#121417] text-gray-600 dark:text-gray-400 border border-[#E9ECEF] dark:border-[#262A30]"
           }`}
         >

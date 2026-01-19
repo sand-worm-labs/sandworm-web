@@ -140,19 +140,17 @@ function VisualizationViewV2(props: Props) {
             <div className="flex flex-col items-center justify-center space-y-2">
               <ExclamationTriangleIcon
                 strokeWidth={1.2}
-                className="h-12 w-12 text-[#6C757D]"
+                className="h-12 w-12 text-ink-400"
               />
-              <span className="text-lg text-[#6C757D]">
-                Something went wrong
-              </span>
+              <span className="text-lg text-ink-400">Something went wrong</span>
             </div>
           ) : props.error === "invalid-params" ? (
             <div className="flex flex-col items-center justify-center space-y-2">
               <ExclamationTriangleIcon
                 strokeWidth={1.2}
-                className="h-12 w-12 text-[#6C757D]"
+                className="h-12 w-12 text-ink-400"
               />
-              <span className="text-lg text-[#6C757D]">
+              <span className="text-lg text-ink-400">
                 Missing or invalid parameters
               </span>
             </div>
@@ -160,13 +158,13 @@ function VisualizationViewV2(props: Props) {
             <div className="flex flex-col items-center justify-center space-y-2">
               <CubeTransparentIcon
                 strokeWidth={1.2}
-                className="h-12 w-12 text-[#6C757D]"
+                className="h-12 w-12 text-ink-400"
               />
-              <span className="text-lg text-[#6C757D]">No data</span>
+              <span className="text-lg text-ink-400">No data</span>
               {!props.dataframe && (
                 <button
                   type="button"
-                  className="text-xs text-[#6C757D] hover:underline"
+                  className="text-xs text-ink-400 hover:underline"
                   onClick={props.onNewSQL}
                 >
                   Add a SQL block to fetch data to visualize.

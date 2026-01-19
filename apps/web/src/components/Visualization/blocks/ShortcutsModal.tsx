@@ -64,7 +64,7 @@ const KeyboardKey = (props: {
     className={clsx(
       "px-1.5 py-0.5 rounded-md font-mono",
       props.mode === "insert"
-        ? "bg-[#A308F020] text-[#A308F0]"
+        ? "bg-[#A308F020] text-primary"
         : "bg-yellow-100 text-yellow-700"
     )}
   >
@@ -103,7 +103,7 @@ export default function ShortcutsModal(props: ShortcutsModalProps) {
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#A308F020]">
                     <KeyboardIcon
                       aria-hidden="true"
-                      className="h-6 w-6 text-[#A308F0]"
+                      className="h-6 w-6 text-primary"
                     />
                   </div>
                   <div className="mt-3 text-center sm:mt-5">
@@ -117,10 +117,10 @@ export default function ShortcutsModal(props: ShortcutsModalProps) {
                     <div className="mt-2 flex flex-col gap-y-2">
                       <p className="text-sm text-gray-500">
                         When in insert mode, blocks will be highlighted in{" "}
-                        <span className="text-[#A308F0]">yellow</span>. When in
+                        <span className="text-primary">yellow</span>. When in
                         command mode, blocks will be highlighted in{" "}
-                        <span className="text-[#A308F0]">orange</span>.
-                        Shortcuts here are highlighted accordingly.
+                        <span className="text-primary">orange</span>. Shortcuts
+                        here are highlighted accordingly.
                       </p>
                     </div>
                     <div className="mt-6 mb-8 text-sm flex flex-col gap-y-2 ">
@@ -138,7 +138,7 @@ export default function ShortcutsModal(props: ShortcutsModalProps) {
                               </Fragment>
                             ))}
                           </div>
-                          <div className="text-[#455768] whitespace-nowrap ">
+                          <div className="text-ink-200 whitespace-nowrap ">
                             {shortcut.action}
                           </div>
                         </div>
