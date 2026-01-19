@@ -4,6 +4,9 @@ import { PubSubService } from './service/pubsub.service';
 
 @Global()
 @Module({
+    imports: [
+        
+    ],
     providers: [PubSubService],
     exports: [PubSubService],
 })
