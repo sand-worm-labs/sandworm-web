@@ -17,6 +17,7 @@ import { AuthGithubModule } from '@/features/auth/github/auth-github.module';
 import { ScheduleModule } from '@/features/schedule/schedule.module';
 import { JupyterModule } from './infrastructure/jupyter/jupyter.module';
 import { WebsocketModule } from './infrastructure/websocket/websocket.module';
+import { AppGateway } from './infrastructure/websocket/app.gateway';
 
 @Module({
     imports: [
@@ -45,7 +46,8 @@ import { WebsocketModule } from './infrastructure/websocket/websocket.module';
         TagModule,
         ScheduleModule,
 
-        WebsocketModule
+        WebsocketModule,
+        AppGateway
     ],
 })
 export class ApiModule { }
