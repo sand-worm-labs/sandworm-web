@@ -197,9 +197,7 @@ export class DocumentService {
     return Document.fromEntity(restoredDocument);
   }
 
-  // ========================================
-  // DUPLICATE - Uses tree service
-  // ========================================
+
   async duplicateDocument(
     userId: string,
     input: DuplicateDocumentInput,
@@ -223,9 +221,6 @@ export class DocumentService {
     return Document.fromEntity(duplicatedDocument);
   }
 
-  // ========================================
-  // FAVORITES - Direct operations
-  // ========================================
   async addFavoriteDocument(
     userId: string,
     input: FavoriteDocumentInput,
@@ -275,9 +270,8 @@ export class DocumentService {
     return Document.fromEntity(document);
   }
 
-  // ========================================
-  // PUBLISHING - Direct operations
-  // ========================================
+
+
   async publishDocument(
     documentId: string,
     workspaceId: string,

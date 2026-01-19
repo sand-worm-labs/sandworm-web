@@ -3,13 +3,8 @@ import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
 import { useHotkeys } from "react-hotkeys-hook";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@sandworm/ui/components/resizable";
 
-import { MiniChat } from "../Chats/MiniChat";
+import NotebookPanel from "../Layout/NotebookPanel";
 
 import { useStringQuery } from "./hooks/useQueryArgs";
 import useSideBar from "./hooks/useSideBar";
@@ -19,15 +14,14 @@ import CommandPalette from "./blocks/commandPalette";
 import { FeaturesDialog } from "./blocks/SubscriptionBadge";
 import PagePath from "./blocks/PagePath";
 import DragLayer from "./blocks/DragLayer";
-import NotebookPanel from "../Layout/NotebookPanel";
 
 interface Props {
   children: React.ReactNode;
   pagePath?: Page[];
   topBarClassname?: string;
   topBarContent?: React.ReactNode;
-  hideChat?: boolean;
   sidebarContent?: React.ReactNode;
+  onToggleChat?: () => void;
 }
 
 export default function Layout({
@@ -35,11 +29,10 @@ export default function Layout({
   pagePath,
   topBarClassname,
   topBarContent,
-  hideChat,
   sidebarContent,
+  onToggleChat,
 }: Props) {
   const [isSearchOpen, setSearchOpen] = useState(false);
-  const [isChatOpen, setIsChatOpen] = useState(true);
   useHotkeys(["mod+k"], () => {
     setSearchOpen(prev => !prev);
   });
@@ -104,63 +97,43 @@ export default function Layout({
         setOpen={setUpgradeDialogOpen}
         currentPlan="open-source"
       />
-
-      <main
-        className="flex flex-col h-screen flex-1 overflow-hidden relative"
-        style={{
-          transition: "flex 0.2s ease-in-out",
-        }}
-      >
+      <main className="flex flex-col h-screen flex-1 overflow-hidden relative">
+        {/* TOP BAR */}
         <div
           className={clsx(
             isSideBarOpen ? "px-8" : "pr-8",
-            "shrink-0 w-full h-12 border-b b-1 border-gray-200 dark:border-[#262A30] flex justify-between",
+            "shrink-0 w-full h-12 border-b border-gray-200 dark:border-[#262A30] flex justify-between",
             topBarClassname
           )}
         >
-          <div className="flex w-full">
+          <div className="flex w-full items-center">
             <button
               type="button"
               className={clsx(
                 isSideBarOpen ? "hidden" : "mr-8",
-                "relative h-12 w-12 border-b border-gray-200 bg-ceramic-50 text-gray-500 dark:text-[#868E96] cursor-pointer hover:bg-ceramic-100 flex-shrink-0"
+                "relative h-12 w-12 bg-ceramic-50 text-gray-500 hover:bg-ceramic-100 flex-shrink-0"
               )}
               onClick={toggleSideBar(true)}
             >
-              <ChevronDoubleRightIcon className="w-5 h-5 absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2" />
+              <ChevronDoubleRightIcon className="w-5 h-5 absolute inset-1/2 -translate-x-1/2 -translate-y-1/2" />
             </button>
+
             {pagePath && <PagePath pages={pagePath} />}
             {topBarContent}
           </div>
         </div>
-        <ResizablePanelGroup direction="horizontal" className="h-full">
-          <ResizablePanel
-            className="overflow-auto"
-            defaultSize={isChatOpen ? 70 : 100}
-            minSize={40}
-            maxSize={100}
-          >
-            <div className="h-full flex-grow flex overflow-hidden">
-              {children}
-            </div>
-          </ResizablePanel>
-          {/*   {!hideChat && isChatOpen && (
-            <>
-              <ResizableHandle withHandle />
 
-              <ResizablePanel
-                className="overflow-auto"
-                defaultSize={30}
-                minSize={0}
-                maxSize={60}
-                collapsible
-              >
-                <MiniChat onClose={() => setIsChatOpen(false)} />
-              </ResizablePanel>
-            </>
-          )} */}
-          <NotebookPanel sidebarContent={sidebarContent} />
-        </ResizablePanelGroup>
+        {/* BODY */}
+        <div className="flex flex-1 min-h-0 overflow-hidden">
+          {/* Editor */}
+          <div className="flex-1 min-w-0 overflow-hidden">{children}</div>
+
+          {/* Right panel */}
+          <NotebookPanel
+            sidebarContent={sidebarContent}
+            onToggleChat={onToggleChat}
+          />
+        </div>
       </main>
     </div>
   );
