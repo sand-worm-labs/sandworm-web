@@ -17,20 +17,20 @@ export type ReadDataFramePageResult =
 
 @Injectable()
 export class DataFrameService {
-  constructor(private readonly pythonExecutor: PythonExecutorService) {}
+  constructor(private readonly pythonExecutor: PythonExecutorService) { }
 
-  async rename(from: string, to: string): Promise<void> {
+  async rename(context: { workspaceId: string; sessionId: string }, from: string, to: string): Promise<void> {
     const code = `if "${from}" in globals():
     ${to} = ${from}
     del ${from}`;
     await (
-      await this.pythonExecutor.executeCode(code, () => {}, {
+      await this.pythonExecutor.executeCode(context, code, () => { }, {
         storeHistory: false,
       })
     ).promise;
   }
 
-  async list(): Promise<DataFrame[]> {
+  async list(context: { workspaceId: string; sessionId: string }): Promise<DataFrame[]> {
     const code = `
             import pandas as pd, json
             dfs = []
@@ -43,6 +43,7 @@ export class DataFrameService {
 
     await (
       await this.pythonExecutor.executeCode(
+        context,
         code,
         (outputs) => {
           for (const o of outputs) {
@@ -112,6 +113,7 @@ export class DataFrameService {
   }
 
   async readPage(
+    context: { workspaceId: string; sessionId: string },
     queryId: string,
     dataframeName: string,
     pageOptions: {
@@ -184,6 +186,7 @@ if "${dataframeName}" in globals():
 
     await (
       await this.pythonExecutor.executeCode(
+        context,
         code,
         (outputs) => this.processOutputs(outputs, result, error),
         { storeHistory: false },
