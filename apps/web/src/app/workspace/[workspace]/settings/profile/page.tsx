@@ -298,7 +298,7 @@ export default function ProfileSettings() {
           <button
             type="button"
             disabled
-            className="mt-4 text-xs font-medium text-gray-400 dark:text-[#8696A6] cursor-not-allowed  flex items-center border-[#E6E0F1] border bg-[#F1F3F4] dark:bg-[#121417] px-3 rounded-lg py-1.5 absolute left-[-2.5rem] top-[7.5rem] opacity-50 dark:border-[#262A30]"
+            className="mt-4 text-xs font-medium text-gray-400 dark:text-ink-300 cursor-not-allowed  flex items-center border-[#E6E0F1] border bg-[#F1F3F4] dark:bg-[#121417] px-3 rounded-lg py-1.5 absolute left-[-2.5rem] top-[7.5rem] opacity-50 dark:border-[#262A30]"
           >
             <Pencil className="inline-block mr-2" size={14} />
             Change Avatar

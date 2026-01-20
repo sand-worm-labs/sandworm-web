@@ -63,14 +63,14 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
               <span className="flex items-center gap-1">
                 {query.stared_by.length || 0}
                 <Star
-                  className="h-4 w-4 font-light text-[#1C3B5A] dark:text-ink-300 "
+                  className="h-4 w-4 font-light text-base-100 dark:text-ink-300 "
                   strokeWidth={1.2}
                 />
               </span>
               <span className="flex items-center gap-1">
                 {query.forked_by.length || 0}
                 <GitFork
-                  className="h-4 w-4 font-light text-[#1C3B5A] dark:text-ink-300 "
+                  className="h-4 w-4 font-light text-base-100 dark:text-ink-300 "
                   strokeWidth={1.2}
                 />
               </span>
@@ -81,7 +81,7 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
                 <Badge
                   key={tag}
                   variant="secondary"
-                  className="text-xs dark:bg-[#262A30] bg-[#E0EAF1] text-muted-foreground dark:text-[#8696A6] py-0"
+                  className="text-xs dark:bg-[#262A30] bg-[#E0EAF1] text-muted-foreground dark:text-ink-300 py-0"
                 >
                   #{tag}
                 </Badge>
@@ -91,9 +91,7 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
         </div>
       </div>
 
-      {viewMode === "detailed" && (
-        <div className="px-5 pb-4 text-sm text-[#495057]" />
-      )}
+      {viewMode === "detailed" && <div className="px-5 pb-4 text-sm" />}
     </div>
   );
 };

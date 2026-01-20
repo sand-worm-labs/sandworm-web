@@ -43,6 +43,7 @@ const config: Config = {
           200: "var(--ink-200)",
           300: "var(--ink-300)",
           400: "var(--ink-400)",
+          500: "var(--ink-500)",
         },
 
         border: "hsl(var(--border))",

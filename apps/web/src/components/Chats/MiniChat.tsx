@@ -161,14 +161,16 @@ export const MiniChat: React.FC<MiniChatProps> = ({ visible, onClose }) => {
               {messages.map(msg => (
                 <div
                   key={msg.text}
-                  className={`flex ${msg.isUser ? "justify-end" : "justify-start"
-                    }`}
+                  className={`flex ${
+                    msg.isUser ? "justify-end" : "justify-start"
+                  }`}
                 >
                   <div
-                    className={`${msg.isUser
+                    className={`${
+                      msg.isUser
                         ? "bg-[#F7E4E1] dark:bg-[#121417]"
                         : "bg-[#F1F3F4] dark:bg-[#121417]"
-                      } text-[#343A40] dark:text-[#8696A6] px-4 py-2 rounded-2xl max-w-[75%]`}
+                    } text-ink-500 dark:text-ink-300 px-4 py-2 rounded-2xl max-w-[75%]`}
                   >
                     {msg.text}
                   </div>

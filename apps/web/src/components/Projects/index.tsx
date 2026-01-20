@@ -217,7 +217,7 @@ export const Projects: React.FC = () => {
                         }
                         className="p-1 rounded transition-colors"
                       >
-                        <MoreHorizontal className="w-4 h-4 text-[#717a94]" />
+                        <MoreHorizontal className="w-4 h-4 text-ink-200" />
                       </button>
 
                       {openMenuId === project.id && (
@@ -271,7 +271,7 @@ export const Projects: React.FC = () => {
                       onMouseLeave={() => setHoveredUser(null)}
                       className="p-2 hover:bg-gray-100 rounded-full transition-colors  dark:hover:bg-[#181C21]"
                     >
-                      <User className="w-4 h-4 text-[#717a94]" />
+                      <User className="w-4 h-4 text-ink-200" />
                     </button>
 
                     {hoveredUser === project.id && (
@@ -288,11 +288,11 @@ export const Projects: React.FC = () => {
                       onMouseLeave={() => setHoveredSave(null)}
                       className="p-2 hover:bg-gray-100 rounded-full transition-colors dark:hover:bg-[#181C21]"
                     >
-                      <Save className="w-4 h-4 text-[#717a94]" />
+                      <Save className="w-4 h-4 text-ink-200" />
                     </button>
 
                     {hoveredSave === project.id && (
-                      <div className="absolute bottom-full right-0 mb-2 px-4 py-1.5 dark:bg-black bg-white text-[#343A40] border-[#E9ECEF] dark:border-[#262A30] border dark:text-white text-xs rounded shadow-[0_0.5px_4px_#2516660A] whitespace-nowrap z-20">
+                      <div className="absolute bottom-full right-0 mb-2 px-4 py-1.5 dark:bg-black bg-white text-ink-500 border-[#E9ECEF] dark:border-[#262A30] border dark:text-white text-xs rounded shadow-[0_0.5px_4px_#2516660A] whitespace-nowrap z-20">
                         <div className="space-y-1">
                           <div>
                             <span className="font-medium text-ink-400 dark:text-white">

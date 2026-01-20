@@ -234,13 +234,13 @@ export const HomeTab = () => {
         <TabsList className="w-full justify-start px-0 pb-8">
           <TabsTrigger
             value="recent"
-            className="flex items-start gap-2 data-[state=active]:text-[#A6554D] data-[state=active]:border-b border-none"
+            className="flex items-start gap-2 data-[state=active]:text-accent data-[state=active]:border-b border-none"
           >
             Recent Queries
           </TabsTrigger>
           <TabsTrigger
             value="resources"
-            className="data-[state=active]:text-[#A6554D] data-[state=active]:border-b border-none"
+            className="data-[state=active]:text-accent data-[state=active]:border-b border-none"
           >
             Resources
           </TabsTrigger>

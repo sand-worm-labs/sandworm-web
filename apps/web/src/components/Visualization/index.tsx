@@ -862,7 +862,7 @@ function VisualizationBlockV2(props: Props) {
           >
             <div className="flex items-center justify-between px-3 pr-0 gap-x-4 font-primary h-12 divide-x divide-gray-200 dark:divide-[#262A30]">
               <div className="select-none text-gray-300 text-xs flex items-center w-full h-full gap-x-0.5 px-4">
-                <ChartPie className="h-5 w-5 text-[#343330]" />
+                <ChartPie className="h-5 w-5 text-ink-500" />
                 <input
                   type="text"
                   className={clsx(

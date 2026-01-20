@@ -121,7 +121,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                     }
                     className="p-1 rounded hover:bg-gray-100 dark:hover:bg-[#181C21] transition-colors shrink-0 "
                   >
-                    <MoreHorizontal className="w-6 h-4 text-[#717a94]" />
+                    <MoreHorizontal className="w-6 h-4 text-ink-200" />
                   </button>
 
                   {openMenuId === project.id && (
