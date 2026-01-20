@@ -16,7 +16,6 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { IoAdapter } from '@nestjs/platform-socket.io';
-
 import {
   AsyncContextProvider,
   Environment,
@@ -25,7 +24,6 @@ import {
   genReqId,
   REQUEST_ID_HEADER,
 } from '@sandworm/nest-common';
-
 import { AppModule } from './app.module';
 import { AllConfigType } from './core/config/config.type';
 import { GlobalExceptionFilter } from './core/filters/global-exception.filter';
@@ -46,8 +44,6 @@ async function bootstrap() {
     { bufferLogs: true },
   );
 
-  app.useWebSocketAdapter(new IoAdapter(app));
-
   const configService = app.get(ConfigService<AllConfigType>);
   const reflector = app.get(Reflector);
   const httpAdapterHost = app.get(HttpAdapterHost);
@@ -55,8 +51,7 @@ async function bootstrap() {
 
   const env = configService.getOrThrow('app.nodeEnv', { infer: true });
   const isProduction = env === Environment.PRODUCTION;
-  const debug =
-    env === Environment.LOCAL || env === Environment.DEVELOPMENT;
+  const debug = env === Environment.LOCAL || env === Environment.DEVELOPMENT;
 
   const logger = new ConsoleLogger({
     ...(env === Environment.LOCAL && { colors: true }),
@@ -95,7 +90,7 @@ async function bootstrap() {
         : [corsOrigin];
 
   app.enableCors({
-    origin: isProduction ? origins : 'http://localhost:3000',
+    origin: isProduction ? origins : true, // Allow all origins in non-production for WebSocket testing
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: [
@@ -106,13 +101,9 @@ async function bootstrap() {
     ],
   });
 
-  app.useGlobalGuards(
-    new AuthGuard(reflector, app.get(AuthGraphqlService)),
-  );
+  app.useGlobalGuards(new AuthGuard(reflector, app.get(AuthGraphqlService)));
 
-  app.useGlobalFilters(
-    new GlobalExceptionFilter(httpAdapterHost, debug),
-  );
+  app.useGlobalFilters(new GlobalExceptionFilter(httpAdapterHost, debug));
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -128,6 +119,7 @@ async function bootstrap() {
     }),
   );
 
+  // Register Fastify WebSocket plugin BEFORE Socket.IO adapter
   await app.register(websocket);
 
   const swaggerConfig = configService.get('app.swagger', {
@@ -138,14 +130,22 @@ async function bootstrap() {
     setupSwagger(app, configService);
   }
 
+  // Use Socket.IO adapter for WebSocket Gateway
+  app.useWebSocketAdapter(new IoAdapter(app));
+
   const port = configService.getOrThrow('app.port', {
     infer: true,
   }) as number;
 
   await app.listen(port, '0.0.0.0');
 
-  logger.log(`🚀 Server running at http://localhost:${port}`);
-  logger.log(`📊 GraphQL Playground http://localhost:${port}/graphql`);
+  logger.log(`🚀 Server running at http://0.0.0.0:${port}`);
+  logger.log(`📊 GraphQL Playground http://0.0.0.0:${port}/graphql`);
+  logger.log(`🔌 WebSocket endpoint ws://0.0.0.0:${port}/socket.io/`);
+  logger.log(`📝 Environment: ${env}`);
 }
 
-bootstrap();
+bootstrap().catch((error) => {
+  console.error('❌ Failed to start application:', error);
+  process.exit(1);
+});

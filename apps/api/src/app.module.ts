@@ -29,6 +29,7 @@ import mailConfig from './infrastructure/mail/config/mail.config';
 import authConfig from './features/auth/core/config/auth.config';
 import { ApiModule } from './api.module';
 import { pinoLoggerConfig } from './common/logger/pino-logger.config';
+import { WebsocketModule } from './infrastructure/websocket/websocket.module';
 
 const configModule = ConfigModule.forRoot({
   isGlobal: true,
@@ -129,6 +130,7 @@ const eventEmitterModule = EventEmitterModule.forRoot({
     configModule,
     dbModule,
     i18nModule,
+    WebsocketModule,
     ApiModule,
     graphqlModule,
     eventEmitterModule,
