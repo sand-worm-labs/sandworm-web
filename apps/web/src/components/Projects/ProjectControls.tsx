@@ -93,7 +93,7 @@ const ProjectControl: React.FC<ProjectControlProps> = ({
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="gap-2 outline-none border-none text-sm bg-transparent text-[#717a94] hover:bg-[rgba(177,182,196,0.1)] h-7"
+                  className="gap-2 outline-none border-none text-sm bg-transparent text-ink-200 hover:bg-[rgba(177,182,196,0.1)] h-7"
                 >
                   <IoFilterOutline className="w-4 h-4" />
                   <span>Filter</span>
@@ -147,7 +147,7 @@ const ProjectControl: React.FC<ProjectControlProps> = ({
           <div className="flex items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="gap-2 text-[#717a94] ">
+                <Button variant="ghost" className="gap-2 text-ink-200 ">
                   <span>Sort by</span>
                 </Button>
               </DropdownMenuTrigger>
@@ -165,7 +165,7 @@ const ProjectControl: React.FC<ProjectControlProps> = ({
             </DropdownMenu>
 
             <Button variant="ghost" size="icon">
-              <Settings className="w-4 h-4 text-[#717a94]" />
+              <Settings className="w-4 h-4 text-ink-200" />
             </Button>
 
             <div className="w-px h-6 bg-gray-300  dark:bg-[#262A30] mx-1" />
@@ -173,7 +173,7 @@ const ProjectControl: React.FC<ProjectControlProps> = ({
             <Button
               variant={activeView === "grid" ? "default" : "ghost"}
               size="icon"
-              className="bg-transparent border border-[#DEE2E6] p-1 rounded-sm text-[#717a94] dark:border-[#262A30]"
+              className="bg-transparent border border-[#DEE2E6] p-1 rounded-sm text-ink-200 dark:border-[#262A30]"
               onClick={() => handleViewChange("grid")}
               title="Grid view"
             >
@@ -183,7 +183,7 @@ const ProjectControl: React.FC<ProjectControlProps> = ({
             <Button
               variant={activeView === "table" ? "default" : "ghost"}
               size="icon"
-              className="bg-transparent border border-[#DEE2E6]  dark:border-[#262A30] p-1 rounded-sm text-[#717a94]"
+              className="bg-transparent border border-[#DEE2E6]  dark:border-[#262A30] p-1 rounded-sm text-ink-200"
               onClick={() => handleViewChange("table")}
               title="Table view"
             >

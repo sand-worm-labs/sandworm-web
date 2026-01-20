@@ -3,10 +3,11 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
-import { SocialLogin } from "./SocialLogin";
-import { SignInForm } from "./SignInForm";
 import { SandwormLogo } from "../Assets";
 import { PartnersSection } from "../Partners";
+
+import { SocialLogin } from "./SocialLogin";
+import { SignInForm } from "./SignInForm";
 
 export const SignIn = () => {
   const params = useSearchParams();
@@ -40,11 +41,11 @@ export const SignIn = () => {
       <SignInForm />
 
       <div className="flex justify-between w-full text-sm font-primary mt-3">
-        <Link href="/signup" className="text-[#8053FE] hover:underline">
+        <Link href="/signup" className="text-accent hover:underline">
           Sign Up
         </Link>
 
-        <Link href="/reset" className="text-[#FF0000] hover:underline">
+        <Link href="/reset" className="text-error hover:underline">
           Reset Password
         </Link>
       </div>

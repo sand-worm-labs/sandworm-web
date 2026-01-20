@@ -207,7 +207,7 @@ const ProfileComponent = () => {
                   </div>
 
                   {mockProfile.statusText && (
-                    <p className="text-[#343A40] dark:text-white">
+                    <p className="text-ink-500 dark:text-white">
                       {currentUser?.settings.statusText}
                     </p>
                   )}

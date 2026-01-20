@@ -56,7 +56,7 @@ export function UserProfileHover({ children }: UserProfileHoverProps) {
             <Button
               size="sm"
               variant="secondary"
-              className="bg-[#E2ECFF] dark:bg-[#A308F020] dark:text-primary text-[#8053FE] hover:bg-[#E2ECFF]/90 text-sm rounded-md font-medium h-6"
+              className="bg-[#E2ECFF] dark:bg-[#A308F020] dark:text-primary text-accent hover:bg-[#E2ECFF]/90 text-sm rounded-md font-medium h-6"
             >
               Share
             </Button>
@@ -80,7 +80,7 @@ export function UserProfileHover({ children }: UserProfileHoverProps) {
             </div>
           </div>
 
-          <p className="text-sm text-muted-foreground leading-relaxed border-t border-b border-[#E9ECEF] py-3 text-[#343A40] dark:text-white dark:border-[#262A30]">
+          <p className="text-sm text-muted-foreground leading-relaxed border-t border-b border-[#E9ECEF] py-3 text-ink-500 dark:text-white dark:border-[#262A30]">
             {dummyUser.bio}
           </p>
 

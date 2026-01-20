@@ -120,7 +120,7 @@ export function DataExplorerContent({
                 onClick={onHide}
                 className="no-drag"
               >
-                <X className="w-5 h-5 text-[#1C3B5A]" strokeWidth={1.4} />
+                <X className="w-5 h-5 text-base-100" strokeWidth={1.4} />
               </Button>
             )}
           </div>

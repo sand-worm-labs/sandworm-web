@@ -41,7 +41,7 @@ export default function ShareDropdown(props: Props) {
 
   return (
     <Menu as="div" className="relative inline-block text-left h-full">
-      <Menu.Button className="flex items-center rounded-sm px-3 py-1 text-sm dark:border-[#262A30] border text-gray-500 hover:bg-gray-100  border-gray-200 overflow-hidden group max-w-[42px] xl:max-w-[94px] hover:max-w-[94px] transition-mw duration-500 bg-white dark:bg-black  dark:text-[#868E96">
+      <Menu.Button className="flex items-center rounded-sm px-3 py-1 text-sm dark:border-[#262A30] border text-gray-500 hover:bg-gray-100  border-gray-200 overflow-hidden group max-w-[42px] xl:max-w-[94px] hover:max-w-[94px] transition-mw duration-500 bg-white dark:bg-black ">
         <ShareIcon className="min-w-4 min-h-4" />
         <span className="ml-2 opacity-0 group-hover:opacity-100 xl:opacity-100 duration-500 transition-opacity">
           Share

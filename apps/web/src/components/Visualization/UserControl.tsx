@@ -57,7 +57,7 @@ export function UserControl({
         <Popover className="relative">
           {({ open }) => (
             <>
-              <Popover.Button className="gap-2 outline-none border-none text-sm bg-transparent text-[#717a94] hover:bg-[rgba(177,182,196,0.1)] h-7 flex items-center py-0.5 px-2 rounded-md">
+              <Popover.Button className="gap-2 outline-none border-none text-sm bg-transparent text-ink-200 hover:bg-[rgba(177,182,196,0.1)] h-7 flex items-center py-0.5 px-2 rounded-md">
                 <IoFilterOutline className="w-4 h-4" />
                 <span>
                   Filter {activeFiltersCount > 0 && `(${activeFiltersCount})`}

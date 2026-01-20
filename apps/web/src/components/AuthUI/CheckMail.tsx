@@ -56,7 +56,7 @@ export const CheckMail = ({
         <button
           type="button"
           onClick={onResend}
-          className="text-[#8053FE] underline cursor-pointer"
+          className="text-accent underline cursor-pointer"
         >
           Resend
         </button>

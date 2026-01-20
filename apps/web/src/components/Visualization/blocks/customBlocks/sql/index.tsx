@@ -817,7 +817,7 @@ function SQLBlock(props: Props) {
             >
               <div className="select-none text-gray-300 text-xs flex items-center w-full h-full gap-x-1.5 px-4">
                 <div className="relative group w-4 h-4">
-                  <CircleStackIcon className="absolute inset-0 h-5 w-5 text-[#343330] group-hover:opacity-0 transition-opacity" />
+                  <CircleStackIcon className="absolute inset-0 h-5 w-5 text-ink-500 group-hover:opacity-0 transition-opacity" />
                   <button
                     type="button"
                     className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"

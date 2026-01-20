@@ -138,7 +138,7 @@ export const AccountDropdown = () => {
               size="sm"
               variant="secondary"
               onClick={shareProfile}
-              className="bg-[#E2ECFF] dark:bg-[#A308F020] dark:text-primary text-[#8053FE] hover:bg-[#E2ECFF]/90 text-xs rounded-md font-medium h-6 gap-1.5"
+              className="bg-[#E2ECFF] dark:bg-[#A308F020] dark:text-primary text-accent hover:bg-[#E2ECFF]/90 text-xs rounded-md font-medium h-6 gap-1.5"
             >
               {copied ? (
                 <>
@@ -158,7 +158,7 @@ export const AccountDropdown = () => {
             Go to profile page
           </Link>
 
-          <p className="text-[0.75rem] leading-relaxed border-t border-b border-[#E9ECEF] py-3 text-[#343A40] dark:text-white dark:border-[#262A30]">
+          <p className="text-[0.75rem] leading-relaxed border-t border-b border-[#E9ECEF] py-3 text-ink-500 dark:text-white dark:border-[#262A30]">
             {user.settings?.statusText ?? "No bio available."}
           </p>
 
