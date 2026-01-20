@@ -14,15 +14,16 @@ export class PivotTableBlockExecutorService {
 
     constructor(private readonly pivotTableService: PivotTableService) { }
 
-    async run(executionItem: ExecutionQueueItem, block: Y.XmlElement<PivotTableBlock>, ctx: DocumentContext): Promise<void> {
-        return this.execute(executionItem, block, ctx, 'create');
+    async run(context: { workspaceId: string; sessionId: string }, executionItem: ExecutionQueueItem, block: Y.XmlElement<PivotTableBlock>, ctx: DocumentContext): Promise<void> {
+        return this.execute(context, executionItem, block, ctx, 'create');
     }
 
-    async loadPage(executionItem: ExecutionQueueItem, block: Y.XmlElement<PivotTableBlock>, ctx: DocumentContext): Promise<void> {
-        return this.execute(executionItem, block, ctx, 'read');
+    async loadPage(context: { workspaceId: string; sessionId: string }, executionItem: ExecutionQueueItem, block: Y.XmlElement<PivotTableBlock>, ctx: DocumentContext): Promise<void> {
+        return this.execute(context, executionItem, block, ctx, 'read');
     }
 
     private async execute(
+        context: { workspaceId: string; sessionId: string },
         executionItem: ExecutionQueueItem,
         block: Y.XmlElement<PivotTableBlock>,
         ctx: DocumentContext,
@@ -73,7 +74,7 @@ export class PivotTableBlockExecutorService {
                 return;
             }
 
-            const { promise, abort } = await this.pivotTableService.createPivotTable({
+            const { promise, abort } = await this.pivotTableService.createPivotTable(context, {
                 dataframe,
                 rows: attrs.rows,
                 columns: attrs.columns,

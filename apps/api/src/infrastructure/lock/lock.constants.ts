@@ -1,0 +1,5 @@
+export const LOCK_CONFIG = {
+    EXPIRATION_TIME: 5000,
+    RETRY_TIMEOUT: 30000,
+    NUM_PARTITIONS: 32,
+} as const;

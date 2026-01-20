@@ -1,4 +1,3 @@
-// apps/graphql_api/src/modules/schedule/schedule.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ExecutionScheduleEntity, DocumentEntity } from '@sandworm/postgresql-typeorm';

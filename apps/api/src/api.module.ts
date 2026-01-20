@@ -16,6 +16,8 @@ import { MailerModule } from '@/infrastructure/mailer/mailer.module';
 import { AuthGithubModule } from '@/features/auth/github/auth-github.module';
 import { ScheduleModule } from '@/features/schedule/schedule.module';
 import { JupyterModule } from './infrastructure/jupyter/jupyter.module';
+import { WebsocketModule } from './infrastructure/websocket/websocket.module';
+import { AppGateway } from './infrastructure/websocket/app.gateway';
 
 @Module({
     imports: [

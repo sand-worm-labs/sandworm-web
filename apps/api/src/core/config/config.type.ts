@@ -1,7 +1,6 @@
 import { AppConfig } from '@sandworm/graphql';
 import { DatabaseConfig } from '@sandworm/postgresql-typeorm';
 import { JupyterConfig } from '@sandworm/jupyter';
-import { RedisConfig } from '@sandworm/redis';
 import { AuthConfig } from '@/features/auth/core/config/auth-config.type';
 import { GoogleConfig } from '@/features/auth/google/config/google-config.type';
 import { MailConfig } from '@/infrastructure/mail/config/mail-config.type';
@@ -11,7 +10,6 @@ import { BlockExecutorConfig } from '@/features/block-executor/config/block-exec
 export type AllConfigType = {
   app: AppConfig;
   database: DatabaseConfig;
-  redis: RedisConfig;
   auth: AuthConfig;
   jupyter: JupyterConfig;
   google: GoogleConfig;

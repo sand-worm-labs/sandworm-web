@@ -21,6 +21,7 @@ export class DropdownInputBlockExecutorService {
 
     }
     async saveValue(
+        context: { workspaceId: string; sessionId: string },
         executionItem: ExecutionQueueItem,
         block: Y.XmlElement<DropdownInputBlock>,
         ctx: DocumentContext,
@@ -36,7 +37,7 @@ export class DropdownInputBlockExecutorService {
         }
 
         try {
-            await this.variableService.setVariable(variableName, newValue);
+            await this.variableService.setVariable(context, variableName, newValue);
             updateDropdownInputValue(block, { value: newValue, error: null });
             updateDropdownInputBlockExecutedAt(block, new Date());
             executionItem.setCompleted('success');
@@ -48,6 +49,7 @@ export class DropdownInputBlockExecutorService {
     }
 
     async renameVariable(
+        context: { workspaceId: string; sessionId: string },
         executionItem: ExecutionQueueItem,
         block: Y.XmlElement<DropdownInputBlock>,
         ctx: DocumentContext,
@@ -77,6 +79,7 @@ export class DropdownInputBlockExecutorService {
             });
 
             const { promise, abort } = await this.variableService.setVariable(
+                context,
                 newVariableName,
                 value,
             );
