@@ -1,13 +1,24 @@
 import clsx from "clsx";
-import { ArrowUpRightIcon } from "lucide-react";
 
 const examplePrompts = [
-  { id: "eliza", prompt: "What's Vitalik's wallet holding rn?" },
-  { id: "agent", prompt: "Most active token on Base today?" },
-  { id: "create-agent", prompt: "How do I track airdrops to new wallets?" },
+  { id: "eliza", prompt: "How many farcaster handles have a premium badge?" },
+  {
+    id: "agent",
+    prompt: "Top 10 DeFi protocols on Ethereum ranked by total value",
+  },
+  {
+    id: "create-agent",
+    prompt:
+      "average gas fee on Linea compared to Ethereum in the last 24 hours?",
+  },
   {
     id: "analytics",
-    prompt: "Show me top 10 NFT projects by volume this week.",
+    prompt: "What’s the Daily active wallets (7d) on Base?",
+  },
+  {
+    id: "transaction",
+    prompt:
+      "Compare the transaction volume of Uniswap to Aerodrome (30d) on Base",
   },
 ];
 
@@ -17,7 +28,7 @@ interface ExamplePromptsProps {
 
 export function ExamplePrompts({ onPromptSelect }: ExamplePromptsProps) {
   return (
-    <div className="w-full grid grid-cols-2 items-center justify-center gap-2 md:gap-4 ">
+    <div className="w-full max-w-[800px] flex flex-wrap items-center justify-center gap-2 md:gap-4 font-body">
       {examplePrompts.map(({ id, prompt }) => (
         <button
           type="button"
@@ -25,7 +36,7 @@ export function ExamplePrompts({ onPromptSelect }: ExamplePromptsProps) {
           className={clsx([
             "!shrink-0 !rounded-full !px-3 !py-1 !text-xs !flex !items-center !gap-2 hover:cursor-pointer dark:text-ink-300  text-ink-400",
             // Base
-            "relative isolate inline-flex items-center justify-center gap-x-2 rounded-md border text-base/6 font-base",
+            "relative isolate inline-flex items-center justify-center gap-x-2 rounded-md border text-sm font-base",
             // Focus
             "focus:outline-none focus:outline-2 focus:outline-offset-2 focus:outline-[#A308F0]",
             // Disabled
@@ -45,7 +56,6 @@ export function ExamplePrompts({ onPromptSelect }: ExamplePromptsProps) {
             ?.split("\n")[0]
             ?.replace("Create ", "")
             ?.replace("Design ", "") ?? ""}
-          <ArrowUpRightIcon className="h-3 w-3" />
         </button>
       ))}
     </div>

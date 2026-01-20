@@ -27,14 +27,14 @@ export default function OnboardingLayout({
 
             <div className="absolute inset-0 flex items-center justify-center flex-col bottom-[-76%]">
               <SandwormLogo width="50" height="50" />
-              <h2 className="text-3xl font-medium text-center text-white mb-1 mt-3 font-primary ">
+              <h2 className="text-3xl font-medium text-center text-white mb-1 mt-3 font-body ">
                 Welcome back
               </h2>
-              <div className="text-center text-[#B4CACE] font-primary mt-2 ">
-                <p className="text-lg md:text-base font-normal">
+              <div className="text-center text-[#B4CACE] font-body mt-2 ">
+                <p className="text-lg md:text-base font-medium">
                   Deep and Insightful Onchain data for
                 </p>
-                <p className="text-lg md:text-base font-normal mt-0.5">
+                <p className="text-lg md:text-base font-medium mt-0.5">
                   teams and enterprise
                 </p>
               </div>

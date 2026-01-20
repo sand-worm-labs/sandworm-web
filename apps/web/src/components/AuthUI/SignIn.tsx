@@ -20,7 +20,7 @@ export const SignIn = () => {
         Welcome back
       </h2>
 
-      <p className="text-ink-200 font-primary text-sm mt-1 mb-6">
+      <p className="text-ink-200 font-body font-medium text-sm mt-1 mb-6">
         Sign into Sandworm
       </p>
 
@@ -40,18 +40,21 @@ export const SignIn = () => {
 
       <SignInForm />
 
-      <div className="flex justify-between w-full text-sm font-primary mt-3">
-        <Link href="/signup" className="text-accent hover:underline">
+      <div className="flex justify-between w-full text-sm font-body mt-3">
+        <Link
+          href="/signup"
+          className="text-accent hover:underline font-medium"
+        >
           Sign Up
         </Link>
 
-        <Link href="/reset" className="text-error hover:underline">
+        <Link href="/reset" className="text-error hover:underline font-medium">
           Reset Password
         </Link>
       </div>
 
       <div className="flex-col  gap-2 absolute bottom-[2rem] w-full flex items-center justify-center">
-        <p className="text-base text-ink-200 font-primary mb-4">
+        <p className="text-base text-ink-200 font-body font-medium mb-4">
           Trusted by teams at
         </p>
         <PartnersSection />

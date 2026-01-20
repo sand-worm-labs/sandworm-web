@@ -10,10 +10,14 @@ import allLucideIcons from "../utils/lucideIcons";
 import { useDebounce } from "../hooks/useDebounce";
 import useDocument from "../hooks/useDocument";
 import useDropdownPosition from "../hooks/dropdownposition";
+import { Folder } from "@/components/Assets/Menu/Folder";
+import { File } from "@/components/Assets/Menu/File";
 
 const icons: Record<string, React.ComponentType<React.ComponentProps<any>>> = {
   ...allOutlineIcons,
   ...allLucideIcons,
+  Folder,
+  File,
 };
 
 const fuse = new Fuse(Object.keys(icons), {
@@ -24,6 +28,7 @@ interface Props {
   workspaceId: string;
   documentId: string;
   disabled: boolean;
+  isChild?: boolean;
 }
 
 function IconSelector(props: Props) {
@@ -32,7 +37,8 @@ function IconSelector(props: Props) {
 
   const [{ document: doc }] = useDocument(props.workspaceId, props.documentId);
   const [, setFilteredIcons] = useState(Object.keys(icons));
-  const Icon = icons[doc?.icon ?? "DocumentIcon"] || (() => null);
+  const iconKey = props.isChild ? "File" : (doc?.icon ?? "Folder");
+  const Icon = icons[iconKey] || (() => null);
 
   const debouncedSearch = useDebounce((search: string) => {
     if (search === "") {
@@ -81,7 +87,7 @@ function IconSelector(props: Props) {
         )}
         disabled={props.disabled}
       >
-        <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+        <Icon aria-hidden="true" size={18} color={"#616A79"} />
       </Menu.Button>
 
       {ReactDOM.createPortal(

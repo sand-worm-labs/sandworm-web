@@ -1,9 +1,7 @@
 "use client";
 
-import { Home, Search, Clock, Terminal, Heart } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LuLayoutGrid } from "react-icons/lu";
 import { useCallback, useState } from "react";
 import { PlusSmallIcon } from "@heroicons/react/24/outline";
 import type { MouseEventHandler } from "react";
@@ -15,7 +13,12 @@ import { SandwormLogo } from "@/components/Assets";
 import { SidebarIcon } from "@/components/Assets/SidebarIcon";
 import { useDocuments } from "@/components/Visualization/hooks/useDocuments";
 import { useSession } from "@/components/Visualization/hooks/useAuth";
-import { ProjectIcon } from "@/components/Assets/ProjectIcon";
+import { ProjectIcon } from "@/components/Assets/Menu/ProjectIcon";
+import { MagnifyingGlass } from "@/components/Assets/Menu/MagnifyingGlass";
+import { Star } from "@/components/Assets/Menu/Star";
+import { SquaresFour } from "@/components/Assets/Menu/SquaresFour";
+import { House } from "@/components/Assets/Menu/House";
+import { Terminal } from "@/components/Assets/Menu/Terminal";
 
 interface NavItem {
   name: string;
@@ -35,7 +38,7 @@ export const WorkspaceSidebar = () => {
   const user = session?.user;
 
   const mainNav: NavItem[] = [
-    { name: " Home", href: `/workspace/${workspaceId}`, icon: Home },
+    { name: " Home", href: `/workspace/${workspaceId}`, icon: House },
     {
       name: "Projects",
       href: `/workspace/${workspaceId}/session`,
@@ -44,7 +47,7 @@ export const WorkspaceSidebar = () => {
     {
       name: "Explore",
       href: `/workspace/${workspaceId}/explore`,
-      icon: Search,
+      icon: MagnifyingGlass,
     },
   ];
 
@@ -52,7 +55,7 @@ export const WorkspaceSidebar = () => {
     {
       name: "Favorites",
       href: `/workspace/${workspaceId}/favorites`,
-      icon: Heart,
+      icon: Star,
     },
     {
       name: "Console",
@@ -62,16 +65,16 @@ export const WorkspaceSidebar = () => {
     {
       name: "All tools",
       href: `/workspace/${workspaceId}/tools`,
-      icon: LuLayoutGrid,
+      icon: SquaresFour,
     },
   ];
 
   const linkClasses = (href: string) =>
-    `flex items-center gap-3 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors
+    `flex items-center gap-3 rounded-xl px-2 py-1.5 text-sm font-medium transition-colors
      ${
        pathname === href
-         ? "bg-white dark:bg-[#181C21] shadow-[0_0.5px_4px_#2516660A] text-primary dark:text-primary"
-         : "text-gray-600 dark:text-white hover:bg-[#ffffff] dark:hover:bg-[#181C21] hover:text-black dark:hover:text-white"
+         ? "bg-[#EBF7F7] dark:bg-[#181C21]  text-primary dark:text-primary"
+         : "text-menu-ink dark:text-white hover:bg-[#EBF7F7] hover:text-primary  dark:hover:bg-[#181C21] hover:text-black dark:hover:text-white"
      }`;
 
   const [
@@ -183,7 +186,7 @@ export const WorkspaceSidebar = () => {
     <aside
       className={`h-full flex flex-col justify-between dark:bg-[#0C1015] bg-[#FBFBFB] border-r dark:border-[#262A30] border-[#E9ECEF] font-body
       transition-all duration-300 ease-in-out
-      ${collapsed ? "w-16" : "w-[300px]"}
+      ${collapsed ? "w-16" : "w-[280px]"}
       `}
     >
       <div>
@@ -193,7 +196,7 @@ export const WorkspaceSidebar = () => {
               <SandwormLogo width="30" height="30" />
 
               <span className="ml-1.5 font-bold text-[1.05rem] uppercase">
-                SandW0rm.
+                SandWorm.
               </span>
             </Link>
           )}
@@ -210,14 +213,13 @@ export const WorkspaceSidebar = () => {
         <div className="px-4 py-4" />
 
         <nav className="flex-1 px-3">
-          {/* MAIN NAV */}
-          <ul className="space-y-1">
+          <ul className="space-y-1.5">
             {mainNav.map(item => (
               <li key={item.name}>
                 <Link href={item.href} className={linkClasses(item.href)}>
                   <item.icon
-                    strokeWidth={1.8}
-                    className="h-4 w-4 text-base-100 dark:text-ink-300 "
+                    size={18}
+                    color={pathname === item.href ? "#A308F0" : "#39414E"}
                   />
                   {!collapsed && item.name}
                 </Link>
@@ -228,20 +230,19 @@ export const WorkspaceSidebar = () => {
           <hr className="border-t-[1px] border-[#E6E0F1] dark:border-[#262A30] mt-4" />
 
           {/* TOOLS NAV */}
-          <ul className="space-y-1 mt-4">
+          <ul className="space-y-1.5 mt-4">
             {toolsNav.map(item => (
               <li key={item.name}>
                 <Link href={item.href} className={linkClasses(item.href)}>
                   <item.icon
-                    strokeWidth={1.8}
-                    className="h-4 w-4 text-base-100 dark:text-ink-300 "
+                    size={18}
+                    color={pathname === item.href ? "#A308F0" : "#39414E"}
                   />
                   {!collapsed && item.name}
                 </Link>
               </li>
             ))}
           </ul>
-          <hr className="border-t-[1px] border-[#E6E0F1] dark:border-[#262A30] mt-4" />
 
           {!collapsed && (
             <ul>
@@ -250,10 +251,10 @@ export const WorkspaceSidebar = () => {
                   type="button"
                   id="create-workspace-doc"
                   onClick={onCreateDocumentHandler}
-                  className="p-1.5 hover:text-ceramic-500 hover:bg-white bg-[#F3F3FA] hover:text-black rounded-lg hover:cursor-pointer text-sm border mt-3 flex px-5 items-center justify-center w-full border-[#D000FF]  text-primary mb-3 "
+                  className="p-2 bg-[#F3F3FA]  rounded-xl hover:cursor-pointer text-sm border mt-6 flex px-5 items-center justify-center w-full border-[#D000FF]  text-primary mb-3 font-body font-medium  "
                 >
                   {" "}
-                  <PlusSmallIcon className="h-4 w-4 mr-3 " aria-hidden="true" />
+                  <PlusSmallIcon className="h-4 w-4 mr-1 " aria-hidden="true" />
                   <span>New Project</span>
                 </button>
               )}

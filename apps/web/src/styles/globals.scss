@@ -43,6 +43,16 @@ font-tertiary {
   font-weight: 400;
 }
 
+.font-body.font-medium {
+  font-family: "Moderat", sans-serif;
+  font-weight: 500;
+}
+
+.font-body.font-bold {
+  font-family: "Moderat", sans-serif;
+  font-weight: 700;
+}
+
 ::cue {
   font-family: "Roobert", sans-serif;
   font-size: 18px;
@@ -106,6 +116,7 @@ font-tertiary {
     --ink-300: #868e96;
     --ink-400: #6c757d;
     --ink-500: #343a40;
+    --menu-ink: #39414e;
 
     --radius: 0.5rem;
   }

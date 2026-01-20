@@ -1,14 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { useCallback } from "react";
 import Link from "next/link";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@sandworm/ui/components/card";
+import { useRouter } from "next/navigation";
+import { Card, CardContent } from "@sandworm/ui/components/card";
 import { ArrowRight } from "lucide-react";
+import { ToolsiIlustration } from "@/components/Assets/ToolsiIlustration";
+import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
+import { useDocuments } from "@/components/Visualization/hooks/useDocuments";
 
 import SquareFour from "@/components/Assets/SquareFour";
 
@@ -16,76 +15,36 @@ type Tool = {
   id: string;
   name: string;
   description: string;
-  href: string;
+  href?: string;
+  action?: () => void | Promise<void>;
   color?: string;
 };
-
-const tools: Tool[] = [
-  {
-    id: "worm-chat",
-    name: "Worm Chat",
-    description:
-      "Ask questions in plain English and explore onchain data with AI-powered insights.",
-    href: "/chats",
-    color: "#A8FB63",
-  },
-  {
-    id: "report",
-    name: "Report",
-    description:
-      "Generate clear, structured summaries and narratives from blockchain data in seconds.",
-    href: "/tools/report",
-    color: "#F863FB",
-  },
-  {
-    id: "visualization",
-    name: "Visualization",
-    description:
-      "Turn raw data into interactive charts and graphs — customize or let AI handle it.",
-    href: "/tools/visualization",
-    color: "#BAD2A7",
-  },
-  {
-    id: "query-console",
-    name: "Query Console",
-    description:
-      "Write and refine queries directly, with AI suggestions to guide you when needed.",
-    href: "/tools/query-console",
-    color: "#ED2D64",
-  },
-  {
-    id: "notebook",
-    name: "Notebook",
-    description:
-      "Combine queries, charts, and notes into a single shareable workspace.",
-    href: "/tools/notebook",
-    color: "#FFADE4",
-  },
-  {
-    id: "dashboards",
-    name: "Dashboards",
-    description:
-      "Build live dashboards to track metrics, monitor activity, and collaborate in real time.",
-    href: "/tools/dashboards",
-    color: "#FFADE4",
-  },
-];
 
 type ToolCardProps = {
   tool: Tool;
 };
 
 const ToolCard: React.FC<ToolCardProps> = ({ tool }) => {
-  return (
-    <Link href={tool.href} className="inline-block h-full group relative">
-      <Card
-        className="
-          bg-[#FFFFFF] dark:border-[#262A30] dark:bg-[#111111] border-[#CED4DA]
-          rounded-3xl p-6 pb-8 pt-6 flex flex-col text-left h-full
-          transition-all duration-200 ease-out
-        "
-      >
-        <SquareFour color={tool.color} />
+  const isDisabled = !tool.href && !tool.action;
+
+  const handleClick = (e: React.MouseEvent) => {
+    if (tool.action) {
+      e.preventDefault();
+      tool.action();
+    }
+  };
+
+  const content = (
+    <Card
+      className={`
+        bg-[#FFFFFF]  dark:bg-[#111111] border-none shadow-none 
+        rounded-3xl p-6 pb-8 pt-6 flex flex-row gap-x-3 text-left h-full items-center
+        transition-all duration-200 ease-out
+        ${isDisabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+      `}
+    >
+      <SquareFour color={tool.color} className="shrink-0" />
+      {!isDisabled && (
         <span
           className="
             absolute top-4 right-4 opacity-0
@@ -98,36 +57,123 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool }) => {
         >
           <ArrowRight className="inline-block w-4 h-4 mr-1" />
         </span>
+      )}
 
-        <CardHeader className="p-0 mb-0">
-          <CardTitle className="text-[0.90rem] dark:text-white text-ink-100  font-medium">
-            {tool.name}
-          </CardTitle>
-        </CardHeader>
+      <CardContent className="p-0 mt-0 pt-0">
+        <h3 className="text-[0.90rem] dark:text-white text-ink-100  font-bold font-body">
+          {tool.name}
+        </h3>
+        <p className="text-ink-400 dark:text-gray-300 text-[0.85rem] leading-relaxed font-body mt-1 font-medium">
+          {tool.description}
+        </p>
+      </CardContent>
+    </Card>
+  );
 
-        <CardContent className="p-0">
-          <p className="text-ink-400 dark:text-gray-300 text-[0.85rem] leading-relaxed font-medium">
-            {tool.description}
-          </p>
-        </CardContent>
-      </Card>
+  if (isDisabled) {
+    return <div className="inline-block h-full">{content}</div>;
+  }
+
+  if (tool.action) {
+    return (
+      <button
+        type="button"
+        onClick={handleClick}
+        className="inline-block h-full group relative cursor-pointer"
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <Link href={tool.href!} className="inline-block h-full group relative ">
+      {content}
     </Link>
   );
 };
 
 export default function ToolsPage() {
+  const workspaceId = useStringQuery("workspace");
+  const router = useRouter();
+
+  const [documentsState, { createDocument }] = useDocuments(workspaceId);
+
+  const onCreateNotebook = useCallback(async () => {
+    if (documentsState.loading) return;
+
+    try {
+      const doc = await createDocument({ parentId: null, version: 2 });
+      router.push(`/workspace/${workspaceId}/documents/${doc.id}`);
+    } catch (err) {
+      console.error(err);
+    }
+  }, [documentsState, createDocument, router, workspaceId]);
+
+  const tools: Tool[] = [
+    {
+      id: "worm-chat",
+      name: "Worm Chat",
+      description:
+        "Ask questions in plain English and explore onchain data with AI-powered insights.",
+      href: `/workspace/${workspaceId}`,
+      color: "#A8FB63",
+    },
+    {
+      id: "report",
+      name: "Smartlens/Report",
+      description:
+        "Generate clear, structured summaries and narratives from blockchain data in seconds.",
+      href: `/workspace/${workspaceId}`,
+      color: "#F863FB",
+    },
+    {
+      id: "visualization",
+      name: "Visualization",
+      description:
+        "Turn raw data into interactive charts and graphs — customize or let AI handle it.",
+      color: "#BAD2A7",
+    },
+    {
+      id: "query-console",
+      name: "Query Console",
+      description:
+        "Write and refine queries directly, with AI suggestions to guide you when needed.",
+      href: `/workspace/${workspaceId}/console`,
+      color: "#ED2D64",
+    },
+    {
+      id: "notebook",
+      name: "Notebook",
+      description:
+        "Combine queries, charts, and notes into a single shareable workspace.",
+      action: onCreateNotebook,
+      color: "#FFADE4",
+    },
+    {
+      id: "smart-query",
+      name: "Smart Queries",
+      description:
+        "Explore blockchain data interactively. Select chains, metrics, and filters to build live queries and get instant onchain insights.",
+      color: "#FFADE4",
+    },
+  ];
+
   return (
-    <div>
-      <div className="flex flex-col items-center gap-3  mt-10 px-8 mb-5 text-center">
-        <h2 className="text-xl font-medium ">
+    <div className="relative ">
+      <div className="absolute top-[-1rem] left-[50%] transform translate-x-[-50%]">
+        <ToolsiIlustration />
+      </div>
+      <div className="flex flex-col items-center gap-3  mt-7 px-8 mb-16 text-center font-body ">
+        <h2 className="text-2xl font-medium text-ink-100 font-body ">
           Explore Tools for specific Functionalities
         </h2>
-        <p className="text-sm max-w-[35rem]">
+        <p className="text-sm max-w-[35rem] text-ink-400 font-medium">
           These Tools help you quickly jump into specific workflows without
           needing the full data analysis workflow in the main product.
         </p>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6 mt-12 container mx-auto">
         {tools.map(tool => (
           <ToolCard key={tool.id} tool={tool} />
         ))}
