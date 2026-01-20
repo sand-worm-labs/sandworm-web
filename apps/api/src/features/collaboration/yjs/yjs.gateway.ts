@@ -1,3 +1,4 @@
+// features/collaboration/yjs/yjs.gateway.ts
 import {
     WebSocketGateway,
     WebSocketServer,
@@ -65,7 +66,8 @@ interface RequestData {
     maxPayload: 1024 * 1024 * 1024, // 1GB
     transports: ['websocket'],
 })
-export class YjsGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+export class YjsGateway
+    implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer()
     server: WSServer;
 
@@ -100,6 +102,7 @@ export class YjsGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 
                 const { document, userId, authUser, role, isApp, clock } = data;
 
+                // Get or create session
                 const session = await this.getOrCreateSession(
                     document.id,
                     document.workspaceId,
@@ -201,6 +204,7 @@ export class YjsGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
             }
         });
 
+        // Ping/pong for connection health
         this.setupPingPong(session, client, user.id);
 
         // Connection close handler
@@ -709,7 +713,7 @@ export class YjsGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
                     this.sessions.delete(key);
                 }
             }
-        }, 60000);
+        }, 60000); // Check every minute
     }
 
     async onModuleDestroy() {

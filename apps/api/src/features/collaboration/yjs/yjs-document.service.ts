@@ -8,6 +8,8 @@ import {
     UserYjsAppDocumentEntity,
     DocumentEntity,
 } from "@sandworm/postgresql-typeorm";
+import { WSSharedDocV2 } from './shared-doc/ws-shared-doc';
+import { LRUCache } from 'lru-cache';
 
 export interface LoadYDocResult {
     yDoc: Y.Doc;
