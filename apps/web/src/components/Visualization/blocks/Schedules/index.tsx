@@ -291,7 +291,7 @@ function ScheduleList(props: ScheduleListProps) {
                   "text-white flex items-center justify-center gap-x-2 text-sm px-4 py-1.5 rounded-lg shrink-0",
                   !props.isLimited && props.isPublished
                     ? "bg-[#A308F0] hover:bg-primary-300"
-                    : "bg-gray-200 cursor-not-allowed"
+                    : "bg-[#868E96] cursor-not-allowed"
                 )}
                 onClick={props.onAddSchedule}
                 disabled={props.isLimited || !props.isPublished}
