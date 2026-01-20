@@ -34,22 +34,22 @@ export class PythonExecutorService {
     constructor(
         private readonly sessionService: JupyterSessionService,
         private readonly kernelLifecycle: KernelLifecycleService,
-        private readonly workspaceId: string,
-        private readonly sessionId: string
     ) { }
 
     async executeCode(
+        context: { workspaceId: string; sessionId: string },
         code: string,
         onOutputs: (outputs: Output[]) => void,
         opts: ExecutionOptions = { storeHistory: true }
     ): Promise<ExecutionHandle> {
         const { kernel } = await this.sessionService.getSession(
-            this.workspaceId,
-            this.sessionId
+            context.workspaceId,
+            context.sessionId
         );
 
         const abortController = this.createAbortController();
         const promise = this.runExecution(
+            context,
             kernel,
             code,
             onOutputs,
@@ -59,11 +59,11 @@ export class PythonExecutorService {
 
         return {
             promise,
-            abort: () => this.abortExecution(kernel, abortController),
+            abort: () => this.abortExecution(context, kernel, abortController),
         };
     }
 
-    async renderJinja(template: string): Promise<string | PythonErrorOutput> {
+    async renderJinja(context: { workspaceId: string; sessionId: string }, template: string): Promise<string | PythonErrorOutput> {
         const code = this.buildJinjaRenderCode(template);
         let result: string | PythonErrorOutput | null = null;
 
@@ -71,7 +71,7 @@ export class PythonExecutorService {
             result = this.extractJinjaResult(outputs, result);
         };
 
-        await this.executeCode(code, handleOutputs, { storeHistory: false }).then(
+        await this.executeCode(context, code, handleOutputs, { storeHistory: false }).then(
             ({ promise }) => promise
         );
 
@@ -87,6 +87,7 @@ export class PythonExecutorService {
     }
 
     private async abortExecution(
+        context: { workspaceId: string; sessionId: string },
         kernel: any,
         controller: { aborted: boolean }
     ): Promise<void> {
@@ -95,7 +96,7 @@ export class PythonExecutorService {
         controller.aborted = true;
 
         this.logger.warn(
-            { workspaceId: this.workspaceId, sessionId: this.sessionId },
+            { workspaceId: context.workspaceId, sessionId: context.sessionId },
             'Execution aborted by user'
         );
 
@@ -103,6 +104,7 @@ export class PythonExecutorService {
     }
 
     private async runExecution(
+        context: { workspaceId: string; sessionId: string },
         kernel: any,
         code: string,
         onOutputs: (outputs: Output[]) => void,
@@ -124,7 +126,7 @@ export class PythonExecutorService {
         } catch (err) {
             if (!abortController.aborted) {
                 this.logger.error(
-                    { err, workspaceId: this.workspaceId, sessionId: this.sessionId },
+                    { err, workspaceId: context.workspaceId, sessionId: context.sessionId },
                     'Code execution failed'
                 );
                 throw err;

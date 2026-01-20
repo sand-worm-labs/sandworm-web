@@ -9,17 +9,6 @@ import { NEXT_PUBLIC_API_URL } from "../utils/env";
 
 import { tokenStorage } from "./useAuth";
 
-function createNewUploadFile(file: File): UploadFile {
-  return {
-    status: "enqueued", // Waiting to start
-    replace: false, // Don't replace by default
-    file, // The actual File object
-    abortController: new AbortController(), // Can cancel later
-    uploaded: 0, // Bytes uploaded so far
-    total: file.size, // Total bytes to upload
-  };
-}
-
 export type UploadFile = {
   status: "enqueued" | "uploading" | "asking-replace";
   replace: boolean;
@@ -69,6 +58,17 @@ type API = {
 };
 
 type UseFiles = [State, API];
+
+function createNewUploadFile(file: File): UploadFile {
+  return {
+    status: "enqueued", // Waiting to start
+    replace: false, // Don't replace by default
+    file, // The actual File object
+    abortController: new AbortController(), // Can cancel later
+    uploaded: 0, // Bytes uploaded so far
+    total: file.size, // Total bytes to upload
+  };
+}
 
 /* =======================
    MAIN HOOK

@@ -30,6 +30,7 @@ export class PythonQueryRunnerService {
         const abortFns: (() => Promise<void>)[] = [];
 
         const { promise, abort } = await this.pythonExecutor.executeCode(
+            { workspaceId, sessionId },
             queryCode,
             (outputs) => this.parseQueryOutputs(outputs, state, onProgress),
             { storeHistory: false },
@@ -44,6 +45,7 @@ export class PythonQueryRunnerService {
 
             const { promise: loadPromise, abort: abortLoad } =
                 await this.pythonExecutor.executeCode(
+                    { workspaceId, sessionId },
                     loadCode,
                     () => { },
                     { storeHistory: false },

@@ -1,10 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ValidationException } from '@sandworm/graphql';
-import { ErrorCode } from '@/constants/error-code.constant';
 import { SandwormFile } from './model/file.model';
 import {
   ListFilesInput,
-  GetFileInput,
   DeleteFileInput,
 } from './dto/file.dto';
 import { JupyterService } from '@/infrastructure/jupyter/jupyter.service';

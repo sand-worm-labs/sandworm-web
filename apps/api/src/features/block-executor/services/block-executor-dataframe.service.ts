@@ -11,28 +11,27 @@ export class BlockExecutorDataframeService {
 
   constructor(
     private readonly dataframeService: DataFrameService,
-    private readonly workspaceId: string,
-    private readonly sessionId: string,
   ) { }
 
   async updateDataframes(
+    context: { workspaceId: string; sessionId: string },
     currentBlockId: string,
     blocks: Set<string>,
     dataframes: Y.Map<DataFrame>,
   ): Promise<void> {
     try {
       this.logger.debug(
-        `Updating dataframes for block ${currentBlockId} in workspace ${this.workspaceId}`,
+        `Updating dataframes for block ${currentBlockId} in workspace ${context.workspaceId}`,
       );
 
-      const newDataframes = await this.dataframeService.list();
+      const newDataframes = await this.dataframeService.list(context);
 
       this.logger.debug(`Found ${newDataframes.length} dataframes in Python session`);
 
       this.updateDataframesInMap(dataframes, newDataframes, currentBlockId, blocks);
     } catch (err) {
       this.logger.error(
-        { workspaceId: this.workspaceId, sessionId: this.sessionId, currentBlockId, err },
+        { workspaceId: context.workspaceId, sessionId: context.sessionId, currentBlockId, err },
         'Error updating dataframes',
       );
       throw err;

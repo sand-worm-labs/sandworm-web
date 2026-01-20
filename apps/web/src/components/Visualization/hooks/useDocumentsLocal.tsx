@@ -55,7 +55,6 @@ function createDocumentObject(
   return {
     id,
     title: "Untitled",
-    icon: "DocumentIcon",
     parentId,
     orderIndex,
     isSyncedWithYjs: true,
@@ -116,7 +115,7 @@ type UseDocumentsLocal = [UseDocumentsLocalState, API];
 
 const LocalContext = createContext<
   [State, React.Dispatch<React.SetStateAction<State>>]
->([Map(), () => {}]);
+>([Map(), () => { }]);
 
 type Props = {
   children: React.ReactNode;
@@ -440,10 +439,10 @@ export function useDocumentsLocal(workspaceId: string): UseDocumentsLocal {
           documents: currentState.documents.map(doc =>
             doc.id === id
               ? {
-                  ...doc,
-                  publishedAt: new Date().toISOString(),
-                  updatedAt: new Date(),
-                }
+                ...doc,
+                publishedAt: new Date().toISOString(),
+                updatedAt: new Date(),
+              }
               : doc
           ),
         });
@@ -472,10 +471,10 @@ export function useDocumentsLocal(workspaceId: string): UseDocumentsLocal {
           documents: currentState.documents.map(doc =>
             doc.id === id
               ? {
-                  ...doc,
-                  ...settings,
-                  updatedAt: new Date(),
-                }
+                ...doc,
+                ...settings,
+                updatedAt: new Date(),
+              }
               : doc
           ),
         });
