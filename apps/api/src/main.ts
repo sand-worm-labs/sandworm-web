@@ -1,5 +1,7 @@
 import compression from '@fastify/compress';
 import helmet from '@fastify/helmet';
+import websocket from '@fastify/websocket';
+
 import {
   ConsoleLogger,
   HttpStatus,
@@ -13,6 +15,7 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
+import { IoAdapter } from '@nestjs/platform-socket.io';
 import {
   AsyncContextProvider,
   Environment,
@@ -27,6 +30,7 @@ import { GlobalExceptionFilter } from './core/filters/global-exception.filter';
 import { AuthGuard } from './core/guards/auth.guard';
 import { setupSwagger } from './common/utils/setup-swagger';
 import { AuthGraphqlService } from './features/auth/graphql/auth-graphql.service';
+
 async function bootstrap() {
   const fastifyAdapter = new FastifyAdapter({
     requestIdHeader: REQUEST_ID_HEADER,
@@ -37,36 +41,25 @@ async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     fastifyAdapter,
-    {
-      bufferLogs: true,
-    },
+    { bufferLogs: true },
   );
 
-  // Get services
   const configService = app.get(ConfigService<AllConfigType>);
   const reflector = app.get(Reflector);
   const httpAdapterHost = app.get(HttpAdapterHost);
+  const asyncContext = app.get(AsyncContextProvider);
 
-  // Get environment early to use throughout
   const env = configService.getOrThrow('app.nodeEnv', { infer: true });
   const isProduction = env === Environment.PRODUCTION;
   const debug = env === Environment.LOCAL || env === Environment.DEVELOPMENT;
 
-  // Configure the logger
-  const asyncContext = app.get(AsyncContextProvider);
-
   const logger = new ConsoleLogger({
-    ...(env === Environment.LOCAL && {
-      colors: true,
-    }),
-    ...(env !== Environment.LOCAL && {
-      json: true,
-    }),
+    ...(env === Environment.LOCAL && { colors: true }),
+    ...(env !== Environment.LOCAL && { json: true }),
   });
-
   app.useLogger(logger);
 
-  fastifyAdapter.getInstance().addHook('onRequest', (request, reply, done) => {
+  fastifyAdapter.getInstance().addHook('onRequest', (request, _reply, done) => {
     asyncContext.run(() => {
       asyncContext.set('log', request.log);
       done();
@@ -74,66 +67,17 @@ async function bootstrap() {
   });
 
   fastifyAdapter.getInstance().addContentTypeParser(
-    ["application/octet-stream"],
+    ['application/octet-stream'],
     { parseAs: 'buffer' },
-    (req, body, done) => {
-      done(null, body);
-    },
+    (_req, body, done) => done(null, body),
   );
 
-
-  // Security headers
-  const devContentSecurityPolicy = {
-    directives: {
-      defaultSrc: [
-        "'self'",
-        'https://sandbox.embed.apollographql.com',
-        'https://apollo-server-landing-page.cdn.apollographql.com',
-      ],
-      scriptSrc: [
-        "'self'",
-        "'unsafe-inline'",
-        "'unsafe-eval'",
-        'https://unpkg.com',
-        'https://embeddable-sandbox.cdn.apollographql.com',
-        'https://apollo-server-landing-page.cdn.apollographql.com',
-        'http://cdn.jsdelivr.net',
-        'https://cdn.jsdelivr.net',
-      ],
-      styleSrc: [
-        "'self'",
-        "'unsafe-inline'",
-        'https://unpkg.com',
-        'https://fonts.googleapis.com',
-        'http://cdn.jsdelivr.net',
-        'https://cdn.jsdelivr.net',
-      ],
-      imgSrc: [
-        "'self'",
-        'data:',
-        'https:',
-        'http:',
-        'https://apollo-server-landing-page.cdn.apollographql.com',
-      ],
-      fontSrc: [
-        "'self'",
-        'https://fonts.gstatic.com',
-        'https://fonts.googleapis.com',
-        'http://cdn.jsdelivr.net',
-        'https://cdn.jsdelivr.net',
-      ],
-      connectSrc: ["'self'", 'https://sandbox.embed.apollographql.com'],
-    },
-  };
-  app.useGlobalPipes(new ValidationPipe());
-
   app.register(helmet, {
-    contentSecurityPolicy: isProduction ? undefined : devContentSecurityPolicy,
+    contentSecurityPolicy: isProduction ? undefined : false,
   });
 
   app.register(compression);
 
-  // CORS
   const corsOrigin = configService.getOrThrow('app.corsOrigin', {
     infer: true,
   });
@@ -146,7 +90,8 @@ async function bootstrap() {
         : [corsOrigin];
 
   app.enableCors({
-    origin: isProduction ? origins : 'http://localhost:3000',
+    origin: isProduction ? origins : true, // Allow all origins in non-production for WebSocket testing
+    credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: [
       'Content-Type',
@@ -154,46 +99,53 @@ async function bootstrap() {
       'X-File-Name',
       'X-File-Size',
     ],
-    credentials: true,
   });
 
-  logger.log(
-    `CORS Origin: ${isProduction ? origins.join(', ') : 'All origins (development)'}`,
-  );
-
-  // Global guards, filters, and pipes
   app.useGlobalGuards(new AuthGuard(reflector, app.get(AuthGraphqlService)));
+
   app.useGlobalFilters(new GlobalExceptionFilter(httpAdapterHost, debug));
+
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
       whitelist: true,
       errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-      exceptionFactory: (errors: ValidationError[]) => {
-        // Pass the full ValidationError objects instead of transforming them
-        return new UnprocessableEntityException({
-          message: errors, // Keep as ValidationError[]
+      exceptionFactory: (errors: ValidationError[]) =>
+        new UnprocessableEntityException({
+          message: errors,
           error: 'Unprocessable Entity',
           statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-        });
-      },
+        }),
     }),
   );
 
-  // Setup Swagger (handles its own logging)
-  const swaggerConfig = configService.get('app.swagger', { infer: true });
+  // Register Fastify WebSocket plugin BEFORE Socket.IO adapter
+  await app.register(websocket);
+
+  const swaggerConfig = configService.get('app.swagger', {
+    infer: true,
+  });
+
   if (swaggerConfig?.enabled && !isProduction) {
     setupSwagger(app, configService);
   }
 
-  // Start server
-  const port = configService.getOrThrow('app.port', { infer: true }) as number;
+  // Use Socket.IO adapter for WebSocket Gateway
+  app.useWebSocketAdapter(new IoAdapter(app));
+
+  const port = configService.getOrThrow('app.port', {
+    infer: true,
+  }) as number;
+
   await app.listen(port, '0.0.0.0');
 
-  // Startup logs
-  logger.log(`🚀 Server running at: http://localhost:${port}`);
-  logger.log(`📊 GraphQL Playground: http://localhost:${port}/graphql`);
-  logger.log(`📖 REST API: http://localhost:${port}/auth`);
+  logger.log(`🚀 Server running at http://0.0.0.0:${port}`);
+  logger.log(`📊 GraphQL Playground http://0.0.0.0:${port}/graphql`);
+  logger.log(`🔌 WebSocket endpoint ws://0.0.0.0:${port}/socket.io/`);
+  logger.log(`📝 Environment: ${env}`);
 }
 
-bootstrap();
+bootstrap().catch((error) => {
+  console.error('❌ Failed to start application:', error);
+  process.exit(1);
+});

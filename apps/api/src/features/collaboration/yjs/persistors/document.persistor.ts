@@ -6,25 +6,39 @@ import {
   YjsDocumentEntity,
   YjsUpdateEntity,
 } from '@sandworm/postgresql-typeorm';
-import { ILockService } from '@sandworm/redis';
-import { 
-  Persistor, 
+import {
+  Persistor,
   ReplaceStateResult,
   LoadStateResult,
-  TransactionOrigin, 
+  TransactionOrigin,
   WSSharedDoc
 } from '../interfaces';
-
-const logger = new Logger('DocumentPersistor');
+import { LockService } from '@/infrastructure/lock/lock.services';
 
 export class DocumentPersistor implements Persistor {
+
+  private readonly logger = new Logger(DocumentPersistor.name);
+
   constructor(
-    private readonly docId: string,
     private readonly documentId: string,
     private readonly yjsDocumentRepository: Repository<YjsDocumentEntity>,
     private readonly yjsUpdateRepository: Repository<YjsUpdateEntity>,
-    private readonly lockService: ILockService
-  ) {}
+    private readonly lockService: LockService,
+  ) { }
+
+  static create(
+    documentId: string,
+    yjsDocumentRepository: Repository<YjsDocumentEntity>,
+    yjsUpdateRepository: Repository<YjsUpdateEntity>,
+    lockService: LockService
+  ): DocumentPersistor {
+    return new DocumentPersistor(
+      documentId,
+      yjsDocumentRepository,
+      yjsUpdateRepository,
+      lockService
+    );
+  }
 
   private applyUpdate(ydoc: Y.Doc, update: Buffer | Uint8Array): number {
     const start = Date.now();
@@ -43,7 +57,7 @@ export class DocumentPersistor implements Persistor {
       });
 
       if (!dbDoc) {
-        logger.debug(`No existing YJS document found for ${this.documentId}, creating new`);
+        this.logger.debug(`No existing YJS document found for ${this.documentId}, creating new`);
         return {
           ydoc,
           clock: 0,
@@ -64,7 +78,7 @@ export class DocumentPersistor implements Persistor {
       let applyUpdateLatency = this.applyUpdate(ydoc, dbDoc.state);
 
       if (updates.length > 0) {
-        logger.debug(`Applying ${updates.length} updates for document ${this.documentId}`);
+        this.logger.debug(`Applying ${updates.length} updates for document ${this.documentId}`);
         const mergedUpdate = Y.mergeUpdates(updates.map((u) => u.update));
         applyUpdateLatency += this.applyUpdate(ydoc, mergedUpdate);
       }
@@ -77,13 +91,13 @@ export class DocumentPersistor implements Persistor {
         clockUpdatedAt: dbDoc.clockUpdatedAt ?? new Date(Date.now() - 24 * 60 * 60 * 1000),
       };
     } catch (err) {
-      logger.error(`Failed to load Yjs document state for ${this.documentId}:`, err);
+      this.logger.error(`Failed to load Yjs document state for ${this.documentId}:`, err);
       throw err;
     }
   }
 
   public async persist(ydoc: WSSharedDoc, tx?: EntityManager): Promise<void> {
-    return this.lockService.acquireLock(`document-persistor:${this.docId}`, async () => {
+    return this.lockService.acquireLock(`document-persistor:${this.documentId}`, async () => {
       const repo = tx ? tx.getRepository(YjsDocumentEntity) : this.yjsDocumentRepository;
 
       let dbDoc = await repo.findOne({
@@ -93,7 +107,7 @@ export class DocumentPersistor implements Persistor {
       const state = Buffer.from(Y.encodeStateAsUpdate(ydoc.ydoc));
 
       if (!dbDoc) {
-        logger.debug(`Creating new YJS document for ${this.documentId}`);
+        this.logger.debug(`Creating new YJS document for ${this.documentId}`);
         dbDoc = repo.create({
           documentId: this.documentId,
           state,
@@ -119,15 +133,15 @@ export class DocumentPersistor implements Persistor {
     });
 
     if (updatesCount > 100) {
-      logger.debug(`Cleaning up old updates for document ${this.documentId}. Current count: ${updatesCount}`);
-      
+      this.logger.debug(`Cleaning up old updates for document ${this.documentId}. Current count: ${updatesCount}`);
+
       const deleted = await this.yjsUpdateRepository.delete({
         yjsDocumentId,
         createdAt: LessThan(new Date()),
         clock: LessThan(clock),
       });
 
-      logger.debug(`Deleted ${deleted.affected} old updates for document ${this.documentId}`);
+      this.logger.debug(`Deleted ${deleted.affected} old updates for document ${this.documentId}`);
     }
   }
 
@@ -162,7 +176,7 @@ export class DocumentPersistor implements Persistor {
       .execute();
 
     if (result.affected === 0) {
-      logger.warn(`Found old clock when replacing state for ${this.documentId}, reloading instead`);
+      this.logger.warn(`Found old clock when replacing state for ${this.documentId}, reloading instead`);
       const loadResult = await this.load();
       return {
         ...loadResult,
@@ -174,7 +188,7 @@ export class DocumentPersistor implements Persistor {
     const applyUpdateLatency = this.applyUpdate(ydoc, newState);
     const updated = result.raw[0];
 
-    logger.debug(`Successfully replaced state for document ${this.documentId}`);
+    this.logger.debug(`Successfully replaced state for document ${this.documentId}`);
 
     return {
       ydoc,

@@ -8,7 +8,7 @@ import {
     ExecutionScheduleType,
     YjsAppDocumentEntity,
 } from '@sandworm/postgresql-typeorm';
-import { LockService } from '@sandworm/redis';
+import { LockService } from '@/infrastructure/lock/lock.services';
 
 interface JobInfo {
     job: CronJob<null, string>;
