@@ -2,6 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
+import { Transition } from "@headlessui/react";
+
+import ScrollBar from "../Visualization/blocks/ScrollBar";
 
 import { MiniChatInput } from "./MiniChatInput";
 
@@ -93,71 +96,92 @@ export const MiniChatEmptyState: React.FC = () => {
 };
 
 interface MiniChatProps {
+  visible: boolean;
   onClose?: () => void;
 }
-
-export const MiniChat: React.FC<MiniChatProps> = ({ onClose }) => {
+export const MiniChat: React.FC<MiniChatProps> = ({ visible, onClose }) => {
   const searchParams = useSearchParams();
   const [messages, setMessages] = useState<
     Array<{ text: string; isUser: boolean }>
   >([]);
 
-  // Handle incoming prompt from URL
   useEffect(() => {
     const prompt = searchParams.get("prompt");
     if (prompt && messages.length === 0) {
-      // Add the user's message
       setMessages([{ text: prompt, isUser: true }]);
 
-      // Simulate agent response
       setTimeout(() => {
-        const agentResponse =
-          "I've analyzed the blockchain data you requested. Here's what I found: The tokens above $1m market cap on Base show strong growth trends, with the top performers being in the DeFi and NFT sectors. Would you like me to create a visualization or dive deeper into specific metrics?";
-        setMessages(prev => [...prev, { text: agentResponse, isUser: false }]);
+        setMessages(prev => [
+          ...prev,
+          {
+            text: "I've analyzed the blockchain data you requested. Here's what I found...",
+            isUser: false,
+          },
+        ]);
       }, 800);
     }
   }, [searchParams]);
 
   const handleSendMessage = (data: { message: string; files: File[] }) => {
-    if (data.message.trim()) {
-      setMessages(prev => [...prev, { text: data.message, isUser: true }]);
+    if (!data.message.trim()) return;
 
-      setTimeout(() => {
-        const agentResponse =
-          "I've analyzed the blockchain data you requested. Here's what I found: The tokens above $1m market cap on Base show strong growth trends, with the top performers being in the DeFi and NFT sectors. Would you like me to create a visualization or dive deeper into specific metrics?";
-        setMessages(prev => [...prev, { text: agentResponse, isUser: false }]);
-      }, 800);
-    }
+    setMessages(prev => [...prev, { text: data.message, isUser: true }]);
+
+    setTimeout(() => {
+      setMessages(prev => [
+        ...prev,
+        {
+          text: "I've analyzed the blockchain data you requested. Here's what I found...",
+          isUser: false,
+        },
+      ]);
+    }, 800);
   };
 
   return (
-    <div className="flex flex-col h-[94%] w-full md:max-w-[800px] max-w-[calc(100dvw-32px)] md:px-0 mx-auto border-l dark:border-[#262A30] border-[#E9ECEF] text-sm">
-      <MiniChatHeader onCancel={onClose} />
+    <Transition
+      as="div"
+      show={visible}
+      className="top-0 right-0 h-full absolute z-30 font-primary"
+      enter="transition ease-in-out duration-300 transform"
+      enterFrom="translate-x-full"
+      enterTo="translate-x-0"
+      leave="transition ease-in-out duration-300 transform"
+      leaveFrom="translate-x-0"
+      leaveTo="transform translate-x-full"
+    >
+      <div className="w-[324px] flex flex-col overflow-y-auto border-l dark:border-[#262A30] border-gray-200 h-full bg-white dark:bg-black ">
+        <MiniChatHeader onCancel={onClose} />
 
-      <div className="flex-1 overflow-y-auto py-6 px-4">
-        {messages.length === 0 ? (
-          <MiniChatEmptyState />
-        ) : (
-          <div className="flex flex-col w-full gap-4">
-            {messages.map(msg => (
-              <div
-                key={msg.text}
-                className={`flex ${msg.isUser ? "justify-end" : "justify-start"}`}
-              >
+        <div className="flex-1 overflow-y-auto py-6 px-4">
+          {messages.length === 0 ? (
+            <MiniChatEmptyState />
+          ) : (
+            <div className="flex flex-col w-full gap-4">
+              {messages.map(msg => (
                 <div
-                  className={`${msg.isUser ? "bg-[#F7E4E1] dark:bg-[#121417]" : "bg-[#F1F3F4] dark:bg-[#121417]"} text-[#343A40] dark:text-[#8696A6] px-4 py-2 rounded-2xl max-w-[75%]`}
+                  key={msg.text}
+                  className={`flex ${msg.isUser ? "justify-end" : "justify-start"
+                    }`}
                 >
-                  {msg.text}
+                  <div
+                    className={`${msg.isUser
+                        ? "bg-[#F7E4E1] dark:bg-[#121417]"
+                        : "bg-[#F1F3F4] dark:bg-[#121417]"
+                      } text-[#343A40] dark:text-[#8696A6] px-4 py-2 rounded-2xl max-w-[75%]`}
+                  >
+                    {msg.text}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+              ))}
+            </div>
+          )}
+        </div>
 
-      <div className="pb-6 md:px-4">
-        <MiniChatInput onSend={handleSendMessage} />
+        <div className="pb-6 md:px-4">
+          <MiniChatInput onSend={handleSendMessage} />
+        </div>
       </div>
-    </div>
+    </Transition>
   );
 };

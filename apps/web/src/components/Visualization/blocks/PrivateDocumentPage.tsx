@@ -12,6 +12,8 @@ import * as Y from "yjs";
 
 import type { ApiDocument } from "@/types";
 import { widthClasses } from "@/components/Editor/constants";
+import { DataExplorerContent } from "@/components/ExplorerPanels/DataExplorerContent";
+import { MiniChat } from "@/components/Chats/MiniChat";
 
 import { useDataSources } from "../hooks/useDataSources";
 import { useDocuments } from "../hooks/useDocuments";
@@ -36,7 +38,6 @@ import ReusableComponents from "./ReusableComponents";
 import PageSettingsPanel from "./PageSettingsPanel";
 import { Tooltip } from "./ToolTips";
 import { ContentSkeleton, TitleSkeleton } from "./ContentSkeleton";
-import { DataExplorerContent } from "@/components/ExplorerPanels/DataExplorerContent";
 
 // this is needed because this component only works with the browser
 const V2Editor = dynamic(() => import("@/components/Editor"), {
@@ -127,6 +128,7 @@ function PrivateDocumentPageInner(
     | { _tag: "shortcuts" }
     | { _tag: "reusableComponents" }
     | { _tag: "pageSettings" }
+    | { _tag: "chat" }
     | null
   >(null);
 
@@ -195,12 +197,16 @@ function PrivateDocumentPageInner(
     );
   }, [setSelectedSidebar]);
 
+  const onToggleChat = useCallback(() => {
+    console.log("onToggleChat");
+    setSelectedSidebar(v => (v?._tag === "chat" ? null : { _tag: "chat" }));
+  }, []);
+
   const router = useRouter();
   const shareLinkWithoutSidebar = props.document.shareLinksWithoutSidebar;
   const copyLink = useMemo(
     () =>
-      `${NEXT_PUBLIC_PUBLIC_URL()}/workspace/${props.workspaceId}/documents/${
-        props.documentId
+      `${NEXT_PUBLIC_PUBLIC_URL()}/workspace/${props.workspaceId}/documents/${props.documentId
       }/notebook${shareLinkWithoutSidebar ? `?sidebarCollapsed=true` : ""}`,
     [props.workspaceId, props.documentId, shareLinkWithoutSidebar]
   );
@@ -331,7 +337,7 @@ function PrivateDocumentPageInner(
         <span className="w-full truncate">
           <span className="font-semibold">
             {props.isApp ||
-            props?.user?.role?.[props.workspaceId] === "viewer" ? (
+              props?.user?.role?.[props.workspaceId] === "viewer" ? (
               <span className="text-ceramic-500">Viewing</span>
             ) : (
               "Editing"
@@ -361,7 +367,7 @@ function PrivateDocumentPageInner(
         <ShareDropdown
           link={copyLink}
           isPublic={false}
-          onTogglePublic={() => {}}
+          onTogglePublic={() => { }}
           workspaceId={props.workspaceId}
           documentId={props.documentId}
           documentTitle={documentTitle}
@@ -371,15 +377,15 @@ function PrivateDocumentPageInner(
         />
 
         {props?.user?.role?.[props.workspaceId] ===
-        "viewer" ? null : props.isApp ? (
-          <Link
-            className="flex gap-x-2 items-center rounded-sm px-3 py-1 text-sm text-gray-500 bg-white hover:bg-gray-100 border border-gray-200 disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 justify-center"
-            href={`/workspace/${props.document.workspaceId}/documents/${props.document.id}/notebook/edit`}
-          >
-            <PencilIcon className="w-4 h-4" />
-            <span>Edit</span>
-          </Link>
-        ) : (
+          "viewer" ? null : props.isApp ? (
+            <Link
+              className="flex gap-x-2 items-center rounded-sm px-3 py-1 text-sm text-gray-500 bg-white hover:bg-gray-100 border border-gray-200 disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 justify-center"
+              href={`/workspace/${props.document.workspaceId}/documents/${props.document.id}/notebook/edit`}
+            >
+              <PencilIcon className="w-4 h-4" />
+              <span>Edit</span>
+            </Link>
+          ) : (
           <Tooltip
             title="Click to save"
             message="This notebook has unsaved changes."
@@ -414,9 +420,8 @@ function PrivateDocumentPageInner(
       topBarContent={topBarContent}
       user={props.user}
       sidebarContent={sidebarContent}
-      hideChat={
-        props.isApp || props?.user?.role?.[props.workspaceId] === "viewer"
-      }
+   
+      onToggleChat={onToggleChat}
     >
       <div className="w-full relative flex">
         <V2Editor
@@ -496,6 +501,10 @@ function PrivateDocumentPageInner(
             />
             <DataExplorerContent
               visible={selectedSidebar?._tag === "schemaExplorer"}
+            />
+            <MiniChat
+              visible={selectedSidebar?._tag === "chat"}
+              onClose={onHideSidebar}
             />
           </>
         )}
