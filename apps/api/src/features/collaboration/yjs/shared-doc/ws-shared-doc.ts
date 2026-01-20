@@ -1,4 +1,3 @@
-// features/collaboration/yjs/shared-doc/ws-shared-doc.ts
 import { Logger } from '@nestjs/common';
 import * as Y from 'yjs';
 import { WebSocket } from 'ws';
@@ -13,7 +12,7 @@ import {
     getLayout,
 } from '@sandworm/editor';
 import { WSSharedDoc, TransactionOrigin, Persistor } from '../interfaces';
-import { PubSubProvider } from '../pubsub/pubsub-provider';
+import { PubSubService } from '@/infrastructure/pubsub/service/pubsub.service';
 
 const messageSync = 0;
 const messageAwareness = 1;
