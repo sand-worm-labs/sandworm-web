@@ -8,9 +8,11 @@ import {
   UserYjsAppDocumentEntity,
   DocumentEntity,
   YjsUpdateEntity,
+  PubSubPayloadEntity,
 } from '@sandworm/postgresql-typeorm'
 import { PersistorFactory } from './persistors/persistor.factory'
 import { LockModule } from '@/infrastructure/lock/lock.module'
+import { PubSubModule } from '@/infrastructure/pubsub/pubsub.module'
 
 @Module({
   imports: [
@@ -20,10 +22,12 @@ import { LockModule } from '@/infrastructure/lock/lock.module'
         YjsAppDocumentEntity,
         UserYjsAppDocumentEntity,
         YjsUpdateEntity,
-        DocumentEntity
+        DocumentEntity,
+        PubSubPayloadEntity
       ]),
     AuthModule,
-    LockModule
+    LockModule,
+    PubSubModule
   ],
   providers: [
     YjsDocumentService,

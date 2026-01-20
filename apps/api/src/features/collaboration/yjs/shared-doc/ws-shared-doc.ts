@@ -11,8 +11,9 @@ import {
     getDataframes,
     getLayout,
 } from '@sandworm/editor';
-import { WSSharedDoc, TransactionOrigin, Persistor } from '../interfaces';
-import { PubSubService } from '@/infrastructure/pubsub/service/pubsub.service';
+import { WSSharedDoc, TransactionOrigin, Persistor, LoadStateResult } from '../interfaces';
+import { PubSubProviderFactory } from '@/infrastructure/pubsub/pubsub-provider.factory';
+import { PubSubProvider } from '@/infrastructure/pubsub/pubsub.provider';
 
 const messageSync = 0;
 const messageAwareness = 1;
@@ -32,8 +33,6 @@ export class WSSharedDocV2 implements WSSharedDoc {
     private hasUpdatesToPersist = false;
     private persistUpdatesQueue: PQueue;
     private updating = 0;
-
-    // Executors - will be injected
     private executor?: any;
     private aiExecutor?: any;
     private pubSubProvider?: PubSubProvider;
@@ -42,8 +41,9 @@ export class WSSharedDocV2 implements WSSharedDoc {
         id: string,
         documentId: string,
         workspaceId: string,
-        loadStateResult: any,
+        loadStateResult: LoadStateResult,
         private readonly persistor: Persistor,
+        private readonly pubSubProviderFactory: PubSubProviderFactory,
         private readonly onTitleChange?: (title: string) => Promise<void>
     ) {
         this.id = id;
@@ -86,8 +86,8 @@ export class WSSharedDocV2 implements WSSharedDoc {
         return (
             this.conns.size === 0 &&
             this.updating === 0 &&
-            this.executor?.isIdle() &&
-            this.aiExecutor?.isIdle()
+            (!this.executor || this.executor.isIdle()) &&
+            (!this.aiExecutor || this.aiExecutor.isIdle())
         );
     }
 
@@ -129,7 +129,6 @@ export class WSSharedDocV2 implements WSSharedDoc {
             syncProtocol.readUpdate(decoder, this.ydoc, transactionOrigin);
         } else {
             this.logger.error(`Unauthorized update attempt on ${this.id}`);
-            // Disconnect the client
             this.closeConn(transactionOrigin.conn);
         }
     }
@@ -138,15 +137,20 @@ export class WSSharedDocV2 implements WSSharedDoc {
         this.ydoc.on('update', this.updateHandler);
         this.awareness.on('update', this.awarenessHandler);
 
-        // Initialize executors (will be set externally)
-        // this.executor?.start();
-        // this.aiExecutor?.start();
+        this.pubSubProvider = this.pubSubProviderFactory.create(
+            this.id,
+            this.ydoc,
+            this.clock,
+            this.onNewerClock
+        );
+        await this.pubSubProvider.connect();
 
-        // Initialize pubsub
-        await this.pubSubProvider?.connect();
+        this.logger.debug(`WSSharedDocV2 initialized for ${this.id}`);
     }
 
     public async destroy(): Promise<void> {
+        this.logger.debug(`Destroying WSSharedDocV2 ${this.id}`);
+
         await Promise.all([
             this.executor?.stop(),
             this.aiExecutor?.stop(),
@@ -160,10 +164,17 @@ export class WSSharedDocV2 implements WSSharedDoc {
 
         this.awareness.destroy();
         this.ydoc.destroy();
+
+        this.logger.debug(`WSSharedDocV2 destroyed for ${this.id}`);
     }
 
     private async reset(newYDoc: Y.Doc, newClock: number, newByteLength: number): Promise<void> {
-        await Promise.all([this.executor?.stop(), this.aiExecutor?.stop()]);
+        this.logger.debug(`Resetting WSSharedDocV2 ${this.id}`);
+
+        await Promise.all([
+            this.executor?.stop(),
+            this.aiExecutor?.stop()
+        ]);
 
         this.ydoc.off('update', this.updateHandler);
         this.ydoc.destroy();
@@ -182,11 +193,7 @@ export class WSSharedDocV2 implements WSSharedDoc {
 
         await this.pubSubProvider?.reset(newYDoc, newClock);
 
-        // Restart executors
-        // this.executor = createExecutor();
-        // this.aiExecutor = createAIExecutor();
-        // this.executor?.start();
-        // this.aiExecutor?.start();
+        this.logger.debug(`WSSharedDocV2 reset complete for ${this.id}`);
     }
 
     private configAwareness(): awarenessProtocol.Awareness {
@@ -203,7 +210,6 @@ export class WSSharedDocV2 implements WSSharedDoc {
     ) => {
         this.hasUpdatesToPersist = true;
 
-        // Broadcast to connections
         const encoder = encoding.createEncoder();
         encoding.writeVarUint(encoder, messageSync);
         syncProtocol.writeUpdate(encoder, update);
@@ -211,18 +217,15 @@ export class WSSharedDocV2 implements WSSharedDoc {
 
         this.conns.forEach((_, conn) => this.send(conn, message));
 
-        // Handle title updates
         const titleChanged = await this.handleTitleUpdate();
         if (titleChanged && this.onTitleChange) {
             await this.onTitleChange(this.title);
         }
 
-        // Don't persist while duplicating
         if ((tr.origin as any)?.isDuplicating) {
             return;
         }
 
-        // Queue persistence
         this.persistUpdatesQueue.add(async () => {
             this.persistUpdatesQueue.clear();
             if (this.hasUpdatesToPersist) {
@@ -250,7 +253,6 @@ export class WSSharedDocV2 implements WSSharedDoc {
             }
         }
 
-        // Broadcast awareness update
         const encoder = encoding.createEncoder();
         encoding.writeVarUint(encoder, messageAwareness);
         encoding.writeVarUint8Array(
@@ -274,7 +276,7 @@ export class WSSharedDocV2 implements WSSharedDoc {
     }
 
     private send(conn: WebSocket, message: Uint8Array): void {
-        if (conn.readyState !== 1) { // WebSocket.OPEN
+        if (conn.readyState !== 1) {
             this.closeConn(conn);
             return;
         }
@@ -306,8 +308,23 @@ export class WSSharedDocV2 implements WSSharedDoc {
                 null
             );
         }
-        conn.close();
+        try {
+            conn.close();
+        } catch (err) {
+            this.logger.debug(`Error closing connection: ${err}`);
+        }
     }
+
+    private onNewerClock = async (newClock: number) => {
+        this.logger.warn({
+            id: this.id,
+            currentClock: this.clock,
+            newClock,
+        }, 'Detected newer clock, reloading state');
+
+        const loadResult = await this.persistor.load();
+        await this.reset(loadResult.ydoc, loadResult.clock, loadResult.byteLength);
+    };
 
     public setExecutor(executor: any): void {
         this.executor = executor;
@@ -317,31 +334,27 @@ export class WSSharedDocV2 implements WSSharedDoc {
         this.aiExecutor = aiExecutor;
     }
 
-    public setPubSubProvider(provider: PubSubProvider): void {
-        this.pubSubProvider = provider;
-    }
-
     public static async make(
         id: string,
         documentId: string,
         workspaceId: string,
+        loadStateResult: LoadStateResult,
         persistor: Persistor,
+        pubSubProviderFactory: PubSubProviderFactory,
         onTitleChange?: (title: string) => Promise<void>
     ): Promise<WSSharedDocV2> {
-        const loadStateResult = await persistor.load();
-
         const doc = new WSSharedDocV2(
             id,
             documentId,
             workspaceId,
             loadStateResult,
             persistor,
+            pubSubProviderFactory,
             onTitleChange
         );
 
         await doc.init();
 
-        // Check if we need to remove history
         if (
             loadStateResult.applyUpdateLatency > 1000 &&
             Date.now() - loadStateResult.clockUpdatedAt.getTime() > 1000 * 60 * 60 * 24
@@ -350,7 +363,6 @@ export class WSSharedDocV2 implements WSSharedDoc {
                 `Removing history from YDoc ${id} to improve performance`,
                 'WSSharedDocV2'
             );
-            // await doc.removeHistory();
         }
 
         return doc;
