@@ -4,81 +4,111 @@ import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useGoogleLogin } from "@react-oauth/google";
 
 import { useSessionStore } from "@/store/session";
-import { NEXT_PUBLIC_API_URL } from "@/components/Visualization/utils/env";
+import {
+  NEXT_PUBLIC_API_URL,
+  GITHUB_CLIENT_ID,
+  REDIRECT_URI,
+} from "@/components/Visualization/utils/env";
 
 type SocialLoginProps = {
   variant?: "signup" | "signin";
 };
 
 export const SocialLogin = ({ variant = "signup" }: SocialLoginProps) => {
-  const [isLoading, setIsLoading] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<"google" | "github" | null>(null);
   const router = useRouter();
-  const { setIntent } = useSessionStore();
+  const { setIntent, setSession } = useSessionStore();
 
-  const openOAuthPopup = (provider: string) => {
+  const handleBackendLogin = async (
+    provider: "google" | "github",
+    code: string
+  ) => {
+    try {
+      const res = await fetch(
+        `${NEXT_PUBLIC_API_URL()}/auth/${provider}/login`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ code, intent: variant }),
+        }
+      );
+
+      if (!res.ok) throw new Error("Login failed");
+
+      const data = await res.json();
+      setSession(data);
+
+      router.push(variant === "signup" ? "/claim" : "/workspace");
+    } catch (err: any) {
+      console.error(err);
+      alert(err.message || "Authentication failed");
+    } finally {
+      setIsLoading(null);
+    }
+  };
+
+  const googleLogin = useGoogleLogin({
+    flow: "auth-code",
+    onSuccess: async response => {
+      if (!response.code) return;
+      setIsLoading("google");
+      await handleBackendLogin("google", response.code);
+    },
+  });
+
+  // GitHub popup
+  const openGitHubPopup = () => {
+    setIsLoading("github");
+    setIntent(variant);
+
     const width = 500;
     const height = 600;
     const left = window.screen.width / 2 - width / 2;
     const top = window.screen.height / 2 - height / 2;
 
-    const url = `${NEXT_PUBLIC_API_URL()}/auth/${provider}/login?intent=${variant}`;
+    const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID()}&redirect_uri=${REDIRECT_URI()}&scope=read:user`;
 
     const popup = window.open(
-      url,
-      `${provider}-oauth-popup`,
-      `width=${width},height=${height},left=${left},top=${top},toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=no`
+      githubAuthUrl,
+      "github-oauth-popup",
+      `width=${width},height=${height},left=${left},top=${top},scrollbars=yes`
     );
 
-    if (!popup) {
-      return null;
-    }
-
-    return popup;
-  };
-
-  const handleOAuthLogin = async (provider: "google" | "github") => {
-    setIsLoading(provider);
-    setIntent(variant);
-
-    const popup = openOAuthPopup(provider);
     if (!popup) {
       setIsLoading(null);
       return;
     }
 
-    const handleMessage = (event: MessageEvent) => {
+    const handleMessage = async (event: MessageEvent) => {
       if (event.origin !== window.location.origin) return;
 
       if (
-        event.data.type === "oauth-success" &&
-        event.data.provider === provider
+        event.data?.type === "oauth-success" &&
+        event.data.provider === "github"
       ) {
         window.removeEventListener("message", handleMessage);
-        setIsLoading(null);
+        await handleBackendLogin("github", event.data.code);
         popup.close();
-
-        if (variant === "signup") {
-          router.push("/claim");
-        } else {
-          router.push("/workspace");
-        }
       }
 
       if (
-        event.data.type === "oauth-error" &&
-        event.data.provider === provider
+        event.data?.type === "oauth-error" &&
+        event.data.provider === "github"
       ) {
         window.removeEventListener("message", handleMessage);
         setIsLoading(null);
         popup.close();
-        alert(`Authentication failed: ${event.data.error || "Unknown error"}`);
+        alert(event.data.error || "Authentication failed");
       }
     };
 
     window.addEventListener("message", handleMessage);
 
+    // Detect if user manually closes the popup
     const checkClosed = setInterval(() => {
       if (popup.closed) {
         clearInterval(checkClosed);
@@ -88,18 +118,26 @@ export const SocialLogin = ({ variant = "signup" }: SocialLoginProps) => {
     }, 500);
   };
 
-  const getGoogleButtonText = () => {
-    if (isLoading === "google") return "Connecting...";
-    return variant === "signup" ? "Sign up with Google" : "Sign in with Google";
+  const handleOAuthLogin = (provider: "google" | "github") => {
+    if (provider === "google") {
+      setIntent(variant);
+      setIsLoading(provider);
+      googleLogin();
+    } else {
+      openGitHubPopup();
+    }
   };
 
-  const getGithubButtonText = () => {
-    if (isLoading === "github") return "Connecting...";
-    return variant === "signup" ? "Sign up with Github" : "Sign in with Github";
+  const getButtonText = (provider: "google" | "github") => {
+    if (isLoading === provider) return "Connecting...";
+    return variant === "signup"
+      ? `Sign up with ${provider === "google" ? "Google" : "Github"}`
+      : `Sign in with ${provider === "google" ? "Google" : "Github"}`;
   };
 
   return (
     <div className="w-full mt-4">
+      {/* Google Login Button */}
       <button
         type="button"
         onClick={() => handleOAuthLogin("google")}
@@ -107,17 +145,18 @@ export const SocialLogin = ({ variant = "signup" }: SocialLoginProps) => {
         className="flex w-full items-center justify-center space-x-2 rounded-xl border border-[#DEE2E6] px-4 py-3 bg-[#F8F9FA] hover:bg-[#E9ECEF] dark:bg-white text-black mb-2 text-sm font-primary disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <FcGoogle size={20} />
-        <span>{getGoogleButtonText()}</span>
+        <span>{getButtonText("google")}</span>
       </button>
 
+      {/* GitHub Login Button */}
       <button
         type="button"
         onClick={() => handleOAuthLogin("github")}
         disabled={isLoading !== null}
-        className="flex w-full items-center justify-center space-x-2 rounded-xl border border-[#DEE2E6] px-4 py-3 bg-[#F8F9FA] hover:bg-[#E9ECEF] dark:bg-white text-black mb-4 text-sm font-primary disabled:opacity-50 disabled:cursor-not-allowed"
+        className="flex w-full items-center justify-center space-x-2 rounded-xl border border-[#DEE2E6] px-4 py-3 bg-[#000] hover:bg-[#333] text-white mb-4 text-sm font-primary disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <FaGithub size={20} />
-        <span>{getGithubButtonText()}</span>
+        <span>{getButtonText("github")}</span>
       </button>
     </div>
   );
