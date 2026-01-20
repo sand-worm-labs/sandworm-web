@@ -82,9 +82,9 @@ export function Chat({
   };
 
   return (
-    <div className="flex flex-row justify-center pb-4 md:pb-8 h-dvh bg-[#F9FAFD] dark:bg-black">
-      <div className="flex flex-col mt-32 items-center gap-2">
-        <h1 className="text-3xl lg:text-3xl font-medium text-center tracking-tighter text-pretty font-primary">
+    <div className="flex flex-row justify-center pb-4 md:pb-8 h-dvh bg-[#FEFEFE] dark:bg-black">
+      <div className="flex flex-col mt-[8%] items-center gap-2">
+        <h1 className="text-3xl lg:text-3xl font-medium text-center tracking-tighter font-primary">
           What do you want to explore onchain today?
         </h1>
 
@@ -105,7 +105,9 @@ export function Chat({
         </form>
 
         <div className="mt-6">
-          <h3 className="mb-4 text-sm">Test Queries</h3>
+          <h3 className="mb-4 px-6 text-sm font-body font-medium text-ink-100">
+            Test Queries
+          </h3>
           <ExamplePrompts onPromptSelect={handlePromptSelect} />
         </div>
       </div>

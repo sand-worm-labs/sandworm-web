@@ -60,7 +60,7 @@ export default function SignUpForm() {
           <input
             type={type}
             name={field}
-            className="mt-1 w-full rounded-3xl dark:bg-[#121417] bg-[#FFFFFF] p-2.5 px-5 text-black dark:text-white border border-[#DEE2E6] dark:border-[#262A30] focus:border-[#A308F0] focus:ring-1 focus:ring-[#A308F0] outline-none font-normal text-[0.9rem] placeholder:text-muted-foreground dark:placeholder:text-ink-300 "
+            className="mt-1 w-full rounded-3xl dark:bg-[#121417] bg-[#FFFFFF] p-2.5 px-5 text-ink-100 font-body  dark:text-white border border-[#DEE2E6] dark:border-[#262A30] focus:border-primary focus:ring-1 focus:ring-[#A308F0] outline-none font-medium text-[0.9rem] placeholder:text-muted-foreground  dark:placeholder:text-ink-300 "
             placeholder={`${label}`}
             value={formData[field as keyof typeof formData]}
             onChange={handleChange}
@@ -68,7 +68,7 @@ export default function SignUpForm() {
         </div>
       ))}
 
-      {displayError && <p className="text-red-500 text-sm">{displayError}</p>}
+      {displayError && <p className="text-error text-sm">{displayError}</p>}
 
       {state.data && (
         <p className="text-green-600 text-sm">
@@ -79,7 +79,7 @@ export default function SignUpForm() {
       <button
         type="submit"
         disabled={state.loading}
-        className="w-full rounded-3xl bg-[#0F0F0F] px-4 py-3.5 mb-5 text-white text-sm font-medium disabled:bg-[#868E96] text-sm"
+        className="w-full rounded-3xl bg-[#0F0F0F] px-4 py-3.5 mb-5 text-white font-medium disabled:bg-[#868E96] text-sm"
       >
         {state.loading ? "Signing Up..." : "Sign Up"}
       </button>

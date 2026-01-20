@@ -209,7 +209,7 @@ function DropDown(props: DropDownProps) {
       >
         <PlusSmallIcon className="invisible group-hover:visible hover:bg-ceramic-200/50 h-6 w-6 shrink-0 rounded-md" />
       </button>
-      <Menu as="div" className="relative inline-flex text-left font-primary">
+      <Menu as="div" className="relative inline-flex text-left font-body">
         <Menu.Button className="pr-0.5" ref={buttonRef} onClick={onOpen}>
           <EllipsisHorizontalIcon className="invisible group-hover:visible hover:bg-ceramic-200/50 h-6 w-6 shrink-0 rounded-md" />
         </Menu.Button>
@@ -541,6 +541,7 @@ function NodeComponent(props: NodeComponentProps) {
                   workspaceId={props.workspaceId}
                   documentId={props.document.id}
                   disabled={isViewer}
+                  isChild={props.level > 0}
                 />
               </div>
               <div className="flex items-center flex-1 overflow-auto">

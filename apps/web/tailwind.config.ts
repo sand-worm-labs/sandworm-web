@@ -46,6 +46,8 @@ const config: Config = {
           500: "var(--ink-500)",
         },
 
+        "menu-ink": "var(--menu-ink)",
+
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         inputBg: "hsl(var(--bg-input))",

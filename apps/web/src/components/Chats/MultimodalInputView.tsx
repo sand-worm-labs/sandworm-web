@@ -65,6 +65,7 @@ export const MultimodalInputView = forwardRef<
     focus:outline-none
     focus:border-transparent
     focus:ring-4
+   shadow-[0_3.5px_24px_rgba(120,147,208,0.09)] 
    focus:ring-[rgba(163,8,240,0.2)]
 dark:focus:ring-[rgba(163,8,240,0.3)]
     transition-all
@@ -87,7 +88,7 @@ dark:focus:ring-[rgba(163,8,240,0.3)]
               <PiPlus size={18} />
             </Button>
           </div>
-          <div className="flex flex-row gap-2 absolute bottom-5 right-5">
+          <div className="flex flex-row gap-2 absolute bottom-4 right-5">
             <Button
               type="button"
               className="rounded-full p-2.5 py-2 h-fit m-0.5 text-sm bg-[#E7EBF0] dark:bg-[#363C46] dark:text-[#C5CED9] text-black px-4 font-primary font-medium hidden"
