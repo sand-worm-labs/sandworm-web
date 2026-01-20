@@ -24,6 +24,7 @@ export class PythonBlockExecutorService {
   ) { }
 
   async run(
+    context: { workspaceId: string; sessionId: string },
     executionItem: ExecutionQueueItem,
     block: Y.XmlElement<PythonBlock>,
     ctx: DocumentContext,
@@ -40,6 +41,7 @@ export class PythonBlockExecutorService {
 
       let errored = false;
       const { promise, abort } = await this.pythonExecutorService.executeCode(
+        context,
         actualSource,
         (outputs) => {
           const prevOutputs = block.getAttribute('result') ?? [];
@@ -67,7 +69,7 @@ export class PythonBlockExecutorService {
         return;
       }
 
-      await this.updateDataFrames(blockId, ctx);
+      await this.updateDataFrames(context, blockId, ctx);
 
       block.setAttribute('lastQuery', block.getAttribute('source')!.toJSON());
       block.setAttribute('lastQueryTime', new Date().toISOString());
@@ -79,9 +81,9 @@ export class PythonBlockExecutorService {
     }
   }
 
-  private async updateDataFrames(blockId: string, ctx: DocumentContext): Promise<void> {
-    const newDataframes = await this.dataframeService.list();
+  private async updateDataFrames(context: { workspaceId: string; sessionId: string }, blockId: string, ctx: DocumentContext): Promise<void> {
+    const newDataframes = await this.dataframeService.list(context);
     const blocks = new Set(Array.from(ctx.blocks.keys()));
-    await this.blockExecutorDataframeService.updateDataframes(blockId, blocks, ctx.dataframes);
+    await this.blockExecutorDataframeService.updateDataframes(context, blockId, blocks, ctx.dataframes);
   }
 }

@@ -28,7 +28,7 @@ function getWSProvider(
   publishedAt: string | null
 ): WebsocketProvider {
   const id = getDocId(documentId, isDataApp, clock, publishedAt);
-  const wsUrl = `${NEXT_PUBLIC_API_WS_URL()}/ws`;
+  const wsUrl = `${NEXT_PUBLIC_API_WS_URL()}`;
 
   const provider = new WebsocketProvider(wsUrl, id, yDoc, {
     connect: false,

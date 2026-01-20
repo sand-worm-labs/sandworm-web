@@ -45,9 +45,6 @@ import { AppGateway } from './infrastructure/websocket/app.gateway';
         FileModule,
         TagModule,
         ScheduleModule,
-
-        WebsocketModule,
-        AppGateway
     ],
 })
 export class ApiModule { }

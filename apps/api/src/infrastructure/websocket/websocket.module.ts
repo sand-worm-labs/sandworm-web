@@ -27,6 +27,7 @@ import { ReusableComponentModule } from '@/features/collaboration/component/reus
             ReusableComponentEntity
         ]), SessionModule, JupyterModule, YjsModule, CodeExecutionModule, ReusableComponentModule, JwtModule.register({})],
     providers: [
+        AppGateway,
         WorkspaceGatewayService,
         EnvironmentGatewayService,
         CommentGatewayService,

@@ -32,7 +32,7 @@ import { DataSource } from 'typeorm';
   pingTimeout: 60000,
   pingInterval: 25000,
 })
-@UseFilters(WsExceptionFilter)
+// @UseFilters(WsExceptionFilter)
 export class AppGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
@@ -48,7 +48,9 @@ export class AppGateway
     private readonly pythonCompletionService: PythonCompletionService,
     private readonly commentGatewayService: CommentGatewayService,
     private readonly dataSource: DataSource
-  ) { }
+  ) {
+    this.logger.log('🚀 AppGateway constructor called!');
+  }
 
   async afterInit(server: Server): Promise<void> {
     try {
@@ -104,13 +106,14 @@ export class AppGateway
   }
 
 
-  @UseGuards(WsJwtGuard)
+  // @UseGuards(WsJwtGuard)
   @SubscribeMessage('join-workspace')
   async handleJoinWorkspace(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { workspaceId: string },
     @CurrentSession() session: Session,
   ): Promise<void> {
+    this.logger.log(`Joining workspace: ${data.workspaceId}`);
     await this.trackWork(() =>
       this.workspaceGatewayService.joinWorkspace(client, data, session)
     );

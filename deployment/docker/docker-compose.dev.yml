@@ -78,4 +78,10 @@ services:
       test: [ "CMD-SHELL", "curl -f http://localhost:8888/api || exit 1" ]
       interval: 5s
       timeout: 10s
-      retries: 5
+      retries: 5 
+  haproxy:
+    image: haproxy:3.0
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    ports:
+      - '8080:8080'
