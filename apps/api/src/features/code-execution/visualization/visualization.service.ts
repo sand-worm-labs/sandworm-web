@@ -55,27 +55,27 @@ export class VisualizationService {
     private readonly executorService: PythonExecutorService;
 
     constructor(
-        private readonly workspaceId: string,
-        private readonly sessionId: string,
     ) { }
 
 
     async createVisualization(
+        context: { workspaceId: string; sessionId: string },
         config: VisualizationConfig
     ): Promise<CreateVisualizationTask> {
-        await this.jupyterManager.ensureRunning(this.workspaceId)
+        await this.jupyterManager.ensureRunning(context.workspaceId)
 
         const code = this.generateVisualizationCode(config)
         let outputs: Output[] = []
 
         const { promise: execute, abort } = await this.executorService.executeCode(
+            context,
             code,
             (newOutputs) => outputs = outputs.concat(newOutputs),
             { storeHistory: false }
         )
 
         const promise = execute.then(() =>
-            this.processOutputs(outputs, config)
+            this.processOutputs(context, outputs, config)
         )
 
         return {
@@ -644,6 +644,7 @@ else:
 
 
     private processOutputs(
+        context: { workspaceId: string; sessionId: string },
         outputs: Output[],
         config: VisualizationConfig
     ): CreateVisualizationResult {
@@ -665,11 +666,12 @@ else:
                     break
                 case 'stdio':
                     this.handleStdioOutput(
+                        context,
                         output,
                         result
                     )
                     if (output.name === 'stdout') {
-                        const parsed = this.parseVisualizationOutput(output.text)
+                        const parsed = this.parseVisualizationOutput(context, output.text)
                         if (parsed) {
                             result = parsed
                         } else if (!result?.success) {
@@ -708,6 +710,7 @@ else:
 
 
     private handleStdioOutput(
+        context: { workspaceId: string; sessionId: string },
         output: Extract<Output, { type: 'stdio' }>,
         result: CreateVisualizationResult | null,
     ): void {
@@ -717,7 +720,7 @@ else:
                     for (const line of output.text.split('\n')) {
                         if (line.trim() === '') continue
 
-                        const parsed = this.parseVisualizationOutput(line)
+                        const parsed = this.parseVisualizationOutput(context, line)
                         if (parsed) {
                             return
                         }
@@ -727,8 +730,8 @@ else:
             case 'stderr':
                 this.logger.error(
                     {
-                        workspaceId: this.workspaceId,
-                        sessionId: this.sessionId,
+                        workspaceId: context.workspaceId,
+                        sessionId: context.sessionId,
                         message: output.text,
                     },
                     'Got stderr while running createVisualizationV2'
@@ -741,6 +744,7 @@ else:
 
 
     private parseVisualizationOutput(
+        context: { workspaceId: string; sessionId: string },
         text: string
     ): CreateVisualizationResult | null {
         const lines = text.split('\n')
@@ -769,8 +773,8 @@ else:
                     case 'log':
                         this.logger.log(
                             {
-                                workspaceId: this.workspaceId,
-                                sessionId: this.sessionId,
+                                workspaceId: context.workspaceId,
+                                sessionId: context.sessionId,
                                 message: parsed.data.message,
                             },
                             'createVisualizationV2 log'

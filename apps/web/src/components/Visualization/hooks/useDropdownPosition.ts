@@ -1,4 +1,4 @@
-import type { exhaustiveCheck } from "@sandworm/types";
+import { exhaustiveCheck } from "@sandworm/types";
 import type { CSSProperties, RefObject } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 

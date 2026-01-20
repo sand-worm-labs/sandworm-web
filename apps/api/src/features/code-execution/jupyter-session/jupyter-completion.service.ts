@@ -3,7 +3,7 @@ import { JupyterSessionService } from "./jupyter-session.service";
 import { Injectable } from "@nestjs/common";
 
 @Injectable()
-export class PythonCompletionService {
+export class JupyterCompletionService {
     constructor(
         private readonly jupyterManager: JupyterService,
         private readonly sessionService: JupyterSessionService,

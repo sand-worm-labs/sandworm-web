@@ -1,23 +1,37 @@
 import { AuthModule } from '@/features/auth/core/auth.module'
 import { Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
-// import { YjsGateway } from './gateways/yjs.gateway'
-// import { YjsDocumentService } from './services/yjs-document.service'
-// import { YjsPersistenceService } from './services/yjs-persistence.service'
-// import { YjsDocumentEntity } from './services/yjs-persistence.service'
+import { YjsDocumentService } from './yjs-document.service'
+import {
+  YjsDocumentEntity,
+  YjsAppDocumentEntity,
+  UserYjsAppDocumentEntity,
+  DocumentEntity,
+  YjsUpdateEntity,
+} from '@sandworm/postgresql-typeorm'
+import { PersistorFactory } from './persistors/persistor.factory'
+import { LockModule } from '@/infrastructure/lock/lock.module'
 
 @Module({
   imports: [
-    // TypeOrmModule.forFeature([YjsDocumentEntity]),
+    TypeOrmModule.forFeature(
+      [
+        YjsDocumentEntity,
+        YjsAppDocumentEntity,
+        UserYjsAppDocumentEntity,
+        YjsUpdateEntity,
+        DocumentEntity
+      ]),
     AuthModule,
+    LockModule
   ],
   providers: [
-    // YjsGateway,
-    // YjsDocumentService,
-    // YjsPersistenceService,
+    YjsDocumentService,
+    PersistorFactory
   ],
   exports: [
-    // YjsDocumentService, YjsPersistenceService
+    YjsDocumentService,
+    PersistorFactory
   ],
 })
 export class YjsModule { }

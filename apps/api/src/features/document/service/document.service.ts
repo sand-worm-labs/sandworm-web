@@ -7,8 +7,7 @@ import {
   FavoriteEntity,
   YjsDocumentEntity,
 } from '@sandworm/postgresql-typeorm';
-import { Not, Repository } from 'typeorm';
-import { Doc, encodeStateAsUpdate } from 'yjs';
+import { Not, Repository, In } from 'typeorm';
 import {
   CreateDocumentInput,
   DeleteDocumentInput,
@@ -242,6 +241,25 @@ export class DocumentService {
 
     await this.favoriteRepository.save(favorite);
     return Document.fromEntity(document);
+  }
+
+  async getFavoriteDocuments(userId: string, workspaceId: string): Promise<Document[]> {
+    const favorites = await this.favoriteRepository.find({
+      where: { userId },
+    });
+
+    const documentIds = favorites.map((fav) => fav.documentId);
+    if (documentIds.length === 0) {
+      return [];
+    }
+    const documents = await this.documentRepository.find({
+      where: {
+        id: In(documentIds),
+        workspaceId,
+        deletedAt: null,
+      },
+    });
+    return Document.fromEntities(documents);
   }
 
   async removeFavoriteDocument(

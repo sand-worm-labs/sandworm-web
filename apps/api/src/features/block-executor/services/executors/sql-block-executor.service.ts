@@ -164,6 +164,7 @@ export class SqlBlockExecutorService {
   }
 
   async loadPage(
+    context: { workspaceId: string; sessionId: string },
     executionItem: ExecutionQueueItem,
     block: Y.XmlElement<SQLBlock>,
     ctx: DocumentContext,
@@ -174,6 +175,7 @@ export class SqlBlockExecutorService {
       const queryDurationMs = getQueryDuration(prevResult);
 
       const nextResult = await this.dataFrameService.readPage(
+        context,
         attrs.id,
         attrs.dataframeName.value,
         { page: attrs.page, pageSize: 50, dashboardPage: 0, dashboardPageSize: 0 },
@@ -207,6 +209,7 @@ export class SqlBlockExecutorService {
   }
 
   async renameDataframe(
+    context: { workspaceId: string; sessionId: string },
     executionItem: ExecutionQueueItem,
     block: Y.XmlElement<SQLBlock>,
     ctx: DocumentContext,
@@ -227,11 +230,12 @@ export class SqlBlockExecutorService {
 
     try {
       await this.dataFrameService.rename(
+        context,
         dataframeName.value,
         dataframeName.newValue,
       );
 
-      const dataframes = await this.dataFrameService.list();
+      const dataframes = await this.dataFrameService.list(context);
       const blocks = new Set(Array.from(ctx.blocks.keys()));
       this.blockExecutorDataframeService.updateDataframesInMap(ctx.dataframes, dataframes, blockId, blocks);
 

@@ -23,7 +23,7 @@ export const NEXT_PUBLIC_API_URL = () =>
 export const NEXT_PUBLIC_API_WS_URL = () =>
   process.env.NEXT_PUBLIC_API_WS_URL ||
   getFromWindow("NEXT_PUBLIC_API_WS_URL") ||
-  `${currentUrl().replace("http", "ws")}/api`;
+  `${currentUrl()}`;
 
 export const NEXT_PUBLIC_PUBLIC_URL = () =>
   process.env.NEXT_PUBLIC_PUBLIC_URL ||

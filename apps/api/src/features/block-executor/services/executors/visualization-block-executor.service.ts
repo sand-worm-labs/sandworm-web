@@ -18,6 +18,7 @@ export class VisualizationBlockExecutorService {
     constructor(private readonly eventEmitter: EventEmitter2) { }
 
     async run(
+        context: { workspaceId: string; sessionId: string },
         executionItem: ExecutionQueueItem,
         block: Y.XmlElement<VisualizationV2Block>,
         ctx: DocumentContext,
@@ -50,7 +51,7 @@ export class VisualizationBlockExecutorService {
                 chartType: attrs.input.chartType,
             });
 
-            const { promise, abort } = await this.visualizationService.createVisualization({
+            const { promise, abort } = await this.visualizationService.createVisualization(context, {
                 dataframe,
                 input: attrs.input,
             });

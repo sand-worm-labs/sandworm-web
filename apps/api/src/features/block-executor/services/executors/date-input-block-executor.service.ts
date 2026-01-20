@@ -16,6 +16,7 @@ export class DateInputBlockExecutorService {
     constructor(private readonly variableService: VariableService) { }
 
     async save(
+        context: { workspaceId: string; sessionId: string },
         executionItem: ExecutionQueueItem,
         block: Y.XmlElement<DateInputBlock>,
         ctx: DocumentContext,
@@ -29,7 +30,7 @@ export class DateInputBlockExecutorService {
         }
 
         try {
-            await this.variableService.setDateTimeVariable({
+            await this.variableService.setDateTimeVariable(context, {
                 variable,
                 value,
                 dateType,
