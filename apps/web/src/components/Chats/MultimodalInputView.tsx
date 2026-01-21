@@ -15,11 +15,16 @@ interface MultimodalInputUIProps {
   isLoading?: boolean;
   onStop?: () => void;
   attachments?: Array<Attachment>;
-  uploadQueue?: Array<string>;
   disabled?: boolean;
   onFileClick?: () => void;
   onSubmit?: () => void;
   onRemoveAttachment?: (index: number) => void;
+  uploadQueue: string[];
+  uploadProgress?: {
+    uploaded: number;
+    total: number;
+  };
+  onAbortUpload?: () => void;
 }
 
 export const MultimodalInputView = forwardRef<
@@ -34,10 +39,12 @@ export const MultimodalInputView = forwardRef<
       onStop,
       attachments = [],
       uploadQueue = [],
+      uploadProgress,
       disabled = false,
       onFileClick,
       onSubmit,
       onRemoveAttachment,
+      onAbortUpload,
     },
     ref
   ) => {
@@ -119,7 +126,7 @@ dark:focus:ring-[rgba(163,8,240,0.3)]
         </div>
         {/* Attachments Preview */}
         {(attachments.length > 0 || uploadQueue.length > 0) && (
-          <div className="flex flex-row gap-2 overflow-x-auto pb-2">
+          <div className="flex flex-row gap-2 overflow-x-auto pb-2 mt-2">
             {attachments.map((attachment, index) => (
               <div key={attachment.url} className="relative group">
                 <PreviewAttachment attachment={attachment} />
@@ -135,11 +142,13 @@ dark:focus:ring-[rgba(163,8,240,0.3)]
                 )}
               </div>
             ))}
-            {uploadQueue.map(filename => (
+            {uploadQueue.map((filename, index) => (
               <PreviewAttachment
                 key={filename}
                 attachment={{ url: "", name: filename, contentType: "" }}
                 isUploading
+                uploadProgress={index === 0 ? uploadProgress : undefined}
+                onAbort={index === 0 ? onAbortUpload : undefined}
               />
             ))}
           </div>

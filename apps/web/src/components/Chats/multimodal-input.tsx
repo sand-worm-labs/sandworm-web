@@ -2,13 +2,15 @@
 
 import type { Attachment, ChatRequestOptions, CreateUIMessage } from "ai";
 import type { Dispatch, SetStateAction, ChangeEvent } from "react";
-import React, { useRef, useEffect, useState, useCallback } from "react";
+import React, { useRef, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 
 import useWindowSize from "./use-window-size";
 import { MultimodalInputView } from "./MultimodalInputView";
+import { useFiles } from "../Visualization/hooks/useFiles";
 
 export function MultimodalInput({
+  workspaceId,
   input,
   setInput,
   isLoading,
@@ -19,6 +21,7 @@ export function MultimodalInput({
   append,
   handleSubmit,
 }: {
+  workspaceId: string;
   input: string;
   setInput: (value: string) => void;
   isLoading: boolean;
@@ -40,6 +43,10 @@ export function MultimodalInput({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
 
+  const [fileState, fileAPI] = useFiles(workspaceId);
+
+  console.log(messages, append);
+
   const adjustHeight = () => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
@@ -58,7 +65,65 @@ export function MultimodalInput({
   };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [uploadQueue, setUploadQueue] = useState<Array<string>>([]);
+
+  // Derive upload queue from fileState
+  const uploadQueue = React.useMemo(() => {
+    if (fileState.upload._tag === "uploading") {
+      const currentFile = fileState.upload.current.file.name;
+      const restFiles = fileState.upload.rest.map(f => f.name);
+      return [currentFile, ...restFiles];
+    }
+    return [];
+  }, [fileState.upload]);
+
+  // Track upload progress and add completed files to attachments
+  useEffect(() => {
+    const { upload } = fileState;
+
+    // Check for successful uploads in results
+    if (upload._tag === "idle" && upload.results.length > 0) {
+      const successfulUploads = upload.results.filter(
+        r => r.outcome === "success"
+      );
+
+      if (successfulUploads.length > 0) {
+        // Convert successful uploads to attachments
+        const newAttachments: Attachment[] = successfulUploads.map(result => ({
+          url: URL.createObjectURL(result.file),
+          name: result.file.name,
+          contentType: result.file.type,
+        }));
+
+        setAttachments(current => [...current, ...newAttachments]);
+        toast.success(
+          `Successfully uploaded ${successfulUploads.length} file(s)`
+        );
+
+        successfulUploads.forEach(result => {
+          fileAPI.onRemoveResult(result.file);
+        });
+      }
+
+      // Handle failed uploads
+      const failedUploads = upload.results.filter(
+        r => r.outcome === "unexpected"
+      );
+      if (failedUploads.length > 0) {
+        toast.error(`Failed to upload ${failedUploads.length} file(s)`);
+        failedUploads.forEach(result => {
+          fileAPI.onRemoveResult(result.file);
+        });
+      }
+
+      // Handle aborted uploads
+      const abortedUploads = upload.results.filter(
+        r => r.outcome === "aborted"
+      );
+      abortedUploads.forEach(result => {
+        fileAPI.onRemoveResult(result.file);
+      });
+    }
+  }, [fileState.upload, setAttachments, fileAPI]);
 
   const submitForm = useCallback(() => {
     if (!input.trim() && attachments.length === 0) return;
@@ -71,21 +136,6 @@ export function MultimodalInput({
       setTimeout(() => textareaRef.current?.focus(), 100);
     }
   }, [input, attachments, handleSubmit, setAttachments, setInput, width]);
-
-  const uploadFile = async (file: File) => {
-    try {
-      const url = URL.createObjectURL(file);
-
-      return {
-        url,
-        name: file.name,
-        contentType: file.type,
-      };
-    } catch (error) {
-      toast.error("Failed to process file, please try again!");
-      return undefined;
-    }
-  };
 
   const handleFileChange = useCallback(
     async (event: ChangeEvent<HTMLInputElement>) => {
@@ -112,30 +162,15 @@ export function MultimodalInput({
 
       if (validFiles.length === 0) return;
 
-      setUploadQueue(validFiles.map(file => file.name));
+      // Use the useFiles hook's onDrop to handle uploads
+      fileAPI.onDrop(validFiles);
 
-      try {
-        const uploadPromises = validFiles.map(file => uploadFile(file));
-        const uploadedAttachments = await Promise.all(uploadPromises);
-        const successful = uploadedAttachments.filter(Boolean) as Attachment[];
-
-        setAttachments(current => [...current, ...successful]);
-
-        if (successful.length > 0) {
-          toast.success(`Successfully uploaded ${successful.length} file(s)`);
-        }
-      } catch (error) {
-        console.error("Error uploading files!", error);
-        toast.error("Error uploading files");
-      } finally {
-        setUploadQueue([]);
-        // Reset file input
-        if (fileInputRef.current) {
-          fileInputRef.current.value = "";
-        }
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
       }
     },
-    [setAttachments]
+    [fileAPI]
   );
 
   const handleRemoveAttachment = useCallback(
@@ -149,6 +184,14 @@ export function MultimodalInput({
     fileInputRef.current?.click();
   };
 
+  // Handle file replacement dialog
+  const isAskingReplace =
+    fileState.upload._tag === "uploading" &&
+    fileState.upload.current.status === "asking-replace";
+
+  const currentUploadingFile =
+    fileState.upload._tag === "uploading" ? fileState.upload.current : null;
+
   return (
     <div className="w-full max-w-3xl mx-auto px-4 mt-4">
       <input
@@ -161,6 +204,38 @@ export function MultimodalInput({
         tabIndex={-1}
       />
 
+      {/* File Replace Dialog */}
+      {isAskingReplace && currentUploadingFile && (
+        <div className="mb-2 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+          <p className="text-sm text-yellow-800 dark:text-yellow-200 mb-2">
+            File "{currentUploadingFile.file.name}" already exists. Replace it?
+          </p>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={fileAPI.onReplaceYes}
+              className="px-3 py-1 text-xs bg-yellow-500 hover:bg-yellow-600 text-white rounded"
+            >
+              Replace
+            </button>
+            <button
+              type="button"
+              onClick={fileAPI.onReplaceAll}
+              className="px-3 py-1 text-xs bg-yellow-500 hover:bg-yellow-600 text-white rounded"
+            >
+              Replace All
+            </button>
+            <button
+              type="button"
+              onClick={fileAPI.onReplaceNo}
+              className="px-3 py-1 text-xs bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white rounded"
+            >
+              Skip
+            </button>
+          </div>
+        </div>
+      )}
+
       <MultimodalInputView
         ref={textareaRef}
         input={input}
@@ -170,8 +245,21 @@ export function MultimodalInput({
         onStop={stop}
         attachments={attachments}
         uploadQueue={uploadQueue}
+        uploadProgress={
+          currentUploadingFile
+            ? {
+                uploaded: currentUploadingFile.uploaded,
+                total: currentUploadingFile.total,
+              }
+            : undefined
+        }
         onFileClick={handleFileClick}
         onRemoveAttachment={handleRemoveAttachment}
+        onAbortUpload={
+          currentUploadingFile
+            ? () => fileAPI.onAbort(currentUploadingFile.file)
+            : undefined
+        }
       />
     </div>
   );

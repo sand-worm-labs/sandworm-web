@@ -7,17 +7,29 @@ import {
   PiFileCsv,
   PiFilePdf,
   PiImage,
+  PiX,
 } from "react-icons/pi";
 import { Loader2 } from "lucide-react";
 
 export const PreviewAttachment = ({
   attachment,
   isUploading = false,
+  uploadProgress,
+  onAbort,
 }: {
   attachment: Attachment;
   isUploading?: boolean;
+  uploadProgress?: {
+    uploaded: number;
+    total: number;
+  };
+  onAbort?: () => void;
 }) => {
   const { name, url, contentType } = attachment;
+
+  const progressPercent = uploadProgress
+    ? Math.round((uploadProgress.uploaded / uploadProgress.total) * 100)
+    : 0;
 
   const getFileIcon = () => {
     if (!contentType && name) {
@@ -63,7 +75,22 @@ export const PreviewAttachment = ({
         `}
       >
         {isUploading ? (
-          <Loader2 className="w-8 h-8 text-gray-400 animate-spin" />
+          <div className="flex flex-col items-center justify-center gap-2 p-2 w-full">
+            <Loader2 className="w-6 h-6 text-gray-400 animate-spin" />
+            {uploadProgress && (
+              <div className="w-full px-2">
+                <div className="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-[#A308F0] transition-all duration-300 ease-out"
+                    style={{ width: `${progressPercent}%` }}
+                  />
+                </div>
+                <p className="text-[10px] text-center text-gray-500 mt-1">
+                  {progressPercent}%
+                </p>
+              </div>
+            )}
+          </div>
         ) : isImage && url ? (
           <img
             src={url}
@@ -75,6 +102,18 @@ export const PreviewAttachment = ({
             {getFileIcon()}
           </div>
         )}
+
+        {/* Abort button for uploading files */}
+        {isUploading && onAbort && (
+          <button
+            type="button"
+            onClick={onAbort}
+            className="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full p-0.5 transition-colors"
+            aria-label="Cancel upload"
+          >
+            <PiX size={12} />
+          </button>
+        )}
       </div>
 
       <div className="w-full px-1">
@@ -84,6 +123,11 @@ export const PreviewAttachment = ({
         {!isUploading && contentType && (
           <p className="text-[10px] text-center text-gray-500 dark:text-gray-500 truncate w-full">
             {contentType.split("/")[1]?.toUpperCase() || "FILE"}
+          </p>
+        )}
+        {isUploading && !uploadProgress && (
+          <p className="text-[10px] text-center text-gray-500 dark:text-gray-500">
+            Queued...
           </p>
         )}
       </div>
