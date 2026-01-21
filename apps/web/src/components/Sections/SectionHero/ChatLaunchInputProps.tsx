@@ -1,12 +1,10 @@
 "use client";
 
 import React, { forwardRef } from "react";
-import type { Attachment } from "ai";
 import { PiPaperPlaneTilt } from "react-icons/pi";
 import { Button } from "@sandworm/ui/components/button";
 import { Textarea } from "@sandworm/ui/components/textarea";
 
-import { PreviewAttachment } from "@/components/Chats/preview-attachment";
 import { StopIcon } from "@/components/Chats/icons";
 import { Binocular } from "@/components/Assets/Binocular";
 
@@ -18,8 +16,6 @@ interface ChatLaunchInputProps {
   onSubmit?: (e?: React.FormEvent) => void;
   isLoading?: boolean;
   onStop?: () => void;
-  attachments?: Array<Attachment>;
-  uploadQueue?: Array<string>;
   disabled?: boolean;
 }
 
@@ -36,34 +32,12 @@ export const ChatLaunchInput = forwardRef<
       onSubmit,
       isLoading = false,
       onStop,
-      attachments = [],
-      uploadQueue = [],
       disabled = false,
     },
     ref
   ) => {
     return (
       <div className="relative w-full flex flex-col gap-4 ">
-        {attachments.length === 0 && uploadQueue.length === 0 && (
-          <div className="grid sm:grid-cols-2 gap-4 w-full md:px-0 mx-auto md:max-w-[650px]" />
-        )}
-
-        {/* ════════════ Attachement Preview ════════════ */}
-        {(attachments.length > 0 || uploadQueue.length > 0) && (
-          <div className="flex flex-row gap-2 overflow-x-scroll">
-            {attachments.map(attachment => (
-              <PreviewAttachment key={attachment.url} attachment={attachment} />
-            ))}
-            {uploadQueue.map(filename => (
-              <PreviewAttachment
-                key={filename}
-                attachment={{ url: "", name: filename, contentType: "" }}
-                isUploading
-              />
-            ))}
-          </div>
-        )}
-
         {/* ════════════ Textarea ════════════ */}
         <div className="p-[4.5px] bg-rainbow-gradient rounded-[24px]">
           <Textarea
