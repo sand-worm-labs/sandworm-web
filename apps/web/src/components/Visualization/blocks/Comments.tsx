@@ -87,13 +87,18 @@ export default function Comments({
         <h3 className="text-lg font-medium leading-6 dark:text-white text-gray-900 px-4 pt-6 xl:px-6">
           Comments
         </h3>
+        <p className="text-sm text-ink-400 px-4 mb-4  xl:px-6">
+          Make comments to teammates
+        </p>
+        <div className="border-t border-dashed border-gray-200 dark:border-[#262A30]" />
+
         <ul className="flex-1 space-y-6 pb-6 pt-4 px-2 xl:px-6">
           {comments.map(comment => {
             return (
               <li key={comment.id} className="relative flex gap-x-4">
-                <div className="flex-auto rounded-md p-3 ring-1 ring-inset ring-gray-200">
+                <div className="flex-auto rounded-xl p-3 border border-border bg-base-500">
                   <div className="flex justify-between gap-x-4">
-                    <div className="flex gap-x-1 py-0.5 leading-5 text-gray-500">
+                    <div className="flex gap-x-1 py-0.5 leading-5 text-ink-400">
                       {comment.user.picture ? (
                         <Image
                           src={comment.user.picture}
@@ -104,9 +109,14 @@ export default function Comments({
                           referrerPolicy="no-referrer"
                         />
                       ) : (
-                        <div className="flex items-center justify-center relative h-5 w-5 flex-none bg-gray-50 rounded-full">
-                          <UserIcon className="h-4 w-4" />
-                        </div>
+                        <Image
+                          src="/img/avatar/avatar2.svg"
+                          alt=""
+                          width={20}
+                          height={20}
+                          className="relative h-5 w-5 flex-none rounded-full bg-gray-50"
+                          referrerPolicy="no-referrer"
+                        />
                       )}
                       <span className="text-xs font-medium text-gray-900">
                         {comment.user.name}
@@ -114,12 +124,12 @@ export default function Comments({
                     </div>
                     <time
                       dateTime={new Date(comment.createdAt).toISOString()}
-                      className="flex-none py-0.5 text-xs leading-5 text-gray-300"
+                      className="flex-none py-0.5 text-xs leading-5 text-ink-400"
                     >
                       {timeAgo(new Date(comment.createdAt))}
                     </time>
                   </div>
-                  <p className="text-sm leading-6 text-gray-600 pt-2">
+                  <p className="text-sm leading-6 text-ink-400 pt-2">
                     {comment.content}
                   </p>
                 </div>
@@ -132,7 +142,7 @@ export default function Comments({
           className="sticky bottom-0 bg-white dark:bg-black"
           onSubmit={onComment}
         >
-          <div className="border-t dark:border-[#262A30] border-gray-200 px-4 xl:px-6">
+          <div className=" px-2 xl:px-4">
             <div className="py-6 flex gap-x-3">
               {session.user?.avater ? (
                 <Image
@@ -145,12 +155,12 @@ export default function Comments({
                 />
               ) : (
                 <div className="h-6 w-6 flex justify-center items-center bg-gray-50 rounded-full">
-                  <UserIcon className="h-4 w-4" />
+                  <UserIcon className="h-5 w-5" />
                 </div>
               )}
 
               <div className="relative flex-auto">
-                <div className="rounded-lg  dark:ring-[#262A30] focus-within:ring-2 dark:bg-[#1A1A1A] bg-[#F1F3F4] border  dark:border-[#262A30] border-[#DEE2E6] ring-primary">
+                <div className="rounded-xl  dark:ring-[#262A30] focus-within:ring-2 dark:bg-[#1A1A1A]  dark:border-[#262A30] border-[#E6E0F1] border-[1.5px] ring-primary">
                   <label htmlFor="comment" className="sr-only">
                     Add your comment
                   </label>
@@ -158,7 +168,7 @@ export default function Comments({
                     rows={2}
                     name="comment"
                     id="comment"
-                    className="w-full px-3 py-1.5 pt-2 pb-12 rounded-lg dark:bg-[#1A1A1A] bg-[#F1F3F4] dark:text-white placeholder:dark:text-ink-300  placeholder-[#455768] focus:outline-none transition text-xs md:text-sm min-h-[7rem] resize-none border-0"
+                    className="w-full px-3 py-1.5 pt-2 pb-12 rounded-xl dark:bg-[#1A1A1A]  dark:text-white placeholder:dark:text-ink-300  placeholder-[#455768] border-0  focus:outline-none transition text-xs md:text-sm min-h-[4rem] resize-none  "
                     placeholder="Add your comment..."
                     value={content}
                     onKeyDown={onKeyDown}

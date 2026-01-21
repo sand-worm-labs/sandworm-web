@@ -329,7 +329,7 @@ function PrivateDocumentPageInner(
 
   const topBarContent = (
     <div className="flex items-center w-full justify-between gap-x-6">
-      <div className="w-full overflow-hidden flex items-center gap-x-1.5 text-sm text-gray-400 dark:text-ink-300  font-primary">
+      <div className="w-full overflow-hidden flex items-center gap-x-1.5 text-sm text-gray-400 dark:text-ink-300  font-body">
         {props.isApp || props?.user?.role?.[props.workspaceId] === "viewer" ? (
           <EyeIcon className="w-4 h-4" />
         ) : (

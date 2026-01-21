@@ -4,7 +4,6 @@ import type { SubmitHandler, UseFormReturn } from "react-hook-form";
 import { useWatch } from "react-hook-form";
 
 import FormError from "../forms/formError";
-import { Tooltip } from "../ToolTips";
 import ScrollBar from "../ScrollBar";
 
 import {
@@ -134,7 +133,7 @@ function ScheduleConfigForm({
             />
           )}
 
-          <div className="pt-2 flex flex-col space-y-6">
+          {/*  <div className="pt-2 flex flex-col space-y-6">
             <div className="flex items-center justify-between pt-2">
               <h4 className="pt-0.5">Notifications</h4>
               <div className="flex items-center justify-end gap-x-2">
@@ -154,21 +153,21 @@ function ScheduleConfigForm({
                 </Tooltip>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </ScrollBar>
 
-      <div className="flex bg-white px-2 py-4 justify-end space-x-2 sm:px-4 xl:px-6">
+      <div className="flex bg-white px-2 py-4 w-full space-x-2 sm:px-4 xl:px-6">
         <button
           onClick={onClose}
           type="button"
-          className="flex items-center gap-x-2 rounded-sm px-3 py-1 text-gray-500 text-sm hover:bg-gray-100 border border-gray-200"
+          className="flex-1 flex items-center text-center justify-center  rounded-full px-3 py-1.5 text-gray-500 text-sm hover:bg-gray-100 border border-gray-200"
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="flex items-center gap-x-2 rounded-sm bg-[#A308F0] px-3 py-1 text-sm hover:bg-primary-300"
+          className="flex-1 flex items-center text-center justify-center  rounded-full bg-base-400 px-3 py-1.5 text-sm hover:bg-primary-300 text-white"
         >
           Schedule run
         </button>

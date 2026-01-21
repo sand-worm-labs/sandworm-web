@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Settings, Grid3x3, List, X, Check } from "lucide-react";
+import { Grid3x3, List, X, Check } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,

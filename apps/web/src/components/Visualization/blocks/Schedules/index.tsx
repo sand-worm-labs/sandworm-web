@@ -1,14 +1,10 @@
 import { Transition } from "@headlessui/react";
 import { useCallback, useState } from "react";
-import {
-  XMarkIcon,
-  CalendarDaysIcon,
-  QuestionMarkCircleIcon,
-  ExclamationTriangleIcon,
-} from "@heroicons/react/24/solid";
+import { XMarkIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
 import clsx from "clsx";
 import cronstrue from "cronstrue";
 import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
+import { ScheduleIcon } from "@/components/Assets/ScheduleIcon";
 
 import type {
   ExecutionSchedule,
@@ -24,6 +20,7 @@ import { PortalTooltip, Tooltip } from "../ToolTips";
 import ScrollBar from "../ScrollBar";
 
 import AddScheduleForm from "./AddScheduleForm";
+import { ChevronRightIcon } from "lucide-react";
 
 interface Props {
   workspaceId: string;
@@ -262,98 +259,138 @@ function ScheduleList(props: ScheduleListProps) {
       <div className="px-4 xl:px-6 pt-6 pb-5">
         <div className="flex justify-between">
           <div>
-            <h3 className="text-lg font-medium leading-6 text-gray-900 ">
+            <h3 className="text-lg font-medium leading-6 text-gray-900 dark:text-white">
               Schedule
             </h3>
 
             <p className="text-gray-500 text-sm pt-1">
-              Schedule to run the latest saved version.
+              Schedule your notebook to run automatically
             </p>
           </div>
-          <div>
-            <Tooltip
-              title={
-                props.isLimited ? "You've hit the free limit" : "Not saved"
-              }
-              message={
-                props.isLimited
-                  ? "Upgrade to the professional plan to schedule more runs."
-                  : "You haven't saved this page yet. Save to be able to schedule it."
-              }
-              className="flex"
-              tooltipClassname="-bottom-1 right-0 translate-y-full translate-x-0 w-48"
-              position="manual"
-              active={props.isLimited || !props.isPublished}
-            >
-              <button
-                type="button"
-                className={clsx(
-                  "text-white flex items-center justify-center gap-x-2 text-sm px-4 py-1.5 rounded-lg shrink-0",
-                  !props.isLimited && props.isPublished
-                    ? "bg-[#A308F0] hover:bg-primary-300"
-                    : "bg-[#868E96] cursor-not-allowed"
-                )}
-                onClick={props.onAddSchedule}
-                disabled={props.isLimited || !props.isPublished}
-              >
-                <span>Add</span>
-              </button>
-            </Tooltip>
-          </div>
+          <ChevronRightIcon className="h-5 w-5 text-gray-400" />
         </div>
       </div>
 
+      <div className="border-t border-dashed border-gray-200 dark:border-[#262A30]" />
+
       {props.isPublished ? (
-        <ScrollBar className="overflow-auto">
-          <ul className="flex-1 text-xs font-primary overflow-visible">
-            {props.schedules.map((scheduledRun, i) => {
-              return (
-                <li
-                  key={scheduledRun.id}
-                  className={clsx(
-                    {
-                      "border-b": i === props.schedules.length - 1,
-                    },
-                    "flex border-t border-gray-200 dark:border-[#262A30] px-4 xl:px-6 py-6"
-                  )}
-                >
-                  <div className="flex flex-1 items-center justify-between">
-                    <div className="w-3/4">
-                      {getScheduleBlock(scheduledRun)}
-                    </div>
-                    <div className="w-1/4 flex items-center justify-end">
-                      <button
-                        type="button"
-                        className="p-1 hover:cursor-pointer hover:bg-gray-200 hover:text-gray-900 text-gray-400 rounded-sm"
-                        onClick={props.onDeleteSchedule(scheduledRun.id)}
+        <div className="flex-1 flex flex-col">
+          {props.schedules.length > 0 ? (
+            <>
+              {/* Schedule List */}
+              <ScrollBar className="overflow-auto flex-1">
+                <ul className="text-xs font-primary overflow-visible">
+                  {props.schedules.map((scheduledRun, i) => {
+                    return (
+                      <li
+                        key={scheduledRun.id}
+                        className={clsx(
+                          {
+                            "border-b border-gray-200 dark:border-[#262A30]":
+                              i === props.schedules.length - 1,
+                          },
+                          "flex border-t border-gray-200 dark:border-[#262A30] px-4 xl:px-6 py-6"
+                        )}
                       >
-                        <XMarkIcon className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        </ScrollBar>
+                        <div className="flex flex-1 items-center justify-between">
+                          <div className="w-3/4">
+                            {getScheduleBlock(scheduledRun)}
+                          </div>
+                          <div className="w-1/4 flex items-center justify-end">
+                            <button
+                              type="button"
+                              className="p-1 hover:cursor-pointer hover:bg-gray-200 hover:text-gray-900 text-gray-400 rounded-sm"
+                              onClick={props.onDeleteSchedule(scheduledRun.id)}
+                            >
+                              <XMarkIcon className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </ScrollBar>
+
+              <div className="px-4 xl:px-6 py-6 flex justify-center">
+                <Tooltip
+                  title={props.isLimited ? "You've hit the free limit" : ""}
+                  message={
+                    props.isLimited
+                      ? "Upgrade to the professional plan to schedule more runs."
+                      : ""
+                  }
+                  className="flex"
+                  tooltipClassname="-bottom-1 right-0 translate-y-full translate-x-0 w-48"
+                  position="manual"
+                  active={props.isLimited}
+                >
+                  <button
+                    type="button"
+                    className={clsx(
+                      "flex items-center justify-center gap-x-2 text-sm px-4 py-2 rounded-full",
+                      !props.isLimited
+                        ? "bg-[#A308F0] hover:bg-primary-300 text-white"
+                        : "bg-[#868E96] cursor-not-allowed text-white"
+                    )}
+                    onClick={props.onAddSchedule}
+                    disabled={props.isLimited}
+                  >
+                    <span>Add Schedule</span>
+                  </button>
+                </Tooltip>
+              </div>
+            </>
+          ) : (
+            <div className="flex-1 flex flex-col items-center justify-center px-4 xl:px-6 py-12">
+              <div className="flex flex-col items-center gap-y-4">
+                <ScheduleIcon className="w-12 h-12" />
+                <Tooltip
+                  title={props.isLimited ? "You've hit the free limit" : ""}
+                  message={
+                    props.isLimited
+                      ? "Upgrade to the professional plan to schedule more runs."
+                      : ""
+                  }
+                  className="flex"
+                  tooltipClassname="-bottom-1 right-0 translate-y-full translate-x-0 w-48"
+                  position="manual"
+                  active={props.isLimited}
+                >
+                  <button
+                    type="button"
+                    className={clsx(
+                      "flex items-center justify-center gap-x-2 text-sm px-4 py-2 rounded-full",
+                      !props.isLimited
+                        ? "bg-[#A308F0] hover:bg-primary-300 text-white"
+                        : "bg-[#868E96] cursor-not-allowed text-white"
+                    )}
+                    onClick={props.onAddSchedule}
+                    disabled={props.isLimited}
+                  >
+                    <span>Add Schedule</span>
+                  </button>
+                </Tooltip>
+              </div>
+            </div>
+          )}
+        </div>
       ) : (
-        <div className="px-4 xl:px-6 py-6">
-          <div className="flex flex-col gap-y-1 bg-ceramic-50/60 p-4 rounded-xl border-2 border-gray-100 dark:border-[#262A30] border-dashed">
-            <ExclamationTriangleIcon className="w-16 h-16 mx-auto text-yellow-300/40" />
-            <div className="text-gray-500 text-center text-sm pb-2">
+        <div className="flex-1 flex flex-col items-center justify-center px-4 xl:px-6 py-12">
+          <div className="flex flex-col gap-y-3 bg-ceramic-50/60 p-6 rounded-xl border-2 border-[#E9ECEF] dark:border-[#262A30] border-dashed items-center max-w-[260px]">
+            <ScheduleIcon className="w-10 h-10" />
+            <div className="text-ink-300 text-center text-sm">
               <p>{`You haven't saved this page yet.`}</p>
               <p>Save it to be able to create a schedule.</p>
             </div>
-            <div className="flex items-center justify-center">
-              <button
-                type="button"
-                className="rounded-sm px-3 py-1 text-sm bg-[#A308F0] hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50 text-white"
-                onClick={props.onPublish}
-                disabled={props.publishing}
-              >
-                Save
-              </button>
-            </div>
+            <button
+              type="button"
+              className="rounded-full px-4 py-2 text-sm bg-[#A308F0] hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50 text-white"
+              onClick={props.onPublish}
+              disabled={props.publishing}
+            >
+              Save
+            </button>
           </div>
         </div>
       )}

@@ -36,6 +36,8 @@ const config: Config = {
           100: "hsl(var(--base-100))",
           200: "hsl(var(--base-200))",
           300: "hsl(var(--base-300))",
+          400: "hsl(var(--base-400))",
+          500: "var(--base-500)",
         },
 
         gray: {
