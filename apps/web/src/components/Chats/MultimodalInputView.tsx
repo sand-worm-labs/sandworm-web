@@ -127,7 +127,7 @@ dark:focus:ring-[rgba(163,8,240,0.3)]
                   <button
                     type="button"
                     onClick={() => onRemoveAttachment(index)}
-                    className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute -top-0 -right-0 bg-red-500 hover:bg-red-600 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
                     aria-label="Remove attachment"
                   >
                     <PiX size={12} />

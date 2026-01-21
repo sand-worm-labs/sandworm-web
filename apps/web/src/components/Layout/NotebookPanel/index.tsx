@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { GitBranch, Clock } from "lucide-react";
 import { cn } from "@sandworm/ui/lib/utils";
 
 import { SparkleAI } from "@/components/Assets/SparkleAI";
@@ -51,7 +50,7 @@ const PanelItem = ({
       aria-label={action.label}
       title={action.label}
     >
-      <Icon size={18} />
+      <Icon size={22} />
     </button>
   );
 };
