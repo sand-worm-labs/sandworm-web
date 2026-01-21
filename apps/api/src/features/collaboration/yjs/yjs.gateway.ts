@@ -61,8 +61,8 @@ interface RequestData {
 }
 
 @WebSocketGateway({
-    path: '/v2/yjs',
-    maxPayload: 1024 * 1024 * 1024, // 1GB
+    path: '/yjs',
+    maxPayload: 1024 * 1024 * 1024,
     transports: ['websocket'],
 })
 export class YjsGateway
@@ -417,7 +417,6 @@ export class YjsGateway
     }
 
     private async sendInitialState(session: DocumentSession, client: WebSocket) {
-        // Send sync step 1
         this.logger.debug('Sending sync step 1');
         const syncEncoder = encoding.createEncoder();
         encoding.writeVarUint(syncEncoder, messageSync);
