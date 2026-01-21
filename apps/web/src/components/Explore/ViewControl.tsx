@@ -20,8 +20,8 @@ export function ViewControl({ viewMode, onViewModeChange }: ViewControlProps) {
         size="icon"
         onClick={() => onViewModeChange("grid")}
         className={cn(
-          "h-8 w-8 rounded-md",
-          viewMode === "grid" && "bg-accent text-primary"
+          "h-8 w-8 rounded-md hover:bg-primary/20",
+          viewMode === "grid" && "text-primary"
         )}
       >
         <PiSquareSplitVerticalFill className="text-xl" />
@@ -32,8 +32,8 @@ export function ViewControl({ viewMode, onViewModeChange }: ViewControlProps) {
         size="icon"
         onClick={() => onViewModeChange("list")}
         className={cn(
-          "h-8 w-8 rounded-md",
-          viewMode === "list" && "bg-accent text-primary"
+          "h-8 w-8 rounded-md hover:bg-primary/20",
+          viewMode === "list" && " text-primary"
         )}
       >
         <PiListThin className="text-xl" />

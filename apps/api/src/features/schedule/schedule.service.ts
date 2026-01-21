@@ -24,7 +24,7 @@ export class ScheduleService {
     private readonly scheduleRepository: Repository<ExecutionScheduleEntity>,
     @InjectRepository(DocumentEntity)
     private readonly documentRepository: Repository<DocumentEntity>,
-  ) {}
+  ) { }
 
   async getSchedule(scheduleId: string): Promise<Schedule> {
     const schedule = await this.scheduleRepository.findOne({
@@ -54,8 +54,6 @@ export class ScheduleService {
     input: CreateScheduleInput,
   ): Promise<Schedule> {
     const { documentId, cron, timezone, isActive = true } = input;
-
-    // Verify document exists and belongs to workspace
     const document = await this.documentRepository.findOne({
       where: { id: documentId, workspaceId },
     });

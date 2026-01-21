@@ -45,7 +45,7 @@ const TabsHeader: React.FC<{
   onSortChange: (sort: SortOption) => void;
 }> = ({ tab, sortBy, onSortChange }) => (
   <div className="flex justify-between items-center">
-    <TabsList className="flex border-b border-borderLight">
+    <TabsList className="flex ">
       <TabsTrigger
         value="all"
         className={`px-3 py-1 flex items-center space-x-1.5 rounded-lg ${

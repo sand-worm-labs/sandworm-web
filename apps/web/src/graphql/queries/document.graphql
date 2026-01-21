@@ -25,3 +25,31 @@ query GetDocument($workspaceId: String!, $documentId: String!) {
     shareLinksWithoutSidebar
   }
 }
+
+query GetFavoriteDocuments($workspaceId: String!) {
+  getFavoriteDocuments(workspaceId: $workspaceId) {
+    id
+    title
+    slug
+    
+    parentId
+    orderIndex
+    authorId
+    workspaceId
+    createdAt
+    updatedAt
+    deletedAt
+    version
+    publishedAt
+    isDataApp
+    isSyncedWithYjs
+    hasDashboard
+    appId
+    clock
+    appClock
+    userAppClock
+    runSQLSelection
+    runUnexecutedBlocks
+    shareLinksWithoutSidebar
+  }
+}

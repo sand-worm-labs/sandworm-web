@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { GripHorizontal, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Transition } from "@headlessui/react";
 import {
   Card,
   CardContent,
@@ -11,6 +12,7 @@ import {
 } from "@sandworm/ui/components/card";
 import { Input } from "@sandworm/ui/components/input";
 import { Button } from "@sandworm/ui/components/button";
+import { ChevronDoubleRightIcon } from "@heroicons/react/20/solid";
 
 import { useChainStore } from "@/store/chains";
 import {
@@ -28,12 +30,14 @@ interface DataExplorerContentProps {
   visible?: boolean;
   onHide?: () => void;
   showDragHandle?: boolean;
+  mode?: "draggable" | "sidebar"; // New prop to distinguish usage
 }
 
 export function DataExplorerContent({
   visible = true,
   onHide,
   showDragHandle = true,
+  mode = "draggable",
 }: DataExplorerContentProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
@@ -86,10 +90,75 @@ export function DataExplorerContent({
     );
   };
 
+  // Sidebar mode with transition
+  if (mode === "sidebar") {
+    return (
+      <Transition
+        show={visible}
+        as="div"
+        className="top-0 right-0 h-full absolute z-30"
+        enter="transition ease-in-out duration-300 transform"
+        enterFrom="translate-x-full"
+        enterTo="translate-x-0"
+        leave="transition ease-in-out duration-300 transform"
+        leaveFrom="translate-x-0"
+        leaveTo="translate-x-full"
+      >
+        {onHide && (
+          <button
+            type="button"
+            className="absolute z-10 top-7 transform rounded-full border border-gray-300 dark:border-[#262A30] text-gray-400 bg-white dark:bg-black hover:bg-gray-100 dark:hover:bg-gray-900 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
+            onClick={onHide}
+            aria-label="Close data explorer"
+          >
+            <ChevronDoubleRightIcon className="w-3 h-3" />
+          </button>
+        )}
+
+        <Card className="h-full overflow-hidden border-l dark:border-[#262A30] border-gray-200 rounded-none w-[324px] bg-white dark:bg-black">
+          {loading && (
+            <div className="flex items-center justify-center h-full">
+              <p className="text-muted-foreground">Loading chains...</p>
+            </div>
+          )}
+
+          <CardHeader className="p-4 border-b border-[#E9ECEF] dark:border-[#262A30] mb-0">
+            <div className="flex items-center gap-2">
+              <Database />
+              <CardTitle className="font-medium">Data Explorer</CardTitle>
+            </div>
+          </CardHeader>
+
+          <CardContent className="p-2 px-0 h-[calc(100%-60px)] overflow-y-auto">
+            {chains && chains.length > 0 ? (
+              <div className="space-y-2">
+                <ExplorerBreadCrumbs
+                  entities={entityData || { raw: [], project: [], decoded: [] }}
+                />
+                <Input
+                  type="text"
+                  placeholder="Search..."
+                  value={searchTerm}
+                  onChange={handleSearch}
+                  className="m-auto w-[calc(100%-2rem)] focus:ring-0 hidden"
+                />
+
+                <ul className="pt-0 mt-0" style={{ marginTop: 0 }}>
+                  {renderExplorer()}
+                </ul>
+              </div>
+            ) : null}
+          </CardContent>
+        </Card>
+      </Transition>
+    );
+  }
+
+  // Draggable mode (original)
   if (!visible) return null;
 
   return (
-    <Card className="h-full overflow-hidden relative border-[#E9ECEF] dark:border-[#262A30] border-2 gap-y-0">
+    <Card className="h-full overflow-hidden relative border-[#E9ECEF] dark:border-[#262A30] border-2 gap-y-0 min-w-[310px]">
       {showDragHandle && (
         <div
           aria-label="Drag panel"

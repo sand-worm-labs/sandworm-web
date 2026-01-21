@@ -63,14 +63,14 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
               <span className="flex items-center gap-1">
                 {query.stared_by.length || 0}
                 <Star
-                  className="h-4 w-4 font-light text-base-100 dark:text-ink-300 "
+                  className="h-4 w-4 font-light text-ink-300 dark:text-ink-300 "
                   strokeWidth={1.2}
                 />
               </span>
               <span className="flex items-center gap-1">
                 {query.forked_by.length || 0}
                 <GitFork
-                  className="h-4 w-4 font-light text-base-100 dark:text-ink-300 "
+                  className="h-4 w-4 font-light text-ink-300 dark:text-ink-300 "
                   strokeWidth={1.2}
                 />
               </span>
