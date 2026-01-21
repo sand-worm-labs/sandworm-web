@@ -1,6 +1,6 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger, OnModuleDestroy } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { Repository, EntityManager } from "typeorm";
 import * as Y from "yjs";
 import {
     YjsDocumentEntity,
@@ -10,16 +10,30 @@ import {
 } from "@sandworm/postgresql-typeorm";
 import { WSSharedDocV2 } from './shared-doc/ws-shared-doc';
 import { LRUCache } from 'lru-cache';
+import { PersistorFactory } from './persistors/persistor.factory';
+import { PubSubProviderFactory } from '@/infrastructure/pubsub/pubsub-provider.factory';
+import { Persistor } from './interfaces';
+import { Server, Socket } from 'socket.io';
 
 export interface LoadYDocResult {
     yDoc: Y.Doc;
     state: Buffer;
     clock: number;
+    clockUpdatedAt?: Date;
+}
+
+interface YDocCacheConfig {
+    maxSize: number;
+    ttl?: number;
 }
 
 @Injectable()
-export class YjsDocumentService {
+export class YjsDocumentService implements OnModuleDestroy {
     private readonly logger = new Logger(YjsDocumentService.name);
+    private readonly docs = new Map<string, WSSharedDocV2>();
+    private readonly docsCache: LRUCache<string, WSSharedDocV2>;
+    private readonly creationPromises = new Map<string, Promise<WSSharedDocV2>>();
+    private cleanupInterval?: NodeJS.Timeout;
 
     constructor(
         @InjectRepository(YjsDocumentEntity)
@@ -30,7 +44,32 @@ export class YjsDocumentService {
         private readonly userYjsAppDocumentRepo: Repository<UserYjsAppDocumentEntity>,
         @InjectRepository(DocumentEntity)
         private readonly documentRepo: Repository<DocumentEntity>,
-    ) { }
+        private readonly persistorFactory: PersistorFactory,
+        private readonly pubSubProviderFactory: PubSubProviderFactory,
+    ) {
+        const cacheConfig: YDocCacheConfig = {
+            maxSize: this.getCacheSizeFromEnv(),
+        };
+
+        this.docsCache = new LRUCache<string, WSSharedDocV2>({
+            maxSize: cacheConfig.maxSize,
+            sizeCalculation: (doc) => doc.getByteLength(),
+            dispose: async (doc, id) => {
+                if (!this.docs.has(id)) {
+                    try {
+                        await doc.destroy();
+                        this.logger.debug(`Disposed cached YDoc: ${id}`);
+                    } catch (err) {
+                        this.logger.error(
+                            `Failed to dispose YDoc ${id}: ${err}`
+                        );
+                    }
+                }
+            },
+        });
+
+        this.startDocumentCleanup();
+    }
 
     async loadEditYDoc(documentId: string): Promise<LoadYDocResult> {
         const yDoc = new Y.Doc();
@@ -41,7 +80,12 @@ export class YjsDocumentService {
 
         if (!yjsDoc) {
             const emptyState = Buffer.from(Y.encodeStateAsUpdate(yDoc));
-            return { yDoc, state: emptyState, clock: 0 };
+            return {
+                yDoc,
+                state: emptyState,
+                clock: 0,
+                clockUpdatedAt: new Date(),
+            };
         }
 
         Y.applyUpdate(yDoc, yjsDoc.state);
@@ -50,6 +94,7 @@ export class YjsDocumentService {
             yDoc,
             state: yjsDoc.state,
             clock: yjsDoc.clock,
+            clockUpdatedAt: yjsDoc.clockUpdatedAt || new Date(),
         };
     }
 
@@ -63,7 +108,12 @@ export class YjsDocumentService {
 
         if (!yjsAppDoc) {
             const emptyState = Buffer.from(Y.encodeStateAsUpdate(yDoc));
-            return { yDoc, state: emptyState, clock: 0 };
+            return {
+                yDoc,
+                state: emptyState,
+                clock: 0,
+                clockUpdatedAt: new Date(),
+            };
         }
 
         const userYjsAppDoc = await this.userYjsAppDocumentRepo.findOne({
@@ -79,13 +129,13 @@ export class YjsDocumentService {
                 yDoc,
                 state: userYjsAppDoc.state,
                 clock: userYjsAppDoc.clock,
+                clockUpdatedAt: userYjsAppDoc.clockUpdatedAt || new Date(),
             };
         }
 
-        // First time user opens app - create their copy
         Y.applyUpdate(yDoc, yjsAppDoc.state);
 
-        await this.userYjsAppDocumentRepo.save({
+        const newUserDoc = await this.userYjsAppDocumentRepo.save({
             yjsAppDocumentId: yjsAppDoc.id,
             userId,
             state: yjsAppDoc.state,
@@ -96,6 +146,7 @@ export class YjsDocumentService {
             yDoc,
             state: yjsAppDoc.state,
             clock: yjsAppDoc.clock,
+            clockUpdatedAt: newUserDoc.clockUpdatedAt || new Date(),
         };
     }
 
@@ -112,6 +163,8 @@ export class YjsDocumentService {
                 skipUpdateIfNoValuesChanged: true,
             },
         );
+
+        this.logger.debug(`Saved edit YDoc for document: ${documentId}`);
     }
 
     async saveAppYDoc(
@@ -133,29 +186,32 @@ export class YjsDocumentService {
                     skipUpdateIfNoValuesChanged: true,
                 },
             );
+            this.logger.debug(
+                `Saved app YDoc for user ${userId}, app: ${yjsAppDocumentId}`
+            );
         } else {
             await this.yjsAppDocumentRepo.update(yjsAppDocumentId, { state });
+            this.logger.debug(`Saved app YDoc: ${yjsAppDocumentId}`);
         }
     }
 
     async publishDocument(documentId: string): Promise<YjsAppDocumentEntity> {
+        this.logger.log(`Publishing document: ${documentId}`);
+
         const editYDoc = await this.loadEditYDoc(documentId);
         const state = Buffer.from(Y.encodeStateAsUpdate(editYDoc.yDoc));
 
-        // Check if app document exists
         let yjsAppDoc = await this.yjsAppDocumentRepo.findOne({
             where: { documentId },
             order: { createdAt: "DESC" },
         });
 
         if (yjsAppDoc) {
-            // Update existing
             yjsAppDoc.state = state;
             yjsAppDoc.clock += 1;
             yjsAppDoc.clockUpdatedAt = new Date();
             await this.yjsAppDocumentRepo.save(yjsAppDoc);
 
-            // Update all user copies
             await this.userYjsAppDocumentRepo.update(
                 { yjsAppDocumentId: yjsAppDoc.id },
                 {
@@ -164,17 +220,19 @@ export class YjsDocumentService {
                     clockUpdatedAt: new Date(),
                 },
             );
+
+            this.logger.log(`Updated existing app document: ${yjsAppDoc.id}`);
         } else {
-            // Create new
             yjsAppDoc = await this.yjsAppDocumentRepo.save({
                 documentId,
                 state,
                 clock: 0,
                 clockUpdatedAt: new Date(),
             });
+
+            this.logger.log(`Created new app document: ${yjsAppDoc.id}`);
         }
 
-        // Update document publishedAt
         await this.documentRepo.update(documentId, {
             publishedAt: new Date(),
         });
@@ -194,5 +252,252 @@ export class YjsDocumentService {
 
         const result = await this.loadEditYDoc(documentId);
         return result.state.toString("base64");
+    }
+
+    async getYDoc(
+        id: string,
+        documentId: string,
+        workspaceId: string,
+        persistor: Persistor
+    ): Promise<WSSharedDocV2> {
+        this.logger.debug({
+            id,
+            documentId,
+            workspaceId,
+            cacheSize: this.docsCache.calculatedSize,
+            cacheCount: this.docsCache.size,
+        }, 'Getting YDoc');
+
+        let yDoc = this.docs.get(id);
+
+        if (!yDoc) {
+            yDoc = this.docsCache.get(id);
+            if (yDoc) {
+                this.logger.debug({ id }, 'YDoc cache hit');
+                this.docs.set(id, yDoc);
+                return yDoc;
+            }
+            this.logger.debug({ id }, 'YDoc cache miss');
+        } else {
+            return yDoc;
+        }
+
+        let creationPromise = this.creationPromises.get(id);
+
+        if (!creationPromise) {
+            creationPromise = this.createYDoc(
+                id,
+                documentId,
+                workspaceId,
+                persistor
+            );
+            this.creationPromises.set(id, creationPromise);
+
+            try {
+                yDoc = await creationPromise;
+            } finally {
+                this.creationPromises.delete(id);
+            }
+        } else {
+            yDoc = await creationPromise;
+        }
+
+        this.logger.debug({
+            id,
+            cacheSize: this.docsCache.calculatedSize,
+            cacheCount: this.docsCache.size,
+        }, 'YDoc created/retrieved');
+
+        return yDoc;
+    }
+
+    private async createYDoc(
+        id: string,
+        documentId: string,
+        workspaceId: string,
+        persistor: Persistor,
+        tx?: EntityManager,
+    ): Promise<WSSharedDocV2> {
+        const loadStateResult = await persistor.load(tx);
+
+        const newYDoc = await WSSharedDocV2.make(
+            id,
+            documentId,
+            workspaceId,
+            loadStateResult,
+            persistor,
+            this.pubSubProviderFactory,
+        );
+
+        this.docs.set(id, newYDoc);
+        this.docsCache.set(id, newYDoc);
+
+        return newYDoc;
+    }
+
+
+    async getYDocForUpdate<T>(
+        id: string,
+        documentId: string,
+        server: Server,
+        workspaceId: string,
+        callback: (yDoc: WSSharedDocV2) => T | Promise<T>,
+        persistor: Persistor
+    ): Promise<T> {
+        const doc = await this.getYDoc(
+            id,
+            documentId,
+            workspaceId,
+            persistor
+        );
+
+        this.incrementUpdating(doc);
+
+        try {
+            const result = await callback(doc);
+            this.decrementUpdating(doc);
+
+            this.logger.debug({ id }, 'YDoc update completed');
+            return result;
+        } catch (err) {
+            this.decrementUpdating(doc);
+            this.logger.error({ id, err }, 'YDoc update failed');
+            throw err;
+        }
+    }
+
+    getDocId(
+        documentId: string,
+        app: { id: string; userId: string | null } | null,
+    ): string {
+        if (app) {
+            return [documentId, app.id, String(app.userId)].join('-');
+        }
+        return [documentId, 'null'].join('-');
+    }
+
+    private startDocumentCleanup(): void {
+        const CLEANUP_INTERVAL = 20 * 1000;
+
+        this.cleanupInterval = setInterval(async () => {
+            await this.runCleanup();
+        }, CLEANUP_INTERVAL);
+
+        this.logger.log('Document cleanup started');
+    }
+
+    private async runCleanup(): Promise<void> {
+        const startTime = Date.now();
+
+        try {
+            this.logger.debug(
+                { docsCount: this.docs.size },
+                'Running document cleanup'
+            );
+
+            let collected = 0;
+            const toCollect: string[] = [];
+
+            for (const [docId, doc] of this.docs) {
+                if (doc.canCollect()) {
+                    toCollect.push(docId);
+                }
+            }
+
+            for (const docId of toCollect) {
+                const doc = this.docs.get(docId);
+                if (!doc) continue;
+
+                this.logger.debug({ docId }, 'Collecting document');
+                this.docs.delete(docId);
+
+                if (!this.docsCache.has(docId)) {
+                    try {
+                        await doc.destroy();
+                        collected++;
+                    } catch (err) {
+                        this.logger.error(
+                            { docId, err },
+                            'Failed to destroy document during cleanup'
+                        );
+                    }
+                }
+            }
+
+            if (collected > 0) {
+                this.logger.debug({
+                    collected,
+                    timeMs: Date.now() - startTime,
+                    remaining: this.docs.size,
+                }, 'Document cleanup completed');
+            }
+        } catch (err) {
+            this.logger.error(
+                { err, timeMs: Date.now() - startTime },
+                'Document cleanup failed'
+            );
+        }
+    }
+
+    async onModuleDestroy(): Promise<void> {
+        this.logger.log('Shutting down YJS Document Service');
+
+        if (this.cleanupInterval) {
+            clearInterval(this.cleanupInterval);
+        }
+
+        const destroyPromises = Array.from(this.docs.values()).map((doc) =>
+            doc.destroy().catch((err) => {
+                this.logger.error(
+                    `Failed to destroy document ${doc.id}: ${err.message}`,
+                );
+            }),
+        );
+
+        await Promise.all(destroyPromises);
+
+        for (const doc of this.docsCache.values()) {
+            try {
+                await doc.destroy();
+            } catch (err) {
+                this.logger.error(
+                    `Failed to destroy cached doc: ${err}`
+                );
+            }
+        }
+
+        this.docs.clear();
+        this.docsCache.clear();
+        this.creationPromises.clear();
+
+        this.logger.log('YJS Document Service shutdown complete');
+    }
+
+    private getCacheSizeFromEnv(): number {
+        const envSize = process.env.YJS_DOCS_CACHE_SIZE_MB;
+        if (envSize) {
+            const parsed = parseInt(envSize, 10);
+            if (!isNaN(parsed) && parsed > 0) {
+                return parsed * 1024 * 1024;
+            }
+        }
+        return 100 * 1024 * 1024;
+    }
+
+    private incrementUpdating(doc: WSSharedDocV2): void {
+        (doc as any).updating = ((doc as any).updating || 0) + 1;
+    }
+
+    private decrementUpdating(doc: WSSharedDocV2): void {
+        (doc as any).updating = Math.max(((doc as any).updating || 0) - 1, 0);
+    }
+
+    getStats() {
+        return {
+            activeDocs: this.docs.size,
+            cachedDocs: this.docsCache.size,
+            cacheSize: this.docsCache.calculatedSize,
+            pendingCreations: this.creationPromises.size,
+        };
     }
 }

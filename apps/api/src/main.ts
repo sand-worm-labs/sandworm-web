@@ -119,9 +119,6 @@ async function bootstrap() {
     }),
   );
 
-  // Register Fastify WebSocket plugin BEFORE Socket.IO adapter
-  await app.register(websocket);
-
   const swaggerConfig = configService.get('app.swagger', {
     infer: true,
   });

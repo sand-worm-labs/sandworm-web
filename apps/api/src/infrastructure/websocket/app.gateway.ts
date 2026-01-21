@@ -106,7 +106,7 @@ export class AppGateway
   }
 
 
-  // @UseGuards(WsJwtGuard)
+  @UseGuards(WsJwtGuard)
   @SubscribeMessage('join-workspace')
   async handleJoinWorkspace(
     @ConnectedSocket() client: Socket,
@@ -206,10 +206,6 @@ export class AppGateway
       this.commentGatewayService.fetchDocumentComments(client, data, session)
     );
   }
-
-  // ============================================
-  // Helper Methods
-  // ============================================
 
   private async trackWork<T>(fn: () => Promise<T>): Promise<T> {
     const id = uuidv4();
