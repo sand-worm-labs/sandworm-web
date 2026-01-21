@@ -38,6 +38,10 @@ const config: Config = {
           300: "hsl(var(--base-300))",
         },
 
+        gray: {
+          100: "var(--gray-100)",
+        },
+
         ink: {
           100: "var(--ink-100)",
           200: "var(--ink-200)",
@@ -47,6 +51,7 @@ const config: Config = {
         },
 
         "menu-ink": "var(--menu-ink)",
+        "hero-base": "#141B1F",
 
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

@@ -1,17 +1,19 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import {
   Star,
   MoreHorizontal,
   User,
   Save,
-  FolderOpen,
   ExternalLink,
   Copy,
   Trash2,
 } from "lucide-react";
 import { PiPlus } from "react-icons/pi";
+import { PlusSmallIcon } from "@heroicons/react/24/outline";
+import { UploadIcon } from "../Assets/UploadIcon";
+
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 
@@ -39,8 +41,10 @@ export const Projects: React.FC = () => {
   const router = useRouter();
   const [activeView, setActiveView] = useState<"grid" | "table">("grid");
 
-  const [documentsState, { duplicateDocument, deleteDocument }] =
-    useDocuments(workspaceId);
+  const [
+    documentsState,
+    { createDocument, duplicateDocument, deleteDocument },
+  ] = useDocuments(workspaceId);
 
   const [favorites, { favoriteDocument, unfavoriteDocument }] =
     useFavorites(workspaceId);
@@ -53,7 +57,29 @@ export const Projects: React.FC = () => {
   console.log("Documents:", documentsState.documents);
   console.log("Favorites:", favorites);
 
-  // Filter documents same way as WorkspaceSidebar
+  const onCreateDocument = useCallback(
+    async (parentId: string | null) => {
+      if (documentsState.loading) return;
+
+      try {
+        const doc = await createDocument({ parentId, version: 2 });
+        router.push(`/workspace/${workspaceId}/documents/${doc.id}`);
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    [documentsState, createDocument, router, workspaceId]
+  );
+
+  const onCreateDocumentHandler: MouseEventHandler<HTMLButtonElement> =
+    useCallback(
+      e => {
+        e.preventDefault();
+        onCreateDocument(null);
+      },
+      [onCreateDocument]
+    );
+
   const documents = documentsState.documents.filter(
     doc => doc.deletedAt === null && doc.version >= 1
   );
@@ -92,8 +118,6 @@ export const Projects: React.FC = () => {
     }));
   }, [documents, favorites]);
 
-  console.log("Transformed Projects:", projects);
-
   const toggleFavorite = (id: string): void => {
     const isFavorite = favorites.has(id);
 
@@ -129,21 +153,20 @@ export const Projects: React.FC = () => {
   if (projects.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-black flex items-center justify-center p-8">
-        <div className="text-center">
-          <FolderOpen className="w-24 h-24 text-gray-300 dark:text-white mx-auto mb-6" />
-          <h2 className="text-2xl font-semibold text-gray-700 mb-2">
+        <div className="text-center flex items-center flex-col">
+          <UploadIcon />
+          <h2 className="text-2xl font-medium text-ink-100 font-body mb-2 mt-3">
             No projects yet
           </h2>
-          <p className="text-gray-500 mb-6">
+          <p className="text-ink-300 mb-1">
             Create your first project to get started
           </p>
           <button
             type="button"
-            onClick={() =>
-              router.push(`/workspace/${workspaceId}/documents/notebook`)
-            }
-            className="px-3  bg-[#A308F020] hover:bg-[#A308F030]  border-[#A308F0] border  text-primary rounded-lg transition-colors text-sm flex items-center gap-x-2 py-0"
+            onClick={onCreateDocumentHandler}
+            className="p-2 bg-[#F3F3FA]  rounded-xl hover:cursor-pointer text-sm border mt-6 flex px-5 items-center justify-center w-full border-[#D000FF]  text-primary mb-3 font-body font-medium "
           >
+            <PlusSmallIcon className="h-4 w-4 mr-1 " aria-hidden="true" />
             Create Project
           </button>
         </div>
@@ -153,26 +176,26 @@ export const Projects: React.FC = () => {
 
   return (
     <div className="min-h-screen dark:bg-black  p-8">
-      <div className="flex justify-between w-full">
+      <div className="flex justify-between w-full container mx-auto">
         <div className="flex items-center gap-3 mb-0">
-          <span className="bg-[#A308F020]  rounded-full p-2 flex items-center justify-center">
-            <FolderOpen className="w-4 h-4 text-primary " />
+          <span className=" rounded-full  flex items-center justify-center">
+            <UploadIcon />
           </span>
           <h2 className="text-xl font-medium ">Projects</h2>
         </div>
-        <button
-          type="button"
-          className="px-3  bg-[#A308F020] hover:bg-[#A308F030]  border-[#A308F0] border  text-primary rounded-lg transition-colors text-sm flex items-center gap-x-2 py-0 "
-          onClick={() =>
-            router.push(`/workspace/${workspaceId}/documents/notebook`)
-          }
-        >
-          <PiPlus size={18} />
-          <span className="inline-block"> Create Project</span>
-        </button>
+        <div>
+          <button
+            type="button"
+            className="p-2 bg-[#F3F3FA]  rounded-xl hover:cursor-pointer text-sm border mt-6 flex px-5 items-center justify-center w-full border-[#D000FF]  text-primary mb-3 font-body font-medium"
+            onClick={onCreateDocumentHandler}
+          >
+            <PiPlus size={18} />
+            <span className="inline-block"> Create Project</span>
+          </button>
+        </div>
       </div>
 
-      <div className=" mx-auto">
+      <div className=" mx-auto container">
         <ProjectControl onViewChange={setActiveView} />
 
         {activeView === "grid" ? (

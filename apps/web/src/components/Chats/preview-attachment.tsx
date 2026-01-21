@@ -44,7 +44,7 @@ export const PreviewAttachment = ({
   const isImage = contentType?.startsWith("image/");
 
   return (
-    <div className="flex flex-col items-center gap-2 min-w-[100px] max-w-[140px] py-5">
+    <div className="flex flex-col items-center gap-2 min-w-[100px] max-w-[140px] py-2">
       <div
         className={`
           relative flex items-center justify-center

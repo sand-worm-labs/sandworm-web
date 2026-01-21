@@ -93,7 +93,7 @@ export const SectionHero = () => {
     <section
       className="py-16 text-center pb-64 min-h-dvh pt-28 text-white relative"
       style={{
-        backgroundImage: "url('/img/temp.svg')",
+        backgroundImage: "url('/img/herobg.svg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
@@ -189,8 +189,8 @@ export const SectionHero = () => {
           </motion.form>
         </div>
       </div>
-      <Blob />
-      <Noise />
+      {/*     <Blob />
+      <Noise /> */}
 
       {/* ════════════ Backed by ════════════ */}
       <div className="absolute bottom-8 w-full text-center px-5 text-white flex flex-col items-center z-10">
