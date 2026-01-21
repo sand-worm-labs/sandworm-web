@@ -13,6 +13,7 @@ import { LRUCache } from 'lru-cache';
 import { PersistorFactory } from './persistors/persistor.factory';
 import { PubSubProviderFactory } from '@/infrastructure/pubsub/pubsub-provider.factory';
 import { Persistor } from './interfaces';
+import { Server, Socket } from 'socket.io';
 
 export interface LoadYDocResult {
     yDoc: Y.Doc;
@@ -338,6 +339,7 @@ export class YjsDocumentService implements OnModuleDestroy {
     async getYDocForUpdate<T>(
         id: string,
         documentId: string,
+        server: Server,
         workspaceId: string,
         callback: (yDoc: WSSharedDocV2) => T | Promise<T>,
         persistor: Persistor
