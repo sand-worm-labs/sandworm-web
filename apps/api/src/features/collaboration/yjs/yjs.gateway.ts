@@ -1,4 +1,3 @@
-// features/collaboration/yjs/yjs.gateway.ts
 import {
     WebSocketGateway,
     WebSocketServer,
@@ -18,9 +17,9 @@ import * as Y from 'yjs';
 import * as syncProtocol from 'y-protocols/sync';
 import * as awarenessProtocol from 'y-protocols/awareness';
 import { encoding, decoding } from 'lib0';
-import { DocumentEntity } from '@sandworm/postgresql-typeorm';
+import { DocumentEntity, UserWorkspaceRole } from '@sandworm/postgresql-typeorm';
 import { YjsDocumentService } from './yjs-document.service';
-import { AuthService } from '@/features/auth/core/auth.service';
+import { SessionService } from '@/features/session/session.service';
 
 const wsReadyStateOpen = 1;
 const wsReadyStateConnecting = 0;
@@ -48,7 +47,7 @@ interface ClientMetadata {
         email: string;
         username?: string;
     };
-    role: 'admin' | 'editor' | 'viewer';
+    role: UserWorkspaceRole;
     session: DocumentSession;
 }
 
@@ -56,7 +55,7 @@ interface RequestData {
     document: DocumentEntity;
     clock: number;
     authUser: any;
-    role: 'admin' | 'editor' | 'viewer';
+    role: UserWorkspaceRole;
     isApp: boolean;
     userId: string | null;
 }
@@ -77,150 +76,121 @@ export class YjsGateway
 
     constructor(
         private readonly yjsDocumentService: YjsDocumentService,
-        private readonly authService: AuthService,
+        private readonly sessionService: SessionService,
         @InjectRepository(DocumentEntity)
         private readonly documentRepository: Repository<DocumentEntity>,
     ) { }
 
     afterInit(server: WSServer) {
         this.logger.log('YJS WebSocket Gateway initialized');
-
-        const httpServer = (server as any).server as http.Server;
-
-        httpServer.on('upgrade', async (req, socket, head) => {
-            if (!req.url?.startsWith('/v2/yjs')) {
-                return;
-            }
-
-            try {
-                const data = await this.getRequestData(req);
-                if (!data) {
-                    this.logger.warn('Invalid request data, destroying socket');
-                    socket.destroy();
-                    return;
-                }
-
-                const { document, userId, authUser, role, isApp, clock } = data;
-
-                // Get or create session
-                const session = await this.getOrCreateSession(
-                    document.id,
-                    document.workspaceId,
-                    isApp,
-                    userId,
-                );
-
-                // Validate clock
-                if (session.clock !== clock) {
-                    this.logger.warn({
-                        documentId: session.documentId,
-                        userClock: clock,
-                        sessionClock: session.clock,
-                        userId: authUser.id,
-                    }, 'Clock mismatch detected');
-
-                    const isValid = await this.validateAndFixClock(
-                        session,
-                        document,
-                        authUser,
-                        clock,
-                    );
-
-                    if (!isValid) {
-                        this.logger.error('Clock validation failed, destroying socket');
-                        socket.destroy();
-                        return;
-                    }
-                }
-
-                // Store metadata
-                (req as any).briefer = {
-                    user: authUser,
-                    role,
-                    session,
-                } as ClientMetadata;
-
-                server.handleUpgrade(req, socket, head, (ws) => {
-                    server.emit('connection', ws, req);
-                });
-            } catch (err) {
-                this.logger.error(`Failed to setup YJS connection: ${err}`);
-                socket.destroy();
-            }
-        });
-
-        // Start cleanup interval
         this.startSessionCleanup();
     }
 
     async handleConnection(client: WebSocket, req: http.IncomingMessage) {
-        const metadata = (req as any).briefer as ClientMetadata;
+        try {
+            // Get request data (auth, document, etc.)
+            const data = await this.getRequestData(req);
 
-        if (!metadata) {
-            this.logger.error('No metadata found on connection');
-            client.close();
-            return;
-        }
-
-        const { user, role, session } = metadata;
-
-        this.logger.log(
-            `Client connecting: ${user.id} to document ${session.documentId}`,
-        );
-
-        // Register connection
-        session.conns.set(client, new Set());
-        client.binaryType = 'arraybuffer';
-
-        const transactionOrigin = { conn: client, user, role };
-        let lastRoleUpdate = Date.now();
-
-        // Message handler
-        client.on('message', async (message: ArrayBuffer) => {
-            try {
-                const now = Date.now();
-
-                // Revalidate role every 5 seconds
-                if (now - lastRoleUpdate > 5000) {
-                    lastRoleUpdate = now;
-                    const updatedRole = await this.getUserRole(
-                        user.id,
-                        session.workspaceId,
-                    );
-                    if (updatedRole) {
-                        transactionOrigin.role = updatedRole;
-                    } else {
-                        this.logger.warn(
-                            `User ${user.id} lost access to workspace ${session.workspaceId}`,
-                        );
-                        this.closeConnection(session, client);
-                        return;
-                    }
-                }
-
-                this.handleMessage(session, new Uint8Array(message), transactionOrigin);
-            } catch (err) {
-                this.logger.error(`Error handling message: ${err}`);
+            if (!data) {
+                this.logger.warn('Invalid request data, closing connection');
+                client.close(1008, 'Invalid request data');
+                return;
             }
-        });
 
-        // Ping/pong for connection health
-        this.setupPingPong(session, client, user.id);
+            const { document, userId, authUser, role, isApp, clock } = data;
 
-        // Connection close handler
-        client.on('close', () => {
-            this.logger.log(
-                `Client ${user.id} closed connection to ${session.documentId}`,
+            // Get or create session
+            const session = await this.getOrCreateSession(
+                document.id,
+                document.workspaceId,
+                isApp,
+                userId,
             );
-            this.closeConnection(session, client);
-        });
 
-        // Send initial state
-        await this.sendInitialState(session, client);
+            // Validate clock
+            if (session.clock !== clock) {
+                this.logger.warn({
+                    documentId: session.documentId,
+                    userClock: clock,
+                    sessionClock: session.clock,
+                    userId: authUser.id,
+                }, 'Clock mismatch detected');
 
-        this.logger.log(
-            `Client ${user.id} successfully connected to document ${session.documentId}`,
-        );
+                const isValid = await this.validateAndFixClock(
+                    session,
+                    document,
+                    authUser,
+                    clock,
+                );
+
+                if (!isValid) {
+                    this.logger.error('Clock validation failed, closing connection');
+                    client.close(1008, 'Clock validation failed');
+                    return;
+                }
+            }
+
+            this.logger.log(
+                `Client connecting: ${authUser.id} to document ${session.documentId}`,
+            );
+
+            // Register connection
+            session.conns.set(client, new Set());
+            client.binaryType = 'arraybuffer';
+
+            const transactionOrigin = { conn: client, user: authUser, role };
+            let lastRoleUpdate = Date.now();
+
+            // Message handler
+            client.on('message', async (message: ArrayBuffer) => {
+                try {
+                    const now = Date.now();
+
+                    // Revalidate role every 5 seconds
+                    if (now - lastRoleUpdate > 5000) {
+                        lastRoleUpdate = now;
+                        const updatedRole = await this.getUserRole(
+                            authUser.id,
+                            session.workspaceId,
+                        );
+                        if (updatedRole) {
+                            transactionOrigin.role = updatedRole;
+                        } else {
+                            this.logger.warn(
+                                `User ${authUser.id} lost access to workspace ${session.workspaceId}`,
+                            );
+                            this.closeConnection(session, client);
+                            return;
+                        }
+                    }
+
+                    this.handleMessage(session, new Uint8Array(message), transactionOrigin);
+                } catch (err) {
+                    this.logger.error(`Error handling message: ${err}`);
+                }
+            });
+
+            // Ping/pong for connection health
+            this.setupPingPong(session, client, authUser.id);
+
+            // Connection close handler
+            client.on('close', () => {
+                this.logger.log(
+                    `Client ${authUser.id} closed connection to ${session.documentId}`,
+                );
+                this.closeConnection(session, client);
+            });
+
+            // Send initial state
+            await this.sendInitialState(session, client);
+
+            this.logger.log(
+                `Client ${authUser.id} successfully connected to document ${session.documentId}`,
+            );
+        } catch (err) {
+            this.logger.error(`Failed to handle connection: ${err}`);
+            client.close(1011, 'Internal server error');
+        }
     }
 
     handleDisconnect(client: WebSocket) {
@@ -351,9 +321,6 @@ export class YjsGateway
         this.logger.debug(`Persisting session ${session.documentId}`);
 
         if (session.isApp) {
-            // For app documents, we need the yjsAppDocumentId
-            // This is a limitation - you'll need to store it in the session
-            // For now, we'll skip app persistence in this handler
             this.logger.warn('App document persistence not implemented in gateway');
             return;
         }
@@ -420,7 +387,7 @@ export class YjsGateway
                 this.logger.debug('Processing sync step 2');
 
                 // Check write permissions for viewers
-                if (transactionOrigin.role === 'viewer') {
+                if (transactionOrigin.role === UserWorkspaceRole.VIEWER) {
                     this.logger.warn('Viewer attempted to write, rejecting');
                     this.closeConnection(session, transactionOrigin.conn);
                     return messageType;
@@ -433,7 +400,7 @@ export class YjsGateway
                 this.logger.debug('Processing update');
 
                 // Check write permissions
-                if (transactionOrigin.role === 'viewer') {
+                if (transactionOrigin.role === UserWorkspaceRole.VIEWER) {
                     this.logger.warn('Viewer attempted to write, rejecting');
                     this.closeConnection(session, transactionOrigin.conn);
                     return messageType;
@@ -596,7 +563,7 @@ export class YjsGateway
                 return null;
             }
 
-            const session = await this.authService.getSessionFromCookies(cookies);
+            const session = await this.sessionService.validateSessionFromCookies(cookies);
 
             if (!session) {
                 this.logger.warn('No valid session found');
@@ -621,7 +588,7 @@ export class YjsGateway
                 document,
                 clock: args.data.clock,
                 authUser: session.user,
-                role: userWorkspace.role,
+                role: userWorkspace.role as UserWorkspaceRole,
                 isApp: args.data.isApp,
                 userId: args.data.userId ?? null,
             };
@@ -662,10 +629,10 @@ export class YjsGateway
     private async getUserRole(
         userId: string,
         workspaceId: string,
-    ): Promise<'admin' | 'editor' | 'viewer' | null> {
+    ): Promise<UserWorkspaceRole | null> {
         try {
-            // Implement based on your user-workspace relationship
-            return 'editor';
+            // TODO: Implement actual role lookup
+            return UserWorkspaceRole.EDITOR;
         } catch (err) {
             this.logger.error(`Failed to get user role: ${err}`);
             return null;
