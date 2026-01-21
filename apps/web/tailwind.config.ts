@@ -53,6 +53,8 @@ const config: Config = {
         },
 
         "menu-ink": "var(--menu-ink)",
+        "menu-ink-200": "var(--menu-ink-200)",
+
         "hero-base": "#141B1F",
 
         border: "hsl(var(--border))",

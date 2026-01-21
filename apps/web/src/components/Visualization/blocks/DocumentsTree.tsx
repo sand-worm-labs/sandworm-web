@@ -231,7 +231,7 @@ function DropDown(props: DropDownProps) {
             leaveFrom="transform opacity-100 scale-100"
             leaveTo="transform opacity-0 scale-95"
           >
-            <Menu.Items className="absolute left-2 -top-2 z-20 w-44 origin-top-right rounded-lg bg-white dark:bg-[#0C1015]  ring-opacity-5 focus:outline-none border-[#CED4DA] border dark:border-[#262A30]">
+            <Menu.Items className="absolute left-2 -top-2 z-20 w-44 origin-top-right rounded-lg bg-white dark:bg-[#0C1015]  ring-opacity-5 focus:outline-none border-[#E9ECEF] border dark:border-[#262A30] rounded-xl shadow-[0_1.5px_13px_3px_rgba(82,106,159,0.12)]">
               <div className="py-2 px-1.5">
                 <Menu.Item>
                   {({ active }) => (
@@ -243,7 +243,7 @@ function DropDown(props: DropDownProps) {
                           hidden: isViewer || props.isFavoriteDropdown,
                         },
                         active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                        "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 rounded-md font-primary hover:bg-[#FDE6EA] text-ink-200 dark:text-white"
+                        "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 rounded-md font-body font-medium hover:bg-primary/20 text-menu-ink-200 dark:text-white"
                       )}
                     >
                       <TrashIcon className="h-4 w-4" />
@@ -261,7 +261,7 @@ function DropDown(props: DropDownProps) {
                           hidden: isViewer,
                         },
                         active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                        "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 font-primary hover:bg-[#FDE6EA] rounded-md text-ink-200 dark:text-white"
+                        "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 font-body font-medium hover:bg-primary/20 rounded-md text-menu-ink-200  dark:text-white"
                       )}
                     >
                       <Square2StackIcon className="h-4 w-4" />
@@ -279,7 +279,7 @@ function DropDown(props: DropDownProps) {
                           hidden: props.isFavorited,
                         },
                         active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                        "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 font-primary hover:bg-[#FDE6EA] rounded-md text-ink-200 dark:text-white"
+                        "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 font-body font-medium hover:bg-primary/20 rounded-md text-menu-ink-200  dark:text-white"
                       )}
                     >
                       <BookmarkIcon className="h-4 w-4" />
@@ -297,7 +297,7 @@ function DropDown(props: DropDownProps) {
                           hidden: !props.isFavorited,
                         },
                         active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                        "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 font-primary hover:bg-[#FDE6EA] rounded-md text-ink-200 dark:text-white"
+                        "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 font-body font-medium hover:bg-primary/20 rounded-md text-menu-ink-200  dark:text-white"
                       )}
                     >
                       <BookmarkSlashIcon className="h-4 w-4" />

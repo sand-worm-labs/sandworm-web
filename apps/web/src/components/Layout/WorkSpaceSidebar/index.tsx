@@ -71,11 +71,10 @@ export const WorkspaceSidebar = () => {
 
   const linkClasses = (href: string) =>
     `flex items-center gap-3 rounded-xl px-2 py-1.5 text-sm font-medium transition-colors
-     ${
-       pathname === href
-         ? "bg-[#EBF7F7] dark:bg-[#181C21]  text-primary dark:text-primary"
-         : "text-menu-ink dark:text-white hover:bg-[#EBF7F7] hover:text-primary  dark:hover:bg-[#181C21] hover:text-black dark:hover:text-white"
-     }`;
+     ${pathname === href
+      ? "bg-[#EBF7F7] dark:bg-[#181C21]  text-primary dark:text-primary"
+      : "text-menu-ink dark:text-white hover:bg-[#EBF7F7] hover:text-primary  dark:hover:bg-[#181C21] hover:text-black dark:hover:text-white"
+    }`;
 
   const [
     documentsState,

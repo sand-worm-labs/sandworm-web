@@ -1,55 +1,92 @@
 import { useCallback, useMemo } from "react";
-import useSWR from "swr";
 
-import { NEXT_PUBLIC_API_URL } from "../utils/env";
-import fetcher from "../utils/fetcher";
+import {
+  useAddFavoriteDocumentMutation,
+  useRemoveFavoriteDocumentMutation,
+  useGetFavoriteDocumentsQuery,
+  GetFavoriteDocumentsDocument,
+} from "@/generated/graphql";
 
 type API = {
   favoriteDocument: (docId: string) => Promise<void>;
   unfavoriteDocument: (docId: string, refetch?: boolean) => Promise<void>;
 };
-type UseFavorites = [Set<string>, API];
-export const useFavorites = (workspaceId: string): UseFavorites => {
-  const { data, mutate } = useSWR<string[]>(
-    `${NEXT_PUBLIC_API_URL()}/v1/workspaces/${workspaceId}/favorites`,
-    fetcher
-  );
 
-  const favorites = useMemo(() => data ?? [], [data]);
+type UseFavorites = [
+  Set<string>,
+  API,
+  { data: any; loading: boolean; error?: any },
+];
+
+export const useFavorites = (workspaceId: string): UseFavorites => {
+  console.log("useFavorites called with workspaceId:", workspaceId);
+
+  const { data, refetch, loading, error } = useGetFavoriteDocumentsQuery({
+    variables: { workspaceId },
+    skip: !workspaceId,
+    fetchPolicy: "cache-and-network", // Add this to ensure it fetches
+  });
+
+  console.log("Query state:", { data, loading, error, workspaceId });
+
+  const [addFavoriteMutation] = useAddFavoriteDocumentMutation();
+  const [removeFavoriteMutation] = useRemoveFavoriteDocumentMutation();
+
+  const favorites = useMemo(
+    () => data?.getFavoriteDocuments?.map(doc => doc.id) ?? [],
+    [data]
+  );
 
   const favoriteDocument = useCallback(
     async (docId: string) => {
-      await fetch(
-        `${NEXT_PUBLIC_API_URL()}/v1/workspaces/${workspaceId}/documents/${docId}/favorite`,
-        {
-          credentials: "include",
-          method: "POST",
-        }
-      );
-
-      mutate(favorites.concat([docId]));
+      try {
+        await addFavoriteMutation({
+          variables: {
+            input: {
+              workspaceId,
+              documentId: docId,
+            },
+          },
+          refetchQueries: [
+            {
+              query: GetFavoriteDocumentsDocument,
+              variables: { workspaceId },
+            },
+          ],
+        });
+      } catch (error) {
+        console.error("Failed to favorite document:", error);
+        throw error;
+      }
     },
-    [workspaceId, mutate, favorites]
+    [workspaceId, addFavoriteMutation]
   );
 
   const unfavoriteDocument = useCallback(
-    async (docId: string, refetch = true) => {
-      if (refetch) {
-        await fetch(
-          `${NEXT_PUBLIC_API_URL()}/v1/workspaces/${workspaceId}/documents/${docId}/favorite`,
-          {
-            credentials: "include",
-            method: "DELETE",
-          }
-        );
+    async (docId: string, shouldRefetch = true) => {
+      try {
+        await removeFavoriteMutation({
+          variables: {
+            input: {
+              workspaceId,
+              documentId: docId,
+            },
+          },
+          refetchQueries: shouldRefetch
+            ? [
+              {
+                query: GetFavoriteDocumentsDocument,
+                variables: { workspaceId },
+              },
+            ]
+            : [],
+        });
+      } catch (error) {
+        console.error("Failed to unfavorite document:", error);
+        throw error;
       }
-
-      mutate(
-        favorites.filter(dId => dId !== docId),
-        refetch
-      );
     },
-    [workspaceId, mutate, favorites]
+    [workspaceId, removeFavoriteMutation]
   );
 
   return useMemo(
@@ -59,7 +96,12 @@ export const useFavorites = (workspaceId: string): UseFavorites => {
         favoriteDocument,
         unfavoriteDocument,
       },
+      {
+        data,
+        loading,
+        error,
+      },
     ],
-    [favorites, favoriteDocument, unfavoriteDocument]
+    [favorites, favoriteDocument, unfavoriteDocument, data, loading, error]
   );
 };

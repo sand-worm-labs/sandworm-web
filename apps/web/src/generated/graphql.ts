@@ -43,11 +43,24 @@ export type CreateCommentInput = {
   id: Scalars['String']['input'];
 };
 
+export type CreateComponentInstanceInput = {
+  blockId: Scalars['String']['input'];
+  documentId: Scalars['String']['input'];
+};
+
 export type CreateDocumentInput = {
   orderIndex?: Scalars['Float']['input'];
   parentId?: InputMaybe<Scalars['String']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
   version: Scalars['Float']['input'];
+};
+
+export type CreateReusableComponentInput = {
+  blockId: Scalars['String']['input'];
+  documentId: Scalars['String']['input'];
+  state: Scalars['String']['input'];
+  title: Scalars['String']['input'];
+  type: ReusableComponentType;
 };
 
 export type CreateScheduleInput = {
@@ -199,6 +212,10 @@ export type Mutation = {
   addFavoriteDocument: Document;
   /** Create a new comment on a document */
   createComment: Comment;
+  /** Create a new reusable component */
+  createComponent: ReusableComponent;
+  /** Create a component instance */
+  createComponentInstance: ReusableComponentInstance;
   /** Create a new document in a workspace */
   createDocument: Document;
   /** Create a new execution schedule for a document */
@@ -209,6 +226,10 @@ export type Mutation = {
   createWorkspace: Workspace;
   /** Delete a comment (only by comment author) */
   deleteComment: Scalars['Boolean']['output'];
+  /** Delete a reusable component */
+  deleteComponent: Scalars['Boolean']['output'];
+  /** Delete a component instance */
+  deleteComponentInstance: Scalars['Boolean']['output'];
   /** Soft delete or permanently delete a document */
   deleteDocument: Document;
   /** Delete a single environment variable */
@@ -243,6 +264,8 @@ export type Mutation = {
   unfollowUser: Profile;
   /** Unpublish a document */
   unpublishDocument: Document;
+  /** Update a reusable component */
+  updateComponent: ReusableComponent;
   /** Update document metadata */
   updateDocument: Document;
   /** Update an existing schedule */
@@ -272,6 +295,19 @@ export type MutationCreateCommentArgs = {
 };
 
 
+export type MutationCreateComponentArgs = {
+  input: CreateReusableComponentInput;
+  workspaceId: Scalars['String']['input'];
+};
+
+
+export type MutationCreateComponentInstanceArgs = {
+  componentId: Scalars['String']['input'];
+  input: CreateComponentInstanceInput;
+  workspaceId: Scalars['String']['input'];
+};
+
+
 export type MutationCreateDocumentArgs = {
   input: CreateDocumentInput;
   workspaceId: Scalars['String']['input'];
@@ -296,6 +332,19 @@ export type MutationCreateWorkspaceArgs = {
 
 export type MutationDeleteCommentArgs = {
   input: DeleteCommentInput;
+};
+
+
+export type MutationDeleteComponentArgs = {
+  componentId: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
+};
+
+
+export type MutationDeleteComponentInstanceArgs = {
+  blockId: Scalars['String']['input'];
+  componentId: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
 };
 
 
@@ -391,6 +440,13 @@ export type MutationUnpublishDocumentArgs = {
 };
 
 
+export type MutationUpdateComponentArgs = {
+  componentId: Scalars['String']['input'];
+  input: UpdateReusableComponentInput;
+  workspaceId: Scalars['String']['input'];
+};
+
+
 export type MutationUpdateDocumentArgs = {
   documentId: Scalars['String']['input'];
   input: UpdateDocumentInput;
@@ -445,8 +501,12 @@ export type Query = {
   fileExists: Scalars['Boolean']['output'];
   /** Get all users */
   getAllUsers: Scalars['Int']['output'];
+  /** Get a reusable component by ID */
+  getComponent: ReusableComponent;
   /** Get a single document by ID */
   getDocument: Document;
+  /** Get User favorite documents */
+  getFavoriteDocuments: Array<Document>;
   /** Users who follow a given user */
   getUserFollowers: Array<User>;
   /** Users that a given user is following */
@@ -457,6 +517,8 @@ export type Query = {
   getUserWorkspaces: Array<Workspace>;
   /** Get workspace by ID */
   getWorkspace: Workspace;
+  /** Get all reusable components in a workspace */
+  getWorkspaceComponents: Array<ReusableComponent>;
   /** Get all documents in a workspace */
   getWorkspaceDocuments: Array<Document>;
   /** Get workspace members */
@@ -509,8 +571,19 @@ export type QueryGetAllUsersArgs = {
 };
 
 
+export type QueryGetComponentArgs = {
+  componentId: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
+};
+
+
 export type QueryGetDocumentArgs = {
   documentId: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
+};
+
+
+export type QueryGetFavoriteDocumentsArgs = {
   workspaceId: Scalars['String']['input'];
 };
 
@@ -526,6 +599,11 @@ export type QueryGetUserFollowingArgs = {
 
 
 export type QueryGetWorkspaceArgs = {
+  workspaceId: Scalars['String']['input'];
+};
+
+
+export type QueryGetWorkspaceComponentsArgs = {
   workspaceId: Scalars['String']['input'];
 };
 
@@ -568,6 +646,35 @@ export type RestoreDocumentInput = {
   workspaceId: Scalars['String']['input'];
 };
 
+export type ReusableComponent = {
+  __typename?: 'ReusableComponent';
+  blockId: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  documentId: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  instances: Array<ReusableComponentInstance>;
+  instancesCreated: Scalars['Boolean']['output'];
+  state: Scalars['String']['output'];
+  title: Scalars['String']['output'];
+  type: ReusableComponentType;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type ReusableComponentInstance = {
+  __typename?: 'ReusableComponentInstance';
+  blockId: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  documentId: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  reusableComponentId: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export enum ReusableComponentType {
+  Python = 'PYTHON',
+  Sql = 'SQL'
+}
+
 export type SandwormFile = {
   __typename?: 'SandwormFile';
   createdAt: Scalars['Float']['output'];
@@ -606,6 +713,11 @@ export type UpdateDocumentInput = {
   runSQLSelection?: InputMaybe<Scalars['Boolean']['input']>;
   runUnexecutedBlocks?: InputMaybe<Scalars['Boolean']['input']>;
   shareLinksWithoutSidebar?: InputMaybe<Scalars['Boolean']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateReusableComponentInput = {
+  state?: InputMaybe<Scalars['String']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -936,6 +1048,13 @@ export type GetDocumentQueryVariables = Exact<{
 
 
 export type GetDocumentQuery = { __typename?: 'Query', getDocument: { __typename?: 'Document', id: string, title: string, slug: string, icon: string, parentId?: string | null, orderIndex: number, authorId: string, workspaceId: string, createdAt: any, updatedAt: any, deletedAt?: any | null, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, runSQLSelection: boolean, runUnexecutedBlocks: boolean, shareLinksWithoutSidebar: boolean } };
+
+export type GetFavoriteDocumentsQueryVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+}>;
+
+
+export type GetFavoriteDocumentsQuery = { __typename?: 'Query', getFavoriteDocuments: Array<{ __typename?: 'Document', id: string, title: string, slug: string, parentId?: string | null, orderIndex: number, authorId: string, workspaceId: string, createdAt: any, updatedAt: any, deletedAt?: any | null, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, runSQLSelection: boolean, runUnexecutedBlocks: boolean, shareLinksWithoutSidebar: boolean }> };
 
 export type GetEnvironmentQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
@@ -2419,6 +2538,67 @@ export type GetDocumentQueryHookResult = ReturnType<typeof useGetDocumentQuery>;
 export type GetDocumentLazyQueryHookResult = ReturnType<typeof useGetDocumentLazyQuery>;
 export type GetDocumentSuspenseQueryHookResult = ReturnType<typeof useGetDocumentSuspenseQuery>;
 export type GetDocumentQueryResult = Apollo.QueryResult<GetDocumentQuery, GetDocumentQueryVariables>;
+export const GetFavoriteDocumentsDocument = gql`
+    query GetFavoriteDocuments($workspaceId: String!) {
+  getFavoriteDocuments(workspaceId: $workspaceId) {
+    id
+    title
+    slug
+    parentId
+    orderIndex
+    authorId
+    workspaceId
+    createdAt
+    updatedAt
+    deletedAt
+    version
+    publishedAt
+    isDataApp
+    isSyncedWithYjs
+    hasDashboard
+    appId
+    clock
+    appClock
+    userAppClock
+    runSQLSelection
+    runUnexecutedBlocks
+    shareLinksWithoutSidebar
+  }
+}
+    `;
+
+/**
+ * __useGetFavoriteDocumentsQuery__
+ *
+ * To run a query within a React component, call `useGetFavoriteDocumentsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFavoriteDocumentsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFavoriteDocumentsQuery({
+ *   variables: {
+ *      workspaceId: // value for 'workspaceId'
+ *   },
+ * });
+ */
+export function useGetFavoriteDocumentsQuery(baseOptions: Apollo.QueryHookOptions<GetFavoriteDocumentsQuery, GetFavoriteDocumentsQueryVariables> & ({ variables: GetFavoriteDocumentsQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetFavoriteDocumentsQuery, GetFavoriteDocumentsQueryVariables>(GetFavoriteDocumentsDocument, options);
+      }
+export function useGetFavoriteDocumentsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetFavoriteDocumentsQuery, GetFavoriteDocumentsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetFavoriteDocumentsQuery, GetFavoriteDocumentsQueryVariables>(GetFavoriteDocumentsDocument, options);
+        }
+export function useGetFavoriteDocumentsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetFavoriteDocumentsQuery, GetFavoriteDocumentsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetFavoriteDocumentsQuery, GetFavoriteDocumentsQueryVariables>(GetFavoriteDocumentsDocument, options);
+        }
+export type GetFavoriteDocumentsQueryHookResult = ReturnType<typeof useGetFavoriteDocumentsQuery>;
+export type GetFavoriteDocumentsLazyQueryHookResult = ReturnType<typeof useGetFavoriteDocumentsLazyQuery>;
+export type GetFavoriteDocumentsSuspenseQueryHookResult = ReturnType<typeof useGetFavoriteDocumentsSuspenseQuery>;
+export type GetFavoriteDocumentsQueryResult = Apollo.QueryResult<GetFavoriteDocumentsQuery, GetFavoriteDocumentsQueryVariables>;
 export const GetEnvironmentDocument = gql`
     query GetEnvironment($workspaceId: String!) {
   environment(workspaceId: $workspaceId) {

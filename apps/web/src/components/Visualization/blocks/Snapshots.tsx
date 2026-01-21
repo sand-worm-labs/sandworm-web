@@ -50,14 +50,20 @@ export default function Snapshots(props: Props) {
       <div className="w-[324px] flex flex-col border-l dark:border-[#262A30] border-gray-200 h-full bg-white dark:bg-black">
         <div className="flex items-center justify-between border-b dark:border-[#262A30] p-6">
           <div className="flex items-center">
-            <h3 className="text-lg font-medium leading-6 text-gray-900  dark:text-white pr-1.5">
-              Snapshots
-            </h3>
-            <div className="group relative">
+            <div>
+              <h3 className="text-lg font-medium leading-6 text-gray-900  dark:text-white pr-1.5">
+                Snapshots
+              </h3>
+              <p className="text-gray-500 text-sm pt-1">
+                Each Scheduled Run generates a snapshot
+              </p>
+            </div>
+
+          {/*   <div className="group relative">
               <QuestionMarkCircleIcon className="w-4 h-4 text-gray-300" />
 
               <DefaultSnapshotsTooltip />
-            </div>
+            </div> */}
           </div>
 
           <Tooltip
@@ -70,7 +76,7 @@ export default function Snapshots(props: Props) {
           >
             <button
               type="button"
-              className="flex items-center gap-x-2 rounded-sm bg-[#A308F0] px-3 py-1 text-sm hover:bg-primary-300 disabled:cursor-not-allowed disabled:bg-gray-200"
+              className="flex items-center gap-x-2 rounded-lg  bg-[#A308F0] px-3 py-1 text-sm hover:bg-primary-300 disabled:cursor-not-allowed disabled:bg-gray-200"
               disabled
             >
               Save
