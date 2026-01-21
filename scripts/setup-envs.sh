@@ -98,6 +98,9 @@ NEXT_PUBLIC_API_URL=http://localhost:8003
 NEXT_PUBLIC_API_WS_URL=ws://localhost:8003/ws
 NEXT_PUBLIC_URL=http://localhost:3000
 NEXT_PUBLIC_PUBLIC_URL=http://localhost:3000
+GOOGLE_CLIENT_ID=826443297313-bh9mp34f408b3urpili8knr4pap819hh.apps.googleusercontent.com
+GITHUB_CLIENT_ID=Ov23lisbzsoM7RX7aRDV
+REDIRECT_URI=http://localhost:3000/workspace/
 EOL
   echo "✅ Created $WEB_ENV"
 fi
