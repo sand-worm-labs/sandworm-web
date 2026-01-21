@@ -28,10 +28,10 @@ function getWSProvider(
   publishedAt: string | null
 ): WebsocketProvider {
   const id = getDocId(documentId, isDataApp, clock, publishedAt);
-  const wsUrl = `${NEXT_PUBLIC_API_WS_URL()}`;
+  const wsUrl = `${NEXT_PUBLIC_API_WS_URL()}/yjs/`;
 
   const provider = new WebsocketProvider(wsUrl, id, yDoc, {
-    connect: false,
+    connect: true,
     params: {
       documentId,
       clock: clock.toString(),
@@ -61,7 +61,7 @@ class Provider implements IProvider {
   constructor(private wsProvider: WebsocketProvider) {
     this._synced = this.wsProvider.synced;
 
-    this.wsProvider.on("synced", this.onWSSynced);
+    this.wsProvider.on("sync", this.onWSSynced);
   }
 
   private onWSSynced = async () => {
