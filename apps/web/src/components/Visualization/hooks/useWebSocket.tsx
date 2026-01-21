@@ -26,7 +26,7 @@ export function useWebsocket() {
     console.log("[WebSocket] Creating socket connection");
 
     const url = new URL(
-      process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"
+      process.env.NEXT_PUBLIC_API_URL || "http://localhost:8003"
     );
     const withoutPathname = url.origin;
     const socketPath =
@@ -39,6 +39,9 @@ export function useWebsocket() {
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionAttempts: 5,
+      extraHeaders: {
+        Authorization: `Bearer ${session}`,
+      },
     });
     console.log(newSocket);
 
