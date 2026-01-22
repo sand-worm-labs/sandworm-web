@@ -4,11 +4,12 @@ import type { ReactNode } from "react";
 
 import { GraphQLProvider } from "@/graphql/provider";
 import { tokenStorage } from "@/components/Visualization/hooks/useAuth";
+import { NEXT_PUBLIC_API_URL } from "@/components/Visualization/utils/env";
 
 import { ThemeProvider } from "./ThemeProvider";
 import AppProvider from "./AppProvider";
 
-const GRAPHQL_URL = "http://localhost:8003/graphql";
+const GRAPHQL_URL = `${NEXT_PUBLIC_API_URL()}/graphql`;
 
 const getAccessToken = () => {
   return tokenStorage.getToken();

@@ -65,16 +65,20 @@ font-tertiary {
 :root {
   --ui-notch-amount: 1.5rem;
   --ui-notch-hypotenuse: 2.25rem;
-  --ui-notch-path: polygon(0 0,
-      100% 0,
-      100% calc(100% - var(--ui-notch-amount) + 2px),
-      calc(100% - var(--ui-notch-amount) + 2px) 100%,
-      0 100%);
-  --ui-notch-path-bl: polygon(0 0,
-      100% 0,
-      100% 100%,
-      var(--ui-notch-amount) 100%,
-      0 calc(100% - var(--ui-notch-amount)));
+  --ui-notch-path: polygon(
+    0 0,
+    100% 0,
+    100% calc(100% - var(--ui-notch-amount) + 2px),
+    calc(100% - var(--ui-notch-amount) + 2px) 100%,
+    0 100%
+  );
+  --ui-notch-path-bl: polygon(
+    0 0,
+    100% 0,
+    100% 100%,
+    var(--ui-notch-amount) 100%,
+    0 calc(100% - var(--ui-notch-amount))
+  );
 }
 
 @layer base {
@@ -124,7 +128,7 @@ font-tertiary {
     --ink-400: #6c757d;
     --ink-500: #343a40;
     --menu-ink: #39414e;
-    --menu-ink-200: #616A79;
+    --menu-ink-200: #616a79;
     --radius: 0.5rem;
   }
 
@@ -423,14 +427,16 @@ select {
 }
 
 .bg-rainbow-gradient {
-  background: linear-gradient(99deg,
-      #6368ff 0.62%,
-      #cbecff 15.71%,
-      #7bff42 25.15%,
-      #2db2ff 42.6%,
-      #f00 60.53%,
-      #ded757 80.81%,
-      #ff00e1 98.74%);
+  background: linear-gradient(
+    99deg,
+    #6368ff 0.62%,
+    #cbecff 15.71%,
+    #7bff42 25.15%,
+    #2db2ff 42.6%,
+    #f00 60.53%,
+    #ded757 80.81%,
+    #ff00e1 98.74%
+  );
   background-size: 250% 250%;
   animation: gradientScroll 8s ease-in-out infinite;
   will-change: background-position;
@@ -450,14 +456,16 @@ select {
   inset: 0;
   border-radius: inherit;
   padding: 2px;
-  background: linear-gradient(99deg,
-      #6368ff 0.62%,
-      #cbecff 15.71%,
-      #7bff42 25.15%,
-      #2db2ff 42.6%,
-      #f00 60.53%,
-      #ded757 80.81%,
-      #ff00e1 98.74%);
+  background: linear-gradient(
+    99deg,
+    #6368ff 0.62%,
+    #cbecff 15.71%,
+    #7bff42 25.15%,
+    #2db2ff 42.6%,
+    #f00 60.53%,
+    #ded757 80.81%,
+    #ff00e1 98.74%
+  );
   background-size: 200% 200%;
   animation: gradientScroll 4s linear infinite;
   mask:
@@ -476,7 +484,7 @@ select {
   background: linear-gradient(99deg, #094b72 0.62%, #560036 91.19%);
 }
 
-.gradient-border>.inner {
+.gradient-border > .inner {
   background: #000;
 }
 
@@ -538,6 +546,7 @@ label {
   position: absolute;
   inset: 0;
   z-index: 0;
+  backdrop-filter: blur(0px);
   filter: url(#lg-dist);
   isolation: isolate;
 }
@@ -552,7 +561,7 @@ label {
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0);
 }
 
 .glass-specular {

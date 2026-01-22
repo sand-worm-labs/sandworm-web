@@ -73,16 +73,13 @@ export const MainHeader = () => {
 
           {/* Desktop Nav Links */}
           <motion.ul
-            className="hidden md:flex ml-10 text-[0.8rem]  rounded-full  py-2.5 px-8  glass-container relative"
+            className="hidden md:flex ml-10 text-[0.8rem]  rounded-full  py-2.5 px-8  glass-container relative "
             variants={headerContainer}
           >
             <div className="glass-filter" />
             <div className="glass-overlay" />
             <div className="glass-specular" />
-            <div className="glass-filter" />
-            <div className="glass-overlay" />
-            <div className="glass-specular" />
-            <div className="relative flex space-x-6 items-center">
+            <div className="relative flex space-x-6 items-center z-[3]">
               {navLinks.map(link => (
                 <li key={link.name}>
                   <Link

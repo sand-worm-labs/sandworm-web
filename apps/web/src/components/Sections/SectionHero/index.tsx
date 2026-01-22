@@ -7,7 +7,6 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 
 import { ChatLaunchInput } from "./ChatLaunchInputProps";
-import { Blob, Noise } from "./Blob";
 
 export const SectionHero = () => {
   const [input, setInput] = useState("");
@@ -147,7 +146,7 @@ export const SectionHero = () => {
             >
               <Button
                 type="button"
-                className="rounded-2xl p-2.5 h-fit m-0.5 text-black bg-white px-5 transition-colors duration-200 hover:bg-white/80"
+                className="rounded-2xl p-2.5 h-fit m-0.5 text-black bg-white px-5 transition-colors duration-200 hover:bg-white/80 border border-white"
                 onClick={() => router.push("/waitlist")}
               >
                 Get Started
@@ -161,7 +160,7 @@ export const SectionHero = () => {
             >
               <Button
                 type="button"
-                className="rounded-2xl p-2.5 h-fit m-0.5 text-white  bg-primary px-5 font-medium"
+                className="rounded-2xl p-2.5 h-fit m-0.5 text-white  bg-primary px-5 font-medium border border-white"
                 onClick={() => router.push("/waitlist")}
               >
                 Explore Worm AI
@@ -193,7 +192,7 @@ export const SectionHero = () => {
       <Noise /> */}
 
       {/* ════════════ Backed by ════════════ */}
-      <div className="absolute bottom-8 w-full text-center px-5 text-white flex flex-col items-center z-10">
+      <div className="absolute bottom-16 w-full text-center px-5 text-white flex flex-col items-center z-10">
         <motion.h2
           className="uppercase text-sm font-medium mb-5 text-[#C5C5C5]"
           initial={{ opacity: 0, y: 10 }}

@@ -30,7 +30,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
         flex-col 
         gap-2 
         justify-center 
-        items-center 
+        items-center font-primary 
       "
     >
       <Heading center title={title} subtitle={subtitle} />
@@ -43,13 +43,17 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
           <Button
             variant="default"
             onClick={() => reset && reset()}
-            className="bg-white text-black"
+            className="bg-primary text-white rounded-full"
           >
             {" "}
             {label ?? "Remove all filters"}
           </Button>
         )}
-        <Button variant="outline" onClick={() => router.push("/")}>
+        <Button
+          variant="outline"
+          className="rounded-full"
+          onClick={() => router.push("/")}
+        >
           Go Back
         </Button>
       </div>
