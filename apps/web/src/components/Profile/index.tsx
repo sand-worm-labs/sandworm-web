@@ -70,8 +70,8 @@ const ProfileComponent = () => {
     username: "sandworm",
     fullName: "Sandworm Labs",
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=sandworm",
-    followersCount: 1247,
-    followingCount: 89,
+    followersCount: 0,
+    followingCount: 0,
     statusText: "Building the future of collaborative blockchain analytics",
     statusUpdatedAt: "2024-01-15T10:30:00Z",
     memberSince: "2023-06-15",
@@ -163,7 +163,7 @@ const ProfileComponent = () => {
                     <img
                       src={mockProfile.avatar}
                       alt={mockProfile.username}
-                      className="w-32 h-32 rounded-full border-4 border-[#A308F0]"
+                      className="w-32 h-32 rounded-full "
                     />
                   ) : (
                     <div className="w-32 h-32 rounded-full bg-[#A308F0] flex items-center justify-center">
@@ -189,7 +189,7 @@ const ProfileComponent = () => {
                       className={`flex items-center gap-2 px-6 py-2 rounded-xl font-medium transition-color text-sm ${
                         isFollowing
                           ? "bg-[#E9ECEF] dark:bg-[#262A30] text-ink-100  dark:text-white hover:bg-opacity-80"
-                          : "bg-[#A308F0] text-white hover:bg-opacity-90"
+                          : "bg-black text-white hover:bg-opacity-90"
                       }`}
                     >
                       {isFollowing ? (
@@ -268,81 +268,6 @@ const ProfileComponent = () => {
                         )}
                       </div>
                     )}
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="bg-white dark:bg-[#010100] border border-[#E9ECEF] dark:border-[#262A30] rounded-2xl p-6">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 rounded-lg bg-[#A308F0] bg-opacity-10">
-                    <Zap strokeWidth={1.2} className="w-5 h-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-medium text-ink-100  dark:text-white">
-                      {mockProfile.stats?.queriesRun.toLocaleString()}
-                    </p>
-                    <p className="text-sm text-ink-200 dark:text-gray-400">
-                      Queries Run
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white dark:bg-[#010100] border border-[#E9ECEF] dark:border-[#262A30] rounded-2xl p-6">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 rounded-lg bg-[#A308F0] bg-opacity-10">
-                    <Database
-                      className="w-5 h-5 text-primary"
-                      strokeWidth={1.2}
-                    />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-medium text-ink-100  dark:text-white">
-                      {mockProfile.stats?.datasetsAnalyzed}
-                    </p>
-                    <p className="text-sm text-ink-200 dark:text-gray-400">
-                      Datasets Analyzed
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white dark:bg-[#010100] border border-[#E9ECEF] dark:border-[#262A30] rounded-2xl p-6">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 rounded-lg bg-[#A308F0] bg-opacity-10">
-                    <TrendingUp
-                      className="w-5 h-5 text-primary"
-                      strokeWidth={1.2}
-                    />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-medium text-ink-100  dark:text-white">
-                      {mockProfile.stats?.chainsTracked}
-                    </p>
-                    <p className="text-sm text-ink-200 dark:text-gray-400">
-                      Chains Tracked
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white dark:bg-[#010100] border border-[#E9ECEF] dark:border-[#262A30] rounded-2xl p-6">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 rounded-lg bg-[#A308F0] bg-opacity-10">
-                    <BarChart3
-                      className="w-5 h-5 text-primary"
-                      strokeWidth={1.2}
-                    />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-medium text-ink-100  dark:text-white">
-                      {mockProfile.stats?.totalViews.toLocaleString()}
-                    </p>
-                    <p className="text-sm text-ink-200 dark:text-gray-400">
-                      Total Views
-                    </p>
-                  </div>
                 </div>
               </div>
             </div>

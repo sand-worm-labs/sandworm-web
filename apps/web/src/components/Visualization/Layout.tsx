@@ -97,7 +97,12 @@ export default function Layout({
         setOpen={setUpgradeDialogOpen}
         currentPlan="open-source"
       />
-      <main className="flex flex-col h-screen flex-1 overflow-hidden relative">
+      <main
+        className="flex flex-col h-screen flex-1 overflow-hidden relative"
+        style={{
+          transition: "flex 0.2s ease-in-out",
+        }}
+      >
         {/* TOP BAR */}
         <div
           className={clsx(
@@ -126,7 +131,7 @@ export default function Layout({
         {/* BODY */}
         <div className="flex flex-1 min-h-0 overflow-hidden">
           {/* Editor */}
-          <div className="flex-1 min-w-0 overflow-hidden">{children}</div>
+          <div className="flex-grow flex overflow-hidden">{children}</div>
 
           {/* Right panel */}
           <NotebookPanel
