@@ -51,4 +51,5 @@ export enum ErrorCode {
 
   // Schedule Errors
   E600 = 'app.schedule.falied_to_create',
+  E601 = 'app.schedule.duplicate_schedule',
 };
