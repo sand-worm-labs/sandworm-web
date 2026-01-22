@@ -45,10 +45,15 @@ input CreateReusableComponentInput {
 }
 
 input CreateScheduleInput {
-  cron: String!
+  cron: String
+  days: String
   documentId: String!
+  hour: Float
   isActive: Boolean
+  minute: Float
   timezone: String!
+  type: ExecutionScheduleType!
+  weekdays: String
 }
 
 """User register request"""
@@ -470,8 +475,13 @@ input UpdateReusableComponentInput {
 
 input UpdateScheduleInput {
   cron: String
+  days: String
+  hour: Float
   isActive: Boolean
+  minute: Float
   timezone: String
+  type: ExecutionScheduleType
+  weekdays: String
 }
 
 """User update request"""
