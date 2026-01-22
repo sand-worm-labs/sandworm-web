@@ -1,6 +1,7 @@
-import { InputType } from '@nestjs/graphql';
-import { IsString, IsUUID, IsBoolean, IsOptional } from 'class-validator';
-import { UUIDField, StringField, BooleanFieldOptional } from '@sandworm/graphql';
+import { InputType, Field } from '@nestjs/graphql';
+import { IsString, IsUUID, IsBoolean, IsOptional, IsEnum, IsInt, Min, Max } from 'class-validator';
+import { UUIDField, StringField, BooleanFieldOptional, NumberFieldOptional } from '@sandworm/graphql';
+import { ExecutionScheduleType } from '@sandworm/postgresql-typeorm';
 
 @InputType()
 export class CreateScheduleInput {
@@ -8,9 +9,38 @@ export class CreateScheduleInput {
   @IsUUID()
   documentId: string;
 
-  @StringField()
+  @Field(() => ExecutionScheduleType)
+  @IsEnum(ExecutionScheduleType)
+  type: ExecutionScheduleType;
+
+  @NumberFieldOptional()
+  @IsInt()
+  @Min(0)
+  @Max(23)
+  @IsOptional()
+  hour?: number;
+
+  @NumberFieldOptional()
+  @IsInt()
+  @Min(0)
+  @Max(59)
+  @IsOptional()
+  minute?: number;
+
+  @StringField({ nullable: true })
   @IsString()
-  cron: string;
+  @IsOptional()
+  cron?: string;
+
+  @StringField({ nullable: true })
+  @IsString()
+  @IsOptional()
+  weekdays?: string;
+
+  @StringField({ nullable: true })
+  @IsString()
+  @IsOptional()
+  days?: string;
 
   @StringField()
   @IsString()
@@ -24,10 +54,39 @@ export class CreateScheduleInput {
 
 @InputType()
 export class UpdateScheduleInput {
+  @Field(() => ExecutionScheduleType, { nullable: true })
+  @IsEnum(ExecutionScheduleType)
+  @IsOptional()
+  type?: ExecutionScheduleType;
+
+  @NumberFieldOptional()
+  @IsInt()
+  @Min(0)
+  @Max(23)
+  @IsOptional()
+  hour?: number;
+
+  @NumberFieldOptional()
+  @IsInt()
+  @Min(0)
+  @Max(59)
+  @IsOptional()
+  minute?: number;
+
   @StringField({ nullable: true })
   @IsString()
   @IsOptional()
   cron?: string;
+
+  @StringField({ nullable: true })
+  @IsString()
+  @IsOptional()
+  weekdays?: string;
+
+  @StringField({ nullable: true })
+  @IsString()
+  @IsOptional()
+  days?: string;
 
   @StringField({ nullable: true })
   @IsString()
