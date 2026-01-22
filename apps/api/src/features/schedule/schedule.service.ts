@@ -65,6 +65,21 @@ export class ScheduleService {
       throw new ValidationException(ErrorCode.E003, 'Document not found');
     }
 
+    // Check for exact duplicate schedule
+    const duplicateSchedule = await this.checkForDuplicateSchedule(
+      documentId,
+      type,
+      { hour, minute, cron, weekdays, days },
+    );
+
+    if (duplicateSchedule) {
+      throw new ValidationException(
+        ErrorCode.E601,
+        `An identical schedule already exists (ID: ${duplicateSchedule.id}). ` +
+        `Type: ${type}, Time: ${this.getScheduleDescription(duplicateSchedule)}`,
+      );
+    }
+
     // Validate schedule type-specific fields
     this.validateScheduleInput(type, { hour, minute, cron, weekdays, days });
 
@@ -182,6 +197,82 @@ export class ScheduleService {
     });
 
     return Schedule.fromEntities(schedules);
+  }
+
+  /**
+   * Check if an identical schedule already exists
+   * Compares type and relevant time fields based on schedule type
+   */
+  private async checkForDuplicateSchedule(
+    documentId: string,
+    type: ExecutionScheduleType,
+    fields: {
+      hour?: number;
+      minute?: number;
+      cron?: string;
+      weekdays?: string;
+      days?: string;
+    },
+  ): Promise<ExecutionScheduleEntity | null> {
+    const whereClause: any = {
+      documentId,
+      type,
+    };
+
+    // Add type-specific fields to check for duplicates
+    switch (type) {
+      case ExecutionScheduleType.HOURLY:
+        whereClause.minute = fields.minute;
+        break;
+
+      case ExecutionScheduleType.DAILY:
+        whereClause.hour = fields.hour;
+        whereClause.minute = fields.minute;
+        break;
+
+      case ExecutionScheduleType.WEEKLY:
+        whereClause.hour = fields.hour;
+        whereClause.minute = fields.minute;
+        whereClause.weekdays = fields.weekdays;
+        break;
+
+      case ExecutionScheduleType.MONTHLY:
+        whereClause.hour = fields.hour;
+        whereClause.minute = fields.minute;
+        whereClause.days = fields.days;
+        break;
+
+      case ExecutionScheduleType.CRON:
+        whereClause.cron = fields.cron;
+        break;
+    }
+
+    return await this.scheduleRepository.findOne({ where: whereClause });
+  }
+
+  /**
+   * Get human-readable description of schedule for error messages
+   */
+  private getScheduleDescription(schedule: ExecutionScheduleEntity): string {
+    switch (schedule.type) {
+      case ExecutionScheduleType.HOURLY:
+        return `Every hour at :${schedule.minute}`;
+
+      case ExecutionScheduleType.DAILY:
+        return `Daily at ${schedule.hour}:${String(schedule.minute).padStart(2, '0')}`;
+
+      case ExecutionScheduleType.WEEKLY:
+        return `Weekly on days ${schedule.weekdays} at ${schedule.hour}:${String(schedule.minute).padStart(2, '0')}`;
+
+      case ExecutionScheduleType.MONTHLY:
+        return `Monthly on days ${schedule.days} at ${schedule.hour}:${String(schedule.minute).padStart(2, '0')}`;
+
+      case ExecutionScheduleType.CRON:
+        return `Cron: ${schedule.cron}`;
+
+      default:
+        return 'Unknown';
+    }
   }
 
   private validateScheduleInput(
