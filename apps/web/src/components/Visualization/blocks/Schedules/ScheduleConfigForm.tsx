@@ -155,23 +155,23 @@ function ScheduleConfigForm({
             </div>
           </div> */}
         </div>
-      </ScrollBar>
 
-      <div className="flex bg-white px-2 py-4 w-full space-x-2 sm:px-4 xl:px-6">
-        <button
-          onClick={onClose}
-          type="button"
-          className="flex-1 flex items-center text-center justify-center  rounded-full px-3 py-1.5 text-gray-500 text-sm hover:bg-gray-100 border border-gray-200"
-        >
-          Cancel
-        </button>
-        <button
-          type="submit"
-          className="flex-1 flex items-center text-center justify-center  rounded-full bg-base-400 px-3 py-1.5 text-sm hover:bg-primary-300 text-white"
-        >
-          Schedule run
-        </button>
-      </div>
+        <div className="flex bg-white px-2 py-4 w-full space-x-2 sm:px-4 xl:px-6">
+          <button
+            onClick={onClose}
+            type="button"
+            className="flex-1 flex items-center text-center justify-center  rounded-full px-3 py-1.5 text-gray-500 text-sm hover:bg-gray-100 border border-gray-200"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="flex-1 flex items-center text-center justify-center  rounded-full bg-base-400 px-3 py-1.5 text-sm hover:bg-primary-300 text-white"
+          >
+            Schedule run
+          </button>
+        </div>
+      </ScrollBar>
     </form>
   );
 }

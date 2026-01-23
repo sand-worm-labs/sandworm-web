@@ -4,8 +4,9 @@ import { XMarkIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
 import clsx from "clsx";
 import cronstrue from "cronstrue";
 import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
-import { ScheduleIcon } from "@/components/Assets/ScheduleIcon";
+import { ChevronRightIcon } from "lucide-react";
 
+import { ScheduleIcon } from "@/components/Assets/ScheduleIcon";
 import type {
   ExecutionSchedule,
   HourlySchedule,
@@ -20,7 +21,6 @@ import { PortalTooltip, Tooltip } from "../ToolTips";
 import ScrollBar from "../ScrollBar";
 
 import AddScheduleForm from "./AddScheduleForm";
-import { ChevronRightIcon } from "lucide-react";
 
 interface Props {
   workspaceId: string;
@@ -166,15 +166,15 @@ const CronSchedule = ({ schedule }: { schedule: CronSchedule }) => {
 
 const getScheduleBlock = (schedule: ExecutionSchedule) => {
   switch (schedule.type) {
-    case "hourly":
+    case "HOURLY":
       return <HourlySchedule schedule={schedule} />;
-    case "daily":
+    case "DAILY":
       return <DailySchedule schedule={schedule} />;
-    case "weekly":
+    case "WEEKLY":
       return <WeeklySchedule schedule={schedule} />;
-    case "monthly":
+    case "MONTHLY":
       return <MonthlySchedule schedule={schedule} />;
-    case "cron":
+    case "CRON":
       return <CronSchedule schedule={schedule} />;
     default:
       return null;
@@ -182,10 +182,13 @@ const getScheduleBlock = (schedule: ExecutionSchedule) => {
 };
 
 export default function Schedules(props: Props) {
-  const [schedules, { createSchedule, deleteSchedule }] = useSchedules(
+  const { schedules, loading, error, api } = useSchedules(
     props.workspaceId,
     props.documentId
   );
+
+  console.log("schedules", schedules);
+  const { createSchedule, deleteSchedule } = api;
 
   const [showAddForm, setShowAddForm] = useState(false);
 

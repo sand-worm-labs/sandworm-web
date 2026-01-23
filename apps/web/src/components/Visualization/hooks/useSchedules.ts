@@ -1,9 +1,8 @@
 import { useCallback, useMemo } from "react";
-import useSWR from "swr";
 
 import type { ExecutionSchedule, CreateSchedulePayload } from "@/types";
 import {
-  useGetScheduleQuery,
+  useGetSchedulesQuery,
   useCreateScheduleMutation,
   useDeleteScheduleMutation,
 } from "@/generated/graphql";
@@ -15,96 +14,119 @@ type API = {
   deleteSchedule: (id: string) => Promise<void>;
 };
 
-type UseSchedules = [ExecutionSchedule[], API];
+type UseSchedules = {
+  schedules: ExecutionSchedule[];
+  loading: boolean;
+  error: Error | undefined;
+  api: API;
+};
 
 export const useSchedules = (
   workspaceId: string,
-  docId: string
+  documentId: string
 ): UseSchedules => {
-  // Use SWR for caching
-  const { data, mutate } = useSWR<ExecutionSchedule[]>(
-    ["schedules", docId],
-    async () => {
-      const result = await useGetScheduleQuery({
-        variables: { input: { documentId: docId } },
-      });
-      return result.data?.schedules ?? [];
-    }
-  );
+  // Use Apollo's generated hooks directly - they handle caching
+  const { data, loading, error, refetch } = useGetSchedulesQuery({
+    variables: { input: { documentId } },
+    skip: !documentId,
+  });
 
-  const schedules = useMemo(() => data ?? [], [data]);
+  const schedules = useMemo(() => data?.schedules ?? [], [data?.schedules]);
 
   const [createScheduleMutation] = useCreateScheduleMutation();
   const [deleteScheduleMutation] = useDeleteScheduleMutation();
 
-  // Optimistic create
   const createSchedule = useCallback(
-    async (payload: CreateSchedulePayload) => {
-      // Generate a temporary ID for optimistic update
-      const tempId = `temp-${Date.now()}`;
-      const optimisticSchedule: ExecutionSchedule = {
-        id: tempId,
-        ...payload.scheduleParams,
-      };
+    async (payload: CreateSchedulePayload): Promise<ExecutionSchedule> => {
+      const result = await createScheduleMutation({
+        variables: {
+          workspaceId,
+          input: {
+            documentId,
+            ...payload.scheduleParams,
+          },
+        },
+        // Optimistic update
+        optimisticResponse: {
+          createSchedule: {
+            __typename: "ExecutionSchedule",
+            id: `temp-${Date.now()}`,
+            documentId,
+            lastExecutedAt: null,
+            nextExecutionAt: null,
+            ...payload.scheduleParams,
+          },
+        },
+        // Update cache after mutation
+        update: (cache, { data }) => {
+          if (!data?.createSchedule) return;
 
-      // Update cache optimistically
-      mutate([...schedules, optimisticSchedule], false);
+          cache.modify({
+            fields: {
+              schedules(existingSchedules = [], { toReference }) {
+                const newScheduleRef = toReference(data.createSchedule);
+                return [...existingSchedules, newScheduleRef];
+              },
+            },
+          });
+        },
+      });
 
-      try {
-        const result = await createScheduleMutation({
-          variables: { workspaceId, input: payload.scheduleParams },
-        });
-
-        const newSchedule = result.data?.createSchedule;
-        if (!newSchedule) throw new Error("Failed to create schedule");
-
-        // Replace temp schedule with real schedule
-        mutate(
-          schedules => [
-            ...(schedules?.filter(s => s.id !== tempId) ?? []),
-            newSchedule,
-          ],
-          false
-        );
-
-        return newSchedule;
-      } catch (err) {
-        // Rollback optimistic update on error
-        mutate(schedules, false);
-        throw err;
+      const newSchedule = result.data?.createSchedule;
+      if (!newSchedule) {
+        throw new Error("Failed to create schedule");
       }
+
+      return newSchedule;
     },
-    [schedules, createScheduleMutation, mutate, workspaceId]
+    [workspaceId, documentId, createScheduleMutation]
   );
 
-  // Optimistic delete
   const deleteSchedule = useCallback(
-    async (id: string) => {
-      const previous = schedules;
+    async (scheduleId: string): Promise<void> => {
+      const result = await deleteScheduleMutation({
+        variables: {
+          input: {
+            workspaceId,
+            documentId,
+            scheduleId,
+          },
+        },
+        // Optimistic update - remove from cache immediately
+        optimisticResponse: {
+          deleteSchedule: true,
+        },
+        // Update cache after mutation
+        update: (cache, { data }) => {
+          if (!data?.deleteSchedule) return;
 
-      // Optimistically remove schedule from cache
-      mutate(
-        schedules.filter(s => s.id !== id),
-        false
-      );
+          cache.modify({
+            fields: {
+              schedules(existingSchedules = [], { readField }) {
+                return existingSchedules.filter(
+                  (scheduleRef: any) =>
+                    readField("id", scheduleRef) !== scheduleId
+                );
+              },
+            },
+          });
+        },
+      });
 
-      try {
-        const result = await deleteScheduleMutation({
-          variables: { input: { id } },
-        });
-        if (!result.data?.deleteSchedule)
-          throw new Error("Failed to delete schedule");
-      } catch (err) {
-        // Rollback on error
-        mutate(previous, false);
-        throw err;
+      if (!result.data?.deleteSchedule) {
+        throw new Error("Failed to delete schedule");
       }
     },
-    [schedules, deleteScheduleMutation, mutate]
+    [workspaceId, documentId, deleteScheduleMutation]
   );
 
   return useMemo(
-    () => [schedules, { createSchedule, deleteSchedule }],
-    [schedules, createSchedule, deleteSchedule]
+    () => ({
+      schedules,
+      loading,
+      error,
+      api: { createSchedule, deleteSchedule },
+    }),
+    [schedules, loading, error, createSchedule, deleteSchedule]
   );
 };
