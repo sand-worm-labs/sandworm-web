@@ -56,9 +56,7 @@ input CreateScheduleInput {
   weekdays: String
 }
 
-"""
-User register request
-"""
+"""User register request"""
 input CreateUserInput {
   email: String!
   password: String!
@@ -134,9 +132,7 @@ type Environment {
   workspaceId: String!
 }
 
-"""
-The status of the Jupyter environment
-"""
+"""The status of the Jupyter environment"""
 enum EnvironmentStatus {
   FAILING
   RUNNING
@@ -158,9 +154,7 @@ input EnvironmentVariableInput {
   value: String!
 }
 
-"""
-The type of execution schedule
-"""
+"""The type of execution schedule"""
 enum ExecutionScheduleType {
   CRON
   DAILY
@@ -195,231 +189,125 @@ input ListSchedulesInput {
   documentId: String!
 }
 
-"""
-Login input
-"""
+"""Login input"""
 input LoginInput {
-  """
-  Email address
-  """
+  """Email address"""
   email: String!
 
-  """
-  Password
-  """
+  """Password"""
   password: String!
 }
 
 type Mutation {
-  """
-  Accept workspace invitation with hash from email
-  """
+  """Accept workspace invitation with hash from email"""
   acceptWorkspaceInvitation(hash: String!): Boolean!
 
-  """
-  Mark a document as a favorite
-  """
+  """Mark a document as a favorite"""
   addFavoriteDocument(input: FavoriteDocumentInput!): Document!
 
-  """
-  Create a new comment on a document
-  """
+  """Create a new comment on a document"""
   createComment(documentId: String!, input: CreateCommentInput!): Comment!
 
-  """
-  Create a new reusable component
-  """
-  createComponent(
-    input: CreateReusableComponentInput!
-    workspaceId: String!
-  ): ReusableComponent!
+  """Create a new reusable component"""
+  createComponent(input: CreateReusableComponentInput!, workspaceId: String!): ReusableComponent!
 
-  """
-  Create a component instance
-  """
-  createComponentInstance(
-    componentId: String!
-    input: CreateComponentInstanceInput!
-    workspaceId: String!
-  ): ReusableComponentInstance!
+  """Create a component instance"""
+  createComponentInstance(componentId: String!, input: CreateComponentInstanceInput!, workspaceId: String!): ReusableComponentInstance!
 
-  """
-  Create a new document in a workspace
-  """
+  """Create a new document in a workspace"""
   createDocument(input: CreateDocumentInput!, workspaceId: String!): Document!
 
-  """
-  Create a new execution schedule for a document
-  """
+  """Create a new execution schedule for a document"""
   createSchedule(input: CreateScheduleInput!, workspaceId: String!): Schedule!
 
-  """
-  Register new user
-  """
+  """Register new user"""
   createUser(input: CreateUserInput!): User!
 
-  """
-  Create a new workspace
-  """
+  """Create a new workspace"""
   createWorkspace(name: String!): Workspace!
 
-  """
-  Delete a comment (only by comment author)
-  """
+  """Delete a comment (only by comment author)"""
   deleteComment(input: DeleteCommentInput!): Boolean!
 
-  """
-  Delete a reusable component
-  """
+  """Delete a reusable component"""
   deleteComponent(componentId: String!, workspaceId: String!): Boolean!
 
-  """
-  Delete a component instance
-  """
-  deleteComponentInstance(
-    blockId: String!
-    componentId: String!
-    workspaceId: String!
-  ): Boolean!
+  """Delete a component instance"""
+  deleteComponentInstance(blockId: String!, componentId: String!, workspaceId: String!): Boolean!
 
-  """
-  Soft delete or permanently delete a document
-  """
+  """Soft delete or permanently delete a document"""
   deleteDocument(input: DeleteDocumentInput!): Document!
 
-  """
-  Delete a single environment variable
-  """
+  """Delete a single environment variable"""
   deleteEnvironmentVariable(variableId: String!, workspaceId: String!): Boolean!
 
-  """
-  Delete a file from the workspace
-  """
+  """Delete a file from the workspace"""
   deleteFile(input: DeleteFileInput!): Boolean!
 
-  """
-  Delete a schedule
-  """
+  """Delete a schedule"""
   deleteSchedule(input: DeleteScheduleInput!): Boolean!
 
-  """
-  Create a fork/duplicate of a document
-  """
+  """Create a fork/duplicate of a document"""
   duplicateDocument(input: DuplicateDocumentInput!): Document!
 
-  """
-  Follow User
-  """
+  """Follow User"""
   followUser(
-    """
-    Username of the profile
-    """
+    """Username of the profile"""
     username: String!
   ): Profile!
 
-  """
-  Invite a user to workspace by email
-  """
-  inviteUserToWorkspace(
-    email: String!
-    role: String
-    workspaceId: String!
-  ): Boolean!
+  """Invite a user to workspace by email"""
+  inviteUserToWorkspace(email: String!, role: String, workspaceId: String!): Boolean!
 
-  """
-  Sign in
-  """
+  """Sign in"""
   login(input: LoginInput!): AuthPayload!
 
-  """
-  Publish a document
-  """
+  """Publish a document"""
   publishDocument(documentId: String!, workspaceId: String!): Document!
 
-  """
-  Unmark a document as a favorite
-  """
+  """Unmark a document as a favorite"""
   removeFavoriteDocument(input: FavoriteDocumentInput!): Document!
 
-  """
-  Remove a user from workspace
-  """
+  """Remove a user from workspace"""
   removeUserFromWorkspace(userId: String!, workspaceId: String!): Boolean!
 
-  """
-  Restart the Jupyter environment
-  """
+  """Restart the Jupyter environment"""
   restartEnvironment(input: RestartEnvironmentInput!): Environment!
 
-  """
-  Restore a previously deleted document
-  """
+  """Restore a previously deleted document"""
   restoreDocument(input: RestoreDocumentInput!): Document!
 
-  """
-  Add or remove environment variables
-  """
-  setEnvironmentVariables(
-    input: SetEnvironmentVariablesInput!
-    workspaceId: String!
-  ): [EnvironmentVariable!]!
+  """Add or remove environment variables"""
+  setEnvironmentVariables(input: SetEnvironmentVariablesInput!, workspaceId: String!): [EnvironmentVariable!]!
 
-  """
-  Switch to a different workspace
-  """
+  """Switch to a different workspace"""
   switchWorkspace(workspaceId: String!): Boolean!
 
-  """
-  Unfollow User
-  """
+  """Unfollow User"""
   unfollowUser(
-    """
-    Username of the profile
-    """
+    """Username of the profile"""
     username: String!
   ): Profile!
 
-  """
-  Unpublish a document
-  """
+  """Unpublish a document"""
   unpublishDocument(documentId: String!, workspaceId: String!): Document!
 
-  """
-  Update a reusable component
-  """
-  updateComponent(
-    componentId: String!
-    input: UpdateReusableComponentInput!
-    workspaceId: String!
-  ): ReusableComponent!
+  """Update a reusable component"""
+  updateComponent(componentId: String!, input: UpdateReusableComponentInput!, workspaceId: String!): ReusableComponent!
 
-  """
-  Update document metadata
-  """
-  updateDocument(
-    documentId: String!
-    input: UpdateDocumentInput!
-    workspaceId: String!
-  ): Document!
+  """Update document metadata"""
+  updateDocument(documentId: String!, input: UpdateDocumentInput!, workspaceId: String!): Document!
 
-  """
-  Update an existing schedule
-  """
+  """Update an existing schedule"""
   updateSchedule(input: UpdateScheduleInput!, scheduleId: String!): Schedule!
 
-  """
-  Update current user
-  """
+  """Update current user"""
   updateUser(input: UpdateUserInput!): User!
 
-  """
-  Update user settings
-  """
+  """Update user settings"""
   updateUserSettings(input: UpdateUserSettingInput!): Boolean!
 
-  """
-  Update workspace info
-  """
+  """Update workspace info"""
   updateWorkspace(name: String, workspaceId: String!): Workspace!
 }
 
@@ -431,124 +319,76 @@ type Profile {
 }
 
 type Query {
-  """
-  Get a single comment by ID
-  """
+  """Get a single comment by ID"""
   comment(commentId: String!): Comment!
 
-  """
-  Get all comments for a document
-  """
+  """Get all comments for a document"""
   comments(documentId: String!): [Comment!]!
 
-  """
-  Get current user (from token)
-  """
+  """Get current user (from token)"""
   currentUser: AuthPayload!
 
-  """
-  Get environment details for a workspace
-  """
+  """Get environment details for a workspace"""
   environment(workspaceId: String!): Environment!
 
-  """
-  Get current environment status
-  """
+  """Get current environment status"""
   environmentStatus(workspaceId: String!): EnvironmentStatus!
 
-  """
-  Get all environment variables (values are masked)
-  """
+  """Get all environment variables (values are masked)"""
   environmentVariables(workspaceId: String!): [EnvironmentVariable!]!
 
-  """
-  Check if a file exists
-  """
+  """Check if a file exists"""
   fileExists(fileName: String!, workspaceId: String!): Boolean!
 
-  """
-  Get all users
-  """
+  """Get all users"""
   getAllUsers(input: GetAllUsersInput!): Int!
 
-  """
-  Get a reusable component by ID
-  """
+  """Get a reusable component by ID"""
   getComponent(componentId: String!, workspaceId: String!): ReusableComponent!
 
-  """
-  Get a single document by ID
-  """
+  """Get a single document by ID"""
   getDocument(documentId: String!, workspaceId: String!): Document!
 
-  """
-  Get User favorite documents
-  """
+  """Get User favorite documents"""
   getFavoriteDocuments(workspaceId: String!): [Document!]!
 
-  """
-  Users who follow a given user
-  """
+  """Users who follow a given user"""
   getUserFollowers(userId: String!): [User!]!
 
-  """
-  Users that a given user is following
-  """
+  """Users that a given user is following"""
   getUserFollowing(userId: String!): [User!]!
 
-  """
-  Get user workspace info with role
-  """
+  """Get user workspace info with role"""
   getUserWorkspaceInfo: WorkspaceInfo!
 
-  """
-  Get User workspaces
-  """
+  """Get User workspaces"""
   getUserWorkspaces: [Workspace!]!
 
-  """
-  Get workspace by ID
-  """
+  """Get workspace by ID"""
   getWorkspace(workspaceId: String!): Workspace!
 
-  """
-  Get all reusable components in a workspace
-  """
+  """Get all reusable components in a workspace"""
   getWorkspaceComponents(workspaceId: String!): [ReusableComponent!]!
 
-  """
-  Get all documents in a workspace
-  """
+  """Get all documents in a workspace"""
   getWorkspaceDocuments(workspaceId: String!): [Document!]!
 
-  """
-  Get workspace members
-  """
+  """Get workspace members"""
   getWorkspaceMembers(workspaceId: String!): [WorkspaceMember!]!
 
-  """
-  List all files in a workspace
-  """
+  """List all files in a workspace"""
   listFiles(input: ListFilesInput!): [SandwormFile!]!
 
-  """
-  Get Profile
-  """
+  """Get Profile"""
   profile(
-    """
-    Username of the profile
-    """
+    """Username of the profile"""
     username: String!
   ): Profile!
 
-  """
-  Get a single schedule by ID
-  """
+  """Get a single schedule by ID"""
   schedule(scheduleId: String!): Schedule!
 
-  """
-  Get all schedules for a document
-  """
+  """Get all schedules for a document"""
   schedules(input: ListSchedulesInput!): [Schedule!]!
   tags: [String!]!
 }
@@ -644,9 +484,7 @@ input UpdateScheduleInput {
   weekdays: String
 }
 
-"""
-User update request
-"""
+"""User update request"""
 input UpdateUserInput {
   bio: String
   email: String
@@ -714,9 +552,7 @@ type WorkspaceMember {
   userId: String!
 }
 
-"""
-Price plan of the workspace
-"""
+"""Price plan of the workspace"""
 enum WorkspacePlan {
   ENTERPRISE
   FREE
