@@ -89,7 +89,7 @@ export class AppGateway
 
   handleConnection(client: Socket): void {
     this.logger.log(`Client connected: ${client.id}`);
-
+    
     client.on('error', (error) => {
       this.logger.error(`Socket error for client ${client.id}`, error);
     });

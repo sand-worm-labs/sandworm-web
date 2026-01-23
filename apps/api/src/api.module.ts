@@ -18,6 +18,7 @@ import { ScheduleModule } from '@/features/schedule/schedule.module';
 import { JupyterModule } from './infrastructure/jupyter/jupyter.module';
 import { WebsocketModule } from './infrastructure/websocket/websocket.module';
 import { AppGateway } from './infrastructure/websocket/app.gateway';
+import { YjsModule } from './features/collaboration/yjs/yjs.module';
 
 @Module({
     imports: [
@@ -45,6 +46,12 @@ import { AppGateway } from './infrastructure/websocket/app.gateway';
         FileModule,
         TagModule,
         ScheduleModule,
+
+        // Websocket
+        WebsocketModule,
+
+        // Yjs
+        YjsModule
     ],
 })
 export class ApiModule { }

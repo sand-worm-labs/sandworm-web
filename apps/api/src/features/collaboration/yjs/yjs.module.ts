@@ -40,6 +40,7 @@ import { YjsGateway } from './yjs.gateway'
   exports: [
     YjsDocumentService,
     PersistorFactory,
+    YjsGateway
   ],
 })
 export class YjsModule { }

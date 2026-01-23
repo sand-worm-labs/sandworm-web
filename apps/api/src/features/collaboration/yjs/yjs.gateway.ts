@@ -61,9 +61,11 @@ interface RequestData {
 }
 
 @WebSocketGateway({
-    path: '/yjs',
+    namespace: 'yjs',
     maxPayload: 1024 * 1024 * 1024,
-    transports: ['websocket'],
+    transports: ['websocket', "polling"],
+    pingTimeout: 60000,
+    pingInterval: 25000,
 })
 export class YjsGateway
     implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
@@ -88,6 +90,7 @@ export class YjsGateway
 
     async handleConnection(client: WebSocket, req: http.IncomingMessage) {
         try {
+            this.logger.log("YJS client connected");
             // Get request data (auth, document, etc.)
             const data = await this.getRequestData(req);
 
