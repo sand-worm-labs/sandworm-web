@@ -1,17 +1,17 @@
-mutation CreateSchedule($workspaceId: String!, $input: CreateScheduleInput!) {
+mutation CreateSchedule($workspaceId: ID!, $input: CreateScheduleInput!) {
   createSchedule(workspaceId: $workspaceId, input: $input) {
     id
-    documentId
-    cron
     type
-    isActive
     hour
     minute
-    timezone
-    days
+    cron
     weekdays
+    days
+    timezone
+    isActive
     lastExecutedAt
     nextExecutionAt
+    documentId
   }
 }
 

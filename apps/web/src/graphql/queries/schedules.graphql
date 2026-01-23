@@ -1,17 +1,17 @@
-query GetSchedules($input: ListSchedulesInput!) {
+query GetSchedules($input: GetSchedulesInput!) {
   schedules(input: $input) {
     id
-    documentId
-    cron
     type
-    isActive
     hour
     minute
-    timezone
-    days
+    cron
     weekdays
+    days
+    timezone
+    isActive
     lastExecutedAt
     nextExecutionAt
+    documentId
   }
 }
 

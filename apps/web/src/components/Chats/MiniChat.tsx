@@ -4,8 +4,6 @@ import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { Transition } from "@headlessui/react";
 
-import ScrollBar from "../Visualization/blocks/ScrollBar";
-
 import { MiniChatInput } from "./MiniChatInput";
 
 interface MiniChatHeaderProps {
@@ -15,9 +13,16 @@ interface MiniChatHeaderProps {
 export const MiniChatHeader: React.FC<MiniChatHeaderProps> = ({ onCancel }) => {
   return (
     <header className="flex items-center justify-between px-4 py-2 bg-white dark:bg-black border-b border-gray-200 dark:border-slate-800 ">
-      <h3 className="text-sm font-medium leading-5 text-slate-900 dark:text-slate-100">
-        Sandworm agent
-      </h3>
+      <div className="flex-col flex">
+        <h3 className="text-sm font-medium leading-5 text-slate-900 dark:text-slate-100">
+          Sandworm agent
+        </h3>
+
+        <p className="text-ink-400 text-xs ">
+          Explanation of what this drawer does, explanation of what this drawer
+          does,Click or drag and drop files here to upload them
+        </p>
+      </div>
 
       <button
         type="button"
@@ -153,7 +158,7 @@ export const MiniChat: React.FC<MiniChatProps> = ({ visible, onClose }) => {
       <div className="w-[324px] flex flex-col overflow-y-auto border-l dark:border-[#262A30] border-gray-200 h-full bg-white dark:bg-black ">
         <MiniChatHeader onCancel={onClose} />
 
-        <div className="flex-1 overflow-y-auto py-6 px-4">
+        <div className="flex-1 overflow-y-auto py-6 px-4 ">
           {messages.length === 0 ? (
             <MiniChatEmptyState />
           ) : (
@@ -168,9 +173,9 @@ export const MiniChat: React.FC<MiniChatProps> = ({ visible, onClose }) => {
                   <div
                     className={`${
                       msg.isUser
-                        ? "bg-[#F7E4E1] dark:bg-[#121417]"
+                        ? "bg-[#DEFCFE] dark:bg-[#121417]"
                         : "bg-[#F1F3F4] dark:bg-[#121417]"
-                    } text-ink-500 dark:text-ink-300 px-4 py-2 rounded-2xl max-w-[75%]`}
+                    } text-ink-500 dark:text-ink-300 px-4 py-2 rounded-2xl max-w-[75%] text-sm`}
                   >
                     {msg.text}
                   </div>
