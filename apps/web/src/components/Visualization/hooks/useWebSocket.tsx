@@ -1,10 +1,10 @@
 import type { Socket } from "socket.io-client";
 import { io } from "socket.io-client";
-import { useContext, createContext, useEffect, useState, useRef } from "react";
+import { useContext, createContext, useEffect, useState } from "react";
 import { validate } from "uuid";
 
 import { useStringQuery } from "./useQueryArgs";
-import { useSession } from "./useAuth";
+import { useSession, tokenStorage } from "./useAuth";
 
 const Context = createContext<Socket | null>(null);
 
@@ -12,18 +12,16 @@ interface Props {
   children: React.ReactNode;
 }
 
-export function useWebsocket() {
+// Provider contains all logic - only mounted once
+export function WebsocketProvider({ children }: Props) {
   const [socket, setSocket] = useState<Socket | null>(null);
   const session = useSession({ redirectToLogin: false });
-  const workspaceId = useStringQuery("workspaceId");
-  const currentWorkspaceRef = useRef<string | null>(null);
+  const workspaceId = useStringQuery("workspace");
 
   useEffect(() => {
     if (!session.user?.id) {
       return;
     }
-
-    console.log("[WebSocket] Creating socket connection");
 
     const url = new URL(
       process.env.NEXT_PUBLIC_API_URL || "http://localhost:8003"
@@ -32,6 +30,12 @@ export function useWebsocket() {
     const socketPath =
       url.pathname === "/" ? undefined : `${url.pathname}/socket.io`;
 
+    console.log("[WebSocket] Creating socket connection to:", withoutPathname);
+
+    const token = tokenStorage.getToken();
+
+    console.log("my precious token", token);
+
     const newSocket = io(withoutPathname, {
       withCredentials: true,
       path: socketPath,
@@ -39,14 +43,13 @@ export function useWebsocket() {
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionAttempts: 5,
-      extraHeaders: {
-        Authorization: `Bearer ${session}`,
+      auth: {
+        token,
       },
     });
-    console.log(newSocket);
 
     newSocket.on("connect", () => {
-      console.log("[WebSocket] Connected:", newSocket.id);
+      console.log("[WebSocket] Connected, id:", newSocket.id);
     });
 
     newSocket.on("connect_error", error => {
@@ -55,23 +58,22 @@ export function useWebsocket() {
 
     newSocket.on("disconnect", (reason: Socket.DisconnectReason) => {
       console.log("[WebSocket] Disconnected:", reason);
-
       if (reason === "io server disconnect") {
-        console.log("[WebSocket] Server disconnect, reconnecting in 1s...");
-        setTimeout(() => {
-          newSocket.connect();
-        }, 1000);
+        setTimeout(() => newSocket.connect(), 1000);
       }
+    });
+
+    // Debug logging
+    newSocket.onAny((eventName, ...args) => {
+      console.log("[WebSocket] Received:", eventName, args);
     });
 
     setSocket(newSocket);
 
     return () => {
-      console.log("[WebSocket] Cleaning up socket connection");
+      console.log("[WebSocket] Cleaning up");
       newSocket.removeAllListeners();
       newSocket.disconnect();
-      setSocket(null);
-      currentWorkspaceRef.current = null;
     };
   }, [session.user?.id]);
 
@@ -80,43 +82,23 @@ export function useWebsocket() {
       return;
     }
 
-    if (currentWorkspaceRef.current === workspaceId) {
-      return;
-    }
-
-    console.log("[WebSocket] Joining workspace:", workspaceId);
-
-    const handleConnect = () => {
-      console.log("[WebSocket] Connected, joining workspace:", workspaceId);
+    const onConnect = () => {
+      console.log("[WebSocket] Emitting join-workspace:", workspaceId);
       socket.emit("join-workspace", { workspaceId });
-      currentWorkspaceRef.current = workspaceId;
     };
 
-    if (socket.connected) {
-      handleConnect();
-    }
-
-    socket.on("connect", handleConnect);
+    socket.on("connect", onConnect);
+    socket.emit("join-workspace", { workspaceId });
 
     return () => {
-      console.log("[WebSocket] Leaving workspace:", workspaceId);
-      socket.off("connect", handleConnect);
-
-      if (currentWorkspaceRef.current === workspaceId) {
-        socket.emit("leave-workspace", { workspaceId });
-        currentWorkspaceRef.current = null;
-      }
+      socket.off("connect", onConnect);
+      socket.emit("leave-workspace", { workspaceId });
     };
   }, [socket, workspaceId]);
 
-  return socket;
-}
-
-export function WebsocketProvider({ children }: Props) {
-  const socket = useWebsocket();
   return <Context.Provider value={socket}>{children}</Context.Provider>;
 }
 
-export function useWebsocketContext() {
+export function useWebsocket() {
   return useContext(Context);
 }
