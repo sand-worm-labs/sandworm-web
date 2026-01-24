@@ -19,6 +19,7 @@ interface Props {
   onClose: () => void;
   onSubmit: (payload: CreateSchedulePayload) => Promise<ExecutionSchedule>;
 }
+
 function AddScheduleForm({ documentId, onClose, onSubmit }: Props) {
   const form = useForm<ScheduleFormValues>({
     mode: "onSubmit",
@@ -28,18 +29,37 @@ function AddScheduleForm({ documentId, onClose, onSubmit }: Props) {
   const onSubmitHandler = useCallback(
     async (data: ScheduleFormValues) => {
       try {
-        if ("hour" in data) {
-          if (data.amPm === "PM") {
-            data.hour = data.hour === 12 ? 12 : data.hour + 12;
+        const { amPm, notifyOnFailure, days, weekdays, hour, type, ...rest } =
+          data;
+
+        // Convert hour to 24-hour format
+        let hour24 = hour;
+        if (hour !== undefined) {
+          if (amPm === "PM") {
+            hour24 = hour === 12 ? 12 : hour + 12;
           } else {
-            data.hour %= 12;
+            hour24 = hour === 12 ? 0 : hour;
           }
         }
 
-        // TODO fix data and data.notifications passing separately
-        await onSubmit({
-          scheduleParams: data,
-        });
+        // Convert arrays to strings (schema expects String, not Array)
+        const daysString = Array.isArray(days) ? days.join(",") : days;
+        const weekdaysString = Array.isArray(weekdays)
+          ? weekdays.join(",")
+          : weekdays;
+
+        // Convert type to uppercase to match GraphQL enum
+        const typeUppercase = type?.toUpperCase() as ScheduleParams["type"];
+
+        const scheduleParams: ScheduleParams = {
+          ...rest,
+          type: typeUppercase,
+          hour: hour24,
+          days: daysString,
+          weekdays: weekdaysString,
+        };
+
+        await onSubmit({ scheduleParams });
       } finally {
         onClose();
       }

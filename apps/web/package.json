@@ -45,6 +45,7 @@
     "@nanostores/react": "1.0.0",
     "@next/bundle-analyzer": "^15.0.1",
     "@radix-ui/react-visually-hidden": "^1.2.3",
+    "@react-icons/all-files": "^4.1.0",
     "@react-oauth/google": "^0.13.4",
     "@replit/codemirror-vscode-keymap": "^6.0.2",
     "@sandworm/editor": "workspace:*",

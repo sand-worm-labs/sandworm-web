@@ -90,7 +90,7 @@ export const AccountDropdown = () => {
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
-            className="px-2 flex items-center gap-3 bg-white rounded-xl h-12 border border-[#E9ECEF] dark:bg-[#0D1014] w-full justify-between dark:border-[#262A30]"
+            className="px-2 flex items-center gap-3 bg-white rounded-xl h-12 border border-[#E9ECEF] dark:bg-[#0D1014] w-full justify-between dark:border-[#262A30] hover:bg-white"
           >
             <div className="flex items-center gap-3">
               <Avatar className="h-9 w-9">
@@ -168,7 +168,7 @@ export const AccountDropdown = () => {
             <Link href={`/workspace/${workspaceId}/settings`}>
               <Button
                 variant="outline"
-                className="w-full bg-[#F8F9FA] dark:bg-[#0C1015] border border-[#DEE2E6] dark:border-[#262A30] text-[0.8rem] py-5 rounded-lg"
+                className="w-full bg-[#F8F9FA] dark:bg-[#0C1015] border border-[#DEE2E6] dark:border-[#262A30] text-[0.8rem] py-5 rounded-lg hover:bg-white"
               >
                 Settings
               </Button>

@@ -58,6 +58,8 @@ const config: Config = {
         "hero-base": "#141B1F",
 
         border: "hsl(var(--border))",
+        "border-secondary": "hsl(var(--border-secondary))",
+
         input: "hsl(var(--input))",
         inputBg: "hsl(var(--bg-input))",
 

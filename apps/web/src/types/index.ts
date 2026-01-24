@@ -233,14 +233,14 @@ export type ApiWorkspace = Workspace & {
 ─────────────────────────────── */
 
 export type HourlySchedule = {
-  type: "hourly";
+  type: "HOURLY";
   documentId: string;
   minute: number;
   timezone: string;
 };
 
 export type DailySchedule = {
-  type: "daily";
+  type: "DAILY";
   documentId: string;
   hour: number;
   minute: number;
@@ -248,7 +248,7 @@ export type DailySchedule = {
 };
 
 export type WeeklySchedule = {
-  type: "weekly";
+  type: "WEEKLY";
   documentId: string;
   hour: number;
   minute: number;
@@ -257,7 +257,7 @@ export type WeeklySchedule = {
 };
 
 export type MonthlySchedule = {
-  type: "monthly";
+  type: "MONTHLY";
   documentId: string;
   hour: number;
   minute: number;
@@ -266,7 +266,7 @@ export type MonthlySchedule = {
 };
 
 export type CronSchedule = {
-  type: "cron";
+  type: "CRON";
   documentId: string;
   cron: string;
   timezone: string;

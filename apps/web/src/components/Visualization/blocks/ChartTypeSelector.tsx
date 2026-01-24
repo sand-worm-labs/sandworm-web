@@ -169,7 +169,7 @@ export default function ChartTypeSelector({
                           <>
                             <div className="h-12 w-20 rounded-sm">
                               <Image
-                                width={48}
+                                width={80}
                                 height={80}
                                 rel="preload"
                                 src={`/img/charts/${option.icon}`}
@@ -177,7 +177,7 @@ export default function ChartTypeSelector({
                                 className={
                                   option.comingSoon
                                     ? "grayscale opacity-50"
-                                    : "filter hue-rotate-[230deg] saturate-120 brightness-110"
+                                    : "filter hue-rotate-[170deg] saturate-125 brightness-11"
                                 }
                               />
                             </div>
