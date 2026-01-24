@@ -64,10 +64,15 @@ export type CreateReusableComponentInput = {
 };
 
 export type CreateScheduleInput = {
-  cron: Scalars['String']['input'];
+  cron?: InputMaybe<Scalars['String']['input']>;
+  days?: InputMaybe<Scalars['String']['input']>;
   documentId: Scalars['String']['input'];
+  hour?: InputMaybe<Scalars['Float']['input']>;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  minute?: InputMaybe<Scalars['Float']['input']>;
   timezone: Scalars['String']['input'];
+  type: ExecutionScheduleType;
+  weekdays?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** User register request */
@@ -723,8 +728,13 @@ export type UpdateReusableComponentInput = {
 
 export type UpdateScheduleInput = {
   cron?: InputMaybe<Scalars['String']['input']>;
+  days?: InputMaybe<Scalars['String']['input']>;
+  hour?: InputMaybe<Scalars['Float']['input']>;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  minute?: InputMaybe<Scalars['Float']['input']>;
   timezone?: InputMaybe<Scalars['String']['input']>;
+  type?: InputMaybe<ExecutionScheduleType>;
+  weekdays?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** User update request */
@@ -865,6 +875,49 @@ export type DeleteCommentMutationVariables = Exact<{
 
 export type DeleteCommentMutation = { __typename?: 'Mutation', deleteComment: boolean };
 
+export type CreateComponentMutationVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+  input: CreateReusableComponentInput;
+}>;
+
+
+export type CreateComponentMutation = { __typename?: 'Mutation', createComponent: { __typename?: 'ReusableComponent', id: string, blockId: string, documentId: string, title: string, type: ReusableComponentType, state: string, instancesCreated: boolean, createdAt: any, updatedAt: any, instances: Array<{ __typename?: 'ReusableComponentInstance', id: string, blockId: string, documentId: string, reusableComponentId: string, createdAt: any, updatedAt: any }> } };
+
+export type UpdateComponentMutationVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+  componentId: Scalars['String']['input'];
+  input: UpdateReusableComponentInput;
+}>;
+
+
+export type UpdateComponentMutation = { __typename?: 'Mutation', updateComponent: { __typename?: 'ReusableComponent', id: string, blockId: string, documentId: string, title: string, type: ReusableComponentType, state: string, instancesCreated: boolean, createdAt: any, updatedAt: any, instances: Array<{ __typename?: 'ReusableComponentInstance', id: string, blockId: string, documentId: string, reusableComponentId: string, createdAt: any, updatedAt: any }> } };
+
+export type DeleteComponentMutationVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+  componentId: Scalars['String']['input'];
+}>;
+
+
+export type DeleteComponentMutation = { __typename?: 'Mutation', deleteComponent: boolean };
+
+export type CreateComponentInstanceMutationVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+  componentId: Scalars['String']['input'];
+  input: CreateComponentInstanceInput;
+}>;
+
+
+export type CreateComponentInstanceMutation = { __typename?: 'Mutation', createComponentInstance: { __typename?: 'ReusableComponentInstance', id: string, blockId: string, documentId: string, reusableComponentId: string, createdAt: any, updatedAt: any } };
+
+export type DeleteComponentInstanceMutationVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+  componentId: Scalars['String']['input'];
+  blockId: Scalars['String']['input'];
+}>;
+
+
+export type DeleteComponentInstanceMutation = { __typename?: 'Mutation', deleteComponentInstance: boolean };
+
 export type CreateDocumentMutationVariables = Exact<{
   workspaceId: Scalars['String']['input'];
   input: CreateDocumentInput;
@@ -961,7 +1014,7 @@ export type CreateScheduleMutationVariables = Exact<{
 }>;
 
 
-export type CreateScheduleMutation = { __typename?: 'Mutation', createSchedule: { __typename?: 'Schedule', id: string, documentId: string, cron?: string | null, type: ExecutionScheduleType, isActive: boolean, hour?: number | null, minute?: number | null, timezone?: string | null, days?: string | null, weekdays?: string | null, lastExecutedAt?: any | null, nextExecutionAt?: any | null } };
+export type CreateScheduleMutation = { __typename?: 'Mutation', createSchedule: { __typename?: 'Schedule', id: string, type: ExecutionScheduleType, hour?: number | null, minute?: number | null, cron?: string | null, weekdays?: string | null, days?: string | null, timezone?: string | null, isActive: boolean, lastExecutedAt?: any | null, nextExecutionAt?: any | null, documentId: string } };
 
 export type DeleteScheduleMutationVariables = Exact<{
   input: DeleteScheduleInput;
@@ -1041,6 +1094,21 @@ export type GetDocumentCommentsQueryVariables = Exact<{
 
 export type GetDocumentCommentsQuery = { __typename?: 'Query', comments: Array<{ __typename?: 'Comment', id: string, documentId: string, authorId: string, body: string, createdAt: any, updatedAt: any }> };
 
+export type GetComponentQueryVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+  componentId: Scalars['String']['input'];
+}>;
+
+
+export type GetComponentQuery = { __typename?: 'Query', getComponent: { __typename?: 'ReusableComponent', id: string, blockId: string, documentId: string, title: string, type: ReusableComponentType, state: string, instancesCreated: boolean, createdAt: any, updatedAt: any, instances: Array<{ __typename?: 'ReusableComponentInstance', id: string, blockId: string, documentId: string, reusableComponentId: string, createdAt: any, updatedAt: any }> } };
+
+export type GetWorkspaceComponentsQueryVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+}>;
+
+
+export type GetWorkspaceComponentsQuery = { __typename?: 'Query', getWorkspaceComponents: Array<{ __typename?: 'ReusableComponent', id: string, blockId: string, documentId: string, title: string, type: ReusableComponentType, state: string, instancesCreated: boolean, createdAt: any, updatedAt: any, instances: Array<{ __typename?: 'ReusableComponentInstance', id: string, blockId: string, documentId: string, reusableComponentId: string, createdAt: any, updatedAt: any }> }> };
+
 export type GetDocumentQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
   documentId: Scalars['String']['input'];
@@ -1097,7 +1165,7 @@ export type GetSchedulesQueryVariables = Exact<{
 }>;
 
 
-export type GetSchedulesQuery = { __typename?: 'Query', schedules: Array<{ __typename?: 'Schedule', id: string, documentId: string, cron?: string | null, type: ExecutionScheduleType, isActive: boolean, hour?: number | null, minute?: number | null, timezone?: string | null, days?: string | null, weekdays?: string | null, lastExecutedAt?: any | null, nextExecutionAt?: any | null }> };
+export type GetSchedulesQuery = { __typename?: 'Query', schedules: Array<{ __typename?: 'Schedule', id: string, type: ExecutionScheduleType, hour?: number | null, minute?: number | null, cron?: string | null, weekdays?: string | null, days?: string | null, timezone?: string | null, isActive: boolean, lastExecutedAt?: any | null, nextExecutionAt?: any | null, documentId: string }> };
 
 export type GetScheduleQueryVariables = Exact<{
   scheduleId: Scalars['String']['input'];
@@ -1387,6 +1455,224 @@ export function useDeleteCommentMutation(baseOptions?: Apollo.MutationHookOption
 export type DeleteCommentMutationHookResult = ReturnType<typeof useDeleteCommentMutation>;
 export type DeleteCommentMutationResult = Apollo.MutationResult<DeleteCommentMutation>;
 export type DeleteCommentMutationOptions = Apollo.BaseMutationOptions<DeleteCommentMutation, DeleteCommentMutationVariables>;
+export const CreateComponentDocument = gql`
+    mutation CreateComponent($workspaceId: String!, $input: CreateReusableComponentInput!) {
+  createComponent(workspaceId: $workspaceId, input: $input) {
+    id
+    blockId
+    documentId
+    title
+    type
+    state
+    instancesCreated
+    instances {
+      id
+      blockId
+      documentId
+      reusableComponentId
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type CreateComponentMutationFn = Apollo.MutationFunction<CreateComponentMutation, CreateComponentMutationVariables>;
+
+/**
+ * __useCreateComponentMutation__
+ *
+ * To run a mutation, you first call `useCreateComponentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateComponentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createComponentMutation, { data, loading, error }] = useCreateComponentMutation({
+ *   variables: {
+ *      workspaceId: // value for 'workspaceId'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateComponentMutation(baseOptions?: Apollo.MutationHookOptions<CreateComponentMutation, CreateComponentMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateComponentMutation, CreateComponentMutationVariables>(CreateComponentDocument, options);
+      }
+export type CreateComponentMutationHookResult = ReturnType<typeof useCreateComponentMutation>;
+export type CreateComponentMutationResult = Apollo.MutationResult<CreateComponentMutation>;
+export type CreateComponentMutationOptions = Apollo.BaseMutationOptions<CreateComponentMutation, CreateComponentMutationVariables>;
+export const UpdateComponentDocument = gql`
+    mutation UpdateComponent($workspaceId: String!, $componentId: String!, $input: UpdateReusableComponentInput!) {
+  updateComponent(
+    workspaceId: $workspaceId
+    componentId: $componentId
+    input: $input
+  ) {
+    id
+    blockId
+    documentId
+    title
+    type
+    state
+    instancesCreated
+    instances {
+      id
+      blockId
+      documentId
+      reusableComponentId
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type UpdateComponentMutationFn = Apollo.MutationFunction<UpdateComponentMutation, UpdateComponentMutationVariables>;
+
+/**
+ * __useUpdateComponentMutation__
+ *
+ * To run a mutation, you first call `useUpdateComponentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateComponentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateComponentMutation, { data, loading, error }] = useUpdateComponentMutation({
+ *   variables: {
+ *      workspaceId: // value for 'workspaceId'
+ *      componentId: // value for 'componentId'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateComponentMutation(baseOptions?: Apollo.MutationHookOptions<UpdateComponentMutation, UpdateComponentMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateComponentMutation, UpdateComponentMutationVariables>(UpdateComponentDocument, options);
+      }
+export type UpdateComponentMutationHookResult = ReturnType<typeof useUpdateComponentMutation>;
+export type UpdateComponentMutationResult = Apollo.MutationResult<UpdateComponentMutation>;
+export type UpdateComponentMutationOptions = Apollo.BaseMutationOptions<UpdateComponentMutation, UpdateComponentMutationVariables>;
+export const DeleteComponentDocument = gql`
+    mutation DeleteComponent($workspaceId: String!, $componentId: String!) {
+  deleteComponent(workspaceId: $workspaceId, componentId: $componentId)
+}
+    `;
+export type DeleteComponentMutationFn = Apollo.MutationFunction<DeleteComponentMutation, DeleteComponentMutationVariables>;
+
+/**
+ * __useDeleteComponentMutation__
+ *
+ * To run a mutation, you first call `useDeleteComponentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteComponentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteComponentMutation, { data, loading, error }] = useDeleteComponentMutation({
+ *   variables: {
+ *      workspaceId: // value for 'workspaceId'
+ *      componentId: // value for 'componentId'
+ *   },
+ * });
+ */
+export function useDeleteComponentMutation(baseOptions?: Apollo.MutationHookOptions<DeleteComponentMutation, DeleteComponentMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteComponentMutation, DeleteComponentMutationVariables>(DeleteComponentDocument, options);
+      }
+export type DeleteComponentMutationHookResult = ReturnType<typeof useDeleteComponentMutation>;
+export type DeleteComponentMutationResult = Apollo.MutationResult<DeleteComponentMutation>;
+export type DeleteComponentMutationOptions = Apollo.BaseMutationOptions<DeleteComponentMutation, DeleteComponentMutationVariables>;
+export const CreateComponentInstanceDocument = gql`
+    mutation CreateComponentInstance($workspaceId: String!, $componentId: String!, $input: CreateComponentInstanceInput!) {
+  createComponentInstance(
+    workspaceId: $workspaceId
+    componentId: $componentId
+    input: $input
+  ) {
+    id
+    blockId
+    documentId
+    reusableComponentId
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type CreateComponentInstanceMutationFn = Apollo.MutationFunction<CreateComponentInstanceMutation, CreateComponentInstanceMutationVariables>;
+
+/**
+ * __useCreateComponentInstanceMutation__
+ *
+ * To run a mutation, you first call `useCreateComponentInstanceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateComponentInstanceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createComponentInstanceMutation, { data, loading, error }] = useCreateComponentInstanceMutation({
+ *   variables: {
+ *      workspaceId: // value for 'workspaceId'
+ *      componentId: // value for 'componentId'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateComponentInstanceMutation(baseOptions?: Apollo.MutationHookOptions<CreateComponentInstanceMutation, CreateComponentInstanceMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateComponentInstanceMutation, CreateComponentInstanceMutationVariables>(CreateComponentInstanceDocument, options);
+      }
+export type CreateComponentInstanceMutationHookResult = ReturnType<typeof useCreateComponentInstanceMutation>;
+export type CreateComponentInstanceMutationResult = Apollo.MutationResult<CreateComponentInstanceMutation>;
+export type CreateComponentInstanceMutationOptions = Apollo.BaseMutationOptions<CreateComponentInstanceMutation, CreateComponentInstanceMutationVariables>;
+export const DeleteComponentInstanceDocument = gql`
+    mutation DeleteComponentInstance($workspaceId: String!, $componentId: String!, $blockId: String!) {
+  deleteComponentInstance(
+    workspaceId: $workspaceId
+    componentId: $componentId
+    blockId: $blockId
+  )
+}
+    `;
+export type DeleteComponentInstanceMutationFn = Apollo.MutationFunction<DeleteComponentInstanceMutation, DeleteComponentInstanceMutationVariables>;
+
+/**
+ * __useDeleteComponentInstanceMutation__
+ *
+ * To run a mutation, you first call `useDeleteComponentInstanceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteComponentInstanceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteComponentInstanceMutation, { data, loading, error }] = useDeleteComponentInstanceMutation({
+ *   variables: {
+ *      workspaceId: // value for 'workspaceId'
+ *      componentId: // value for 'componentId'
+ *      blockId: // value for 'blockId'
+ *   },
+ * });
+ */
+export function useDeleteComponentInstanceMutation(baseOptions?: Apollo.MutationHookOptions<DeleteComponentInstanceMutation, DeleteComponentInstanceMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteComponentInstanceMutation, DeleteComponentInstanceMutationVariables>(DeleteComponentInstanceDocument, options);
+      }
+export type DeleteComponentInstanceMutationHookResult = ReturnType<typeof useDeleteComponentInstanceMutation>;
+export type DeleteComponentInstanceMutationResult = Apollo.MutationResult<DeleteComponentInstanceMutation>;
+export type DeleteComponentInstanceMutationOptions = Apollo.BaseMutationOptions<DeleteComponentInstanceMutation, DeleteComponentInstanceMutationVariables>;
 export const CreateDocumentDocument = gql`
     mutation CreateDocument($workspaceId: String!, $input: CreateDocumentInput!) {
   createDocument(workspaceId: $workspaceId, input: $input) {
@@ -1969,17 +2255,17 @@ export const CreateScheduleDocument = gql`
     mutation CreateSchedule($workspaceId: String!, $input: CreateScheduleInput!) {
   createSchedule(workspaceId: $workspaceId, input: $input) {
     id
-    documentId
-    cron
     type
-    isActive
     hour
     minute
-    timezone
-    days
+    cron
     weekdays
+    days
+    timezone
+    isActive
     lastExecutedAt
     nextExecutionAt
+    documentId
   }
 }
     `;
@@ -2475,6 +2761,119 @@ export type GetDocumentCommentsQueryHookResult = ReturnType<typeof useGetDocumen
 export type GetDocumentCommentsLazyQueryHookResult = ReturnType<typeof useGetDocumentCommentsLazyQuery>;
 export type GetDocumentCommentsSuspenseQueryHookResult = ReturnType<typeof useGetDocumentCommentsSuspenseQuery>;
 export type GetDocumentCommentsQueryResult = Apollo.QueryResult<GetDocumentCommentsQuery, GetDocumentCommentsQueryVariables>;
+export const GetComponentDocument = gql`
+    query GetComponent($workspaceId: String!, $componentId: String!) {
+  getComponent(workspaceId: $workspaceId, componentId: $componentId) {
+    id
+    blockId
+    documentId
+    title
+    type
+    state
+    instancesCreated
+    instances {
+      id
+      blockId
+      documentId
+      reusableComponentId
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useGetComponentQuery__
+ *
+ * To run a query within a React component, call `useGetComponentQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetComponentQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetComponentQuery({
+ *   variables: {
+ *      workspaceId: // value for 'workspaceId'
+ *      componentId: // value for 'componentId'
+ *   },
+ * });
+ */
+export function useGetComponentQuery(baseOptions: Apollo.QueryHookOptions<GetComponentQuery, GetComponentQueryVariables> & ({ variables: GetComponentQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetComponentQuery, GetComponentQueryVariables>(GetComponentDocument, options);
+      }
+export function useGetComponentLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetComponentQuery, GetComponentQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetComponentQuery, GetComponentQueryVariables>(GetComponentDocument, options);
+        }
+export function useGetComponentSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetComponentQuery, GetComponentQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetComponentQuery, GetComponentQueryVariables>(GetComponentDocument, options);
+        }
+export type GetComponentQueryHookResult = ReturnType<typeof useGetComponentQuery>;
+export type GetComponentLazyQueryHookResult = ReturnType<typeof useGetComponentLazyQuery>;
+export type GetComponentSuspenseQueryHookResult = ReturnType<typeof useGetComponentSuspenseQuery>;
+export type GetComponentQueryResult = Apollo.QueryResult<GetComponentQuery, GetComponentQueryVariables>;
+export const GetWorkspaceComponentsDocument = gql`
+    query GetWorkspaceComponents($workspaceId: String!) {
+  getWorkspaceComponents(workspaceId: $workspaceId) {
+    id
+    blockId
+    documentId
+    title
+    type
+    state
+    instancesCreated
+    instances {
+      id
+      blockId
+      documentId
+      reusableComponentId
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useGetWorkspaceComponentsQuery__
+ *
+ * To run a query within a React component, call `useGetWorkspaceComponentsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetWorkspaceComponentsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetWorkspaceComponentsQuery({
+ *   variables: {
+ *      workspaceId: // value for 'workspaceId'
+ *   },
+ * });
+ */
+export function useGetWorkspaceComponentsQuery(baseOptions: Apollo.QueryHookOptions<GetWorkspaceComponentsQuery, GetWorkspaceComponentsQueryVariables> & ({ variables: GetWorkspaceComponentsQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetWorkspaceComponentsQuery, GetWorkspaceComponentsQueryVariables>(GetWorkspaceComponentsDocument, options);
+      }
+export function useGetWorkspaceComponentsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetWorkspaceComponentsQuery, GetWorkspaceComponentsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetWorkspaceComponentsQuery, GetWorkspaceComponentsQueryVariables>(GetWorkspaceComponentsDocument, options);
+        }
+export function useGetWorkspaceComponentsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetWorkspaceComponentsQuery, GetWorkspaceComponentsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetWorkspaceComponentsQuery, GetWorkspaceComponentsQueryVariables>(GetWorkspaceComponentsDocument, options);
+        }
+export type GetWorkspaceComponentsQueryHookResult = ReturnType<typeof useGetWorkspaceComponentsQuery>;
+export type GetWorkspaceComponentsLazyQueryHookResult = ReturnType<typeof useGetWorkspaceComponentsLazyQuery>;
+export type GetWorkspaceComponentsSuspenseQueryHookResult = ReturnType<typeof useGetWorkspaceComponentsSuspenseQuery>;
+export type GetWorkspaceComponentsQueryResult = Apollo.QueryResult<GetWorkspaceComponentsQuery, GetWorkspaceComponentsQueryVariables>;
 export const GetDocumentDocument = gql`
     query GetDocument($workspaceId: String!, $documentId: String!) {
   getDocument(workspaceId: $workspaceId, documentId: $documentId) {
@@ -2814,17 +3213,17 @@ export const GetSchedulesDocument = gql`
     query GetSchedules($input: ListSchedulesInput!) {
   schedules(input: $input) {
     id
-    documentId
-    cron
     type
-    isActive
     hour
     minute
-    timezone
-    days
+    cron
     weekdays
+    days
+    timezone
+    isActive
     lastExecutedAt
     nextExecutionAt
+    documentId
   }
 }
     `;

@@ -9,11 +9,11 @@ import { ChevronRightIcon } from "lucide-react";
 import { ScheduleIcon } from "@/components/Assets/ScheduleIcon";
 import type {
   ExecutionSchedule,
-  HourlySchedule,
-  DailySchedule,
-  WeeklySchedule,
-  MonthlySchedule,
-  CronSchedule,
+  HourlySchedule as HourlyScheduleType,
+  DailySchedule as DailyScheduleType,
+  WeeklySchedule as WeeklyScheduleType,
+  MonthlySchedule as MonthlyScheduleType,
+  CronSchedule as CronScheduleType,
 } from "@/types";
 
 import { useSchedules } from "../../hooks/useSchedules";
@@ -21,6 +21,21 @@ import { PortalTooltip, Tooltip } from "../ToolTips";
 import ScrollBar from "../ScrollBar";
 
 import AddScheduleForm from "./AddScheduleForm";
+
+// Helper to parse string "0,1,2" or array [0,1,2] into number array
+const parseNumberList = (
+  value: string | number[] | null | undefined
+): number[] => {
+  if (!value) return [];
+  if (Array.isArray(value)) return value;
+  if (typeof value === "string") {
+    return value
+      .split(",")
+      .map(s => parseInt(s.trim(), 10))
+      .filter(n => !isNaN(n));
+  }
+  return [];
+};
 
 interface Props {
   workspaceId: string;
@@ -31,9 +46,10 @@ interface Props {
   onPublish: () => void;
   publishing: boolean;
 }
+
 const getPrettyTz = (tz: string) => tz.replace(/_/g, " ");
 
-const HourlySchedule = ({ schedule }: { schedule: HourlySchedule }) => {
+const HourlySchedule = ({ schedule }: { schedule: HourlyScheduleType }) => {
   const { minute, timezone } = schedule;
   const minuteStr = `${minute}`.padStart(2, "0");
 
@@ -47,7 +63,7 @@ const HourlySchedule = ({ schedule }: { schedule: HourlySchedule }) => {
   );
 };
 
-const DailySchedule = ({ schedule }: { schedule: DailySchedule }) => {
+const DailySchedule = ({ schedule }: { schedule: DailyScheduleType }) => {
   const { hour, minute, timezone } = schedule;
   const hour12 = hour % 12 || 12;
   const amPm = hour < 12 ? "AM" : "PM";
@@ -65,11 +81,13 @@ const DailySchedule = ({ schedule }: { schedule: DailySchedule }) => {
   );
 };
 
-const WeeklySchedule = ({ schedule }: { schedule: WeeklySchedule }) => {
-  const { hour, minute, timezone, weekdays } = schedule;
+const WeeklySchedule = ({ schedule }: { schedule: WeeklyScheduleType }) => {
+  const { hour, minute, timezone, weekdays: weekdaysRaw } = schedule;
   const hour12 = hour % 12 || 12;
   const amPm = hour < 12 ? "AM" : "PM";
   const minuteStr = `${minute}`.padStart(2, "0");
+
+  const weekdays = parseNumberList(weekdaysRaw);
 
   const prettyWeekDays = weekdays.map(day => {
     switch (day) {
@@ -104,19 +122,20 @@ const WeeklySchedule = ({ schedule }: { schedule: WeeklySchedule }) => {
   );
 };
 
-const MonthlySchedule = ({ schedule }: { schedule: MonthlySchedule }) => {
-  const { hour, minute, timezone, days } = schedule;
+const MonthlySchedule = ({ schedule }: { schedule: MonthlyScheduleType }) => {
+  const { hour, minute, timezone, days: daysRaw } = schedule;
   const hour12 = hour % 12 || 12;
   const amPm = hour < 12 ? "AM" : "PM";
   const minuteStr = `${minute}`.padStart(2, "0");
 
-  const prettyDays =
-    days?.map(dIndex => {
-      const d = dIndex + 1;
-      const s = ["th", "st", "nd", "rd"];
-      const v = d % 100;
-      return d + (s[(v - 20) % 10] || s[v] || s[0]);
-    }) ?? [];
+  const days = parseNumberList(daysRaw);
+
+  const prettyDays = days.map(dIndex => {
+    const d = dIndex + 1;
+    const s = ["th", "st", "nd", "rd"];
+    const v = d % 100;
+    return d + (s[(v - 20) % 10] || s[v] || s[0]);
+  });
 
   return (
     <div>
@@ -130,7 +149,7 @@ const MonthlySchedule = ({ schedule }: { schedule: MonthlySchedule }) => {
   );
 };
 
-const CronSchedule = ({ schedule }: { schedule: CronSchedule }) => {
+const CronSchedule = ({ schedule }: { schedule: CronScheduleType }) => {
   const { cron, timezone } = schedule;
   const tooltipText = cronstrue.toString(cron, {
     locale: "en",
@@ -180,72 +199,6 @@ const getScheduleBlock = (schedule: ExecutionSchedule) => {
       return null;
   }
 };
-
-export default function Schedules(props: Props) {
-  const { schedules, loading, error, api } = useSchedules(
-    props.workspaceId,
-    props.documentId
-  );
-
-  console.log("schedules", schedules);
-  const { createSchedule, deleteSchedule } = api;
-
-  const [showAddForm, setShowAddForm] = useState(false);
-
-  const onAddSchedule = useCallback(() => {
-    setShowAddForm(true);
-  }, [setShowAddForm]);
-
-  const onCloseAddForm = useCallback(() => {
-    setShowAddForm(false);
-  }, [setShowAddForm]);
-
-  const onDeleteSchedule = useCallback(
-    (id: string) => {
-      return () => deleteSchedule(id);
-    },
-    [deleteSchedule]
-  );
-
-  return (
-    <Transition
-      as="div"
-      show={props.visible}
-      className="top-0 right-0 h-full absolute bg-white z-30"
-      enter="transition-transform duration-300"
-      enterFrom="transform translate-x-full"
-      enterTo="transform translate-x-0"
-      leave="transition-transform duration-300"
-      leaveFrom="transform translate-x-0"
-      leaveTo="transform translate-x-full"
-    >
-      <button
-        type="button"
-        className="absolute z-10 top-7 transform rounded-full border border-gray-300 text-gray-400 dark:border-[#262A30] bg-white hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
-        onClick={props.onHide}
-      >
-        <ChevronDoubleRightIcon className="w-3 h-3" />
-      </button>
-      {showAddForm ? (
-        <AddScheduleForm
-          documentId={props.documentId}
-          onClose={onCloseAddForm}
-          onSubmit={createSchedule}
-        />
-      ) : (
-        <ScheduleList
-          schedules={schedules}
-          isLimited={false}
-          isPublished={props.isPublished}
-          onAddSchedule={onAddSchedule}
-          onDeleteSchedule={onDeleteSchedule}
-          onPublish={props.onPublish}
-          publishing={props.publishing}
-        />
-      )}
-    </Transition>
-  );
-}
 
 interface ScheduleListProps {
   schedules: ExecutionSchedule[];
@@ -398,5 +351,71 @@ function ScheduleList(props: ScheduleListProps) {
         </div>
       )}
     </div>
+  );
+}
+
+export default function Schedules(props: Props) {
+  const { schedules, loading, error, api } = useSchedules(
+    props.workspaceId,
+    props.documentId
+  );
+
+  console.log("schedules", schedules);
+  const { createSchedule, deleteSchedule } = api;
+
+  const [showAddForm, setShowAddForm] = useState(false);
+
+  const onAddSchedule = useCallback(() => {
+    setShowAddForm(true);
+  }, [setShowAddForm]);
+
+  const onCloseAddForm = useCallback(() => {
+    setShowAddForm(false);
+  }, [setShowAddForm]);
+
+  const onDeleteSchedule = useCallback(
+    (id: string) => {
+      return () => deleteSchedule(id);
+    },
+    [deleteSchedule]
+  );
+
+  return (
+    <Transition
+      as="div"
+      show={props.visible}
+      className="top-0 right-0 h-full absolute bg-white z-30"
+      enter="transition-transform duration-300"
+      enterFrom="transform translate-x-full"
+      enterTo="transform translate-x-0"
+      leave="transition-transform duration-300"
+      leaveFrom="transform translate-x-0"
+      leaveTo="transform translate-x-full"
+    >
+      <button
+        type="button"
+        className="absolute z-10 top-7 transform rounded-full border border-gray-300 text-gray-400 dark:border-[#262A30] bg-white hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
+        onClick={props.onHide}
+      >
+        <ChevronDoubleRightIcon className="w-3 h-3" />
+      </button>
+      {showAddForm ? (
+        <AddScheduleForm
+          documentId={props.documentId}
+          onClose={onCloseAddForm}
+          onSubmit={createSchedule}
+        />
+      ) : (
+        <ScheduleList
+          schedules={schedules}
+          isLimited={false}
+          isPublished={props.isPublished}
+          onAddSchedule={onAddSchedule}
+          onDeleteSchedule={onDeleteSchedule}
+          onPublish={props.onPublish}
+          publishing={props.publishing}
+        />
+      )}
+    </Transition>
   );
 }

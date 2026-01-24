@@ -38,13 +38,13 @@ const WeekdaySelector = (props: WeekdaySelectorProps) => {
     <Menu>
       {({ open }) => (
         <>
-          <Menu.Button className="inline-flex justify-between w-full px-2 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300">
+          <Menu.Button className="inline-flex justify-between w-full px-2 py-2 text-sm font-medium text-gray-700 bg-white border-[1.5px] border-border-secondary rounded-[10px] shadow-none focus:outline-none focus:ring-primary/20 focus:ring focus:border-primary/20 h-10">
             {currentValue.length > 0 ? (
               <div className="flex justify-start items-center gap-x-2 gap-y-2 flex-wrap">
                 {currentValue.map(dayIndex => (
                   <div
                     key={dayIndex}
-                    className="flex items-center bg-gray-50 rounded-sm px-2 gap-x-1 py-0.5 text-sm border border-gray-200"
+                    className="flex items-center bg-gray-50 rounded-sm px-2 gap-x-1 py-0.5 text-sm border border-gray-200 "
                   >
                     <span>{orderedWeekdays[dayIndex]}</span>
                     <button
@@ -73,7 +73,7 @@ const WeekdaySelector = (props: WeekdaySelectorProps) => {
           >
             <Menu.Items
               static
-              className="absolute w-56 mt-2 origin-top-right bg-white border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+              className="absolute w-56 mt-2 origin-top-right bg-white border border-gray-200 divide-y divide-gray-100 rounded-2xl shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
             >
               <div className="px-1 py-1">
                 {orderedWeekdays.map((day, dayIndex) => (
@@ -83,12 +83,12 @@ const WeekdaySelector = (props: WeekdaySelectorProps) => {
                         type="button"
                         className={`${
                           active ? "bg-gray-100" : ""
-                        } group flex items-center px-2 py-2 text-sm cursor-pointer`}
+                        } group flex items-center px-2 py-2 text-sm cursor-pointer hover:bg-primary/20 w-full rounded-lg text-menu-ink-200`}
                         onClick={() => toggleDay(dayIndex)}
                       >
                         <div className="flex items-center gap-x-2">
                           {currentValue.includes(dayIndex) ? (
-                            <CheckIcon className="h-4 w-4 text-green-500" />
+                            <CheckIcon className="h-4 w-4 text-primary" />
                           ) : (
                             <div className="w-4 h-4" />
                           )}

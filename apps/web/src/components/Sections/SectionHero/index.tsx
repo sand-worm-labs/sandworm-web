@@ -115,12 +115,10 @@ export const SectionHero = () => {
             animate="visible"
           >
             <div className="relative py-6 w-full">
-              <motion.h1
-                variants={itemVariants}
-                className="mx-auto  leading-[1.3] px-3 lg:px-0 lg:text-[2.9rem] text-3xl font-primary font-semibold roobert"
-              >
+              <h1 className="mx-auto leading-[1.3] px-3 lg:px-0 lg:text-[2.9rem] text-3xl font-primary font-semibold ">
                 Deep, clean Blockchain Data Analysis
-              </motion.h1>
+              </h1>
+
               <motion.p
                 variants={itemVariants}
                 className="text-custom-gray mt-5 mb-3 lg:max-w-[35rem] mx-auto font-primary text-base font-medium"

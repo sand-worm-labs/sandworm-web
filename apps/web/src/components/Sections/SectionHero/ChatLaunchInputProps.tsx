@@ -1,12 +1,12 @@
 "use client";
 
 import React, { forwardRef } from "react";
-import { PiPaperPlaneTilt } from "react-icons/pi";
 import { Button } from "@sandworm/ui/components/button";
 import { Textarea } from "@sandworm/ui/components/textarea";
 
 import { StopIcon } from "@/components/Chats/icons";
 import { Binocular } from "@/components/Assets/Binocular";
+import { PaperPlaneTilt } from "@/components/Assets/PaperPlaneTilt";
 
 // ⬢ Interface ⬢
 // =====================================
@@ -77,7 +77,7 @@ export const ChatLaunchInput = forwardRef<
               className="rounded-full p-2.5 h-fit m-0.5 text-custom-light-gray-2 bg-primary"
               onClick={onSubmit}
             >
-              <PiPaperPlaneTilt size={16} />
+              <PaperPlaneTilt />
             </Button>
           )}
         </div>
