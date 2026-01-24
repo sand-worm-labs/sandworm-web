@@ -27,16 +27,16 @@ function getWSProvider(
   userId: string | null,
   publishedAt: string | null
 ): WebsocketProvider {
-  const id = getDocId(documentId, isDataApp, clock, publishedAt);
-  const wsUrl = `${NEXT_PUBLIC_API_WS_URL()}/yjs/`;
+  // Don't use room name - just pass empty string or documentId
+  const wsUrl = `${NEXT_PUBLIC_API_WS_URL()}/yjs`;
 
-  const provider = new WebsocketProvider(wsUrl, id, yDoc, {
+  const provider = new WebsocketProvider(wsUrl, "", yDoc, {
     connect: true,
     params: {
       documentId,
       clock: clock.toString(),
-      isDataApp: isDataApp ? "true" : "false",
-      userId: userId ?? "",
+      isApp: isDataApp ? "true" : "false",
+      ...(userId && { userId }),
     },
     resyncInterval: 30000,
   });
