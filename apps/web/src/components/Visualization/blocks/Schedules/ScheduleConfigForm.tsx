@@ -57,14 +57,14 @@ function ScheduleConfigForm({
           <div>
             <label
               htmlFor="scheduleType"
-              className="block text-sm font-medium leading-6 text-gray-900"
+              className="block text-sm font-medium leading-6 text-ink-100"
             >
               Schedule type
             </label>
             <select
               {...form.register("type")}
               defaultValue="monthly"
-              className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-gray-300 focus-visible:outline-primary focus:ring-1 focus:ring-primary sm:text-sm sm:leading-6 "
+              className="mt-2 block w-full rounded-[10px] border-0 py-1.5 pl-3 pr-10 text-ink-500 ring-[1.5px] ring-border-secondary focus-visible:outline-primary focus:ring-1 focus:ring-primary sm:text-sm sm:leading-6 "
             >
               <option value="hourly">Hourly</option>
               <option value="daily">Daily</option>
@@ -78,13 +78,13 @@ function ScheduleConfigForm({
           <div>
             <label
               htmlFor="timezone"
-              className="block text-sm font-medium leading-6 text-gray-900"
+              className="block text-sm font-medium leading-6 text-ink-100"
             >
               Timezone
             </label>
             <select
               {...form.register("timezone", { required: true })}
-              className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-gray-300 focus:ring-2 focus:ring-primary focus-visible:outline-primary sm:text-sm sm:leading-6"
+              className="mt-2 block w-full rounded-[10px] border-0 py-1.5 pl-3 pr-10 text-ink-500 ring-[1.5px] ring-border-secondary focus:ring-2 focus:ring-primary focus-visible:outline-primary sm:text-sm sm:leading-6"
               defaultValue={userTimezone}
             >
               {tzList.map(timezone => (
@@ -156,7 +156,7 @@ function ScheduleConfigForm({
           </div> */}
         </div>
 
-        <div className="flex bg-white px-2 py-4 w-full space-x-2 sm:px-4 xl:px-6">
+        <div className="flex bg-white  py-4  px-0 w-full space-x-2 ">
           <button
             onClick={onClose}
             type="button"
