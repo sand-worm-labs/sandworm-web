@@ -1,4 +1,4 @@
-import { Map, List } from "immutable";
+import { List } from "immutable";
 import {
   createContext,
   useCallback,
@@ -13,8 +13,14 @@ import type {
   APIReusableComponent,
   UpdateReusableComponent,
 } from "@/types";
-
-import { NEXT_PUBLIC_API_URL } from "../utils/env";
+import {
+  useGetWorkspaceComponentsQuery,
+  useCreateComponentMutation,
+  useUpdateComponentMutation,
+  useDeleteComponentMutation,
+  useCreateComponentInstanceMutation,
+  useDeleteComponentInstanceMutation,
+} from "@/generated/graphql";
 
 import { useWebsocket } from "./useWebSocket";
 
@@ -24,7 +30,7 @@ type API = {
   create: (
     workspaceId: string,
     data: Omit<NewReusableComponent, "id"> & { id: string },
-    documenTitle: string,
+    documentTitle: string,
     documentIcon: string
   ) => void;
   update: (
@@ -48,19 +54,19 @@ type API = {
 type State = Map<string, ReusableComponents>;
 
 const Context = createContext<[State, API]>([
-  Map(),
+  new Map(),
   {
-    create: async () => {
+    create: () => {
       throw new Error(
         "Attempted to call component create without ReusableComponentsProvider"
       );
     },
-    update: async () => {
+    update: () => {
       throw new Error(
         "Attempted to call component update without ReusableComponentsProvider"
       );
     },
-    remove: async () => {
+    remove: () => {
       throw new Error(
         "Attempted to call component remove without ReusableComponentsProvider"
       );
@@ -70,7 +76,7 @@ const Context = createContext<[State, API]>([
         "Attempted to call createInstance without ReusableComponentsProvider"
       );
     },
-    removeInstance: async () => {
+    removeInstance: () => {
       throw new Error(
         "Attempted to call removeInstance without ReusableComponentsProvider"
       );
@@ -82,6 +88,7 @@ type UseReusableComponents = [
   { data: ReusableComponents; isLoading: boolean },
   API,
 ];
+
 export const useReusableComponents = (
   workspaceId: string
 ): UseReusableComponents => {
@@ -93,65 +100,90 @@ export const useReusableComponents = (
 };
 
 interface Props {
+  workspaceId: string;
   children: React.ReactNode;
 }
-export function ReusableComponentsProvider(props: Props) {
+
+export function ReusableComponentsProvider({ workspaceId, children }: Props) {
   const socket = useWebsocket();
-  const [state, setState] = useState<State>(Map());
+  const [state, setState] = useState<State>(new Map());
 
+  const { data, loading } = useGetWorkspaceComponentsQuery({
+    variables: { workspaceId },
+    skip: !workspaceId,
+  });
+
+  const [createComponentMutation] = useCreateComponentMutation();
+  const [updateComponentMutation] = useUpdateComponentMutation();
+  const [deleteComponentMutation] = useDeleteComponentMutation();
+  const [createInstanceMutation] = useCreateComponentInstanceMutation();
+  const [deleteInstanceMutation] = useDeleteComponentInstanceMutation();
+
+  // Sync query data to state
   useEffect(() => {
-    if (!socket) {
-      return;
+    if (data?.getWorkspaceComponents) {
+      setState(prev => {
+        const next = new Map(prev);
+        next.set(
+          workspaceId,
+          List(data.getWorkspaceComponents as APIReusableComponent[])
+        );
+        return next;
+      });
     }
+  }, [data, workspaceId]);
 
-    const onReusableComponents = (data: {
+  // Socket listeners
+  useEffect(() => {
+    if (!socket) return;
+
+    const onReusableComponents = (payload: {
       workspaceId: string;
       components: APIReusableComponent[];
     }) => {
-      setState(state => state.set(data.workspaceId, List(data.components)));
+      setState(prev => {
+        const next = new Map(prev);
+        next.set(payload.workspaceId, List(payload.components));
+        return next;
+      });
     };
 
-    socket.on("workspace-components", onReusableComponents);
-
-    const onReusableComponentUpdate = (data: {
+    const onReusableComponentUpdate = (payload: {
       workspaceId: string;
       component: APIReusableComponent;
     }) => {
-      setState(state => {
-        const reusableComponents = state.get(
-          data.workspaceId,
-          List<APIReusableComponent>()
-        );
-        const index = reusableComponents.findIndex(
-          rc => rc.id === data.component.id
-        );
+      setState(prev => {
+        const next = new Map(prev);
+        const components = next.get(payload.workspaceId) ?? List();
+        const index = components.findIndex(c => c.id === payload.component.id);
 
-        return state.set(
-          data.workspaceId,
+        next.set(
+          payload.workspaceId,
           index === -1
-            ? reusableComponents.push(data.component)
-            : reusableComponents.set(index, data.component)
+            ? components.push(payload.component)
+            : components.set(index, payload.component)
         );
+        return next;
       });
     };
 
-    socket.on("workspace-component-update", onReusableComponentUpdate);
-
-    const onReusableComponentRemoved = (data: {
+    const onReusableComponentRemoved = (payload: {
       workspaceId: string;
       componentId: string;
     }) => {
-      setState(state => {
-        const reusableComponents = state.get(
-          data.workspaceId,
-          List<APIReusableComponent>()
+      setState(prev => {
+        const next = new Map(prev);
+        const components = next.get(payload.workspaceId) ?? List();
+        next.set(
+          payload.workspaceId,
+          components.filter(c => c.id !== payload.componentId)
         );
-        return state.set(
-          data.workspaceId,
-          reusableComponents.filter(rc => rc.id !== data.componentId)
-        );
+        return next;
       });
     };
+
+    socket.on("workspace-components", onReusableComponents);
+    socket.on("workspace-component-update", onReusableComponentUpdate);
     socket.on("workspace-component-removed", onReusableComponentRemoved);
 
     return () => {
@@ -168,15 +200,13 @@ export function ReusableComponentsProvider(props: Props) {
       documentTitle: string,
       documentIcon: string
     ) => {
-      // optimistic update
-      setState(state => {
-        const reusableComponents = state.get(
+      // Optimistic update
+      setState(prev => {
+        const next = new Map(prev);
+        const components = next.get(workspaceId) ?? List();
+        next.set(
           workspaceId,
-          List<APIReusableComponent>()
-        );
-        return state.set(
-          workspaceId,
-          reusableComponents.push({
+          components.push({
             ...data,
             document: {
               id: data.documentId,
@@ -188,146 +218,121 @@ export function ReusableComponentsProvider(props: Props) {
             instancesCreated: true,
           })
         );
+        return next;
       });
 
-      const res = await fetch(
-        `${NEXT_PUBLIC_API_URL()}/v1/workspaces/${workspaceId}/components`,
-        {
-          credentials: "include",
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
+      try {
+        await createComponentMutation({
+          variables: {
+            workspaceId,
+            input: {
+              blockId: data.blockId,
+              documentId: data.documentId,
+              state: data.state,
+              title: data.title,
+              type: data.type.toUpperCase() as ReusableComponentType,
+            },
           },
-          body: JSON.stringify(data),
-        }
-      );
-
-      if (!res.ok) {
+        });
+      } catch {
         alert("Failed to create reusable component");
-
-        // remove the component from the state
-        setState(state => {
-          const reusableComponents = state.get(
+        setState(prev => {
+          const next = new Map(prev);
+          const components = next.get(workspaceId) ?? List();
+          next.set(
             workspaceId,
-            List<APIReusableComponent>()
+            components.filter(c => c.id !== data.id)
           );
-          return state.set(
-            workspaceId,
-            reusableComponents.filter(rc => rc.id !== data.id)
-          );
+          return next;
         });
       }
     },
-    []
+    [createComponentMutation]
   );
 
   const update = useCallback(
     async (workspaceId: string, id: string, data: UpdateReusableComponent) => {
-      const prevComponent = state.get(workspaceId)?.find(rc => rc.id === id);
+      const prevComponent = state.get(workspaceId)?.find(c => c.id === id);
 
-      // optimistic update
-      setState(state => {
-        const reusableComponents = state.get(
+      // Optimistic update
+      setState(prev => {
+        const next = new Map(prev);
+        const components = next.get(workspaceId) ?? List();
+        const index = components.findIndex(c => c.id === id);
+        const component = components.get(index);
+
+        if (index === -1 || !component) return prev;
+
+        next.set(
           workspaceId,
-          List<APIReusableComponent>()
-        );
-
-        const index = reusableComponents.findIndex(rc => rc.id === id);
-        const component = reusableComponents.get(index);
-        if (index === -1 || component === undefined) {
-          return state;
-        }
-
-        return state.set(
-          workspaceId,
-          reusableComponents.set(index, {
+          components.set(index, {
             ...component,
             ...data,
             id,
             updatedAt: new Date().toISOString(),
           })
         );
+        return next;
       });
 
-      const res = await fetch(
-        `${NEXT_PUBLIC_API_URL()}/v1/workspaces/${workspaceId}/components/${id}`,
-        {
-          credentials: "include",
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
+      try {
+        await updateComponentMutation({
+          variables: {
+            workspaceId,
+            componentId: id,
+            input: data,
           },
-          body: JSON.stringify(data),
-        }
-      );
-
-      if (!res.ok) {
-        // set the component back to the previous state
+        });
+      } catch {
         if (prevComponent) {
-          setState(state => {
-            const components = state.get(
-              workspaceId,
-              List<APIReusableComponent>()
-            );
-            const index = components.findIndex(rc => rc.id === id);
-            if (index === -1) {
-              return state;
-            }
+          setState(prev => {
+            const next = new Map(prev);
+            const components = next.get(workspaceId) ?? List();
+            const index = components.findIndex(c => c.id === id);
 
-            return state.set(workspaceId, components.set(index, prevComponent));
+            if (index === -1) return prev;
+
+            next.set(workspaceId, components.set(index, prevComponent));
+            return next;
           });
         }
-
         alert("Failed to update reusable component");
       }
     },
-    [state]
+    [state, updateComponentMutation]
   );
 
   const remove = useCallback(
     async (workspaceId: string, id: string) => {
-      const prevComponent = state.get(workspaceId)?.find(rc => rc.id === id);
-      if (!prevComponent) {
-        return;
-      }
+      const prevComponent = state.get(workspaceId)?.find(c => c.id === id);
+      if (!prevComponent) return;
 
-      // optimistic update
-      setState(state => {
-        const reusableComponents = state.get(
+      // Optimistic update
+      setState(prev => {
+        const next = new Map(prev);
+        const components = next.get(workspaceId) ?? List();
+        next.set(
           workspaceId,
-          List<APIReusableComponent>()
+          components.filter(c => c.id !== id)
         );
-        return state.set(
-          workspaceId,
-          reusableComponents.filter(rc => rc.id !== id)
-        );
+        return next;
       });
 
-      const res = await fetch(
-        `${NEXT_PUBLIC_API_URL()}/v1/workspaces/${workspaceId}/components/${id}`,
-        {
-          credentials: "include",
-          method: "DELETE",
-        }
-      );
-
-      if (!res.ok) {
+      try {
+        await deleteComponentMutation({
+          variables: { workspaceId, componentId: id },
+        });
+      } catch {
         alert("Failed to remove reusable component");
-
-        // set the component back to the previous state
-        setState(state => {
-          const components = state.get(
-            workspaceId,
-            List<APIReusableComponent>()
-          );
-          return state.set(
-            workspaceId,
-            components.push(prevComponent as APIReusableComponent)
-          );
+        setState(prev => {
+          const next = new Map(prev);
+          const components = next.get(workspaceId) ?? List();
+          next.set(workspaceId, components.push(prevComponent));
+          return next;
         });
       }
     },
-    [state]
+    [state, deleteComponentMutation]
   );
 
   const createInstance = useCallback(
@@ -336,59 +341,38 @@ export function ReusableComponentsProvider(props: Props) {
       componentId: string,
       data: { documentId: string; blockId: string }
     ) => {
-      const res = await fetch(
-        `${NEXT_PUBLIC_API_URL()}/v1/workspaces/${workspaceId}/components/${componentId}/instances`,
-        {
-          credentials: "include",
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
+      try {
+        await createInstanceMutation({
+          variables: {
+            workspaceId,
+            componentId,
+            input: data,
           },
-          body: JSON.stringify(data),
-        }
-      );
-
-      if (!res.ok) {
-        throw new Error(
-          `Failed to create component instance, status ${res.status}.`
-        );
+        });
+      } catch {
+        throw new Error("Failed to create component instance");
       }
     },
-    []
+    [createInstanceMutation]
   );
 
   const removeInstance = useCallback(
     async (workspaceId: string, componentId: string, blockId: string) => {
-      const res = await fetch(
-        `${NEXT_PUBLIC_API_URL()}/v1/workspaces/${workspaceId}/components/${componentId}/instances/${blockId}`,
-        {
-          credentials: "include",
-          method: "DELETE",
-        }
-      );
-
-      if (!res.ok) {
-        throw new Error(
-          `Failed to remove component instance, status ${res.status}.`
-        );
+      try {
+        await deleteInstanceMutation({
+          variables: { workspaceId, componentId, blockId },
+        });
+      } catch {
+        throw new Error("Failed to remove component instance");
       }
     },
-    []
+    [deleteInstanceMutation]
   );
 
   const value: [State, API] = useMemo(
-    () => [
-      state,
-      {
-        create,
-        update,
-        remove,
-        createInstance,
-        removeInstance,
-      },
-    ],
+    () => [state, { create, update, remove, createInstance, removeInstance }],
     [state, create, update, remove, createInstance, removeInstance]
   );
 
-  return <Context.Provider value={value}>{props.children}</Context.Provider>;
+  return <Context.Provider value={value}>{children}</Context.Provider>;
 }

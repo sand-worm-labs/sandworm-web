@@ -1,0 +1,43 @@
+query GetComponent($workspaceId: String!, $componentId: String!) {
+  getComponent(workspaceId: $workspaceId, componentId: $componentId) {
+    id
+    blockId
+    documentId
+    title
+    type
+    state
+    instancesCreated
+    instances {
+      id
+      blockId
+      documentId
+      reusableComponentId
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+  }
+}
+
+query GetWorkspaceComponents($workspaceId: String!) {
+  getWorkspaceComponents(workspaceId: $workspaceId) {
+    id
+    blockId
+    documentId
+    title
+    type
+    state
+    instancesCreated
+    instances {
+      id
+      blockId
+      documentId
+      reusableComponentId
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+  }
+}

@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from "react";
 
 import type { ExecutionSchedule, CreateSchedulePayload } from "@/types";
+import type { ExecutionScheduleType } from "@/generated/graphql";
 import {
   useGetSchedulesQuery,
   useCreateScheduleMutation,
@@ -25,8 +26,7 @@ export const useSchedules = (
   workspaceId: string,
   documentId: string
 ): UseSchedules => {
-  // Use Apollo's generated hooks directly - they handle caching
-  const { data, loading, error, refetch } = useGetSchedulesQuery({
+  const { data, loading, error } = useGetSchedulesQuery({
     variables: { input: { documentId } },
     skip: !documentId,
   });
@@ -38,26 +38,51 @@ export const useSchedules = (
 
   const createSchedule = useCallback(
     async (payload: CreateSchedulePayload): Promise<ExecutionSchedule> => {
+      const { scheduleParams } = payload;
+
+      const input = {
+        documentId,
+        type: scheduleParams.type,
+        timezone: scheduleParams.timezone,
+        // Only include fields relevant to the schedule type
+        ...(scheduleParams.hour !== undefined && { hour: scheduleParams.hour }),
+        ...(scheduleParams.minute !== undefined && {
+          minute: scheduleParams.minute,
+        }),
+        ...(scheduleParams.cron && { cron: scheduleParams.cron }),
+        ...(scheduleParams.weekdays && { weekdays: scheduleParams.weekdays }),
+        ...(scheduleParams.days && { days: scheduleParams.days }),
+        ...(scheduleParams.isActive !== undefined && {
+          isActive: scheduleParams.isActive,
+        }),
+      };
+
       const result = await createScheduleMutation({
         variables: {
           workspaceId,
-          input: {
-            documentId,
-            ...payload.scheduleParams,
-          },
+          input,
         },
-        // Optimistic update
+        // Optimistic response MUST include ALL fields from the mutation selection set
+        // Every field must be present, use null for fields not applicable to this schedule type
         optimisticResponse: {
+          __typename: "Mutation",
           createSchedule: {
-            __typename: "ExecutionSchedule",
+            __typename: "Schedule",
             id: `temp-${Date.now()}`,
             documentId,
+            type: scheduleParams.type as ExecutionScheduleType,
+            // All fields must be present - use null for inapplicable ones
+            hour: scheduleParams.hour ?? null,
+            minute: scheduleParams.minute ?? null,
+            cron: scheduleParams.cron ?? null,
+            weekdays: scheduleParams.weekdays ?? null,
+            days: scheduleParams.days ?? null,
+            timezone: scheduleParams.timezone,
+            isActive: scheduleParams.isActive ?? true,
             lastExecutedAt: null,
             nextExecutionAt: null,
-            ...payload.scheduleParams,
           },
         },
-        // Update cache after mutation
         update: (cache, { data }) => {
           if (!data?.createSchedule) return;
 
@@ -65,6 +90,7 @@ export const useSchedules = (
             fields: {
               schedules(existingSchedules = [], { toReference }) {
                 const newScheduleRef = toReference(data.createSchedule);
+                if (!newScheduleRef) return existingSchedules;
                 return [...existingSchedules, newScheduleRef];
               },
             },
@@ -77,7 +103,7 @@ export const useSchedules = (
         throw new Error("Failed to create schedule");
       }
 
-      return newSchedule;
+      return newSchedule as ExecutionSchedule;
     },
     [workspaceId, documentId, createScheduleMutation]
   );
@@ -92,11 +118,10 @@ export const useSchedules = (
             scheduleId,
           },
         },
-        // Optimistic update - remove from cache immediately
         optimisticResponse: {
+          __typename: "Mutation",
           deleteSchedule: true,
         },
-        // Update cache after mutation
         update: (cache, { data }) => {
           if (!data?.deleteSchedule) return;
 
@@ -104,7 +129,7 @@ export const useSchedules = (
             fields: {
               schedules(existingSchedules = [], { readField }) {
                 return existingSchedules.filter(
-                  (scheduleRef: any) =>
+                  (scheduleRef: unknown) =>
                     readField("id", scheduleRef) !== scheduleId
                 );
               },
