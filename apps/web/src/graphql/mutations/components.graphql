@@ -1,0 +1,89 @@
+mutation CreateComponent(
+  $workspaceId: String!
+  $input: CreateReusableComponentInput!
+) {
+  createComponent(workspaceId: $workspaceId, input: $input) {
+    id
+    blockId
+    documentId
+    title
+    type
+    state
+    instancesCreated
+    instances {
+      id
+      blockId
+      documentId
+      reusableComponentId
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+  }
+}
+
+mutation UpdateComponent(
+  $workspaceId: String!
+  $componentId: String!
+  $input: UpdateReusableComponentInput!
+) {
+  updateComponent(
+    workspaceId: $workspaceId
+    componentId: $componentId
+    input: $input
+  ) {
+    id
+    blockId
+    documentId
+    title
+    type
+    state
+    instancesCreated
+    instances {
+      id
+      blockId
+      documentId
+      reusableComponentId
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+  }
+}
+
+mutation DeleteComponent($workspaceId: String!, $componentId: String!) {
+  deleteComponent(workspaceId: $workspaceId, componentId: $componentId)
+}
+
+mutation CreateComponentInstance(
+  $workspaceId: String!
+  $componentId: String!
+  $input: CreateComponentInstanceInput!
+) {
+  createComponentInstance(
+    workspaceId: $workspaceId
+    componentId: $componentId
+    input: $input
+  ) {
+    id
+    blockId
+    documentId
+    reusableComponentId
+    createdAt
+    updatedAt
+  }
+}
+
+mutation DeleteComponentInstance(
+  $workspaceId: String!
+  $componentId: String!
+  $blockId: String!
+) {
+  deleteComponentInstance(
+    workspaceId: $workspaceId
+    componentId: $componentId
+    blockId: $blockId
+  )
+}
