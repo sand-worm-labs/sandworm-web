@@ -1,4 +1,4 @@
-mutation CreateSchedule($workspaceId: ID!, $input: CreateScheduleInput!) {
+mutation CreateSchedule($workspaceId: String!, $input: CreateScheduleInput!) {
   createSchedule(workspaceId: $workspaceId, input: $input) {
     id
     type

@@ -1,4 +1,4 @@
-query GetSchedules($input: GetSchedulesInput!) {
+query GetSchedules($input: ListSchedulesInput!) {
   schedules(input: $input) {
     id
     type
