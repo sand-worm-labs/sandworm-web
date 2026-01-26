@@ -77,7 +77,7 @@ export class WorkspaceGatewayService {
         }
     }
 
-    async leaveWorkspace(client: Socket, data: unknown, session: Session): Promise<void> {
+    async leaveWorkspace(client: Socket, data: { workspaceId: string }, session: Session): Promise<void> {
         const payload = z.object({ workspaceId: uuidSchema }).safeParse(data);
         if (!payload.success) {
             return;

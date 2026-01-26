@@ -20,7 +20,7 @@ export class CommentGatewayService {
         private readonly userWorkspaceRepository: Repository<UserWorkspaceEntity>,
     ) { }
 
-    async fetchDocumentComments(client: Socket, data: unknown, session: Session): Promise<void> {
+    async fetchDocumentComments(client: Socket, data: { documentId: string }, session: Session): Promise<void> {
         const payload = z.object({ documentId: uuidSchema }).safeParse(data);
         if (!payload.success) {
             this.logger.warn('Invalid fetch comments payload');
