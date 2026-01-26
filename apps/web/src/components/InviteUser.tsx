@@ -3,7 +3,6 @@
 import React, { useState, useCallback, Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon, EnvelopeIcon } from "@heroicons/react/24/outline";
-import clsx from "clsx";
 
 interface InviteUserModalProps {
   isOpen: boolean;
@@ -19,7 +18,7 @@ export default function InviteUserModal({
   onInvite,
 }: InviteUserModalProps) {
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState<string>("member");
+  const [role, setRole] = useState<string>("editor");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
 
@@ -152,7 +151,8 @@ export default function InviteUserModal({
                       disabled={isSubmitting}
                       className="w-full px-3 py-1.5 rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white focus:outline-none focus:ring focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4]"
                     >
-                      <option value="member">Member</option>
+                      <option value="editor">Editor</option>
+                      <option value="viewer">Viewer</option>
                       <option value="admin">Admin</option>
                     </select>
                   </div>
