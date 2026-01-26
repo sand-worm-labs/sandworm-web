@@ -82,7 +82,7 @@ export default function MultiSelect<T>(props: Props<T>) {
                 <Menu.Items
                   as="div"
                   ref={menuContainerRef}
-                  className="w-full rounded-md bg-white dark:bg-black shadow-md ring-1 ring-gray-100 dark:text-ink-300  focus:outline-none font-primary flex flex-col text-xs text-gray-600 py-1.5 dark:ring-[#262A30]"
+                  className="w-full rounded-xl bg-white dark:bg-black shadow-md ring-1 ring-gray-100 dark:text-ink-300  focus:outline-none font-primary flex flex-col text-xs text-ink-300 py-1.5 dark:ring-[#262A30]"
                 >
                   {props.options.map(option => (
                     <Menu.Item
@@ -93,7 +93,7 @@ export default function MultiSelect<T>(props: Props<T>) {
                         props.onToggle(option);
                       }}
                       className={clsx(
-                        " hover:bg-gray-100 dark:hover:bg-[#181C21] w-full pl-3 pr-4 py-1.5 text-left flex gap-x-2 items-center justify-between whitespace-nowrap",
+                        "hover:bg-primary/20  w-full pl-3 pr-4 py-1.5 text-left flex gap-x-2 items-center justify-between whitespace-nowrap",
                         props.value.includes(option) ? "font-medium" : ""
                       )}
                     >

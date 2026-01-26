@@ -556,7 +556,7 @@ function DashboardControls(props: Props) {
               <input
                 type="text"
                 placeholder="Find block by title"
-                className="block w-full rounded-md border-0 pl-7 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 text-xs h-[38px]"
+                className="block w-full rounded-md border-0 pl-7 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset outline-none  focus:ring-primary text-xs h-[38px]"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
               />
