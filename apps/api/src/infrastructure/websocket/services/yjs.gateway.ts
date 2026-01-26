@@ -18,7 +18,7 @@ import * as syncProtocol from 'y-protocols/sync';
 import * as awarenessProtocol from 'y-protocols/awareness';
 import { encoding, decoding } from 'lib0';
 import { DocumentEntity, UserWorkspaceRole } from '@sandworm/postgresql-typeorm';
-import { YjsDocumentService } from './yjs-document.service';
+import { YjsDocumentService } from '../../../features/collaboration/yjs/yjs-document.service';
 import { SessionService } from '@/features/session/session.service';
 
 const wsReadyStateOpen = 1;
