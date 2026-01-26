@@ -153,23 +153,7 @@ function UserItem(props: UserItemProps) {
               >
                 <Menu.Items className="absolute text-left right-0 z-10 mt-0.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none hover:cursor-default">
                   {promotions}
-                  <Menu.Item>
-                    {({ active }) => {
-                      return (
-                        <button
-                          type="button"
-                          onClick={onResetPassword}
-                          className={clsx(
-                            active ? "bg-gray-50" : "",
-                            "text-left w-full px-3 py-1 text-sm leading-6 block"
-                          )}
-                        >
-                          Reset password
-                          <span className="sr-only">of {props.user.name}</span>
-                        </button>
-                      );
-                    }}
-                  </Menu.Item>
+
                   <Menu.Item>
                     {({ active }) => (
                       <button
@@ -244,13 +228,13 @@ function UsersList(props: Props) {
                   scope="col"
                   className="text-left p-4 text-xs font-medium text-ink-400 dark:text-ink-300  min-w-[120px]"
                 >
-                  Title
+                  Email
                 </th>
                 <th
                   scope="col"
                   className="text-left p-4 text-xs font-medium text-ink-400 dark:text-ink-300  min-w-[120px]"
                 >
-                  Email
+                  Status
                 </th>
                 <th
                   scope="col"
