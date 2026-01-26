@@ -10,6 +10,7 @@ import {
   useSwitchWorkspaceMutation,
   useInviteUserToWorkspaceMutation,
   useAcceptWorkspaceInvitationMutation,
+  useGetWorkspaceWithMembersQuery,
 } from "@/generated/graphql";
 
 import { NEXT_PUBLIC_API_URL } from "../utils/env";
@@ -374,4 +375,72 @@ export const useAcceptInvitation = (): UseAcceptInvitation => {
     () => [state, { acceptInvitation }],
     [state, acceptInvitation]
   );
+};
+
+export type WorkspaceMember = {
+  id: string;
+  userId: string;
+  role: string;
+  email: string;
+  username: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  fullName: string;
+  name: string;
+};
+
+export const useWorkspaceWithMembers = (workspaceId: string | undefined) => {
+  const session = useSession({ redirectToLogin: false });
+
+  const { data, loading, error, refetch } = useGetWorkspaceWithMembersQuery({
+    variables: { workspaceId: workspaceId! },
+    skip: !workspaceId,
+    fetchPolicy: "cache-and-network",
+  });
+
+  const members: WorkspaceMember[] = useMemo(() => {
+    if (!data?.getWorkspaceMembers) return [];
+
+    console.log(
+      "Raw members data:",
+      JSON.stringify(data.getWorkspaceMembers, null, 2)
+    );
+
+    return data.getWorkspaceMembers.map(member => {
+      const fullName =
+        [member.user?.firstName, member.user?.lastName]
+          .filter(Boolean)
+          .join(" ") ||
+        member.user?.username ||
+        member.user?.email ||
+        "";
+
+      return {
+        id: member.userId,
+        userId: member.userId,
+        role: member.role,
+        email: member.user?.email ?? "",
+        username: member.user?.username ?? null,
+        firstName: member.user?.firstName ?? null,
+        lastName: member.user?.lastName ?? null,
+        fullName,
+        name: fullName,
+      };
+    });
+  }, [data?.getWorkspaceMembers]);
+
+  const currentUserRole = useMemo(() => {
+    if (!session?.user?.id || !members.length) return null;
+    const currentMember = members.find(m => m.userId === session.user?.id);
+    return currentMember?.role ?? null;
+  }, [members, session?.user?.id]);
+
+  return {
+    workspace: data?.getWorkspace,
+    members,
+    currentUserRole,
+    isLoading: loading,
+    error,
+    refetch,
+  };
 };
