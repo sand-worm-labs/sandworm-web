@@ -390,6 +390,76 @@ export class WorkspaceService {
     await this.workspaceMembersRepository.save(userWorkspace);
   }
 
+  async getInvitationInfo(hash: string): Promise<{
+    workspace: Workspace;
+    inviter: User;
+    invitedUser: User;
+    role: UserWorkspaceRole;
+  }> {
+    const authConfig = this.configService.getOrThrow('auth', { infer: true });
+
+    let workspaceId: string;
+    let userId: string;
+    let inviterId: string;
+    let role: UserWorkspaceRole;
+
+    try {
+      const jwtData = await this.jwtService.verifyAsync<{
+        workspaceId: string;
+        userId: string;
+        inviterId: string;
+        role: UserWorkspaceRole;
+      }>(hash, {
+        secret: authConfig.confirmEmailSecret,
+      });
+
+      workspaceId = jwtData.workspaceId;
+      userId = jwtData.userId;
+      inviterId = jwtData.inviterId;
+      role = jwtData.role;
+    } catch {
+      throw new UnprocessableEntityException('Invalid or expired invitation');
+    }
+
+    const workspace = await this.workspaceRepository.findOne({
+      where: { id: workspaceId },
+    });
+
+    if (!workspace) {
+      throw new NotFoundException('Workspace not found');
+    }
+
+    const inviter = await this.userRepository.findOne({
+      where: { id: inviterId },
+    });
+
+    if (!inviter) {
+      throw new NotFoundException('Inviter not found');
+    }
+
+    const invitedUser = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!invitedUser) {
+      throw new NotFoundException('Invited user not found');
+    }
+
+    const existingMembership = await this.workspaceMembersRepository.findOne({
+      where: { workspaceId, userId },
+    });
+
+    if (existingMembership) {
+      throw new BadRequestException('User is already a member of this workspace');
+    }
+
+    return {
+      workspace: Workspace.fromEntity(workspace),
+      inviter: User.fromEntity(inviter),
+      invitedUser: User.fromEntity(invitedUser),
+      role,
+    };
+  }
   async removeUserFromWorkspace(
     workspaceId: string,
     userIdToRemove: string,
