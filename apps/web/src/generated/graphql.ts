@@ -1054,6 +1054,13 @@ export type InviteUserToWorkspaceMutationVariables = Exact<{
 
 export type InviteUserToWorkspaceMutation = { __typename?: 'Mutation', inviteUserToWorkspace: boolean };
 
+export type AcceptWorkspaceInvitationMutationVariables = Exact<{
+  hash: Scalars['String']['input'];
+}>;
+
+
+export type AcceptWorkspaceInvitationMutation = { __typename?: 'Mutation', acceptWorkspaceInvitation: boolean };
+
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -2474,6 +2481,37 @@ export function useInviteUserToWorkspaceMutation(baseOptions?: Apollo.MutationHo
 export type InviteUserToWorkspaceMutationHookResult = ReturnType<typeof useInviteUserToWorkspaceMutation>;
 export type InviteUserToWorkspaceMutationResult = Apollo.MutationResult<InviteUserToWorkspaceMutation>;
 export type InviteUserToWorkspaceMutationOptions = Apollo.BaseMutationOptions<InviteUserToWorkspaceMutation, InviteUserToWorkspaceMutationVariables>;
+export const AcceptWorkspaceInvitationDocument = gql`
+    mutation AcceptWorkspaceInvitation($hash: String!) {
+  acceptWorkspaceInvitation(hash: $hash)
+}
+    `;
+export type AcceptWorkspaceInvitationMutationFn = Apollo.MutationFunction<AcceptWorkspaceInvitationMutation, AcceptWorkspaceInvitationMutationVariables>;
+
+/**
+ * __useAcceptWorkspaceInvitationMutation__
+ *
+ * To run a mutation, you first call `useAcceptWorkspaceInvitationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAcceptWorkspaceInvitationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [acceptWorkspaceInvitationMutation, { data, loading, error }] = useAcceptWorkspaceInvitationMutation({
+ *   variables: {
+ *      hash: // value for 'hash'
+ *   },
+ * });
+ */
+export function useAcceptWorkspaceInvitationMutation(baseOptions?: Apollo.MutationHookOptions<AcceptWorkspaceInvitationMutation, AcceptWorkspaceInvitationMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AcceptWorkspaceInvitationMutation, AcceptWorkspaceInvitationMutationVariables>(AcceptWorkspaceInvitationDocument, options);
+      }
+export type AcceptWorkspaceInvitationMutationHookResult = ReturnType<typeof useAcceptWorkspaceInvitationMutation>;
+export type AcceptWorkspaceInvitationMutationResult = Apollo.MutationResult<AcceptWorkspaceInvitationMutation>;
+export type AcceptWorkspaceInvitationMutationOptions = Apollo.BaseMutationOptions<AcceptWorkspaceInvitationMutation, AcceptWorkspaceInvitationMutationVariables>;
 export const CurrentUserDocument = gql`
     query CurrentUser {
   currentUser {

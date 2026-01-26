@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import type { WorkspaceEditFormValues } from "@sandworm/types";
 
 import type { ApiWorkspace } from "@/types";
@@ -9,6 +9,7 @@ import {
   useUpdateWorkspaceMutation,
   useSwitchWorkspaceMutation,
   useInviteUserToWorkspaceMutation,
+  useAcceptWorkspaceInvitationMutation,
 } from "@/generated/graphql";
 
 import { NEXT_PUBLIC_API_URL } from "../utils/env";
@@ -282,4 +283,95 @@ export const useInviteUserToWorkspace = (
     error: error as Error | null,
     isAdmin,
   };
+};
+
+type AcceptInvitationState = {
+  loading: boolean;
+  success: boolean;
+  error?: "expired" | "invalid" | "unauthorized" | "unexpected";
+};
+
+type AcceptInvitationAPI = {
+  acceptInvitation: (hash: string) => Promise<void>;
+};
+
+type UseAcceptInvitation = [AcceptInvitationState, AcceptInvitationAPI];
+
+export const useAcceptInvitation = (): UseAcceptInvitation => {
+  const [state, setState] = useState<AcceptInvitationState>({
+    loading: false,
+    success: false,
+    error: undefined,
+  });
+
+  const { refetch: refetchWorkspaces } = useGetUserWorkspacesQuery({
+    fetchPolicy: "cache-and-network",
+  });
+
+  const { refetch: refetchWorkspaceInfo } = useCurrentWorkspaceInfo();
+
+  const [acceptMutation] = useAcceptWorkspaceInvitationMutation();
+
+  const acceptInvitation = useCallback(
+    async (hash: string) => {
+      console.log("=== ACCEPT INVITATION DEBUG ===");
+      console.log("Hash:", hash);
+
+      setState({ loading: true, success: false, error: undefined });
+
+      try {
+        console.log("Calling mutation...");
+        const result = await acceptMutation({
+          variables: { hash },
+        });
+
+        console.log("Mutation result:", result);
+        console.log("result.data:", result.data);
+        console.log(
+          "result.data?.acceptWorkspaceInvitation:",
+          result.data?.acceptWorkspaceInvitation
+        );
+        console.log("result.errors:", result.errors);
+
+        if (result.data?.acceptWorkspaceInvitation) {
+          await refetchWorkspaces();
+          await refetchWorkspaceInfo();
+          setState({ loading: false, success: true, error: undefined });
+        } else {
+          console.log("No data returned, setting invalid error");
+          setState({ loading: false, success: false, error: "invalid" });
+        }
+      } catch (err: any) {
+        console.log("=== CAUGHT ERROR ===");
+        console.log("Error object:", err);
+        console.log("Error message:", err?.message);
+        console.log("GraphQL errors:", err?.graphQLErrors);
+        console.log("Network error:", err?.networkError);
+
+        const message = err?.message?.toLowerCase() || "";
+
+        if (message.includes("expired")) {
+          setState({ loading: false, success: false, error: "expired" });
+        } else if (
+          message.includes("invalid") ||
+          message.includes("not found")
+        ) {
+          setState({ loading: false, success: false, error: "invalid" });
+        } else if (
+          message.includes("unauthorized") ||
+          message.includes("unauthenticated")
+        ) {
+          setState({ loading: false, success: false, error: "unauthorized" });
+        } else {
+          setState({ loading: false, success: false, error: "unexpected" });
+        }
+      }
+    },
+    [acceptMutation, refetchWorkspaces, refetchWorkspaceInfo]
+  );
+
+  return useMemo(
+    () => [state, { acceptInvitation }],
+    [state, acceptInvitation]
+  );
 };

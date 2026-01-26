@@ -41,3 +41,7 @@ mutation InviteUserToWorkspace(
 ) {
   inviteUserToWorkspace(email: $email, workspaceId: $workspaceId, role: $role)
 }
+
+mutation AcceptWorkspaceInvitation($hash: String!) {
+  acceptWorkspaceInvitation(hash: $hash)
+}
