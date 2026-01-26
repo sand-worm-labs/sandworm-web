@@ -2,6 +2,8 @@ import { ObjectType, registerEnumType } from '@nestjs/graphql';
 import { BooleanField, StringField, StringFieldOptional, UUIDField } from '@sandworm/graphql';
 import { Field } from '@nestjs/graphql';
 import { Plan, WorkspaceEntity } from '@sandworm/postgresql-typeorm';
+import { User } from '../../user/model/graphql/user.model';
+import { UserWorkspaceRole } from '@sandworm/postgresql-typeorm';
 
 registerEnumType(Plan, {
   name: 'WorkspacePlan',
@@ -52,4 +54,20 @@ export class Workspace {
   static fromEntities(entities: WorkspaceEntity[]): Workspace[] {
     return entities.map((entity) => Workspace.fromEntity(entity));
   }
+}
+
+
+@ObjectType()
+export class WorkspaceInvitationInfo {
+  @Field(() => Workspace, { description: 'The workspace being invited to' })
+  workspace: Workspace;
+
+  @Field(() => User, { description: 'The user who sent the invitation' })
+  inviter: User;
+
+  @Field(() => User, { description: 'The user being invited' })
+  invitedUser: User;
+
+  @Field(() => String, { description: 'The role the user will have in the workspace' })
+  role: UserWorkspaceRole;
 }

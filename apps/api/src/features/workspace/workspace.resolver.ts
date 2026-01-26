@@ -9,7 +9,7 @@ import {
 import { CurrentUser } from '@sandworm/graphql';
 import { UserWorkspaceRole } from '@sandworm/postgresql-typeorm';
 import { WorkspaceService } from './service/workspace.service';
-import { Workspace, WorkspaceSecrets } from './model/workspace.model';
+import { Workspace, WorkspaceSecrets, WorkspaceInvitationInfo } from './model/workspace.model';
 import { User } from '../user/model/graphql/user.model';
 import { Document } from '../document/model/document.model';
 import { WorkspaceInfo, WorkspaceMember } from './model/workspace-info.model';
@@ -145,6 +145,17 @@ export class WorkspaceResolver {
     await this.workspaceService.acceptWorkspaceInvitation(hash);
     return true;
   }
+
+  @Public()
+  @Query(() => WorkspaceInvitationInfo, {
+    description: 'Get invitation details from hash without accepting it',
+  })
+  async getInvitationInfo(
+    @Args('hash', { type: () => String }) hash: string,
+  ): Promise<WorkspaceInvitationInfo> {
+    return await this.workspaceService.getInvitationInfo(hash);
+  }
+
 
   @ResolveField(() => [User])
   async users(

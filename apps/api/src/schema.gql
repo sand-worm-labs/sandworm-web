@@ -352,6 +352,9 @@ type Query {
   """Get User favorite documents"""
   getFavoriteDocuments(workspaceId: String!): [Document!]!
 
+  """Get invitation details from hash without accepting it"""
+  getInvitationInfo(hash: String!): WorkspaceInvitationInfo!
+
   """Users who follow a given user"""
   getUserFollowers(userId: String!): [User!]!
 
@@ -544,6 +547,20 @@ type WorkspaceInfo {
   ownerId: String!
   role: String!
   updatedAt: DateTime!
+}
+
+type WorkspaceInvitationInfo {
+  """The user being invited"""
+  invitedUser: User!
+
+  """The user who sent the invitation"""
+  inviter: User!
+
+  """The role the user will have in the workspace"""
+  role: String!
+
+  """The workspace being invited to"""
+  workspace: Workspace!
 }
 
 type WorkspaceMember {
