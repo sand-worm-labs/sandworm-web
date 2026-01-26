@@ -14,9 +14,11 @@ import { CommentEntity, DocumentEntity, EnvironmentEntity, ReusableComponentEnti
 import { CodeExecutionModule } from '@/features/code-execution/code-execution.module';
 import { ReusableComponentModule } from '@/features/collaboration/component/reusable-component.module';
 import { YjsGateway } from '@/features/collaboration/yjs/yjs.gateway';
+import { AuthModule } from '@/features/auth/core/auth.module';
 
 @Module({
     imports: [
+        AuthModule,
         TypeOrmModule.forFeature([
             UserEntity,
             UserSettingEntity,
