@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 import { useSignup } from "../Visualization/hooks/useAuth";
 
 export default function SignUpForm() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -14,6 +16,12 @@ export default function SignUpForm() {
 
   const [localError, setLocalError] = useState("");
   const [state, { signupWithEmail }] = useSignup();
+
+  useEffect(() => {
+    if (state.data?.email) {
+      router.push(`/check-mail?email=${encodeURIComponent(state.data.email)}`);
+    }
+  }, [state.data, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
@@ -60,7 +68,7 @@ export default function SignUpForm() {
           <input
             type={type}
             name={field}
-            className="mt-1 w-full rounded-3xl dark:bg-[#121417] bg-[#FFFFFF] p-2.5 px-5 text-ink-100 font-body  dark:text-white border border-[#DEE2E6] dark:border-[#262A30] focus:border-primary focus:ring-1 focus:ring-[#A308F0] outline-none font-medium text-[0.9rem] placeholder:text-muted-foreground  dark:placeholder:text-ink-300 "
+            className="mt-1 w-full rounded-3xl dark:bg-[#121417] bg-[#FFFFFF] p-2.5 px-5 text-ink-100 font-body dark:text-white border border-[#DEE2E6] dark:border-[#262A30] focus:border-primary focus:ring-1 focus:ring-[#A308F0] outline-none font-medium text-[0.9rem] placeholder:text-muted-foreground dark:placeholder:text-ink-300"
             placeholder={`${label}`}
             value={formData[field as keyof typeof formData]}
             onChange={handleChange}
@@ -69,12 +77,6 @@ export default function SignUpForm() {
       ))}
 
       {displayError && <p className="text-error text-sm">{displayError}</p>}
-
-      {state.data && (
-        <p className="text-green-600 text-sm">
-          Signup successful! Check your email: {state.data.email}
-        </p>
-      )}
 
       <button
         type="submit"

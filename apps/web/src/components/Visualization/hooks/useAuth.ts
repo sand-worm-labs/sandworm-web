@@ -52,8 +52,6 @@ type ForgotPasswordAPI = {
 
 type UseForgotPassword = [AuthState, ForgotPasswordAPI];
 
-interface SignupResponse extends LoginResponse {}
-
 const TOKEN_KEY = "auth_token";
 const REFRESH_TOKEN_KEY = "auth_refresh_token";
 const TOKEN_EXPIRES_KEY = "auth_token_expires";
@@ -138,30 +136,27 @@ export const useSignup = (): UseSignup => {
       })
         .then(async res => {
           if (res.ok) {
-            const data: SignupResponse = await res.json();
-
-            tokenStorage.setTokens(
-              data.token,
-              data.refreshToken,
-              data.tokenExpires,
-              data.roles
-            );
-
             setState({
               loading: false,
-              data: { email: data.email },
+              data: { email },
               error: undefined,
             });
             return;
           }
 
+          if (res.status === 422) {
+            const errorData = await res.json().catch(() => ({}));
+            console.error("Signup validation error:", errorData);
+          }
+
           throw new Error(`Unexpected status ${res.status}`);
         })
-        .catch(() => {
+        .catch(err => {
+          console.error("Signup error:", err);
           setState(s => ({ ...s, loading: false, error: "unexpected" }));
         });
     },
-    [setState]
+    []
   );
 
   return useMemo(() => [state, { signupWithEmail }], [state, signupWithEmail]);
@@ -258,6 +253,63 @@ export const useLogin = (): UseLogin => {
     () => [state, { loginWithPassword }],
     [state, loginWithPassword]
   );
+};
+
+type ConfirmEmailState = {
+  loading: boolean;
+  success: boolean;
+  error?: "expired" | "invalid" | "unexpected";
+};
+
+type ConfirmEmailAPI = {
+  confirmEmail: (hash: string) => void;
+};
+
+type UseConfirmEmail = [ConfirmEmailState, ConfirmEmailAPI];
+
+export const useConfirmEmail = (): UseConfirmEmail => {
+  const [state, setState] = useState<ConfirmEmailState>({
+    loading: false,
+    success: false,
+    error: undefined,
+  });
+
+  const confirmEmail = useCallback((hash: string) => {
+    setState({ loading: true, success: false, error: undefined });
+
+    fetch(`${NEXT_PUBLIC_API_URL()}/auth/email/confirm`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ hash }),
+    })
+      .then(async res => {
+        if (res.ok) {
+          setState({ loading: false, success: true, error: undefined });
+          return;
+        }
+
+        if (res.status === 404 || res.status === 422) {
+          const errorData = await res.json().catch(() => ({}));
+          const isExpired = errorData?.message
+            ?.toLowerCase()
+            .includes("expired");
+          setState({
+            loading: false,
+            success: false,
+            error: isExpired ? "expired" : "invalid",
+          });
+          return;
+        }
+
+        throw new Error(`Unexpected status ${res.status}`);
+      })
+      .catch(err => {
+        console.error("Confirm email error:", err);
+        setState({ loading: false, success: false, error: "unexpected" });
+      });
+  }, []);
+
+  return useMemo(() => [state, { confirmEmail }], [state, confirmEmail]);
 };
 
 export type SessionUser = ApiUser & {
