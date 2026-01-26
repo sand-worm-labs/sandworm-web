@@ -116,7 +116,11 @@ dark:focus:ring-[rgba(163,8,240,0.3)]
             ) : (
               <Button
                 type="button"
-                className="rounded-full p-2.5 h-fit m-0.5 text-white bg-[#A308F0]  font-light"
+                className={`rounded-full p-2.5 h-fit m-0.5 font-light ${
+                  input.trim()
+                    ? "text-white bg-[#A308F0]"
+                    : "text-white bg-[#A308F0]/50"
+                }`}
                 onClick={() => onSubmit?.()}
               >
                 <PiPaperPlaneTilt size={18} strokeWidth={0.5} />

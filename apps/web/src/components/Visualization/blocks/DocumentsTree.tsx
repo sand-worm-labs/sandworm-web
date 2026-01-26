@@ -2,9 +2,7 @@ import { ascend, sortWith } from "ramda";
 import { useDrag, useDrop } from "react-dnd";
 import {
   EllipsisHorizontalIcon,
-  TrashIcon,
   Square2StackIcon,
-  BookmarkIcon,
   BookmarkSlashIcon,
 } from "@heroicons/react/24/outline";
 import clsx from "clsx";
@@ -18,14 +16,18 @@ import {
   ChevronRightIcon,
   PlusSmallIcon,
 } from "@heroicons/react/20/solid";
+
 import { List, Stack } from "immutable";
 import { getEmptyImage } from "react-dnd-html5-backend";
 
 import type { ApiDocument, UserWorkspaceRole } from "@/types";
+import { Trash } from "@/components/Assets/Trash";
+import { BookmarkSimple } from "@/components/Assets/BookmarkSimple";
 
 import useDropdownPosition from "../hooks/dropdownposition";
 
 import IconSelector from "./IconSelector";
+import { Copy } from "@/components/Assets/Copy";
 
 function useIsDocExpanded(doc: ApiDocument, startsOpen: boolean) {
   const [isExpanded, _setIsExpanded] = useState(
@@ -231,7 +233,7 @@ function DropDown(props: DropDownProps) {
             leaveFrom="transform opacity-100 scale-100"
             leaveTo="transform opacity-0 scale-95"
           >
-            <Menu.Items className="absolute left-2 -top-2 z-20 w-44 origin-top-right rounded-lg bg-white dark:bg-[#0C1015]  ring-opacity-5 focus:outline-none border-[#E9ECEF] border dark:border-[#262A30] rounded-xl shadow-[0_1.5px_13px_3px_rgba(82,106,159,0.12)]">
+            <Menu.Items className="absolute left-2 -top-2 z-20 w-40 origin-top-right  bg-white dark:bg-[#0C1015]  ring-opacity-5 focus:outline-none border-[#E9ECEF] border dark:border-[#262A30] rounded-2xl shadow-[0_1.5px_13px_3px_rgba(82,106,159,0.12)]">
               <div className="py-2 px-1.5">
                 <Menu.Item>
                   {({ active }) => (
@@ -246,7 +248,7 @@ function DropDown(props: DropDownProps) {
                         "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 rounded-md font-body font-medium hover:bg-primary/20 text-menu-ink-200 dark:text-white"
                       )}
                     >
-                      <TrashIcon className="h-4 w-4" />
+                      <Trash />
                       <span>Delete</span>
                     </button>
                   )}
@@ -264,7 +266,7 @@ function DropDown(props: DropDownProps) {
                         "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 font-body font-medium hover:bg-primary/20 rounded-md text-menu-ink-200  dark:text-white"
                       )}
                     >
-                      <Square2StackIcon className="h-4 w-4" />
+                      <Copy />
                       <span>Duplicate</span>
                     </button>
                   )}
@@ -282,7 +284,7 @@ function DropDown(props: DropDownProps) {
                         "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 font-body font-medium hover:bg-primary/20 rounded-md text-menu-ink-200  dark:text-white"
                       )}
                     >
-                      <BookmarkIcon className="h-4 w-4" />
+                      <BookmarkSimple />
                       <span>Add to favorites</span>
                     </button>
                   )}
