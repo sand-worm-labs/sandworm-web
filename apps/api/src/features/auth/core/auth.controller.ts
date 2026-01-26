@@ -22,7 +22,7 @@ import { CurrentUser } from '@sandworm/api/decorators/current-user.decorator';
   version: '1',
 })
 export class AuthController {
-  constructor(private readonly service: AuthService) {}
+  constructor(private readonly service: AuthService) { }
 
   @Post('email/login')
   @SerializeOptions({ groups: ['me'] })
@@ -37,7 +37,7 @@ export class AuthController {
   @Post('email/register')
   @ApiPublic({
     summary: 'Register a new user',
-    statusCode: 204,
+    statusCode: 200,
   })
   async register(@Body() createUserDto: AuthRegisterLoginDto): Promise<void> {
     return this.service.register(createUserDto);
@@ -106,7 +106,7 @@ export class AuthController {
     summary: 'Logout current user',
     statusCode: 204,
   })
-  public async logout(@CurrentUser("sessionId") sessionId:string): Promise<void> {
+  public async logout(@CurrentUser("sessionId") sessionId: string): Promise<void> {
     await this.service.logout({
       sessionId: sessionId,
     });
