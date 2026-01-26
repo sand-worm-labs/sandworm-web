@@ -512,6 +512,8 @@ export type Query = {
   getDocument: Document;
   /** Get User favorite documents */
   getFavoriteDocuments: Array<Document>;
+  /** Get invitation details from hash without accepting it */
+  getInvitationInfo: WorkspaceInvitationInfo;
   /** Users who follow a given user */
   getUserFollowers: Array<User>;
   /** Users that a given user is following */
@@ -590,6 +592,11 @@ export type QueryGetDocumentArgs = {
 
 export type QueryGetFavoriteDocumentsArgs = {
   workspaceId: Scalars['String']['input'];
+};
+
+
+export type QueryGetInvitationInfoArgs = {
+  hash: Scalars['String']['input'];
 };
 
 
@@ -801,6 +808,18 @@ export type WorkspaceInfo = {
   ownerId: Scalars['String']['output'];
   role: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
+};
+
+export type WorkspaceInvitationInfo = {
+  __typename?: 'WorkspaceInvitationInfo';
+  /** The user being invited */
+  invitedUser: User;
+  /** The user who sent the invitation */
+  inviter: User;
+  /** The role the user will have in the workspace */
+  role: Scalars['String']['output'];
+  /** The workspace being invited to */
+  workspace: Workspace;
 };
 
 export type WorkspaceMember = {
@@ -1190,6 +1209,13 @@ export type GetUserWorkspacesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetUserWorkspacesQuery = { __typename?: 'Query', getUserWorkspaces: Array<{ __typename?: 'Workspace', id: string, name: string, plan: WorkspacePlan, source?: string | null, useCases: Array<string>, useContext?: string | null, ownerId: string, owner: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null } }> };
+
+export type GetWorkspaceWithMembersQueryVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+}>;
+
+
+export type GetWorkspaceWithMembersQuery = { __typename?: 'Query', getWorkspace: { __typename?: 'Workspace', id: string, name: string, plan: WorkspacePlan, source?: string | null, ownerId: string }, getWorkspaceMembers: Array<{ __typename?: 'WorkspaceMember', role: string, userId: string, user?: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null } | null }> };
 
 export type GetWorkspaceQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
@@ -3445,6 +3471,61 @@ export type GetUserWorkspacesQueryHookResult = ReturnType<typeof useGetUserWorks
 export type GetUserWorkspacesLazyQueryHookResult = ReturnType<typeof useGetUserWorkspacesLazyQuery>;
 export type GetUserWorkspacesSuspenseQueryHookResult = ReturnType<typeof useGetUserWorkspacesSuspenseQuery>;
 export type GetUserWorkspacesQueryResult = Apollo.QueryResult<GetUserWorkspacesQuery, GetUserWorkspacesQueryVariables>;
+export const GetWorkspaceWithMembersDocument = gql`
+    query GetWorkspaceWithMembers($workspaceId: String!) {
+  getWorkspace(workspaceId: $workspaceId) {
+    id
+    name
+    plan
+    source
+    ownerId
+  }
+  getWorkspaceMembers(workspaceId: $workspaceId) {
+    role
+    userId
+    user {
+      id
+      username
+      email
+      firstName
+      lastName
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetWorkspaceWithMembersQuery__
+ *
+ * To run a query within a React component, call `useGetWorkspaceWithMembersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetWorkspaceWithMembersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetWorkspaceWithMembersQuery({
+ *   variables: {
+ *      workspaceId: // value for 'workspaceId'
+ *   },
+ * });
+ */
+export function useGetWorkspaceWithMembersQuery(baseOptions: Apollo.QueryHookOptions<GetWorkspaceWithMembersQuery, GetWorkspaceWithMembersQueryVariables> & ({ variables: GetWorkspaceWithMembersQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetWorkspaceWithMembersQuery, GetWorkspaceWithMembersQueryVariables>(GetWorkspaceWithMembersDocument, options);
+      }
+export function useGetWorkspaceWithMembersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetWorkspaceWithMembersQuery, GetWorkspaceWithMembersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetWorkspaceWithMembersQuery, GetWorkspaceWithMembersQueryVariables>(GetWorkspaceWithMembersDocument, options);
+        }
+export function useGetWorkspaceWithMembersSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetWorkspaceWithMembersQuery, GetWorkspaceWithMembersQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetWorkspaceWithMembersQuery, GetWorkspaceWithMembersQueryVariables>(GetWorkspaceWithMembersDocument, options);
+        }
+export type GetWorkspaceWithMembersQueryHookResult = ReturnType<typeof useGetWorkspaceWithMembersQuery>;
+export type GetWorkspaceWithMembersLazyQueryHookResult = ReturnType<typeof useGetWorkspaceWithMembersLazyQuery>;
+export type GetWorkspaceWithMembersSuspenseQueryHookResult = ReturnType<typeof useGetWorkspaceWithMembersSuspenseQuery>;
+export type GetWorkspaceWithMembersQueryResult = Apollo.QueryResult<GetWorkspaceWithMembersQuery, GetWorkspaceWithMembersQueryVariables>;
 export const GetWorkspaceDocument = gql`
     query GetWorkspace($workspaceId: String!) {
   getWorkspace(workspaceId: $workspaceId) {
