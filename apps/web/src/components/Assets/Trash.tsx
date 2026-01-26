@@ -3,44 +3,39 @@ import React from "react";
 export const Trash = () => {
   return (
     <svg
-      width="14"
-      height="14"
-      viewBox="0 0 14 14"
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
-        d="M11.8125 3.0625H2.1875"
-        stroke="#1C3B5A"
-        strokeWidth="0.65625"
+        d="M13.5 3.5H2.5"
+        stroke="#616A79"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
-        d="M5.6875 5.6875V9.1875"
-        stroke="#1C3B5A"
-        strokeWidth="0.65625"
+        d="M6.5 6.5V10.5"
+        stroke="#616A79"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
-        d="M8.3125 5.6875V9.1875"
-        stroke="#1C3B5A"
-        strokeWidth="0.65625"
+        d="M9.5 6.5V10.5"
+        stroke="#616A79"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
-        d="M10.9375 3.0625V11.375C10.9375 11.491 10.8914 11.6023 10.8094 11.6844C10.7273 11.7664 10.616 11.8125 10.5 11.8125H3.5C3.38397 11.8125 3.27269 11.7664 3.19064 11.6844C3.10859 11.6023 3.0625 11.491 3.0625 11.375V3.0625"
-        stroke="#1C3B5A"
-        strokeWidth="0.65625"
+        d="M12.5 3.5V13C12.5 13.1326 12.4473 13.2598 12.3536 13.3536C12.2598 13.4473 12.1326 13.5 12 13.5H4C3.86739 13.5 3.74021 13.4473 3.64645 13.3536C3.55268 13.2598 3.5 13.1326 3.5 13V3.5"
+        stroke="#616A79"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
-        d="M9.1875 3.0625V2.1875C9.1875 1.95544 9.09531 1.73288 8.93122 1.56878C8.76712 1.40469 8.54456 1.3125 8.3125 1.3125H5.6875C5.45544 1.3125 5.23288 1.40469 5.06878 1.56878C4.90469 1.73288 4.8125 1.95544 4.8125 2.1875V3.0625"
-        stroke="#1C3B5A"
-        strokeWidth="0.65625"
+        d="M10.5 3.5V2.5C10.5 2.23478 10.3946 1.98043 10.2071 1.79289C10.0196 1.60536 9.76522 1.5 9.5 1.5H6.5C6.23478 1.5 5.98043 1.60536 5.79289 1.79289C5.60536 1.98043 5.5 2.23478 5.5 2.5V3.5"
+        stroke="#616A79"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
