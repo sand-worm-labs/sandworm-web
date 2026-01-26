@@ -32,7 +32,7 @@ import { DataSource } from 'typeorm';
   pingTimeout: 60000,
   pingInterval: 25000,
 })
-// @UseFilters(WsExceptionFilter)
+@UseFilters(WsExceptionFilter)
 export class AppGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
@@ -89,7 +89,7 @@ export class AppGateway
 
   handleConnection(client: Socket): void {
     this.logger.log(`Client connected: ${client.id}`);
-    
+
     client.on('error', (error) => {
       this.logger.error(`Socket error for client ${client.id}`, error);
     });
@@ -113,7 +113,7 @@ export class AppGateway
     @MessageBody() data: { workspaceId: string },
     @CurrentSession() session: Session,
   ): Promise<void> {
-    this.logger.log(`Joining workspace: ${data.workspaceId}`);
+    this.logger.log(`Joining workspace: ${data.workspaceId}`, `${{ ...session }}`);
     await this.trackWork(() =>
       this.workspaceGatewayService.joinWorkspace(client, data, session)
     );

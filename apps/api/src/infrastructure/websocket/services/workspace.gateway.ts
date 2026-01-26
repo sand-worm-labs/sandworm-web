@@ -37,7 +37,6 @@ export class WorkspaceGatewayService {
 
         try {
             let userWorkspace = session.userWorkspaces?.[workspaceId];
-
             if (!userWorkspace) {
                 userWorkspace = await this.userWorkspaceRepository.findOne({
                     where: {
