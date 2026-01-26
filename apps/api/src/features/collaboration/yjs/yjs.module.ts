@@ -14,7 +14,7 @@ import { PersistorFactory } from './persistors/persistor.factory'
 import { LockModule } from '@/infrastructure/lock/lock.module'
 import { PubSubModule } from '@/infrastructure/pubsub/pubsub.module'
 import { SessionModule } from '@/features/session/session.module'
-import { YjsGateway } from './yjs.gateway'
+import { YjsGateway } from '../../../infrastructure/websocket/services/yjs.gateway'
 
 @Module({
   imports: [
