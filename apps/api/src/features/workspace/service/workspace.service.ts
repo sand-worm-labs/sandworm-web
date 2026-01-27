@@ -5,7 +5,7 @@ import {
   BadRequestException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import {
   WorkspaceEntity,
   UserWorkspaceEntity,
@@ -78,9 +78,16 @@ export class WorkspaceService {
   async getAllUserWorkspaces(userId: string): Promise<Workspace[]> {
     await this.validateAndGetUser(userId, 'User');
 
-    const workspaces = await this.workspaceRepository.find({
-      where: { ownerId: userId },
+
+    const userWorkspaces = await this.workspaceMembersRepository.find({
+      where: { userId: userId },
       order: { createdAt: 'DESC' },
+    });
+
+    const workspaceIds = userWorkspaces.map(uw => uw.workspaceId);
+
+    const workspaces = await this.workspaceRepository.find({
+      where: { id: In(workspaceIds) }
     });
 
     return Workspace.fromEntities(workspaces);
