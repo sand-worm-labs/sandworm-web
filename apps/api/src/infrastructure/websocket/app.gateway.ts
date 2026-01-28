@@ -64,7 +64,7 @@ export class AppGateway
   private workInProgress = new Map<string, Promise<void>>();
 
   constructor(
- 
+
     private readonly workspaceGatewayService: WorkspaceGatewayService,
     private readonly environmentGatewayService: EnvironmentGatewayService,
     private readonly pythonCompletionService: PythonCompletionService,
@@ -303,6 +303,7 @@ export class AppGateway
     this.server.emit('document-comment', {
       documentId: event.documentId,
       comment: event.comment,
+      user: event.user,
     });
     this.logger.debug(`Broadcasted comment created for document ${event.documentId}`);
   }

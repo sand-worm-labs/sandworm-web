@@ -8,6 +8,7 @@ import { CreateCommentInput, DeleteCommentInput } from './dto/comment.dto';
 import { Comment } from './model/comment.model';
 import { EventEmitter2, EventEmitterReadinessWatcher } from '@nestjs/event-emitter';
 import { CommentCreatedEvent, CommentDeletedEvent, CommentEventNames } from '@/core/events/comment.events';
+import { User } from '@/features/user/model/graphql/user.model';
 
 @Injectable()
 export class CommentService {
@@ -62,15 +63,17 @@ export class CommentService {
 
     await this.commentRepository.save(commentEntity);
 
+
     this.logger.log(`Comment created: ${commentEntity.id} on document ${documentId}`);
 
     const comment = Comment.fromEntity(commentEntity);
-
+    let userFound = await this.userRepository.findOne({ where: { id: authorId } });
+    let user = User.fromEntity(userFound);
     await this.eventEmitterReadinessWatcher.waitUntilReady();
 
     this.eventEmitter.emit(
       CommentEventNames.COMMENT_CREATED,
-      new CommentCreatedEvent(documentId, comment),
+      new CommentCreatedEvent(documentId, comment, user),
     );
 
     return comment;
