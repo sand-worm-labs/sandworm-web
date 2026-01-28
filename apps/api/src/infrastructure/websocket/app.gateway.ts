@@ -22,6 +22,28 @@ import { EnvironmentGatewayService } from './services/environment.gateway';
 import { PythonCompletionService } from '../../features/code-execution/python-completion.service';
 import { CommentGatewayService } from './services/comments.gateway';
 import { DataSource } from 'typeorm';
+import { OnEvent } from '@nestjs/event-emitter';
+import {
+  WorkspaceDocumentsEvent,
+  DocumentUpdateEvent,
+  EventNames as DocumentEventNames
+} from '@/events/document.events';
+import {
+  EnvironmentStatusEvent,
+  EventNames as EnvironmentEventNames
+} from '@/events/environment.events';
+import {
+  WorkspaceComponentsEvent,
+  ComponentUpdateEvent,
+  ComponentRemovedEvent,
+  EventNames as ComponentEventNames
+} from '@/events/reusable-component.events';
+import {
+  CommentCreatedEvent,
+  CommentDeletedEvent,
+  CommentEventNames
+} from '@/events/comment.events';
+
 
 @WebSocketGateway({
   cors: {
@@ -42,7 +64,7 @@ export class AppGateway
   private workInProgress = new Map<string, Promise<void>>();
 
   constructor(
-    private readonly configService: ConfigService,
+ 
     private readonly workspaceGatewayService: WorkspaceGatewayService,
     private readonly environmentGatewayService: EnvironmentGatewayService,
     private readonly pythonCompletionService: PythonCompletionService,
@@ -206,6 +228,95 @@ export class AppGateway
       this.commentGatewayService.fetchDocumentComments(client, data, session)
     );
   }
+
+  @OnEvent(DocumentEventNames.WORKSPACE_DOCUMENTS)
+  handleWorkspaceDocumentsEvent(event: WorkspaceDocumentsEvent): void {
+    this.server.to(event.workspaceId).emit('workspace-documents', {
+      workspaceId: event.workspaceId,
+      documents: event.documents,
+    });
+    this.logger.debug(`Broadcasted workspace documents for ${event.workspaceId}`);
+  }
+
+  @OnEvent(DocumentEventNames.DOCUMENT_UPDATE)
+  handleDocumentUpdateEvent(event: DocumentUpdateEvent): void {
+    this.server.to(event.workspaceId).emit('workspace-document-update', {
+      workspaceId: event.workspaceId,
+      document: event.document,
+    });
+    this.logger.debug(`Broadcasted document update: ${event.document.id}`);
+  }
+
+  // Environment Events
+  @OnEvent(EnvironmentEventNames.ENVIRONMENT_STATUS_UPDATE)
+  handleEnvironmentStatusUpdateEvent(event: EnvironmentStatusEvent): void {
+    this.server.to(event.workspaceId).emit('environment-status-update', {
+      workspaceId: event.workspaceId,
+      status: event.status,
+      startedAt: event.startedAt,
+    });
+    this.logger.debug(`Broadcasted environment status for ${event.workspaceId}: ${event.status}`);
+  }
+
+  @OnEvent(EnvironmentEventNames.ENVIRONMENT_STATUS_ERROR)
+  handleEnvironmentStatusErrorEvent(event: { workspaceId: string; error: string }): void {
+    this.server.to(event.workspaceId).emit('environment-status-error', {
+      workspaceId: event.workspaceId,
+      error: event.error,
+    });
+    this.logger.debug(`Broadcasted environment error for ${event.workspaceId}`);
+  }
+
+  // Component Events
+  @OnEvent(ComponentEventNames.WORKSPACE_COMPONENTS)
+  handleWorkspaceComponentsEvent(event: WorkspaceComponentsEvent): void {
+    this.server.to(event.workspaceId).emit('workspace-components', {
+      workspaceId: event.workspaceId,
+      components: event.components,
+    });
+    this.logger.debug(`Broadcasted workspace components for ${event.workspaceId}`);
+  }
+
+  @OnEvent(ComponentEventNames.COMPONENT_UPDATE)
+  handleComponentUpdateEvent(event: ComponentUpdateEvent): void {
+    this.server.to(event.workspaceId).emit('workspace-component-update', {
+      workspaceId: event.workspaceId,
+      component: event.component,
+    });
+    this.logger.debug(`Broadcasted component update: ${event.component.id}`);
+  }
+
+  @OnEvent(ComponentEventNames.COMPONENT_REMOVED)
+  handleComponentRemovedEvent(event: ComponentRemovedEvent): void {
+    this.server.to(event.workspaceId).emit('workspace-component-removed', {
+      workspaceId: event.workspaceId,
+      componentId: event.componentId,
+    });
+    this.logger.debug(`Broadcasted component removed: ${event.componentId}`);
+  }
+
+  // Comment Events
+  @OnEvent(CommentEventNames.COMMENT_CREATED)
+  handleCommentCreatedEvent(event: CommentCreatedEvent): void {
+    // Find workspace for this document
+    // TODO: You might need to inject DocumentRepository to get workspaceId
+    this.server.emit('document-comment', {
+      documentId: event.documentId,
+      comment: event.comment,
+    });
+    this.logger.debug(`Broadcasted comment created for document ${event.documentId}`);
+  }
+
+  @OnEvent(CommentEventNames.COMMENT_DELETED)
+  handleCommentDeletedEvent(event: CommentDeletedEvent): void {
+    this.server.to(event.workspaceId).emit('document-comment-deleted', {
+      workspaceId: event.workspaceId,
+      documentId: event.documentId,
+      commentId: event.commentId,
+    });
+    this.logger.debug(`Broadcasted comment deleted: ${event.commentId}`);
+  }
+
 
   private async trackWork<T>(fn: () => Promise<T>): Promise<T> {
     const id = uuidv4();

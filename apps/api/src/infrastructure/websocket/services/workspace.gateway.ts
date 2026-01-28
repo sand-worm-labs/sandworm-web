@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Socket } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { z } from 'zod';
 import { uuidSchema } from '@sandworm/types';
 import { Session } from '../../../features/session/domain/session';
@@ -9,10 +9,17 @@ import { DocumentGatewayService } from './document.gateway';
 import { EnvironmentGatewayService } from './environment.gateway';
 import { ComponentGatewayService } from './reusable-component.gateway';
 import { UserEntity, UserWorkspaceEntity } from '@sandworm/postgresql-typeorm';
+import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 
+
+@WebSocketGateway({ cors: true })
 @Injectable()
 export class WorkspaceGatewayService {
     private readonly logger = new Logger(WorkspaceGatewayService.name);
+
+
+    @WebSocketServer()
+    server: Server;
 
     constructor(
         @InjectRepository(UserWorkspaceEntity)

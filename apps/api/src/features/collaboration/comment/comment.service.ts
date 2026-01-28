@@ -6,6 +6,8 @@ import { CommentEntity, UserEntity } from '@sandworm/postgresql-typeorm';
 import { Repository } from 'typeorm';
 import { CreateCommentInput, DeleteCommentInput } from './dto/comment.dto';
 import { Comment } from './model/comment.model';
+import { EventEmitter2, EventEmitterReadinessWatcher } from '@nestjs/event-emitter';
+import { CommentCreatedEvent, CommentDeletedEvent, CommentEventNames } from '@/core/events/comment.events';
 
 @Injectable()
 export class CommentService {
@@ -16,14 +18,15 @@ export class CommentService {
     private readonly commentRepository: Repository<CommentEntity>,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
-  ) {}
+    private readonly eventEmitter: EventEmitter2,
+    private readonly eventEmitterReadinessWatcher: EventEmitterReadinessWatcher,
+  ) { }
 
   async getCommentsByDocument(documentId: string): Promise<Comment[]> {
     const comments = await this.commentRepository.find({
       where: { documentId },
       order: { createdAt: 'ASC' },
     });
-
     return comments.map((c) => Comment.fromEntity(c));
   }
 
@@ -31,11 +34,9 @@ export class CommentService {
     const comment = await this.commentRepository.findOne({
       where: { id: commentId },
     });
-
     if (!comment) {
       throw new ValidationException(ErrorCode.E301); // comment not found
     }
-
     return Comment.fromEntity(comment);
   }
 
@@ -52,18 +53,27 @@ export class CommentService {
       throw new ValidationException(ErrorCode.E305);
     }
 
-    const comment = this.commentRepository.create({
+    const commentEntity = this.commentRepository.create({
       id: input.id,
       body: input.body,
       documentId,
       authorId,
     });
 
-    await this.commentRepository.save(comment);
+    await this.commentRepository.save(commentEntity);
 
-    this.logger.log(`Comment created: ${comment.id} on document ${documentId}`);
+    this.logger.log(`Comment created: ${commentEntity.id} on document ${documentId}`);
 
-    return Comment.fromEntity(comment);
+    const comment = Comment.fromEntity(commentEntity);
+
+    await this.eventEmitterReadinessWatcher.waitUntilReady();
+
+    this.eventEmitter.emit(
+      CommentEventNames.COMMENT_CREATED,
+      new CommentCreatedEvent(documentId, comment),
+    );
+
+    return comment;
   }
 
   async deleteComment(
@@ -85,6 +95,13 @@ export class CommentService {
     await this.commentRepository.delete({ id: input.commentId });
 
     this.logger.log(`Comment deleted: ${input.commentId}`);
+
+    await this.eventEmitterReadinessWatcher.waitUntilReady();
+
+    this.eventEmitter.emit(
+      CommentEventNames.COMMENT_DELETED,
+      new CommentDeletedEvent(input.commentId, comment.documentId, input.workspaceId),
+    );
 
     return true;
   }
