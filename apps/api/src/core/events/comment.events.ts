@@ -1,4 +1,5 @@
 import { Comment } from "@/features/collaboration/comment/model/comment.model";
+import { User } from "@/features/user/model/graphql/user.model";
 
 export class CommentDeletedEvent {
     commentId: string;
@@ -16,9 +17,11 @@ export class CommentDeletedEvent {
 export class CommentCreatedEvent {
     documentId: string;
     comment: Comment;
-    constructor(documentId: string, comment: Comment) {
+    user: User;
+    constructor(documentId: string, comment: Comment, user: User) {
         this.documentId = documentId;
         this.comment = comment;
+        this.user = user;
     }
 };
 
