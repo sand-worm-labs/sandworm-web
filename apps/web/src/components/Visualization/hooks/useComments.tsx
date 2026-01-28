@@ -223,7 +223,7 @@ export function CommentsProvider(props: Props) {
       const comment: Comment = {
         user: {
           name: user.firstName,
-          picture: user.avatar || null,
+          picture: user.avater || null,
         },
         id: uuidv4(),
         content,

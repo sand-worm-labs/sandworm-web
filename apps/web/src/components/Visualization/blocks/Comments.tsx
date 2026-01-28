@@ -5,6 +5,7 @@ import { UserIcon, ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 
 import { timeAgo } from "@/lib";
+import { Trash } from "@/components/Assets/Trash";
 
 import { useComments } from "../hooks/useComments";
 import { useSession } from "../hooks/useAuth";
@@ -24,7 +25,7 @@ export default function Comments({
   onHide,
 }: Props) {
   const session = useSession({ redirectToLogin: true });
-  const [comments, { createComment }] = useComments(documentId);
+  const [comments, { createComment, deleteComment }] = useComments(documentId);
   const [content, setContent] = useState("");
 
   console.log("comm", comments);
@@ -43,6 +44,13 @@ export default function Comments({
       setContent("");
     },
     [createComment, content, documentId]
+  );
+
+  const onDeleteComment = useCallback(
+    (commentId: string) => {
+      deleteComment(workspaceId, documentId, commentId);
+    },
+    [deleteComment, workspaceId, documentId]
   );
 
   const onChangeContent: ChangeEventHandler<HTMLTextAreaElement> = useCallback(
@@ -124,12 +132,24 @@ export default function Comments({
                         {comment.user.name}
                       </span>{" "}
                     </div>
-                    <time
-                      dateTime={new Date(comment.createdAt).toISOString()}
-                      className="flex-none py-0.5 text-xs leading-5 text-ink-400"
-                    >
-                      {timeAgo(new Date(comment.createdAt))}
-                    </time>
+                    <div className="flex items-center gap-x-2">
+                      <time
+                        dateTime={new Date(comment.createdAt).toISOString()}
+                        className="flex-none py-0.5 text-xs leading-5 text-ink-400"
+                      >
+                        {timeAgo(new Date(comment.createdAt))}
+                      </time>
+                      {session?.user?.id === comment.userId && (
+                        <button
+                          type="button"
+                          onClick={() => onDeleteComment(comment.id)}
+                          className="text-ink-400 hover:text-red-600 transition-colors"
+                          aria-label="Delete comment"
+                        >
+                          <Trash />
+                        </button>
+                      )}
+                    </div>
                   </div>
                   <p className="text-sm leading-6 text-ink-400 pt-2">
                     {comment.content}
