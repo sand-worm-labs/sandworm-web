@@ -79,7 +79,6 @@ export class CommentService {
   async deleteComment(
     input: DeleteCommentInput,
     currentUserId: string,
-    workspaceId: string,
   ): Promise<boolean> {
     const comment = await this.commentRepository.findOne({
       where: { id: input.commentId },
@@ -101,7 +100,7 @@ export class CommentService {
 
     this.eventEmitter.emit(
       CommentEventNames.COMMENT_DELETED,
-      new CommentDeletedEvent(input.commentId, comment.documentId, workspaceId),
+      new CommentDeletedEvent(input.commentId, comment.documentId, input.workspaceId),
     );
 
     return true;
