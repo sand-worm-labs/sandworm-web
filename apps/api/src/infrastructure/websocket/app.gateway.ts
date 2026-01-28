@@ -207,6 +207,7 @@ export class AppGateway
     );
   }
 
+
   private async trackWork<T>(fn: () => Promise<T>): Promise<T> {
     const id = uuidv4();
     try {
