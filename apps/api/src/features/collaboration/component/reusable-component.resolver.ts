@@ -16,8 +16,7 @@ import {
     CreateComponentInstanceInput,
 } from './dto/reusable-component.dto';
 
-const COMPONENT_UPDATED = 'componentUpdated';
-const COMPONENT_DELETED = 'componentDeleted';
+
 
 @Resolver(() => ReusableComponent)
 export class ReusableComponentResolver {
@@ -43,7 +42,8 @@ export class ReusableComponentResolver {
     async getWorkspaceComponents(
         @Args('workspaceId') workspaceId: string,
     ): Promise<ReusableComponent[]> {
-        return this.componentService.getWorkspaceComponents(workspaceId);
+        let components = await this.componentService.getWorkspaceComponents(workspaceId);
+        return components.map((c) => ReusableComponent.fromEntity(c));
     }
 
 

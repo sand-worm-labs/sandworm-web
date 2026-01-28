@@ -57,4 +57,16 @@ export class ReusableComponent {
     static fromEntities(entities: ReusableComponentEntity[]): ReusableComponent[] {
         return entities.map((e) => ReusableComponent.fromEntity(e));
     }
+
+    toEntity(): Partial<ReusableComponentEntity> {
+        return {
+            id: this.id,
+            title: this.title,
+            type: this.type,
+            state: Buffer.from(this.state, 'base64'),
+            blockId: this.blockId,
+            documentId: this.documentId,
+            instancesCreated: this.instancesCreated,
+        };
+    }
 }
