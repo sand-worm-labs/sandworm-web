@@ -5,6 +5,12 @@ export class EnvironmentStatusEvent {
     workspaceId: string;
     status: EnvironmentStatus;
     startedAt: string | null;
+
+    constructor(workspaceId: string, status: EnvironmentStatus, startedAt: string | null) {
+        this.workspaceId = workspaceId;
+        this.status = status;
+        this.startedAt = startedAt;
+    }
 }
 
 export const EventNames = {

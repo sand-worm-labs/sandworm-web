@@ -6,10 +6,13 @@ import { z } from 'zod';
 import { uuidSchema } from '@sandworm/types';
 import { Session } from '../../../features/session/domain/session';
 import { CommentEntity, DocumentEntity, UserWorkspaceEntity } from '@sandworm/postgresql-typeorm';
+import { Comment } from '@/features/collaboration/comment/model/comment.model';
+
 
 @Injectable()
 export class CommentGatewayService {
     private readonly logger = new Logger(CommentGatewayService.name);
+
 
     constructor(
         @InjectRepository(CommentEntity)
