@@ -5,13 +5,15 @@ import {
   EnvironmentEntity,
   EnvironmentStatus,
   EnvironmentVariableEntity,
-} from '@sandworm/postgresql-typeorm';;
+} from '@sandworm/postgresql-typeorm';
 import { Environment } from './model/environment.model';
 import { EnvironmentVariable } from './model/environment_variable.model';
 import { SetEnvironmentVariablesInput } from './dto/environment.dto';
 import { ValidationException } from '@sandworm/graphql';
 import { ErrorCode } from '@/constants/error-code.constant';
 import { JupyterService } from '@/infrastructure/jupyter/jupyter.service';
+import { EventEmitter2, EventEmitterReadinessWatcher } from '@nestjs/event-emitter';
+import { EnvironmentStatusEvent, EventNames } from '@/events/environment.events';
 
 @Injectable()
 export class EnvironmentService {
@@ -23,6 +25,8 @@ export class EnvironmentService {
     @InjectRepository(EnvironmentVariableEntity)
     private readonly envVarRepository: Repository<EnvironmentVariableEntity>,
     private readonly jupyterService: JupyterService,
+    private readonly eventEmitter: EventEmitter2,
+    private readonly eventEmitterReadinessWatcher: EventEmitterReadinessWatcher,
   ) { }
 
   async getEnvironment(workspaceId: string): Promise<Environment> {
@@ -37,6 +41,12 @@ export class EnvironmentService {
         resourceVersion: 0,
       });
       await this.environmentRepository.save(entity);
+
+      // Emit initial status
+      await this.emitStatusUpdate(workspaceId, {
+        status: EnvironmentStatus.STOPPED,
+        startedAt: null,
+      });
     }
 
     return Environment.fromEntity(entity);
@@ -50,26 +60,61 @@ export class EnvironmentService {
   async restartEnvironment(workspaceId: string): Promise<Environment> {
     this.logger.log(`Restarting environment for workspace ${workspaceId}`);
 
+    // Update to STOPPING status
     await this.environmentRepository.update(
       { workspaceId },
       { status: EnvironmentStatus.STOPPING },
     );
 
-    await this.jupyterService.restart(workspaceId);
-
-    const environment = await this.environmentRepository.findOne({
-      where: { workspaceId },
+    // Emit STOPPING status
+    await this.emitStatusUpdate(workspaceId, {
+      status: EnvironmentStatus.STOPPING,
+      startedAt: null,
     });
 
-    if (!environment) {
-      throw new ValidationException(ErrorCode.E401);
+    try {
+      // Restart Jupyter
+      await this.jupyterService.restart(workspaceId);
+
+      // Update to RUNNING status
+      const environment = await this.environmentRepository.findOne({
+        where: { workspaceId },
+      });
+
+      if (!environment) {
+        throw new ValidationException(ErrorCode.E401);
+      }
+
+      environment.status = EnvironmentStatus.RUNNING;
+      environment.startedAt = new Date();
+      await this.environmentRepository.save(environment);
+
+      // Emit RUNNING status
+      await this.emitStatusUpdate(workspaceId, {
+        status: environment.status,
+        startedAt: environment.startedAt,
+      });
+
+      this.logger.log(`Environment restarted successfully for workspace ${workspaceId}`);
+
+      return Environment.fromEntity(environment);
+    } catch (error) {
+      this.logger.error(
+        `Failed to restart environment for workspace ${workspaceId}`,
+        error,
+      );
+
+      // Update to ERROR status
+      await this.environmentRepository.update(
+        { workspaceId },
+        { status: EnvironmentStatus.STOPPED },
+      );
+
+      // Emit error event
+      await this.emitStatusError(workspaceId, error);
+
+      throw error;
     }
-
-    environment.status = EnvironmentStatus.RUNNING;
-    environment.startedAt = new Date();
-    await this.environmentRepository.save(environment);
-
-    return Environment.fromEntity(environment);
   }
 
   async getEnvironmentVariables(
@@ -88,7 +133,7 @@ export class EnvironmentService {
     input: SetEnvironmentVariablesInput,
   ): Promise<EnvironmentVariable[]> {
     this.logger.log(
-      `Setting environment variables for workspace ${workspaceId}`,
+      `Setting environment variables for workspace ${workspaceId}: adding ${input.add.length}, removing ${input.remove.length}`,
     );
 
     const removeNames =
@@ -121,7 +166,14 @@ export class EnvironmentService {
       add: input.add,
       remove: removeNames.map((v) => v.name),
     });
-    return this.getEnvironmentVariables(workspaceId);
+
+    const updatedVariables = await this.getEnvironmentVariables(workspaceId);
+
+    this.logger.log(
+      `Environment variables updated for workspace ${workspaceId}`,
+    );
+
+    return updatedVariables;
   }
 
   async deleteEnvironmentVariable(
@@ -133,7 +185,15 @@ export class EnvironmentService {
       workspaceId,
     });
 
-    return result.affected ? result.affected > 0 : false;
+    const success = result.affected ? result.affected > 0 : false;
+
+    if (success) {
+      this.logger.log(
+        `Environment variable ${variableId} deleted for workspace ${workspaceId}`,
+      );
+    }
+
+    return success;
   }
 
   async registerLastActivity(
@@ -167,4 +227,35 @@ export class EnvironmentService {
 
     return Environment.fromEntity(environment);
   }
-}  
+
+  private async emitStatusUpdate(
+    workspaceId: string,
+    environment: { status: EnvironmentStatus; startedAt: Date | null },
+  ): Promise<void> {
+    await this.eventEmitterReadinessWatcher.waitUntilReady();
+
+    this.eventEmitter.emit(
+      EventNames.ENVIRONMENT_STATUS_UPDATE,
+      new EnvironmentStatusEvent(
+        workspaceId,
+        environment.status,
+        environment.startedAt?.toISOString() ?? null,
+      ),
+    );
+  }
+
+  private async emitStatusError(
+    workspaceId: string,
+    error: any,
+  ): Promise<void> {
+    await this.eventEmitterReadinessWatcher.waitUntilReady();
+
+    this.eventEmitter.emit(
+      EventNames.ENVIRONMENT_STATUS_ERROR,
+      {
+        workspaceId,
+        error: error.message || String(error),
+      },
+    );
+  }
+}

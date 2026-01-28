@@ -1,4 +1,3 @@
-// reusable-component.service.ts
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -16,6 +15,14 @@ import {
     UpdateReusableComponentInput,
     CreateComponentInstanceInput,
 } from './dto/reusable-component.dto';
+import { EventEmitter2, EventEmitterReadinessWatcher } from '@nestjs/event-emitter';
+import {
+    WorkspaceComponentsEvent,
+    ComponentUpdateEvent,
+    ComponentRemovedEvent,
+    EventNames,
+} from '@/events/reusable-component.events';
+import { APIReusableComponent } from '@/infrastructure/websocket/services/reusable-component.gateway';
 
 @Injectable()
 export class ReusableComponentService {
@@ -28,6 +35,8 @@ export class ReusableComponentService {
         private readonly instanceRepository: Repository<ReusableComponentInstanceEntity>,
         @InjectRepository(DocumentEntity)
         private readonly documentRepository: Repository<DocumentEntity>,
+        private readonly eventEmitter: EventEmitter2,
+        private readonly eventEmitterReadinessWatcher: EventEmitterReadinessWatcher,
     ) { }
 
     async getComponent(componentId: string, workspaceId: string): Promise<ReusableComponent> {
@@ -43,14 +52,15 @@ export class ReusableComponentService {
         return ReusableComponent.fromEntity(component);
     }
 
-    async getWorkspaceComponents(workspaceId: string): Promise<ReusableComponent[]> {
+    async getWorkspaceComponents(workspaceId: string): Promise<ReusableComponentEntity[]> {
         const components = await this.componentRepository
             .createQueryBuilder('component')
             .innerJoin('component.document', 'document')
+            .addSelect(['document.id', 'document.title'])
             .where('document.workspaceId = :workspaceId', { workspaceId })
             .getMany();
 
-        return ReusableComponent.fromEntities(components);
+        return components;
     }
 
     async createComponent(
@@ -65,7 +75,7 @@ export class ReusableComponentService {
             throw new ValidationException(ErrorCode.E003);
         }
 
-        const component = this.componentRepository.create({
+        const componentEntity = this.componentRepository.create({
             title: input.title,
             type: input.type,
             state: Buffer.from(input.state, 'base64'),
@@ -74,11 +84,24 @@ export class ReusableComponentService {
             instancesCreated: true,
         });
 
-        await this.componentRepository.save(component);
+        await this.componentRepository.save(componentEntity);
 
-        // TODO: Update Yjs document to set componentId on block
+        // Reload with relations
+        const savedComponent = await this.componentRepository.findOne({
+            where: { id: componentEntity.id },
+            relations: ['document'],
+        });
 
-        return ReusableComponent.fromEntity(component);
+        if (!savedComponent) {
+            throw new ValidationException(ErrorCode.E003);
+        }
+
+        // Emit component update event
+        await this.emitComponentUpdate(workspaceId, savedComponent);
+
+        this.logger.log(`Component created: ${savedComponent.id} in workspace ${workspaceId}`);
+
+        return ReusableComponent.fromEntity(savedComponent);
     }
 
     async updateComponent(
@@ -86,27 +109,40 @@ export class ReusableComponentService {
         workspaceId: string,
         input: UpdateReusableComponentInput,
     ): Promise<ReusableComponent> {
-        const component = await this.componentRepository.findOne({
+        const componentEntity = await this.componentRepository.findOne({
             where: { id: componentId },
             relations: ['document', 'instances'],
         });
 
-        if (!component || component.document.workspaceId !== workspaceId) {
+        if (!componentEntity || componentEntity.document.workspaceId !== workspaceId) {
             throw new ValidationException(ErrorCode.E003);
         }
 
         if (input.title !== undefined) {
-            component.title = input.title;
+            componentEntity.title = input.title;
         }
         if (input.state !== undefined) {
-            component.state = Buffer.from(input.state, 'base64');
+            componentEntity.state = Buffer.from(input.state, 'base64');
         }
 
-        await this.componentRepository.save(component);
+        await this.componentRepository.save(componentEntity);
 
-        // TODO: Update all component instances in Yjs documents
+        // Reload with relations
+        const updatedComponent = await this.componentRepository.findOne({
+            where: { id: componentId },
+            relations: ['document'],
+        });
 
-        return ReusableComponent.fromEntity(component);
+        if (!updatedComponent) {
+            throw new ValidationException(ErrorCode.E003);
+        }
+
+        // Emit component update event
+        await this.emitComponentUpdate(workspaceId, updatedComponent);
+
+        this.logger.log(`Component updated: ${componentId}`);
+
+        return ReusableComponent.fromEntity(updatedComponent);
     }
 
     async deleteComponent(componentId: string, workspaceId: string): Promise<boolean> {
@@ -124,6 +160,15 @@ export class ReusableComponentService {
         }
 
         await this.componentRepository.remove(component);
+
+        // Emit component removed event
+        await this.emitComponentRemoved(workspaceId, componentId);
+
+        // Also emit updated workspace components list
+        await this.emitWorkspaceComponents(workspaceId);
+
+        this.logger.log(`Component deleted: ${componentId} from workspace ${workspaceId}`);
+
         return true;
     }
 
@@ -148,6 +193,11 @@ export class ReusableComponentService {
         });
 
         await this.instanceRepository.save(instance);
+
+        this.logger.log(
+            `Component instance created: ${instance.id} for component ${componentId}`,
+        );
+
         return ReusableComponentInstance.fromEntity(instance);
     }
 
@@ -166,6 +216,9 @@ export class ReusableComponentService {
         }
 
         await this.instanceRepository.remove(instance);
+
+        this.logger.log(`Component instance deleted: ${blockId} from component ${componentId}`);
+
         return true;
     }
 
@@ -175,5 +228,65 @@ export class ReusableComponentService {
         });
 
         return instances.map((i) => ReusableComponentInstance.fromEntity(i));
+    }
+
+    // ========================================
+    // Event Emission Helpers
+    // ========================================
+    private async emitComponentUpdate(
+        workspaceId: string,
+        component: ReusableComponentEntity,
+    ): Promise<void> {
+        await this.eventEmitterReadinessWatcher.waitUntilReady();
+
+        const apiComponent = this.toAPIReusableComponent(component);
+
+        this.eventEmitter.emit(
+            EventNames.COMPONENT_UPDATE,
+            new ComponentUpdateEvent(workspaceId, apiComponent),
+        );
+    }
+
+    private async emitComponentRemoved(
+        workspaceId: string,
+        componentId: string,
+    ): Promise<void> {
+        await this.eventEmitterReadinessWatcher.waitUntilReady();
+
+        this.eventEmitter.emit(
+            EventNames.COMPONENT_REMOVED,
+            new ComponentRemovedEvent(workspaceId, componentId),
+        );
+    }
+
+    private async emitWorkspaceComponents(workspaceId: string): Promise<void> {
+        await this.eventEmitterReadinessWatcher.waitUntilReady();
+
+        const components = await this.getWorkspaceComponents(workspaceId);
+        const apiComponents = components.map((c) => this.toAPIReusableComponent(c));
+
+        this.eventEmitter.emit(
+            EventNames.WORKSPACE_COMPONENTS,
+            new WorkspaceComponentsEvent(workspaceId, apiComponents),
+        );
+    }
+
+    // Convert entity to API format
+    private toAPIReusableComponent(component: ReusableComponentEntity): APIReusableComponent {
+        return {
+            id: component.id,
+            title: component.title,
+            type: component.type,
+            state: component.state.toString('base64'), // Convert Buffer to base64 string
+            blockId: component.blockId,
+            documentId: component.documentId,
+            instancesCreated: component.instancesCreated,
+            createdAt: component.createdAt.toISOString(), // Convert Date to ISO string
+            updatedAt: component.updatedAt.toISOString(), // Convert Date to ISO string
+            document: {
+                id: component.document.id,
+                title: component.document.title,
+            },
+        };
     }
 }

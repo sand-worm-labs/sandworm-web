@@ -17,8 +17,8 @@ import { AuthGithubModule } from '@/features/auth/github/auth-github.module';
 import { ScheduleModule } from '@/features/schedule/schedule.module';
 import { JupyterModule } from './infrastructure/jupyter/jupyter.module';
 import { WebsocketModule } from './infrastructure/websocket/websocket.module';
-import { AppGateway } from './infrastructure/websocket/app.gateway';
 import { YjsModule } from './features/collaboration/yjs/yjs.module';
+import { DataSourcesModule } from './infrastructure/datasource/datasource.module';
 
 @Module({
     imports: [
@@ -37,6 +37,7 @@ import { YjsModule } from './features/collaboration/yjs/yjs.module';
         MailerModule,
         SessionModule,
         JupyterModule,
+        DataSourcesModule,
 
         // Features
         WorkspaceModule,
