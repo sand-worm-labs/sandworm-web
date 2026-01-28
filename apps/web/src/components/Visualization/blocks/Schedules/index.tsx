@@ -360,7 +360,6 @@ export default function Schedules(props: Props) {
     props.documentId
   );
 
-  console.log("schedules", schedules);
   const { createSchedule, deleteSchedule } = api;
 
   const [showAddForm, setShowAddForm] = useState(false);

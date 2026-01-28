@@ -34,8 +34,6 @@ export function WebsocketProvider({ children }: Props) {
 
     const token = tokenStorage.getToken();
 
-    console.log("my precious token", token);
-
     const newSocket = io(withoutPathname, {
       withCredentials: true,
       path: socketPath,

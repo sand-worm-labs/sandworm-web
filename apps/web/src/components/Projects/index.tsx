@@ -53,10 +53,6 @@ export const Projects: React.FC = () => {
   const [hoveredUser, setHoveredUser] = useState<string | null>(null);
   const [hoveredSave, setHoveredSave] = useState<string | null>(null);
 
-  console.log("Documents State:", documentsState);
-  console.log("Documents:", documentsState.documents);
-  console.log("Favorites:", favorites);
-
   const onCreateDocument = useCallback(
     async (parentId: string | null) => {
       if (documentsState.loading) return;

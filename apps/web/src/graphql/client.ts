@@ -52,8 +52,6 @@ export const createApolloClient = ({
   getAccessToken,
   refreshAccessToken,
 }: CreateClientOpts): ApolloClient<NormalizedCacheObject> => {
-  console.log("Initializing Apollo Client with URL:", graphqlUrl);
-
   // 1) Error handling link (GraphQL errors / Network errors)
   const errorLink = onError(
     ({ graphQLErrors, networkError, operation, forward }) => {
@@ -81,7 +79,6 @@ export const createApolloClient = ({
 
           // Check if already refreshing
           if (refreshingPromise) {
-            console.log("⏳ Refresh already in progress, queuing request");
             return new Observable(observer => {
               addPendingRequest(() => {
                 forward(operation).subscribe({
@@ -96,15 +93,12 @@ export const createApolloClient = ({
           // Start refresh
           refreshingPromise = (async () => {
             try {
-              console.log("🔄 Calling refreshAccessToken...");
               const newToken = await refreshAccessToken();
 
               if (newToken) {
-                console.log("✅ Token refreshed, retrying requests");
                 onRefreshed(newToken);
                 return newToken;
               }
-              console.log("❌ Refresh failed - no new token");
               onRefreshed(null);
               // Redirect to login
               if (typeof window !== "undefined") {
@@ -112,7 +106,6 @@ export const createApolloClient = ({
               }
               return null;
             } catch (e) {
-              console.error("❌ Refresh error:", e);
               onRefreshed(null);
               if (typeof window !== "undefined") {
                 window.location.href = "/signin";
@@ -177,8 +170,6 @@ export const createApolloClient = ({
   const authLink = setContext((operation, { headers }) => {
     const token = getAccessToken();
 
-    console.log("🔑 Auth Link - Token:", token ? "Present" : "Missing");
-
     return {
       headers: {
         ...headers,
@@ -222,13 +213,6 @@ export const createApolloClient = ({
     uri: graphqlUrl,
     credentials: "include", // Include cookies if needed
     fetch: (uri, options) => {
-      console.log(" GraphQL Request:", {
-        uri,
-        method: options?.method,
-        headers: options?.headers,
-        bodyPreview: options?.body ? JSON.parse(options.body as string) : null,
-      });
-
       return fetch(uri, options).then(response => {
         console.log("GraphQL Response:", {
           status: response.status,

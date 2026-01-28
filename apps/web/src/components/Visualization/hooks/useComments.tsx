@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 
@@ -42,6 +43,7 @@ type API = {
     documentId: string,
     commentId: string
   ) => Promise<void>;
+  setComments: (documentId: string, comments: Comment[]) => void;
 };
 
 type State = Map<string, Comment[]>;
@@ -59,29 +61,71 @@ const Context = createContext<[State, API]>([
         "Attempted to call deleteComment without CommentsProvider"
       );
     },
+    setComments: () => {
+      throw new Error("Attempted to call setComments without CommentsProvider");
+    },
   },
 ]);
 
-type UseComments = [Comment[], API, { loading: boolean }];
+type UseComments = [Comment[], Omit<API, "setComments">];
+
+// Helper function to transform GraphQL/WebSocket data to Comment type
+function transformComment(c: any): Comment {
+  return {
+    id: c.id,
+    documentId: c.documentId,
+    userId: c.authorId || c.userId,
+    content: c.body || c.content,
+    createdAt: c.createdAt,
+    updatedAt: c.updatedAt,
+    user: {
+      name: c.author?.firstName
+        ? `${c.author.firstName} ${c.author.lastName || ""}`.trim()
+        : c.user?.name || "Unknown User",
+      picture: c.author?.avatar || c.user?.picture || null,
+    },
+  };
+}
 
 export function useComments(documentId: string): UseComments {
   const [state, api] = useContext(Context);
   const socket = useWebsocket();
+  const hasLoadedRef = useRef(false);
 
-  // Fetch comments via GraphQL on mount (without websocket data, won't have user details)
-  const { loading } = useGetDocumentCommentsQuery({
+  // Fetch initial comments from GraphQL
+  const { data } = useGetDocumentCommentsQuery({
     variables: { documentId },
     skip: !documentId,
   });
 
+  // When GraphQL data arrives, transform and store it
   useEffect(() => {
-    // Emit websocket event for real-time sync with user details
-    socket?.emit("fetch-document-comments", { documentId });
+    if (data?.comments && documentId && !hasLoadedRef.current) {
+      console.log("📥 Loading comments from GraphQL:", data.comments.length);
+      const transformedComments = data.comments.map(transformComment);
+      api.setComments(documentId, transformedComments);
+      hasLoadedRef.current = true;
+    }
+  }, [data, documentId, api]);
+
+  // Reset ref when documentId changes
+  useEffect(() => {
+    hasLoadedRef.current = false;
+  }, [documentId]);
+
+  // Request comments via WebSocket for real-time sync
+  useEffect(() => {
+    if (socket) {
+      console.log("📤 Emitting fetch-document-comments:", documentId);
+      socket.emit("fetch-document-comments", { documentId });
+    }
   }, [socket, documentId]);
 
+  const { setComments, ...publicApi } = api;
+
   return useMemo(
-    (): UseComments => [state.get(documentId) ?? [], api, { loading }],
-    [state, api, documentId, loading]
+    (): UseComments => [state.get(documentId) ?? [], publicApi],
+    [state, publicApi, documentId]
   );
 }
 
@@ -89,7 +133,7 @@ interface Props {
   children: React.ReactNode;
 }
 
-export function CommentsProvider({ children }: Props) {
+export function CommentsProvider(props: Props) {
   const [state, setState] = useState<State>(Map());
   const socket = useWebsocket();
   const session = useSession({ redirectToLogin: false });
@@ -97,62 +141,91 @@ export function CommentsProvider({ children }: Props) {
   const [createCommentMutation] = useCreateCommentMutation();
   const [deleteCommentMutation] = useDeleteCommentMutation();
 
-  // Websocket listeners for real-time sync (these provide full Comment with user data)
+  // WebSocket listeners
   useEffect(() => {
-    if (!socket) return () => {};
+    if (!socket) {
+      console.log("❌ No socket in CommentsProvider");
+      return;
+    }
 
-    const onComments = (data: { documentId: string; comments: Comment[] }) => {
-      setState(prev => prev.set(data.documentId, data.comments));
+    console.log("✅ Socket exists, ID:", socket.id);
+    console.log("✅ Setting up WebSocket listeners...");
+
+    const onComments = (data: any) => {
+      console.log("🎯 LISTENER FIRED: document-comments");
+      console.log("🎯 Raw data:", data);
+
+      // Transform WebSocket data to match our Comment type
+      const transformedComments = (data.comments || []).map(transformComment);
+      setState(state => state.set(data.documentId, transformedComments));
     };
+    socket.on("document-comments", onComments);
 
-    const onComment = (data: { documentId: string; comment: Comment }) => {
-      setState(prev => {
-        const comments = prev.get(data.comment.documentId) ?? [];
+    const onComment = (data: any) => {
+      console.log("🎯 LISTENER FIRED: document-comment");
+      console.log("🎯 Raw data:", data);
 
-        if (comments.some(c => c.id === data.comment.id)) {
-          return prev;
+      const transformedComment = transformComment(data.comment);
+
+      setState(state => {
+        const comments = state.get(transformedComment.documentId) ?? [];
+
+        if (comments.some(({ id }) => id === transformedComment.id)) {
+          console.log("⚠️ Comment already exists");
+          return state;
         }
 
-        return prev.set(data.comment.documentId, [...comments, data.comment]);
+        console.log("✅ Adding new comment");
+        return state.set(transformedComment.documentId, [
+          ...comments,
+          transformedComment,
+        ]);
       });
     };
+    socket.on("document-comment", onComment);
 
-    const onCommentDeleted = (data: {
-      documentId: string;
-      commentId: string;
-    }) => {
-      setState(prev => {
-        const comments = prev.get(data.documentId) ?? [];
-        return prev.set(
+    const onCommentDeleted = (data: any) => {
+      console.log("🎯 LISTENER FIRED: document-comment-deleted");
+      console.log("🎯 Raw data:", data);
+
+      setState(state => {
+        const comments = state.get(data.documentId) ?? [];
+        return state.set(
           data.documentId,
           comments.filter(c => c.id !== data.commentId)
         );
       });
     };
-
-    socket.on("document-comments", onComments);
-    socket.on("document-comment", onComment);
     socket.on("document-comment-deleted", onCommentDeleted);
 
+    console.log("👂 WebSocket listeners registered");
+
     return () => {
+      console.log("🧹 Cleaning up WebSocket listeners");
       socket.off("document-comments", onComments);
       socket.off("document-comment", onComment);
       socket.off("document-comment-deleted", onCommentDeleted);
     };
   }, [socket]);
 
+  const setComments = useCallback((documentId: string, comments: Comment[]) => {
+    setState(state => state.set(documentId, comments));
+  }, []);
+
   const createComment = useCallback(
     async (workspaceId: string, documentId: string, content: string) => {
       const user = session?.user;
-      if (!user) return;
+      if (!user) {
+        return;
+      }
 
-      const commentId = uuidv4();
       const now = new Date().toISOString();
-
-      // Optimistic update with current user data
-      const optimisticComment: Comment = {
-        user: { name: user.firstName, picture: user.avatar || null },
-        id: commentId,
+      const comment: Comment = {
+        user: {
+          name: user.firstName,
+          picture: user.avatar || null,
+        },
+        id: uuidv4(),
         content,
         documentId,
         userId: user.id,
@@ -160,9 +233,9 @@ export function CommentsProvider({ children }: Props) {
         updatedAt: now,
       };
 
-      setState(prev => {
-        const comments = prev.get(documentId) ?? [];
-        return prev.set(documentId, [...comments, optimisticComment]);
+      setState(state => {
+        const comments = state.get(documentId) ?? [];
+        return state.set(documentId, [...comments, comment]);
       });
 
       try {
@@ -170,8 +243,8 @@ export function CommentsProvider({ children }: Props) {
           variables: {
             documentId,
             input: {
-              id: commentId,
-              body: content, // GraphQL uses 'body' not 'content'
+              id: comment.id,
+              body: content,
             },
           },
         });
@@ -179,18 +252,13 @@ export function CommentsProvider({ children }: Props) {
         if (!result.data?.createComment) {
           throw new Error("Failed to create comment");
         }
-
-        // Websocket will sync the actual comment with user details populated by backend
       } catch (error) {
-        console.error("Failed to create comment:", error);
         alert("Failed to create comment");
-
-        // Rollback optimistic update
-        setState(prev => {
-          const comments = prev.get(documentId) ?? [];
-          return prev.set(
+        setState(state => {
+          const comments = state.get(documentId) ?? [];
+          return state.set(
             documentId,
-            comments.filter(c => c.id !== commentId)
+            comments.filter(c => c.id !== comment.id)
           );
         });
       }
@@ -200,13 +268,14 @@ export function CommentsProvider({ children }: Props) {
 
   const deleteComment = useCallback(
     async (workspaceId: string, documentId: string, commentId: string) => {
-      const existing = state.get(documentId)?.find(c => c.id === commentId);
-      if (!existing) return;
+      const comment = state.get(documentId)?.find(c => c.id === commentId);
+      if (!comment) {
+        return;
+      }
 
-      // Optimistic update
-      setState(prev => {
-        const comments = prev.get(documentId) ?? [];
-        return prev.set(
+      setState(state => {
+        const comments = state.get(documentId) ?? [];
+        return state.set(
           documentId,
           comments.filter(c => c.id !== commentId)
         );
@@ -226,26 +295,21 @@ export function CommentsProvider({ children }: Props) {
         if (!result.data?.deleteComment) {
           throw new Error("Failed to delete comment");
         }
-
-        // Websocket will confirm deletion
       } catch (error) {
-        console.error("Failed to delete comment:", error);
         alert("Failed to delete comment");
-
-        // Rollback optimistic update
-        setState(prev => {
-          const comments = prev.get(documentId) ?? [];
-          return prev.set(documentId, [...comments, existing]);
+        setState(state => {
+          const comments = state.get(documentId) ?? [];
+          return state.set(documentId, [...comments, comment]);
         });
       }
     },
     [state, deleteCommentMutation]
   );
 
-  const value = useMemo(
-    () => [state, { createComment, deleteComment }] as [State, API],
-    [state, createComment, deleteComment]
+  const value: [State, API] = useMemo(
+    () => [state, { createComment, deleteComment, setComments }],
+    [state, createComment, deleteComment, setComments]
   );
 
-  return <Context.Provider value={value}>{children}</Context.Provider>;
+  return <Context.Provider value={value}>{props.children}</Context.Provider>;
 }
