@@ -51,22 +51,14 @@ function AcceptInvitationContent() {
   useEffect(() => {
     if (!state.success || declined) return () => {};
 
+    const workspaceId = invitation?.workspace?.slug;
+
     const timer = setTimeout(() => {
-      router.push("/workspace");
+      router.push(workspaceId ? `/workspace/${workspaceId}` : "/workspace");
     }, 2000);
 
     return () => clearTimeout(timer);
-  }, [state.success, declined, router]);
-
-  useEffect(() => {
-    if (!state.success || !declined) return () => {};
-
-    const timer = setTimeout(() => {
-      router.push("/workspace");
-    }, 2000);
-
-    return () => clearTimeout(timer);
-  }, [state.success, declined, router]);
+  }, [state.success, declined, router, invitation?.workspace?.slug]);
 
   const handleAccept = () => {
     if (hash && !hasAccepted.current) {
@@ -274,7 +266,7 @@ function AcceptInvitationContent() {
           <span className="font-semibold">{invitation.inviter.name}</span>
           {" invited you to collaborate on "}
           <span className="font-semibold text-primary">
-            {invitation.inviter.name}/{invitation.workspace.slug}
+            {invitation.workspace.name}
           </span>
         </p>
 
@@ -304,7 +296,7 @@ function AcceptInvitationContent() {
                 Owners
               </span>
               {" of "}
-              <span className="font-medium">{invitation.workspace.slug}</span>
+              <span className="font-medium">{invitation.workspace.name}</span>
               {" will be able to see:"}
             </p>
           </div>
