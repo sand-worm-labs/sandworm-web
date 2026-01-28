@@ -144,10 +144,22 @@ export function CommentsProvider(props: Props) {
       console.log("🎯 LISTENER FIRED: document-comment");
       console.log("🎯 Raw data:", data);
 
-      const transformedComments = (data.comments || []).map((c: any) =>
-        transformComment(c, c.user)
-      );
-      setState(state => state.set(data.documentId, transformedComments));
+      const transformedComment = transformComment(data.comment, data.user);
+
+      setState(state => {
+        const comments = state.get(transformedComment.documentId) ?? [];
+
+        if (comments.some(({ id }) => id === transformedComment.id)) {
+          console.log("⚠️ Comment already exists");
+          return state;
+        }
+
+        console.log("✅ Adding new comment");
+        return state.set(transformedComment.documentId, [
+          ...comments,
+          transformedComment,
+        ]);
+      });
     };
     socket.on("document-comment", onComment);
 

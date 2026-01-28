@@ -46,7 +46,7 @@ export default function ResetPasswordPage() {
         <p className="mt-2 text-sm text-ink-200">
           You can now log in with your new password.
         </p>
-        <Link href="/login" className="inline-block mt-6 text-sm underline">
+        <Link href="/signin" className="inline-block mt-6 text-sm underline">
           Back to Login
         </Link>
       </div>

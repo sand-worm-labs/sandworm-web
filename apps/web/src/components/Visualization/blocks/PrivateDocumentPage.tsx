@@ -51,62 +51,6 @@ interface Props {
   isApp: boolean;
 }
 
-// ⬢ Persist Ydoc to indexed db
-// =====================================
-function persistYDocToIndexedDB(
-  documentId: string,
-  yDoc: Y.Doc,
-  clock: number,
-  publishedAt: string | null
-) {
-  const data = Y.encodeStateAsUpdate(yDoc);
-
-  const dbRequest = indexedDB.open("YjsDatabase");
-
-  dbRequest.onsuccess = () => {
-    const db = dbRequest.result;
-
-    try {
-      if (!db.objectStoreNames.contains("yDocs")) {
-        console.error(" yDocs object store doesn't exist");
-        db.close();
-        return;
-      }
-
-      const transaction = db.transaction(["yDocs"], "readwrite");
-      const store = transaction.objectStore("yDocs");
-
-      const editId = `${documentId}-false-${clock}`;
-      store.put({ id: editId, data, clock });
-
-      if (publishedAt) {
-        const appId = `${documentId}-true-${clock}-${publishedAt}`;
-        store.put({ id: appId, data, clock });
-
-        const editPublishedId = `${documentId}-false-${clock}-${publishedAt}`;
-        store.put({ id: editPublishedId, data, clock });
-      }
-
-      transaction.oncomplete = () => {
-        db.close();
-      };
-
-      transaction.onerror = event => {
-        console.error("Transaction error:", event);
-        db.close();
-      };
-    } catch (error) {
-      console.error(" Error:", error);
-      db.close();
-    }
-  };
-
-  dbRequest.onerror = event => {
-    const { error } = event.target as IDBOpenDBRequest;
-    console.error(" Error opening IndexedDB:", error?.message || error);
-  };
-}
-
 function PrivateDocumentPageInner(
   props: Props & {
     document: ApiDocument;

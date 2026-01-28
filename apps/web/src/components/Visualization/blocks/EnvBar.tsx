@@ -193,7 +193,7 @@ function EnvBar(props: Props) {
   return (
     <div
       className={clsx(
-        "flex items-center justify-between border-t border-gray-200 dark:border-[#262A30] py-2 px-4 font-primary",
+        "flex items-center justify-between border-t border-gray-200 dark:border-[#262A30] py-2 px-4 font-primary env-bar ",
         props.publishedAt && "bg-gray-50 dark:bg-black"
       )}
     >

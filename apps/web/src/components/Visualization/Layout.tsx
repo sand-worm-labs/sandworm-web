@@ -129,16 +129,15 @@ export default function Layout({
         </div>
 
         {/* BODY */}
-        <div className="flex flex-1 min-h-0 overflow-hidden">
+        <div className="flex-grow flex overflow-hidden">
           {/* Editor */}
-          <div className="flex-grow flex overflow-hidden">{children}</div>
-
-          {/* Right panel */}
-          <NotebookPanel
+          {children}
+        </div>
+        {/* Right panel */}
+        {/*   <NotebookPanel
             sidebarContent={sidebarContent}
             onToggleChat={onToggleChat}
-          />
-        </div>
+          /> */}
       </main>
     </div>
   );

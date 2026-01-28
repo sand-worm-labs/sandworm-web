@@ -15,8 +15,6 @@ import { CalendarIcon, QueueListIcon } from "@heroicons/react/24/solid";
 import { Menu, Transition } from "@headlessui/react";
 import { Table2Icon } from "lucide-react";
 
-import useFeatureFlags from "../Visualization/hooks/useFeatureFlags";
-
 const TriangleUp = () => {
   return (
     <div className="h-3 w-3 bg-white border-t border-l border-gray-200 rotate-45 translate-y-1/2" />
@@ -109,7 +107,7 @@ interface BlockListProps {
   writebackEnabled: boolean;
 }
 function BlockList(props: BlockListProps) {
-  const ff = useFeatureFlags(props.workspaceId);
+  const ff = { visualizationsV2: true };
 
   const onAddText = useCallback(() => {
     props.onAddBlock(BlockType.RichText);
