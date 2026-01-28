@@ -17,7 +17,7 @@
         "src/infrastructure/*"
       ],
       "@/events/*": [
-        "src/events/*"
+        "src/core/events/*"
       ],
       "@/generated/*": [
         "src/generated/*"
