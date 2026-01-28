@@ -7,36 +7,46 @@ import Image from "next/image";
 
 import { Cautious } from "@/components/Assets/Cautious";
 import { useSession } from "@/components/Visualization/hooks/useAuth";
-import { useAcceptInvitation } from "@/components/Visualization/hooks/useWorkspaces";
+import {
+  useAcceptInvitation,
+  useGetInvitationInfo,
+} from "@/components/Visualization/hooks/useWorkspaces";
 import { Mail } from "@/components/Assets/Mail";
-
-// TODO: Replace with real API call when backend adds endpoint
-const MOCK_INVITATION = {
-  inviter: {
-    name: "Ifechukwudaniel",
-    avatar: "/img/avatar/avatar2.svg",
-  },
-  workspace: {
-    name: "sandworm-analytics",
-    slug: "sandworm-analytics",
-  },
-  role: "member",
-};
 
 function AcceptInvitationContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const hash = searchParams.get("hash");
   const hasAccepted = useRef(false);
+  const hasFetchedInfo = useRef(false);
 
   const { user, loading: sessionLoading } = useSession({
     redirectToLogin: true,
   });
   const [state, { acceptInvitation }] = useAcceptInvitation();
+  const [invitationState, { getInvitationInfo }] = useGetInvitationInfo();
   const [declined] = useState(false);
 
-  // TODO: Fetch real invitation info
-  const invitation = MOCK_INVITATION;
+  useEffect(() => {
+    if (hash && !hasFetchedInfo.current && !sessionLoading) {
+      hasFetchedInfo.current = true;
+      getInvitationInfo(hash);
+    }
+  }, [hash, sessionLoading, getInvitationInfo]);
+
+  const invitation = invitationState.data
+    ? {
+        inviter: {
+          name: `${invitationState.data.inviter.firstName} ${invitationState.data.inviter.lastName}`.trim(),
+          avatar: `/img/avatar/avatar${(parseInt(invitationState.data.inviter.id) % 3) + 1}.svg`,
+        },
+        workspace: {
+          name: invitationState.data.workspace.name,
+          slug: invitationState.data.workspace.id,
+        },
+        role: invitationState.data.role,
+      }
+    : null;
 
   useEffect(() => {
     if (!state.success || declined) return () => {};
@@ -69,7 +79,7 @@ function AcceptInvitationContent() {
     router.push("/workspace");
   };
 
-  if (sessionLoading) {
+  if (sessionLoading || invitationState.loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-4">
         <Loader2 className="w-8 h-8 text-primary animate-spin" />
@@ -120,6 +130,32 @@ function AcceptInvitationContent() {
     );
   }
 
+  if (!invitation) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-4">
+        <div className="max-w-md w-full text-center space-y-4">
+          <div className="w-12 h-12 mx-auto rounded-xl bg-[#EDE7FF] flex items-center justify-center mb-4">
+            <Cautious />
+          </div>
+          <h1 className="text-xl font-medium font-body text-ink-100 dark:text-white">
+            Unable to Load Invitation
+          </h1>
+          <p className="text-ink-300 font-body font-medium">
+            We couldn't load the invitation details. Please try again or contact
+            support.
+          </p>
+          <button
+            type="button"
+            onClick={() => router.push("/workspace")}
+            className="w-full text-sm font-body mt-6 px-6 py-3.5 rounded-[20px] bg-[#0F0F0F] text-white font-medium"
+          >
+            Go to Workspace
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (state.success) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-4">
@@ -127,7 +163,7 @@ function AcceptInvitationContent() {
           <div className="flex items-center justify-center gap-3 mb-4">
             <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-primary">
               <Image
-                src={invitation.inviter.avatar}
+                src={invitation?.inviter.avatar}
                 alt={invitation.inviter.name}
                 width={48}
                 height={48}
@@ -158,7 +194,8 @@ function AcceptInvitationContent() {
     );
   }
 
-  if (state.error) {
+  if (state.error || invitationState.error) {
+    const error = state.error || invitationState.error;
     const errorConfig = {
       expired: {
         title: "Invitation Expired",
@@ -179,7 +216,7 @@ function AcceptInvitationContent() {
       },
     };
 
-    const error = errorConfig[state.error];
+    const errorInfo = errorConfig[error!];
 
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-4">
@@ -188,19 +225,19 @@ function AcceptInvitationContent() {
             <Cautious />
           </div>
           <h1 className="text-xl font-medium font-body text-ink-100">
-            {error.title}
+            {errorInfo.title}
           </h1>
-          <p className="text-ink-300 font-body font-medium">{error.message}</p>
+          <p className="text-ink-300 font-body font-medium">
+            {errorInfo.message}
+          </p>
           <button
             type="button"
             onClick={() =>
-              router.push(
-                state.error === "unauthorized" ? "/signin" : "/workspace"
-              )
+              router.push(error === "unauthorized" ? "/signin" : "/workspace")
             }
             className="w-full text-sm font-body mt-6 px-6 py-3.5 rounded-[20px] bg-[#0F0F0F] text-white font-medium"
           >
-            {state.error === "unauthorized" ? "Sign In" : "Go to Workspace"}
+            {error === "unauthorized" ? "Sign In" : "Go to Workspace"}
           </button>
         </div>
       </div>

@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from "react";
 import type { WorkspaceEditFormValues } from "@sandworm/types";
 
 import type { ApiWorkspace } from "@/types";
+import type { GetInvitationInfoQuery } from "@/generated/graphql";
 import {
   useGetUserWorkspacesQuery,
   useGetWorkspaceQuery,
@@ -11,7 +12,10 @@ import {
   useInviteUserToWorkspaceMutation,
   useAcceptWorkspaceInvitationMutation,
   useGetWorkspaceWithMembersQuery,
+  useGetInvitationInfoQuery,
+  GetInvitationInfoDocument,
 } from "@/generated/graphql";
+import { useLazyQuery } from "@apollo/client";
 
 import { NEXT_PUBLIC_API_URL } from "../utils/env";
 
@@ -419,4 +423,74 @@ export const useWorkspaceWithMembers = (workspaceId: string | undefined) => {
     error,
     refetch,
   };
+};
+
+type GetInvitationInfoState = {
+  loading: boolean;
+  data: GetInvitationInfoQuery["getInvitationInfo"] | null;
+  error?: "expired" | "invalid" | "unauthorized" | "unexpected";
+};
+
+type GetInvitationInfoAPI = {
+  getInvitationInfo: (hash: string) => Promise<void>;
+};
+
+type UseGetInvitationInfo = [GetInvitationInfoState, GetInvitationInfoAPI];
+
+export const useGetInvitationInfo = (): UseGetInvitationInfo => {
+  const [state, setState] = useState<GetInvitationInfoState>({
+    loading: false,
+    data: null,
+    error: undefined,
+  });
+
+  const [fetchInvitationInfo] = useLazyQuery(GetInvitationInfoDocument, {
+    fetchPolicy: "network-only",
+  });
+
+  const getInvitationInfo = useCallback(
+    async (hash: string) => {
+      setState({ loading: true, data: null, error: undefined });
+
+      try {
+        const result = await fetchInvitationInfo({
+          variables: { hash },
+        });
+
+        if (result.data?.getInvitationInfo) {
+          setState({
+            loading: false,
+            data: result.data.getInvitationInfo,
+            error: undefined,
+          });
+        } else {
+          setState({ loading: false, data: null, error: "invalid" });
+        }
+      } catch (err: any) {
+        const message = err?.message?.toLowerCase() || "";
+
+        if (message.includes("expired")) {
+          setState({ loading: false, data: null, error: "expired" });
+        } else if (
+          message.includes("invalid") ||
+          message.includes("not found")
+        ) {
+          setState({ loading: false, data: null, error: "invalid" });
+        } else if (
+          message.includes("unauthorized") ||
+          message.includes("unauthenticated")
+        ) {
+          setState({ loading: false, data: null, error: "unauthorized" });
+        } else {
+          setState({ loading: false, data: null, error: "unexpected" });
+        }
+      }
+    },
+    [fetchInvitationInfo]
+  );
+
+  return useMemo(
+    () => [state, { getInvitationInfo }],
+    [state, getInvitationInfo]
+  );
 };

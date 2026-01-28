@@ -121,6 +121,8 @@ export function ReusableComponentsProvider({ workspaceId, children }: Props) {
 
   // Sync query data to state
   useEffect(() => {
+    console.log("🔍 GraphQL data:", data);
+    console.log("🔍 Loading:", loading);
     if (data?.getWorkspaceComponents) {
       setState(prev => {
         const next = new Map(prev);
@@ -132,6 +134,12 @@ export function ReusableComponentsProvider({ workspaceId, children }: Props) {
       });
     }
   }, [data, workspaceId]);
+
+  useEffect(() => {
+    if (!socket || !workspaceId) return;
+
+    socket.emit("fetch-workspace-components", { workspaceId });
+  }, [socket, workspaceId]);
 
   // Socket listeners
   useEffect(() => {
@@ -200,6 +208,8 @@ export function ReusableComponentsProvider({ workspaceId, children }: Props) {
       documentTitle: string,
       documentIcon: string
     ) => {
+      console.log("🚀 Creating component:", { workspaceId, data });
+
       // Optimistic update
       setState(prev => {
         const next = new Map(prev);
@@ -234,7 +244,10 @@ export function ReusableComponentsProvider({ workspaceId, children }: Props) {
             },
           },
         });
+        console.log("✅ Mutation result:", result);
       } catch {
+        console.error("❌ Mutation error:", error);
+
         alert("Failed to create reusable component");
         setState(prev => {
           const next = new Map(prev);

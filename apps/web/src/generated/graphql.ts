@@ -1231,6 +1231,13 @@ export type GetWorkspaceDocumentsQueryVariables = Exact<{
 
 export type GetWorkspaceDocumentsQuery = { __typename?: 'Query', getWorkspaceDocuments: Array<{ __typename?: 'Document', id: string, title: string, slug: string, parentId?: string | null, orderIndex: number, authorId: string, workspaceId: string, createdAt: any, updatedAt: any, deletedAt?: any | null, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, runSQLSelection: boolean, runUnexecutedBlocks: boolean, shareLinksWithoutSidebar: boolean }> };
 
+export type GetInvitationInfoQueryVariables = Exact<{
+  hash: Scalars['String']['input'];
+}>;
+
+
+export type GetInvitationInfoQuery = { __typename?: 'Query', getInvitationInfo: { __typename?: 'WorkspaceInvitationInfo', role: string, invitedUser: { __typename?: 'User', id: string, firstName?: string | null, lastName?: string | null, email?: string | null }, inviter: { __typename?: 'User', id: string, firstName?: string | null, lastName?: string | null, email?: string | null }, workspace: { __typename?: 'Workspace', id: string, name: string, owner: { __typename?: 'User', id: string, firstName?: string | null, lastName?: string | null } } } };
+
 
 export const CreateUserDocument = gql`
     mutation CreateUser($input: CreateUserInput!) {
@@ -3654,3 +3661,64 @@ export type GetWorkspaceDocumentsQueryHookResult = ReturnType<typeof useGetWorks
 export type GetWorkspaceDocumentsLazyQueryHookResult = ReturnType<typeof useGetWorkspaceDocumentsLazyQuery>;
 export type GetWorkspaceDocumentsSuspenseQueryHookResult = ReturnType<typeof useGetWorkspaceDocumentsSuspenseQuery>;
 export type GetWorkspaceDocumentsQueryResult = Apollo.QueryResult<GetWorkspaceDocumentsQuery, GetWorkspaceDocumentsQueryVariables>;
+export const GetInvitationInfoDocument = gql`
+    query GetInvitationInfo($hash: String!) {
+  getInvitationInfo(hash: $hash) {
+    invitedUser {
+      id
+      firstName
+      lastName
+      email
+    }
+    inviter {
+      id
+      firstName
+      lastName
+      email
+    }
+    role
+    workspace {
+      id
+      name
+      owner {
+        id
+        firstName
+        lastName
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetInvitationInfoQuery__
+ *
+ * To run a query within a React component, call `useGetInvitationInfoQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetInvitationInfoQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetInvitationInfoQuery({
+ *   variables: {
+ *      hash: // value for 'hash'
+ *   },
+ * });
+ */
+export function useGetInvitationInfoQuery(baseOptions: Apollo.QueryHookOptions<GetInvitationInfoQuery, GetInvitationInfoQueryVariables> & ({ variables: GetInvitationInfoQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetInvitationInfoQuery, GetInvitationInfoQueryVariables>(GetInvitationInfoDocument, options);
+      }
+export function useGetInvitationInfoLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetInvitationInfoQuery, GetInvitationInfoQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetInvitationInfoQuery, GetInvitationInfoQueryVariables>(GetInvitationInfoDocument, options);
+        }
+export function useGetInvitationInfoSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetInvitationInfoQuery, GetInvitationInfoQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetInvitationInfoQuery, GetInvitationInfoQueryVariables>(GetInvitationInfoDocument, options);
+        }
+export type GetInvitationInfoQueryHookResult = ReturnType<typeof useGetInvitationInfoQuery>;
+export type GetInvitationInfoLazyQueryHookResult = ReturnType<typeof useGetInvitationInfoLazyQuery>;
+export type GetInvitationInfoSuspenseQueryHookResult = ReturnType<typeof useGetInvitationInfoSuspenseQuery>;
+export type GetInvitationInfoQueryResult = Apollo.QueryResult<GetInvitationInfoQuery, GetInvitationInfoQueryVariables>;
