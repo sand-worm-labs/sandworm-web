@@ -114,3 +114,30 @@ query GetWorkspaceDocuments($workspaceId: String!) {
     shareLinksWithoutSidebar
   }
 }
+
+query GetInvitationInfo($hash: String!) {
+  getInvitationInfo(hash: $hash) {
+    invitedUser {
+      id
+      firstName
+      lastName
+      email
+    }
+    inviter {
+      id
+      firstName
+      lastName
+      email
+    }
+    role
+    workspace {
+      id
+      name
+      owner {
+        id
+        firstName
+        lastName
+      }
+    }
+  }
+}
