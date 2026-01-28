@@ -61,11 +61,12 @@ interface RequestData {
 }
 
 @WebSocketGateway({
-    namespace: 'yjs',
-    maxPayload: 1024 * 1024 * 1024,
-    transports: ['websocket', "polling"],
-    pingTimeout: 60000,
-    pingInterval: 25000,
+    path: '/yjs/',
+    transports: ['websocket', 'polling'],
+    cors: {
+        credentials: true,
+        origin: (origin, callback) => callback(null, true),
+    },
 })
 export class YjsGateway
     implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
@@ -84,13 +85,30 @@ export class YjsGateway
     ) { }
 
     afterInit(server: WSServer) {
-        this.logger.log('YJS WebSocket Gateway initialized');
+        this.logger.log('='.repeat(80));
+        this.logger.log('YJS WebSocket Gateway Initialized');
+        this.logger.log('='.repeat(80));
+
+        this.logger.log(`Gateway Configuration:`);
+        this.logger.log(`  - Path: /yjs`);
+        this.logger.log(`  - Transports: websocket, polling`);
+        this.logger.log(`  - Ping Timeout: ${pingTimeout}ms`);
+
+        this.logger.log(`Connection Examples:`);
+        this.logger.log(`  ws://localhost:8003/yjs?documentId=<uuid>&clock=0&isApp=false`);
+        this.logger.log(`  ws://localhost:8003/yjs?documentId=<uuid>&clock=0&isApp=true&userId=<uuid>`);
+
+        this.logger.log('='.repeat(80));
+
         this.startSessionCleanup();
     }
 
     async handleConnection(client: WebSocket, req: http.IncomingMessage) {
         try {
-            this.logger.log("YJS client connected");
+            this.logger.log('📥 New YJS connection attempt');
+            this.logger.debug(`   URL: ${req.url}`);
+            this.logger.debug(`   Remote: ${req.socket.remoteAddress}:${req.socket.remotePort}`);
+
             // Get request data (auth, document, etc.)
             const data = await this.getRequestData(req);
 
@@ -134,7 +152,7 @@ export class YjsGateway
             }
 
             this.logger.log(
-                `Client connecting: ${authUser.id} to document ${session.documentId}`,
+                `✅ Client connecting: ${authUser.email} (${authUser.id}) to document ${session.documentId}`,
             );
 
             // Register connection
@@ -179,25 +197,29 @@ export class YjsGateway
             // Connection close handler
             client.on('close', () => {
                 this.logger.log(
-                    `Client ${authUser.id} closed connection to ${session.documentId}`,
+                    `🔌 Client ${authUser.email} closed connection to ${session.documentId}`,
                 );
                 this.closeConnection(session, client);
+            });
+
+            client.on('error', (error) => {
+                this.logger.error(`WebSocket error for ${authUser.email}: ${error.message}`);
             });
 
             // Send initial state
             await this.sendInitialState(session, client);
 
             this.logger.log(
-                `Client ${authUser.id} successfully connected to document ${session.documentId}`,
+                `✨ Client ${authUser.email} successfully connected to document ${session.documentId}`,
             );
         } catch (err) {
-            this.logger.error(`Failed to handle connection: ${err}`);
+            this.logger.error(`Failed to handle connection: ${err}`, err);
             client.close(1011, 'Internal server error');
         }
     }
 
     handleDisconnect(client: WebSocket) {
-        this.logger.debug('Client disconnected');
+        this.logger.debug('Client disconnected (generic handler)');
     }
 
     private async getOrCreateSession(
@@ -210,7 +232,7 @@ export class YjsGateway
         let session = this.sessions.get(sessionKey);
 
         if (!session) {
-            this.logger.debug(`Creating new session for ${sessionKey}`);
+            this.logger.debug(`🔧 Creating new session for ${sessionKey}`);
 
             // Load document state
             const loadResult = isApp && userId
@@ -244,6 +266,10 @@ export class YjsGateway
             });
 
             this.sessions.set(sessionKey, session);
+
+            this.logger.log(`📄 Session created: ${sessionKey} (clock: ${session.clock})`);
+        } else {
+            this.logger.debug(`♻️  Reusing existing session: ${sessionKey}`);
         }
 
         return session;
@@ -254,15 +280,21 @@ export class YjsGateway
         update: Uint8Array,
         origin: any,
     ) {
+        this.logger.debug(`📝 Document update for ${session.documentId}`);
+
         // Broadcast update to all connections
         const encoder = encoding.createEncoder();
         encoding.writeVarUint(encoder, messageSync);
         syncProtocol.writeUpdate(encoder, update);
         const message = encoding.toUint8Array(encoder);
 
+        let broadcastCount = 0;
         session.conns.forEach((_, conn) => {
             this.send(session, conn, message);
+            broadcastCount++;
         });
+
+        this.logger.debug(`   Broadcasted to ${broadcastCount} connections`);
 
         // Schedule persistence
         this.schedulePersist(session);
@@ -307,7 +339,6 @@ export class YjsGateway
             try {
                 const now = Date.now();
 
-                // Only persist if there are no active connections and enough time has passed
                 if (session.conns.size === 0 || now - session.lastPersist > PERSIST_DEBOUNCE_MS) {
                     await this.persistSession(session);
                     session.lastPersist = now;
@@ -321,10 +352,12 @@ export class YjsGateway
     }
 
     private async persistSession(session: DocumentSession) {
-        this.logger.debug(`Persisting session ${session.documentId}`);
+        this.logger.debug(`💾 Persisting session ${session.documentId}`);
 
-        if (session.isApp) {
-            this.logger.warn('App document persistence not implemented in gateway');
+        if (session.isApp && session.userId) {
+            // For app documents with userId, we need the yjsAppDocumentId
+            // This is a limitation - you'll need to store this in the session
+            this.logger.warn('App document persistence requires yjsAppDocumentId - skipping');
             return;
         }
 
@@ -333,7 +366,7 @@ export class YjsGateway
             session.yDoc,
         );
 
-        this.logger.debug(`Successfully persisted session ${session.documentId}`);
+        this.logger.debug(`✅ Successfully persisted session ${session.documentId}`);
     }
 
     private handleMessage(
@@ -382,16 +415,15 @@ export class YjsGateway
 
         switch (messageType) {
             case syncProtocol.messageYjsSyncStep1:
-                this.logger.debug('Processing sync step 1');
+                this.logger.debug('🔄 Processing sync step 1');
                 syncProtocol.readSyncStep1(decoder, encoder, session.yDoc);
                 break;
 
             case syncProtocol.messageYjsSyncStep2:
-                this.logger.debug('Processing sync step 2');
+                this.logger.debug('🔄 Processing sync step 2');
 
-                // Check write permissions for viewers
                 if (transactionOrigin.role === UserWorkspaceRole.VIEWER) {
-                    this.logger.warn('Viewer attempted to write, rejecting');
+                    this.logger.warn('⛔ Viewer attempted to write, rejecting');
                     this.closeConnection(session, transactionOrigin.conn);
                     return messageType;
                 }
@@ -400,11 +432,10 @@ export class YjsGateway
                 break;
 
             case syncProtocol.messageYjsUpdate:
-                this.logger.debug('Processing update');
+                this.logger.debug('🔄 Processing update');
 
-                // Check write permissions
                 if (transactionOrigin.role === UserWorkspaceRole.VIEWER) {
-                    this.logger.warn('Viewer attempted to write, rejecting');
+                    this.logger.warn('⛔ Viewer attempted to write, rejecting');
                     this.closeConnection(session, transactionOrigin.conn);
                     return messageType;
                 }
@@ -420,7 +451,8 @@ export class YjsGateway
     }
 
     private async sendInitialState(session: DocumentSession, client: WebSocket) {
-        this.logger.debug('Sending sync step 1');
+        this.logger.debug('📤 Sending sync step 1');
+
         const syncEncoder = encoding.createEncoder();
         encoding.writeVarUint(syncEncoder, messageSync);
         syncProtocol.writeSyncStep1(syncEncoder, session.yDoc);
@@ -429,7 +461,8 @@ export class YjsGateway
         // Send awareness states
         const awarenessStates = session.awareness.getStates();
         if (awarenessStates.size > 0) {
-            this.logger.debug(`Sending ${awarenessStates.size} awareness states`);
+            this.logger.debug(`📤 Sending ${awarenessStates.size} awareness states`);
+
             const awarenessEncoder = encoding.createEncoder();
             encoding.writeVarUint(awarenessEncoder, messageAwareness);
             encoding.writeVarUint8Array(
@@ -453,7 +486,7 @@ export class YjsGateway
         const pingInterval = setInterval(() => {
             if (!pongReceived) {
                 if (session.conns.has(client)) {
-                    this.logger.warn(`Client ${userId} did not respond to ping`);
+                    this.logger.warn(`⏱️  Client ${userId} did not respond to ping`);
                     this.closeConnection(session, client);
                 }
                 clearInterval(pingInterval);
@@ -473,7 +506,6 @@ export class YjsGateway
             pongReceived = true;
         });
 
-        // Clean up interval on close
         client.once('close', () => {
             clearInterval(pingInterval);
         });
@@ -496,7 +528,7 @@ export class YjsGateway
 
                 const isEPIPE = (err as any).code === 'EPIPE';
                 if (!isEPIPE) {
-                    this.logger.error(`Failed to send message: ${err.message}`);
+                    this.logger.error(`Failed to send message: ${err}`);
                 }
             });
         } catch (err) {
@@ -520,6 +552,8 @@ export class YjsGateway
                 Array.from(controlledIds),
                 null,
             );
+
+            this.logger.debug(`🔌 Removed ${controlledIds.size} awareness states`);
         }
 
         try {
@@ -613,13 +647,13 @@ export class YjsGateway
                 : await this.yjsDocumentService.loadEditYDoc(session.documentId);
 
             if (loadResult.clock === clock) {
-                this.logger.warn(`Fixing session clock from ${session.clock} to ${clock}`);
+                this.logger.warn(`🔧 Fixing session clock from ${session.clock} to ${clock}`);
                 session.clock = clock;
                 return true;
             }
 
             this.logger.error(
-                `Clock mismatch: user=${clock}, session=${session.clock}, db=${loadResult.clock}`,
+                `❌ Clock mismatch: user=${clock}, session=${session.clock}, db=${loadResult.clock}`,
             );
             return false;
         } catch (err) {
@@ -633,7 +667,8 @@ export class YjsGateway
         workspaceId: string,
     ): Promise<UserWorkspaceRole | null> {
         try {
-            // TODO: Implement actual role lookup
+            // TODO: Implement actual role lookup from database
+            // For now, return EDITOR as default
             return UserWorkspaceRole.EDITOR;
         } catch (err) {
             this.logger.error(`Failed to get user role: ${err}`);
@@ -661,16 +696,15 @@ export class YjsGateway
             const IDLE_TIMEOUT = 5 * 60 * 1000; // 5 minutes
 
             for (const [key, session] of this.sessions.entries()) {
-                // Remove sessions with no connections that haven't been active recently
                 if (
                     session.conns.size === 0 &&
                     now - session.lastPersist > IDLE_TIMEOUT
                 ) {
-                    this.logger.debug(`Cleaning up idle session ${key}`);
+                    this.logger.debug(`🧹 Cleaning up idle session ${key}`);
 
                     // Final persist
                     this.persistSession(session).catch((err) => {
-                        this.logger.error(`Failed to persist on cleanup: ${err.message}`);
+                        this.logger.error(`Failed to persist on cleanup: ${err}`);
                     });
 
                     // Cleanup
@@ -680,13 +714,15 @@ export class YjsGateway
                     session.yDoc.destroy();
                     session.awareness.destroy();
                     this.sessions.delete(key);
+
+                    this.logger.log(`♻️  Session cleaned up: ${key}`);
                 }
             }
         }, 60000); // Check every minute
     }
 
     async onModuleDestroy() {
-        this.logger.log('Shutting down YJS Gateway');
+        this.logger.log('🛑 Shutting down YJS Gateway');
 
         if (this.cleanupInterval) {
             clearInterval(this.cleanupInterval);
@@ -696,7 +732,7 @@ export class YjsGateway
         const persistPromises = Array.from(this.sessions.values()).map((session) =>
             this.persistSession(session).catch((err) => {
                 this.logger.error(
-                    `Failed to persist session ${session.documentId}: ${err.message}`,
+                    `Failed to persist session ${session.documentId}: ${err}`,
                 );
             }),
         );
@@ -713,6 +749,6 @@ export class YjsGateway
         }
 
         this.sessions.clear();
-        this.logger.log('YJS Gateway shutdown complete');
+        this.logger.log('✅ YJS Gateway shutdown complete');
     }
 }
