@@ -443,4 +443,65 @@ export const useForgotPassword = (): UseForgotPassword => {
   return useMemo(() => [state, { sendResetEmail }], [state, sendResetEmail]);
 };
 
+type ResetPasswordState = AuthState<{ success: boolean }>;
+
+type ResetPasswordCallbacks = {
+  resetPassword: (password: string, hash: string) => void;
+};
+
+type UseResetPassword = [ResetPasswordState, ResetPasswordCallbacks];
+
+export const useResetPassword = (): UseResetPassword => {
+  const [state, setState] = useState<ResetPasswordState>({
+    loading: false,
+    data: undefined,
+    error: undefined,
+  });
+
+  const resetPassword = useCallback((password: string, hash: string) => {
+    setState(s => ({ ...s, loading: true, error: undefined }));
+    fetch(`${NEXT_PUBLIC_API_URL()}/auth/reset/password`, {
+      credentials: "include",
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password, hash }),
+    })
+      .then(async res => {
+        if (res.ok) {
+          setState({
+            loading: false,
+            data: { success: true },
+            error: undefined,
+          });
+          return;
+        }
+
+        if (res.status === 400) {
+          setState({
+            loading: false,
+            data: undefined,
+            error: "invalid-token",
+          });
+          return;
+        }
+
+        if (res.status === 410) {
+          setState({
+            loading: false,
+            data: undefined,
+            error: "expired-token",
+          });
+          return;
+        }
+
+        throw new Error(`Unexpected status ${res.status}`);
+      })
+      .catch(() => {
+        setState({ loading: false, data: undefined, error: "unexpected" });
+      });
+  }, []);
+
+  return useMemo(() => [state, { resetPassword }], [state, resetPassword]);
+};
+
 export { tokenStorage };

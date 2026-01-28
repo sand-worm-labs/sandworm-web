@@ -44,7 +44,6 @@ import { Transition } from "@headlessui/react";
 
 import type { ApiDocument, ApiWorkspace, DataSourceType } from "@/types";
 
-import useFeatureFlags from "../../../hooks/useFeatureFlags";
 import { TooltipV2 } from "../../ToolTips";
 import type { DashboardMode } from "../../Dashboard";
 import { dashboardModeHasControls } from "../../Dashboard";
@@ -577,7 +576,8 @@ function SQLBlock(props: Props) {
     [props.block, props.dashboardMode, props.userId, environmentStartedAt]
   );
 
-  const flags = useFeatureFlags(props.document.workspaceId);
+  const flags = { visualizationsV2: true };
+
   const isVisualizationButtonDisabled =
     props.block.getAttribute("result")?.type !== "success" || !props.isEditable;
   const onAddVisualization = useCallback(() => {

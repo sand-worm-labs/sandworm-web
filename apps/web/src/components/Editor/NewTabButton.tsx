@@ -22,7 +22,6 @@ import type { FeatureFlags } from "@sandworm/types";
 
 import useDropdownPosition from "../Visualization/hooks/dropdownposition";
 import type { APIDataSources } from "../Visualization/hooks/useDataSources";
-import useFeatureFlags from "../Visualization/hooks/useFeatureFlags";
 
 type Item = {
   name: string;
@@ -102,7 +101,7 @@ interface Props {
   dataSources: APIDataSources;
 }
 function NewTabButton(props: Props) {
-  const ff = useFeatureFlags(props.workspaceId);
+  const ff: FeatureFlags = { visualizationsV2: true };
 
   const buttonRef = useRef<HTMLButtonElement>(null);
   const { onOpen, dropdownPosition, containerRef } = useDropdownPosition(

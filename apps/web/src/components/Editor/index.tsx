@@ -1754,18 +1754,11 @@ const Editor = (props: Props) => {
               )}
             </HotkeysProvider>
 
-            {!props.isPDF && <div className="pb-72" />}
+            {!props.isPDF && <div className="pb-20" />}
           </div>
         </div>
       </SimpleBar>
-      {!props.isPublicViewer && !props.isPDF && (
-        <EnvBar
-          onOpenFiles={props.onOpenFiles}
-          publishedAt={props.isApp ? props.document.publishedAt : null}
-          lastUpdatedAt={lastUpdatedAt}
-          isViewer={props.role === "viewer"}
-        />
-      )}
+
       <RemoveBlockDashboardConflictDialog
         yDoc={props.yDoc}
         state={
@@ -1784,6 +1777,14 @@ const Editor = (props: Props) => {
         }
         onClose={() => setRemoveBlockDialog(null)}
       /> */}
+      {!props.isPublicViewer && !props.isPDF && (
+        <EnvBar
+          onOpenFiles={props.onOpenFiles}
+          publishedAt={props.isApp ? props.document.publishedAt : null}
+          lastUpdatedAt={lastUpdatedAt}
+          isViewer={props.role === "viewer"}
+        />
+      )}
     </div>
   );
 };

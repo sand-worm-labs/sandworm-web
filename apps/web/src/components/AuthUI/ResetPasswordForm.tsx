@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { z } from "zod";
-
-import type { UseAuthError } from "../Visualization/hooks/useAuth";
+import { useResetPassword } from "../Visualization/hooks/useAuth";
 
 // ⬢ Password Validation Schema
 // =====================================
@@ -18,10 +17,6 @@ type ResetPasswordFormProps = {
   onSuccess?: () => void;
 };
 
-const useResetPassword = () => {
-  return null;
-};
-
 export const ResetPasswordForm = ({
   token,
   onSuccess,
@@ -32,9 +27,17 @@ export const ResetPasswordForm = ({
 
   const [state, { resetPassword }] = useResetPassword();
 
+  // ⬢ Trigger onSuccess when data indicates success
+  // =====================================
+  useEffect(() => {
+    if (state.data?.success) {
+      onSuccess?.();
+    }
+  }, [state.data?.success, onSuccess]);
+
   // ⬢ Submit Handler
   // =====================================
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     // ⬢ Zod Validation
@@ -52,26 +55,18 @@ export const ResetPasswordForm = ({
     }
 
     setLocalError("");
-
-    const success = await resetPassword({
-      token,
-      password,
-    });
-
-    if (success) {
-      onSuccess?.();
-    }
+    resetPassword(password, token);
   };
 
   // ⬢ API Error Mapping
   // =====================================
-  const getErrorMessage = (error: UseAuthError | undefined) => {
+  const getErrorMessage = (error: string | undefined) => {
     if (error === "invalid-token") {
-      return "This password reset link is invalid or has expired. Please request a new one.";
+      return "This password reset link is invalid. Please request a new one.";
     }
 
-    if (error === "weak-password") {
-      return "Password must contain at least 8 characters, one uppercase letter, and one number.";
+    if (error === "expired-token") {
+      return "This password reset link has expired. Please request a new one.";
     }
 
     if (error === "unexpected") {
