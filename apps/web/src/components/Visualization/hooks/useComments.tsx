@@ -70,7 +70,10 @@ const Context = createContext<[State, API]>([
 type UseComments = [Comment[], Omit<API, "setComments">];
 
 // Helper function to transform GraphQL/WebSocket data to Comment type
-function transformComment(c: any): Comment {
+function transformComment(c: any, userData?: any): Comment {
+  // Check for user data passed separately (WebSocket) or nested (GraphQL)
+  const user = userData || c.author;
+
   return {
     id: c.id,
     documentId: c.documentId,
@@ -79,44 +82,20 @@ function transformComment(c: any): Comment {
     createdAt: c.createdAt,
     updatedAt: c.updatedAt,
     user: {
-      name: c.author?.firstName
-        ? `${c.author.firstName} ${c.author.lastName || ""}`.trim()
+      name: user?.firstName
+        ? `${user.firstName} ${user.lastName || ""}`.trim()
         : c.user?.name || "Unknown User",
-      picture: c.author?.avatar || c.user?.picture || null,
+      picture: user?.avater || user?.avatar || c.user?.picture || null,
     },
   };
 }
-
 export function useComments(documentId: string): UseComments {
   const [state, api] = useContext(Context);
   const socket = useWebsocket();
-  const hasLoadedRef = useRef(false);
 
-  // Fetch initial comments from GraphQL
-  const { data } = useGetDocumentCommentsQuery({
-    variables: { documentId },
-    skip: !documentId,
-  });
-
-  // When GraphQL data arrives, transform and store it
+  // Request comments via WebSocket only
   useEffect(() => {
-    if (data?.comments && documentId && !hasLoadedRef.current) {
-      console.log("📥 Loading comments from GraphQL:", data.comments.length);
-      const transformedComments = data.comments.map(transformComment);
-      api.setComments(documentId, transformedComments);
-      hasLoadedRef.current = true;
-    }
-  }, [data, documentId, api]);
-
-  // Reset ref when documentId changes
-  useEffect(() => {
-    hasLoadedRef.current = false;
-  }, [documentId]);
-
-  // Request comments via WebSocket for real-time sync
-  useEffect(() => {
-    if (socket) {
-      console.log("📤 Emitting fetch-document-comments:", documentId);
+    if (socket && documentId) {
       socket.emit("fetch-document-comments", { documentId });
     }
   }, [socket, documentId]);
@@ -165,22 +144,10 @@ export function CommentsProvider(props: Props) {
       console.log("🎯 LISTENER FIRED: document-comment");
       console.log("🎯 Raw data:", data);
 
-      const transformedComment = transformComment(data.comment);
-
-      setState(state => {
-        const comments = state.get(transformedComment.documentId) ?? [];
-
-        if (comments.some(({ id }) => id === transformedComment.id)) {
-          console.log("⚠️ Comment already exists");
-          return state;
-        }
-
-        console.log("✅ Adding new comment");
-        return state.set(transformedComment.documentId, [
-          ...comments,
-          transformedComment,
-        ]);
-      });
+      const transformedComments = (data.comments || []).map((c: any) =>
+        transformComment(c, c.user)
+      );
+      setState(state => state.set(data.documentId, transformedComments));
     };
     socket.on("document-comment", onComment);
 
