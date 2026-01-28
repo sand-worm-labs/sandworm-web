@@ -57,8 +57,6 @@ interface MultiBlockSuggestionProps {
 }
 
 function MultiBlockSuggestion(props: MultiBlockSuggestionProps) {
-  console.log(props.onAdd);
-
   return (
     <Menu as="div" className="w-full text-sm px-1 relative z-30">
       <Menu.Button className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 rounded-md text-gray-400 bg-white dark:bg-[#0C1015]  hover:text-gray-700 relative">

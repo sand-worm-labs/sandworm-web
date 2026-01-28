@@ -23,9 +23,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         shallowRouting
       >
         <DocumentsProvider>
-          <CommentsProvider>
-            <DndBackendProvider>
-              <WebsocketProvider>
+          <WebsocketProvider>
+            <CommentsProvider>
+              <DndBackendProvider>
                 <EnvironmentStatusProvider>
                   <DataSourcesProvider>
                     <ReusableComponentsProvider>
@@ -33,10 +33,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     </ReusableComponentsProvider>
                   </DataSourcesProvider>
                 </EnvironmentStatusProvider>
-              </WebsocketProvider>
-            </DndBackendProvider>
-          </CommentsProvider>
+              </DndBackendProvider>
+            </CommentsProvider>
+          </WebsocketProvider>
         </DocumentsProvider>
+
         <FooterWrapper />
         <SignInModal />
         <Toaster

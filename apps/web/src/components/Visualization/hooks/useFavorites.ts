@@ -19,15 +19,11 @@ type UseFavorites = [
 ];
 
 export const useFavorites = (workspaceId: string): UseFavorites => {
-  console.log("useFavorites called with workspaceId:", workspaceId);
-
   const { data, refetch, loading, error } = useGetFavoriteDocumentsQuery({
     variables: { workspaceId },
     skip: !workspaceId,
-    fetchPolicy: "cache-and-network", // Add this to ensure it fetches
+    fetchPolicy: "cache-and-network",
   });
-
-  console.log("Query state:", { data, loading, error, workspaceId });
 
   const [addFavoriteMutation] = useAddFavoriteDocumentMutation();
   const [removeFavoriteMutation] = useRemoveFavoriteDocumentMutation();
@@ -74,11 +70,11 @@ export const useFavorites = (workspaceId: string): UseFavorites => {
           },
           refetchQueries: shouldRefetch
             ? [
-              {
-                query: GetFavoriteDocumentsDocument,
-                variables: { workspaceId },
-              },
-            ]
+                {
+                  query: GetFavoriteDocumentsDocument,
+                  variables: { workspaceId },
+                },
+              ]
             : [],
         });
       } catch (error) {

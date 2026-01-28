@@ -45,8 +45,6 @@ export function MultimodalInput({
 
   const [fileState, fileAPI] = useFiles(workspaceId);
 
-  console.log(messages, append);
-
   const adjustHeight = () => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";

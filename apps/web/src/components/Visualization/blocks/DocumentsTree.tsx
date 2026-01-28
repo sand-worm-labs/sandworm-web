@@ -162,7 +162,6 @@ type DropDownProps = {
 function DropDown(props: DropDownProps) {
   const role: UserWorkspaceRole = props.role ?? "viewer";
   const isViewer = role === "viewer";
-  console.log("is virwer", isViewer);
 
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const { onOpen, dropdownPosition } = useDropdownPosition(buttonRef);

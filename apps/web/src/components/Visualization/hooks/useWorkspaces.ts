@@ -315,40 +315,21 @@ export const useAcceptInvitation = (): UseAcceptInvitation => {
 
   const acceptInvitation = useCallback(
     async (hash: string) => {
-      console.log("=== ACCEPT INVITATION DEBUG ===");
-      console.log("Hash:", hash);
-
       setState({ loading: true, success: false, error: undefined });
 
       try {
-        console.log("Calling mutation...");
         const result = await acceptMutation({
           variables: { hash },
         });
-
-        console.log("Mutation result:", result);
-        console.log("result.data:", result.data);
-        console.log(
-          "result.data?.acceptWorkspaceInvitation:",
-          result.data?.acceptWorkspaceInvitation
-        );
-        console.log("result.errors:", result.errors);
 
         if (result.data?.acceptWorkspaceInvitation) {
           await refetchWorkspaces();
           await refetchWorkspaceInfo();
           setState({ loading: false, success: true, error: undefined });
         } else {
-          console.log("No data returned, setting invalid error");
           setState({ loading: false, success: false, error: "invalid" });
         }
       } catch (err: any) {
-        console.log("=== CAUGHT ERROR ===");
-        console.log("Error object:", err);
-        console.log("Error message:", err?.message);
-        console.log("GraphQL errors:", err?.graphQLErrors);
-        console.log("Network error:", err?.networkError);
-
         const message = err?.message?.toLowerCase() || "";
 
         if (message.includes("expired")) {
@@ -400,11 +381,6 @@ export const useWorkspaceWithMembers = (workspaceId: string | undefined) => {
 
   const members: WorkspaceMember[] = useMemo(() => {
     if (!data?.getWorkspaceMembers) return [];
-
-    console.log(
-      "Raw members data:",
-      JSON.stringify(data.getWorkspaceMembers, null, 2)
-    );
 
     return data.getWorkspaceMembers.map(member => {
       const fullName =

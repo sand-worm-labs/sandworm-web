@@ -51,10 +51,6 @@ export const SavedProjects: React.FC = () => {
   const [hoveredUser, setHoveredUser] = useState<string | null>(null);
   const [hoveredSave, setHoveredSave] = useState<string | null>(null);
 
-  console.log("Favorites Data:", data);
-  console.log("Favorites Set:", favorites);
-  console.log("Loading:", loading);
-
   // Helper function to format dates
   const formatDate = (dateString: string | Date): string => {
     if (!dateString) return "Unknown";
@@ -91,11 +87,9 @@ export const SavedProjects: React.FC = () => {
         creator: doc.authorId || "Unknown",
         lastEdited: formatDate(doc.updatedAt),
         created: formatDate(doc.createdAt),
-        isFavorite: true, // All documents from getFavoriteDocuments are favorites
+        isFavorite: true,
       }));
   }, [data]);
-
-  console.log("Saved Projects:", projects);
 
   const toggleFavorite = async (id: string): Promise<void> => {
     const isFavorite = favorites.has(id);

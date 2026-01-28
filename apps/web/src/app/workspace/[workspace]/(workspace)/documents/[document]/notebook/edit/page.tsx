@@ -27,10 +27,9 @@ export default function EditNotebookPage() {
   const workspaceId = useStringQuery("workspace");
   const documentId = useStringQuery("document");
 
-  if (!session.user) {
+  if (!session.user || !workspaceId || !documentId) {
     return null;
   }
-
   return (
     <EditNotebook
       workspaceId={workspaceId}

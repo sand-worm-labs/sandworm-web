@@ -27,6 +27,8 @@ export default function Comments({
   const [comments, { createComment }] = useComments(documentId);
   const [content, setContent] = useState("");
 
+  console.log("comm", comments);
+
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (ref.current) {
