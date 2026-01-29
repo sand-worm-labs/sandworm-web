@@ -1703,7 +1703,7 @@ const Editor = (props: Props) => {
       <SimpleBar
         id="editor-scrollview"
         scrollableNodeProps={{ ref: props.scrollViewRef }}
-        className={clsx("h-full w-full", {
+        className={clsx(" w-full", {
           "overflow-y-auto overflow-x-hidden": !props.isPDF,
         })}
       >
@@ -1717,7 +1717,7 @@ const Editor = (props: Props) => {
             id="editor-wrapper"
             ref={editorWrapperRef}
             className={clsx(
-              "flex-grow h-full py-2",
+              "flex-grow min-h-0 py-2 ",
               props.isFullScreen ? "w-full" : widthClasses
             )}
           >
