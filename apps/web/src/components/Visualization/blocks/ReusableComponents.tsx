@@ -18,6 +18,7 @@ import { useReusableComponents } from "../hooks/useReusableComponents";
 import { Tooltip, TooltipV2 } from "./ToolTips";
 import Spin from "./Spin";
 import ScrollBar from "./ScrollBar";
+import { ScheduleIcon } from "@/components/Assets/ScheduleIcon";
 
 const icons: Record<string, React.ComponentType<React.ComponentProps<any>>> = {
   ...allOutlineIcons,
@@ -266,7 +267,7 @@ export default function ReusableComponents(props: Props) {
       >
         <ChevronDoubleRightIcon className="w-3 h-3" />
       </button>
-      <div className="w-[324px] flex flex-col border-l border-gray-200 h-full bg-white font-primary dark:bg-black dark:border-[#262A30]">
+      <div className="w-[354px] flex flex-col border-l border-gray-200 h-full bg-white font-primary dark:bg-black dark:border-[#262A30]">
         <div className="flex justify-between border-b p-6 space-x-3 border-[#E9ECEF] dark:border-[#262A30]">
           <div>
             <h3 className="text-lg font-medium leading-6 text-gray-900 dark:text-white pr-1.5">
@@ -307,8 +308,11 @@ export default function ReusableComponents(props: Props) {
           </>
         ) : (
           <div className="flex-1 p-4">
-            <div className="flex items-center justify-center h-full text-gray-500 bg-gray-50 rounded-lg border-2 border-dashed dark:border-[#262A30] border-gray-200 p-8 text-center">
-              You have no reusable components. Save a block to create one.
+            <div className="flex items-center justify-center h-full text-ink-300 rounded-lg border border-dashed  border-[#E9ECEF] p-8 text-center font-body font-medium flex-col bg-[#FBFBFB]">
+              <ScheduleIcon />
+              <p className="mt-2 text-[0.9rem] ">
+                You have no reusable components. Save a block to create one.
+              </p>
             </div>
           </div>
         )}

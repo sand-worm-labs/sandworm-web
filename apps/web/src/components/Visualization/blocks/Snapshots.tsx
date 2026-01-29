@@ -2,9 +2,7 @@ import * as dfns from "date-fns";
 import React from "react";
 import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 import { Transition } from "@headlessui/react";
-import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 
-import { Tooltip } from "./ToolTips";
 import ScrollBar from "./ScrollBar";
 import { ScheduleIcon } from "@/components/Assets/ScheduleIcon";
 
@@ -48,7 +46,7 @@ export default function Snapshots(props: Props) {
       >
         <ChevronDoubleRightIcon className="w-3 h-3" />
       </button>
-      <div className="w-[324px] flex flex-col border-l dark:border-[#262A30] border-gray-200 h-full bg-white dark:bg-black">
+      <div className="w-[354px] flex flex-col border-l dark:border-[#262A30] border-gray-200 h-full bg-white dark:bg-black">
         <div className="flex items-center justify-between border-b dark:border-[#262A30] p-6">
           <div className="flex items-center">
             <div>
@@ -70,7 +68,7 @@ export default function Snapshots(props: Props) {
         <ScrollBar className="overflow-auto">
           <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">
             <div className="flex flex-col gap-y-3 bg-ceramic-50/60 p-6 rounded-xl border-2 border-[#E9ECEF] dark:border-[#262A30] border-dashed items-center max-w-[260px] text-center">
-              <ScheduleIcon className="w-10 h-10" />
+              <ScheduleIcon />
 
               <div className="text-ink-300 text-sm space-y-1">
                 <p className="text-ink-100">No snapshots yet.</p>

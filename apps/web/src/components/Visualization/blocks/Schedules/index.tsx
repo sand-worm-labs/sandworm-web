@@ -220,7 +220,7 @@ function ScheduleList(props: ScheduleListProps) {
               Schedule
             </h3>
 
-            <p className="text-gray-500 text-sm pt-1">
+            <p className="text-ink-300 text-sm pt-1">
               Schedule your notebook to run automatically
             </p>
           </div>

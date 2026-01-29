@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { GripHorizontal, X } from "lucide-react";
+import { GripHorizontal, X, ChevronRightIcon } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Transition } from "@headlessui/react";
 import {
@@ -30,7 +30,8 @@ interface DataExplorerContentProps {
   visible?: boolean;
   onHide?: () => void;
   showDragHandle?: boolean;
-  mode?: "draggable" | "sidebar"; // New prop to distinguish usage
+  mode?: "draggable" | "sidebar";
+  basePath?: string;
 }
 
 export function DataExplorerContent({
@@ -38,6 +39,7 @@ export function DataExplorerContent({
   onHide,
   showDragHandle = true,
   mode = "draggable",
+  basePath,
 }: DataExplorerContentProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
@@ -115,24 +117,41 @@ export function DataExplorerContent({
           </button>
         )}
 
-        <Card className="h-full overflow-hidden border-l dark:border-[#262A30] border-gray-200 rounded-none w-[324px] bg-white dark:bg-black">
+        <Card className="h-full overflow-hidden border-l dark:border-[#262A30] border-gray-200 rounded-none w-[354px] bg-white dark:bg-black gap-y-0 pt-0">
           {loading && (
-            <div className="flex items-center justify-center h-full">
-              <p className="text-muted-foreground">Loading chains...</p>
-            </div>
+            <div className="flex items-center justify-center h-full"> </div>
           )}
 
-          <CardHeader className="p-4 border-b border-[#E9ECEF] dark:border-[#262A30] mb-0">
-            <div className="flex items-center gap-2">
-              <Database />
-              <CardTitle className="font-medium">Data Explorer</CardTitle>
+          {mode === "sidebar" ? (
+            <div className="px-4 xl:px-6 pt-6 pb-5 border-b border-[#E9ECEF] dark:border-[#262A30]">
+              <div className="flex justify-between">
+                <div>
+                  <h3 className="text-lg font-medium leading-6 text-gray-900 dark:text-white">
+                    Data Explorer
+                  </h3>
+                  <p className="text-ink-300 text-sm pt-1">
+                    Browse and explore your blockchain data
+                  </p>
+                </div>
+                <ChevronRightIcon className="h-5 w-5 text-gray-400" />
+              </div>
             </div>
-          </CardHeader>
+          ) : (
+            <div className="p-4 border-b border-[#E9ECEF] dark:border-[#262A30]">
+              <div className="flex items-center gap-2">
+                <Database />
+                <h3 className="font-medium text-gray-900 dark:text-white">
+                  Data Explorer
+                </h3>
+              </div>
+            </div>
+          )}
 
           <CardContent className="p-2 px-0 h-[calc(100%-60px)] overflow-y-auto">
             {chains && chains.length > 0 ? (
               <div className="space-y-2">
                 <ExplorerBreadCrumbs
+                  basePath={basePath}
                   entities={entityData || { raw: [], project: [], decoded: [] }}
                 />
                 <Input
@@ -154,7 +173,6 @@ export function DataExplorerContent({
     );
   }
 
-  // Draggable mode (original)
   if (!visible) return null;
 
   return (

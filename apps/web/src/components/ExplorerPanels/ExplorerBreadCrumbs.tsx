@@ -4,21 +4,20 @@ import { useSearchParams, useRouter } from "next/navigation";
 
 import type { IChainEntitySet } from "@/types";
 
-import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
-
 interface IExplorerBreadCrumbsProps {
   entities: IChainEntitySet;
+  basePath?: string;
 }
 
 export const ExplorerBreadCrumbs: React.FC<IExplorerBreadCrumbsProps> = ({
   entities,
+  basePath,
 }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const chain = searchParams.get("namespace");
   const entity = searchParams.get("id");
   const type = searchParams.get("type") ?? "raw";
-  const workspaceId = useStringQuery("workspace");
 
   const activeEntity = entities?.[type as keyof typeof entities]?.find(
     (e: any) => e.name === entity
@@ -34,7 +33,12 @@ export const ExplorerBreadCrumbs: React.FC<IExplorerBreadCrumbsProps> = ({
     if (params.namespace) newParams.set("namespace", params.namespace);
     if (params.id) newParams.set("id", params.id);
     if (params.type) newParams.set("type", params.type);
-    router.push(`/workspace/${workspaceId}/console?${newParams.toString()}`);
+
+    const path = basePath
+      ? `${basePath}?${newParams.toString()}`
+      : `?${newParams.toString()}`;
+
+    router.push(path);
   };
 
   return (
