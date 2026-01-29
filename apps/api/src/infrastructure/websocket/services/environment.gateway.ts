@@ -38,19 +38,6 @@ export class EnvironmentGatewayService {
         }
     }
 
-    async broadcastEnvironmentStatus(
-        server: Server,
-        workspaceId: string,
-        status: EnvironmentStatus,
-        startedAt: string | null,
-    ): Promise<void> {
-        server.to(workspaceId).emit('environment-status-update', {
-            workspaceId,
-            status,
-            startedAt: status === 'Running' ? startedAt : null,
-        });
-    }
-
     async getEnvironmentStatus(client: Socket, data: { workspaceId: string }, session: Session): Promise<void> {
         const payload = z.object({ workspaceId: uuidSchema }).safeParse(data);
         if (!payload.success) {
