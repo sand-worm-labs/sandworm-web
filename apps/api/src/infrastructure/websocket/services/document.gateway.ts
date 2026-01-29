@@ -20,19 +20,6 @@ export class DocumentGatewayService {
                 order: { orderIndex: 'ASC' },
             });
 
-            if (documents.length === 0) {
-                const newDoc = this.documentRepository.create({
-                    workspaceId,
-                    orderIndex: 0,
-                    version: 2,
-                });
-                await this.documentRepository.save(newDoc);
-
-                documents = await this.documentRepository.find({
-                    where: { workspaceId },
-                    order: { orderIndex: 'ASC' },
-                });
-            }
 
             client.emit('workspace-documents', { workspaceId, documents });
         } catch (error) {
