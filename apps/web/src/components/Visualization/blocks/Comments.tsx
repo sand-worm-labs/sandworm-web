@@ -1,11 +1,13 @@
 import { Transition } from "@headlessui/react";
 import type { ChangeEventHandler, FormEvent } from "react";
 import { useCallback, useState, useRef, useEffect } from "react";
-import { UserIcon, ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
+import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 
 import { timeAgo } from "@/lib";
 import { Trash } from "@/components/Assets/Trash";
+import { CommentIcon } from "@/components/Assets/CommentIcon";
+import { PaperPlaneTilt } from "@/components/Assets/PaperPlaneTilt";
 
 import { useComments } from "../hooks/useComments";
 import { useSession } from "../hooks/useAuth";
@@ -91,7 +93,7 @@ export default function Comments({
         <ChevronDoubleRightIcon className="w-3 h-3" />
       </button>
       <ScrollBar
-        className="w-[324px] flex flex-col overflow-y-auto border-l dark:border-[#262A30] border-gray-200 h-full bg-white dark:bg-black "
+        className="w-[354px] flex flex-col overflow-y-auto border-l dark:border-[#262A30] border-gray-200 h-full bg-white dark:bg-black "
         ref={ref}
       >
         <h3 className="text-lg font-medium leading-6 dark:text-white text-gray-900 px-4 pt-6 xl:px-6">
@@ -166,23 +168,10 @@ export default function Comments({
         >
           <div className=" px-2 xl:px-4">
             <div className="py-6 flex gap-x-3">
-              {session.user?.avater ? (
-                <Image
-                  src={session.user?.avater}
-                  alt=""
-                  width={20}
-                  height={20}
-                  className="h-6 w-6 flex-none rounded-full bg-gray-50"
-                  referrerPolicy="no-referrer"
-                />
-              ) : (
-                <div className="h-6 w-6 flex justify-center items-center bg-gray-50 rounded-full">
-                  <UserIcon className="h-5 w-5" />
-                </div>
-              )}
+              <CommentIcon />
 
               <div className="relative flex-auto">
-                <div className="rounded-xl  dark:ring-[#262A30] focus-within:ring-2 dark:bg-[#1A1A1A]  dark:border-[#262A30] border-[#E6E0F1] border-[1.5px] ring-primary">
+                <div className="rounded-xl  dark:ring-[#262A30] focus-within:ring-2 dark:bg-[#1A1A1A]  dark:border-[#262A30] border-[#E6E0F1] border-[2px] ring-primary">
                   <label htmlFor="comment" className="sr-only">
                     Add your comment
                   </label>
@@ -200,9 +189,9 @@ export default function Comments({
                   <div className="absolute inset-x-0 bottom-0 flex justify-end py-2 pl-3 pr-2">
                     <button
                       type="submit"
-                      className="gap-x-2 rounded-md bg-[#A308F0] px-3 py-1 text-sm hover:bg-primary-300 text-white"
+                      className="gap-x-2 rounded-full bg-[#A308F0] p-2.5 text-sm hover:bg-primary-300 "
                     >
-                      Comment
+                      <PaperPlaneTilt />
                     </button>
                   </div>
                 </div>

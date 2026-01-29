@@ -5,7 +5,6 @@ import {
   ExclamationTriangleIcon,
   ChevronDoubleRightIcon,
   DocumentPlusIcon,
-  TrashIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 import { Dialog, Transition } from "@headlessui/react";
@@ -19,10 +18,8 @@ import {
   getBlocks,
   getLayout,
 } from "@sandworm/editor";
-import {
-  InformationCircleIcon,
-  CloudArrowUpIcon as CloudArrowUpIconSolid,
-} from "@heroicons/react/20/solid";
+import { CloudArrowUpIcon as CloudArrowUpIconSolid } from "@heroicons/react/20/solid";
+import { Cautious } from "@/components/Assets/Cautious";
 
 import { UploadIcon } from "@/components/Assets/UploadIcon";
 import { Trash } from "@/components/Assets/Trash";
@@ -68,6 +65,45 @@ function DragOverlay({ isDragActive }: { isDragActive: boolean }) {
         </span>
       </div>
     </div>
+  );
+}
+
+function UploadPlaceholder({
+  compact = false,
+  onClick,
+}: {
+  compact?: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={clsx(
+        "w-full text-left font-body focus:outline-none focus-visible:ring-2 focus-visible:ring-[#A308F0] rounded-xl",
+        compact ? "p-2" : "p-4"
+      )}
+    >
+      <div
+        className={clsx(
+          "bg-[#FBFBFB] rounded-2xl border-2 border-dashed border-[#E9ECEF] text-ink-300 dark:bg-[#0C1015] dark:border-[#262A30]",
+          compact
+            ? "flex items-center justify-between px-2 py-2 text-sm  "
+            : "flex flex-col items-center justify-center h-full p-8 text-center"
+        )}
+      >
+        <div
+          className={clsx(
+            compact ? "flex items-center gap-x-2" : "flex flex-col items-center"
+          )}
+        >
+          <UploadIcon className={compact ? "w-4 h-4" : ""} />
+          <span className={compact ? "whitespace-nowrap" : "mt-2"}>
+            Click or drag and drop files here
+          </span>
+        </div>
+      </div>
+    </button>
   );
 }
 
@@ -338,21 +374,16 @@ function ReplaceDialog(props: ReplaceDialogProps) {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden rounded-xl bg-white px-4 pb-4 pt-5 text-left  transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg sm:p-6 data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95 border-[#E9ECEF]">
+              <Dialog.Panel className="relative transform overflow-hidden rounded-xl bg-white px-4 pb-4 pt-5 text-left  transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg sm:p-6 data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95 border-[#E9ECEF] font-body font-medium">
                 <div>
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100">
-                    <ExclamationTriangleIcon
-                      aria-hidden="true"
-                      className="h-6 w-6 text-yellow-600"
-                    />
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full ">
+                    <Cautious />
                   </div>
                   <div className="mt-3 text-center sm:mt-5">
                     <div className="mt-2">
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-ink-100">
                         File{" "}
-                        <span className="font-primary bg-gray-100 px-1">
-                          {fileName}
-                        </span>{" "}
+                        <span className=" text-[#ff0000] px-1">{fileName}</span>{" "}
                         already exists. Do you want to replace it?
                       </p>
                     </div>
@@ -362,14 +393,14 @@ function ReplaceDialog(props: ReplaceDialogProps) {
                   <button
                     type="button"
                     onClick={props.onReplaceYes}
-                    className="mt-3 inline-flex w-full justify-center rounded-lg bg-[#A308F0] px-3 py-2 text-sm text-white  hover:bg-[#A308F0] sm:col-start-1 sm:mt-0 font-primary"
+                    className="mt-3 inline-flex w-full justify-center rounded-[10px] bg-[#A308F0] px-3 py-1.5 text-sm text-white  hover:bg-[#A308F0] sm:col-start-1 sm:mt-0 font-primary"
                   >
                     Yes
                   </button>
                   <button
                     type="button"
                     onClick={props.onReplaceAll}
-                    className="mt-3 inline-flex w-full justify-center rounded-lg bg-white px-3 py-2 text-sm text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-2 sm:mt-0 font-primary"
+                    className="mt-3 inline-flex w-full justify-center rounded-[10px] bg-[#F8F9FA] px-3 py-1.5 text-sm text-ink-100 shadow-sm ring-1 ring-inset ring-[#DEE2E6] hover:bg-gray-50 sm:col-start-2 sm:mt-0 font-primary"
                   >
                     Yes to all
                   </button>
@@ -377,7 +408,7 @@ function ReplaceDialog(props: ReplaceDialogProps) {
                     type="button"
                     data-autofocus
                     onClick={props.onReplaceNo}
-                    className="mt-3 inline-flex w-full justify-center rounded-lg bg-white px-3 py-2 text-sm text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-3 sm:mt-0 font-primary"
+                    className="mt-3 inline-flex w-full justify-center rounded-[10px] bg-[#F8F9FA] px-3 py-1.5 text-sm text-ink-100 shadow-sm ring-1 ring-inset ring-[#DEE2E6] hover:bg-gray-50 sm:col-start-3 sm:mt-0 font-primary"
                   >
                     No
                   </button>
@@ -605,7 +636,7 @@ file`;
           <ChevronDoubleRightIcon className="w-3 h-3" />
         </button>
         <div
-          className="w-[374px] flex flex-col border-l dark:border-[#262A30] border-gray-200 h-full bg-white dark:bg-black"
+          className="w-[354px] flex flex-col border-l dark:border-[#262A30] border-gray-200 h-full bg-white dark:bg-black"
           {...getRootProps()}
         >
           <div className="flex justify-between border-b p-6 space-x-3 border-[#E9ECEF]">
@@ -618,7 +649,7 @@ file`;
               </p>
             </div>
 
-            <div>
+            {/*    <div>
               <button
                 type="button"
                 className="flex items-center gap-x-2 rounded-lg bg-[#A308F0] px-3 py-1 text-sm hover:bg-primary-300 text-white disabled:cursor-not-allowed disabled:bg-gray-200"
@@ -626,7 +657,7 @@ file`;
               >
                 Add
               </button>
-            </div>
+            </div> */}
           </div>
           {(upload._tag === "uploading" || results.length > 0) && (
             <>
@@ -685,6 +716,9 @@ file`;
                   value={search}
                 />
               </div>
+              {!isDragActive && (
+                <UploadPlaceholder compact onClick={openUpload} />
+              )}
               {actualFiles.length > 0 ? (
                 <ul className="flex-1  overflow-y-auto px-3">
                   {actualFiles

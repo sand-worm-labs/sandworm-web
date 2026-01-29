@@ -6,6 +6,7 @@ import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 
 import { Tooltip } from "./ToolTips";
 import ScrollBar from "./ScrollBar";
+import { ScheduleIcon } from "@/components/Assets/ScheduleIcon";
 
 interface Props {
   visible: boolean;
@@ -59,32 +60,32 @@ export default function Snapshots(props: Props) {
               </p>
             </div>
 
-          {/*   <div className="group relative">
+            {/*  <div className="group relative">
               <QuestionMarkCircleIcon className="w-4 h-4 text-gray-300" />
 
               <DefaultSnapshotsTooltip />
             </div> */}
           </div>
-
-          <Tooltip
-            title="Snapshots are not available in the open-source version"
-            message="Upgrade to the sandworm cloud's professional tier to use them."
-            className="flex"
-            tooltipClassname="-bottom-1 right-0 translate-y-full translate-x-0 w-64 text-center"
-            position="manual"
-            active
-          >
-            <button
-              type="button"
-              className="flex items-center gap-x-2 rounded-lg  bg-[#A308F0] px-3 py-1 text-sm hover:bg-primary-300 disabled:cursor-not-allowed disabled:bg-gray-200"
-              disabled
-            >
-              Save
-            </button>
-          </Tooltip>
         </div>
         <ScrollBar className="overflow-auto">
-          <ul className="flex-1 divide-y divide-solid" />
+          <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">
+            <div className="flex flex-col gap-y-3 bg-ceramic-50/60 p-6 rounded-xl border-2 border-[#E9ECEF] dark:border-[#262A30] border-dashed items-center max-w-[260px] text-center">
+              <ScheduleIcon className="w-10 h-10" />
+
+              <div className="text-ink-300 text-sm space-y-1">
+                <p className="text-ink-100">No snapshots yet.</p>
+                <p>Create snapshots manually by clicking the save button.</p>
+              </div>
+
+              <button
+                type="button"
+                disabled
+                className="rounded-full px-4 py-2 text-sm bg-[#A308F0] hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50 text-white"
+              >
+                Save
+              </button>
+            </div>
+          </div>
         </ScrollBar>
       </div>
     </Transition>
