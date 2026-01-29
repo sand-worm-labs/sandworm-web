@@ -2,6 +2,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { KeyboardIcon } from "lucide-react";
 import clsx from "clsx";
 import { Fragment } from "react";
+import { ScheduleIcon } from "@/components/Assets/ScheduleIcon";
 
 type ShortcutsModalProps = {
   visible: boolean;
@@ -62,10 +63,10 @@ const KeyboardKey = (props: {
 }) => (
   <span
     className={clsx(
-      "px-1.5 py-0.5 rounded-md font-mono",
+      "px-1.5 py-0.5 rounded-md font-body",
       props.mode === "insert"
         ? "bg-[#A308F020] text-primary"
-        : "bg-yellow-100 text-yellow-700"
+        : "bg-[#EBF7F7] text-blue-400"
     )}
   >
     {props.children}
@@ -101,10 +102,7 @@ export default function ShortcutsModal(props: ShortcutsModalProps) {
               <Dialog.Panel className="relative transform overflow-y-auto rounded-2xl bg-white text-left  transition-all sm:my-8 px-8 py-6 w-[582px] max-h-[90vh]">
                 <div>
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#A308F020]">
-                    <KeyboardIcon
-                      aria-hidden="true"
-                      className="h-6 w-6 text-primary"
-                    />
+                    <ScheduleIcon />
                   </div>
                   <div className="mt-3 text-center sm:mt-5">
                     <Dialog.Title
@@ -125,7 +123,7 @@ export default function ShortcutsModal(props: ShortcutsModalProps) {
                     </div>
                     <div className="mt-6 mb-8 text-sm flex flex-col gap-y-2 ">
                       {shortcuts.map(shortcut => (
-                        <div key={shortcut.action} className="flex gap-x-4">
+                        <div key={shortcut.action} className="flex gap-x-4 ">
                           <div className="flex items-center justify-end w-1/3 gap-x-2 whitespace-nowrap">
                             {shortcut.keys.map((key, i) => (
                               <Fragment key={key}>

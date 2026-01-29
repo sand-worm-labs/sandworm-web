@@ -1,6 +1,6 @@
 import { Transition } from "@headlessui/react";
 import { useCallback, useState } from "react";
-import { XMarkIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
+import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
 import clsx from "clsx";
 import cronstrue from "cronstrue";
 import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
@@ -15,6 +15,7 @@ import type {
   MonthlySchedule as MonthlyScheduleType,
   CronSchedule as CronScheduleType,
 } from "@/types";
+import { Trash } from "@/components/Assets/Trash";
 
 import { useSchedules } from "../../hooks/useSchedules";
 import { PortalTooltip, Tooltip } from "../ToolTips";
@@ -56,7 +57,7 @@ const HourlySchedule = ({ schedule }: { schedule: HourlyScheduleType }) => {
   return (
     <div>
       <div className="font-medium">Hourly at minute {minuteStr}</div>
-      <div className="pt-0.5 flex flex-col text-gray-400 gap-y-0.5">
+      <div className="pt-0.5 flex flex-col text-ink-300 gap-y-0.5">
         <span>{getPrettyTz(timezone)}</span>
       </div>
     </div>
@@ -74,7 +75,7 @@ const DailySchedule = ({ schedule }: { schedule: DailyScheduleType }) => {
       <div className="font-medium">
         Daily at {hour12}:{minuteStr} {amPm}
       </div>
-      <div className="pt-0.5 flex flex-col text-gray-400 gap-y-0.5">
+      <div className="pt-0.5 flex flex-col text-ink-300 gap-y-0.5">
         <span>{getPrettyTz(timezone)}</span>
       </div>
     </div>
@@ -115,7 +116,7 @@ const WeeklySchedule = ({ schedule }: { schedule: WeeklyScheduleType }) => {
       <div className="font-medium">
         Weekly on {prettyWeekDays.join(", ")} at {hour12}:{minuteStr} {amPm}
       </div>
-      <div className="pt-0.5 flex flex-col text-gray-400 gap-y-0.5">
+      <div className="pt-0.5 flex flex-col text-ink-300 gap-y-0.5">
         <span>{getPrettyTz(timezone)}</span>
       </div>
     </div>
@@ -211,7 +212,7 @@ interface ScheduleListProps {
 }
 function ScheduleList(props: ScheduleListProps) {
   return (
-    <div className="w-[324px] h-full flex flex-col overflow-y-auto border-l border-gray-200 dark:border-[#262A30] font-primary dark:bg-black">
+    <div className="w-[354px] h-full flex flex-col overflow-y-auto border-l border-gray-200 dark:border-[#262A30] font-primary dark:bg-black">
       <div className="px-4 xl:px-6 pt-6 pb-5">
         <div className="flex justify-between">
           <div>
@@ -234,7 +235,7 @@ function ScheduleList(props: ScheduleListProps) {
           {props.schedules.length > 0 ? (
             <>
               {/* Schedule List */}
-              <ScrollBar className="overflow-auto flex-1">
+              <ScrollBar className="overflow-auto flex-1 space-y-6 pb-6 pt-4 px-2 xl:px-4 ">
                 <ul className="text-xs font-primary overflow-visible">
                   {props.schedules.map((scheduledRun, i) => {
                     return (
@@ -242,10 +243,9 @@ function ScheduleList(props: ScheduleListProps) {
                         key={scheduledRun.id}
                         className={clsx(
                           {
-                            "border-b border-gray-200 dark:border-[#262A30]":
-                              i === props.schedules.length - 1,
+                            "": i === props.schedules.length - 1,
                           },
-                          "flex border-t border-gray-200 dark:border-[#262A30] px-4 xl:px-6 py-6"
+                          "flex  border-border bg-base-500 border rounded-xl  p-3"
                         )}
                       >
                         <div className="flex flex-1 items-center justify-between">
@@ -255,10 +255,10 @@ function ScheduleList(props: ScheduleListProps) {
                           <div className="w-1/4 flex items-center justify-end">
                             <button
                               type="button"
-                              className="p-1 hover:cursor-pointer hover:bg-gray-200 hover:text-gray-900 text-gray-400 rounded-sm"
+                              className="p-1 hover:cursor-pointer  text-ink-400 hover:text-red-600  rounded-sm"
                               onClick={props.onDeleteSchedule(scheduledRun.id)}
                             >
-                              <XMarkIcon className="h-4 w-4" />
+                              <Trash />
                             </button>
                           </div>
                         </div>
@@ -300,7 +300,7 @@ function ScheduleList(props: ScheduleListProps) {
           ) : (
             <div className="flex-1 flex flex-col items-center justify-center px-4 xl:px-6 py-12">
               <div className="flex flex-col items-center gap-y-4">
-                <ScheduleIcon className="w-12 h-12" />
+                <ScheduleIcon />
                 <Tooltip
                   title={props.isLimited ? "You've hit the free limit" : ""}
                   message={
