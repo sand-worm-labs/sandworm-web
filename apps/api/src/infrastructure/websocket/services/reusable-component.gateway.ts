@@ -61,15 +61,5 @@ export class ComponentGatewayService {
         }
     }
 
-    async broadcastComponentRemoved(
-        server: Server,
-        workspaceId: string,
-        componentId: string,
-    ): Promise<void> {
-        try {
-            server.to(workspaceId).emit('workspace-component-removed', { workspaceId, componentId });
-        } catch (error) {
-            this.logger.error(`Failed to broadcast component removal ${componentId}`, error);
-        }
-    }
+
 }

@@ -92,7 +92,8 @@
     "uuid": "^9.0.1",
     "ws": "^8.14.2",
     "y-protocols": "^1.0.6",
-    "yjs": "^13.6.11",
+    "y-websocket": "^3.0.0",
+    "yjs": "^13.6.27",
     "zod": "^4.1.13"
   },
   "devDependencies": {
