@@ -47,13 +47,13 @@ interface Props {
 }
 function EllipsisDropdown(props: Props) {
   return (
-    <Menu as="div" className="relative h-full">
-      <Menu.Button className="flex items-center rounded-sm px-3 py-1 text-sm text-gray-500 hover:bg-gray-100 dark:bg-black   h-full bg-white">
-        <EllipsisHorizontalIcon className="w-5 h-4" />
+    <Menu as="div" className="relative h-full w-full">
+      <Menu.Button className="flex items-center rounded-none px-3 py-3.5 text-sm text-gray-500 hover:bg-gray-100 dark:bg-black border-t border-b   h-full bg-white w-full">
+        <EllipsisHorizontalIcon className="w-5 h-4 shrink-0" />
       </Menu.Button>
       <Transition
         as="div"
-        className="absolute z-40 right-0"
+        className="absolute z-40 right-[1rem]"
         enter="transition-opacity duration-300"
         enterFrom="opacity-0"
         enterTo="opacity-100"

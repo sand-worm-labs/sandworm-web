@@ -124,16 +124,16 @@ export const NotebookPanel = ({
   return (
     <aside
       className={cn(
-        "flex flex-col items-center py-4 px-2 h-[95%]",
+        "flex flex-col items-center py-4 px-0  h-[95%]",
         "bg-white dark:bg-[#0C1015]",
         "border-l border-[#E3E5E8] dark:border-[#262A30]",
         "w-14"
       )}
     >
       {/* Top Section */}
-      <div className="flex flex-col items-center gap-1">
+      <div className="flex flex-col items-center  gap-x-0 w-full">
         {panelSections.map((section, sectionIndex) => (
-          <div key={section.id} className="flex flex-col items-center gap-1">
+          <div key={section.id} className="flex flex-col items-center gap-1  ">
             {section.items.map(item => (
               <PanelItem
                 key={item.id}
@@ -153,9 +153,8 @@ export const NotebookPanel = ({
         {/* Sidebar Content (EllipsisDropdown) */}
         {sidebarContent && (
           <>
-            <div className="py-2">
-              <PanelDivider />
-            </div>
+            <div className="py-2 w-full" />
+
             {sidebarContent}
           </>
         )}
