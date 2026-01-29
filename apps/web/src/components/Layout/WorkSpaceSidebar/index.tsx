@@ -19,6 +19,7 @@ import { Star } from "@/components/Assets/Menu/Star";
 import { SquaresFour } from "@/components/Assets/Menu/SquaresFour";
 import { House } from "@/components/Assets/Menu/House";
 import { Terminal } from "@/components/Assets/Menu/Terminal";
+import { Trash } from "@/components/Assets/Trash";
 
 interface NavItem {
   name: string;
@@ -62,19 +63,26 @@ export const WorkspaceSidebar = () => {
       href: `/workspace/${workspaceId}/console`,
       icon: Terminal,
     },
+
     {
       name: "All tools",
       href: `/workspace/${workspaceId}/tools`,
       icon: SquaresFour,
     },
+    {
+      name: "Trash",
+      href: `/workspace/${workspaceId}/trash`,
+      icon: Trash,
+    },
   ];
 
   const linkClasses = (href: string) =>
     `flex items-center gap-3 rounded-xl px-2 py-1.5 text-sm font-medium transition-colors
-     ${pathname === href
-      ? "bg-[#EBF7F7] dark:bg-[#181C21]  text-primary dark:text-primary"
-      : "text-menu-ink dark:text-white hover:bg-[#EBF7F7] hover:text-primary  dark:hover:bg-[#181C21] hover:text-black dark:hover:text-white"
-    }`;
+     ${
+       pathname === href
+         ? "bg-[#EBF7F7] dark:bg-[#181C21]  text-primary dark:text-primary"
+         : "text-menu-ink dark:text-white hover:bg-[#EBF7F7] hover:text-primary  dark:hover:bg-[#181C21] hover:text-black dark:hover:text-white"
+     }`;
 
   const [
     documentsState,
@@ -93,6 +101,7 @@ export const WorkspaceSidebar = () => {
 
   const onCreateDocument = useCallback(
     async (parentId: string | null) => {
+      console.log("doc", documentsState);
       if (documentsState.loading) return;
 
       try {
@@ -185,7 +194,7 @@ export const WorkspaceSidebar = () => {
     <aside
       className={`h-full flex flex-col justify-between dark:bg-[#0C1015] bg-[#FBFBFB] border-r dark:border-[#262A30] border-[#E9ECEF] font-body
       transition-all duration-300 ease-in-out
-      ${collapsed ? "w-16" : "w-[280px]"}
+      ${collapsed ? "w-16" : "w-[260px]"}
       `}
     >
       <div>
@@ -250,7 +259,7 @@ export const WorkspaceSidebar = () => {
                   type="button"
                   id="create-workspace-doc"
                   onClick={onCreateDocumentHandler}
-                  className="p-2 bg-[#F3F3FA]  rounded-xl hover:cursor-pointer text-sm border mt-6 flex px-5 items-center justify-center w-full border-[#D000FF]  text-primary mb-3 font-body font-medium  "
+                  className="p-2 bg-[#F7E8FF]  rounded-xl hover:cursor-pointer text-sm border mt-6 flex px-5 items-center justify-center w-full border-[#D000FF]  text-primary mb-3 font-body font-medium  "
                 >
                   {" "}
                   <PlusSmallIcon className="h-4 w-4 mr-1 " aria-hidden="true" />

@@ -236,7 +236,7 @@ type UseDocuments = [UseDocumentsState, API];
 
 const Context = createContext<
   [State, React.Dispatch<React.SetStateAction<State>>]
->([Map(), () => { }]);
+>([Map(), () => {}]);
 
 type Props = {
   children: React.ReactNode;
@@ -246,14 +246,29 @@ export function DocumentsProvider(props: Props) {
   const [state, setState] = useState<State>(Map());
 
   useEffect(() => {
+    console.log("[DocumentsProvider] socket exists:", !!socket);
+
     if (!socket) {
       return;
     }
 
-    const onDocuments = (data: {
-      workspaceId: string;
-      documents: ApiDocument[];
-    }) => {
+    console.log(
+      "[DocumentsProvider] REGISTERING listener for workspace-documents"
+    );
+
+    const onDocuments = (rawData: unknown) => {
+      console.log("[onDocuments] rawData:", rawData);
+
+      const data = Array.isArray(rawData) ? rawData[0] : rawData;
+      console.log("[onDocuments] unwrapped data:", data);
+      console.log("[onDocuments] workspaceId:", data?.workspaceId);
+      console.log("[onDocuments] documents:", data?.documents);
+
+      if (!data?.workspaceId || !data?.documents) {
+        console.error("Invalid workspace-documents payload:", rawData);
+        return;
+      }
+
       const now = new Date();
       const prepareForComparison = (stateValue: StateValue) => ({
         ...stateValue,
@@ -335,6 +350,7 @@ export function DocumentsProvider(props: Props) {
 export function useDocuments(workspaceId: string): UseDocuments {
   const [state, setState] = useContext(Context);
   const [_, { unfavoriteDocument }] = useFavorites(workspaceId);
+  const socket = useWebsocket();
 
   const [createDocumentMutation] = useCreateDocumentMutation();
   const [deleteDocumentMutation] = useDeleteDocumentMutation();
@@ -343,48 +359,13 @@ export function useDocuments(workspaceId: string): UseDocuments {
   const [updateDocumentMutation] = useUpdateDocumentMutation();
   const [publishDocumentMutation] = usePublishDocumentMutation();
 
-  const {
-    data: queryData,
-    loading: queryLoading,
-    error: queryError,
-  } = useGetWorkspaceDocumentsQuery({
-    variables: { workspaceId },
-    skip: !workspaceId,
-  });
+  const { documents, loading } = useMemo(
+    (): StateValue =>
+      state.get(workspaceId) ?? { loading: true, documents: List() },
+    [state, workspaceId]
+  );
 
-  useEffect(() => {
-    if (queryData?.getWorkspaceDocuments && !queryLoading) {
-      setState(s => {
-        const current = s.get(workspaceId);
-
-        // Initialize with GraphQL data if we don't have data yet
-        if (!current || current.loading) {
-          return s.set(workspaceId, {
-            loading: false,
-            documents: List(queryData.getWorkspaceDocuments as ApiDocument[]),
-          });
-        }
-
-        return s;
-      });
-    }
-  }, [queryData, queryLoading, workspaceId, setState]);
-
-  const { documents, loading } = useMemo((): StateValue => {
-    const currentState = state.get(workspaceId);
-
-    // If we have GraphQL data, use it even if websocket hasn't loaded
-    if (queryData?.getWorkspaceDocuments && !queryLoading) {
-      return {
-        loading: false,
-        documents:
-          currentState?.documents ??
-          List(queryData.getWorkspaceDocuments as ApiDocument[]),
-      };
-    }
-
-    return currentState ?? { loading: true, documents: List() };
-  }, [state, workspaceId, queryData, queryLoading]);
+  console.log("[useDocuments] workspaceId:", workspaceId);
 
   const createDocument = useCallback(
     async (data: { parentId?: string | null; version: number }) => {
@@ -404,23 +385,13 @@ export function useDocuments(workspaceId: string): UseDocuments {
           },
         });
 
+        console.log("[useDocuments] state.get result:", result);
+
         if (!result.data?.createDocument) {
           throw new Error("Failed to create document");
         }
 
         const newDoc = result.data.createDocument as ApiDocument;
-
-        setState(s => {
-          const { loading, documents } = s.get(workspaceId) ?? {
-            loading: false,
-            documents: List(),
-          };
-
-          return s.set(workspaceId, {
-            loading,
-            documents: documents.push(newDoc),
-          });
-        });
 
         return newDoc as Document;
       } catch (e) {
@@ -428,7 +399,7 @@ export function useDocuments(workspaceId: string): UseDocuments {
         throw e;
       }
     },
-    [loading, workspaceId, setState, createDocumentMutation]
+    [loading, workspaceId, createDocumentMutation]
   );
 
   const deleteDocument = useCallback(
@@ -438,7 +409,8 @@ export function useDocuments(workspaceId: string): UseDocuments {
         return;
       }
 
-      if (!isPermanent && !thisDocument.parentId) {
+      /* Allow the last document in the workspace to be deleted */
+      /*   if (!isPermanent && !thisDocument.parentId) {
         const rootNonDeletedDocuments = documents.filter(
           d => !d.deletedAt && !d.parentId
         );
@@ -446,9 +418,11 @@ export function useDocuments(workspaceId: string): UseDocuments {
         if (rootNonDeletedDocuments.size === 1) {
           return;
         }
-      }
+      } */
 
       const previousStateValue = state.get(workspaceId);
+
+      console.log("prev", previousStateValue, workspaceId, id);
 
       setState(s => {
         const { loading, documents } = s.get(workspaceId) ?? {
@@ -739,10 +713,10 @@ export function useDocuments(workspaceId: string): UseDocuments {
             documents: documents.map(doc =>
               doc.id === id
                 ? {
-                  ...doc,
-                  isDataApp: true,
-                  publishedAt: new Date().toISOString(),
-                }
+                    ...doc,
+                    isDataApp: true,
+                    publishedAt: new Date().toISOString(),
+                  }
                 : doc
             ),
           });
@@ -782,9 +756,9 @@ export function useDocuments(workspaceId: string): UseDocuments {
           documents: documents.map(doc =>
             doc.id === id
               ? {
-                ...doc,
-                ...settings,
-              }
+                  ...doc,
+                  ...settings,
+                }
               : doc
           ),
         });
