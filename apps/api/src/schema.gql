@@ -236,7 +236,7 @@ type Mutation {
   deleteComponentInstance(blockId: String!, componentId: String!, workspaceId: String!): Boolean!
 
   """Soft delete or permanently delete a document"""
-  deleteDocument(input: DeleteDocumentInput!): Document!
+  deleteDocument(input: DeleteDocumentInput!): Boolean!
 
   """Delete a single environment variable"""
   deleteEnvironmentVariable(variableId: String!, workspaceId: String!): Boolean!

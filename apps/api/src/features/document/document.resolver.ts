@@ -78,13 +78,13 @@ export class DocumentResolver {
     return this.documentService.updateDocument(documentId, workspaceId, input);
   }
 
-  @Mutation(() => Document, {
+  @Mutation(() => Boolean, {
     name: 'deleteDocument',
     description: 'Soft delete or permanently delete a document',
   })
   async deleteDocument(
     @Args('input') input: DeleteDocumentInput,
-  ): Promise<Document> {
+  ): Promise<Boolean> {
     return this.documentService.deleteDocument(input);
   }
 

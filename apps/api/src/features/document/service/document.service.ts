@@ -166,38 +166,38 @@ export class DocumentService {
     return result;
   }
 
-  async deleteDocument(input: DeleteDocumentInput): Promise<Document> {
+  async deleteDocument(input: DeleteDocumentInput): Promise<boolean> {
     const { documentId, workspaceId, isPermanent } = input;
 
     const document = await this.documentRepository.findOne({
       where: { id: documentId, workspaceId },
     });
 
+    this.logger.log(`Document deleted: ${documentId} (permanent: ${isPermanent})`, document);
+
     if (!document) {
       throw new ValidationException(ErrorCode.E003);
     }
 
-    const deletedDocument = await this.documentTreeService.deleteDocument(
+    await this.documentTreeService.deleteDocument(
       documentId,
       workspaceId,
       !isPermanent, // softDelete = !isPermanent
     );
-
-    const result = Document.fromEntity(deletedDocument);
 
     // Emit events
     await this.emitWorkspaceDocuments(workspaceId);
 
     this.logger.log(`Document deleted: ${documentId} (permanent: ${isPermanent})`);
 
-    return result;
+    return true;
   }
 
   async restoreDocument(input: RestoreDocumentInput): Promise<Document> {
     const { documentId, workspaceId } = input;
 
     const document = await this.documentRepository.findOne({
-      where: { id: documentId, workspaceId, deletedAt: Not(null) },
+      where: { id: documentId, workspaceId },
       withDeleted: true,
     });
 

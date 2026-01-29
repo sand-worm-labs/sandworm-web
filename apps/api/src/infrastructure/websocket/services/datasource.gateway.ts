@@ -13,7 +13,6 @@ import { Comment } from '@/features/collaboration/comment/model/comment.model';
 export class CommentGatewayService {
     private readonly logger = new Logger(CommentGatewayService.name);
 
-
     constructor(
         @InjectRepository(CommentEntity)
         private readonly commentRepository: Repository<CommentEntity>,
@@ -82,21 +81,5 @@ export class CommentGatewayService {
         }
     }
 
-    async broadcastComment(
-        server: Server,
-        workspaceId: string,
-        documentId: string,
-        comment: Comment,
-    ): Promise<void> {
-        server.to(workspaceId).emit('document-comment', { documentId, comment });
-    }
 
-    async broadcastCommentDeleted(
-        server: Server,
-        workspaceId: string,
-        documentId: string,
-        commentId: string,
-    ): Promise<void> {
-        server.to(workspaceId).emit('document-comment-deleted', { documentId, commentId });
-    }
 }
