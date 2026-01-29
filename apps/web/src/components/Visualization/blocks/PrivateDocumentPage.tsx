@@ -38,6 +38,7 @@ import ReusableComponents from "./ReusableComponents";
 import PageSettingsPanel from "./PageSettingsPanel";
 import { Tooltip } from "./ToolTips";
 import { ContentSkeleton, TitleSkeleton } from "./ContentSkeleton";
+import ShareModal from "./ShareModal";
 
 // this is needed because this component only works with the browser
 const V2Editor = dynamic(() => import("@/components/Editor"), {
@@ -239,25 +240,39 @@ function PrivateDocumentPageInner(
     );
   }, [router]);
 
+  const handleVisibilityChange = useCallback(
+    async (visibility: "private" | "team" | "community") => {
+      console.log("Visibility changed to:", visibility);
+    },
+    []
+  );
+
   // ⬢ Sidebar content for NotebookPanel
   // =====================================
   const sidebarContent = useMemo(
     () => (
-      <EllipsisDropdown
-        onToggleSchedules={onToggleSchedules}
-        onToggleSnapshots={onToggleSnapshots}
-        onToggleComments={onToggleComments}
-        onToggleFullScreen={onToggleFullScreen}
-        onToggleFiles={onToggleFiles}
-        onToggleSchemaExplorer={onToggleSchemaExplorerEllipsis}
-        onToggleReusableComponents={onToggleReusableComponents}
-        onToggleShortcuts={onToggleShortcuts}
-        onTogglePageSettings={onTogglePageSettings}
-        isViewer={isViewer}
-        isDeleted={isDeleted}
-        isFullScreen={isFullScreen}
-        position="sidebar"
-      />
+      <>
+        <ShareModal
+          link={`${NEXT_PUBLIC_PUBLIC_URL()}/workspace/${props.workspaceId}/documents/${props.documentId}/notebook`}
+          initialVisibility="private"
+          onVisibilityChange={handleVisibilityChange}
+        />
+        <EllipsisDropdown
+          onToggleSchedules={onToggleSchedules}
+          onToggleSnapshots={onToggleSnapshots}
+          onToggleComments={onToggleComments}
+          onToggleFullScreen={onToggleFullScreen}
+          onToggleFiles={onToggleFiles}
+          onToggleSchemaExplorer={onToggleSchemaExplorerEllipsis}
+          onToggleReusableComponents={onToggleReusableComponents}
+          onToggleShortcuts={onToggleShortcuts}
+          onTogglePageSettings={onTogglePageSettings}
+          isViewer={isViewer}
+          isDeleted={isDeleted}
+          isFullScreen={isFullScreen}
+          position="sidebar"
+        />
+      </>
     ),
     [
       onToggleSchedules,
