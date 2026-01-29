@@ -168,13 +168,20 @@ function PrivateDocumentPageInner(
     restoreDocument(props.documentId);
   }, [props.documentId, restoreDocument]);
 
+  console.log("[PrivateDocumentPageInner] props.document:", props.document);
+  console.log("[PrivateDocumentPageInner] clock:", props.document?.clock);
+  console.log(
+    "[PrivateDocumentPageInner] typeof clock:",
+    typeof props.document?.clock
+  );
+
   const clock = useMemo(() => {
     if (!props.isApp) {
-      return props.document.clock;
+      return props.document.clock ?? 0;
     }
 
     return (
-      props.document.userAppClock[props.user.id] ?? props.document.appClock
+      props.document.userAppClock[props.user.id] ?? props.document.appClock ?? 0
     );
   }, [
     props.isApp,
