@@ -12,13 +12,12 @@ import {
 } from "lucide-react";
 import { PiPlus } from "react-icons/pi";
 import { PlusSmallIcon } from "@heroicons/react/24/outline";
-import { UploadIcon } from "../Assets/UploadIcon";
-
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 
 import { useFavorites } from "@/components/Visualization/hooks/useFavorites";
 
+import { UploadIcon } from "../Assets/UploadIcon";
 import { useDocuments } from "../Visualization/hooks/useDocuments";
 
 import ProjectControl from "./ProjectControls";
@@ -77,7 +76,7 @@ export const Projects: React.FC = () => {
     );
 
   const documents = documentsState.documents.filter(
-    doc => doc.deletedAt === null && doc.version >= 1
+    doc => doc.deletedAt === null && doc.version >= 1 && doc.parentId === null
   );
 
   const formatDate = (dateString: string | Date): string => {

@@ -16,18 +16,17 @@ import {
   ChevronRightIcon,
   PlusSmallIcon,
 } from "@heroicons/react/20/solid";
-
 import { List, Stack } from "immutable";
 import { getEmptyImage } from "react-dnd-html5-backend";
 
 import type { ApiDocument, UserWorkspaceRole } from "@/types";
 import { Trash } from "@/components/Assets/Trash";
 import { BookmarkSimple } from "@/components/Assets/BookmarkSimple";
+import { Copy } from "@/components/Assets/Copy";
 
 import useDropdownPosition from "../hooks/dropdownposition";
 
 import IconSelector from "./IconSelector";
-import { Copy } from "@/components/Assets/Copy";
 
 function useIsDocExpanded(doc: ApiDocument, startsOpen: boolean) {
   const [isExpanded, _setIsExpanded] = useState(
@@ -61,13 +60,19 @@ type Node = {
 
 function buildTrees(
   parentId: string | null,
-  data: List<ApiDocument>
+  data: List<ApiDocument>,
+  maxDepth: number = 2,
+  currentDepth: number = 0
 ): List<Node> {
+  if (currentDepth >= maxDepth) {
+    return List([]);
+  }
+
   const children = data.filter(document => document.parentId === parentId);
 
   const trees = children.map(root => ({
     document: root,
-    children: buildTrees(root.id, data),
+    children: buildTrees(root.id, data, maxDepth, currentDepth + 1),
   }));
 
   return List(
@@ -157,6 +162,7 @@ type DropDownProps = {
   onUnfavorite: (id: string) => void;
   onCreate: (parentId: string) => void;
   role: UserWorkspaceRole;
+  level: any;
 };
 
 function DropDown(props: DropDownProps) {
@@ -169,6 +175,7 @@ function DropDown(props: DropDownProps) {
   const onDeleteHandler: MouseEventHandler<HTMLButtonElement> = useCallback(
     e => {
       e.preventDefault();
+
       props.onDelete(props.documentId);
     },
     [props.onDelete, props.documentId]
@@ -203,7 +210,8 @@ function DropDown(props: DropDownProps) {
       <button
         type="button"
         className={clsx(
-          (props.isFavoriteDropdown || isViewer) && "hidden",
+          (props.isFavoriteDropdown || isViewer || props.level >= 1) &&
+            "hidden",
           "pr-0.5"
         )}
         onClick={onCreateHandler}
@@ -413,6 +421,10 @@ function NodeComponent(props: NodeComponentProps) {
         }
 
         if (dropHoverState === "center") {
+          if (props.level >= 1) {
+            console.warn("Cannot nest more than 2 levels deep");
+            return;
+          }
           props.onUpdateParent(item.id, droppedOnDocument.id, -1);
           return;
         }
@@ -505,8 +517,7 @@ function NodeComponent(props: NodeComponentProps) {
                 }}
               />
             )}
-          <Link
-            href={`/workspace/${props.workspaceId}/documents/${props.document.id}`}
+          <div
             className={clsx(
               props.document.id === props.current
                 ? "text-gray-800 bg-ceramic-100/50"
@@ -525,19 +536,20 @@ function NodeComponent(props: NodeComponentProps) {
               <div
                 className={clsx("flex items-center", { "pl-1": props.flat })}
               >
-                {!props.flat && (
-                  <button
-                    type="button"
-                    className="hover:bg-ceramic-200 rounded-md p-0.5 flex items-center justify-center"
-                    onClick={toggleIsExpanded}
-                  >
-                    {isExpanded ? (
-                      <ChevronDownIcon className="h-4 w-4" />
-                    ) : (
-                      <ChevronRightIcon className="h-4 w-4" />
-                    )}
-                  </button>
-                )}
+                {!props.flat &&
+                  (props.descendants.size > 0 || props.level < 1) && (
+                    <button
+                      type="button"
+                      className="hover:bg-ceramic-200 rounded-md p-0.5 flex items-center justify-center"
+                      onClick={toggleIsExpanded}
+                    >
+                      {isExpanded ? (
+                        <ChevronDownIcon className="h-4 w-4" />
+                      ) : (
+                        <ChevronRightIcon className="h-4 w-4" />
+                      )}
+                    </button>
+                  )}
                 <IconSelector
                   workspaceId={props.workspaceId}
                   documentId={props.document.id}
@@ -545,11 +557,14 @@ function NodeComponent(props: NodeComponentProps) {
                   isChild={props.level > 0}
                 />
               </div>
-              <div className="flex items-center flex-1 overflow-auto">
+              <Link
+                className="flex items-center flex-1 overflow-auto"
+                href={`/workspace/${props.workspaceId}/documents/${props.document.id}`}
+              >
                 <span className="truncate">
                   {props.document.title || "Untitled"}
                 </span>
-              </div>
+              </Link>
               <DropDown
                 documentId={props.document.id}
                 isFavoriteDropdown={Boolean(props.flat)}
@@ -560,9 +575,10 @@ function NodeComponent(props: NodeComponentProps) {
                 onUnfavorite={props.onUnfavorite}
                 role={props.role ?? "viewer"}
                 onCreate={props.onCreate}
+                level={props.level}
               />
             </div>
-          </Link>
+          </div>
           {isExpanded && (
             <ul
               className={clsx(

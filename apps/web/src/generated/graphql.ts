@@ -236,7 +236,7 @@ export type Mutation = {
   /** Delete a component instance */
   deleteComponentInstance: Scalars['Boolean']['output'];
   /** Soft delete or permanently delete a document */
-  deleteDocument: Document;
+  deleteDocument: Scalars['Boolean']['output'];
   /** Delete a single environment variable */
   deleteEnvironmentVariable: Scalars['Boolean']['output'];
   /** Delete a file from the workspace */
@@ -959,7 +959,7 @@ export type DeleteDocumentMutationVariables = Exact<{
 }>;
 
 
-export type DeleteDocumentMutation = { __typename?: 'Mutation', deleteDocument: { __typename?: 'Document', id: string, title: string, slug: string, parentId?: string | null, orderIndex: number, authorId: string, workspaceId: string, createdAt: any, updatedAt: any, deletedAt?: any | null, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, runSQLSelection: boolean, runUnexecutedBlocks: boolean, shareLinksWithoutSidebar: boolean } };
+export type DeleteDocumentMutation = { __typename?: 'Mutation', deleteDocument: boolean };
 
 export type RestoreDocumentMutationVariables = Exact<{
   input: RestoreDocumentInput;
@@ -1830,30 +1830,7 @@ export type UpdateDocumentMutationResult = Apollo.MutationResult<UpdateDocumentM
 export type UpdateDocumentMutationOptions = Apollo.BaseMutationOptions<UpdateDocumentMutation, UpdateDocumentMutationVariables>;
 export const DeleteDocumentDocument = gql`
     mutation DeleteDocument($input: DeleteDocumentInput!) {
-  deleteDocument(input: $input) {
-    id
-    title
-    slug
-    parentId
-    orderIndex
-    authorId
-    workspaceId
-    createdAt
-    updatedAt
-    deletedAt
-    version
-    publishedAt
-    isDataApp
-    isSyncedWithYjs
-    hasDashboard
-    appId
-    clock
-    appClock
-    userAppClock
-    runSQLSelection
-    runUnexecutedBlocks
-    shareLinksWithoutSidebar
-  }
+  deleteDocument(input: $input)
 }
     `;
 export type DeleteDocumentMutationFn = Apollo.MutationFunction<DeleteDocumentMutation, DeleteDocumentMutationVariables>;

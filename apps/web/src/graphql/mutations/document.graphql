@@ -61,31 +61,7 @@ mutation UpdateDocument(
 }
 
 mutation DeleteDocument($input: DeleteDocumentInput!) {
-  deleteDocument(input: $input) {
-    id
-    title
-    slug
-
-    parentId
-    orderIndex
-    authorId
-    workspaceId
-    createdAt
-    updatedAt
-    deletedAt
-    version
-    publishedAt
-    isDataApp
-    isSyncedWithYjs
-    hasDashboard
-    appId
-    clock
-    appClock
-    userAppClock
-    runSQLSelection
-    runUnexecutedBlocks
-    shareLinksWithoutSidebar
-  }
+  deleteDocument(input: $input)
 }
 
 mutation RestoreDocument($input: RestoreDocumentInput!) {

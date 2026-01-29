@@ -30,7 +30,7 @@ export default function TrashList({
   );
 
   return (
-    <ul className="divide-y divide-gray-100">
+    <ul className="divide-y divide-[">
       {sorted.map(doc => {
         const path: string[] = [doc.title || "Untitled"];
         let parent = doc.parentId ? docById.get(doc.parentId) : undefined;
@@ -53,7 +53,7 @@ export default function TrashList({
             <div>
               <p className="text-sm font-semibold leading-6 text-gray-900">
                 <Link
-                  href={`/workspaces/${workspaceId}/documents/${doc.id}`}
+                  href={`/workspace/${workspaceId}/documents/${doc.id}`}
                   className="hover:underline"
                 >
                   {doc.title || "Untitled"}

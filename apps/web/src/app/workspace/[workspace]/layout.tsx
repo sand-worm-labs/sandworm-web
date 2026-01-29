@@ -22,8 +22,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         options={{ showSpinner: false }}
         shallowRouting
       >
-        <DocumentsProvider>
-          <WebsocketProvider>
+        <WebsocketProvider>
+          <DocumentsProvider>
             <CommentsProvider>
               <DndBackendProvider>
                 <EnvironmentStatusProvider>
@@ -35,8 +35,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 </EnvironmentStatusProvider>
               </DndBackendProvider>
             </CommentsProvider>
-          </WebsocketProvider>
-        </DocumentsProvider>
+          </DocumentsProvider>
+        </WebsocketProvider>
 
         <FooterWrapper />
         <SignInModal />
