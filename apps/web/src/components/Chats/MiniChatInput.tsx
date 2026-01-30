@@ -99,7 +99,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
             onChange={handleTextareaChange}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
-            className="w-full resize-none bg-transparent outline-none text-gray-800 dark:text-white placeholder-[#343A40] max-h-[300px] dark:placeholder:text-[#E1E9F1] px-3"
+            className="w-full resize-none bg-transparent outline-none text-gray-800 dark:text-white placeholder-[#343A40] text-sm max-h-[300px] dark:placeholder:text-[#E1E9F1] px-3"
             rows={2}
             aria-label="Message input"
           />
@@ -121,15 +121,15 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
             type="button"
             onClick={handleSend}
             disabled={!message.trim() && files.length === 0}
-            className={`flex items-center justify-center w-8 h-8 rounded-lg transition-colors ${
+            className={`flex items-center justify-center w-8 h-8 rounded-xl transition-colors ${
               message.trim() || files.length > 0
                 ? "bg-[#A308F0]  hover:bg-[#A308F0]  text-white"
-                : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                : "bg-white text-gray-400 cursor-not-allowed border border-[#DEE2E6]"
             }`}
             title="Send message"
             aria-label="Send message"
           >
-            <Send className="w-5 h-5" />
+            <Send className="w-4 h-4" />
           </button>
 
           <input
