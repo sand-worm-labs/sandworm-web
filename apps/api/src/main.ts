@@ -1,7 +1,6 @@
 import compression from '@fastify/compress';
 import helmet from '@fastify/helmet';
-import websocket from '@fastify/websocket';
-
+import fastifyWebsocket from '@fastify/websocket';
 import {
   ConsoleLogger,
   HttpStatus,
@@ -30,6 +29,8 @@ import { GlobalExceptionFilter } from './core/filters/global-exception.filter';
 import { AuthGuard } from './core/guards/auth.guard';
 import { setupSwagger } from './common/utils/setup-swagger';
 import { AuthGraphqlService } from './features/auth/graphql/auth-graphql.service';
+import { YjsGateway } from './features/collaboration/yjs/yjs.gateway';
+
 
 async function bootstrap() {
   const fastifyAdapter = new FastifyAdapter({
@@ -71,6 +72,7 @@ async function bootstrap() {
     { parseAs: 'buffer' },
     (_req, body, done) => done(null, body),
   );
+
 
   app.register(helmet, {
     contentSecurityPolicy: isProduction ? undefined : false,
@@ -127,12 +129,19 @@ async function bootstrap() {
     setupSwagger(app, configService);
   }
 
-  // Use Socket.IO adapter for WebSocket Gateway
-  app.useWebSocketAdapter(new IoAdapter(app));
 
   const port = configService.getOrThrow('app.port', {
     infer: true,
   }) as number;
+
+
+  app.useWebSocketAdapter(new IoAdapter(app));
+
+  // 2. Initialize app (starts Socket.IO)
+  await app.init();
+  const yjsGateway = app.get(YjsGateway);
+  yjsGateway.init(port);
+
 
   await app.listen(port, '0.0.0.0');
 
@@ -140,6 +149,8 @@ async function bootstrap() {
   logger.log(`📊 GraphQL Playground http://0.0.0.0:${port}/graphql`);
   logger.log(`🔌 WebSocket endpoint ws://0.0.0.0:${port}/socket.io/`);
   logger.log(`📝 Environment: ${env}`);
+
+
 }
 
 bootstrap().catch((error) => {

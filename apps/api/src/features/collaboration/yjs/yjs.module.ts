@@ -10,11 +10,15 @@ import {
   YjsUpdateEntity,
   PubSubPayloadEntity,
 } from '@sandworm/postgresql-typeorm'
+import { PersistenceService } from "./services/persistence.service";
+import { SessionManagerService } from "./services/session-manager.service";
+import { MessageHandlerService } from "./services/message-handler.service";
+import { SyncHandlerService } from "./services/sync-handler.service";
 import { PersistorFactory } from './persistors/persistor.factory'
 import { LockModule } from '@/infrastructure/lock/lock.module'
 import { PubSubModule } from '@/infrastructure/pubsub/pubsub.module'
 import { SessionModule } from '@/features/session/session.module'
-import { YjsGateway } from '../../../infrastructure/websocket/services/yjs.gateway'
+import { YjsGateway } from './yjs.gateway'
 
 @Module({
   imports: [
@@ -35,6 +39,10 @@ import { YjsGateway } from '../../../infrastructure/websocket/services/yjs.gatew
   providers: [
     YjsDocumentService,
     PersistorFactory,
+    PersistenceService,
+    SessionManagerService,
+    MessageHandlerService,
+    SyncHandlerService,
     YjsGateway
   ],
   exports: [
