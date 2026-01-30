@@ -14,11 +14,11 @@ import {
 import { WSSharedDoc, TransactionOrigin, Persistor, LoadStateResult } from '../interfaces';
 import { PubSubProviderFactory } from '@/infrastructure/pubsub/pubsub-provider.factory';
 import { PubSubProvider } from '@/infrastructure/pubsub/pubsub.provider';
+import { MESSAGE_AWARENESS, MESSAGE_SYNC } from '../types/yjs.types';
 
-const messageSync = 0;
-const messageAwareness = 1;
 
 export class WSSharedDocV2 implements WSSharedDoc {
+
     public id: string;
     public documentId: string;
     public workspaceId: string;
@@ -211,7 +211,7 @@ export class WSSharedDocV2 implements WSSharedDoc {
         this.hasUpdatesToPersist = true;
 
         const encoder = encoding.createEncoder();
-        encoding.writeVarUint(encoder, messageSync);
+        encoding.writeVarUint(encoder, MESSAGE_SYNC);
         syncProtocol.writeUpdate(encoder, update);
         const message = encoding.toUint8Array(encoder);
 
@@ -254,7 +254,7 @@ export class WSSharedDocV2 implements WSSharedDoc {
         }
 
         const encoder = encoding.createEncoder();
-        encoding.writeVarUint(encoder, messageAwareness);
+        encoding.writeVarUint(encoder, MESSAGE_AWARENESS);
         encoding.writeVarUint8Array(
             encoder,
             awarenessProtocol.encodeAwarenessUpdate(this.awareness, changedClients)

@@ -6,6 +6,10 @@ import { SessionEntity, UserEntity } from '@sandworm/postgresql-typeorm';
 import { IsNull, Not, Repository } from 'typeorm';
 import { UserResponse } from '../user/model/http/user.model';
 import { Session } from './domain/session';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import { AllConfigType } from '@/core/config/config.type';
+import { JwtPayloadType } from '../auth/core/strategies/types/jwt-payload.type';
 
 @Injectable()
 export class SessionService {
@@ -16,6 +20,8 @@ export class SessionService {
     private readonly sessionRepository: Repository<SessionEntity>,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService<AllConfigType>,
   ) { }
 
   private toSession(sessionEntity: SessionEntity): Session {
@@ -254,5 +260,36 @@ export class SessionService {
 
     const newHash = crypto.randomUUID();
     return this.updateHash(session.id, newHash);
+  }
+
+  async validateSessionFromAuthToken(token: string): Promise<Session | null> {
+    const authConfig = this.configService.getOrThrow('auth', { infer: true });
+
+    let payload: JwtPayloadType;
+
+    try {
+      payload = await this.jwtService.verifyAsync<JwtPayloadType>(token, {
+        secret: authConfig.secret,
+      });
+    } catch {
+      this.logger.debug('Invalid or expired auth token');
+      return null;
+    }
+
+    // 2️⃣ Load session by sessionId
+    const session = await this.sessionRepository.findOne({
+      where: {
+        id: payload.sessionId,
+        deletedAt: IsNull(),
+      },
+      relations: ['user', 'user.userWorkspaces'],
+    });
+
+    if (!session || !session.user) {
+      this.logger.debug(`Session not found for token sessionId=${payload.sessionId}`);
+      return null;
+    }
+
+    return this.toSession(session);
   }
 }
