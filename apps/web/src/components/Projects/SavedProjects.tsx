@@ -16,7 +16,9 @@ import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 
 import { useFavorites } from "@/components/Visualization/hooks/useFavorites";
+
 import { useDocuments } from "../Visualization/hooks/useDocuments";
+import { Loader } from "../Loader";
 
 import ProjectControl from "./ProjectControls";
 import { ProjectsTable } from "./ProjectTable";
@@ -115,9 +117,9 @@ export const SavedProjects: React.FC = () => {
 
   if (loading || documentsState.loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-black flex items-center justify-center p-8">
+      <div className="min-h-screen  dark:bg-black flex items-center justify-center p-8">
         <div className="text-center">
-          <p className="text-gray-500">Loading saved projects...</p>
+          <Loader />
         </div>
       </div>
     );

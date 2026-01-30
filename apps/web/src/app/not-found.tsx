@@ -16,10 +16,17 @@ const NotFound: React.FC<NotFoundStateProps> = ({ error }) => {
 
   return (
     <EmptyState
-      title="Uh No"
-      subtitle="Could not find requested resource"
-      showReset
-      label="Go back home"
+      heading="404"
+      title="Page Not Found"
+      subtitle="The page you're looking for doesn't exist."
+      showGoBack={false}
+      quickLinks={[
+        { label: "Home", href: "/" },
+        { label: "Explore", href: "/explore" },
+        { label: "Docs", href: "/docs" },
+        { label: "Help Center", href: "/help" },
+        { label: "Twitter Updates", href: "https://twitter.com/your_handle" },
+      ]}
     />
   );
 };

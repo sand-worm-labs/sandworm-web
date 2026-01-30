@@ -54,7 +54,7 @@ export const Button: React.FC<ButtonProps> = ({
           "
         />
       )}
-      {isLoading ? "Lading.." : label}
+      {isLoading ? "Loading.." : label}
     </button>
   );
 };

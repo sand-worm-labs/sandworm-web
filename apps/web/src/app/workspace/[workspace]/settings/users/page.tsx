@@ -20,6 +20,7 @@ import {
   useWorkspaceWithMembers,
   useInviteUserToWorkspace,
 } from "@/components/Visualization/hooks/useWorkspaces";
+import { Loader } from "@/components/Loader";
 
 export default function UsersPage() {
   const workspaceId = useStringQuery("workspace");
@@ -168,7 +169,7 @@ export default function UsersPage() {
   if (workspaceLoading) {
     return (
       <div className="w-full h-full flex items-center justify-center">
-        <div className="text-gray-500">Loading workspace...</div>
+        <Loader />
       </div>
     );
   }
