@@ -13,6 +13,7 @@ import TrashList from "@/components/Visualization/blocks/TrashList";
 import ScrollBar from "@/components/Visualization/blocks/ScrollBar";
 import { useDocuments } from "@/components/Visualization/hooks/useDocuments";
 import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
+import { Loader } from "@/components/Loader";
 
 const pagePath = (workspaceId: string) => [
   { name: "Configurations", icon: Cog8ToothIcon, href: "#", current: false },
@@ -55,6 +56,19 @@ export default function TrashPage() {
   const session = useSession({ redirectToLogin: true });
   if (!session.user) {
     return null;
+  }
+
+  // Add loading state check
+  if (state.loading) {
+    return (
+      <div className="items-center justify-center flex fixed top-0 bottom-0 w-full left-0 z-10 h-screen">
+        <div className="loader">
+          {Array.from({ length: 9 }).map((_, i) => (
+            <div key={i} className={`square sq${i + 1}`} />
+          ))}
+        </div>
+      </div>
+    );
   }
 
   return (

@@ -28,16 +28,13 @@ export default function WorkspaceRedirectPage() {
     }
   }, [workspaceInfo, sessionLoading, workspaceLoading, user, router]);
 
-  if (sessionLoading || workspaceLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4" />
-          <p className="text-sm text-gray-600">Loading workspace...</p>
-        </div>
+  return (
+    <div className="items-center justify-center flex fixed top-0 bottom-0 w-full left-0 z-10 h-screen">
+      <div className="loader">
+        {Array.from({ length: 9 }).map((_, i) => (
+          <div key={i} className={`square sq${i + 1}`} />
+        ))}
       </div>
-    );
-  }
-
-  return null;
+    </div>
+  );
 }

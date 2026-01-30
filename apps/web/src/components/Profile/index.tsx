@@ -15,14 +15,12 @@ import {
   Globe,
   UserPlus,
   UserMinus,
-  TrendingUp,
   Database,
-  Zap,
-  BarChart3,
 } from "lucide-react";
 import { ActivityCalendar } from "react-activity-calendar";
 
 import { useCurrentUser } from "../Visualization/hooks/useCurrentUser";
+import { Loader } from "../Loader";
 
 interface SocialLinks {
   twitter?: string;
@@ -143,9 +141,7 @@ const ProfileComponent = () => {
     <div className="min-h-screen bg-white dark:bg-[#010100] transition-colors">
       {loading ? (
         <div className="max-w-6xl mx-auto px-4 py-8">
-          <p className="text-center text-ink-200 dark:text-gray-400">
-            Loading...
-          </p>
+          <Loader />
         </div>
       ) : !currentUser ? (
         <div className="max-w-6xl mx-auto px-4 py-8">
