@@ -19,8 +19,7 @@ export const MiniChatHeader: React.FC<MiniChatHeaderProps> = ({ onCancel }) => {
         </h3>
 
         <p className="text-ink-400 text-xs ">
-          Explanation of what this drawer does, explanation of what this drawer
-          does,Click or drag and drop files here to upload them
+          This allows you to create deep and insightful analysis
         </p>
       </div>
 
@@ -155,7 +154,7 @@ export const MiniChat: React.FC<MiniChatProps> = ({ visible, onClose }) => {
       leaveFrom="translate-x-0"
       leaveTo="transform translate-x-full"
     >
-      <div className="w-[324px] flex flex-col overflow-y-auto border-l dark:border-[#262A30] border-gray-200 h-full bg-white dark:bg-black ">
+      <div className="w-[354px] flex flex-col overflow-y-auto border-l dark:border-[#262A30] border-gray-200 h-full bg-white dark:bg-black ">
         <MiniChatHeader onCancel={onClose} />
 
         <div className="flex-1 overflow-y-auto py-6 px-4 ">

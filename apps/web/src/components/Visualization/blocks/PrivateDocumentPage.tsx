@@ -3,12 +3,25 @@ import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { isNil } from "ramda";
 import Link from "next/link";
-import { EyeIcon, PencilIcon } from "@heroicons/react/24/outline";
+import {
+  EyeIcon,
+  PencilIcon,
+  BookOpenIcon,
+  ClockIcon,
+  CodeBracketSquareIcon,
+  Cog6ToothIcon,
+  MapIcon,
+  EllipsisHorizontalIcon,
+  InboxArrowDownIcon,
+  FolderIcon,
+  ChatBubbleBottomCenterTextIcon,
+} from "@heroicons/react/24/outline";
 import { BookUpIcon } from "lucide-react";
 import clsx from "clsx";
 import { AITasks, ExecutionQueue } from "@sandworm/editor";
 import { useHotkeys } from "react-hotkeys-hook";
 import * as Y from "yjs";
+import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/20/solid";
 
 import type { ApiDocument } from "@/types";
 import { widthClasses } from "@/components/Editor/constants";
@@ -252,6 +265,57 @@ function PrivateDocumentPageInner(
   const sidebarContent = useMemo(
     () => (
       <>
+        {/* Icon-only buttons for Comments, Schedules, and Horizontal Toggle */}
+        <div className="flex flex-col">
+          {/* Comments Button */}
+          <button
+            type="button"
+            onClick={onToggleComments}
+            className="flex items-center justify-center rounded-none px-3 py-3 text-sm text-gray-500 hover:bg-gray-100 dark:bg-black dark:hover:bg-[#181C21]  h-full bg-white w-full"
+            title="Comments"
+          >
+            <ChatBubbleBottomCenterTextIcon className="w-5 h-5 shrink-0" />
+          </button>
+
+          {/* Schedules Button - Only show if not viewer and not deleted */}
+          {!isViewer && !isDeleted && (
+            <button
+              type="button"
+              onClick={onToggleSchedules}
+              className="flex items-center justify-center rounded-none px-3 py-3 text-sm text-gray-500 hover:bg-gray-100 dark:bg-black dark:hover:bg-[#181C21]  h-full bg-white w-full"
+              title="Schedules"
+            >
+              <ClockIcon className="w-5 h-5 shrink-0" />
+            </button>
+          )}
+
+          {/* Horizontal Toggle Button */}
+          {onToggleFullScreen && (
+            <button
+              type="button"
+              onClick={onToggleFullScreen}
+              className="flex items-center justify-center rounded-none px-3 py-3 text-sm text-gray-500 hover:bg-gray-100 dark:bg-black dark:hover:bg-[#181C21] h-full bg-white w-full"
+              title={
+                isFullScreen ? "Shrink horizontally" : "Stretch horizontally"
+              }
+            >
+              <div className="flex items-center">
+                {isFullScreen ? (
+                  <>
+                    <ArrowRightIcon className="h-3 w-3" />
+                    <ArrowLeftIcon className="h-3 w-3" />
+                  </>
+                ) : (
+                  <>
+                    <ArrowLeftIcon className="h-3 w-3" />
+                    <ArrowRightIcon className="h-3 w-3" />
+                  </>
+                )}
+              </div>
+            </button>
+          )}
+        </div>
+
         <ShareModal
           link={`${NEXT_PUBLIC_PUBLIC_URL()}/workspace/${props.workspaceId}/documents/${props.documentId}/notebook`}
           initialVisibility="private"
@@ -287,6 +351,9 @@ function PrivateDocumentPageInner(
       isViewer,
       isDeleted,
       isFullScreen,
+      props.workspaceId,
+      props.documentId,
+      handleVisibilityChange,
     ]
   );
 
