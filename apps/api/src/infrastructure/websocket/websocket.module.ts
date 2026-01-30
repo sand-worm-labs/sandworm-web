@@ -13,7 +13,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CommentEntity, DocumentEntity, EnvironmentEntity, ReusableComponentEntity, UserEntity, UserFollowsEntity, UserSettingEntity, UserWorkspaceEntity } from '@sandworm/postgresql-typeorm';
 import { CodeExecutionModule } from '@/features/code-execution/code-execution.module';
 import { ReusableComponentModule } from '@/features/collaboration/component/reusable-component.module';
-import { YjsGateway } from '@/infrastructure/websocket/services/yjs.gateway';
 import { AuthModule } from '@/features/auth/core/auth.module';
 
 @Module({
@@ -31,7 +30,6 @@ import { AuthModule } from '@/features/auth/core/auth.module';
         ]), SessionModule, JupyterModule, YjsModule, CodeExecutionModule, ReusableComponentModule, JwtModule.register({})],
     providers: [
         AppGateway,
-        YjsGateway,
         WorkspaceGatewayService,
         EnvironmentGatewayService,
         CommentGatewayService,

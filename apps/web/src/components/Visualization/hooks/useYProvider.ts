@@ -2,8 +2,11 @@ import type { Awareness } from "y-protocols/awareness";
 import type * as Y from "yjs";
 import { useEffect, useRef, useState } from "react";
 import { WebsocketProvider } from "y-websocket";
+import Cookies from "js-cookie";
 
 import { NEXT_PUBLIC_API_WS_URL } from "../utils/env";
+
+import { tokenStorage } from "./useAuth";
 
 export function getDocId(
   id: string,
@@ -19,6 +22,13 @@ export function getDocId(
   return parts.join("-");
 }
 
+function getYjsUrl() {
+  const baseUrl = NEXT_PUBLIC_API_WS_URL(); // ws://localhost:8003
+  const url = new URL(baseUrl);
+  url.port = (parseInt(url.port, 10) + 2).toString();
+  return `${url.toString()}yjs`;
+}
+
 function getWSProvider(
   yDoc: Y.Doc,
   documentId: string,
@@ -28,7 +38,15 @@ function getWSProvider(
   publishedAt: string | null
 ): WebsocketProvider {
   const id = getDocId(documentId, isDataApp, clock, publishedAt);
-  const wsUrl = `${NEXT_PUBLIC_API_WS_URL()}/yjs/`;
+  const wsUrl = getYjsUrl();
+  console.log("wsUrl", wsUrl);
+  const token = tokenStorage.getToken();
+  Cookies.set("auth-token", token, {
+    expires: 7, // 7 days
+    path: "/",
+    sameSite: "lax",
+    secure: false, // true in production with HTTPS
+  });
 
   const provider = new WebsocketProvider(wsUrl, id, yDoc, {
     connect: false,
