@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 import {
   UserRound,
@@ -11,16 +10,16 @@ import {
   Users,
   ChevronLeft,
 } from "lucide-react";
-import { Avatar, AvatarFallback } from "@sandworm/ui/components/avatar";
 
 import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
+import { useSession } from "@/components/Visualization/hooks/useAuth";
 
 export default function SettingsLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { data: session, status } = useSession();
+  const { user: session } = useSession({ redirectToLogin: true });
   const pathname = usePathname();
   const workspaceId = useStringQuery("workspace");
 
@@ -61,37 +60,6 @@ export default function SettingsLayout({
 
         <span>Settings</span>
       </div>
-      {session && (
-        <div className="container mx-auto py-6 flex justify-between md:items-center px-6 flex-col md:flex-row  space-y-4 items-start">
-          <div className="flex space-x-3 items-center">
-            {session?.user?.image ? (
-              <Image
-                src={session?.user.image}
-                width={60}
-                height={60}
-                alt={`${session?.user.name} image`}
-                className="rounded-full border"
-              />
-            ) : (
-              <Avatar className="h-64 w-64">
-                <AvatarFallback>
-                  {session?.user.id?.split(" ")[0]?.[0] ?? "U"}
-                </AvatarFallback>
-              </Avatar>
-            )}
-            <div>
-              <p className="font-bold">{session?.user.name}</p>
-              <span className=" text-text-gray text-sm">Personal Account</span>
-            </div>
-          </div>
-          <Link
-            href="workspace/explore"
-            className="inline-block font-semibold rounded py-1.5 lg:px-4  border-borderLight border text-xs px-3 bg-white/15  hover:bg-btnHover"
-          >
-            Go to Public Profile
-          </Link>
-        </div>
-      )}
 
       <div className="flex min-h-screen  md:flex-row flex-col ">
         <div className=" p-6 border-r dark:border-borderLight my-12 min-w-[30rem] border-[#E9ECEF] bg-[#F1F3F4] dark:bg-black">

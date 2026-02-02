@@ -536,7 +536,6 @@ label {
   @apply font-normal;
 }
 
-/* From Uiverse.io by JkHuger */
 
 .loader {
   position: relative;
@@ -568,32 +567,38 @@ label {
 .sq1 {
   margin-top: -25px;
   margin-left: -25px;
+  background: #6368FF;
   animation: loader_5191 675ms ease-in-out 0ms infinite alternate;
 }
 
 .sq2 {
   margin-top: -25px;
+  background: #CBECFF;
   animation: loader_5191 675ms ease-in-out 75ms infinite alternate;
 }
 
 .sq3 {
   margin-top: -25px;
   margin-left: 15px;
+  background: #7BFF42;
   animation: loader_5191 675ms ease-in-out 150ms infinite;
 }
 
 /* row 2 */
 .sq4 {
   margin-left: -25px;
+  background: #2DB2FF;
   animation: loader_5191 675ms ease-in-out 225ms infinite;
 }
 
 .sq5 {
+  background: #FF0000;
   animation: loader_5191 675ms ease-in-out 300ms infinite;
 }
 
 .sq6 {
   margin-left: 15px;
+  background: #DED757;
   animation: loader_5191 675ms ease-in-out 375ms infinite;
 }
 
@@ -601,17 +606,21 @@ label {
 .sq7 {
   margin-top: 15px;
   margin-left: -25px;
+  background: #FF00E1;
   animation: loader_5191 675ms ease-in-out 450ms infinite;
+  -webkit-animation: loader_5191 675ms ease-in-out 450ms infinite;
 }
 
 .sq8 {
   margin-top: 15px;
+  background: #ef4444;
   animation: loader_5191 675ms ease-in-out 525ms infinite;
 }
 
 .sq9 {
   margin-top: 15px;
   margin-left: 15px;
+  background: #8053FE;
   animation: loader_5191 675ms ease-in-out 600ms infinite;
 }
 

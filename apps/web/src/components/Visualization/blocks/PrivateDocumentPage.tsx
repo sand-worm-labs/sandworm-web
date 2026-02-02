@@ -395,7 +395,7 @@ function PrivateDocumentPageInner(
           />
         )}
 
-        <ShareDropdown
+       {/*  <ShareDropdown
           link={copyLink}
           isPublic={false}
           onTogglePublic={() => {}}
@@ -405,7 +405,7 @@ function PrivateDocumentPageInner(
           role={props?.user?.role?.[props.workspaceId]}
           isDashboard={false}
           isApp={props.isApp}
-        />
+        /> */}
 
         {props?.user?.role?.[props.workspaceId] ===
         "viewer" ? null : props.isApp ? (
