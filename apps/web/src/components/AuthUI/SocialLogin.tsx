@@ -142,7 +142,7 @@ export const SocialLogin = ({ variant = "signup" }: SocialLoginProps) => {
         type="button"
         onClick={() => handleOAuthLogin("google")}
         disabled={isLoading !== null}
-        className="flex w-full items-center justify-center space-x-2 rounded-xl border border-[#DEE2E6] px-4 py-3 bg-[#F8F9FA] hover:bg-[#E9ECEF] dark:bg-white font-medium text-ink-100 mb-2 text-sm font-body disabled:opacity-50 disabled:cursor-not-allowed"
+        className="flex w-full items-center justify-center space-x-2 rounded-2xl border border-[#DEE2E6] px-4 py-3 bg-[#F8F9FA] hover:bg-[#E9ECEF] dark:bg-white font-medium text-ink-100 mb-2 text-sm font-body disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <FcGoogle size={20} />
         <span>{getButtonText("google")}</span>
@@ -153,7 +153,7 @@ export const SocialLogin = ({ variant = "signup" }: SocialLoginProps) => {
         type="button"
         onClick={() => handleOAuthLogin("github")}
         disabled={isLoading !== null}
-        className="flex w-full items-center justify-center space-x-2 rounded-xl border border-[#DEE2E6] px-4 py-3 bg-[#F8F9FA] hover:bg-[#E9ECEF] dark:bg-white text-ink-100 mb-4 text-sm font-body font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+        className="flex w-full items-center justify-center space-x-2 rounded-2xl border border-[#DEE2E6] px-4 py-3 bg-[#F8F9FA] hover:bg-[#E9ECEF] dark:bg-white text-ink-100 mb-4 text-sm font-body font-medium disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <FaGithub size={20} />
         <span>{getButtonText("github")}</span>

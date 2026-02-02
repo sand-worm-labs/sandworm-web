@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 
-import { SocialLogin } from "./SocialLogin";
 import { PartnersSection } from "../Partners";
-
 import { SandwormLogo } from "../Assets";
+
+import { SocialLogin } from "./SocialLogin";
 import SignUpForm from "./SignUpForm";
 
 export const SignUp = () => {
@@ -38,8 +38,8 @@ export const SignUp = () => {
         </Link>
       </p>
 
-      <div className="flex-col  gap-2 absolute bottom-[4rem] w-full flex items-center justify-center">
-        <p className="text-base text-ink-200 font-body font-medium mb-4">
+      <div className="flex-col  gap-2 absolute bottom-[3rem] w-full flex items-center justify-center">
+        <p className="text-base text-ink-200 font-body font-medium mb-2.5">
           Trusted by teams at
         </p>
         <PartnersSection />

@@ -47,8 +47,9 @@ const getErrorType = (
 
 const ErrorPage: React.FC<ErrorStateProps> = ({ error, reset }) => {
   const errorType = getErrorType(error);
-  const isDev = process.env.NODE_ENV === "development";
-
+  /*   const isDev = process.env.NODE_ENV === "development";
+   */
+  const isDev = false;
   const errorConfigs = {
     server: {
       title: "Server is Down",
@@ -70,7 +71,7 @@ const ErrorPage: React.FC<ErrorStateProps> = ({ error, reset }) => {
       subtitle: isDev
         ? `Dev: ${error.message}`
         : "Unable to reach our servers. Check your internet connection.",
-      imageSrc: "/img/network-error.png",
+      imageSrc: "/img/error.png",
       showRefresh: true,
       showGoBack: true,
       showTwitterUpdates: false,
@@ -82,7 +83,7 @@ const ErrorPage: React.FC<ErrorStateProps> = ({ error, reset }) => {
       subtitle: isDev
         ? `Dev: ${error.message}`
         : "We're having trouble accessing data. Please try again in a moment.",
-      imageSrc: "/img/database-error.png",
+      imageSrc: "/img/error.png",
       showRefresh: true,
       showReportBug: true,
       showGoBack: true,
@@ -94,7 +95,7 @@ const ErrorPage: React.FC<ErrorStateProps> = ({ error, reset }) => {
       subtitle: isDev
         ? `Dev: ${error.message}`
         : "You don't have permission to access this resource.",
-      imageSrc: "/img/auth-error.png",
+      imageSrc: "/img/error.png",
       showRefresh: false,
       showReportBug: false,
       showGoBack: true,
@@ -118,23 +119,20 @@ const ErrorPage: React.FC<ErrorStateProps> = ({ error, reset }) => {
       subtitle:
         error.message ||
         "Something unexpected happened while processing your request.",
-      imageSrc: "/img/404.png",
-      showRefresh: false,
+      imageSrc: "/img/error.svg",
+      showRefresh: true,
       showReportBug: true,
       showGoBack: true,
       showTwitterUpdates: false,
-      quickLinks: [
-        { label: "Home", href: "/" },
-        { label: "Help Center", href: "/help" },
-      ],
     },
   };
 
   const config = errorConfigs[errorType];
 
   return (
-    <div>
+    <div className="h-screen">
       <EmptyState
+        heading="?"
         title={config.title}
         subtitle={config.subtitle}
         imageSrc={config.imageSrc}
@@ -152,7 +150,7 @@ const ErrorPage: React.FC<ErrorStateProps> = ({ error, reset }) => {
       {/* Error details for development */}
       {isDev && (
         <div className="fixed bottom-4 left-4 right-4 bg-red-900/90 text-white p-4 rounded-lg max-w-2xl mx-auto font-mono text-xs overflow-auto max-h-40">
-          <div className="font-bold mb-2">🐛 Development Error Details:</div>
+          <div className="font-bold mb-2"> Development Error Details:</div>
           <div>
             <strong>Type:</strong> {errorType}
           </div>

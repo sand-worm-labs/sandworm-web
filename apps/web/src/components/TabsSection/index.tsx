@@ -18,6 +18,7 @@ import type { QueryResponse } from "@/types";
 import { EmptyQueryState } from "../EmptyState/EmptyQueryState";
 import { SortControl } from "../Explore/SortControl";
 import { ViewControl } from "../Explore/ViewControl";
+import { FeaturedExploreSection } from "../Explore/FeaturedExploreSection";
 
 // 🎨 Interfaces and Types
 // =====================================
@@ -154,9 +155,13 @@ export const TabsSection: React.FC<TabSectionProps> = ({
     <div>
       <div className="flex justify-between">
         <p className="text-ink-200 dark:text-ink-300  text-sm mb-6 mt-4">
-          See what others are creating using Sandworm
+          Discover the latest trends in the crypto ecosystem.
         </p>
         <ViewControl viewMode={viewMode} onViewModeChange={setViewMode} />
+      </div>
+
+      <div className=" w-full container mx-auto">
+        <FeaturedExploreSection />
       </div>
 
       <Tabs value={tab} onValueChange={setTab} className="w-full">
