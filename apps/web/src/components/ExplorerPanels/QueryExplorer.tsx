@@ -2,7 +2,6 @@
 
 import React, { useEffect } from "react";
 import { SquareTerminal, Plus, Loader2 } from "lucide-react";
-import { useSession } from "next-auth/react";
 import {
   CardHeader,
   CardTitle,
@@ -14,6 +13,8 @@ import { Button } from "@sandworm/ui/components/button";
 import type { Query } from "@/types";
 import { useModalStore } from "@/store/auth";
 import { useQueryStore } from "@/store/queries";
+
+import { useSession } from "../Visualization/hooks/useAuth";
 
 import { QueryExplorerCardList } from "./QueryExplorerCardList";
 
@@ -77,14 +78,14 @@ const QueryExplorerContent = ({
 };
 
 export const QueryExplorer = () => {
-  const { data: session } = useSession();
+  const { user: session } = useSession({ redirectToLogin: true });
   const { queries, loadQueries, loading } = useQueryStore();
 
   useEffect(() => {
-    if (session?.user?.id) {
-      loadQueries(session.user.id);
+    if (session?.id) {
+      loadQueries(session.id);
     }
-  }, [session?.user?.id]);
+  }, [session?.id]);
 
   return (
     <Card className="h-full overflow-hidden border-none ">

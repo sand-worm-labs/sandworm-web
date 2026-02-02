@@ -40,10 +40,10 @@ export default function OnboardingLayout({
 
   return (
     <div className="h-dvh relative overflow-hidden">
-      <div className="grid grid-cols-2 h-full">
+      <div className="grid md:grid-cols-2 h-full">
         {children}
 
-        <div className="relative h-full w-full">
+        <div className="relative h-full w-full hidden md:block">
           <div className="relative h-full w-full rounded-none overflow-hidden shadow-lg">
             <div className="relative h-full w-full min-h-[100dvh]">
               <Image

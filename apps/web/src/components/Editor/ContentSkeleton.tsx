@@ -26,7 +26,7 @@ const SkeletonRow = ({ pattern }: { pattern: string[] }) => {
       {pattern.map((width, i) => (
         <div
           key={i}
-          className={clsx("h-3.5 bg-gray-100/80 rounded-full", width)}
+          className={clsx("h-3.5 bg-[#F3F4F7]/80 rounded-full", width)}
         />
       ))}
     </div>
@@ -49,7 +49,7 @@ export function TitleSkeleton({ visible }: Props) {
   if (!visible || !show) return null;
 
   return (
-    <div className="animate-pulse w-full h-24 bg-gray-100 rounded-lg mb-4" />
+    <div className="animate-pulse w-full h-24 bg-[#F3F4F7] rounded-lg mb-4" />
   );
 }
 

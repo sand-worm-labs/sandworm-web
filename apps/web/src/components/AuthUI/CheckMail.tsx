@@ -41,17 +41,17 @@ export const CheckMail = ({
   const { title, description, resendText } = content[variant];
 
   return (
-    <div className="flex flex-col items-center justify-center h-full w-full px-10 py-6 overflow-hidden text-center">
+    <div className="flex flex-col items-center justify-center h-full w-full px-10 py-6 overflow-hidden text-center ">
       <div className="w-12 h-12 rounded-xl bg-[#EDE7FF] flex items-center justify-center mb-4">
         <Mail />
       </div>
       <h2 className="text-xl font-primary mb-1 ">{title}</h2>
-      <p className="text-sm font-medium text-ink-400 dark:text-white font-primary max-w-md mt-2">
+      <p className="text-sm font-medium text-ink-400 dark:text-white font-body max-w-md mt-2">
         {description}
       </p>
 
       <div className="bg-[#E9ECEF] h-[1px]  w-48 mt-2.5" />
-      <p className="text-sm font-primary text-ink-400 mt-2">
+      <p className="text-sm font-body text-ink-400 mt-2">
         {resendText}{" "}
         <button
           type="button"
@@ -63,7 +63,7 @@ export const CheckMail = ({
       </p>
 
       {variant === "signup" && (
-        <p className="font-primary text-center text-xs text-ink-400 mt-6">
+        <p className="font-body text-center text-xs text-ink-400 mt-6 absolute bottom-4 max-w-24">
           By creating an account you agree to the{" "}
           <span className="underline">Terms</span> and confirm that you have
           read the <span className="underline">Privacy Policy</span>.
