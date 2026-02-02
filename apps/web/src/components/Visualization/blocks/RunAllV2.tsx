@@ -54,14 +54,14 @@ export default function RunAllV2(props: Props) {
         {
           "bg-gray-200 cursor-not-allowed":
             props.disabled || status === "aborting",
-          "bg-[#A308F0] hover:bg-primary-300":
+          "bg-[#0F0F0F] hover:bg-primary-300":
             !props.disabled && !loading && props.primary,
-          "bg-[#A308F0] ring-gray-200 text-white":
+          "bg-[#0F0F0F] ring-gray-200 text-white":
             !props.disabled && !loading && !props.primary,
           "bg-red-200 hover:bg-red-300":
             !props.disabled && loading && status !== "aborting",
         },
-        "flex items-center rounded-lg px-3.5 py-1 text-sm gap-x-1.5 absolute top-3 right-8 z-10 font-primary font-medium text-white"
+        "flex items-center rounded-2xl px-5 py-1.5 text-sm gap-x-1.5 absolute top-3 right-8 z-10 font-body  text-white"
       )}
       onClick={onClick}
       disabled={props.disabled}

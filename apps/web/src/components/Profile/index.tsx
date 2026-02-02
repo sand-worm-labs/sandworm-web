@@ -8,19 +8,17 @@ import {
   MapPin,
   Calendar,
   Link as LinkIcon,
-  Copy,
-  Check,
   Github,
   Twitter,
   Globe,
   UserPlus,
   UserMinus,
-  Database,
 } from "lucide-react";
 import { ActivityCalendar } from "react-activity-calendar";
 
 import { useCurrentUser } from "../Visualization/hooks/useCurrentUser";
 import { Loader } from "../Loader";
+import { ProjectIcon } from "../Assets/ProjectIcon";
 
 interface SocialLinks {
   twitter?: string;
@@ -123,24 +121,24 @@ const ProfileComponent = () => {
   const getSocialIcon = (platform: string) => {
     switch (platform) {
       case "twitter":
-        return <Twitter className="w-4 h-4" strokeWidth={1.2} />;
+        return <Twitter className="w-4 h-4" />;
       case "github":
-        return <Github className="w-4 h-4" strokeWidth={1.2} />;
+        return <Github className="w-4 h-4" />;
       case "website":
-        return <Globe className="w-4 h-4" strokeWidth={1.2} />;
+        return <Globe className="w-4 h-4" />;
       case "telegram":
-        return <LinkIcon className="w-4 h-4" strokeWidth={1.2} />;
+        return <LinkIcon className="w-4 h-4" />;
       case "discord":
-        return <LinkIcon className="w-4 h-4" strokeWidth={1.2} />;
+        return <LinkIcon className="w-4 h-4" />;
       default:
-        return <LinkIcon className="w-4 h-4" strokeWidth={1.2} />;
+        return <LinkIcon className="w-4 h-4" />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#010100] transition-colors">
+    <div className="min-h-screen bg-white dark:bg-[#010100] transition-colors font-body">
       {loading ? (
-        <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="mx-auto min-h-screen w-full flex items-center justify-center px-4 py-8">
           <Loader />
         </div>
       ) : !currentUser ? (
@@ -152,7 +150,7 @@ const ProfileComponent = () => {
       ) : (
         <div className="max-w-6xl mx-auto px-4 py-8">
           <div className="space-y-6">
-            <div className="bg-white dark:bg-[#010100] border border-[#E9ECEF] dark:border-[#262A30] rounded-2xl p-8">
+            <div className="bg-white dark:bg-[#010100]  rounded-2xl p-8">
               <div className="flex flex-col md:flex-row gap-6">
                 <div className="flex-shrink-0">
                   {mockProfile.avatar ? (
@@ -203,7 +201,7 @@ const ProfileComponent = () => {
                   </div>
 
                   {mockProfile.statusText && (
-                    <p className="text-ink-500 dark:text-white">
+                    <p className="text-[#6C757D] dark:text-white">
                       {currentUser?.settings.statusText}
                     </p>
                   )}
@@ -256,7 +254,7 @@ const ProfileComponent = () => {
                               href={url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="p-2 rounded-lg border border-[#E9ECEF] dark:border-[#262A30] hover:bg-[#A308F0] hover:border-[#A308F0] hover:text-white transition-colors text-ink-200 dark:text-gray-400"
+                              className="p-2.5 rounded-xl border border-[#DEE2E6] dark:border-[#262A30] hover:bg-[#A308F0] hover:border-[#A308F0] hover:text-white transition-colors text-[#1C3B5A] dark:text-gray-400 bg-[#F8F9FA]"
                             >
                               {getSocialIcon(platform)}
                             </a>
@@ -268,8 +266,8 @@ const ProfileComponent = () => {
               </div>
             </div>
 
-            {mockProfile.wallets && mockProfile.wallets.length > 0 && (
-              <div className="bg-white dark:bg-[#010100] border border-[#E9ECEF] dark:border-[#262A30] rounded-2xl p-6">
+            {/*    {mockProfile.wallets && mockProfile.wallets.length > 0 && (
+              <div className="bg-white dark:bg-[#010100]  rounded-2xl p-6">
                 <h2 className="text-xl font-medium text-ink-100  dark:text-white mb-4">
                   Wallets
                 </h2>
@@ -277,7 +275,7 @@ const ProfileComponent = () => {
                   {mockProfile.wallets.map((wallet, index) => (
                     <div
                       key={index}
-                      className="flex items-center justify-between p-4 rounded-lg border border-[#E9ECEF] dark:border-[#262A30] hover:border-[#A308F0] transition-colors"
+                      className="flex items-center justify-between p-4 rounded-lg  dark:border-[#262A30] hover:border-[#A308F0] transition-colors"
                     >
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
@@ -311,9 +309,9 @@ const ProfileComponent = () => {
                   ))}
                 </div>
               </div>
-            )}
+            )} */}
 
-            <div className="bg-white dark:bg-[#010100] border border-[#E9ECEF] dark:border-[#262A30] rounded-2xl p-6">
+            <div className="bg-white dark:bg-[#010100]  dark:border-[#262A30] rounded-2xl p-6">
               <h2 className="text-xl font-medium text-ink-100  dark:text-white mb-4">
                 Activity
               </h2>
@@ -322,17 +320,17 @@ const ProfileComponent = () => {
                   data={mockActivityData}
                   theme={{
                     light: [
-                      "#E9ECEF",
-                      "#fab8b3",
-                      "#f59489",
-                      "#ef7066",
+                      "#F3ECEC80",
+                      "#CE76FB",
+                      "#FDC7CF",
+                      "#E3AFFD",
                       "#A308F0",
                     ],
                     dark: [
-                      "#262A30",
-                      "#8a5854",
-                      "#a66862",
-                      "#c2786f",
+                      "#F3ECEC80",
+                      "#CE76FB",
+                      "#FDC7CF",
+                      "#E3AFFD",
                       "#A308F0",
                     ],
                   }}
@@ -352,15 +350,12 @@ const ProfileComponent = () => {
               </div>
             </div>
 
-            <div className="bg-white dark:bg-[#010100] border border-[#E9ECEF] dark:border-[#262A30] rounded-2xl p-6">
+            <div className="rounded-2xl p-6">
               <h2 className="text-xl font-medium text-ink-100  dark:text-white mb-4">
                 Projects
               </h2>
-              <div className="text-center py-12">
-                <Database
-                  className="w-12 h-12 text-ink-200 dark:text-gray-400 mx-auto mb-3"
-                  strokeWidth={1.2}
-                />
+              <div className="text-center py-12 flex flex-col items-center justify-center gap-2">
+                <ProjectIcon />
                 <p className="text-ink-200 dark:text-gray-400">
                   No projects yet
                 </p>
