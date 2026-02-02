@@ -2,6 +2,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { KeyboardIcon } from "lucide-react";
 import clsx from "clsx";
 import { Fragment } from "react";
+
 import { ScheduleIcon } from "@/components/Assets/ScheduleIcon";
 
 type ShortcutsModalProps = {
@@ -65,8 +66,8 @@ const KeyboardKey = (props: {
     className={clsx(
       "px-1.5 py-0.5 rounded-md font-body",
       props.mode === "insert"
-        ? "bg-[#A308F020] text-primary"
-        : "bg-[#EBF7F7] text-blue-400"
+        ? "bg-[#F1E6F7] text-primary"
+        : "bg-[#F7F6E6] text-[#1C3B5A]"
     )}
   >
     {props.children}
@@ -85,7 +86,7 @@ export default function ShortcutsModal(props: ShortcutsModalProps) {
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity font-primary" />
+          <div className="fixed inset-0 bg-[#161633] bg-opacity-20 transition-opacity font-body" />
         </Transition.Child>
 
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto font-primary">
@@ -99,7 +100,7 @@ export default function ShortcutsModal(props: ShortcutsModalProps) {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-y-auto rounded-2xl bg-white text-left  transition-all sm:my-8 px-8 py-6 w-[582px] max-h-[90vh]">
+              <Dialog.Panel className="relative transform overflow-y-auto rounded-2xl bg-white text-left  transition-all sm:my-8 px-8 py-6 w-[600px] max-h-[90vh]">
                 <div>
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#A308F020]">
                     <ScheduleIcon />
@@ -107,18 +108,22 @@ export default function ShortcutsModal(props: ShortcutsModalProps) {
                   <div className="mt-3 text-center sm:mt-5">
                     <Dialog.Title
                       as="h3"
-                      className="text-base font-medium leading-6 text-gray-900"
+                      className="text-sm font-bold font-body leading-6 text-ink-100"
                     >
-                      Keyboard Shortcuts
+                      Keyboard shortcuts
                     </Dialog.Title>
 
                     <div className="mt-2 flex flex-col gap-y-2">
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-ink-400 font-body">
                         When in insert mode, blocks will be highlighted in{" "}
-                        <span className="text-primary">yellow</span>. When in
-                        command mode, blocks will be highlighted in{" "}
-                        <span className="text-primary">orange</span>. Shortcuts
-                        here are highlighted accordingly.
+                        <span className="text-accent font-semibold">
+                          purple
+                        </span>
+                        . When in command mode, blocks will be highlighted in{" "}
+                        <span className="text-primary font-semibold">
+                          orange
+                        </span>
+                        . Shortcuts here are highlighted accordingly.
                       </p>
                     </div>
                     <div className="mt-6 mb-8 text-sm flex flex-col gap-y-2 ">
@@ -136,7 +141,7 @@ export default function ShortcutsModal(props: ShortcutsModalProps) {
                               </Fragment>
                             ))}
                           </div>
-                          <div className="text-ink-200 whitespace-nowrap ">
+                          <div className="text-ink-400 whitespace-nowrap font-bold font-body ">
                             {shortcut.action}
                           </div>
                         </div>
@@ -144,12 +149,12 @@ export default function ShortcutsModal(props: ShortcutsModalProps) {
                     </div>
                   </div>
                 </div>
-                <div className="mt-6 flex justify-end">
+                <div className="mt-6 flex justify-center">
                   <button
                     type="button"
                     data-autofocus
                     onClick={props.onHide}
-                    className="rounded-xl bg-primary px-3 py-2 text-sm font-medium text-white   mt-0 w-1/3"
+                    className="rounded-xl  px-3 py-2 text-sm font-medium text-white bg-[#0F0F0F]  mt-0 w-1/3"
                   >
                     Close
                   </button>

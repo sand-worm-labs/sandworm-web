@@ -46,8 +46,8 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   showReset,
   reset,
   imageSrc = "/img/404.png",
-  imageWidth = 1233,
-  imageHeight = 467,
+  imageWidth = 1633,
+  imageHeight = 1467,
   imageAlt,
   showRefresh = false,
   showGoBack = true,
@@ -73,7 +73,6 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
     if (onReportBug) {
       onReportBug();
     } else {
-      // Default bug report action
       window.open("/report-bug", "_blank");
     }
   };
@@ -91,37 +90,53 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
         items-center font-body relative
       "
     >
-      <h2 className="text-[5rem] font-mono mt-[5%]">{heading} </h2>
+      <h2 className="text-[6rem] leading-[1.2] font-mono mt-[5%]">{heading} </h2>
       <Heading center title={title} subtitle={subtitle} />
 
-      {/* Action Buttons and Links - All on same line */}
-      <div className="mt-6 flex flex-row gap-4 flex-wrap justify-center items-center">
+      <div className="mt-6 flex flex-row gap-5 flex-wrap justify-center items-center">
         {showReset && (
-          <button onClick={() => reset && reset()} className={linkClassName}>
+          <button
+            type="button"
+            onClick={() => reset && reset()}
+            className={linkClassName}
+          >
             {label}
           </button>
         )}
 
         {showRefresh && (
-          <button onClick={handleRefresh} className={linkClassName}>
+          <button
+            type="button"
+            onClick={handleRefresh}
+            className={linkClassName}
+          >
             Refresh
           </button>
         )}
 
         {showGoBack && (
-          <button onClick={() => router.push("/")} className={linkClassName}>
+          <button
+            type="button"
+            onClick={() => router.push("/")}
+            className={linkClassName}
+          >
             Go Back
           </button>
         )}
 
         {showReportBug && (
-          <button onClick={handleReportBug} className={linkClassName}>
+          <button
+            type="button"
+            onClick={handleReportBug}
+            className={linkClassName}
+          >
             Report Bug
           </button>
         )}
 
         {showTwitterUpdates && (
           <button
+            type="button"
             onClick={() => window.open(twitterUrl, "_blank")}
             className={linkClassName}
           >
@@ -131,6 +146,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
 
         {customActions.map((action, index) => (
           <button
+            type="button"
             key={`action-${index}`}
             onClick={action.onClick}
             className={linkClassName}

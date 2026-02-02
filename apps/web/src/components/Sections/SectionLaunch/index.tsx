@@ -3,7 +3,6 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
 
 import { Star } from "@/components/Assets/Star";
 import { CircuitIcon } from "@/components/Assets/Circuit";
@@ -14,38 +13,15 @@ import { Blur } from "@/components/Assets/Blur";
 interface FeatureCardProps {
   children: React.ReactNode;
   className?: string;
-  delay?: number;
 }
 
-export const FeatureCard = ({
-  children,
-  className = "",
-  delay = 0,
-}: FeatureCardProps) => {
-  const cardVariants = {
-    hidden: { opacity: 0, y: 40, scale: 0.95 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        duration: 0.7,
-        delay,
-        ease: [0.22, 1, 0.36, 1],
-      },
-    },
-  };
-
+export const FeatureCard = ({ children, className = "" }: FeatureCardProps) => {
   return (
-    <motion.div
+    <div
       className={`rounded-2xl backdrop-blur-sm gradient-border relative ${className}`}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.2 }}
-      variants={cardVariants}
     >
       <div className="inner w-full h-full p-8 py-6 rounded-2xl">{children}</div>
-    </motion.div>
+    </div>
   );
 };
 
@@ -68,7 +44,7 @@ export const SectionFeatures = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 gap-x-7">
           {/* ════════════ First Card ════════════ */}
-          <FeatureCard delay={0}>
+          <FeatureCard>
             <div className="absolute right-0 top-0 left-0 w-full">
               <Blur />
             </div>
@@ -108,7 +84,7 @@ export const SectionFeatures = () => {
           </FeatureCard>
 
           {/* ════════════ Second Card ════════════ */}
-          <FeatureCard delay={0.15}>
+          <FeatureCard>
             <div className="absolute right-0 top-0 left-0 w-full">
               <Blur />
             </div>
@@ -145,10 +121,7 @@ export const SectionFeatures = () => {
           </FeatureCard>
 
           {/* ════════════ Third Card ════════════ */}
-          <FeatureCard
-            className="lg:col-span-2 gap-10 w-full overflow-hidden "
-            delay={0.3}
-          >
+          <FeatureCard className="lg:col-span-2 gap-10 w-full overflow-hidden">
             <div className="absolute right-0 top-0 w-[80%]">
               <Blur />
             </div>

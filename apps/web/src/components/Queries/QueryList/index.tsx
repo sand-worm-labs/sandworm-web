@@ -1,10 +1,10 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 
 import type { Query, QueryPagination } from "@/types";
 import { ExploreCard } from "@/components/Explore/ExploreCard";
+import { useSession } from "@/components/Visualization/hooks/useAuth";
 
 interface IQueryListProps {
   queries: Query[] | null;
@@ -12,8 +12,8 @@ interface IQueryListProps {
 }
 
 export const QueryList: React.FC<IQueryListProps> = ({ queries }) => {
-  const { data: session } = useSession();
-  const userId = session?.user?.id ?? "";
+  const { user: session } = useSession({ redirectToLogin: true });
+  const userId = session?.id ?? "";
 
   if (!queries || queries.length === 0) {
     return (

@@ -99,7 +99,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
             onChange={handleTextareaChange}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
-            className="w-full resize-none bg-transparent outline-none text-gray-800 dark:text-white placeholder-[#343A40] text-sm max-h-[300px] dark:placeholder:text-[#E1E9F1] px-3"
+            className="w-full resize-none bg-transparent outline-none text-gray-800 dark:text-white placeholder-text-ink-300 text-sm max-h-[300px] dark:placeholder:text-[#E1E9F1] px-3"
             rows={2}
             aria-label="Message input"
           />

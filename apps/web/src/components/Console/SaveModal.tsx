@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -17,6 +16,8 @@ import { Checkbox } from "@sandworm/ui/components/checkbox";
 
 import { useCreateQuery } from "@/hooks/useCreateQuery";
 import { useSaveQuery } from "@/hooks/useSaveQuery";
+
+import { useSession } from "../Visualization/hooks/useAuth";
 
 interface SaveModalProps {
   open: boolean;
@@ -45,10 +46,10 @@ export const SaveModal = ({
 
   const { create, loading } = useCreateQuery();
   const { save, loading: saving } = useSaveQuery();
-  const { data: session } = useSession();
+  const { user: session } = useSession({ redirectToLogin: true });
 
   const handleSave = async () => {
-    if (!session?.user?.id) {
+    if (!session?.id) {
       toast.error("You need to login first to save a query");
       return;
     }
@@ -59,7 +60,7 @@ export const SaveModal = ({
       query: content,
       privateQuery: isPrivate,
       tags: tags.split(",").map(tag => tag.trim()),
-      creator: session.user.id,
+      creator: session?.id,
       id: tabId,
     };
 

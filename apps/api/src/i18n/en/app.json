@@ -38,8 +38,8 @@
   },
   "email": {
     "confirm_email": {
-      "greeting": "Hey there!",
-      "intro": "You're almost ready to start enjoying our platform.",
+      "greeting": "Thank you for joining Sandworm Beta",
+      "intro": "Built on Base and powered by AI, our mission is to provide you with the ultimate tool for Onchain data analysis. We believe blockchain data shouldn't be a mystery, so we’ve designed our platform to deliver useful, human-readable outputs that anyone can utilize, expert or not.",
       "instruction": "Simply click the button below to verify your email address."
     },
     "confirm_new_email": {
