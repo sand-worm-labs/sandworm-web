@@ -60,7 +60,11 @@ export const MainHeader = () => {
         <div className="px-3 flex justify-between items-center py-2.5">
           {/* Logo */}
           <motion.div variants={navItem} className="flex items-center">
-            <Link href="/" className="flex items-center">
+            <Link
+              href="/"
+              className="flex items-center"
+              aria-label="Sandworm Labs"
+            >
               <SandwormLogo />
               <span className="ml-3 font-medium text-xl uppercase text-white">
                 Sandw0rm.
@@ -73,46 +77,23 @@ export const MainHeader = () => {
 
           {/* Desktop Nav Links */}
           <motion.ul
-            className="hidden md:flex ml-10 text-[0.8rem]  rounded-full  py-2.5 px-8  glass-container relative "
+            className="hidden md:flex ml-10 text-[0.9rem]  rounded-full  py-2.5 px-8   relative space-x-6 font-body "
             variants={headerContainer}
           >
-            <div className="glass-filter" />
-            <div className="glass-overlay" />
-            <div className="glass-specular" />
-            <div className="relative flex space-x-6 items-center z-[3]">
-              {navLinks.map(link => (
-                <li key={link.name}>
-                  <Link
-                    href={link.href}
-                    {...(link.isExternal
-                      ? { target: "_blank", rel: "noopener noreferrer" }
-                      : {})}
-                    className="text-neutral-500 font-medium hover:text-primary"
-                  >
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </div>
-            <svg style={{ display: "none" }}>
-              <filter id="lg-dist" x="0%" y="0%" width="100%" height="100%">
-                <feTurbulence
-                  type="fractalNoise"
-                  baseFrequency="0.008 0.008"
-                  numOctaves="2"
-                  seed="92"
-                  result="noise"
-                />
-                <feGaussianBlur in="noise" stdDeviation="2" result="blurred" />
-                <feDisplacementMap
-                  in="SourceGraphic"
-                  in2="blurred"
-                  scale="70"
-                  xChannelSelector="R"
-                  yChannelSelector="G"
-                />
-              </filter>
-            </svg>
+            {navLinks.map(link => (
+              <li key={link.name}>
+                <Link
+                  href={link.href}
+                  {...(link.isExternal
+                    ? { target: "_blank", rel: "noopener noreferrer" }
+                    : {})}
+                  aria-label={link.name}
+                  className="text-[#CDD6E7] font-medium hover:text-primary"
+                >
+                  {link.name}
+                </Link>
+              </li>
+            ))}
           </motion.ul>
 
           {/* Launch App Button */}
@@ -165,6 +146,7 @@ export const MainHeader = () => {
                   ? { target: "_blank", rel: "noopener noreferrer" }
                   : {})}
                 className="text-[#999999] hover:text-white text-[0.9rem]"
+                aria-label={link.name}
                 onClick={() => setIsOpen(false)}
               >
                 {link.name}

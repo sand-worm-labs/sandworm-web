@@ -74,7 +74,7 @@ export const SectionWorkFlow = () => {
         <h1 className="uppercase mb-5 text-sm font-medium mt-5 text-white text-center">
           How Sandworm works
         </h1>
-        <h1 className="lg:text-[4.5rem] text-4xl text-primary mb-4 uppercase leading-[1.3] text-center font-secondary font-black">
+        <h1 className="lg:text-[4.5rem] text-4xl text-[#C7C2FF] mb-4 uppercase leading-[1.3] text-center font-secondary font-black">
           Get started in 3 easy steps
         </h1>
 
@@ -105,7 +105,7 @@ export const SectionWorkFlow = () => {
                     <h3 className="mb-3 font-bold uppercase text-white text-xs">
                       {index + 1}. {step.title}
                     </h3>
-                    <p className="text-custom-gray mb-6 font-secondary font-medium text-sm">
+                    <p className="text-[#8A919E] mb-6 font-body font-medium text-base">
                       {step.description}
                     </p>
 

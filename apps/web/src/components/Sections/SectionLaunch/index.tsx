@@ -34,7 +34,7 @@ export const SectionFeatures = () => {
         <h1 className="uppercase mb-5 text-xs font-semibold mt-5 text-center">
           ● Built to Last ●
         </h1>
-        <h1 className="lg:text-[4.5rem] text-4xl text-primary mb-4 uppercase font-black leading-[1.3] text-center">
+        <h1 className="lg:text-[4.5rem] text-4xl text-[#C7C2FF] mb-4 uppercase font-black leading-[1.3] text-center">
           Built for the future
         </h1>
 

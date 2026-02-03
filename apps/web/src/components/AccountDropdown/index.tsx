@@ -119,7 +119,7 @@ export const AccountDropdown = () => {
               <Avatar className="h-10 w-10">
                 <AvatarImage
                   src={user.avater ?? undefined}
-                  alt={user.firstName ?? "User"}
+                  alt={user.firstName ?? "Sandworm User"}
                 />
                 <AvatarFallback>
                   {user.firstName?.split(" ")[0]?.[0] ?? "U"}
