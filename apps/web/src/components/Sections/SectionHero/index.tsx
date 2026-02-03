@@ -115,13 +115,13 @@ export const SectionHero = () => {
             animate="visible"
           >
             <div className="relative py-6 w-full">
-              <h1 className="mx-auto leading-[1.3] px-3 lg:px-0 lg:text-[2.9rem] text-3xl font-primary font-semibold ">
+              <h1 className="mx-auto leading-[1.3] px-3 lg:px-0 lg:text-[2.9rem] text-3xl font-body font-semibold ">
                 Deep, clean Blockchain Data Analysis
               </h1>
 
               <motion.p
                 variants={itemVariants}
-                className="text-custom-gray mt-5 mb-3 lg:max-w-[35rem] mx-auto font-primary text-base font-medium"
+                className="text-[#B3B9C3] mt-5 mb-3 lg:max-w-[35rem] mx-auto font-primary text-base font-medium "
               >
                 Sandworm gives you deep, clear, and editable data on various
                 blockchains, driving your whole team to make better data-based
@@ -186,8 +186,7 @@ export const SectionHero = () => {
           </motion.form>
         </div>
       </div>
-      {/*     <Blob />
-      <Noise /> */}
+    
 
       {/* ════════════ Backed by ════════════ */}
       <div className="absolute bottom-16 w-full text-center px-5 text-white flex flex-col items-center z-10">

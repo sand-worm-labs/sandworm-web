@@ -53,14 +53,7 @@ export const ChatLaunchInput = forwardRef<
 
         {/* ════════════ Action buttons ════════════ */}
         <div className="flex flex-row gap-2 absolute bottom-5 right-5">
-          <Button
-            type="button"
-            className="rounded-full p-2.5 py-[7px] h-fit m-0.5 text-xs bg-gray-100  text-custom-light-gray-2 px-4 flex"
-            onClick={onStop}
-          >
-            <Binocular className="w-5 h-5" />
-            <span>Deep Research</span>
-          </Button>
+         
 
           {isLoading ? (
             <Button

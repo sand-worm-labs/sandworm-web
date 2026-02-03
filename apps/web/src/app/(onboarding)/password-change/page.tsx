@@ -6,6 +6,7 @@ import Link from "next/link";
 
 import { SandwormLogo } from "@/components/Assets";
 import { ResetPasswordForm } from "@/components/AuthUI/ResetPasswordForm";
+import { OnboardingFooter } from "@/components/AuthUI/OnboardingFooter";
 
 export default function ResetPasswordPage() {
   const searchParams = useSearchParams();
@@ -41,20 +42,20 @@ export default function ResetPasswordPage() {
       <div className="w-full max-w-md mx-auto text-center font-primary  h-full items-center justify-center flex flex-col">
         <SandwormLogo />
         <h2 className="mt-4 text-2xl font-medium text-black dark:text-white">
-          Password updated
+          Password Reset
         </h2>
         <p className="mt-2 text-sm text-ink-200">
-          You can now log in with your new password.
+          Password has been successfully reset, please click below to log in.
         </p>
         <Link href="/signin" className="inline-block mt-6 text-sm underline">
-          Back to Login
+          Login to Sandworm
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-md rounded-lg p-6 flex flex-col justify-center items-center h-full mx-auto font-primary">
+    <div className="w-full max-w-md rounded-lg p-6 flex flex-col justify-center items-center h-full mx-auto font-primary relative">
       <SandwormLogo />
       <h2 className="text-2xl font-medium text-center text-black mb-2 mt-4 dark:text-white">
         Reset your Password
@@ -65,6 +66,11 @@ export default function ResetPasswordPage() {
       </p>
 
       <ResetPasswordForm token={token} onSuccess={handleSuccess} />
+
+      <div className="absolute bottom-4 w-full">
+        {" "}
+        <OnboardingFooter />{" "}
+      </div>
     </div>
   );
 }

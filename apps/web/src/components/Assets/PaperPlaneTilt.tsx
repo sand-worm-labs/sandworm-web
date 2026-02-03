@@ -8,6 +8,7 @@ export const PaperPlaneTilt = () => {
       viewBox="0 0 16 16"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      aria-label="Paper Plane Tilt"
     >
       <path
         d="M6.75 9.25L10 6"

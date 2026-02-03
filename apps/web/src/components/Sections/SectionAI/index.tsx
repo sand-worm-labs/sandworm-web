@@ -2,7 +2,6 @@
 
 import React from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
 
 import { SparkleIcon } from "@/components/Assets/Sparkle";
 import { RingIcon } from "@/components/Assets/RingIcon";
@@ -19,32 +18,11 @@ interface AICardProps {
   title: string;
   description: string;
   children?: React.ReactNode;
-  delay?: number;
 }
 
-const AICard = ({ title, description, children, delay = 0 }: AICardProps) => {
-  const cardVariants = {
-    hidden: { opacity: 0, y: 40, scale: 0.95 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        duration: 0.7,
-        delay,
-        ease: [0.22, 1, 0.36, 1],
-      },
-    },
-  };
-
+const AICard = ({ title, description, children }: AICardProps) => {
   return (
-    <motion.div
-      className="bg-custom-black rounded-2xl gradient-border relative overflow-hidden min-h-[21rem]"
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.2 }}
-      variants={cardVariants}
-    >
+    <div className="bg-custom-black rounded-2xl gradient-border relative overflow-hidden min-h-[21rem]">
       <div className="bg-custom-black inner rounded-2xl p-5 px-4 flex flex-col text-left h-full relative z-10">
         <div className="flex space-x-4 mb-3">
           <SparkleIcon />
@@ -55,7 +33,7 @@ const AICard = ({ title, description, children, delay = 0 }: AICardProps) => {
         </p>
         {children}
       </div>
-    </motion.div>
+    </div>
   );
 };
 
@@ -68,11 +46,11 @@ export const SectionAI = () => {
           ● Let's talk worm AI ●
         </h3>
 
-        <h1 className="mx-auto leading-[1] px-3 lg:px-0 text-primary uppercase font-black lg:text-[4rem] text-4xl text-center">
+        <h1 className="mx-auto leading-[1] px-3 lg:px-0 text-[#C7C2FF] uppercase font-black lg:text-[4rem] text-4xl text-center">
           complex onchain
         </h1>
 
-        <h1 className="mx-auto leading-[1] px-3 lg:px-0 text-primary uppercase font-bold lg:text-[4rem] text-4xl text-center">
+        <h1 className="mx-auto leading-[1] px-3 lg:px-0 text-[#C7C2FF] uppercase font-bold lg:text-[4rem] text-4xl text-center">
           insight made easy
         </h1>
 
@@ -89,7 +67,7 @@ export const SectionAI = () => {
         </Link>
 
         <div className="bg-rainbow-gradient p-1 mt-28 my-8 mb-8 mx-auto rounded-full">
-          <div className="rounded-full py-3 w-auto flex gap-4 items-center px-6 justify-center text-xs bg-custom-dark-gray">
+          <div className="rounded-full py-3 w-auto flex gap-4 items-center px-6 justify-center text-xs bg-[#141B1F]">
             <SparkleIcon />
             <p>
               Create a bar chart of the tokens with {">"} $1m mcap on Zora in
@@ -111,7 +89,6 @@ export const SectionAI = () => {
           <AICard
             title="Create Charts"
             description="Easily prompt and create charts, comparing, contrasting, analysing data from the blockchain all from a single prompt on our AI."
-            delay={0}
           >
             <div className="absolute bottom-[4rem] left-12 w-[6rem] h-[6rem]">
               <Ellipse />
@@ -124,7 +101,6 @@ export const SectionAI = () => {
           <AICard
             title="Query User Data"
             description="Get information on user behaviour, insights, transaction statistics, campaign outlook and more easily."
-            delay={0.15}
           >
             <div className="absolute bottom-0 right-0 w-[9rem] h-[9rem]">
               <Users />
@@ -134,7 +110,6 @@ export const SectionAI = () => {
           <AICard
             title="Analyze Price Data"
             description="Analyse price action over any period of time to spot trends, systems and underlying issues before others do."
-            delay={0.3}
           >
             <div className="absolute bottom-[1.5rem] right-[-2rem] left-6 w-[100%]">
               <Wave />

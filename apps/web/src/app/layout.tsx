@@ -13,7 +13,7 @@ import { RootProvider } from "@/providers/RootProvider";
 // =====================================
 export const metadata: Metadata = {
   description:
-    "Explore, query, and visualize blockchain data on Sui, EVM, and other chains with Sandworm, your open-source, SQL-powered data IDE for Web3",
+    "Explore, query, and visualize blockchain data on Base, EVM, and other chains with Sandworm, your open-source, SQL-powered data IDE for Web3",
   keywords: "data, web3, blockchain, analytics, sui, base, etherium, indexer",
   title: "Sand Worm",
   icons: {
@@ -31,7 +31,6 @@ const azeretMono = AzeretMono({
 const GTAG_ID = "G-GQB5QS1LHQ";
 
 console.log(azeretMono.style.fontFamily);
-
 
 // ⬢ Root Layout
 // =====================================
@@ -55,7 +54,9 @@ export default async function RootLayout({ children }: ChildrenProps) {
         className={`${azeretMono.className} h-full flex flex-col justify-between `}
       >
         <RootProvider>
-          <section className="flex-1 over-flow-x-hidden">{children}</section>
+          <section className="flex-1 overflow-x-hidden   w-full">
+            {children}
+          </section>
         </RootProvider>
       </body>
     </html>
