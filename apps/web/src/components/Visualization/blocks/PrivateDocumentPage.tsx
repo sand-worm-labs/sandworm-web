@@ -3,19 +3,7 @@ import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { isNil } from "ramda";
 import Link from "next/link";
-import {
-  EyeIcon,
-  PencilIcon,
-  BookOpenIcon,
-  ClockIcon,
-  CodeBracketSquareIcon,
-  Cog6ToothIcon,
-  MapIcon,
-  EllipsisHorizontalIcon,
-  InboxArrowDownIcon,
-  FolderIcon,
-  ChatBubbleBottomCenterTextIcon,
-} from "@heroicons/react/24/outline";
+import { EyeIcon, PencilIcon } from "@heroicons/react/24/outline";
 import { BookUpIcon } from "lucide-react";
 import clsx from "clsx";
 import { AITasks, ExecutionQueue } from "@sandworm/editor";
@@ -27,6 +15,9 @@ import type { ApiDocument } from "@/types";
 import { widthClasses } from "@/components/Editor/constants";
 import { DataExplorerContent } from "@/components/ExplorerPanels/DataExplorerContent";
 import { MiniChat } from "@/components/Chats/MiniChat";
+import { ClockCountdown } from "@/components/Assets/ClockCountdown";
+import { ChatIcon } from "@/components/Assets/ChatIcon";
+import { Share } from "@/components/Assets/Share";
 
 import { useDataSources } from "../hooks/useDataSources";
 import { useDocuments } from "../hooks/useDocuments";
@@ -37,7 +28,6 @@ import Layout from "../Layout";
 import { useYDoc } from "../hooks/useYDocs";
 import useDocument from "../hooks/useDocument";
 
-import ShareDropdown from "./ShareDropdown";
 import Comments from "./Comments";
 import Schedules from "./Schedules";
 import Snapshots from "./Snapshots";
@@ -271,10 +261,10 @@ function PrivateDocumentPageInner(
           <button
             type="button"
             onClick={onToggleComments}
-            className="flex items-center justify-center rounded-none px-3 py-3 text-sm text-gray-500 hover:bg-gray-100 dark:bg-black dark:hover:bg-[#181C21]  h-full bg-white w-full"
+            className="flex items-center justify-center rounded-xl px-0.5 py-1.5 text-sm  hover:bg-[#F1F2F4] dark:bg-black dark:hover:bg-[#181C21]  h-full bg-white mb-1.5"
             title="Comments"
           >
-            <ChatBubbleBottomCenterTextIcon className="w-5 h-5 shrink-0" />
+            <ChatIcon size={22} />
           </button>
 
           {/* Schedules Button - Only show if not viewer and not deleted */}
@@ -282,10 +272,10 @@ function PrivateDocumentPageInner(
             <button
               type="button"
               onClick={onToggleSchedules}
-              className="flex items-center justify-center rounded-none px-3 py-3 text-sm text-gray-500 hover:bg-gray-100 dark:bg-black dark:hover:bg-[#181C21]  h-full bg-white w-full"
+              className="flex items-center justify-center rounded-xl px-0.5 py-1.5 text-sm  hover:bg-[#F1F2F4] dark:bg-black dark:hover:bg-[#181C21]  h-full bg-white mb-1.5"
               title="Schedules"
             >
-              <ClockIcon className="w-5 h-5 shrink-0" />
+              <ClockCountdown size={22} />
             </button>
           )}
 
@@ -395,7 +385,7 @@ function PrivateDocumentPageInner(
           />
         )}
 
-       {/*  <ShareDropdown
+        {/*  <ShareDropdown
           link={copyLink}
           isPublic={false}
           onTogglePublic={() => {}}

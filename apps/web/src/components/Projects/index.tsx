@@ -19,9 +19,11 @@ import { useFavorites } from "@/components/Visualization/hooks/useFavorites";
 
 import { UploadIcon } from "../Assets/UploadIcon";
 import { useDocuments } from "../Visualization/hooks/useDocuments";
+import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
 
 import ProjectControl from "./ProjectControls";
 import { ProjectsTable } from "./ProjectTable";
+import { Loader } from "../Loader";
 
 interface Project {
   id: string;
@@ -36,7 +38,7 @@ type MenuAction = "duplicate" | "newTab" | "trash";
 
 export const Projects: React.FC = () => {
   const pathname = usePathname();
-  const workspaceId = pathname.split("/")[2] ?? "";
+  const workspaceId = useStringQuery("workspace");
   const router = useRouter();
   const [activeView, setActiveView] = useState<"grid" | "table">("grid");
 
@@ -137,17 +139,15 @@ export const Projects: React.FC = () => {
 
   if (documentsState.loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-black flex items-center justify-center p-8">
-        <div className="text-center">
-          <p className="text-gray-500">Loading projects...</p>
-        </div>
+      <div className="min-h-screen  dark:bg-black flex items-center justify-center p-8">
+       <Loader/>
       </div>
     );
   }
 
   if (projects.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-black flex items-center justify-center p-8">
+      <div className="h-full  flex items-center justify-center p-8">
         <div className="text-center flex items-center flex-col">
           <UploadIcon />
           <h2 className="text-2xl font-medium text-ink-100 font-body mb-2 mt-3">

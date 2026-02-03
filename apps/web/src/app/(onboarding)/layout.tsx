@@ -14,7 +14,7 @@ const getWelcomeContent = (pathname: string) => {
         title: (
           <>
             Welcome to{" "}
-            <span className="uppercase font-primary bold">Sandworm</span>
+            <span className="uppercase font-tertiary  font-bold ">Sandworm</span>
           </>
         ),
         subtitle: "Deep and Insightful Onchain data for",

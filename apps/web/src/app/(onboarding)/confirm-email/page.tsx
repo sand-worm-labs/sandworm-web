@@ -64,7 +64,7 @@ function ConfirmEmailContent() {
   }
 
   // Loading state
-  if (state.loading) {
+  if (state.loading || (!state.success && !state.error)) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-4 relative">
         <div className="max-w-md w-full text-center space-y-2 flex-col items-center justify-center">

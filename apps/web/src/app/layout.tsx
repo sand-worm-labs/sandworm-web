@@ -30,9 +30,14 @@ const azeretMono = AzeretMono({
 
 const GTAG_ID = "G-GQB5QS1LHQ";
 
+console.log(azeretMono.style.fontFamily);
+
+
 // ⬢ Root Layout
 // =====================================
 export default async function RootLayout({ children }: ChildrenProps) {
+  console.log(azeretMono.style.fontFamily);
+
   return (
     <html lang="en" suppressHydrationWarning>
       <Script

@@ -2,7 +2,6 @@ import type * as Y from "yjs";
 import { useDropzone } from "react-dropzone";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  ExclamationTriangleIcon,
   ChevronDoubleRightIcon,
   DocumentPlusIcon,
   MagnifyingGlassIcon,
@@ -558,6 +557,7 @@ file`;
       onRemoveResult,
     },
   ] = useFiles(props.workspaceId, props.visible ? 5000 : 0);
+
 
   const onRemove = useCallback(
     (file: SandwormFile) => {

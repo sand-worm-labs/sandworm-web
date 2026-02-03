@@ -203,8 +203,8 @@ export const WorkspaceSidebar = () => {
             <Link href="/" className="flex items-center gap-2">
               <SandwormLogo width="30" height="30" />
 
-              <span className="ml-1.5 font-bold text-[1.05rem] uppercase">
-                SandWorm.
+              <span className=" font-bold text-[1.05rem] uppercase font-tertiary">
+                SandWorm
               </span>
             </Link>
           )}
@@ -218,7 +218,7 @@ export const WorkspaceSidebar = () => {
           </button>
         </div>
 
-        <div className="px-4 py-4" />
+        <div className="px-4 py-2.5" />
 
         <nav className="flex-1 px-3">
           <ul className="space-y-1.5">

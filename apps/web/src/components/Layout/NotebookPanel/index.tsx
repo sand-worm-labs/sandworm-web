@@ -4,8 +4,8 @@ import { useState } from "react";
 import { cn } from "@sandworm/ui/lib/utils";
 
 import { SparkleAI } from "@/components/Assets/SparkleAI";
-import { Dashboard } from "@/components/Assets/Dashboard";
-import { Notebook } from "@/components/Assets/Notebook";
+
+
 
 // =====================================
 // Types
@@ -15,11 +15,6 @@ type PanelAction = {
   icon: React.ComponentType<{ size?: number; className?: string }>;
   label: string;
   onClick?: () => void;
-};
-
-type PanelSection = {
-  id: string;
-  items: PanelAction[];
 };
 
 // =====================================
@@ -55,14 +50,6 @@ const PanelItem = ({
   );
 };
 
-// =====================================
-// Panel Section Divider
-// =====================================
-const PanelDivider = () => (
-  <div className="w-full px-2">
-    <div className="h-px bg-[#E3E5E8] dark:bg-[#262A30]" />
-  </div>
-);
 
 // =====================================
 // AI Assistant Button (Special Styling)
@@ -71,11 +58,11 @@ const AIAssistantButton = ({ onClick }: { onClick?: () => void }) => (
   <button
     type="button"
     onClick={onClick}
-    className=""
+    className="border-t border-b border-[#E9ECEF] py-3.5 w-full flex items-center justify-center "
     aria-label="AI Assistant"
     title="AI Assistant"
   >
-    <SparkleAI />
+    <SparkleAI size={36} />
   </button>
 );
 
@@ -105,7 +92,7 @@ export const NotebookPanel = ({
   return (
     <aside
       className={cn(
-        "flex flex-col items-center py-4 px-0  h-[95%]",
+        "flex flex-col items-center py-4 pb-0 px-0  h-[95%]",
         "bg-white dark:bg-[#0C1015]",
         "border-l border-[#E3E5E8] dark:border-[#262A30]",
         "w-14 z-[99]"
@@ -145,7 +132,7 @@ export const NotebookPanel = ({
       <div className="flex-1" />
 
       {/* Bottom Section */}
-      <div className="flex flex-col items-center gap-1">
+      <div className="flex flex-col items-center justify-center gap-1 w-full">
         {bottomActions.map(action => (
           <PanelItem
             key={action.id}
@@ -156,7 +143,7 @@ export const NotebookPanel = ({
         ))}
 
         {/* AI Assistant Button */}
-        <div className="pt-2">
+        <div className="pt-2 w-full">
           <AIAssistantButton onClick={onToggleChat} />
         </div>
       </div>
