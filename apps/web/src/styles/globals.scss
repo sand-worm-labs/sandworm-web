@@ -33,9 +33,14 @@
   font-weight: 400;
 }
 
-font-tertiary {
-  font-family: "AzeretMono", sans-serif;
+.font-tertiary {
+  font-family: 'Azeret Mono', sans-serif;
   font-weight: 400;
+}
+
+.font-tertiary.font-bold{
+  font-family: 'Azeret Mono', sans-serif;
+  font-weight: 700;
 }
 
 .font-body {

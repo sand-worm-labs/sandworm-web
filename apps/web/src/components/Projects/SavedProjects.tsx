@@ -19,11 +19,12 @@ import { useFavorites } from "@/components/Visualization/hooks/useFavorites";
 
 import { useDocuments } from "../Visualization/hooks/useDocuments";
 import { Loader } from "../Loader";
+import { UploadIcon } from "../Assets/UploadIcon";
 
 import ProjectControl from "./ProjectControls";
 import { ProjectsTable } from "./ProjectTable";
 
-interface Project {
+export interface Project {
   id: string;
   title: string;
   creator: string;
@@ -127,19 +128,19 @@ export const SavedProjects: React.FC = () => {
 
   if (projects.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-black flex items-center justify-center p-8">
-        <div className="text-center">
-          <Bookmark className="w-24 h-24 text-gray-300 dark:text-white mx-auto mb-6" />
-          <h2 className="text-2xl font-medium text-gray-700 dark:text-white mb-2">
-            No saved projects yet
+      <div className="h-full  dark:bg-black flex items-center justify-center p-8 font-body">
+        <div className="text-center flex items-center flex-col">
+          <UploadIcon />
+          <h2 className="text-2xl font-medium font-body  text-ink-100 dark:text-white mb-2 mt-3">
+            No Favorites projects yet
           </h2>
-          <p className="text-gray-500 mb-6">
+          <p className="text-ink-300 mb-1">
             Star your favorite projects to see them here
           </p>
           <button
             type="button"
             onClick={() => router.push(`/workspace/${workspaceId}/projects`)}
-            className="px-4 py-2 bg-[#A308F020] hover:bg-[#A308F030] border-[#A308F0] border text-primary rounded-lg transition-colors text-sm"
+            className="px-4 py-2 bg-[#A308F020] hover:bg-[#A308F030] border-[#A308F0] border text-primary font-body font-medium rounded-lg transition-colors text-sm mt-6"
           >
             Browse All Projects
           </button>

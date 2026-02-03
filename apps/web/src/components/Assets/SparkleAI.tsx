@@ -1,13 +1,16 @@
 import React from "react";
 
-export const SparkleAI = () => {
+import type { IconProps } from "./Menu/types";
+
+export const SparkleAI: React.FC<IconProps> = ({ size = 32, className }) => {
   return (
     <svg
-      width="32"
-      height="32"
+      width={size}
+      height={size}
       viewBox="0 0 32 32"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      className={className}
     >
       <rect x="0.5" y="0.5" width="31" height="31" rx="9.5" fill="#F5F7FA" />
       <rect

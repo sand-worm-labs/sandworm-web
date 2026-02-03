@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { useLogin, tokenStorage } from "../Visualization/hooks/useAuth";
+import { Spinner } from "../Spinner/Spinner";
 
 export const SignInForm = () => {
   const router = useRouter();
@@ -90,14 +91,23 @@ export const SignInForm = () => {
         />
       </div>
 
-      {localError && <p className="text-sm text-red-500">{localError}</p>}
+      {localError && (
+        <p className="text-sm text-error font-body">{localError}</p>
+      )}
 
       <button
         type="submit"
         disabled={state.loading}
-        className="w-full rounded-3xl bg-[#0F0F0F] px-4 py-3.5 text-white font-medium disabled:bg-[#868E96] text-sm font-body"
+        className="w-full rounded-3xl bg-[#0F0F0F] px-4 py-3.5 text-white font-medium disabled:bg-[#868E96] text-sm font-body flex items-center justify-center gap-2"
       >
-        {state.loading ? "Signing In..." : "Sign in"}
+        {state.loading ? (
+          <>
+            <Spinner />
+            Signing In...
+          </>
+        ) : (
+          "Sign in"
+        )}
       </button>
     </form>
   );

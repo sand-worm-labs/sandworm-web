@@ -64,7 +64,7 @@ const KeyboardKey = (props: {
 }) => (
   <span
     className={clsx(
-      "px-1.5 py-0.5 rounded-md font-body",
+      "px-1.5 py-0.5 rounded-md font-tertiary text-[0.85rem] ",
       props.mode === "insert"
         ? "bg-[#F1E6F7] text-primary"
         : "bg-[#F7F6E6] text-[#1C3B5A]"
@@ -136,7 +136,7 @@ export default function ShortcutsModal(props: ShortcutsModalProps) {
                                   {key}
                                 </KeyboardKey>
                                 {i < shortcut.keys.length - 1 && (
-                                  <span className="text-gray-500">or</span>
+                                  <span className="text-ink-300">or</span>
                                 )}
                               </Fragment>
                             ))}

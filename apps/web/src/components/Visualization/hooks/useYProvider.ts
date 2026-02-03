@@ -29,6 +29,9 @@ function getYjsUrl() {
   return `${url.toString()}yjs`;
 }
 
+
+
+
 function getWSProvider(
   yDoc: Y.Doc,
   documentId: string,
@@ -39,7 +42,7 @@ function getWSProvider(
 ): WebsocketProvider {
   const id = getDocId(documentId, isDataApp, clock, publishedAt);
   const wsUrl = getYjsUrl();
-  console.log("wsUrl", wsUrl);
+
   const token = tokenStorage.getToken();
   Cookies.set("auth-token", token, {
     expires: 7, // 7 days
