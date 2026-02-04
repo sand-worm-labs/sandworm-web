@@ -18,7 +18,7 @@ interface FeatureCardProps {
 export const FeatureCard = ({ children, className = "" }: FeatureCardProps) => {
   return (
     <div
-      className={`rounded-2xl backdrop-blur-sm gradient-border relative ${className}`}
+      className={`rounded-2xl backdrop-blur-sm gradient-border relative will-change-transform ${className}`}
     >
       <div className="inner w-full h-full p-8 py-6 rounded-2xl">{children}</div>
     </div>
@@ -57,7 +57,7 @@ export const SectionFeatures = () => {
                     src="/img/radar-static.svg"
                     width={386}
                     height={386}
-                    priority
+                    loading="lazy"
                   />
                 </div>
               </div>
@@ -96,8 +96,8 @@ export const SectionFeatures = () => {
                   src="/img/chainimages.svg"
                   width={606}
                   height={345}
-                  priority
-                />
+                  loading="lazy"
+                  />
               </div>
               <div>
                 <CircuitIcon />
@@ -152,7 +152,8 @@ export const SectionFeatures = () => {
                   src="/img/console.svg"
                   width={576}
                   height={345}
-                  priority
+                  loading="lazy"
+
                 />
               </div>
             </div>

@@ -115,7 +115,7 @@ export const SectionHero = () => {
             animate="visible"
           >
             <div className="relative py-6 w-full">
-              <h1 className="mx-auto leading-[1.3] px-3 lg:px-0 lg:text-[2.9rem] text-3xl font-body font-semibold ">
+              <h1 className="mx-auto leading-[1.3] px-3 lg:px-0 lg:text-[2.9rem] text-3xl font-body font-bold ">
                 Deep, clean Blockchain Data Analysis
               </h1>
 
