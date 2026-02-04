@@ -151,12 +151,11 @@ export const SectionFeatures = () => {
               <div className="flex flex-col items-end mt-6 w-full mb-6 ">
                 <Image
                   alt="wormcard-placeholder"
-                  className="object-contain"
+                  className="object-contain w-full"
                   src="/img/console.svg"
                   width={576}
                   height={345}
                   loading="lazy"
-                  className="w-full "
                 />
               </div>
             </div>
