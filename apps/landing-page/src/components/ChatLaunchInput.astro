@@ -1,0 +1,46 @@
+---
+import { PaperPlaneTilt } from './icons/PaperPlaneTilt.astro';
+---
+
+<div class="relative w-full flex flex-col gap-4">
+  <div class="p-[4.5px] bg-rainbow-gradient rounded-[24px]">
+    <textarea
+      id="chat-input"
+      placeholder="Start a query..."
+      rows="4"
+      class="min-h-[40px] overflow-hidden resize-none bg-hero-base text-sm placeholder:text-[13px] font-medium focus:ring-0 focus:outline-none scrollbar-thin scrollbar-thumb-rounded-md scrollbar-thumb-zinc-700 py-4 px-6 placeholder:text-neutral-500 placeholder:tracking-wide rounded-[23px] border-0 w-full"
+    ></textarea>
+  </div>
+
+  <div class="flex flex-row gap-2 absolute bottom-5 right-5">
+    <button
+      id="chat-submit"
+      type="button"
+      class="rounded-full p-2.5 h-fit m-0.5 text-custom-light-gray-2 bg-primary"
+    >
+      <PaperPlaneTilt />
+    </button>
+  </div>
+</div>
+
+<script>
+  const input = document.getElementById('chat-input') as HTMLTextAreaElement;
+  const button = document.getElementById('chat-submit');
+
+  function submit() {
+    const query = input.value.trim();
+    if (!query) return;
+    
+    const params = new URLSearchParams({ q: query });
+    window.location.href = `/app?${params.toString()}`;
+  }
+
+  button?.addEventListener('click', submit);
+  
+  input?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      submit();
+    }
+  });
+</script>
