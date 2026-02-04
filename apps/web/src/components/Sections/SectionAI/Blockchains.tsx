@@ -16,11 +16,12 @@ export const Blockchains = () => {
     {
       src: "/img/base.svg",
       alt: "Base",
-      width: 96,
-      height: 96,
-      rotate: -5,
+      width: 70,
+      height: 70,
+      rotate: 0,
       marginLeft: "20%",
       finalBottom: 30,
+      offset: "5px",
     },
     {
       src: "/img/polygon.svg",
@@ -104,7 +105,13 @@ export const Blockchains = () => {
               alt={chain.alt}
               width={chain.width}
               height={chain.height}
-              className="object-contain"
+              style={{
+                marginLeft: chain.offset ? chain.offset : 0,
+                marginTop:
+                  chain.offset && chain.offset !== "0px"
+                    ? parseInt(chain.offset) / 2
+                    : 0,
+              }}
             />
           </motion.div>
         );
