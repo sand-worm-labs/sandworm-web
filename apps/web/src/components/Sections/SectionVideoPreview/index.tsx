@@ -37,21 +37,21 @@ export const SectionVideoPreview: React.FC = () => {
             ● Easy intelligence
           </h3>
 
-          <h1 className="lg:text-[2.5rem] text-3xl leading-[1.4] font-secondary">
-            Unlock clear,
+          <h1 className="lg:text-[2.5rem] text-3xl leading-[1.4] font-body font-medium">
+            Unlock Clear,
             <br />
-            actionable data for
+            Actionable Data for
             <br />
-            smarter decisions.
+            Smarter Decisions.
           </h1>
         </div>
 
         <div className="text-base text-custom-light-gray leading-[1.5]">
-          <p className="mb-5 font-secondary">
+          <p className="mb-5 font-body">
             Most analytics tools are built for engineers, complicated, rigid,
             and slow. Sandworm brings simplicity and speed to everyone.
           </p>
-          <p className="font-secondary">
+          <p className="font-body">
             Whether you're a protocol team, data analyst, or founder, Sandworm
             adapts to how you work — not the other way around.
           </p>

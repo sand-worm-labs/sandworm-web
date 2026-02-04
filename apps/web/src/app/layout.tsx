@@ -51,12 +51,10 @@ export default async function RootLayout({ children }: ChildrenProps) {
   gtag('config', "G-GQB5QS1LHQ")`}
       </Script>
       <body
-        className={`${azeretMono.className} h-full flex flex-col justify-between `}
+        className={`${azeretMono.className} h-full w-screen `}
       >
         <RootProvider>
-          <section className="flex-1 overflow-x-hidden   w-full">
             {children}
-          </section>
         </RootProvider>
       </body>
     </html>

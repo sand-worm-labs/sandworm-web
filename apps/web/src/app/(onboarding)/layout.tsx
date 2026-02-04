@@ -39,7 +39,7 @@ export default function OnboardingLayout({
   const content = getWelcomeContent(pathname);
 
   return (
-    <div className="h-dvh relative overflow-hidden">
+    <div className="h-dvh relative overflow-hidden bg-white">
       <div className="grid md:grid-cols-2 h-full">
         {children}
 
