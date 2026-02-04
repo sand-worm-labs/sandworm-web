@@ -22,13 +22,13 @@ interface AICardProps {
 
 const AICard = ({ title, description, children }: AICardProps) => {
   return (
-    <div className="bg-custom-black rounded-2xl gradient-border relative overflow-hidden min-h-[21rem]">
-      <div className="bg-custom-black inner rounded-2xl p-5 px-4 flex flex-col text-left h-full relative z-10">
+    <div className=" rounded-2xl gradient-border relative overflow-hidden min-h-[22.5rem]">
+      <div className="bg-[#0B0B12] inner rounded-2xl p-5 px-4 flex flex-col text-left h-full relative z-10">
         <div className="flex space-x-4 mb-3">
           <SparkleIcon />
-          <h4 className="text-[13px] font-semibold mb-3">{title}</h4>
+          <h4 className="text-[14px] font-semibold mb-3">{title}</h4>
         </div>
-        <p className="text-custom-gray text-[0.9rem] leading-relaxed font-medium font-secondary">
+        <p className="text-[#8A919E] text-base leading-relaxed font-medium font-body">
           {description}
         </p>
         {children}
@@ -80,12 +80,12 @@ export const SectionAI = () => {
           <Blockchains />
         </div>
       </div>
-      <div className="container mx-auto lg:max-w-[75%] mt-16 px-4">
-        <h2 className="text-xs mb-1 mt-16 text-left font-semibold uppercase text-white">
+      <div className="container mx-auto mt-16 px-4">
+        <h2 className="text-[15px] mb-2 mt-16 text-left font-semibold uppercase text-white">
           ● Accelerate with AI
         </h2>
 
-        <div className="grid gap-4 mt-4 sm:grid-cols-2 lg:grid-cols-3 ">
+        <div className="grid gap-4 mt-4 sm:grid-cols-2 lg:grid-cols-3  ">
           <AICard
             title="Create Charts"
             description="Easily prompt and create charts, comparing, contrasting, analysing data from the blockchain all from a single prompt on our AI."
