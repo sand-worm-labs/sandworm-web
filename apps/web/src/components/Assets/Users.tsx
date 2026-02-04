@@ -1,13 +1,15 @@
 import React from "react";
+import { IconProps } from "./Menu/types";
 
-export const Users = () => {
+export const Users: React.FC<IconProps> = ({ size = 118, className }) => {
   return (
     <svg
-      width="118"
-      height="116"
+      width={size}
+      height={size}
       viewBox="0 0 118 116"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      className={className}
     >
       <g filter="url(#filter0_i_3023_3072)">
         <rect

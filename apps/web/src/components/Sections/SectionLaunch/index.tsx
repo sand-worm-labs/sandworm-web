@@ -8,7 +8,7 @@ import { Star } from "@/components/Assets/Star";
 import { CircuitIcon } from "@/components/Assets/Circuit";
 import { Dots } from "@/components/Assets/Dots";
 import { Boxes } from "@/components/Assets/Boxes";
-import { Blur } from "@/components/Assets/Blur";
+import { Blur, BlurBlockchain, BlurConsole } from "@/components/Assets/Blur";
 
 interface FeatureCardProps {
   children: React.ReactNode;
@@ -18,9 +18,11 @@ interface FeatureCardProps {
 export const FeatureCard = ({ children, className = "" }: FeatureCardProps) => {
   return (
     <div
-      className={`rounded-2xl backdrop-blur-sm gradient-border relative will-change-transform ${className}`}
+      className={`rounded-[32px]  gradient-border relative will-change-transform overflow-hidden ${className}`}
     >
-      <div className="inner w-full h-full p-8 py-6 rounded-2xl">{children}</div>
+      <div className="inner w-full h-full p-8 py-6 rounded-[32px]">
+        {children}
+      </div>
     </div>
   );
 };
@@ -29,7 +31,7 @@ export const FeatureCard = ({ children, className = "" }: FeatureCardProps) => {
 
 export const SectionFeatures = () => {
   return (
-    <section className="lg:py-32 py-16 bg-black text-white">
+    <section className="lg:py-32 py-16 bg-black text-white mb-32">
       <div className="container mx-auto px-5 py-16">
         <h1 className="uppercase mb-5 text-xs font-semibold mt-5 text-center">
           ● Built to Last ●
@@ -44,7 +46,7 @@ export const SectionFeatures = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 gap-x-7">
           {/* ════════════ First Card ════════════ */}
-          <FeatureCard>
+          <FeatureCard className="pb-10">
             <div className="absolute right-0 top-0 left-0 w-full">
               <Blur />
             </div>
@@ -61,19 +63,19 @@ export const SectionFeatures = () => {
                   />
                 </div>
               </div>
-              <div className="mt-6">
+              <div className="mt-6 mb-6">
                 <Star />
                 <h3 className="uppercase text-sm mb-2.5 font-semibold mt-6">
                   ● Explore
                 </h3>
-                <p className="text-custom-gray font-secondary">
+                <p className="text-[#8A919E] font-secondary">
                   Our protocol helps teams hit their data goals, whether it's
                   checking live balances across wallets, gaining on-chain
                   insights into onboarding activities, or comparing activity
                   across several blockchains over any time frame.
                 </p>
                 <Link
-                  className="rounded-xl p-2 h-fit m-0.5 bg-white text-black hover:scale-105 px-4 font-medium inline-block text-sm mt-5"
+                  className="rounded-xl p-2  m-0.5 bg-white text-black hover:scale-105 px-4 font-medium inline-block text-sm mt-5"
                   href="/waitlist"
                   target="_blank"
                 >
@@ -84,33 +86,34 @@ export const SectionFeatures = () => {
           </FeatureCard>
 
           {/* ════════════ Second Card ════════════ */}
-          <FeatureCard>
-            <div className="absolute right-0 top-0 left-0 w-full">
-              <Blur />
+          <FeatureCard className="pb-10">
+            <div className="absolute right-0 left-0 top-0  ">
+              <BlurBlockchain className="w-full" />
             </div>
             <div className="flex flex-col justify-between h-full z-10 relative">
               <div className="flex flex-col items-center">
                 <Image
                   alt="wormcard-placeholder"
-                  className="object-contain"
+                  className="object-contain w-full"
                   src="/img/chainimages.svg"
+
                   width={606}
                   height={345}
                   loading="lazy"
-                  />
+                />
               </div>
-              <div>
+              <div className="pb-6">
                 <CircuitIcon />
                 <h3 className="uppercase text-sm mb-2.5 font-semibold mt-6">
                   ● Query the blockchain
                 </h3>
-                <p className="text-custom-gray font-secondary">
+                <p className="text-[#8A919E] font-secondary">
                   You can explore over 25+ blockchain networks, comparing data,
                   getting information and building a database, all with natural
                   language prompts.
                 </p>
                 <Link
-                  className="rounded-xl p-2 h-fit m-0.5 bg-white text-black hover:scale-105 px-4 font-medium inline-block text-sm mt-5"
+                  className="rounded-xl p-2  m-0.5 bg-white text-black hover:scale-105 px-4 font-medium inline-block text-sm mt-5"
                   href="/waitlist"
                   target="_blank"
                 >
@@ -121,9 +124,9 @@ export const SectionFeatures = () => {
           </FeatureCard>
 
           {/* ════════════ Third Card ════════════ */}
-          <FeatureCard className="lg:col-span-2 gap-10 w-full overflow-hidden">
-            <div className="absolute right-0 top-0 w-[80%]">
-              <Blur />
+          <FeatureCard className="lg:col-span-2 gap-10 w-full overflow-hidden pb-10 relative">
+            <div className="absolute right-0 top-0 bottom-0 h-full">
+              <BlurConsole />
             </div>
             <div className="grid lg:grid-cols-2 relative ">
               <div className="flex flex-col justify-center items-start">
@@ -131,7 +134,7 @@ export const SectionFeatures = () => {
                 <h3 className="uppercase text-sm mb-2.5 font-semibold mt-6">
                   ● Powerful sql
                 </h3>
-                <p className="text-custom-gray font-secondary pr-6">
+                <p className="text-[#8A919E] font-secondary pr-10 ">
                   Go beyond static charts, create and tweak pure SQL data which
                   powers your visuals to explore deeper insights, test
                   hypotheses, and uncover new trends instantly.
@@ -145,7 +148,7 @@ export const SectionFeatures = () => {
                 </Link>
               </div>
 
-              <div className="flex flex-col items-end mt-6">
+              <div className="flex flex-col items-end mt-6 w-full mb-6 ">
                 <Image
                   alt="wormcard-placeholder"
                   className="object-contain"
@@ -153,7 +156,7 @@ export const SectionFeatures = () => {
                   width={576}
                   height={345}
                   loading="lazy"
-
+                  className="w-full "
                 />
               </div>
             </div>

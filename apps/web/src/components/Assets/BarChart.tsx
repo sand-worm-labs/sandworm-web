@@ -1,14 +1,16 @@
 import React from "react";
 
-type IconProps = React.HTMLAttributes<SVGElement>;
+import type { IconProps } from "./Menu/types";
 
-export const BarChart = (props: IconProps) => {
+
+export const BarChart: React.FC<IconProps> = ({ size = 188, className }) => {
   return (
     <svg
-      width="188"
-      height="136"
+      width={size}
+      height={size}
       viewBox="0 0 188 136"
       fill="none"
+      className={className}
       xmlns="http://www.w3.org/2000/svg"
     >
       <g filter="url(#filter0_i_1149_3272)">
