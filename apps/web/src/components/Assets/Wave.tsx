@@ -7,6 +7,7 @@ export const Wave = () => {
       height="183"
       viewBox="0 0 340 183"
       fill="none"
+      className="w-full px-5 h-full "
       xmlns="http://www.w3.org/2000/svg"
     >
       <g filter="url(#filter0_i_1149_4619)">

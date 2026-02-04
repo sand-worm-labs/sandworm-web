@@ -1,13 +1,16 @@
 import React from "react";
 
-export const Ellipse = () => {
+import type { IconProps } from "./Menu/types";
+
+export const Ellipse: React.FC<IconProps> = ({ size = 82, className }) => {
   return (
     <svg
-      width="82"
-      height="82"
+      width={size}
+      height={size}
       viewBox="0 0 82 82"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      className={className}
     >
       <g filter="url(#filter0_i_1149_3285)">
         <path

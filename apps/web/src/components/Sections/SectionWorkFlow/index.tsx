@@ -60,15 +60,7 @@ export const SectionWorkFlow = () => {
 
   return (
     <div className="relative bg-black">
-      <div className="w-full flex-col items-center justify-center mx-auto container">
-        <Image
-          src="/img/illustration.svg"
-          width={1391}
-          height={1500}
-          className="w-[85%] mx-auto"
-          alt="illustration"
-        />
-      </div>
+    
 
       <div className="container mx-auto px-6 bg-black pt-6 relative">
         <h1 className="uppercase mb-5 text-sm font-medium mt-5 text-white text-center">
