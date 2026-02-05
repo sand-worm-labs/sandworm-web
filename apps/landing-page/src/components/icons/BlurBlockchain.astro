@@ -1,0 +1,65 @@
+---
+interface Props {
+  size?: number;
+  className?: string;
+}
+
+const { size = 622, className } = Astro.props;
+---
+
+<svg
+  width={size}
+  height={size + 50}
+  viewBox="0 0 622 674"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+  class={className}
+>
+  <g filter="url(#filter0_f_1149_3467)">
+    <path
+      d="M240.304 135.168L-6.24609 391V246.55L240.304 0L531.524 226.826L627.244 82.3769L623.763 263.084L531.524 391L240.304 135.168Z"
+      fill="url(#paint0_linear_1149_3467)"
+    />
+    <path
+      d="M240.304 135.168L-6.24609 391V246.55L240.304 0L531.524 226.826L627.244 82.3769L623.763 263.084L531.524 391L240.304 135.168Z"
+      stroke="black"
+      stroke-width="1.16024"
+    />
+  </g>
+  <defs>
+    <filter
+      id="filter0_f_1149_3467"
+      x="-288.026"
+      y="-281.973"
+      width="1197.09"
+      height="955.611"
+      filterUnits="userSpaceOnUse"
+      color-interpolation-filters="sRGB"
+    >
+      <feFlood flood-opacity="0" result="BackgroundImageFix" />
+      <feBlend
+        mode="normal"
+        in="SourceGraphic"
+        in2="BackgroundImageFix"
+        result="shape"
+      />
+      <feGaussianBlur
+        stdDeviation="140.6"
+        result="effect1_foregroundBlur_1149_3467"
+      />
+    </filter>
+    <linearGradient
+      id="paint0_linear_1149_3467"
+      x1="-18.244"
+      y1="67.4722"
+      x2="656.784"
+      y2="232.474"
+      gradientUnits="userSpaceOnUse"
+    >
+      <stop stop-color="#6368FF" />
+      <stop offset="0.153846" stop-color="#6D185C" />
+      <stop offset="0.427885" stop-color="#2DB2FF" />
+      <stop offset="1" stop-color="#FF00E1" />
+    </linearGradient>
+  </defs>
+</svg>
