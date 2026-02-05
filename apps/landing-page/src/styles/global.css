@@ -1,1 +1,100 @@
+
+
 @import "tailwindcss";
+
+*{
+  box-sizing: border-box;
+}
+
+body{
+  background: black;
+}
+
+
+@theme {
+  --color-primary: #A308F0;
+  --color-hero-base: #141B1F;
+  --color-custom-light-gray-2: #your-hex;
+  
+}
+
+
+@font-face {
+    font-family: "Moderat";
+    src: url("/fonts/Moderat-Regular.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+  
+  @font-face {
+    font-family: "Moderat";
+    src: url("/fonts/Moderat-Medium.woff2") format("woff2");
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
+  
+  @font-face {
+    font-family: "Moderat";
+    src: url("/fonts/Moderat-Bold.woff2") format("woff2");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: "AzeretMono";
+    src: url("/fonts/AzeretMono-Regular.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  
+  .font-body.font-medium {
+    font-family: "Moderat", sans-serif;
+    font-weight: 500;
+  }
+  
+  .font-body.font-bold {
+    font-family: "Moderat", sans-serif;
+    font-weight: 700;
+  }
+
+  .font-primary{
+    font-family: "AzeretMono", sans-serif;
+  }
+
+body{
+    background-color: black;
+    font-family: "Moderat", sans-serif;
+    font-weight: 400;
+}
+
+
+
+.bg-rainbow-gradient {
+  background: linear-gradient(
+    99deg,
+    #6368ff 0.62%,
+    #cbecff 15.71%,
+    #7bff42 25.15%,
+    #2db2ff 42.6%,
+    #f00 60.53%,
+    #ded757 80.81%,
+    #ff00e1 98.74%
+  );
+  background-size: 100% 100%;
+  animation: gradientScroll 8s ease-in-out infinite;
+  will-change: background-position;
+}
+
+.gradient-border {
+  padding: 1.5px;
+  background: linear-gradient(99deg, #094b72 0.62%, #560036 91.19%);
+}
+
+.gradient-border > .inner {
+background: #0B0B12;
+}

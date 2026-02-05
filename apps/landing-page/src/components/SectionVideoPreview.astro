@@ -1,0 +1,73 @@
+---
+const previewSrc = "/img/preview.webp";
+const bgPlaceholder = "data:image/webp;base64,YOUR_BLUR_PLACEHOLDER";
+---
+
+<section
+  class="relative w-full py-32 pt-32  px-6 flex flex-col items-center text-left overflow-hidden text-white bg-black"
+  aria-labelledby="video-preview-heading"
+>
+  <!-- Background Image -->
+  <picture class="absolute inset-0 z-10">
+    <source
+      srcset="/img/temp2.svg"
+      sizes="100vw"
+      type="image/svg"
+    />
+    <img
+      src="/img/temp2.svg"
+      alt=""
+      class="w-full h-full object-cover"
+      loading="lazy"
+      decoding="async"
+    />
+  </picture>
+
+  <!-- Video/Image Preview -->
+  <div class="max-w-6xl w-full relative z-10">
+    <div class="relative rounded-2xl shadow-lg overflow-hidden">
+      <img
+        src={previewSrc}
+        alt="Sandworm platform interface showing blockchain data analytics dashboard"
+        width="1144"
+        height="665"
+        class="w-full h-auto min-h-[500px] object-cover"
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
+  </div>
+
+  <!-- Text Content Overlay -->
+  <div class="lg:absolute bottom-0 grid grid-cols-[65%_35%]
+ lg:px-16 px-2 lg:pt-20 pt-16 z-10 bg-gradient-to-b from-transparent to-black/90 backdrop-blur-[0.2rem]   mx-auto w-[80%] pb-24">
+    <div class="overflow-hidden">
+      <p class="uppercase font-semibold mb-4 text-xs font-primary">
+        <span aria-hidden="true">●</span> Easy intelligence
+      </p>
+
+      <h2 id="video-preview-heading" class="lg:text-[2.5rem] text-3xl leading-[1.4] font-body font-medium">
+        Unlock Clear,<br />
+        Actionable Data for<br />
+        Smarter Decisions.
+      </h2>
+    </div>
+
+    <div class="text-base text-custom-light-gray leading-normal max-w-[30rem]">
+      <p class="mb-5 font-body">
+        Most analytics tools are built for engineers, complicated, rigid,
+        and slow. Sandworm brings simplicity and speed to everyone.
+      </p>
+      <p class="font-body">
+        Whether you're a protocol team, data analyst, or founder, Sandworm
+        adapts to how you work — not the other way around.
+      </p>
+      <a
+        href="/waitlist"
+        class="rounded-2xl p-2.5 h-fit m-0.5 bg-white text-black hover:bg-white/90 hover:scale-105 transition-all px-5 font-medium font-primary inline-block text-sm mt-5"
+      >
+        Get Started
+      </a>
+    </div>
+  </div>
+</section>

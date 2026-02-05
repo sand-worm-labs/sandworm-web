@@ -1,0 +1,110 @@
+---
+import SandwormLogo from "../assets/sandworm.svg"
+
+const navLinks = [
+  { name: "Explore", href: "workspace/explore" },
+  { name: "Documentation", href: "https://docs.sandwormlabs.xyz", isExternal: true },
+  { name: "Blog", href: "https://docs.sandwormlabs.xyz/blog", isExternal: true },
+  { name: "About", href: "https://docs.sandwormlabs.xyz/blog", isExternal: true },
+];
+---
+
+<header class="fixed w-full top-5 mx-auto left-0 right-0 z-99">
+  <div class="w-[85%] mx-auto rounded-xl">
+    <div class="px-3 flex justify-between items-center py-2.5">
+      <!-- Logo -->
+      <div class="flex items-center">
+        <a href="/" class="flex items-center" aria-label="Sandworm Labs">
+          <SandwormLogo />
+          <span class="ml-3 font-medium text-xl uppercase text-white">
+            Sandw0rm.
+          </span>
+          <span class="bg-white text-black text-xs px-2 py-0.5 rounded-xl ml-2 font-normal">
+            beta
+          </span>
+        </a>
+      </div>
+
+      <!-- Desktop Nav Links -->
+      <ul class="hidden md:flex ml-10 text-[0.9rem] rounded-full py-2.5 px-8 relative space-x-6 font-body">
+        {navLinks.map(link => (
+          <li>
+            <a
+
+              href={link.href}
+              target={link.isExternal ? "_blank" : undefined}
+              rel={link.isExternal ? "noopener noreferrer" : undefined}
+              aria-label={link.name}
+              class="text-[#CDD6E7] font-medium hover:text-primary transition-colors"
+           
+            
+>  {link.name}</a>
+          </li>
+        ))}
+      </ul>
+
+      <!-- Launch App Button -->
+      
+        <a class="hidden md:flex py-2 bg-primary text-white rounded-2xl px-4 text-[0.9rem] font-medium hover:scale-105 transition-transform font-primary"
+        href="/workspace"
+      >
+        Launch App
+      </a>
+
+      <!-- Mobile Hamburger -->
+      <button
+        type="button"
+        id="mobile-menu-btn"
+        class="md:hidden flex flex-col space-y-1 cursor-pointer"
+        aria-label="Toggle menu"
+      >
+        <div class="hamburger-line w-6 h-0.5 bg-white transition-transform duration-300 ease-in-out" />
+        <div class="hamburger-line w-6 h-0.5 bg-white transition-opacity duration-300 ease-in-out" />
+        <div class="hamburger-line w-6 h-0.5 bg-white transition-transform duration-300 ease-in-out" />
+      </button>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div
+      id="mobile-menu"
+      class="md:hidden hidden flex-col items-center space-y-4 py-4 bg-black border-t border-borderLight"
+    >
+      {navLinks.map(link => (
+        <a
+          href={link.href}
+          target={link.isExternal ? "_blank" : undefined}
+          rel={link.isExternal ? "noopener noreferrer" : undefined}
+          class="text-[#999999] hover:text-white text-[0.9rem] transition-colors"
+          aria-label={link.name}
+        >
+          {link.name}
+        </a>
+      ))}
+      <a
+        href="workspace/explore"
+        class="border py-1.5 bg-white text-black rounded px-4 text-[0.9rem] font-primary"
+      >
+        Launch App
+      </a>
+    </div>
+  </div>
+</header>
+
+<script>
+  const btn = document.getElementById("mobile-menu-btn");
+  const menu = document.getElementById("mobile-menu");
+  const lines = btn?.querySelectorAll(".hamburger-line");
+
+  btn?.addEventListener("click", () => {
+    const isOpen = menu?.classList.toggle("hidden") === false;
+    menu?.classList.toggle("flex", isOpen);
+
+    if (lines && lines.length === 3) {
+      lines[0].classList.toggle("rotate-45", isOpen);
+      lines[0].classList.toggle("translate-y-1.5", isOpen);
+      lines[1].classList.toggle("opacity-0", isOpen);
+      lines[2].classList.toggle("-rotate-45", isOpen);
+      lines[2].classList.toggle("-translate-y-1.5", isOpen);
+    }
+  });
+</script>

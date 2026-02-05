@@ -5,7 +5,6 @@ import { Button } from "@sandworm/ui/components/button";
 import Image from "next/image";
 
 export const SectionVideoPreview: React.FC = () => {
-  const videoSrc = "/img/preview.png";
 
   return (
     <section

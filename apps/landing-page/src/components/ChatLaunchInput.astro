@@ -1,14 +1,14 @@
 ---
-import { PaperPlaneTilt } from './icons/PaperPlaneTilt.astro';
+import  PaperPlaneTilt  from '../assets/PaperPlaneTilt.svg';
 ---
 
 <div class="relative w-full flex flex-col gap-4">
-  <div class="p-[4.5px] bg-rainbow-gradient rounded-[24px]">
+  <div class="p-[4.5px] bg-rainbow-gradient rounded-3xl">
     <textarea
       id="chat-input"
-      placeholder="Start a query..."
-      rows="4"
-      class="min-h-[40px] overflow-hidden resize-none bg-hero-base text-sm placeholder:text-[13px] font-medium focus:ring-0 focus:outline-none scrollbar-thin scrollbar-thumb-rounded-md scrollbar-thumb-zinc-700 py-4 px-6 placeholder:text-neutral-500 placeholder:tracking-wide rounded-[23px] border-0 w-full"
+      placeholder="Describe a process to configure...."
+      rows="5"
+      class="block min-h-11 overflow-hidden resize-none bg-hero-base text-sm placeholder:text-[13px]  focus:ring-0 focus:outline-none scrollbar-thin scrollbar-thumb-rounded-md scrollbar-thumb-zinc-700 py-4 px-6 placeholder:text-[#868E96] placeholder:tracking-wide rounded-[23px] border-0 w-full m-0 font-primary "
     ></textarea>
   </div>
 
@@ -16,6 +16,7 @@ import { PaperPlaneTilt } from './icons/PaperPlaneTilt.astro';
     <button
       id="chat-submit"
       type="button"
+      aria-label="paper plane tilt"
       class="rounded-full p-2.5 h-fit m-0.5 text-custom-light-gray-2 bg-primary"
     >
       <PaperPlaneTilt />
