@@ -1,0 +1,174 @@
+---
+import SparkleIcon  from "../components/icons/Sparkle.astro";
+import  RingIcon from "../components/icons/Ring.astro";
+import  BarChart  from "../components/icons/Bar.astro";
+import  Ellipse  from "../components/icons/Ellipse.astro";
+import Wave  from "../components/icons/Wave.astro";
+import  Users  from "../components/icons/Users.astro";
+import Blockchains from "./Blockchain.astro";
+import Dots from "../components/icons/Dots.astro"
+
+interface AICardProps {
+  title: string;
+  description: string;
+}
+
+const aiCards: AICardProps[] = [
+  {
+    title: "Create Charts",
+    description: "Easily prompt and create charts, comparing, contrasting, analysing data from the blockchain all from a single prompt on our AI.",
+  },
+  {
+    title: "Query User Data",
+    description: "Get information on user behaviour, insights, transaction statistics, campaign outlook and more easily.",
+  },
+  {
+    title: "Analyze Price Data",
+    description: "Analyse price action over any period of time to spot trends, systems and underlying issues before others do.",
+  },
+];
+---
+
+<section
+  class="py-28 pb-0 bg-black text-white relative"
+  aria-labelledby="ai-section-heading"
+>
+  <!-- Background Image -->
+  <picture class="absolute inset-0 ">
+    <img
+      src="/img/lines-down.svg"
+      alt=""
+      class="w-full h-full object-cover"
+      loading="lazy"
+      decoding="async"
+    />
+  </picture>
+
+  <!-- Top Decorative Lines -->
+  <div class="absolute -top-30 left-0 w-full" aria-hidden="true">
+    <img
+      src="/img/lines-up.svg"
+      width="1560"
+      height="120"
+      class="w-full"
+      alt=""
+      loading="lazy"
+      decoding="async"
+    />
+  </div>
+
+  <div class="container px-4 mx-auto flex flex-col items-center">
+    <RingIcon />
+    
+    <p class="uppercase mb-5 text-xs font-medium mt-5">
+      <span aria-hidden="true">●</span> Let's talk worm AI <span aria-hidden="true">●</span>
+    </p>
+
+    <h2 id="ai-section-heading" class="mx-auto leading-none px-3 lg:px-0 text-[#C7C2FF] uppercase font-black lg:text-[4rem] text-4xl text-center">
+      complex onchain
+    </h2>
+
+    <p class="mx-auto leading-none px-3 lg:px-0 text-[#C7C2FF] uppercase font-bold lg:text-[4rem] text-4xl text-center">
+      insight made easy
+    </p>
+
+    <div class="flex justify-center mb-8 mt-8" aria-hidden="true">
+      <Dots />
+    </div>
+
+    <a
+      class="rounded-2xl p-2.5 h-fit m-0.5 bg-white text-black hover:bg-white/90 hover:scale-105 transition-all px-5 font-medium inline-block text-sm"
+      href="/workspace"
+    >
+      Use WormAI
+    </a>
+
+    <!-- Prompt Example -->
+    <div class="bg-rainbow-gradient p-1 mt-28 my-8 mb-8 mx-auto rounded-full">
+      <div class="rounded-full py-3 w-auto flex gap-4 items-center px-6 justify-center text-xs bg-hero-base">
+        <SparkleIcon />
+        <p>
+          Create a bar chart of the tokens with &gt; $1m mcap on Zora in August, 2025
+        </p>
+      </div>
+    </div>
+
+    <!-- Blockchains Animation -->
+    <div class="relative mx-auto w-full min-h-62.5">
+      <Blockchains />
+    </div>
+  </div>
+
+  <!-- AI Cards Section -->
+  <div class="container mx-auto mt-16 px-4">
+    <h3 class="text-[15px] mb-2.5 mt-16 text-left font-semibold uppercase text-white">
+      <span aria-hidden="true">●</span> Accelerate with AI
+    </h3>
+
+    <div class="grid gap-4 mt-4 sm:grid-cols-2 lg:grid-cols-3">
+      <!-- Card 1: Create Charts -->
+      <article class="rounded-2xl gradient-border relative overflow-hidden min-h-90 xl:min-h-100">
+        <div class="bg-[#0B0B12] inner rounded-2xl p-5 px-4 xl:px-5 flex flex-col text-left h-full relative z-10">
+          <div class="flex space-x-4 mb-3">
+            <SparkleIcon />
+            <h4 class="text-[14px] font-semibold mb-3">{aiCards[0].title}</h4>
+          </div>
+          <p class="text-[#8A919E] text-base leading-relaxed font-medium font-body xl:text-lg">
+            {aiCards[0].description}
+          </p>
+          <div class="absolute bottom-14 left-14" aria-hidden="true">
+            <Ellipse size={115} className="xl:h-28.75" />
+          </div>
+          <div class="absolute -bottom-10 right-5" aria-hidden="true">
+            <BarChart size={250} className="xl:h-62.5" />
+          </div>
+        </div>
+      </article>
+
+      <!-- Card 2: Query User Data -->
+      <article class="rounded-2xl gradient-border relative overflow-hidden min-h-90 xl:min-h-100">
+        <div class="bg-[#0B0B12] inner rounded-2xl p-5 px-4 xl:px-5 flex flex-col text-left h-full relative z-10">
+          <div class="flex space-x-4 mb-3">
+            <SparkleIcon />
+            <h4 class="text-[14px] font-semibold mb-3">{aiCards[1].title}</h4>
+          </div>
+          <p class="text-[#8A919E] text-base leading-relaxed font-medium font-body xl:text-lg">
+            {aiCards[1].description}
+          </p>
+          <div class="absolute bottom-5 right-7" aria-hidden="true">
+            <Users size={168} />
+          </div>
+        </div>
+      </article>
+
+      <!-- Card 3: Analyze Price Data -->
+      <article class="rounded-2xl gradient-border relative overflow-hidden min-h-90 xl:min-h-100">
+        <div class="bg-[#0B0B12] inner rounded-2xl p-5 px-4 xl:px-5 flex flex-col text-left h-full relative z-10">
+          <div class="flex space-x-4 mb-3">
+            <SparkleIcon />
+            <h4 class="text-[14px] font-semibold mb-3">{aiCards[2].title}</h4>
+          </div>
+          <p class="text-[#8A919E] text-base leading-relaxed font-medium font-body xl:text-lg">
+            {aiCards[2].description}
+          </p>
+          <div class="absolute bottom-6 left-0 right-0" aria-hidden="true">
+            <Wave />
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <!-- Bottom Illustration -->
+  <div class="w-full flex-col items-center justify-center mx-auto container pt-28">
+    <img
+      src="/img/illustration.svg"
+      width="1391"
+      height="1500"
+      class="w-[85%] mx-auto"
+      alt="Sandworm platform illustration showing data visualization capabilities"
+      loading="lazy"
+      decoding="async"
+    />
+  </div>
+</section>
