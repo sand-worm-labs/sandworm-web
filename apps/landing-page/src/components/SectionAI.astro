@@ -45,7 +45,7 @@ const aiCards: AICardProps[] = [
   </picture>
 
   <!-- Top Decorative Lines -->
-  <div class="absolute -top-30 left-0 w-full" aria-hidden="true">
+  <div class="absolute -top-30 left-0 w-full -z-1" aria-hidden="true">
     <img
       src="/img/lines-up.svg"
       width="1560"
@@ -57,37 +57,37 @@ const aiCards: AICardProps[] = [
     />
   </div>
 
-  <div class="container px-4 mx-auto flex flex-col items-center">
+  <div class="container px-4 mx-auto flex flex-col items-center relative">
     <RingIcon />
     
-    <p class="uppercase mb-5 text-xs font-medium mt-5">
+    <p class="uppercase mb-5 text-[15px] font-medium font-primary mt-5">
       <span aria-hidden="true">●</span> Let's talk worm AI <span aria-hidden="true">●</span>
     </p>
 
-    <h2 id="ai-section-heading" class="mx-auto leading-none px-3 lg:px-0 text-[#C7C2FF] uppercase font-black lg:text-[4rem] text-4xl text-center">
+    <h2 id="ai-section-heading" class="mx-auto leading-none px-3 lg:px-0 text-[#C7C2FF] uppercase font-black lg:text-[4rem] text-[56px] text-center font-mono ">
       complex onchain
     </h2>
 
-    <p class="mx-auto leading-none px-3 lg:px-0 text-[#C7C2FF] uppercase font-bold lg:text-[4rem] text-4xl text-center">
+    <p class="mx-auto leading-none px-3 lg:px-0 text-[#C7C2FF] uppercase font-bold lg:text-[4rem] text-[56px] text-center font-mono">
       insight made easy
     </p>
 
-    <div class="flex justify-center mb-8 mt-8" aria-hidden="true">
+    <div class="flex justify-center mb-6 mt-8" aria-hidden="true">
       <Dots />
     </div>
 
     <a
-      class="rounded-2xl p-2.5 h-fit m-0.5 bg-white text-black hover:bg-white/90 hover:scale-105 transition-all px-5 font-medium inline-block text-sm"
+      class="rounded-2xl p-2.5 h-fit m-0.5 bg-white text-black hover:bg-white/90 hover:scale-105 transition-all px-5 font-medium inline-block text-sm font-primary"
       href="/workspace"
     >
       Use WormAI
     </a>
 
     <!-- Prompt Example -->
-    <div class="bg-rainbow-gradient p-1 mt-28 my-8 mb-8 mx-auto rounded-full">
-      <div class="rounded-full py-3 w-auto flex gap-4 items-center px-6 justify-center text-xs bg-hero-base">
+    <div class="bg-rainbow-gradient p-1 lg:mt-28 mt-16  my-8 mb-8 mx-auto rounded-full w-full lg:w-auto">
+      <div class="rounded-full py-3 lg:w-auto w-full flex gap-4 items-center px-6 justify-center text-[13px] bg-hero-base text-[#C5CED9] font-primary font-normal">
         <SparkleIcon />
-        <p>
+        <p class="truncate overflow-hidden flex-1 min-w-0">
           Create a bar chart of the tokens with &gt; $1m mcap on Zora in August, 2025
         </p>
       </div>
@@ -100,8 +100,8 @@ const aiCards: AICardProps[] = [
   </div>
 
   <!-- AI Cards Section -->
-  <div class="container mx-auto mt-16 px-4">
-    <h3 class="text-[15px] mb-2.5 mt-16 text-left font-semibold uppercase text-white">
+  <div class="container mx-auto mt-16 px-4 relative">
+    <h3 class="text-[15px] mb-2.5 mt-16 lg:text-left font-semibold font-primary uppercase text-white text-center" >
       <span aria-hidden="true">●</span> Accelerate with AI
     </h3>
 
@@ -111,9 +111,9 @@ const aiCards: AICardProps[] = [
         <div class="bg-[#0B0B12] inner rounded-2xl p-5 px-4 xl:px-5 flex flex-col text-left h-full relative z-10">
           <div class="flex space-x-4 mb-3">
             <SparkleIcon />
-            <h4 class="text-[14px] font-semibold mb-3">{aiCards[0].title}</h4>
+            <h4 class="text-[14px] font-bold mb-3 font-primary">{aiCards[0].title}</h4>
           </div>
-          <p class="text-[#8A919E] text-base leading-relaxed font-medium font-body xl:text-lg">
+          <p class="text-[#8A919E] text-base leading-relaxed font-normal font-body xl:text-lg">
             {aiCards[0].description}
           </p>
           <div class="absolute bottom-14 left-14" aria-hidden="true">
@@ -130,9 +130,9 @@ const aiCards: AICardProps[] = [
         <div class="bg-[#0B0B12] inner rounded-2xl p-5 px-4 xl:px-5 flex flex-col text-left h-full relative z-10">
           <div class="flex space-x-4 mb-3">
             <SparkleIcon />
-            <h4 class="text-[14px] font-semibold mb-3">{aiCards[1].title}</h4>
+            <h4 class="text-[14px] font-bold mb-3 font-primary">{aiCards[1].title}</h4>
           </div>
-          <p class="text-[#8A919E] text-base leading-relaxed font-medium font-body xl:text-lg">
+          <p class="text-[#8A919E] text-base leading-relaxed font-normal font-body xl:text-lg">
             {aiCards[1].description}
           </p>
           <div class="absolute bottom-5 right-7" aria-hidden="true">
@@ -146,13 +146,13 @@ const aiCards: AICardProps[] = [
         <div class="bg-[#0B0B12] inner rounded-2xl p-5 px-4 xl:px-5 flex flex-col text-left h-full relative z-10">
           <div class="flex space-x-4 mb-3">
             <SparkleIcon />
-            <h4 class="text-[14px] font-semibold mb-3">{aiCards[2].title}</h4>
+            <h4 class="text-[14px] font-bold mb-3 font-primary">{aiCards[2].title}</h4>
           </div>
-          <p class="text-[#8A919E] text-base leading-relaxed font-medium font-body xl:text-lg">
+          <p class="text-[#8A919E] text-base leading-relaxed font-normal font-body xl:text-lg">
             {aiCards[2].description}
           </p>
           <div class="absolute bottom-6 left-0 right-0" aria-hidden="true">
-            <Wave />
+            <Wave className="w-full" />
           </div>
         </div>
       </article>
@@ -160,12 +160,12 @@ const aiCards: AICardProps[] = [
   </div>
 
   <!-- Bottom Illustration -->
-  <div class="w-full flex-col items-center justify-center mx-auto container pt-28">
+  <div class="w-full flex-col items-center justify-center mx-auto container lg:pt-28 pt-16 relative">
     <img
       src="/img/illustration.svg"
       width="1391"
       height="1500"
-      class="w-[85%] mx-auto"
+      class="lg:w-[85%] w-[120%] mx-auto"
       alt="Sandworm platform illustration showing data visualization capabilities"
       loading="lazy"
       decoding="async"

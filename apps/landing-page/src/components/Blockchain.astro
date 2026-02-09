@@ -9,16 +9,17 @@ const blockchains = [
 ];
 ---
 
-<div class="absolute left-30 right-0 mx-auto h-37.5 w-212.5 top-[10%] bg-black">
+<div class="absolute -left-30 right-0 mx-auto h-37.5 w-212.5 w-[550px] top-[10%]">
   {blockchains.map((chain) => (
     <div
-      class="blockchain-card absolute bottom-2.5 flex items-center justify-center h-24 w-24 bg-white rounded-[1.2rem] opacity-0"
+      class="blockchain-card absolute bottom-2.5 flex items-center justify-center h-[64px] w-[64px] lg:h-24 lg:w-24 bg-white lg:rounded-[1.2rem] rounded-[7px] opacity-0"
       style={`margin-left: ${chain.marginLeft}; rotate: ${chain.rotate}deg; --final-bottom: ${chain.finalBottom}px; --delay: ${chain.delay}s;`}
       data-animate
     >
       <img
         src={chain.src}
         alt={chain.alt}
+        class="w-[50px] h-[50px] lg:w-auto lg:h-auto"
         width={chain.width}
         height={chain.height}
         style={chain.offset ? `margin-left: ${chain.offset}; margin-top: ${parseInt(chain.offset) / 2}px;` : ""}

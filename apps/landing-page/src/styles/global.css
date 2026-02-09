@@ -34,6 +34,14 @@ body{
     font-style: normal;
     font-display: swap;
   }
+
+  @font-face {
+    font-family: "Moderat Mono";
+    src: url("/fonts/Moderat-Condensed-Black.woff") format("woff2");
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+  }
   
   @font-face {
     font-family: "Moderat";
@@ -51,6 +59,23 @@ body{
     font-display: swap;
   }
 
+  @font-face {
+    font-family: "AzeretMono";
+    src: url("/fonts/AzeretMono-SemiBold.woff2") format("woff2");
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: "AzeretMono";
+    src: url("/fonts/AzeretMono-SemiBold.woff2") format("woff2");
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+  }
+
+
   
   .font-body.font-medium {
     font-family: "Moderat", sans-serif;
@@ -66,13 +91,20 @@ body{
     font-family: "AzeretMono", sans-serif;
   }
 
+  .font-primary.font-medium{
+    font-family: "AzeretMono", sans-serif;
+    font-weight: 500;
+  }
+
+  .font-mono{
+    font-family: "Moderat Mono", sans-serif;
+  }
+
 body{
     background-color: black;
     font-family: "Moderat", sans-serif;
     font-weight: 400;
 }
-
-
 
 .bg-rainbow-gradient {
   background: linear-gradient(
@@ -97,4 +129,12 @@ body{
 
 .gradient-border > .inner {
 background: #0B0B12;
+}
+
+.blur-behind {
+  width: 622px;
+  height: 674px;
+  background-image: url('data:image/svg+xml;utf8,<svg width="622" height="674" viewBox="0 0 622 674" fill="none" xmlns="http://www.w3.org/2000/svg"><g filter="url(%23filter0_f_1149_4783)"><path d="M240.304 135.168L-6.24609 391V246.55L240.304 0L531.524 226.826L627.244 82.3769L623.763 263.084L531.524 391L240.304 135.168Z" fill="url(%23paint0_linear_1149_4783)"/><path d="M240.304 135.168L-6.24609 391V246.55L240.304 0L531.524 226.826L627.244 82.3769L623.763 263.084L531.524 391L240.304 135.168Z" stroke="black" stroke-width="1.16024"/></g><defs><filter id="filter0_f_1149_4783" x="-288.026" y="-281.973" width="1197.09" height="955.611" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur stdDeviation="140.6" result="effect1_foregroundBlur_1149_4783"/></filter><linearGradient id="paint0_linear_1149_4783" x1="-18.244" y1="67.4722" x2="656.784" y2="232.474" gradientUnits="userSpaceOnUse"><stop stop-color="%236368FF"/><stop offset="0.153846" stop-color="%236D185C"/><stop offset="0.427885" stop-color="%232DB2FF"/><stop offset="1" stop-color="%23FF00E1"/></linearGradient></defs></svg>');
+  background-repeat: no-repeat;
+  background-size: contain;
 }
