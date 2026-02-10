@@ -10,7 +10,7 @@ const navLinks = [
 ---
 
 <header class="fixed w-full lg:top-5 top-2 mx-auto left-0 right-0 z-99">
-  <div class="lg:w-[85%] w-full px-2 mx-auto rounded-xl">
+  <div id="header-container" class="lg:w-[85%] w-full px-2 mx-auto rounded-xl transition-colors duration-300 ease-in-out ">
     <div class="px-3 flex justify-between items-center py-2.5">
       <!-- Logo -->
       <div class="flex items-center z-10">
@@ -118,9 +118,41 @@ const navLinks = [
 <script>
   const btn = document.getElementById("mobile-menu-btn");
   const menu = document.getElementById("mobile-menu");
+  const headerContainer = document.getElementById("header-container");
   const lines = btn?.querySelectorAll(".hamburger-line");
   const menuLinks = menu?.querySelectorAll("a");
 
+  // Scroll effect for header background
+  let ticking = false;
+  
+  function updateHeaderBackground() {
+    console.log("hhh")
+    const scrollY = window.scrollY;
+    const threshold = 50; // Adjust this value to change when the background appears
+    
+    if (scrollY > threshold) {
+      console.log("true")
+      headerContainer?.classList.add("bg-red-500", "backdrop-blur-md");
+    } else {
+      headerContainer?.classList.remove("bg-[#00000050]", "backdrop-blur-md");
+    }
+    
+    ticking = false;
+  }
+  
+  function requestTick() {
+    if (!ticking) {
+      window.requestAnimationFrame(updateHeaderBackground);
+      ticking = true;
+    }
+  }
+  
+  window.addEventListener("scroll", requestTick, { passive: true });
+  
+  // Initial check on page load
+  updateHeaderBackground();
+
+  // Mobile menu toggle
   btn?.addEventListener("click", () => {
     const isOpen = menu?.getAttribute("aria-hidden") === "true";
     

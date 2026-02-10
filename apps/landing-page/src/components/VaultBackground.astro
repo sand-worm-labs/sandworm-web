@@ -1,0 +1,39 @@
+---
+interface Props {
+  gridColor?: string; // e.g., "white" or "rgb(100,100,255)"
+  opacity?: number;
+}
+
+const { gridColor = "white", opacity = 0.10 } = Astro.props;
+---
+
+<div class="vault-container">
+  <div class="vault-pattern"></div>
+  <slot />
+</div>
+
+<style define:vars={{ gridColor, opacity }}>
+  .vault-container {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    height: 100%;
+    background-color: #000000;
+    overflow: hidden;
+  }
+
+  .vault-pattern {
+    position: absolute;
+    inset: 0;
+    /* WIDTH: Changed to 120 (viewBox and width)
+       STROKE: 'white' is used here, but you can use hex codes like %23FFFFFF
+    */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='1000' viewBox='0 0 120 1000'%3E%3Cpath d='M0 1000V60C0 26.86 26.86 0 60 0C93.14 0 120 26.86 120 60V1000' fill='none' stroke='white' stroke-dasharray='6 10' stroke-width='1'/%3E%3C/svg%3E");
+    background-repeat: repeat-x;
+    background-position: top center;
+    opacity: var(--opacity);
+    /* This creates the fade-out effect at the bottom */
+    mask-image: linear-gradient(to bottom, black 10%, transparent 80%);
+    pointer-events: none;
+  }
+</style>
