@@ -5,13 +5,14 @@ import {
   BadRequestException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { In, Repository } from 'typeorm';
+import { Equal, In, Or, Repository } from 'typeorm';
 import {
   WorkspaceEntity,
   UserWorkspaceEntity,
   UserEntity,
   DocumentEntity,
   UserWorkspaceRole,
+  UserWorkspaceStatus,
 } from '@sandworm/postgresql-typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
@@ -78,9 +79,8 @@ export class WorkspaceService {
   async getAllUserWorkspaces(userId: string): Promise<Workspace[]> {
     await this.validateAndGetUser(userId, 'User');
 
-
     const userWorkspaces = await this.workspaceMembersRepository.find({
-      where: { userId: userId },
+      where: { userId: userId, status: UserWorkspaceStatus.ACTIVE },
       order: { createdAt: 'DESC' },
     });
 
@@ -122,6 +122,34 @@ export class WorkspaceService {
     return Workspace.fromEntity(savedWorkspace);
   }
 
+  async deleteWorkspace(workspaceId: string, ownerId: string): Promise<void> {
+    validateUUID(workspaceId, 'Workspace ID');
+    validateUUID(ownerId, 'Owner ID');
+
+    const workspace = await this.workspaceRepository.findOne({
+      where: { id: workspaceId, ownerId },
+    });
+
+    if (!workspace) {
+      throw new NotFoundException(
+        'Workspace not found or you do not have permission to delete it',
+      );
+    }
+
+    await this.workspaceRepository.remove(workspace);
+  }
+
+  async sendUserInviiteRequest(workspaceId: string, email: string, role: UserWorkspaceRole): Promise<void> {
+    validateUUID(workspaceId, 'Workspace ID');
+    validateNonEmptyString(email, 'Email');
+
+    const workspace = await this.workspaceRepository.findOne({ where: { id: workspaceId } });
+    if (!workspace) {
+      throw new NotFoundException('Workspace not found');
+    }
+
+  }
+
   async switchWorkspace(
     userId: string,
     workspaceId: string,
@@ -132,7 +160,7 @@ export class WorkspaceService {
     const user = await this.validateAndGetUser(userId, 'User');
 
     const membership = await this.workspaceMembersRepository.findOne({
-      where: { userId, workspaceId },
+      where: { userId, workspaceId, status: UserWorkspaceStatus.ACTIVE },
     });
 
     if (!membership) {
@@ -314,7 +342,7 @@ export class WorkspaceService {
     }
 
     const existingMembership = await this.workspaceMembersRepository.findOne({
-      where: { workspaceId, userId: invitedUser.id },
+      where: { workspaceId, userId: invitedUser.id, status: Or(Equal(UserWorkspaceStatus.ACTIVE), Equal(UserWorkspaceStatus.PENDING)) },
     });
 
     if (existingMembership) {
@@ -392,6 +420,7 @@ export class WorkspaceService {
       workspaceId,
       role,
       inviterId,
+      status: UserWorkspaceStatus.ACTIVE,
     });
 
     await this.workspaceMembersRepository.save(userWorkspace);

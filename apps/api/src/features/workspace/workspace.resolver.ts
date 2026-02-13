@@ -74,6 +74,31 @@ export class WorkspaceResolver {
     return this.workspaceService.createWorkspace({ ownerId, name });
   }
 
+  @Mutation(() => Boolean, {
+    name: 'deleteWorkspace',
+    description: 'Delete a workspace',
+  })
+  async deleteWorkspace(
+    @CurrentUser('id') ownerId: string,
+    @Args('workspaceId', { type: () => String }) workspaceId: string,
+  ): Promise<boolean> {
+    await this.workspaceService.deleteWorkspace(workspaceId, ownerId);
+    return true;
+  }
+
+  @Mutation(() => Boolean, {
+    name: 'sendUserInviiteRequest',
+    description: 'Send user invite request to join workspace',
+  })
+  async sendUserInviiteRequest(
+    @Args('workspaceId', { type: () => String }) workspaceId: string,
+    @Args('email', { type: () => String }) email: string,
+    @Args('role', { type: () => UserWorkspaceRole, defaultValue: UserWorkspaceRole.VIEWER }) role: UserWorkspaceRole,
+  ): Promise<boolean> {
+    await this.workspaceService.sendUserInviiteRequest(workspaceId, email, role);
+    return true;
+  }
+
   @Mutation(() => Workspace, {
     name: 'updateWorkspace',
     description: 'Update workspace info',

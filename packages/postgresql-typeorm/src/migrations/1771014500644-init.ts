@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class CreatedTables1766094648870 implements MigrationInterface {
-    name = 'CreatedTables1766094648870'
+export class Init1771014500644 implements MigrationInterface {
+    name = 'Init1771014500644'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
@@ -125,6 +125,9 @@ export class CreatedTables1766094648870 implements MigrationInterface {
             CREATE TYPE "public"."user_workspace_role_enum" AS ENUM('editor', 'viewer', 'admin')
         `);
         await queryRunner.query(`
+            CREATE TYPE "public"."user_workspace_status_enum" AS ENUM('active', 'inactive', 'pending')
+        `);
+        await queryRunner.query(`
             CREATE TABLE "user_workspace" (
                 "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
                 "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
@@ -132,6 +135,7 @@ export class CreatedTables1766094648870 implements MigrationInterface {
                 "workspace_id" uuid NOT NULL,
                 "inviter_id" uuid,
                 "role" "public"."user_workspace_role_enum" NOT NULL DEFAULT 'editor',
+                "status" "public"."user_workspace_status_enum" NOT NULL DEFAULT 'pending',
                 CONSTRAINT "PK_a007c1434d1433fd63d9e5a27a6" PRIMARY KEY ("user_id", "workspace_id")
             )
         `);
@@ -246,6 +250,7 @@ export class CreatedTables1766094648870 implements MigrationInterface {
                 "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
                 "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+                "icon" character varying NOT NULL,
                 "name" character varying NOT NULL,
                 "source" character varying,
                 "useCases" text array NOT NULL DEFAULT '{}',
@@ -399,6 +404,23 @@ export class CreatedTables1766094648870 implements MigrationInterface {
                 "payload" bytea NOT NULL,
                 CONSTRAINT "PK_d415b8fae27041727abbf7069ba" PRIMARY KEY ("id")
             )
+        `);
+        await queryRunner.query(`
+            CREATE TABLE "lock" (
+                "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+                "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+                "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+                "name" character varying NOT NULL,
+                "acquired_at" TIMESTAMP NOT NULL DEFAULT now(),
+                "expires_at" TIMESTAMP WITH TIME ZONE NOT NULL,
+                "is_locked" boolean NOT NULL DEFAULT false,
+                "owner_id" uuid NOT NULL,
+                "clock" bigint NOT NULL DEFAULT '0',
+                CONSTRAINT "PK_b47095fc0260d85601062b8ed1d" PRIMARY KEY ("id")
+            )
+        `);
+        await queryRunner.query(`
+            CREATE UNIQUE INDEX "IDX_ac5fb94b61c32ab89034409abe" ON "lock" ("name")
         `);
         await queryRunner.query(`
             ALTER TABLE "votes"
@@ -659,6 +681,12 @@ export class CreatedTables1766094648870 implements MigrationInterface {
             ALTER TABLE "votes" DROP CONSTRAINT "FK_votes_message"
         `);
         await queryRunner.query(`
+            DROP INDEX "public"."IDX_ac5fb94b61c32ab89034409abe"
+        `);
+        await queryRunner.query(`
+            DROP TABLE "lock"
+        `);
+        await queryRunner.query(`
             DROP TABLE "pub_sub_payload"
         `);
         await queryRunner.query(`
@@ -741,6 +769,9 @@ export class CreatedTables1766094648870 implements MigrationInterface {
         `);
         await queryRunner.query(`
             DROP TABLE "user_workspace"
+        `);
+        await queryRunner.query(`
+            DROP TYPE "public"."user_workspace_status_enum"
         `);
         await queryRunner.query(`
             DROP TYPE "public"."user_workspace_role_enum"
