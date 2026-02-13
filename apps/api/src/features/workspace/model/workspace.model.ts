@@ -25,6 +25,9 @@ export class Workspace {
   name!: string;
 
   @StringFieldOptional()
+  icon?: string;
+
+  @StringFieldOptional()
   source?: string;
 
   @Field(() => [String])
@@ -42,6 +45,7 @@ export class Workspace {
   static fromEntity(entity: WorkspaceEntity): Workspace {
     const workspace = new Workspace();
     workspace.id = entity.id;
+    workspace.icon = entity.icon;
     workspace.name = entity.name;
     workspace.source = entity.source;
     workspace.useCases = entity.useCases;
