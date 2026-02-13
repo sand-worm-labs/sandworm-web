@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback, Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { XMarkIcon, EnvelopeIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 
 interface InviteUserModalProps {
   isOpen: boolean;
@@ -78,7 +78,7 @@ export default function InviteUserModal({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-black/25 dark:bg-black/50" />
+          <div className="fixed inset-0 bg-[#0000001A] dark:bg-black/50" />
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-y-auto font-primary">
@@ -92,13 +92,13 @@ export default function InviteUserModal({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white dark:bg-[#0C1015] p-6 text-left align-middle shadow-xl transition-all">
-                <div className="flex items-center justify-between mb-4">
+              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-3xl bg-white dark:bg-[#0C1015] py-10 px-8 text-left align-middle shadow-xl transition-all">
+                <div className="flex items-center justify-between mb-7">
                   <Dialog.Title
                     as="h3"
-                    className="text-lg font-medium leading-6 text-gray-900 dark:text-white"
+                    className="text-base font-medium leading-6 text-[#1A1A1A] dark:text-white "
                   >
-                    Invite member to {workspaceName}
+                    Invite to {workspaceName}
                   </Dialog.Title>
                   <button
                     type="button"
@@ -114,14 +114,11 @@ export default function InviteUserModal({
                   <div className="mb-4">
                     <label
                       htmlFor="email"
-                      className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                      className="block text-sm font-medium text-[#1A1A1A] dark:text-gray-300 mb-2"
                     >
-                      Invite by email
+                      Email Address
                     </label>
                     <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <EnvelopeIcon className="h-5 w-5 text-gray-400 dark:text-gray-500" />
-                      </div>
                       <input
                         type="email"
                         id="email"
@@ -132,7 +129,7 @@ export default function InviteUserModal({
                         }}
                         placeholder="colleague@example.com"
                         disabled={isSubmitting}
-                        className="w-full pl-10 pr-16 py-1.5 rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-ink-300  placeholder-[#455768] focus:outline-none focus:ring focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4]"
+                        className="w-full px-5 py-3.5 rounded-xl dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-ink-300  placeholder-[#868E96] focus:outline-none focus:ring focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F8F9FA] "
                       />
                     </div>
                   </div>
@@ -140,16 +137,16 @@ export default function InviteUserModal({
                   <div className="mb-4">
                     <label
                       htmlFor="role"
-                      className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                      className="block text-sm font-medium text-[#1A1A1A] dark:text-gray-300 mb-2"
                     >
-                      Role
+                      Select role
                     </label>
                     <select
                       id="role"
                       value={role}
                       onChange={e => setRole(e.target.value)}
                       disabled={isSubmitting}
-                      className="w-full px-3 py-1.5 rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white focus:outline-none focus:ring focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4]"
+                      className="w-auto px-3 py-1 rounded-lg  dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white focus:outline-none focus:ring focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F8F9FA]"
                     >
                       <option value="editor">Editor</option>
                       <option value="viewer">Viewer</option>
@@ -165,19 +162,11 @@ export default function InviteUserModal({
 
                   <div className="mt-6 flex gap-3">
                     <button
-                      type="button"
-                      onClick={handleClose}
-                      disabled={isSubmitting}
-                      className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-[#181C21] hover:bg-gray-200 dark:hover:bg-[#181C21] rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      Cancel
-                    </button>
-                    <button
                       type="submit"
                       disabled={isSubmitting || !email.trim()}
-                      className="flex-1 px-4 py-2 text-sm font-medium text-white bg-[#A308F0] hover:bg-[#B55A50] rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex-1 px-4 py-3.5 text-sm font-medium text-white bg-[#A308F0]  rounded-[16px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      {isSubmitting ? "Sending..." : "Invite"}
+                      {isSubmitting ? "Sending..." : "Send invite"}
                     </button>
                   </div>
                 </form>

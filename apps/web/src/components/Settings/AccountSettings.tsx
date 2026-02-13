@@ -1,16 +1,10 @@
 "use client";
 
-import { PencilIcon } from "@heroicons/react/24/outline";
 import React, { useState } from "react";
 import clsx from "clsx";
-import {
-  CheckCircleIcon,
-  XMarkIcon,
-  XCircleIcon,
-  ArrowsRightLeftIcon,
-} from "@heroicons/react/24/solid";
 import { useRouter } from "next/navigation";
 
+import { User } from "../Assets/Avatar/User";
 import {
   useCurrentWorkspaceInfo,
   useSwitchWorkspace,
@@ -22,11 +16,12 @@ import { useSession } from "../Visualization/hooks/useAuth";
 import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
 
 import CreateTeamModal from "./CreateTeam";
+import WorkspaceSettingsModal from "./WorkspaceSettings";
 
 export default function WorkspaceSettings() {
   const router = useRouter();
 
-  const workspaceId = useStringQuery("workspace"); // this should work without issues but for safety we can choose to fetch from current workspace info
+  const workspaceId = useStringQuery("workspace");
 
   const session = useSession({ redirectToLogin: true });
   const properties = useProperties();
@@ -34,6 +29,8 @@ export default function WorkspaceSettings() {
   const [{ data: allWorkspaces }] = useWorkspaces();
   const { updateWorkspace, loading: isUpdating } =
     useUpdateWorkspace(workspaceId);
+
+  console.log(allWorkspaces, "lol");
 
   const { switchWorkspace, loading: isSwitching } = useSwitchWorkspace();
 
@@ -44,6 +41,7 @@ export default function WorkspaceSettings() {
     newOpenAIKey: "",
     showWorkspaceSwitcher: false,
     showCreateModal: false,
+    showSettingsModal: false,
   });
 
   const currentWorkspace = workspaceInfo;
@@ -76,7 +74,6 @@ export default function WorkspaceSettings() {
     try {
       const success = await switchWorkspace(targetWorkspaceId);
       if (success) {
-        // Navigate to the new workspace settings page
         router.push(`/workspace/${targetWorkspaceId}/settings/account`);
         setState(s => ({ ...s, showWorkspaceSwitcher: false }));
       }
@@ -86,366 +83,351 @@ export default function WorkspaceSettings() {
     }
   };
 
+  const handleOpenSettings = (targetWorkspaceId: string) => {
+    if (targetWorkspaceId !== currentWorkspace?.id) {
+      alert("Please switch to this workspace first to access its settings.");
+      return;
+    }
+    setState(s => ({ ...s, showSettingsModal: true }));
+  };
+
   return (
-    <div className="w-full bg-white dark:bg-black h-full">
+    <div className="w-full bg-white dark:bg-black h-full font-body">
       <div className="px-4 sm:p-6 lg:p-8">
         <div className="">
           <div className="pb-4 sm:flex flex-col mb-6">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-2xl font-medium text-gray-900 dark:text-gray-100 mb-2">
-                  Team Settings
+                <h3 className="text-xl font-bold text-ink-100 dark:text-gray-100 mb-2">
+                  Account Settings
                 </h3>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Manage your team workspace settings
+                <p className="text-[#6C757D] dark:text-gray-400">
+                  Manage your workspaces, settings, permissions and billings.
                 </p>
               </div>
 
-              <button
-                type="button"
-                onClick={() =>
-                  setState(s => ({
-                    ...s,
-                    showWorkspaceSwitcher: !s.showWorkspaceSwitcher,
-                  }))
-                }
-                className="flex items-center gap-2 px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-              >
-                <ArrowsRightLeftIcon className="h-4 w-4" />
-                <span className="text-sm font-medium">Switch Team</span>
-              </button>
-            </div>
-
-            <div
-              className={clsx(
-                "transition-all duration-300 ease-in-out overflow-hidden",
-                state.showWorkspaceSwitcher
-                  ? "max-h-96 opacity-100 mb-4"
-                  : "max-h-0 opacity-0 mb-0"
-              )}
-            >
-              <div className="p-4 border border-[#E9ECEF] dark:border-[#262A30] rounded-xl dark:bg-[0C1015]">
-                <h4 className="text-sm font-medium mb-3 dark:text-white">
-                  Your Teams
-                </h4>
-                <div className="space-y-2">
-                  {allWorkspaces.map(workspace => (
-                    <button
-                      type="button"
-                      key={workspace.id}
-                      onClick={() => handleSwitchWorkspace(workspace.id)}
-                      disabled={
-                        isSwitching || workspace.id === currentWorkspace?.id
-                      }
-                      className={clsx(
-                        "w-full text-left px-3 py-2 rounded-xl text-sm transition-colors cursor-pointer flex gap-5 items-center pl-5",
-                        workspace.id === currentWorkspace?.id
-                          ? "bg-[#A308F020] dark:bg-[#121417] text-primary dark:text-white"
-                          : "hover:bg-[#A308F030] dark:hover:bg-[#181C21]"
-                      )}
-                    >
-                      <div
-                        className={clsx(
-                          "h-3 w-3 rounded-full transition-all",
-                          workspace.id === currentWorkspace?.id
-                            ? "bg-[#A308F0] ring-[6px] ring-[#A308F030] border-[#A308F0] border"
-                            : "bg-gray-400/60"
-                        )}
-                      />
-                      <div>
-                        <div className="font-medium">{workspace.name}</div>
-                        <div className="text-xs text-gray-500">
-                          {workspace.ownerId === session.user?.id
-                            ? "Owner"
-                            : "Member"}
-                        </div>
-                      </div>
-                    </button>
-                  ))}
-
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setState(s => ({
-                        ...s,
-                        showCreateModal: true,
-                        showWorkspaceSwitcher: false,
-                      }))
-                    }
-                    className="w-full text-left px-3 py-2 rounded-md text-sm border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 text-gray-600 dark:text-gray-400 transition-colors"
-                  >
-                    + Create New Team
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-black rounded-xl shadow-sm border border-gray-200 dark:border-[#262A30] p-8 mb-6">
-          <div className="space-y-8 border-b border-gray-900/10 dark:border-gray-800 pb-0 sm:space-y-0 sm:divide-y sm:divide-gray-900/10 dark:divide-gray-800">
-            {/* Team Name */}
-            <div className="flex items-center justify-between sm:gap-4 sm:py-6">
-              <div className="flex flex-col gap-y-2 justify-left">
-                <label className="block text-md font-medium leading-6 dark:text-white sm:pt-1.5">
-                  Team name
-                </label>
-                <span className="text-xs text-gray-400">
-                  This name appears on invites and will be displayed to you and
-                  your team members.
-                </span>
-              </div>
-
-              <div className="w-1/2 flex items-center justify-center">
-                {state.isEditingName ? (
-                  <form
-                    onSubmit={e => {
-                      e.preventDefault();
-                      handleUpdateName();
-                    }}
-                    className="flex gap-x-2 items-center w-full"
-                  >
-                    <input
-                      type="text"
-                      className=" w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-ink-300  placeholder-[#455768] focus:outline-none  focus:border-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4]"
-                      value={state.newName}
-                      onChange={e =>
-                        setState(s => ({ ...s, newName: e.target.value }))
-                      }
-                      placeholder="My Team"
-                    />
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setState(s => ({ ...s, isEditingName: false }))
-                      }
-                      className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 text-sm"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={isUpdating || !state.newName.trim()}
-                      className="px-6 py-2 bg-[#A308F0] text-white rounded-xl hover:bg-[#b55a51] text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                    >
-                      {isUpdating ? (
-                        <>
-                          <svg
-                            className="animate-spin h-4 w-4"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <circle
-                              className="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="4"
-                            />
-                            <path
-                              className="opacity-75"
-                              fill="currentColor"
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            />
-                          </svg>
-                          Saving...
-                        </>
-                      ) : (
-                        "Save"
-                      )}
-                    </button>
-                  </form>
-                ) : (
-                  <div className="flex items-center gap-x-6">
-                    <span className="text-lg dark:text-white text-ink-400">
-                      {currentWorkspace?.name}
-                    </span>
-                    {isAdmin && (
-                      <button
-                        type="button"
-                        className="flex gap-x-1.5 items-center px-4 py-1.5 border border-gray-200 dark:border-gray-700 rounded-full hover:bg-gray-50 dark:hover:bg-gray-800 text-sm"
-                        onClick={() =>
-                          setState(s => ({
-                            ...s,
-                            newName: currentWorkspace?.name ?? "",
-                            isEditingName: true,
-                          }))
-                        }
-                      >
-                        <PencilIcon className="h-3 w-3" />
-                        Edit
-                      </button>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Team Plan */}
-            <div className="flex items-center justify-between sm:gap-4 sm:py-6">
-              <div className="flex flex-col gap-y-2 justify-left">
-                <label className="block text-md font-medium leading-6 dark:text-white sm:pt-1.5">
-                  Team plan
-                </label>
-                <span className="text-xs text-gray-400">
-                  Current plan:{" "}
-                  <span className="font-medium capitalize">Free</span>
-                </span>
-              </div>
-
-              <div className="w-1/2 flex items-center justify-end">
+              <div className="flex gap-x-2">
                 <button
                   type="button"
                   onClick={() =>
-                    router.push(
-                      `/workspace/${currentWorkspace?.name}/settings/billing`
-                    )
+                    setState(s => ({
+                      ...s,
+                      showWorkspaceSwitcher: !s.showWorkspaceSwitcher,
+                    }))
                   }
-                  className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 text-sm"
+                  className="flex items-center gap-2 px-5 py-1 border bg-[#F8F9FA] border-[#DEE2E6] dark:border-gray-700 rounded-lg text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                 >
-                  Upgrade Plan
+                  Manage Invites
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setState(s => ({
+                      ...s,
+                      showCreateModal: true,
+                      showWorkspaceSwitcher: false,
+                    }))
+                  }
+                  className="text-primary text-left px-5 py-1.5 rounded-xl text-sm bg-[#A308F0] text-white transition-colors"
+                >
+                  Create New Team
                 </button>
               </div>
             </div>
 
-            {/* AI Model Selection */}
-            <div className="flex items-center justify-between sm:gap-4 sm:py-6">
-              <div className="flex flex-col gap-y-2 justify-left">
-                <label className="block text-md font-medium leading-6 dark:text-white sm:pt-1.5">
-                  AI Model
-                </label>
-                <span className="text-xs text-gray-400">
-                  Select the default AI model for your team workspace.
-                </span>
-              </div>
-
-              <select
-                className="block w-[14rem] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset  ring-gray-300 focus:ring-2 focus:ring-primary-600 sm:text-sm sm:leading-6 dark:bg-[#0D1014] disabled:bg-gray-100 dark:text-white dark:ring-[#262A30]"
-                defaultValue="gpt-4o"
-              >
-                <option value="gpt-4o">GPT-4o (Recommended)</option>
-                <option value="gpt-4">GPT-4</option>
-                <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-              </select>
-            </div>
-
-            {/* Custom OpenAI API Key */}
-            {!properties.data?.disableCustomOpenAiKey && (
-              <div className="flex items-center justify-between sm:gap-4 sm:py-6">
-                <div className="flex flex-col gap-y-2 justify-left">
-                  <label className="block text-md font-medium leading-6 dark:text-white sm:pt-1.5">
-                    Custom AI API Key
-                  </label>
-                  <span className="text-xs text-gray-400">
-                    Use your own API key for this team workspace.
-                  </span>
+            <div
+              className={clsx(
+                "transition-all duration-300 ease-in-out overflow-hidden"
+              )}
+            >
+              <div className="p-4 px-0 rounded-xl dark:bg-[0C1015] grid grid-cols-2 gap-x-5">
+                <div>
+                  <h4 className="text-lg font-bold  mb-3 dark:text-white">
+                    Your Teams
+                  </h4>
+                  <p className="text-[#6C757D] mb-5 max-w-[32rem] pr-6">
+                    Your workspaces can be deleted, renamed, team members added
+                    etc depending on your permission level within the
+                    organization.
+                  </p>
                 </div>
 
-                <div className="w-1/2 flex justify-center gap-x-6">
-                  {!state.isEditingOpenAIKey ? (
-                    <>
-                      <span className="flex gap-x-1 items-center text-sm">
-                        {currentWorkspace?.secrets?.hasOpenAiApiKey ? (
-                          <>
-                            <CheckCircleIcon className="h-5 w-5 text-green-500" />
-                            <span className="dark:text-white">API key set</span>
-                          </>
-                        ) : (
-                          <>
-                            <XCircleIcon className="h-5 w-5 text-red-500" />
-                            <span className="dark:text-white">Not set</span>
-                          </>
-                        )}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setState(s => ({
-                            ...s,
-                            isEditingOpenAIKey: true,
-                            newOpenAIKey: "",
-                          }))
-                        }
-                        className="flex gap-x-1.5 items-center px-4 py-1.5 border border-gray-200 dark:border-gray-700 rounded-full hover:bg-gray-50 dark:hover:bg-gray-800 text-sm"
-                      >
-                        <PencilIcon className="h-3 w-3" />
-                        Edit
-                      </button>
-                      {currentWorkspace?.secrets?.hasOpenAiApiKey && (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            // updateSettings(currentWorkspace.id, { openAiApiKey: "" });
-                          }}
+                <div className="w-full">
+                  {/* Header */}
+                  <div className="flex items-center px-5 py-3 text-xs font-medium text-[#6C757D] uppercase tracking-wider border-[#E9ECEF] border-b">
+                    <div className="flex-1">Workspace</div>
+                    <div className="w-32 text-center">Members</div>
+                    <div className="w-24 text-center">Plan</div>
+                    <div className="w-10" />
+                  </div>
+
+                  {/* Workspace rows */}
+                  <div className="space-y-0">
+                    {allWorkspaces.map(workspace => {
+                      const isCurrentWorkspace =
+                        workspace.id === currentWorkspace?.id;
+
+                      return (
+                        <div
+                          key={workspace.id}
                           className={clsx(
-                            "flex gap-x-1.5 items-center px-4 py-1.5 border border-gray-200 text-xs rounded-full shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none"
+                            "flex items-center px-5 py-4 border-b border-[#E9ECEF] dark:border-gray-800 transition-colors",
+                            isCurrentWorkspace
+                              ? "dark:bg-[#121417]"
+                              : "hover:bg-gray-50 dark:hover:bg-[#181C21]"
                           )}
                         >
-                          <XMarkIcon className="h-3 w-3" />
-                          Remove
-                        </button>
-                      )}
-                    </>
-                  ) : (
-                    <form
-                      onSubmit={e => {
-                        e.preventDefault();
-                        // updateSettings(currentWorkspace.id, { openAiApiKey: state.newOpenAIKey });
-                        setState(s => ({
-                          ...s,
-                          isEditingOpenAIKey: false,
-                          newOpenAIKey: "",
-                        }));
-                      }}
-                      className="flex rounded-md shadow-sm  focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary-600 sm:max-w-md w-full gap-x-3"
-                    >
-                      <input
-                        type="password"
-                        placeholder="sk-..."
-                        name="openAIKey"
-                        className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-ink-300  placeholder-[#455768] focus:outline-none  focus:border-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4]"
-                        value={state.newOpenAIKey}
-                        onChange={e =>
-                          setState(s => ({
-                            ...s,
-                            newOpenAIKey: e.target.value,
-                          }))
-                        }
-                      />
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setState(s => ({ ...s, isEditingOpenAIKey: false }))
-                        }
-                        className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 text-sm"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        type="submit"
-                        className="px-6 py-2 bg-[#A308F0] text-white rounded-xl hover:bg-[#A308F0] text-sm"
-                      >
-                        Save
-                      </button>
-                    </form>
-                  )}
+                          {/* Workspace name with avatar */}
+                          <button
+                            type="button"
+                            onClick={() => handleSwitchWorkspace(workspace.id)}
+                            disabled={isSwitching || isCurrentWorkspace}
+                            className="flex-1 flex items-center gap-4 text-left cursor-pointer"
+                          >
+                            <User />
+                            <span className="font-medium text-gray-900 dark:text-white">
+                              {workspace.name}
+                            </span>
+                            {isCurrentWorkspace && (
+                              <span className="text-xs px-2 py-0.5 bg-[#A308F0]/10 text-[#A308F0] rounded-full">
+                                Current
+                              </span>
+                            )}
+                          </button>
+
+                          {/* Members count */}
+                          <div className="w-32 flex items-center justify-center gap-2 text-sm text-[#6C757D] font-medium dark:text-gray-400">
+                            <svg
+                              className="w-5 h-5"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={1.5}
+                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                              />
+                            </svg>
+                            <span>
+                              {workspace.memberCount || 1}{" "}
+                              {workspace.memberCount === 1
+                                ? "member"
+                                : "members"}
+                            </span>
+                          </div>
+
+                          {/* Plan badge */}
+                          <div className="w-24 text-center text-sm text-gray-600 dark:text-gray-400 capitalize">
+                            {workspace.plan || "Free"}
+                          </div>
+
+                          {/* Settings icon */}
+                          <button
+                            type="button"
+                            onClick={e => {
+                              e.stopPropagation();
+                              handleOpenSettings(workspace.id);
+                            }}
+                            disabled={!isCurrentWorkspace}
+                            className={clsx(
+                              "w-10 flex justify-center transition-colors",
+                              isCurrentWorkspace
+                                ? "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer"
+                                : "text-gray-300 dark:text-gray-600 cursor-not-allowed"
+                            )}
+                            title={
+                              isCurrentWorkspace
+                                ? "Workspace settings"
+                                : "Switch to this workspace to access settings"
+                            }
+                          >
+                            <svg
+                              className="w-5 h-5"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={1.5}
+                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                              />
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={1.5}
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
-            )}
+            </div>
+
+            <div
+              className={clsx(
+                "transition-all duration-300 ease-in-out overflow-hidden mt-20"
+              )}
+            >
+              <div className="p-4 px-0 rounded-xl dark:bg-[0C1015] grid grid-cols-2 gap-x-5">
+                <div>
+                  <h4 className="text-lg font-bold mb-3 dark:text-white">
+                    Invited Teams
+                  </h4>
+                  <p className="text-[#6C757D] mb-5 max-w-[32rem] pr-6">
+                    Your workspaces can be deleted, renamed, team members added
+                    etc depending on your permission level within the
+                    organization.
+                  </p>
+                </div>
+
+                <div className="w-full">
+                  {/* Header */}
+                  <div className="flex items-center px-5 py-3 text-xs font-medium text-[#6C757D] uppercase tracking-wider">
+                    <div className="flex-1">Workspace</div>
+                    <div className="w-32 text-center">Members</div>
+                    <div className="w-24 text-center">Plan</div>
+                    <div className="w-10" />
+                  </div>
+
+                  {/* Workspace rows */}
+                  <div className="space-y-0">
+                    {allWorkspaces.map(workspace => {
+                      const isCurrentWorkspace =
+                        workspace.id === currentWorkspace?.id;
+
+                      return (
+                        <div
+                          key={workspace.id}
+                          className={clsx(
+                            "flex items-center px-5 py-4 border-b border-[#E9ECEF] dark:border-gray-800 transition-colors",
+                            isCurrentWorkspace
+                              ? "dark:bg-[#121417]"
+                              : "hover:bg-gray-50 dark:hover:bg-[#181C21]"
+                          )}
+                        >
+                          {/* Workspace name with avatar */}
+                          <button
+                            type="button"
+                            onClick={() => handleSwitchWorkspace(workspace.id)}
+                            disabled={isSwitching || isCurrentWorkspace}
+                            className="flex-1 flex items-center gap-4 text-left cursor-pointer"
+                          >
+                            <User />
+                            <span className="font-medium text-gray-900 dark:text-white">
+                              {workspace.name}
+                            </span>
+                            {isCurrentWorkspace && (
+                              <span className="text-xs px-2 py-0.5 bg-[#A308F0]/10 text-[#A308F0] rounded-full">
+                                Current
+                              </span>
+                            )}
+                          </button>
+
+                          {/* Members count */}
+                          <div className="w-32 flex items-center justify-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                            <svg
+                              className="w-5 h-5"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={1.5}
+                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                              />
+                            </svg>
+                            <span>
+                              {workspace.memberCount || 1}{" "}
+                              {workspace.memberCount === 1
+                                ? "member"
+                                : "members"}
+                            </span>
+                          </div>
+
+                          {/* Plan badge */}
+                          <div className="w-24 text-center text-sm text-gray-600 dark:text-gray-400 capitalize">
+                            {workspace.plan || "Free"}
+                          </div>
+
+                          {/* Settings icon */}
+                          <button
+                            type="button"
+                            onClick={e => {
+                              e.stopPropagation();
+                              handleOpenSettings(workspace.id);
+                            }}
+                            disabled={!isCurrentWorkspace}
+                            className={clsx(
+                              "w-10 flex justify-center transition-colors",
+                              isCurrentWorkspace
+                                ? "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer"
+                                : "text-gray-300 dark:text-gray-600 cursor-not-allowed"
+                            )}
+                            title={
+                              isCurrentWorkspace
+                                ? "Workspace settings"
+                                : "Switch to this workspace to access settings"
+                            }
+                          >
+                            <svg
+                              className="w-5 h-5"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={1.5}
+                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                              />
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={1.5}
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-
-        {/* Todo: We need to handle workspace deletion */}
       </div>
 
+      {/* Create Team Modal */}
       <CreateTeamModal
         isOpen={state.showCreateModal}
         onClose={() => setState(s => ({ ...s, showCreateModal: false }))}
         onSuccess={workspaceId => {
           router.push(`/workspace/${workspaceId}/settings`);
         }}
+      />
+
+      {/* Workspace Settings Modal */}
+      <WorkspaceSettingsModal
+        isOpen={state.showSettingsModal}
+        onClose={() => setState(s => ({ ...s, showSettingsModal: false }))}
+        workspace={currentWorkspace}
+        isAdmin={isAdmin}
+        updateWorkspace={updateWorkspace}
+        isUpdating={isUpdating}
+        disableCustomOpenAiKey={properties.data?.disableCustomOpenAiKey}
       />
     </div>
   );

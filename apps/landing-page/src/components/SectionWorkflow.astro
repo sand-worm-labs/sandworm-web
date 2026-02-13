@@ -106,14 +106,16 @@ const workflowSteps = [
     entries.forEach((entry) => {
       if (entry.isIntersecting) {
         const index = entry.target.getAttribute('data-index');
-        updateDots(parseInt(index));
+        if (index !== null) {
+          updateDots(parseInt(index));
+        }
       }
     });
   }, observerOptions);
 
   items.forEach((item) => observer.observe(item));
 
-  function updateDots(index) {
+  function updateDots(index:number) {
     dots.forEach((dot, i) => {
       dot.classList.toggle('active', i === index);
       dot.setAttribute('aria-selected', i === index ? 'true' : 'false');
