@@ -50,12 +50,8 @@ export default async function RootLayout({ children }: ChildrenProps) {
 
   gtag('config', "G-GQB5QS1LHQ")`}
       </Script>
-      <body
-        className={`${azeretMono.className} h-full w-screen `}
-      >
-        <RootProvider>
-            {children}
-        </RootProvider>
+      <body className={`${azeretMono.className} h-full w-screen `}>
+        <RootProvider>{children}</RootProvider>
       </body>
     </html>
   );

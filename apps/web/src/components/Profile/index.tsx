@@ -13,12 +13,17 @@ import {
   Globe,
   UserPlus,
   UserMinus,
+  Pencil,
+  Copy,
+  Check,
 } from "lucide-react";
 import { ActivityCalendar } from "react-activity-calendar";
 
 import { useCurrentUser } from "../Visualization/hooks/useCurrentUser";
 import { Loader } from "../Loader";
 import { ProjectIcon } from "../Assets/ProjectIcon";
+
+import { ProfileSettingsModal } from "./ProfileSettingModal";
 
 interface SocialLinks {
   twitter?: string;
@@ -55,17 +60,29 @@ interface UserProfile {
   };
 }
 
-const ProfileComponent = () => {
+interface ProfileComponentProps {
+  isOwnProfile?: boolean;
+}
+
+const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
   const [isFollowing, setIsFollowing] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [copiedWallet, setCopiedWallet] = useState<string | null>(null);
-  const { currentUser, settings, loading } = useCurrentUser();
-  console.log(currentUser);
+  const {
+    currentUser,
+    settings,
+    loading,
+    updateUser,
+    updateUserSettings,
+    loading: updateLoading,
+    error,
+  } = useCurrentUser();
 
   const mockProfile: UserProfile = {
     id: "1",
     username: "sandworm",
     fullName: "Sandworm Labs",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=sandworm",
+    avatar: "/apps/web/public/img/",
     followersCount: 0,
     followingCount: 0,
     statusText: "Building the future of collaborative blockchain analytics",
@@ -135,236 +152,241 @@ const ProfileComponent = () => {
     }
   };
 
+  const userForModal = currentUser
+    ? {
+        firstName: currentUser.firstName,
+        lastName: currentUser.lastName,
+        username: currentUser.username,
+        email: currentUser.email,
+        avater: currentUser.avatar,
+        fullName: currentUser.fullName,
+      }
+    : null;
+
   return (
-    <div className="min-h-screen bg-white dark:bg-[#010100] transition-colors font-body">
-      {loading ? (
-        <div className="mx-auto min-h-screen w-full flex items-center justify-center px-4 py-8">
-          <Loader />
-        </div>
-      ) : !currentUser ? (
-        <div className="max-w-6xl mx-auto px-4 py-8">
-          <p className="text-center text-ink-200 dark:text-gray-400">
-            No user found
-          </p>
-        </div>
-      ) : (
-        <div className="max-w-6xl mx-auto px-4 py-8">
-          <div className="space-y-6">
-            <div className="bg-white dark:bg-[#010100]  rounded-2xl p-8">
-              <div className="flex flex-col md:flex-row gap-6">
-                <div className="flex-shrink-0">
-                  {mockProfile.avatar ? (
-                    <img
-                      src={mockProfile.avatar}
-                      alt={mockProfile.username}
-                      className="w-32 h-32 rounded-full "
-                    />
-                  ) : (
-                    <div className="w-32 h-32 rounded-full bg-[#A308F0] flex items-center justify-center">
-                      <User className="w-16 h-16 text-white" />
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex-1 space-y-4">
-                  <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-                    <div>
-                      <p className="text-xl font-medium text-ink-100  dark:text-white">
-                        {currentUser.firstName || currentUser.username}
-                      </p>
-                      <p className="text-ink-200 dark:text-gray-400">
-                        @{currentUser.username}
-                      </p>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => setIsFollowing(!isFollowing)}
-                      className={`flex items-center gap-2 px-6 py-2 rounded-xl font-medium transition-color text-sm ${
-                        isFollowing
-                          ? "bg-[#E9ECEF] dark:bg-[#262A30] text-ink-100  dark:text-white hover:bg-opacity-80"
-                          : "bg-black text-white hover:bg-opacity-90"
-                      }`}
-                    >
-                      {isFollowing ? (
-                        <>
-                          <UserMinus className="w-4 h-4" />
-                          Unfollow
-                        </>
+    <>
+      <div className="min-h-screen bg-white dark:bg-[#010100] transition-colors font-body">
+        {loading ? (
+          <div className="mx-auto min-h-screen w-full flex items-center justify-center px-4 py-8">
+            <Loader />
+          </div>
+        ) : !currentUser ? (
+          <div className="max-w-6xl mx-auto px-4 py-8">
+            <p className="text-center text-ink-200 dark:text-gray-400">
+              No user found
+            </p>
+          </div>
+        ) : (
+          <div className="max-w-6xl mx-auto px-4 py-8">
+            <div className="space-y-6">
+              <div className="flex gap-x-4">
+                <div className="bg-white dark:bg-[#010100] rounded-2xl p-8 flex-1">
+                  <div className="flex flex-col md:flex-row gap-6">
+                    <div className="flex-shrink-0">
+                      {mockProfile.avatar ? (
+                        <img
+                          src={mockProfile.avatar}
+                          alt={mockProfile.username}
+                          className="w-32 h-32 rounded-full"
+                        />
                       ) : (
-                        <>
-                          <UserPlus className="w-4 h-4" />
-                          Follow
-                        </>
+                        <div className="w-32 h-32 rounded-full bg-[#A308F0] flex items-center justify-center">
+                          <User className="w-16 h-16 text-white" />
+                        </div>
                       )}
-                    </button>
-                  </div>
-
-                  {mockProfile.statusText && (
-                    <p className="text-[#6C757D] dark:text-white">
-                      {currentUser?.settings.statusText}
-                    </p>
-                  )}
-
-                  <div className="flex flex-wrap gap-4 text-sm text-ink-200 dark:text-gray-400">
-                    {mockProfile.location && (
-                      <div className="flex items-center gap-1">
-                        <MapPin className="w-4 h-4" />
-                        {mockProfile.location}
-                      </div>
-                    )}
-                    {mockProfile.memberSince && (
-                      <div className="flex items-center gap-1">
-                        <Calendar className="w-4 h-4" />
-                        Joined{" "}
-                        {new Date(mockProfile.memberSince).toLocaleDateString(
-                          "en-US",
-                          { month: "short", year: "numeric" }
-                        )}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex gap-6 text-[0.95rem]">
-                    <div>
-                      <span className="font-medium text-ink-100  dark:text-white">
-                        {mockProfile.followersCount}
-                      </span>{" "}
-                      <span className="text-ink-400 dark:text-gray-400 ml-1">
-                        Followers
-                      </span>
                     </div>
-                    <div>
-                      <span className="font-medium text-ink-100  dark:text-white">
-                        {mockProfile.followingCount}
-                      </span>{" "}
-                      <span className="text-ink-400 dark:text-gray-400 ml-1">
-                        Following
-                      </span>
-                    </div>
-                  </div>
 
-                  {mockProfile.socialLinks &&
-                    Object.keys(mockProfile.socialLinks).length > 0 && (
-                      <div className="flex gap-3">
-                        {Object.entries(mockProfile.socialLinks).map(
-                          ([platform, url]) => (
-                            <a
-                              key={platform}
-                              href={url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="p-2.5 rounded-xl border border-[#DEE2E6] dark:border-[#262A30] hover:bg-[#A308F0] hover:border-[#A308F0] hover:text-white transition-colors text-[#1C3B5A] dark:text-gray-400 bg-[#F8F9FA]"
+                    <div className="flex-1 space-y-4">
+                      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                        <div>
+                          <p className="text-xl font-medium text-ink-100 dark:text-white">
+                            {currentUser.firstName || currentUser.username}
+                          </p>
+                          <p className="text-ink-200 dark:text-gray-400">
+                            @{currentUser.username}
+                          </p>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                          {isOwnProfile ? (
+                            <button
+                              type="button"
+                              onClick={() => setIsModalOpen(true)}
+                              className="flex items-center gap-2 px-4 py-1 rounded-lg font-medium transition-colors text-sm border border-[#DEE2E6] dark:border-[#262A30] text-[#6C757D] dark:text-white hover:bg-[#F8F9FA] dark:hover:bg-[#262A30] bg-[#F8F9FA]"
                             >
-                              {getSocialIcon(platform)}
-                            </a>
-                          )
-                        )}
-                      </div>
-                    )}
-                </div>
-              </div>
-            </div>
-
-            {/*    {mockProfile.wallets && mockProfile.wallets.length > 0 && (
-              <div className="bg-white dark:bg-[#010100]  rounded-2xl p-6">
-                <h2 className="text-xl font-medium text-ink-100  dark:text-white mb-4">
-                  Wallets
-                </h2>
-                <div className="space-y-3">
-                  {mockProfile.wallets.map((wallet, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between p-4 rounded-lg  dark:border-[#262A30] hover:border-[#A308F0] transition-colors"
-                    >
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          {wallet.label && (
-                            <span className="text-sm font-medium text-ink-100  dark:text-white">
-                              {wallet.label}
-                            </span>
-                          )}
-                          {wallet.chain && (
-                            <span className="text-xs px-2 py-0.5 rounded-full bg-[#A308F0] bg-opacity-10 text-primary">
-                              {wallet.chain}
-                            </span>
+                              Edit
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => setIsFollowing(!isFollowing)}
+                              className={`flex items-center gap-2 px-6 py-2 rounded-xl font-medium transition-colors text-sm ${
+                                isFollowing
+                                  ? "bg-[#E9ECEF] dark:bg-[#262A30] text-ink-100 dark:text-white hover:bg-opacity-80"
+                                  : "bg-black text-white hover:bg-opacity-90"
+                              }`}
+                            >
+                              {isFollowing ? (
+                                <>
+                                  <UserMinus className="w-4 h-4" />
+                                  Unfollow
+                                </>
+                              ) : (
+                                <>
+                                  <UserPlus className="w-4 h-4" />
+                                  Follow
+                                </>
+                              )}
+                            </button>
                           )}
                         </div>
-                        <code className="text-sm text-ink-200 dark:text-gray-400 font-mono">
-                          {truncateAddress(wallet.address)}
-                        </code>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => copyToClipboard(wallet.address)}
-                        className="p-2 rounded-lg hover:bg-[#E9ECEF] dark:hover:bg-[#262A30] transition-colors"
-                      >
-                        {copiedWallet === wallet.address ? (
-                          <Check className="w-4 h-4 text-primary" />
-                        ) : (
-                          <Copy className="w-4 h-4 text-ink-200 dark:text-gray-400" />
+
+                      {settings?.statusText && (
+                        <p className="text-[#6C757D] dark:text-white">
+                          {settings.statusText}
+                        </p>
+                      )}
+
+                      <div className="flex flex-wrap gap-4 text-sm text-ink-200 dark:text-gray-400">
+                        {mockProfile.location && (
+                          <div className="flex items-center gap-1">
+                            <MapPin className="w-4 h-4" />
+                            {mockProfile.location}
+                          </div>
                         )}
-                      </button>
+                        {mockProfile.memberSince && (
+                          <div className="flex items-center gap-1">
+                            <Calendar className="w-4 h-4" />
+                            Joined{" "}
+                            {new Date(
+                              mockProfile.memberSince
+                            ).toLocaleDateString("en-US", {
+                              month: "short",
+                              year: "numeric",
+                            })}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex gap-6 text-[0.95rem]">
+                        <div>
+                          <span className="font-medium text-ink-100 dark:text-white">
+                            {mockProfile.followersCount}
+                          </span>{" "}
+                          <span className="text-ink-400 dark:text-gray-400 ml-1">
+                            Followers
+                          </span>
+                        </div>
+                        <div>
+                          <span className="font-medium text-ink-100 dark:text-white">
+                            {mockProfile.followingCount}
+                          </span>{" "}
+                          <span className="text-ink-400 dark:text-gray-400 ml-1">
+                            Following
+                          </span>
+                        </div>
+                      </div>
+
+                      {settings?.socialLinks &&
+                        Object.keys(settings.socialLinks).length > 0 && (
+                          <div className="flex gap-3">
+                            {Object.entries(settings.socialLinks)
+                              .filter(([_, url]) => url)
+                              .map(([platform, url]) => (
+                                <a
+                                  key={platform}
+                                  href={url as string}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="p-2.5 rounded-xl border border-[#DEE2E6] dark:border-[#262A30] hover:bg-[#A308F0] hover:border-[#A308F0] hover:text-white transition-colors text-[#1C3B5A] dark:text-gray-400 bg-[#F8F9FA] dark:bg-transparent"
+                                >
+                                  {getSocialIcon(platform)}
+                                </a>
+                              ))}
+                          </div>
+                        )}
                     </div>
-                  ))}
+                  </div>
+                </div>
+
+                <div className="w-full flex-1">
+                  {mockProfile.wallets && mockProfile.wallets.length > 0 && (
+                    <div className="bg-white dark:bg-[#010100] rounded-2xl p-6">
+                      <h2 className="px-2 py-0.5 font-medium text-ink-100 dark:text-white mb-4 bg-[#E9ECEF] inline-block text-sm rounded-lg">
+                        Main Wallets
+                      </h2>
+                      <div className="space-y-3">
+                        {mockProfile.wallets.map((wallet, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center justify-between p-4 py-2 rounded-2xl dark:border-[#262A30]   transition-colors bg-[#F8F9FA] border border-[#DEE2E6]"
+                          >
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                {/*   {wallet.label && (
+                              <span className="text-sm font-medium text-ink-100 dark:text-white">
+                                {wallet.label}
+                              </span>
+                            )} */}
+                                {/*    {wallet.chain && (
+                              <span className="text-xs px-2 py-0.5 rounded-full bg-[#A308F0] bg-opacity-10 text-primary">
+                                {wallet.chain}
+                              </span>
+                            )} */}
+                              </div>
+                              <code className="text-sm text-[#6C757D] dark:text-[#6C757D] font-body font-medium">
+                                {truncateAddress(wallet.address)}
+                              </code>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => copyToClipboard(wallet.address)}
+                              className="p-2 rounded-lg hover:bg-[#E9ECEF] dark:hover:bg-[#262A30] transition-colors"
+                            >
+                              {copiedWallet === wallet.address ? (
+                                <Check className="w-4 h-4 text-primary" />
+                              ) : (
+                                <Copy className="w-4 h-4 text-ink-200 dark:text-gray-400" />
+                              )}
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
-            )} */}
 
-            <div className="bg-white dark:bg-[#010100]  dark:border-[#262A30] rounded-2xl p-6">
-              <h2 className="text-xl font-medium text-ink-100  dark:text-white mb-4">
-                Activity
-              </h2>
-              <div className="overflow-x-auto w-full">
-                <ActivityCalendar
-                  data={mockActivityData}
-                  theme={{
-                    light: [
-                      "#F3ECEC80",
-                      "#CE76FB",
-                      "#FDC7CF",
-                      "#E3AFFD",
-                      "#A308F0",
-                    ],
-                    dark: [
-                      "#F3ECEC80",
-                      "#CE76FB",
-                      "#FDC7CF",
-                      "#E3AFFD",
-                      "#A308F0",
-                    ],
-                  }}
-                  blockSize={12}
-                  blockMargin={4}
-                  fontSize={12}
-                  hideColorLegend={false}
-                  hideMonthLabels={false}
-                  hideTotalCount={false}
-                  style={{
-                    width: "100%",
-                  }}
-                  labels={{
-                    totalCount: "{{count}} contributions in the last year",
-                  }}
-                />
-              </div>
-            </div>
+          
 
-            <div className="rounded-2xl p-6">
-              <h2 className="text-xl font-medium text-ink-100  dark:text-white mb-4">
-                Projects
-              </h2>
-              <div className="text-center py-12 flex flex-col items-center justify-center gap-2">
-                <ProjectIcon />
-                <p className="text-ink-200 dark:text-gray-400">
-                  No projects yet
-                </p>
+              <div className="rounded-2xl p-6 ">
+                <h2 className="text-base font-bold text-ink-100 dark:text-white mb-4" >
+                  Projects
+                </h2>
+                <div className="text-center py-12 min-h-[20rem] flex flex-col items-center justify-center gap-2">
+                  <ProjectIcon />
+                  <p className="text-ink-200 dark:text-gray-400">
+                    No projects yet
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+
+      <ProfileSettingsModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        user={userForModal}
+        settings={settings}
+        updateUser={updateUser}
+        updateUserSettings={updateUserSettings}
+        loading={updateLoading}
+        error={error}
+      />
+    </>
   );
 };
 

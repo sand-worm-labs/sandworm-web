@@ -1,13 +1,10 @@
 ---
 import SparkleIcon  from "../components/icons/Sparkle.astro";
-import  RingIcon from "../components/icons/Ring.astro";
-import  BarChart  from "../components/icons/Bar.astro";
 import  Ellipse  from "../components/icons/Ellipse.astro";
 import Wave  from "../components/icons/Wave.astro";
 import  Users  from "../components/icons/Users.astro";
 import Blockchains from "./Blockchain.astro";
 import Dots from "../components/icons/Dots.astro"
-import VaultBackground from "./VaultBackground.astro";
 
 interface AICardProps {
   title: string;
@@ -60,7 +57,8 @@ const aiCards: AICardProps[] = [
   </div>
 
   <div class="container px-4 mx-auto flex flex-col items-center relative">
-    <RingIcon />
+    <img src="/img/ring.svg"  class="w-[48px]" alt="ring icon" width={48} height={48}/>
+
     
     <p class="uppercase mb-5 text-[15px] font-medium font-primary mt-5">
       <span aria-hidden="true">●</span> Let's talk worm AI <span aria-hidden="true">●</span>
@@ -122,7 +120,7 @@ const aiCards: AICardProps[] = [
             <Ellipse size={115} className="xl:h-28.75" />
           </div>
           <div class="absolute -bottom-10 right-5" aria-hidden="true">
-            <BarChart size={250} className="xl:h-62.5" />
+            <img src="/img/bar-chart.svg"  class="xl:h-55.5"/>
           </div>
         </div>
       </article>

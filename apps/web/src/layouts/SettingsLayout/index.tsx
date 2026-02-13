@@ -49,8 +49,8 @@ export default function SettingsLayout({
   if (status === "loading") return null;
 
   return (
-    <div className=" w-full ">
-      <div className="flex items-center gap-2 py-3 border-b border-[#E9ECEF] dark:border-[#262A30] px-10 text-[1.1rem]">
+    <div className=" w-full">
+      <div className="flex items-center gap-2 py-3 border-b border-[#F1F3F4] dark:border-[#262A30] px-10 text-[1.1rem]">
         <Link
           href="/workspace"
           className="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition "
@@ -62,18 +62,18 @@ export default function SettingsLayout({
       </div>
 
       <div className="flex min-h-screen  md:flex-row flex-col ">
-        <div className=" p-6 border-r dark:border-borderLight my-12 min-w-[30rem] border-[#E9ECEF] bg-[#F1F3F4] dark:bg-black">
+        <div className=" p-6 px-3 border-r dark:border-borderLight my-12 min-w-[35rem] border-[#E9ECEF] bg-[#FEFFFF] dark:bg-black">
           <ul className="mt-4  flex flex-col w-full ">
             {tabs.map(tab => (
               <li key={tab.href}>
                 <Link
                   href={tab.href}
-                  className={`border-l-4  px-6 py-1.5 text-sm font-medium mb-1 flex space-x-2  items-center rounded-lg  ${
+                  className={`border-l-4  px-8 py-1.5 text-sm font-medium mb-1 flex space-x-2  items-center rounded-xl  ${
                     pathname === tab.href
-                      ? " bg-white dark:bg-[#181C21] dark:border-[#262A30] border-[#E9ECEF] border "
+                      ? " bg-[#EBF7F7] dark:bg-[#181C21]  text-primary"
                       : "text-text-gray hover:bg-dark-translucent"
                   }`}
-                >
+                > 
                   {tab.icon}
                   <span> {tab.name}</span>
                 </Link>

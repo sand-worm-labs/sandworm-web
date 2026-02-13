@@ -56,6 +56,14 @@ export const MultimodalInputView = forwardRef<
             placeholder="Start a query..."
             value={input}
             onChange={onInputChange}
+            onKeyDown={e => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                if (input.trim() && !isLoading && !disabled) {
+                  onSubmit?.();
+                }
+              }
+            }}
             className="
     min-h-[50px]
     overflow-hidden
