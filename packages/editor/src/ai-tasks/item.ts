@@ -45,6 +45,16 @@ export function isAITaskStatusLoading(
   }
 }
 
+export const AITaskItemAddPythonMetadata = z.object({
+  _tag: z.literal("add-python"),
+});
+export type AITaskItemAddPythonMetadata = z.infer<typeof AITaskItemAddPythonMetadata>;
+
+export const AITaskItemAddSQLMetadata = z.object({
+  _tag: z.literal("add-sql"),
+});
+export type AITaskItemAddSQLMetadata = z.infer<typeof AITaskItemAddSQLMetadata>;
+
 export const AITaskItemEditPythonMetadata = z.object({
   _tag: z.literal("edit-python"),
 });
@@ -71,16 +81,36 @@ export const AITaskItemFixSQLMetadata = z.object({
 });
 export type AITaskItemFixSQLMetadata = z.infer<typeof AITaskItemFixSQLMetadata>;
 
+export const AITaskItemAddTextMetadata = z.object({
+  _tag: z.literal("add-text"),
+});
+export type AITaskItemAddTextMetadata = z.infer<typeof AITaskItemAddTextMetadata>;
+
+export const AITaskItemAddInputMetadata = z.object({
+  _tag: z.literal("add-input"),
+});
+export type AITaskItemAddInputMetadata = z.infer<typeof AITaskItemAddInputMetadata>;
+
+export const AITaskItemAddDropdownMetadata = z.object({
+  _tag: z.literal("add-dropdown"),
+});
+export type AITaskItemAddDropdownMetadata = z.infer<typeof AITaskItemAddDropdownMetadata>;
+
 export const AITaskItemNoopMetadata = z.object({
   _tag: z.literal("noop"),
 });
 export type AITaskItemNoopMetadata = z.infer<typeof AITaskItemNoopMetadata>;
 
 export const AITaskItemMetadata = z.union([
+  AITaskItemAddPythonMetadata,
+  AITaskItemAddSQLMetadata,
   AITaskItemEditPythonMetadata,
   AITaskItemFixPythonMetadata,
   AITaskItemEditSQLMetadata,
   AITaskItemFixSQLMetadata,
+  AITaskItemAddTextMetadata,
+  AITaskItemAddInputMetadata,
+  AITaskItemAddDropdownMetadata,
   AITaskItemNoopMetadata,
 ]);
 export type AITaskItemMetadata = z.infer<typeof AITaskItemMetadata>;
@@ -99,21 +129,6 @@ export const AITaskItemAttrs = z.object({
 export type YAITaskItemAttrs = z.infer<typeof AITaskItemAttrs>;
 
 export type YAITaskItem = Y.XmlElement<YAITaskItemAttrs>;
-
-export const AITaskItemAddTextMetadata = z.object({
-  _tag: z.literal("add-text"),
-});
-export type AITaskItemAddTextMetadata = z.infer<typeof AITaskItemAddTextMetadata>;
-
-export const AITaskItemAddInputMetadata = z.object({
-  _tag: z.literal("add-input"),
-});
-export type AITaskItemAddInputMetadata = z.infer<typeof AITaskItemAddInputMetadata>;
-
-export const AITaskItemAddDropdownMetadata = z.object({
-  _tag: z.literal("add-dropdown"),
-});
-export type AITaskItemAddDropdownMetadata = z.infer<typeof AITaskItemAddDropdownMetadata>;
 
 export function createYAITaskItem(
   blockId: string,
@@ -138,7 +153,7 @@ export function createYAITaskItem(
 }
 
 export class AITaskItem {
-  private constructor(private readonly item: YAITaskItem) {}
+  private constructor(private readonly item: YAITaskItem) { }
   private statusObservers: Set<(status: AITaskItemStatus) => void> = new Set();
 
   public getCompleteStatus(): "success" | "error" | "aborted" | null {
