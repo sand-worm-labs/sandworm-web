@@ -1,13 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { PencilIcon } from "@heroicons/react/24/outline";
-import {
-  CheckCircleIcon,
-  XMarkIcon,
-  XCircleIcon,
-} from "@heroicons/react/24/solid";
+import { XMarkIcon, CheckIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 import { User } from "../Assets/Avatar/User";
 import { PencilSimple } from "../Assets/PencilSimple";
@@ -73,7 +69,7 @@ export default function WorkspaceSettingsModal({
       name: "Simon Cyril",
       email: "Simoncyril@gmail.com",
       role: "editor",
-      invitedAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000), // 3 months ago
+      invitedAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000), 
     },
     {
       id: "2",
@@ -87,18 +83,15 @@ export default function WorkspaceSettingsModal({
       name: "Alejandro Rajaonarimampianina",
       email: "AlejandroRajaonarimampianina@gmail.com",
       role: "editor",
-      invitedAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000), // 2 months ago
+      invitedAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000), 
     },
   ]);
 
-  // Handlers
   const handleSendInvite = async (email: string, role: UserRole) => {
     console.log("Sending invite to:", email, "with role:", role);
 
-    // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    // Add to pending invites
     const newInvite: PendingInvite = {
       id: Date.now().toString(),
       name: email.split("@")[0],
@@ -113,14 +106,11 @@ export default function WorkspaceSettingsModal({
   const handleCancelInvite = async (inviteId: string) => {
     console.log("Cancelling invite:", inviteId);
 
-    // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 500));
 
-    // Remove from pending invites
     setPendingInvites(prev => prev.filter(invite => invite.id !== inviteId));
   };
 
-  // Reset state when modal opens/closes
   useEffect(() => {
     if (!isOpen) {
       setState({
@@ -500,7 +490,7 @@ export default function WorkspaceSettingsModal({
             email: "simon@example.com",
             requestedRole: "editor",
             requestedAt: new Date(),
-            message: "I'd like to help with the dashboard", 
+            message: "I'd like to help with the dashboard",
           },
         ]}
       />
@@ -533,16 +523,16 @@ interface EditWorkspaceProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
   currentName?: string;
-  onSave: (data: { name: string; selectedIcon: number | null }) => void;
+  onSave: (data: { name: string; selectedIcon: string | null }) => void;
   isLoading?: boolean;
 }
 
 const PRESET_ICONS = [
-  { id: 1, gradient: "linear-gradient(135deg, #1E3A8A 0%, #7C3AED 100%)" },
-  { id: 2, gradient: "linear-gradient(135deg, #22C55E 0%, #16A34A 100%)" },
-  { id: 3, gradient: "linear-gradient(135deg, #F97316 0%, #FBBF24 100%)" },
-  { id: 4, gradient: "linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)" },
-  { id: 5, gradient: "linear-gradient(135deg, #EF4444 0%, #DC2626 100%)" },
+  { id: 1, src: "/img/avatar-1.svg" },
+  { id: 2, src: "/img/avatar-2.svg" },
+  { id: 3, src: "/img/avatar-3.svg" },
+  { id: 4, src: "/img/avatar-4.svg" },
+  { id: 5, src: "/img/avatar-5.svg" },
 ];
 
 export function EditWorkspaceProfileModal({
@@ -553,7 +543,7 @@ export function EditWorkspaceProfileModal({
   isLoading = false,
 }: EditWorkspaceProfileModalProps) {
   const [workspaceName, setWorkspaceName] = useState(currentName);
-  const [selectedIcon, setSelectedIcon] = useState<number | null>(null);
+  const [selectedIcon, setSelectedIcon] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
@@ -569,10 +559,10 @@ export function EditWorkspaceProfileModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+      <div className="absolute inset-0 bg-[#0000001A]" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative bg-white dark:bg-[#1A1A1A] rounded-xl shadow-xl w-full max-w-md mx-4 p-6">
+      <div className="relative bg-white dark:bg-[#1A1A1A] rounded-3xl shadow-xl w-full max-w-[31rem] mx-4 p-6 py-10 px-10">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-base font-medium text-ink-100 dark:text-white">
@@ -589,42 +579,66 @@ export function EditWorkspaceProfileModal({
 
         {/* Workspace Profile Section */}
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+          <label className="block text-sm font-medium text-[#1A1A1A] dark:text-gray-300 mb-3">
             Workspace Profile
           </label>
           <div className="flex items-center gap-3">
-            {/* Upload Button */}
+            {/* Upload Button / Selected Preview */}
             <button
               type="button"
-              className="relative w-14 mr-4 h-14 rounded-full border-2  border-[#DEE2E6] dark:border-gray-600 hover:border-[#A308F0] dark:hover:border-[#A308F0] transition-colors flex items-center justify-center group"
+              className="relative w-14 mr-4 h-14 rounded-full border-2 border-[#DEE2E6] dark:border-gray-600 hover:border-[#A308F0] dark:hover:border-[#A308F0] transition-colors flex items-center justify-center group overflow-hidden"
             >
-              <span className="text-[10px] text-center text-gray-500 dark:text-gray-400 group-hover:text-[#A308F0] leading-tight">
-                Click to
-                <br />
-                Upload
-              </span>
+              {selectedIcon ? (
+                <Image
+                  src={selectedIcon}
+                  alt="Selected workspace icon"
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                <span className="text-[10px] text-center text-gray-500 dark:text-gray-400 group-hover:text-[#A308F0] leading-tight">
+                  Click to
+                  <br />
+                  Upload
+                </span>
+              )}
             </button>
 
             {/* Preset Icons */}
-            {PRESET_ICONS.map(icon => (
-              <button
-                key={icon.id}
-                type="button"
-                onClick={() => setSelectedIcon(icon.id)}
-                className={`w-8 h-8 rounded-full transition-all ${
-                  selectedIcon === icon.id
-                    ? "ring-2 ring-[#A308F0] ring-offset-2 dark:ring-offset-[#1A1A1A]"
-                    : "hover:scale-110"
-                }`}
-                style={{ background: icon.gradient }}
-              />
-            ))}
+            {PRESET_ICONS.map(icon => {
+              const isSelected = selectedIcon === icon.src;
+              return (
+                <button
+                  key={icon.id}
+                  type="button"
+                  onClick={() => setSelectedIcon(icon.src)}
+                  className={`relative w-8 h-8 rounded-full transition-all overflow-hidden ${
+                    isSelected
+                      ? "ring-2 ring-[#A308F0] ring-offset-2 dark:ring-offset-[#1A1A1A]"
+                      : "hover:scale-110"
+                  }`}
+                >
+                  <Image
+                    src={icon.src}
+                    alt={`Avatar option ${icon.id}`}
+                    fill
+                    className="object-cover"
+                  />
+                  {/* Checkmark Indicator */}
+                  {isSelected && (
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                      <CheckIcon className="w-4 h-4 text-white stroke-[3]" />
+                    </div>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
 
         {/* Workspace Name Section */}
         <div className="mb-10">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-[#1A1A1A] dark:text-gray-300 mb-3">
             Workspace Name
           </label>
           <input
@@ -632,7 +646,7 @@ export function EditWorkspaceProfileModal({
             value={workspaceName}
             onChange={e => setWorkspaceName(e.target.value)}
             placeholder="Enter workspace name"
-            className="w-full px-4 py-3 rounded-lg bg-[#F8F9FA] dark:bg-[#262626] border border-[#DEE2E6] dark:border-[#363636] text-gray-900 dark:text-white placeholder:text-[#6C757D] dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#A308F0] focus:border-transparent transition-all text-sm font-medium"
+            className="w-full px-4 py-3 rounded-xl bg-[#F8F9FA] dark:bg-[#262626] border border-[#DEE2E6] dark:border-[#363636] text-gray-900 dark:text-white placeholder:text-[#6C757D] dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#A308F0] focus:border-transparent transition-all text-sm font-medium"
           />
           <ul className="mt-2 space-y-1 text-xs font-medium">
             <li className="flex items-center gap-1">
@@ -651,7 +665,7 @@ export function EditWorkspaceProfileModal({
           type="button"
           onClick={handleSave}
           disabled={!isNameValid || isLoading}
-          className="w-full py-3 px-4 bg-[#A308F0] hover:bg-[#8a07c9] disabled:bg-[#868E96] text-white font-medium rounded-xl transition-colors disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
+          className="w-full py-3.5 px-4 bg-[#A308F0] hover:bg-[#8a07c9] disabled:bg-[#868E96] text-[#E9ECEF] font-medium rounded-xl transition-colors disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
         >
           {isLoading ? (
             <>
