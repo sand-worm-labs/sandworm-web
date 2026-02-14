@@ -27,14 +27,48 @@ interface PendingInvite {
   avatar?: string;
 }
 
+interface PendingRequest {
+  id: string;
+  name: string;
+  email: string;
+  requestedRole: UserRole;
+  requestedAt: Date;
+  message?: string;
+  avatar?: string;
+}
+
 interface ManageInviteModalProps {
   isOpen: boolean;
   onClose: () => void;
   workspaceMembers: WorkspaceMember[];
   pendingInvites: PendingInvite[];
+  pendingRequests?: PendingRequest[];
   onSendInvite: (email: string, role: UserRole) => Promise<void>;
   onCancelInvite: (inviteId: string) => Promise<void>;
+  onApproveRequest?: (requestId: string) => Promise<void>;
+  onDenyRequest?: (requestId: string) => Promise<void>;
 }
+
+// ============================================================================
+// UTILITY FUNCTIONS
+// ============================================================================
+
+const getTimeAgo = (date: Date) => {
+  const now = new Date();
+  const diffInMs = now.getTime() - date.getTime();
+  const diffInMonths = Math.floor(diffInMs / (1000 * 60 * 60 * 24 * 30));
+
+  if (diffInMonths >= 1) {
+    return `${diffInMonths} month${diffInMonths > 1 ? "s" : ""} ago`;
+  }
+
+  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+  if (diffInDays >= 1) {
+    return `${diffInDays} day${diffInDays > 1 ? "s" : ""} ago`;
+  }
+
+  return "Today";
+};
 
 // ============================================================================
 // INVITE FORM COMPONENT
@@ -89,6 +123,95 @@ const InviteForm: React.FC<InviteFormProps> = ({ onSendInvite }) => {
 };
 
 // ============================================================================
+// PENDING REQUEST ITEM COMPONENT
+// ============================================================================
+
+interface PendingRequestItemProps {
+  request: PendingRequest;
+  onApprove: (requestId: string) => Promise<void>;
+  onDeny: (requestId: string) => Promise<void>;
+}
+
+const PendingRequestItem: React.FC<PendingRequestItemProps> = ({
+  request,
+  onApprove,
+  onDeny,
+}) => {
+  const [isApproving, setIsApproving] = useState(false);
+  const [isDenying, setIsDenying] = useState(false);
+
+  const handleApprove = async () => {
+    setIsApproving(true);
+    try {
+      await onApprove(request.id);
+    } catch (error) {
+      console.error("Failed to approve request:", error);
+    } finally {
+      setIsApproving(false);
+    }
+  };
+
+  const handleDeny = async () => {
+    setIsDenying(true);
+    try {
+      await onDeny(request.id);
+    } catch (error) {
+      console.error("Failed to deny request:", error);
+    } finally {
+      setIsDenying(false);
+    }
+  };
+
+  const isProcessing = isApproving || isDenying;
+
+  return (
+    <div className="flex items-start gap-3 p-4">
+      {/* Avatar */}
+      <User size={30} />
+
+      {/* Content */}
+      <div className="flex-1 min-w-0">
+        <p className="mb-1">
+          <span className="font-medium text-ink-100 mr-1">{request.name}</span>
+          <span className="text-sm text-[#343A40]">requested access as</span>
+          <span className="text-[13px] font-medium text-[#A308F0] font-tertiary ml-1">
+            {request.requestedRole}
+          </span>
+        </p>
+        <div className="text-sm text-[#6C757D]">
+          {request.email} | {getTimeAgo(request.requestedAt)}
+        </div>
+        {request.message && (
+          <p className="text-sm text-[#6C757D] mt-1 italic">
+            "{request.message}"
+          </p>
+        )}
+      </div>
+
+      {/* Actions */}
+      <div className="flex items-center gap-2 flex-shrink-0">
+        <button
+          type="button"
+          onClick={handleApprove}
+          disabled={isProcessing}
+          className="px-3 py-1 text-xs font-medium bg-[#F8F9FA] border border-[#DEE2E6] text-[#1A1A1A] rounded-md  disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          {isApproving ? "Approving..." : "Approve"}
+        </button>
+        <button
+          type="button"
+          onClick={handleDeny}
+          disabled={isProcessing}
+          className="px-2 py-2 text-xs font-medium  bg-[#FF0000]  rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+                         <X className="w-[14px] h-[14px] text-[#F8F9FA]" />
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// ============================================================================
 // PENDING INVITE ITEM COMPONENT
 // ============================================================================
 
@@ -112,23 +235,6 @@ const PendingInviteItem: React.FC<PendingInviteItemProps> = ({
     } finally {
       setIsCancelling(false);
     }
-  };
-
-  const getTimeAgo = (date: Date) => {
-    const now = new Date();
-    const diffInMs = now.getTime() - date.getTime();
-    const diffInMonths = Math.floor(diffInMs / (1000 * 60 * 60 * 24 * 30));
-
-    if (diffInMonths >= 1) {
-      return `${diffInMonths} month${diffInMonths > 1 ? "s" : ""} ago`;
-    }
-
-    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-    if (diffInDays >= 1) {
-      return `${diffInDays} day${diffInDays > 1 ? "s" : ""} ago`;
-    }
-
-    return "Today";
   };
 
   return (
@@ -171,17 +277,23 @@ const PendingInviteItem: React.FC<PendingInviteItemProps> = ({
 };
 
 // ============================================================================
-// PENDING INVITES LIST COMPONENT
+// PENDING TABS CONTENT COMPONENT
 // ============================================================================
 
-interface PendingInvitesListProps {
+interface PendingTabsContentProps {
   invites: PendingInvite[];
+  requests: PendingRequest[];
   onCancelInvite: (inviteId: string) => Promise<void>;
+  onApproveRequest: (requestId: string) => Promise<void>;
+  onDenyRequest: (requestId: string) => Promise<void>;
 }
 
-const PendingInvitesList: React.FC<PendingInvitesListProps> = ({
+const PendingTabsContent: React.FC<PendingTabsContentProps> = ({
   invites,
+  requests,
   onCancelInvite,
+  onApproveRequest,
+  onDenyRequest,
 }) => {
   const [activeTab, setActiveTab] = useState<"requests" | "invites">("invites");
 
@@ -192,13 +304,18 @@ const PendingInvitesList: React.FC<PendingInvitesListProps> = ({
         <button
           type="button"
           onClick={() => setActiveTab("requests")}
-          className={`pb-2 text-sm font-medium transition-colors ${
+          className={`pb-2 text-sm font-medium transition-colors relative ${
             activeTab === "requests"
               ? "text-gray-900 border-b-2 border-gray-900"
               : "text-[#6C757D] hover:text-gray-700"
           }`}
         >
           Pending requests
+          {requests.length > 0 && (
+            <span className="ml-2 px-1.5 py-0.5 text-xs bg-[#A308F0] text-white rounded-full">
+              {requests.length}
+            </span>
+          )}
         </button>
         <button
           type="button"
@@ -210,12 +327,32 @@ const PendingInvitesList: React.FC<PendingInvitesListProps> = ({
           }`}
         >
           Pending invites
+          {invites.length > 0 && (
+            <span className="ml-2 px-1.5 py-0.5 text-xs bg-[#6C757D] text-white rounded-full">
+              {invites.length}
+            </span>
+          )}
         </button>
       </div>
 
-      {/* Invites List */}
+      {/* Tab Content */}
       <div className="space-y-2 divide-y divide-[#E9ECEF]">
-        {invites.length === 0 ? (
+        {activeTab === "requests" ? (
+          requests.length === 0 ? (
+            <p className="text-sm text-gray-500 text-center py-8">
+              No pending requests
+            </p>
+          ) : (
+            requests.map(request => (
+              <PendingRequestItem
+                key={request.id}
+                request={request}
+                onApprove={onApproveRequest}
+                onDeny={onDenyRequest}
+              />
+            ))
+          )
+        ) : invites.length === 0 ? (
           <p className="text-sm text-gray-500 text-center py-8">
             No pending invites
           </p>
@@ -313,8 +450,11 @@ const ManageInviteModal: React.FC<ManageInviteModalProps> = ({
   onClose,
   workspaceMembers,
   pendingInvites,
+  pendingRequests = [],
   onSendInvite,
   onCancelInvite,
+  onApproveRequest = async () => {},
+  onDenyRequest = async () => {},
 }) => {
   if (!isOpen) return null;
 
@@ -334,6 +474,7 @@ const ManageInviteModal: React.FC<ManageInviteModalProps> = ({
                 Manage Invite
               </h2>
               <button
+                type="button"
                 onClick={onClose}
                 className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
               >
@@ -344,10 +485,13 @@ const ManageInviteModal: React.FC<ManageInviteModalProps> = ({
             {/* Invite Form */}
             <InviteForm onSendInvite={onSendInvite} />
 
-            {/* Pending Invites */}
-            <PendingInvitesList
+            {/* Pending Tabs Content */}
+            <PendingTabsContent
               invites={pendingInvites}
+              requests={pendingRequests}
               onCancelInvite={onCancelInvite}
+              onApproveRequest={onApproveRequest}
+              onDenyRequest={onDenyRequest}
             />
           </div>
 
@@ -371,4 +515,5 @@ export type {
   UserRole,
   WorkspaceMember,
   PendingInvite,
+  PendingRequest,
 };

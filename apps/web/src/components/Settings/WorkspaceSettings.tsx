@@ -493,6 +493,16 @@ export default function WorkspaceSettingsModal({
         pendingInvites={pendingInvites}
         onSendInvite={handleSendInvite}
         onCancelInvite={handleCancelInvite}
+        pendingRequests={[
+          {
+            id: "req-1",
+            name: "Simon Peters",
+            email: "simon@example.com",
+            requestedRole: "editor",
+            requestedAt: new Date(),
+            message: "I'd like to help with the dashboard", 
+          },
+        ]}
       />
 
       <EditWorkspaceProfileModal
