@@ -62,6 +62,7 @@ export class WorkspaceService {
     return user;
   }
 
+
   async getWorkspaceById(workspaceId: string): Promise<Workspace> {
     validateUUID(workspaceId, 'Workspace ID');
 
@@ -84,19 +85,20 @@ export class WorkspaceService {
       order: { createdAt: 'DESC' },
     });
 
-    const workspaceIds = userWorkspaces.map(uw => uw.workspaceId);
+    const workspaceIds = userWorkspaces.map((uw) => uw.workspaceId);
+
+    if (workspaceIds.length === 0) {
+      return [];
+    }
 
     const workspaces = await this.workspaceRepository.find({
-      where: { id: In(workspaceIds) }
+      where: { id: In(workspaceIds) },
     });
 
     return Workspace.fromEntities(workspaces);
   }
 
-  async createWorkspace(data: {
-    ownerId: string;
-    name: string;
-  }): Promise<Workspace> {
+  async createWorkspace(data: { ownerId: string; name: string }): Promise<Workspace> {
     validateUUID(data.ownerId, 'Owner ID');
     validateNonEmptyString(data.name, 'Workspace name');
     validateStringLength(data.name, 'Workspace name', 255);
@@ -115,6 +117,7 @@ export class WorkspaceService {
       workspaceId: savedWorkspace.id,
       role: UserWorkspaceRole.ADMIN,
       inviterId: null,
+      status: UserWorkspaceStatus.ACTIVE,
     });
 
     await this.workspaceMembersRepository.save(userWorkspace);
@@ -139,21 +142,7 @@ export class WorkspaceService {
     await this.workspaceRepository.remove(workspace);
   }
 
-  async sendUserInviiteRequest(workspaceId: string, email: string, role: UserWorkspaceRole): Promise<void> {
-    validateUUID(workspaceId, 'Workspace ID');
-    validateNonEmptyString(email, 'Email');
-
-    const workspace = await this.workspaceRepository.findOne({ where: { id: workspaceId } });
-    if (!workspace) {
-      throw new NotFoundException('Workspace not found');
-    }
-
-  }
-
-  async switchWorkspace(
-    userId: string,
-    workspaceId: string,
-  ): Promise<boolean> {
+  async switchWorkspace(userId: string, workspaceId: string): Promise<boolean> {
     validateUUID(userId, 'User ID');
     validateUUID(workspaceId, 'Workspace ID');
 
@@ -242,7 +231,7 @@ export class WorkspaceService {
       relations: ['user'],
     });
 
-    const users = memberships.map(membership => membership.user);
+    const users = memberships.map((membership) => membership.user);
     return User.fromEntities(users);
   }
 
@@ -326,7 +315,7 @@ export class WorkspaceService {
     }
 
     const inviterMembership = await this.workspaceMembersRepository.findOne({
-      where: { workspaceId, userId: inviterId },
+      where: { workspaceId, userId: inviterId, status: UserWorkspaceStatus.ACTIVE },
     });
 
     if (!inviterMembership || inviterMembership.role !== UserWorkspaceRole.ADMIN) {
@@ -341,8 +330,16 @@ export class WorkspaceService {
       throw new NotFoundException('User with this email does not exist');
     }
 
+    if (invitedUser.id === inviterId) {
+      throw new BadRequestException('You cannot invite yourself');
+    }
+
     const existingMembership = await this.workspaceMembersRepository.findOne({
-      where: { workspaceId, userId: invitedUser.id, status: Or(Equal(UserWorkspaceStatus.ACTIVE), Equal(UserWorkspaceStatus.PENDING)) },
+      where: {
+        workspaceId,
+        userId: invitedUser.id,
+        status: Or(Equal(UserWorkspaceStatus.ACTIVE), Equal(UserWorkspaceStatus.PENDING)),
+      },
     });
 
     if (existingMembership) {
@@ -363,12 +360,14 @@ export class WorkspaceService {
       },
     );
 
+    const inviter = await this.userRepository.findOne({ where: { id: inviterId } });
+
     await this.mailService.workspaceInvitation({
       to: email,
       data: {
         hash,
         workspaceName: workspace.name,
-        inviterName: (await this.userRepository.findOne({ where: { id: inviterId } }))?.firstName || 'Someone',
+        inviterName: inviter?.firstName || 'Someone',
       },
     });
   }
@@ -412,7 +411,15 @@ export class WorkspaceService {
     });
 
     if (existingMembership) {
-      throw new BadRequestException('User is already a member of this workspace');
+      if (existingMembership.status === UserWorkspaceStatus.ACTIVE) {
+        throw new BadRequestException('User is already a member of this workspace');
+      }
+
+      existingMembership.status = UserWorkspaceStatus.ACTIVE;
+      existingMembership.role = role;
+      existingMembership.inviterId = inviterId;
+      await this.workspaceMembersRepository.save(existingMembership);
+      return;
     }
 
     const userWorkspace = this.workspaceMembersRepository.create({
@@ -482,7 +489,7 @@ export class WorkspaceService {
     }
 
     const existingMembership = await this.workspaceMembersRepository.findOne({
-      where: { workspaceId, userId },
+      where: { workspaceId, userId, status: UserWorkspaceStatus.ACTIVE },
     });
 
     if (existingMembership) {
@@ -496,6 +503,7 @@ export class WorkspaceService {
       role,
     };
   }
+
   async removeUserFromWorkspace(
     workspaceId: string,
     userIdToRemove: string,
@@ -506,7 +514,7 @@ export class WorkspaceService {
     validateUUID(adminId, 'Admin ID');
 
     const adminMembership = await this.workspaceMembersRepository.findOne({
-      where: { workspaceId, userId: adminId },
+      where: { workspaceId, userId: adminId, status: UserWorkspaceStatus.ACTIVE },
     });
 
     if (!adminMembership || adminMembership.role !== UserWorkspaceRole.ADMIN) {
@@ -522,7 +530,7 @@ export class WorkspaceService {
     }
 
     const membership = await this.workspaceMembersRepository.findOne({
-      where: { workspaceId, userId: userIdToRemove },
+      where: { workspaceId, userId: userIdToRemove, status: UserWorkspaceStatus.ACTIVE },
     });
 
     if (!membership) {
@@ -530,6 +538,48 @@ export class WorkspaceService {
     }
 
     await this.workspaceMembersRepository.remove(membership);
+  }
+
+  async updateMemberRole(
+    workspaceId: string,
+    targetUserId: string,
+    adminId: string,
+    newRole: UserWorkspaceRole,
+  ): Promise<void> {
+    validateUUID(workspaceId, 'Workspace ID');
+    validateUUID(targetUserId, 'Target User ID');
+    validateUUID(adminId, 'Admin ID');
+
+    if (targetUserId === adminId) {
+      throw new BadRequestException('You cannot change your own role');
+    }
+
+    const adminMembership = await this.workspaceMembersRepository.findOne({
+      where: { workspaceId, userId: adminId, status: UserWorkspaceStatus.ACTIVE },
+    });
+
+    if (!adminMembership || adminMembership.role !== UserWorkspaceRole.ADMIN) {
+      throw new BadRequestException('Only workspace admins can change roles');
+    }
+
+    const workspace = await this.workspaceRepository.findOne({
+      where: { id: workspaceId },
+    });
+
+    if (workspace?.ownerId === targetUserId) {
+      throw new BadRequestException('Cannot change workspace owner role');
+    }
+
+    const targetMembership = await this.workspaceMembersRepository.findOne({
+      where: { workspaceId, userId: targetUserId, status: UserWorkspaceStatus.ACTIVE },
+    });
+
+    if (!targetMembership) {
+      throw new NotFoundException('User is not an active member of this workspace');
+    }
+
+    targetMembership.role = newRole;
+    await this.workspaceMembersRepository.save(targetMembership);
   }
 
   async getWorkspaceMembers(
@@ -540,7 +590,7 @@ export class WorkspaceService {
     validateUUID(userId, 'User ID');
 
     const membership = await this.workspaceMembersRepository.findOne({
-      where: { workspaceId, userId },
+      where: { workspaceId, userId, status: UserWorkspaceStatus.ACTIVE },
     });
 
     if (!membership) {
@@ -548,11 +598,11 @@ export class WorkspaceService {
     }
 
     const memberships = await this.workspaceMembersRepository.find({
-      where: { workspaceId },
+      where: { workspaceId, status: UserWorkspaceStatus.ACTIVE },
       relations: ['user'],
     });
 
-    return memberships.map(membership => {
+    return memberships.map((membership) => {
       const workspaceMember = new WorkspaceMember();
       workspaceMember.userId = membership.userId;
       workspaceMember.role = membership.role;
