@@ -199,6 +199,9 @@ input LoginInput {
 }
 
 type Mutation {
+  """Accept a pending join request"""
+  acceptPendingInvite(userId: String!, workspaceId: String!): Boolean!
+
   """Accept workspace invitation with hash from email"""
   acceptWorkspaceInvitation(hash: String!): Boolean!
 
@@ -270,6 +273,9 @@ type Mutation {
 
   """Publish a document"""
   publishDocument(documentId: String!, workspaceId: String!): Document!
+
+  """Reject a pending join request"""
+  rejectPendingInvite(userId: String!, workspaceId: String!): Boolean!
 
   """Unmark a document as a favorite"""
   removeFavoriteDocument(input: FavoriteDocumentInput!): Document!
@@ -360,6 +366,9 @@ type Query {
 
   """Get invitation details from hash without accepting it"""
   getInvitationInfo(hash: String!): WorkspaceInvitationInfo!
+
+  """Get all pending join requests for a workspace"""
+  getPendingInvites(workspaceId: String!): [WorkspaceMember!]!
 
   """Users who follow a given user"""
   getUserFollowers(userId: String!): [User!]!

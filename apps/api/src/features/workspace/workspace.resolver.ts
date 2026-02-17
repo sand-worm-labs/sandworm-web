@@ -14,10 +14,14 @@ import { User } from '../user/model/graphql/user.model';
 import { Document } from '../document/model/document.model';
 import { WorkspaceInfo, WorkspaceMember } from './model/workspace-info.model';
 import { Public } from '@sandworm/nest-common';
+import { WorkspaceMembershipService } from './service/workspace-membership.service';
 
 @Resolver(() => Workspace)
 export class WorkspaceResolver {
-  constructor(private readonly workspaceService: WorkspaceService) { }
+  constructor(
+    private readonly workspaceService: WorkspaceService,
+    private readonly workspaceMembershipService: WorkspaceMembershipService,
+  ) { }
 
   @Query(() => Workspace, {
     name: 'getWorkspace',
@@ -57,7 +61,18 @@ export class WorkspaceResolver {
     @Args('workspaceId', { type: () => String }) workspaceId: string,
     @CurrentUser('id') userId: string
   ): Promise<WorkspaceMember[]> {
-    return this.workspaceService.getWorkspaceMembers(workspaceId, userId);
+    return this.workspaceMembershipService.getWorkspaceMembers(workspaceId, userId);
+  }
+
+  @Query(() => [WorkspaceMember], {
+    name: 'getPendingInvites',
+    description: 'Get all pending join requests for a workspace',
+  })
+  async getPendingInvites(
+    @Args('workspaceId', { type: () => String }) workspaceId: string,
+    @CurrentUser('id') userId: string,
+  ): Promise<WorkspaceMember[]> {
+    return this.workspaceMembershipService.getPendingInvites(workspaceId, userId);
   }
 
   @Mutation(() => Workspace, {
@@ -96,7 +111,7 @@ export class WorkspaceResolver {
     @Args('email', { type: () => String }) email: string,
     @Args('role', { type: () => UserWorkspaceRole, defaultValue: UserWorkspaceRole.VIEWER }) role: UserWorkspaceRole,
   ): Promise<boolean> {
-    await this.workspaceService.joinWorkspace(workspaceId, email, role);
+    await this.workspaceMembershipService.joinWorkspace(workspaceId, email, role);
     return true;
   }
 
@@ -132,7 +147,7 @@ export class WorkspaceResolver {
     @Args('workspaceId', { type: () => String }) workspaceId: string,
     @Args('userId', { type: () => String }) userIdtoRemove: string,
   ): Promise<boolean> {
-    await this.workspaceService.removeUserFromWorkspace(
+    await this.workspaceMembershipService.removeUserFromWorkspace(
       workspaceId,
       userIdtoRemove,
       adminId,
@@ -151,7 +166,7 @@ export class WorkspaceResolver {
     @Args('role', { type: () => String, nullable: true }) role?: string,
   ): Promise<boolean> {
     const userRole = (role as UserWorkspaceRole) || UserWorkspaceRole.VIEWER;
-    await this.workspaceService.inviteUserToWorkspace(
+    await this.workspaceMembershipService.inviteUserToWorkspace(
       workspaceId,
       email,
       inviterId,
@@ -168,7 +183,34 @@ export class WorkspaceResolver {
   async acceptWorkspaceInvitation(
     @Args('hash', { type: () => String }) hash: string,
   ): Promise<boolean> {
-    await this.workspaceService.acceptWorkspaceInvitation(hash);
+    await this.workspaceMembershipService.acceptWorkspaceInvitation(hash);
+    return true;
+  }
+
+  @Mutation(() => Boolean, {
+    name: 'acceptPendingInvite',
+    description: 'Accept a pending join request',
+  })
+  async acceptPendingInvite(
+    @CurrentUser('id') inviterId: string,
+    @Args('workspaceId', { type: () => String }) workspaceId: string,
+    @Args('userId', { type: () => String }) userId: string,
+  ): Promise<boolean> {
+    await this.workspaceMembershipService.acceptPendingInvite(workspaceId, userId, inviterId);
+    return true;
+  }
+
+  @Mutation(() => Boolean, {
+    name: 'rejectPendingInvite',
+    description: 'Reject a pending join request',
+  })
+  async rejectPendingInvite(
+    @CurrentUser('id') rejectedById: string,
+    @Args('workspaceId', { type: () => String }) workspaceId: string,
+    @Args('userId', { type: () => String }) userId: string,
+
+  ): Promise<boolean> {
+    await this.workspaceMembershipService.rejectPendingInvite(workspaceId, userId, rejectedById);
     return true;
   }
 
@@ -179,7 +221,7 @@ export class WorkspaceResolver {
   async getInvitationInfo(
     @Args('hash', { type: () => String }) hash: string,
   ): Promise<WorkspaceInvitationInfo> {
-    return await this.workspaceService.getInvitationInfo(hash);
+    return await this.workspaceMembershipService.getInvitationInfo(hash);
   }
 
 
