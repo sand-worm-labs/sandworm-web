@@ -320,7 +320,7 @@ type Mutation {
   updateUserSettings(input: UpdateUserSettingInput!): Boolean!
 
   """Update workspace info"""
-  updateWorkspace(name: String, workspaceId: String!): Workspace!
+  updateWorkspace(icon: String, name: String, workspaceId: String!): Workspace!
 }
 
 type Profile {

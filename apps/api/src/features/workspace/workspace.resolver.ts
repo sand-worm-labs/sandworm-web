@@ -123,8 +123,9 @@ export class WorkspaceResolver {
     @CurrentUser('id') ownerId: string,
     @Args('workspaceId', { type: () => String }) workspaceId: string,
     @Args('name', { type: () => String, nullable: true }) name?: string,
+    @Args('icon', { type: () => String, nullable: true }) icon?: string,
   ): Promise<Workspace> {
-    return this.workspaceService.updateWorkspace(workspaceId, { name, ownerId });
+    return this.workspaceService.updateWorkspace(workspaceId, { name, ownerId, icon });
   }
 
   @Mutation(() => Boolean, {
