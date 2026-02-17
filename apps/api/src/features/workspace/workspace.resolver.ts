@@ -95,7 +95,7 @@ export class WorkspaceResolver {
     @Args('email', { type: () => String }) email: string,
     @Args('role', { type: () => UserWorkspaceRole, defaultValue: UserWorkspaceRole.VIEWER }) role: UserWorkspaceRole,
   ): Promise<boolean> {
-    await this.workspaceService.sendUserInviiteRequest(workspaceId, email, role);
+    await this.workspaceService.sendUserInvite(workspaceId, email, role);
     return true;
   }
 
