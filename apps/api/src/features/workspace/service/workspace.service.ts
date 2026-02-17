@@ -234,7 +234,7 @@ export class WorkspaceService {
 
   async updateWorkspace(
     workspaceId: string,
-    data: { name?: string; ownerId?: string },
+    data: { name?: string; ownerId?: string, icon?: string },
   ): Promise<Workspace> {
     validateUUID(workspaceId, 'Workspace ID');
 
@@ -249,7 +249,7 @@ export class WorkspaceService {
     }
 
     const workspace = await this.workspaceRepository.findOne({
-      where: { id: workspaceId, ownerId: data.ownerId },
+      where: { id: workspaceId, ownerId: data.ownerId, icon: data.icon },
     });
 
     if (!workspace) {
