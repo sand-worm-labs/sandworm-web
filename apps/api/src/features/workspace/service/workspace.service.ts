@@ -2,9 +2,9 @@ import {
   Injectable,
   Logger,
   NotFoundException,
-  BadRequestException 
+  BadRequestException
 } from '@nestjs/common';
-import {  In, Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import {
   WorkspaceEntity,
   UserWorkspaceEntity,
@@ -22,7 +22,8 @@ import {
   validateNonEmptyString,
   validateStringLength,
 } from '@/common/utils/uuid';
-import { WorkspaceInfo} from '../model/workspace-info.model';
+import { WorkspaceInfo } from '../model/workspace-info.model';
+import { getRandomIconColor } from '@/common/utils/color';
 
 @Injectable()
 export class WorkspaceService {
@@ -98,8 +99,10 @@ export class WorkspaceService {
 
     await this.validateAndGetUser(data.ownerId, 'Owner');
 
+    const color = getRandomIconColor();
+
     const workspace = this.workspaceRepository.create({
-      icon: `blue`,
+      icon: color,
       name: data.name.trim(),
       ownerId: data.ownerId,
     });

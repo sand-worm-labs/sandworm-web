@@ -21,7 +21,7 @@ export enum Plan {
 
 export enum UserWorkspaceStatus {
     ACTIVE = 'active',
-    INACTIVE = 'inactive',
+    REMOVED = 'removed',
     PENDING = 'pending',
 }
 
