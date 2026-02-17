@@ -106,6 +106,7 @@ export class WorkspaceService {
     await this.validateAndGetUser(data.ownerId, 'Owner');
 
     const workspace = this.workspaceRepository.create({
+      icon: `blue`,
       name: data.name.trim(),
       ownerId: data.ownerId,
     });
@@ -190,7 +191,7 @@ export class WorkspaceService {
     }
 
     const membership = await this.workspaceMembersRepository.findOne({
-      where: { userId, workspaceId },
+      where: { userId, workspaceId, status: UserWorkspaceStatus.ACTIVE },
       relations: ['workspace'],
     });
 
@@ -217,17 +218,17 @@ export class WorkspaceService {
     await this.validateAndGetUser(userId, 'User');
 
     const userMembership = await this.workspaceMembersRepository.findOne({
-      where: { workspaceId, userId },
+      where: { workspaceId, userId, status: UserWorkspaceStatus.ACTIVE },
     });
 
-    if (!userMembership) {
+    if (!userMembership || userMembership.status !== UserWorkspaceStatus.ACTIVE) {
       throw new BadRequestException(
         'You must be a member of this workspace to view its users',
       );
     }
 
     const memberships = await this.workspaceMembersRepository.find({
-      where: { workspaceId },
+      where: { workspaceId, status: UserWorkspaceStatus.ACTIVE },
       relations: ['user'],
     });
 
@@ -608,6 +609,65 @@ export class WorkspaceService {
       workspaceMember.role = membership.role;
       workspaceMember.user = membership.user ? User.fromEntity(membership.user) : undefined;
       return workspaceMember;
+    });
+  }
+
+  async joinWorkspace(
+    workspaceId: string,
+    email: string,
+    role: UserWorkspaceRole = UserWorkspaceRole.VIEWER,
+  ): Promise<void> {
+    validateUUID(workspaceId, 'Workspace ID');
+    validateNonEmptyString(email, 'Email');
+
+    const workspace = await this.workspaceRepository.findOne({
+      where: { id: workspaceId },
+      relations: ['owner'],
+    });
+
+    if (!workspace) {
+      throw new NotFoundException('Workspace not found');
+    }
+
+    const user = await this.userRepository.findOne({
+      where: { email: email.toLowerCase() },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User with this email does not exist');
+    }
+
+    const existingMembership = await this.workspaceMembersRepository.findOne({
+      where: {
+        workspaceId,
+        userId: user.id,
+        status: Or(Equal(UserWorkspaceStatus.ACTIVE), Equal(UserWorkspaceStatus.PENDING)),
+      },
+    });
+
+    if (existingMembership) {
+      throw new BadRequestException('User is already a member of this workspace');
+    }
+
+    const userWorkspace = this.workspaceMembersRepository.create({
+      userId: user.id,
+      workspaceId,
+      role,
+      inviterId: null,
+      status: UserWorkspaceStatus.PENDING,
+    });
+
+    await this.workspaceMembersRepository.save(userWorkspace);
+
+    await this.mailService.workspaceJoinRequest({
+      to: workspace.owner.email,
+      data: {
+        userName: user.firstName || user.email,
+        userEmail: user.email,
+        workspaceName: workspace.name,
+        workspaceId: workspace.id,
+        role,
+      },
     });
   }
 }
