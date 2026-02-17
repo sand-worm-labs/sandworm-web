@@ -27,7 +27,6 @@ export default function UsersPage() {
   const session = useSession({ redirectToLogin: true });
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
-  // Use the new combined hook
   const {
     workspace,
     members,
@@ -44,10 +43,8 @@ export default function UsersPage() {
   const [searchValue, setSearchValue] = useState("");
   const [roleFilters, setRoleFilters] = useState<RoleFilter[]>([
     { role: "admin", label: "Admin", count: 0, enabled: false },
-    { role: "manager", label: "Manager", count: 0, enabled: false },
     { role: "editor", label: "Editor", count: 0, enabled: false },
     { role: "viewer", label: "Viewer", count: 0, enabled: false },
-    { role: "guest", label: "Guest", count: 0, enabled: false },
   ]);
 
   // Calculate role counts from members
@@ -176,16 +173,15 @@ export default function UsersPage() {
 
   return (
     <>
-      <ScrollBar className="w-full h-full overflow-auto">
+      <ScrollBar className="w-full h-full overflow-auto font-body">
         <div className="px-4 sm:p-6 lg:p-8 min-h-[100vh]">
-          <div className="border-b border-gray-200 dark:border-gray-800 pb-4 mb-6 flex justify-between items-center">
+          <div className=" dark:border-gray-800 pb-4 mb-6 flex justify-between items-center">
             <div>
-              <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-1">
+              <h2 className="text-xl font-medium text-ink-100 dark:text-white mb-1">
                 Users
               </h2>
-              <p className="mb-6 text-ink-400 dark:text-gray-400">
-                List of users in {workspace?.name} team
-              </p>
+              <p className="mb-6 text-ink-400 ">
+              View and manage everyone youve invited across all your workspaces.              </p>
             </div>
 
             <Tooltip

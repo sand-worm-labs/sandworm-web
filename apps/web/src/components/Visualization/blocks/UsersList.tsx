@@ -2,7 +2,9 @@ import { Menu, Transition } from "@headlessui/react";
 import { EllipsisVerticalIcon } from "@heroicons/react/24/solid";
 import clsx from "clsx";
 import { Fragment, useCallback, useMemo } from "react";
+import { Avatar } from "@sandworm/ui/components/avatar";
 
+import { Trash } from "@/components/Assets/Trash";
 import type { UserWorkspaceRole, WorkspaceUser } from "@/types";
 
 interface BadgeProps {
@@ -49,26 +51,16 @@ function UserItem(props: UserItemProps) {
 
   console.log("Rendering UserItem for user:", props.user.role);
 
+  console.log(props, "gg");
+
   const badge = useMemo(() => {
     switch (props.user.role) {
       case "admin":
-        return (
-          <Badge className="bg-green-100 text-green-800 border-green-200">
-            Admin
-          </Badge>
-        );
+        return <Badge className=" border-0">Admin</Badge>;
       case "editor":
-        return (
-          <Badge className="bg-blue-100 text-blue-800 border-blue-200">
-            Editor
-          </Badge>
-        );
+        return <Badge className=" border-0">Editor</Badge>;
       case "viewer":
-        return (
-          <Badge className="bg-gray-100 text-gray-800 border-gray-200">
-            Viewer
-          </Badge>
-        );
+        return <Badge className=" border-0">Viewer</Badge>;
       default:
         return null;
     }
@@ -112,28 +104,36 @@ function UserItem(props: UserItemProps) {
   }, [props.onResetPassword, props.user.id]);
 
   return (
-    <tr className="border-b border-[#CED4DA] dark:border-[#262A30] hover:bg-gray-50 dark:hover:bg-[#0D0F12] transition-colors">
-      <td className="whitespace-nowrap p-4 text-sm font-medium text-gray-900 dark:text-white">
+    <tr className="border-b border-[#E9ECEF] dark:border-[#262A30] hover:bg-gray-50 dark:hover:bg-[#0D0F12] transition-colors">
+      <td className="whitespace-nowrap p-4 text-sm font-medium text-[#1A1A1A] dark:text-white">
+        <Avatar />
         <span>{props.user.name}</span>{" "}
-        {props.isCurrentUser && <span className="text-gray-400">(You)</span>}
+        <span className="text-[#6C757D] inline-block font-light">
+          {" "}
+          {props.user.email}
+        </span>
       </td>
-      <td className="whitespace-nowrap p-4  text-sm text-gray-500">
-        {props.user.email}
+      <td className="whitespace-nowrap p-4  text-sm text-ink-100">
+        <span className="bg-[#F8F9FA] border border-[#DEE2E6] rounded-md px-3 py-1">
+          workspace
+        </span>
       </td>
-      <td className="whitespace-nowrap p-4  text-sm text-gray-500">
-        {/*  {new Date(props.user.createdAt).toISOString()} */}
+      <td className="whitespace-nowrap p-4  text-sm text-[#6C757D] font-medium">
+        {badge}
       </td>
-      <td className="whitespace-nowrap p-4  text-sm text-gray-500">{badge}</td>
-      <td className="whitespace-nowrap p-4  text-sm font-medium sm:pl-6 lg:pl-8 pr-4">
-        <Menu as="div" className="flex items-center justify-end relative">
+      <td className="whitespace-nowrap p-4  text-sm text-[#6C757D] font-medium">
+        10 mins ago
+      </td>
+      <td className="whitespace-nowrap p-4  text-sm font-medium sm:pl-6 lg:pl-8 pr-4 items-end flex w-full">
+        {/*  <Menu as="div" className="flex items-center justify-end relative">
           <Menu.Button
             as="span"
-            className={clsx(
-              props.isCurrentUser || props.role !== "admin"
+            className={
+              props.role !== "admin"
                 ? "hover:cursor-not-allowed"
                 : "hover:cursor-pointer hover:text-gray-900"
-            )}
-            disabled={props.isCurrentUser || props.role !== "admin"}
+            }
+            disabled={props.role !== "admin"}
           >
             <EllipsisVerticalIcon
               className="h-5 w-5 text-gray-400 "
@@ -141,7 +141,7 @@ function UserItem(props: UserItemProps) {
             />
             <span className="sr-only">Options for {props.user.name}</span>
 
-            {!props.isCurrentUser && props.role === "admin" && (
+            {props.isCurrentUser && props.role === "admin" && (
               <Transition
                 as={Fragment}
                 enter="transition ease-out duration-100"
@@ -173,7 +173,16 @@ function UserItem(props: UserItemProps) {
               </Transition>
             )}
           </Menu.Button>
-        </Menu>
+        </Menu> */}
+
+        <button
+          type="button"
+          onClick={onRemoveUser}
+          className="
+                          text-left w-full px-3 py-1 text-sm leading-6 text-red-600 block"
+        >
+          <Trash />
+        </button>
       </td>
     </tr>
   );
@@ -214,33 +223,33 @@ function UsersList(props: Props) {
   return (
     <div className="h-full">
       <div className="overflow-visible">
-        <div className="w-full overflow-x-auto border border-[#E9ECEF] rounded-t-2xl dark:border-[#262A30] border-b-0">
+        <div className="w-full overflow-x-auto dark:border-[#262A30] border-b-0">
           <table className="min-w-full border-collapse ">
-            <thead className=" bg-[#F1F3F4] dark:bg-[#0D0F12] rounded-t-2xl  sticky top-0 z-10">
+            <thead className="  rounded-t-2xl  sticky top-0 z-10 border-b border-[#E9ECEF]">
               <tr>
                 <th
                   scope="col"
-                  className="text-left p-4 text-xs font-medium text-ink-400 dark:text-ink-300  sticky left-0 bg-[#F1F3F4] dark:bg-[#0D0F12] min-w-[250px]"
+                  className="text-left p-4 text-xs font-bold text-ink-400 dark:text-ink-300  sticky left-0  min-w-[250px] uppercase"
                 >
-                  Name
+                  user
                 </th>
                 <th
                   scope="col"
-                  className="text-left p-4 text-xs font-medium text-ink-400 dark:text-ink-300  min-w-[120px]"
+                  className="text-left p-4 text-xs font-bold text-ink-400 dark:text-ink-300  min-w-[120px] uppercase"
                 >
-                  Email
+                  workspaces
                 </th>
                 <th
                   scope="col"
-                  className="text-left p-4 text-xs font-medium text-ink-400 dark:text-ink-300  min-w-[120px]"
-                >
-                  Status
-                </th>
-                <th
-                  scope="col"
-                  className="text-left p-4 text-xs font-medium text-ink-400 dark:text-ink-300  min-w-[120px]"
+                  className="text-left p-4 text-xs font-bold text-ink-400 dark:text-ink-300  min-w-[120px] uppercase"
                 >
                   Role
+                </th>
+                <th
+                  scope="col"
+                  className="text-left p-4 text-xs font-bold text-ink-400 dark:text-ink-300  min-w-[120px] uppercase"
+                >
+                  last active
                 </th>
                 <th
                   scope="col"

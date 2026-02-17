@@ -82,7 +82,7 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
     id: "1",
     username: "sandworm",
     fullName: "Sandworm Labs",
-    avatar: "/apps/web/public/img/",
+    avatar: "/img/avatar/avatar2.svg",
     followersCount: 0,
     followingCount: 0,
     statusText: "Building the future of collaborative blockchain analytics",
@@ -171,13 +171,14 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
             <Loader />
           </div>
         ) : !currentUser ? (
-          <div className="max-w-6xl mx-auto px-4 py-8">
+          <div className=" mx-auto px-4 py-8">
             <p className="text-center text-ink-200 dark:text-gray-400">
               No user found
             </p>
           </div>
         ) : (
           <div className="max-w-6xl mx-auto px-4 py-8">
+            <h2 className="text-base font-bold mb-4">Profile</h2>
             <div className="space-y-6">
               <div className="flex gap-x-4">
                 <div className="bg-white dark:bg-[#010100] rounded-2xl p-8 flex-1">
@@ -187,10 +188,10 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                         <img
                           src={mockProfile.avatar}
                           alt={mockProfile.username}
-                          className="w-32 h-32 rounded-full"
+                          className="w-[6rem] h-[6rem]  rounded-full"
                         />
                       ) : (
-                        <div className="w-32 h-32 rounded-full bg-[#A308F0] flex items-center justify-center">
+                        <div className="w-[7rem] h-[7rem] rounded-full bg-[#A308F0] flex items-center justify-center">
                           <User className="w-16 h-16 text-white" />
                         </div>
                       )}
@@ -199,10 +200,10 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                     <div className="flex-1 space-y-4">
                       <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                         <div>
-                          <p className="text-xl font-medium text-ink-100 dark:text-white">
+                          <p className="text-base capitalize font-medium text-ink-100 dark:text-white">
                             {currentUser.firstName || currentUser.username}
                           </p>
-                          <p className="text-ink-200 dark:text-gray-400">
+                          <p className="text-ink-200 text-[15px] font-medium mt-1">
                             @{currentUser.username}
                           </p>
                         </div>
@@ -243,48 +244,48 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                       </div>
 
                       {settings?.statusText && (
-                        <p className="text-[#6C757D] dark:text-white">
+                        <p className="text-[#6C757D] font-medium text-sm dark:text-white">
                           {settings.statusText}
                         </p>
                       )}
 
-                      <div className="flex flex-wrap gap-4 text-sm text-ink-200 dark:text-gray-400">
-                        {mockProfile.location && (
-                          <div className="flex items-center gap-1">
-                            <MapPin className="w-4 h-4" />
-                            {mockProfile.location}
-                          </div>
-                        )}
-                        {mockProfile.memberSince && (
-                          <div className="flex items-center gap-1">
-                            <Calendar className="w-4 h-4" />
-                            Joined{" "}
-                            {new Date(
-                              mockProfile.memberSince
-                            ).toLocaleDateString("en-US", {
-                              month: "short",
-                              year: "numeric",
-                            })}
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="flex gap-6 text-[0.95rem]">
+                      <div className="flex gap-4 gap-y-0 text-[0.95rem]">
                         <div>
-                          <span className="font-medium text-ink-100 dark:text-white">
+                          <span className="font-bold text-ink-100 dark:text-white">
                             {mockProfile.followersCount}
                           </span>{" "}
-                          <span className="text-ink-400 dark:text-gray-400 ml-1">
+                          <span className="text-ink-400  ml-0.5 font-medium text-sm">
                             Followers
                           </span>
                         </div>
                         <div>
-                          <span className="font-medium text-ink-100 dark:text-white">
+                          <span className="font-bold text-ink-100 dark:text-white">
                             {mockProfile.followingCount}
                           </span>{" "}
-                          <span className="text-ink-400 dark:text-gray-400 ml-1">
+                          <span className="text-ink-400  ml-0.5 font-medium text-sm">
                             Following
                           </span>
+                        </div>
+
+                        <div className="flex flex-wrap gap-4 text-sm text-ink-400 font-medium ">
+                          {mockProfile.location && (
+                            <div className="flex items-center gap-1">
+                              <MapPin className="w-4 h-4" />
+                              {mockProfile.location}
+                            </div>
+                          )}
+                          {mockProfile.memberSince && (
+                            <div className="flex items-center gap-1">
+                              <Calendar className="w-4 h-4" />
+                              Joined{" "}
+                              {new Date(
+                                mockProfile.memberSince
+                              ).toLocaleDateString("en-US", {
+                                month: "short",
+                                year: "numeric",
+                              })}
+                            </div>
+                          )}
                         </div>
                       </div>
 
@@ -311,7 +312,7 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                 </div>
 
                 <div className="w-full flex-1">
-                  {mockProfile.wallets && mockProfile.wallets.length > 0 && (
+                  {mockProfile.wallets && mockProfile.wallets.length > 0 ? (
                     <div className="bg-white dark:bg-[#010100] rounded-2xl p-6">
                       <h2 className="px-2 py-0.5 font-medium text-ink-100 dark:text-white mb-4 bg-[#E9ECEF] inline-block text-sm rounded-lg">
                         Main Wallets
@@ -320,7 +321,7 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                         {mockProfile.wallets.map((wallet, index) => (
                           <div
                             key={index}
-                            className="flex items-center justify-between p-4 py-2 rounded-2xl dark:border-[#262A30]   transition-colors bg-[#F8F9FA] border border-[#DEE2E6]"
+                            className="flex items-center justify-between p-4 py-2 rounded-xl dark:border-[#262A30]   transition-colors bg-[#F8F9FA] border border-[#DEE2E6]"
                           >
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-1">
@@ -353,15 +354,21 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                           </div>
                         ))}
                       </div>
+                      <button className="bg-[#A308F0] py-3 px-5 rounded-xl text-white mt-6 text-[#E9ECEF] xl:text-sm w-full text-start text-[13px] font-medium">
+                        Add Wallet
+                      </button>
+                      <button className="text-[#A308F0] mt-3 text-[13px] font-medium">
+                        All Wallets
+                      </button>
                     </div>
+                  ) : (
+                    <div />
                   )}
                 </div>
               </div>
 
-          
-
-              <div className="rounded-2xl p-6 ">
-                <h2 className="text-base font-bold text-ink-100 dark:text-white mb-4" >
+              <div className="rounded-2xl ">
+                <h2 className="text-base font-bold text-ink-100 dark:text-white mb-4">
                   Projects
                 </h2>
                 <div className="text-center py-12 min-h-[20rem] flex flex-col items-center justify-center gap-2">

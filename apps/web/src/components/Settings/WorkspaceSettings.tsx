@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import { XMarkIcon, CheckIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { Dialog, Transition } from "@headlessui/react";
 
 import { User } from "../Assets/Avatar/User";
 import { PencilSimple } from "../Assets/PencilSimple";
@@ -44,6 +45,7 @@ export default function WorkspaceSettingsModal({
   });
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -69,7 +71,7 @@ export default function WorkspaceSettingsModal({
       name: "Simon Cyril",
       email: "Simoncyril@gmail.com",
       role: "editor",
-      invitedAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000), 
+      invitedAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000),
     },
     {
       id: "2",
@@ -83,7 +85,7 @@ export default function WorkspaceSettingsModal({
       name: "Alejandro Rajaonarimampianina",
       email: "AlejandroRajaonarimampianina@gmail.com",
       role: "editor",
-      invitedAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000), 
+      invitedAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000),
     },
   ]);
 
@@ -465,6 +467,7 @@ export default function WorkspaceSettingsModal({
                   lost
                 </span>
                 <button
+                  onClick={() => setIsDeleteModalOpen(true)}
                   type="button"
                   className="bg-[#F8F9FA] text-[12px] py-1 px-2 rounded-lg border border-[#DEE2E6] text-[#ff0000] font-medium inline-block"
                 >
@@ -493,6 +496,15 @@ export default function WorkspaceSettingsModal({
             message: "I'd like to help with the dashboard",
           },
         ]}
+      />
+
+      <DeleteWorkspaceModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onDelete={() => {
+          setIsDeleteModalOpen(false);
+        }}
+        workspaceName={workspace?.name}
       />
 
       <EditWorkspaceProfileModal
@@ -697,5 +709,87 @@ export function EditWorkspaceProfileModal({
         </button>
       </div>
     </div>
+  );
+}
+
+interface DeleteWorkspaceModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onDelete: () => void;
+  workspaceName: string;
+}
+
+export function DeleteWorkspaceModal({
+  isOpen,
+  onClose,
+  onDelete,
+  workspaceName,
+}: DeleteWorkspaceModalProps) {
+  return (
+    <Transition appear show={isOpen} as={Fragment}>
+      <Dialog as="div" className="relative z-50" onClose={onClose}>
+        <Transition.Child
+          as={Fragment}
+          enter="ease-out duration-200"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-150"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div className="fixed inset-0 bg-[#0000001A]" />
+        </Transition.Child>
+
+        <div className="fixed inset-0 flex items-center justify-center p-4 font-body">
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-200"
+            enterFrom="opacity-0 scale-95"
+            enterTo="opacity-100 scale-100"
+            leave="ease-in duration-150"
+            leaveFrom="opacity-100 scale-100"
+            leaveTo="opacity-0 scale-95"
+          >
+            <Dialog.Panel className="w-full max-w-md rounded-xl bg-white p-6 py-8 shadow-xl relative">
+              <Dialog.Title className="text-lg font-medium text-ink-100">
+                Delete Workspace
+              </Dialog.Title>
+
+              <button
+                type="button"
+                onClick={onClose}
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+              >
+                <XMarkIcon className="h-5 w-5" />
+              </button>
+
+              <p className="mt-3 text-sm text-ink-100">
+                You are about to delete workspace{" "}
+                <span className="font-semibold text-primary">
+                  {workspaceName}
+                </span>
+              </p>
+
+              <div className="mt-6 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={onDelete}
+                  className="rounded-xl bg-error px-6 py-2 text-sm font-medium text-[#F8F9FA] hover:bg-red-700"
+                >
+                  Delete
+                </button>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="rounded-xl border border-[#DEE2E6] bg-[#F8F9FA] px-6 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+              </div>
+            </Dialog.Panel>
+          </Transition.Child>
+        </div>
+      </Dialog>
+    </Transition>
   );
 }
