@@ -7,7 +7,7 @@ import {
 import { IoFilterOutline } from "react-icons/io5";
 
 export interface RoleFilter {
-  role: "admin" | "manager" | "editor" | "viewer" | "guest";
+  role: "editor" | "admin" | "viewer";
   label: string;
   count: number;
   enabled: boolean;
@@ -34,11 +34,6 @@ export function UserControl({
 
   return (
     <div className="space-y-4 max-w-[28rem]">
-      {/* Header */}
-      <h2 className="text-base font-medium text-[#050818] dark:text-gray-100">
-        Users ({totalUsers})
-      </h2>
-
       {/* Controls */}
       <div className="flex items-center gap-3">
         {/* Search Input */}
@@ -46,10 +41,10 @@ export function UserControl({
           <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
           <input
             type="text"
-            placeholder="Name or email..."
+            placeholder="Search Name or email..."
             value={searchValue}
             onChange={e => onSearchChange(e.target.value)}
-            className="w-full pl-10 pr-16 py-1 h-8  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-ink-300  placeholder-[#455768] focus:outline-none focus:ring focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4]"
+            className="w-full pl-10 pr-16 py-1 h-8  rounded-lg dark:bg-[#1A1A1A]  dark:text-white placeholder:dark:text-ink-300  placeholder-[#868E96] focus:outline-none focus:ring focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#EBF7F7] placeholder:text-[#868E96]"
           />
         </div>
 
@@ -78,8 +73,8 @@ export function UserControl({
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Popover.Panel className="absolute right-0  mt-2 w-40 origin-top-right rounded-xl border border-[#CED4DA]  bg-white z-40  shadow-lg focus:outline-none dark:border-gray-600 dark:bg-gray-800">
-                  <div className="p-4">
+                <Popover.Panel className="absolute right-0  mt-2 w-[12rem] origin-top-right rounded-xl border border-[#CED4DA]  bg-white z-40  shadow-lg focus:outline-none dark:border-gray-600 dark:bg-gray-800">
+                  <div className="p-4 px-2.5">
                     {/* Header */}
                     <div className="mb-3 flex items-center justify-between">
                       <span className="text-[0.65rem] font-medium uppercase tracking-wider text-gray-400">
@@ -111,15 +106,15 @@ export function UserControl({
                                   e.target.checked
                                 )
                               }
-                              className="h-4 w-4 cursor-pointer appearance-none rounded border-2 border-[#CED4DA] bg-white transition-colors checked:border-[#A308F0] checked:bg-[#A308F0] focus:outline-none focus:ring-2 focus:ring-[#A308F0] focus:ring-offset-2 focus:ring-none dark:border-gray-500 dark:bg-gray-700"
+                              className="h-4 w-4 cursor-pointer appearance-none rounded border border-[#D0D5DD] bg-white transition-colors checked:border-[#A308F0] checked:bg-[#A308F0] focus:outline-none focus:ring-2 focus:ring-[#A308F0] focus:ring-offset-1 focus:ring-none "
                             />
                             {filter.enabled && (
                               <svg
                                 className="pointer-events-none absolute left-0.5 top-0.5 h-3 w-3 text-white"
                                 fill="none"
                                 viewBox="0 0 24 24"
-                                stroke="currentColor"
-                                strokeWidth={3}
+                                stroke="#D0D5DD"
+                                strokeWidth={2}
                               >
                                 <path
                                   strokeLinecap="round"
@@ -129,10 +124,10 @@ export function UserControl({
                               </svg>
                             )}
                           </div>
-                          <span className="flex-1 text-sm font-medium text-ink-200 dark:text-gray-100">
+                          <span className="flex-1 ml-2 text-sm font-medium text-[#6C757D] dark:text-gray-100">
                             {filter.label}
                           </span>
-                          <span className="text-sm text-gray-400 dark:text-gray-400">
+                          <span className="text-sm text-[#6C757D] font-medium">
                             ({filter.count})
                           </span>
                         </label>

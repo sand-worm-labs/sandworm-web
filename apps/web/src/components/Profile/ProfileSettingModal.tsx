@@ -9,7 +9,7 @@ import {
   Transition,
   TransitionChild,
 } from "@headlessui/react";
-import { X, Pencil } from "lucide-react";
+import { X } from "lucide-react";
 
 import { useProfileForm } from "@/hooks/useProfileSettings";
 
@@ -52,10 +52,10 @@ interface ProfileSettingsModalProps {
 }
 
 const inputClassName =
-  "w-full px-3 py-3.5 rounded-xl bg-white dark:bg-[#1A1A1A] border border-[#DEE2E6] dark:border-[#262A30] text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#A308F0]/50 focus:border-[#A308F0] transition text-sm";
+  "w-full px-3 py-2.5 rounded-xl bg-white dark:bg-[#1A1A1A] border border-[#DEE2E6] dark:border-[#262A30] text-[#868E96] dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#A308F0]/50 focus:border-[#A308F0] transition text-sm";
 
 const labelClassName =
-  "block text-sm font-medium text-[#6C757D] dark:text-gray-300 mb-2 uppercase font-bold ";
+  "block text-xs font-bold text-[#6C757D] dark:text-gray-300 mb-2 uppercase font-bold ";
 
 export function ProfileSettingsModal({
   isOpen,
@@ -104,7 +104,7 @@ export function ProfileSettingsModal({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" />
+          <div className="fixed inset-0 bg-[#0000001A]" />
         </TransitionChild>
 
         {/* Modal container */}
@@ -119,35 +119,63 @@ export function ProfileSettingsModal({
               leaveFrom="opacity-100 scale-100 translate-y-0"
               leaveTo="opacity-0 scale-95 translate-y-4"
             >
-              <DialogPanel className="w-full max-w-4xl transform overflow-hidden rounded-[32px] bg-white dark:bg-[#121417]  transition-all">
+              <DialogPanel className="w-full max-w-4xl transform overflow-hidden rounded-[32px] bg-white dark:bg-[#121417]  transition-all pt-5">
                 {/* Header */}
-                <div className="flex items-center justify-between px-10 py-6">
-                  <div>
-                    <ProfileCardIcon />
-
-                    <DialogTitle
-                      as="h2"
-                      className="text-base font-semibold text-gray-900 dark:text-white mt-3"
-                    >
-                      Edit Profile
-                    </DialogTitle>
-                    <p className="text-[#6C757D] text-sm mt-1.5">
-                      Change details relating to how other users see your
-                      account
-                    </p>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={handleClose}
-                    className="p-2 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                  >
-                    <X size={20} />
-                  </button>
-                </div>
 
                 {/* Form */}
                 <form onSubmit={handleSubmit}>
+                  <div className="flex items-center justify-between px-10 py-6">
+                    <div className="flex justify-between w-full">
+                      <div>
+                        <ProfileCardIcon />
+
+                        <DialogTitle
+                          as="h2"
+                          className="text-base font-semibold text-ink-100 dark:text-white mt-3"
+                        >
+                          Edit Profile
+                        </DialogTitle>
+                        <p className="text-[#6C757D] text-sm mt-1.5">
+                          Change details relating to how other users see your
+                          account
+                        </p>
+                      </div>
+
+                      {/* Avatar Section */}
+                      <div className="flex flex-col items-center md:items-start shrink-0">
+                        <div className="relative group">
+                          <button
+                            type="button"
+                            disabled
+                            className="mt-3 flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-gray-400 dark:text-gray-500 border-none dark:border-[#262A30] rounded-lg  dark:bg-[#121417] cursor-not-allowed opacity-50 absolute top-[50%] translate-y-[-70%]"
+                          >
+                            Click to Change Image
+                          </button>
+                          {user?.avater ? (
+                            <Image
+                              src={user.avater}
+                              width={60}
+                              height={60}
+                              alt={
+                                user.fullName || user.username || "User avatar"
+                              }
+                              className="rounded-full border-2 border-gray-200 dark:border-gray-700"
+                            />
+                          ) : (
+                            <div className="w-[88px] h-[88px] rounded-full border-2 border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-[#363C46] flex items-center justify-center">
+                              <span className="text-3xl font-medium text-gray-400 dark:text-gray-500">
+                                {(
+                                  user?.firstName?.[0] ||
+                                  user?.username?.[0] ||
+                                  "?"
+                                ).toUpperCase()}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                   <div className="px-10 py-6 max-h-[70vh] overflow-y-auto">
                     {/* Status Messages */}
                     {updateSuccess && (
@@ -242,79 +270,56 @@ export function ProfileSettingsModal({
                               value={formData.bio}
                               onChange={handleChange}
                             />
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                              Share a bit about yourself and your focus areas
-                            </p>
                           </div>
                         </section>
 
                         {/* Social Accounts */}
-                        <section className="space-y-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                          <h3 className="text-xs font-bold text-ink-100 dark:text-white  tracking-wide">
+                        <section className="space-y-4 pt-4  dark:border-gray-700">
+                          <h3 className="text-xs font-bold text-ink-100 dark:text-white ">
                             Social Media
                           </h3>
 
-                          <div className="space-y-3">
-                            <input
-                              type="text"
-                              name="github"
-                              placeholder="GitHub Profile URL"
-                              className={inputClassName}
-                              value={formData.github}
-                              onChange={handleChange}
-                            />
-                            <input
-                              type="text"
-                              name="discord"
-                              placeholder="Discord Username"
-                              className={inputClassName}
-                              value={formData.discord}
-                              onChange={handleChange}
-                            />
-                            <input
-                              type="text"
-                              name="telegram"
-                              placeholder="Telegram Handle"
-                              className={inputClassName}
-                              value={formData.telegram}
-                              onChange={handleChange}
-                            />
+                          <div className="gap-4 grid grid-cols-2">
+                            <div>
+                              <label className={labelClassName}>github</label>
+
+                              <input
+                                type="text"
+                                name="github"
+                                placeholder="GitHub Profile URL"
+                                className={inputClassName}
+                                value={formData.github}
+                                onChange={handleChange}
+                              />
+                            </div>
+
+                            <div>
+                              <label className={labelClassName}>discord</label>
+
+                              <input
+                                type="text"
+                                name="discord"
+                                placeholder="Discord Username"
+                                className={inputClassName}
+                                value={formData.discord}
+                                onChange={handleChange}
+                              />
+                            </div>
+
+                            <div>
+                              <label className={labelClassName}>telegram</label>
+
+                              <input
+                                type="text"
+                                name="telegram"
+                                placeholder="Telegram Handle"
+                                className={inputClassName}
+                                value={formData.telegram}
+                                onChange={handleChange}
+                              />
+                            </div>
                           </div>
                         </section>
-                      </div>
-
-                      {/* Avatar Section */}
-                      <div className="flex flex-col items-center md:items-start shrink-0">
-                        <div className="relative group">
-                          <button
-                            type="button"
-                            disabled
-                            className="mt-3 flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-gray-400 dark:text-gray-500 border-none dark:border-[#262A30] rounded-lg  dark:bg-[#121417] cursor-not-allowed opacity-50"
-                          >
-                            Click to Change Image
-                          </button>
-                          {user?.avater ? (
-                            <Image
-                              src={user.avater}
-                              width={120}
-                              height={120}
-                              alt={
-                                user.fullName || user.username || "User avatar"
-                              }
-                              className="rounded-full border-2 border-gray-200 dark:border-gray-700"
-                            />
-                          ) : (
-                            <div className="w-[120px] h-[120px] rounded-full border-2 border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-[#363C46] flex items-center justify-center">
-                              <span className="text-3xl font-medium text-gray-400 dark:text-gray-500">
-                                {(
-                                  user?.firstName?.[0] ||
-                                  user?.username?.[0] ||
-                                  "?"
-                                ).toUpperCase()}
-                              </span>
-                            </div>
-                          )}
-                        </div>
                       </div>
                     </div>
                   </div>
