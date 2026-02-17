@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class Init1771350484695 implements MigrationInterface {
-    name = 'Init1771350484695'
+export class Init1771368431587 implements MigrationInterface {
+    name = 'Init1771368431587'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
@@ -125,7 +125,7 @@ export class Init1771350484695 implements MigrationInterface {
             CREATE TYPE "public"."user_workspace_role_enum" AS ENUM('editor', 'viewer', 'admin')
         `);
         await queryRunner.query(`
-            CREATE TYPE "public"."user_workspace_status_enum" AS ENUM('active', 'inactive', 'pending')
+            CREATE TYPE "public"."user_workspace_status_enum" AS ENUM('active', 'removed', 'pending')
         `);
         await queryRunner.query(`
             CREATE TABLE "user_workspace" (
@@ -362,15 +362,6 @@ export class Init1771350484695 implements MigrationInterface {
             )
         `);
         await queryRunner.query(`
-            CREATE TABLE "socket_io_attachments" (
-                "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-                "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-                "id" BIGSERIAL NOT NULL,
-                "payload" bytea NOT NULL,
-                CONSTRAINT "PK_dc5b76127041ee7cfa4d5f416d1" PRIMARY KEY ("id")
-            )
-        `);
-        await queryRunner.query(`
             CREATE TABLE "tag" (
                 "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
                 "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
@@ -381,6 +372,15 @@ export class Init1771350484695 implements MigrationInterface {
         `);
         await queryRunner.query(`
             CREATE UNIQUE INDEX "UQ_tag_name" ON "tag" ("name")
+        `);
+        await queryRunner.query(`
+            CREATE TABLE "socket_io_attachments" (
+                "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+                "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+                "id" BIGSERIAL NOT NULL,
+                "payload" bytea NOT NULL,
+                CONSTRAINT "PK_dc5b76127041ee7cfa4d5f416d1" PRIMARY KEY ("id")
+            )
         `);
         await queryRunner.query(`
             CREATE TABLE "sessions" (
@@ -696,13 +696,13 @@ export class Init1771350484695 implements MigrationInterface {
             DROP TABLE "sessions"
         `);
         await queryRunner.query(`
+            DROP TABLE "socket_io_attachments"
+        `);
+        await queryRunner.query(`
             DROP INDEX "public"."UQ_tag_name"
         `);
         await queryRunner.query(`
             DROP TABLE "tag"
-        `);
-        await queryRunner.query(`
-            DROP TABLE "socket_io_attachments"
         `);
         await queryRunner.query(`
             DROP TABLE "yjs_update"
