@@ -247,6 +247,9 @@ type Mutation {
   """Delete a schedule"""
   deleteSchedule(input: DeleteScheduleInput!): Boolean!
 
+  """Delete a workspace"""
+  deleteWorkspace(workspaceId: String!): Boolean!
+
   """Create a fork/duplicate of a document"""
   duplicateDocument(input: DuplicateDocumentInput!): Document!
 
@@ -258,6 +261,9 @@ type Mutation {
 
   """Invite a user to workspace by email"""
   inviteUserToWorkspace(email: String!, role: String, workspaceId: String!): Boolean!
+
+  """Join a workspace"""
+  joinWorkspace(email: String!, role: UserWorkspaceRole! = VIEWER, workspaceId: String!): Boolean!
 
   """Sign in"""
   login(input: LoginInput!): AuthPayload!
@@ -526,8 +532,16 @@ type UserSetting {
   wallets: [JSON!]!
 }
 
+"""User role within a workspace"""
+enum UserWorkspaceRole {
+  ADMIN
+  EDITOR
+  VIEWER
+}
+
 type Workspace {
   documents: [Document!]!
+  icon: String
   id: String!
   name: String!
   owner: User!

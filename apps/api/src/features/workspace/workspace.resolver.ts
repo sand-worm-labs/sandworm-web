@@ -86,16 +86,17 @@ export class WorkspaceResolver {
     return true;
   }
 
+  @Public()
   @Mutation(() => Boolean, {
-    name: 'sendUserInviiteRequest',
-    description: 'Send user invite request to join workspace',
+    name: 'joinWorkspace',
+    description: 'Join a workspace',
   })
-  async sendUserInviiteRequest(
+  async joinWorkspace(
     @Args('workspaceId', { type: () => String }) workspaceId: string,
     @Args('email', { type: () => String }) email: string,
     @Args('role', { type: () => UserWorkspaceRole, defaultValue: UserWorkspaceRole.VIEWER }) role: UserWorkspaceRole,
   ): Promise<boolean> {
-    await this.workspaceService.sendUserInvite(workspaceId, email, role);
+    await this.workspaceService.joinWorkspace(workspaceId, email, role);
     return true;
   }
 

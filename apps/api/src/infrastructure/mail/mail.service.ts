@@ -230,4 +230,56 @@ export class MailService {
     });
   }
 
+  async workspaceJoinRequest(
+    mailData: MailData<{
+      userName: string;
+      userEmail: string;
+      workspaceName: string;
+      workspaceId: string;
+      role: string;
+    }>,
+  ): Promise<void> {
+    const i18n = I18nContext.current();
+    let joinRequestTitle: MaybeType<string>;
+    let actionTitle: MaybeType<string>;
+
+    if (i18n) {
+      [joinRequestTitle, actionTitle] = await Promise.all([
+        i18n.t('app.email.workspace_join_request.title'),
+        i18n.t('app.email.workspace_join_request.action_title'),
+      ]);
+    }
+
+    const url = new URL(
+      this.configService.getOrThrow('app.frontendDomain', {
+        infer: true,
+      }) + `/workspace/${mailData.data.workspaceId}/account`,
+    );
+
+    await this.mailerService.sendMail({
+      to: mailData.to,
+      subject: joinRequestTitle || `Join request for ${mailData.data.workspaceName}`,
+      text: `${mailData.data.userName || mailData.data.userEmail} wants to join ${mailData.data.workspaceName}`,
+      templatePath: path.join(
+        this.configService.getOrThrow('app.workingDirectory', {
+          infer: true,
+        }),
+        'src',
+        'infrastructure',
+        'mail',
+        'mail-templates',
+        'workspace-join-request.hbs',
+      ),
+      context: {
+        title: joinRequestTitle || 'Workspace Join Request',
+        url: url.toString(),
+        actionTitle: actionTitle || 'Review Request',
+        app_name: this.configService.get('app.name', { infer: true }),
+        userName: mailData.data.userName,
+        userEmail: mailData.data.userEmail,
+        workspaceName: mailData.data.workspaceName,
+        role: mailData.data.role,
+      },
+    });
+  }
 }
