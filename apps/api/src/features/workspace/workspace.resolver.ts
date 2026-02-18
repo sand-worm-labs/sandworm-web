@@ -148,7 +148,7 @@ export class WorkspaceResolver {
     @Args('workspaceId', { type: () => String }) workspaceId: string,
     @Args('userId', { type: () => String }) userIdtoRemove: string,
   ): Promise<boolean> {
-    await this.workspaceMembershipService.removeUserFromWorkspace(
+    await this.workspaceMembershipService.softRemoveUserFromWorkspace(
       workspaceId,
       userIdtoRemove,
       adminId,
