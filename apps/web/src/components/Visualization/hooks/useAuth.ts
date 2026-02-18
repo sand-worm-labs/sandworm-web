@@ -21,7 +21,8 @@ type SignupApi = {
     email: string,
     password: string,
     firstName: string,
-    lastName: string
+    lastName: string,
+    username: string
   ) => void;
 };
 
@@ -120,7 +121,13 @@ export const useSignup = (): UseSignup => {
   });
 
   const signupWithEmail = useCallback(
-    (email: string, password: string, firstName: string, lastName: string) => {
+    (
+      email: string,
+      password: string,
+      firstName: string,
+      lastName: string,
+      username: string
+    ) => {
       setState(s => ({ ...s, loading: true }));
       fetch(`${NEXT_PUBLIC_API_URL()}/auth/email/register`, {
         credentials: "include",
@@ -131,6 +138,7 @@ export const useSignup = (): UseSignup => {
           password,
           firstName,
           lastName,
+          username,
           callback: NEXT_PUBLIC_PUBLIC_URL(),
         }),
       })

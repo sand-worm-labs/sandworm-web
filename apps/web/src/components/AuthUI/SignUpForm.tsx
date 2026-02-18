@@ -1,17 +1,21 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { useSignup } from "../Visualization/hooks/useAuth";
 import { Spinner } from "../Spinner/Spinner";
 
-type Step = 1 | 2;
+import { ClaimUsernameStep } from "./ClaimUsername";
+
+type Step = 1 | 2 | 3;
 
 export default function SignUpForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const [step, setStep] = useState<Step>(1);
+  const stepParam = Number(searchParams.get("step") ?? "1") as Step;
+  const [step, setStep] = useState<Step>(stepParam);
   const [localError, setLocalError] = useState("");
 
   const [formData, setFormData] = useState({
@@ -23,18 +27,17 @@ export default function SignUpForm() {
 
   const [state, { signupWithEmail }] = useSignup();
 
-  // refs for autofocus
   const firstNameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (step === 1) {
-      firstNameRef.current?.focus();
-    }
+    const incoming = Number(searchParams.get("step") ?? "1") as Step;
+    setStep(incoming);
+  }, [searchParams]);
 
-    if (step === 2) {
-      emailRef.current?.focus();
-    }
+  useEffect(() => {
+    if (step === 1) firstNameRef.current?.focus();
+    if (step === 2) emailRef.current?.focus();
   }, [step]);
 
   useEffect(() => {
@@ -43,42 +46,39 @@ export default function SignUpForm() {
     }
   }, [state.data, router]);
 
+  const goToStep = (s: Step) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("step", String(s));
+    router.push(`?${params.toString()}`);
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleNext = () => {
     const { firstName, lastName } = formData;
-
     if (!firstName.trim() || !lastName.trim()) {
       setLocalError("First and last name are required.");
       return;
     }
-
     setLocalError("");
-    setStep(2);
+    goToStep(2);
   };
 
-  const handleBack = () => {
-    setLocalError("");
-    setStep(1);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setLocalError("");
-
-    const { firstName, lastName, email, password } = formData;
-
+  const handleToUsername = () => {
+    const { email, password } = formData;
     if (!email.trim() || !password.trim()) {
       setLocalError("Email and password are required.");
       return;
     }
+    setLocalError("");
+    goToStep(3);
+  };
 
-    signupWithEmail(email, password, firstName, lastName);
+  const handleClaim = (username: string) => {
+    const { firstName, lastName, email, password } = formData;
+    signupWithEmail(email, password, firstName, lastName, username);
   };
 
   const displayError =
@@ -86,9 +86,23 @@ export default function SignUpForm() {
       ? "An unexpected error occurred. Please try again."
       : localError;
 
+  // Step 3 renders ClaimUsernameStep — no wrapper form needed
+  if (step === 3) {
+    return (
+      <ClaimUsernameStep onSubmit={handleClaim} isLoading={state.loading} />
+    );
+  }
+
   return (
     <form
-      onSubmit={step === 2 ? handleSubmit : e => e.preventDefault()}
+      onSubmit={
+        step === 2
+          ? e => {
+              e.preventDefault();
+              handleToUsername();
+            }
+          : e => e.preventDefault()
+      }
       className="mt-4 space-y-3 font-primary w-full"
     >
       {step === 1 && (
@@ -101,7 +115,6 @@ export default function SignUpForm() {
             onChange={handleChange}
             className="mt-1 w-full rounded-3xl dark:bg-[#121417] bg-white p-2.5 px-5 text-ink-100 dark:text-white border border-[#DEE2E6] dark:border-[#262A30] focus:border-primary focus:ring-1 focus:ring-[#A308F0] outline-none text-[0.9rem]"
           />
-
           <input
             name="lastName"
             placeholder="Last name"
@@ -109,7 +122,6 @@ export default function SignUpForm() {
             onChange={handleChange}
             className="mt-1 w-full rounded-3xl dark:bg-[#121417] bg-white p-2.5 px-5 text-ink-100 dark:text-white border border-[#DEE2E6] dark:border-[#262A30] focus:border-primary focus:ring-1 focus:ring-[#A308F0] outline-none text-[0.9rem]"
           />
-
           <button
             type="button"
             onClick={handleNext}
@@ -131,7 +143,6 @@ export default function SignUpForm() {
             onChange={handleChange}
             className="mt-1 w-full rounded-3xl dark:bg-[#121417] bg-white p-2.5 px-5 text-ink-100 dark:text-white border border-[#DEE2E6] dark:border-[#262A30] focus:border-primary focus:ring-1 focus:ring-[#A308F0] outline-none text-[0.9rem]"
           />
-
           <input
             type="password"
             name="password"
@@ -140,20 +151,11 @@ export default function SignUpForm() {
             onChange={handleChange}
             className="mt-1 w-full rounded-3xl dark:bg-[#121417] bg-white p-2.5 px-5 text-ink-100 dark:text-white border border-[#DEE2E6] dark:border-[#262A30] focus:border-primary focus:ring-1 focus:ring-[#A308F0] outline-none text-[0.9rem]"
           />
-
           <button
             type="submit"
-            disabled={state.loading}
-            className="w-full rounded-3xl bg-[#0F0F0F] px-4 py-3.5 text-white font-medium disabled:bg-[#868E96] text-sm font-body flex items-center justify-center gap-2"
+            className="w-full rounded-3xl bg-[#0F0F0F] px-4 py-3.5 text-white font-medium text-sm font-body"
           >
-            {state.loading ? (
-              <>
-                <Spinner />
-                Creating Account
-              </>
-            ) : (
-              "Create Account"
-            )}
+            Continue
           </button>
         </>
       )}

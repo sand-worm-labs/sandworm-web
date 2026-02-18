@@ -1,14 +1,22 @@
 import { SignUp } from "@/components/AuthUI/SignUp";
 import { Stepper } from "@/components/AuthUI/Stepper";
 
-export default function SignUpPage() {
+export default function SignUpPage({
+  searchParams,
+}: {
+  searchParams: { step?: string };
+}) {
+  const step = Number(searchParams.step ?? "1");
+  const currentStep = Math.min(Math.max(step - 1, 0), 2); // 0-indexed
+
   return (
     <div className="h-full min-h-0 flex flex-col overflow-hidden">
       <Stepper
-        currentStep={0}
+        currentStep={currentStep}
         steps={[
-          { name: "Sign Up", href: "/signup" },
-          { name: "Setup Sundomain", href: "/claim" },
+          { name: "Personal Info", href: "/signup?step=1" },
+          { name: "Credentials", href: "/signup?step=2" },
+          { name: "Claim Handle", href: "/signup?step=3" },
         ]}
       />
 
