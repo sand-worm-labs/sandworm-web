@@ -9,8 +9,6 @@ import { Button } from "@sandworm/ui/components/button";
 
 import { Username } from "../Assets/Username";
 
-// ⚙️ Schema for username validation
-// =====================================
 const usernameSchema = z
   .string()
   .min(2, { message: "Username must be at least 2 characters." })
@@ -20,18 +18,23 @@ const usernameSchema = z
   });
 
 // ⚛️ =====================================
-// CLAIM USERNAME COMPONENT
+// CLAIM USERNAME STEP — embeddable, no outer layout
 // =====================================
-export const ClaimUsername = () => {
+interface ClaimUsernameStepProps {
+  onSubmit: (username: string) => void;
+  isLoading?: boolean;
+}
+
+export const ClaimUsernameStep = ({
+  onSubmit,
+  isLoading,
+}: ClaimUsernameStepProps) => {
   const [username, setUsername] = useState("");
   const [status, setStatus] = useState<
     "idle" | "checking" | "available" | "taken" | "invalid"
   >("idle");
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
 
-  // ⬢ Check Subdomain availability
-  // =====================================
   const checkUsername = async (name: string) => {
     const validation = usernameSchema.safeParse(name);
 
@@ -44,11 +47,8 @@ export const ClaimUsername = () => {
     setStatus("checking");
     setError(null);
 
-    await new Promise<void>(resolve => {
-      setTimeout(resolve, 500);
-    });
+    await new Promise<void>(resolve => setTimeout(resolve, 500));
 
-    // 💭 for demo purpose only. assume "si" is taken
     if (name.toLowerCase() === "si") {
       setStatus("taken");
       setError("Username is already taken.");
@@ -57,20 +57,12 @@ export const ClaimUsername = () => {
     }
   };
 
-  // ⬢ Handle Subdomain Claim Submission
-  // =====================================
-  const handleSubmit = () => {
-    if (status === "available") {
-      router.push("/check-mail");
-    }
-  };
-
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen px-4 py-12 w-full">
+    <div className="flex flex-col items-center justify-center px-4 py-12 w-full">
       <Username />
 
       <div className="w-full max-w-md mx-auto space-y-4 text-center">
-        <h2 className="text-2xl font-bold font-primary mt-4">
+        <h2 className="text-2xl font-bold font-primary text-ink-100 mt-4">
           Claim your Sandworm domain
         </h2>
         <p className="text-sm font-medium text-ink-200 dark:text-white font-primary mb-4">
@@ -79,7 +71,6 @@ export const ClaimUsername = () => {
           Sandworm.
         </p>
 
-        {/* ═══ Username Input Section ═══ */}
         <div className="space-y-2">
           <div className="flex mb-6">
             <Input
@@ -90,23 +81,16 @@ export const ClaimUsername = () => {
               className="bg-[#F8F9FA] dark:bg-[#1A1A1A] text-ink-500 dark:text-white border-[#DEE2E6] py-6 rounded-xl font-primary font-medium text-base"
             />
             <Button
-              disabled={status !== "available"}
-              onClick={handleSubmit}
+              disabled={status !== "available" || isLoading}
+              onClick={() => onSubmit(username)}
               className="bg-black text-white rounded-lg ml-2 py-6 font-primary disabled:bg-[#868E96] disabled:text-[#DEE2E6] disabled:opacity-1"
             >
-              Claim handle
+              {isLoading ? "Creating..." : "Claim handle"}
             </Button>
           </div>
 
-          {/* ═══ Username Preview ═══ */}
-          {/* ═══ Username Preview ═══ */}
           <span
-            className="
-    text-xl text-[#D0DCE4] green-gradient
-    py-4 px-5 rounded-xl font-semibold mt-5
-    inline-block box-gradient
-    max-w-full truncate whitespace-nowrap overflow-hidden
-  "
+            className="text-xl text-[#D0DCE4] green-gradient py-4 px-5 rounded-xl font-semibold mt-5 inline-block box-gradient max-w-full truncate whitespace-nowrap overflow-hidden"
             title={
               username
                 ? `${username}.sandwormlabs.xyz`
@@ -118,7 +102,6 @@ export const ClaimUsername = () => {
               : "username.sandwormlabs.xyz"}
           </span>
 
-          {/* ═══ Validation Feedback ═══ */}
           {error && (
             <p className="text-xs text-destructive font-primary">{error}</p>
           )}
@@ -128,7 +111,7 @@ export const ClaimUsername = () => {
             </p>
           )}
 
-          <ul className="text-xs font-primary space-y-1 list-disc pl-4 text-left">
+          <ul className="text-xs font-primary space-y-1 list-disc pl-4 text-left text-ink-400">
             <li
               className={
                 username.length > 14
@@ -150,8 +133,21 @@ export const ClaimUsername = () => {
           </ul>
         </div>
       </div>
+    </div>
+  );
+};
 
-      <div className="flex-col  gap-2 absolute bottom-[4rem] w-full flex items-center justify-center">
+// ⚛️ =====================================
+// CLAIM USERNAME — standalone page wrapper (unchanged behaviour)
+// =====================================
+export const ClaimUsername = () => {
+  const router = useRouter();
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen px-4 py-12 w-full">
+      <ClaimUsernameStep onSubmit={() => router.push("/check-mail")} />
+
+      <div className="flex-col gap-2 absolute bottom-[4rem] w-full flex items-center justify-center">
         <p className="font-primary text-center text-xs text-ink-400 md:max-w-[300px] mt-6">
           By creating an account you agree to the{" "}
           <Link href="/terms" className="underline">
