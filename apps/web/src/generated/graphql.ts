@@ -211,6 +211,8 @@ export type LoginInput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  /** Accept a pending join request */
+  acceptPendingInvite: Scalars['Boolean']['output'];
   /** Accept workspace invitation with hash from email */
   acceptWorkspaceInvitation: Scalars['Boolean']['output'];
   /** Mark a document as a favorite */
@@ -243,16 +245,22 @@ export type Mutation = {
   deleteFile: Scalars['Boolean']['output'];
   /** Delete a schedule */
   deleteSchedule: Scalars['Boolean']['output'];
+  /** Delete a workspace */
+  deleteWorkspace: Scalars['Boolean']['output'];
   /** Create a fork/duplicate of a document */
   duplicateDocument: Document;
   /** Follow User */
   followUser: Profile;
   /** Invite a user to workspace by email */
   inviteUserToWorkspace: Scalars['Boolean']['output'];
+  /** Join a workspace */
+  joinWorkspace: Scalars['Boolean']['output'];
   /** Sign in */
   login: AuthPayload;
   /** Publish a document */
   publishDocument: Document;
+  /** Reject a pending join request */
+  rejectPendingInvite: Scalars['Boolean']['output'];
   /** Unmark a document as a favorite */
   removeFavoriteDocument: Document;
   /** Remove a user from workspace */
@@ -281,6 +289,12 @@ export type Mutation = {
   updateUserSettings: Scalars['Boolean']['output'];
   /** Update workspace info */
   updateWorkspace: Workspace;
+};
+
+
+export type MutationAcceptPendingInviteArgs = {
+  userId: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
 };
 
 
@@ -374,6 +388,11 @@ export type MutationDeleteScheduleArgs = {
 };
 
 
+export type MutationDeleteWorkspaceArgs = {
+  workspaceId: Scalars['String']['input'];
+};
+
+
 export type MutationDuplicateDocumentArgs = {
   input: DuplicateDocumentInput;
 };
@@ -391,6 +410,13 @@ export type MutationInviteUserToWorkspaceArgs = {
 };
 
 
+export type MutationJoinWorkspaceArgs = {
+  email: Scalars['String']['input'];
+  role?: UserWorkspaceRole;
+  workspaceId: Scalars['String']['input'];
+};
+
+
 export type MutationLoginArgs = {
   input: LoginInput;
 };
@@ -398,6 +424,12 @@ export type MutationLoginArgs = {
 
 export type MutationPublishDocumentArgs = {
   documentId: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
+};
+
+
+export type MutationRejectPendingInviteArgs = {
+  userId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
 };
 
@@ -476,6 +508,7 @@ export type MutationUpdateUserSettingsArgs = {
 
 
 export type MutationUpdateWorkspaceArgs = {
+  icon?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   workspaceId: Scalars['String']['input'];
 };
@@ -514,6 +547,8 @@ export type Query = {
   getFavoriteDocuments: Array<Document>;
   /** Get invitation details from hash without accepting it */
   getInvitationInfo: WorkspaceInvitationInfo;
+  /** Get all pending join requests for a workspace */
+  getPendingInvites: Array<WorkspaceMember>;
   /** Users who follow a given user */
   getUserFollowers: Array<User>;
   /** Users that a given user is following */
@@ -597,6 +632,11 @@ export type QueryGetFavoriteDocumentsArgs = {
 
 export type QueryGetInvitationInfoArgs = {
   hash: Scalars['String']['input'];
+};
+
+
+export type QueryGetPendingInvitesArgs = {
+  workspaceId: Scalars['String']['input'];
 };
 
 
@@ -785,9 +825,17 @@ export type UserSetting = {
   wallets: Array<Scalars['JSON']['output']>;
 };
 
+/** User role within a workspace */
+export enum UserWorkspaceRole {
+  Admin = 'ADMIN',
+  Editor = 'EDITOR',
+  Viewer = 'VIEWER'
+}
+
 export type Workspace = {
   __typename?: 'Workspace';
   documents: Array<Document>;
+  icon?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
   name: Scalars['String']['output'];
   owner: User;
@@ -1056,6 +1104,13 @@ export type UpdateWorkspaceMutationVariables = Exact<{
 
 
 export type UpdateWorkspaceMutation = { __typename?: 'Mutation', updateWorkspace: { __typename?: 'Workspace', id: string, name: string, plan: WorkspacePlan, source?: string | null, useCases: Array<string>, useContext?: string | null } };
+
+export type DeleteWorkspaceMutationVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+}>;
+
+
+export type DeleteWorkspaceMutation = { __typename?: 'Mutation', deleteWorkspace: boolean };
 
 export type SwitchWorkspaceMutationVariables = Exact<{
   workspaceId: Scalars['String']['input'];
@@ -2427,6 +2482,37 @@ export function useUpdateWorkspaceMutation(baseOptions?: Apollo.MutationHookOpti
 export type UpdateWorkspaceMutationHookResult = ReturnType<typeof useUpdateWorkspaceMutation>;
 export type UpdateWorkspaceMutationResult = Apollo.MutationResult<UpdateWorkspaceMutation>;
 export type UpdateWorkspaceMutationOptions = Apollo.BaseMutationOptions<UpdateWorkspaceMutation, UpdateWorkspaceMutationVariables>;
+export const DeleteWorkspaceDocument = gql`
+    mutation DeleteWorkspace($workspaceId: String!) {
+  deleteWorkspace(workspaceId: $workspaceId)
+}
+    `;
+export type DeleteWorkspaceMutationFn = Apollo.MutationFunction<DeleteWorkspaceMutation, DeleteWorkspaceMutationVariables>;
+
+/**
+ * __useDeleteWorkspaceMutation__
+ *
+ * To run a mutation, you first call `useDeleteWorkspaceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteWorkspaceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteWorkspaceMutation, { data, loading, error }] = useDeleteWorkspaceMutation({
+ *   variables: {
+ *      workspaceId: // value for 'workspaceId'
+ *   },
+ * });
+ */
+export function useDeleteWorkspaceMutation(baseOptions?: Apollo.MutationHookOptions<DeleteWorkspaceMutation, DeleteWorkspaceMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteWorkspaceMutation, DeleteWorkspaceMutationVariables>(DeleteWorkspaceDocument, options);
+      }
+export type DeleteWorkspaceMutationHookResult = ReturnType<typeof useDeleteWorkspaceMutation>;
+export type DeleteWorkspaceMutationResult = Apollo.MutationResult<DeleteWorkspaceMutation>;
+export type DeleteWorkspaceMutationOptions = Apollo.BaseMutationOptions<DeleteWorkspaceMutation, DeleteWorkspaceMutationVariables>;
 export const SwitchWorkspaceDocument = gql`
     mutation SwitchWorkspace($workspaceId: String!) {
   switchWorkspace(workspaceId: $workspaceId)

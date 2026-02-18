@@ -30,6 +30,10 @@ mutation UpdateWorkspace($workspaceId: String!, $name: String) {
   }
 }
 
+mutation DeleteWorkspace($workspaceId: String!) {
+  deleteWorkspace(workspaceId: $workspaceId)
+}
+
 mutation SwitchWorkspace($workspaceId: String!) {
   switchWorkspace(workspaceId: $workspaceId)
 }
