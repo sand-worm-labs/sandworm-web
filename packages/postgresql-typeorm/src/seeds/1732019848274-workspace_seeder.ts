@@ -13,7 +13,7 @@ export class WorkspaceSeeder1732019848274 implements Seeder {
     // Get random users
     const userRepository = dataSource.getRepository(UserEntity);
     const userWorkspaceRepository = dataSource.getRepository(UserWorkspaceEntity);
-    
+
     const numberOfUsers = await userRepository.count();
     const randomOffset = getRandomInt(0, numberOfUsers - 1);
     const users = await userRepository
@@ -23,7 +23,7 @@ export class WorkspaceSeeder1732019848274 implements Seeder {
       .getMany();
 
     const workspaceFactory = factoryManager.get(WorkspaceEntity);
-    
+
     for (const user of users) {
       // Create workspaces for this user
       const workspace = await workspaceFactory.save({

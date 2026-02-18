@@ -60,6 +60,10 @@
       "instruction": "Click the button below to accept the invitation and start collaborating.",
       "expiry_note": "This invitation will expire in 7 days. If you didn't expect this invitation, you can safely ignore this email.",
       "action_title": "Accept Invitation"
+    },
+    "workspace_join_request": {
+      "title": "Workspace Join Request",
+      "action_title": "Review Request"
     }
   }
 }

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{title}}</title>
+</head>
+
+<body style="margin:0;font-family:arial">
+    <table style="border:0;width:100%">
+        <tr style="background:#eeeeee">
+            <td style="padding:20px;color:#808080;text-align:center;font-size:40px;font-weight:600">
+                {{app_name}}
+            </td>
+        </tr>
+        <tr>
+            <td style="padding:20px;color:#808080;font-size:16px;font-weight:100">
+                Hi there!<br><br>
+                <strong>{{userName}}</strong> ({{userEmail}}) wants to join your workspace
+                "<strong>{{workspaceName}}</strong>" as a <strong>{{role}}</strong>.<br><br>
+                Click below to review and approve this request.
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align:center;padding:20px">
+                <a href="{{url}}"
+                    style="display:inline-block;padding:20px 40px;background:#00838f;text-decoration:none;color:#ffffff;border-radius:4px;font-weight:600">Review
+                    Request</a>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding:20px;color:#808080;font-size:14px;font-weight:100;text-align:center">
+                You're receiving this because you're an admin of {{workspaceName}}.
+            </td>
+        </tr>
+    </table>
+</body>
+
+</html>

@@ -68,6 +68,10 @@ export type I18nTranslations = {
                 "expiry_note": string;
                 "action_title": string;
             };
+            "workspace_join_request": {
+                "title": string;
+                "action_title": string;
+            };
         };
     };
 };

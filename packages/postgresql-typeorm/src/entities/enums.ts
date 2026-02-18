@@ -19,6 +19,12 @@ export enum Plan {
     PRO = 'professional',
 }
 
+export enum UserWorkspaceStatus {
+    ACTIVE = 'active',
+    REMOVED = 'removed',
+    PENDING = 'pending',
+}
+
 export enum UserWorkspaceRole {
     EDITOR = 'editor',
     VIEWER = 'viewer',
@@ -50,5 +56,4 @@ export enum OnboardingTutorialStep {
 
 export enum TutorialType {
     ONBOARDING = 'onboarding',
-  }
-  
+}
