@@ -4,7 +4,7 @@ import { fake } from '../utils';
 
 export default setSeederFactory(WorkspaceEntity, () => {
     const workspace = new WorkspaceEntity();
-
+    workspace.icon = fake.image.avatar();
     workspace.name = fake.company.name();
     workspace.source = fake.internet.url(); // or leave undefined sometimes
     workspace.useCases = fake.helpers.arrayElements(
