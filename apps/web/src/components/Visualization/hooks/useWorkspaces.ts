@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import type { WorkspaceEditFormValues } from "@sandworm/types";
+import { useLazyQuery } from "@apollo/client";
 
 import type { ApiWorkspace } from "@/types";
 import type { GetInvitationInfoQuery } from "@/generated/graphql";
@@ -14,8 +15,8 @@ import {
   useGetWorkspaceWithMembersQuery,
   useGetInvitationInfoQuery,
   GetInvitationInfoDocument,
+  useDeleteWorkspaceMutation
 } from "@/generated/graphql";
-import { useLazyQuery } from "@apollo/client";
 
 import { NEXT_PUBLIC_API_URL } from "../utils/env";
 
@@ -112,8 +113,6 @@ export const useUpdateWorkspace = (
   workspaceId?: string
 ): UseUpdateWorkspaceReturn => {
   const session = useSession({ redirectToLogin: false });
-  const { workspaceInfo, refetch: refetchWorkspaceInfo } =
-    useCurrentWorkspaceInfo();
 
   const {
     data: workspacesData,
@@ -123,24 +122,34 @@ export const useUpdateWorkspace = (
     fetchPolicy: "cache-and-network",
   });
 
+  const { refetch: refetchWorkspaceInfo } = useCurrentWorkspaceInfo();
+
   const [updateWorkspaceMutation, { loading, error }] =
     useUpdateWorkspaceMutation();
 
-  // Check if current user is admin
+  // Check if current user is owner/admin of a given workspace id.
+  // Derived from ownerId on the workspace object, not from workspaceInfo.role
+  // which only reflects the URL-current workspace and would always block
+  // cross-workspace operations.
+  const isAdminOfWorkspace = useCallback(
+    (targetId: string): boolean => {
+      if (!session?.user?.id || !workspacesData?.userWorkspaces) return false;
+      const workspace = workspacesData.userWorkspaces.find(
+        (w) => w.id === targetId
+      );
+      return workspace?.ownerId === session.user.id;
+    },
+    [workspacesData, session?.user?.id]
+  );
+
   const isAdmin = useMemo(() => {
-    if (!workspaceInfo || !session?.user?.id) return false;
-
-    const targetWorkspaceId = workspaceId || workspaceInfo.id;
-    if (workspaceInfo.id !== targetWorkspaceId) return false;
-
-    return workspaceInfo.role === "admin";
-  }, [workspaceInfo, session?.user?.id, workspaceId]);
+    if (!workspaceId) return false;
+    return isAdminOfWorkspace(workspaceId);
+  }, [workspaceId, isAdminOfWorkspace]);
 
   const updateWorkspace = useCallback(
     async (targetWorkspaceId: string, name: string) => {
-      if (!isAdmin) {
-        throw new Error("You must be an admin to update workspace settings");
-      }
+    
 
       try {
         const result = await updateWorkspaceMutation({
@@ -151,7 +160,6 @@ export const useUpdateWorkspace = (
         });
 
         if (result.data?.updateWorkspace) {
-          // Refetch workspace info to get updated data
           await refetchWorkspaceInfo();
           await refetchWorkspaces();
         }
@@ -162,7 +170,7 @@ export const useUpdateWorkspace = (
         throw err;
       }
     },
-    [isAdmin, updateWorkspaceMutation, refetchWorkspaceInfo, refetchWorkspaces]
+    [isAdminOfWorkspace, updateWorkspaceMutation, refetchWorkspaceInfo, refetchWorkspaces]
   );
 
   return {
@@ -170,6 +178,7 @@ export const useUpdateWorkspace = (
     loading,
     error: error as Error | null,
     isAdmin,
+    isAdminOfWorkspace,
   };
 };
 
@@ -493,4 +502,98 @@ export const useGetInvitationInfo = (): UseGetInvitationInfo => {
     () => [state, { getInvitationInfo }],
     [state, getInvitationInfo]
   );
+};
+
+type DeleteWorkspaceError =
+  | "current_workspace"
+  | "last_workspace"
+  | "unauthorized"
+  | "unexpected"
+  | undefined;
+
+type DeleteWorkspaceState = {
+  loading: boolean;
+  error: DeleteWorkspaceError;
+};
+
+type DeleteWorkspaceAPI = {
+  deleteWorkspace: (workspaceId: string) => Promise<boolean>;
+};
+
+type UseDeleteWorkspace = [DeleteWorkspaceState, DeleteWorkspaceAPI];
+
+export const useDeleteWorkspace = (
+  currentWorkspaceId?: string
+): UseDeleteWorkspace => {
+  const session = useSession({ redirectToLogin: false });
+  const { workspaceInfo } = useCurrentWorkspaceInfo();
+
+  const { data: workspacesData, refetch: refetchWorkspaces } =
+    useGetUserWorkspacesQuery({
+      fetchPolicy: "cache-and-network",
+    });
+
+  const [deleteWorkspaceMutation, { loading }] = useDeleteWorkspaceMutation();
+
+  const [error, setError] = useState<DeleteWorkspaceError>(undefined);
+
+  const deleteWorkspace = useCallback(
+    async (workspaceId: string): Promise<boolean> => {
+      setError(undefined);
+
+      if (currentWorkspaceId && workspaceId === currentWorkspaceId) {
+        setError("current_workspace");
+        throw new Error("You cannot delete the workspace you are currently in");
+      }
+
+      const userWorkspaces = workspacesData?.getUserWorkspaces ?? [];
+      if (userWorkspaces.length <= 1) {
+        setError("last_workspace");
+        throw new Error("You cannot delete your last workspace");
+      }
+
+     
+
+      try {
+        const result = await deleteWorkspaceMutation({
+          variables: { workspaceId },
+        });
+
+        if (result.data?.deleteWorkspace) {
+          await refetchWorkspaces();
+          return true;
+        }
+
+        setError("unexpected");
+        return false;
+      } catch (err: any) {
+        const message = err?.message?.toLowerCase() || "";
+
+        if (
+          message.includes("unauthorized") ||
+          message.includes("unauthenticated")
+        ) {
+          setError("unauthorized");
+        } else {
+          setError("unexpected");
+        }
+
+        throw err;
+      }
+    },
+    [
+      currentWorkspaceId,
+      workspacesData,
+      workspaceInfo,
+      deleteWorkspaceMutation,
+      refetchWorkspaces,
+    ]
+  );
+
+  const state = useMemo<DeleteWorkspaceState>(
+    () => ({ loading, error }),
+    [loading, error]
+  );
+
+  return useMemo(() => [state, { deleteWorkspace }], [state, deleteWorkspace]);
 };
