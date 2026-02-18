@@ -156,6 +156,28 @@ export class WorkspaceResolver {
     return true;
   }
 
+
+  @Mutation(() => Boolean, {
+    name: 'batchRemoveUsersFromWorkspace',
+    description: 'Remove multiple users from a workspace',
+  })
+  async batchRemoveUsersFromWorkspace(
+    @CurrentUser('id') adminId: string,
+    @Args('workspaceId', { type: () => String }) workspaceId: string,
+    @Args('userIds', { type: () => [String] }) userIds: string[],
+  ): Promise<boolean> {
+    await Promise.all(
+      userIds.map((userId) =>
+        this.workspaceMembershipService.softRemoveUserFromWorkspace(
+          workspaceId,
+          userId,
+          adminId,
+        ),
+      ),
+    );
+    return true;
+  }
+
   @Mutation(() => Boolean, {
     name: 'inviteUserToWorkspace',
     description: 'Invite a user to workspace by email',
