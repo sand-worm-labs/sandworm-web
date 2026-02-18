@@ -1,11 +1,11 @@
-import { Field, ObjectType } from '@nestjs/graphql';
-import { BooleanField, StringField, StringFieldOptional } from '@sandworm/graphql';
+import { ObjectType } from '@nestjs/graphql';
+import { BooleanField, DateFieldOptional, StringField, StringFieldOptional } from '@sandworm/graphql';
 import { UserEntity } from '@sandworm/postgresql-typeorm';
 
 
 @ObjectType()
 export class User {
- @StringField()
+  @StringField()
   id!: string;
 
   @StringFieldOptional()
@@ -29,6 +29,9 @@ export class User {
   @StringFieldOptional()
   avater?: string;
 
+  @DateFieldOptional()
+  createdAt?: Date;
+
 
 
   static fromEntity(entity: UserEntity): User {
@@ -41,6 +44,8 @@ export class User {
     user.fullName = entity.fullName;
     user.isOnboarded = entity.isOnboarded;
     user.avater = entity.avater;
+    user.createdAt = entity.createdAt;
+
     return user;
   }
 
