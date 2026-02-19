@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { useSignup } from "../Visualization/hooks/useAuth";
-import { Spinner } from "../Spinner/Spinner";
 
 import { ClaimUsernameStep } from "./ClaimUsername";
 
@@ -86,7 +85,6 @@ export default function SignUpForm() {
       ? "An unexpected error occurred. Please try again."
       : localError;
 
-  // Step 3 renders ClaimUsernameStep — no wrapper form needed
   if (step === 3) {
     return (
       <ClaimUsernameStep onSubmit={handleClaim} isLoading={state.loading} />

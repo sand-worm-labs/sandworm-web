@@ -217,6 +217,8 @@ export type Mutation = {
   acceptWorkspaceInvitation: Scalars['Boolean']['output'];
   /** Mark a document as a favorite */
   addFavoriteDocument: Document;
+  /** Remove multiple users from a workspace */
+  batchRemoveUsersFromWorkspace: Scalars['Boolean']['output'];
   /** Create a new comment on a document */
   createComment: Comment;
   /** Create a new reusable component */
@@ -305,6 +307,12 @@ export type MutationAcceptWorkspaceInvitationArgs = {
 
 export type MutationAddFavoriteDocumentArgs = {
   input: FavoriteDocumentInput;
+};
+
+
+export type MutationBatchRemoveUsersFromWorkspaceArgs = {
+  userIds: Array<Scalars['String']['input']>;
+  workspaceId: Scalars['String']['input'];
 };
 
 
@@ -801,6 +809,7 @@ export type UpdateUserSettingInput = {
 export type User = {
   __typename?: 'User';
   avater?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
   email?: Maybe<Scalars['String']['output']>;
   firstName?: Maybe<Scalars['String']['output']>;
   followers: Array<User>;
@@ -1100,10 +1109,11 @@ export type CreateWorkspaceMutation = { __typename?: 'Mutation', createWorkspace
 export type UpdateWorkspaceMutationVariables = Exact<{
   workspaceId: Scalars['String']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
+  icon?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
-export type UpdateWorkspaceMutation = { __typename?: 'Mutation', updateWorkspace: { __typename?: 'Workspace', id: string, name: string, plan: WorkspacePlan, source?: string | null, useCases: Array<string>, useContext?: string | null } };
+export type UpdateWorkspaceMutation = { __typename?: 'Mutation', updateWorkspace: { __typename?: 'Workspace', id: string, name: string, icon?: string | null, plan: WorkspacePlan, source?: string | null, useCases: Array<string>, useContext?: string | null } };
 
 export type DeleteWorkspaceMutationVariables = Exact<{
   workspaceId: Scalars['String']['input'];
@@ -1263,21 +1273,21 @@ export type GetUserWorkspaceInfoQuery = { __typename?: 'Query', getUserWorkspace
 export type GetUserWorkspacesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetUserWorkspacesQuery = { __typename?: 'Query', getUserWorkspaces: Array<{ __typename?: 'Workspace', id: string, name: string, plan: WorkspacePlan, source?: string | null, useCases: Array<string>, useContext?: string | null, ownerId: string, owner: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null } }> };
+export type GetUserWorkspacesQuery = { __typename?: 'Query', getUserWorkspaces: Array<{ __typename?: 'Workspace', id: string, name: string, plan: WorkspacePlan, icon?: string | null, source?: string | null, useCases: Array<string>, useContext?: string | null, ownerId: string, owner: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null } }> };
 
 export type GetWorkspaceWithMembersQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
 }>;
 
 
-export type GetWorkspaceWithMembersQuery = { __typename?: 'Query', getWorkspace: { __typename?: 'Workspace', id: string, name: string, plan: WorkspacePlan, source?: string | null, ownerId: string }, getWorkspaceMembers: Array<{ __typename?: 'WorkspaceMember', role: string, userId: string, user?: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null } | null }> };
+export type GetWorkspaceWithMembersQuery = { __typename?: 'Query', getWorkspace: { __typename?: 'Workspace', id: string, name: string, plan: WorkspacePlan, icon?: string | null, source?: string | null, ownerId: string }, getWorkspaceMembers: Array<{ __typename?: 'WorkspaceMember', role: string, userId: string, user?: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null } | null }> };
 
 export type GetWorkspaceQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
 }>;
 
 
-export type GetWorkspaceQuery = { __typename?: 'Query', getWorkspace: { __typename?: 'Workspace', id: string, name: string, plan: WorkspacePlan, source?: string | null, useCases: Array<string>, useContext?: string | null, ownerId: string, owner: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null }, users: Array<{ __typename?: 'User', id: string, firstName?: string | null, lastName?: string | null, email?: string | null, avater?: string | null }>, documents: Array<{ __typename?: 'Document', id: string, title: string, slug: string, authorId: string, parentId?: string | null }> } };
+export type GetWorkspaceQuery = { __typename?: 'Query', getWorkspace: { __typename?: 'Workspace', id: string, name: string, plan: WorkspacePlan, source?: string | null, useCases: Array<string>, useContext?: string | null, ownerId: string, icon?: string | null, owner: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null }, users: Array<{ __typename?: 'User', id: string, firstName?: string | null, lastName?: string | null, email?: string | null, avater?: string | null }>, documents: Array<{ __typename?: 'Document', id: string, title: string, slug: string, authorId: string, parentId?: string | null }> } };
 
 export type GetWorkspaceDocumentsQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
@@ -2444,10 +2454,11 @@ export type CreateWorkspaceMutationHookResult = ReturnType<typeof useCreateWorks
 export type CreateWorkspaceMutationResult = Apollo.MutationResult<CreateWorkspaceMutation>;
 export type CreateWorkspaceMutationOptions = Apollo.BaseMutationOptions<CreateWorkspaceMutation, CreateWorkspaceMutationVariables>;
 export const UpdateWorkspaceDocument = gql`
-    mutation UpdateWorkspace($workspaceId: String!, $name: String) {
-  updateWorkspace(workspaceId: $workspaceId, name: $name) {
+    mutation UpdateWorkspace($workspaceId: String!, $name: String, $icon: String) {
+  updateWorkspace(workspaceId: $workspaceId, name: $name, icon: $icon) {
     id
     name
+    icon
     plan
     source
     useCases
@@ -2472,6 +2483,7 @@ export type UpdateWorkspaceMutationFn = Apollo.MutationFunction<UpdateWorkspaceM
  *   variables: {
  *      workspaceId: // value for 'workspaceId'
  *      name: // value for 'name'
+ *      icon: // value for 'icon'
  *   },
  * });
  */
@@ -3495,6 +3507,7 @@ export const GetUserWorkspacesDocument = gql`
     id
     name
     plan
+    icon
     source
     useCases
     useContext
@@ -3547,6 +3560,7 @@ export const GetWorkspaceWithMembersDocument = gql`
     id
     name
     plan
+    icon
     source
     ownerId
   }
@@ -3606,6 +3620,7 @@ export const GetWorkspaceDocument = gql`
     useCases
     useContext
     ownerId
+    icon
     owner {
       id
       username

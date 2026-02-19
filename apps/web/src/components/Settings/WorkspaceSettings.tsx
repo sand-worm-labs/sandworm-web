@@ -25,42 +25,81 @@ interface WorkspaceSettingsModalProps {
     };
   } | null;
   isAdmin: boolean;
-  updateWorkspace: (id: string, name: string) => Promise<void>;
+  updateWorkspace: (id: string, name: string, icon?: string) => Promise<void>;
   isUpdating: boolean;
   disableCustomOpenAiKey?: boolean;
 }
 
+export const ICON_COLOR_TO_AVATAR: Record<string, string> = {
+  "red.png": "/img/avatar-1.svg",
+  "blue.png": "/img/avatar-2.svg",
+  "green.png": "/img/avatar-3.svg",
+  "purple.png": "/img/avatar-4.svg",
+  "yellow.png": "/img/avatar-5.svg",
+};
+
+// Reverse map — avatar src back to backend color key
+export const AVATAR_TO_ICON_COLOR: Record<string, string> = Object.fromEntries(
+  Object.entries(ICON_COLOR_TO_AVATAR).map(([color, avatar]) => [avatar, color])
+);
+
+// Display helper: given a backend icon value, return the avatar src to render
+export function getAvatarSrc(
+  iconColor: string | null | undefined
+): string | null {
+  if (!iconColor) return null;
+  return ICON_COLOR_TO_AVATAR[iconColor] ?? null;
+}
+
+// Save helper: given an avatar src, return the backend color key to persist
+export function getIconColor(
+  avatarSrc: string | null | undefined
+): string | null {
+  if (!avatarSrc) return null;
+  return AVATAR_TO_ICON_COLOR[avatarSrc] ?? null;
+}
 interface EditWorkspaceProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
   currentName?: string;
-  onSave: (data: { name: string; selectedIcon: string | null }) => void;
+  currentIcon?: string | null; // backend value e.g. "red.png"
+  onSave: (data: { name: string; selectedIcon: string | null }) => void; // selectedIcon is backend value
   isLoading?: boolean;
 }
 
-const PRESET_ICONS = [
-  { id: 1, src: "/img/avatar-1.svg" },
-  { id: 2, src: "/img/avatar-2.svg" },
-  { id: 3, src: "/img/avatar-3.svg" },
-  { id: 4, src: "/img/avatar-4.svg" },
-  { id: 5, src: "/img/avatar-5.svg" },
-];
+// Each preset maps a display avatar to its backend color key
+const PRESET_ICONS = Object.entries(ICON_COLOR_TO_AVATAR).map(
+  ([colorKey, avatarSrc], index) => ({
+    id: index + 1,
+    avatarSrc,
+    colorKey,
+  })
+);
 
 export function EditWorkspaceProfileModal({
   isOpen,
   onClose,
   currentName = "",
+  currentIcon = null,
   onSave,
   isLoading = false,
 }: EditWorkspaceProfileModalProps) {
   const [workspaceName, setWorkspaceName] = useState(currentName);
-  const [selectedIcon, setSelectedIcon] = useState<string | null>(null);
 
+
+
+  // Internally track avatar src for display, convert to/from backend key at boundary
+  const [selectedAvatar, setSelectedAvatar] = useState<string | null>(
+    getAvatarSrc(currentIcon)
+  );
 
   if (!isOpen) return null;
 
   const handleSave = () => {
-    onSave({ name: workspaceName, selectedIcon });
+    onSave({
+      name: workspaceName,
+      selectedIcon: getIconColor(selectedAvatar), // sends "red.png" etc to parent
+    });
   };
 
   const isNameValid =
@@ -70,7 +109,6 @@ export function EditWorkspaceProfileModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop */}
       <div
         className="absolute inset-0 bg-[#0000001A]"
         onClick={onClose}
@@ -85,9 +123,7 @@ export function EditWorkspaceProfileModal({
         aria-label="Close modal"
       />
 
-      {/* Modal */}
       <div className="relative bg-white dark:bg-[#1A1A1A] rounded-3xl shadow-xl w-full max-w-[31rem] mx-4 p-6 py-10 px-10">
-        {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-base font-medium text-ink-100 dark:text-white">
             Edit workspace Profile
@@ -101,7 +137,6 @@ export function EditWorkspaceProfileModal({
           </button>
         </div>
 
-        {/* Workspace Profile Section */}
         <div className="mb-6">
           <label className="block text-sm font-medium text-[#1A1A1A] dark:text-gray-300 mb-3">
             Workspace Profile
@@ -112,9 +147,9 @@ export function EditWorkspaceProfileModal({
               type="button"
               className="relative w-14 mr-4 h-14 rounded-full border-2 border-[#DEE2E6] dark:border-gray-600 hover:border-[#A308F0] dark:hover:border-[#A308F0] transition-colors flex items-center justify-center group overflow-hidden"
             >
-              {selectedIcon ? (
+              {selectedAvatar ? (
                 <Image
-                  src={selectedIcon}
+                  src={selectedAvatar}
                   alt="Selected workspace icon"
                   fill
                   className="object-cover"
@@ -128,27 +163,27 @@ export function EditWorkspaceProfileModal({
               )}
             </button>
 
-            {/* Preset Icons */}
+            {/* Preset color icons rendered as avatars */}
             {PRESET_ICONS.map(icon => {
-              const isSelected = selectedIcon === icon.src;
+              const isSelected = selectedAvatar === icon.avatarSrc;
               return (
                 <button
                   key={icon.id}
                   type="button"
-                  onClick={() => setSelectedIcon(icon.src)}
+                  onClick={() => setSelectedAvatar(icon.avatarSrc)}
                   className={`relative w-8 h-8 rounded-full transition-all overflow-hidden ${
                     isSelected
                       ? "ring-2 ring-[#A308F0] ring-offset-2 dark:ring-offset-[#1A1A1A]"
                       : "hover:scale-110"
                   }`}
+                  aria-label={`${icon.colorKey.replace(".png", "")} workspace icon`}
                 >
                   <Image
-                    src={icon.src}
-                    alt={`Avatar option ${icon.id}`}
+                    src={icon.avatarSrc}
+                    alt={`${icon.colorKey.replace(".png", "")} icon`}
                     fill
                     className="object-cover"
                   />
-                  {/* Checkmark Indicator */}
                   {isSelected && (
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                       <CheckIcon className="w-4 h-4 text-white stroke-[3]" />
@@ -160,7 +195,6 @@ export function EditWorkspaceProfileModal({
           </div>
         </div>
 
-        {/* Workspace Name Section */}
         <div className="mb-10">
           <label className="block text-sm font-medium text-[#1A1A1A] dark:text-gray-300 mb-3">
             Workspace Name
@@ -184,7 +218,6 @@ export function EditWorkspaceProfileModal({
           </ul>
         </div>
 
-        {/* Save Button */}
         <button
           type="button"
           onClick={handleSave}
@@ -328,11 +361,13 @@ export default function WorkspaceSettingsModal({
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const currentWorkspace = useStringQuery("workspace")
+  const currentWorkspace = useStringQuery("workspace");
   const [{ loading: isDeleting, error: deleteError }, { deleteWorkspace }] =
-  useDeleteWorkspace(currentWorkspace ?? undefined);
+    useDeleteWorkspace(currentWorkspace ?? undefined);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  console.log("woo", workspace)
 
   // Mock data
   const workspaceMembers: WorkspaceMember[] = [
@@ -408,7 +443,6 @@ export default function WorkspaceSettingsModal({
       });
     }
   }, [isOpen]);
-
 
   if (!isOpen || !workspace) return null;
 
@@ -712,7 +746,11 @@ export default function WorkspaceSettingsModal({
           }
 
           try {
-            await updateWorkspace(workspace?.id || "", name.trim());
+            await updateWorkspace(
+              workspace?.id || "",
+              name.trim(),
+              selectedIcon
+            );
             setIsEditModalOpen(false);
           } catch (err) {
             console.error("Failed to update workspace name:", err);

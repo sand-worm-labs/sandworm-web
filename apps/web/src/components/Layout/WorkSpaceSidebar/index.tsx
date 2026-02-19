@@ -20,6 +20,7 @@ import { SquaresFour } from "@/components/Assets/Menu/SquaresFour";
 import { House } from "@/components/Assets/Menu/House";
 import { Terminal } from "@/components/Assets/Menu/Terminal";
 import { Trash } from "@/components/Assets/Trash";
+import WorkspaceSwitcher from "@/components/WorkspaceSwitcher";
 
 interface NavItem {
   name: string;
@@ -217,6 +218,8 @@ export const WorkspaceSidebar = () => {
             <SidebarIcon />
           </button>
         </div>
+
+        <WorkspaceSwitcher />
 
         <div className="px-4 py-2.5" />
 

@@ -19,17 +19,17 @@ mutation CreateWorkspace($name: String!) {
 }
 
 # Update workspace information
-mutation UpdateWorkspace($workspaceId: String!, $name: String) {
-  updateWorkspace(workspaceId: $workspaceId, name: $name) {
+mutation UpdateWorkspace($workspaceId: String!, $name: String, $icon: String) {
+  updateWorkspace(workspaceId: $workspaceId, name: $name, icon: $icon) {
     id
     name
+    icon
     plan
     source
     useCases
     useContext
   }
 }
-
 mutation DeleteWorkspace($workspaceId: String!) {
   deleteWorkspace(workspaceId: $workspaceId)
 }

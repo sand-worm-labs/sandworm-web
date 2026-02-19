@@ -26,11 +26,7 @@ export default function WorkspaceSettings() {
   const properties = useProperties();
   const { workspaceInfo } = useCurrentWorkspaceInfo();
   const [{ data: allWorkspaces }] = useWorkspaces();
-
-  // No workspaceId param — updateWorkspace and isAdminOfWorkspace now resolve
-  // admin status per targetWorkspaceId at call time, not from the URL param.
   const { updateWorkspace, loading: isUpdating } = useUpdateWorkspace();
-
   const { switchWorkspace, loading: isSwitching } = useSwitchWorkspace();
 
   const [state, setState] = useState<{
@@ -41,6 +37,7 @@ export default function WorkspaceSettings() {
     selectedSettingsWorkspace: null,
   });
 
+  /* Is Admin */
   const isAdminOfWorkspace = useCallback(
     (targetId: string): boolean => {
       if (!session?.user?.id || !allWorkspaces) return false;
@@ -60,7 +57,6 @@ export default function WorkspaceSettings() {
       invitedWorkspaces: allWorkspaces.filter(w => w.ownerId !== userId),
     };
   }, [allWorkspaces, session?.user?.id]);
-
 
 
   const handleSwitchWorkspace = async (targetWorkspaceId: string) => {
