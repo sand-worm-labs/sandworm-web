@@ -24,6 +24,7 @@ import { Loader } from "../Loader";
 import { ProjectIcon } from "../Assets/ProjectIcon";
 
 import { ProfileSettingsModal } from "./ProfileSettingModal";
+import { ManageWalletsModal } from "./ManageWalletModal";
 
 interface SocialLinks {
   twitter?: string;
@@ -114,6 +115,10 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
       totalViews: 45231,
     },
   };
+
+  const [wallets, setWallets] = useState(mockProfile.wallets ?? []);
+  const [isWalletsModalOpen, setIsWalletsModalOpen] = useState(false);
+
 
   const mockActivityData = Array.from({ length: 365 }, (_, i) => {
     const date = new Date();
@@ -268,18 +273,13 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                         </div>
 
                         <div className="flex flex-wrap gap-4 text-sm text-ink-400 font-medium ">
-                          {mockProfile.location && (
-                            <div className="flex items-center gap-1">
-                              <MapPin className="w-4 h-4" />
-                              {mockProfile.location}
-                            </div>
-                          )}
-                          {mockProfile.memberSince && (
+                         
+                          {currentUser.createdAt && (
                             <div className="flex items-center gap-1">
                               <Calendar className="w-4 h-4" />
                               Joined{" "}
                               {new Date(
-                                mockProfile.memberSince
+                                currentUser.createdAt
                               ).toLocaleDateString("en-US", {
                                 month: "short",
                                 year: "numeric",
@@ -357,7 +357,7 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                       <button className="bg-[#A308F0] py-3 px-5 rounded-xl text-white mt-6 text-[#E9ECEF] xl:text-sm w-full text-start text-[13px] font-medium">
                         Add Wallet
                       </button>
-                      <button className="text-[#A308F0] mt-3 text-[13px] font-medium">
+                      <button className="text-[#A308F0] mt-3 text-[13px] font-medium" onClick={() => setIsWalletsModalOpen(true)}>
                         All Wallets
                       </button>
                     </div>
@@ -392,6 +392,13 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
         updateUserSettings={updateUserSettings}
         loading={updateLoading}
         error={error}
+      />
+
+      <ManageWalletsModal
+        isOpen={isWalletsModalOpen}
+        onClose={() => setIsWalletsModalOpen(false)}
+        wallets={wallets}
+        onWalletsChange={setWallets}
       />
     </>
   );
