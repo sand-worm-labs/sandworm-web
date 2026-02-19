@@ -52,10 +52,11 @@ export const useCurrentUser = (): UseCurrentUserReturn => {
   const updateUserSettings = useCallback(
     async (input: Omit<UpdateUserSettingInput, "id">) => {
       try {
-        await updateUserSettingsMutation({ variables: input });
+        const result = await updateUserSettingsMutation({ variables: input });
+        console.log("[updateUserSettings] mutation result:", result);
         await refetch();
       } catch (err) {
-        console.error("Failed to update user settings:", err);
+        console.error("[updateUserSettings] error:", err);
         throw err;
       }
     },

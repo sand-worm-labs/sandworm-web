@@ -2,10 +2,9 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   User,
-  MapPin,
   Calendar,
   Link as LinkIcon,
   Github,
@@ -13,18 +12,16 @@ import {
   Globe,
   UserPlus,
   UserMinus,
-  Pencil,
   Copy,
   Check,
 } from "lucide-react";
-import { ActivityCalendar } from "react-activity-calendar";
 
 import { useCurrentUser } from "../Visualization/hooks/useCurrentUser";
 import { Loader } from "../Loader";
 import { ProjectIcon } from "../Assets/ProjectIcon";
 
 import { ProfileSettingsModal } from "./ProfileSettingModal";
-import { ManageWalletsModal } from "./ManageWalletModal";
+import { ManageWalletsModal, AddWalletModal } from "./ManageWalletModal";
 
 interface SocialLinks {
   twitter?: string;
@@ -78,6 +75,12 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
     loading: updateLoading,
     error,
   } = useCurrentUser();
+  console.log(settings, "sett")
+  const [wallets, setWallets] = useState<WalletInfo[]>([]);
+
+  useEffect(() => {
+    if (settings?.wallets) setWallets(settings.wallets);
+  }, [settings?.wallets]);
 
   const mockProfile: UserProfile = {
     id: "1",
@@ -96,18 +99,7 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
       website: "https://sandwormlabs.com",
       telegram: "https://t.me/sandwormlabs",
     },
-    wallets: [
-      {
-        address: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
-        chain: "Ethereum",
-        label: "Main Wallet",
-      },
-      {
-        address: "0x8Ba1f109551bD432803012645Ac136ddd64DBA72",
-        chain: "Base",
-        label: "Trading",
-      },
-    ],
+    wallets: [],
     stats: {
       queriesRun: 3421,
       datasetsAnalyzed: 127,
@@ -116,19 +108,8 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
     },
   };
 
-  const [wallets, setWallets] = useState(mockProfile.wallets ?? []);
   const [isWalletsModalOpen, setIsWalletsModalOpen] = useState(false);
-
-
-  const mockActivityData = Array.from({ length: 365 }, (_, i) => {
-    const date = new Date();
-    date.setDate(date.getDate() - (364 - i));
-    return {
-      date: date.toISOString().split("T")[0],
-      count: Math.floor(Math.random() * 15),
-      level: Math.floor(Math.random() * 5) as 0 | 1 | 2 | 3 | 4,
-    };
-  });
+  const [isAddWalletOpen, setIsAddWalletOpen] = useState(false);
 
   const truncateAddress = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -273,7 +254,6 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                         </div>
 
                         <div className="flex flex-wrap gap-4 text-sm text-ink-400 font-medium ">
-                         
                           {currentUser.createdAt && (
                             <div className="flex items-center gap-1">
                               <Calendar className="w-4 h-4" />
@@ -312,30 +292,19 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                 </div>
 
                 <div className="w-full flex-1">
-                  {mockProfile.wallets && mockProfile.wallets.length > 0 ? (
+                  {wallets && wallets.length > 0 ? (
                     <div className="bg-white dark:bg-[#010100] rounded-2xl p-6">
                       <h2 className="px-2 py-0.5 font-medium text-ink-100 dark:text-white mb-4 bg-[#E9ECEF] inline-block text-sm rounded-lg">
                         Main Wallets
                       </h2>
                       <div className="space-y-3">
-                        {mockProfile.wallets.map((wallet, index) => (
+                        {wallets.map((wallet, index) => (
                           <div
                             key={index}
                             className="flex items-center justify-between p-4 py-2 rounded-xl dark:border-[#262A30]   transition-colors bg-[#F8F9FA] border border-[#DEE2E6]"
                           >
                             <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
-                                {/*   {wallet.label && (
-                              <span className="text-sm font-medium text-ink-100 dark:text-white">
-                                {wallet.label}
-                              </span>
-                            )} */}
-                                {/*    {wallet.chain && (
-                              <span className="text-xs px-2 py-0.5 rounded-full bg-[#A308F0] bg-opacity-10 text-primary">
-                                {wallet.chain}
-                              </span>
-                            )} */}
-                              </div>
+                              <div className="flex items-center gap-2 mb-1" />
                               <code className="text-sm text-[#6C757D] dark:text-[#6C757D] font-body font-medium">
                                 {truncateAddress(wallet.address)}
                               </code>
@@ -354,15 +323,33 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                           </div>
                         ))}
                       </div>
-                      <button className="bg-[#A308F0] py-3 px-5 rounded-xl text-white mt-6 text-[#E9ECEF] xl:text-sm w-full text-start text-[13px] font-medium">
+                      <button
+                        type="button"
+                        onClick={() => setIsAddWalletOpen(true)}
+                        className="bg-[#A308F0] py-3 px-5 rounded-xl mt-6 text-[#E9ECEF] xl:text-sm w-full text-start text-[13px] font-medium"
+                      >
                         Add Wallet
                       </button>
-                      <button className="text-[#A308F0] mt-3 text-[13px] font-medium" onClick={() => setIsWalletsModalOpen(true)}>
+                      <button
+                        type="button"
+                        className="text-[#A308F0] mt-3 text-[13px] font-medium"
+                        onClick={() => setIsWalletsModalOpen(true)}
+                      >
                         All Wallets
                       </button>
                     </div>
                   ) : (
-                    <div />
+                    <div className="relative  max-w-[380px] mx-auto mt-12">
+                      <div className="absolute z-1 inset-0  top-[1rem] left-[1rem] right-[1rem] rounded-xl bg-[#D97EF9] opacity-40 h-full" />
+                      <div className="absolute z-1 inset-0 top-[0.5rem] left-[0.5rem] right-[0.5rem] rounded-xl bg-[#C44DF5] opacity-60 h-full" />
+                      <button
+                        type="button"
+                        onClick={() => setIsAddWalletOpen(true)}
+                        className="relative z-[10] bg-[#A308F0] py-3 px-6 rounded-xl text-[#E9ECEF] xl:text-sm w-full text-start text-[13px] font-medium"
+                      >
+                        Add Wallet
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
@@ -398,7 +385,22 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
         isOpen={isWalletsModalOpen}
         onClose={() => setIsWalletsModalOpen(false)}
         wallets={wallets}
-        onWalletsChange={setWallets}
+        onWalletsChange={async updated => {
+          setWallets(updated);
+          await updateUserSettings({ wallets: updated });
+        }}
+      />
+
+      <AddWalletModal
+        isOpen={isAddWalletOpen}
+        onClose={() => setIsAddWalletOpen(false)}
+        onAdd={async newWallet => {
+          const updated = [...wallets, newWallet];
+          console.log("[AddWallet] sending to updateUserSettings:", updated);
+          setWallets(updated);
+          await updateUserSettings({ wallets: updated });
+        }}
+        existingAddresses={wallets.map(w => w.address)}
       />
     </>
   );

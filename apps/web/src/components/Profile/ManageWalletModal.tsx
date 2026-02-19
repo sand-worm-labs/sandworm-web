@@ -41,21 +41,15 @@ export const AddWalletModal = ({
 
   if (!isOpen) return null;
 
-  const validateAddress = (value: string) =>
-    /^0x[0-9a-fA-F]{40}$/.test(value);
-
   const handleConfirm = () => {
     if (!address.trim()) {
       setAddressError("Address is required");
       return;
     }
-    if (!validateAddress(address.trim())) {
-      setAddressError("Invalid Ethereum address");
-      return;
-    }
+
     if (
       existingAddresses.some(
-        (a) => a.toLowerCase() === address.trim().toLowerCase()
+        a => a.toLowerCase() === address.trim().toLowerCase()
       )
     ) {
       setAddressError("This wallet is already added");
@@ -98,7 +92,7 @@ export const AddWalletModal = ({
               ref={addressInputRef}
               type="text"
               value={address}
-              onChange={(e) => {
+              onChange={e => {
                 setAddress(e.target.value);
                 setAddressError("");
               }}
@@ -118,7 +112,7 @@ export const AddWalletModal = ({
           <input
             type="text"
             value={label}
-            onChange={(e) => setLabel(e.target.value)}
+            onChange={e => setLabel(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Label (optional)"
             className="w-full px-4 py-2.5 rounded-xl border border-[#DEE2E6] dark:border-[#262A30] text-sm bg-[#F8F9FA] dark:bg-[#0F1117] text-ink-100 dark:text-white placeholder:text-[#ADB5BD] dark:placeholder:text-gray-600 focus:border-[#A308F0] outline-none transition-colors font-body"
@@ -291,7 +285,7 @@ export const ManageWalletsModal = ({
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onAdd={handleWalletAdded}
-        existingAddresses={wallets.map((w) => w.address)}
+        existingAddresses={wallets.map(w => w.address)}
       />
     </>
   );
