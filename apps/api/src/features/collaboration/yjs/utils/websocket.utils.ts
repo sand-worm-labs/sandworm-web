@@ -1,16 +1,17 @@
 import { Logger } from '@nestjs/common';
 import { WebSocket } from 'ws';
 import * as awarenessProtocol from 'y-protocols/awareness';
-import { DocumentSession, PING_TIMEOUT, WS_READY_STATE_CONNECTING, WS_READY_STATE_OPEN } from '../types/yjs.types';
+import { PING_TIMEOUT, WS_READY_STATE_CONNECTING, WS_READY_STATE_OPEN } from '../types/yjs.types';
+import { WSSharedDoc } from '../interfaces/ws-shared-doc.interface';
 
 export class WebSocketUtils {
     private static readonly logger = new Logger(WebSocketUtils.name);
 
     static send(
-        session: DocumentSession,
+        session: WSSharedDoc,
         conn: WebSocket,
         message: Uint8Array,
-        onClose: (session: DocumentSession, conn: WebSocket) => void,
+        onClose: (session: WSSharedDoc, conn: WebSocket) => void,
     ) {
         if (conn.readyState !== WS_READY_STATE_CONNECTING && conn.readyState !== WS_READY_STATE_OPEN) {
             onClose(session, conn);
@@ -37,7 +38,7 @@ export class WebSocketUtils {
         }
     }
 
-    static closeConnection(session: DocumentSession, conn: WebSocket) {
+    static closeConnection(session: WSSharedDoc, conn: WebSocket) {
         const controlledIds = session.conns.get(conn);
 
         if (controlledIds !== undefined) {
@@ -60,10 +61,10 @@ export class WebSocketUtils {
     }
 
     static setupPingPong(
-        session: DocumentSession,
+        session: WSSharedDoc,
         client: WebSocket,
         userId: string,
-        onClose: (session: DocumentSession, conn: WebSocket) => void,
+        onClose: (session: WSSharedDoc, conn: WebSocket) => void,
     ) {
         let pongReceived = true;
 

@@ -6,17 +6,10 @@ import { z } from 'zod';
 import { Repository } from 'typeorm';
 import { DocumentEntity, UserWorkspaceRole } from '@sandworm/postgresql-typeorm';
 import { SessionService } from '@/features/session/session.service';
+import { RequestData } from '../types/yjs.types';
 
 const logger = new Logger('ValidationUtils');
 
-export interface RequestData {
-    document: DocumentEntity;
-    clock: number;
-    authUser: any;
-    role: UserWorkspaceRole;
-    isApp: boolean;
-    userId: string | null;
-}
 
 export async function getRequestData(
     req: http.IncomingMessage,

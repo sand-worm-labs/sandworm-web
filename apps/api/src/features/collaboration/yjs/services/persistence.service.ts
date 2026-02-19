@@ -1,14 +1,19 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { YjsDocumentService } from '@/features/collaboration/yjs/yjs-document.service';
-import { DocumentSession } from "../types/yjs.types";
+import { WSSharedDoc } from '../interfaces';
+import { PersistorFactory } from '../persistors/persistor.factory';
+
 
 @Injectable()
 export class PersistenceService {
     private readonly logger = new Logger(PersistenceService.name);
 
-    constructor(private readonly yjsDocumentService: YjsDocumentService) { }
+    constructor(
+        private readonly yjsDocumentService: YjsDocumentService,
+        private readonly persistorFactory: PersistorFactory
+    ) { }
 
-    async persistSession(session: DocumentSession): Promise<void> {
+    async persistSession(session: WSSharedDoc): Promise<void> {
         this.logger.debug(`💾 Persisting session ${session.documentId}`);
 
         if (session.isApp && session.userId) {
@@ -16,18 +21,18 @@ export class PersistenceService {
             return;
         }
 
-        await this.yjsDocumentService.saveEditYDoc(session.documentId, session.yDoc);
+        await this.yjsDocumentService.saveEditYDoc(session.documentId, session.ydoc);
         this.logger.debug(`✅ Successfully persisted session ${session.documentId}`);
     }
 
     async validateAndFixClock(
-        session: DocumentSession,
+        session: WSSharedDoc,
         clock: number,
     ): Promise<boolean> {
         try {
             const loadResult = session.isApp && session.userId
-                ? await this.yjsDocumentService.loadAppYDoc(session.documentId, session.userId)
-                : await this.yjsDocumentService.loadEditYDoc(session.documentId);
+                ? await this.persistorFactory.createAppPersistor(session.documentId, session.appId, session.userId).load()
+                : await this.persistorFactory.createDocumentPersistor(session.documentId).load();
 
             if (loadResult.clock === clock) {
                 this.logger.warn(`🔧 Fixing session clock from ${session.clock} to ${clock}`);

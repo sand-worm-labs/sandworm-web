@@ -208,6 +208,9 @@ type Mutation {
   """Mark a document as a favorite"""
   addFavoriteDocument(input: FavoriteDocumentInput!): Document!
 
+  """Remove multiple users from a workspace"""
+  batchRemoveUsersFromWorkspace(userIds: [String!]!, workspaceId: String!): Boolean!
+
   """Create a new comment on a document"""
   createComment(documentId: String!, input: CreateCommentInput!): Comment!
 
@@ -518,6 +521,7 @@ input UpdateUserSettingInput {
 
 type User {
   avater: String
+  createdAt: DateTime
   email: String
   firstName: String
   followers: [User!]!

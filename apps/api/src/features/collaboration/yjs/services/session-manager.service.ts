@@ -1,17 +1,24 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as awarenessProtocol from 'y-protocols/awareness';
 import { YjsDocumentService } from '@/features/collaboration/yjs/yjs-document.service';
-import { DocumentSession, PERSIST_DEBOUNCE_MS } from "../types/yjs.types";
+import { PERSIST_DEBOUNCE_MS } from "../types/yjs.types";
+import { WSSharedDoc } from '../interfaces/ws-shared-doc.interface';
+import { PersistenceService } from './persistence.service';
+import { PersistorFactory } from '../persistors/persistor.factory';
+
 
 const IDLE_TIMEOUT = 5 * 60 * 1000;
 
 @Injectable()
 export class SessionManagerService {
     private readonly logger = new Logger(SessionManagerService.name);
-    private readonly sessions = new Map<string, DocumentSession>();
+    private readonly sessions = new Map<string, WSSharedDoc>();
     private cleanupInterval?: NodeJS.Timeout;
 
-    constructor(private readonly yjsDocumentService: YjsDocumentService) { }
+    constructor(
+        private readonly yjsDocumentService: YjsDocumentService,
+        private readonly persistorFactory: PersistorFactory
+    ) { }
 
     getSessionKey(documentId: string, isApp: boolean, userId: string | null): string {
         if (isApp && userId) return `${documentId}:app:${userId}`;
@@ -23,27 +30,29 @@ export class SessionManagerService {
         documentId: string,
         workspaceId: string,
         isApp: boolean,
-        userId: string | null,
-        onUpdate: (session: DocumentSession, update: Uint8Array, origin: any) => void,
-        onAwarenessUpdate: (session: DocumentSession, changes: any, origin: any) => void,
-    ): Promise<DocumentSession> {
+        appId: string,
+        userId: string,
+        onUpdate: (session: WSSharedDoc, update: Uint8Array, origin: any) => void,
+        onAwarenessUpdate: (session: WSSharedDoc, changes: any, origin: any) => void,
+    ): Promise<WSSharedDoc> {
         const sessionKey = this.getSessionKey(documentId, isApp, userId);
         let session = this.sessions.get(sessionKey);
 
         if (!session) {
             this.logger.debug(`🔧 Creating new session for ${sessionKey}`);
 
-            const loadResult = isApp && userId
-                ? await this.yjsDocumentService.loadAppYDoc(documentId, userId)
-                : await this.yjsDocumentService.loadEditYDoc(documentId);
+            const loadResult = isApp && userId && appId
+                ? await this.persistorFactory.createAppPersistor(documentId, appId, userId).load()
+                : await this.persistorFactory.createDocumentPersistor(documentId).load();
 
-            const awareness = new awarenessProtocol.Awareness(loadResult.yDoc);
+            const awareness = new awarenessProtocol.Awareness(loadResult.ydoc);
             awareness.setLocalState(null);
+
 
             session = {
                 documentId,
                 workspaceId,
-                yDoc: loadResult.yDoc,
+                ydoc: loadResult.yDoc,
                 awareness,
                 conns: new Map(),
                 clock: loadResult.clock,
@@ -52,7 +61,7 @@ export class SessionManagerService {
                 lastPersist: Date.now(),
             };
 
-            loadResult.yDoc.on('update', (update: Uint8Array, origin: any) => {
+            loadResult.ydoc.on('update', (update: Uint8Array, origin: any) => {
                 onUpdate(session!, update, origin);
             });
 
@@ -70,8 +79,8 @@ export class SessionManagerService {
     }
 
     schedulePersist(
-        session: DocumentSession,
-        persistFn: (session: DocumentSession) => Promise<void>,
+        session: WSSharedDoc,
+        persistFn: (session: WSSharedDoc) => Promise<void>,
     ) {
         if (session.persistTimeout) {
             clearTimeout(session.persistTimeout);
@@ -90,7 +99,7 @@ export class SessionManagerService {
         }, PERSIST_DEBOUNCE_MS);
     }
 
-    startCleanup(persistFn: (session: DocumentSession) => Promise<void>) {
+    startCleanup(persistFn: (session: WSSharedDoc) => Promise<void>) {
         this.cleanupInterval = setInterval(() => {
             const now = Date.now();
 
@@ -103,7 +112,7 @@ export class SessionManagerService {
                     });
 
                     if (session.persistTimeout) clearTimeout(session.persistTimeout);
-                    session.yDoc.destroy();
+                    session.ydoc.destroy();
                     session.awareness.destroy();
                     this.sessions.delete(key);
 
@@ -113,7 +122,7 @@ export class SessionManagerService {
         }, 60000);
     }
 
-    async destroyAll(persistFn: (session: DocumentSession) => Promise<void>) {
+    async destroyAll(persistFn: (session: WSSharedDoc) => Promise<void>) {
         if (this.cleanupInterval) {
             clearInterval(this.cleanupInterval);
         }
@@ -128,7 +137,7 @@ export class SessionManagerService {
 
         for (const session of this.sessions.values()) {
             if (session.persistTimeout) clearTimeout(session.persistTimeout);
-            session.yDoc.destroy();
+            session.ydoc.destroy();
             session.awareness.destroy();
         }
 

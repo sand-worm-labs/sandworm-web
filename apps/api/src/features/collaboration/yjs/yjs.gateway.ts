@@ -5,7 +5,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DocumentEntity } from '@sandworm/postgresql-typeorm';
 import { SessionService } from '@/features/session/session.service';
-import { YjsDocumentService } from '@/features/collaboration/yjs/yjs-document.service';
 import { SessionManagerService } from '@/features/collaboration/yjs/services/session-manager.service';
 import { MessageHandlerService } from '@/features/collaboration/yjs/services/message-handler.service';
 import { SyncHandlerService } from '@/features/collaboration/yjs/services/sync-handler.service';

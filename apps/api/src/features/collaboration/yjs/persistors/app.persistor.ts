@@ -39,7 +39,6 @@ export class AppPersistor implements Persistor {
     private readonly userId: string | null,
     private readonly yjsAppDocumentRepository: Repository<YjsAppDocumentEntity>,
     private readonly userYjsAppDocumentRepository: Repository<UserYjsAppDocumentEntity>,
-    // private readonly yjsUpdateRepository: Repository<YjsUpdateEntity>,b
     private readonly lockService: LockService
   ) { }
 

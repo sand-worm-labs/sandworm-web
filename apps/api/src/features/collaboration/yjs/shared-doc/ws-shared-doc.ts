@@ -26,6 +26,11 @@ export class WSSharedDocV2 implements WSSharedDoc {
     public ydoc: Y.Doc;
     public awareness: awarenessProtocol.Awareness;
     public clock: number;
+    public isApp: boolean;
+    public userId: string;
+    public persistTimeout?: NodeJS.Timeout;
+    public lastPersist: number;
+    public appId: string;
 
     private readonly logger = new Logger(WSSharedDocV2.name);
     private title = '';
@@ -107,31 +112,6 @@ export class WSSharedDocV2 implements WSSharedDoc {
         await this.reset(result.ydoc, result.clock, result.byteLength);
     }
 
-    public readSyncStep1(decoder: decoding.Decoder, encoder: encoding.Encoder): void {
-        this.logger.debug(`Reading sync step 1 for ${this.id}`);
-        syncProtocol.readSyncStep1(decoder, encoder, this.ydoc);
-    }
-
-    public readSyncStep2(
-        decoder: decoding.Decoder,
-        transactionOrigin: TransactionOrigin
-    ): void {
-        this.logger.debug(`Reading sync step 2 for ${this.id}`);
-        syncProtocol.readSyncStep2(decoder, this.ydoc, transactionOrigin);
-    }
-
-    public readUpdate(
-        decoder: decoding.Decoder,
-        transactionOrigin: TransactionOrigin
-    ): void {
-        this.logger.debug(`Reading update for ${this.id}`);
-        if (this.canWrite(decoder, transactionOrigin)) {
-            syncProtocol.readUpdate(decoder, this.ydoc, transactionOrigin);
-        } else {
-            this.logger.error(`Unauthorized update attempt on ${this.id}`);
-            this.closeConn(transactionOrigin.conn);
-        }
-    }
 
     public async init(): Promise<void> {
         this.ydoc.on('update', this.updateHandler);
@@ -202,67 +182,6 @@ export class WSSharedDocV2 implements WSSharedDoc {
         return awareness;
     }
 
-    private updateHandler = async (
-        update: Uint8Array,
-        _origin: any,
-        _doc: Y.Doc,
-        tr: Y.Transaction
-    ) => {
-        this.hasUpdatesToPersist = true;
-
-        const encoder = encoding.createEncoder();
-        encoding.writeVarUint(encoder, MESSAGE_SYNC);
-        syncProtocol.writeUpdate(encoder, update);
-        const message = encoding.toUint8Array(encoder);
-
-        this.conns.forEach((_, conn) => this.send(conn, message));
-
-        const titleChanged = await this.handleTitleUpdate();
-        if (titleChanged && this.onTitleChange) {
-            await this.onTitleChange(this.title);
-        }
-
-        if ((tr.origin as any)?.isDuplicating) {
-            return;
-        }
-
-        this.persistUpdatesQueue.add(async () => {
-            this.persistUpdatesQueue.clear();
-            if (this.hasUpdatesToPersist) {
-                this.hasUpdatesToPersist = false;
-                await this.persistor.persist(this);
-            }
-        });
-    };
-
-    private awarenessHandler = (
-        { added, updated, removed }: {
-            added: number[];
-            updated: number[];
-            removed: number[];
-        },
-        transactionOrigin: TransactionOrigin | null
-    ) => {
-        const changedClients = added.concat(updated, removed);
-
-        if (transactionOrigin !== null) {
-            const connControlledIDs = this.conns.get(transactionOrigin.conn);
-            if (connControlledIDs !== undefined) {
-                added.forEach((clientID) => connControlledIDs.add(clientID));
-                removed.forEach((clientID) => connControlledIDs.delete(clientID));
-            }
-        }
-
-        const encoder = encoding.createEncoder();
-        encoding.writeVarUint(encoder, MESSAGE_AWARENESS);
-        encoding.writeVarUint8Array(
-            encoder,
-            awarenessProtocol.encodeAwarenessUpdate(this.awareness, changedClients)
-        );
-        const buff = encoding.toUint8Array(encoder);
-
-        this.conns.forEach((_, c) => this.send(c, buff));
-    };
 
     private async handleTitleUpdate(): Promise<boolean> {
         const nextTitle = this.getTitleFromDoc();
@@ -273,46 +192,6 @@ export class WSSharedDocV2 implements WSSharedDoc {
         }
 
         return false;
-    }
-
-    private send(conn: WebSocket, message: Uint8Array): void {
-        if (conn.readyState !== 1) {
-            this.closeConn(conn);
-            return;
-        }
-
-        try {
-            conn.send(message, (err) => {
-                if (err) {
-                    this.closeConn(conn);
-                    if ((err as any).code !== 'EPIPE') {
-                        this.logger.error(`Failed to send message: ${err.message}`);
-                    }
-                }
-            });
-        } catch (err) {
-            this.closeConn(conn);
-            if ((err as any).code !== 'EPIPE') {
-                this.logger.error(`Failed to send message: ${err}`);
-            }
-        }
-    }
-
-    private closeConn(conn: WebSocket): void {
-        const controlledIds = this.conns.get(conn);
-        if (controlledIds !== undefined) {
-            this.conns.delete(conn);
-            awarenessProtocol.removeAwarenessStates(
-                this.awareness,
-                Array.from(controlledIds),
-                null
-            );
-        }
-        try {
-            conn.close();
-        } catch (err) {
-            this.logger.debug(`Error closing connection: ${err}`);
-        }
     }
 
     private onNewerClock = async (newClock: number) => {

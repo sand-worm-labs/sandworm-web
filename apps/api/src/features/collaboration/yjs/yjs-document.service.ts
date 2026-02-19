@@ -10,17 +10,10 @@ import {
 } from "@sandworm/postgresql-typeorm";
 import { WSSharedDocV2 } from './shared-doc/ws-shared-doc';
 import { LRUCache } from 'lru-cache';
-import { PersistorFactory } from './persistors/persistor.factory';
 import { PubSubProviderFactory } from '@/infrastructure/pubsub/pubsub-provider.factory';
 import { Persistor } from './interfaces';
-import { Server, Socket } from 'socket.io';
-
-export interface LoadYDocResult {
-    yDoc: Y.Doc;
-    state: Buffer;
-    clock: number;
-    clockUpdatedAt?: Date;
-}
+import { Server } from 'socket.io';
+import { PersistorFactory } from "./persistors/persistor.factory";
 
 interface YDocCacheConfig {
     maxSize: number;
@@ -44,8 +37,8 @@ export class YjsDocumentService implements OnModuleDestroy {
         private readonly userYjsAppDocumentRepo: Repository<UserYjsAppDocumentEntity>,
         @InjectRepository(DocumentEntity)
         private readonly documentRepo: Repository<DocumentEntity>,
-        private readonly persistorFactory: PersistorFactory,
         private readonly pubSubProviderFactory: PubSubProviderFactory,
+        private readonly persistorFactory: PersistorFactory
     ) {
         const cacheConfig: YDocCacheConfig = {
             maxSize: this.getCacheSizeFromEnv(),
@@ -69,85 +62,6 @@ export class YjsDocumentService implements OnModuleDestroy {
         });
 
         this.startDocumentCleanup();
-    }
-
-    async loadEditYDoc(documentId: string): Promise<LoadYDocResult> {
-        const yDoc = new Y.Doc();
-
-        const yjsDoc = await this.yjsDocumentRepo.findOne({
-            where: { documentId },
-        });
-
-        if (!yjsDoc) {
-            const emptyState = Buffer.from(Y.encodeStateAsUpdate(yDoc));
-            return {
-                yDoc,
-                state: emptyState,
-                clock: 0,
-                clockUpdatedAt: new Date(),
-            };
-        }
-
-        Y.applyUpdate(yDoc, yjsDoc.state);
-
-        return {
-            yDoc,
-            state: yjsDoc.state,
-            clock: yjsDoc.clock,
-            clockUpdatedAt: yjsDoc.clockUpdatedAt || new Date(),
-        };
-    }
-
-    async loadAppYDoc(documentId: string, userId: string): Promise<LoadYDocResult> {
-        const yDoc = new Y.Doc();
-
-        const yjsAppDoc = await this.yjsAppDocumentRepo.findOne({
-            where: { documentId },
-            order: { createdAt: "DESC" },
-        });
-
-        if (!yjsAppDoc) {
-            const emptyState = Buffer.from(Y.encodeStateAsUpdate(yDoc));
-            return {
-                yDoc,
-                state: emptyState,
-                clock: 0,
-                clockUpdatedAt: new Date(),
-            };
-        }
-
-        const userYjsAppDoc = await this.userYjsAppDocumentRepo.findOne({
-            where: {
-                yjsAppDocumentId: yjsAppDoc.id,
-                userId,
-            },
-        });
-
-        if (userYjsAppDoc) {
-            Y.applyUpdate(yDoc, userYjsAppDoc.state);
-            return {
-                yDoc,
-                state: userYjsAppDoc.state,
-                clock: userYjsAppDoc.clock,
-                clockUpdatedAt: userYjsAppDoc.clockUpdatedAt || new Date(),
-            };
-        }
-
-        Y.applyUpdate(yDoc, yjsAppDoc.state);
-
-        const newUserDoc = await this.userYjsAppDocumentRepo.save({
-            yjsAppDocumentId: yjsAppDoc.id,
-            userId,
-            state: yjsAppDoc.state,
-            clock: yjsAppDoc.clock,
-        });
-
-        return {
-            yDoc,
-            state: yjsAppDoc.state,
-            clock: yjsAppDoc.clock,
-            clockUpdatedAt: newUserDoc.clockUpdatedAt || new Date(),
-        };
     }
 
     async saveEditYDoc(documentId: string, yDoc: Y.Doc): Promise<void> {
@@ -198,8 +112,8 @@ export class YjsDocumentService implements OnModuleDestroy {
     async publishDocument(documentId: string): Promise<YjsAppDocumentEntity> {
         this.logger.log(`Publishing document: ${documentId}`);
 
-        const editYDoc = await this.loadEditYDoc(documentId);
-        const state = Buffer.from(Y.encodeStateAsUpdate(editYDoc.yDoc));
+        const editYDoc = await this.persistorFactory.createDocumentPersistor(documentId).load();
+        const state = Buffer.from(Y.encodeStateAsUpdate(editYDoc.ydoc));
 
         let yjsAppDoc = await this.yjsAppDocumentRepo.findOne({
             where: { documentId },
@@ -243,15 +157,16 @@ export class YjsDocumentService implements OnModuleDestroy {
     async getYDocState(
         documentId: string,
         isApp: boolean,
+        addId?:string,
         userId?: string,
     ): Promise<string | null> {
         if (isApp && userId) {
-            const result = await this.loadAppYDoc(documentId, userId);
-            return result.state.toString("base64");
+            const result = await this.persistorFactory.createAppPersistor(documentId, addId, userId).load();
+            return Buffer.from(Y.encodeStateAsUpdate(result.ydoc)).toString("base64");
         }
 
-        const result = await this.loadEditYDoc(documentId);
-        return result.state.toString("base64");
+        const result = await this.persistorFactory.createDocumentPersistor(documentId).load();
+        return Buffer.from(Y.encodeStateAsUpdate(result.ydoc)).toString("base64");
     }
 
     async getYDoc(
