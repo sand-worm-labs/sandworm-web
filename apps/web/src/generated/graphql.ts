@@ -1145,10 +1145,26 @@ export type AcceptWorkspaceInvitationMutationVariables = Exact<{
 
 export type AcceptWorkspaceInvitationMutation = { __typename?: 'Mutation', acceptWorkspaceInvitation: boolean };
 
+export type BatchRemoveUsersFromWorkspaceMutationVariables = Exact<{
+  userIds: Array<Scalars['String']['input']> | Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
+}>;
+
+
+export type BatchRemoveUsersFromWorkspaceMutation = { __typename?: 'Mutation', batchRemoveUsersFromWorkspace: boolean };
+
+export type RemoveUserFromWorkspaceMutationVariables = Exact<{
+  userId: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
+}>;
+
+
+export type RemoveUserFromWorkspaceMutation = { __typename?: 'Mutation', removeUserFromWorkspace: boolean };
+
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentUserQuery = { __typename?: 'Query', currentUser: { __typename: 'AuthPayload', id: string, token: string, tokenExpires: number, user: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, fullName?: string | null, isOnboarded: boolean, avater?: string | null, followersCount: number, followingCount: number, settings?: { __typename?: 'UserSetting', statusText?: string | null, statusUpdatedAt?: any | null, socialLinks?: any | null, wallets: Array<any> } | null } } };
+export type CurrentUserQuery = { __typename?: 'Query', currentUser: { __typename: 'AuthPayload', id: string, token: string, tokenExpires: number, user: { __typename?: 'User', id: string, username?: string | null, email?: string | null, createdAt?: any | null, firstName?: string | null, lastName?: string | null, fullName?: string | null, isOnboarded: boolean, avater?: string | null, followersCount: number, followingCount: number, settings?: { __typename?: 'UserSetting', statusText?: string | null, statusUpdatedAt?: any | null, socialLinks?: any | null, wallets: Array<any> } | null } } };
 
 export type GetProfileQueryVariables = Exact<{
   username: Scalars['String']['input'];
@@ -2620,6 +2636,70 @@ export function useAcceptWorkspaceInvitationMutation(baseOptions?: Apollo.Mutati
 export type AcceptWorkspaceInvitationMutationHookResult = ReturnType<typeof useAcceptWorkspaceInvitationMutation>;
 export type AcceptWorkspaceInvitationMutationResult = Apollo.MutationResult<AcceptWorkspaceInvitationMutation>;
 export type AcceptWorkspaceInvitationMutationOptions = Apollo.BaseMutationOptions<AcceptWorkspaceInvitationMutation, AcceptWorkspaceInvitationMutationVariables>;
+export const BatchRemoveUsersFromWorkspaceDocument = gql`
+    mutation BatchRemoveUsersFromWorkspace($userIds: [String!]!, $workspaceId: String!) {
+  batchRemoveUsersFromWorkspace(userIds: $userIds, workspaceId: $workspaceId)
+}
+    `;
+export type BatchRemoveUsersFromWorkspaceMutationFn = Apollo.MutationFunction<BatchRemoveUsersFromWorkspaceMutation, BatchRemoveUsersFromWorkspaceMutationVariables>;
+
+/**
+ * __useBatchRemoveUsersFromWorkspaceMutation__
+ *
+ * To run a mutation, you first call `useBatchRemoveUsersFromWorkspaceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useBatchRemoveUsersFromWorkspaceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [batchRemoveUsersFromWorkspaceMutation, { data, loading, error }] = useBatchRemoveUsersFromWorkspaceMutation({
+ *   variables: {
+ *      userIds: // value for 'userIds'
+ *      workspaceId: // value for 'workspaceId'
+ *   },
+ * });
+ */
+export function useBatchRemoveUsersFromWorkspaceMutation(baseOptions?: Apollo.MutationHookOptions<BatchRemoveUsersFromWorkspaceMutation, BatchRemoveUsersFromWorkspaceMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<BatchRemoveUsersFromWorkspaceMutation, BatchRemoveUsersFromWorkspaceMutationVariables>(BatchRemoveUsersFromWorkspaceDocument, options);
+      }
+export type BatchRemoveUsersFromWorkspaceMutationHookResult = ReturnType<typeof useBatchRemoveUsersFromWorkspaceMutation>;
+export type BatchRemoveUsersFromWorkspaceMutationResult = Apollo.MutationResult<BatchRemoveUsersFromWorkspaceMutation>;
+export type BatchRemoveUsersFromWorkspaceMutationOptions = Apollo.BaseMutationOptions<BatchRemoveUsersFromWorkspaceMutation, BatchRemoveUsersFromWorkspaceMutationVariables>;
+export const RemoveUserFromWorkspaceDocument = gql`
+    mutation RemoveUserFromWorkspace($userId: String!, $workspaceId: String!) {
+  removeUserFromWorkspace(userId: $userId, workspaceId: $workspaceId)
+}
+    `;
+export type RemoveUserFromWorkspaceMutationFn = Apollo.MutationFunction<RemoveUserFromWorkspaceMutation, RemoveUserFromWorkspaceMutationVariables>;
+
+/**
+ * __useRemoveUserFromWorkspaceMutation__
+ *
+ * To run a mutation, you first call `useRemoveUserFromWorkspaceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRemoveUserFromWorkspaceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [removeUserFromWorkspaceMutation, { data, loading, error }] = useRemoveUserFromWorkspaceMutation({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *      workspaceId: // value for 'workspaceId'
+ *   },
+ * });
+ */
+export function useRemoveUserFromWorkspaceMutation(baseOptions?: Apollo.MutationHookOptions<RemoveUserFromWorkspaceMutation, RemoveUserFromWorkspaceMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RemoveUserFromWorkspaceMutation, RemoveUserFromWorkspaceMutationVariables>(RemoveUserFromWorkspaceDocument, options);
+      }
+export type RemoveUserFromWorkspaceMutationHookResult = ReturnType<typeof useRemoveUserFromWorkspaceMutation>;
+export type RemoveUserFromWorkspaceMutationResult = Apollo.MutationResult<RemoveUserFromWorkspaceMutation>;
+export type RemoveUserFromWorkspaceMutationOptions = Apollo.BaseMutationOptions<RemoveUserFromWorkspaceMutation, RemoveUserFromWorkspaceMutationVariables>;
 export const CurrentUserDocument = gql`
     query CurrentUser {
   currentUser {
@@ -2630,6 +2710,7 @@ export const CurrentUserDocument = gql`
       id
       username
       email
+      createdAt
       firstName
       lastName
       fullName
