@@ -1,9 +1,6 @@
 export interface WSSharedDoc {
     id: string;
     documentId: string;
-    appId: string ;
-    isApp: boolean;
-    userId: string;
     persistTimeout?: NodeJS.Timeout;
     lastPersist: number;
     workspaceId: string;

@@ -2,8 +2,7 @@ import { Logger } from '@nestjs/common';
 import * as Y from 'yjs';
 import { WebSocket } from 'ws';
 import * as awarenessProtocol from 'y-protocols/awareness';
-import { encoding, decoding } from 'lib0';
-import * as syncProtocol from 'y-protocols/sync';
+import { decoding } from 'lib0';
 import PQueue from 'p-queue';
 import {
     getBlocks,
@@ -14,8 +13,6 @@ import {
 import { WSSharedDoc, TransactionOrigin, Persistor, LoadStateResult } from '../interfaces';
 import { PubSubProviderFactory } from '@/infrastructure/pubsub/pubsub-provider.factory';
 import { PubSubProvider } from '@/infrastructure/pubsub/pubsub.provider';
-import { MESSAGE_AWARENESS, MESSAGE_SYNC } from '../types/yjs.types';
-
 
 export class WSSharedDocV2 implements WSSharedDoc {
 
@@ -26,21 +23,17 @@ export class WSSharedDocV2 implements WSSharedDoc {
     public ydoc: Y.Doc;
     public awareness: awarenessProtocol.Awareness;
     public clock: number;
-    public isApp: boolean;
-    public userId: string;
-    public persistTimeout?: NodeJS.Timeout;
-    public lastPersist: number;
-    public appId: string;
 
     private readonly logger = new Logger(WSSharedDocV2.name);
-    private title = '';
     private byteLength = 0;
-    private hasUpdatesToPersist = false;
-    private persistUpdatesQueue: PQueue;
     private updating = 0;
     private executor?: any;
-    private aiExecutor?: any;
     private pubSubProvider?: PubSubProvider;
+    private persistUpdatesQueue: PQueue;
+
+    // Stored so destroy/reset can detach them
+    private onUpdate?: (update: Uint8Array, tr: Y.Transaction) => void;
+    private onAwareness?: (changes: any, origin: any) => void;
 
     private constructor(
         id: string,
@@ -49,7 +42,6 @@ export class WSSharedDocV2 implements WSSharedDoc {
         loadStateResult: LoadStateResult,
         private readonly persistor: Persistor,
         private readonly pubSubProviderFactory: PubSubProviderFactory,
-        private readonly onTitleChange?: (title: string) => Promise<void>
     ) {
         this.id = id;
         this.documentId = documentId;
@@ -58,7 +50,6 @@ export class WSSharedDocV2 implements WSSharedDoc {
         this.ydoc = loadStateResult.ydoc;
         this.clock = loadStateResult.clock;
         this.byteLength = loadStateResult.byteLength;
-
         this.awareness = this.configAwareness();
         this.persistUpdatesQueue = new PQueue({
             concurrency: 1,
@@ -66,6 +57,8 @@ export class WSSharedDocV2 implements WSSharedDoc {
             interval: 500,
         });
     }
+    persistTimeout?: NodeJS.Timeout;
+    lastPersist: number;
 
     public get blocks() {
         return getBlocks(this.ydoc);
@@ -91,8 +84,7 @@ export class WSSharedDocV2 implements WSSharedDoc {
         return (
             this.conns.size === 0 &&
             this.updating === 0 &&
-            (!this.executor || this.executor.isIdle()) &&
-            (!this.aiExecutor || this.aiExecutor.isIdle())
+            (!this.executor || this.executor.isIdle())
         );
     }
 
@@ -112,10 +104,31 @@ export class WSSharedDocV2 implements WSSharedDoc {
         await this.reset(result.ydoc, result.clock, result.byteLength);
     }
 
+    public incrementUpdating(): void {
+        this.updating++;
+    }
 
-    public async init(): Promise<void> {
-        this.ydoc.on('update', this.updateHandler);
-        this.awareness.on('update', this.awarenessHandler);
+    public decrementUpdating(): void {
+        this.updating = Math.max(this.updating - 1, 0);
+    }
+
+    public getPersistUpdatesQueue(): PQueue {
+        return this.persistUpdatesQueue;
+    }
+
+    public getPersistor(): Persistor {
+        return this.persistor;
+    }
+
+    public async init(
+        onUpdate: (update: Uint8Array, tr: Y.Transaction) => void,
+        onAwareness: (changes: any, origin: any) => void,
+    ): Promise<void> {
+        this.onUpdate = onUpdate;
+        this.onAwareness = onAwareness;
+
+        this.ydoc.on('update', this.onUpdate);
+        this.awareness.on('update', this.onAwareness);
 
         this.pubSubProvider = this.pubSubProviderFactory.create(
             this.id,
@@ -132,13 +145,13 @@ export class WSSharedDocV2 implements WSSharedDoc {
         this.logger.debug(`Destroying WSSharedDocV2 ${this.id}`);
 
         await Promise.all([
-            this.executor?.stop(),
-            this.aiExecutor?.stop(),
+            this.executor?.stop()
         ]);
 
-        this.ydoc.off('update', this.updateHandler);
-        await this.persistUpdatesQueue.onIdle();
+        if (this.onUpdate) this.ydoc.off('update', this.onUpdate);
+        if (this.onAwareness) this.awareness.off('update', this.onAwareness);
 
+        await this.persistUpdatesQueue.onIdle();
         await this.persistor.persist(this);
         await this.pubSubProvider?.disconnect();
 
@@ -148,28 +161,27 @@ export class WSSharedDocV2 implements WSSharedDoc {
         this.logger.debug(`WSSharedDocV2 destroyed for ${this.id}`);
     }
 
-    private async reset(newYDoc: Y.Doc, newClock: number, newByteLength: number): Promise<void> {
+    public async reset(newYDoc: Y.Doc, newClock: number, newByteLength: number): Promise<void> {
         this.logger.debug(`Resetting WSSharedDocV2 ${this.id}`);
 
         await Promise.all([
-            this.executor?.stop(),
-            this.aiExecutor?.stop()
+            this.executor?.stop()
         ]);
 
-        this.ydoc.off('update', this.updateHandler);
-        this.ydoc.destroy();
+        if (this.onUpdate) this.ydoc.off('update', this.onUpdate);
+        if (this.onAwareness) this.awareness.off('update', this.onAwareness);
 
-        this.awareness.off('update', this.awarenessHandler);
+        this.ydoc.destroy();
         await this.persistUpdatesQueue.onIdle();
         this.awareness.destroy();
 
         this.ydoc = newYDoc;
         this.clock = newClock;
         this.byteLength = newByteLength;
-        this.title = this.getTitleFromDoc();
-
         this.awareness = this.configAwareness();
-        this.ydoc.on('update', this.updateHandler);
+
+        if (this.onUpdate) this.ydoc.on('update', this.onUpdate);
+        if (this.onAwareness) this.awareness.on('update', this.onAwareness);
 
         await this.pubSubProvider?.reset(newYDoc, newClock);
 
@@ -180,18 +192,6 @@ export class WSSharedDocV2 implements WSSharedDoc {
         const awareness = new awarenessProtocol.Awareness(this.ydoc);
         awareness.setLocalState(null);
         return awareness;
-    }
-
-
-    private async handleTitleUpdate(): Promise<boolean> {
-        const nextTitle = this.getTitleFromDoc();
-
-        if (this.title !== nextTitle) {
-            this.title = nextTitle;
-            return true;
-        }
-
-        return false;
     }
 
     private onNewerClock = async (newClock: number) => {
@@ -205,14 +205,6 @@ export class WSSharedDocV2 implements WSSharedDoc {
         await this.reset(loadResult.ydoc, loadResult.clock, loadResult.byteLength);
     };
 
-    public setExecutor(executor: any): void {
-        this.executor = executor;
-    }
-
-    public setAIExecutor(aiExecutor: any): void {
-        this.aiExecutor = aiExecutor;
-    }
-
     public static async make(
         id: string,
         documentId: string,
@@ -220,7 +212,8 @@ export class WSSharedDocV2 implements WSSharedDoc {
         loadStateResult: LoadStateResult,
         persistor: Persistor,
         pubSubProviderFactory: PubSubProviderFactory,
-        onTitleChange?: (title: string) => Promise<void>
+        onUpdate: (update: Uint8Array, tr: Y.Transaction) => void,
+        onAwareness: (changes: any, origin: any) => void,
     ): Promise<WSSharedDocV2> {
         const doc = new WSSharedDocV2(
             id,
@@ -229,10 +222,9 @@ export class WSSharedDocV2 implements WSSharedDoc {
             loadStateResult,
             persistor,
             pubSubProviderFactory,
-            onTitleChange
         );
 
-        await doc.init();
+        await doc.init(onUpdate, onAwareness);
 
         if (
             loadStateResult.applyUpdateLatency > 1000 &&

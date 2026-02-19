@@ -11,7 +11,7 @@ import {
 import { WSSharedDocV2 } from './shared-doc/ws-shared-doc';
 import { LRUCache } from 'lru-cache';
 import { PubSubProviderFactory } from '@/infrastructure/pubsub/pubsub-provider.factory';
-import { Persistor } from './interfaces';
+import { LoadStateResult, Persistor } from './interfaces';
 import { Server } from 'socket.io';
 import { PersistorFactory } from "./persistors/persistor.factory";
 
@@ -157,7 +157,7 @@ export class YjsDocumentService implements OnModuleDestroy {
     async getYDocState(
         documentId: string,
         isApp: boolean,
-        addId?:string,
+        addId?: string,
         userId?: string,
     ): Promise<string | null> {
         if (isApp && userId) {
@@ -228,6 +228,7 @@ export class YjsDocumentService implements OnModuleDestroy {
 
     private async createYDoc(
         id: string,
+
         documentId: string,
         workspaceId: string,
         persistor: Persistor,
@@ -238,10 +239,11 @@ export class YjsDocumentService implements OnModuleDestroy {
         const newYDoc = await WSSharedDocV2.make(
             id,
             documentId,
-            workspaceId,
             loadStateResult,
             persistor,
             this.pubSubProviderFactory,
+
+
         );
 
         this.docs.set(id, newYDoc);
@@ -249,7 +251,9 @@ export class YjsDocumentService implements OnModuleDestroy {
 
         return newYDoc;
     }
-
+    async onTitleChange(title: string): Promise<void> {
+        this.logger.debug(`Document title changed: ${title}`);
+    }
 
     async getYDocForUpdate<T>(
         id: string,

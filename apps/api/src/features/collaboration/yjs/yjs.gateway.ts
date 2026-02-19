@@ -8,7 +8,6 @@ import { SessionService } from '@/features/session/session.service';
 import { SessionManagerService } from '@/features/collaboration/yjs/services/session-manager.service';
 import { MessageHandlerService } from '@/features/collaboration/yjs/services/message-handler.service';
 import { SyncHandlerService } from '@/features/collaboration/yjs/services/sync-handler.service';
-import { PersistenceService } from '@/features/collaboration/yjs/services/persistence.service';
 import { WebSocketUtils } from '@/features/collaboration/yjs/utils/websocket.utils';
 import { getRequestData, getUserRole } from '@/features/collaboration/yjs/utils/validation.utils';
 
@@ -21,7 +20,6 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
         private readonly sessionManager: SessionManagerService,
         private readonly messageHandler: MessageHandlerService,
         private readonly syncHandler: SyncHandlerService,
-        private readonly persistence: PersistenceService,
         private readonly sessionService: SessionService,
         @InjectRepository(DocumentEntity)
         private readonly documentRepository: Repository<DocumentEntity>,

@@ -3,7 +3,6 @@ import * as awarenessProtocol from 'y-protocols/awareness';
 import { YjsDocumentService } from '@/features/collaboration/yjs/yjs-document.service';
 import { PERSIST_DEBOUNCE_MS } from "../types/yjs.types";
 import { WSSharedDoc } from '../interfaces/ws-shared-doc.interface';
-import { PersistenceService } from './persistence.service';
 import { PersistorFactory } from '../persistors/persistor.factory';
 
 
@@ -49,17 +48,18 @@ export class SessionManagerService {
             awareness.setLocalState(null);
 
 
-            session = {
-                documentId,
-                workspaceId,
-                ydoc: loadResult.yDoc,
-                awareness,
-                conns: new Map(),
-                clock: loadResult.clock,
-                isApp,
-                userId,
-                lastPersist: Date.now(),
-            };
+
+            // session = {
+            //     documentId,
+            //     workspaceId,
+            //     ydoc: loadResult.yDoc,
+            //     awareness,
+            //     conns: new Map(),
+            //     clock: loadResult.clock,
+            //     isApp,
+            //     userId,
+            //     lastPersist: Date.now(),
+            // };
 
             loadResult.ydoc.on('update', (update: Uint8Array, origin: any) => {
                 onUpdate(session!, update, origin);
