@@ -26,3 +26,13 @@ export const getQueryDuration = (result: SuccessRunQueryResult | null): number =
 
   return 0;
 };
+
+export const getDocId = (
+  documentId: string,
+  app: { id: string; userId: string | null } | null,
+): string => {
+  if (app) {
+    return [documentId, app.id, String(app.userId)].join('-');
+  }
+  return [documentId, 'null'].join('-');
+}

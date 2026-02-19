@@ -8,6 +8,7 @@ import {
     UserYjsAppDocumentEntity,
 } from '@sandworm/postgresql-typeorm';
 import { LockService } from '@/infrastructure/lock/lock.services';
+import { getDocId } from '@/common/utils/validation';
 import { DocumentPersistor } from './document.persistor';
 import { AppPersistor } from './app.persistor';
 import { Persistor } from '../interfaces/persistor.interface';
@@ -27,7 +28,7 @@ export class PersistorFactory {
     ) { }
 
     createDocumentPersistor(documentId: string): Persistor {
-        const docId = this.getDocId(documentId, null);
+        const docId = getDocId(documentId, null);
         return DocumentPersistor.create(
             documentId,
             this.yjsDocumentRepository,
@@ -41,7 +42,7 @@ export class PersistorFactory {
         yjsAppDocumentId: string,
         userId: string | null,
     ): Persistor {
-        const docId = this.getDocId(documentId, { id: yjsAppDocumentId, userId });
+        const docId = getDocId(documentId, { id: yjsAppDocumentId, userId });
         return AppPersistor.create(
             docId,
             yjsAppDocumentId,
@@ -52,13 +53,6 @@ export class PersistorFactory {
         );
     }
 
-    getDocId(
-        documentId: string,
-        app: { id: string; userId: string | null } | null,
-    ): string {
-        if (app) {
-            return [documentId, app.id, String(app.userId)].join('-');
-        }
-        return [documentId, 'null'].join('-');
-    }
+
 }
+
