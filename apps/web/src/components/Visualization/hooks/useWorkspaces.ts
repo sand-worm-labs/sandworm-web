@@ -127,10 +127,6 @@ export const useUpdateWorkspace = (
   const [updateWorkspaceMutation, { loading, error }] =
     useUpdateWorkspaceMutation();
 
-  // Check if current user is owner/admin of a given workspace id.
-  // Derived from ownerId on the workspace object, not from workspaceInfo.role
-  // which only reflects the URL-current workspace and would always block
-  // cross-workspace operations.
   const isAdminOfWorkspace = useCallback(
     (targetId: string): boolean => {
       if (!session?.user?.id || !workspacesData?.userWorkspaces) return false;
@@ -148,14 +144,13 @@ export const useUpdateWorkspace = (
   }, [workspaceId, isAdminOfWorkspace]);
 
   const updateWorkspace = useCallback(
-    async (targetWorkspaceId: string, name: string) => {
-    
-
+    async (targetWorkspaceId: string, name: string, icon?: string) => {
       try {
         const result = await updateWorkspaceMutation({
           variables: {
             workspaceId: targetWorkspaceId,
             name,
+            ...(icon !== undefined && { icon }),
           },
         });
 

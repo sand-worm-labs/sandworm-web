@@ -17,6 +17,7 @@ query GetUserWorkspaces {
     id
     name
     plan
+    icon
     source
     useCases
     useContext
@@ -36,6 +37,7 @@ query GetWorkspaceWithMembers($workspaceId: String!) {
     id
     name
     plan
+    icon
     source
     ownerId
   }
@@ -62,6 +64,7 @@ query GetWorkspace($workspaceId: String!) {
     useCases
     useContext
     ownerId
+    icon
     owner {
       id
       username
