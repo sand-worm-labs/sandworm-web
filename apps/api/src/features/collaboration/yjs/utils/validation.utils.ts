@@ -77,6 +77,7 @@ export async function getRequestData(
             role: userWorkspace.role as UserWorkspaceRole,
             isApp: args.data.isApp,
             userId: args.data.userId ?? null,
+            workspaceId: document.workspaceId,
         };
     } catch (err) {
         logger.error(`Failed to get request data: ${err}`);

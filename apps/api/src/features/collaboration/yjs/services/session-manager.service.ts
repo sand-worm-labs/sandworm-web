@@ -4,7 +4,7 @@ import { YjsDocumentService } from '@/features/collaboration/yjs/yjs-document.se
 import { PERSIST_DEBOUNCE_MS } from "../types/yjs.types";
 import { WSSharedDoc } from '../interfaces/ws-shared-doc.interface';
 import { PersistorFactory } from '../persistors/persistor.factory';
-
+import { SharedDoc } from '../shared-doc/ws-shared-doc';
 
 const IDLE_TIMEOUT = 5 * 60 * 1000;
 

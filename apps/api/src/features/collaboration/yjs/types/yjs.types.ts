@@ -30,4 +30,5 @@ export interface RequestData {
     role: UserWorkspaceRole;
     isApp: boolean;
     userId: string | null;
+    workspaceId: string;
 }

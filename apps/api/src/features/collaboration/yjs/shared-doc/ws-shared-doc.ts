@@ -14,7 +14,8 @@ import { WSSharedDoc, TransactionOrigin, Persistor, LoadStateResult } from '../i
 import { PubSubProviderFactory } from '@/infrastructure/pubsub/pubsub-provider.factory';
 import { PubSubProvider } from '@/infrastructure/pubsub/pubsub.provider';
 
-export class WSSharedDocV2 implements WSSharedDoc {
+
+export class SharedDoc implements WSSharedDoc {
 
     public id: string;
     public documentId: string;
@@ -24,7 +25,7 @@ export class WSSharedDocV2 implements WSSharedDoc {
     public awareness: awarenessProtocol.Awareness;
     public clock: number;
 
-    private readonly logger = new Logger(WSSharedDocV2.name);
+    private readonly logger = new Logger(SharedDoc.name);
     private byteLength = 0;
     private updating = 0;
     private executor?: any;
@@ -138,11 +139,11 @@ export class WSSharedDocV2 implements WSSharedDoc {
         );
         await this.pubSubProvider.connect();
 
-        this.logger.debug(`WSSharedDocV2 initialized for ${this.id}`);
+        this.logger.debug(`SharedDoc initialized for ${this.id}`);
     }
 
     public async destroy(): Promise<void> {
-        this.logger.debug(`Destroying WSSharedDocV2 ${this.id}`);
+        this.logger.debug(`Destroying SharedDoc ${this.id}`);
 
         await Promise.all([
             this.executor?.stop()
@@ -158,11 +159,11 @@ export class WSSharedDocV2 implements WSSharedDoc {
         this.awareness.destroy();
         this.ydoc.destroy();
 
-        this.logger.debug(`WSSharedDocV2 destroyed for ${this.id}`);
+        this.logger.debug(`SharedDoc destroyed for ${this.id}`);
     }
 
     public async reset(newYDoc: Y.Doc, newClock: number, newByteLength: number): Promise<void> {
-        this.logger.debug(`Resetting WSSharedDocV2 ${this.id}`);
+        this.logger.debug(`Resetting SharedDoc ${this.id}`);
 
         await Promise.all([
             this.executor?.stop()
@@ -185,7 +186,7 @@ export class WSSharedDocV2 implements WSSharedDoc {
 
         await this.pubSubProvider?.reset(newYDoc, newClock);
 
-        this.logger.debug(`WSSharedDocV2 reset complete for ${this.id}`);
+        this.logger.debug(`SharedDoc reset complete for ${this.id}`);
     }
 
     private configAwareness(): awarenessProtocol.Awareness {
@@ -214,8 +215,8 @@ export class WSSharedDocV2 implements WSSharedDoc {
         pubSubProviderFactory: PubSubProviderFactory,
         onUpdate: (update: Uint8Array, tr: Y.Transaction) => void,
         onAwareness: (changes: any, origin: any) => void,
-    ): Promise<WSSharedDocV2> {
-        const doc = new WSSharedDocV2(
+    ): Promise<SharedDoc> {
+        const doc = new SharedDoc(
             id,
             documentId,
             workspaceId,
@@ -232,7 +233,7 @@ export class WSSharedDocV2 implements WSSharedDoc {
         ) {
             Logger.log(
                 `Removing history from YDoc ${id} to improve performance`,
-                'WSSharedDocV2'
+                'SharedDoc'
             );
         }
 
