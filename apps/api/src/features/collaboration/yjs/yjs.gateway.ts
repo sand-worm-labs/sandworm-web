@@ -5,11 +5,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DocumentEntity } from '@sandworm/postgresql-typeorm';
 import { SessionService } from '@/features/session/session.service';
-import { SessionManagerService } from '@/features/collaboration/yjs/services/session-manager.service';
 import { MessageHandlerService } from '@/features/collaboration/yjs/services/message-handler.service';
 import { SyncHandlerService } from '@/features/collaboration/yjs/services/sync-handler.service';
 import { WebSocketUtils } from '@/features/collaboration/yjs/utils/websocket.utils';
+import { PersistenceService } from '@/features/collaboration/yjs/services/persistence.service';
+import { PersistorFactory } from '@/features/collaboration/yjs/persistors/persistor.factory';
+import { YjsDocumentService } from '@/features/collaboration/yjs/yjs-document.service';
 import { getRequestData, getUserRole } from '@/features/collaboration/yjs/utils/validation.utils';
+import { WSSharedDoc } from './interfaces';
+import { getDocId } from '@/common/utils/validation';
 
 @Injectable()
 export class YjsGateway implements OnModuleInit, OnModuleDestroy {
@@ -17,7 +21,9 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
     private wss: WebSocket.Server;
 
     constructor(
-        private readonly sessionManager: SessionManagerService,
+        private readonly yjsDocumentService: YjsDocumentService,
+        private readonly persistorFactory: PersistorFactory,
+        private readonly persistence: PersistenceService,
         private readonly messageHandler: MessageHandlerService,
         private readonly syncHandler: SyncHandlerService,
         private readonly sessionService: SessionService,
@@ -39,8 +45,6 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
         this.wss.on('connection', async (socket, req) => {
             await this.handleConnection(socket, req);
         });
-
-        this.sessionManager.startCleanup((session) => this.persistence.persistSession(session));
 
         this.logger.log(`🚀 WebSocket server running on port ${port + 2} at /yjs`);
         this.logger.log('='.repeat(80));
@@ -64,18 +68,24 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
                 return;
             }
 
-            const { document, userId, authUser, role, isApp, clock } = data;
+            const { document, userId, authUser, role, isApp, clock, appId } = data;
 
-            const session = await this.sessionManager.getOrCreateSession(
+            const docId = getDocId(
                 document.id,
-                document.workspaceId,
-                isApp,
-                userId,
-                (sess, update, origin) => this.onYDocUpdate(sess, update, origin),
-                (sess, changes, origin) => this.onAwarenessUpdate(sess, changes, origin),
+                isApp && appId ? { id: appId, userId } : null,
             );
 
-            // Validate clock
+            const persistor = isApp && appId
+                ? this.persistorFactory.createAppPersistor(document.id, appId, userId)
+                : this.persistorFactory.createDocumentPersistor(document.id);
+
+            const session = await this.yjsDocumentService.getYDoc(
+                docId,
+                document.id,
+                document.workspaceId,
+                persistor,
+            );
+
             if (session.clock !== clock) {
                 const isValid = await this.persistence.validateAndFixClock(session, clock);
                 if (!isValid) {
@@ -87,19 +97,16 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
 
             this.logger.log(`✅ Connected: ${authUser.email} → ${session.documentId}`);
 
-            // Register connection
             session.conns.set(client, new Set());
             client.binaryType = 'arraybuffer';
 
             const transactionOrigin = { conn: client, user: authUser, role };
             let lastRoleUpdate = Date.now();
 
-            // Message handler
             client.on('message', async (message: ArrayBuffer) => {
                 try {
                     const now = Date.now();
 
-                    // Revalidate role every 5 seconds
                     if (now - lastRoleUpdate > 5000) {
                         lastRoleUpdate = now;
                         const updatedRole = await getUserRole(authUser.id, session.workspaceId);
@@ -127,12 +134,10 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
                 }
             });
 
-
             WebSocketUtils.setupPingPong(session, client, authUser.id, (s, c) =>
                 this.closeConnection(s, c),
             );
 
-            // Close handler
             client.on('close', () => {
                 this.logger.log(`🔌 Closed: ${authUser.email}`);
                 this.closeConnection(session, client);
@@ -153,31 +158,11 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
         }
     }
 
-    private onYDocUpdate(session: any, update: Uint8Array, origin: any) {
-        this.messageHandler.handleYDocUpdate(session, update, (msg) => this.broadcast(session, msg));
-        this.sessionManager.schedulePersist(session, (s) => this.persistence.persistSession(s));
-    }
-
-    private onAwarenessUpdate(session: any, changes: any, origin: any) {
-        this.messageHandler.handleAwarenessUpdate(session, changes, origin, (msg) =>
-            this.broadcast(session, msg),
-        );
-    }
-
-    private broadcast(session: any, message: Uint8Array) {
-        let count = 0;
-        session.conns.forEach((_, conn) => {
-            this.send(session, conn, message);
-            count++;
-        });
-        this.logger.debug(`Broadcasted to ${count} connections`);
-    }
-
-    private send(session: any, conn: WebSocket, message: Uint8Array) {
+    private send(session: WSSharedDoc, conn: WebSocket, message: Uint8Array) {
         WebSocketUtils.send(session, conn, message, (s, c) => this.closeConnection(s, c));
     }
 
-    private closeConnection(session: any, conn: WebSocket) {
+    private closeConnection(session: WSSharedDoc, conn: WebSocket) {
         WebSocketUtils.closeConnection(session, conn);
     }
 
@@ -188,7 +173,6 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
             this.wss.close();
         }
 
-        this.sessionManager.destroyAll((session) => this.persistence.persistSession(session));
         this.logger.log('✅ Shutdown complete');
     }
 }

@@ -12,14 +12,9 @@ import { SharedDoc } from './shared-doc/ws-shared-doc';
 import { LRUCache } from 'lru-cache';
 import { PubSubProviderFactory } from '@/infrastructure/pubsub/pubsub-provider.factory';
 import { LoadStateResult, Persistor } from './interfaces';
-import { Server } from 'socket.io';
 import { PersistorFactory } from "./persistors/persistor.factory";
 import { MessageHandlerService } from "./services/message-handler.service";
 
-interface YDocCacheConfig {
-    maxSize: number;
-    ttl?: number;
-}
 
 @Injectable()
 export class YjsDocumentService implements OnModuleDestroy {
@@ -30,8 +25,6 @@ export class YjsDocumentService implements OnModuleDestroy {
     private cleanupInterval?: NodeJS.Timeout;
 
     constructor(
-        @InjectRepository(YjsDocumentEntity)
-        private readonly yjsDocumentRepo: Repository<YjsDocumentEntity>,
         @InjectRepository(YjsAppDocumentEntity)
         private readonly yjsAppDocumentRepo: Repository<YjsAppDocumentEntity>,
         @InjectRepository(UserYjsAppDocumentEntity)
@@ -40,15 +33,10 @@ export class YjsDocumentService implements OnModuleDestroy {
         private readonly documentRepo: Repository<DocumentEntity>,
         private readonly pubSubProviderFactory: PubSubProviderFactory,
         private readonly persistorFactory: PersistorFactory,
-        private readonly messageHandler: MessageHandlerService
-
+        private readonly messageHandler: MessageHandlerService,
     ) {
-        const cacheConfig: YDocCacheConfig = {
-            maxSize: this.getCacheSizeFromEnv(),
-        };
-
         this.docsCache = new LRUCache<string, SharedDoc>({
-            maxSize: cacheConfig.maxSize,
+            maxSize: this.getCacheSizeFromEnv(),
             sizeCalculation: (doc) => doc.getByteLength(),
             dispose: async (doc, id) => {
                 if (!this.docs.has(id)) {
@@ -56,60 +44,13 @@ export class YjsDocumentService implements OnModuleDestroy {
                         await doc.destroy();
                         this.logger.debug(`Disposed cached YDoc: ${id}`);
                     } catch (err) {
-                        this.logger.error(
-                            `Failed to dispose YDoc ${id}: ${err}`
-                        );
+                        this.logger.error(`Failed to dispose YDoc ${id}: ${err}`);
                     }
                 }
             },
         });
 
         this.startDocumentCleanup();
-    }
-
-    async saveEditYDoc(documentId: string, yDoc: Y.Doc): Promise<void> {
-        const state = Buffer.from(Y.encodeStateAsUpdate(yDoc));
-
-        await this.yjsDocumentRepo.upsert(
-            {
-                documentId,
-                state,
-            },
-            {
-                conflictPaths: ["documentId"],
-                skipUpdateIfNoValuesChanged: true,
-            },
-        );
-
-        this.logger.debug(`Saved edit YDoc for document: ${documentId}`);
-    }
-
-    async saveAppYDoc(
-        yjsAppDocumentId: string,
-        userId: string | null,
-        yDoc: Y.Doc,
-    ): Promise<void> {
-        const state = Buffer.from(Y.encodeStateAsUpdate(yDoc));
-
-        if (userId) {
-            await this.userYjsAppDocumentRepo.upsert(
-                {
-                    yjsAppDocumentId,
-                    userId,
-                    state,
-                },
-                {
-                    conflictPaths: ["yjsAppDocumentId", "userId"],
-                    skipUpdateIfNoValuesChanged: true,
-                },
-            );
-            this.logger.debug(
-                `Saved app YDoc for user ${userId}, app: ${yjsAppDocumentId}`
-            );
-        } else {
-            await this.yjsAppDocumentRepo.update(yjsAppDocumentId, { state });
-            this.logger.debug(`Saved app YDoc: ${yjsAppDocumentId}`);
-        }
     }
 
     async publishDocument(documentId: string): Promise<YjsAppDocumentEntity> {
@@ -131,11 +72,7 @@ export class YjsDocumentService implements OnModuleDestroy {
 
             await this.userYjsAppDocumentRepo.update(
                 { yjsAppDocumentId: yjsAppDoc.id },
-                {
-                    state,
-                    clock: yjsAppDoc.clock,
-                    clockUpdatedAt: new Date(),
-                },
+                { state, clock: yjsAppDoc.clock, clockUpdatedAt: new Date() },
             );
 
             this.logger.log(`Updated existing app document: ${yjsAppDoc.id}`);
@@ -150,9 +87,7 @@ export class YjsDocumentService implements OnModuleDestroy {
             this.logger.log(`Created new app document: ${yjsAppDoc.id}`);
         }
 
-        await this.documentRepo.update(documentId, {
-            publishedAt: new Date(),
-        });
+        await this.documentRepo.update(documentId, { publishedAt: new Date() });
 
         return yjsAppDoc;
     }
@@ -160,15 +95,14 @@ export class YjsDocumentService implements OnModuleDestroy {
     async getYDocState(
         documentId: string,
         isApp: boolean,
-        addId?: string,
+        appId?: string,
         userId?: string,
     ): Promise<string | null> {
-        if (isApp && userId) {
-            const result = await this.persistorFactory.createAppPersistor(documentId, addId, userId).load();
-            return Buffer.from(Y.encodeStateAsUpdate(result.ydoc)).toString("base64");
-        }
+        const persistor = isApp && userId
+            ? this.persistorFactory.createAppPersistor(documentId, appId, userId)
+            : this.persistorFactory.createDocumentPersistor(documentId);
 
-        const result = await this.persistorFactory.createDocumentPersistor(documentId).load();
+        const result = await persistor.load();
         return Buffer.from(Y.encodeStateAsUpdate(result.ydoc)).toString("base64");
     }
 
@@ -176,7 +110,7 @@ export class YjsDocumentService implements OnModuleDestroy {
         id: string,
         documentId: string,
         workspaceId: string,
-        persistor: Persistor
+        persistor: Persistor,
     ): Promise<SharedDoc> {
         this.logger.debug({
             id,
@@ -187,28 +121,21 @@ export class YjsDocumentService implements OnModuleDestroy {
         }, 'Getting YDoc');
 
         let yDoc = this.docs.get(id);
+        if (yDoc) return yDoc;
 
-        if (!yDoc) {
-            yDoc = this.docsCache.get(id);
-            if (yDoc) {
-                this.logger.debug({ id }, 'YDoc cache hit');
-                this.docs.set(id, yDoc);
-                return yDoc;
-            }
-            this.logger.debug({ id }, 'YDoc cache miss');
-        } else {
+        yDoc = this.docsCache.get(id);
+        if (yDoc) {
+            this.logger.debug({ id }, 'YDoc cache hit');
+            this.docs.set(id, yDoc);
             return yDoc;
         }
+
+        this.logger.debug({ id }, 'YDoc cache miss');
 
         let creationPromise = this.creationPromises.get(id);
 
         if (!creationPromise) {
-            creationPromise = this.createYDoc(
-                id,
-                documentId,
-                workspaceId,
-                persistor
-            );
+            creationPromise = this.createYDoc(id, documentId, workspaceId, persistor);
             this.creationPromises.set(id, creationPromise);
 
             try {
@@ -238,65 +165,46 @@ export class YjsDocumentService implements OnModuleDestroy {
     ): Promise<SharedDoc> {
         const loadStateResult = await persistor.load(tx);
 
-        // const newYDoc = await SharedDoc.make(
-        //     id,
-        //     documentId,
-        //     workspaceId,
-        //     loadStateResult,
-        //     persistor,
-        //     this.pubSubProviderFactory,
-        //     (update, tr) => this.messageHandler.handleYDocUpdate(tr, update, (update) => this.messageHandler.broadcastYDocUpdate(documentId, update)),
-        //     (changes, origin) => this.messageHandler.handleAwarenessUpdate(documentId, changes, origin),
-        // );
+        const newYDoc = await SharedDoc.make(
+            id,
+            documentId,
+            workspaceId,
+            loadStateResult,
+            persistor,
+            this.pubSubProviderFactory,
+            (update, tr) => this.messageHandler.handleYDocUpdate(tr, update, (msg) => this.broadcast(id, msg)),
+            (changes, origin) => this.messageHandler.handleAwarenessUpdate(newYDoc, changes, origin, (msg) => this.broadcast(id, msg)),
+        );
 
-        // this.docs.set(id, newYDoc);
-        // this.docsCache.set(id, newYDoc);
+        this.docs.set(id, newYDoc);
+        this.docsCache.set(id, newYDoc);
 
-        return {} as SharedDoc;
-    }
-    async onTitleChange(title: string): Promise<void> {
-        this.logger.debug(`Document title changed: ${title}`);
+        return newYDoc;
     }
 
     async getYDocForUpdate<T>(
         id: string,
         documentId: string,
-        server: Server,
         workspaceId: string,
+        persistor: Persistor,
         callback: (yDoc: SharedDoc) => T | Promise<T>,
-        persistor: Persistor
     ): Promise<T> {
-        const doc = await this.getYDoc(
-            id,
-            documentId,
-            workspaceId,
-            persistor
-        );
+        const doc = await this.getYDoc(id, documentId, workspaceId, persistor);
 
-        this.incrementUpdating(doc);
+        doc.incrementUpdating();
 
         try {
             const result = await callback(doc);
-            this.decrementUpdating(doc);
-
             this.logger.debug({ id }, 'YDoc update completed');
             return result;
         } catch (err) {
-            this.decrementUpdating(doc);
             this.logger.error({ id, err }, 'YDoc update failed');
             throw err;
+        } finally {
+            doc.decrementUpdating();
         }
     }
 
-    getDocId(
-        documentId: string,
-        app: { id: string; userId: string | null } | null,
-    ): string {
-        if (app) {
-            return [documentId, app.id, String(app.userId)].join('-');
-        }
-        return [documentId, 'null'].join('-');
-    }
 
     private startDocumentCleanup(): void {
         const CLEANUP_INTERVAL = 20 * 1000;
@@ -312,10 +220,7 @@ export class YjsDocumentService implements OnModuleDestroy {
         const startTime = Date.now();
 
         try {
-            this.logger.debug(
-                { docsCount: this.docs.size },
-                'Running document cleanup'
-            );
+            this.logger.debug({ docsCount: this.docs.size }, 'Running document cleanup');
 
             let collected = 0;
             const toCollect: string[] = [];
@@ -330,18 +235,15 @@ export class YjsDocumentService implements OnModuleDestroy {
                 const doc = this.docs.get(docId);
                 if (!doc) continue;
 
-                this.logger.debug({ docId }, 'Collecting document');
                 this.docs.delete(docId);
 
                 if (!this.docsCache.has(docId)) {
                     try {
                         await doc.destroy();
                         collected++;
+                        this.logger.debug({ docId }, 'Collected document');
                     } catch (err) {
-                        this.logger.error(
-                            { docId, err },
-                            'Failed to destroy document during cleanup'
-                        );
+                        this.logger.error({ docId, err }, 'Failed to destroy document during cleanup');
                     }
                 }
             }
@@ -354,10 +256,7 @@ export class YjsDocumentService implements OnModuleDestroy {
                 }, 'Document cleanup completed');
             }
         } catch (err) {
-            this.logger.error(
-                { err, timeMs: Date.now() - startTime },
-                'Document cleanup failed'
-            );
+            this.logger.error({ err, timeMs: Date.now() - startTime }, 'Document cleanup failed');
         }
     }
 
@@ -370,9 +269,7 @@ export class YjsDocumentService implements OnModuleDestroy {
 
         const destroyPromises = Array.from(this.docs.values()).map((doc) =>
             doc.destroy().catch((err) => {
-                this.logger.error(
-                    `Failed to destroy document ${doc.id}: ${err.message}`,
-                );
+                this.logger.error(`Failed to destroy document ${doc.id}: ${err.message}`);
             }),
         );
 
@@ -382,9 +279,7 @@ export class YjsDocumentService implements OnModuleDestroy {
             try {
                 await doc.destroy();
             } catch (err) {
-                this.logger.error(
-                    `Failed to destroy cached doc: ${err}`
-                );
+                this.logger.error(`Failed to destroy cached doc: ${err}`);
             }
         }
 
@@ -404,14 +299,6 @@ export class YjsDocumentService implements OnModuleDestroy {
             }
         }
         return 100 * 1024 * 1024;
-    }
-
-    private incrementUpdating(doc: SharedDoc): void {
-        (doc as any).updating = ((doc as any).updating || 0) + 1;
-    }
-
-    private decrementUpdating(doc: SharedDoc): void {
-        (doc as any).updating = Math.max(((doc as any).updating || 0) - 1, 0);
     }
 
     getStats() {
