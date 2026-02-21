@@ -10,7 +10,6 @@ import { RequestData } from '../types/yjs.types';
 
 const logger = new Logger('ValidationUtils');
 
-
 export async function getRequestData(
     req: http.IncomingMessage,
     sessionService: SessionService,
@@ -42,6 +41,7 @@ export async function getRequestData(
 
         const document = await documentRepository.findOne({
             where: { id: args.data.docId },
+            relations: ['yjsAppDocuments'],
         });
 
         if (!document) {
@@ -49,7 +49,7 @@ export async function getRequestData(
             return null;
         }
 
-        const session = await sessionService.validateSessionFromAuthToken(cookies["auth-token"]);
+        const session = await sessionService.validateSessionFromAuthToken(cookies['auth-token']);
 
         if (!session) {
             logger.warn('No valid session found');
@@ -70,6 +70,15 @@ export async function getRequestData(
             return null;
         }
 
+        const appId = args.data.isApp
+            ? (document.yjsAppDocuments?.[0]?.id ?? null)
+            : null;
+
+        if (args.data.isApp && !appId) {
+            logger.warn(`No yjsAppDocument found for document ${args.data.docId}`);
+            return null;
+        }
+
         return {
             document,
             clock: args.data.clock,
@@ -77,6 +86,7 @@ export async function getRequestData(
             role: userWorkspace.role as UserWorkspaceRole,
             isApp: args.data.isApp,
             userId: args.data.userId ?? null,
+            appId,
             workspaceId: document.workspaceId,
         };
     } catch (err) {

@@ -14,6 +14,7 @@ import { PubSubProviderFactory } from '@/infrastructure/pubsub/pubsub-provider.f
 import { LoadStateResult, Persistor } from './interfaces';
 import { PersistorFactory } from "./persistors/persistor.factory";
 import { MessageHandlerService } from "./services/message-handler.service";
+import { WebSocketUtils } from "./utils/websocket.utils";
 
 
 @Injectable()
@@ -172,7 +173,7 @@ export class YjsDocumentService implements OnModuleDestroy {
             loadStateResult,
             persistor,
             this.pubSubProviderFactory,
-            (update, tr) => this.messageHandler.handleYDocUpdate(tr, update, (msg) => this.broadcast(id, msg)),
+            (update, _tr) => this.messageHandler.handleYDocUpdate(newYDoc, update, (msg) => this.broadcast(id, msg)),
             (changes, origin) => this.messageHandler.handleAwarenessUpdate(newYDoc, changes, origin, (msg) => this.broadcast(id, msg)),
         );
 
@@ -214,6 +215,16 @@ export class YjsDocumentService implements OnModuleDestroy {
         }, CLEANUP_INTERVAL);
 
         this.logger.log('Document cleanup started');
+    }
+    private broadcast(id: string, message: Uint8Array): void {
+        const doc = this.docs.get(id);
+        if (!doc) return;
+
+        doc.conns.forEach((_, conn) => {
+            WebSocketUtils.send(doc, conn, message, (d, c) => {
+                WebSocketUtils.closeConnection(d, c);
+            });
+        });
     }
 
     private async runCleanup(): Promise<void> {

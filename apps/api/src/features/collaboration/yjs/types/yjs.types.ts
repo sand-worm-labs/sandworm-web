@@ -31,4 +31,5 @@ export interface RequestData {
     isApp: boolean;
     userId: string | null;
     workspaceId: string;
+    appId?: string;
 }
