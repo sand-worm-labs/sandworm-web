@@ -11,8 +11,7 @@ import {
     getLayout,
 } from '@sandworm/editor';
 import { WSSharedDoc, TransactionOrigin, Persistor, LoadStateResult } from '../interfaces';
-import { PubSubProviderFactory } from '@/infrastructure/pubsub/pubsub-provider.factory';
-import { PubSubProvider } from '@/infrastructure/pubsub/pubsub.provider';
+import { PubSubProviderFactory } from '@/infrastructure/pubsub/pubsub-provider.factory'
 
 
 export class SharedDoc implements WSSharedDoc {
@@ -29,7 +28,6 @@ export class SharedDoc implements WSSharedDoc {
     private byteLength = 0;
     private updating = 0;
     private executor?: any;
-    private pubSubProvider?: PubSubProvider;
     private persistUpdatesQueue: PQueue;
 
     // Stored so destroy/reset can detach them

@@ -4,10 +4,8 @@ import * as Y from 'yjs';
 import { decoding } from 'lib0';
 import { equals, omit } from 'ramda';
 import {
-  YjsDocumentEntity,
   YjsAppDocumentEntity,
   UserYjsAppDocumentEntity,
-  YjsUpdateEntity,
 } from '@sandworm/postgresql-typeorm';
 import {
   YBlock,

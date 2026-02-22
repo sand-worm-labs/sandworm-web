@@ -3,7 +3,6 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository, EntityManager } from "typeorm";
 import * as Y from "yjs";
 import {
-    YjsDocumentEntity,
     YjsAppDocumentEntity,
     UserYjsAppDocumentEntity,
     DocumentEntity,

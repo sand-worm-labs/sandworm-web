@@ -14,7 +14,6 @@ import { YjsDocumentService } from '@/features/collaboration/yjs/yjs-document.se
 import { getRequestData, getUserRole } from '@/features/collaboration/yjs/utils/validation.utils';
 import { WSSharedDoc } from './interfaces';
 import { getDocId } from '@/common/utils/validation';
-import { initPubSub } from '@sandworm/postgresql-typeorm';
 
 @Injectable()
 export class YjsGateway implements OnModuleInit, OnModuleDestroy {
@@ -42,7 +41,7 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
         this.logger.log('Initializing YJS WebSocket server');
         this.logger.log('='.repeat(80));
 
-        this.wss = new WebSocket.Server({ port: port + 2 });
+        this.wss = new WebSocket.Server({ port: port + 1 });
 
         this.wss.on('connection', async (socket, req) => {
             await this.handleConnection(socket, req);

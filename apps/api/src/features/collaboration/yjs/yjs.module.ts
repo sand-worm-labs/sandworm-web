@@ -11,7 +11,6 @@ import {
   PubSubPayloadEntity,
 } from '@sandworm/postgresql-typeorm'
 import { PersistenceService } from "./services/persistence.service";
-import { SessionManagerService } from "./services/session-manager.service";
 import { MessageHandlerService } from "./services/message-handler.service";
 import { SyncHandlerService } from "./services/sync-handler.service";
 import { PersistorFactory } from './persistors/persistor.factory'
@@ -40,7 +39,6 @@ import { YjsGateway } from './yjs.gateway'
     YjsDocumentService,
     PersistorFactory,
     PersistenceService,
-    SessionManagerService,
     MessageHandlerService,
     SyncHandlerService,
     YjsGateway
