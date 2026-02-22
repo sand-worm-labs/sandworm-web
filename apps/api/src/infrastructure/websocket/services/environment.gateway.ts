@@ -1,12 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Server, Socket } from 'socket.io';
+import { Socket } from 'socket.io';
 import { z } from 'zod';
 import { uuidSchema } from '@sandworm/types';
 import { Session } from '../../../features/session/domain/session';
 import { JupyterService } from '../../jupyter/jupyter.service';
-import { EnvironmentEntity, EnvironmentStatus, UserWorkspaceRole } from '@sandworm/postgresql-typeorm';
+import { EnvironmentEntity, UserWorkspaceRole } from '@sandworm/postgresql-typeorm';
 
 @Injectable()
 export class EnvironmentGatewayService {

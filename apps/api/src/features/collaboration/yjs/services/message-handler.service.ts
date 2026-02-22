@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { encoding, decoding } from 'lib0';
 import * as awarenessProtocol from 'y-protocols/awareness';
+import * as syncProtocol from 'y-protocols/sync';
 import { SyncHandlerService } from './sync-handler.service';
 import { MESSAGE_SYNC, MESSAGE_AWARENESS } from '../types/yjs.types';
 import { WSSharedDoc } from '../interfaces/ws-shared-doc.interface';
@@ -62,7 +63,6 @@ export class MessageHandlerService {
 
         const encoder = encoding.createEncoder();
         encoding.writeVarUint(encoder, MESSAGE_SYNC);
-        const syncProtocol = require('y-protocols/sync');
         syncProtocol.writeUpdate(encoder, update);
         const message = encoding.toUint8Array(encoder);
 
