@@ -4,7 +4,7 @@ import * as cookie from 'cookie';
 import qs from 'querystring';
 import { z } from 'zod';
 import { Repository } from 'typeorm';
-import { DocumentEntity, UserWorkspaceRole } from '@sandworm/postgresql-typeorm';
+import { DocumentEntity, UserWorkspaceRole, UserWorkspaceEntity, UserWorkspaceStatus } from '@sandworm/postgresql-typeorm';
 import { SessionService } from '@/features/session/session.service';
 import { RequestData } from '../types/yjs.types';
 
@@ -98,10 +98,19 @@ export async function getRequestData(
 export async function getUserRole(
     userId: string,
     workspaceId: string,
+    userWorkspaceMemberRepository: Repository<UserWorkspaceEntity>,
 ): Promise<UserWorkspaceRole | null> {
     try {
-        // TODO: Implement actual role lookup from database
-        return UserWorkspaceRole.EDITOR;
+        const member = await userWorkspaceMemberRepository.findOne({
+            where: { userId, workspaceId, status: UserWorkspaceStatus.ACTIVE },
+        });
+
+        if (!member) {
+            logger.warn(`User ${userId} not found in workspace ${workspaceId}`);
+            return null;
+        }
+
+        return member.role as UserWorkspaceRole;
     } catch (err) {
         logger.error(`Failed to get user role: ${err}`);
         return null;

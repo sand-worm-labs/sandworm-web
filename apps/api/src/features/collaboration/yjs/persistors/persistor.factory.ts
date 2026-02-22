@@ -53,6 +53,5 @@ export class PersistorFactory {
         );
     }
 
-
 }
 

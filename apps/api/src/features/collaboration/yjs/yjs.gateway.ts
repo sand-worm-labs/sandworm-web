@@ -3,7 +3,7 @@ import WebSocket from 'ws';
 import * as http from 'http';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { DocumentEntity } from '@sandworm/postgresql-typeorm';
+import { DocumentEntity, UserWorkspaceEntity } from '@sandworm/postgresql-typeorm';
 import { SessionService } from '@/features/session/session.service';
 import { MessageHandlerService } from '@/features/collaboration/yjs/services/message-handler.service';
 import { SyncHandlerService } from '@/features/collaboration/yjs/services/sync-handler.service';
@@ -14,6 +14,7 @@ import { YjsDocumentService } from '@/features/collaboration/yjs/yjs-document.se
 import { getRequestData, getUserRole } from '@/features/collaboration/yjs/utils/validation.utils';
 import { WSSharedDoc } from './interfaces';
 import { getDocId } from '@/common/utils/validation';
+import { th } from 'zod/v4/locales';
 
 @Injectable()
 export class YjsGateway implements OnModuleInit, OnModuleDestroy {
@@ -29,6 +30,8 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
         private readonly sessionService: SessionService,
         @InjectRepository(DocumentEntity)
         private readonly documentRepository: Repository<DocumentEntity>,
+        @InjectRepository(UserWorkspaceEntity)
+        private readonly userWorkspaceRepository: Repository<UserWorkspaceEntity>,
     ) { }
 
     onModuleInit() {
@@ -110,7 +113,7 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
 
                     if (now - lastRoleUpdate > 5000) {
                         lastRoleUpdate = now;
-                        const updatedRole = await getUserRole(authUser.id, session.workspaceId);
+                        const updatedRole = await getUserRole(authUser.id, session.workspaceId, this.userWorkspaceRepository);
                         if (updatedRole) {
                             transactionOrigin.role = updatedRole;
                         } else {
