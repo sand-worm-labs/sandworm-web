@@ -13,7 +13,8 @@ import {
   CreateUserInput,
   UpdateUserInput,
   GetAllUsersInput,
-  UpdateUserSettingInput,
+  WalletInput,
+  SocialLinksInput,
 } from './dto/user.dto';
 import { User } from './model/graphql/user.model';
 import { UserService } from './user.service';
@@ -57,20 +58,36 @@ export class UserResolver {
   }
 
   @Mutation(() => Boolean, {
-    name: 'updateUserSettings',
-    description: 'Update user settings',
+    name: 'updateSocialLinks',
+    description: 'Update social links for the current user',
   })
-  async updateUserSettings(
+  async updateSocialLinks(
     @CurrentUser('id') userId: string,
-    @Args('input') input: UpdateUserSettingInput,
+    @Args('input', { type: () => SocialLinksInput }) input: SocialLinksInput,
   ): Promise<boolean> {
-    const inputWithDefaults = {
-      wallets: input.wallets ?? [],
-      socialLinks: input.socialLinks ?? {},
-      ...input,
-    };
-    await this.userService.updateUserSettings(userId, inputWithDefaults);
-    return true;
+    return this.userService.updateSocialLinks(userId, input);
+  }
+
+  @Mutation(() => Boolean, {
+    name: 'updateWallets',
+    description: 'Update wallets for the current user',
+  })
+  async updateWallets(
+    @CurrentUser('id') userId: string,
+    @Args('wallets', { type: () => [WalletInput] }) wallets: WalletInput[],
+  ): Promise<boolean> {
+    return this.userService.updateWallets(userId, wallets);
+  }
+
+  @Mutation(() => Boolean, {
+    name: 'updateStatusText',
+    description: 'Update status text for the current user',
+  })
+  async updateStatusText(
+    @CurrentUser('id') userId: string,
+    @Args('statusText', { type: () => String }) statusText: string,
+  ): Promise<boolean> {
+    return this.userService.updateStatusText(userId, statusText);
   }
 
   @Public()
