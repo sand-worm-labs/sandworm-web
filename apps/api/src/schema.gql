@@ -316,11 +316,17 @@ type Mutation {
   """Update an existing schedule"""
   updateSchedule(input: UpdateScheduleInput!, scheduleId: String!): Schedule!
 
+  """Update social links for the current user"""
+  updateSocialLinks(input: SocialLinksInput!): Boolean!
+
+  """Update status text for the current user"""
+  updateStatusText(statusText: String!): Boolean!
+
   """Update current user"""
   updateUser(input: UpdateUserInput!): User!
 
-  """Update user settings"""
-  updateUserSettings(input: UpdateUserSettingInput!): Boolean!
+  """Update wallets for the current user"""
+  updateWallets(wallets: [WalletInput!]!): Boolean!
 
   """Update workspace info"""
   updateWorkspace(icon: String, name: String, workspaceId: String!): Workspace!
@@ -483,6 +489,15 @@ input SetEnvironmentVariablesInput {
   remove: [String!]!
 }
 
+input SocialLinksInput {
+  discord: String
+  email: String
+  github: String
+  telegram: String
+  twitter: String
+  warpcast: String
+}
+
 input UpdateDocumentInput {
   orderIndex: Float!
   parentId: String
@@ -516,12 +531,6 @@ input UpdateUserInput {
   username: String
 }
 
-input UpdateUserSettingInput {
-  socialLinks: JSON
-  statusText: String
-  wallets: [JSON!] = []
-}
-
 type User {
   avater: String
   createdAt: DateTime
@@ -546,6 +555,11 @@ type UserSetting {
   statusUpdatedAt: DateTime
   userId: ID!
   wallets: [JSON!]!
+}
+
+input WalletInput {
+  address: String!
+  chain: String!
 }
 
 type Workspace {

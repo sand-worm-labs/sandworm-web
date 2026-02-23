@@ -57,20 +57,31 @@ export class GetAllUsersInput {
 }
 
 @InputType()
-export class UpdateUserSettingInput {
-  @Field(() => GraphQLJSON, { nullable: true })
-  socialLinks?: {
-    telegram?: string;
-    twitter?: string;
-    github?: string;
-    discord?: string;
-    email?: string;
-    warpcast?: string;
-  };
+export class SocialLinksInput {
+  @StringFieldOptional()
+  telegram?: string;
 
   @StringFieldOptional()
-  statusText?: string;
+  twitter?: string;
 
-  @Field(() => [GraphQLJSON], { nullable: true, defaultValue: [] })
-  wallets?: { chain: string; address: string }[];
+  @StringFieldOptional()
+  github?: string;
+
+  @StringFieldOptional()
+  discord?: string;
+
+  @StringFieldOptional()
+  email?: string;
+
+  @StringFieldOptional()
+  warpcast?: string;
+}
+
+@InputType()
+export class WalletInput {
+  @Field(() => String)
+  chain: string;
+
+  @Field(() => String)
+  address: string;
 }
