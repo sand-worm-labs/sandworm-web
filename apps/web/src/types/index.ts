@@ -1,3 +1,5 @@
+import type { AnyARecord } from "node:dns";
+
 import type { NextPage } from "next";
 import type { AppProps } from "next/app";
 import type { ReactNode } from "react";
@@ -226,6 +228,7 @@ export type ApiWorkspace = Workspace & {
   secrets: {
     hasOpenAiApiKey: boolean;
   };
+  users: any;
 };
 
 /* ───────────────────────────────

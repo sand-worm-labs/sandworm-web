@@ -1,8 +1,5 @@
 import {
-  Bars3CenterLeftIcon,
-  ChartBarIcon,
-  CircleStackIcon,
-  CodeBracketIcon,
+
   PencilSquareIcon,
   PlusIcon,
   ChevronDownIcon,
@@ -13,7 +10,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { BlockType } from "@sandworm/editor";
 import { CalendarIcon, QueueListIcon } from "@heroicons/react/24/solid";
 import { Menu, Transition } from "@headlessui/react";
-import { Table2Icon } from "lucide-react";
+
+import { TextIcon } from "../Assets/Blocks/TextIcon";
+import { DatabaseIcon } from "../Assets/Blocks/DatabaseIcon";
+import { CodeIcon } from "../Assets/Blocks/CodeIcon";
+import { ChartbarIcon } from "../Assets/Blocks/ChartbarIcon";
+import { CubeIcon } from "../Assets/Blocks/CubeIcon";
+import { KeyboardIcon } from "../Assets/Blocks/KeyboardIcon";
+import { LightningIcon } from "../Assets/Blocks/LightningIcon";
 
 const TriangleUp = () => {
   return (
@@ -37,7 +41,7 @@ function BlockSuggestion(props: BlockSuggestionProps) {
     <div id={props.id} className="w-full text-sm px-1 relative z-30">
       <button
         type="button"
-        className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 rounded-md text-gray-400 bg-white dark:bg-[#0C1015]  hover:bg-[#A308F015] hover:text-gray-700"
+        className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 py-2.5 rounded-full text-[#6C757D] bg-white dark:bg-[#0C1015]    hover:border-[#A308F0] border border-[#E9ECEF] font-body font-normal text-sm  "
         onClick={onClick}
       >
         {props.icon}
@@ -57,7 +61,7 @@ interface MultiBlockSuggestionProps {
 function MultiBlockSuggestion(props: MultiBlockSuggestionProps) {
   return (
     <Menu as="div" className="w-full text-sm px-1 relative z-30">
-      <Menu.Button className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 rounded-md text-gray-400 bg-white dark:bg-[#0C1015]  hover:text-gray-700 relative">
+      <Menu.Button className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 rounded-full text-gray-400 bg-white dark:bg-[#0C1015]  hover:text-gray-700 relative  border border-[#abaeb0] py-2.5 hover:border-[#A308F0]">
         {props.icon}
         <span>{props.text}</span>
         <ChevronDownIcon className="w-4 h-4" />
@@ -74,7 +78,7 @@ function MultiBlockSuggestion(props: MultiBlockSuggestionProps) {
       >
         <Menu.Items
           as="div"
-          className="w-44 mt-2 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none font-primary divide-y divide-gray-200"
+          className="w-44 mt-2 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none font-primary divide-y divide-gray-200 "
         >
           {props.options.map((option, index) => (
             <Menu.Item>
@@ -85,7 +89,7 @@ function MultiBlockSuggestion(props: MultiBlockSuggestionProps) {
                     active ? "bg-gray-100 text-gray-900" : "text-gray-700",
                     index === 0 ? "rounded-t-md" : "",
                     index === props.options.length - 1 ? "rounded-b-md" : "",
-                    "flex items-center gap-x-2 w-full text-sm px-4 py-3"
+                    "flex items-center gap-x-2 w-full text-sm px-4 py-3 "
                   )}
                   onClick={option.onClick}
                 >
@@ -140,51 +144,50 @@ function BlockList(props: BlockListProps) {
   }, [props.onAddBlock]);
 
   return (
-    <div className="w-full absolute z-30 -translate-y-2">
+    <div className="w-full absolute z-30 -translate-y-2 font-body">
       <div className="w-full flex justify-center relative z-30">
         <TriangleUp />
       </div>
-      <div className="w-full bg-white dark:bg-[#0C1015] py-1 rounded-lg border border-[#CED4DA] dark:border-[#262A30] flex items-center justify-center divide-x divide-[#CED4DA] dark:divide-[#262A30]">
+      <div className="w-full  dark:bg-[#0C1015] py-1   flex items-center justify-center ">
+      <BlockSuggestion
+          id="add-block-power"
+          icon={<LightningIcon className="w-[20px] h-[20px]" />}
+          onAdd={onAddText}
+          text="Power Toolbox"
+        />
         <BlockSuggestion
           id="add-block-text"
-          icon={<Bars3CenterLeftIcon className="w-4 h-4" />}
+          icon={<TextIcon className="w-[20px] h-[20px]" />}
           onAdd={onAddText}
           text="Text"
         />
         <BlockSuggestion
           id="add-block-query"
-          icon={<CircleStackIcon className="w-4 h-4" />}
+          icon={<DatabaseIcon className="w-[20px] h-[20px]" />}
           onAdd={onAddSQL}
           text="Query"
         />
         <BlockSuggestion
           id="add-block-python"
-          icon={<CodeBracketIcon className="w-4 h-4" />}
+          icon={<CodeIcon className="w-[20px] h-[20px]" />}
           onAdd={onAddPython}
           text="Python"
         />
         <BlockSuggestion
           id="add-block-visualization"
-          icon={<ChartBarIcon className="w-4 h-4" />}
+          icon={<ChartbarIcon className="w-[20px] h-[20px]" />}
           onAdd={onAddVisualization}
           text="Visualization"
         />
         <BlockSuggestion
           id="add-block-pivot"
-          icon={<Table2Icon className="w-4 h-4" />}
+          icon={<CubeIcon className="w-[20px] h-[20px]" />}
           onAdd={onAddPivotTable}
           text="Pivot"
         />
-        {props.writebackEnabled && (
-          <BlockSuggestion
-            id="add-block-writeback"
-            icon={<ArrowUpTrayIcon className="w-4 h-4" />}
-            onAdd={onAddWriteback}
-            text="Writeback"
-          />
-        )}
+       
         <MultiBlockSuggestion
-          icon={<PencilSquareIcon className="w-4 h-4" />}
+          icon={<KeyboardIcon className="w-[20px] h-[20px]" />}
           text="Input"
           onAdd={onAddInput}
           options={[
@@ -279,12 +282,12 @@ function PlusButton(props: Props) {
         )}
         onClick={toggleOptions}
       >
-        <div className="w-full h-[1px] bg-gray-200 dark:bg-[#181C21]" />
-        <div className="flex text-gray-400 justify-center items-center gap-x-1 text-[10px] whitespace-nowrap">
-          <PlusIcon className="h-3 w-3 text-gray-400 dark:text-ink-300 " />
+        <div className="w-full h-[1px] bg-[#E9ECEF] dark:bg-[#181C21] font-body" />
+        <div className="flex text-[#6C757D] font-medium  justify-center items-center gap-x-1 text-[12px] whitespace-nowrap">
+          <PlusIcon className="h-3 w-3 text-[#6C757D]  dark:text-ink-300 " />
           <span>Add block</span>
         </div>
-        <div className="w-full h-[1px] bg-gray-200 dark:bg-[#181C21]" />
+        <div className="w-full h-[1px] bg-[#E9ECEF] dark:bg-[#181C21]" />
       </button>
 
       {props.isEditable && (showOptions || props.alwaysOpen) && (

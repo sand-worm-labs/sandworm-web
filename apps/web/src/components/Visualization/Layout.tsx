@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useHotkeys } from "react-hotkeys-hook";
 
 import NotebookPanel from "../Layout/NotebookPanel";
+import { ViewerAccessBar } from "../ViewerAccessBar";
 
 import { useStringQuery } from "./hooks/useQueryArgs";
 import useSideBar from "./hooks/useSideBar";
@@ -83,6 +84,14 @@ export default function Layout({
   return (
     <div className="flex w-full h-full overflow-hidden relative">
       <MobileWarning />
+
+   {/*    <ViewerAccessBar
+        status={accessStatus}
+        onRequestAccess={async () => {
+          await requestWorkspaceAccess(workspaceId);
+          setAccessStatus("pending");
+        }}
+      /> */}
 
       <DragLayer />
 

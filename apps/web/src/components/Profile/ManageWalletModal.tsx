@@ -9,8 +9,6 @@ interface WalletInfo {
   label?: string;
 }
 
-// ─── AddWalletModal ───────────────────────────────────────────────────────────
-
 interface AddWalletModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -25,7 +23,7 @@ export const AddWalletModal = ({
   existingAddresses,
 }: AddWalletModalProps) => {
   const [address, setAddress] = useState("");
-  const [label, setLabel] = useState("");
+  const [chain, setChain] = useState("");
   const [addressError, setAddressError] = useState("");
   const addressInputRef = useRef<HTMLInputElement>(null);
 
@@ -34,7 +32,7 @@ export const AddWalletModal = ({
       setTimeout(() => addressInputRef.current?.focus(), 50);
     } else {
       setAddress("");
-      setLabel("");
+      setChain("");
       setAddressError("");
     }
   }, [isOpen]);
@@ -56,7 +54,7 @@ export const AddWalletModal = ({
       return;
     }
 
-    onAdd({ address: address.trim(), label: label.trim() || undefined });
+    onAdd({ address: address.trim(), chain: chain.trim() || undefined });
     onClose();
   };
 
@@ -111,10 +109,10 @@ export const AddWalletModal = ({
 
           <input
             type="text"
-            value={label}
-            onChange={e => setLabel(e.target.value)}
+            value={chain}
+            onChange={e => setChain(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Label (optional)"
+            placeholder="Chain "
             className="w-full px-4 py-2.5 rounded-xl border border-[#DEE2E6] dark:border-[#262A30] text-sm bg-[#F8F9FA] dark:bg-[#0F1117] text-ink-100 dark:text-white placeholder:text-[#ADB5BD] dark:placeholder:text-gray-600 focus:border-[#A308F0] outline-none transition-colors font-body"
           />
         </div>
@@ -227,9 +225,9 @@ export const ManageWalletsModal = ({
                     <code className="text-sm font-medium text-[#6C757D] dark:text-white font-body">
                       {truncateAddress(wallet.address)}
                     </code>
-                    {wallet.label && (
+                    {wallet.chain && (
                       <span className="text-xs text-[#6C757D] dark:text-gray-500 mt-0.5">
-                        {wallet.label}
+                        {wallet.chain}
                       </span>
                     )}
                   </div>

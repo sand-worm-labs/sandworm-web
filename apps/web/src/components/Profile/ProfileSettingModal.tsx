@@ -9,7 +9,6 @@ import {
   Transition,
   TransitionChild,
 } from "@headlessui/react";
-import { X } from "lucide-react";
 
 import { useProfileForm } from "@/hooks/useProfileSettings";
 
@@ -30,6 +29,10 @@ interface UserSettings {
     github?: string | null;
     discord?: string | null;
     telegram?: string | null;
+  };
+  wallets: {
+    chain?: string | null;
+    address?: string | null;
   };
 }
 
@@ -324,7 +327,6 @@ export function ProfileSettingsModal({
                     </div>
                   </div>
 
-                  {/* Footer */}
                   <div className="flex items-center justify-end gap-3 px-6 py-4 pt-3">
                     <button
                       type="submit"
