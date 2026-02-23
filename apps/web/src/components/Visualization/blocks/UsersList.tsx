@@ -1,15 +1,7 @@
 "use client";
 
-import { Menu, Transition } from "@headlessui/react";
 import clsx from "clsx";
-import {
-  Fragment,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Avatar } from "@sandworm/ui/components/avatar";
 
 import { Trash } from "@/components/Assets/Trash";
@@ -76,7 +68,7 @@ function UserItem(props: UserItemProps) {
           type="checkbox"
           checked={props.isSelected}
           onChange={onToggleSelect}
-           className="h-4 w-4 rounded-2xl border-[#D0D5DD] text-[#7F56D9] focus:border-[#7F56D9] cursor-pointer"
+          className="h-4 w-4 rounded-2xl border-[#D0D5DD] text-[#7F56D9] focus:border-[#7F56D9] cursor-pointer"
         />
       </td>
       <td className="whitespace-nowrap p-4 text-sm font-medium text-[#1A1A1A] dark:text-white">
@@ -140,7 +132,6 @@ function UsersList(props: Props) {
   const allSelected = selectedIds.size === users.length && users.length > 0;
   const someSelected = selectedIds.size > 0 && !allSelected;
 
-  // Drive the indeterminate state on the select-all checkbox
   useEffect(() => {
     if (selectAllRef.current) {
       selectAllRef.current.indeterminate = someSelected;
@@ -258,7 +249,6 @@ function UsersList(props: Props) {
           </span>{" "}
           {selectionCount === 1 ? "user" : "users"} selected
         </span>
-
 
         <button
           type="button"
