@@ -214,28 +214,6 @@ export class WorkspaceResolver {
     name: 'acceptPendingInvite',
     description: 'Accept a pending join request',
   })
-  async acceptPendingInvite(
-    @CurrentUser('id') inviterId: string,
-    @Args('workspaceId', { type: () => String }) workspaceId: string,
-    @Args('userId', { type: () => String }) userId: string,
-  ): Promise<boolean> {
-    await this.workspaceMembershipService.acceptPendingInvite(workspaceId, userId, inviterId);
-    return true;
-  }
-
-  @Mutation(() => Boolean, {
-    name: 'rejectPendingInvite',
-    description: 'Reject a pending join request',
-  })
-  async rejectPendingInvite(
-    @CurrentUser('id') rejectedById: string,
-    @Args('workspaceId', { type: () => String }) workspaceId: string,
-    @Args('userId', { type: () => String }) userId: string,
-
-  ): Promise<boolean> {
-    await this.workspaceMembershipService.rejectPendingInvite(workspaceId, userId, rejectedById);
-    return true;
-  }
 
   @Public()
   @Query(() => WorkspaceInvitationInfo, {

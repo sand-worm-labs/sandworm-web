@@ -330,42 +330,6 @@ export class WorkspaceMembershipService {
         return this.mapToWorkspaceMembers(memberships);
     }
 
-    async acceptPendingInvite(workspaceId: string, userId: string, adminId: string): Promise<void> {
-        validateUUID(workspaceId, 'Workspace ID');
-        validateUUID(userId, 'User ID');
-        validateUUID(adminId, 'Admin ID');
-
-        await this.validateAdminAccess(workspaceId, adminId);
-
-        const membership = await this.getMembershipOrThrow(
-            workspaceId,
-            userId,
-            UserWorkspaceStatus.PENDING,
-            'No pending invite found for this user',
-        );
-
-        membership.status = UserWorkspaceStatus.ACTIVE;
-        membership.inviterId = adminId;
-        await this.workspaceMembersRepository.save(membership);
-    }
-
-    async rejectPendingInvite(workspaceId: string, userId: string, adminId: string): Promise<void> {
-        validateUUID(workspaceId, 'Workspace ID');
-        validateUUID(userId, 'User ID');
-        validateUUID(adminId, 'Admin ID');
-
-        await this.validateAdminAccess(workspaceId, adminId);
-
-        const membership = await this.getMembershipOrThrow(
-            workspaceId,
-            userId,
-            UserWorkspaceStatus.PENDING,
-            'No pending invite found for this user',
-        );
-
-        await this.workspaceMembersRepository.remove(membership);
-    }
-
     async removeUserFromWorkspace(workspaceId: string, userId: string, adminId: string): Promise<void> {
         validateUUID(workspaceId, 'Workspace ID');
         validateUUID(userId, 'User ID');
