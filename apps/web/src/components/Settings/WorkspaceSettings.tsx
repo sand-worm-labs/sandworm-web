@@ -2,19 +2,25 @@
 
 "use client";
 
-import React, { useState, useEffect, Fragment } from "react";
+import React, { useState, useEffect, Fragment, useCallback } from "react";
 import { XMarkIcon, CheckIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Dialog, Transition } from "@headlessui/react";
+import toast from "react-hot-toast";
 
 import type { ApiUser } from "@/types";
 
 import { User } from "../Assets/Avatar/User";
 import { PencilSimple } from "../Assets/PencilSimple";
 import ManageInviteModal from "../ManageInvite";
-import { useDeleteWorkspace } from "../Visualization/hooks/useWorkspaces";
+import {
+  useDeleteWorkspace,
+  useInviteUserToWorkspace,
+} from "../Visualization/hooks/useWorkspaces";
 import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
+import MiniUsersList from "../Visualization/blocks/MiniUsersList";
+import { useSession } from "../Visualization/hooks/useAuth";
 
 interface WorkspaceSettingsModalProps {
   isOpen: boolean;
@@ -352,6 +358,9 @@ export default function WorkspaceSettingsModal({
   disableCustomOpenAiKey,
 }: WorkspaceSettingsModalProps) {
   const router = useRouter();
+  const session = useSession({ redirectToLogin: true });
+
+  console.log(workspace, "workspace");
 
   const [state, setState] = useState({
     isEditingName: false,
@@ -370,7 +379,6 @@ export default function WorkspaceSettingsModal({
 
   console.log("woo", workspace);
 
-  // Mock data
   const workspaceMembers: WorkspaceMember[] = [
     {
       id: "1",
@@ -410,20 +418,19 @@ export default function WorkspaceSettingsModal({
     },
   ]);
 
-  const handleSendInvite = async (email: string, role: UserRole) => {
-    console.log("Sending invite to:", email, "with role:", role);
+  const { inviteUser } = useInviteUserToWorkspace(workspace?.id);
 
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    const newInvite: PendingInvite = {
-      id: Date.now().toString(),
-      name: email.split("@")[0],
-      email,
-      role,
-      invitedAt: new Date(),
-    };
-
-    setPendingInvites(prev => [...prev, newInvite]);
+  const handleSendInvite = async (
+    email: string,
+    role: UserRole,
+    workspaceId: string
+  ) => {
+    const success = await inviteUser(email, workspaceId, role);
+    if (success) {
+      toast.success(`Invitation sent to ${email}`);
+    } else {
+      toast.error("Failed to send invitation");
+    }
   };
 
   const handleCancelInvite = async (inviteId: string) => {
@@ -433,6 +440,17 @@ export default function WorkspaceSettingsModal({
 
     setPendingInvites(prev => prev.filter(invite => invite.id !== inviteId));
   };
+
+  const onChangeRole = useCallback(
+    async (id: string, role: UserWorkspaceRole) => {
+      console.log("Change role:", id, role);
+    },
+    []
+  );
+
+  const onRemoveUser = useCallback(async (id: string) => {
+    console.log("Remove user:", id);
+  }, []);
 
   useEffect(() => {
     if (!isOpen) {
@@ -567,23 +585,25 @@ export default function WorkspaceSettingsModal({
                 </div>
               </div>
 
-              <div className="flex border-b  ">
+              <div className="flex w-[50%] justify-between border-b border-[#E9ECEF] pb-2">
+                <div className="flex  ">
+                  <div>
+                    <div className="text-[13px] uppercase text-[#6C757D] font-bold block mb-2.5">
+                      Current plan
+                    </div>
+                    <div className="font-medium capitalize bg-[#F7E8FF] px-3 py-0.5 rounded-md text-[#A308F0] inline-block text-sm">
+                      Free
+                    </div>
+                  </div>
+                </div>
+
                 <div>
                   <div className="text-[13px] uppercase text-[#6C757D] font-bold block mb-2.5">
-                    Current plan
+                    Available AI Credit
                   </div>
-                  <div className="font-medium capitalize bg-[#F7E8FF] px-3 py-0.5 rounded-md text-[#A308F0] inline-block text-sm">
-                    Free
+                  <div className="font-medium text-[#6C757D] capitalize  px-2 py-0.5 block  inline-block text-sm">
+                    0
                   </div>
-                </div>
-              </div>
-
-              <div>
-                <div className="text-[13px] uppercase text-[#6C757D] font-bold block mb-2.5">
-                  Available AI Credit
-                </div>
-                <div className="font-medium capitalize  px-2 py-0.5 block  inline-block text-sm">
-                  0
                 </div>
               </div>
             </div>
@@ -654,7 +674,19 @@ export default function WorkspaceSettingsModal({
                 </span>
               </div>
 
-              <div className=" border border-[#DEE2E6]  min-h-[12rem] w-[50%]  rounded-[10px]" />
+              <div className="w-[50%]">
+                <MiniUsersList
+                  currentUserEmail={session.user?.email ?? ""}
+                  users={workspace?.users}
+                  onRemoveUser={onRemoveUser}
+                  onChangeRole={onChangeRole}
+                  role="admin"
+                  onInvite={() => {
+                    console.log;
+                  }}
+                  onViewAll={() => [console.log("j")]}
+                />
+              </div>
             </div>
           </div>
 
@@ -667,12 +699,12 @@ export default function WorkspaceSettingsModal({
               </p>
             </div>
 
-            <div className="">
+            <div className="w-[50%] ">
               <h3 className="uppercase mb-2 text-[#6C757D] font-bold text-[13px]">
                 Delete this workspace
               </h3>
-              <div className="flex bg-[#FFDBDB] border border-[#CED4DA] rounded-xl text-[13px] py-1 px-2 items-center gap-x-5">
-                <span className="inline-block text-[#ff0000]">
+              <div className="flex bg-[#FFDBDB] border border-[#CED4DA] rounded-xl text-[13px] py-1 px-2 items-center gap-x-5 justify-between">
+                <span className="inline-block text-[#ff0000] ">
                   Once deleted, all files, users and data will be permanently
                   lost
                 </span>

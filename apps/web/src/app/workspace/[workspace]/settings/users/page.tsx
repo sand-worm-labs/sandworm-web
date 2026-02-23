@@ -26,7 +26,6 @@ export default function UsersPage() {
   const workspaceId = useStringQuery("workspace");
   const session = useSession({ redirectToLogin: true });
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
-
   const {
     workspace,
     members,
@@ -34,12 +33,8 @@ export default function UsersPage() {
     isLoading: workspaceLoading,
     refetch: refetchMembers,
   } = useWorkspaceWithMembers(workspaceId);
-
-  const { inviteUser, loading: inviteLoading } =
-    useInviteUserToWorkspace(workspaceId);
-
+  const { inviteUser } = useInviteUserToWorkspace(workspaceId);
   const isAdmin = currentUserRole === "admin";
-
   const [searchValue, setSearchValue] = useState("");
   const [roleFilters, setRoleFilters] = useState<RoleFilter[]>([
     { role: "admin", label: "Admin", count: 0, enabled: false },
@@ -47,7 +42,6 @@ export default function UsersPage() {
     { role: "viewer", label: "Viewer", count: 0, enabled: false },
   ]);
 
-  // Calculate role counts from members
   const roleFiltersWithCounts = useMemo(() => {
     const roleCounts: Record<string, number> = {
       admin: 0,
@@ -69,11 +63,9 @@ export default function UsersPage() {
     }));
   }, [members, roleFilters]);
 
-  // Filter members based on search and role filters
   const filteredMembers = useMemo(() => {
     let filtered = members;
 
-    // Apply search filter
     if (searchValue.trim()) {
       const searchLower = searchValue.toLowerCase();
       filtered = filtered.filter(member => {
@@ -93,7 +85,6 @@ export default function UsersPage() {
       });
     }
 
-    // Apply role filters (if any are enabled)
     const enabledRoles = roleFilters.filter(f => f.enabled).map(f => f.role);
 
     if (enabledRoles.length > 0) {
@@ -120,23 +111,18 @@ export default function UsersPage() {
     setRoleFilters(prev => prev.map(filter => ({ ...filter, enabled: false })));
   }, []);
 
-  // TODO: You'll need mutations for these - add them to your GraphQL schema
+  // todo change role function
   const onChangeRole = useCallback(
     async (id: string, role: UserWorkspaceRole) => {
-      // Implement with a mutation like updateWorkspaceMemberRole
       console.log("Change role:", id, role);
-      // After mutation succeeds:
-      // refetchMembers();
     },
     [refetchMembers]
   );
 
+  // remove user function
   const onRemoveUser = useCallback(
     async (id: string) => {
-      // Implement with a mutation like removeWorkspaceMember
       console.log("Remove user:", id);
-      // After mutation succeeds:
-      // refetchMembers();
     },
     [refetchMembers]
   );
@@ -181,32 +167,25 @@ export default function UsersPage() {
                 Users
               </h2>
               <p className="mb-6 text-ink-400 ">
-              View and manage everyone youve invited across all your workspaces.              </p>
+                View and manage everyone youve invited across all your
+                workspaces.
+              </p>
             </div>
 
-            <Tooltip
-              title="You've hit the free limit"
-              message="Upgrade to the professional plan to add more users."
-              className="flex"
-              tooltipClassname="w-48"
-              position="left"
-              active={false}
+            <button
+              type="button"
+              id="add-user-button"
+              onClick={() => setIsInviteModalOpen(true)}
+              disabled={!isAdmin}
+              className={clsx(
+                isAdmin
+                  ? "bg-[#A308F0] hover:bg-primary-300"
+                  : "bg-[#A308F0DD] cursor-not-allowed",
+                "px-6 py-2 bg-[#A308F0] text-white rounded-xl hover:bg-[#A308F0] text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+              )}
             >
-              <button
-                type="button"
-                id="add-user-button"
-                onClick={() => setIsInviteModalOpen(true)}
-                disabled={!isAdmin}
-                className={clsx(
-                  isAdmin
-                    ? "bg-[#A308F0] hover:bg-primary-300"
-                    : "bg-[#A308F0DD] cursor-not-allowed",
-                  "px-6 py-2 bg-[#A308F0] text-white rounded-xl hover:bg-[#B55A50] text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
-                )}
-              >
-                <UserPlusIcon className="h-4 w-4" /> Invite user
-              </button>
-            </Tooltip>
+              <UserPlusIcon className="h-4 w-4" /> Invite user
+            </button>
           </div>
 
           <div className="mb-6">

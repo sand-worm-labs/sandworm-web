@@ -184,10 +184,8 @@ const PendingRequestItem: React.FC<PendingRequestItemProps> = ({
 
   return (
     <div className="flex items-start gap-3 p-4">
-      {/* Avatar */}
       <User size={30} />
 
-      {/* Content */}
       <div className="flex-1 min-w-0">
         <p className="mb-1">
           <span className="font-medium text-ink-100 mr-1">{request.name}</span>
