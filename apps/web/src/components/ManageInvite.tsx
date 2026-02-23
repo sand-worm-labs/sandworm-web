@@ -3,6 +3,8 @@ import { X } from "lucide-react";
 import Image from "next/image";
 
 import { User } from "./Assets/Avatar/User";
+import { useInviteUserToWorkspace } from "./Visualization/hooks/useWorkspaces";
+import toast from "react-hot-toast";
 
 // ============================================================================
 // TYPES & INTERFACES
@@ -40,6 +42,7 @@ interface PendingRequest {
 interface ManageInviteModalProps {
   isOpen: boolean;
   onClose: () => void;
+  workspaceId: string;
   workspaceMembers: WorkspaceMember[];
   pendingInvites: PendingInvite[];
   pendingRequests?: PendingRequest[];
@@ -78,21 +81,30 @@ interface InviteFormProps {
   onSendInvite: (email: string, role: UserRole) => Promise<void>;
 }
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 const InviteForm: React.FC<InviteFormProps> = ({ onSendInvite }) => {
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState<UserRole>("editor");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+
     if (!email.trim()) return;
+
+    if (!EMAIL_REGEX.test(email)) {
+      setError("Please enter a valid email address");
+      return;
+    }
 
     setIsLoading(true);
     try {
-      await onSendInvite(email, role);
+      await onSendInvite(email, "editor");
       setEmail("");
-    } catch (error) {
-      console.error("Failed to send invite:", error);
+    } catch (err) {
+      console.error("Failed to send invite:", err);
     } finally {
       setIsLoading(false);
     }
@@ -102,20 +114,26 @@ const InviteForm: React.FC<InviteFormProps> = ({ onSendInvite }) => {
     <div className="mb-6">
       <h3 className="text-base font-medium text-ink-100 mb-3">Invite users</h3>
       <form onSubmit={handleSubmit} className="flex gap-3">
-        <input
-          type="email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          placeholder="Samsonderulo@gmail.com"
-          className="flex-1 px-4 py-2.5 border border-[#DEE2E6] bg-[#F8F9FA] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#A308F0] placeholder:text-[#868E96] text-sm font-medium"
-          disabled={isLoading}
-        />
+        <div className="flex-1 flex flex-col gap-1">
+          <input
+            type="email"
+            value={email}
+            onChange={e => {
+              setEmail(e.target.value);
+              setError("");
+            }}
+            placeholder="Samsonderulo@gmail.com"
+            className="flex-1 px-4 py-2.5 border border-[#DEE2E6] bg-[#F8F9FA] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#A308F0] placeholder:text-[#868E96] text-sm font-medium"
+            disabled={isLoading}
+          />
+          {error && <p className="text-xs text-red-500">{error}</p>}
+        </div>
         <button
           type="submit"
           disabled={isLoading || !email.trim()}
           className="px-6 py-2.5 bg-[#A308F0] text-white disabled:text-[#E9ECEF] font-medium font-body rounded-xl disabled:bg-[#868E96] disabled:cursor-not-allowed transition-colors text-sm"
         >
-          Send invite
+          {isLoading ? "Sending..." : "Send invite"}
         </button>
       </form>
     </div>
@@ -204,7 +222,7 @@ const PendingRequestItem: React.FC<PendingRequestItemProps> = ({
           disabled={isProcessing}
           className="px-2 py-2 text-xs font-medium  bg-[#FF0000]  rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
-                         <X className="w-[14px] h-[14px] text-[#F8F9FA]" />
+          <X className="w-[14px] h-[14px] text-[#F8F9FA]" />
         </button>
       </div>
     </div>
@@ -448,15 +466,26 @@ const WorkspaceDescription: React.FC<WorkspaceDescriptionProps> = ({
 const ManageInviteModal: React.FC<ManageInviteModalProps> = ({
   isOpen,
   onClose,
+  workspaceId,
   workspaceMembers,
   pendingInvites,
   pendingRequests = [],
-  onSendInvite,
   onCancelInvite,
   onApproveRequest = async () => {},
   onDenyRequest = async () => {},
 }) => {
   if (!isOpen) return null;
+  const { inviteUser } = useInviteUserToWorkspace(workspaceId);
+
+  const handleSendInvite = async (email: string, role: UserRole) => {
+    const success = await inviteUser(email, workspaceId, role);
+    if (success) {
+      toast.success(`Invitation sent to ${email}`);
+    } else {
+      toast.error("Failed to send invitation");
+    }
+  };
+
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -483,7 +512,7 @@ const ManageInviteModal: React.FC<ManageInviteModalProps> = ({
             </div>
 
             {/* Invite Form */}
-            <InviteForm onSendInvite={onSendInvite} />
+            <InviteForm onSendInvite={handleSendInvite } />
 
             {/* Pending Tabs Content */}
             <PendingTabsContent

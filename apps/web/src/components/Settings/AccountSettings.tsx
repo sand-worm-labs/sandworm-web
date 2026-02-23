@@ -18,6 +18,7 @@ import { useSession } from "../Visualization/hooks/useAuth";
 
 import CreateTeamModal from "./CreateTeam";
 import WorkspaceSettingsModal from "./WorkspaceSettings";
+import { WorkspaceIcon } from "../Assets/WorkspaceIcon";
 
 export default function WorkspaceSettings() {
   const router = useRouter();
@@ -36,6 +37,8 @@ export default function WorkspaceSettings() {
     showCreateModal: false,
     selectedSettingsWorkspace: null,
   });
+
+  console.log(allWorkspaces, "all workspace");
 
   /* Is Admin */
   const isAdminOfWorkspace = useCallback(
@@ -57,7 +60,6 @@ export default function WorkspaceSettings() {
       invitedWorkspaces: allWorkspaces.filter(w => w.ownerId !== userId),
     };
   }, [allWorkspaces, session?.user?.id]);
-
 
   const handleSwitchWorkspace = async (targetWorkspaceId: string) => {
     try {
@@ -128,8 +130,8 @@ export default function WorkspaceSettings() {
             />
           </svg>
           <span>
-            {workspace.memberCount || 1}{" "}
-            {workspace.memberCount === 1 ? "member" : "members"}
+            {workspace.users?.length || 1}{" "}
+            {workspace.users?.length === 1 ? "member" : "members"}
           </span>
         </div>
 
@@ -261,17 +263,30 @@ export default function WorkspaceSettings() {
                 </div>
 
                 <div className="w-full">
-                  <div className="flex items-center px-5 py-3 text-xs font-medium text-[#6C757D] uppercase tracking-wider">
-                    <div className="flex-1">Workspace</div>
-                    <div className="w-32 text-center">Members</div>
-                    <div className="w-24 text-center">Plan</div>
-                    <div className="w-10" />
-                  </div>
-                  <div className="space-y-0">
-                    {invitedWorkspaces.map(workspace =>
-                      renderWorkspaceRow(workspace, false)
-                    )}
-                  </div>
+                  {invitedWorkspaces.length > 0 ? (
+                    <>
+                      <div className="flex items-center px-5 py-3 text-xs font-medium text-[#6C757D] uppercase tracking-wider">
+                        <div className="flex-1">Workspace</div>
+                        <div className="w-32 text-center">Members</div>
+                        <div className="w-24 text-center">Plan</div>
+                        <div className="w-10" />
+                      </div>
+
+                      <div className="space-y-0">
+                        {invitedWorkspaces.map(workspace =>
+                          renderWorkspaceRow(workspace, false)
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center h-[15rem] text-center">
+                      <WorkspaceIcon/>
+                      <p className="text-sm font-medium text-[#868E96] mt-3">
+                        No workspace invites
+                      </p>
+                   
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

@@ -1289,7 +1289,7 @@ export type GetUserWorkspaceInfoQuery = { __typename?: 'Query', getUserWorkspace
 export type GetUserWorkspacesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetUserWorkspacesQuery = { __typename?: 'Query', getUserWorkspaces: Array<{ __typename?: 'Workspace', id: string, name: string, plan: WorkspacePlan, icon?: string | null, source?: string | null, useCases: Array<string>, useContext?: string | null, ownerId: string, owner: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null } }> };
+export type GetUserWorkspacesQuery = { __typename?: 'Query', getUserWorkspaces: Array<{ __typename?: 'Workspace', id: string, name: string, plan: WorkspacePlan, icon?: string | null, source?: string | null, useCases: Array<string>, useContext?: string | null, ownerId: string, owner: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null }, users: Array<{ __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null }> }> };
 
 export type GetWorkspaceWithMembersQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
@@ -3594,6 +3594,13 @@ export const GetUserWorkspacesDocument = gql`
     useContext
     ownerId
     owner {
+      id
+      username
+      email
+      firstName
+      lastName
+    }
+    users {
       id
       username
       email

@@ -8,6 +8,8 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Dialog, Transition } from "@headlessui/react";
 
+import type { ApiUser } from "@/types";
+
 import { User } from "../Assets/Avatar/User";
 import { PencilSimple } from "../Assets/PencilSimple";
 import ManageInviteModal from "../ManageInvite";
@@ -20,6 +22,7 @@ interface WorkspaceSettingsModalProps {
   workspace: {
     id: string;
     name: string;
+    users: ApiUser;
     secrets?: {
       hasOpenAiApiKey?: boolean;
     };
@@ -85,8 +88,6 @@ export function EditWorkspaceProfileModal({
   isLoading = false,
 }: EditWorkspaceProfileModalProps) {
   const [workspaceName, setWorkspaceName] = useState(currentName);
-
-
 
   // Internally track avatar src for display, convert to/from backend key at boundary
   const [selectedAvatar, setSelectedAvatar] = useState<string | null>(
@@ -367,7 +368,7 @@ export default function WorkspaceSettingsModal({
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  console.log("woo", workspace)
+  console.log("woo", workspace);
 
   // Mock data
   const workspaceMembers: WorkspaceMember[] = [
@@ -497,8 +498,8 @@ export default function WorkspaceSettingsModal({
                     />
                   </svg>
                   <span>
-                    {workspace.memberCount || 1}{" "}
-                    {workspace.memberCount === 1 ? "member" : "members"}
+                    {workspace?.users?.length || 1}{" "}
+                    {workspace?.users?.length === 1 ? "member" : "members"}
                   </span>
                 </div>
 
@@ -690,6 +691,7 @@ export default function WorkspaceSettingsModal({
 
       <ManageInviteModal
         isOpen={isModalOpen}
+        workspaceId={workspace?.id}
         onClose={() => setIsModalOpen(false)}
         workspaceMembers={workspaceMembers}
         pendingInvites={pendingInvites}
