@@ -14,6 +14,9 @@ export class WorkspaceMember {
   @StringField()
   role!: string;
 
+  @StringField({ nullable: true })
+  requestedRole?: string | null;
+
   @Field(() => User, { nullable: true })
   user?: User;
 }

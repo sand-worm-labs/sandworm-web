@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class Init1771368431587 implements MigrationInterface {
-    name = 'Init1771368431587'
+export class Init1771864260744 implements MigrationInterface {
+    name = 'Init1771864260744'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
@@ -128,6 +128,9 @@ export class Init1771368431587 implements MigrationInterface {
             CREATE TYPE "public"."user_workspace_status_enum" AS ENUM('active', 'removed', 'pending')
         `);
         await queryRunner.query(`
+            CREATE TYPE "public"."user_workspace_requested_role_enum" AS ENUM('editor', 'viewer', 'admin')
+        `);
+        await queryRunner.query(`
             CREATE TABLE "user_workspace" (
                 "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
                 "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
@@ -136,6 +139,7 @@ export class Init1771368431587 implements MigrationInterface {
                 "inviter_id" uuid,
                 "role" "public"."user_workspace_role_enum" NOT NULL DEFAULT 'editor',
                 "status" "public"."user_workspace_status_enum" NOT NULL DEFAULT 'pending',
+                "requested_role" "public"."user_workspace_requested_role_enum",
                 CONSTRAINT "PK_a007c1434d1433fd63d9e5a27a6" PRIMARY KEY ("user_id", "workspace_id")
             )
         `);
@@ -769,6 +773,9 @@ export class Init1771368431587 implements MigrationInterface {
         `);
         await queryRunner.query(`
             DROP TABLE "user_workspace"
+        `);
+        await queryRunner.query(`
+            DROP TYPE "public"."user_workspace_requested_role_enum"
         `);
         await queryRunner.query(`
             DROP TYPE "public"."user_workspace_status_enum"

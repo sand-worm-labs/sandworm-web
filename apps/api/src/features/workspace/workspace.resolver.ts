@@ -101,20 +101,6 @@ export class WorkspaceResolver {
     return true;
   }
 
-  @Public()
-  @Mutation(() => Boolean, {
-    name: 'joinWorkspace',
-    description: 'Join a workspace',
-  })
-  async joinWorkspace(
-    @Args('workspaceId', { type: () => String }) workspaceId: string,
-    @Args('email', { type: () => String }) email: string,
-    @Args('role', { type: () => UserWorkspaceRole, defaultValue: UserWorkspaceRole.VIEWER }) role: UserWorkspaceRole,
-  ): Promise<boolean> {
-    await this.workspaceMembershipService.joinWorkspace(workspaceId, email, role);
-    return true;
-  }
-
   @Mutation(() => Workspace, {
     name: 'updateWorkspace',
     description: 'Update workspace info',
@@ -210,10 +196,68 @@ export class WorkspaceResolver {
     return true;
   }
 
-  @Mutation(() => Boolean, {
-    name: 'acceptPendingInvite',
-    description: 'Accept a pending join request',
+  @Query(() => [WorkspaceMember], {
+    name: 'getPendingRoleRequests',
+    description: 'Get pending role requests for a workspace',
   })
+  async getPendingRoleRequests(
+    @CurrentUser('id') adminId: string,
+    @Args('workspaceId', { type: () => String }) workspaceId: string,
+  ): Promise<WorkspaceMember[]> {
+    return this.workspaceMembershipService.getPendingRoleRequests(workspaceId, adminId);
+  }
+
+  @Mutation(() => Boolean, {
+    name: 'requestRoleUpgrade',
+    description: 'Request a role upgrade in a workspace',
+  })
+  async requestRoleUpgrade(
+    @CurrentUser('id') userId: string,
+    @Args('workspaceId', { type: () => String }) workspaceId: string,
+    @Args('role', { type: () => String }) role: string,
+  ): Promise<boolean> {
+    await this.workspaceMembershipService.requestRoleUpgrade(
+      workspaceId,
+      userId,
+      role as UserWorkspaceRole || UserWorkspaceRole.VIEWER,
+    );
+    return true;
+  }
+
+  @Mutation(() => Boolean, {
+    name: 'approveRoleRequest',
+    description: 'Approve a pending role request',
+  })
+  async approveRoleRequest(
+    @CurrentUser('id') adminId: string,
+    @Args('workspaceId', { type: () => String }) workspaceId: string,
+    @Args('userId', { type: () => String }) userId: string,
+  ): Promise<boolean> {
+    await this.workspaceMembershipService.approveRoleRequest(
+      workspaceId,
+      userId,
+      adminId,
+    );
+    return true;
+  }
+
+  @Mutation(() => Boolean, {
+    name: 'rejectRoleRequest',
+    description: 'Reject a pending role request',
+  })
+  async rejectRoleRequest(
+    @CurrentUser('id') adminId: string,
+    @Args('workspaceId', { type: () => String }) workspaceId: string,
+    @Args('userId', { type: () => String }) userId: string,
+  ): Promise<boolean> {
+    await this.workspaceMembershipService.rejectRoleRequest(
+      workspaceId,
+      userId,
+      adminId,
+    );
+    return true;
+  }
+
 
   @Public()
   @Query(() => WorkspaceInvitationInfo, {

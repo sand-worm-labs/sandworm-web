@@ -5,7 +5,7 @@ import {
     BadRequestException,
     UnprocessableEntityException,
 } from '@nestjs/common';
-import { Equal, Or, Repository } from 'typeorm';
+import { Equal, IsNull, Not, Or, Repository } from 'typeorm';
 import {
     WorkspaceEntity,
     UserWorkspaceEntity,
@@ -156,6 +156,7 @@ export class WorkspaceMembershipService {
             const workspaceMember = new WorkspaceMember();
             workspaceMember.userId = membership.userId;
             workspaceMember.role = membership.role;
+            workspaceMember.requestedRole = membership.requestedRole || null;
             workspaceMember.user = membership.user ? User.fromEntity(membership.user) : undefined;
             return workspaceMember;
         });
@@ -175,6 +176,24 @@ export class WorkspaceMembershipService {
             inviterId,
             status,
         });
+    }
+
+    async getPendingRoleRequests(workspaceId: string, adminId: string): Promise<WorkspaceMember[]> {
+        validateUUID(workspaceId, 'Workspace ID');
+        validateUUID(adminId, 'Admin ID');
+
+        await this.validateAdminAccess(workspaceId, adminId);
+
+        const memberships = await this.workspaceMembersRepository.find({
+            where: {
+                workspaceId,
+                status: UserWorkspaceStatus.ACTIVE,
+                requestedRole: Not(IsNull()),
+            },
+            relations: ['user'],
+        });
+
+        return this.mapToWorkspaceMembers(memberships);
     }
 
     async inviteUserToWorkspace(
@@ -268,33 +287,6 @@ export class WorkspaceMembershipService {
         };
     }
 
-    async joinWorkspace(
-        workspaceId: string,
-        email: string,
-        role: UserWorkspaceRole = UserWorkspaceRole.VIEWER,
-    ): Promise<void> {
-        validateUUID(workspaceId, 'Workspace ID');
-        validateNonEmptyString(email, 'Email');
-        const workspace = await this.getWorkspaceOrThrow(workspaceId, ['owner']);
-        const user = await this.getUserByEmailOrThrow(email);
-        const existingMembership = await this.getExistingMembership(workspaceId, user.id);
-        if (existingMembership) {
-            throw new BadRequestException('User is already a member of this workspace');
-        }
-        const membership = this.createMembership(user.id, workspaceId, role, UserWorkspaceStatus.PENDING);
-        await this.workspaceMembersRepository.save(membership);
-        await this.mailService.workspaceJoinRequest({
-            to: workspace.owner.email,
-            data: {
-                userName: user.firstName || user.email,
-                userEmail: user.email,
-                workspaceName: workspace.name,
-                workspaceId: workspace.id,
-                role,
-            },
-        });
-    }
-
     async getWorkspaceMembers(workspaceId: string, userId: string): Promise<WorkspaceMember[]> {
         validateUUID(workspaceId, 'Workspace ID');
         validateUUID(userId, 'User ID');
@@ -368,31 +360,76 @@ export class WorkspaceMembershipService {
         await this.workspaceMembersRepository.save(membership);
     }
 
-    async updateMemberRole(
+    async requestRoleUpgrade(
         workspaceId: string,
-        targetUserId: string,
-        adminId: string,
-        newRole: UserWorkspaceRole,
+        userId: string,
+        requestedRole: UserWorkspaceRole,
     ): Promise<void> {
         validateUUID(workspaceId, 'Workspace ID');
-        validateUUID(targetUserId, 'Target User ID');
-        validateUUID(adminId, 'Admin ID');
-
-        if (targetUserId === adminId) {
-            throw new BadRequestException('You cannot change your own role');
-        }
-
-        await this.validateAdminAccess(workspaceId, adminId);
-        await this.validateNotOwner(workspaceId, targetUserId);
+        validateUUID(userId, 'User ID');
 
         const membership = await this.getMembershipOrThrow(
             workspaceId,
-            targetUserId,
+            userId,
             UserWorkspaceStatus.ACTIVE,
             'User is not an active member of this workspace',
         );
 
-        membership.role = newRole;
+        if (membership.role === requestedRole) {
+            throw new BadRequestException('You already have this role');
+        }
+
+        if (membership.requestedRole === requestedRole) {
+            throw new BadRequestException('You already have a pending request for this role');
+        }
+
+        membership.requestedRole = requestedRole;
         await this.workspaceMembersRepository.save(membership);
     }
+
+    async approveRoleRequest(workspaceId: string, userId: string, adminId: string): Promise<void> {
+        validateUUID(workspaceId, 'Workspace ID');
+        validateUUID(userId, 'User ID');
+        validateUUID(adminId, 'Admin ID');
+
+        await this.validateAdminAccess(workspaceId, adminId);
+
+        const membership = await this.getMembershipOrThrow(
+            workspaceId,
+            userId,
+            UserWorkspaceStatus.ACTIVE,
+            'User is not an active member of this workspace',
+        );
+
+        if (!membership.requestedRole) {
+            throw new BadRequestException('No pending role request for this user');
+        }
+
+        membership.role = membership.requestedRole;
+        membership.requestedRole = null;
+        await this.workspaceMembersRepository.save(membership);
+    }
+
+    async rejectRoleRequest(workspaceId: string, userId: string, adminId: string): Promise<void> {
+        validateUUID(workspaceId, 'Workspace ID');
+        validateUUID(userId, 'User ID');
+        validateUUID(adminId, 'Admin ID');
+
+        await this.validateAdminAccess(workspaceId, adminId);
+
+        const membership = await this.getMembershipOrThrow(
+            workspaceId,
+            userId,
+            UserWorkspaceStatus.ACTIVE,
+            'User is not an active member of this workspace',
+        );
+
+        if (!membership.requestedRole) {
+            throw new BadRequestException('No pending role request for this user');
+        }
+
+        membership.requestedRole = null;
+        await this.workspaceMembersRepository.save(membership);
+    }
+
 }
