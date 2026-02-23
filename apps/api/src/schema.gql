@@ -199,14 +199,17 @@ input LoginInput {
 }
 
 type Mutation {
-  """Accept a pending join request"""
-  acceptPendingInvite(userId: String!, workspaceId: String!): Boolean!
-
   """Accept workspace invitation with hash from email"""
   acceptWorkspaceInvitation(hash: String!): Boolean!
 
   """Mark a document as a favorite"""
   addFavoriteDocument(input: FavoriteDocumentInput!): Document!
+
+  """Approve a pending role request"""
+  approveRoleRequest(userId: String!, workspaceId: String!): Boolean!
+
+  """Remove multiple users from a workspace"""
+  batchRemoveUsersFromWorkspace(userIds: [String!]!, workspaceId: String!): Boolean!
 
   """Create a new comment on a document"""
   createComment(documentId: String!, input: CreateCommentInput!): Comment!
@@ -265,23 +268,23 @@ type Mutation {
   """Invite a user to workspace by email"""
   inviteUserToWorkspace(email: String!, role: String, workspaceId: String!): Boolean!
 
-  """Join a workspace"""
-  joinWorkspace(email: String!, role: UserWorkspaceRole! = VIEWER, workspaceId: String!): Boolean!
-
   """Sign in"""
   login(input: LoginInput!): AuthPayload!
 
   """Publish a document"""
   publishDocument(documentId: String!, workspaceId: String!): Document!
 
-  """Reject a pending join request"""
-  rejectPendingInvite(userId: String!, workspaceId: String!): Boolean!
+  """Reject a pending role request"""
+  rejectRoleRequest(userId: String!, workspaceId: String!): Boolean!
 
   """Unmark a document as a favorite"""
   removeFavoriteDocument(input: FavoriteDocumentInput!): Document!
 
   """Remove a user from workspace"""
   removeUserFromWorkspace(userId: String!, workspaceId: String!): Boolean!
+
+  """Request a role upgrade in a workspace"""
+  requestRoleUpgrade(role: String!, workspaceId: String!): Boolean!
 
   """Restart the Jupyter environment"""
   restartEnvironment(input: RestartEnvironmentInput!): Environment!
@@ -369,6 +372,9 @@ type Query {
 
   """Get all pending join requests for a workspace"""
   getPendingInvites(workspaceId: String!): [WorkspaceMember!]!
+
+  """Get pending role requests for a workspace"""
+  getPendingRoleRequests(workspaceId: String!): [WorkspaceMember!]!
 
   """Users who follow a given user"""
   getUserFollowers(userId: String!): [User!]!
@@ -518,6 +524,7 @@ input UpdateUserSettingInput {
 
 type User {
   avater: String
+  createdAt: DateTime
   email: String
   firstName: String
   followers: [User!]!
@@ -539,13 +546,6 @@ type UserSetting {
   statusUpdatedAt: DateTime
   userId: ID!
   wallets: [JSON!]!
-}
-
-"""User role within a workspace"""
-enum UserWorkspaceRole {
-  ADMIN
-  EDITOR
-  VIEWER
 }
 
 type Workspace {
@@ -587,6 +587,7 @@ type WorkspaceInvitationInfo {
 }
 
 type WorkspaceMember {
+  requestedRole: String
   role: String!
   user: User
   userId: String!
