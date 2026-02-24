@@ -178,6 +178,27 @@ export class WorkspaceMembershipService {
         });
     }
 
+    private async sendWorkspaceInvitationEmail(
+        email: string,
+        workspaceId: string,
+        userId: string,
+        inviterId: string,
+        role: UserWorkspaceRole,
+    ): Promise<void> {
+        const hash = await this.createInvitationHash({ workspaceId, userId, inviterId, role });
+        const workspace = await this.getWorkspaceOrThrow(workspaceId);
+        const inviter = await this.getUserOrThrow(inviterId);
+
+        await this.mailService.workspaceInvitation({
+            to: email,
+            data: {
+                hash,
+                workspaceName: workspace.name,
+                inviterName: inviter.firstName || 'Someone',
+            },
+        });
+    }
+
     async getPendingRoleRequests(workspaceId: string, adminId: string): Promise<WorkspaceMember[]> {
         validateUUID(workspaceId, 'Workspace ID');
         validateUUID(adminId, 'Admin ID');
@@ -217,23 +238,21 @@ export class WorkspaceMembershipService {
 
         const existingMembership = await this.getExistingMembership(workspaceId, invitedUser.id);
         if (existingMembership) {
-            throw new BadRequestException('User is already a member of this workspace');
+            if (existingMembership.status === UserWorkspaceStatus.ACTIVE) {
+                throw new BadRequestException('User is already a member of this workspace');
+            }
+            await this.sendWorkspaceInvitationEmail(email, workspaceId, invitedUser.id, inviterId, role);
+        } else {
+            const membership = this.createMembership(
+                invitedUser.id,
+                workspaceId,
+                role,
+                UserWorkspaceStatus.PENDING,
+                inviterId,
+            );
+            await this.workspaceMembersRepository.save(membership);
+            await this.sendWorkspaceInvitationEmail(email, workspaceId, invitedUser.id, inviterId, role);
         }
-        const hash = await this.createInvitationHash({
-            workspaceId,
-            userId: invitedUser.id,
-            inviterId,
-            role,
-        });
-        const inviter = await this.getUserOrThrow(inviterId);
-        await this.mailService.workspaceInvitation({
-            to: email,
-            data: {
-                hash,
-                workspaceName: workspace.name,
-                inviterName: inviter.firstName || 'Someone',
-            },
-        });
     }
 
     async acceptWorkspaceInvitation(hash: string): Promise<void> {
@@ -249,7 +268,6 @@ export class WorkspaceMembershipService {
             if (existingMembership.status === UserWorkspaceStatus.ACTIVE) {
                 throw new BadRequestException('User is already a member of this workspace');
             }
-
             existingMembership.status = UserWorkspaceStatus.ACTIVE;
             existingMembership.role = role;
             existingMembership.inviterId = inviterId;
@@ -257,7 +275,13 @@ export class WorkspaceMembershipService {
             return;
         }
 
-        const membership = this.createMembership(userId, workspaceId, role, UserWorkspaceStatus.ACTIVE, inviterId);
+        const membership = this.createMembership(
+            userId,
+            workspaceId,
+            role,
+            UserWorkspaceStatus.PENDING,
+            inviterId,
+        );
         await this.workspaceMembersRepository.save(membership);
     }
 
