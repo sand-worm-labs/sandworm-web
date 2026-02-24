@@ -217,7 +217,7 @@ export type Mutation = {
   addFavoriteDocument: Document;
   /** Approve a pending role request */
   approveRoleRequest: Scalars['Boolean']['output'];
-  /** Remove multiple users from a workspace */
+  /** Remove multiple users from workspaces */
   batchRemoveUsersFromWorkspace: Scalars['Boolean']['output'];
   /** Create a new comment on a document */
   createComment: Comment;
@@ -315,8 +315,7 @@ export type MutationApproveRoleRequestArgs = {
 
 
 export type MutationBatchRemoveUsersFromWorkspaceArgs = {
-  userIds: Array<Scalars['String']['input']>;
-  workspaceId: Scalars['String']['input'];
+  removals: Array<RemoveUserFromWorkspaceInput>;
 };
 
 
@@ -568,7 +567,7 @@ export type Query = {
   getFavoriteDocuments: Array<Document>;
   /** Get invitation details from hash without accepting it */
   getInvitationInfo: WorkspaceInvitationInfo;
-  /** Get all pending join requests for a workspace */
+  /** Get all pending invites for a workspace */
   getPendingInvites: Array<WorkspaceMember>;
   /** Get pending role requests for a workspace */
   getPendingRoleRequests: Array<WorkspaceMember>;
@@ -715,6 +714,11 @@ export type QueryScheduleArgs = {
 
 export type QuerySchedulesArgs = {
   input: ListSchedulesInput;
+};
+
+export type RemoveUserFromWorkspaceInput = {
+  userId: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
 };
 
 export type RestartEnvironmentInput = {
@@ -1179,14 +1183,6 @@ export type AcceptWorkspaceInvitationMutationVariables = Exact<{
 
 export type AcceptWorkspaceInvitationMutation = { __typename?: 'Mutation', acceptWorkspaceInvitation: boolean };
 
-export type BatchRemoveUsersFromWorkspaceMutationVariables = Exact<{
-  userIds: Array<Scalars['String']['input']> | Scalars['String']['input'];
-  workspaceId: Scalars['String']['input'];
-}>;
-
-
-export type BatchRemoveUsersFromWorkspaceMutation = { __typename?: 'Mutation', batchRemoveUsersFromWorkspace: boolean };
-
 export type RemoveUserFromWorkspaceMutationVariables = Exact<{
   userId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
@@ -1383,6 +1379,13 @@ export type GetPendingRoleRequestsQueryVariables = Exact<{
 
 
 export type GetPendingRoleRequestsQuery = { __typename?: 'Query', getPendingRoleRequests: Array<{ __typename?: 'WorkspaceMember', userId: string, role: string, requestedRole?: string | null, user?: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null } | null }> };
+
+export type GetPendingInvitesQueryVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+}>;
+
+
+export type GetPendingInvitesQuery = { __typename?: 'Query', getPendingInvites: Array<{ __typename?: 'WorkspaceMember', userId: string, role: string, requestedRole?: string | null, user?: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null } | null }> };
 
 
 export const CreateUserDocument = gql`
@@ -2759,38 +2762,6 @@ export function useAcceptWorkspaceInvitationMutation(baseOptions?: Apollo.Mutati
 export type AcceptWorkspaceInvitationMutationHookResult = ReturnType<typeof useAcceptWorkspaceInvitationMutation>;
 export type AcceptWorkspaceInvitationMutationResult = Apollo.MutationResult<AcceptWorkspaceInvitationMutation>;
 export type AcceptWorkspaceInvitationMutationOptions = Apollo.BaseMutationOptions<AcceptWorkspaceInvitationMutation, AcceptWorkspaceInvitationMutationVariables>;
-export const BatchRemoveUsersFromWorkspaceDocument = gql`
-    mutation BatchRemoveUsersFromWorkspace($userIds: [String!]!, $workspaceId: String!) {
-  batchRemoveUsersFromWorkspace(userIds: $userIds, workspaceId: $workspaceId)
-}
-    `;
-export type BatchRemoveUsersFromWorkspaceMutationFn = Apollo.MutationFunction<BatchRemoveUsersFromWorkspaceMutation, BatchRemoveUsersFromWorkspaceMutationVariables>;
-
-/**
- * __useBatchRemoveUsersFromWorkspaceMutation__
- *
- * To run a mutation, you first call `useBatchRemoveUsersFromWorkspaceMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useBatchRemoveUsersFromWorkspaceMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [batchRemoveUsersFromWorkspaceMutation, { data, loading, error }] = useBatchRemoveUsersFromWorkspaceMutation({
- *   variables: {
- *      userIds: // value for 'userIds'
- *      workspaceId: // value for 'workspaceId'
- *   },
- * });
- */
-export function useBatchRemoveUsersFromWorkspaceMutation(baseOptions?: Apollo.MutationHookOptions<BatchRemoveUsersFromWorkspaceMutation, BatchRemoveUsersFromWorkspaceMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<BatchRemoveUsersFromWorkspaceMutation, BatchRemoveUsersFromWorkspaceMutationVariables>(BatchRemoveUsersFromWorkspaceDocument, options);
-      }
-export type BatchRemoveUsersFromWorkspaceMutationHookResult = ReturnType<typeof useBatchRemoveUsersFromWorkspaceMutation>;
-export type BatchRemoveUsersFromWorkspaceMutationResult = Apollo.MutationResult<BatchRemoveUsersFromWorkspaceMutation>;
-export type BatchRemoveUsersFromWorkspaceMutationOptions = Apollo.BaseMutationOptions<BatchRemoveUsersFromWorkspaceMutation, BatchRemoveUsersFromWorkspaceMutationVariables>;
 export const RemoveUserFromWorkspaceDocument = gql`
     mutation RemoveUserFromWorkspace($userId: String!, $workspaceId: String!) {
   removeUserFromWorkspace(userId: $userId, workspaceId: $workspaceId)
@@ -4156,3 +4127,52 @@ export type GetPendingRoleRequestsQueryHookResult = ReturnType<typeof useGetPend
 export type GetPendingRoleRequestsLazyQueryHookResult = ReturnType<typeof useGetPendingRoleRequestsLazyQuery>;
 export type GetPendingRoleRequestsSuspenseQueryHookResult = ReturnType<typeof useGetPendingRoleRequestsSuspenseQuery>;
 export type GetPendingRoleRequestsQueryResult = Apollo.QueryResult<GetPendingRoleRequestsQuery, GetPendingRoleRequestsQueryVariables>;
+export const GetPendingInvitesDocument = gql`
+    query GetPendingInvites($workspaceId: String!) {
+  getPendingInvites(workspaceId: $workspaceId) {
+    userId
+    role
+    requestedRole
+    user {
+      id
+      username
+      email
+      firstName
+      lastName
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetPendingInvitesQuery__
+ *
+ * To run a query within a React component, call `useGetPendingInvitesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPendingInvitesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPendingInvitesQuery({
+ *   variables: {
+ *      workspaceId: // value for 'workspaceId'
+ *   },
+ * });
+ */
+export function useGetPendingInvitesQuery(baseOptions: Apollo.QueryHookOptions<GetPendingInvitesQuery, GetPendingInvitesQueryVariables> & ({ variables: GetPendingInvitesQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetPendingInvitesQuery, GetPendingInvitesQueryVariables>(GetPendingInvitesDocument, options);
+      }
+export function useGetPendingInvitesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPendingInvitesQuery, GetPendingInvitesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetPendingInvitesQuery, GetPendingInvitesQueryVariables>(GetPendingInvitesDocument, options);
+        }
+export function useGetPendingInvitesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetPendingInvitesQuery, GetPendingInvitesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetPendingInvitesQuery, GetPendingInvitesQueryVariables>(GetPendingInvitesDocument, options);
+        }
+export type GetPendingInvitesQueryHookResult = ReturnType<typeof useGetPendingInvitesQuery>;
+export type GetPendingInvitesLazyQueryHookResult = ReturnType<typeof useGetPendingInvitesLazyQuery>;
+export type GetPendingInvitesSuspenseQueryHookResult = ReturnType<typeof useGetPendingInvitesSuspenseQuery>;
+export type GetPendingInvitesQueryResult = Apollo.QueryResult<GetPendingInvitesQuery, GetPendingInvitesQueryVariables>;

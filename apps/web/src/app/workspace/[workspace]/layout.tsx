@@ -13,6 +13,7 @@ import { DataSourcesProvider } from "@/components/Visualization/hooks/useDataSou
 import { ReusableComponentsProvider } from "@/components/Visualization/hooks/useReusableComponents";
 import { CommentsProvider } from "@/components/Visualization/hooks/useComments";
 
+
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="font-primary">

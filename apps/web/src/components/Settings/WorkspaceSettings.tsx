@@ -2,7 +2,13 @@
 
 "use client";
 
-import React, { useState, useEffect, Fragment, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  Fragment,
+  useCallback,
+  useMemo,
+} from "react";
 import { XMarkIcon, CheckIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -15,8 +21,12 @@ import { User } from "../Assets/Avatar/User";
 import { PencilSimple } from "../Assets/PencilSimple";
 import ManageInviteModal from "../ManageInvite";
 import {
+  useApproveRoleRequest,
   useDeleteWorkspace,
   useInviteUserToWorkspace,
+  usePendingInvites,
+  usePendingRoleRequests,
+  useRejectRoleRequest,
 } from "../Visualization/hooks/useWorkspaces";
 import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
 import MiniUsersList from "../Visualization/blocks/MiniUsersList";
@@ -359,6 +369,12 @@ export default function WorkspaceSettingsModal({
 }: WorkspaceSettingsModalProps) {
   const router = useRouter();
   const session = useSession({ redirectToLogin: true });
+  const { pendingRequests, refetch: refetchPendingRequests } =
+    usePendingRoleRequests(workspace?.id ?? "");
+  const { pendingInvites: rawPendingInvites, refetch: refetchInvites } =
+    usePendingInvites(workspace?.id ?? "");
+  const { approveRoleRequest } = useApproveRoleRequest(workspace?.id ?? "");
+  const { rejectRoleRequest } = useRejectRoleRequest(workspace?.id ?? "");
 
   console.log(workspace, "workspace");
 
@@ -394,29 +410,43 @@ export default function WorkspaceSettingsModal({
     },
   ];
 
-  const [pendingInvites, setPendingInvites] = useState<PendingInvite[]>([
-    {
-      id: "1",
-      name: "Simon Cyril",
-      email: "Simoncyril@gmail.com",
-      role: "editor",
-      invitedAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000),
-    },
-    {
-      id: "2",
-      name: "Alejandro Rajaonarimampianina",
-      email: "AlejandroRajaonarimampianina@gmail.com",
-      role: "editor",
-      invitedAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000),
-    },
-    {
-      id: "3",
-      name: "Alejandro Rajaonarimampianina",
-      email: "AlejandroRajaonarimampianina@gmail.com",
-      role: "editor",
-      invitedAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000),
-    },
-  ]);
+  const mappedPendingRequests = useMemo(() => {
+    return pendingRequests.map(req => ({
+      id: req.userId,
+      name: req.user
+        ? `${req.user.firstName ?? ""} ${req.user.lastName ?? ""}`.trim() ||
+          req.user.username ||
+          req.user.email
+        : req.userId,
+      email: req.user?.email ?? "",
+      requestedRole: req.requestedRole ?? "editor",
+      requestedAt: new Date(),
+    }));
+  }, [pendingRequests]);
+
+  const mappedPendingInvites = useMemo(() => {
+    return rawPendingInvites.map(invite => ({
+      id: invite.userId,
+      name: invite.user
+        ? `${invite.user.firstName ?? ""} ${invite.user.lastName ?? ""}`.trim() ||
+          invite.user.username ||
+          invite.user.email
+        : invite.userId,
+      email: invite.user?.email ?? "",
+      role: invite.role,
+      invitedAt: new Date(),
+    }));
+  }, [rawPendingInvites]);
+
+  const handleApproveRequest = async (userId: string) => {
+    await approveRoleRequest(userId);
+    refetchPendingRequests();
+  };
+
+  const handleDenyRequest = async (userId: string) => {
+    await rejectRoleRequest(userId);
+    refetchPendingRequests();
+  };
 
   const { inviteUser } = useInviteUserToWorkspace(workspace?.id);
 
@@ -681,7 +711,7 @@ export default function WorkspaceSettingsModal({
                   onRemoveUser={onRemoveUser}
                   onChangeRole={onChangeRole}
                   onInvite={() => {
-                    console.log("")
+                    console.log("");
                   }}
                 />
               </div>
@@ -724,19 +754,12 @@ export default function WorkspaceSettingsModal({
         workspaceId={workspace?.id}
         onClose={() => setIsModalOpen(false)}
         workspaceMembers={workspaceMembers}
-        pendingInvites={pendingInvites}
+        pendingInvites={mappedPendingInvites}
         onSendInvite={handleSendInvite}
         onCancelInvite={handleCancelInvite}
-        pendingRequests={[
-          {
-            id: "req-1",
-            name: "Simon Peters",
-            email: "simon@example.com",
-            requestedRole: "editor",
-            requestedAt: new Date(),
-            message: "I'd like to help with the dashboard",
-          },
-        ]}
+        pendingRequests={mappedPendingRequests}
+        onApproveRequest={handleApproveRequest}
+        onDenyRequest={handleDenyRequest}
       />
 
       <DeleteWorkspaceModal

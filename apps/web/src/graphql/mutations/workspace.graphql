@@ -50,9 +50,7 @@ mutation AcceptWorkspaceInvitation($hash: String!) {
   acceptWorkspaceInvitation(hash: $hash)
 }
 
-mutation BatchRemoveUsersFromWorkspace($userIds: [String!]!, $workspaceId: String!) {
-  batchRemoveUsersFromWorkspace(userIds: $userIds, workspaceId: $workspaceId)
-}
+
 
 mutation RemoveUserFromWorkspace($userId: String!, $workspaceId: String!) {
   removeUserFromWorkspace(userId: $userId, workspaceId: $workspaceId)
