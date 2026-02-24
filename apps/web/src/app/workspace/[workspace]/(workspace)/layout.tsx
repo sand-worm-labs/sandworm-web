@@ -2,20 +2,53 @@
 
 import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 
 import { WorkspaceSidebar } from "@/components/Layout/WorkSpaceSidebar";
 import { AppHeader } from "@/components/Layout/AppHeader";
+import { useSession } from "@/components/Visualization/hooks/useAuth";
+import {
+  useRequestRoleUpgrade,
+  useCurrentWorkspaceInfo,
+} from "@/components/Visualization/hooks/useWorkspaces";
+import { ViewerAccessBar } from "@/components/ViewerAccessBar";
 
 interface WorkspaceLayoutProps {
   children: ReactNode;
 }
 
 export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
+  const { loading: sessionLoading } = useSession({ redirectToLogin: true });
+  const { workspaceInfo } = useCurrentWorkspaceInfo();
+
   const pathname = usePathname();
+  const workspaceId = workspaceInfo?.id ?? "";
+
+  const { requestRoleUpgrade } = useRequestRoleUpgrade(workspaceId);
+
+  // TODO: Replace with polling or WebSocket event to detect approval.
+  // Currently status resets to "viewing" on refresh — no persistence yet.
+  const [accessStatus, setAccessStatus] = useState<"viewing" | "sent" | "pending" | "approved">("viewing");
+
 
   const shouldHideHeader =
     pathname.includes("/documents/") &&
     (pathname.endsWith("/edit") || pathname.includes("/notebook"));
+
+  const isOnNotebook = pathname.includes("/notebook");
+
+  // Role comes directly from getUserWorkspaceInfo — always fresh, never stale
+  const isViewer = workspaceInfo?.role === "viewer";
+
+  const handleRequestAccess = async () => {
+    await requestRoleUpgrade("editor");
+    setAccessStatus("sent");
+    // TODO: Poll getUserWorkspaceInfo or listen to WebSocket to transition
+    // from "sent" -> "pending" -> "approved" when admin acts on the request.
+  };
+
+  console.log(workspaceInfo, "workspaceinfo")
+
 
   return (
     <div className="flex h-screen w-full bg-background">
@@ -26,6 +59,13 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
 
         <main className="flex-1 overflow-y-auto">{children}</main>
       </div>
+
+      {isViewer && (
+        <ViewerAccessBar
+          status={accessStatus}
+          onRequestAccess={handleRequestAccess}
+        />
+      )}
     </div>
   );
 }

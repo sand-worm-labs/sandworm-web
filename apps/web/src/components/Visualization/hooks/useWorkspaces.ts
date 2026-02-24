@@ -15,7 +15,13 @@ import {
   useGetWorkspaceWithMembersQuery,
   useGetInvitationInfoQuery,
   GetInvitationInfoDocument,
-  useDeleteWorkspaceMutation
+  useDeleteWorkspaceMutation,
+  useGetPendingRoleRequestsQuery,
+  useRequestRoleUpgradeMutation,
+  useApproveRoleRequestMutation,
+  useRejectRoleRequestMutation,
+  useGetPendingInvitesQuery
+  
 } from "@/generated/graphql";
 
 import { NEXT_PUBLIC_API_URL } from "../utils/env";
@@ -131,7 +137,7 @@ export const useUpdateWorkspace = (
     (targetId: string): boolean => {
       if (!session?.user?.id || !workspacesData?.userWorkspaces) return false;
       const workspace = workspacesData.userWorkspaces.find(
-        (w) => w.id === targetId
+        w => w.id === targetId
       );
       return workspace?.ownerId === session.user.id;
     },
@@ -165,7 +171,12 @@ export const useUpdateWorkspace = (
         throw err;
       }
     },
-    [isAdminOfWorkspace, updateWorkspaceMutation, refetchWorkspaceInfo, refetchWorkspaces]
+    [
+      isAdminOfWorkspace,
+      updateWorkspaceMutation,
+      refetchWorkspaceInfo,
+      refetchWorkspaces,
+    ]
   );
 
   return {
@@ -547,8 +558,6 @@ export const useDeleteWorkspace = (
         throw new Error("You cannot delete your last workspace");
       }
 
-     
-
       try {
         const result = await deleteWorkspaceMutation({
           variables: { workspaceId },
@@ -591,4 +600,129 @@ export const useDeleteWorkspace = (
   );
 
   return useMemo(() => [state, { deleteWorkspace }], [state, deleteWorkspace]);
+};
+
+// Pending role requests for a workspace (admin only)
+export const usePendingRoleRequests = (workspaceId: string) => {
+  const { data, loading, error, refetch } = useGetPendingRoleRequestsQuery({
+    variables: { workspaceId },
+    skip: !workspaceId,
+    fetchPolicy: "cache-and-network",
+  });
+
+  return {
+    pendingRequests: data?.getPendingRoleRequests ?? [],
+    isLoading: loading,
+    error,
+    refetch,
+  };
+};
+
+// Request a role upgrade (any member)
+export const useRequestRoleUpgrade = (workspaceId: string) => {
+  const [requestRoleUpgradeMutation, { loading, error }] =
+    useRequestRoleUpgradeMutation();
+
+  const requestRoleUpgrade = useCallback(
+    async (role: string) => {
+      try {
+        const result = await requestRoleUpgradeMutation({
+          variables: { workspaceId, role },
+        });
+
+        return result.data?.requestRoleUpgrade ?? false;
+      } catch (err) {
+        console.error("Failed to request role upgrade:", err);
+        throw err;
+      }
+    },
+    [requestRoleUpgradeMutation, workspaceId]
+  );
+
+  return { requestRoleUpgrade, loading, error: error as Error | null };
+};
+
+// Approve a pending role request (admin only)
+export const useApproveRoleRequest = (workspaceId: string) => {
+  const { workspaceInfo } = useCurrentWorkspaceInfo();
+
+  const [approveRoleRequestMutation, { loading, error }] =
+    useApproveRoleRequestMutation();
+
+  const isAdmin = useMemo(() => {
+    if (!workspaceInfo) return false;
+    return workspaceInfo.id === workspaceId && workspaceInfo.role === "admin";
+  }, [workspaceInfo, workspaceId]);
+
+  const approveRoleRequest = useCallback(
+    async (userId: string) => {
+      if (!isAdmin) {
+        throw new Error("You must be an admin to approve role requests");
+      }
+
+      try {
+        const result = await approveRoleRequestMutation({
+          variables: { workspaceId, userId },
+        });
+
+        return result.data?.approveRoleRequest ?? false;
+      } catch (err) {
+        console.error("Failed to approve role request:", err);
+        throw err;
+      }
+    },
+    [isAdmin, approveRoleRequestMutation, workspaceId]
+  );
+
+  return { approveRoleRequest, loading, error: error as Error | null, isAdmin };
+};
+
+// Reject a pending role request (admin only)
+export const useRejectRoleRequest = (workspaceId: string) => {
+  const { workspaceInfo } = useCurrentWorkspaceInfo();
+
+  const [rejectRoleRequestMutation, { loading, error }] =
+    useRejectRoleRequestMutation();
+
+  const isAdmin = useMemo(() => {
+    if (!workspaceInfo) return false;
+    return workspaceInfo.id === workspaceId && workspaceInfo.role === "admin";
+  }, [workspaceInfo, workspaceId]);
+
+  const rejectRoleRequest = useCallback(
+    async (userId: string) => {
+      if (!isAdmin) {
+        throw new Error("You must be an admin to reject role requests");
+      }
+
+      try {
+        const result = await rejectRoleRequestMutation({
+          variables: { workspaceId, userId },
+        });
+
+        return result.data?.rejectRoleRequest ?? false;
+      } catch (err) {
+        console.error("Failed to reject role request:", err);
+        throw err;
+      }
+    },
+    [isAdmin, rejectRoleRequestMutation, workspaceId]
+  );
+
+  return { rejectRoleRequest, loading, error: error as Error | null, isAdmin };
+};
+
+export const usePendingInvites = (workspaceId: string) => {
+  const { data, loading, error, refetch } = useGetPendingInvitesQuery({
+    variables: { workspaceId },
+    skip: !workspaceId,
+    fetchPolicy: "cache-and-network",
+  });
+
+  return {
+    pendingInvites: data?.getPendingInvites ?? [],
+    isLoading: loading,
+    error,
+    refetch,
+  };
 };
