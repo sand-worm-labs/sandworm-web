@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { X } from "lucide-react";
 import Image from "next/image";
+import toast from "react-hot-toast";
 
 import { User } from "./Assets/Avatar/User";
 import { useInviteUserToWorkspace } from "./Visualization/hooks/useWorkspaces";
-import toast from "react-hot-toast";
 
 // ============================================================================
 // TYPES & INTERFACES
@@ -469,6 +469,7 @@ const ManageInviteModal: React.FC<ManageInviteModalProps> = ({
   pendingInvites,
   pendingRequests = [],
   onCancelInvite,
+  refetchInvite = async () => {},
   onApproveRequest = async () => {},
   onDenyRequest = async () => {},
 }) => {
@@ -478,12 +479,12 @@ const ManageInviteModal: React.FC<ManageInviteModalProps> = ({
   const handleSendInvite = async (email: string, role: UserRole) => {
     const success = await inviteUser(email, workspaceId, role);
     if (success) {
+      refetchInvite();
       toast.success(`Invitation sent to ${email}`);
     } else {
       toast.error("Failed to send invitation");
     }
   };
-
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -510,7 +511,7 @@ const ManageInviteModal: React.FC<ManageInviteModalProps> = ({
             </div>
 
             {/* Invite Form */}
-            <InviteForm onSendInvite={handleSendInvite } />
+            <InviteForm onSendInvite={handleSendInvite} />
 
             {/* Pending Tabs Content */}
             <PendingTabsContent

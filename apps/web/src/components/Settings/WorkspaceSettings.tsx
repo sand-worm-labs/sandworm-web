@@ -32,6 +32,8 @@ import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
 import MiniUsersList from "../Visualization/blocks/MiniUsersList";
 import { useSession } from "../Visualization/hooks/useAuth";
 
+import { WorkspaceIcon } from "./WorkspaceIcon";
+
 interface WorkspaceSettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -48,52 +50,22 @@ interface WorkspaceSettingsModalProps {
   isUpdating: boolean;
   disableCustomOpenAiKey?: boolean;
 }
+const PRESET_ICONS = [
+  "red.png",
+  "blue.png",
+  "green.png",
+  "purple.png",
+  "yellow.png",
+] as const;
 
-export const ICON_COLOR_TO_AVATAR: Record<string, string> = {
-  "red.png": "/img/avatar-1.svg",
-  "blue.png": "/img/avatar-2.svg",
-  "green.png": "/img/avatar-3.svg",
-  "purple.png": "/img/avatar-4.svg",
-  "yellow.png": "/img/avatar-5.svg",
-};
-
-// Reverse map — avatar src back to backend color key
-export const AVATAR_TO_ICON_COLOR: Record<string, string> = Object.fromEntries(
-  Object.entries(ICON_COLOR_TO_AVATAR).map(([color, avatar]) => [avatar, color])
-);
-
-// Display helper: given a backend icon value, return the avatar src to render
-export function getAvatarSrc(
-  iconColor: string | null | undefined
-): string | null {
-  if (!iconColor) return null;
-  return ICON_COLOR_TO_AVATAR[iconColor] ?? null;
-}
-
-// Save helper: given an avatar src, return the backend color key to persist
-export function getIconColor(
-  avatarSrc: string | null | undefined
-): string | null {
-  if (!avatarSrc) return null;
-  return AVATAR_TO_ICON_COLOR[avatarSrc] ?? null;
-}
 interface EditWorkspaceProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
   currentName?: string;
-  currentIcon?: string | null; // backend value e.g. "red.png"
-  onSave: (data: { name: string; selectedIcon: string | null }) => void; // selectedIcon is backend value
+  currentIcon?: string | null;
+  onSave: (data: { name: string; selectedIcon: string | null }) => void;
   isLoading?: boolean;
 }
-
-// Each preset maps a display avatar to its backend color key
-const PRESET_ICONS = Object.entries(ICON_COLOR_TO_AVATAR).map(
-  ([colorKey, avatarSrc], index) => ({
-    id: index + 1,
-    avatarSrc,
-    colorKey,
-  })
-);
 
 export function EditWorkspaceProfileModal({
   isOpen,
@@ -104,19 +76,12 @@ export function EditWorkspaceProfileModal({
   isLoading = false,
 }: EditWorkspaceProfileModalProps) {
   const [workspaceName, setWorkspaceName] = useState(currentName);
-
-  // Internally track avatar src for display, convert to/from backend key at boundary
-  const [selectedAvatar, setSelectedAvatar] = useState<string | null>(
-    getAvatarSrc(currentIcon)
-  );
+  const [selectedIcon, setSelectedIcon] = useState<string | null>(currentIcon);
 
   if (!isOpen) return null;
 
   const handleSave = () => {
-    onSave({
-      name: workspaceName,
-      selectedIcon: getIconColor(selectedAvatar), // sends "red.png" etc to parent
-    });
+    onSave({ name: workspaceName, selectedIcon });
   };
 
   const isNameValid =
@@ -140,7 +105,7 @@ export function EditWorkspaceProfileModal({
         aria-label="Close modal"
       />
 
-      <div className="relative bg-white dark:bg-[#1A1A1A] rounded-3xl  w-full max-w-[31rem] mx-4 p-6 py-10 px-10">
+      <div className="relative bg-white dark:bg-[#1A1A1A] rounded-3xl w-full max-w-[31rem] mx-4 p-6 py-10 px-10">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-base font-medium text-ink-100 dark:text-white">
             Edit workspace Profile
@@ -156,51 +121,39 @@ export function EditWorkspaceProfileModal({
 
         <div className="mb-6">
           <label className="block text-sm font-medium text-[#1A1A1A] dark:text-gray-300 mb-3">
-            Workspace Profile
+            Workspace Icon
           </label>
           <div className="flex items-center gap-3">
-            {/* Upload Button / Selected Preview */}
-            <button
-              type="button"
-              className="relative w-14 mr-4 h-14 rounded-full border-2 border-[#DEE2E6] dark:border-gray-600 hover:border-[#A308F0] dark:hover:border-[#A308F0] transition-colors flex items-center justify-center group overflow-hidden"
-            >
-              {selectedAvatar ? (
-                <Image
-                  src={selectedAvatar}
-                  alt="Selected workspace icon"
-                  fill
+            {/* Current selection preview */}
+            <div className="relative w-14 h-14 rounded-full border-2 border-[#DEE2E6] dark:border-gray-600 flex items-center justify-center overflow-hidden mr-4">
+              {selectedIcon ? (
+                <WorkspaceIcon
+                  icon={selectedIcon}
+                  size={56}
                   className="object-cover"
                 />
               ) : (
-                <span className="text-[10px] text-center text-gray-500 dark:text-gray-400 group-hover:text-[#A308F0] leading-tight">
-                  Click to
-                  <br />
-                  Upload
+                <span className="text-[10px] text-center text-gray-400 leading-tight">
+                  No icon
                 </span>
               )}
-            </button>
+            </div>
 
-            {/* Preset color icons rendered as avatars */}
-            {PRESET_ICONS.map(icon => {
-              const isSelected = selectedAvatar === icon.avatarSrc;
+            {PRESET_ICONS.map(colorKey => {
+              const isSelected = selectedIcon === colorKey;
               return (
                 <button
-                  key={icon.id}
+                  key={colorKey}
                   type="button"
-                  onClick={() => setSelectedAvatar(icon.avatarSrc)}
+                  onClick={() => setSelectedIcon(colorKey)}
                   className={`relative w-8 h-8 rounded-full transition-all overflow-hidden ${
                     isSelected
                       ? "ring-2 ring-[#A308F0] ring-offset-2 dark:ring-offset-[#1A1A1A]"
                       : "hover:scale-110"
                   }`}
-                  aria-label={`${icon.colorKey.replace(".png", "")} workspace icon`}
+                  aria-label={`${colorKey.replace(".png", "")} icon`}
                 >
-                  <Image
-                    src={icon.avatarSrc}
-                    alt={`${icon.colorKey.replace(".png", "")} icon`}
-                    fill
-                    className="object-cover"
-                  />
+                  <WorkspaceIcon icon={colorKey} size={32} />
                   {isSelected && (
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                       <CheckIcon className="w-4 h-4 text-white stroke-[3]" />
@@ -395,21 +348,6 @@ export default function WorkspaceSettingsModal({
 
   console.log("woo", workspace);
 
-  const workspaceMembers: WorkspaceMember[] = [
-    {
-      id: "1",
-      name: "James Earl",
-      email: "james@example.com",
-      role: "editor",
-    },
-    {
-      id: "2",
-      name: "Camila Houst",
-      email: "camila@example.com",
-      role: "owner",
-    },
-  ];
-
   const mappedPendingRequests = useMemo(() => {
     return pendingRequests.map(req => ({
       id: req.userId,
@@ -456,8 +394,10 @@ export default function WorkspaceSettingsModal({
     workspaceId: string
   ) => {
     const success = await inviteUser(email, workspaceId, role);
+
     if (success) {
       toast.success(`Invitation sent to ${email}`);
+      refetchInvites();
     } else {
       toast.error("Failed to send invitation");
     }
@@ -518,7 +458,7 @@ export default function WorkspaceSettingsModal({
           <div className="flex items-center justify-between  px-6 py-4 pt-12 ">
             <div>
               <div className="flex gap-x-3">
-                <User />
+                <WorkspaceIcon icon={workspace?.icon} />
                 <h2 className="text-base font-semibold text-ink-100 dark:text-white capitalize flex items-center gap-2">
                   {workspace?.name} workspace
                   <button
@@ -564,11 +504,11 @@ export default function WorkspaceSettingsModal({
                 </button>
 
                 <div className="text-primary text-[13px] font-medium">
-                  0 Pending Requests
+                  {mappedPendingRequests.length} Pending Requests
                 </div>
 
                 <div className="text-primary text-[13px] font-medium">
-                  0 Pending Invites
+                  {mappedPendingInvites.length} Pending Invites
                 </div>
               </div>
 
@@ -753,11 +693,11 @@ export default function WorkspaceSettingsModal({
         isOpen={isModalOpen}
         workspaceId={workspace?.id}
         onClose={() => setIsModalOpen(false)}
-        workspaceMembers={workspaceMembers}
         pendingInvites={mappedPendingInvites}
         onSendInvite={handleSendInvite}
         onCancelInvite={handleCancelInvite}
         pendingRequests={mappedPendingRequests}
+        refetchInvite={refetchInvites}
         onApproveRequest={handleApproveRequest}
         onDenyRequest={handleDenyRequest}
       />
