@@ -61,6 +61,22 @@ query GetWorkspaceWithMembers($workspaceId: String!) {
   }
 }
 
+query GetAdminWorkspacesWithMembers {
+  getAdminWorkspacesWithMembers {
+    userId
+    role
+    requestedRole
+    workspaceName
+    user {
+      id
+      username
+      email
+      firstName
+      lastName
+    }
+  }
+}
+
 # Get a specific workspace by ID
 query GetWorkspace($workspaceId: String!) {
   getWorkspace(workspaceId: $workspaceId) {
