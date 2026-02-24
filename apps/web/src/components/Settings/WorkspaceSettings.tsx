@@ -130,7 +130,7 @@ export function EditWorkspaceProfileModal({
         aria-label="Close modal"
       />
 
-      <div className="relative bg-white dark:bg-[#1A1A1A] rounded-3xl shadow-xl w-full max-w-[31rem] mx-4 p-6 py-10 px-10">
+      <div className="relative bg-white dark:bg-[#1A1A1A] rounded-3xl  w-full max-w-[31rem] mx-4 p-6 py-10 px-10">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-base font-medium text-ink-100 dark:text-white">
             Edit workspace Profile
@@ -680,11 +680,9 @@ export default function WorkspaceSettingsModal({
                   users={workspace?.users}
                   onRemoveUser={onRemoveUser}
                   onChangeRole={onChangeRole}
-                  role="admin"
                   onInvite={() => {
-                    console.log;
+                    console.log("")
                   }}
-                  onViewAll={() => [console.log("j")]}
                 />
               </div>
             </div>

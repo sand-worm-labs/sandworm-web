@@ -2,22 +2,25 @@ import { useCallback, useMemo } from "react";
 
 import {
   useUpdateUserMutation,
-  useUpdateUserSettingsMutation,
+  useUpdateSocialLinksMutation,
+  useUpdateStatusTextMutation,
   useCurrentUserQuery as useGetCurrentUserQuery,
   type UpdateUserInput,
-  type UpdateUserSettingInput,
-  type UserSetting,
+  type SocialLinksInput,
 } from "@/generated/graphql";
 
 type UseCurrentUserReturn = {
   updateUser: (input: UpdateUserInput) => Promise<void>;
-  updateUserSettings: (
-    input: Omit<UpdateUserSettingInput, "id">
-  ) => Promise<void>;
+  updateSocialLinks: (input: SocialLinksInput) => Promise<void>;
+  updateStatusText: (statusText: string) => Promise<void>;
+  updateProfile: (params: {
+    user?: UpdateUserInput;
+    socialLinks?: SocialLinksInput;
+    statusText?: string;
+  }) => Promise<void>;
   loading: boolean;
   error: Error | null;
   currentUser: any;
-  settings: UserSetting | null;
   refetch: () => void;
 };
 
@@ -31,57 +34,95 @@ export const useCurrentUser = (): UseCurrentUserReturn => {
 
   const [updateUserMutation, { loading: userLoading, error: userError }] =
     useUpdateUserMutation();
+
   const [
-    updateUserSettingsMutation,
-    { loading: settingsLoading, error: settingsError },
-  ] = useUpdateUserSettingsMutation();
+    updateSocialLinksMutation,
+    { loading: socialLoading, error: socialError },
+  ] = useUpdateSocialLinksMutation();
+
+  const [
+    updateStatusTextMutation,
+    { loading: statusLoading, error: statusError },
+  ] = useUpdateStatusTextMutation();
 
   const updateUser = useCallback(
     async (input: UpdateUserInput) => {
-      try {
-        await updateUserMutation({ variables: { input } });
-        await refetch();
-      } catch (err) {
-        console.error("Failed to update user:", err);
-        throw err;
-      }
+      await updateUserMutation({ variables: { input } });
+      await refetch();
     },
     [updateUserMutation, refetch]
   );
 
-  const updateUserSettings = useCallback(
-    async (input: Omit<UpdateUserSettingInput, "id">) => {
-      try {
-        const result = await updateUserSettingsMutation({ variables: input });
-        console.log("[updateUserSettings] mutation result:", result);
-        await refetch();
-      } catch (err) {
-        console.error("[updateUserSettings] error:", err);
-        throw err;
-      }
+  const updateSocialLinks = useCallback(
+    async (input: SocialLinksInput) => {
+      await updateSocialLinksMutation({ variables: { input } });
+      await refetch();
     },
-    [updateUserSettingsMutation, refetch]
+    [updateSocialLinksMutation, refetch]
+  );
+
+  const updateStatusText = useCallback(
+    async (statusText: string) => {
+      await updateStatusTextMutation({ variables: { statusText } });
+      await refetch();
+    },
+    [updateStatusTextMutation, refetch]
+  );
+
+  const updateProfile = useCallback(
+    async ({
+      user,
+      socialLinks,
+      statusText,
+    }: {
+      user?: UpdateUserInput;
+      socialLinks?: SocialLinksInput;
+      statusText?: string;
+    }) => {
+      await Promise.all([
+        user && updateUserMutation({ variables: { input: user } }),
+        socialLinks &&
+          updateSocialLinksMutation({ variables: { input: socialLinks } }),
+        statusText !== undefined &&
+          updateStatusTextMutation({ variables: { statusText } }),
+      ]);
+      await refetch();
+    },
+    [
+      updateUserMutation,
+      updateSocialLinksMutation,
+      updateStatusTextMutation,
+      refetch,
+    ]
   );
 
   return useMemo(
     () => ({
       updateUser,
-      updateUserSettings,
-      loading: queryLoading || userLoading || settingsLoading,
-      error: (queryError || userError || settingsError) as Error | null,
+      updateSocialLinks,
+      updateStatusText,
+      updateProfile,
+      loading: queryLoading || userLoading || socialLoading || statusLoading,
+      error: (queryError ||
+        userError ||
+        socialError ||
+        statusError) as Error | null,
       currentUser: data?.currentUser.user,
-      settings: data?.currentUser.user.settings ?? null,
       refetch,
     }),
     [
       updateUser,
-      updateUserSettings,
+      updateSocialLinks,
+      updateStatusText,
+      updateProfile,
       queryLoading,
       userLoading,
-      settingsLoading,
+      socialLoading,
+      statusLoading,
       queryError,
       userError,
-      settingsError,
+      socialError,
+      statusError,
       data,
       refetch,
     ]

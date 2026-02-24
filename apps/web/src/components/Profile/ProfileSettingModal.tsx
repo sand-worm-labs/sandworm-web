@@ -23,32 +23,18 @@ interface SessionUser {
   fullName?: string;
 }
 
-interface UserSettings {
-  statusText?: string;
-  socialLinks?: {
-    github?: string | null;
-    discord?: string | null;
-    telegram?: string | null;
-  };
-  wallets: {
-    chain?: string | null;
-    address?: string | null;
-  };
-}
-
 interface ProfileSettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
   user: SessionUser | null | undefined;
-  settings: UserSettings | null | undefined;
-  updateUser: (data: Partial<{ username?: string }>) => Promise<void>;
-  updateUserSettings: (data: {
-    statusText?: string;
+  updateProfile: (params: {
+    user?: { username?: string; firstName?: string; lastName?: string };
     socialLinks?: {
       github?: string | null;
       discord?: string | null;
       telegram?: string | null;
     };
+    statusText?: string;
   }) => Promise<void>;
   loading: boolean;
   error: unknown;
@@ -58,15 +44,13 @@ const inputClassName =
   "w-full px-3 py-2.5 rounded-xl bg-white dark:bg-[#1A1A1A] border border-[#DEE2E6] dark:border-[#262A30] text-[#868E96] dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#A308F0]/50 focus:border-[#A308F0] transition text-sm";
 
 const labelClassName =
-  "block text-xs font-bold text-[#6C757D] dark:text-gray-300 mb-2 uppercase font-bold ";
+  "block text-xs font-bold text-[#6C757D] dark:text-gray-300 mb-2 uppercase font-bold";
 
 export function ProfileSettingsModal({
   isOpen,
   onClose,
   user,
-  settings,
-  updateUser,
-  updateUserSettings,
+  updateProfile,
   loading,
   error,
 }: ProfileSettingsModalProps) {
@@ -80,13 +64,9 @@ export function ProfileSettingsModal({
     isSubmitting,
   } = useProfileForm({
     user,
-    settings,
-    updateUser,
-    updateUserSettings,
+    updateProfile,
     loading,
-    onSuccess: () => {
-      // todo
-    },
+    onSuccess: () => {},
   });
 
   const handleClose = () => {
@@ -97,7 +77,6 @@ export function ProfileSettingsModal({
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-50" onClose={handleClose}>
-        {/* Backdrop */}
         <TransitionChild
           as={Fragment}
           enter="ease-out duration-200"
@@ -110,7 +89,6 @@ export function ProfileSettingsModal({
           <div className="fixed inset-0 bg-[#0000001A]" />
         </TransitionChild>
 
-        {/* Modal container */}
         <div className="fixed inset-0 overflow-y-auto font-body">
           <div className="flex min-h-full items-center justify-center p-4">
             <TransitionChild
@@ -122,16 +100,12 @@ export function ProfileSettingsModal({
               leaveFrom="opacity-100 scale-100 translate-y-0"
               leaveTo="opacity-0 scale-95 translate-y-4"
             >
-              <DialogPanel className="w-full max-w-4xl transform overflow-hidden rounded-[32px] bg-white dark:bg-[#121417]  transition-all pt-5">
-                {/* Header */}
-
-                {/* Form */}
+              <DialogPanel className="w-full max-w-4xl transform overflow-hidden rounded-[32px] bg-white dark:bg-[#121417] transition-all pt-5">
                 <form onSubmit={handleSubmit}>
                   <div className="flex items-center justify-between px-10 py-6">
                     <div className="flex justify-between w-full">
                       <div>
                         <ProfileCardIcon />
-
                         <DialogTitle
                           as="h2"
                           className="text-base font-semibold text-ink-100 dark:text-white mt-3"
@@ -144,13 +118,12 @@ export function ProfileSettingsModal({
                         </p>
                       </div>
 
-                      {/* Avatar Section */}
                       <div className="flex flex-col items-center md:items-start shrink-0">
                         <div className="relative group">
                           <button
                             type="button"
                             disabled
-                            className="mt-3 flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-gray-400 dark:text-gray-500 border-none dark:border-[#262A30] rounded-lg  dark:bg-[#121417] cursor-not-allowed opacity-50 absolute top-[50%] translate-y-[-70%]"
+                            className="mt-3 flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-gray-400 dark:text-gray-500 border-none dark:border-[#262A30] rounded-lg dark:bg-[#121417] cursor-not-allowed opacity-50 absolute top-[50%] translate-y-[-70%]"
                           >
                             Click to Change Image
                           </button>
@@ -179,8 +152,8 @@ export function ProfileSettingsModal({
                       </div>
                     </div>
                   </div>
+
                   <div className="px-10 py-6 max-h-[70vh] overflow-y-auto">
-                    {/* Status Messages */}
                     {updateSuccess && (
                       <div className="mb-4 p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
                         <p className="text-sm text-green-800 dark:text-green-200">
@@ -199,9 +172,7 @@ export function ProfileSettingsModal({
                     )}
 
                     <div className="flex flex-col-reverse md:flex-row gap-8">
-                      {/* Form Fields */}
                       <div className="flex-1 space-y-6">
-                        {/* Account Information */}
                         <section className="space-y-4">
                           <div>
                             <label className={labelClassName}>Email</label>
@@ -261,7 +232,6 @@ export function ProfileSettingsModal({
                           </div>
                         </section>
 
-                        {/* Profile Details */}
                         <section className="space-y-4">
                           <div>
                             <label className={labelClassName}>Bio</label>
@@ -276,16 +246,13 @@ export function ProfileSettingsModal({
                           </div>
                         </section>
 
-                        {/* Social Accounts */}
-                        <section className="space-y-4 pt-4  dark:border-gray-700">
-                          <h3 className="text-xs font-bold text-ink-100 dark:text-white ">
+                        <section className="space-y-4 pt-4 dark:border-gray-700">
+                          <h3 className="text-xs font-bold text-ink-100 dark:text-white">
                             Social Media
                           </h3>
-
                           <div className="gap-4 grid grid-cols-2">
                             <div>
                               <label className={labelClassName}>github</label>
-
                               <input
                                 type="text"
                                 name="github"
@@ -295,10 +262,8 @@ export function ProfileSettingsModal({
                                 onChange={handleChange}
                               />
                             </div>
-
                             <div>
                               <label className={labelClassName}>discord</label>
-
                               <input
                                 type="text"
                                 name="discord"
@@ -308,10 +273,8 @@ export function ProfileSettingsModal({
                                 onChange={handleChange}
                               />
                             </div>
-
                             <div>
                               <label className={labelClassName}>telegram</label>
-
                               <input
                                 type="text"
                                 name="telegram"
@@ -331,14 +294,14 @@ export function ProfileSettingsModal({
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="px-7 py-2 text-sm font-medium text-white bg-[#0F0F0F] rounded-xl  disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className="px-7 py-2 text-sm font-medium text-white bg-[#0F0F0F] rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                       {isSubmitting ? "Saving..." : "Save"}
                     </button>
                     <button
                       type="button"
                       onClick={handleClose}
-                      className="px-6 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white bg-[#F8F9FA] dark:bg-transparent border border-[#DEE2E6]  rounded-xl hover:bg-gray-50 transition-colors"
+                      className="px-6 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white bg-[#F8F9FA] dark:bg-transparent border border-[#DEE2E6] rounded-xl hover:bg-gray-50 transition-colors"
                     >
                       Cancel
                     </button>

@@ -211,12 +211,12 @@ export type LoginInput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  /** Accept a pending join request */
-  acceptPendingInvite: Scalars['Boolean']['output'];
   /** Accept workspace invitation with hash from email */
   acceptWorkspaceInvitation: Scalars['Boolean']['output'];
   /** Mark a document as a favorite */
   addFavoriteDocument: Document;
+  /** Approve a pending role request */
+  approveRoleRequest: Scalars['Boolean']['output'];
   /** Remove multiple users from a workspace */
   batchRemoveUsersFromWorkspace: Scalars['Boolean']['output'];
   /** Create a new comment on a document */
@@ -255,18 +255,18 @@ export type Mutation = {
   followUser: Profile;
   /** Invite a user to workspace by email */
   inviteUserToWorkspace: Scalars['Boolean']['output'];
-  /** Join a workspace */
-  joinWorkspace: Scalars['Boolean']['output'];
   /** Sign in */
   login: AuthPayload;
   /** Publish a document */
   publishDocument: Document;
-  /** Reject a pending join request */
-  rejectPendingInvite: Scalars['Boolean']['output'];
+  /** Reject a pending role request */
+  rejectRoleRequest: Scalars['Boolean']['output'];
   /** Unmark a document as a favorite */
   removeFavoriteDocument: Document;
   /** Remove a user from workspace */
   removeUserFromWorkspace: Scalars['Boolean']['output'];
+  /** Request a role upgrade in a workspace */
+  requestRoleUpgrade: Scalars['Boolean']['output'];
   /** Restart the Jupyter environment */
   restartEnvironment: Environment;
   /** Restore a previously deleted document */
@@ -285,18 +285,16 @@ export type Mutation = {
   updateDocument: Document;
   /** Update an existing schedule */
   updateSchedule: Schedule;
+  /** Update social links for the current user */
+  updateSocialLinks: Scalars['Boolean']['output'];
+  /** Update status text for the current user */
+  updateStatusText: Scalars['Boolean']['output'];
   /** Update current user */
   updateUser: User;
-  /** Update user settings */
-  updateUserSettings: Scalars['Boolean']['output'];
+  /** Update wallets for the current user */
+  updateWallets: Scalars['Boolean']['output'];
   /** Update workspace info */
   updateWorkspace: Workspace;
-};
-
-
-export type MutationAcceptPendingInviteArgs = {
-  userId: Scalars['String']['input'];
-  workspaceId: Scalars['String']['input'];
 };
 
 
@@ -307,6 +305,12 @@ export type MutationAcceptWorkspaceInvitationArgs = {
 
 export type MutationAddFavoriteDocumentArgs = {
   input: FavoriteDocumentInput;
+};
+
+
+export type MutationApproveRoleRequestArgs = {
+  userId: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
 };
 
 
@@ -418,13 +422,6 @@ export type MutationInviteUserToWorkspaceArgs = {
 };
 
 
-export type MutationJoinWorkspaceArgs = {
-  email: Scalars['String']['input'];
-  role?: UserWorkspaceRole;
-  workspaceId: Scalars['String']['input'];
-};
-
-
 export type MutationLoginArgs = {
   input: LoginInput;
 };
@@ -436,7 +433,7 @@ export type MutationPublishDocumentArgs = {
 };
 
 
-export type MutationRejectPendingInviteArgs = {
+export type MutationRejectRoleRequestArgs = {
   userId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
 };
@@ -449,6 +446,12 @@ export type MutationRemoveFavoriteDocumentArgs = {
 
 export type MutationRemoveUserFromWorkspaceArgs = {
   userId: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
+};
+
+
+export type MutationRequestRoleUpgradeArgs = {
+  role: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
 };
 
@@ -505,13 +508,23 @@ export type MutationUpdateScheduleArgs = {
 };
 
 
+export type MutationUpdateSocialLinksArgs = {
+  input: SocialLinksInput;
+};
+
+
+export type MutationUpdateStatusTextArgs = {
+  statusText: Scalars['String']['input'];
+};
+
+
 export type MutationUpdateUserArgs = {
   input: UpdateUserInput;
 };
 
 
-export type MutationUpdateUserSettingsArgs = {
-  input: UpdateUserSettingInput;
+export type MutationUpdateWalletsArgs = {
+  wallets: Array<WalletInput>;
 };
 
 
@@ -557,6 +570,8 @@ export type Query = {
   getInvitationInfo: WorkspaceInvitationInfo;
   /** Get all pending join requests for a workspace */
   getPendingInvites: Array<WorkspaceMember>;
+  /** Get pending role requests for a workspace */
+  getPendingRoleRequests: Array<WorkspaceMember>;
   /** Users who follow a given user */
   getUserFollowers: Array<User>;
   /** Users that a given user is following */
@@ -644,6 +659,11 @@ export type QueryGetInvitationInfoArgs = {
 
 
 export type QueryGetPendingInvitesArgs = {
+  workspaceId: Scalars['String']['input'];
+};
+
+
+export type QueryGetPendingRoleRequestsArgs = {
   workspaceId: Scalars['String']['input'];
 };
 
@@ -767,6 +787,15 @@ export type SetEnvironmentVariablesInput = {
   remove: Array<Scalars['String']['input']>;
 };
 
+export type SocialLinksInput = {
+  discord?: InputMaybe<Scalars['String']['input']>;
+  email?: InputMaybe<Scalars['String']['input']>;
+  github?: InputMaybe<Scalars['String']['input']>;
+  telegram?: InputMaybe<Scalars['String']['input']>;
+  twitter?: InputMaybe<Scalars['String']['input']>;
+  warpcast?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type UpdateDocumentInput = {
   orderIndex: Scalars['Float']['input'];
   parentId?: InputMaybe<Scalars['String']['input']>;
@@ -800,12 +829,6 @@ export type UpdateUserInput = {
   username?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type UpdateUserSettingInput = {
-  socialLinks?: InputMaybe<Scalars['JSON']['input']>;
-  statusText?: InputMaybe<Scalars['String']['input']>;
-  wallets?: InputMaybe<Array<Scalars['JSON']['input']>>;
-};
-
 export type User = {
   __typename?: 'User';
   avater?: Maybe<Scalars['String']['output']>;
@@ -834,12 +857,10 @@ export type UserSetting = {
   wallets: Array<Scalars['JSON']['output']>;
 };
 
-/** User role within a workspace */
-export enum UserWorkspaceRole {
-  Admin = 'ADMIN',
-  Editor = 'EDITOR',
-  Viewer = 'VIEWER'
-}
+export type WalletInput = {
+  address: Scalars['String']['input'];
+  chain: Scalars['String']['input'];
+};
 
 export type Workspace = {
   __typename?: 'Workspace';
@@ -881,6 +902,7 @@ export type WorkspaceInvitationInfo = {
 
 export type WorkspaceMember = {
   __typename?: 'WorkspaceMember';
+  requestedRole?: Maybe<Scalars['String']['output']>;
   role: Scalars['String']['output'];
   user?: Maybe<User>;
   userId: Scalars['String']['output'];
@@ -913,14 +935,26 @@ export type UpdateUserMutationVariables = Exact<{
 
 export type UpdateUserMutation = { __typename?: 'Mutation', updateUser: { __typename?: 'User', id: string, email?: string | null, username?: string | null, firstName?: string | null, lastName?: string | null, fullName?: string | null, avater?: string | null, isOnboarded: boolean } };
 
-export type UpdateUserSettingsMutationVariables = Exact<{
-  statusText?: InputMaybe<Scalars['String']['input']>;
-  socialLinks?: InputMaybe<Scalars['JSON']['input']>;
-  wallets?: InputMaybe<Array<Scalars['JSON']['input']> | Scalars['JSON']['input']>;
+export type UpdateSocialLinksMutationVariables = Exact<{
+  input: SocialLinksInput;
 }>;
 
 
-export type UpdateUserSettingsMutation = { __typename?: 'Mutation', updateUserSettings: boolean };
+export type UpdateSocialLinksMutation = { __typename?: 'Mutation', updateSocialLinks: boolean };
+
+export type UpdateWalletsMutationVariables = Exact<{
+  wallets: Array<WalletInput> | WalletInput;
+}>;
+
+
+export type UpdateWalletsMutation = { __typename?: 'Mutation', updateWallets: boolean };
+
+export type UpdateStatusTextMutationVariables = Exact<{
+  statusText: Scalars['String']['input'];
+}>;
+
+
+export type UpdateStatusTextMutation = { __typename?: 'Mutation', updateStatusText: boolean };
 
 export type FollowUserMutationVariables = Exact<{
   username: Scalars['String']['input'];
@@ -1399,41 +1433,99 @@ export function useUpdateUserMutation(baseOptions?: Apollo.MutationHookOptions<U
 export type UpdateUserMutationHookResult = ReturnType<typeof useUpdateUserMutation>;
 export type UpdateUserMutationResult = Apollo.MutationResult<UpdateUserMutation>;
 export type UpdateUserMutationOptions = Apollo.BaseMutationOptions<UpdateUserMutation, UpdateUserMutationVariables>;
-export const UpdateUserSettingsDocument = gql`
-    mutation UpdateUserSettings($statusText: String, $socialLinks: JSON, $wallets: [JSON!]) {
-  updateUserSettings(
-    input: {statusText: $statusText, socialLinks: $socialLinks, wallets: $wallets}
-  )
+export const UpdateSocialLinksDocument = gql`
+    mutation UpdateSocialLinks($input: SocialLinksInput!) {
+  updateSocialLinks(input: $input)
 }
     `;
-export type UpdateUserSettingsMutationFn = Apollo.MutationFunction<UpdateUserSettingsMutation, UpdateUserSettingsMutationVariables>;
+export type UpdateSocialLinksMutationFn = Apollo.MutationFunction<UpdateSocialLinksMutation, UpdateSocialLinksMutationVariables>;
 
 /**
- * __useUpdateUserSettingsMutation__
+ * __useUpdateSocialLinksMutation__
  *
- * To run a mutation, you first call `useUpdateUserSettingsMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUpdateUserSettingsMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useUpdateSocialLinksMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateSocialLinksMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [updateUserSettingsMutation, { data, loading, error }] = useUpdateUserSettingsMutation({
+ * const [updateSocialLinksMutation, { data, loading, error }] = useUpdateSocialLinksMutation({
  *   variables: {
- *      statusText: // value for 'statusText'
- *      socialLinks: // value for 'socialLinks'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateSocialLinksMutation(baseOptions?: Apollo.MutationHookOptions<UpdateSocialLinksMutation, UpdateSocialLinksMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateSocialLinksMutation, UpdateSocialLinksMutationVariables>(UpdateSocialLinksDocument, options);
+      }
+export type UpdateSocialLinksMutationHookResult = ReturnType<typeof useUpdateSocialLinksMutation>;
+export type UpdateSocialLinksMutationResult = Apollo.MutationResult<UpdateSocialLinksMutation>;
+export type UpdateSocialLinksMutationOptions = Apollo.BaseMutationOptions<UpdateSocialLinksMutation, UpdateSocialLinksMutationVariables>;
+export const UpdateWalletsDocument = gql`
+    mutation UpdateWallets($wallets: [WalletInput!]!) {
+  updateWallets(wallets: $wallets)
+}
+    `;
+export type UpdateWalletsMutationFn = Apollo.MutationFunction<UpdateWalletsMutation, UpdateWalletsMutationVariables>;
+
+/**
+ * __useUpdateWalletsMutation__
+ *
+ * To run a mutation, you first call `useUpdateWalletsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateWalletsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateWalletsMutation, { data, loading, error }] = useUpdateWalletsMutation({
+ *   variables: {
  *      wallets: // value for 'wallets'
  *   },
  * });
  */
-export function useUpdateUserSettingsMutation(baseOptions?: Apollo.MutationHookOptions<UpdateUserSettingsMutation, UpdateUserSettingsMutationVariables>) {
+export function useUpdateWalletsMutation(baseOptions?: Apollo.MutationHookOptions<UpdateWalletsMutation, UpdateWalletsMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<UpdateUserSettingsMutation, UpdateUserSettingsMutationVariables>(UpdateUserSettingsDocument, options);
+        return Apollo.useMutation<UpdateWalletsMutation, UpdateWalletsMutationVariables>(UpdateWalletsDocument, options);
       }
-export type UpdateUserSettingsMutationHookResult = ReturnType<typeof useUpdateUserSettingsMutation>;
-export type UpdateUserSettingsMutationResult = Apollo.MutationResult<UpdateUserSettingsMutation>;
-export type UpdateUserSettingsMutationOptions = Apollo.BaseMutationOptions<UpdateUserSettingsMutation, UpdateUserSettingsMutationVariables>;
+export type UpdateWalletsMutationHookResult = ReturnType<typeof useUpdateWalletsMutation>;
+export type UpdateWalletsMutationResult = Apollo.MutationResult<UpdateWalletsMutation>;
+export type UpdateWalletsMutationOptions = Apollo.BaseMutationOptions<UpdateWalletsMutation, UpdateWalletsMutationVariables>;
+export const UpdateStatusTextDocument = gql`
+    mutation UpdateStatusText($statusText: String!) {
+  updateStatusText(statusText: $statusText)
+}
+    `;
+export type UpdateStatusTextMutationFn = Apollo.MutationFunction<UpdateStatusTextMutation, UpdateStatusTextMutationVariables>;
+
+/**
+ * __useUpdateStatusTextMutation__
+ *
+ * To run a mutation, you first call `useUpdateStatusTextMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateStatusTextMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateStatusTextMutation, { data, loading, error }] = useUpdateStatusTextMutation({
+ *   variables: {
+ *      statusText: // value for 'statusText'
+ *   },
+ * });
+ */
+export function useUpdateStatusTextMutation(baseOptions?: Apollo.MutationHookOptions<UpdateStatusTextMutation, UpdateStatusTextMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateStatusTextMutation, UpdateStatusTextMutationVariables>(UpdateStatusTextDocument, options);
+      }
+export type UpdateStatusTextMutationHookResult = ReturnType<typeof useUpdateStatusTextMutation>;
+export type UpdateStatusTextMutationResult = Apollo.MutationResult<UpdateStatusTextMutation>;
+export type UpdateStatusTextMutationOptions = Apollo.BaseMutationOptions<UpdateStatusTextMutation, UpdateStatusTextMutationVariables>;
 export const FollowUserDocument = gql`
     mutation FollowUser($username: String!) {
   followUser(username: $username) {

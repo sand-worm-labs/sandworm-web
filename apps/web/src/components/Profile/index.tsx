@@ -19,6 +19,7 @@ import {
 import { useCurrentUser } from "../Visualization/hooks/useCurrentUser";
 import { Loader } from "../Loader";
 import { ProjectIcon } from "../Assets/ProjectIcon";
+import { useWallets } from "../Visualization/hooks/useWallets";
 
 import { ProfileSettingsModal } from "./ProfileSettingModal";
 import { ManageWalletsModal, AddWalletModal } from "./ManageWalletModal";
@@ -66,21 +67,11 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
   const [isFollowing, setIsFollowing] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [copiedWallet, setCopiedWallet] = useState<string | null>(null);
-  const {
-    currentUser,
-    settings,
-    loading,
-    updateUser,
-    updateUserSettings,
-    loading: updateLoading,
-    error,
-  } = useCurrentUser();
-  console.log(settings, "sett")
-  const [wallets, setWallets] = useState<WalletInfo[]>([]);
+  const { currentUser, loading, updateProfile, error } = useCurrentUser();
 
-  useEffect(() => {
-    if (settings?.wallets) setWallets(settings.wallets);
-  }, [settings?.wallets]);
+  const { wallets, addWallets, loading: updateLoading } = useWallets();
+
+  console.log(currentUser, "current user");
 
   const mockProfile: UserProfile = {
     id: "1",
@@ -146,6 +137,7 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
         email: currentUser.email,
         avater: currentUser.avatar,
         fullName: currentUser.fullName,
+        settings: currentUser.settings,
       }
     : null;
 
@@ -229,9 +221,9 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                         </div>
                       </div>
 
-                      {settings?.statusText && (
+                      {currentUser?.settings?.statusText && (
                         <p className="text-[#6C757D] font-medium text-sm dark:text-white">
-                          {settings.statusText}
+                          {currentUser?.settings?.statusText}
                         </p>
                       )}
 
@@ -269,10 +261,11 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                         </div>
                       </div>
 
-                      {settings?.socialLinks &&
-                        Object.keys(settings.socialLinks).length > 0 && (
+                      {currentUser?.settings?.socialLinks &&
+                        Object.keys(currentUser?.settings?.socialLinks).length >
+                          0 && (
                           <div className="flex gap-3">
-                            {Object.entries(settings.socialLinks)
+                            {Object.entries(currentUser?.settings?.socialLinks)
                               .filter(([_, url]) => url)
                               .map(([platform, url]) => (
                                 <a
@@ -374,9 +367,7 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         user={userForModal}
-        settings={settings}
-        updateUser={updateUser}
-        updateUserSettings={updateUserSettings}
+        updateProfile={updateProfile}
         loading={updateLoading}
         error={error}
       />
@@ -386,8 +377,7 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
         onClose={() => setIsWalletsModalOpen(false)}
         wallets={wallets}
         onWalletsChange={async updated => {
-          setWallets(updated);
-          await updateUserSettings({ wallets: updated });
+          await addWallets(updated);
         }}
       />
 
@@ -395,10 +385,7 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
         isOpen={isAddWalletOpen}
         onClose={() => setIsAddWalletOpen(false)}
         onAdd={async newWallet => {
-          const updated = [...wallets, newWallet];
-          console.log("[AddWallet] sending to updateUserSettings:", updated);
-          setWallets(updated);
-          await updateUserSettings({ wallets: updated });
+          await addWallets([...wallets, newWallet]);
         }}
         existingAddresses={wallets.map(w => w.address)}
       />

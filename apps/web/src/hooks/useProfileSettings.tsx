@@ -20,28 +20,28 @@ interface SessionUser {
   email?: string;
   avater?: string;
   fullName?: string;
-}
-
-interface UserSettings {
-  statusText?: string;
-  socialLinks?: {
-    github?: string | null;
-    discord?: string | null;
-    telegram?: string | null;
-  };
-}
-
-interface UseProfileFormProps {
-  user: SessionUser | null | undefined;
-  settings: UserSettings | null | undefined;
-  updateUser: (data: Partial<{ username?: string }>) => Promise<void>;
-  updateUserSettings: (data: {
+  settings?: {
     statusText?: string;
     socialLinks?: {
       github?: string | null;
       discord?: string | null;
       telegram?: string | null;
+      twitter?: string | null;
+      warpcast?: string | null;
     };
+  };
+}
+
+interface UseProfileFormProps {
+  user: SessionUser | null | undefined;
+  updateProfile: (params: {
+    user?: { username?: string; firstName?: string; lastName?: string };
+    socialLinks?: {
+      github?: string | null;
+      discord?: string | null;
+      telegram?: string | null;
+    };
+    statusText?: string;
   }) => Promise<void>;
   loading: boolean;
   onSuccess?: () => void;
@@ -59,9 +59,7 @@ const initialFormData: ProfileFormData = {
 
 export function useProfileForm({
   user,
-  settings,
-  updateUser,
-  updateUserSettings,
+  updateProfile,
   loading,
   onSuccess,
 }: UseProfileFormProps) {
@@ -75,20 +73,20 @@ export function useProfileForm({
         firstName: user.firstName || "",
         lastName: user.lastName || "",
         username: user.username || "",
-        bio: settings?.statusText || "",
-        github: settings?.socialLinks?.github || "",
-        discord: settings?.socialLinks?.discord || "",
-        telegram: settings?.socialLinks?.telegram || "",
+        bio: user.settings?.statusText || "",
+        github: user.settings?.socialLinks?.github || "",
+        discord: user.settings?.socialLinks?.discord || "",
+        telegram: user.settings?.socialLinks?.telegram || "",
       });
     }
   }, [
     user?.firstName,
     user?.lastName,
     user?.username,
-    settings?.statusText,
-    settings?.socialLinks?.github,
-    settings?.socialLinks?.discord,
-    settings?.socialLinks?.telegram,
+    user?.settings?.statusText,
+    user?.settings?.socialLinks?.github,
+    user?.settings?.socialLinks?.discord,
+    user?.settings?.socialLinks?.telegram,
   ]);
 
   const handleChange = useCallback(
@@ -108,29 +106,29 @@ export function useProfileForm({
       setSubmitError(null);
 
       try {
-        await updateUser({
-          username: formData.username || undefined,
-        });
-
-        await updateUserSettings({
-          statusText: formData.bio || undefined,
+        await updateProfile({
+          user: {
+            username: formData.username || undefined,
+            firstName: formData.firstName || undefined,
+            lastName: formData.lastName || undefined,
+          },
           socialLinks: {
             github: formData.github || null,
             discord: formData.discord || null,
             telegram: formData.telegram || null,
           },
+          statusText: formData.bio || undefined,
         });
 
         setUpdateSuccess(true);
         onSuccess?.();
-
         setTimeout(() => setUpdateSuccess(false), 3000);
       } catch (err) {
         console.error("Failed to update profile:", err);
         setSubmitError("Failed to update profile. Please try again.");
       }
     },
-    [formData, updateUser, updateUserSettings, onSuccess]
+    [formData, updateProfile, onSuccess]
   );
 
   const resetForm = useCallback(() => {
@@ -139,15 +137,15 @@ export function useProfileForm({
         firstName: user.firstName || "",
         lastName: user.lastName || "",
         username: user.username || "",
-        bio: settings?.statusText || "",
-        github: settings?.socialLinks?.github || "",
-        discord: settings?.socialLinks?.discord || "",
-        telegram: settings?.socialLinks?.telegram || "",
+        bio: "",
+        github: "",
+        discord: "",
+        telegram: "",
       });
     }
     setUpdateSuccess(false);
     setSubmitError(null);
-  }, [user, settings]);
+  }, [user]);
 
   return {
     formData,
