@@ -15,10 +15,11 @@ import {
 } from "../Visualization/hooks/useWorkspaces";
 import useProperties from "../Visualization/hooks/useProperties";
 import { useSession } from "../Visualization/hooks/useAuth";
+import { WorkspaceIcon } from "../Assets/WorkspaceIcon";
 
+import { WorkspaceIcon as WorkspaceIconAvatar } from "./WorkspaceIcon";
 import CreateTeamModal from "./CreateTeam";
 import WorkspaceSettingsModal from "./WorkspaceSettings";
-import { WorkspaceIcon } from "../Assets/WorkspaceIcon";
 
 export default function WorkspaceSettings() {
   const router = useRouter();
@@ -103,7 +104,7 @@ export default function WorkspaceSettings() {
           disabled={isSwitching || isCurrentWorkspace}
           className="flex-1 flex items-center gap-4 text-left cursor-pointer"
         >
-          <User />
+          <WorkspaceIconAvatar icon={workspace?.icon} />
           <span className="font-medium text-gray-900 dark:text-white">
             {workspace.name}
           </span>
@@ -204,12 +205,6 @@ export default function WorkspaceSettings() {
               <div className="flex gap-x-2">
                 <button
                   type="button"
-                  className="flex items-center gap-2 px-5 py-1 border bg-[#F8F9FA] border-[#DEE2E6] dark:border-gray-700 rounded-lg text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                >
-                  Manage Invites
-                </button>
-                <button
-                  type="button"
                   onClick={() =>
                     setState(s => ({ ...s, showCreateModal: true }))
                   }
@@ -220,7 +215,6 @@ export default function WorkspaceSettings() {
               </div>
             </div>
 
-            {/* Your Teams — workspaces the user owns */}
             <div className="transition-all duration-300 ease-in-out overflow-hidden">
               <div className="p-4 px-0 rounded-xl dark:bg-[0C1015] grid grid-cols-2 gap-x-5">
                 <div>
@@ -280,11 +274,10 @@ export default function WorkspaceSettings() {
                     </>
                   ) : (
                     <div className="flex flex-col items-center justify-center h-[15rem] text-center">
-                      <WorkspaceIcon/>
+                      <WorkspaceIcon />
                       <p className="text-sm font-medium text-[#868E96] mt-3">
                         No workspace invites
                       </p>
-                   
                     </div>
                   )}
                 </div>
@@ -310,13 +303,10 @@ export default function WorkspaceSettings() {
           setState(s => ({ ...s, selectedSettingsWorkspace: null }))
         }
         workspace={state.selectedSettingsWorkspace}
-        // isAdmin: user owns this specific workspace
         isAdmin={
           !!state.selectedSettingsWorkspace &&
           isAdminOfWorkspace(state.selectedSettingsWorkspace.id)
         }
-        // isCurrentWorkspace: controls delete gating — can't delete the workspace
-        // you're currently on even if you own it
         isCurrentWorkspace={
           state.selectedSettingsWorkspace?.id === workspaceInfo?.id
         }

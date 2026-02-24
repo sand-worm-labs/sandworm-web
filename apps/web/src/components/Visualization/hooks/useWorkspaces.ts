@@ -136,7 +136,7 @@ export const useUpdateWorkspace = (
   const isAdminOfWorkspace = useCallback(
     (targetId: string): boolean => {
       if (!session?.user?.id || !workspacesData?.userWorkspaces) return false;
-      const workspace = workspacesData.userWorkspaces.find(
+      const workspace = workspacesData.getUserWorkspaces.find(
         w => w.id === targetId
       );
       return workspace?.ownerId === session.user.id;
