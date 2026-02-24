@@ -29,18 +29,16 @@ mutation UpdateUser($input: UpdateUserInput!) {
   }
 }
 
-mutation UpdateUserSettings(
-  $statusText: String
-  $socialLinks: JSON
-  $wallets: [JSON!]
-) {
-  updateUserSettings(
-    input: {
-      statusText: $statusText
-      socialLinks: $socialLinks
-      wallets: $wallets
-    }
-  )
+mutation UpdateSocialLinks($input: SocialLinksInput!) {
+  updateSocialLinks(input: $input)
+}
+
+mutation UpdateWallets($wallets: [WalletInput!]!) {
+  updateWallets(wallets: $wallets)
+}
+
+mutation UpdateStatusText($statusText: String!) {
+  updateStatusText(statusText: $statusText)
 }
 
 # Follow a user

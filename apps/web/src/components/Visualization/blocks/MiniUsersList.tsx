@@ -1,9 +1,23 @@
 "use client";
 
 import clsx from "clsx";
-import { useCallback, useMemo, useRef, useState, useEffect } from "react";
+import {
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+  useEffect,
+  Fragment,
+} from "react";
 import { Avatar } from "@sandworm/ui/components/avatar";
 import { PlusIcon } from "lucide-react";
+import {
+  Dialog,
+  DialogPanel,
+  DialogTitle,
+  Transition,
+  TransitionChild,
+} from "@headlessui/react";
 
 import type { UserWorkspaceRole, WorkspaceUser } from "@/types";
 
@@ -24,6 +38,8 @@ const ROLES: {
     description: "Read-only access to the files in the workspace",
   },
 ];
+
+const PREVIEW_CAP = 2;
 
 interface RoleDropdownProps {
   role: UserWorkspaceRole;
@@ -59,7 +75,7 @@ function RoleDropdown({ role, onChange, disabled }: RoleDropdownProps) {
           "bg-[#F8F9FA] dark:bg-[#1A1D21]",
           "text-[#343A40] dark:text-white",
           "hover:bg-[#F8F9FA] dark:hover:bg-[#262A30]",
-          disabled && " cursor-not-allowed"
+          disabled && "cursor-not-allowed"
         )}
       >
         {current?.label ?? "—"}
@@ -80,10 +96,10 @@ function RoleDropdown({ role, onChange, disabled }: RoleDropdownProps) {
       {open && (
         <div
           className={clsx(
-            "absolute right-0 mt-1 w-52 z-50",
-            "bg-white dark:bg-[#1A1D21]",
-            "border border-[#E9ECEF] dark:border-[#262A30]",
-            "rounded-xl shadow-lg py-1"
+            "absolute right-0 mt-1 w-[9rem] z-50",
+            "bg-[#F8F9FA] dark:bg-[#1A1D21]",
+            "border border-[#DEE2E6] dark:border-[#262A30]",
+            "rounded-lg  py-0"
           )}
         >
           {ROLES.map(r => (
@@ -95,14 +111,16 @@ function RoleDropdown({ role, onChange, disabled }: RoleDropdownProps) {
                 setOpen(false);
               }}
               className={clsx(
-                "w-full text-left px-3 py-2.5 hover:bg-[#F8F9FA] dark:hover:bg-[#262A30] transition-colors",
+                "w-full text-left px-3 py-1.5 hover:bg-[#EAECEF] dark:hover:bg-[#262A30] transition-colors",
                 r.value === role && "bg-[#F8F9FA] dark:bg-[#262A30]"
               )}
             >
-              <p className="text-sm font-medium text-[#1A1A1A] dark:text-white">
+              <p className="text-xs font-medium text-[#343A40] dark:text-white">
                 {r.label}
               </p>
-              <p className="text-xs text-[#6C757D] mt-0.5">{r.description}</p>
+              <p className="text-[11px] text-[#6C757D] mt-1.5">
+                {r.description}
+              </p>
             </button>
           ))}
         </div>
@@ -158,17 +176,7 @@ function MiniUserItem({
         type="checkbox"
         checked={isSelected}
         onChange={handleToggle}
-        className="
-    h-4 w-4
-    rounded-[5px]
-    border-[1.5px] border-[#D0D5DD]
-    appearance-none
-    checked:bg-[#7F56D9]
-    checked:border-[#7F56D9]
-    focus:outline-none
-    focus:ring-2 focus:ring-[#7F56D9]
-    cursor-pointer
-  "
+        className="h-4 w-4 rounded-[5px] border-[1.5px] border-[#D0D5DD] appearance-none checked:bg-[#7F56D9] checked:border-[#7F56D9] focus:outline-none focus:ring-2 focus:ring-[#7F56D9] cursor-pointer"
       />
     </div>
   );
@@ -180,7 +188,6 @@ type MiniUsersListProps = {
   onChangeRole: (id: string, role: UserWorkspaceRole) => void;
   onRemoveUser: (id: string) => void;
   onInvite?: () => void;
-  onViewAll?: () => void;
 };
 
 export function MiniUsersList({
@@ -189,9 +196,9 @@ export function MiniUsersList({
   onChangeRole,
   onRemoveUser,
   onInvite,
-  onViewAll,
 }: MiniUsersListProps) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [modalOpen, setModalOpen] = useState(false);
 
   const sorted = useMemo(
     () =>
@@ -204,6 +211,9 @@ export function MiniUsersList({
       }),
     [users, currentUserEmail]
   );
+
+  const previewUsers = sorted.slice(0, PREVIEW_CAP);
+  const hasMore = sorted.length > PREVIEW_CAP;
 
   const handleToggleSelect = useCallback((id: string) => {
     setSelectedIds(prev => {
@@ -220,18 +230,24 @@ export function MiniUsersList({
 
   const selectionCount = selectedIds.size;
 
+  const sharedItemProps = {
+    onToggleSelect: handleToggleSelect,
+    onChangeRole,
+  };
+
   return (
     <div className="relative w-full">
       <div className="rounded-xl border border-[#DEE2E6] dark:border-[#262A30] overflow-hidden">
+        {/* Header */}
         <div className="flex items-center justify-between px-4 py-2 border-b border-[#CED4DA] dark:border-[#262A30]">
           <span className="text-sm font-medium text-[#6C757D] dark:text-white">
             {users.length} member{users.length !== 1 ? "s" : ""}
           </span>
           <div className="flex items-center gap-3">
-            {onViewAll && (
+            {hasMore && (
               <button
                 type="button"
-                onClick={onViewAll}
+                onClick={() => setModalOpen(true)}
                 className="text-xs text-[#A308F0] hover:underline font-medium"
               >
                 View all members
@@ -247,24 +263,98 @@ export function MiniUsersList({
                   "text-[#A308F0] dark:text-white hover:bg-[#F8F9FA] dark:hover:bg-[#262A30] transition-colors"
                 )}
               >
-                <span className="text-base leading-none inline-block mr-0.5"><PlusIcon className="w-4 h-4"/></span> Invite
+                <PlusIcon className="w-4 h-4" /> Invite
               </button>
             )}
           </div>
         </div>
 
-        {/* User rows */}
-        {sorted.map(user => (
+        {/* Capped preview */}
+        {previewUsers.map(user => (
           <MiniUserItem
             key={user.id}
             user={user}
             isCurrentUser={user.email === currentUserEmail}
             isSelected={selectedIds.has(user.id)}
-            onToggleSelect={handleToggleSelect}
-            onChangeRole={onChangeRole}
+            {...sharedItemProps}
           />
         ))}
       </div>
+
+      {/* View all modal */}
+      <Transition show={modalOpen} as={Fragment}>
+        <Dialog
+          onClose={() => setModalOpen(false)}
+          className="relative z-[999]"
+        >
+          <TransitionChild
+            as={Fragment}
+            enter="ease-out duration-200"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-150"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div
+              className="fixed inset-0 bg-black/40 backdrop-blur-sm"
+              aria-hidden="true"
+            />
+          </TransitionChild>
+
+          <div className="fixed inset-0 flex items-center justify-center p-4">
+            <TransitionChild
+              as={Fragment}
+              enter="ease-out duration-200"
+              enterFrom="opacity-0 scale-95 translate-y-2"
+              enterTo="opacity-100 scale-100 translate-y-0"
+              leave="ease-in duration-150"
+              leaveFrom="opacity-100 scale-100 translate-y-0"
+              leaveTo="opacity-0 scale-95 translate-y-2"
+            >
+              <DialogPanel className="w-full max-w-md bg-white dark:bg-[#0D0F12] rounded-2xl border border-[#DEE2E6] dark:border-[#262A30] shadow-xl flex flex-col max-h-[80vh] overflow-hidden font-body">
+                {/* Modal header */}
+                <div className="flex items-center justify-between px-5 py-4 border-b border-[#DEE2E6] dark:border-[#262A30] flex-shrink-0">
+                  <DialogTitle className="text-sm font-semibold text-[#1A1A1A] dark:text-white">
+                    All members{" "}
+                    <span className="text-xs font-normal text-[#6C757D]">
+                      {users.length}
+                    </span>
+                  </DialogTitle>
+                  <button
+                    type="button"
+                    onClick={() => setModalOpen(false)}
+                    className="text-[#6C757D] hover:text-[#1A1A1A] dark:hover:text-white transition-colors"
+                  >
+                    <svg
+                      className="w-4 h-4"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path d="M3 3l10 10M13 3L3 13" strokeLinecap="round" />
+                    </svg>
+                  </button>
+                </div>
+
+                {/* Scrollable list */}
+                <div className="overflow-y-auto flex-1">
+                  {sorted.map(user => (
+                    <MiniUserItem
+                      key={user.id}
+                      user={user}
+                      isCurrentUser={user.email === currentUserEmail}
+                      isSelected={selectedIds.has(user.id)}
+                      {...sharedItemProps}
+                    />
+                  ))}
+                </div>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </Dialog>
+      </Transition>
 
       {/* Bulk action bar */}
       <div

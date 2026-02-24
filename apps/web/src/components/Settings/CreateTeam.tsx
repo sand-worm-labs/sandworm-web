@@ -69,10 +69,10 @@ export default function CreateTeamModal({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-black/50 dark:bg-black/70" />
+          <div className="fixed inset-0 bg-[#0000001A]" />
         </Transition.Child>
 
-        <div className="fixed inset-0 overflow-y-auto font-primary">
+        <div className="fixed inset-0 overflow-y-auto font-body">
           <div className="flex min-h-full items-center justify-center p-4">
             <Transition.Child
               as={Fragment}
@@ -83,9 +83,9 @@ export default function CreateTeamModal({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-lg transform overflow-hidden rounded-xl bg-white dark:bg-gray-900 shadow-xl transition-all lg:min-w-[37rem]">
-                <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 px-6 py-4">
-                  <Dialog.Title className="text-lg font-medium text-gray-900 dark:text-white">
+              <Dialog.Panel className="w-full max-w-[31rem] transform overflow-hidden rounded-3xl bg-white dark:bg-gray-900 transition-all ">
+                <div className="flex items-center justify-between  px-6 py-4">
+                  <Dialog.Title className="text-base font-medium text-ink-100 dark:text-white">
                     Create New Team
                   </Dialog.Title>
                   <button
@@ -100,11 +100,10 @@ export default function CreateTeamModal({
 
                 {/* Form */}
                 <form onSubmit={handleSubmit} className="p-6 space-y-5">
-                  {/* Team Name */}
                   <div>
                     <label
                       htmlFor="team-name"
-                      className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"
+                      className="block text-sm font-medium text-[#1A1A1A] dark:text-gray-300 mb-1.5"
                     >
                       Team Name <span className="text-red-500">*</span>
                     </label>
@@ -118,97 +117,28 @@ export default function CreateTeamModal({
                         setFormData(prev => ({ ...prev, name: e.target.value }))
                       }
                       disabled={loading}
-                      className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-ink-300  placeholder-[#455768] focus:outline-none  focus:border-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4]"
+                      className="w-full px-4 py-3 rounded-xl bg-[#F8F9FA] dark:bg-[#262626] border border-[#DEE2E6] dark:border-[#363636] text-gray-900 dark:text-white placeholder:text-[#6C757D] dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#A308F0] focus:border-transparent transition-all text-sm font-medium"
                     />
                   </div>
 
-                  {/* Source - How was it created */}
-                  <div>
-                    <label
-                      htmlFor="source"
-                      className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"
-                    >
-                      Origin
-                    </label>
-                    <input
-                      id="source"
-                      type="text"
-                      placeholder="How was this team created?"
-                      value={formData.source}
-                      onChange={e =>
-                        setFormData(prev => ({
-                          ...prev,
-                          source: e.target.value,
-                        }))
-                      }
-                      disabled={loading}
-                      className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-ink-300  placeholder-[#455768] focus:outline-none  focus:border-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4]"
-                    />
-                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                      Optional: How or why this team was formed
-                    </p>
-                  </div>
+                  <ul className="mt-2 space-y-1 text-xs font-medium">
+            <li className="flex items-center gap-1">
+              <span className="text-[#6C757D]">·</span>
+              Workspace name should be less than 40 characters
+            </li>
+            <li className="flex items-center gap-1">
+              <span className="text-[#6C757D]">·</span>
+              Cannot contain punctuation/special marks
+            </li>
+          </ul>
 
-                  {/* Use Cases - What will you do */}
-                  <div>
-                    <label
-                      htmlFor="use-cases"
-                      className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"
-                    >
-                      Intent
-                    </label>
-                    <textarea
-                      id="use-cases"
-                      rows={3}
-                      placeholder="What will you do with this team?"
-                      value={formData.useCases}
-                      onChange={e =>
-                        setFormData(prev => ({
-                          ...prev,
-                          useCases: e.target.value,
-                        }))
-                      }
-                      disabled={loading}
-                      className="w-full px-3 py-1.5  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-ink-300  placeholder-[#455768] focus:outline-none  focus:border-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4] min-h-[6rem] resize-none "
-                    />
-                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                      Optional: Primary goals and use cases
-                    </p>
-                  </div>
+   
 
-                  {/* Use Context - In what setting */}
-                  <div>
-                    <label
-                      htmlFor="use-context"
-                      className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"
-                    >
-                      Situation
-                    </label>
-                    <input
-                      id="use-context"
-                      type="text"
-                      placeholder="In what setting are you using it?"
-                      value={formData.useContext}
-                      onChange={e =>
-                        setFormData(prev => ({
-                          ...prev,
-                          useContext: e.target.value,
-                        }))
-                      }
-                      disabled={loading}
-                      className="w-full px-3 py-1  rounded-md dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-ink-300  placeholder-[#455768] focus:outline-none  focus:border-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4] "
-                    />
-                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                      Optional: Context of where/how it will be used
-                    </p>
-                  </div>
-
-                  {/* Actions */}
                   <div className="flex items-center gap-3 pt-4 ">
                     <button
                       type="submit"
                       disabled={loading || !formData.name.trim()}
-                      className="px-4 py-3 text-sm font-medium text-white bg-[#A308F0] hover:bg-[#A308F0] dark:bg-[#A308F0] dark:hover:bg-[#A308F0] rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 w-full text-center justify-center"
+                      className="w-full py-3.5 px-4 bg-[#A308F0] hover:bg-[#8a07c9] disabled:bg-[#868E96] text-[#E9ECEF] font-medium rounded-xl transition-colors disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
                     >
                       {loading ? (
                         <>
