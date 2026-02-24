@@ -557,6 +557,8 @@ export type Query = {
   environmentVariables: Array<EnvironmentVariable>;
   /** Check if a file exists */
   fileExists: Scalars['Boolean']['output'];
+  /** Get all workspaces the current user is an admin of, with their members */
+  getAdminWorkspacesWithMembers: Array<WorkspaceMember>;
   /** Get all users */
   getAllUsers: Scalars['Int']['output'];
   /** Get a reusable component by ID */
@@ -910,6 +912,7 @@ export type WorkspaceMember = {
   role: Scalars['String']['output'];
   user?: Maybe<User>;
   userId: Scalars['String']['output'];
+  workspaceName?: Maybe<Scalars['String']['output']>;
 };
 
 /** Price plan of the workspace */
@@ -1191,6 +1194,13 @@ export type RemoveUserFromWorkspaceMutationVariables = Exact<{
 
 export type RemoveUserFromWorkspaceMutation = { __typename?: 'Mutation', removeUserFromWorkspace: boolean };
 
+export type BatchRemoveUsersFromWorkspaceMutationVariables = Exact<{
+  removals: Array<RemoveUserFromWorkspaceInput> | RemoveUserFromWorkspaceInput;
+}>;
+
+
+export type BatchRemoveUsersFromWorkspaceMutation = { __typename?: 'Mutation', batchRemoveUsersFromWorkspace: boolean };
+
 export type RequestRoleUpgradeMutationVariables = Exact<{
   workspaceId: Scalars['String']['input'];
   role: Scalars['String']['input'];
@@ -1351,6 +1361,11 @@ export type GetWorkspaceWithMembersQueryVariables = Exact<{
 
 
 export type GetWorkspaceWithMembersQuery = { __typename?: 'Query', getWorkspace: { __typename?: 'Workspace', id: string, name: string, plan: WorkspacePlan, icon?: string | null, source?: string | null, ownerId: string }, getWorkspaceMembers: Array<{ __typename?: 'WorkspaceMember', role: string, userId: string, user?: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null } | null }> };
+
+export type GetAdminWorkspacesWithMembersQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAdminWorkspacesWithMembersQuery = { __typename?: 'Query', getAdminWorkspacesWithMembers: Array<{ __typename?: 'WorkspaceMember', userId: string, role: string, requestedRole?: string | null, workspaceName?: string | null, user?: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null } | null }> };
 
 export type GetWorkspaceQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
@@ -2794,6 +2809,37 @@ export function useRemoveUserFromWorkspaceMutation(baseOptions?: Apollo.Mutation
 export type RemoveUserFromWorkspaceMutationHookResult = ReturnType<typeof useRemoveUserFromWorkspaceMutation>;
 export type RemoveUserFromWorkspaceMutationResult = Apollo.MutationResult<RemoveUserFromWorkspaceMutation>;
 export type RemoveUserFromWorkspaceMutationOptions = Apollo.BaseMutationOptions<RemoveUserFromWorkspaceMutation, RemoveUserFromWorkspaceMutationVariables>;
+export const BatchRemoveUsersFromWorkspaceDocument = gql`
+    mutation BatchRemoveUsersFromWorkspace($removals: [RemoveUserFromWorkspaceInput!]!) {
+  batchRemoveUsersFromWorkspace(removals: $removals)
+}
+    `;
+export type BatchRemoveUsersFromWorkspaceMutationFn = Apollo.MutationFunction<BatchRemoveUsersFromWorkspaceMutation, BatchRemoveUsersFromWorkspaceMutationVariables>;
+
+/**
+ * __useBatchRemoveUsersFromWorkspaceMutation__
+ *
+ * To run a mutation, you first call `useBatchRemoveUsersFromWorkspaceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useBatchRemoveUsersFromWorkspaceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [batchRemoveUsersFromWorkspaceMutation, { data, loading, error }] = useBatchRemoveUsersFromWorkspaceMutation({
+ *   variables: {
+ *      removals: // value for 'removals'
+ *   },
+ * });
+ */
+export function useBatchRemoveUsersFromWorkspaceMutation(baseOptions?: Apollo.MutationHookOptions<BatchRemoveUsersFromWorkspaceMutation, BatchRemoveUsersFromWorkspaceMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<BatchRemoveUsersFromWorkspaceMutation, BatchRemoveUsersFromWorkspaceMutationVariables>(BatchRemoveUsersFromWorkspaceDocument, options);
+      }
+export type BatchRemoveUsersFromWorkspaceMutationHookResult = ReturnType<typeof useBatchRemoveUsersFromWorkspaceMutation>;
+export type BatchRemoveUsersFromWorkspaceMutationResult = Apollo.MutationResult<BatchRemoveUsersFromWorkspaceMutation>;
+export type BatchRemoveUsersFromWorkspaceMutationOptions = Apollo.BaseMutationOptions<BatchRemoveUsersFromWorkspaceMutation, BatchRemoveUsersFromWorkspaceMutationVariables>;
 export const RequestRoleUpgradeDocument = gql`
     mutation RequestRoleUpgrade($workspaceId: String!, $role: String!) {
   requestRoleUpgrade(workspaceId: $workspaceId, role: $role)
@@ -3888,6 +3934,55 @@ export type GetWorkspaceWithMembersQueryHookResult = ReturnType<typeof useGetWor
 export type GetWorkspaceWithMembersLazyQueryHookResult = ReturnType<typeof useGetWorkspaceWithMembersLazyQuery>;
 export type GetWorkspaceWithMembersSuspenseQueryHookResult = ReturnType<typeof useGetWorkspaceWithMembersSuspenseQuery>;
 export type GetWorkspaceWithMembersQueryResult = Apollo.QueryResult<GetWorkspaceWithMembersQuery, GetWorkspaceWithMembersQueryVariables>;
+export const GetAdminWorkspacesWithMembersDocument = gql`
+    query GetAdminWorkspacesWithMembers {
+  getAdminWorkspacesWithMembers {
+    userId
+    role
+    requestedRole
+    workspaceName
+    user {
+      id
+      username
+      email
+      firstName
+      lastName
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetAdminWorkspacesWithMembersQuery__
+ *
+ * To run a query within a React component, call `useGetAdminWorkspacesWithMembersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAdminWorkspacesWithMembersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAdminWorkspacesWithMembersQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetAdminWorkspacesWithMembersQuery(baseOptions?: Apollo.QueryHookOptions<GetAdminWorkspacesWithMembersQuery, GetAdminWorkspacesWithMembersQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAdminWorkspacesWithMembersQuery, GetAdminWorkspacesWithMembersQueryVariables>(GetAdminWorkspacesWithMembersDocument, options);
+      }
+export function useGetAdminWorkspacesWithMembersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAdminWorkspacesWithMembersQuery, GetAdminWorkspacesWithMembersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAdminWorkspacesWithMembersQuery, GetAdminWorkspacesWithMembersQueryVariables>(GetAdminWorkspacesWithMembersDocument, options);
+        }
+export function useGetAdminWorkspacesWithMembersSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetAdminWorkspacesWithMembersQuery, GetAdminWorkspacesWithMembersQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetAdminWorkspacesWithMembersQuery, GetAdminWorkspacesWithMembersQueryVariables>(GetAdminWorkspacesWithMembersDocument, options);
+        }
+export type GetAdminWorkspacesWithMembersQueryHookResult = ReturnType<typeof useGetAdminWorkspacesWithMembersQuery>;
+export type GetAdminWorkspacesWithMembersLazyQueryHookResult = ReturnType<typeof useGetAdminWorkspacesWithMembersLazyQuery>;
+export type GetAdminWorkspacesWithMembersSuspenseQueryHookResult = ReturnType<typeof useGetAdminWorkspacesWithMembersSuspenseQuery>;
+export type GetAdminWorkspacesWithMembersQueryResult = Apollo.QueryResult<GetAdminWorkspacesWithMembersQuery, GetAdminWorkspacesWithMembersQueryVariables>;
 export const GetWorkspaceDocument = gql`
     query GetWorkspace($workspaceId: String!) {
   getWorkspace(workspaceId: $workspaceId) {
