@@ -8,7 +8,6 @@ import toast from "react-hot-toast";
 import type { UserWorkspaceRole } from "@/types";
 import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
 import { useSession } from "@/components/Visualization/hooks/useAuth";
-import { Tooltip } from "@/components/Visualization/blocks/ToolTips";
 import UsersList from "@/components/Visualization/blocks/UsersList";
 import ScrollBar from "@/components/Visualization/blocks/ScrollBar";
 import {

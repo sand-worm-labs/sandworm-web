@@ -151,3 +151,18 @@ query GetInvitationInfo($hash: String!) {
     }
   }
 }
+
+query GetPendingRoleRequests($workspaceId: String!) {
+  getPendingRoleRequests(workspaceId: $workspaceId) {
+    userId
+    role
+    requestedRole
+    user {
+      id
+      username
+      email
+      firstName
+      lastName
+    }
+  }
+}
