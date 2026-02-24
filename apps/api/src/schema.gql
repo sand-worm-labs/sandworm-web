@@ -610,6 +610,7 @@ type WorkspaceMember {
   role: String!
   user: User
   userId: String!
+  workspaceName: String
 }
 
 """Price plan of the workspace"""
