@@ -159,6 +159,7 @@ export class WorkspaceMembershipService {
             workspaceMember.requestedRole = membership.requestedRole || null;
             workspaceMember.user = membership.user ? User.fromEntity(membership.user) : undefined;
             workspaceMember.workspaceName = membership.workspace?.name || null;
+            workspaceMember.workspaceId = membership.workspaceId || null;
             return workspaceMember;
         });
     }
