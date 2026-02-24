@@ -66,6 +66,16 @@ export class WorkspaceResolver {
   }
 
   @Query(() => [WorkspaceMember], {
+    name: 'getAdminWorkspacesWithMembers',
+    description: 'Get all workspaces the current user is an admin of, with their members',
+  })
+  async getAdminWorkspacesWithMembers(
+    @CurrentUser('id') userId: string,
+  ): Promise<WorkspaceMember[]> {
+    return this.workspaceMembershipService.findWorkspacesUserIsAdminOf(userId);
+  }
+
+  @Query(() => [WorkspaceMember], {
     name: 'getPendingInvites',
     description: 'Get all pending invites for a workspace',
   })
