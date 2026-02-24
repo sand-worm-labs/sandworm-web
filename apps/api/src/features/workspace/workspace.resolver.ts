@@ -15,6 +15,7 @@ import { Document } from '../document/model/document.model';
 import { WorkspaceInfo, WorkspaceMember } from './model/workspace-info.model';
 import { Public } from '@sandworm/nest-common';
 import { WorkspaceMembershipService } from './service/workspace-membership.service';
+import { RemoveUserFromWorkspaceInput } from './dto/workspace.dto';
 
 @Resolver(() => Workspace)
 export class WorkspaceResolver {
@@ -66,7 +67,7 @@ export class WorkspaceResolver {
 
   @Query(() => [WorkspaceMember], {
     name: 'getPendingInvites',
-    description: 'Get all pending join requests for a workspace',
+    description: 'Get all pending invites for a workspace',
   })
   async getPendingInvites(
     @Args('workspaceId', { type: () => String }) workspaceId: string,
@@ -98,20 +99,6 @@ export class WorkspaceResolver {
     @Args('workspaceId', { type: () => String }) workspaceId: string,
   ): Promise<boolean> {
     await this.workspaceService.deleteWorkspace(workspaceId, ownerId);
-    return true;
-  }
-
-  @Public()
-  @Mutation(() => Boolean, {
-    name: 'joinWorkspace',
-    description: 'Join a workspace',
-  })
-  async joinWorkspace(
-    @Args('workspaceId', { type: () => String }) workspaceId: string,
-    @Args('email', { type: () => String }) email: string,
-    @Args('role', { type: () => UserWorkspaceRole, defaultValue: UserWorkspaceRole.VIEWER }) role: UserWorkspaceRole,
-  ): Promise<boolean> {
-    await this.workspaceMembershipService.joinWorkspace(workspaceId, email, role);
     return true;
   }
 
@@ -156,7 +143,6 @@ export class WorkspaceResolver {
     return true;
   }
 
-
   @Mutation(() => Boolean, {
     name: 'batchRemoveUsersFromWorkspace',
     description: 'Remove multiple users from a workspace',
@@ -168,6 +154,27 @@ export class WorkspaceResolver {
   ): Promise<boolean> {
     await Promise.all(
       userIds.map((userId) =>
+        this.workspaceMembershipService.softRemoveUserFromWorkspace(
+          workspaceId,
+          userId,
+          adminId,
+        ),
+      ),
+    );
+    return true;
+  }
+
+  @Mutation(() => Boolean, {
+    name: 'batchRemoveUsersFromWorkspace',
+    description: 'Remove multiple users from workspaces',
+  })
+  async batchRemoveUsersFromWorkspaces(
+    @CurrentUser('id') adminId: string,
+    @Args('removals', { type: () => [RemoveUserFromWorkspaceInput] })
+    removals: RemoveUserFromWorkspaceInput[],
+  ): Promise<boolean> {
+    await Promise.all(
+      removals.map(({ userId, workspaceId }) =>
         this.workspaceMembershipService.softRemoveUserFromWorkspace(
           workspaceId,
           userId,
@@ -210,32 +217,68 @@ export class WorkspaceResolver {
     return true;
   }
 
-  @Mutation(() => Boolean, {
-    name: 'acceptPendingInvite',
-    description: 'Accept a pending join request',
+  @Query(() => [WorkspaceMember], {
+    name: 'getPendingRoleRequests',
+    description: 'Get pending role requests for a workspace',
   })
-  async acceptPendingInvite(
-    @CurrentUser('id') inviterId: string,
+  async getPendingRoleRequests(
+    @CurrentUser('id') adminId: string,
     @Args('workspaceId', { type: () => String }) workspaceId: string,
-    @Args('userId', { type: () => String }) userId: string,
+  ): Promise<WorkspaceMember[]> {
+    return this.workspaceMembershipService.getPendingRoleRequests(workspaceId, adminId);
+  }
+
+  @Mutation(() => Boolean, {
+    name: 'requestRoleUpgrade',
+    description: 'Request a role upgrade in a workspace',
+  })
+  async requestRoleUpgrade(
+    @CurrentUser('id') userId: string,
+    @Args('workspaceId', { type: () => String }) workspaceId: string,
+    @Args('role', { type: () => String }) role: string,
   ): Promise<boolean> {
-    await this.workspaceMembershipService.acceptPendingInvite(workspaceId, userId, inviterId);
+    await this.workspaceMembershipService.requestRoleUpgrade(
+      workspaceId,
+      userId,
+      role as UserWorkspaceRole || UserWorkspaceRole.VIEWER,
+    );
     return true;
   }
 
   @Mutation(() => Boolean, {
-    name: 'rejectPendingInvite',
-    description: 'Reject a pending join request',
+    name: 'approveRoleRequest',
+    description: 'Approve a pending role request',
   })
-  async rejectPendingInvite(
-    @CurrentUser('id') rejectedById: string,
+  async approveRoleRequest(
+    @CurrentUser('id') adminId: string,
     @Args('workspaceId', { type: () => String }) workspaceId: string,
     @Args('userId', { type: () => String }) userId: string,
-
   ): Promise<boolean> {
-    await this.workspaceMembershipService.rejectPendingInvite(workspaceId, userId, rejectedById);
+    await this.workspaceMembershipService.approveRoleRequest(
+      workspaceId,
+      userId,
+      adminId,
+    );
     return true;
   }
+
+  @Mutation(() => Boolean, {
+    name: 'rejectRoleRequest',
+    description: 'Reject a pending role request',
+  })
+  async rejectRoleRequest(
+    @CurrentUser('id') adminId: string,
+    @Args('workspaceId', { type: () => String }) workspaceId: string,
+    @Args('userId', { type: () => String }) userId: string,
+  ): Promise<boolean> {
+    await this.workspaceMembershipService.rejectRoleRequest(
+      workspaceId,
+      userId,
+      adminId,
+    );
+    return true;
+  }
+
 
   @Public()
   @Query(() => WorkspaceInvitationInfo, {

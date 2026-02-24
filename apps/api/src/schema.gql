@@ -199,14 +199,17 @@ input LoginInput {
 }
 
 type Mutation {
-  """Accept a pending join request"""
-  acceptPendingInvite(userId: String!, workspaceId: String!): Boolean!
-
   """Accept workspace invitation with hash from email"""
   acceptWorkspaceInvitation(hash: String!): Boolean!
 
   """Mark a document as a favorite"""
   addFavoriteDocument(input: FavoriteDocumentInput!): Document!
+
+  """Approve a pending role request"""
+  approveRoleRequest(userId: String!, workspaceId: String!): Boolean!
+
+  """Remove multiple users from workspaces"""
+  batchRemoveUsersFromWorkspace(removals: [RemoveUserFromWorkspaceInput!]!): Boolean!
 
   """Create a new comment on a document"""
   createComment(documentId: String!, input: CreateCommentInput!): Comment!
@@ -265,23 +268,23 @@ type Mutation {
   """Invite a user to workspace by email"""
   inviteUserToWorkspace(email: String!, role: String, workspaceId: String!): Boolean!
 
-  """Join a workspace"""
-  joinWorkspace(email: String!, role: UserWorkspaceRole! = VIEWER, workspaceId: String!): Boolean!
-
   """Sign in"""
   login(input: LoginInput!): AuthPayload!
 
   """Publish a document"""
   publishDocument(documentId: String!, workspaceId: String!): Document!
 
-  """Reject a pending join request"""
-  rejectPendingInvite(userId: String!, workspaceId: String!): Boolean!
+  """Reject a pending role request"""
+  rejectRoleRequest(userId: String!, workspaceId: String!): Boolean!
 
   """Unmark a document as a favorite"""
   removeFavoriteDocument(input: FavoriteDocumentInput!): Document!
 
   """Remove a user from workspace"""
   removeUserFromWorkspace(userId: String!, workspaceId: String!): Boolean!
+
+  """Request a role upgrade in a workspace"""
+  requestRoleUpgrade(role: String!, workspaceId: String!): Boolean!
 
   """Restart the Jupyter environment"""
   restartEnvironment(input: RestartEnvironmentInput!): Environment!
@@ -313,11 +316,17 @@ type Mutation {
   """Update an existing schedule"""
   updateSchedule(input: UpdateScheduleInput!, scheduleId: String!): Schedule!
 
+  """Update social links for the current user"""
+  updateSocialLinks(input: SocialLinksInput!): Boolean!
+
+  """Update status text for the current user"""
+  updateStatusText(statusText: String!): Boolean!
+
   """Update current user"""
   updateUser(input: UpdateUserInput!): User!
 
-  """Update user settings"""
-  updateUserSettings(input: UpdateUserSettingInput!): Boolean!
+  """Update wallets for the current user"""
+  updateWallets(wallets: [WalletInput!]!): Boolean!
 
   """Update workspace info"""
   updateWorkspace(icon: String, name: String, workspaceId: String!): Workspace!
@@ -367,8 +376,11 @@ type Query {
   """Get invitation details from hash without accepting it"""
   getInvitationInfo(hash: String!): WorkspaceInvitationInfo!
 
-  """Get all pending join requests for a workspace"""
+  """Get all pending invites for a workspace"""
   getPendingInvites(workspaceId: String!): [WorkspaceMember!]!
+
+  """Get pending role requests for a workspace"""
+  getPendingRoleRequests(workspaceId: String!): [WorkspaceMember!]!
 
   """Users who follow a given user"""
   getUserFollowers(userId: String!): [User!]!
@@ -409,6 +421,11 @@ type Query {
   """Get all schedules for a document"""
   schedules(input: ListSchedulesInput!): [Schedule!]!
   tags: [String!]!
+}
+
+input RemoveUserFromWorkspaceInput {
+  userId: String!
+  workspaceId: String!
 }
 
 input RestartEnvironmentInput {
@@ -477,6 +494,15 @@ input SetEnvironmentVariablesInput {
   remove: [String!]!
 }
 
+input SocialLinksInput {
+  discord: String
+  email: String
+  github: String
+  telegram: String
+  twitter: String
+  warpcast: String
+}
+
 input UpdateDocumentInput {
   orderIndex: Float!
   parentId: String
@@ -510,14 +536,9 @@ input UpdateUserInput {
   username: String
 }
 
-input UpdateUserSettingInput {
-  socialLinks: JSON
-  statusText: String
-  wallets: [JSON!] = []
-}
-
 type User {
   avater: String
+  createdAt: DateTime
   email: String
   firstName: String
   followers: [User!]!
@@ -541,11 +562,9 @@ type UserSetting {
   wallets: [JSON!]!
 }
 
-"""User role within a workspace"""
-enum UserWorkspaceRole {
-  ADMIN
-  EDITOR
-  VIEWER
+input WalletInput {
+  address: String!
+  chain: String!
 }
 
 type Workspace {
@@ -587,6 +606,7 @@ type WorkspaceInvitationInfo {
 }
 
 type WorkspaceMember {
+  requestedRole: String
   role: String!
   user: User
   userId: String!

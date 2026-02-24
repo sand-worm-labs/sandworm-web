@@ -13,8 +13,8 @@ import { Repository } from 'typeorm';
 import {
   CreateUserInput,
   GetAllUsersInput,
-  UpdateUserInput,
-  UpdateUserSettingInput,
+  SocialLinksInput,
+  UpdateUserInput
 } from './dto/user.dto';
 import { UserSetting } from './model/graphql/user-setting.model';
 import { User } from './model/graphql/user.model';
@@ -214,20 +214,58 @@ export class UserService {
     return relations.filter((r) => r.followee).map((r) => r.followee);
   }
 
-  async updateUserSettings(
+  async updateSocialLinks(
     userId: string,
-    input: UpdateUserSettingInput,
+    socialLinks: SocialLinksInput,
   ): Promise<boolean> {
     let settings = await this.userSettingRepository.findOneBy({ userId });
 
     if (!settings) {
       settings = this.userSettingRepository.create({
         userId,
-        statusText: "Just joined Sandworm!",
-        ...input,
+        socialLinks: { ...socialLinks },
       });
     } else {
-      Object.assign(settings, input);
+      settings.socialLinks = { ...settings.socialLinks, ...socialLinks };
+    }
+
+    await this.userSettingRepository.save(settings);
+    return true;
+  }
+
+  async updateWallets(
+    userId: string,
+    wallets: { chain: string; address: string }[],
+  ): Promise<boolean> {
+    let settings = await this.userSettingRepository.findOneBy({ userId });
+
+    if (!settings) {
+      settings = this.userSettingRepository.create({
+        userId,
+        wallets,
+      });
+    } else {
+      settings.wallets = wallets;
+    }
+
+    await this.userSettingRepository.save(settings);
+    return true;
+  }
+
+  async updateStatusText(
+    userId: string,
+    statusText: string,
+  ): Promise<boolean> {
+    let settings = await this.userSettingRepository.findOneBy({ userId });
+
+    if (!settings) {
+      settings = this.userSettingRepository.create({
+        userId,
+        statusText,
+      });
+    } else {
+      settings.statusText = statusText;
+      settings.statusUpdatedAt = new Date();
     }
 
     await this.userSettingRepository.save(settings);

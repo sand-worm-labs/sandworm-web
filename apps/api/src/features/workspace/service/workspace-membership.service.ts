@@ -5,7 +5,7 @@ import {
     BadRequestException,
     UnprocessableEntityException,
 } from '@nestjs/common';
-import { Equal, Or, Repository } from 'typeorm';
+import { Equal, IsNull, Not, Or, Repository } from 'typeorm';
 import {
     WorkspaceEntity,
     UserWorkspaceEntity,
@@ -156,6 +156,7 @@ export class WorkspaceMembershipService {
             const workspaceMember = new WorkspaceMember();
             workspaceMember.userId = membership.userId;
             workspaceMember.role = membership.role;
+            workspaceMember.requestedRole = membership.requestedRole || null;
             workspaceMember.user = membership.user ? User.fromEntity(membership.user) : undefined;
             return workspaceMember;
         });
@@ -175,6 +176,45 @@ export class WorkspaceMembershipService {
             inviterId,
             status,
         });
+    }
+
+    private async sendWorkspaceInvitationEmail(
+        email: string,
+        workspaceId: string,
+        userId: string,
+        inviterId: string,
+        role: UserWorkspaceRole,
+    ): Promise<void> {
+        const hash = await this.createInvitationHash({ workspaceId, userId, inviterId, role });
+        const workspace = await this.getWorkspaceOrThrow(workspaceId);
+        const inviter = await this.getUserOrThrow(inviterId);
+
+        await this.mailService.workspaceInvitation({
+            to: email,
+            data: {
+                hash,
+                workspaceName: workspace.name,
+                inviterName: inviter.firstName || 'Someone',
+            },
+        });
+    }
+
+    async getPendingRoleRequests(workspaceId: string, adminId: string): Promise<WorkspaceMember[]> {
+        validateUUID(workspaceId, 'Workspace ID');
+        validateUUID(adminId, 'Admin ID');
+
+        await this.validateAdminAccess(workspaceId, adminId);
+
+        const memberships = await this.workspaceMembersRepository.find({
+            where: {
+                workspaceId,
+                status: UserWorkspaceStatus.ACTIVE,
+                requestedRole: Not(IsNull()),
+            },
+            relations: ['user'],
+        });
+
+        return this.mapToWorkspaceMembers(memberships);
     }
 
     async inviteUserToWorkspace(
@@ -198,23 +238,21 @@ export class WorkspaceMembershipService {
 
         const existingMembership = await this.getExistingMembership(workspaceId, invitedUser.id);
         if (existingMembership) {
-            throw new BadRequestException('User is already a member of this workspace');
+            if (existingMembership.status === UserWorkspaceStatus.ACTIVE) {
+                throw new BadRequestException('User is already a member of this workspace');
+            }
+            await this.sendWorkspaceInvitationEmail(email, workspaceId, invitedUser.id, inviterId, role);
+        } else {
+            const membership = this.createMembership(
+                invitedUser.id,
+                workspaceId,
+                role,
+                UserWorkspaceStatus.PENDING,
+                inviterId,
+            );
+            await this.workspaceMembersRepository.save(membership);
+            await this.sendWorkspaceInvitationEmail(email, workspaceId, invitedUser.id, inviterId, role);
         }
-        const hash = await this.createInvitationHash({
-            workspaceId,
-            userId: invitedUser.id,
-            inviterId,
-            role,
-        });
-        const inviter = await this.getUserOrThrow(inviterId);
-        await this.mailService.workspaceInvitation({
-            to: email,
-            data: {
-                hash,
-                workspaceName: workspace.name,
-                inviterName: inviter.firstName || 'Someone',
-            },
-        });
     }
 
     async acceptWorkspaceInvitation(hash: string): Promise<void> {
@@ -230,7 +268,6 @@ export class WorkspaceMembershipService {
             if (existingMembership.status === UserWorkspaceStatus.ACTIVE) {
                 throw new BadRequestException('User is already a member of this workspace');
             }
-
             existingMembership.status = UserWorkspaceStatus.ACTIVE;
             existingMembership.role = role;
             existingMembership.inviterId = inviterId;
@@ -238,7 +275,13 @@ export class WorkspaceMembershipService {
             return;
         }
 
-        const membership = this.createMembership(userId, workspaceId, role, UserWorkspaceStatus.ACTIVE, inviterId);
+        const membership = this.createMembership(
+            userId,
+            workspaceId,
+            role,
+            UserWorkspaceStatus.PENDING,
+            inviterId,
+        );
         await this.workspaceMembersRepository.save(membership);
     }
 
@@ -266,33 +309,6 @@ export class WorkspaceMembershipService {
             invitedUser: User.fromEntity(invitedUser),
             role,
         };
-    }
-
-    async joinWorkspace(
-        workspaceId: string,
-        email: string,
-        role: UserWorkspaceRole = UserWorkspaceRole.VIEWER,
-    ): Promise<void> {
-        validateUUID(workspaceId, 'Workspace ID');
-        validateNonEmptyString(email, 'Email');
-        const workspace = await this.getWorkspaceOrThrow(workspaceId, ['owner']);
-        const user = await this.getUserByEmailOrThrow(email);
-        const existingMembership = await this.getExistingMembership(workspaceId, user.id);
-        if (existingMembership) {
-            throw new BadRequestException('User is already a member of this workspace');
-        }
-        const membership = this.createMembership(user.id, workspaceId, role, UserWorkspaceStatus.PENDING);
-        await this.workspaceMembersRepository.save(membership);
-        await this.mailService.workspaceJoinRequest({
-            to: workspace.owner.email,
-            data: {
-                userName: user.firstName || user.email,
-                userEmail: user.email,
-                workspaceName: workspace.name,
-                workspaceId: workspace.id,
-                role,
-            },
-        });
     }
 
     async getWorkspaceMembers(workspaceId: string, userId: string): Promise<WorkspaceMember[]> {
@@ -328,42 +344,6 @@ export class WorkspaceMembershipService {
         });
 
         return this.mapToWorkspaceMembers(memberships);
-    }
-
-    async acceptPendingInvite(workspaceId: string, userId: string, adminId: string): Promise<void> {
-        validateUUID(workspaceId, 'Workspace ID');
-        validateUUID(userId, 'User ID');
-        validateUUID(adminId, 'Admin ID');
-
-        await this.validateAdminAccess(workspaceId, adminId);
-
-        const membership = await this.getMembershipOrThrow(
-            workspaceId,
-            userId,
-            UserWorkspaceStatus.PENDING,
-            'No pending invite found for this user',
-        );
-
-        membership.status = UserWorkspaceStatus.ACTIVE;
-        membership.inviterId = adminId;
-        await this.workspaceMembersRepository.save(membership);
-    }
-
-    async rejectPendingInvite(workspaceId: string, userId: string, adminId: string): Promise<void> {
-        validateUUID(workspaceId, 'Workspace ID');
-        validateUUID(userId, 'User ID');
-        validateUUID(adminId, 'Admin ID');
-
-        await this.validateAdminAccess(workspaceId, adminId);
-
-        const membership = await this.getMembershipOrThrow(
-            workspaceId,
-            userId,
-            UserWorkspaceStatus.PENDING,
-            'No pending invite found for this user',
-        );
-
-        await this.workspaceMembersRepository.remove(membership);
     }
 
     async removeUserFromWorkspace(workspaceId: string, userId: string, adminId: string): Promise<void> {
@@ -404,31 +384,91 @@ export class WorkspaceMembershipService {
         await this.workspaceMembersRepository.save(membership);
     }
 
-    async updateMemberRole(
+    async requestRoleUpgrade(
         workspaceId: string,
-        targetUserId: string,
-        adminId: string,
-        newRole: UserWorkspaceRole,
+        userId: string,
+        requestedRole: UserWorkspaceRole,
     ): Promise<void> {
         validateUUID(workspaceId, 'Workspace ID');
-        validateUUID(targetUserId, 'Target User ID');
-        validateUUID(adminId, 'Admin ID');
-
-        if (targetUserId === adminId) {
-            throw new BadRequestException('You cannot change your own role');
-        }
-
-        await this.validateAdminAccess(workspaceId, adminId);
-        await this.validateNotOwner(workspaceId, targetUserId);
+        validateUUID(userId, 'User ID');
 
         const membership = await this.getMembershipOrThrow(
             workspaceId,
-            targetUserId,
+            userId,
             UserWorkspaceStatus.ACTIVE,
             'User is not an active member of this workspace',
         );
 
-        membership.role = newRole;
+        if (membership.role === requestedRole) {
+            throw new BadRequestException('You already have this role');
+        }
+
+        if (membership.requestedRole === requestedRole) {
+            throw new BadRequestException('You already have a pending request for this role');
+        }
+
+        membership.requestedRole = requestedRole;
         await this.workspaceMembersRepository.save(membership);
     }
+
+    async approveRoleRequest(workspaceId: string, userId: string, adminId: string): Promise<void> {
+        validateUUID(workspaceId, 'Workspace ID');
+        validateUUID(userId, 'User ID');
+        validateUUID(adminId, 'Admin ID');
+
+        await this.validateAdminAccess(workspaceId, adminId);
+
+        const membership = await this.getMembershipOrThrow(
+            workspaceId,
+            userId,
+            UserWorkspaceStatus.ACTIVE,
+            'User is not an active member of this workspace',
+        );
+
+        if (!membership.requestedRole) {
+            throw new BadRequestException('No pending role request for this user');
+        }
+
+        membership.role = membership.requestedRole;
+        membership.requestedRole = null;
+        await this.workspaceMembersRepository.save(membership);
+    }
+
+    async rejectRoleRequest(workspaceId: string, userId: string, adminId: string): Promise<void> {
+        validateUUID(workspaceId, 'Workspace ID');
+        validateUUID(userId, 'User ID');
+        validateUUID(adminId, 'Admin ID');
+
+        await this.validateAdminAccess(workspaceId, adminId);
+
+        const membership = await this.getMembershipOrThrow(
+            workspaceId,
+            userId,
+            UserWorkspaceStatus.ACTIVE,
+            'User is not an active member of this workspace',
+        );
+
+        if (!membership.requestedRole) {
+            throw new BadRequestException('No pending role request for this user');
+        }
+
+        membership.requestedRole = null;
+        await this.workspaceMembersRepository.save(membership);
+    }
+
+    async findWorkspacesWhereAdmin(userId: string): Promise<WorkspaceEntity[]> {
+        validateUUID(userId, 'User ID');
+
+        const memberships = await this.workspaceMembersRepository.find({
+            where: {
+                userId,
+                role: UserWorkspaceRole.ADMIN,
+                status: UserWorkspaceStatus.ACTIVE,
+            },
+            relations: ['workspace'],
+        });
+
+        return memberships.map((m) => m.workspace);
+    }
+
 }

@@ -38,6 +38,14 @@ export class UserWorkspaceEntity extends AbstractEntity {
   })
   status!: UserWorkspaceStatus;
 
+  @Column({
+    type: 'enum',
+    enum: UserWorkspaceRole,
+    nullable: true,
+    name: 'requested_role',
+  })
+  requestedRole?: UserWorkspaceRole | null;
+
   @ManyToOne(() => UserEntity, (user) => user.userWorkspaces, {
     onDelete: 'CASCADE',
   })
