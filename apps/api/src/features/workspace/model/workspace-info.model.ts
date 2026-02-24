@@ -15,13 +15,16 @@ export class WorkspaceMember {
   role!: string;
 
   @StringField({ nullable: true })
-  requestedRole?: string | null;
+  requestedRole?: string;
 
   @Field(() => User, { nullable: true })
   user?: User;
 
   @StringField({ nullable: true })
-  workspaceName?: string | null;
+  workspaceName?: string;
+
+  @UUIDField({ nullable: true })
+  workspaceId?: string;
 }
 
 @ObjectType()
@@ -43,6 +46,7 @@ export class WorkspaceInfo {
 
   @StringField()
   role!: string;
+
 
   static fromService(data: {
     id: string;
