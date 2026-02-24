@@ -13,15 +13,16 @@ import {
   useInviteUserToWorkspaceMutation,
   useAcceptWorkspaceInvitationMutation,
   useGetWorkspaceWithMembersQuery,
-  useGetInvitationInfoQuery,
   GetInvitationInfoDocument,
   useDeleteWorkspaceMutation,
   useGetPendingRoleRequestsQuery,
   useRequestRoleUpgradeMutation,
   useApproveRoleRequestMutation,
   useRejectRoleRequestMutation,
-  useGetPendingInvitesQuery
-  
+  useGetPendingInvitesQuery,
+  useRemoveUserFromWorkspaceMutation,
+  useBatchRemoveUsersFromWorkspaceMutation,
+  useGetAdminWorkspacesWithMembersQuery,
 } from "@/generated/graphql";
 
 import { NEXT_PUBLIC_API_URL } from "../utils/env";
@@ -721,6 +722,79 @@ export const usePendingInvites = (workspaceId: string) => {
 
   return {
     pendingInvites: data?.getPendingInvites ?? [],
+    isLoading: loading,
+    error,
+    refetch,
+  };
+};
+
+export const useRemoveUserFromWorkspace = (workspaceId: string) => {
+  const { workspaceInfo } = useCurrentWorkspaceInfo();
+
+  const [removeUserMutation, { loading, error }] =
+    useRemoveUserFromWorkspaceMutation();
+
+  const isAdmin = useMemo(() => {
+    if (!workspaceInfo) return false;
+    return workspaceInfo.id === workspaceId && workspaceInfo.role === "admin";
+  }, [workspaceInfo, workspaceId]);
+
+  const removeUser = useCallback(
+    async (userId: string) => {
+      if (!isAdmin) {
+        throw new Error(
+          "You must be an admin to remove users from the workspace"
+        );
+      }
+
+      try {
+        const result = await removeUserMutation({
+          variables: { workspaceId, userId },
+        });
+
+        return result.data?.removeUserFromWorkspace ?? false;
+      } catch (err) {
+        console.error("Failed to remove user:", err);
+        throw err;
+      }
+    },
+    [isAdmin, removeUserMutation, workspaceId]
+  );
+
+  return { removeUser, loading, error: error as Error | null, isAdmin };
+};
+
+export const useBatchRemoveUsersFromWorkspace = () => {
+  const [batchRemoveMutation, { loading, error }] =
+    useBatchRemoveUsersFromWorkspaceMutation();
+
+  const batchRemoveUsers = useCallback(
+    async (removals: { userId: string; workspaceId: string }[]) => {
+      try {
+        const result = await batchRemoveMutation({
+          variables: { removals },
+        });
+
+        return result.data?.batchRemoveUsersFromWorkspace ?? false;
+      } catch (err) {
+        console.error("Failed to batch remove users:", err);
+        throw err;
+      }
+    },
+    [batchRemoveMutation]
+  );
+
+  return { batchRemoveUsers, loading, error: error as Error | null };
+};
+
+export const useAdminWorkspacesWithMembers = () => {
+  const { data, loading, error, refetch } =
+    useGetAdminWorkspacesWithMembersQuery({
+      fetchPolicy: "cache-and-network",
+    });
+
+  return {
+    workspacesWithMembers: data?.getAdminWorkspacesWithMembers ?? [],
     isLoading: loading,
     error,
     refetch,
