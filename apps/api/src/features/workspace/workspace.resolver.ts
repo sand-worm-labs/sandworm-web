@@ -15,6 +15,7 @@ import { Document } from '../document/model/document.model';
 import { WorkspaceInfo, WorkspaceMember } from './model/workspace-info.model';
 import { Public } from '@sandworm/nest-common';
 import { WorkspaceMembershipService } from './service/workspace-membership.service';
+import { RemoveUserFromWorkspaceInput } from './dto/workspace.dto';
 
 @Resolver(() => Workspace)
 export class WorkspaceResolver {
@@ -66,7 +67,7 @@ export class WorkspaceResolver {
 
   @Query(() => [WorkspaceMember], {
     name: 'getPendingInvites',
-    description: 'Get all pending join requests for a workspace',
+    description: 'Get all pending invites for a workspace',
   })
   async getPendingInvites(
     @Args('workspaceId', { type: () => String }) workspaceId: string,
@@ -142,7 +143,6 @@ export class WorkspaceResolver {
     return true;
   }
 
-
   @Mutation(() => Boolean, {
     name: 'batchRemoveUsersFromWorkspace',
     description: 'Remove multiple users from a workspace',
@@ -154,6 +154,27 @@ export class WorkspaceResolver {
   ): Promise<boolean> {
     await Promise.all(
       userIds.map((userId) =>
+        this.workspaceMembershipService.softRemoveUserFromWorkspace(
+          workspaceId,
+          userId,
+          adminId,
+        ),
+      ),
+    );
+    return true;
+  }
+
+  @Mutation(() => Boolean, {
+    name: 'batchRemoveUsersFromWorkspace',
+    description: 'Remove multiple users from workspaces',
+  })
+  async batchRemoveUsersFromWorkspaces(
+    @CurrentUser('id') adminId: string,
+    @Args('removals', { type: () => [RemoveUserFromWorkspaceInput] })
+    removals: RemoveUserFromWorkspaceInput[],
+  ): Promise<boolean> {
+    await Promise.all(
+      removals.map(({ userId, workspaceId }) =>
         this.workspaceMembershipService.softRemoveUserFromWorkspace(
           workspaceId,
           userId,

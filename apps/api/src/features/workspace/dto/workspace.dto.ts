@@ -1,4 +1,4 @@
-import { InputType} from '@nestjs/graphql';
+import { InputType } from '@nestjs/graphql';
 import {
   EmailField,
   EmailFieldOptional,
@@ -44,4 +44,14 @@ export class UpdateUserInput {
 export class GetAllUsersInput {
   @NumberFieldOptional()
   limit: number;
+}
+
+
+@InputType()
+export class RemoveUserFromWorkspaceInput {
+  @StringField()
+  userId: string;
+
+  @StringField()
+  workspaceId: string;
 }
