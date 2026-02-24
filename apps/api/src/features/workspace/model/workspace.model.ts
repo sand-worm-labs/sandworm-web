@@ -85,3 +85,4 @@ export class WorkspaceInvitationInfo {
   @Field(() => String, { description: 'The role the user will have in the workspace' })
   role: UserWorkspaceRole;
 }
+

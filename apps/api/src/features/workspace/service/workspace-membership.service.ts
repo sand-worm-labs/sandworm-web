@@ -432,4 +432,19 @@ export class WorkspaceMembershipService {
         await this.workspaceMembersRepository.save(membership);
     }
 
+    async findWorkspacesWhereAdmin(userId: string): Promise<WorkspaceEntity[]> {
+        validateUUID(userId, 'User ID');
+
+        const memberships = await this.workspaceMembersRepository.find({
+            where: {
+                userId,
+                role: UserWorkspaceRole.ADMIN,
+                status: UserWorkspaceStatus.ACTIVE,
+            },
+            relations: ['workspace'],
+        });
+
+        return memberships.map((m) => m.workspace);
+    }
+
 }
