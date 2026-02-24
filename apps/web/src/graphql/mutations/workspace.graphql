@@ -57,3 +57,15 @@ mutation BatchRemoveUsersFromWorkspace($userIds: [String!]!, $workspaceId: Strin
 mutation RemoveUserFromWorkspace($userId: String!, $workspaceId: String!) {
   removeUserFromWorkspace(userId: $userId, workspaceId: $workspaceId)
 }
+
+mutation RequestRoleUpgrade($workspaceId: String!, $role: String!) {
+  requestRoleUpgrade(workspaceId: $workspaceId, role: $role)
+}
+
+mutation ApproveRoleRequest($workspaceId: String!, $userId: String!) {
+  approveRoleRequest(workspaceId: $workspaceId, userId: $userId)
+}
+
+mutation RejectRoleRequest($workspaceId: String!, $userId: String!) {
+  rejectRoleRequest(workspaceId: $workspaceId, userId: $userId)
+}
