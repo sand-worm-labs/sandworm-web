@@ -19,6 +19,9 @@ export class WorkspaceMember {
 
   @Field(() => User, { nullable: true })
   user?: User;
+
+  @StringField({ nullable: true })
+  workspaceName?: string | null;
 }
 
 @ObjectType()

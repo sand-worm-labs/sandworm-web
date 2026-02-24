@@ -5,7 +5,7 @@ import {
     BadRequestException,
     UnprocessableEntityException,
 } from '@nestjs/common';
-import { Equal, IsNull, Not, Or, Repository } from 'typeorm';
+import { Equal, In, IsNull, Not, Or, Repository } from 'typeorm';
 import {
     WorkspaceEntity,
     UserWorkspaceEntity,
@@ -158,6 +158,7 @@ export class WorkspaceMembershipService {
             workspaceMember.role = membership.role;
             workspaceMember.requestedRole = membership.requestedRole || null;
             workspaceMember.user = membership.user ? User.fromEntity(membership.user) : undefined;
+            workspaceMember.workspaceName = membership.workspace?.name || null;
             return workspaceMember;
         });
     }
@@ -456,19 +457,26 @@ export class WorkspaceMembershipService {
         await this.workspaceMembersRepository.save(membership);
     }
 
-    async findWorkspacesWhereAdmin(userId: string): Promise<WorkspaceEntity[]> {
+    async findWorkspacesUserIsAdminOf(userId: string): Promise<WorkspaceMember[]> {
         validateUUID(userId, 'User ID');
-
-        const memberships = await this.workspaceMembersRepository.find({
+        const adminMemberships = await this.workspaceMembersRepository.find({
             where: {
                 userId,
                 role: UserWorkspaceRole.ADMIN,
                 status: UserWorkspaceStatus.ACTIVE,
             },
-            relations: ['workspace'],
+            select: ['workspaceId'],
+        });
+        if (!adminMemberships.length) return [];
+        const workspaceIds = adminMemberships.map((m) => m.workspaceId);
+        const allMembers = await this.workspaceMembersRepository.find({
+            where: {
+                workspaceId: In(workspaceIds),
+            },
+            relations: ['user', 'workspace'],
         });
 
-        return memberships.map((m) => m.workspace);
+        return this.mapToWorkspaceMembers(allMembers);
     }
 
 }
