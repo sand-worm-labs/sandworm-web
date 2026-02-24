@@ -208,8 +208,8 @@ type Mutation {
   """Approve a pending role request"""
   approveRoleRequest(userId: String!, workspaceId: String!): Boolean!
 
-  """Remove multiple users from a workspace"""
-  batchRemoveUsersFromWorkspace(userIds: [String!]!, workspaceId: String!): Boolean!
+  """Remove multiple users from workspaces"""
+  batchRemoveUsersFromWorkspace(removals: [RemoveUserFromWorkspaceInput!]!): Boolean!
 
   """Create a new comment on a document"""
   createComment(documentId: String!, input: CreateCommentInput!): Comment!
@@ -376,7 +376,7 @@ type Query {
   """Get invitation details from hash without accepting it"""
   getInvitationInfo(hash: String!): WorkspaceInvitationInfo!
 
-  """Get all pending join requests for a workspace"""
+  """Get all pending invites for a workspace"""
   getPendingInvites(workspaceId: String!): [WorkspaceMember!]!
 
   """Get pending role requests for a workspace"""
@@ -421,6 +421,11 @@ type Query {
   """Get all schedules for a document"""
   schedules(input: ListSchedulesInput!): [Schedule!]!
   tags: [String!]!
+}
+
+input RemoveUserFromWorkspaceInput {
+  userId: String!
+  workspaceId: String!
 }
 
 input RestartEnvironmentInput {
