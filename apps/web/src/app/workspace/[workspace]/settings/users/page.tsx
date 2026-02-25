@@ -16,8 +16,9 @@ import {
 } from "@/components/Visualization/UserControl";
 import InviteUserModal from "@/components/InviteUser";
 import {
-  useWorkspaceWithMembers,
   useInviteUserToWorkspace,
+  useAdminWorkspacesWithMembers,
+  useBatchRemoveUsersFromWorkspace,
 } from "@/components/Visualization/hooks/useWorkspaces";
 import { Loader } from "@/components/Loader";
 
@@ -25,15 +26,45 @@ export default function UsersPage() {
   const workspaceId = useStringQuery("workspace");
   const session = useSession({ redirectToLogin: true });
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+
   const {
-    workspace,
-    members,
-    currentUserRole,
+    workspacesWithMembers,
     isLoading: workspaceLoading,
     refetch: refetchMembers,
-  } = useWorkspaceWithMembers(workspaceId);
+  } = useAdminWorkspacesWithMembers();
+
   const { inviteUser } = useInviteUserToWorkspace(workspaceId);
-  const isAdmin = currentUserRole === "admin";
+  const { batchRemoveUsers } = useBatchRemoveUsersFromWorkspace();
+
+  // Always admin since useAdminWorkspacesWithMembers only returns workspaces you admin
+  const isAdmin = true;
+
+  const members = useMemo(() => {
+    return workspacesWithMembers.map(member => {
+      const fullName =
+        [member.user?.firstName, member.user?.lastName]
+          .filter(Boolean)
+          .join(" ") ||
+        member.user?.username ||
+        member.user?.email ||
+        "";
+
+      return {
+        id: member.userId,
+        userId: member.userId,
+        role: member.role,
+        email: member.user?.email ?? "",
+        username: member.user?.username ?? null,
+        firstName: member.user?.firstName ?? null,
+        lastName: member.user?.lastName ?? null,
+        fullName,
+        name: fullName,
+        workspaceName: member.workspaceName ?? "",
+        workspaceId: member.workspaceId ?? "",
+      };
+    });
+  }, [workspacesWithMembers]);
+
   const [searchValue, setSearchValue] = useState("");
   const [roleFilters, setRoleFilters] = useState<RoleFilter[]>([
     { role: "admin", label: "Admin", count: 0, enabled: false },
@@ -85,7 +116,6 @@ export default function UsersPage() {
     }
 
     const enabledRoles = roleFilters.filter(f => f.enabled).map(f => f.role);
-
     if (enabledRoles.length > 0) {
       filtered = filtered.filter(
         member => member.role && enabledRoles.includes(member.role as any)
@@ -110,22 +140,35 @@ export default function UsersPage() {
     setRoleFilters(prev => prev.map(filter => ({ ...filter, enabled: false })));
   }, []);
 
-  // todo change role function
+  // todo: wire up change role mutation when available
   const onChangeRole = useCallback(
     async (id: string, role: UserWorkspaceRole) => {
       console.log("Change role:", id, role);
     },
-    [refetchMembers]
+    []
   );
 
-  // remove user function
+
   const onRemoveUser = useCallback(
     async (id: string) => {
-      console.log("Remove user:", id);
-    },
-    [refetchMembers]
-  );
+      const member = members.find(m => m.userId === id);
+      if (!member?.workspaceId) {
+        toast.error("Could not determine workspace for this user");
+        return;
+      }
 
+      try {
+        await batchRemoveUsers([
+          { userId: id, workspaceId: member.workspaceId },
+        ]);
+        toast.success("User removed");
+        refetchMembers();
+      } catch (err) {
+        toast.error("Failed to remove user");
+      }
+    },
+    [members, batchRemoveUsers, refetchMembers]
+  );
   const onResetPassword = useCallback(async (id: string) => {
     console.log("Reset password:", id);
   }, []);
@@ -160,13 +203,13 @@ export default function UsersPage() {
     <>
       <ScrollBar className="w-full h-full overflow-auto font-body">
         <div className="px-4 sm:p-6 lg:p-8 min-h-[100vh]">
-          <div className=" dark:border-gray-800 pb-4 mb-6 flex justify-between items-center">
+          <div className="dark:border-gray-800 pb-4 mb-6 flex justify-between items-center">
             <div>
               <h2 className="text-xl font-medium text-ink-100 dark:text-white mb-1">
                 Users
               </h2>
-              <p className="mb-6 text-ink-400 ">
-                View and manage everyone youve invited across all your
+              <p className="mb-6 text-ink-400">
+                View and manage everyone you've invited across all your
                 workspaces.
               </p>
             </div>
@@ -180,7 +223,7 @@ export default function UsersPage() {
                 isAdmin
                   ? "bg-[#A308F0] hover:bg-primary-300"
                   : "bg-[#A308F0DD] cursor-not-allowed",
-                "px-6 py-2 bg-[#A308F0] text-white rounded-xl hover:bg-[#A308F0] text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                "px-6 py-2 text-white rounded-xl text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
               )}
             >
               <UserPlusIcon className="h-4 w-4" /> Invite user
@@ -204,14 +247,15 @@ export default function UsersPage() {
             onRemoveUser={onRemoveUser}
             onChangeRole={onChangeRole}
             onResetPassword={onResetPassword}
-            role={currentUserRole ?? "viewer"}
+            role="admin"
           />
         </div>
       </ScrollBar>
+
       <InviteUserModal
         isOpen={isInviteModalOpen}
         onClose={() => setIsInviteModalOpen(false)}
-        workspaceName={workspace?.name || "workspace"}
+        workspaceName={workspaceId ?? "workspace"}
         onInvite={handleInviteUser}
       />
     </>

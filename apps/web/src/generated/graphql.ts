@@ -912,6 +912,7 @@ export type WorkspaceMember = {
   role: Scalars['String']['output'];
   user?: Maybe<User>;
   userId: Scalars['String']['output'];
+  workspaceId?: Maybe<Scalars['String']['output']>;
   workspaceName?: Maybe<Scalars['String']['output']>;
 };
 
@@ -1365,7 +1366,7 @@ export type GetWorkspaceWithMembersQuery = { __typename?: 'Query', getWorkspace:
 export type GetAdminWorkspacesWithMembersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAdminWorkspacesWithMembersQuery = { __typename?: 'Query', getAdminWorkspacesWithMembers: Array<{ __typename?: 'WorkspaceMember', userId: string, role: string, requestedRole?: string | null, workspaceName?: string | null, user?: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null } | null }> };
+export type GetAdminWorkspacesWithMembersQuery = { __typename?: 'Query', getAdminWorkspacesWithMembers: Array<{ __typename?: 'WorkspaceMember', userId: string, role: string, requestedRole?: string | null, workspaceName?: string | null, workspaceId?: string | null, user?: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null } | null }> };
 
 export type GetWorkspaceQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
@@ -3941,6 +3942,7 @@ export const GetAdminWorkspacesWithMembersDocument = gql`
     role
     requestedRole
     workspaceName
+    workspaceId
     user {
       id
       username

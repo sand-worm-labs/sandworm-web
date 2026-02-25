@@ -34,6 +34,7 @@ interface UserItemProps {
   onResetPassword: (id: string) => void;
   role: UserWorkspaceRole;
 }
+
 function UserItem(props: UserItemProps) {
   const onRemoveUser = useCallback(() => {
     props.onRemoveUser(props.user.id);
@@ -80,7 +81,7 @@ function UserItem(props: UserItemProps) {
       </td>
       <td className="whitespace-nowrap p-4 text-sm text-ink-100">
         <span className="bg-[#F8F9FA] border border-[#DEE2E6] rounded-md px-3 py-1">
-          workspace
+          {props.user.workspaceName || "—"} workspace
         </span>
       </td>
       <td className="whitespace-nowrap p-4 text-sm text-[#6C757D] font-medium">
@@ -93,7 +94,13 @@ function UserItem(props: UserItemProps) {
         <button
           type="button"
           onClick={onRemoveUser}
-          className="text-left w-full px-3 py-1 text-sm leading-6 text-red-600 block"
+          disabled={props.isCurrentUser}
+          className={clsx(
+            "text-left w-full px-3 py-1 text-sm leading-6 block",
+            props.isCurrentUser
+              ? "text-gray-300 cursor-not-allowed"
+              : "text-red-600"
+          )}
         >
           <Trash />
         </button>
@@ -129,7 +136,13 @@ function UsersList(props: Props) {
     [props.users, props.currentUserEmail]
   );
 
-  const allSelected = selectedIds.size === users.length && users.length > 0;
+  const selectableUsers = useMemo(
+    () => users.filter(u => u.email !== props.currentUserEmail),
+    [users, props.currentUserEmail]
+  );
+
+  const allSelected =
+    selectedIds.size === selectableUsers.length && selectableUsers.length > 0;
   const someSelected = selectedIds.size > 0 && !allSelected;
 
   useEffect(() => {
@@ -150,14 +163,23 @@ function UsersList(props: Props) {
     if (allSelected) {
       setSelectedIds(new Set());
     } else {
-      setSelectedIds(new Set(users.map(u => u.id)));
+      setSelectedIds(
+        new Set(
+          users.filter(u => u.email !== props.currentUserEmail).map(u => u.id)
+        )
+      );
     }
-  }, [allSelected, users]);
+  }, [allSelected, users, props.currentUserEmail]);
 
   const handleBulkRemove = useCallback(() => {
-    selectedIds.forEach(id => props.onRemoveUser(id));
+    selectedIds.forEach(id => {
+      const user = users.find(u => u.id === id);
+      if (user?.email !== props.currentUserEmail) {
+        props.onRemoveUser(id);
+      }
+    });
     setSelectedIds(new Set());
-  }, [selectedIds, props.onRemoveUser]);
+  }, [selectedIds, users, props.currentUserEmail, props.onRemoveUser]);
 
   const selectionCount = selectedIds.size;
 
