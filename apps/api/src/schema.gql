@@ -330,6 +330,9 @@ type Mutation {
 
   """Update workspace info"""
   updateWorkspace(icon: String, name: String, workspaceId: String!): Workspace!
+
+  """Update a user role in a workspace"""
+  updateWorkspaceMemberRole(role: String!, userId: String!, workspaceId: String!): Boolean!
 }
 
 type Profile {
@@ -360,6 +363,9 @@ type Query {
 
   """Check if a file exists"""
   fileExists(fileName: String!, workspaceId: String!): Boolean!
+
+  """Get all workspaces the current user is an admin of, with their members"""
+  getAdminWorkspacesWithMembers: [WorkspaceMember!]!
 
   """Get all users"""
   getAllUsers(input: GetAllUsersInput!): Int!
@@ -610,6 +616,7 @@ type WorkspaceMember {
   role: String!
   user: User
   userId: String!
+  workspaceId: String
   workspaceName: String
 }
 
