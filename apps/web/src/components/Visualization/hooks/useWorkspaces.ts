@@ -800,3 +800,37 @@ export const useAdminWorkspacesWithMembers = () => {
     refetch,
   };
 };
+
+export const useUpdateWorkspaceMemberRole = (workspaceId: string) => {
+  const { workspaceInfo } = useCurrentWorkspaceInfo();
+
+  const [updateRoleMutation, { loading, error }] =
+    useUpdateWorkspaceMemberRoleMutation();
+
+  const isAdmin = useMemo(() => {
+    if (!workspaceInfo) return false;
+    return workspaceInfo.id === workspaceId && workspaceInfo.role === "admin";
+  }, [workspaceInfo, workspaceId]);
+
+  const updateMemberRole = useCallback(
+    async (userId: string, role: string) => {
+      if (!isAdmin) {
+        throw new Error("You must be an admin to update member roles");
+      }
+
+      try {
+        const result = await updateRoleMutation({
+          variables: { workspaceId, userId, role },
+        });
+
+        return result.data?.updateWorkspaceMemberRole ?? false;
+      } catch (err) {
+        console.error("Failed to update member role:", err);
+        throw err;
+      }
+    },
+    [isAdmin, updateRoleMutation, workspaceId]
+  );
+
+  return { updateMemberRole, loading, error: error as Error | null, isAdmin };
+};
