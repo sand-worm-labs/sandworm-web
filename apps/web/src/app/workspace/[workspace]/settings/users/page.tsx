@@ -148,7 +148,6 @@ export default function UsersPage() {
     []
   );
 
-
   const onRemoveUser = useCallback(
     async (id: string) => {
       const member = members.find(m => m.userId === id);
@@ -190,6 +189,20 @@ export default function UsersPage() {
       throw err;
     }
   };
+
+  const workspacesList = useMemo(() => {
+    const seen = new Set<string>();
+    return workspacesWithMembers
+      .filter(m => {
+        if (!m.workspaceId || seen.has(m.workspaceId)) return false;
+        seen.add(m.workspaceId);
+        return true;
+      })
+      .map(m => ({
+        id: m.workspaceId!,
+        name: m.workspaceName ?? m.workspaceId!,
+      }));
+  }, [workspacesWithMembers]);
 
   if (workspaceLoading) {
     return (
@@ -256,6 +269,7 @@ export default function UsersPage() {
         isOpen={isInviteModalOpen}
         onClose={() => setIsInviteModalOpen(false)}
         workspaceName={workspaceId ?? "workspace"}
+        workspaces={workspacesList}
         onInvite={handleInviteUser}
       />
     </>
