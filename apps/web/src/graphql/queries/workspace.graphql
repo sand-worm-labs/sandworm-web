@@ -67,6 +67,7 @@ query GetAdminWorkspacesWithMembers {
     role
     requestedRole
     workspaceName
+    workspaceId
     user {
       id
       username
