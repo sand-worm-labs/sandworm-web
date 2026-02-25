@@ -295,6 +295,8 @@ export type Mutation = {
   updateWallets: Scalars['Boolean']['output'];
   /** Update workspace info */
   updateWorkspace: Workspace;
+  /** Update a user role in a workspace */
+  updateWorkspaceMemberRole: Scalars['Boolean']['output'];
 };
 
 
@@ -530,6 +532,13 @@ export type MutationUpdateWalletsArgs = {
 export type MutationUpdateWorkspaceArgs = {
   icon?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
+  workspaceId: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateWorkspaceMemberRoleArgs = {
+  role: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
 };
 
@@ -1186,6 +1195,15 @@ export type AcceptWorkspaceInvitationMutationVariables = Exact<{
 
 
 export type AcceptWorkspaceInvitationMutation = { __typename?: 'Mutation', acceptWorkspaceInvitation: boolean };
+
+export type UpdateWorkspaceMemberRoleMutationVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
+  role: Scalars['String']['input'];
+}>;
+
+
+export type UpdateWorkspaceMemberRoleMutation = { __typename?: 'Mutation', updateWorkspaceMemberRole: boolean };
 
 export type RemoveUserFromWorkspaceMutationVariables = Exact<{
   userId: Scalars['String']['input'];
@@ -2778,6 +2796,43 @@ export function useAcceptWorkspaceInvitationMutation(baseOptions?: Apollo.Mutati
 export type AcceptWorkspaceInvitationMutationHookResult = ReturnType<typeof useAcceptWorkspaceInvitationMutation>;
 export type AcceptWorkspaceInvitationMutationResult = Apollo.MutationResult<AcceptWorkspaceInvitationMutation>;
 export type AcceptWorkspaceInvitationMutationOptions = Apollo.BaseMutationOptions<AcceptWorkspaceInvitationMutation, AcceptWorkspaceInvitationMutationVariables>;
+export const UpdateWorkspaceMemberRoleDocument = gql`
+    mutation UpdateWorkspaceMemberRole($workspaceId: String!, $userId: String!, $role: String!) {
+  updateWorkspaceMemberRole(
+    workspaceId: $workspaceId
+    userId: $userId
+    role: $role
+  )
+}
+    `;
+export type UpdateWorkspaceMemberRoleMutationFn = Apollo.MutationFunction<UpdateWorkspaceMemberRoleMutation, UpdateWorkspaceMemberRoleMutationVariables>;
+
+/**
+ * __useUpdateWorkspaceMemberRoleMutation__
+ *
+ * To run a mutation, you first call `useUpdateWorkspaceMemberRoleMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateWorkspaceMemberRoleMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateWorkspaceMemberRoleMutation, { data, loading, error }] = useUpdateWorkspaceMemberRoleMutation({
+ *   variables: {
+ *      workspaceId: // value for 'workspaceId'
+ *      userId: // value for 'userId'
+ *      role: // value for 'role'
+ *   },
+ * });
+ */
+export function useUpdateWorkspaceMemberRoleMutation(baseOptions?: Apollo.MutationHookOptions<UpdateWorkspaceMemberRoleMutation, UpdateWorkspaceMemberRoleMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateWorkspaceMemberRoleMutation, UpdateWorkspaceMemberRoleMutationVariables>(UpdateWorkspaceMemberRoleDocument, options);
+      }
+export type UpdateWorkspaceMemberRoleMutationHookResult = ReturnType<typeof useUpdateWorkspaceMemberRoleMutation>;
+export type UpdateWorkspaceMemberRoleMutationResult = Apollo.MutationResult<UpdateWorkspaceMemberRoleMutation>;
+export type UpdateWorkspaceMemberRoleMutationOptions = Apollo.BaseMutationOptions<UpdateWorkspaceMemberRoleMutation, UpdateWorkspaceMemberRoleMutationVariables>;
 export const RemoveUserFromWorkspaceDocument = gql`
     mutation RemoveUserFromWorkspace($userId: String!, $workspaceId: String!) {
   removeUserFromWorkspace(userId: $userId, workspaceId: $workspaceId)

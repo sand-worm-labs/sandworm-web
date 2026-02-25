@@ -50,6 +50,9 @@ mutation AcceptWorkspaceInvitation($hash: String!) {
   acceptWorkspaceInvitation(hash: $hash)
 }
 
+mutation UpdateWorkspaceMemberRole($workspaceId: String!, $userId: String!, $role: String!) {
+  updateWorkspaceMemberRole(workspaceId: $workspaceId, userId: $userId, role: $role)
+}
 
 
 mutation RemoveUserFromWorkspace($userId: String!, $workspaceId: String!) {
