@@ -480,4 +480,28 @@ export class WorkspaceMembershipService {
         return this.mapToWorkspaceMembers(allMembers);
     }
 
+
+    async updateWorkspaceMemberRole(
+        workspaceId: string,
+        userId: string,
+        newRole: UserWorkspaceRole,
+        adminId: string,
+    ): Promise<void> {
+        validateUUID(workspaceId, 'Workspace ID');
+        validateUUID(userId, 'User ID');
+        validateUUID(adminId, 'Admin ID');
+
+        await this.validateAdminAccess(workspaceId, adminId);
+        await this.validateNotOwner(workspaceId, userId);
+
+        const membership = await this.getMembershipOrThrow(
+            workspaceId,
+            userId,
+            UserWorkspaceStatus.ACTIVE,
+            'User is not an active member of this workspace',
+        );
+
+        membership.role = newRole;
+        await this.workspaceMembersRepository.save(membership);
+    }
 }

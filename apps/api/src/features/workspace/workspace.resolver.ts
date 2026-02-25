@@ -289,6 +289,24 @@ export class WorkspaceResolver {
     return true;
   }
 
+  @Mutation(() => Boolean, {
+    name: 'updateWorkspaceMemberRole',
+    description: 'Update a user role in a workspace',
+  })
+  async updateWorkspaceMemberRole(
+    @CurrentUser('id') adminId: string,
+    @Args('workspaceId', { type: () => String }) workspaceId: string,
+    @Args('userId', { type: () => String }) userId: string,
+    @Args('role', { type: () => String }) role: string,
+  ): Promise<boolean> {
+    await this.workspaceMembershipService.updateWorkspaceMemberRole(
+      workspaceId,
+      userId,
+      role as UserWorkspaceRole || UserWorkspaceRole.VIEWER,
+      adminId,
+    );
+    return true;
+  }
 
   @Public()
   @Query(() => WorkspaceInvitationInfo, {
