@@ -18,6 +18,9 @@ import {
   Transition,
   TransitionChild,
 } from "@headlessui/react";
+import { createPortal } from "react-dom";
+
+
 
 import type { UserWorkspaceRole, WorkspaceUser } from "@/types";
 
@@ -46,14 +49,22 @@ interface RoleDropdownProps {
   onChange: (role: UserWorkspaceRole) => void;
   disabled?: boolean;
 }
+
 function RoleDropdown({ role, onChange, disabled }: RoleDropdownProps) {
   const [open, setOpen] = useState(false);
+  const [coords, setCoords] = useState({ top: 0, left: 0, width: 0 });
   const ref = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  const portalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!open) return;
     const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      const outsideButton = ref.current && !ref.current.contains(target);
+      const outsidePortal = portalRef.current && !portalRef.current.contains(target);
+      if (outsideButton && outsidePortal) {
         setOpen(false);
       }
     };
@@ -61,14 +72,27 @@ function RoleDropdown({ role, onChange, disabled }: RoleDropdownProps) {
     return () => document.removeEventListener("mousedown", handler);
   }, [open]);
 
+  const handleOpen = () => {
+    if (buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setCoords({
+        top: rect.bottom + window.scrollY + 4,
+        left: rect.right + window.scrollX - 144, // 144 = w-[9rem]
+        width: rect.width,
+      });
+    }
+    setOpen(v => !v);
+  };
+
   const current = ROLES.find(r => r.value === role);
 
   return (
     <div className="relative" ref={ref}>
       <button
+        ref={buttonRef}
         type="button"
         disabled={disabled}
-        onClick={() => setOpen(v => !v)}
+        onClick={handleOpen}
         className={clsx(
           "flex items-center gap-1.5 px-3 py-0.5 rounded-lg border text-sm font-medium transition-colors min-w-[70px]",
           "border-[#DEE2E6] dark:border-[#262A30]",
@@ -93,42 +117,51 @@ function RoleDropdown({ role, onChange, disabled }: RoleDropdownProps) {
         </svg>
       </button>
 
-      {open && (
-        <div
-          className={clsx(
-            "absolute right-0 mt-1 w-[9rem] z-50",
-            "bg-[#F8F9FA] dark:bg-[#1A1D21]",
-            "border border-[#DEE2E6] dark:border-[#262A30]",
-            "rounded-lg  py-0"
-          )}
-        >
-          {ROLES.map(r => (
-            <button
-              key={r.value}
-              type="button"
-              onClick={() => {
-                onChange(r.value);
-                setOpen(false);
-              }}
-              className={clsx(
-                "w-full text-left px-3 py-1.5 hover:bg-[#EAECEF] dark:hover:bg-[#262A30] transition-colors",
-                r.value === role && "bg-[#F8F9FA] dark:bg-[#262A30]"
-              )}
-            >
-              <p className="text-xs font-medium text-[#343A40] dark:text-white">
-                {r.label}
-              </p>
-              <p className="text-[11px] text-[#6C757D] mt-1.5">
-                {r.description}
-              </p>
-            </button>
-          ))}
-        </div>
-      )}
+      {open &&
+        createPortal(
+          <div
+          ref={portalRef}
+
+            style={{
+              position: "absolute",
+              top: coords.top,
+              left: coords.left,
+              width: 144,
+              zIndex: 9999,
+            }}
+            className={clsx(
+              "bg-[#F8F9FA] dark:bg-[#1A1D21]",
+              "border border-[#DEE2E6] dark:border-[#262A30]",
+              "rounded-lg py-0"
+            )}
+          >
+            {ROLES.map(r => (
+              <button
+                key={r.value}
+                type="button"
+                onClick={() => {
+                  onChange(r.value);
+                  setOpen(false);
+                }}
+                className={clsx(
+                  "w-full text-left px-3 py-1.5 hover:bg-[#EAECEF] dark:hover:bg-[#262A30] transition-colors font-body",
+                  r.value === role && "bg-[#F8F9FA] dark:bg-[#262A30]"
+                )}
+              >
+                <p className="text-xs font-medium text-[#343A40] dark:text-white">
+                  {r.label}
+                </p>
+                <p className="text-[11px] text-[#6C757D] mt-1.5">
+                  {r.description}
+                </p>
+              </button>
+            ))}
+          </div>,
+          document.body
+        )}
     </div>
   );
 }
-
 interface MiniUserItemProps {
   user: WorkspaceUser;
   isCurrentUser: boolean;
