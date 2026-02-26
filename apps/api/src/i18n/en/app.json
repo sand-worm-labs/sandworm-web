@@ -1,4 +1,16 @@
 {
+  "app": {
+    "logo_url": "https://imgur.com/8VbjXFg.png",
+    "banner_url": "https://imgur.com/rf1191J.png",
+    "twitter_icon_url": "https://yourdomain.com/static/images/icon-x.png",
+    "linkedin_icon_url": "https://yourdomain.com/static/images/icon-linkedin.png",
+    "twitter_url": "https://x.com/sandwormlabs",
+    "telegram_url": "https://t.me/sandwormlabs",
+    "linkedin_url": "https://linkedin.com/company/sandwormlabs",
+    "support_email": "support@sandworm.com",
+    "help_center_url": "https://yourdomain.com/help",
+    "unsubscribe_url": "https://yourdomain.com/unsubscribe"
+  },
   "common": {
     "internal_server_error": "An internal server error has occurred",
     "entity_not_found": "Entity not found",
@@ -38,32 +50,41 @@
   },
   "email": {
     "confirm_email": {
-      "greeting": "Thank you for joining Sandworm Beta",
-      "intro": "Built on Base and powered by AI, our mission is to provide you with the ultimate tool for Onchain data analysis. We believe blockchain data shouldn't be a mystery, so we’ve designed our platform to deliver useful, human-readable outputs that anyone can utilize, expert or not.",
-      "instruction": "Simply click the button below to verify your email address."
+      "title": "Verify your email – Sandworm",
+      "greeting": "Thank you for joining Sandworm {Beta}",
+      "intro": "Built on Base and powered by AI, our mission is to provide you with the ultimate tool for Onchain data analysis. We believe blockchain data shouldn't be a mystery, so we've designed our platform to deliver useful, human-readable outputs that anyone can utilize, expert or not.",
+      "features": [
+        "AI-powered queries that produce human readable outputs for Onchain information, while still having SQL editable data",
+        "Multiple visualization style to showcase data to the world.",
+        "Remix and share community notebooks",
+        "Collaborate with others on the same file."
+      ],
+      "actionTitle": "Verify Email Address"
     },
     "confirm_new_email": {
       "greeting": "Hey there!",
       "message": "Please confirm your new email address.",
-      "instruction": "Simply click the button below to verify your email address."
+      "instruction": "Simply click the button below to verify your email address.",
+      "actionTitle": "Confirm New Email"
     },
     "reset_password": {
       "subject": "Trouble signing in?",
       "intro": "Resetting your password is easy.",
       "instruction": "Just press the button below and follow the instructions. We'll have you up and running in no time.",
-      "disclaimer": "If you did not make this request, please ignore this email."
+      "disclaimer": "If you did not make this request, please ignore this email.",
+      "actionTitle": "Reset Password"
     },
     "workspace_invitation": {
       "title": "Workspace Invitation",
       "greeting": "Hey there!",
       "intro": "{inviterName} has invited you to join the workspace \"{workspaceName}\".",
       "instruction": "Click the button below to accept the invitation and start collaborating.",
-      "expiry_note": "This invitation will expire in 7 days. If you didn't expect this invitation, you can safely ignore this email.",
+      "expiry_note": "This invitation will expire in 10 days. If you didn't expect this invitation, you can safely ignore this email.",
       "action_title": "Accept Invitation"
     },
     "workspace_join_request": {
       "title": "Workspace Join Request",
-      "action_title": "Review Request"
+      "actionTitle": "Review Request"
     }
   }
 }
