@@ -6,6 +6,18 @@ import { Path } from "nestjs-i18n";
 /* prettier-ignore */
 export type I18nTranslations = {
     "app": {
+        "app": {
+            "logo_url": string;
+            "banner_url": string;
+            "twitter_icon_url": string;
+            "linkedin_icon_url": string;
+            "twitter_url": string;
+            "telegram_url": string;
+            "linkedin_url": string;
+            "support_email": string;
+            "help_center_url": string;
+            "unsubscribe_url": string;
+        };
         "common": {
             "internal_server_error": string;
             "entity_not_found": string;
@@ -45,20 +57,29 @@ export type I18nTranslations = {
         };
         "email": {
             "confirm_email": {
+                "title": string;
                 "greeting": string;
                 "intro": string;
-                "instruction": string;
+                "features": [
+                    string,
+                    string,
+                    string,
+                    string
+                ];
+                "actionTitle": string;
             };
             "confirm_new_email": {
                 "greeting": string;
                 "message": string;
                 "instruction": string;
+                "actionTitle": string;
             };
             "reset_password": {
                 "subject": string;
                 "intro": string;
                 "instruction": string;
                 "disclaimer": string;
+                "actionTitle": string;
             };
             "workspace_invitation": {
                 "title": string;
@@ -66,11 +87,11 @@ export type I18nTranslations = {
                 "intro": string;
                 "instruction": string;
                 "expiry_note": string;
-                "action_title": string;
+                "actionTitle": string;
             };
             "workspace_join_request": {
                 "title": string;
-                "action_title": string;
+                "actionTitle": string;
             };
         };
     };

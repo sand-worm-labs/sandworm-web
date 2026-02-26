@@ -15,12 +15,53 @@ export class MailService {
     private readonly configService: ConfigService<AllConfigType>,
   ) { }
 
+  private async getAppContext(i18n: I18nContext) {
+    const [
+      logo_url,
+      banner_url,
+      twitter_url,
+      telegram_url,
+      twitter_icon_url,
+      linkedin_url,
+      linkedin_icon_url,
+      support_email,
+      help_center_url,
+      unsubscribe_url,
+    ] = await Promise.all([
+      i18n.t('app.app.logo_url'),
+      i18n.t('app.app.banner_url'),
+      i18n.t('app.app.twitter_url'),
+      i18n.t('app.app.telegram_url'),
+      i18n.t('app.app.twitter_icon_url'),
+      i18n.t('app.app.linkedin_url'),
+      i18n.t('app.app.linkedin_icon_url'),
+      i18n.t('app.app.support_email'),
+      i18n.t('app.app.help_center_url'),
+      i18n.t('app.app.unsubscribe_url'),
+    ]);
+
+    return {
+      logo_url,
+      banner_url,
+      twitter_url,
+      telegram_url,
+      twitter_icon_url,
+      linkedin_url,
+      linkedin_icon_url,
+      support_email,
+      help_center_url,
+      unsubscribe_url,
+      year: new Date().getFullYear(),
+    };
+  }
+
   async userSignUp(mailData: MailData<{ hash: string }>): Promise<void> {
     const i18n = I18nContext.current();
     let emailConfirmTitle: MaybeType<string>;
     let greeting: MaybeType<string>;
     let intro: MaybeType<string>;
     let instruction: MaybeType<string>;
+    let appContext = {};
 
     if (i18n) {
       [emailConfirmTitle, greeting, intro, instruction] = await Promise.all([
@@ -29,6 +70,7 @@ export class MailService {
         i18n.t('app.email.confirm_email.intro'),
         i18n.t('app.email.confirm_email.instruction'),
       ]);
+      appContext = await this.getAppContext(i18n);
     }
 
     const url = new URL(
@@ -53,6 +95,7 @@ export class MailService {
         'activation.hbs',
       ),
       context: {
+        ...appContext,
         title: emailConfirmTitle,
         url: url.toString(),
         actionTitle: emailConfirmTitle,
@@ -60,6 +103,12 @@ export class MailService {
         greeting,
         intro,
         instruction,
+        features: [
+          'AI-powered queries that produce human readable outputs for Onchain information, while still having SQL editable data',
+          'Multiple visualization style to showcase data to the world.',
+          'Remix and share community notebooks',
+          'Collaborate with others on the same file.',
+        ],
       },
     });
   }
@@ -73,6 +122,7 @@ export class MailService {
     let intro: MaybeType<string>;
     let instruction: MaybeType<string>;
     let disclaimer: MaybeType<string>;
+    let appContext = {};
 
     if (i18n) {
       [resetPasswordTitle, subject, intro, instruction, disclaimer] = await Promise.all([
@@ -82,6 +132,7 @@ export class MailService {
         i18n.t('app.email.reset_password.instruction'),
         i18n.t('app.email.reset_password.disclaimer'),
       ]);
+      appContext = await this.getAppContext(i18n);
     }
 
     const url = new URL(
@@ -104,15 +155,14 @@ export class MailService {
         'infrastructure',
         'mail',
         'mail-templates',
-        'reset-password.hbs',
+          'reset-password.hbs',
       ),
       context: {
+        ...appContext,
         title: resetPasswordTitle,
         url: url.toString(),
         actionTitle: resetPasswordTitle,
-        app_name: this.configService.get('app.name', {
-          infer: true,
-        }),
+        app_name: this.configService.get('app.name', { infer: true }),
         subject,
         intro,
         instruction,
@@ -127,6 +177,7 @@ export class MailService {
     let greeting: MaybeType<string>;
     let message: MaybeType<string>;
     let instruction: MaybeType<string>;
+    let appContext = {};
 
     if (i18n) {
       [emailConfirmTitle, greeting, message, instruction] = await Promise.all([
@@ -135,6 +186,7 @@ export class MailService {
         i18n.t('app.email.confirm_new_email.message'),
         i18n.t('app.email.confirm_new_email.instruction'),
       ]);
+      appContext = await this.getAppContext(i18n);
     }
 
     const url = new URL(
@@ -159,6 +211,7 @@ export class MailService {
         'confirm-new-email.hbs',
       ),
       context: {
+        ...appContext,
         title: emailConfirmTitle,
         url: url.toString(),
         actionTitle: emailConfirmTitle,
@@ -180,6 +233,7 @@ export class MailService {
     let instruction: MaybeType<string>;
     let expiryNote: MaybeType<string>;
     let actionTitle: MaybeType<string>;
+    let appContext = {};
 
     if (i18n) {
       [invitationTitle, greeting, intro, instruction, expiryNote, actionTitle] = await Promise.all([
@@ -192,6 +246,7 @@ export class MailService {
         i18n.t('app.email.workspace_invitation.expiry_note'),
         i18n.t('app.email.workspace_invitation.action_title'),
       ]);
+      appContext = await this.getAppContext(i18n);
     }
 
     const url = new URL(
@@ -216,6 +271,7 @@ export class MailService {
         'workspace-invitation.hbs',
       ),
       context: {
+        ...appContext,
         title: invitationTitle || 'Workspace Invitation',
         url: url.toString(),
         actionTitle: actionTitle || 'Accept Invitation',
@@ -242,12 +298,14 @@ export class MailService {
     const i18n = I18nContext.current();
     let joinRequestTitle: MaybeType<string>;
     let actionTitle: MaybeType<string>;
+    let appContext = {};
 
     if (i18n) {
       [joinRequestTitle, actionTitle] = await Promise.all([
         i18n.t('app.email.workspace_join_request.title'),
         i18n.t('app.email.workspace_join_request.action_title'),
       ]);
+      appContext = await this.getAppContext(i18n);
     }
 
     const url = new URL(
@@ -271,6 +329,7 @@ export class MailService {
         'workspace-join-request.hbs',
       ),
       context: {
+        ...appContext,
         title: joinRequestTitle || 'Workspace Join Request',
         url: url.toString(),
         actionTitle: actionTitle || 'Review Request',
