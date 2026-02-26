@@ -28,6 +28,8 @@ import {
   usePendingRoleRequests,
   useRejectRoleRequest,
   useWorkspaceWithMembers,
+  useRemoveUserFromWorkspace,
+  useUpdateWorkspaceMemberRole,
 } from "../Visualization/hooks/useWorkspaces";
 import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
 import MiniUsersList from "../Visualization/blocks/MiniUsersList";
@@ -352,6 +354,10 @@ export default function WorkspaceSettingsModal({
     usePendingInvites(workspace?.id ?? "");
   const { approveRoleRequest } = useApproveRoleRequest(workspace?.id ?? "");
   const { rejectRoleRequest } = useRejectRoleRequest(workspace?.id ?? "");
+  const { updateMemberRole } = useUpdateWorkspaceMemberRole(
+    workspace?.id ?? ""
+  );
+  const { removeUser } = useRemoveUserFromWorkspace(workspace?.id ?? "");
 
   const [state, setState] = useState({
     isEditingName: false,
@@ -429,14 +435,30 @@ export default function WorkspaceSettingsModal({
 
   const onChangeRole = useCallback(
     async (id: string, role: UserWorkspaceRole) => {
-      console.log("Change role:", id, role);
+      try {
+        console.log("start");
+        await updateMemberRole(id, role);
+        console.log("success");
+        toast.success("Role updated successfully");
+      } catch (err) {
+        toast.error("Failed to update role");
+        console.log("failed,", err);
+      }
     },
-    []
+    [updateMemberRole]
   );
 
-  const onRemoveUser = useCallback(async (id: string) => {
-    console.log("Remove user:", id);
-  }, []);
+  const onRemoveUser = useCallback(
+    async (id: string) => {
+      try {
+        await removeUser(id);
+        toast.success("User removed from workspace");
+      } catch (err) {
+        toast.error("Failed to remove user");
+      }
+    },
+    [removeUser]
+  );
 
   useEffect(() => {
     if (!isOpen) {
