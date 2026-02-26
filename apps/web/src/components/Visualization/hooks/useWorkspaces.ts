@@ -1,5 +1,4 @@
 import { useCallback, useMemo, useState } from "react";
-import type { WorkspaceEditFormValues } from "@sandworm/types";
 import { useLazyQuery } from "@apollo/client";
 
 import type { ApiWorkspace } from "@/types";
@@ -23,13 +22,16 @@ import {
   useRemoveUserFromWorkspaceMutation,
   useBatchRemoveUsersFromWorkspaceMutation,
   useGetAdminWorkspacesWithMembersQuery,
+  useUpdateWorkspaceMemberRoleMutation,
 } from "@/generated/graphql";
 
 import { NEXT_PUBLIC_API_URL } from "../utils/env";
 
 import { useSession } from "./useAuth";
 
-// 1. Get all user workspaces
+type WorkspaceEditFormValues = Partial<ApiWorkspace>;
+
+/* ---- Get All Users Workspaces --- */
 type UseWorkspacesAPI = {
   updateSettings: (
     workspaceId: string,
@@ -212,7 +214,6 @@ export const useSwitchWorkspace = (): UseSwitchWorkspaceReturn => {
         });
 
         if (result.data?.switchWorkspace) {
-          // Refetch workspace info to get the new current workspace
           await refetchWorkspaceInfo();
           await refetchWorkspaces();
           return true;
