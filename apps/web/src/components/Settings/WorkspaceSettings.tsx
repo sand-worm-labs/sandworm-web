@@ -27,6 +27,7 @@ import {
   usePendingInvites,
   usePendingRoleRequests,
   useRejectRoleRequest,
+  useWorkspaceWithMembers,
 } from "../Visualization/hooks/useWorkspaces";
 import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
 import MiniUsersList from "../Visualization/blocks/MiniUsersList";
@@ -311,25 +312,46 @@ export function DeleteWorkspaceModal({
   );
 }
 
+interface WorkspaceSettingsModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  workspace: {
+    id: string;
+    name: string;
+    icon?: string | null;
+    secrets?: {
+      hasOpenAiApiKey?: boolean;
+    };
+  } | null;
+  updateWorkspace: (id: string, name: string, icon?: string) => Promise<void>;
+  isUpdating: boolean;
+  disableCustomOpenAiKey?: boolean;
+}
+
 export default function WorkspaceSettingsModal({
   isOpen,
   onClose,
   workspace,
-  isAdmin,
   updateWorkspace,
   isUpdating,
   disableCustomOpenAiKey,
 }: WorkspaceSettingsModalProps) {
   const router = useRouter();
-  const session = useSession({ redirectToLogin: true });
+
+  const {
+    members,
+    currentUserRole,
+    isLoading: isMembersLoading,
+  } = useWorkspaceWithMembers(isOpen ? workspace?.id : undefined);
+
+  const isAdmin = currentUserRole === "admin";
+
   const { pendingRequests, refetch: refetchPendingRequests } =
     usePendingRoleRequests(workspace?.id ?? "");
   const { pendingInvites: rawPendingInvites, refetch: refetchInvites } =
     usePendingInvites(workspace?.id ?? "");
   const { approveRoleRequest } = useApproveRoleRequest(workspace?.id ?? "");
   const { rejectRoleRequest } = useRejectRoleRequest(workspace?.id ?? "");
-
-  console.log(workspace, "workspace");
 
   const [state, setState] = useState({
     isEditingName: false,
@@ -345,8 +367,6 @@ export default function WorkspaceSettingsModal({
     useDeleteWorkspace(currentWorkspace ?? undefined);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  console.log("woo", workspace);
 
   const mappedPendingRequests = useMemo(() => {
     return pendingRequests.map(req => ({
@@ -394,7 +414,6 @@ export default function WorkspaceSettingsModal({
     workspaceId: string
   ) => {
     const success = await inviteUser(email, workspaceId, role);
-
     if (success) {
       toast.success(`Invitation sent to ${email}`);
       refetchInvites();
@@ -405,10 +424,7 @@ export default function WorkspaceSettingsModal({
 
   const handleCancelInvite = async (inviteId: string) => {
     console.log("Cancelling invite:", inviteId);
-
     await new Promise(resolve => setTimeout(resolve, 500));
-
-    setPendingInvites(prev => prev.filter(invite => invite.id !== inviteId));
   };
 
   const onChangeRole = useCallback(
@@ -451,11 +467,10 @@ export default function WorkspaceSettingsModal({
         aria-label="Close modal"
       />
 
-      {/* Modal */}
-      <div className="flex min-h-full items-center justify-center p-4 lg:min-w-[1000px]  w-auto">
+      <div className="flex min-h-full items-center justify-center p-4 lg:min-w-[1000px] w-auto">
         <div className="relative w-full max-w-[1000px] xl:max-w-[1300px] transform rounded-2xl bg-white dark:bg-[#0D1014] shadow-none transition-all px-12">
           {/* Header */}
-          <div className="flex items-center justify-between  px-6 py-4 pt-12 ">
+          <div className="flex items-center justify-between px-6 py-4 pt-12">
             <div>
               <div className="flex gap-x-3">
                 <WorkspaceIcon icon={workspace?.icon} />
@@ -464,13 +479,12 @@ export default function WorkspaceSettingsModal({
                   <button
                     type="button"
                     onClick={() => setIsEditModalOpen(true)}
-                    className="p-1 rounded  transition-colors"
+                    className="p-1 rounded transition-colors"
                   >
                     <PencilSimple className="h-4 w-4 text-gray-500" />
                   </button>
                 </h2>
 
-                {/* Members count */}
                 <div className="w-32 flex items-center justify-center gap-2 text-sm text-[#6C757D] font-medium dark:text-gray-400 border-r border-[#1A1A1A]">
                   <svg
                     className="w-5 h-5"
@@ -486,8 +500,8 @@ export default function WorkspaceSettingsModal({
                     />
                   </svg>
                   <span>
-                    {workspace?.users?.length || 1}{" "}
-                    {workspace?.users?.length === 1 ? "member" : "members"}
+                    {isMembersLoading ? "..." : members.length}{" "}
+                    {members.length === 1 ? "member" : "members"}
                   </span>
                 </div>
 
@@ -534,11 +548,9 @@ export default function WorkspaceSettingsModal({
                 <label className="block text-md font-bold leading-4 dark:text-white text-ink-100">
                   Team plan
                 </label>
-
                 <p className="text-xs xl:text-sm mt-2 text-[#6C757D]">
                   Check your current billing status
                 </p>
-
                 <div className="flex items-center">
                   <button
                     type="button"
@@ -548,7 +560,7 @@ export default function WorkspaceSettingsModal({
                       );
                       onClose();
                     }}
-                    className="px-2.5 py-1 border border-[#DEE2E6] dark:border-gray-700 bg-[#F8F9FA] rounded-lg font-medium  hover:bg-gray-50 dark:hover:bg-gray-800 text-xs"
+                    className="px-2.5 py-1 border border-[#DEE2E6] dark:border-gray-700 bg-[#F8F9FA] rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-800 text-xs"
                   >
                     Change Plan
                   </button>
@@ -556,7 +568,7 @@ export default function WorkspaceSettingsModal({
               </div>
 
               <div className="flex w-[50%] justify-between border-b border-[#E9ECEF] pb-2">
-                <div className="flex  ">
+                <div className="flex">
                   <div>
                     <div className="text-[13px] uppercase text-[#6C757D] font-bold block mb-2.5">
                       Current plan
@@ -566,12 +578,11 @@ export default function WorkspaceSettingsModal({
                     </div>
                   </div>
                 </div>
-
                 <div>
                   <div className="text-[13px] uppercase text-[#6C757D] font-bold block mb-2.5">
                     Available AI Credit
                   </div>
-                  <div className="font-medium text-[#6C757D] capitalize  px-2 py-0.5 block  inline-block text-sm">
+                  <div className="font-medium text-[#6C757D] capitalize px-2 py-0.5 block inline-block text-sm">
                     0
                   </div>
                 </div>
@@ -581,7 +592,7 @@ export default function WorkspaceSettingsModal({
             {/* AI Model Selection */}
             <div className="flex items-center justify-between gap-4 py-4">
               <div className="flex flex-col gap-y-2">
-                <label className="block text-md font-bold leading-4 dark:text-white text-ink-100 ">
+                <label className="block text-md font-bold leading-4 dark:text-white text-ink-100">
                   AI Configuration
                 </label>
                 <span className="text-xs xl:text-sm mt-2 text-[#6C757D]">
@@ -590,7 +601,7 @@ export default function WorkspaceSettingsModal({
               </div>
 
               <div className="w-[50%]">
-                <div className=" text-[13px] uppercase text-[#6C757D] font-bold block mb-1.5">
+                <div className="text-[13px] uppercase text-[#6C757D] font-bold block mb-1.5">
                   Model
                 </div>
                 <select
@@ -617,7 +628,7 @@ export default function WorkspaceSettingsModal({
                 </div>
 
                 <div className="w-[50%]">
-                  <div className=" text-[13px] uppercase text-[#6C757D] font-bold block mb-1.5">
+                  <div className="text-[13px] uppercase text-[#6C757D] font-bold block mb-1.5">
                     set key
                   </div>
                   <select
@@ -634,9 +645,10 @@ export default function WorkspaceSettingsModal({
               </div>
             )}
 
-            <div className="flex items-start justify-between gap-4 py-4 ">
+            {/* Members */}
+            <div className="flex items-start justify-between gap-4 py-4">
               <div className="flex flex-col gap-y-2">
-                <label className="block text-md font-bold leading-4 dark:text-white text-ink-100 ">
+                <label className="block text-md font-bold leading-4 dark:text-white text-ink-100">
                   Members
                 </label>
                 <span className="text-xs xl:text-sm mt-2 text-[#6C757D]">
@@ -646,33 +658,33 @@ export default function WorkspaceSettingsModal({
 
               <div className="w-[50%]">
                 <MiniUsersList
-                  currentUserEmail={session.user?.email ?? ""}
-                  users={workspace?.users}
+                  currentUserEmail={
+                    members.find(m => m.role === currentUserRole)?.email ?? ""
+                  }
+                  users={members}
                   onRemoveUser={onRemoveUser}
                   onChangeRole={onChangeRole}
-                  onInvite={() => {
-                    console.log("");
-                  }}
+                  onInvite={() => {}}
                 />
               </div>
             </div>
           </div>
 
           {/* Footer */}
-          <div className="flex justify-between gap-3  px-6 py-4 mb-20">
+          <div className="flex justify-between gap-3 px-6 py-4 mb-20">
             <div>
-              <h3 className="text-ink-100 font-bold"> Delete Workspace</h3>
+              <h3 className="text-ink-100 font-bold">Delete Workspace</h3>
               <p className="text-xs xl:text-sm mt-2 text-[#6C757D]">
                 Delete this Workspace
               </p>
             </div>
 
-            <div className="w-[50%] ">
+            <div className="w-[50%]">
               <h3 className="uppercase mb-2 text-[#6C757D] font-bold text-[13px]">
                 Delete this workspace
               </h3>
               <div className="flex bg-[#FFDBDB] border border-[#CED4DA] rounded-xl text-[13px] py-1 px-2 items-center gap-x-5 justify-between">
-                <span className="inline-block text-[#ff0000] ">
+                <span className="inline-block text-[#ff0000]">
                   Once deleted, all files, users and data will be permanently
                   lost
                 </span>
@@ -734,17 +746,15 @@ export default function WorkspaceSettingsModal({
         onClose={() => setIsEditModalOpen(false)}
         currentName={workspace?.name}
         onSave={async ({ name, selectedIcon }) => {
-          console.log(selectedIcon);
           if (!isAdmin) {
             alert("Only admins can update workspace settings");
             return;
           }
-
           try {
             await updateWorkspace(
               workspace?.id || "",
               name.trim(),
-              selectedIcon
+              selectedIcon ?? undefined
             );
             setIsEditModalOpen(false);
           } catch (err) {
