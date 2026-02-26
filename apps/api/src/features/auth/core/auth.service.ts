@@ -15,8 +15,6 @@ import { verifyPassword } from '@sandworm/nest-common';
 import crypto from 'crypto';
 import ms from 'ms';
 import { MailService } from '@/infrastructure/mail/mail.service';
-import { Session } from '@/features/session/domain/session';
-import { SessionService } from '@/features/session/session.service';
 import { SocialInterface } from '@/features/social/interface/social.interface';
 import { UserResponse } from '@/features/user/model/http/user.model';
 import { AuthProvidersEnum } from '@/common/enums/auth-providers.enum';
@@ -32,7 +30,6 @@ export class AuthService {
   constructor(
     private jwtService: JwtService,
     private usersService: UserService,
-    private sessionService: SessionService,
     private mailService: MailService,
     private configService: ConfigService<AllConfigType>,
   ) { }
