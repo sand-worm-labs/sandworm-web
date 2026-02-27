@@ -1,5 +1,5 @@
-
-import { AuthGraphqlService } from '@/features/auth/graphql/auth-graphql.service';
+import '@fastify/cookie';
+import { AuthService } from '@/features/auth/core/auth.service';
 import {
   CanActivate,
   ExecutionContext,
@@ -15,15 +15,14 @@ import { type FastifyRequest } from 'fastify';
 export class AuthGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
-    private authService: AuthGraphqlService,
-  ) { }
+    private authService: AuthService,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC, [
       context.getHandler(),
       context.getClass(),
     ]);
-
     if (isPublic) return true;
 
     const isAuthOptional = this.reflector.getAllAndOverride<boolean>(
@@ -31,16 +30,11 @@ export class AuthGuard implements CanActivate {
       [context.getHandler(), context.getClass()],
     );
 
-    // Determine if this is a GraphQL or HTTP request
     const request = this.getRequest(context);
-    const accessToken = this.extractTokenFromHeader(request);
+    const accessToken = this.extractTokenFromCookie(request);
 
-    if (isAuthOptional && !accessToken) {
-      return true;
-    }
-    if (!accessToken) {
-      throw new UnauthorizedException();
-    }
+    if (isAuthOptional && !accessToken) return true;
+    if (!accessToken) throw new UnauthorizedException();
 
     request['user'] = {
       ...(await this.authService.verifyAccessToken(accessToken)),
@@ -51,17 +45,13 @@ export class AuthGuard implements CanActivate {
   }
 
   private getRequest(context: ExecutionContext): FastifyRequest {
-    if (context.getType().toString() == 'graphql') {
-      const ctx = GqlExecutionContext.create(context);
-      return ctx.getContext().req;
+    if (context.getType().toString() === 'graphql') {
+      return GqlExecutionContext.create(context).getContext().req;
     }
     return context.switchToHttp().getRequest();
   }
 
-  private extractTokenFromHeader(request: FastifyRequest): string | undefined {
-    const [type, token] = request.headers.authorization?.split(' ') ?? [];
-    if ((type === 'Bearer' || type === 'Token') && token) {
-      return token;
-    }
+  private extractTokenFromCookie(request: FastifyRequest): string | undefined {
+    return request.cookies?.['access_token'];
   }
 }
