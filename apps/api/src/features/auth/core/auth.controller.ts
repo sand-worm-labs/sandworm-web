@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Post,
+  Res,
   SerializeOptions,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -13,8 +14,9 @@ import { AuthForgotPasswordDto } from './dto/auth-forgot-password.dto';
 import { AuthRegisterLoginDto } from './dto/auth-register-login.dto';
 import { AuthResetPasswordDto } from './dto/auth-reset-password.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
-import { RefreshResponseDto } from './dto/refresh-response.dto';
 import { CurrentUser } from '@sandworm/api/decorators/current-user.decorator';
+import { type FastifyReply } from 'fastify';
+import { clearAuthCookies } from './utils/response.util';
 
 @ApiTags('Auth')
 @Controller({
@@ -92,13 +94,13 @@ export class AuthController {
   @SerializeOptions({ groups: ['me'] })
   @ApiAuth({
     summary: 'Refresh access token',
-    type: RefreshResponseDto,
   })
-  public refresh(@CurrentUser() user: { sessionId: string; hash: string }): Promise<RefreshResponseDto> {
-    return this.service.refreshToken({
-      sessionId: user.sessionId,
-      hash: user.hash,
-    });
+  public refresh(@CurrentUser() user: { id: string; ha}): Promise<void> {
+    // return this.service.refreshToken({
+    //   sessionId: user.sessionId,
+    //   hash: user.hash,
+    // });
+    return
   }
 
   @Post('logout')
@@ -106,9 +108,8 @@ export class AuthController {
     summary: 'Logout current user',
     statusCode: 204,
   })
-  public async logout(@CurrentUser("sessionId") sessionId: string): Promise<void> {
-    await this.service.logout({
-      sessionId: sessionId,
-    });
+  public async logout( @Res({ passthrough: true }) res: FastifyReply): Promise<void> {
+    clearAuthCookies(res);
+    return;
   }
 }
