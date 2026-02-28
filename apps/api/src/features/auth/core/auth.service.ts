@@ -22,8 +22,7 @@ import { AuthEmailLoginDto } from './dto/auth-email-login.dto';
 import { AuthRegisterLoginDto } from './dto/auth-register-login.dto';
 import { AuthUpdateDto } from './dto/auth-update.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
-import { JwtPayloadType } from './strategies/types/jwt-payload.type';
-import { JwtRefreshPayloadType } from './strategies/types/jwt-refresh-payload.type';
+
 
 @Injectable()
 export class AuthService {
@@ -80,21 +79,10 @@ export class AuthService {
       });
     }
 
-    const session = await this.sessionService.create(user.id);
-
-    const { token, refreshToken, tokenExpires } = await this.getTokensData({
-      id: user.id,
-      sessionId: session.id,
-      hash: session.hash,
-    });
-
     delete user.password;
 
     const user_workspace = await this.usersService.getUserWorkspaceRoles(user.id);
     return {
-      refreshToken,
-      token,
-      tokenExpires,
       user,
       roles: user_workspace,
     };
@@ -147,23 +135,11 @@ export class AuthService {
       });
     }
 
-    const session = await this.sessionService.create(user.id);
-
-    const {
-      token: jwtToken,
-      refreshToken,
-      tokenExpires,
-    } = await this.getTokensData({
-      id: user.id,
-      sessionId: session.id,
-      hash: session.hash,
-    });
+    const user_workspace = await this.usersService.getUserWorkspaceRoles(user.id);
 
     return {
-      refreshToken,
-      token: jwtToken,
-      tokenExpires,
       user,
+      roles: user_workspace,
     };
   }
 
@@ -334,24 +310,22 @@ export class AuthService {
 
     user.password = password;
 
-    await this.sessionService.deleteByUserId({
-      userId: user.id,
-    });
+    /// cookie stuff 
 
     await this.usersService.update(user.id, user);
   }
 
   async me(
-    userJwtPayload: JwtPayloadType,
+    userId: string,
   ): Promise<NullableType<UserResponse>> {
-    return this.usersService.findById(userJwtPayload.id);
+    return this.usersService.findById(userId);
   }
 
   async update(
-    userJwtPayload: JwtPayloadType,
+    userId: string,
     userDto: AuthUpdateDto,
   ): Promise<NullableType<UserResponse>> {
-    const currentUser = await this.usersService.findById(userJwtPayload.id);
+    const currentUser = await this.usersService.findById(userId);
 
     if (!currentUser) {
       throw new UnprocessableEntityException({
@@ -394,10 +368,10 @@ export class AuthService {
           },
         });
       } else {
-        await this.sessionService.deleteByUserIdWithExclude({
-          userId: currentUser.id,
-          excludeSessionId: userJwtPayload.sessionId,
-        });
+        // await this.sessionService.deleteByUserIdWithExclude({
+        //   userId: currentUser.id,
+        //   excludeSessionId: userJwtPayload.sessionId,
+        // });
       }
     }
 
@@ -437,52 +411,20 @@ export class AuthService {
     delete userDto.email;
     delete userDto.oldPassword;
 
-    await this.usersService.update(userJwtPayload.id, userDto);
+    await this.usersService.update(userId, userDto);
 
-    return this.usersService.findById(userJwtPayload.id);
+    return this.usersService.findById(userId);
   }
 
   async refreshToken(
-    data: Pick<JwtRefreshPayloadType, 'sessionId' | 'hash'>,
   ): Promise<Omit<LoginResponseDto, 'user'>> {
-    const session = await this.sessionService.findById(data.sessionId);
-
-    if (!session) {
-      throw new UnauthorizedException();
-    }
-
-    if (session.hash !== data.hash) {
-      throw new UnauthorizedException();
-    }
-
-    const hash = crypto
-      .createHash('sha256')
-      .update(randomStringGenerator())
-      .digest('hex');
-
-    await this.sessionService.update(session.id, {
-      hash,
-    });
-
-    const { token, refreshToken, tokenExpires } = await this.getTokensData({
-      id: session.user.id,
-      sessionId: session.id,
-      hash,
-    });
-
-    return {
-      token,
-      refreshToken,
-      tokenExpires,
-    };
+     return {
+      roles: [],
+    };  
   }
 
   async softDelete(user: UserResponse): Promise<void> {
     await this.usersService.remove(user.id);
-  }
-
-  async logout(data: Pick<JwtRefreshPayloadType, 'sessionId'>) {
-    return this.sessionService.deleteById(data.sessionId);
   }
 
   async verifyAccessToken(token: string): Promise<JwtPayloadType> {
@@ -499,55 +441,4 @@ export class AuthService {
     }
   }
 
-  async verifyAccessTokenWithSession(token: string): Promise<JwtPayloadType> {
-    const payload = await this.verifyAccessToken(token);
-
-    const session = await this.sessionService.findById(payload.sessionId);
-
-    if (!session) {
-      throw new UnauthorizedException('Session not found or expired');
-    }
-
-    return payload;
-  }
-
-  private async getTokensData(data: {
-    id: UserResponse['id'];
-    sessionId: Session['id'];
-    hash: Session['hash'];
-  }) {
-    const authConfig = this.configService.getOrThrow('auth', { infer: true });
-    const tokenExpiresIn = authConfig.expires;
-
-    const tokenExpires = Date.now() + ms(tokenExpiresIn);
-
-    const [token, refreshToken] = await Promise.all([
-      await this.jwtService.signAsync(
-        {
-          id: data.id,
-          sessionId: data.sessionId,
-        },
-        {
-          secret: authConfig.secret,
-          expiresIn: tokenExpiresIn,
-        },
-      ),
-      await this.jwtService.signAsync(
-        {
-          sessionId: data.sessionId,
-          hash: data.hash,
-        },
-        {
-          secret: authConfig.refreshSecret,
-          expiresIn: authConfig.refreshExpires,
-        },
-      ),
-    ]);
-
-    return {
-      token,
-      refreshToken,
-      tokenExpires,
-    };
-  }
 }

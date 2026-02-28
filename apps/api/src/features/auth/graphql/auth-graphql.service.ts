@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { LoginInput } from './dto/auth-graphql.dto';
 import { AuthPayload } from './models/auth-payload';
-import { JwtPayloadType } from '@/features/auth/core/strategies/types/jwt-payload.type';
 import { AuthService } from '@/features/auth/core/auth.service';
 
 
@@ -20,15 +19,9 @@ export class AuthGraphqlService {
     });
 
     return {
-      id: loginResponse.user.id,
-      tokenExpires: loginResponse.tokenExpires,
-      token: loginResponse.token,
+      id: loginResponse.user.id, 
       user: loginResponse.user,
       roles: loginResponse.roles
     };
-  }
-
-  async verifyAccessToken(token: string): Promise<JwtPayloadType> {
-    return this.authService.verifyAccessTokenWithSession(token);
   }
 }
