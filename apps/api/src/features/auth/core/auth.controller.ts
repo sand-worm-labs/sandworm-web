@@ -16,7 +16,7 @@ import { AuthResetPasswordDto } from './dto/auth-reset-password.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
 import { CurrentUser } from '@sandworm/api/decorators/current-user.decorator';
 import { type FastifyReply } from 'fastify';
-import { clearAuthCookies } from './utils/response.util';
+import { clearAuthCookies, setAuthCookies } from './utils/response.util';
 
 @ApiTags('Auth')
 @Controller({
@@ -32,8 +32,10 @@ export class AuthController {
     summary: 'Login with email and password',
     type: LoginResponseDto,
   })
-  public login(@Body() loginDto: AuthEmailLoginDto): Promise<LoginResponseDto> {
-    return this.service.validateLogin(loginDto);
+  public async login(@Body() loginDto: AuthEmailLoginDto, @Res({ passthrough: true }) response: FastifyReply): Promise<LoginResponseDto> {
+    const { user, roles } = await this.service.validateLogin(loginDto);
+   // setAuthCookies(response, token, refreshToken, tokenExpires - Date.now());
+    return { user, roles };
   }
 
   @Post('email/register')
@@ -95,11 +97,12 @@ export class AuthController {
   @ApiAuth({
     summary: 'Refresh access token',
   })
-  public refresh(@CurrentUser() user: { id: string; ha}): Promise<void> {
+  public async refresh(@CurrentUser() user: { id: string;},  @Res({ passthrough: true }) response: FastifyReply,): Promise<void> {
     // return this.service.refreshToken({
     //   sessionId: user.sessionId,
     //   hash: user.hash,
     // });
+    //setAuthCookies(response, token, refreshToken, tokenExpires - Date.now());
     return
   }
 
