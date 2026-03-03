@@ -70,8 +70,7 @@ export const MultimodalInputView = forwardRef<
     resize-none
     rounded-3xl
     border-[1.5px] border-[#E6E0F1]
-    bg-white dark:border-[#262A30]
-    dark:bg-[#121417]
+    bg-base-100 dark:border-[#262A30]
     dark:text-white
     text-sm
     placeholder:text-ink-300 
@@ -80,7 +79,7 @@ export const MultimodalInputView = forwardRef<
     focus:outline-none
     focus:border-transparent
     focus:ring-4
-   shadow-[0_3.5px_24px_rgba(120,147,208,0.09)] 
+   shadow-[0_3.5px_24px_rgba(120,147,208,0.09)] dark:shadow-none
    focus:ring-[rgba(163,8,240,0.2)]
 dark:focus:ring-[rgba(163,8,240,0.3)]
     transition-all

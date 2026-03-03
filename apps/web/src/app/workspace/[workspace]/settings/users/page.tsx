@@ -36,7 +36,6 @@ export default function UsersPage() {
   const { inviteUser } = useInviteUserToWorkspace(workspaceId);
   const { batchRemoveUsers } = useBatchRemoveUsersFromWorkspace();
 
-  // Always admin since useAdminWorkspacesWithMembers only returns workspaces you admin
   const isAdmin = true;
 
   const members = useMemo(() => {
@@ -140,7 +139,6 @@ export default function UsersPage() {
     setRoleFilters(prev => prev.map(filter => ({ ...filter, enabled: false })));
   }, []);
 
-  // todo: wire up change role mutation when available
   const onChangeRole = useCallback(
     async (id: string, role: UserWorkspaceRole) => {
       console.log("Change role:", id, role);
@@ -216,12 +214,12 @@ export default function UsersPage() {
     <>
       <ScrollBar className="w-full h-full overflow-auto font-body">
         <div className="px-4 sm:p-6 lg:p-8 min-h-[100vh]">
-          <div className="dark:border-gray-800 pb-4 mb-6 flex justify-between items-center">
+          <div className="dark:border-gray-800 pb-4 mb-6 flex flex-col md:flex-row justify-between md:items-center items-start">
             <div>
               <h2 className="text-xl font-medium text-ink-100 dark:text-white mb-1">
                 Users
               </h2>
-              <p className="mb-6 text-ink-400">
+              <p className="mb-6 text-ink-400 text-sm md:text-base">
                 View and manage everyone you've invited across all your
                 workspaces.
               </p>

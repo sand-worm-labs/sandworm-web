@@ -140,7 +140,7 @@ function SQLQueryConfigurationButton(props: Props) {
     athenaResultReuseConfigurationResultReuseByAgeConfigurationEnabled,
   ]);
 
-  if (props.dataSource.config.type !== "athena") {
+  if (props.dataSource.type !== "athena") {
     return null;
   }
 

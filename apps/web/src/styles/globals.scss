@@ -120,6 +120,8 @@
     --base-400: 0 0% 6%;
     /* #0F0F0F*/
     --base-500: #fbfbfb;
+    --base-600: 180 43% 95%; /* #EBF7F7 */
+
     /* Inputs */
     --bg-input: 210 17% 98%;
     /* #F8F9FA */
@@ -138,6 +140,7 @@
     --ink-300: #868e96;
     --ink-400: #6c757d;
     --ink-500: #343a40;
+    --ink-600: #8C98A3;
     --menu-ink: #39414e;
     --menu-ink-200: #616a79;
     --radius: 0.5rem;
@@ -162,12 +165,16 @@
     /* #FF0000 */
 
     /* Base surfaces */
-    --base-100: 0 0% 100%;
+    --base-100: 60 2% 18%;
     /* #ffffff */
-    --base-200: 240 100% 99%;
+    --base-200: 60 1% 15%;
     /* #FEFEFF */
     --base-300: 210 17% 96%;
     /* #F1F3F4 */
+
+    --base-500: #232322;
+
+    --base-600: 60  5% 7%;
 
     --gray-100: #363c46;
     /* Inputs */
@@ -184,8 +191,10 @@
     /* #868E96 */
 
     /* Text */
-    --ink-100: #1a1a1a;
+      --ink-100: #ffffff;
     --ink-200: #455768;
+    --ink-600: #fff;
+
 
     --radius: 0.5rem;
   }
@@ -210,6 +219,7 @@
      padding: 0;
      overflow-x: hidden;
      scroll-behavior: smooth;
+     color: var(--ink-100)
    }
    
    body {
@@ -220,6 +230,49 @@
 
 h1 {
   font-family: "Helvetica Neue";
+}
+
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+height: 100%;
+}
+
+.bar-loader {
+  height: 4px;
+  width: 200px; 
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+  
+  background: linear-gradient(
+    to right, 
+    #6368ff 0.62%,
+    #cbecff 15.71%,
+    #7bff42 25.15%,
+    #2db2ff 42.6%,
+    #f00 60.53%,
+    #ded757 80.81%,
+    #ff00e1 98.74%
+  );
+
+
+
+ 
+  
+  background-size: 200% 100%;
+  animation: shift-colors 2s linear infinite;
+}
+
+@keyframes shift-colors {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 /* ════════════ Scrollbar ════════════ */

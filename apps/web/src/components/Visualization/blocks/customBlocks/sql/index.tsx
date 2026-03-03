@@ -266,7 +266,7 @@ function SQLBlock(props: Props) {
   }, [props.block, hasOaiKey]);
 
   const dataSource = useMemo(
-    () => props.dataSources.find(d => d.config.data.id === dataSourceId),
+    () => props.dataSources.find(d => d.data.id === dataSourceId),
     [props.dataSources, dataSourceId]
   );
 
@@ -438,7 +438,7 @@ function SQLBlock(props: Props) {
   const onToggleFormatSQLCode = useCallback(() => {
     const sqlCodeFormatted = getSQLCodeFormatted(
       source,
-      dataSource?.config.type ?? null
+      dataSource?.type ?? null
     );
 
     if (!sqlCodeFormatted) {
@@ -465,10 +465,10 @@ function SQLBlock(props: Props) {
     () =>
       props.dataSources
         .map(d => ({
-          value: d.config.data.id,
-          label: d.config.data.name,
-          type: d.config.type,
-          isDemo: d.config.data.isDemo,
+          value: d.data.id,
+          label: d.data.name,
+          type: d.type,
+          isDemo: d.data.isDemo,
         }))
         .toArray(),
     [props.dataSources]
@@ -1182,7 +1182,7 @@ function SQLBlock(props: Props) {
           )}
 
         {((result && !isResultHidden) || !isCodeHidden) &&
-          dataSource?.config.type === "athena" && (
+          dataSource?.type === "athena" && (
             <SQLQueryConfigurationButton
               dataSource={dataSource}
               value={configuration}

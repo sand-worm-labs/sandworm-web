@@ -48,6 +48,8 @@ function getDialect(type?: APIDataSource["config"]["type"]): SQLDialect {
       return PostgreSQL;
     case "sqlserver":
       return MSSQL;
+    default:
+      return StandardSQL;
   }
 }
 
@@ -57,7 +59,7 @@ async function computeCompletion(
 ) {
   const schema = getSchemaFromSchemas(schemas);
   return schemaCompletionSource({
-    dialect: getDialect(dataSource.config.type),
+    dialect: getDialect(dataSource.type),
     schema,
     defaultSchema:
       "defaultSchema" in dataSource.structure
@@ -123,7 +125,7 @@ function language(
   dataSource: APIDataSource | null,
   schemas: Map<string, DataSourceSchema>
 ): Extension {
-  const dialect = getDialect(dataSource?.config.type);
+  const dialect = getDialect(dataSource?.type);
 
   const keywordSource = keywordCompletionSource(dialect, true);
   const keywordCompletion = async (
@@ -224,7 +226,7 @@ export function SQLExtensionProvider(props: Props) {
       }
 
       const datasource =
-        datasources?.find(ds => ds.config.data.id === dataSourceId) ?? null;
+        datasources?.find(ds => ds.data.id === dataSourceId) ?? null;
       const schema = dataSourceId ? schemas.get(dataSourceId) : null;
       const newExtension = language(datasource, schema ?? Map());
 
@@ -242,7 +244,7 @@ export function SQLExtensionProvider(props: Props) {
         extensions.map((_, key) => {
           const [, dataSourceId] = key.split("-");
           const datasource =
-            datasources?.find(ds => ds.config.data.id === dataSourceId) ?? null;
+            datasources?.find(ds => ds.data.id === dataSourceId) ?? null;
           const schema = dataSourceId ? schemas.get(dataSourceId) : null;
           return language(datasource, schema ?? Map());
         })

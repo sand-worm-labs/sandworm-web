@@ -36,7 +36,7 @@ interface Props {
 }
 function WritebackControls(props: Props) {
   const datasource = props.dataSources.find(
-    ds => ds.config.data.id === props.dataSourceId
+    ds => ds.data.id === props.dataSourceId
   );
 
   const [tab, setTab] = useState<"general" | "overwrite">("general");
@@ -108,7 +108,7 @@ function WritebackControls(props: Props) {
                   onChange={props.onChangeOnConflict}
                   disabled={props.disabled}
                 />
-                {datasource && datasource.config.type === "bigquery" && (
+                {datasource && datasource.type === "bigquery" && (
                   <WritebackOnConflictColumns
                     value={props.onConflictColumns}
                     onChange={props.onChangeOnConflictColumns}

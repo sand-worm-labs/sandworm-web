@@ -46,8 +46,6 @@ import {
   getBlockFlatPosition,
 } from "@sandworm/editor";
 import type { DataFrame } from "@sandworm/types";
-import RunAllV2 from "../Visualization/blocks/RunAllV2";
-
 import {
   Bars3CenterLeftIcon,
   ChartPieIcon,
@@ -73,9 +71,14 @@ import {
   PlayIcon,
 } from "@heroicons/react/24/outline";
 import SimpleBar from "simplebar-react";
+import { DocumentIcon } from "@heroicons/react/24/solid";
 
 import { useOnClickOutside } from "@/hooks/useOnClickOutside";
+
 import type { ApiDocument, UserWorkspaceRole } from "@/types";
+import RunAllV2 from "../Visualization/blocks/RunAllV2";
+
+
 
 import PivotTableBlock from "../Visualization/blocks/customBlocks/pivotTable";
 import useHotkeys from "../Visualization/hooks/useHotkeys";
@@ -113,7 +116,6 @@ import { ContentSkeleton } from "./ContentSkeleton";
 import PlusButton from "./PlusButton";
 import DragHandle from "./DragHandle";
 import Title from "./Title";
-import { DocumentIcon } from "@heroicons/react/24/solid";
 
 // The react-dnd package does not export this...
 type Identifier = string | symbol;
@@ -1244,21 +1246,23 @@ const Editor = (props: Props) => {
     }
   }, [editorWrapperRef, props.isSyncing]);
 
+  console.log("dataSources:", props.dataSources.toArray());
+
   const [newSQLDatasourceId, newSQLDatasourceIsDemo] = useMemo(() => {
     const dataSource =
       head(
         sortWith(
           [
             // put default data source first
-            descend(d => (d.config.data.isDefault ? 1 : 0)),
+            descend(d => (d.data.isDefault ? 1 : 0)),
             // put demo data source last
-            descend(d => (d.config.data.isDemo ? 0 : 1)),
+            descend(d => (d.data.isDemo ? 0 : 1)),
             // put newer data sources first
-            descend(d => d.config.data.createdAt),
+            descend(d => d.data.createdAt),
           ],
           props.dataSources.toArray()
         )
-      )?.config.data ?? null;
+      )?.data ?? null;
 
     if (dataSource) {
       return [dataSource.id, dataSource.isDemo];
@@ -1586,7 +1590,7 @@ const Editor = (props: Props) => {
   const hasWriteback = useMemo(
     () =>
       props.dataSources.some(
-        ds => ds.config.type === "psql" || ds.config.type === "bigquery"
+        ds => ds.type === "psql" || ds.type === "bigquery"
       ),
     [props.dataSources]
   );

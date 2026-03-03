@@ -2,7 +2,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   User,
   Calendar,
@@ -149,7 +149,7 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
             <Loader />
           </div>
         ) : !currentUser ? (
-          <div className=" mx-auto px-4 py-8">
+          <div className=" mx-auto md:px-4 py-8">
             <p className="text-center text-ink-200 dark:text-gray-400">
               No user found
             </p>
@@ -158,8 +158,8 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
           <div className="max-w-6xl mx-auto px-4 py-8">
             <h2 className="text-base font-bold mb-4">Profile</h2>
             <div className="space-y-6">
-              <div className="flex gap-x-4">
-                <div className="bg-white dark:bg-[#010100] rounded-2xl p-8 flex-1">
+              <div className="flex md:flex-row flex-col gap-x-4">
+                <div className=" rounded-2xl md:p-8 flex-1">
                   <div className="flex flex-col md:flex-row gap-6">
                     <div className="flex-shrink-0">
                       {mockProfile.avatar ? (
@@ -266,7 +266,7 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                           0 && (
                           <div className="flex gap-3">
                             {Object.entries(currentUser?.settings?.socialLinks)
-                              .filter(([_, url]) => url)
+                              .filter(([, url]) => url)
                               .map(([platform, url]) => (
                                 <a
                                   key={platform}
@@ -284,16 +284,16 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                   </div>
                 </div>
 
-                <div className="w-full flex-1">
+                <div className="w-full flex-1 py-12 md:py-0">
                   {wallets && wallets.length > 0 ? (
-                    <div className="bg-white dark:bg-[#010100] rounded-2xl p-6">
+                    <div className="bg-white dark:bg-[#010100] rounded-2xl md:p-6">
                       <h2 className="px-2 py-0.5 font-medium text-ink-100 dark:text-white mb-4 bg-[#E9ECEF] inline-block text-sm rounded-lg">
                         Main Wallets
                       </h2>
                       <div className="space-y-3">
-                        {wallets.map((wallet, index) => (
+                        {wallets.map(wallet => (
                           <div
-                            key={index}
+                            key={wallet.address}
                             className="flex items-center justify-between p-4 py-2 rounded-xl dark:border-[#262A30]   transition-colors bg-[#F8F9FA] border border-[#DEE2E6]"
                           >
                             <div className="flex-1">
@@ -377,7 +377,12 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
         onClose={() => setIsWalletsModalOpen(false)}
         wallets={wallets}
         onWalletsChange={async updated => {
-          await addWallets(updated);
+          await addWallets(
+            updated.map(wallet => ({
+              address: wallet.address,
+              chain: wallet.chain ?? "",
+            }))
+          );
         }}
       />
 
@@ -385,7 +390,13 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
         isOpen={isAddWalletOpen}
         onClose={() => setIsAddWalletOpen(false)}
         onAdd={async newWallet => {
-          await addWallets([...wallets, newWallet]);
+          await addWallets([
+            ...wallets,
+            {
+              address: newWallet.address,
+              chain: newWallet.chain ?? "",
+            },
+          ]);
         }}
         existingAddresses={wallets.map(w => w.address)}
       />

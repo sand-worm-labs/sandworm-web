@@ -5,6 +5,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import type { DataSourceSchema, DataSourceTable } from "@sandworm/types";
@@ -15,6 +16,7 @@ import type { APIDataSource, DataSourceType } from "@/types";
 import { NEXT_PUBLIC_API_URL } from "../utils/env";
 
 import { useWebsocket } from "./useWebSocket";
+import { tokenStorage } from "./useAuth";
 
 export type APIDataSources = List<APIDataSource>;
 
@@ -35,6 +37,7 @@ type API = {
     dataSourceId: string,
     dataSourceType: DataSourceType
   ) => void;
+  fetchDataSources: (workspaceId: string) => Promise<void>;
 };
 
 // {
@@ -84,6 +87,11 @@ const Context = createContext<[State, API]>([
         "Attempted to call data source refresh one without DataSourcesProvider"
       );
     },
+    fetchDataSources: async () => {
+      throw new Error(
+        "Attempted to call data source fetchDataSources without DataSourcesProvider"
+      );
+    },
   },
 ]);
 
@@ -97,6 +105,11 @@ type UseDataSources = [
 ];
 export const useDataSources = (workspaceId: string): UseDataSources => {
   const [state, api] = useContext(Context);
+
+  useEffect(() => {
+    api.fetchDataSources(workspaceId);
+  }, [workspaceId, api]);
+
   return useMemo(() => {
     const data = state.get(workspaceId) ?? {
       datasources: List(),
@@ -112,6 +125,7 @@ interface Props {
 export function DataSourcesProvider(props: Props) {
   const socket = useWebsocket();
   const [state, setState] = useState<State>(Map());
+  const fetchedWorkspaces = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     if (!socket) {
@@ -266,6 +280,41 @@ export function DataSourcesProvider(props: Props) {
     };
   }, [socket]);
 
+  const fetchDataSources = useCallback(async (workspaceId: string) => {
+    if (fetchedWorkspaces.current.has(workspaceId)) {
+      console.log("[fetchDataSources] already fetched, skipping", workspaceId);
+      return;
+    }
+    fetchedWorkspaces.current.add(workspaceId);
+    console.log("[fetchDataSources] fetching for", workspaceId);
+
+    const token = tokenStorage.getToken();
+
+    const res = await fetch(
+      `${NEXT_PUBLIC_API_URL()}/v1/workspaces/${workspaceId}/data-sources`,
+      {
+        credentials: "include",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    console.log("[fetchDataSources] response status", res.status, res.ok);
+
+    if (!res.ok) return;
+
+    const data = await res.json();
+    console.log("[fetchDataSources] data received", data);
+
+    setState(state =>
+      state.set(workspaceId, {
+        datasources: List(data),
+        schemas: state.get(workspaceId)?.schemas ?? Map(),
+      })
+    );
+  }, []);
+
   const ping = useCallback(
     async (workspaceId: string, id: string, type: string) => {
       const res = await fetch(
@@ -279,6 +328,8 @@ export function DataSourcesProvider(props: Props) {
           body: JSON.stringify({ type }),
         }
       );
+
+      console.log("ping", res.json());
 
       return res.json();
     },
@@ -355,9 +406,10 @@ export function DataSourcesProvider(props: Props) {
         makeDefault,
         refreshAll,
         refreshOne,
+        fetchDataSources,
       },
     ],
-    [state, ping, remove, makeDefault, refreshAll, refreshOne]
+    [state, ping, remove, makeDefault, refreshAll, refreshOne, fetchDataSources]
   );
 
   return <Context.Provider value={value}>{props.children}</Context.Provider>;

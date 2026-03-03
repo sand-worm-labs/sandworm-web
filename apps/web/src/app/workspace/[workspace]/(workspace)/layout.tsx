@@ -51,13 +51,13 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
 
 
   return (
-    <div className="flex h-screen w-full bg-background">
+    <div className="flex h-screen w-full bg-base-100">
       <WorkspaceSidebar />
 
       <div className="flex flex-col flex-1 overflow-hidden">
         {!shouldHideHeader && <AppHeader />}
 
-        <main className="flex-1 overflow-y-auto">{children}</main>
+        <main className="flex-1 overflow-y-auto bg-base-100">{children}</main>
       </div>
 
       {isViewer && (
