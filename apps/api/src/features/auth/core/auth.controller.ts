@@ -97,7 +97,7 @@ export class AuthController {
   @ApiAuth({
     summary: 'Refresh access token',
   })
-  public async refresh(@CurrentUser() user: { id: string;},  @Res({ passthrough: true }) response: FastifyReply,): Promise<void> {
+  public async refresh(@CurrentUser() user: { id: string;},  @Res({ passthrough: true }) res: FastifyReply,): Promise<void> {
     // return this.service.refreshToken({
     //   sessionId: user.sessionId,
     //   hash: user.hash,
