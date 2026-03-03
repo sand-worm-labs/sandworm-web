@@ -2,39 +2,300 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{title}}</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>{{title}}</title>
+  <style>
+    @import url(https://db.onlinewebfonts.com/c/0c3856a335fdfdb8b0652f7c3d367fdd?family=Moderat-Regular);
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Moderat-Regular", Arial, sans-serif;
+      line-height: 1.6;
+      background-color: #f0f0f0;
+    }
+
+    table {
+      border-spacing: 0;
+      border-collapse: collapse;
+    }
+
+    img {
+      border: 0;
+      outline: none;
+      text-decoration: none;
+    }
+
+    .email-wrapper {
+      width: 100%;
+      background-color: #f0f0f0;
+      padding: 20px 0;
+    }
+
+    .email-container {
+      max-width: 650px;
+      min-width: 650px;
+      margin: 0 auto;
+      background-color: #f2f5f8;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+      margin-bottom: 32px;
+    }
+
+    /* ── Hero banner ── */
+    .email-hero {
+      overflow: hidden;
+    }
+
+    .hero-image {
+      width: 650px;
+      height: auto;
+      display: block;
+    }
+
+    /* ── Body ── */
+    .email-body {
+      padding: 36px 32px;
+      color: #333333;
+    }
+
+    .hero-box {
+      background-color: #ffffff;
+      border-radius: 12px;
+      padding: 24px 28px;
+      margin-bottom: 20px;
+    }
+
+    .hero-box h1 {
+      margin: 0 0 14px 0;
+      color: #111111;
+      font-size: 26px;
+      font-weight: 900;
+      line-height: 1.2;
+      letter-spacing: -0.5px;
+    }
+
+    .hero-box p {
+      margin: 0;
+      color: #333333;
+      font-size: 14px;
+      line-height: 1.75;
+    }
+
+    .hero-box p strong {
+      color: #111111;
+    }
+
+    /* ── Info box ── */
+    .info-box {
+      background-color: #E8EDF3;
+      border-left: 4px solid #3C00FF;
+      padding: 16px 20px;
+      margin: 20px 0;
+      border-radius: 6px;
+    }
+
+    .info-box p {
+      margin: 0;
+      font-size: 13px;
+      color: #333333;
+    }
+
+    /* ── CTA button ── */
+    .button-container {
+      text-align: center;
+      margin: 28px 0;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 14px 36px;
+      background-color: #0f0f0f;
+      color: #ffffff !important;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.3px;
+    }
+
+    /* ── Help box ── */
+    .help-box {
+      background-color: #E8EDF3;
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin: 20px 0 0 0;
+    }
+
+    .link-fallback {
+      padding-bottom: 10px;
+      border-bottom: 1px solid #d8dfe8;
+      margin-bottom: 14px;
+    }
+
+    .link-fallback p {
+      font-size: 12px;
+      color: #333333;
+      margin: 0 0 6px 0;
+    }
+
+    .link-fallback a {
+      color: #3C00FF;
+      word-break: break-all;
+      font-size: 12px;
+      text-decoration: none;
+    }
+
+    .help-box p {
+      margin: 0;
+      font-size: 13px;
+      color: #333333;
+      line-height: 1.7;
+    }
+
+    /* ── Contact box ── */
+    .contact-box {
+      background-color: #E8EDF3;
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin: 20px 0 0 0;
+    }
+
+    .contact-box p {
+      margin: 0;
+      font-size: 13px;
+      color: #555555;
+      line-height: 1.7;
+    }
+
+    .contact-box a {
+      color: #3C00FF;
+      text-decoration: none;
+    }
+
+    /* ── Footer ── */
+    .email-footer {
+      background-color: #E8EDF3;
+      padding: 24px 32px;
+      border-top: 1px solid #eeeeee;
+      border-radius: 12px;
+      margin: 0 16px 16px 16px;
+    }
+
+    .footer-links {
+      margin-bottom: 10px;
+    }
+
+    .footer-links a {
+      font-size: 12px;
+      color: #3C00FF;
+      text-decoration: underline;
+      margin-right: 14px;
+    }
+
+    .footer-copy {
+      font-size: 11px;
+      color: #5F8491;
+      margin: 0;
+    }
+
+    /* ── Responsive ── */
+    @media only screen and (max-width: 600px) {
+      .email-container {
+        width: 100% !important;
+        min-width: unset !important;
+        border-radius: 0 !important;
+      }
+
+      .hero-image {
+        width: 100% !important;
+      }
+
+      .email-body {
+        padding: 28px 20px !important;
+      }
+
+      .email-footer {
+        padding: 20px !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+      }
+    }
+  </style>
 </head>
 
-<body style="margin:0;font-family:arial">
-    <table style="border:0;width:100%">
-        <tr style="background:#eeeeee">
-            <td style="padding:20px;color:#808080;text-align:center;font-size:40px;font-weight:600">
-                {{app_name}}
+<body>
+  <table class="email-wrapper" width="100%" cellpadding="0" cellspacing="0" role="presentation">
+    <tr>
+      <td align="center">
+        <table class="email-container" width="650" cellpadding="0" cellspacing="0" role="presentation">
+
+          <!-- ── Hero Banner ── -->
+          <tr class="email-hero">
+            <td>
+              <img class="hero-image" src="{{banner_url}}" alt="{{app_name}} banner" width="650" />
             </td>
-        </tr>
-        <tr>
-            <td style="padding:20px;color:#808080;font-size:16px;font-weight:100">
-                Hi there!<br><br>
-                <strong>{{inviterName}}</strong> has invited you to join the workspace
-                "<strong>{{workspaceName}}</strong>".<br><br>
-                Click the button below to accept the invitation and start collaborating.
+          </tr>
+
+          <!-- ── Body ── -->
+          <tr>
+            <td class="email-body">
+
+              <!-- Greeting card -->
+              <div class="hero-box">
+                <h1>You've been invited! 🎉 </h1>
+                <p>
+                  Hi there!<br><br>
+                  <strong>{{inviterName}}</strong> has invited you to join the workspace
+                  "<strong>{{workspaceName}}</strong>" on {{app_name}}.<br><br>
+                  Click the button below to accept the invitation and start collaborating.
+                </p>
+              </div>
+
+              <!-- Info box -->
+              <div class="info-box">
+                <p><strong>Note:</strong> This invitation will expire in 7 days for security reasons.</p>
+              </div>
+
+              <!-- CTA -->
+              <div class="button-container">
+                <a href="{{url}}" class="button">Accept Invitation</a>
+              </div>
+
+         
+
+              <!-- Contact box -->
+              <div class="contact-box">
+                <p>
+                  If you have any questions, reach out to us on
+                  <a href="{{twitter_url}}">X</a> or
+                  <a href="{{telegram_url}}">Telegram</a>.
+                  You can also email us at
+                  <a href="mailto:{{support_email}}">{{support_email}}</a>.
+                </p>
+              </div>
+
             </td>
-        </tr>
-        <tr>
-            <td style="text-align:center;padding:20px">
-                <a href="{{url}}"
-                    style="display:inline-block;padding:20px 40px;background:#00838f;text-decoration:none;color:#ffffff;border-radius:4px;font-weight:600">{{actionTitle}}</a>
+          </tr>
+
+          <!-- ── Footer ── -->
+          <tr>
+            <td class="email-footer">
+              <div class="footer-links">
+                <a href="{{help_center_url}}">Help Center</a>
+                <a href="{{unsubscribe_url}}">Unsubscribe</a>
+              </div>
+              <p class="footer-copy">Copyright &copy;{{year}} {{app_name}}. All rights reserved.</p>
             </td>
-        </tr>
-        <tr>
-            <td style="padding:20px;color:#808080;font-size:14px;font-weight:100;text-align:center">
-                This invitation will expire in 7 days.<br>
-                If you didn't expect this invitation, you can safely ignore this email.
-            </td>
-        </tr>
-    </table>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
 </body>
 
 </html>
