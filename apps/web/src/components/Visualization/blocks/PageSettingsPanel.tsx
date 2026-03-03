@@ -63,7 +63,7 @@ export default function PageSettingsPanel(props: Props) {
     <Transition
       as="div"
       show={props.visible}
-      className="top-0 right-0 h-full absolute bg-white z-30 font-primary"
+      className="top-0 right-0 h-full absolute bg-white z-30 font-body"
       enter="transition-transform duration-300"
       enterFrom="transform translate-x-full"
       enterTo="transform translate-x-0"
@@ -78,10 +78,10 @@ export default function PageSettingsPanel(props: Props) {
       >
         <ChevronDoubleRightIcon className="w-3 h-3" />
       </button>
-      <div className="w-[324px] flex flex-col border-l dark:border-[#262A30] border-gray-200 h-full bg-white font-primary dark:bg-black">
+      <div className="w-[324px] flex flex-col border-l dark:border-[#262A30] border-gray-200 h-full bg-white font-body dark:bg-black">
         <div className="flex justify-between border-b p-6 space-x-3">
           <div>
-            <h3 className="text-lg font-medium leading-6 text-gray-900 dark:text-white pr-1.5">
+            <h3 className="text-lg font-medium leading-6 text-ink-100 dark:text-white pr-1.5">
               Page settings
             </h3>
             <p className="text-gray-500 text-sm pt-1">

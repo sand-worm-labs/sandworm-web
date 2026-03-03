@@ -41,7 +41,7 @@ interface ProfileSettingsModalProps {
 }
 
 const inputClassName =
-  "w-full px-3 py-2.5 rounded-xl bg-white dark:bg-[#1A1A1A] border border-[#DEE2E6] dark:border-[#262A30] text-[#868E96] dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#A308F0]/50 focus:border-[#A308F0] transition text-sm";
+  "w-full px-3 md:py-2.5 py-1.5 rounded-xl bg-white dark:bg-[#1A1A1A] border border-[#DEE2E6] dark:border-[#262A30] text-[#868E96] dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#A308F0]/50 focus:border-[#A308F0] transition md:text-sm text-[13px] ";
 
 const labelClassName =
   "block text-xs font-bold text-[#6C757D] dark:text-gray-300 mb-2 uppercase font-bold";
@@ -102,7 +102,7 @@ export function ProfileSettingsModal({
             >
               <DialogPanel className="w-full max-w-4xl transform overflow-hidden rounded-[32px] bg-white dark:bg-[#121417] transition-all pt-5">
                 <form onSubmit={handleSubmit}>
-                  <div className="flex items-center justify-between px-10 py-6">
+                  <div className="flex items-center justify-between md:px-10 px-5 py-6">
                     <div className="flex justify-between w-full">
                       <div>
                         <ProfileCardIcon />
@@ -153,7 +153,7 @@ export function ProfileSettingsModal({
                     </div>
                   </div>
 
-                  <div className="px-10 py-6 max-h-[70vh] overflow-y-auto">
+                  <div className="md:px-10 px-5 py-6 max-h-[70vh] overflow-y-auto">
                     {updateSuccess && (
                       <div className="mb-4 p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
                         <p className="text-sm text-green-800 dark:text-green-200">
@@ -290,7 +290,7 @@ export function ProfileSettingsModal({
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-end gap-3 px-6 py-4 pt-3">
+                  <div className="flex items-center justify-end gap-3 px-6 py-4 pt-3 ">
                     <button
                       type="submit"
                       disabled={isSubmitting}

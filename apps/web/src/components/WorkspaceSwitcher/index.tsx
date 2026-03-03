@@ -59,7 +59,7 @@ export default function WorkspaceSwitcher() {
       {/* Section label */}
       <div className="flex items-center gap-1 px-2 mb-2">
         <svg
-          className="w-3 h-3 text-gray-400 dark:text-gray-500"
+          className="w-3 h-3 text-ink-300 dark:text-ink-400"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -71,7 +71,7 @@ export default function WorkspaceSwitcher() {
             d="M19 9l-7 7-7-7"
           />
         </svg>
-        <span className="text-[12px] font-medium text-[#8C98A3]  ">
+        <span className="text-[12px] font-medium text-ink-600  ">
           Workspaces
         </span>
       </div>
@@ -82,7 +82,7 @@ export default function WorkspaceSwitcher() {
         onClick={() => setOpen(o => !o)}
         className={clsx(
           "w-full flex items-center gap-3 px-3 py-1.5 rounded-xl border transition-all",
-          "bg-white dark:bg-[#111418]",
+          "bg-base-100",
           "border-[#E9ECEF] dark:border-[#1E2328]",
           "hover:border-[#DEE2E6] dark:hover:border-[#2A2F36]",
           "shadow-sm"
@@ -97,12 +97,12 @@ export default function WorkspaceSwitcher() {
         />
 
         {/* Name */}
-        <span className="flex-1 text-left xl:text-sm text-[13px] font-medium text-ink-100 dark:text-gray-100 truncate">
+        <span className="flex-1 text-left xl:text-sm text-[13px] font-medium text-ink-100  truncate">
           {workspaceInfo.name}
         </span>
 
         {/* Up/down chevrons */}
-        <div className="flex flex-col gap-[0px] text-[#1C3B5A]">
+        <div className="flex flex-col gap-[0px] text-[#1C3B5A] dark:text-ink-600">
           <svg
             className="w-3 h-3"
             viewBox="0 0 24 24"

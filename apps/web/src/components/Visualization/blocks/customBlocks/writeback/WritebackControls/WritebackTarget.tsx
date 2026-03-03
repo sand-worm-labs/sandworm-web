@@ -44,9 +44,9 @@ function WritebackTarget(props: Props) {
 
   const onChange = useCallback(
     (value: string) => {
-      const selected = props.options.find(ds => ds.config.data.id === value);
+      const selected = props.options.find(ds => ds.data.id === value);
       if (selected) {
-        props.onChange(selected.config.data.id);
+        props.onChange(selected.data.id);
       }
     },
     [props.options, props.onChange]

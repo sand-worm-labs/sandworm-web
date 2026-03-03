@@ -201,7 +201,7 @@ function UsersList(props: Props) {
                 </th>
                 <th
                   scope="col"
-                  className="text-left p-4 text-xs font-bold text-ink-400 dark:text-ink-300 sticky left-0 min-w-[250px] uppercase"
+                  className="text-left p-4 text-xs font-bold text-ink-400 dark:text-ink-300 sticky left-0 min-w-[250px] uppercase bg-white"
                 >
                   user
                 </th>

@@ -38,6 +38,7 @@ const config: Config = {
           300: "hsl(var(--base-300))",
           400: "hsl(var(--base-400))",
           500: "var(--base-500)",
+          600: "hsl(var(--base-600))",
         },
 
         gray: {
@@ -50,6 +51,7 @@ const config: Config = {
           300: "var(--ink-300)",
           400: "var(--ink-400)",
           500: "var(--ink-500)",
+          600: "var(--ink-600)",
         },
 
         "menu-ink": "var(--menu-ink)",

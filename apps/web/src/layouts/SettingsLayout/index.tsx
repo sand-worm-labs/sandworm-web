@@ -73,7 +73,7 @@ export default function SettingsLayout({
                       ? " bg-[#EBF7F7] dark:bg-[#181C21]  text-primary"
                       : "text-text-gray hover:bg-dark-translucent"
                   }`}
-                > 
+                >
                   {tab.icon}
                   <span> {tab.name}</span>
                 </Link>
@@ -84,7 +84,7 @@ export default function SettingsLayout({
 
         <hr className="md:hidden" />
 
-        <main className="flex-1 p-6  line-bg">
+        <main className="flex-1 p-6  px-2 md:px-6">
           <div className=" border-t-8 border-l-8 h-20 ml-4">{children}</div>
         </main>
       </div>
