@@ -42,7 +42,7 @@ export const SignUp = () => {
       <SignUpForm />
 
       {!isUsernameStep && (
-        <p className="text-center text-ink-500 font-primary text-sm mt-4">
+        <p className="text-center text-ink-500 dark:text-ink-400 font-primary text-sm mt-4">
           Have an account?
           <Link href="/signin" className="text-accent hover:underline ml-1">
             Sign In

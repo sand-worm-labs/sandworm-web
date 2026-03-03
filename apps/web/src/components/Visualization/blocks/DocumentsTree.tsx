@@ -521,7 +521,7 @@ function NodeComponent(props: NodeComponentProps) {
             className={clsx(
               props.document.id === props.current
                 ? "text-gray-800 bg-ceramic-100/50"
-                : "text-gray-500 hover:bg-ceramic-100/80",
+                : "text-ink-400 hover:bg-ceramic-100/80",
               isDropping &&
                 dropHoverState === "center" &&
                 "bg-ceramic-200 border-ceramic-200",

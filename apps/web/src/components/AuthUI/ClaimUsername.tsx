@@ -78,7 +78,7 @@ export const ClaimUsernameStep = ({
               onChange={e => setUsername(e.target.value)}
               onBlur={() => checkUsername(username)}
               placeholder="Enter username"
-              className="bg-[#F8F9FA] dark:bg-[#1A1A1A] text-ink-500 dark:text-white border-[#DEE2E6] py-6 rounded-xl font-primary font-medium text-base"
+              className="bg-[#F8F9FA] dark:bg-[#1A1A1A] text-ink-500 dark:text-white border-[#DEE2E6] dark:border-border-tertiary py-6 rounded-xl font-primary font-medium text-base"
             />
             <Button
               disabled={status !== "available" || isLoading}
@@ -90,7 +90,7 @@ export const ClaimUsernameStep = ({
           </div>
 
           <span
-            className="text-xl text-[#D0DCE4] green-gradient py-4 px-5 rounded-xl font-semibold mt-5 inline-block box-gradient max-w-full truncate whitespace-nowrap overflow-hidden"
+            className="text-xl text-[#D0DCE4] green-gradient py-4 px-5 rounded-xl font-semibold mt-5 inline-block box-gradient dark:bg-base-100 max-w-full truncate whitespace-nowrap overflow-hidden"
             title={
               username
                 ? `${username}.sandwormlabs.xyz`

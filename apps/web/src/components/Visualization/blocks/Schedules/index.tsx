@@ -212,7 +212,7 @@ interface ScheduleListProps {
 }
 function ScheduleList(props: ScheduleListProps) {
   return (
-    <div className="w-[354px] h-full flex flex-col overflow-y-auto border-l border-gray-200 dark:border-[#262A30] font-primary dark:bg-black">
+    <div className="w-[354px] h-full flex flex-col overflow-y-auto border-l border-gray-200 dark:border-border-tertiary font-body dark:bg-base-100">
       <div className="px-4 xl:px-6 pt-6 pb-5">
         <div className="flex justify-between">
           <div>
@@ -220,15 +220,15 @@ function ScheduleList(props: ScheduleListProps) {
               Schedule
             </h3>
 
-            <p className="text-ink-300 text-sm pt-1">
+            <p className="text-ink-300 dark:text-ink-400 text-sm pt-1">
               Schedule your notebook to run automatically
             </p>
           </div>
-          <ChevronRightIcon className="h-5 w-5 text-gray-400" />
+          <ChevronRightIcon className="h-5 w-5 text-ink-400" />
         </div>
       </div>
 
-      <div className="border-t border-dashed border-gray-200 dark:border-[#262A30]" />
+      <div className="border-t border-dashed border-gray-200 dark:border-border-tertiary" />
 
       {props.isPublished ? (
         <div className="flex-1 flex flex-col">
@@ -335,7 +335,7 @@ function ScheduleList(props: ScheduleListProps) {
         <div className="flex-1 flex flex-col items-center justify-center px-4 xl:px-6 py-12">
           <div className="flex flex-col gap-y-3 bg-ceramic-50/60 p-6 rounded-xl border-2 border-[#E9ECEF] dark:border-[#262A30] border-dashed items-center max-w-[260px]">
             <ScheduleIcon className="w-10 h-10" />
-            <div className="text-ink-300 text-center text-sm">
+            <div className="text-ink-300 dark:text-ink-400 text-center text-sm">
               <p>{`You haven't saved this page yet.`}</p>
               <p>Save it to be able to create a schedule.</p>
             </div>

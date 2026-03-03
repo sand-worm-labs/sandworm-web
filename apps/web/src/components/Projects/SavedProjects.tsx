@@ -118,7 +118,7 @@ export const SavedProjects: React.FC = () => {
 
   if (loading || documentsState.loading) {
     return (
-      <div className="min-h-screen  dark:bg-black flex items-center justify-center p-8">
+      <div className="min-h-screen  dark:bg-base-100 flex items-center justify-center p-8">
         <div className="text-center">
           <Loader />
         </div>
@@ -128,13 +128,13 @@ export const SavedProjects: React.FC = () => {
 
   if (projects.length === 0) {
     return (
-      <div className="h-full  dark:bg-black flex items-center justify-center p-8 font-body">
+      <div className="h-full  dark:bg-base-100 flex items-center justify-center p-8 font-body">
         <div className="text-center flex items-center flex-col">
           <UploadIcon />
           <h2 className="text-2xl font-medium font-body  text-ink-100 dark:text-white mb-2 mt-3">
             No Favorites projects yet
           </h2>
-          <p className="text-ink-300 mb-1">
+          <p className="text-ink-300 dark:text-ink-400 mb-1">
             Star your favorite projects to see them here
           </p>
           <button
@@ -150,7 +150,7 @@ export const SavedProjects: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen dark:bg-black p-8">
+    <div className="min-h-screen dark:bg-base-100 p-8">
       <div className="flex justify-between w-full">
         <div className="flex items-center gap-3 mb-0">
           <span className="bg-[#A308F020] rounded-full p-2 flex items-center justify-center">

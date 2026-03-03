@@ -50,7 +50,7 @@ export default function SettingsLayout({
 
   return (
     <div className=" w-full">
-      <div className="flex items-center gap-2 py-3 border-b border-[#F1F3F4] dark:border-[#262A30] px-10 text-[1.1rem]">
+      <div className="flex items-center gap-2 py-3 border-b border-[#F1F3F4] dark:border-[#262A30] px-10 text-[1.1rem] dark:bg-base-500">
         <Link
           href="/workspace"
           className="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition "
@@ -62,7 +62,7 @@ export default function SettingsLayout({
       </div>
 
       <div className="flex min-h-screen  md:flex-row flex-col ">
-        <div className=" p-6 px-3 border-r dark:border-borderLight my-12 min-w-[35rem] border-[#E9ECEF] bg-[#FEFFFF] dark:bg-black">
+        <div className=" p-6 px-3 border-r dark:border-borderLight my-12 min-w-[35rem] border-[#E9ECEF] dark:border-border-tertiary bg-[#FEFFFF] dark:bg-base-500">
           <ul className="mt-4  flex flex-col w-full ">
             {tabs.map(tab => (
               <li key={tab.href}>
@@ -84,7 +84,7 @@ export default function SettingsLayout({
 
         <hr className="md:hidden" />
 
-        <main className="flex-1 p-6  px-2 md:px-6">
+        <main className="flex-1 p-6  px-2 md:px-6 dark:bg-base-200 ">
           <div className=" border-t-8 border-l-8 h-20 ml-4">{children}</div>
         </main>
       </div>

@@ -20,7 +20,7 @@ export const SignIn = () => {
         Welcome back
       </h2>
 
-      <p className="text-ink-200 font-body font-medium text-sm mt-1 mb-6">
+      <p className="text-ink-200  font-body font-medium text-sm mt-1 mb-6">
         Sign into Sandworm
       </p>
 
@@ -54,7 +54,7 @@ export const SignIn = () => {
       </div>
 
       <div className="flex-col  gap-2 absolute bottom-[2rem] w-full flex items-center justify-center">
-        <p className="text-base text-ink-200 font-body font-medium mb-4">
+        <p className="text-base text-ink-200 dark:text-ink-400 font-body font-medium mb-4">
           Trusted by teams at
         </p>
         <PartnersSection />

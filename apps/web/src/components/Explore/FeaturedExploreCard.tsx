@@ -46,7 +46,7 @@ export function FeaturedExploreCard({
   return (
     <div
       onClick={() => onClick?.(id)}
-      className="bg-[#F2F3FB] rounded-2xl py-6 border border-gray-200 p-4 cursor-pointer  transition-shadow font-body"
+      className="bg-[#F2F3FB] dark:bg-base-100 rounded-2xl py-6 border border-gray-200 dark:border-border-tertiary p-4 cursor-pointer  transition-shadow font-body"
       role="button"
       tabIndex={0}
       onKeyDown={e => {
@@ -79,7 +79,7 @@ export function FeaturedExploreCard({
       </div>
 
       {/* Title */}
-      <h3 className="font-medium text-lg text-gray-900 mb-3">{title}</h3>
+      <h3 className="font-medium text-lg text-ink-100 mb-3">{title}</h3>
 
       {/* Creator row */}
       <div className="flex items-center gap-2 mb-3">
@@ -88,11 +88,11 @@ export function FeaturedExploreCard({
           alt={creator.username}
           className="w-6 h-6 rounded-full"
         />
-        <span className="text-sm text-gray-500">@{creator.username}</span>
+        <span className="text-sm text-ink-400">@{creator.username}</span>
       </div>
 
       {/* Stats row */}
-      <div className="flex items-center gap-4 text-sm text-gray-500">
+      <div className="flex items-center gap-4 text-sm text-ink-400">
         <div className="flex items-center gap-1">
           <Star size={14} />
           <span>{stars}</span>

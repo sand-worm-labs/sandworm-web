@@ -143,7 +143,7 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
 
   return (
     <>
-      <div className="min-h-screen bg-white dark:bg-[#010100] transition-colors font-body">
+      <div className="min-h-screen transition-colors font-body">
         {loading ? (
           <div className="mx-auto min-h-screen w-full flex items-center justify-center px-4 py-8">
             <Loader />
@@ -286,7 +286,7 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
 
                 <div className="w-full flex-1 py-12 md:py-0">
                   {wallets && wallets.length > 0 ? (
-                    <div className="bg-white dark:bg-[#010100] rounded-2xl md:p-6">
+                    <div className="bg-white dark:bg-base-200 rounded-2xl md:p-6">
                       <h2 className="px-2 py-0.5 font-medium text-ink-100 dark:text-white mb-4 bg-[#E9ECEF] inline-block text-sm rounded-lg">
                         Main Wallets
                       </h2>

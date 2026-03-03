@@ -17,7 +17,7 @@ export const LightningIcon: React.FC<IconProps> = ({
     >
       <path
         d="M10 1L9 6L13 7.5L6 15L7 10L3 8.5L10 1Z"
-        stroke="#A308F0"
+        stroke="currentColor"
         strokeLinecap="round"
         strokeLinejoin="round"
       />

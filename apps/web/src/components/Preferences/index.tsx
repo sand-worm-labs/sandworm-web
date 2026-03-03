@@ -5,11 +5,6 @@ import {
   Monitor,
   Sun,
   Moon,
-  Code,
-  Bell,
-  Layout,
-  Palette,
-  Database,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 
@@ -251,7 +246,7 @@ const Preferences: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen  dark:bg-black transition-colors font-body">
+    <div className="min-h-screen   transition-colors font-body">
       <div className="max-w-6xl mx-auto px-6 py-12">
         <div className="mb-8">
           <h2 className="text-xxl font-medium text-ink-100 mb-2">
@@ -263,7 +258,7 @@ const Preferences: React.FC = () => {
         </div>
 
         {/* Data & Performance */}
-        <div className="bg-white dark:bg-black  py-8 mb-6">
+        <div className=" py-8 mb-6">
           <div className="flex items-center gap-3 mb-6">
             <div>
               <h2 className="text-lg font-medium text-ink-100 dark:text-gray-100">
