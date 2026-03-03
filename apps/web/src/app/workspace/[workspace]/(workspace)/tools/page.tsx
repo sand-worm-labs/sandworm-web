@@ -37,7 +37,7 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool }) => {
   const content = (
     <Card
       className={`
-        bg-[#FFFFFF]  dark:bg-[#111111] border-none shadow-none 
+        bg-base-100  border-none shadow-none 
         rounded-3xl p-6 pb-8 pt-6 flex flex-row gap-x-3 text-left h-full items-center
         transition-all duration-200 ease-out
         ${isDisabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}

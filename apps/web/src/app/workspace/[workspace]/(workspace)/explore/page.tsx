@@ -222,7 +222,7 @@ export default async function Explore({ searchParams }: ExplorePageProps) {
   const isAllEmpty = false; // 💭 We're setting this to falso temporarily
 
   return (
-    <div className=" dark:text-white bg-[#FEFEFF] min-h-[88vh] dark:bg-black">
+    <div className=" dark:text-white bg-[#FEFEFF] min-h-[88vh] dark:bg-base-200">
       <Head>
         <title>Explore</title>
       </Head>

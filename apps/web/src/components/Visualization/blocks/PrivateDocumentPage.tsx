@@ -263,7 +263,7 @@ function PrivateDocumentPageInner(
           <button
             type="button"
             onClick={onToggleComments}
-            className="flex items-center justify-center rounded-xl px-0.5 py-1.5 text-sm  hover:bg-[#F1F2F4] dark:bg-black dark:hover:bg-[#181C21]  h-full bg-white mb-1.5"
+            className="flex items-center justify-center rounded-xl px-0.5 py-1.5 text-sm  hover:bg-[#F1F2F4] dark:bg-base-500 dark:hover:bg-base-200 dark:text-ink-100  h-full bg-white mb-1.5"
             title="Comments"
           >
             <ChatIcon size={22} />
@@ -274,7 +274,7 @@ function PrivateDocumentPageInner(
             <button
               type="button"
               onClick={onToggleSchedules}
-              className="flex items-center justify-center rounded-xl px-0.5 py-1.5 text-sm  hover:bg-[#F1F2F4] dark:bg-black dark:hover:bg-[#181C21]  h-full bg-white mb-1.5"
+              className="flex items-center justify-center rounded-xl px-0.5 py-1.5 text-sm  hover:bg-[#F1F2F4] dark:bg-base-500  h-full bg-white mb-1.5 dark:text-ink-100"
               title="Schedules"
             >
               <ClockCountdown size={22} />
@@ -286,7 +286,7 @@ function PrivateDocumentPageInner(
             <button
               type="button"
               onClick={onToggleFullScreen}
-              className="flex items-center justify-center rounded-none px-3 py-3 text-sm text-gray-500 hover:bg-gray-100 dark:bg-black dark:hover:bg-[#181C21] h-full bg-white w-full"
+              className="flex items-center justify-center rounded-none px-3 py-3 text-sm text-gray-500 dark:text-ink-100 hover:bg-gray-100 dark:bg-base-500 h-full bg-white  w-full"
               title={
                 isFullScreen ? "Shrink horizontally" : "Stretch horizontally"
               }
@@ -351,7 +351,7 @@ function PrivateDocumentPageInner(
 
   const topBarContent = (
     <div className="flex items-center w-full justify-between gap-x-6">
-      <div className="w-full overflow-hidden flex items-center gap-x-1.5 text-sm text-gray-400 dark:text-ink-300  font-body">
+      <div className="w-full overflow-hidden flex items-center gap-x-1.5 text-sm text-gray-400 dark:text-ink-400  font-body">
         {props.isApp || props?.user?.role?.[props.workspaceId] === "viewer" ? (
           <EyeIcon className="w-4 h-4" />
         ) : (
@@ -361,7 +361,7 @@ function PrivateDocumentPageInner(
           <span className="font-semibold">
             {props.isApp ||
             props?.user?.role?.[props.workspaceId] === "viewer" ? (
-              <span className="text-ceramic-500">Viewing</span>
+              <span className="text-ink-400">Viewing</span>
             ) : (
               "Editing"
             )}
@@ -402,10 +402,10 @@ function PrivateDocumentPageInner(
         {props?.user?.role?.[props.workspaceId] ===
         "viewer" ? null : props.isApp ? (
           <Link
-            className="flex gap-x-2 items-center rounded-sm px-3 py-1 text-sm text-gray-500 bg-white hover:bg-gray-100 border border-gray-200 disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 justify-center"
+            className="flex gap-x-2 items-center rounded-md px-3 py-1 text-sm text-ink-400 bg-white dark:text-ink-100 hover:bg-gray-100 border dark:border-gray-200 border-border-tertiary disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 justify-center"
             href={`/workspace/${props.document.workspaceId}/documents/${props.document.id}/notebook/edit`}
           >
-            <PencilIcon className="w-4 h-4" />
+            <PencilIcon className="w-5 h-5" />
             <span>Edit</span>
           </Link>
         ) : (
@@ -418,12 +418,12 @@ function PrivateDocumentPageInner(
           >
             <button
               type="button"
-              className="flex items-center rounded-sm px-3 py-1 text-sm bg-white dark:bg-black dark:border-[#262A30] dark:text-ink-300  hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 group relative border border-[#E9ECEF]"
+              className="flex items-center rounded-md px-3 py-1 text-sm bg-white dark:bg-base-100 dark:text-ink-100  hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 group relative border border-[#E9ECEF] dark:border-border-tertiary"
               onClick={onPublish}
               disabled={props.publishing}
             >
               <BookUpIcon
-                className="w-4 h-4 rotate-12 group-hover:rotate-0 transition transition-transform duration-400"
+                className="w-5 h-5 rotate-12 group-hover:rotate-0 transition transition-transform duration-400"
                 strokeWidth={1}
               />
               <span>Save</span>

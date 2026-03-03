@@ -193,7 +193,7 @@ export const WorkspaceSidebar = () => {
 
   return (
     <aside
-      className={`h-full flex flex-col justify-between bg-base-500 border-r dark:border-[#262A30] border-[#E9ECEF] font-body
+      className={`h-full flex flex-col justify-between bg-base-500 border-r dark:border-[#262A30] border-[#E9ECEF] dark:border-border-tertiary font-body
       transition-all duration-300 ease-in-out
       ${collapsed ? "w-16" : "w-[260px]"}
       `}
@@ -231,6 +231,7 @@ export const WorkspaceSidebar = () => {
                   <item.icon
                     size={18}
                     color={pathname === item.href ? "#A308F0" : "#39414E"}
+                    className="text-ink-icon"
                   />
                   {!collapsed && item.name}
                 </Link>
@@ -262,7 +263,7 @@ export const WorkspaceSidebar = () => {
                   type="button"
                   id="create-workspace-doc"
                   onClick={onCreateDocumentHandler}
-                  className="p-2 bg-[#F7E8FF] dark:bg-base-500  rounded-xl hover:cursor-pointer text-sm border mt-6 flex px-5 items-center justify-center w-full border-[#D000FF]  text-primary mb-3 font-body font-medium  "
+                  className="p-2 bg-[#F7E8FF] dark:bg-base-500  rounded-xl hover:cursor-pointer text-sm border mt-6 flex px-5 items-center justify-center w-full border-[#D000FF]  text-primary mb-3 font-body font-medium  dark:border-[#A78BFA] dark:text-[#A78BFA] "
                 >
                   {" "}
                   <PlusSmallIcon className="h-4 w-4 mr-1 " aria-hidden="true" />

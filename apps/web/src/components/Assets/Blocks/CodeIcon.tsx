@@ -14,19 +14,19 @@ export const CodeIcon: React.FC<IconProps> = ({ className, size = 16 }) => {
     >
       <path
         d="M4 5.5L1 8L4 10.5"
-        stroke="#868E96"
+        stroke="currentColor"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
         d="M12 5.5L15 8L12 10.5"
-        stroke="#868E96"
+        stroke="currentColor"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
         d="M10 2.5L6 13.5"
-        stroke="#868E96"
+        stroke="currentColor"
         strokeLinecap="round"
         strokeLinejoin="round"
       />

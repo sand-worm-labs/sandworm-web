@@ -52,6 +52,7 @@ const config: Config = {
           400: "var(--ink-400)",
           500: "var(--ink-500)",
           600: "var(--ink-600)",
+          icon: "var(--ink-icon)",
         },
 
         "menu-ink": "var(--menu-ink)",
@@ -61,6 +62,7 @@ const config: Config = {
 
         border: "hsl(var(--border))",
         "border-secondary": "hsl(var(--border-secondary))",
+        "border-tertiary": "hsl(var(--border-tertiary))",
 
         input: "hsl(var(--input))",
         inputBg: "hsl(var(--bg-input))",

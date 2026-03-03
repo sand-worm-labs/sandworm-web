@@ -90,10 +90,8 @@ export default function WorkspaceSettings() {
       <div
         key={workspace.id}
         className={clsx(
-          "flex items-center px-5 py-4 border-b border-[#E9ECEF] dark:border-gray-800 transition-colors",
-          isCurrentWorkspace
-            ? "dark:bg-[#121417]"
-            : "hover:bg-gray-50 dark:hover:bg-[#181C21]"
+          "flex items-center px-5 py-4 border-b border-[#E9ECEF] dark:border-border-tertiary transition-colors",
+          isCurrentWorkspace ? "" : "hover:bg-gray-50 dark:hover:bg-[#181C21]"
         )}
       >
         {/* Workspace name with avatar */}
@@ -203,16 +201,16 @@ export default function WorkspaceSettings() {
   };
 
   return (
-    <div className="w-full bg-white dark:bg-black h-full font-body">
+    <div className="w-full  h-full font-body">
       <div className="px-4 sm:p-6 lg:p-8">
         <div className="">
           <div className="pb-4 sm:flex flex-col mb-6">
             <div className="flex md:flex-row flex-col md:items-center justify-between mb-4">
               <div>
-                <h3 className="text-xl font-bold text-ink-100 dark:text-gray-100 mb-2">
+                <h3 className="text-xl font-bold text-ink-100  mb-2">
                   Account Settings
                 </h3>
-                <p className="text-[#6C757D] dark:text-gray-400 md:text-base text-sm">
+                <p className="text-[#6C757D] dark:text-ink-400 md:text-base text-sm">
                   Manage your workspaces, settings, permissions and billings.
                 </p>
               </div>
@@ -236,7 +234,7 @@ export default function WorkspaceSettings() {
                   <h4 className="text-lg font-bold mb-3 dark:text-white">
                     Your Teams
                   </h4>
-                  <p className="text-[#6C757D] mb-5 max-w-[32rem] pr-6 text-sm md:text-base">
+                  <p className="text-[#6C757D] dark:text-ink-400 mb-5 max-w-[32rem] pr-6 text-sm md:text-base">
                     Your workspaces can be deleted, renamed, team members added
                     etc depending on your permission level within the
                     organization.
@@ -244,7 +242,7 @@ export default function WorkspaceSettings() {
                 </div>
 
                 <div className="w-full">
-                  <div className="flex items-center px-5 py-3 text-xs font-medium text-[#6C757D] uppercase tracking-wider border-[#E9ECEF] border-b">
+                  <div className="flex items-center px-5 py-3 text-xs font-medium text-[#6C757D] dark:text-ink-400 uppercase tracking-wider border-[#E9ECEF] dark:border-border-tertiary border-b">
                     <div className="flex-1">Workspace</div>
                     <div className="w-32 text-center">Members</div>
                     <div className="w-24 text-center">Plan</div>
@@ -265,7 +263,7 @@ export default function WorkspaceSettings() {
                   <h4 className="text-lg font-bold mb-3 dark:text-white">
                     Invited Teams
                   </h4>
-                  <p className="text-[#6C757D] mb-5 max-w-[32rem] pr-6 text-sm md:text-base ">
+                  <p className="text-[#6C757D] dark:text-ink-400 mb-5 max-w-[32rem] pr-6 text-sm md:text-base ">
                     These are workspaces you've been invited to. Settings are
                     managed by the workspace owner.
                   </p>

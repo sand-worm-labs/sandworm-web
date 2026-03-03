@@ -85,7 +85,7 @@ function UploadPlaceholder({
     >
       <div
         className={clsx(
-          "bg-[#FBFBFB] rounded-2xl border-2 border-dashed border-[#E9ECEF] text-ink-300 dark:bg-[#0C1015] dark:border-[#262A30]",
+          "bg-[#FBFBFB] rounded-2xl border-2 border-dashed border-[#E9ECEF] text-ink-300 dark:bg-base-100 dark:border-border-tertiary",
           compact
             ? "flex items-center justify-between px-2 py-2 text-sm  "
             : "flex flex-col items-center justify-center h-full p-8 text-center"
@@ -614,7 +614,7 @@ file`;
       <Transition
         as="div"
         show={props.visible}
-        className="top-0 right-0 h-full absolute bg-white dark:bg-black z-30 font-primary "
+        className="top-0 right-0 h-full absolute bg-white  dark:bg-base-100 z-30 font-body"
         enter="transition-transform duration-300"
         enterFrom="transform translate-x-full"
         enterTo="transform translate-x-0"
@@ -636,15 +636,15 @@ file`;
           <ChevronDoubleRightIcon className="w-3 h-3" />
         </button>
         <div
-          className="w-[354px] flex flex-col border-l dark:border-[#262A30] border-gray-200 h-full bg-white dark:bg-black"
+          className="w-[354px] flex flex-col border-l dark:border-[#262A30] dark:border-border-tertiary border-gray-200 h-full bg-white  dark:bg-base-100"
           {...getRootProps()}
         >
           <div className="flex justify-between border-b p-6 space-x-3 border-[#E9ECEF]">
             <div>
-              <h3 className="text-lg font-medium leading-6 text-gray-900 pr-1.5">
+              <h3 className="text-lg font-medium leading-6 text-ink-100 pr-1.5">
                 Files
               </h3>
-              <p className="text-gray-500 text-sm pt-1">
+              <p className="text-ink-400 text-sm pt-1">
                 Click "add" or drop files into this tab to upload them.
               </p>
             </div>
@@ -661,7 +661,7 @@ file`;
           </div>
           {(upload._tag === "uploading" || results.length > 0) && (
             <>
-              <div className="relative flex px-4 py-2 text-xs font-medium border-b dark:border-[#262A30] border-[#FEFEFF] bg-gray-50 text-gray-600 justify-between">
+              <div className="relative flex px-4 py-2 text-xs font-medium border-b dark:border-[#262A30] border-[#FEFEFF] bg-gray-50  dark:bg-base-100 text-gray-600 justify-between">
                 <div className="flex gap-x-1">
                   <CloudArrowUpIconSolid className="w-4 h-4 text-gray-400" />
                   Uploading

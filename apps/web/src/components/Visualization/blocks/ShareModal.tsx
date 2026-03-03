@@ -92,7 +92,7 @@ export default function ShareModal({
         onClick={openModal}
         className={cn(
           "p-2 mb-2 rounded-lg transition-colors flex items-center justify-center",
-          "text-ink-400 hover:text-ink-100 dark:text-ink-300 dark:hover:text-white",
+          "text-ink-400 hover:text-ink-100 dark:text-ink-100 dark:hover:text-white",
           "hover:bg-[#F1F3F4] dark:hover:bg-[#21262d] "
         )}
         aria-label="Share"

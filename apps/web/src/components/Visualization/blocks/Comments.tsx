@@ -87,13 +87,13 @@ export default function Comments({
     >
       <button
         type="button"
-        className="absolute z-10 top-7 transform rounded-full border border-gray-300 dark:border-[#262A30] text-gray-400 bg-white hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
+        className="absolute z-10 top-7 transform rounded-full border border-gray-300 dark:border-[#262A30] text-gray-400 bg-base-100 hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2 dark:border-border-tertiary "
         onClick={onHide}
       >
         <ChevronDoubleRightIcon className="w-3 h-3" />
       </button>
       <ScrollBar
-        className="w-[354px] flex flex-col overflow-y-auto border-l dark:border-[#262A30] border-gray-200 h-full bg-white dark:bg-black "
+        className="w-[354px] flex flex-col overflow-y-auto border-l dark:border-border-tertiary border-gray-200 h-full bg-white dark:bg-base-100 dark:border-t  "
         ref={ref}
       >
         <h3 className="text-lg font-medium leading-6 dark:text-white text-gray-900 px-4 pt-6 xl:px-6">
@@ -108,7 +108,7 @@ export default function Comments({
           {comments.map(comment => {
             return (
               <li key={comment.id} className="relative flex gap-x-4">
-                <div className="flex-auto rounded-xl p-3 border border-border bg-base-500">
+                <div className="flex-auto rounded-xl p-3 border border-border dark:border-border-tertiary bg-base-500 ">
                   <div className="flex justify-between gap-x-4">
                     <div className="flex gap-x-1 py-0.5 leading-5 text-ink-400">
                       {comment.user.picture ? (
@@ -130,7 +130,7 @@ export default function Comments({
                           referrerPolicy="no-referrer"
                         />
                       )}
-                      <span className="text-xs font-medium text-gray-900">
+                      <span className="text-xs font-medium text-ink-100">
                         {comment.user.name}
                       </span>{" "}
                     </div>
@@ -153,7 +153,7 @@ export default function Comments({
                       )}
                     </div>
                   </div>
-                  <p className="text-sm leading-6 text-ink-400 pt-2">
+                  <p className="text-sm leading-6 text-ink-400 dark:text-ink-100 pt-2">
                     {comment.content}
                   </p>
                 </div>
@@ -163,7 +163,7 @@ export default function Comments({
         </ul>
 
         <form
-          className="sticky bottom-0 bg-white dark:bg-black"
+          className="sticky bottom-0 "
           onSubmit={onComment}
         >
           <div className=" px-2 xl:px-4">
@@ -171,7 +171,7 @@ export default function Comments({
               <CommentIcon />
 
               <div className="relative flex-auto">
-                <div className="rounded-xl  dark:ring-[#262A30] focus-within:ring-2 dark:bg-[#1A1A1A]  dark:border-[#262A30] border-[#E6E0F1] border-[2px] ring-primary">
+                <div className="rounded-xl  dark:ring-border-tertiary focus-within:ring-2 dark:bg-base-400  dark:border-border-tertiary border-[#E6E0F1] border-[2px] ring-primary">
                   <label htmlFor="comment" className="sr-only">
                     Add your comment
                   </label>
@@ -179,7 +179,7 @@ export default function Comments({
                     rows={2}
                     name="comment"
                     id="comment"
-                    className="w-full px-3 py-1.5 pt-2 pb-12 rounded-xl dark:bg-[#1A1A1A]  dark:text-white placeholder:dark:text-ink-300  placeholder-[#455768] border-0  focus:outline-none transition text-xs md:text-sm min-h-[4rem] resize-none  "
+                    className="w-full px-3 py-1.5 pt-2 pb-12 rounded-xl dark:bg-base-400  dark:text-white placeholder:dark:text-ink-400  placeholder-[#455768] border-0  focus:outline-none transition text-xs md:text-sm min-h-[4rem] resize-none  "
                     placeholder="Add your comment..."
                     value={content}
                     onKeyDown={onKeyDown}

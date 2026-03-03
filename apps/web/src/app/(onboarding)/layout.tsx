@@ -39,7 +39,7 @@ export default function OnboardingLayout({
   const content = getWelcomeContent(pathname);
 
   return (
-    <div className="h-dvh relative overflow-hidden bg-white">
+    <div className="h-dvh relative overflow-hidden bg-white dark:bg-[#141412]">
       <div className="grid md:grid-cols-2 h-full">
         {children}
 
@@ -61,7 +61,7 @@ export default function OnboardingLayout({
               <h2 className="text-3xl font-medium text-center text-white mb-1 mt-3 font-body">
                 {content.title}
               </h2>
-              <div className="text-center text-[#B4CACE] font-body mt-2">
+              <div className="text-center text-[#B4CACE]  font-body mt-2">
                 <p className="text-lg md:text-base font-medium">
                   {content.subtitle}
                 </p>
