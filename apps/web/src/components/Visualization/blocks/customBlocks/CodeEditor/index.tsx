@@ -1,3 +1,4 @@
+// eslint-disable-next-line max-classes-per-file
 import type * as Y from "yjs";
 import {
   forwardRef,
@@ -18,7 +19,7 @@ import { historyField } from "@codemirror/commands";
 
 import useEditorAwareness from "../../../hooks/useEditorAwareness";
 
-import { materialLight } from "./theme";
+import { materialLight, editorTheme } from "./theme";
 import { useSQLExtension } from "./sql";
 import { usePythonExtension } from "./python";
 
@@ -241,6 +242,8 @@ interface Props {
   dataSourceId?: string | null;
   disabled: boolean;
   onSelectionChanged?: (selectedCode: string | null) => void;
+  isDark?: boolean;
+  customTheme?: Extension;
 }
 const CodeEditor = forwardRef<CodeEditorRef, Props>(
   function CodeEditor(props, ref) {
@@ -261,6 +264,16 @@ const CodeEditor = forwardRef<CodeEditorRef, Props>(
     const editorRef = useRef<HTMLDivElement>(null);
     const viewRef = useRef<EditorView | null>(null);
     const mergeRef = useRef<{ view: MergeView; state: any } | null>(null);
+
+    const resolveTheme = useCallback(
+      (disabled: boolean): Extension => {
+        if (props.customTheme) {
+          return props.customTheme;
+        }
+        return editorTheme(disabled, props.isDark ?? false);
+      },
+      [props.customTheme, props.isDark]
+    );
 
     useEffect(() => {
       if (!editorRef.current) {
@@ -297,7 +310,7 @@ const CodeEditor = forwardRef<CodeEditorRef, Props>(
             EditorState.readOnly.of(props.disabled || props.readOnly)
           ),
           createTextSync(source),
-          themeCompartment.of(materialLight(disabled)),
+          themeCompartment.of(resolveTheme(disabled)),
           ...(watchSelection
             ? [
                 watchSelectionCompartment.of(
@@ -490,9 +503,7 @@ const CodeEditor = forwardRef<CodeEditorRef, Props>(
     }, [props.disabled, props.readOnly]);
 
     useEffect(() => {
-      const effect = themeCompartment.reconfigure(
-        materialLight(props.disabled)
-      );
+      const effect = themeCompartment.reconfigure(resolveTheme(props.disabled));
       if (viewRef.current) {
         viewRef.current.dispatch({
           effects: effect,
@@ -507,7 +518,7 @@ const CodeEditor = forwardRef<CodeEditorRef, Props>(
           effects: effect,
         });
       }
-    }, [props.disabled]);
+    }, [props.disabled, props.isDark, props.customTheme, resolveTheme]);
 
     useEffect(() => {
       const effect = keymapsCompartment.reconfigure(
