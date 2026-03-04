@@ -24,7 +24,7 @@ export async function getRequestData(
     documentRepository: Repository<DocumentEntity>,
 ): Promise<RequestData | null> {
     try {
-        
+
         const cookiesHeader = req.headers.cookie;
         const cookies = cookie.parse(cookiesHeader ?? '');
         const query = qs.parse(req.url?.split('?')[1] ?? '');
@@ -33,8 +33,10 @@ export async function getRequestData(
         const clock = parseInt((query['clock'] ?? '').toString());
         const isApp = query['isApp'] === 'true';
         const userId = query['userId']?.toString() ?? null;
-        const authToken = cookies['auth-token'] ?? query['token']?.toString() ?? null;
+        const authToken = cookies['auth-token'] ?? query['authToken']?.toString() ?? null;
 
+        logger.debug(`Parsed query params: docId=${docId}, clock=${clock}, isApp=${isApp}, userId=${userId}`);
+        logger.debug(`Parsed auth token: ${authToken}`);
         const args = z
             .object({
                 docId: z.string().uuid(),
