@@ -166,7 +166,7 @@ function DateInput(props: Props) {
             {/* TODO: use Y.Text the right way */}
             <input
               data-bounding-rect="true"
-              className="block ring-0 text-sm font-medium leading-6 text-gray-900 w-full focus:ring-0 border-0 p-0 bg-transparent"
+              className="block ring-0 text-sm font-medium leading-6 text-ink-100 w-full focus:ring-0 border-0 p-0 bg-transparent"
               type="text"
               value={attrs.label.toString()}
               onChange={onChangeLabel}

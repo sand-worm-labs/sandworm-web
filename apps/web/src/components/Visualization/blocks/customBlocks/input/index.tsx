@@ -232,7 +232,7 @@ function InputBlock(props: Props) {
           <div className="flex-grow">
             <input
               data-bounding-rect="true"
-              className="ring-0 text-sm font-medium leading-6 text-gray-900 w-full focus:ring-0 border-0 p-0 bg-transparent"
+              className="ring-0 text-sm font-medium leading-6 text-ink-100 w-full focus:ring-0 border-0 p-0 bg-transparent"
               type="text"
               value={attrs.label}
               onChange={onChangeLabel}
@@ -304,7 +304,7 @@ function InputBlock(props: Props) {
             onBlur={onBlur}
             onKeyDown={unfocusOnEscape}
             className={clsx(
-              "block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset w-full disabled:bg-gray-100 disabled:cursor-not-allowed bg-white",
+              "block rounded-md border-0 py-1.5 text-ink-100 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset w-full disabled:bg-gray-100 disabled:cursor-not-allowed bg-white",
               attrs.value.error
                 ? "ring-red-200 focus:ring-red-200"
                 : "focus:ring-primary-200",

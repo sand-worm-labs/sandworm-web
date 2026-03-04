@@ -47,7 +47,7 @@ export default function DropdownSettings(props: Props) {
           className={clsx(
             "relative inline-flex items-center justify-between rounded-l-md px-3 py-2 text-xs ring-1 ring-inset ring-gray-300 hover:bg-ceramic-50 focus:z-10 w-full",
             attrs.dropdownType === "static"
-              ? "bg-ceramic-50 text-gray-900 font-medium"
+              ? "bg-ceramic-50 text-ink-100 font-medium"
               : "bg-white text-gray-500"
           )}
           disabled={attrs.dropdownType === "static"}
@@ -69,7 +69,7 @@ export default function DropdownSettings(props: Props) {
           className={clsx(
             "relative -ml-px inline-flex items-center justify-between rounded-r-md px-3 py-2 text-xs ring-1 ring-inset ring-gray-300 hover:bg-ceramic-50 focus:z-10 w-full",
             attrs.dropdownType === "dynamic"
-              ? "bg-ceramic-50 text-gray-900 font-medium"
+              ? "bg-ceramic-50 text-ink-100 font-medium"
               : "bg-white text-gray-500"
           )}
           disabled={attrs.dropdownType === "dynamic"}

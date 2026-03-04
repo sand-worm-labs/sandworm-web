@@ -42,7 +42,7 @@ export default function MobileWarning() {
                   <div className="mt-4 text-center sm:mt-5">
                     <Dialog.Title
                       as="h3"
-                      className="text-base font-semibold leading-6 text-gray-900"
+                      className="text-base font-semibold leading-6 text-ink-100"
                     >
                       sandworm works best on desktop
                     </Dialog.Title>

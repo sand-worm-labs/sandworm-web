@@ -159,7 +159,7 @@ function DisplayControls(props: Props) {
 
         return (
           <div key={yI}>
-            <div className="text-sm font-medium leading-6 text-gray-900 pb-2">
+            <div className="text-sm font-medium leading-6 text-ink-100 pb-2">
               {prefix} Y-Axis
             </div>
             <div className="flex flex-col space-y-4">
@@ -418,7 +418,7 @@ const DisplayYAxisSeries = forwardRef<HTMLDivElement, DisplayYAxisSeriesProps>(
           </div>
           {props.series.groupBy && !props.isDragging && (
             <>
-              <div className="text-xs text-gray-900 pl-2 pt-4 pb-2 flex items-center justify-between">
+              <div className="text-xs text-ink-100 pl-2 pt-4 pb-2 flex items-center justify-between">
                 <span className="font-medium">Group by</span>{" "}
               </div>
               <div className="flex flex-col space-y-1.5">

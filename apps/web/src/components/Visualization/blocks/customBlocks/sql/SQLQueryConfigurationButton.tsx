@@ -183,7 +183,7 @@ function SQLQueryConfigurationButton(props: Props) {
               >
                 <Switch.Label
                   as="span"
-                  className="text-sm leading-6 text-gray-900 flex items-center gap-x-2"
+                  className="text-sm leading-6 text-ink-100 flex items-center gap-x-2"
                   passive
                 >
                   <DatabaseZapIcon strokeWidth={2} className="w-4 h-4" />
@@ -216,7 +216,7 @@ function SQLQueryConfigurationButton(props: Props) {
               <div>
                 <label
                   htmlFor="athenaResultReuseConfigurationResultReuseByAgeConfigurationMaxAgeInMinutes"
-                  className="block text-xs font-medium leading-6 text-gray-900 pb-1"
+                  className="block text-xs font-medium leading-6 text-ink-100 pb-1"
                 >
                   Maximum age (minutes)
                 </label>

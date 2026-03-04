@@ -31,6 +31,8 @@ import { head } from "ramda";
 import { CommandLineIcon } from "@heroicons/react/24/solid";
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import { Transition } from "@headlessui/react";
+import { useTheme } from "next-themes"
+
 
 import type { ApiDocument, ApiWorkspace } from "@/types";
 
@@ -83,6 +85,8 @@ function PythonBlock(props: Props) {
     () => workspaces.data.find(w => w.id === props.document.workspaceId),
     [workspaces.data, props.document.workspaceId]
   );
+  const { resolvedTheme } = useTheme();
+
 
   const hasOaiKey = useMemo(() => {
     return (
@@ -462,13 +466,13 @@ function PythonBlock(props: Props) {
 
   return (
     <div
-      className="bg-white relative group/block"
+      className="bg-white dark:bg-base-100 relative group/block"
       onClick={onClickWithin}
       data-block-id={blockId}
     >
       <div
         className={clsx(
-          "rounded-2xl border border-[#EBD7D7]",
+          "rounded-2xl border border-border-focus",
           props.isBlockHiddenInPublished && "border-dashed",
           props.hasMultipleTabs ? "rounded-tl-2xl" : "rounded-tl-xl",
           isEditorFocused && editorState.mode === "insert" && "shadow-sm"
@@ -477,7 +481,7 @@ function PythonBlock(props: Props) {
         <div
           className={clsx(
             "rounded-2xl",
-            statusIsDisabled ? "" : "bg-white",
+            statusIsDisabled ? "" : "bg-white dark:bg-base-100",
             props.hasMultipleTabs ? "rounded-tl-none" : ""
           )}
         >
@@ -486,7 +490,7 @@ function PythonBlock(props: Props) {
               " rounded-t-2xl",
               isCodeHidden && isResultHidden
                 ? "rounded-b-2xl"
-                : "border-b border-gray-200"
+                : "border-b border-gray-200 dark:border-border-tertiary"
             )}
             ref={d => {
               props.dragPreview?.(d);
@@ -495,7 +499,7 @@ function PythonBlock(props: Props) {
             <div className="flex items-center justify-between px-3 pr-4 gap-x-4 font-primary h-12">
               <div className="select-none text-gray-300 text-xs flex items-center w-full h-full gap-x-1.5">
                 <div className="relative group w-4 h-4">
-                  <CommandLineIcon className="absolute inset-0 h-4 w-4 text-gray-400 group-hover:opacity-0 transition-opacity" />
+                  <CommandLineIcon className="absolute inset-0 h-4 w-4 text-ink-400 group-hover:opacity-0 transition-opacity" />
                   <button
                     type="button"
                     className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -511,7 +515,7 @@ function PythonBlock(props: Props) {
                 <input
                   type="text"
                   className={clsx(
-                    "text-base font-primary font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-md border-0 text-gray-800 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-gray-400 py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white"
+                    "text-base font-primary font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-md border-0 text-ink-100 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-ink-400 py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white"
                   )}
                   placeholder={
                     props.isEditable
@@ -569,6 +573,7 @@ function PythonBlock(props: Props) {
                   onInsertBlock={props.insertBelow ?? (() => {})}
                   diff={aiSuggestions ?? undefined}
                   disabled={statusIsDisabled}
+                  isDark={resolvedTheme === "dark"} 
                 />
               </div>
             </div>

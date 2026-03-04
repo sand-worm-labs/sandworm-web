@@ -59,7 +59,7 @@ export default function AthenaForm({
     <form className="px-4 sm:p-6 lg:p-12" onSubmit={onSubmitHandler} noValidate>
       <div className="space-y-12">
         <div className="border-b border-gray-900/10 pb-8">
-          <h2 className="text-lg font-semibold leading-7 text-gray-900">
+          <h2 className="text-lg font-semibold leading-7 text-ink-100">
             {athenaDataSource ? "Edit" : "New"} Athena data source
           </h2>
           <p className="mt-1 text-sm leading-6 text-gray-500">
@@ -75,7 +75,7 @@ export default function AthenaForm({
             <div className="col-span-6">
               <label
                 htmlFor="name"
-                className="block text-sm font-medium leading-6 text-gray-900"
+                className="block text-sm font-medium leading-6 text-ink-100"
               >
                 Display name
               </label>
@@ -91,7 +91,7 @@ export default function AthenaForm({
                   name="name"
                   placeholder="My Athena database"
                   required
-                  className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
                 <FormError msg={formState.errors.name?.message} />
               </div>
@@ -100,7 +100,7 @@ export default function AthenaForm({
             <div className="col-span-3">
               <label
                 htmlFor="region"
-                className="block text-sm font-medium leading-6 text-gray-900"
+                className="block text-sm font-medium leading-6 text-ink-100"
               >
                 AWS region
               </label>
@@ -116,7 +116,7 @@ export default function AthenaForm({
                   name="region"
                   placeholder="us-east-1"
                   required
-                  className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
                 <FormError msg={formState.errors.region?.message} />
               </div>
@@ -125,7 +125,7 @@ export default function AthenaForm({
             <div className="col-span-3">
               <label
                 htmlFor="s3OutputPath"
-                className="block text-sm font-medium leading-6 text-gray-900"
+                className="block text-sm font-medium leading-6 text-ink-100"
               >
                 S3 output path
               </label>
@@ -141,7 +141,7 @@ export default function AthenaForm({
                   name="s3OutputPath"
                   placeholder="s3://my-bucket/my-folder/"
                   required
-                  className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
                 <FormError msg={formState.errors.region?.message} />
               </div>
@@ -150,7 +150,7 @@ export default function AthenaForm({
             <div className="col-span-3">
               <label
                 htmlFor="accessKeyId"
-                className="block text-sm font-medium leading-6 text-gray-900"
+                className="block text-sm font-medium leading-6 text-ink-100"
               >
                 AWS Access Key ID
               </label>
@@ -165,10 +165,10 @@ export default function AthenaForm({
                   type="password"
                   name="accessKeyId"
                   required={!isEditing}
-                  className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
                 {isEditing && !formState.errors.accessKeyId && (
-                  <span className="block text-sm text-gray-900 empty:before:content-['\200b'] pt-1 pb-1">
+                  <span className="block text-sm text-ink-100 empty:before:content-['\200b'] pt-1 pb-1">
                     Leave empty to keep previous Access Key ID
                   </span>
                 )}
@@ -179,7 +179,7 @@ export default function AthenaForm({
             <div className="col-span-3">
               <label
                 htmlFor="secretAccessKeyId"
-                className="block text-sm font-medium leading-6 text-gray-900"
+                className="block text-sm font-medium leading-6 text-ink-100"
               >
                 AWS Secret Access Key ID
               </label>
@@ -194,10 +194,10 @@ export default function AthenaForm({
                   type="password"
                   name="secretAccessKeyId"
                   required={!isEditing}
-                  className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
                 {isEditing && !formState.errors.accessKeyId && (
-                  <span className="block text-sm text-gray-900 empty:before:content-['\200b'] pt-1 pb-1">
+                  <span className="block text-sm text-ink-100 empty:before:content-['\200b'] pt-1 pb-1">
                     Leave empty to keep previous Secret Access Key ID
                   </span>
                 )}
@@ -208,7 +208,7 @@ export default function AthenaForm({
             <div className="col-span-full pt-8">
               <label
                 htmlFor="additionalInfo"
-                className="block text-sm font-medium leading-6 text-gray-900"
+                className="block text-sm font-medium leading-6 text-ink-100"
               >
                 AI Additional Context{" "}
                 <span className="pl-1 text-gray-500">(optional)</span>
@@ -220,7 +220,7 @@ export default function AthenaForm({
                   name="additionalInfo"
                   rows={5}
                   placeholder="Enter additional context for the AI assistant (examples, descriptions, etc.)"
-                  className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
               </div>
             </div>

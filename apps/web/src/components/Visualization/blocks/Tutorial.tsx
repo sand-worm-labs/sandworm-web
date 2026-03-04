@@ -159,7 +159,7 @@ const TutorialStep = (props: TutorialStepProps) => {
           onClick={stepRef.current ? props.onExpand : () => {}}
           className={clsx(
             "block text-left font-medium",
-            props.status === "current" && "text-gray-800 hover:text-gray-900",
+            props.status === "current" && "text-gray-800 hover:text-ink-100",
             props.status === "completed" &&
               "text-green-700 hover:text-green-800",
             props.status !== "current" &&

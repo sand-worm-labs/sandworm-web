@@ -472,8 +472,8 @@ function PivotTableBlock(props: Props) {
           props.hasMultipleTabs ? "rounded-tl-none" : "rounded-tl-md",
 
           props.isCursorWithin
-            ? "border-[#EBD7D7] shadow-sm"
-            : "border-gray-200 dark:border-[#262A30]"
+            ? "border-border-tertiaryshadow-sm"
+            : "border-gray-200 dark:border-border-tertiary"
         )}
       >
         <div
@@ -483,12 +483,12 @@ function PivotTableBlock(props: Props) {
           )}
         >
           <div
-            className="border-b border-gray-200 dark:border-[#262A30] bg-gray-50 dark:bg-black rounded-t-md"
+            className="border-b border-gray-200 dark:border-border-tertiary bg-gray-50 dark:bg-base-100 rounded-t-md"
             ref={d => {
               props.dragPreview?.(d);
             }}
           >
-            <div className="flex items-center justify-between px-3 pr-0 gap-x-4 font-primary h-12 divide-x divide-gray-200 dark:divide-[#181C21]">
+            <div className="flex items-center justify-between px-3 pr-0 gap-x-4 font-primary h-12 divide-x divide-gray-200 dark:divide-border-tertiary">
               <div className="select-none text-gray-300 text-xs flex items-center w-full h-full gap-x-1.5">
                 <TableCellsIcon className="h-4 w-4 text-gray-400" />
                 <input
@@ -506,7 +506,7 @@ function PivotTableBlock(props: Props) {
                   disabled={!props.isEditable}
                 />
               </div>
-              <div className="print:hidden flex items-center gap-x-0 group-focus/block:opacity-100 h-full divide-x divide-gray-200 dark:divide-[#181C21]">
+              <div className="print:hidden flex items-center gap-x-0 group-focus/block:opacity-100 h-full divide-x divide-gray-200 dark:divide-border-tertiary">
                 <HeaderSelect
                   value={dataframe?.name ?? ""}
                   onChange={onChangeDataframe}

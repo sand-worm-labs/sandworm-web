@@ -54,7 +54,7 @@ c30,0,30,26.9,60,26.9"
     // Show empty state if no query has been run
     if (!currentTab.result) {
       return (
-        <div className="h-full flex items-center justify-center relative border-t border-[#E9ECEF] dark:border-[#262A30]">
+        <div className="h-full flex items-center justify-center relative border-t border-[#E9ECEF] dark:border-border-tertiary">
           <div
             className="absolute inset-0"
             style={{

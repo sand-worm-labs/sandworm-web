@@ -155,7 +155,7 @@ function DateInputBlockInput(props: Props) {
         onBlur={editorAPI.blur}
         onKeyDown={unfocusOnEscape}
         className={clsx(
-          "block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset w-full disabled:bg-gray-100 disabled:cursor-not-allowed bg-white appearance-none",
+          "block rounded-md border-0 py-1.5 text-ink-100 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset w-full disabled:bg-gray-100 disabled:cursor-not-allowed bg-white appearance-none",
           props.error
             ? "ring-red-200 focus:ring-red-200"
             : "focus:ring-primary-200",

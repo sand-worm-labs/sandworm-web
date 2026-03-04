@@ -343,7 +343,7 @@ function GridElement(props: Props) {
         <div
           role="presentation"
           className={clsx(
-            "absolute -top-3 right-3 opacity-0 bg-white group-hover:opacity-100 z-20 border border-gray-200 dark:border-[#262A30] py-1 rounded-md shadow-sm flex gap-x-3.5 items-center px-3.5"
+            "absolute -top-3 right-3 opacity-0 bg-white group-hover:opacity-100 z-20 border border-gray-200 dark:border-border-tertiary py-1 rounded-md shadow-sm flex gap-x-3.5 items-center px-3.5"
           )}
           onMouseDown={e => e.stopPropagation()}
         >

@@ -63,6 +63,7 @@ const config: Config = {
         border: "hsl(var(--border))",
         "border-secondary": "hsl(var(--border-secondary))",
         "border-tertiary": "hsl(var(--border-tertiary))",
+        "border-focus": "hsl(var(--border-focus))",
 
         input: "hsl(var(--input))",
         inputBg: "hsl(var(--bg-input))",

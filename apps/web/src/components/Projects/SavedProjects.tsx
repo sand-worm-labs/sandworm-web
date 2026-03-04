@@ -178,12 +178,12 @@ export const SavedProjects: React.FC = () => {
             {projects.map(project => (
               <div
                 key={project.id}
-                className="bg-white dark:bg-black rounded-3xl border border-[#CED4DA] dark:border-[#262A30] transition-all duration-200 p-4 py-3 relative group"
+                className="bg-white dark:bg-base-100 rounded-3xl border border-[#CED4DA] dark:border-border-tertiary transition-all duration-200 p-4 py-3 relative group"
               >
                 <div className="flex items-start justify-between mb-4">
                   <Link
                     href={`/workspace/${workspaceId}/documents/${project.id}`}
-                    className="text-[0.9rem] font-medium text-gray-900 dark:text-white flex-1 pr-2 hover:underline"
+                    className="text-[0.9rem] font-medium text-ink-100 dark:text-white flex-1 pr-2 hover:underline"
                   >
                     {project.title}
                   </Link>
@@ -219,7 +219,7 @@ export const SavedProjects: React.FC = () => {
                       </button>
 
                       {openMenuId === project.id && (
-                        <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-black rounded-xl shadow-lg border border-[#CED4DA] dark:border-[#262A30] pb-1 z-10 text-ink-200 dark:text-white">
+                        <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-base-100 rounded-xl shadow-lg border border-[#CED4DA] dark:border-border-tertiary pb-1 z-10 text-ink-200 dark:text-white">
                           <button
                             type="button"
                             onClick={() =>
@@ -259,7 +259,7 @@ export const SavedProjects: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="bg-white dark:bg-black rounded-lg h-10 mb-4 flex items-center justify-center" />
+                <div className="bg-white dark:bg-base-100 rounded-lg h-10 mb-4 flex items-center justify-center" />
 
                 <div className="flex items-center justify-between">
                   <div className="relative">
@@ -273,7 +273,7 @@ export const SavedProjects: React.FC = () => {
                     </button>
 
                     {hoveredUser === project.id && (
-                      <div className="absolute bottom-full left-0 mb-2 px-3 py-1 dark:bg-black bg-white text-ink-400 border-[#E9ECEF] dark:border-[#262A30] border dark:text-white text-xs rounded shadow-[0_0.5px_4px_#2516660A] whitespace-nowrap z-20">
+                      <div className="absolute bottom-full left-0 mb-2 px-3 py-1 dark:bg-base-100 bg-white text-ink-400 border-[#E9ECEF] dark:border-border-tertiary border dark:text-white text-xs rounded shadow-[0_0.5px_4px_#2516660A] whitespace-nowrap z-20">
                         Creator: {project.creator}
                       </div>
                     )}
@@ -290,7 +290,7 @@ export const SavedProjects: React.FC = () => {
                     </button>
 
                     {hoveredSave === project.id && (
-                      <div className="absolute bottom-full right-0 mb-2 px-4 py-1.5 dark:bg-black bg-white text-ink-500 border-[#E9ECEF] dark:border-[#262A30] border dark:text-white text-xs rounded shadow-[0_0.5px_4px_#2516660A] whitespace-nowrap z-20">
+                      <div className="absolute bottom-full right-0 mb-2 px-4 py-1.5 dark:bg-base-100 bg-white text-ink-500 border-[#E9ECEF] dark:border-border-tertiary border dark:text-white text-xs rounded shadow-[0_0.5px_4px_#2516660A] whitespace-nowrap z-20">
                         <div className="space-y-1">
                           <div>
                             <span className="font-medium text-ink-400 dark:text-white">

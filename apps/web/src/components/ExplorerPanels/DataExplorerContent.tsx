@@ -109,7 +109,7 @@ export function DataExplorerContent({
         {onHide && (
           <button
             type="button"
-            className="absolute z-10 top-7 transform rounded-full border border-gray-300 dark:border-[#262A30] text-gray-400 bg-white dark:bg-black hover:bg-gray-100 dark:hover:bg-gray-900 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
+            className="absolute z-10 top-7 transform rounded-full border border-gray-300 dark:border-border-tertiary text-gray-400 bg-white dark:bg-base-100 hover:bg-gray-100 dark:hover:bg-gray-900 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
             onClick={onHide}
             aria-label="Close data explorer"
           >
@@ -117,16 +117,16 @@ export function DataExplorerContent({
           </button>
         )}
 
-        <Card className="h-full overflow-hidden border-l dark:border-[#262A30] border-gray-200 rounded-none w-[354px] bg-white dark:bg-black gap-y-0 pt-0">
+        <Card className="h-full overflow-hidden border-l dark:border-border-tertiary border-gray-200 rounded-none w-[354px] bg-white dark:bg-base-100 gap-y-0 pt-0">
           {loading && (
             <div className="flex items-center justify-center h-full"> </div>
           )}
 
           {mode === "sidebar" ? (
-            <div className="px-4 xl:px-6 pt-6 pb-5 border-b border-[#E9ECEF] dark:border-[#262A30]">
+            <div className="px-4 xl:px-6 pt-6 pb-5 border-b border-[#E9ECEF] dark:border-border-tertiary">
               <div className="flex justify-between">
                 <div>
-                  <h3 className="text-lg font-medium leading-6 text-gray-900 dark:text-white">
+                  <h3 className="text-lg font-medium leading-6 text-ink-100 dark:text-white">
                     Data Explorer
                   </h3>
                   <p className="text-ink-300 text-sm pt-1">
@@ -137,10 +137,10 @@ export function DataExplorerContent({
               </div>
             </div>
           ) : (
-            <div className="p-4 border-b border-[#E9ECEF] dark:border-[#262A30]">
+            <div className="p-4 border-b border-[#E9ECEF] dark:border-border-tertiary">
               <div className="flex items-center gap-2">
                 <Database />
-                <h3 className="font-medium text-gray-900 dark:text-white">
+                <h3 className="font-medium text-ink-100 dark:text-white">
                   Data Explorer
                 </h3>
               </div>
@@ -176,11 +176,11 @@ export function DataExplorerContent({
   if (!visible) return null;
 
   return (
-    <Card className="h-full overflow-hidden relative border-[#E9ECEF] dark:border-[#262A30] border-2 gap-y-0 min-w-[310px]">
+    <Card className="h-full overflow-hidden relative border-[#E9ECEF] dark:border-border-tertiary border-2 gap-y-0 min-w-[310px]">
       {showDragHandle && (
         <div
           aria-label="Drag panel"
-          className="border rounded drag-handle absolute left-1/2 -translate-x-1/2 top-4 -translate-y-1/2 z-10 p-1 h-6 w-8 shadow-sm cursor-grab active:cursor-grabbing border-[#EFF0F6] dark:border-[#262A30]"
+          className="border rounded drag-handle absolute left-1/2 -translate-x-1/2 top-4 -translate-y-1/2 z-10 p-1 h-6 w-8 shadow-sm cursor-grab active:cursor-grabbing border-[#EFF0F6] dark:border-border-tertiary"
         >
           <GripHorizontal className="h-4 w-4" />
         </div>
@@ -192,7 +192,7 @@ export function DataExplorerContent({
         </div>
       )}
 
-      <CardHeader className="p-4 pt-0 border-b drag-handle cursor-grab active:cursor-grabbing select-none border-[#E9ECEF] dark:border-[#262A30] mb-0">
+      <CardHeader className="p-4 pt-0 border-b drag-handle cursor-grab active:cursor-grabbing select-none border-[#E9ECEF] dark:border-border-tertiary mb-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center w-full justify-between gap-2">
             <div className="flex items-center gap-2">

@@ -196,7 +196,7 @@ const RichTextBlock = (props: Props) => {
           props.isEditable &&
           props.isCursorWithin &&
           !props.isCursorInserting
-        ? " border border-[#EBD7D7] border-[#262A30]"
+        ? " border border-border-tertiaryborder-[#262A30]"
         : props.dashboardMode?._tag === "editing" &&
             props.dashboardMode.position === "expanded"
           ? "border border-[#EBD7D7]"
@@ -213,9 +213,9 @@ const RichTextBlock = (props: Props) => {
         props.dashboardMode ? "px-4 py-4 h-full overflow-y-auto" : "",
         ringColor,
         {
-          "rounded-tl-none rounded-lg border border-[#EBD7D7] p-2 px-5":
+          "rounded-tl-none rounded-lg border border-border-tertiaryp-2 px-5":
             props.belongsToMultiTabGroup,
-          "rounded-tl-none rounded-lg border border-[#EBD7D7] p-2 px-4 ":
+          "rounded-tl-none rounded-lg border border-border-tertiaryp-2 px-4 ":
             props.belongsToMultiTabGroup &&
             props.isCursorWithin &&
             !props.isCursorInserting,

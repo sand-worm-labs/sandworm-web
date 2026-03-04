@@ -55,7 +55,7 @@ function PivotTableView(props: Props) {
       {props.result && !props.loadingTable && !props.error ? (
         <>
           {props.loadingPage && (
-            <div className="absolute top-0 left-0 bottom-8 right-0 bg-white dark:bg-black opacity-50 z-10 flex items-center justify-center">
+            <div className="absolute top-0 left-0 bottom-8 right-0 bg-white dark:bg-base-100 opacity-50 z-10 flex items-center justify-center">
               <LargeSpinner color="#deff80" />
             </div>
           )}
@@ -66,7 +66,7 @@ function PivotTableView(props: Props) {
               onSort={props.onSort}
             />
             {props.result.pageCount > 1 && (
-              <div className="flex w-full items-center justify-between border-t border-gray-200 dark:border-[#262A30] px-3 py-1.5 text-xs font-syne rounded-b-md bg-gray-50 dark:bg-black ">
+              <div className="flex w-full items-center justify-between border-t border-gray-200 dark:border-border-tertiary px-3 py-1.5 text-xs font-syne rounded-b-md bg-gray-50 dark:bg-base-100 ">
                 <PageButtons
                   currentPage={props.page - 1}
                   totalPages={props.result.pageCount - 1}

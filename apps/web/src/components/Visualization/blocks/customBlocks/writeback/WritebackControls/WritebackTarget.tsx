@@ -72,7 +72,7 @@ function WritebackTarget(props: Props) {
       icon={icon}
       disabled={props.disabled}
       bg="bg-primary-200"
-      fg="text-gray-900"
+      fg="text-ink-100"
     />
   );
 }

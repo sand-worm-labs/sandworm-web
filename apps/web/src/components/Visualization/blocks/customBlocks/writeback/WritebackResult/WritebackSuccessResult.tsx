@@ -37,7 +37,7 @@ function WritebackSuccessResult(props: WritebackSuccessResultProps) {
                       ["Lines ignored", props.result.ignoredRows],
                     ].map(([label, value]) => (
                       <tr className="divide-x divide-gray-200">
-                        <td className="whitespace-nowrap py-3 pl-4 pr-3 text-xs font-medium text-gray-900 bg-gray-50">
+                        <td className="whitespace-nowrap py-3 pl-4 pr-3 text-xs font-medium text-ink-100 bg-gray-50">
                           {label}
                         </td>
                         <td className="break-all py-3 pl-3 pr-4 text-xs text-gray-500">
@@ -48,7 +48,7 @@ function WritebackSuccessResult(props: WritebackSuccessResultProps) {
                     {false && (
                       <>
                         <tr className="divide-x divide-gray-200">
-                          <td className="whitespace-nowrap py-4 pl-4 pr-3 text-xs font-medium text-gray-900 sm:pl-6 bg-gray-50">
+                          <td className="whitespace-nowrap py-4 pl-4 pr-3 text-xs font-medium text-ink-100 sm:pl-6 bg-gray-50">
                             Target
                           </td>
                           <td className="whitespace-nowrap py-4 pl-3 pr-4 text-xs text-gray-500">
@@ -56,7 +56,7 @@ function WritebackSuccessResult(props: WritebackSuccessResultProps) {
                           </td>
                         </tr>
                         <tr className="divide-x divide-gray-200">
-                          <td className="whitespace-nowrap py-4 pl-4 pr-3 text-xs font-medium text-gray-900 sm:pl-6 bg-gray-50">
+                          <td className="whitespace-nowrap py-4 pl-4 pr-3 text-xs font-medium text-ink-100 sm:pl-6 bg-gray-50">
                             Table
                           </td>
                           <td className="px-3 py-4 text-xs text-gray-500 break-all">
@@ -64,7 +64,7 @@ function WritebackSuccessResult(props: WritebackSuccessResultProps) {
                           </td>
                         </tr>
                         <tr className="divide-x divide-gray-200">
-                          <td className="whitespace-nowrap py-4 pl-4 pr-3 text-xs font-medium text-gray-900 sm:pl-6 bg-gray-50">
+                          <td className="whitespace-nowrap py-4 pl-4 pr-3 text-xs font-medium text-ink-100 sm:pl-6 bg-gray-50">
                             Overwritten
                           </td>
                           <td className="px-3 py-4 text-xs text-gray-500 break-all">
@@ -72,7 +72,7 @@ function WritebackSuccessResult(props: WritebackSuccessResultProps) {
                           </td>
                         </tr>
                         <tr className="divide-x divide-gray-200">
-                          <td className="whitespace-nowrap py-4 pl-4 pr-3 text-xs font-medium text-gray-900 sm:pl-6 bg-gray-50">
+                          <td className="whitespace-nowrap py-4 pl-4 pr-3 text-xs font-medium text-ink-100 sm:pl-6 bg-gray-50">
                             Lines created
                           </td>
                           <td className="px-3 py-4 text-xs text-gray-500 break-all">
@@ -80,7 +80,7 @@ function WritebackSuccessResult(props: WritebackSuccessResultProps) {
                           </td>
                         </tr>
                         <tr className="divide-x divide-gray-200">
-                          <td className="whitespace-nowrap py-4 pl-4 pr-3 text-xs font-medium text-gray-900 sm:pl-6 bg-gray-50">
+                          <td className="whitespace-nowrap py-4 pl-4 pr-3 text-xs font-medium text-ink-100 sm:pl-6 bg-gray-50">
                             Lines updated
                           </td>
                           <td className="px-3 py-4 text-xs text-gray-500 break-all">
@@ -88,7 +88,7 @@ function WritebackSuccessResult(props: WritebackSuccessResultProps) {
                           </td>
                         </tr>
                         <tr className="divide-x divide-gray-200">
-                          <td className="whitespace-nowrap py-4 pl-4 pr-3 text-xs font-medium text-gray-900 sm:pl-6 bg-gray-50">
+                          <td className="whitespace-nowrap py-4 pl-4 pr-3 text-xs font-medium text-ink-100 sm:pl-6 bg-gray-50">
                             Lines ignored
                           </td>
                           <td className="px-3 py-4 text-xs text-gray-500 break-all">

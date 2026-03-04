@@ -240,7 +240,7 @@ function AcceptInvitationContent() {
     <div className="flex flex-col items-center justify-center min-h-screen p-4">
       <div className="max-w-lg w-full">
         <div className="flex items-center justify-center gap-3 mb-6">
-          <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-[#DEE2E6] dark:border-[#262A30]">
+          <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-[#DEE2E6] dark:border-border-tertiary">
             <Image
               src={invitation.inviter.avatar}
               alt={invitation.inviter.name}
@@ -250,7 +250,7 @@ function AcceptInvitationContent() {
             />
           </div>
           <span className="text-ink-300 text-2xl font-light">+</span>
-          <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-[#DEE2E6] dark:border-[#262A30]">
+          <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-[#DEE2E6] dark:border-border-tertiary">
             <Image
               src={user?.avater || "/img/avatar/avatar3.svg"}
               alt="You"

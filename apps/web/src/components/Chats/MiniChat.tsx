@@ -14,7 +14,7 @@ interface MiniChatHeaderProps {
 
 export const MiniChatHeader: React.FC<MiniChatHeaderProps> = ({ onCancel }) => {
   return (
-    <header className="flex items-center justify-between px-4 py-2 bg-white dark:bg-black border-b border-gray-200 dark:border-slate-800 ">
+    <header className="flex items-center justify-between px-4 py-2 bg-white dark:bg-base-100 border-b border-gray-200 dark:border-slate-800 ">
       <div className="flex-col flex">
         <h3 className="text-sm font-medium leading-5 text-slate-900 dark:text-slate-100">
           Sandworm agent
@@ -138,7 +138,7 @@ export const MiniChat: React.FC<MiniChatProps> = ({ visible, onClose }) => {
       leaveFrom="translate-x-0"
       leaveTo="transform translate-x-full"
     >
-      <div className="w-[354px] flex flex-col overflow-y-auto border-l dark:border-[#262A30] border-gray-200 h-full bg-white dark:bg-black ">
+      <div className="w-[354px] flex flex-col overflow-y-auto border-l dark:border-border-tertiary border-gray-200 h-full bg-white dark:bg-base-100 ">
         <MiniChatHeader onCancel={onClose} />
 
         <div className="flex-1 overflow-y-auto py-6 px-4 ">

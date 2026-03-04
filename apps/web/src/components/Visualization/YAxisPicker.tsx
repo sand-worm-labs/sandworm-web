@@ -205,7 +205,7 @@ function YAxisPickerV2(props: Props) {
       <div className="flex justify-between items-end pb-1">
         {props.defaultChartType !== "trend" &&
           props.defaultChartType !== "number" && (
-            <div className="text-md font-medium leading-6 text-gray-900">
+            <div className="text-md font-medium leading-6 text-ink-100">
               {props.onAddYAxis ? "" : props.index === 0 ? "Left" : "Right"}{" "}
               Y-Axis
             </div>

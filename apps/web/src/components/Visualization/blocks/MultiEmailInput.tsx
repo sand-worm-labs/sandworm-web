@@ -76,7 +76,7 @@ const MultiEmailInput = <T extends FieldValues>(
 
   return (
     <div className="flex flex-col gap-y-2">
-      <label className="block text-sm font-medium leading-6 text-gray-900">
+      <label className="block text-sm font-medium leading-6 text-ink-100">
         Emails to notify
       </label>
 

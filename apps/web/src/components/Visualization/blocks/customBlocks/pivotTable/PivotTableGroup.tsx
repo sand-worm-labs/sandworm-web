@@ -48,7 +48,7 @@ function PivotTableGroup<
   return (
     <div>
       <div className="flex justify-between items-end pb-1">
-        <div className="text-md font-medium leading-6 text-gray-900">
+        <div className="text-md font-medium leading-6 text-ink-100">
           {props.label}
         </div>
         <button

@@ -81,7 +81,7 @@ function DashboardHeader(props: Props) {
           type="text"
           value={props.block.getAttribute("content")}
           placeholder="Heading"
-          className="block w-full rounded-md border-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 text-2xl font-semibold leading-6 bg-transparent pl-3 py-0.5"
+          className="block w-full rounded-md border-0 text-ink-100 placeholder:text-gray-400 focus:ring-0 text-2xl font-semibold leading-6 bg-transparent pl-3 py-0.5"
           onChange={e => props.block.setAttribute("content", e.target.value)}
           onBlur={endEditing}
           onMouseDown={stopPropagation}
@@ -91,7 +91,7 @@ function DashboardHeader(props: Props) {
           type="button"
           className={clsx(
             "text-2xl font-medium text-left truncate min-h-6 pl-3 w-full",
-            hasContent ? "text-gray-900" : "text-gray-400",
+            hasContent ? "text-ink-100" : "text-gray-400",
             props.dashboardMode !== "live" && "hover:cursor-text"
           )}
           onClick={onClickH1}

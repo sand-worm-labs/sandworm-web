@@ -191,7 +191,7 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                             <button
                               type="button"
                               onClick={() => setIsModalOpen(true)}
-                              className="flex items-center gap-2 px-4 py-1 rounded-lg font-medium transition-colors text-sm border border-[#DEE2E6] dark:border-[#262A30] text-[#6C757D] dark:text-black hover:bg-[#F8F9FA] dark:hover:bg-[#262A30] bg-[#F8F9FA]"
+                              className="flex items-center gap-2 px-4 py-1 rounded-lg font-medium transition-colors text-sm border border-[#DEE2E6] dark:border-border-tertiary text-[#6C757D] dark:text-black hover:bg-[#F8F9FA] dark:hover:bg-[#262A30] bg-[#F8F9FA]"
                             >
                               Edit
                             </button>
@@ -273,7 +273,7 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                                   href={url as string}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="p-2.5 rounded-xl border border-[#DEE2E6] dark:border-[#262A30] hover:bg-[#A308F0] hover:border-[#A308F0] hover:text-white transition-colors text-[#1C3B5A] dark:text-gray-400 bg-[#F8F9FA] dark:bg-transparent"
+                                  className="p-2.5 rounded-xl border border-[#DEE2E6] dark:border-border-tertiary hover:bg-[#A308F0] hover:border-[#A308F0] hover:text-white transition-colors text-[#1C3B5A] dark:text-gray-400 bg-[#F8F9FA] dark:bg-transparent"
                                 >
                                   {getSocialIcon(platform)}
                                 </a>
@@ -294,7 +294,7 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                         {wallets.map(wallet => (
                           <div
                             key={wallet.address}
-                            className="flex items-center justify-between p-4 py-2 rounded-xl dark:border-[#262A30]   transition-colors bg-[#F8F9FA] border border-[#DEE2E6]"
+                            className="flex items-center justify-between p-4 py-2 rounded-xl dark:border-border-tertiary   transition-colors bg-[#F8F9FA] border border-[#DEE2E6]"
                           >
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-1" />

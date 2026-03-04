@@ -39,7 +39,7 @@ export const HourlyScheduleFields = ({
     <div>
       <label
         htmlFor="hourlyMinute"
-        className="block text-sm font-medium leading-6 text-gray-900"
+        className="block text-sm font-medium leading-6 text-ink-100"
       >
         Minute
       </label>
@@ -277,7 +277,7 @@ export const MonthlyScheduleFields = ({
       <div className="w-full">
         <label
           htmlFor="weekdays"
-          className="block text-sm font-medium leading-6 text-gray-900"
+          className="block text-sm font-medium leading-6 text-ink-100"
         >
           Days
         </label>
@@ -307,7 +307,7 @@ export const CronScheduleFields = ({
     <div>
       <label
         htmlFor="hourlyMinute"
-        className="block text-sm font-medium leading-6 text-gray-900"
+        className="block text-sm font-medium leading-6 text-ink-100"
       >
         Cron schedule
       </label>
@@ -328,7 +328,7 @@ export const CronScheduleFields = ({
             },
           })}
           required
-          className="font-mono block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-gray-300 focus:ring-2 focus:ring-primary-400 sm:text-sm sm:leading-6 focus:ring-primary focus-visible:outline-primary"
+          className="font-mono block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-ink-100 ring-1 ring-gray-300 focus:ring-2 focus:ring-primary-400 sm:text-sm sm:leading-6 focus:ring-primary focus-visible:outline-primary"
         />
         <FormError msg={formErrors.cron?.message} />
       </div>

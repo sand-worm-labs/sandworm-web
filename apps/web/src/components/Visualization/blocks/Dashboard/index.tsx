@@ -615,7 +615,7 @@ export default function Dashboard(props: Props) {
 
   return (
     <Layout
-      topBarClassname={!props.isEditing ? "dark:bg-black" : undefined}
+      topBarClassname={!props.isEditing ? "dark:bg-base-100" : undefined}
       topBarContent={topBarContent}
     >
       <div className="w-full flex relative subpixel-antialiased bg-dashboard-gray">
@@ -636,7 +636,7 @@ export default function Dashboard(props: Props) {
           )}
         </div>
 
-        <div className="w-full fixed bottom-0 bg-white dark:bg-black z-20">
+        <div className="w-full fixed bottom-0 bg-white dark:bg-base-100 z-20">
           <EnvBar
             onOpenFiles={onToggleFiles}
             publishedAt={!props.isEditing ? props.document.publishedAt : null}

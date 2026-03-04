@@ -64,7 +64,7 @@ export function FeaturesDialog({
                   <div className="mt-2 text-center sm:mt-5">
                     <Dialog.Title
                       as="h2"
-                      className="text-xl font-semibold leading-6 text-gray-900"
+                      className="text-xl font-semibold leading-6 text-ink-100"
                     >
                       You're using sandworm's open source version
                     </Dialog.Title>
@@ -86,7 +86,7 @@ export function FeaturesDialog({
                 <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
                   <button
                     type="button"
-                    className="inline-flex w-full justify-center rounded-sm bg-primary-300 px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm hover:bg-primary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 sm:col-start-2 border border-primary-600"
+                    className="inline-flex w-full justify-center rounded-sm bg-primary-300 px-3 py-2 text-sm font-semibold text-ink-100 shadow-sm hover:bg-primary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 sm:col-start-2 border border-primary-600"
                     onClick={() => {
                       setOpen(false);
                       window.open("https://sandworm.cloud/pricing");
@@ -96,7 +96,7 @@ export function FeaturesDialog({
                   </button>
                   <button
                     type="button"
-                    className="mt-3 inline-flex w-full justify-center rounded-sm bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
+                    className="mt-3 inline-flex w-full justify-center rounded-sm bg-white px-3 py-2 text-sm font-semibold text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
                     onClick={() => setOpen(false)}
                     ref={cancelButtonRef}
                   >

@@ -41,16 +41,16 @@ export default function Snapshots(props: Props) {
     >
       <button
         type="button"
-        className="absolute z-10 top-7 transform rounded-full border border-gray-300 dark:border-[#262A30] text-gray-400 bg-white hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
+        className="absolute z-10 top-7 transform rounded-full border border-gray-300 dark:border-border-tertiary text-gray-400 bg-white hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
         onClick={props.onHide}
       >
         <ChevronDoubleRightIcon className="w-3 h-3" />
       </button>
-      <div className="w-[354px] flex flex-col border-l dark:border-[#262A30] border-gray-200 h-full bg-white dark:bg-black">
-        <div className="flex items-center justify-between border-b dark:border-[#262A30] p-6">
+      <div className="w-[354px] flex flex-col border-l dark:border-border-tertiary border-gray-200 h-full bg-white dark:bg-base-100">
+        <div className="flex items-center justify-between border-b dark:border-border-tertiary p-6">
           <div className="flex items-center">
             <div>
-              <h3 className="text-lg font-medium leading-6 text-gray-900  dark:text-white pr-1.5">
+              <h3 className="text-lg font-medium leading-6 text-ink-100  dark:text-white pr-1.5">
                 Snapshots
               </h3>
               <p className="text-gray-500 text-sm pt-1">
@@ -67,7 +67,7 @@ export default function Snapshots(props: Props) {
         </div>
         <ScrollBar className="overflow-auto">
           <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">
-            <div className="flex flex-col gap-y-3 bg-ceramic-50/60 p-6 rounded-xl border-2 border-[#E9ECEF] dark:border-[#262A30] border-dashed items-center max-w-[260px] text-center">
+            <div className="flex flex-col gap-y-3 bg-ceramic-50/60 p-6 rounded-xl border-2 border-[#E9ECEF] dark:border-border-tertiary border-dashed items-center max-w-[260px] text-center">
               <ScheduleIcon />
 
               <div className="text-ink-300 text-sm space-y-1">

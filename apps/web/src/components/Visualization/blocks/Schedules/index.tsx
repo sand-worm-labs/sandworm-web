@@ -161,7 +161,7 @@ const CronSchedule = ({ schedule }: { schedule: CronScheduleType }) => {
     <div>
       <div className="font-medium pb-2 flex items-center gap-x-2">
         <span className="">Cron: </span>
-        <span className="rounded-sm px-2 py-1 font-mono bg-gray-100 border border-gray-200 dark:border-[#262A30]">
+        <span className="rounded-sm px-2 py-1 font-mono bg-gray-100 border border-gray-200 dark:border-border-tertiary">
           {cron}
         </span>
         <span className="group relative">
@@ -216,7 +216,7 @@ function ScheduleList(props: ScheduleListProps) {
       <div className="px-4 xl:px-6 pt-6 pb-5">
         <div className="flex justify-between">
           <div>
-            <h3 className="text-lg font-medium leading-6 text-gray-900 dark:text-white">
+            <h3 className="text-lg font-medium leading-6 text-ink-100 dark:text-white">
               Schedule
             </h3>
 
@@ -333,7 +333,7 @@ function ScheduleList(props: ScheduleListProps) {
         </div>
       ) : (
         <div className="flex-1 flex flex-col items-center justify-center px-4 xl:px-6 py-12">
-          <div className="flex flex-col gap-y-3 bg-ceramic-50/60 p-6 rounded-xl border-2 border-[#E9ECEF] dark:border-[#262A30] border-dashed items-center max-w-[260px]">
+          <div className="flex flex-col gap-y-3 bg-ceramic-50/60 p-6 rounded-xl border-2 border-[#E9ECEF] dark:border-border-tertiary border-dashed items-center max-w-[260px]">
             <ScheduleIcon className="w-10 h-10" />
             <div className="text-ink-300 dark:text-ink-400 text-center text-sm">
               <p>{`You haven't saved this page yet.`}</p>
@@ -393,7 +393,7 @@ export default function Schedules(props: Props) {
     >
       <button
         type="button"
-        className="absolute z-10 top-7 transform rounded-full border border-gray-300 text-gray-400 dark:border-[#262A30] bg-white hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
+        className="absolute z-10 top-7 transform rounded-full border border-gray-300 text-gray-400 dark:border-border-tertiary bg-white hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
         onClick={props.onHide}
       >
         <ChevronDoubleRightIcon className="w-3 h-3" />

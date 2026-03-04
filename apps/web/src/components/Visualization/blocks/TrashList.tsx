@@ -51,7 +51,7 @@ export default function TrashList({
             className="flex flex-wrap items-center justify-between gap-x-6 gap-y-4 py-5 sm:flex-nowrap"
           >
             <div>
-              <p className="text-sm font-semibold leading-6 text-gray-900">
+              <p className="text-sm font-semibold leading-6 text-ink-100">
                 <Link
                   href={`/workspace/${workspaceId}/documents/${doc.id}`}
                   className="hover:underline"

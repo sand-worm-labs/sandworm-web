@@ -11,6 +11,7 @@ import Link from "next/link";
 import * as allOutlineIcons from "@heroicons/react/24/outline";
 
 import type { APIReusableComponent, ReusableComponentType } from "@/types";
+import { ScheduleIcon } from "@/components/Assets/ScheduleIcon";
 
 import allLucideIcons from "../utils/lucideIcons";
 import { useReusableComponents } from "../hooks/useReusableComponents";
@@ -18,7 +19,6 @@ import { useReusableComponents } from "../hooks/useReusableComponents";
 import { Tooltip, TooltipV2 } from "./ToolTips";
 import Spin from "./Spin";
 import ScrollBar from "./ScrollBar";
-import { ScheduleIcon } from "@/components/Assets/ScheduleIcon";
 
 const icons: Record<string, React.ComponentType<React.ComponentProps<any>>> = {
   ...allOutlineIcons,
@@ -66,7 +66,7 @@ export const SaveConfirmationModal = (props: SaveConfirmationModalProps) => {
                   <div className="mt-3 text-center sm:mt-5">
                     <Dialog.Title
                       as="h3"
-                      className="text-base font-semibold leading-6 text-gray-900"
+                      className="text-base font-semibold leading-6 text-ink-100"
                     >
                       Update existing component
                     </Dialog.Title>
@@ -90,7 +90,7 @@ export const SaveConfirmationModal = (props: SaveConfirmationModalProps) => {
                   <button
                     type="button"
                     onClick={props.onUpdate}
-                    className="inline-flex w-full justify-center rounded-sm bg-[#A308F0] px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm hover:bg-primary-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2"
+                    className="inline-flex w-full justify-center rounded-sm bg-[#A308F0] px-3 py-2 text-sm font-semibold text-ink-100 shadow-sm hover:bg-primary-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2"
                   >
                     Update component
                   </button>
@@ -98,7 +98,7 @@ export const SaveConfirmationModal = (props: SaveConfirmationModalProps) => {
                     type="button"
                     data-autofocus
                     onClick={props.onClose}
-                    className="mt-3 inline-flex w-full justify-center rounded-sm bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
+                    className="mt-3 inline-flex w-full justify-center rounded-sm bg-white px-3 py-2 text-sm font-semibold text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
                   >
                     Cancel
                   </button>
@@ -262,13 +262,13 @@ export default function ReusableComponents(props: Props) {
     >
       <button
         type="button"
-        className="absolute z-10 top-7 transform rounded-full border border-gray-300 dark:border-[#262A30] text-gray-400 bg-white  hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
+        className="absolute z-10 top-7 transform rounded-full border border-gray-300 dark:border-border-tertiary text-gray-400 bg-white  hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
         onClick={props.onHide}
       >
         <ChevronDoubleRightIcon className="w-3 h-3" />
       </button>
-      <div className="w-[354px] flex flex-col border-l dark:border-border-tertiary border-gray-200 h-full bg-white dark:bg-base-100 font-body  dark:border-[#262A30]">
-        <div className="flex justify-between border-b p-6 space-x-3 border-[#E9ECEF] dark:border-[#262A30]">
+      <div className="w-[354px] flex flex-col border-l dark:border-border-tertiary border-gray-200 h-full bg-white dark:bg-base-100 font-body  dark:border-border-tertiary">
+        <div className="flex justify-between border-b p-6 space-x-3 border-[#E9ECEF] dark:border-border-tertiary">
           <div>
             <h3 className="text-lg font-medium leading-6 text-ink-100 dark:text-white pr-1.5">
               Reusable Components
@@ -291,7 +291,7 @@ export default function ReusableComponents(props: Props) {
                   <li
                     key={component.id}
                     className={clsx(
-                      "border-gray-200 dark:border-[#262A30] border-b"
+                      "border-gray-200 dark:border-border-tertiary border-b"
                     )}
                   >
                     <ReusableComponentItem
@@ -358,7 +358,7 @@ export function SaveReusableComponentButton(
           {ref => (
             <button
               type="button"
-              className="rounded-sm h-6 min-w-6 flex items-center justify-center border border-gray-200 dark:border-[#262A30] text-gray-400 hover:bg-gray-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-300"
+              className="rounded-sm h-6 min-w-6 flex items-center justify-center border border-gray-200 dark:border-border-tertiary text-ink-400 hover:bg-gray-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-300"
               onClick={onSave}
               disabled={props.disabled || props.isComponentInstance}
               ref={ref}
