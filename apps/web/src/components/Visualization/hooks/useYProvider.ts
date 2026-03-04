@@ -29,9 +29,6 @@ function getYjsUrl() {
   return `${url.toString()}yjs`;
 }
 
-
-
-
 function getWSProvider(
   yDoc: Y.Doc,
   documentId: string,
@@ -42,14 +39,17 @@ function getWSProvider(
 ): WebsocketProvider {
   const id = getDocId(documentId, isDataApp, clock, publishedAt);
   const wsUrl = getYjsUrl();
-
+  const isDev = process.env.NODE_ENV === "development";
   const token = tokenStorage.getToken();
-  Cookies.set("auth-token", token, {
-    expires: 7, // 7 days
-    path: "/",
-    sameSite: "lax",
-    secure: false, // true in production with HTTPS
-  });
+
+  if (!isDev) {
+    Cookies.set("auth-token", token ?? "", {
+      expires: 7,
+      path: "/",
+      sameSite: "none",
+      secure: false,
+    });
+  }
 
   const provider = new WebsocketProvider(wsUrl, id, yDoc, {
     connect: false,
@@ -58,6 +58,7 @@ function getWSProvider(
       clock: clock.toString(),
       isApp: isDataApp ? "true" : "false",
       userId: userId ?? "",
+      ...(isDev ? { authToken: token || "" } : {}),
     },
     resyncInterval: 30000,
   });

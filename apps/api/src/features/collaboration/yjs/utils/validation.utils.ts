@@ -24,6 +24,7 @@ export async function getRequestData(
     documentRepository: Repository<DocumentEntity>,
 ): Promise<RequestData | null> {
     try {
+        
         const cookiesHeader = req.headers.cookie;
         const cookies = cookie.parse(cookiesHeader ?? '');
         const query = qs.parse(req.url?.split('?')[1] ?? '');
@@ -32,6 +33,7 @@ export async function getRequestData(
         const clock = parseInt((query['clock'] ?? '').toString());
         const isApp = query['isApp'] === 'true';
         const userId = query['userId']?.toString() ?? null;
+        const authToken = cookies['auth-token'] ?? query['token']?.toString() ?? null;
 
         const args = z
             .object({
@@ -56,7 +58,7 @@ export async function getRequestData(
             return null;
         }
 
-        const session = await sessionService.validateSessionFromAuthToken(cookies["auth-token"]);
+        const session = await sessionService.validateSessionFromAuthToken(authToken);
 
         if (!session) {
             logger.warn('No valid session found');
