@@ -62,7 +62,7 @@ function RemoveBlockDashboardConflictDialog(props: Props) {
                     />
                   </div>
                   <div className="mt-3 text-center sm:mt-5">
-                    <div className="mt-2 text-sm text-gray-900">
+                    <div className="mt-2 text-sm text-ink-100">
                       {state?.tabRefs.length === 1 ? (
                         <span>
                           <span className="font-bold">
@@ -87,7 +87,7 @@ function RemoveBlockDashboardConflictDialog(props: Props) {
                   <button
                     type="button"
                     onClick={onConfirm}
-                    className="mt-3 inline-flex w-full justify-center rounded-sm bg-[#A308F0] px-3 py-2 text-sm text-gray-900 font-medium hover:bg-primary-300 sm:col-start-1 sm:mt-0"
+                    className="mt-3 inline-flex w-full justify-center rounded-sm bg-[#A308F0] px-3 py-2 text-sm text-ink-100 font-medium hover:bg-primary-300 sm:col-start-1 sm:mt-0"
                   >
                     Continue
                   </button>

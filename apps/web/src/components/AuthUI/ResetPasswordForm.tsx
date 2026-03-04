@@ -89,7 +89,7 @@ export const ResetPasswordForm = ({
         </label>
         <input
           type="password"
-          className="mt-1 w-full rounded-3xl bg-white dark:bg-[#121417] p-2.5 px-5 border border-[#DEE2E6] dark:border-[#262A30]"
+          className="mt-1 w-full rounded-3xl bg-white dark:bg-[#121417] p-2.5 px-5 border border-[#DEE2E6] dark:border-border-tertiary"
           value={password}
           onChange={e => setPassword(e.target.value)}
         />
@@ -101,7 +101,7 @@ export const ResetPasswordForm = ({
         </label>
         <input
           type="password"
-          className="mt-1 w-full rounded-3xl bg-white dark:bg-[#121417] p-2.5 px-5 border border-[#DEE2E6] dark:border-[#262A30]"
+          className="mt-1 w-full rounded-3xl bg-white dark:bg-[#121417] p-2.5 px-5 border border-[#DEE2E6] dark:border-border-tertiary"
           value={confirmPassword}
           onChange={e => setConfirmPassword(e.target.value)}
         />

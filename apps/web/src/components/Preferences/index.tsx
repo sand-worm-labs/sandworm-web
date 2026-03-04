@@ -1,11 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  Monitor,
-  Sun,
-  Moon,
-} from "lucide-react";
+import { Monitor, Sun, Moon } from "lucide-react";
 import { useTheme } from "next-themes";
 
 type Theme = "system" | "light" | "dark";
@@ -50,9 +46,7 @@ const ThemeCard: React.FC<{
       type="button"
       onClick={onClick}
       className={`relative w-full p-6  border border-[#E9ECEF] dark:border-border-tertiary transition-all text-left  rounded-3xl ${
-        selected
-          ? ""
-          : "border-[#E9ECEF]   dark:border-border-tertiary"
+        selected ? "" : "border-[#E9ECEF]   dark:border-border-tertiary"
       }`}
     >
       <div className="flex items-start gap-4">
@@ -60,16 +54,14 @@ const ThemeCard: React.FC<{
           className={`p-3 rounded-full ${
             selected
               ? "bg-[#EFF1F2] dark:bg-base-500  border dark:border-border-tertiary border-[#E9ECEF]"
-              : "bg-[#EFF1F2] dark:bg-base-500 text-gray-600 dark:text-gray-400 border border-[#E9ECEF] dark:border-[#262A30]"
+              : "bg-[#EFF1F2] dark:bg-base-500 text-gray-600 dark:text-gray-400 border border-[#E9ECEF] dark:border-border-tertiary"
           }`}
         >
           {option.icon}
         </div>
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-medium text-ink-100 ">
-              {option.label}
-            </h3>
+            <h3 className="font-medium text-ink-100 ">{option.label}</h3>
             {selected && <div className="w-2 h-2 rounded-full bg-[#A308F0]" />}
           </div>
           <p className="text-sm text-[#6C757D] dark:text-ink-400">
@@ -78,7 +70,7 @@ const ThemeCard: React.FC<{
         </div>
       </div>
 
-      <div className="mt-4 rounded-2xl overflow-hidden border border-gray-200 dark:border-[#262A30]">
+      <div className="mt-4 rounded-2xl overflow-hidden border border-gray-200 dark:border-border-tertiary">
         <div className={`h-32 p-3 ${bgMap[option.id] ?? bgMap.default}`}>
           <div className="flex gap-2 mb-2">
             <div
@@ -140,9 +132,7 @@ const EditorThemeCard: React.FC<{
       }`}
     >
       <div className="flex items-center gap-3 mb-3">
-        <h4 className="font-medium text-ink-100  capitalize">
-          {theme.name}
-        </h4>
+        <h4 className="font-medium text-ink-100  capitalize">{theme.name}</h4>
         {selected && <div className="w-2 h-2 rounded-full bg-primary" />}
       </div>
       <div
@@ -309,9 +299,7 @@ const Preferences: React.FC = () => {
         <div className=" py-8 mb-6">
           <div className="flex items-center gap-3 mb-6">
             <div>
-              <h2 className="text-lg font-medium text-ink-100 ">
-                Appearance
-              </h2>
+              <h2 className="text-lg font-medium text-ink-100 ">Appearance</h2>
               <p className="text-sm text-[#6C757D] dark:text-ink-400 max-w-[25rem] mt-2 ">
                 Choose how Sandworm looks to you. Select a single theme, or sync
                 it with your system.
@@ -356,11 +344,6 @@ const Preferences: React.FC = () => {
             ))}
           </div>
         </div>
-
-    
-
-
-      
       </div>
     </div>
   );

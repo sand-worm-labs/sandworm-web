@@ -178,7 +178,7 @@ function VisualizationViewV2(props: Props) {
         <button
           type="button"
           className={clsx(
-            "absolute bottom-0 bg-white rounded-tr-md border-t border-r border-gray-200 p-2 hover:bg-gray-50 z-10 dark:bg-[#181C21] dark:border-[#262A30]",
+            "absolute bottom-0 bg-white rounded-tr-md border-t border-r border-gray-200 p-2 hover:bg-gray-50 z-10 dark:bg-[#181C21] dark:border-border-tertiary",
             props.isHidden ? "left-0 rounded-bl-md" : "-left-[1px]"
           )}
           onClick={props.onToggleHidden}
@@ -195,7 +195,7 @@ function VisualizationViewV2(props: Props) {
         props.input.chartType !== "trend" && (
           <button
             type="button"
-            className="absolute bottom-0 bg-white rounded-tl-md rounded-br-2xl border-t border-l border-gray-200 p-2 hover:bg-gray-50 z-10 right-0 text-xs text-gray-400 dark:bg-[#181C21] dark:border-[#262A30]"
+            className="absolute bottom-0 bg-white rounded-tl-md rounded-br-2xl border-t border-l border-gray-200 p-2 hover:bg-gray-50 z-10 right-0 text-xs text-gray-400 dark:bg-[#181C21] dark:border-border-tertiary"
             onClick={props.onExportToPNG}
           >
             PNG

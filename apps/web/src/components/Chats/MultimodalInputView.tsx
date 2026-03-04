@@ -96,7 +96,7 @@ dark:focus:ring-[rgba(163,8,240,0.3)]
             <Button
               type="button"
               className="rounded-full p-2.5 h-fit m-0.5 bg-transparent dark:bg-base-100 text-black dark:text-[#C5CED9] border-[#B5C8DB] border  hover:bg-[rgba(207,211,222,0.15)] 
-    dark:hover:bg-[rgba(255,255,255,0.05)] dark:border-[#262A30]"
+    dark:hover:bg-[rgba(255,255,255,0.05)] dark:border-border-tertiary"
               onClick={onFileClick}
             >
               <PiPlus size={18} />

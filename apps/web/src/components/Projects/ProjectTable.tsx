@@ -36,7 +36,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
     <div className="w-full overflow-x-auto border border-[#E9ECEF] rounded-t-2xl border-b-0">
       <table className="w-full border-collapse">
         <thead className="bg-[#F1F3F4] dark:bg-[#0D0F12] sticky top-0 z-10">
-          <tr className="border-b border-[#CED4DA] dark:border-[#262A30]">
+          <tr className="border-b border-[#CED4DA] dark:border-border-tertiary">
             <th className="text-left p-4 text-xs font-medium text-ink-400 dark:text-ink-300  sticky left-0 bg-[#F1F3F4] dark:bg-[#0D0F12] min-w-[250px]">
               Title
             </th>
@@ -67,9 +67,9 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
               key={project.id}
               onMouseEnter={() => setHoveredRowId(project.id)}
               onMouseLeave={() => setHoveredRowId(null)}
-              className="border-b border-[#CED4DA] dark:border-[#262A30] hover:bg-gray-50 dark:hover:bg-[#0D0F12] transition-colors"
+              className="border-b border-[#CED4DA] dark:border-border-tertiary hover:bg-gray-50 dark:hover:bg-[#0D0F12] transition-colors"
             >
-              <td className="p-4 sticky left-0 bg-white dark:bg-black group-hover:bg-gray-50 dark:group-hover:bg-[#0D0F12]">
+              <td className="p-4 sticky left-0 bg-white dark:bg-base-100 group-hover:bg-gray-50 dark:group-hover:bg-[#0D0F12]">
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
@@ -90,7 +90,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                   </button>
                   <Link
                     href={`/workspace/${workspaceId}/documents/${project.id}/notebook/edit`}
-                    className="text-sm font-medium text-gray-900 dark:text-white hover:underline truncate"
+                    className="text-sm font-medium text-ink-100 dark:text-white hover:underline truncate"
                   >
                     {project.title}
                   </Link>
@@ -125,7 +125,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                   </button>
 
                   {openMenuId === project.id && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-black rounded-xl shadow-lg border border-[#CED4DA] dark:border-[#262A30] pb-1 z-20">
+                    <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-base-100 rounded-xl shadow-lg border border-[#CED4DA] dark:border-border-tertiary pb-1 z-20">
                       <button
                         type="button"
                         onClick={() => {

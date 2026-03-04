@@ -13,7 +13,7 @@ export default function Toggle<T extends FieldValues>(
       <span className="flex flex-grow flex-col">
         <Switch.Label
           as="span"
-          className="text-sm font-medium leading-6 text-gray-900"
+          className="text-sm font-medium leading-6 text-ink-100"
           passive
         >
           {props.label}

@@ -242,12 +242,12 @@ const XAxisTab = ({
   return (
     <div className="text-xs text-gray-500">
       <div className="mb-8">
-        <h2 className="text-sm font-semibold text-gray-900 mb-4">X-Axis</h2>
+        <h2 className="text-sm font-semibold text-ink-100 mb-4">X-Axis</h2>
 
         <div className="mb-6">
           <label
             htmlFor="xAxisName"
-            className="block text-xs font-medium leading-6 text-gray-900 pb-1"
+            className="block text-xs font-medium leading-6 text-ink-100 pb-1"
           >
             Axis name
           </label>
@@ -280,7 +280,7 @@ const XAxisTab = ({
         {/* Number formatting options - only show for number columns */}
         {isNumberColumn && (
           <div className="mb-6 p-4 bg-gray-50 rounded-md border border-gray-200 shadow-sm">
-            <h3 className="text-xs font-medium mb-1 text-gray-900">
+            <h3 className="text-xs font-medium mb-1 text-ink-100">
               Label formatting
             </h3>
             <NumberFormatControl

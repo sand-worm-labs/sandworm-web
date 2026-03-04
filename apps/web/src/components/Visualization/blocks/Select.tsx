@@ -56,7 +56,7 @@ export default function Select({
                     className={({ active }) =>
                       clsx(
                         active ? "bg-primary-200" : "",
-                        "relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900"
+                        "relative cursor-default select-none py-2 pl-3 pr-9 text-ink-100"
                       )
                     }
                     value={option.value}
@@ -80,7 +80,7 @@ export default function Select({
                             )}
                           >
                             <CheckIcon
-                              className="text-gray-900 h-5 w-5"
+                              className="text-ink-100 h-5 w-5"
                               aria-hidden="true"
                             />
                           </span>

@@ -47,8 +47,8 @@ export default function HeaderSelect(props: Props) {
             className={clsx(
               "h-full relative w-full rounded-tr-2xl pl-3 pr-10 text-left sm:text-xs flex items-center cursor-pointer",
               hasValue
-                ? "text-gray-400 dark:text-white bg-gray-50 dark:bg-black hover:bg-gray-100"
-                : "text-red-400 bg-red-50 dark:bg-black hover:bg-red-100"
+                ? "text-gray-400 dark:text-white bg-gray-50 dark:bg-base-100 hover:bg-gray-100"
+                : "text-red-400 bg-red-50 dark:bg-base-100 hover:bg-red-100"
             )}
           >
             <div className="flex gap-x-3 items-center font-primary overflow-hidden">
@@ -71,7 +71,7 @@ export default function HeaderSelect(props: Props) {
           >
             <Listbox.Options
               as="div"
-              className="mt-[1px] absolute z-10 max-h-60 overflow-auto bg-white dark:bg-black text-base shadow-lg ring-1 ring-gray-200 focus:outline-none sm:text-xs w-[calc(100%-1px)]"
+              className="mt-[1px] absolute z-10 max-h-60 overflow-auto bg-white dark:bg-base-100 text-base shadow-lg ring-1 ring-gray-200 dark:ring-border-tertiary focus:outline-none sm:text-xs w-[calc(100%-1px)]"
             >
               {options.map(option => (
                 <Listbox.Option
@@ -79,8 +79,8 @@ export default function HeaderSelect(props: Props) {
                   as="div"
                   className={({ active }) =>
                     clsx(
-                      active ? "bg-blue-50" : "",
-                      "relative select-none pl-3 pr-9 text-gray-900 dark:text-white hover:cursor-pointer py-3"
+                      active ? "bg-blue-50 dark:bg-base-500" : "",
+                      "relative select-none pl-3 pr-9 text-ink-100 dark:text-white hover:cursor-pointer py-3"
                     )
                   }
                   value={option.value}
@@ -104,7 +104,7 @@ export default function HeaderSelect(props: Props) {
                           )}
                         >
                           <CheckIcon
-                            className="text-gray-900 h-3 w-3"
+                            className="text-ink-100 h-3 w-3"
                             aria-hidden="true"
                           />
                         </span>
@@ -117,7 +117,7 @@ export default function HeaderSelect(props: Props) {
                 <button
                   type="button"
                   onClick={props.onAdd}
-                  className="flex items-center w-full text-left py-2 pl-3 pr-9 text-gray-900 border-t border-gray-200 hover:bg-blue-50 space-x-1 h-10 dark:border-[#181C21]"
+                  className="flex items-center w-full text-left py-2 pl-3 pr-9 text-ink-100 border-t border-gray-200 hover:bg-blue-50 space-x-1 h-10 dark:border-[#181C21]"
                 >
                   <PlusIcon className="h-3 w-3" aria-hidden="true" />
                   <span>{props.onAddLabel ?? ""}</span>

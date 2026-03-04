@@ -217,7 +217,7 @@ export const ManageWalletsModal = ({
                   className={`flex items-center justify-between px-4 py-3 rounded-xl border transition-colors ${
                     hoveredIndex === index
                       ? "border-[#A308F0] bg-[#F8F9FA] dark:bg-[#1A1A2E]"
-                      : "border-[#DEE2E6] dark:border-[#262A30] bg-[#F8F9FA] dark:bg-transparent"
+                      : "border-[#DEE2E6] dark:border-border-tertiary bg-[#F8F9FA] dark:bg-transparent"
                   }`}
                 >
                   <div className="flex flex-col">

@@ -17,7 +17,7 @@ function VisualizationToggleV2({ label, enabled, onToggle, disabled }: Props) {
       <span className="flex flex-grow flex-col">
         <Switch.Label
           as="span"
-          className="font-medium leading-6 text-gray-900"
+          className="font-medium leading-6 text-ink-100"
           passive
         >
           {label}

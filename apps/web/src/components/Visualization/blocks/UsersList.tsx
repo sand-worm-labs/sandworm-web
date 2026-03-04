@@ -60,7 +60,7 @@ function UserItem(props: UserItemProps) {
   return (
     <tr
       className={clsx(
-        "border-b border-[#E9ECEF] dark:border-[#262A30]   transition-colors",
+        "border-b border-[#E9ECEF] dark:border-border-tertiary   transition-colors",
         props.isSelected && ""
       )}
     >
@@ -186,7 +186,7 @@ function UsersList(props: Props) {
   return (
     <div className="h-full">
       <div className="overflow-visible">
-        <div className="w-full overflow-x-auto dark:border-[#262A30] border-b-0">
+        <div className="w-full overflow-x-auto dark:border-border-tertiary border-b-0">
           <table className="min-w-full border-collapse">
             <thead className="rounded-t-2xl sticky top-0 z-10 border-b border-[#E9ECEF]  dark:border-border-tertiary">
               <tr>
@@ -257,7 +257,7 @@ function UsersList(props: Props) {
         className={clsx(
           "fixed bottom-6 left-1/2 -translate-x-1/2 z-50",
           "flex items-center gap-4 px-3 py-3",
-          "bg-[#0F0F0F] dark:bg-[#1A1D21] border border-[#E9ECEF] dark:border-[#262A30]",
+          "bg-[#0F0F0F] dark:bg-[#1A1D21] border border-[#E9ECEF] dark:border-border-tertiary",
           "rounded-[14px]",
           "transition-all duration-200 ease-out",
           selectionCount > 0

@@ -11,7 +11,7 @@ export const AppHeader: FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <header className="bg-[#FBFBFB] dark:bg-base-200 px-8 py-2 flex justify-between items-center  border-[#E9ECEF] dark:border-[#262A30] ">
+    <header className="bg-[#FBFBFB] dark:bg-base-200 px-8 py-2 flex justify-between items-center  border-[#E9ECEF] dark:border-border-tertiary ">
       <div className="hidden md:flex items-center gap-4">
         <SearchBar />
         <span className="text-lg font-medium">Home</span>

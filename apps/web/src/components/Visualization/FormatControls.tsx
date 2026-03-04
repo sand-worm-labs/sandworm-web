@@ -147,7 +147,7 @@ export const NumberFormatControl = ({
       <div className="mt-4">
         <label
           htmlFor={`decimalPlaces-${seriesId || "x"}`}
-          className="block text-xs font-medium leading-6 text-gray-900 pb-1"
+          className="block text-xs font-medium leading-6 text-ink-100 pb-1"
         >
           Number of decimal places
         </label>
@@ -167,7 +167,7 @@ export const NumberFormatControl = ({
       <div className="mt-4">
         <label
           htmlFor={`multiplier-${seriesId || "x"}`}
-          className="block text-xs font-medium leading-6 text-gray-900 pb-1"
+          className="block text-xs font-medium leading-6 text-ink-100 pb-1"
         >
           Multiply by a number
         </label>
@@ -186,7 +186,7 @@ export const NumberFormatControl = ({
       <div className="mt-4">
         <label
           htmlFor={`prefix-${seriesId || "x"}`}
-          className="block text-xs font-medium leading-6 text-gray-900 pb-1"
+          className="block text-xs font-medium leading-6 text-ink-100 pb-1"
         >
           Prefix
         </label>
@@ -204,7 +204,7 @@ export const NumberFormatControl = ({
       <div className="mt-4">
         <label
           htmlFor={`suffix-${seriesId || "x"}`}
-          className="block text-xs font-medium leading-6 text-gray-900 pb-1"
+          className="block text-xs font-medium leading-6 text-ink-100 pb-1"
         >
           Suffix
         </label>

@@ -57,7 +57,7 @@ function DragOverlay({ isDragActive }: { isDragActive: boolean }) {
       )}
     >
       <div className="absolute top-0 left-0 h-full w-full bg-[#FBFBFB] dark:bg-[#0C1015] opacity-70" />
-      <div className="flex flex-col items-center justify-center gap-y-2 rounded-md bg-gray-50 dark:bg-[#0C1015] p-4 relative border-2 border-dashed border-gray-300 dark:border-[#262A30]">
+      <div className="flex flex-col items-center justify-center gap-y-2 rounded-md bg-gray-50 dark:bg-[#0C1015] p-4 relative border-2 border-dashed border-gray-300 dark:border-border-tertiary">
         <DocumentPlusIcon className="w-10 h-10 text-gray-600" />
         <span className="text-center text-gray-600 font-semibold text-xs">
           Drop files here to upload
@@ -630,13 +630,13 @@ file`;
         />
         <button
           type="button"
-          className="absolute z-10 top-7 transform rounded-full border border-[#E9ECEF] dark:border-[#262A30]  text-gray-400 bg-white  hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
+          className="absolute z-10 top-7 transform rounded-full border border-[#E9ECEF] dark:border-border-tertiary  text-gray-400 bg-white  hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
           onClick={props.onHide}
         >
           <ChevronDoubleRightIcon className="w-3 h-3" />
         </button>
         <div
-          className="w-[354px] flex flex-col border-l dark:border-[#262A30] dark:border-border-tertiary border-gray-200 h-full bg-white  dark:bg-base-100"
+          className="w-[354px] flex flex-col border-l dark:border-border-tertiary dark:border-border-tertiary border-gray-200 h-full bg-white  dark:bg-base-100"
           {...getRootProps()}
         >
           <div className="flex justify-between border-b p-6 space-x-3 border-[#E9ECEF]">
@@ -661,13 +661,13 @@ file`;
           </div>
           {(upload._tag === "uploading" || results.length > 0) && (
             <>
-              <div className="relative flex px-4 py-2 text-xs font-medium border-b dark:border-[#262A30] border-[#FEFEFF] bg-gray-50  dark:bg-base-100 text-gray-600 justify-between">
+              <div className="relative flex px-4 py-2 text-xs font-medium border-b dark:border-border-tertiary border-[#FEFEFF] bg-gray-50  dark:bg-base-100 text-gray-600 justify-between">
                 <div className="flex gap-x-1">
                   <CloudArrowUpIconSolid className="w-4 h-4 text-gray-400" />
                   Uploading
                 </div>
               </div>
-              <ul className="divide-y divide-solid overflow-y-auto border-b border-[#FEFEFF] dark:border-[#262A30] divide-[#FEFEFF] dark:divide-[#262A30]">
+              <ul className="divide-y divide-solid overflow-y-auto border-b border-[#FEFEFF] dark:border-border-tertiary divide-[#FEFEFF] dark:divide-[#262A30]">
                 {results.map(result => (
                   <li key={result.file.name}>
                     <UploadResultItem
@@ -692,7 +692,7 @@ file`;
           )}
           {(actualFiles.length > 0 || upload._tag === "idle") && (
             <>
-              <div className="relative flex px-4 py-2 text-xs font-medium border-b border-[#E9ECEF] dark:bg-black dark:border-[#262A30]  text-ink-400 justify-between">
+              <div className="relative flex px-4 py-2 text-xs font-medium border-b border-[#E9ECEF] dark:bg-base-100 dark:border-border-tertiary  text-ink-400 justify-between">
                 <div className="flex gap-x-1">
                   <span className="font-mono">/home/sandwormuser</span>
                 </div>
@@ -706,7 +706,7 @@ file`;
                   <Info />
                 </Tooltip>
               </div>
-              <div className="px-4 py-0 flex items-center border-b dark:border-[#262A30] border-gray-200 group focus-within:border-[#7104A8]">
+              <div className="px-4 py-0 flex items-center border-b dark:border-border-tertiary border-gray-200 group focus-within:border-[#7104A8]">
                 <MagnifyingGlassIcon className="h-4 w-4 text-ink-300  group-focus-within:text-[#7104A8]" />
                 <input
                   type="text"
@@ -740,7 +740,7 @@ file`;
               ) : (
                 !isDragActive && (
                   <div className="flex-1 p-4">
-                    <div className="flex items-center flex-col justify-center h-full text-ink-300  bg-[#FBFBFB] rounded-lg border-2 border-dashed border-[#E9ECEF] p-8 text-center dark:bg-[#0C1015] dark:border-[#262A30]">
+                    <div className="flex items-center flex-col justify-center h-full text-ink-300  bg-[#FBFBFB] rounded-lg border-2 border-dashed border-[#E9ECEF] p-8 text-center dark:bg-[#0C1015] dark:border-border-tertiary">
                       <UploadIcon />
                       <span className="mt-2">
                         Click or drag and drop files here to upload them

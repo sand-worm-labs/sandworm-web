@@ -86,7 +86,7 @@ function MultiBlockSuggestion(props: MultiBlockSuggestionProps) {
                 <button
                   type="button"
                   className={clsx(
-                    active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                    active ? "bg-gray-100 text-ink-100" : "text-gray-700",
                     index === 0 ? "rounded-t-md" : "",
                     index === props.options.length - 1 ? "rounded-b-md" : "",
                     "flex items-center gap-x-2 w-full text-sm px-4 py-3 "

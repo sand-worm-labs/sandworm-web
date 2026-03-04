@@ -128,7 +128,7 @@ export const AccountDropdown = () => {
       <div className="w-[95%] mx-auto mb-5 flex justify-center">
         <Button
           onClick={() => openSignIn()}
-          className="px-5 h-11 border-[#E9ECEF] bg-base-100 text-ink-100 font-semibold inline-block w-full dark:border-[#262A30] border"
+          className="px-5 h-11 border-[#E9ECEF] bg-base-100 text-ink-100 font-semibold inline-block w-full dark:border-border-tertiary border"
         >
           Sign up Today!
         </Button>
@@ -142,7 +142,7 @@ export const AccountDropdown = () => {
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
-            className="px-2 flex items-center gap-3 bg-base-100 rounded-xl h-12 border border-[#E9ECEF]  w-full justify-between dark:border-[#262A30] hover:bg-base-100 "
+            className="px-2 flex items-center gap-3 bg-base-100 rounded-xl h-12 border border-[#E9ECEF]  w-full justify-between dark:border-border-tertiary hover:bg-base-100 "
           >
             <div className="flex items-center gap-3">
               <Avatar className="h-8 w-8">

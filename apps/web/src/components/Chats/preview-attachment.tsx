@@ -65,8 +65,8 @@ export const PreviewAttachment = ({
           border-2
           ${
             isUploading
-              ? "border-dashed border-gray-300 dark:border-[#262A30] bg-gray-50 dark:bg-[#121417]"
-              : "border-gray-200 dark:border-[#262A30]  bg-white dark:bg-[#121417]"
+              ? "border-dashed border-gray-300 dark:border-border-tertiary bg-gray-50 dark:bg-[#121417]"
+              : "border-gray-200 dark:border-border-tertiary  bg-white dark:bg-[#121417]"
           }
           overflow-hidden
           transition-all

@@ -41,7 +41,7 @@ interface ProfileSettingsModalProps {
 }
 
 const inputClassName =
-  "w-full px-3 md:py-2.5 py-1.5 rounded-xl bg-white dark:bg-[#1A1A1A] border border-[#DEE2E6] dark:border-[#262A30] text-[#868E96] dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#A308F0]/50 focus:border-[#A308F0] transition md:text-sm text-[13px] ";
+  "w-full px-3 md:py-2.5 py-1.5 rounded-xl bg-white dark:bg-[#1A1A1A] border border-[#DEE2E6] dark:border-border-tertiary text-[#868E96] dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#A308F0]/50 focus:border-[#A308F0] transition md:text-sm text-[13px] ";
 
 const labelClassName =
   "block text-xs font-bold text-[#6C757D] dark:text-gray-300 mb-2 uppercase font-bold";
@@ -123,7 +123,7 @@ export function ProfileSettingsModal({
                           <button
                             type="button"
                             disabled
-                            className="mt-3 flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-gray-400 dark:text-gray-500 border-none dark:border-[#262A30] rounded-lg dark:bg-[#121417] cursor-not-allowed opacity-50 absolute top-[50%] translate-y-[-70%]"
+                            className="mt-3 flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-gray-400 dark:text-gray-500 border-none dark:border-border-tertiary rounded-lg dark:bg-[#121417] cursor-not-allowed opacity-50 absolute top-[50%] translate-y-[-70%]"
                           >
                             Click to Change Image
                           </button>
@@ -301,7 +301,7 @@ export function ProfileSettingsModal({
                     <button
                       type="button"
                       onClick={handleClose}
-                      className="px-6 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white bg-[#F8F9FA] dark:bg-transparent border border-[#DEE2E6] rounded-xl hover:bg-gray-50 transition-colors"
+                      className="px-6 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-ink-100 dark:hover:text-white bg-[#F8F9FA] dark:bg-transparent border border-[#DEE2E6] rounded-xl hover:bg-gray-50 transition-colors"
                     >
                       Cancel
                     </button>

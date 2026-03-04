@@ -25,7 +25,7 @@ interface Props {
 }
 export default function VisualizationSettingsTabsV2(props: Props) {
   return (
-    <div className="w-full border-b border-gray-200 pt-5 sticky top-0 bg-white dark:bg-black  z-10">
+    <div className="w-full border-b border-gray-200 pt-5 sticky top-0 bg-white dark:bg-base-100  z-10">
       <nav className="-mb-px flex" aria-label="Tabs">
         {tabs.map(tab => (
           <button

@@ -190,7 +190,7 @@ export default function ShareModal({
                                     "text-sm font-medium",
                                     checked
                                       ? "text-primary-900 dark:text-primary-300"
-                                      : "text-gray-900 dark:text-gray-100"
+                                      : "text-ink-100 dark:text-gray-100"
                                   )}
                                 >
                                   {option.name}

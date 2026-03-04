@@ -66,7 +66,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
 
   return (
     <div className="w-full">
-      <div className="bg-[#F1F3F4] dark:bg-[#121417] border border-[#E9ECEF] rounded-2xl shadow-sm dark:border-[#262A30]">
+      <div className="bg-[#F1F3F4] dark:bg-[#121417] border border-[#E9ECEF] rounded-2xl shadow-sm dark:border-border-tertiary">
         {/* File Preview Section */}
         {files.length > 0 && (
           <div className="px-4 pt-3 pb-2 border-b border-gray-100">

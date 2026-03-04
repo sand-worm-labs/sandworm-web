@@ -138,7 +138,7 @@ export default function CommandPalette({
                       />
                       <Combobox.Input
                         autoFocus
-                        className="h-12 w-full border-0 bg-transparent pl-11 pr-4 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
+                        className="h-12 w-full border-0 bg-transparent pl-11 pr-4 text-ink-100 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
                         placeholder="Search..."
                         onChange={onSearchChange}
                       />
@@ -196,7 +196,7 @@ export default function CommandPalette({
                             className="mx-auto h-6 w-6 text-gray-400"
                             aria-hidden="true"
                           />
-                          <p className="mt-4 text-sm text-gray-900">
+                          <p className="mt-4 text-sm text-ink-100">
                             We couldn't find any documents with that name.
                             Please try again.
                           </p>

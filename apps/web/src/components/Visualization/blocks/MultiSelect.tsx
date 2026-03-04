@@ -35,7 +35,7 @@ export default function MultiSelect<T>(props: Props<T>) {
             <Menu.Button
               ref={buttonRef}
               className={clsx(
-                "flex items-center justify-between w-full rounded-md border-0 px-3 text-gray-900 shadow-sm text-xs text-left bg-white dark:bg-black dark:text-white py-2 dark:border-[#262A30] ",
+                "flex items-center justify-between w-full rounded-md border-0 px-3 text-ink-100 shadow-sm text-xs text-left bg-white dark:bg-base-100 dark:text-white py-2 dark:border-border-tertiary ",
                 open
                   ? "ring-2 ring-inset ring-ceramic-200/70"
                   : "ring-1 ring-inset ring-gray-300 dark:ring-[#262A30]",
@@ -45,7 +45,7 @@ export default function MultiSelect<T>(props: Props<T>) {
               {props.value.length > 0 ? (
                 <div className="flex flex-wrap gap-x-1 gap-y-1">
                   {props.value.map(value => (
-                    <div className="bg-gray-50 dark:bg-black border border-gray-200 px-1.5 py-0.5 rounded-sm flex items-center gap-x-1 text-xs text-gray-600 dark:text-ink-300 ">
+                    <div className="bg-gray-50 dark:bg-base-100 border border-gray-200 px-1.5 py-0.5 rounded-sm flex items-center gap-x-1 text-xs text-gray-600 dark:text-ink-300 ">
                       <span>{props.getLabel(value)}</span>
                       <button
                         type="button"
@@ -82,7 +82,7 @@ export default function MultiSelect<T>(props: Props<T>) {
                 <Menu.Items
                   as="div"
                   ref={menuContainerRef}
-                  className="w-full rounded-xl bg-white dark:bg-black shadow-md ring-1 ring-gray-100 dark:text-ink-300  focus:outline-none font-primary flex flex-col text-xs text-ink-300 py-1.5 dark:ring-[#262A30]"
+                  className="w-full rounded-xl bg-white dark:bg-base-100 shadow-md ring-1 ring-gray-100 dark:text-ink-300  focus:outline-none font-primary flex flex-col text-xs text-ink-300 py-1.5 dark:ring-[#262A30]"
                 >
                   {props.options.map(option => (
                     <Menu.Item

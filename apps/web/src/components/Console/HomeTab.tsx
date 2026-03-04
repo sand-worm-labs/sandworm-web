@@ -161,7 +161,7 @@ export const HomeTab = () => {
             transition={{ delay: index * 0.05 }}
           >
             <Card
-              className="hover:bg-accent/50 bg-transparent transition-colors rounded-3xl border-[#CED4DA] dark:border-[#262A30]"
+              className="hover:bg-accent/50 bg-transparent transition-colors rounded-3xl border-[#CED4DA] dark:border-border-tertiary"
               onClick={() => handleNewAction("sql", item.cleaned_query)}
             >
               <CardHeader>
@@ -273,7 +273,7 @@ export const HomeTab = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
               >
-                <Card className="hover:bg-accent/50 bg-transparent transition-colors rounded-3xl border-[#CED4DA] dark:border-[#262A30]">
+                <Card className="hover:bg-accent/50 bg-transparent transition-colors rounded-3xl border-[#CED4DA] dark:border-border-tertiary">
                   <CardHeader>
                     <CardTitle className="text-sm font-medium flex items-center space-x-2">
                       <div className="p-2 rounded-full bg-primary/10">

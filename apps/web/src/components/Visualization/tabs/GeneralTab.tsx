@@ -283,7 +283,7 @@ const GeneralTab = ({
           label={
             chartType === "trend" || chartType === "number" ? (
               <div className="flex items-center justify-between">
-                <span className="text-xs font-medium leading-6 text-gray-900">
+                <span className="text-xs font-medium leading-6 text-ink-100">
                   Period{" "}
                   <span className="text-[10px] font-normal text-gray-400">
                     (optional)

@@ -193,7 +193,7 @@ export const WorkspaceSidebar = () => {
 
   return (
     <aside
-      className={`h-full flex flex-col justify-between bg-base-500 border-r dark:border-[#262A30] border-[#E9ECEF] dark:border-border-tertiary font-body
+      className={`h-full flex flex-col justify-between bg-base-500 border-r dark:border-border-tertiary border-[#E9ECEF] dark:border-border-tertiary font-body
       transition-all duration-300 ease-in-out
       ${collapsed ? "w-16" : "w-[260px]"}
       `}
@@ -239,7 +239,7 @@ export const WorkspaceSidebar = () => {
             ))}
           </ul>
 
-          <hr className="border-t-[1px] border-[#E6E0F1] dark:border-[#262A30] mt-4" />
+          <hr className="border-t-[1px] border-[#E6E0F1] dark:border-border-tertiary mt-4" />
 
           {/* TOOLS NAV */}
           <ul className="space-y-1.5 mt-4">

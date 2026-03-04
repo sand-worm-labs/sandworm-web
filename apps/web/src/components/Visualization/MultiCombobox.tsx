@@ -36,7 +36,7 @@ const ComboboxLabel = ({ label }: { label?: string | JSX.Element }) => {
 
   if (typeof label === "string") {
     return (
-      <div className="block text-xs font-medium leading-6 text-gray-900">
+      <div className="block text-xs font-medium leading-6 text-ink-100">
         {label}
       </div>
     );
@@ -239,7 +239,7 @@ export default function MultiComboboxV2<T extends object>({
                     <button
                       type="button"
                       className={clsx(
-                        active ? "text-white bg-gray-50" : "text-gray-900",
+                        active ? "text-white bg-gray-50" : "text-ink-100",
                         "group relative w-full select-none flex items-center gap-x-2 text-xs",
                         !disabled && "cursor-pointer"
                       )}
@@ -262,7 +262,7 @@ export default function MultiComboboxV2<T extends object>({
                       <div
                         className={clsx(
                           "hover:bg-gray-50",
-                          "text-gray-900 w-full flex items-center justify-between py-2 px-4"
+                          "text-ink-100 w-full flex items-center justify-between py-2 px-4"
                         )}
                       >
                         <div className="flex items-center gap-x-2">

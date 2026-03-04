@@ -114,7 +114,7 @@ const NodeTypeDropdown = ({ editor }: { editor: Editor }) => {
                       onClick={() => setNodeType(item.type)}
                       className={clsx(
                         active
-                          ? "bg-gray-100 dark:bg-[#0C1015] text-gray-900 dark:text-ink-300  "
+                          ? "bg-gray-100 dark:bg-[#0C1015] text-ink-100 dark:text-ink-300  "
                           : "text-gray-700 dark:text-ink-300",
                         "block w-full px-4 py-2 text-left dark:hover:bg-[#181C21]"
                       )}
@@ -147,7 +147,7 @@ const ToggleFormattingButton = (props: {
       type="button"
       onClick={props.onToggle}
       className={clsx(
-        isActive ? "bg-white dark:bg-black" : "",
+        isActive ? "bg-white dark:bg-base-100" : "",
         "h-full text-sm px-2.5 hover:bg-gray-100 relative rounded-md group/toggle-button"
       )}
     >
@@ -205,7 +205,7 @@ const ColorOption = (props: {
       onClick={() => props.onShiftColor(props.color)}
     >
       <div
-        className="rounded-md border border-gray-200 p-0.5 dark:border-[#262A30]"
+        className="rounded-md border border-gray-200 p-0.5 dark:border-border-tertiary"
         style={{
           backgroundColor: props.color.type === "bg" ? props.color.hex : "#fff",
           color: props.color.type === "fg" ? props.color.hex : "#000",
@@ -272,7 +272,7 @@ const ColorTextButton = (props: { editor: Editor }) => {
       </div>
 
       {showColorsMenu && (
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-[calc(100%+8px)] bg-white border dark:bg-[#0C1015] dark:border-[#262A30] border-gray-200 px-1 py-2 flex gap-x-2 rounded-md shadow-md z-[10]">
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-[calc(100%+8px)] bg-white border dark:bg-[#0C1015] dark:border-border-tertiary border-gray-200 px-1 py-2 flex gap-x-2 rounded-md shadow-md z-[10]">
           <div className="flex flex-col gap-y-1">
             <span className="font-medium px-2 dark:text-white">Text</span>
             {textColors.map(color => (

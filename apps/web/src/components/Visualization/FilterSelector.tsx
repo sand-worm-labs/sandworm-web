@@ -307,7 +307,7 @@ interface Props {
 function FilterValueLabel() {
   return (
     <div className="flex items-center justify-between">
-      <label className="text-xs font-medium leading-6 text-gray-900">
+      <label className="text-xs font-medium leading-6 text-ink-100">
         Value
       </label>
       <Tooltip

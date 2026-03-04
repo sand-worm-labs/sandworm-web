@@ -110,7 +110,7 @@ export default function InviteUserModal({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-[#0000001A] dark:bg-black/50" />
+          <div className="fixed inset-0 bg-[#0000001A] dark:bg-base-100/50" />
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-y-auto font-primary">
@@ -158,7 +158,7 @@ export default function InviteUserModal({
                         value={selectedWorkspaceId}
                         onChange={e => setSelectedWorkspaceId(e.target.value)}
                         disabled={isSubmitting}
-                        className="w-full px-3 py-2 rounded-xl dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white focus:outline-none focus:ring focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F8F9FA]"
+                        className="w-full px-3 py-2 rounded-xl dark:bg-[#1A1A1A] border dark:border-border-tertiary border-[#DEE2E6] dark:text-white focus:outline-none focus:ring focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F8F9FA]"
                       >
                         <option value="">Select a workspace</option>
                         {workspaces.map(ws => (
@@ -187,7 +187,7 @@ export default function InviteUserModal({
                       }}
                       placeholder="colleague@example.com"
                       disabled={isSubmitting}
-                      className="w-full px-5 py-3.5 rounded-xl dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-ink-300 placeholder-[#868E96] focus:outline-none focus:ring focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F8F9FA]"
+                      className="w-full px-5 py-3.5 rounded-xl dark:bg-[#1A1A1A] border dark:border-border-tertiary border-[#DEE2E6] dark:text-white placeholder:dark:text-ink-300 placeholder-[#868E96] focus:outline-none focus:ring focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F8F9FA]"
                     />
                   </div>
 
@@ -203,7 +203,7 @@ export default function InviteUserModal({
                       value={role}
                       onChange={e => setRole(e.target.value)}
                       disabled={isSubmitting}
-                      className="w-auto px-3 py-1 rounded-lg dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white focus:outline-none focus:ring focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F8F9FA]"
+                      className="w-auto px-3 py-1 rounded-lg dark:bg-[#1A1A1A] border dark:border-border-tertiary border-[#DEE2E6] dark:text-white focus:outline-none focus:ring focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F8F9FA]"
                     >
                       <option value="editor">Editor</option>
                       <option value="viewer">Viewer</option>

@@ -27,7 +27,7 @@ function DashboardNotebookGroupButton(props: Props) {
         className={clsx(
           "flex gap-x-1.5 items-center rounded-l-sm px-3 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-50 ring-1 ring-inset ring-gray-300 dark:ring-border-tertiary hover:bg-ceramic-50",
           props.current === "notebook"
-            ? "bg-ceramic-50 text-gray-900 dark:text-ink-400 -mr-px"
+            ? "bg-ceramic-50 text-ink-100 dark:text-ink-400 -mr-px"
             : "bg-white dark:bg-[#181C21] dark:text-white text-gray-500"
         )}
         href={`/workspace/${props.workspaceId}/documents/${
@@ -51,7 +51,7 @@ function DashboardNotebookGroupButton(props: Props) {
           className={clsx(
             "flex gap-x-1.5 items-center rounded-r-sm px-3 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-50 ring-1 ring-inset ring-gray-300 hover:bg-ceramic-50 dark:ring-border-tertiary",
             props.current === "dashboard"
-              ? "bg-ceramic-50  text-gray-900 dark:text-ink-300 -ml-px"
+              ? "bg-ceramic-50  text-ink-100 dark:text-ink-300 -ml-px"
               : "bg-white dark:bg-base-600 dark:text-white text-gray-500"
           )}
           disabled={isDashboardButtonDisabled}

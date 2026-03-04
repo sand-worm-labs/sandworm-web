@@ -68,7 +68,7 @@ function AddScheduleForm({ documentId, onClose, onSubmit }: Props) {
   );
 
   return (
-    <div className="w-[324px] flex h-full flex-col overflow-y-auto border-l border-gray-200 font-primary dark:bg-black">
+    <div className="w-[324px] flex h-full flex-col overflow-y-auto border-l border-gray-200 font-primary dark:bg-base-100">
       <ScheduleConfigForm
         form={form}
         submitHandler={onSubmitHandler}

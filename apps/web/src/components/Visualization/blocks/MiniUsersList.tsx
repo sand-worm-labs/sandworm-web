@@ -129,7 +129,7 @@ function RoleDropdown({ role, onChange, disabled }: RoleDropdownProps) {
             }}
             className={clsx(
               "bg-[#F8F9FA] dark:bg-[#1A1D21]",
-              "border border-[#DEE2E6] dark:border-[#262A30]",
+              "border border-[#DEE2E6] dark:border-border-tertiary",
               "rounded-lg py-0"
             )}
           >
@@ -185,7 +185,7 @@ function MiniUserItem({
   );
 
   return (
-    <div className="flex items-center gap-3 py-3 px-4 border-b border-[#DEE2E6] dark:border-[#262A30] last:border-0">
+    <div className="flex items-center gap-3 py-3 px-4 border-b border-[#DEE2E6] dark:border-border-tertiary last:border-0">
       <Avatar />
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-[#1A1A1A] dark:text-white truncate">
@@ -272,7 +272,7 @@ export function MiniUsersList({
     <div className="relative w-full">
       <div className="rounded-xl border border-[#DEE2E6] dark:border-border-tertiary overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-2 border-b border-[#CED4DA] dark:border-[#262A30]">
+        <div className="flex items-center justify-between px-4 py-2 border-b border-[#CED4DA] dark:border-border-tertiary">
           <span className="text-sm font-medium text-[#6C757D] dark:text-white">
             {users.length} member{users.length !== 1 ? "s" : ""}
           </span>
@@ -345,9 +345,9 @@ export function MiniUsersList({
               leaveFrom="opacity-100 scale-100 translate-y-0"
               leaveTo="opacity-0 scale-95 translate-y-2"
             >
-              <DialogPanel className="w-full max-w-md bg-white dark:bg-base-400 dark:bg-[#0D0F12] rounded-2xl border border-[#DEE2E6] dark:border-[#262A30] shadow-xl flex flex-col max-h-[80vh] overflow-hidden font-body">
+              <DialogPanel className="w-full max-w-md bg-white dark:bg-base-400 dark:bg-[#0D0F12] rounded-2xl border border-[#DEE2E6] dark:border-border-tertiary shadow-xl flex flex-col max-h-[80vh] overflow-hidden font-body">
                 {/* Modal header */}
-                <div className="flex items-center justify-between px-5 py-4 border-b border-[#DEE2E6] dark:border-[#262A30] flex-shrink-0">
+                <div className="flex items-center justify-between px-5 py-4 border-b border-[#DEE2E6] dark:border-border-tertiary flex-shrink-0">
                   <DialogTitle className="text-sm font-semibold text-[#1A1A1A] dark:text-white">
                     All members{" "}
                     <span className="text-xs font-normal text-[#6C757D]">
@@ -394,7 +394,7 @@ export function MiniUsersList({
         className={clsx(
           "fixed bottom-6 left-1/2 -translate-x-1/2 z-50",
           "flex items-center gap-4 px-3 py-3",
-          "bg-[#0F0F0F] dark:bg-base-600 border border-[#E9ECEF] dark:border-[#262A30]",
+          "bg-[#0F0F0F] dark:bg-base-600 border border-[#E9ECEF] dark:border-border-tertiary",
           "rounded-[14px] transition-all duration-200 ease-out",
           selectionCount > 0
             ? "opacity-100 translate-y-0 pointer-events-auto"

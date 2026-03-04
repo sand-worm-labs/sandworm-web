@@ -844,8 +844,8 @@ function VisualizationBlockV2(props: Props) {
           props.hasMultipleTabs ? "rounded-2xl" : "rounded-2xl",
 
           props.isCursorWithin
-            ? "border-[#EBD7D7] shadow-sm"
-            : "border-[#EBD7D7] dark:border-[#262A30]"
+            ? "border-border-focus shadow-sm"
+            : "border-border-focus dark:border-border-tertiary"
         )}
       >
         <div
@@ -855,18 +855,18 @@ function VisualizationBlockV2(props: Props) {
           )}
         >
           <div
-            className="border-b border-[#EBD7D7] dark:border-[#262A30]  rounded-t-2xl"
+            className="border-b border-border-focus dark:border-border-tertiary  rounded-t-2xl"
             ref={d => {
               props.dragPreview?.(d);
             }}
           >
-            <div className="flex items-center justify-between px-3 pr-0 gap-x-4 font-primary h-12 divide-x divide-gray-200 dark:divide-[#262A30]">
+            <div className="flex items-center justify-between px-3 pr-0 gap-x-4 font-primary h-12 divide-x divide-gray-200 dark:divide-border-tertiary">
               <div className="select-none text-gray-300 text-xs flex items-center w-full h-full gap-x-0.5 px-4">
-                <ChartPie className="h-5 w-5 text-ink-500" />
+                <ChartPie className="h-5 w-5 text-ink-400" />
                 <input
                   type="text"
                   className={clsx(
-                    "text-base font-primary font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-md border-0 text-gray-800 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-gray-400 dark:placeholder:text-ink-300   py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white dark:text-white"
+                    "text-base font-primary font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-md border-0 text-ink-100 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-ink-400 dark:placeholder:text-ink-300   py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white dark:text-white"
                   )}
                   placeholder="Visualization (click to add a title)"
                   value={attrs.title}
