@@ -3,15 +3,14 @@ import WebSocket from 'ws';
 import * as http from 'http';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { DocumentEntity } from '@sandworm/postgresql-typeorm';
+import { DocumentEntity, UserWorkspaceEntity, UserWorkspaceRole, UserWorkspaceStatus } from '@sandworm/postgresql-typeorm';
 import { SessionService } from '@/features/session/session.service';
-import { YjsDocumentService } from '@/features/collaboration/yjs/yjs-document.service';
 import { SessionManagerService } from '@/features/collaboration/yjs/services/session-manager.service';
 import { MessageHandlerService } from '@/features/collaboration/yjs/services/message-handler.service';
 import { SyncHandlerService } from '@/features/collaboration/yjs/services/sync-handler.service';
 import { PersistenceService } from '@/features/collaboration/yjs/services/persistence.service';
 import { WebSocketUtils } from '@/features/collaboration/yjs/utils/websocket.utils';
-import { getRequestData, getUserRole } from '@/features/collaboration/yjs/utils/validation.utils';
+import { getRequestData } from '@/features/collaboration/yjs/utils/validation.utils';
 
 @Injectable()
 export class YjsGateway implements OnModuleInit, OnModuleDestroy {
@@ -26,6 +25,8 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
         private readonly sessionService: SessionService,
         @InjectRepository(DocumentEntity)
         private readonly documentRepository: Repository<DocumentEntity>,
+        @InjectRepository(UserWorkspaceEntity)
+        private readonly userWorkspaceRepository:Repository<UserWorkspaceEntity>
     ) { }
 
     onModuleInit() {
@@ -102,10 +103,10 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
                 try {
                     const now = Date.now();
 
-                    // Revalidate role every 5 seconds
-                    if (now - lastRoleUpdate > 5000) {
+                    // Revalidate role every  minite
+                    if (now - lastRoleUpdate > 60000) {
                         lastRoleUpdate = now;
-                        const updatedRole = await getUserRole(authUser.id, session.workspaceId);
+                        const updatedRole = await this.getUserRole(authUser.id, session.workspaceId);
                         if (updatedRole) {
                             transactionOrigin.role = updatedRole;
                         } else {
@@ -153,6 +154,22 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
         } catch (err) {
             this.logger.error(`Connection failed: ${err}`, err);
             client.close(1011, 'Internal server error');
+        }
+    }
+
+    private getUserRole(
+        userId: string,
+        workspaceId: string,
+    ): UserWorkspaceRole | null {
+        try {
+            const userWorkspace = await this.userWorkspaceRepository.findOne({
+                where: { userId, workspaceId, status: UserWorkspaceStatus.ACTIVE },
+            });
+    
+            return userWorkspace?.role ?? null;
+        } catch (err) {
+            this.logger.error(`Failed to get user role: ${err}`);
+            return null;
         }
     }
 

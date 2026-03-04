@@ -92,16 +92,3 @@ export async function getRequestData(
         return null;
     }
 }
-
-export async function getUserRole(
-    userId: string,
-    workspaceId: string,
-): Promise<UserWorkspaceRole | null> {
-    try {
-        // TODO: Implement actual role lookup from database
-        return UserWorkspaceRole.EDITOR;
-    } catch (err) {
-        logger.error(`Failed to get user role: ${err}`);
-        return null;
-    }
-}
