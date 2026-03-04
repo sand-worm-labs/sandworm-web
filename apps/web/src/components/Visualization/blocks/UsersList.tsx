@@ -60,7 +60,7 @@ function UserItem(props: UserItemProps) {
   return (
     <tr
       className={clsx(
-        "border-b border-[#E9ECEF] dark:border-[#262A30]  dark:hover:bg-[#0D0F12] transition-colors",
+        "border-b border-[#E9ECEF] dark:border-[#262A30]   transition-colors",
         props.isSelected && ""
       )}
     >
@@ -75,19 +75,19 @@ function UserItem(props: UserItemProps) {
       <td className="whitespace-nowrap p-4 text-sm font-medium text-[#1A1A1A] dark:text-white">
         <Avatar />
         <span>{props.user.name}</span>{" "}
-        <span className="text-[#6C757D] inline-block font-light">
+        <span className="text-[#6C757D] dark:text-ink-400 inline-block font-light">
           {props.user.email}
         </span>
       </td>
       <td className="whitespace-nowrap p-4 text-sm text-ink-100">
-        <span className="bg-[#F8F9FA] border border-[#DEE2E6] rounded-md px-3 py-1">
+        <span className="bg-[#F8F9FA] border border-[#DEE2E6] dark:bg-base-100 dark:border-border-tertiary rounded-md px-3 py-1">
           {props.user.workspaceName || "—"} workspace
         </span>
       </td>
-      <td className="whitespace-nowrap p-4 text-sm text-[#6C757D] font-medium">
+      <td className="whitespace-nowrap p-4 text-sm text-[#6C757D] dark:text-ink-400  font-medium">
         {badge}
       </td>
-      <td className="whitespace-nowrap p-4 text-sm text-[#6C757D] font-medium">
+      <td className="whitespace-nowrap p-4 text-sm text-[#6C757D] dark:text-ink-400  font-medium">
         10 mins ago
       </td>
       <td className="whitespace-nowrap p-4 text-sm font-medium sm:pl-6 lg:pl-8 pr-4 items-end flex w-full">
@@ -102,7 +102,7 @@ function UserItem(props: UserItemProps) {
               : "text-red-600"
           )}
         >
-          <Trash />
+          <Trash size={18} />
         </button>
       </td>
     </tr>
@@ -188,7 +188,7 @@ function UsersList(props: Props) {
       <div className="overflow-visible">
         <div className="w-full overflow-x-auto dark:border-[#262A30] border-b-0">
           <table className="min-w-full border-collapse">
-            <thead className="rounded-t-2xl sticky top-0 z-10 border-b border-[#E9ECEF]">
+            <thead className="rounded-t-2xl sticky top-0 z-10 border-b border-[#E9ECEF]  dark:border-border-tertiary">
               <tr>
                 <th scope="col" className="p-4 w-10">
                   <input
@@ -196,30 +196,30 @@ function UsersList(props: Props) {
                     type="checkbox"
                     checked={allSelected}
                     onChange={handleSelectAll}
-                    className="h-4 w-4 rounded-2xl border-[#D0D5DD] text-[#7F56D9] focus:border-[#7F56D9] cursor-pointer"
+                    className="h-4 w-4 rounded-2xl border-[#D0D5DD]  dark:border-border-tertiary text-[#7F56D9] focus:border-[#7F56D9] cursor-pointer"
                   />
                 </th>
                 <th
                   scope="col"
-                  className="text-left p-4 text-xs font-bold text-ink-400 dark:text-ink-300 sticky left-0 min-w-[250px] uppercase bg-white"
+                  className="text-left p-4 text-xs font-bold text-ink-400 sticky left-0 min-w-[250px] uppercase bg-base-100"
                 >
                   user
                 </th>
                 <th
                   scope="col"
-                  className="text-left p-4 text-xs font-bold text-ink-400 dark:text-ink-300 min-w-[120px] uppercase"
+                  className="text-left p-4 text-xs font-bold text-ink-400  min-w-[120px] uppercase"
                 >
                   workspaces
                 </th>
                 <th
                   scope="col"
-                  className="text-left p-4 text-xs font-bold text-ink-400 dark:text-ink-300 min-w-[120px] uppercase"
+                  className="text-left p-4 text-xs font-bold text-ink-400 min-w-[120px] uppercase"
                 >
                   Role
                 </th>
                 <th
                   scope="col"
-                  className="text-left p-4 text-xs font-bold text-ink-400 dark:text-ink-300 min-w-[120px] uppercase"
+                  className="text-left p-4 text-xs font-bold text-ink-400  min-w-[120px] uppercase"
                 >
                   last active
                 </th>

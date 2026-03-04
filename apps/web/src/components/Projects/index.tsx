@@ -153,13 +153,13 @@ export const Projects: React.FC = () => {
           <h2 className="text-2xl font-medium text-ink-100 font-body mb-2 mt-3">
             No projects yet
           </h2>
-          <p className="text-ink-300 mb-1">
+          <p className="text-ink-300 dark:text-ink-400 mb-1 font-body">
             Create your first project to get started
           </p>
           <button
             type="button"
             onClick={onCreateDocumentHandler}
-            className="p-2  bg-base-200 dark:bg-base-200  rounded-xl hover:cursor-pointer text-sm border mt-6 flex px-5 items-center justify-center w-full border-[#D000FF]  text-primary mb-3 font-body font-medium "
+            className="p-2  bg-base-200 dark:bg-base-200  rounded-xl hover:cursor-pointer text-sm border mt-6 flex px-5 items-center justify-center w-full border-[#D000FF] dark:border-primary  text-primary mb-3 font-body font-medium "
           >
             <PlusSmallIcon className="h-4 w-4 mr-1 " aria-hidden="true" />
             Create Project

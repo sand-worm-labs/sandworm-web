@@ -108,7 +108,7 @@ export function EditWorkspaceProfileModal({
         aria-label="Close modal"
       />
 
-      <div className="relative bg-white dark:bg-[#1A1A1A] rounded-3xl w-full max-w-[31rem] mx-4 p-6 py-10 px-10">
+      <div className="relative bg-white dark:bg-base-400 dark:border dark:border-border-tertiary rounded-3xl w-full max-w-[31rem] mx-4 p-6 py-10 px-10">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-base font-medium text-ink-100 dark:text-white">
             Edit workspace Profile
@@ -118,17 +118,17 @@ export function EditWorkspaceProfileModal({
             onClick={onClose}
             className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           >
-            <XMarkIcon className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+            <XMarkIcon className="h-5 w-5 text-ink-400" />
           </button>
         </div>
 
         <div className="mb-6">
-          <label className="block text-sm font-medium text-[#1A1A1A] dark:text-gray-300 mb-3">
+          <label className="block text-sm font-medium text-ink-100  mb-3">
             Workspace Icon
           </label>
           <div className="flex items-center gap-3">
             {/* Current selection preview */}
-            <div className="relative w-14 h-14 rounded-full border-2 border-[#DEE2E6] dark:border-gray-600 flex items-center justify-center overflow-hidden mr-4">
+            <div className="relative w-14 h-14 rounded-full border-2 border-[#DEE2E6] dark:border-border-tertiary flex items-center justify-center overflow-hidden mr-4">
               {selectedIcon ? (
                 <WorkspaceIcon
                   icon={selectedIcon}
@@ -136,7 +136,7 @@ export function EditWorkspaceProfileModal({
                   className="object-cover"
                 />
               ) : (
-                <span className="text-[10px] text-center text-gray-400 leading-tight">
+                <span className="text-[10px] text-center text-ink-400 leading-tight">
                   No icon
                 </span>
               )}
@@ -151,7 +151,7 @@ export function EditWorkspaceProfileModal({
                   onClick={() => setSelectedIcon(colorKey)}
                   className={`relative w-8 h-8 rounded-full transition-all overflow-hidden ${
                     isSelected
-                      ? "ring-2 ring-[#A308F0] ring-offset-2 dark:ring-offset-[#1A1A1A]"
+                      ? "ring-2 ring-[#A308F0] ring-offset-2 dark:ring-border-tertiary]"
                       : "hover:scale-110"
                   }`}
                   aria-label={`${colorKey.replace(".png", "")} icon`}
@@ -177,15 +177,15 @@ export function EditWorkspaceProfileModal({
             value={workspaceName}
             onChange={e => setWorkspaceName(e.target.value)}
             placeholder="Enter workspace name"
-            className="w-full px-4 py-3 rounded-xl bg-[#F8F9FA] dark:bg-[#262626] border border-[#DEE2E6] dark:border-[#363636] text-gray-900 dark:text-white placeholder:text-[#6C757D] dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#A308F0] focus:border-transparent transition-all text-sm font-medium"
+            className="w-full px-4 py-3 rounded-xl bg-[#F8F9FA] dark:bg-base-100 border border-[#DEE2E6] dark:border-border-tertiary text-ink-100 placeholder:text-[#6C757D] dark:placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-[#A308F0] focus:border-transparent transition-all text-sm font-medium"
           />
           <ul className="mt-2 space-y-1 text-xs font-medium">
             <li className="flex items-center gap-1">
-              <span className="text-[#6C757D]">·</span>
+              <span className="text-[#6C757D] dark:text-ink-400">·</span>
               Workspace name should be less than 40 characters
             </li>
             <li className="flex items-center gap-1">
-              <span className="text-[#6C757D]">·</span>
+              <span className="text-[#6C757D]  dark:text-ink-400">·</span>
               Cannot contain punctuation/special marks
             </li>
           </ul>
@@ -195,7 +195,7 @@ export function EditWorkspaceProfileModal({
           type="button"
           onClick={handleSave}
           disabled={!isNameValid || isLoading}
-          className="w-full py-3.5 px-4 bg-[#A308F0] hover:bg-[#8a07c9] disabled:bg-[#868E96] text-[#E9ECEF] font-medium rounded-xl transition-colors disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
+          className="w-full py-3.5 px-4 bg-[#A308F0] hover:bg-[#8a07c9] disabled:bg-[#868E96] dark:disabled:bg-[#4a4a48] text-[#E9ECEF] font-medium rounded-xl transition-colors disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
         >
           {isLoading ? (
             <>
@@ -490,7 +490,7 @@ export default function WorkspaceSettingsModal({
       />
 
       <div className="flex min-h-full items-center justify-center p-4 lg:min-w-[1000px] w-auto">
-        <div className="relative w-full max-w-[1000px] xl:max-w-[1300px] transform rounded-2xl bg-white dark:bg-[#0D1014] shadow-none transition-all px-12">
+        <div className="relative w-full max-w-[1000px] xl:max-w-[1300px] transform rounded-2xl bg-white dark:bg-base-400 dark:border dark:border-border-tertiary shadow-none transition-all px-12">
           {/* Header */}
           <div className="flex items-center justify-between px-6 py-4 pt-12">
             <div>
@@ -503,11 +503,11 @@ export default function WorkspaceSettingsModal({
                     onClick={() => setIsEditModalOpen(true)}
                     className="p-1 rounded transition-colors"
                   >
-                    <PencilSimple className="h-4 w-4 text-gray-500" />
+                    <PencilSimple className="h-4 w-4  dark:text-ink-400" />
                   </button>
                 </h2>
 
-                <div className="w-32 flex items-center justify-center gap-2 text-sm text-[#6C757D] font-medium dark:text-gray-400 border-r border-[#1A1A1A]">
+                <div className="w-32 flex items-center justify-center gap-2 text-sm text-[#6C757D]  font-medium dark:text-ink-400 border-r border-[#1A1A1A]">
                   <svg
                     className="w-5 h-5"
                     fill="none"
@@ -527,14 +527,14 @@ export default function WorkspaceSettingsModal({
                   </span>
                 </div>
 
-                <div className="px-3 flex items-center justify-center gap-2 text-sm text-[#6C757D] font-medium dark:text-gray-400 border-r border-[#1A1A1A]">
+                <div className="px-3 flex items-center justify-center gap-2 text-sm text-[#6C757D] font-medium dark:text-ink-400 border-r border-[#1A1A1A]">
                   Pro
                 </div>
 
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(true)}
-                  className="flex items-center gap-2 px-2.5 py-0.5 border bg-[#F8F9FA] border-[#DEE2E6] dark:border-gray-700 rounded-lg text-xs font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  className="flex items-center gap-2 px-2.5 py-0.5 border bg-[#F8F9FA] border-[#DEE2E6] dark:text-black dark:border-border-tertiary rounded-lg text-xs font-medium hover:bg-gray-50  transition-colors"
                 >
                   Manage Invites
                 </button>
@@ -548,7 +548,7 @@ export default function WorkspaceSettingsModal({
                 </div>
               </div>
 
-              <p className="text-xs xl:text-sm mt-2 text-[#6C757D]">
+              <p className="text-xs xl:text-sm mt-2 text-[#6C757D] dark:text-ink-400">
                 Change details about your workspace
               </p>
             </div>
@@ -570,7 +570,7 @@ export default function WorkspaceSettingsModal({
                 <label className="block text-md font-bold leading-4 dark:text-white text-ink-100">
                   Team plan
                 </label>
-                <p className="text-xs xl:text-sm mt-2 text-[#6C757D]">
+                <p className="text-xs xl:text-sm mt-2 text-[#6C757D] dark:text-ink-400">
                   Check your current billing status
                 </p>
                 <div className="flex items-center">
@@ -582,29 +582,29 @@ export default function WorkspaceSettingsModal({
                       );
                       onClose();
                     }}
-                    className="px-2.5 py-1 border border-[#DEE2E6] dark:border-gray-700 bg-[#F8F9FA] rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-800 text-xs"
+                    className="px-2.5 py-1 border border-[#DEE2E6] dark:border-gray-700 dark:text-black bg-[#F8F9FA] rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-800 text-xs"
                   >
                     Change Plan
                   </button>
                 </div>
               </div>
 
-              <div className="flex w-[50%] justify-between border-b border-[#E9ECEF] pb-2">
+              <div className="flex w-[50%] justify-between border-b border-[#E9ECEF] pb-2 dark:border-border-tertiary ">
                 <div className="flex">
                   <div>
-                    <div className="text-[13px] uppercase text-[#6C757D] font-bold block mb-2.5">
+                    <div className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-2.5">
                       Current plan
                     </div>
-                    <div className="font-medium capitalize bg-[#F7E8FF] px-3 py-0.5 rounded-md text-[#A308F0] inline-block text-sm">
+                    <div className="font-medium capitalize bg-[#F7E8FF] dark:bg-[#2a1a3a] px-3 py-0.5 rounded-md text-primary inline-block text-sm">
                       Free
                     </div>
                   </div>
                 </div>
                 <div>
-                  <div className="text-[13px] uppercase text-[#6C757D] font-bold block mb-2.5">
+                  <div className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-2.5">
                     Available AI Credit
                   </div>
-                  <div className="font-medium text-[#6C757D] capitalize px-2 py-0.5 block inline-block text-sm">
+                  <div className="font-medium text-[#6C757D] dark:text-ink-400 capitalize px-2 py-0.5 block inline-block text-sm">
                     0
                   </div>
                 </div>
@@ -617,17 +617,17 @@ export default function WorkspaceSettingsModal({
                 <label className="block text-md font-bold leading-4 dark:text-white text-ink-100">
                   AI Configuration
                 </label>
-                <span className="text-xs xl:text-sm mt-2 text-[#6C757D]">
+                <span className="text-xs xl:text-sm mt-2 text-[#6C757D] dark:text-ink-400">
                   Select the default AI model for your team workspace
                 </span>
               </div>
 
               <div className="w-[50%]">
-                <div className="text-[13px] uppercase text-[#6C757D] font-bold block mb-1.5">
+                <div className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-1.5">
                   Model
                 </div>
                 <select
-                  className="block w-full rounded-[10px] xl:py-2 border-0 py-1.5 pl-4 pr-10 text-ink-100 font-medium ring-1 ring-inset ring-[#CED4DA] focus:ring-1 focus:ring-[#A308F0] text-sm dark:bg-[#0D1014] disabled:bg-gray-100 dark:text-white dark:ring-[#262A30]"
+                  className="block w-full rounded-[10px] xl:py-2 border-0 py-1.5 pl-4 pr-10 text-ink-100 font-medium ring-1 ring-inset ring-[#CED4DA] focus:ring-1 focus:ring-[#A308F0] text-sm dark:bg-base-400 disabled:bg-gray-100 dark:text-white dark:ring-border-tertiary"
                   defaultValue="gpt-4o"
                 >
                   <option value="gpt-4o">GPT-4o (Recommended)</option>
@@ -644,17 +644,17 @@ export default function WorkspaceSettingsModal({
                   <label className="block text-md font-bold leading-4 dark:text-white text-ink-100">
                     Custom AI API Key
                   </label>
-                  <span className="text-xs xl:text-sm mt-2 text-[#6C757D]">
+                  <span className="text-xs xl:text-sm mt-2 text-[#6C757D] dark:text-ink-400">
                     Set a custom API key for your workspace
                   </span>
                 </div>
 
                 <div className="w-[50%]">
-                  <div className="text-[13px] uppercase text-[#6C757D] font-bold block mb-1.5">
+                  <div className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-1.5">
                     set key
                   </div>
                   <select
-                    className="block w-full rounded-[10px] xl:py-2 border-0 py-1.5 pl-4 pr-10 text-ink-100 font-medium ring-1 ring-inset ring-[#CED4DA] focus:ring-1 focus:ring-[#A308F0] text-sm dark:bg-[#0D1014] disabled:bg-gray-100 dark:text-white dark:ring-[#262A30]"
+                    className="block w-full rounded-[10px] xl:py-2 border-0 py-1.5 pl-4 pr-10 text-ink-100 font-medium ring-1 ring-inset ring-[#CED4DA] focus:ring-1 focus:ring-[#A308F0] text-sm dark:bg-base-400 disabled:bg-gray-100 dark:text-white dark:ring-border-tertiary"
                     defaultValue="gpt-4o"
                   >
                     <option value="gpt-4o">
@@ -673,7 +673,7 @@ export default function WorkspaceSettingsModal({
                 <label className="block text-md font-bold leading-4 dark:text-white text-ink-100">
                   Members
                 </label>
-                <span className="text-xs xl:text-sm mt-2 text-[#6C757D]">
+                <span className="text-xs xl:text-sm mt-2 text-[#6C757D] dark:text-ink-400">
                   Manage access levels for users within this workspace
                 </span>
               </div>
@@ -696,24 +696,24 @@ export default function WorkspaceSettingsModal({
           <div className="flex justify-between gap-3 px-6 py-4 mb-20">
             <div>
               <h3 className="text-ink-100 font-bold">Delete Workspace</h3>
-              <p className="text-xs xl:text-sm mt-2 text-[#6C757D]">
+              <p className="text-xs xl:text-sm mt-2 text-[#6C757D] dark:text-ink-400">
                 Delete this Workspace
               </p>
             </div>
 
             <div className="w-[50%]">
-              <h3 className="uppercase mb-2 text-[#6C757D] font-bold text-[13px]">
+              <h3 className="uppercase mb-2 text-[#6C757D]  dark:text-ink-400 font-bold text-[13px]">
                 Delete this workspace
               </h3>
-              <div className="flex bg-[#FFDBDB] border border-[#CED4DA] rounded-xl text-[13px] py-1 px-2 items-center gap-x-5 justify-between">
-                <span className="inline-block text-[#ff0000]">
+              <div className="flex bg-[#FFDBDB] dark:bg-[#2a1a1a] border border-[#CED4DA] dark:border-[#5a2e2e] rounded-xl text-[13px] py-1 px-2 items-center gap-x-5 justify-between">
+                <span className="inline-block text-[#ff0000] dark:text-[#ff6b6b]">
                   Once deleted, all files, users and data will be permanently
                   lost
                 </span>
                 <button
                   onClick={() => setIsDeleteModalOpen(true)}
                   type="button"
-                  className="bg-[#F8F9FA] text-[12px] py-1 px-2 rounded-lg border border-[#DEE2E6] text-[#ff0000] font-medium inline-block"
+                  className="bg-[#F8F9FA] dark:bg-base-400 text-[12px] py-1 px-2 rounded-lg border border-[#DEE2E6] dark:border-border-tertiary text-[#ff0000] dark:text-[#ff6b6b]  font-medium inline-block"
                 >
                   Delete Workspace
                 </button>

@@ -105,32 +105,32 @@ export default function WorkspaceSettings() {
 
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="font-medium text-gray-900 dark:text-white truncate">
+              <span className="font-medium text-ink-100 dark:text-white truncate">
                 {workspace.name}
               </span>
               {isCurrentWorkspace && (
-                <span className="text-xs px-2 py-0.5 bg-[#A308F0]/10 text-[#A308F0] rounded-full whitespace-nowrap">
+                <span className="text-xs px-2 py-0.5 bg-[#A308F0]/10 text-primary rounded-full whitespace-nowrap">
                   Current
                 </span>
               )}
             </div>
 
             <div className="flex items-center gap-2 mt-0.5 sm:hidden">
-              <span className="text-xs text-[#6C757D] dark:text-gray-400">
+              <span className="text-xs text-[#6C757D] dark:text-ink-400">
                 {workspace.users?.length || 1}{" "}
                 {workspace.users?.length === 1 ? "member" : "members"}
               </span>
-              <span className="text-xs text-[#6C757D] dark:text-gray-400">
+              <span className="text-xs text-[#6C757D] dark:text-ink-400">
                 ·
               </span>
-              <span className="text-xs text-[#6C757D] dark:text-gray-400 capitalize">
+              <span className="text-xs text-[#6C757D] dark:text-ink-400 capitalize">
                 {workspace.plan || "Free"}
               </span>
             </div>
           </div>
         </button>
 
-        <div className="hidden sm:flex w-32 items-center justify-center gap-2 text-sm text-[#6C757D] font-medium dark:text-gray-400">
+        <div className="hidden sm:flex w-32 items-center justify-center gap-2 text-sm text-[#6C757D] font-medium dark:text-ink-400">
           <svg
             className="w-5 h-5"
             fill="none"
@@ -150,7 +150,7 @@ export default function WorkspaceSettings() {
           </span>
         </div>
 
-        <div className="hidden sm:block w-24 text-center text-sm text-gray-600 dark:text-gray-400 capitalize">
+        <div className="hidden sm:block w-24 text-center text-sm text-ink-400 dark:text-ink-400 capitalize">
           {workspace.plan || "Free"}
         </div>
 
@@ -167,8 +167,8 @@ export default function WorkspaceSettings() {
           className={clsx(
             "w-10 flex justify-center transition-colors",
             allowSettings && isAdmin
-              ? "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer"
-              : "text-gray-300 dark:text-gray-600 cursor-not-allowed opacity-40"
+              ? "text-ink-400 hover:text-gray-600 dark:hover:text-ink-300 cursor-pointer"
+              : "text-ink-300 dark:text-ink-400 cursor-not-allowed opacity-40"
           )}
           title={
             !isAdmin
@@ -272,7 +272,7 @@ export default function WorkspaceSettings() {
                 <div className="w-full">
                   {invitedWorkspaces.length > 0 ? (
                     <>
-                      <div className="flex items-center px-5 py-3 text-xs font-medium text-[#6C757D] uppercase tracking-wider">
+                      <div className="flex items-center px-5 py-3 text-xs font-medium text-[#6C757D] dark:text-ink-400 uppercase tracking-wider">
                         <div className="flex-1">Workspace</div>
                         <div className="w-32 text-center">Members</div>
                         <div className="w-24 text-center">Plan</div>
