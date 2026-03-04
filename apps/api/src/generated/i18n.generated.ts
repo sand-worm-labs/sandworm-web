@@ -87,7 +87,7 @@ export type I18nTranslations = {
                 "intro": string;
                 "instruction": string;
                 "expiry_note": string;
-                "actionTitle": string;
+                "action_title": string;
             };
             "workspace_join_request": {
                 "title": string;
