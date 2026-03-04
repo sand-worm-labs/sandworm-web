@@ -145,7 +145,7 @@ export const AccountDropdown = () => {
             className="px-2 flex items-center gap-3 bg-base-100 rounded-xl h-12 border border-[#E9ECEF]  w-full justify-between dark:border-[#262A30] hover:bg-base-100 "
           >
             <div className="flex items-center gap-3">
-            <Avatar className="h-8 w-8">
+              <Avatar className="h-8 w-8">
                 <AvatarImage
                   src={user.avater ?? undefined}
                   alt={user.firstName ?? "User"}
@@ -171,11 +171,11 @@ export const AccountDropdown = () => {
         </DropdownMenuTrigger>
 
         <DropdownMenuContent
-          className="w-64 rounded-2xl border-[#E9ECEF] dark:border-[#262A30] shadow-md border p-2 ml-6"
+          className="w-64 rounded-2xl border-[#E9ECEF] dark:border-border-tertiary dark:bg-base-400 shadow-md border p-2 ml-6"
           align="start"
         >
           {/* ── User header ── */}
-          <div className="flex items-center justify-between px-2 py-2 mb-1 border-b border-[#E9ECEF] ">
+          <div className="flex items-center justify-between px-2 py-2 mb-1 border-b border-[#E9ECEF] dark:border-border-tertiary ">
             <div className="flex items-center gap-3">
               <Avatar className="h-8 w-8">
                 <AvatarImage
@@ -208,8 +208,6 @@ export const AccountDropdown = () => {
             </Button>
           </div>
 
-          <DropdownMenuSeparator className="my-1 dark:bg-[#262A30]" />
-
           {/* ── Nav list ── */}
           <NavItem
             icon={<BookIcon size={18} />}
@@ -239,7 +237,7 @@ export const AccountDropdown = () => {
           <Button
             variant="destructive"
             onClick={signout}
-            className="w-full text-[0.8rem] py-2 bg-[#FF0000] font-body"
+            className="w-full text-[0.8rem] py-2 bg-[#FF0000] dark:bg-[#FF4444] font-body"
           >
             <span>Sign Out</span>
           </Button>

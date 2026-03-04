@@ -20,8 +20,6 @@ import {
 } from "@headlessui/react";
 import { createPortal } from "react-dom";
 
-
-
 import type { UserWorkspaceRole, WorkspaceUser } from "@/types";
 
 const ROLES: {
@@ -63,7 +61,8 @@ function RoleDropdown({ role, onChange, disabled }: RoleDropdownProps) {
     const handler = (e: MouseEvent) => {
       const target = e.target as Node;
       const outsideButton = ref.current && !ref.current.contains(target);
-      const outsidePortal = portalRef.current && !portalRef.current.contains(target);
+      const outsidePortal =
+        portalRef.current && !portalRef.current.contains(target);
       if (outsideButton && outsidePortal) {
         setOpen(false);
       }
@@ -95,8 +94,8 @@ function RoleDropdown({ role, onChange, disabled }: RoleDropdownProps) {
         onClick={handleOpen}
         className={clsx(
           "flex items-center gap-1.5 px-3 py-0.5 rounded-lg border text-sm font-medium transition-colors min-w-[70px]",
-          "border-[#DEE2E6] dark:border-[#262A30]",
-          "bg-[#F8F9FA] dark:bg-[#1A1D21]",
+          "border-[#DEE2E6] dark:border-border-tertiary",
+          "bg-[#F8F9FA] dark:bg-base-100",
           "text-[#343A40] dark:text-white",
           "hover:bg-[#F8F9FA] dark:hover:bg-[#262A30]",
           disabled && "cursor-not-allowed"
@@ -105,7 +104,7 @@ function RoleDropdown({ role, onChange, disabled }: RoleDropdownProps) {
         {current?.label ?? "—"}
         <svg
           className={clsx(
-            "w-4 h-3.5 text-[#1C3B5A] transition-transform",
+            "w-4 h-3.5 text-[#1C3B5A] dark:text-ink-400 transition-transform",
             open && "rotate-180"
           )}
           viewBox="0 0 16 16"
@@ -120,8 +119,7 @@ function RoleDropdown({ role, onChange, disabled }: RoleDropdownProps) {
       {open &&
         createPortal(
           <div
-          ref={portalRef}
-
+            ref={portalRef}
             style={{
               position: "absolute",
               top: coords.top,
@@ -193,12 +191,14 @@ function MiniUserItem({
         <p className="text-sm font-medium text-[#1A1A1A] dark:text-white truncate">
           {user.firstName} {user.lastName}
           {isCurrentUser && (
-            <span className="ml-1.5 text-xs font-normal text-[#6C757D]">
+            <span className="ml-1.5 text-xs font-normal text-[#6C757D]  dark:text-ink-400">
               (you)
             </span>
           )}
         </p>
-        <p className="text-xs text-[#6C757D] truncate">{user.email}</p>
+        <p className="text-xs text-[#6C757D] dark:text-ink-400 truncate">
+          {user.email}
+        </p>
       </div>
       <RoleDropdown
         role={user.role}
@@ -270,7 +270,7 @@ export function MiniUsersList({
 
   return (
     <div className="relative w-full">
-      <div className="rounded-xl border border-[#DEE2E6] dark:border-[#262A30] overflow-hidden">
+      <div className="rounded-xl border border-[#DEE2E6] dark:border-border-tertiary overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-2 border-b border-[#CED4DA] dark:border-[#262A30]">
           <span className="text-sm font-medium text-[#6C757D] dark:text-white">
@@ -292,7 +292,7 @@ export function MiniUsersList({
                 onClick={onInvite}
                 className={clsx(
                   "flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium",
-                  "bg-[#F8F9FA] dark:bg-[#1A1D21] border border-[#DEE2E6] dark:border-[#262A30]",
+                  "bg-[#F8F9FA] dark:bg-base-100 border border-[#DEE2E6] dark:border-border-tertiary",
                   "text-[#A308F0] dark:text-white hover:bg-[#F8F9FA] dark:hover:bg-[#262A30] transition-colors"
                 )}
               >
@@ -345,7 +345,7 @@ export function MiniUsersList({
               leaveFrom="opacity-100 scale-100 translate-y-0"
               leaveTo="opacity-0 scale-95 translate-y-2"
             >
-              <DialogPanel className="w-full max-w-md bg-white dark:bg-[#0D0F12] rounded-2xl border border-[#DEE2E6] dark:border-[#262A30] shadow-xl flex flex-col max-h-[80vh] overflow-hidden font-body">
+              <DialogPanel className="w-full max-w-md bg-white dark:bg-base-400 dark:bg-[#0D0F12] rounded-2xl border border-[#DEE2E6] dark:border-[#262A30] shadow-xl flex flex-col max-h-[80vh] overflow-hidden font-body">
                 {/* Modal header */}
                 <div className="flex items-center justify-between px-5 py-4 border-b border-[#DEE2E6] dark:border-[#262A30] flex-shrink-0">
                   <DialogTitle className="text-sm font-semibold text-[#1A1A1A] dark:text-white">
@@ -394,7 +394,7 @@ export function MiniUsersList({
         className={clsx(
           "fixed bottom-6 left-1/2 -translate-x-1/2 z-50",
           "flex items-center gap-4 px-3 py-3",
-          "bg-[#0F0F0F] dark:bg-[#1A1D21] border border-[#E9ECEF] dark:border-[#262A30]",
+          "bg-[#0F0F0F] dark:bg-base-600 border border-[#E9ECEF] dark:border-[#262A30]",
           "rounded-[14px] transition-all duration-200 ease-out",
           selectionCount > 0
             ? "opacity-100 translate-y-0 pointer-events-auto"

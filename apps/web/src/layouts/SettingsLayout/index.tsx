@@ -84,7 +84,7 @@ export default function SettingsLayout({
 
         <hr className="md:hidden" />
 
-        <main className="flex-1 p-6  px-2 md:px-6 dark:bg-base-200 ">
+        <main className="flex-1 p-6  px-2 md:px-6 dark:bg-base-100 ">
           <div className=" border-t-8 border-l-8 h-20 ml-4">{children}</div>
         </main>
       </div>

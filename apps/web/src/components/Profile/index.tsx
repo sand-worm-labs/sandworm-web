@@ -191,7 +191,7 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                             <button
                               type="button"
                               onClick={() => setIsModalOpen(true)}
-                              className="flex items-center gap-2 px-4 py-1 rounded-lg font-medium transition-colors text-sm border border-[#DEE2E6] dark:border-[#262A30] text-[#6C757D] dark:text-white hover:bg-[#F8F9FA] dark:hover:bg-[#262A30] bg-[#F8F9FA]"
+                              className="flex items-center gap-2 px-4 py-1 rounded-lg font-medium transition-colors text-sm border border-[#DEE2E6] dark:border-[#262A30] text-[#6C757D] dark:text-black hover:bg-[#F8F9FA] dark:hover:bg-[#262A30] bg-[#F8F9FA]"
                             >
                               Edit
                             </button>
