@@ -11,9 +11,13 @@
     "commitlint",
     "cssnano",
     "nextauth",
+    "Persistor",
+    "persistors",
     "QLJSON",
     "sandworm",
-    "tailwindcss"
+    "sess",
+    "tailwindcss",
+    "ydoc"
   ],
 
   "eslint.workingDirectories": [
