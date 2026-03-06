@@ -1,7 +1,7 @@
 import '@fastify/cookie';
-import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Context, type GraphQLExecutionContext, Mutation, Resolver } from '@nestjs/graphql';
 import { Public } from '@sandworm/nest-common';
-import { type FastifyReply as FastifyReplyType } from 'fastify';
+import { type FastifyReply } from 'fastify';
 import { AuthGraphqlService } from './auth-graphql.service';
 import { LoginInput } from './dto/auth-graphql.dto';
 import { AuthPayload } from './models/auth-payload';
@@ -17,10 +17,11 @@ export class AuthGraphqlResolver {
 
   @Public()
   @Mutation(() => AuthPayload, { name: 'login', description: 'Sign in' })
-  async login(@Args('input') input: LoginInput, @Context('reply') response: FastifyReplyType): Promise<AuthPayload> {
+  async login(@Args('input') input: LoginInput,  @Context('response') res: FastifyReply,): Promise<AuthPayload> {
+    console.log(res)
     let user = await this.authGraphqlService.login(input);
-    const { accessToken, refreshToken, accessTokenExpires, refreshTokenExpires } = await this.authService.issueTokenPair(user.id);
-    setTokenCookies(response, { accessToken, refreshToken, accessTokenExpires, refreshTokenExpires });
-    return 
+      // const { accessToken, refreshToken, accessTokenExpires, refreshTokenExpires } = await this.authService.issueTokenPair(user.id);
+      // setTokenCookies(res, { accessToken, refreshToken, accessTokenExpires, refreshTokenExpires });
+      return  user;
   }
 }
