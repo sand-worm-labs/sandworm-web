@@ -102,7 +102,6 @@ export const WorkspaceSidebar = () => {
 
   const onCreateDocument = useCallback(
     async (parentId: string | null) => {
-      console.log("doc", documentsState);
       if (documentsState.loading) return;
 
       try {

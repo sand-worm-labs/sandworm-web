@@ -19,7 +19,7 @@ export const SignUp = () => {
         <>
           <SandwormLogo width="40" height="40" />
 
-          <h2 className="text-3xl font-medium text-center text-black mb-1 mt-3 font-primary dark:text-white">
+          <h2 className="text-3xl font-medium text-center text-black mb-1 mt-3 font-body  dark:text-white">
             Welcome to Sandworm
           </h2>
 
@@ -31,7 +31,7 @@ export const SignUp = () => {
 
           <div className="flex items-center gap-3 w-full my-2.5">
             <div className="h-px bg-[#E9ECEF] dark:bg-[#FFFFFF30] flex-1" />
-            <span className="text-xs text-muted-foreground font-primary">
+            <span className="text-xs text-muted-foreground font-body ">
               or
             </span>
             <div className="h-px bg-[#E9ECEF] dark:bg-[#FFFFFF30] flex-1" />
@@ -42,7 +42,7 @@ export const SignUp = () => {
       <SignUpForm />
 
       {!isUsernameStep && (
-        <p className="text-center text-ink-500 dark:text-ink-400 font-primary text-sm mt-4">
+        <p className="text-center text-ink-500 dark:text-ink-400 font-body  text-sm mt-4">
           Have an account?
           <Link href="/signin" className="text-accent hover:underline ml-1">
             Sign In

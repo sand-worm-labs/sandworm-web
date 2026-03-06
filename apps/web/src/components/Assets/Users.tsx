@@ -1,5 +1,6 @@
 import React from "react";
-import { IconProps } from "./Menu/types";
+
+import type { IconProps } from "./Menu/types";
 
 export const Users: React.FC<IconProps> = ({ size = 118, className }) => {
   return (

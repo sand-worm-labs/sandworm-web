@@ -52,7 +52,7 @@ function PivotTableGroup<
           {props.label}
         </div>
         <button
-          className="text-[10px] text-gray-400 underline pb-0.5 hover:text-gray-500"
+          className="text-[10px] text-ink-400 underline pb-0.5 hover:text-gray-500"
           onClick={props.onAdd}
         >
           {props.addLabel}
@@ -100,7 +100,7 @@ function PivotTableGroup<
 
               {props.values.length > 1 && (
                 <button
-                  className="flex items-center jutify-center cursor-pointer text-gray-400 hover:text-red-600 text-[10px] absolute top-1 right-1 underline"
+                  className="flex items-center jutify-center cursor-pointer text-ink-400 hover:text-red-600 text-[10px] absolute top-1 right-1 underline"
                   onClick={() => props.onRemove(i)}
                 >
                   Remove

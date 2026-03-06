@@ -129,7 +129,7 @@ export default function BigQueryForm({
                   name="name"
                   placeholder="My BigQuery database"
                   required
-                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
                 <FormError msg={formState.errors.name?.message} />
               </div>
@@ -177,7 +177,7 @@ export default function BigQueryForm({
                   name="additionalInfo"
                   rows={5}
                   placeholder="Enter additional context for the AI assistant (examples, descriptions, etc.)"
-                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
               </div>
             </div>

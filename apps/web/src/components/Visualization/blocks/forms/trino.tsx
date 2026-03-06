@@ -90,7 +90,7 @@ export default function TrinoForm({
                   name="name"
                   placeholder="My Trino database"
                   required
-                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
                 <FormError msg={formState.errors.name?.message} />
               </div>
@@ -112,7 +112,7 @@ export default function TrinoForm({
                   name="host"
                   placeholder="example.com"
                   required
-                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
                 <FormError msg={formState.errors.host?.message} />
               </div>
@@ -139,7 +139,7 @@ export default function TrinoForm({
                   name="port"
                   placeholder="5432"
                   required
-                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
                 <FormError msg={formState.errors.port?.message} />
               </div>
@@ -158,7 +158,7 @@ export default function TrinoForm({
                   type="text"
                   name="catalog"
                   placeholder="catalog"
-                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
               </div>
             </div>
@@ -182,7 +182,7 @@ export default function TrinoForm({
                   name="username"
                   placeholder="username"
                   required
-                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
                 <FormError msg={formState.errors.username?.message} />
               </div>
@@ -200,7 +200,7 @@ export default function TrinoForm({
                   {...register("password")}
                   type="password"
                   name="password"
-                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
                 {isEditing && !formState.errors.password && (
                   <span className="block text-sm text-ink-100 empty:before:content-['\200b'] pt-1 pb-1">
@@ -226,7 +226,7 @@ export default function TrinoForm({
                   name="additionalInfo"
                   rows={5}
                   placeholder="Enter additional context for the AI assistant (examples, descriptions, etc.)"
-                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
               </div>
             </div>

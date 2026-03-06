@@ -45,13 +45,13 @@ function WritebackControls(props: Props) {
 
   return (
     <>
-      <div className="w-full border-b border-gray-200 pt-5 sticky top-0 bg-white z-10">
+      <div className="w-full border-b border-border-secondary pt-5 sticky top-0 bg-white z-10">
         <nav className="-mb-px flex" aria-label="Tabs">
           <button
             className={clsx(
               tab === "general"
                 ? "border-primary-600 text-primary-700"
-                : "border-transparent text-gray-400 hover:border-gray-300 hover:text-gray-600",
+                : "border-transparent text-ink-400 hover:border-gray-300 hover:text-gray-600",
               "whitespace-nowrap border-b-2 py-1 px-2 text-xs font-medium "
             )}
             aria-current={tab === "general" ? "page" : undefined}
@@ -63,7 +63,7 @@ function WritebackControls(props: Props) {
             className={clsx(
               tab === "overwrite"
                 ? "border-primary-600 text-primary-700"
-                : "border-transparent text-gray-400 hover:border-gray-300 hover:text-gray-600",
+                : "border-transparent text-ink-400 hover:border-gray-300 hover:text-gray-600",
               "whitespace-nowrap border-b-2 py-1 px-2 text-xs font-medium "
             )}
             aria-current={tab === "overwrite" ? "page" : undefined}

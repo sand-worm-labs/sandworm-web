@@ -30,7 +30,6 @@ const azeretMono = AzeretMono({
 
 const GTAG_ID = "G-GQB5QS1LHQ";
 
-console.log(azeretMono.style.fontFamily);
 
 // ⬢ Root Layout
 // =====================================

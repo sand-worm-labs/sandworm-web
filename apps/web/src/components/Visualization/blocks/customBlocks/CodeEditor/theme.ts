@@ -61,7 +61,7 @@ function materialDarkTheme(disabled: boolean) {
     {
       "&": {
         color: "#d4d4d4",
-        backgroundColor: disabled ? "#2E2E2C" : "#232322",
+        backgroundColor: disabled ? "#2E2E2C" : "#272726",
         fontSize: "12px",
       },
       "&.cm-focused": { outline: "none" },
@@ -76,14 +76,14 @@ function materialDarkTheme(disabled: boolean) {
       ".cm-selectionMatch": { backgroundColor: "#1e3a5f" },
       ".cm-activeLine": { backgroundColor: "transparent" },
       ".cm-gutters": {
-        backgroundColor: disabled ? "#2E2E2C" : "#232322",
+        backgroundColor: disabled ? "#2E2E2C" : "#272726",
         color: "#6a9fb5",
         border: "none",
         paddingLeft: "8px",
       },
       ".cm-activeLineGutter": {
         color: "#9cdcfe",
-        backgroundColor: disabled ? "#2E2E2C" : "#232322",
+        backgroundColor: disabled ? "#2E2E2C" : "#272726",
       },
     },
     { dark: true }
@@ -105,7 +105,6 @@ export function materialDark(disabled: boolean): Extension {
   ];
 }
 
-// ─── Unified export ──────────────────────────────────────────────────────────
 
 export function editorTheme(disabled: boolean, dark: boolean): Extension {
   return dark ? materialDark(disabled) : materialLight(disabled);

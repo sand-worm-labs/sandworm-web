@@ -24,7 +24,7 @@ function FormatSQLButton(props: Props) {
             {ref => (
               <Menu.Button
                 ref={ref}
-                className="rounded-sm border border-gray-200 dark:border-border-tertiary h-6 min-w-6 flex items-center justify-center relative group hover:bg-gray-50"
+                className="rounded-sm border border-border-secondary dark:border-border-tertiary h-6 min-w-6 flex items-center justify-center relative group hover:bg-gray-50"
                 onClick={props.onFormat}
                 disabled={props.disabled}
               >

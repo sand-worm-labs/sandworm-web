@@ -22,7 +22,7 @@ export default function ResetPasswordPage() {
 
   if (!token) {
     return (
-      <div className="w-full mx-auto text-center font-primary h-full items-center justify-center flex flex-col">
+      <div className="w-full mx-auto text-center font-body  h-full items-center justify-center flex flex-col">
         <SandwormLogo />
         <h2 className="mt-4 text-xl font-medium text-black dark:text-white">
           Invalid or expired link
@@ -39,7 +39,7 @@ export default function ResetPasswordPage() {
 
   if (success) {
     return (
-      <div className="w-full max-w-md mx-auto text-center font-primary  h-full items-center justify-center flex flex-col">
+      <div className="w-full max-w-md mx-auto text-center font-body   h-full items-center justify-center flex flex-col">
         <SandwormLogo />
         <h2 className="mt-4 text-2xl font-medium text-black dark:text-white">
           Password Reset
@@ -55,7 +55,7 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="w-full max-w-md rounded-lg p-6 flex flex-col justify-center items-center h-full mx-auto font-primary relative">
+    <div className="w-full max-w-md rounded-lg p-6 flex flex-col justify-center items-center h-full mx-auto font-body  relative">
       <SandwormLogo />
       <h2 className="text-2xl font-medium text-center text-black mb-2 mt-4 dark:text-white">
         Reset your Password

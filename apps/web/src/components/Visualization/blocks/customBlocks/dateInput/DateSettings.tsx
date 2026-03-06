@@ -41,9 +41,9 @@ export default function DateSettings(props: Props) {
   }, [props.onChangeDateType]);
 
   return (
-    <div className="bg-gray-50 px-3 py-3 border border-gray-200 flex flex-col gap-y-2 rounded-md shadow-sm">
+    <div className="bg-gray-50 px-3 py-3 border border-border-secondary flex flex-col gap-y-2 rounded-md shadow-sm">
       <div className="flex items-center justify-between w-full">
-        <span className="text-xs font-semibold py-1 flex gap-x-1 text-gray-400 w-full">
+        <span className="text-xs font-semibold py-1 flex gap-x-1 text-ink-400 w-full">
           <Cog6ToothIcon className="w-4 h-4" />
           Date input settings
         </span>
@@ -56,7 +56,7 @@ export default function DateSettings(props: Props) {
             position="top"
             active
           >
-            <InformationCircleIcon className="w-4 h-4 text-gray-400" />
+            <InformationCircleIcon className="w-4 h-4 text-ink-400" />
           </Tooltip>
         </div>
       </div>

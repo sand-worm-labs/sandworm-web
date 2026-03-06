@@ -23,12 +23,12 @@ export const SignInModal = () => {
         <div className="grid grid-cols-6  h-full">
           <div className="col-span-3 flex flex-col justify-center p-8 pr-[6rem]">
             <DialogTitle>
-              <span className="text-2xl font-sewmibold block mb-2 font-primary">
+              <span className="text-2xl font-sewmibold block mb-2 font-body ">
                 Join Sandworm
               </span>
             </DialogTitle>
 
-            <DialogDescription className=" mb-6 text-muted-foreground font-primary text-sm">
+            <DialogDescription className=" mb-6 text-muted-foreground font-body  text-sm">
               Decode complex Onchain data in seconds!
             </DialogDescription>
 

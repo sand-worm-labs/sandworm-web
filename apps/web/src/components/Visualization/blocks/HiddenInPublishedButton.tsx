@@ -50,7 +50,7 @@ function HiddenInPublishedButton(props: Props) {
               {ref => (
                 <Menu.Button
                   ref={ref}
-                  className="rounded-sm border border-gray-200 dark:border-border-tertiary h-6 min-w-6 flex items-center justify-center relative group hover:bg-gray-50"
+                  className="rounded-sm border border-border-secondary dark:border-border-tertiary h-6 min-w-6 flex items-center justify-center relative group hover:bg-gray-50"
                 >
                   <EyeIcon className="w-3 h-3 text-ink-400 group-hover:text-gray-500" />
                 </Menu.Button>
@@ -72,9 +72,9 @@ function HiddenInPublishedButton(props: Props) {
                 <Menu.Items
                   as="div"
                   ref={containerRef}
-                  className="absolute z-30 rounded-md bg-white shadow-[0_4px_12px_#CFCFCF] ring-1 ring-gray-100 focus:outline-none font-primary divide-y divide-gray-200 flex flex-col text-xs text-gray-600"
+                  className="absolute z-30 rounded-md bg-white shadow-[0_4px_12px_#CFCFCF] ring-1 ring-gray-100 focus:outline-none font-body  divide-y divide-border-secondary flex flex-col text-xs text-gray-600"
                 >
-                  <div className="flex flex-col divide-y divide-gray-200">
+                  <div className="flex flex-col divide-y divide-border-secondary">
                     <div className="py-0.5 px-0.5">
                       <Menu.Item
                         as="button"

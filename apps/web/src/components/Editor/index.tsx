@@ -74,12 +74,9 @@ import SimpleBar from "simplebar-react";
 import { DocumentIcon } from "@heroicons/react/24/solid";
 
 import { useOnClickOutside } from "@/hooks/useOnClickOutside";
-
 import type { ApiDocument, UserWorkspaceRole } from "@/types";
+
 import RunAllV2 from "../Visualization/blocks/RunAllV2";
-
-
-
 import PivotTableBlock from "../Visualization/blocks/customBlocks/pivotTable";
 import useHotkeys from "../Visualization/hooks/useHotkeys";
 import useEditorAwareness, {
@@ -407,10 +404,10 @@ function Tab(props: TabProps) {
           ref={buttonRef}
           onClick={() => props.onSwitchActiveTab(props.tabRef.blockId)}
           className={clsx(
-            "flex gap-x-2 items-center border-l border-r border-t border-gray-200 px-2.5 py-1.5 rounded-t-sm whitespace-nowrap",
+            "flex gap-x-2 items-center border-l border-r border-t border-border-secondary px-2.5 py-1.5 rounded-t-sm whitespace-nowrap",
             props.tabRef.isCurrent
               ? "bg-white text-gray-950"
-              : "bg-gray-50 text-gray-400 hover:bg-gray-100",
+              : "bg-gray-50 text-ink-400 hover:bg-gray-100",
             isDragging ? "opacity-0" : "",
             !props.isFirst ? "-ml-[1px]" : ""
           )}
@@ -428,7 +425,7 @@ function Tab(props: TabProps) {
               <span
                 className={clsx(
                   "pl-0.5 text-[10px]",
-                  props.tabRef.isCurrent ? "text-gray-400" : "text-gray-300"
+                  props.tabRef.isCurrent ? "text-ink-400" : "text-gray-300"
                 )}
               >
                 hidden
@@ -459,7 +456,7 @@ function Tab(props: TabProps) {
           show={contextMenu !== null}
           ref={contextMenuRef}
         >
-          <div className="rounded-md bg-white dark:bg-base-100 ring-1 ring-gray-100 focus:outline-none font-primary flex flex-col text-xs text-ink-200 border border-[#CED4DA]">
+          <div className="rounded-md bg-white dark:bg-base-100  ring-1 ring-gray-100 focus:outline-none font-body  flex flex-col text-xs text-ink-200 border border-[#CED4DA]">
             <div className="flex flex-col ">
               <div className="py-0.5 px-0.5">
                 <button
@@ -1023,10 +1020,10 @@ file`;
               {isScrollable && !isScrolledAllTheWayLeft && (
                 <button
                   type="button"
-                  className="sticky left-0 h-full bg-white border-t border-r border-l border-gray-200"
+                  className="sticky left-0 h-full bg-white border-t border-r border-l border-border-secondary"
                   onClick={onClickScrollLeft}
                 >
-                  <ChevronLeftIcon className="h-5 w-5 text-gray-400" />
+                  <ChevronLeftIcon className="h-5 w-5 text-ink-400" />
                 </button>
               )}
               {tabRefs.map((tabRef, i) => (
@@ -1049,10 +1046,10 @@ file`;
               {isScrollable && !isScrolledAllTheWayRight && (
                 <button
                   type="button"
-                  className="sticky right-0 h-full bg-white border-t border-r border-l border-gray-200"
+                  className="sticky right-0 h-full bg-white border-t border-r border-l border-border-secondary"
                   onClick={onClickScrollRight}
                 >
-                  <ChevronRightIcon className="h-5 w-5 text-gray-400" />
+                  <ChevronRightIcon className="h-5 w-5 text-ink-400" />
                 </button>
               )}
             </div>
@@ -1671,7 +1668,7 @@ const Editor = (props: Props) => {
   const lastUpdatedAt = useLastUpdatedAt(props.yDoc);
 
   return (
-    <div className="editor-v2 flex flex-col flex-grow justify-center font-primary subpixel-antialiased h-full w-full relative">
+    <div className="editor-v2 flex flex-col flex-grow justify-center font-body  subpixel-antialiased h-full w-full relative">
       {props.isDeleted && (
         <div className="bg-yellow-50 py-6 border-b border-yellow-200">
           <div className="flex justify-center">

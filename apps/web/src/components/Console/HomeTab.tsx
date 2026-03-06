@@ -216,7 +216,7 @@ export const HomeTab = () => {
               className="h-full p-4 py-8 flex flex-col items-start space-y-2 hover:bg-accent hover:text-accent-foreground group w-full overflow-hidden border-[#CED4DA] border rounded-2xl "
               onClick={() => handleNewAction(action.action)}
             >
-              <div className="flex items-center space-x-2 dark:text-white text-black font-primary break-words">
+              <div className="flex items-center space-x-2 dark:text-white text-black font-body  break-words">
                 <div className="p-2 rounded-full bg-primary/10 group-hover:bg-primary/20 text-primary">
                   {action.icon}
                 </div>

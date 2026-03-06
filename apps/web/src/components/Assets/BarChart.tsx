@@ -2,7 +2,6 @@ import React from "react";
 
 import type { IconProps } from "./Menu/types";
 
-
 export const BarChart: React.FC<IconProps> = ({ size = 188, className }) => {
   return (
     <svg

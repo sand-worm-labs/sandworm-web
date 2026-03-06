@@ -81,7 +81,7 @@ export const SaveModal = ({
 
   return (
     <Dialog open={open} onOpenChange={setOpenAction}>
-      <DialogContent className="sm:max-w-lg font-primary rounded-2xl">
+      <DialogContent className="sm:max-w-lg font-body  rounded-2xl">
         <DialogHeader>
           <DialogTitle className="font-medium">Save Query</DialogTitle>
         </DialogHeader>

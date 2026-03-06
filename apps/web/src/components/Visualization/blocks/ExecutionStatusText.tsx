@@ -29,7 +29,7 @@ export function QuerySucceededText({
   onToggleResultHidden,
 }: LastExecutedStatusTextProps) {
   return (
-    <div className="flex items-center gap-x-1 text-gray-400">
+    <div className="flex items-center gap-x-1 text-ink-400">
       <div className="relative group w-4 h-4">
         <CheckCircleIcon
           className={clsx(
@@ -69,7 +69,7 @@ export const LoadingQueryText = ({
   }, [startExecutionTime]);
 
   return (
-    <span className="text-gray-400 text-xs flex items-center select-none">
+    <span className="text-ink-400 text-xs flex items-center select-none">
       <CloudArrowDownIcon className="w-4 h-4 mr-1" />
       <span className="pt-0.5">
         Executing query
@@ -86,7 +86,7 @@ export const LoadingQueryText = ({
 
 export const LoadingEnvText = () => {
   return (
-    <span className=" text-gray-400 text-xs flex items-center select-none">
+    <span className=" text-ink-400 text-xs flex items-center select-none">
       <Cog8ToothIcon className="w-4 h-4 mr-1" />
       <span className="pt-0.5">Starting your environment...</span>
     </span>
@@ -108,7 +108,7 @@ export const ExecutingPythonText = ({
   }, [startExecutionTime]);
 
   return (
-    <span className=" text-gray-400 text-xs flex items-center select-none">
+    <span className=" text-ink-400 text-xs flex items-center select-none">
       <CloudArrowDownIcon className="w-4 h-4 mr-1" />
       <span className="pt-0.5">
         Executing Python code
@@ -129,7 +129,7 @@ export function PythonSucceededText({
   onToggleResultHidden,
 }: LastExecutedStatusTextProps) {
   return (
-    <div className="flex items-center gap-x-1 text-gray-400">
+    <div className="flex items-center gap-x-1 text-ink-400">
       <div className="relative group w-4 h-4">
         <CheckCircleIcon
           className={clsx(

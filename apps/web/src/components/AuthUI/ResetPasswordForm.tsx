@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { z } from "zod";
+
 import { useResetPassword } from "../Visualization/hooks/useAuth";
 
 // ⬢ Password Validation Schema
@@ -81,7 +82,7 @@ export const ResetPasswordForm = ({
   return (
     <form
       onSubmit={handleSubmit}
-      className="mt-4 space-y-4 w-full font-primary"
+      className="mt-4 space-y-4 w-full font-body "
     >
       <div>
         <label className="block text-sm font-medium text-ink-200 dark:text-gray-300">
@@ -89,7 +90,7 @@ export const ResetPasswordForm = ({
         </label>
         <input
           type="password"
-          className="mt-1 w-full rounded-3xl bg-white dark:bg-[#121417] p-2.5 px-5 border border-[#DEE2E6] dark:border-border-tertiary"
+          className="mt-1 w-full rounded-3xl bg-white dark:bg-base-100 p-2.5 px-5 border border-[#DEE2E6] dark:border-border-tertiary"
           value={password}
           onChange={e => setPassword(e.target.value)}
         />
@@ -101,7 +102,7 @@ export const ResetPasswordForm = ({
         </label>
         <input
           type="password"
-          className="mt-1 w-full rounded-3xl bg-white dark:bg-[#121417] p-2.5 px-5 border border-[#DEE2E6] dark:border-border-tertiary"
+          className="mt-1 w-full rounded-3xl bg-white dark:bg-base-100 p-2.5 px-5 border border-[#DEE2E6] dark:border-border-tertiary"
           value={confirmPassword}
           onChange={e => setConfirmPassword(e.target.value)}
         />

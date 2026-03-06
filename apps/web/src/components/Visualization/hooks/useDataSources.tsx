@@ -282,11 +282,9 @@ export function DataSourcesProvider(props: Props) {
 
   const fetchDataSources = useCallback(async (workspaceId: string) => {
     if (fetchedWorkspaces.current.has(workspaceId)) {
-      console.log("[fetchDataSources] already fetched, skipping", workspaceId);
       return;
     }
     fetchedWorkspaces.current.add(workspaceId);
-    console.log("[fetchDataSources] fetching for", workspaceId);
 
     const token = tokenStorage.getToken();
 
@@ -300,12 +298,10 @@ export function DataSourcesProvider(props: Props) {
       }
     );
 
-    console.log("[fetchDataSources] response status", res.status, res.ok);
 
     if (!res.ok) return;
 
     const data = await res.json();
-    console.log("[fetchDataSources] data received", data);
 
     setState(state =>
       state.set(workspaceId, {
@@ -329,7 +325,6 @@ export function DataSourcesProvider(props: Props) {
         }
       );
 
-      console.log("ping", res.json());
 
       return res.json();
     },

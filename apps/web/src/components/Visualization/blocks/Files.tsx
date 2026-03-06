@@ -18,8 +18,8 @@ import {
   getLayout,
 } from "@sandworm/editor";
 import { CloudArrowUpIcon as CloudArrowUpIconSolid } from "@heroicons/react/20/solid";
-import { Cautious } from "@/components/Assets/Cautious";
 
+import { Cautious } from "@/components/Assets/Cautious";
 import { UploadIcon } from "@/components/Assets/UploadIcon";
 import { Trash } from "@/components/Assets/Trash";
 import { Info } from "@/components/Assets/Info";
@@ -57,9 +57,9 @@ function DragOverlay({ isDragActive }: { isDragActive: boolean }) {
       )}
     >
       <div className="absolute top-0 left-0 h-full w-full bg-[#FBFBFB] dark:bg-[#0C1015] opacity-70" />
-      <div className="flex flex-col items-center justify-center gap-y-2 rounded-md bg-gray-50 dark:bg-[#0C1015] p-4 relative border-2 border-dashed border-gray-300 dark:border-border-tertiary">
-        <DocumentPlusIcon className="w-10 h-10 text-gray-600" />
-        <span className="text-center text-gray-600 font-semibold text-xs">
+      <div className="flex flex-col items-center justify-center gap-y-2 rounded-md bg-gray-50 dark:bg-base-100 p-4 relative border-2 border-dashed border-gray-300 dark:border-border-tertiary">
+        <DocumentPlusIcon className="w-10 h-10 text-ink-400" />
+        <span className="text-center text-ink-400 font-semibold text-xs">
           Drop files here to upload
         </span>
       </div>
@@ -85,7 +85,7 @@ function UploadPlaceholder({
     >
       <div
         className={clsx(
-          "bg-[#FBFBFB] rounded-2xl border-2 border-dashed border-[#E9ECEF] text-ink-300 dark:bg-base-100 dark:border-border-tertiary",
+          "bg-[#FBFBFB] rounded-2xl border-2 border-dashed border-[#E9ECEF] text-ink-300 dark:bg-base-100  dark:border-border-tertiary",
           compact
             ? "flex items-center justify-between px-2 py-2 text-sm  "
             : "flex flex-col items-center justify-center h-full p-8 text-center"
@@ -131,7 +131,7 @@ function UploadResultItem(props: UploadResultItemProps) {
   }, [props.onRemove, props.result.file]);
 
   return (
-    <div className="px-4 py-2 font-primary">
+    <div className="px-4 py-2 font-body ">
       <div>
         <div className="flex justify-between pb-1">
           <div
@@ -143,14 +143,14 @@ function UploadResultItem(props: UploadResultItemProps) {
           <div>
             <button
               type="button"
-              className="text-gray-500 disabled:cursor-not-allowed text-xs hover:text-gray-400"
+              className="text-ink-400 disabled:cursor-not-allowed text-xs hover:text-ink-400"
               onClick={onRemove}
             >
               ok
             </button>
           </div>
         </div>
-        <div className="font-medium text-gray-400 text-xs">{message}</div>
+        <div className="font-medium text-ink-400 text-xs">{message}</div>
       </div>
     </div>
   );
@@ -179,7 +179,7 @@ function FileItem(props: FileItemProps) {
   }, [props.onDelete, props.file]);
 
   return (
-    <div className="px-4 py-3 font-primary border border-[#E9ECEF] rounded-xl my-2 bg-[#FBFBFB]">
+    <div className="px-4 py-3 font-body  border border-[#E9ECEF] rounded-xl my-2 bg-[#FBFBFB] dark:bg-base-100 dark:border-border-tertiary">
       <div>
         <div className="flex justify-between pb-0.5">
           <div
@@ -191,15 +191,15 @@ function FileItem(props: FileItemProps) {
           <div>
             <button
               type="button"
-              className="text-gray-500 hover:text-red-500 disabled:cursor-not-allowed"
+              className="text-ink-400 dark:text-ink-100 hover:text-red-500 disabled:cursor-not-allowed"
               onClick={onRemove}
               disabled={props.isDeleting}
             >
-              {props.isDeleting ? <Spin /> : <Trash />}
+              {props.isDeleting ? <Spin /> : <Trash className="w-5 h-5" />}
             </button>
           </div>
         </div>
-        <div className="flex items-center gap-x-2 font-medium text-gray-[#6C757D] text-xs">
+        <div className="flex items-center gap-x-2 font-medium text-[#6C757D] dark:text-ink-400 text-xs">
           {formatBytes(props.file.size)}
           <svg viewBox="0 0 2 2" className="h-0.5 w-0.5 fill-current">
             <circle cx={1} cy={1} r={1} />
@@ -217,7 +217,8 @@ function FileItem(props: FileItemProps) {
         >
           <button
             type="button"
-            className="text-ink-400 hover:text-gray-400 disabled:hover:text-gray-500 disabled:cursor-not-allowed bg-[#F7E8FF] rounded-md px-1.5 py-0.5"
+            className="text-ink-400 hover:text-ink-400 disabled:hover:text-gray-500 disabled:cursor-not-allowed bg-[#F7E8FF] dark:text-ink-100 dark:bg-[#2a1a3a]
+ rounded-md px-1.5 py-0.5"
             onClick={onUseInPython}
             disabled={props.isDeleting || !props.canUse}
           >
@@ -232,7 +233,7 @@ function FileItem(props: FileItemProps) {
         >
           <button
             type="button"
-            className="text-ink-400 hover:text-gray-400 disabled:hover:text-gray-500 disabled:cursor-not-allowed  bg-[#F7E8FF] rounded-md px-1.5 py-0.5"
+            className="text-ink-400 hover:text-ink-400 disabled:hover:text-gray-500 disabled:cursor-not-allowed  bg-[#F7E8FF] dark:text-ink-100 dark:bg-[#2a1a3a] rounded-md px-1.5 py-0.5"
             onClick={onUseInSQL}
             disabled={props.isDeleting || !props.canUse}
           >
@@ -241,8 +242,8 @@ function FileItem(props: FileItemProps) {
         </Tooltip>
         <div
           className={clsx(
-            "text-ink-400  bg-[#F7E8FF] rounded-md px-1.5 py-0.5",
-            props.isDeleting ? "cursor-not-allowed" : "hover:text-gray-400"
+            "text-ink-400  bg-[#F7E8FF] dark:text-ink-100 dark:bg-[#2a1a3a] rounded-md px-1.5 py-0.5",
+            props.isDeleting ? "cursor-not-allowed" : "hover:text-ink-400"
           )}
         >
           {props.isDeleting ? (
@@ -273,7 +274,7 @@ function UploadingItem(props: UploadingItemProps) {
   }, [props.onAbort, props.upload.file]);
 
   return (
-    <div className="px-4 py-3 font-primary">
+    <div className="px-4 py-3 font-body ">
       <div>
         <div className="flex items-center justify-between pb-1">
           <div
@@ -291,7 +292,7 @@ function UploadingItem(props: UploadingItemProps) {
             abort
           </button>
         </div>
-        <div className="flex items-center gap-x-2 font-medium text-gray-400 text-xs">
+        <div className="flex items-center gap-x-2 font-medium text-ink-400 text-xs">
           {formatBytes(props.upload.uploaded)} /{" "}
           {formatBytes(props.upload.file.size)}
         </div>
@@ -310,7 +311,7 @@ function WaitingItem(props: WaitingItemProps) {
   }, [props.onAbort, props.file]);
 
   return (
-    <div className="px-4 py-3 font-primary">
+    <div className="px-4 py-3 font-body ">
       <div>
         <div className="flex items-center justify-between pb-1">
           <div className="font-medium pr-2 text-sm break-all">
@@ -318,13 +319,13 @@ function WaitingItem(props: WaitingItemProps) {
           </div>
           <button
             type="button"
-            className="text-gray-500 hover:text-red-500 disabled:cursor-not-allowed text-xs"
+            className="text-ink-400 hover:text-red-500 disabled:cursor-not-allowed text-xs"
             onClick={onAbort}
           >
             abort
           </button>
         </div>
-        <div className="flex items-center gap-x-2 font-medium text-gray-400 text-xs">
+        <div className="flex items-center gap-x-2 font-medium text-ink-400 text-xs">
           {formatBytes(0)} / {formatBytes(props.file.size)}
         </div>
       </div>
@@ -357,7 +358,7 @@ function ReplaceDialog(props: ReplaceDialogProps) {
           enterTo="opacity-100"
           leave="ease-in duration-200"
           leaveFrom="opacity-100"
-          leaveTo="opacity-0 font-primary"
+          leaveTo="opacity-0 font-body "
         >
           <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
         </Transition.Child>
@@ -373,7 +374,7 @@ function ReplaceDialog(props: ReplaceDialogProps) {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden rounded-xl bg-white px-4 pb-4 pt-5 text-left  transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg sm:p-6 data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95 border-[#E9ECEF] font-body font-medium">
+              <Dialog.Panel className="relative transform overflow-hidden rounded-xl bg-white dark:bg-base-100 px-4 pb-4 pt-5 text-left  transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg sm:p-6 data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95 border-[#E9ECEF] font-body font-medium">
                 <div>
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full ">
                     <Cautious />
@@ -392,14 +393,14 @@ function ReplaceDialog(props: ReplaceDialogProps) {
                   <button
                     type="button"
                     onClick={props.onReplaceYes}
-                    className="mt-3 inline-flex w-full justify-center rounded-[10px] bg-[#A308F0] px-3 py-1.5 text-sm text-white  hover:bg-[#A308F0] sm:col-start-1 sm:mt-0 font-primary"
+                    className="mt-3 inline-flex w-full justify-center rounded-[10px] bg-[#A308F0] px-3 py-1.5 text-sm text-white   hover:bg-[#A308F0] sm:col-start-1 sm:mt-0 font-body "
                   >
                     Yes
                   </button>
                   <button
                     type="button"
                     onClick={props.onReplaceAll}
-                    className="mt-3 inline-flex w-full justify-center rounded-[10px] bg-[#F8F9FA] px-3 py-1.5 text-sm text-ink-100 shadow-sm ring-1 ring-inset ring-[#DEE2E6] hover:bg-gray-50 sm:col-start-2 sm:mt-0 font-primary"
+                    className="mt-3 inline-flex w-full justify-center rounded-[10px] bg-[#F8F9FA] px-3 py-1.5 text-sm text-ink-100 shadow-sm ring-1 ring-inset ring-[#DEE2E6] hover:bg-gray-50 sm:col-start-2 sm:mt-0 font-body  dark:text-black "
                   >
                     Yes to all
                   </button>
@@ -407,7 +408,7 @@ function ReplaceDialog(props: ReplaceDialogProps) {
                     type="button"
                     data-autofocus
                     onClick={props.onReplaceNo}
-                    className="mt-3 inline-flex w-full justify-center rounded-[10px] bg-[#F8F9FA] px-3 py-1.5 text-sm text-ink-100 shadow-sm ring-1 ring-inset ring-[#DEE2E6] hover:bg-gray-50 sm:col-start-3 sm:mt-0 font-primary"
+                    className="mt-3 inline-flex w-full justify-center rounded-[10px] bg-[#F8F9FA] px-3 py-1.5 text-sm text-ink-100 shadow-sm ring-1 ring-inset ring-[#DEE2E6] hover:bg-gray-50 sm:col-start-3 sm:mt-0 font-body  dark:text-black"
                   >
                     No
                   </button>
@@ -558,7 +559,6 @@ file`;
     },
   ] = useFiles(props.workspaceId, props.visible ? 5000 : 0);
 
-
   const onRemove = useCallback(
     (file: SandwormFile) => {
       del(file.relCwdPath);
@@ -614,7 +614,7 @@ file`;
       <Transition
         as="div"
         show={props.visible}
-        className="top-0 right-0 h-full absolute bg-white  dark:bg-base-100 z-30 font-body"
+        className="top-0 right-0 h-full absolute bg-white  dark:bg-base-100  z-30 font-body"
         enter="transition-transform duration-300"
         enterFrom="transform translate-x-full"
         enterTo="transform translate-x-0"
@@ -630,16 +630,16 @@ file`;
         />
         <button
           type="button"
-          className="absolute z-10 top-7 transform rounded-full border border-[#E9ECEF] dark:border-border-tertiary  text-gray-400 bg-white  hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
+          className="absolute z-10 top-7 transform rounded-full border border-[#E9ECEF] dark:border-border-tertiary  text-ink-400 bg-white  hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
           onClick={props.onHide}
         >
           <ChevronDoubleRightIcon className="w-3 h-3" />
         </button>
         <div
-          className="w-[354px] flex flex-col border-l dark:border-border-tertiary dark:border-border-tertiary border-gray-200 h-full bg-white  dark:bg-base-100"
+          className="w-[354px] flex flex-col border-l dark:border-border-tertiary border-border-secondary h-full bg-white  dark:bg-base-100 "
           {...getRootProps()}
         >
-          <div className="flex justify-between border-b p-6 space-x-3 border-[#E9ECEF]">
+          <div className="flex justify-between border-b p-6 space-x-3 border-[#E9ECEF]  dark:border-border-tertiary ">
             <div>
               <h3 className="text-lg font-medium leading-6 text-ink-100 pr-1.5">
                 Files
@@ -661,13 +661,13 @@ file`;
           </div>
           {(upload._tag === "uploading" || results.length > 0) && (
             <>
-              <div className="relative flex px-4 py-2 text-xs font-medium border-b dark:border-border-tertiary border-[#FEFEFF] bg-gray-50  dark:bg-base-100 text-gray-600 justify-between">
+              <div className="relative flex px-4 py-2 text-xs font-medium border-b dark:border-border-tertiary border-[#FEFEFF] bg-gray-50  dark:bg-base-100  text-gray-600 justify-between">
                 <div className="flex gap-x-1">
-                  <CloudArrowUpIconSolid className="w-4 h-4 text-gray-400" />
+                  <CloudArrowUpIconSolid className="w-4 h-4 text-ink-400" />
                   Uploading
                 </div>
               </div>
-              <ul className="divide-y divide-solid overflow-y-auto border-b border-[#FEFEFF] dark:border-border-tertiary divide-[#FEFEFF] dark:divide-[#262A30]">
+              <ul className="divide-y divide-solid overflow-y-auto border-b border-[#FEFEFF] dark:border-border-tertiary divide-[#FEFEFF] dark:divide-border-tertiary">
                 {results.map(result => (
                   <li key={result.file.name}>
                     <UploadResultItem
@@ -692,7 +692,7 @@ file`;
           )}
           {(actualFiles.length > 0 || upload._tag === "idle") && (
             <>
-              <div className="relative flex px-4 py-2 text-xs font-medium border-b border-[#E9ECEF] dark:bg-base-100 dark:border-border-tertiary  text-ink-400 justify-between">
+              <div className="relative flex px-4 py-2 text-xs font-medium border-b border-[#E9ECEF] dark:bg-base-100  dark:border-border-tertiary  text-ink-400 justify-between">
                 <div className="flex gap-x-1">
                   <span className="font-mono">/home/sandwormuser</span>
                 </div>
@@ -706,12 +706,12 @@ file`;
                   <Info />
                 </Tooltip>
               </div>
-              <div className="px-4 py-0 flex items-center border-b dark:border-border-tertiary border-gray-200 group focus-within:border-[#7104A8]">
+              <div className="px-4 py-0 flex items-center border-b dark:border-border-tertiary border-border-secondary group focus-within:border-[#7104A8]">
                 <MagnifyingGlassIcon className="h-4 w-4 text-ink-300  group-focus-within:text-[#7104A8]" />
                 <input
                   type="text"
                   placeholder="Search..."
-                  className="w-full h-8 border-0 placeholder-[#868E96] text-sm text-gray-600 focus:outline-none focus:ring-0 pl-2"
+                  className="w-full h-8 border-0 placeholder-[#868E96] dark:placeholder-ink-400 text-sm text-ink-100 focus:outline-none focus:ring-0 pl-2"
                   onChange={e => setSearch(e.target.value)}
                   value={search}
                 />
@@ -740,9 +740,9 @@ file`;
               ) : (
                 !isDragActive && (
                   <div className="flex-1 p-4">
-                    <div className="flex items-center flex-col justify-center h-full text-ink-300  bg-[#FBFBFB] rounded-lg border-2 border-dashed border-[#E9ECEF] p-8 text-center dark:bg-[#0C1015] dark:border-border-tertiary">
+                    <div className="flex items-center flex-col justify-center h-full text-ink-400  bg-[#FBFBFB] rounded-lg border-2 border-dashed border-[#E9ECEF] p-8 text-center dark:bg-base-100 dark:border-border-tertiary">
                       <UploadIcon />
-                      <span className="mt-2">
+                      <span className="mt-2 text-sm">
                         Click or drag and drop files here to upload them
                       </span>
                     </div>

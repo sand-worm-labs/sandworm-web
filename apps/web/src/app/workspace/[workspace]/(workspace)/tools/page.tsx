@@ -5,10 +5,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@sandworm/ui/components/card";
 import { ArrowRight } from "lucide-react";
+
 import { ToolsiIlustration } from "@/components/Assets/ToolsiIlustration";
 import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
 import { useDocuments } from "@/components/Visualization/hooks/useDocuments";
-
 import SquareFour from "@/components/Assets/SquareFour";
 
 type Tool = {

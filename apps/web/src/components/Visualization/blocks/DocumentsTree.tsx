@@ -240,7 +240,7 @@ function DropDown(props: DropDownProps) {
             leaveFrom="transform opacity-100 scale-100"
             leaveTo="transform opacity-0 scale-95"
           >
-            <Menu.Items className="absolute left-2 -top-2 z-20 w-40 origin-top-right  bg-white dark:bg-[#0C1015]  ring-opacity-5 focus:outline-none border-[#E9ECEF] border dark:border-border-tertiary rounded-2xl shadow-[0_1.5px_13px_3px_rgba(82,106,159,0.12)]">
+            <Menu.Items className="absolute left-2 -top-2 z-20 w-40 origin-top-right  bg-white dark:bg-base-100  ring-opacity-5 focus:outline-none border-[#E9ECEF] border dark:border-border-tertiary rounded-2xl shadow-[0_1.5px_13px_3px_rgba(82,106,159,0.12)] dark:shadow-none">
               <div className="py-2 px-1.5">
                 <Menu.Item>
                   {({ active }) => (
@@ -251,7 +251,7 @@ function DropDown(props: DropDownProps) {
                         {
                           hidden: isViewer || props.isFavoriteDropdown,
                         },
-                        active ? "bg-gray-100 text-ink-100" : "text-gray-700",
+                        active ? "bg-gray-100 text-ink-100" : "text-ink-400",
                         "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 rounded-md font-body font-medium hover:bg-primary/20 text-menu-ink-200 dark:text-white"
                       )}
                     >
@@ -269,7 +269,7 @@ function DropDown(props: DropDownProps) {
                         {
                           hidden: isViewer,
                         },
-                        active ? "bg-gray-100 text-ink-100" : "text-gray-700",
+                        active ? "bg-gray-100 text-ink-100" : "text-ink-400",
                         "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 font-body font-medium hover:bg-primary/20 rounded-md text-menu-ink-200  dark:text-white"
                       )}
                     >
@@ -287,7 +287,7 @@ function DropDown(props: DropDownProps) {
                         {
                           hidden: props.isFavorited,
                         },
-                        active ? "bg-gray-100 text-ink-100" : "text-gray-700",
+                        active ? "bg-gray-100 text-ink-100" : "text-ink-400",
                         "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 font-body font-medium hover:bg-primary/20 rounded-md text-menu-ink-200  dark:text-white"
                       )}
                     >
@@ -305,7 +305,7 @@ function DropDown(props: DropDownProps) {
                         {
                           hidden: !props.isFavorited,
                         },
-                        active ? "bg-gray-100 text-ink-100" : "text-gray-700",
+                        active ? "bg-gray-100 text-ink-100" : "text-ink-400",
                         "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 font-body font-medium hover:bg-primary/20 rounded-md text-menu-ink-200  dark:text-white"
                       )}
                     >
@@ -520,7 +520,7 @@ function NodeComponent(props: NodeComponentProps) {
           <div
             className={clsx(
               props.document.id === props.current
-                ? "text-gray-800 bg-ceramic-100/50"
+                ? "text-ink-100 bg-ceramic-100/50"
                 : "text-ink-400 hover:bg-ceramic-100/80",
               isDropping &&
                 dropHoverState === "center" &&
@@ -590,7 +590,7 @@ function NodeComponent(props: NodeComponentProps) {
             >
               {props.descendants.size === 0 && (
                 <li
-                  className="text-gray-400 text-sm font-medium leading-6 py-1 rounded-sm pointer-events-none overflow-auto truncate"
+                  className="text-ink-400 text-sm font-medium leading-6 py-1 rounded-sm pointer-events-none overflow-auto truncate"
                   style={{ paddingLeft: `${props.level + 3}rem` }}
                 >
                   No documents inside

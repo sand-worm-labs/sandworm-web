@@ -128,7 +128,7 @@ export const AddWalletModal = ({
           <button
             type="button"
             onClick={onClose}
-            className="w-[40%] py-2.5 rounded-xl border border-[#DEE2E6] dark:border-border-tertiary text-[#6C757D] dark:text-ink-400 text-sm font-medium hover:bg-[#F8F9FA] dark:hover:bg-[#262A30] transition-colors"
+            className="w-[40%] py-2.5 rounded-xl border border-[#DEE2E6] dark:border-border-tertiary text-[#6C757D] dark:text-ink-400 text-sm font-medium hover:bg-[#F8F9FA] dark:hover:bg-base-500 transition-colors"
           >
             Cancel
           </button>
@@ -196,7 +196,7 @@ export const ManageWalletsModal = ({
             <button
               type="button"
               onClick={onClose}
-              className="p-1.5 rounded-lg hover:bg-[#F8F9FA] dark:hover:bg-[#262A30] transition-colors text-[#1C3B5A]"
+              className="p-1.5 rounded-lg hover:bg-[#F8F9FA] dark:hover:bg-[#262A30] transition-colors text-[#1C3B5A] dark:text-ink-100"
             >
               <X className="w-4 h-4" />
             </button>
@@ -205,7 +205,7 @@ export const ManageWalletsModal = ({
           {/* Wallet List */}
           <div className="space-y-2 max-h-72 overflow-y-auto pr-0.5">
             {wallets.length === 0 ? (
-              <p className="text-center text-sm text-ink-200 dark:text-gray-500 py-8">
+              <p className="text-center text-sm text-ink-200 dark:text-ink-400 py-8">
                 No wallets added yet
               </p>
             ) : (
@@ -216,7 +216,7 @@ export const ManageWalletsModal = ({
                   onMouseLeave={() => setHoveredIndex(null)}
                   className={`flex items-center justify-between px-4 py-3 rounded-xl border transition-colors ${
                     hoveredIndex === index
-                      ? "border-[#A308F0] bg-[#F8F9FA] dark:bg-[#1A1A2E]"
+                      ? "border-[#A308F0] bg-[#F8F9FA] dark:bg-base-100"
                       : "border-[#DEE2E6] dark:border-border-tertiary bg-[#F8F9FA] dark:bg-transparent"
                   }`}
                 >
@@ -225,7 +225,7 @@ export const ManageWalletsModal = ({
                       {truncateAddress(wallet.address)}
                     </code>
                     {wallet.chain && (
-                      <span className="text-xs text-[#6C757D] dark:text-gray-500 mt-0.5">
+                      <span className="text-xs text-[#6C757D] dark:text-ink-400 mt-0.5">
                         {wallet.chain}
                       </span>
                     )}
@@ -240,7 +240,7 @@ export const ManageWalletsModal = ({
                       {copiedAddress === wallet.address ? (
                         <Check className="w-4 h-4 text-[#A308F0]" />
                       ) : (
-                        <Copy className="w-4 h-4 text-ink-200 dark:text-gray-400" />
+                        <Copy className="w-4 h-4 text-ink-200 dark:text-ink-400" />
                       )}
                     </button>
                     <button
@@ -248,7 +248,7 @@ export const ManageWalletsModal = ({
                       onClick={() => deleteWallet(index)}
                       className="p-1.5 rounded-lg hover:bg-[#FFE8E8] dark:hover:bg-[#3A1A1A] transition-colors group"
                     >
-                      <Trash2 className="w-4 h-4 text-ink-200 dark:text-gray-400 group-hover:text-red-500 transition-colors" />
+                      <Trash2 className="w-4 h-4 text-ink-200 dark:text-ink-400 group-hover:text-red-500 transition-colors" />
                     </button>
                   </div>
                 </div>
@@ -269,7 +269,7 @@ export const ManageWalletsModal = ({
               <button
                 type="button"
                 onClick={deleteAll}
-                className="w-[40%] py-2.5 rounded-xl bg-[#1C1C1C] dark:bg-[#262A30] text-white text-sm font-medium hover:bg-opacity-80 transition-colors"
+                className="w-[40%] py-2.5 rounded-xl border border-[#DEE2E6] dark:border-border-tertiary text-[#6C757D] dark:text-ink-400 text-sm font-medium hover:bg-[#F8F9FA] dark:hover:bg-base-500 transition-colors"
               >
                 Delete all
               </button>

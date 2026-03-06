@@ -101,7 +101,7 @@ export default function SignUpForm() {
             }
           : e => e.preventDefault()
       }
-      className="mt-4 space-y-3 font-primary w-full"
+      className="mt-4 space-y-3 font-body  w-full"
     >
       {step === 1 && (
         <>

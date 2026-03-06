@@ -53,7 +53,7 @@ export default function SettingsLayout({
       <div className="flex items-center gap-2 py-3 border-b border-[#F1F3F4] dark:border-border-tertiary px-10 text-[1.1rem] dark:bg-base-500">
         <Link
           href="/workspace"
-          className="text-gray-500 hover:text-ink-100 dark:text-gray-400 dark:hover:text-white transition "
+          className="text-gray-500 hover:text-ink-100 dark:text-ink-400 dark:hover:text-white transition "
         >
           <ChevronLeft size={16} />
         </Link>
@@ -84,7 +84,7 @@ export default function SettingsLayout({
 
         <hr className="md:hidden" />
 
-        <main className="flex-1 p-6  px-2 md:px-6 dark:bg-base-100 ">
+        <main className="flex-1 p-6  px-2 md:px-6 dark:bg-base-100  ">
           <div className=" border-t-8 border-l-8 h-20 ml-4">{children}</div>
         </main>
       </div>

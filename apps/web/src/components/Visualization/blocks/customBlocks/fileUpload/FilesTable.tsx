@@ -84,14 +84,14 @@ function FilesTable(props: Props) {
       className={clsx(
         isAskingReplace && "min-h-64",
         props.isBlockHiddenInPublished && "border-dashed",
-        "flow-root bg-white relative border border-gray-200 rounded-md"
+        "flow-root bg-white relative border border-border-secondary rounded-md"
       )}
     >
       <div className="bg-gray-50 text-xs py-2 rounded-t-md">
-        <div className="flex items-center text-gray-400 hover:text-gray-500 px-3 h-[1.6rem]">
+        <div className="flex items-center text-ink-400 hover:text-gray-500 px-3 h-[1.6rem]">
           <button
             type="button"
-            className="print:hidden h-4 w-4 hover:text-gray-400 rounded-sm mr-0.5"
+            className="print:hidden h-4 w-4 hover:text-ink-400 rounded-sm mr-0.5"
             onClick={props.toggleFilesHidden}
           >
             {props.areFilesHidden ? <ChevronRightIcon /> : <ChevronDownIcon />}
@@ -99,7 +99,7 @@ function FilesTable(props: Props) {
           <input
             type="text"
             className={clsx(
-              "w-1/2 font-primary bg-transparent pl-1 ring-gray-200 focus:ring-gray-400 block rounded-md border-0 text-gray-500 hover:ring-1 focus:ring-1 ring-inset placeholder:text-gray-400 focus:ring-inset h-full py-0 text-xs disabled:ring-0 h-full"
+              "w-1/2 font-body  bg-transparent pl-1 ring-gray-200 focus:ring-gray-400 block rounded-md border-0 text-gray-500 hover:ring-1 focus:ring-1 ring-inset placeholder:text-ink-400 focus:ring-inset h-full py-0 text-xs disabled:ring-0 h-full"
             )}
             placeholder="Files"
             value={props.title}
@@ -110,7 +110,7 @@ function FilesTable(props: Props) {
       </div>
       <table
         className={clsx(
-          "min-w-full divide-y divide-gray-200 border-t",
+          "min-w-full divide-y divide-border-secondary border-t",
           props.areFilesHidden && "hidden"
         )}
       >
@@ -120,7 +120,7 @@ function FilesTable(props: Props) {
               <th
                 key={header}
                 scope="col"
-                className="px-2 py-2 text-left text-xs uppercase font-normal text-gray-400"
+                className="px-2 py-2 text-left text-xs uppercase font-normal text-ink-400"
               >
                 {header}
               </th>
@@ -181,7 +181,7 @@ function FilesTable(props: Props) {
           </div>
         </div>
       )}
-      <div className="flex justify-between bg-gray-50 text-xs text-gray-400 px-3 py-2 border-t border-gray-200 rounded-b-md">
+      <div className="flex justify-between bg-gray-50 text-xs text-ink-400 px-3 py-2 border-t border-border-secondary rounded-b-md">
         <div>
           {okFiles} {okFiles < totalFiles ? `out of ${totalFiles} ` : ""}
           {okFiles === 1 ? "file" : "files"} uploaded into{" "}
@@ -205,10 +205,10 @@ function FilesTable(props: Props) {
             .
           </span>
           <div className="relative group/tooltip">
-            <InformationCircleIcon className="text-gray-400 hover:text-gray-600 cursor-help w-4 h-4" />
-            <div className="font-primary pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover/tooltip:opacity-100 bg-hunter-950 text-xs p-3 rounded-md flex flex-col gap-y-1 font-primary w-64 text-center">
+            <InformationCircleIcon className="text-ink-400 hover:text-gray-600 cursor-help w-4 h-4" />
+            <div className="font-body  pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover/tooltip:opacity-100 bg-hunter-950 text-xs p-3 rounded-md flex flex-col gap-y-1 font-body  w-64 text-center">
               <span className="text-white">These files are in your disk.</span>
-              <span className="text-gray-400">
+              <span className="text-ink-400">
                 Your files are available in your filesystem at
                 /home/sandwormuser. Use this path in your Python code to read
                 them.
@@ -258,9 +258,9 @@ function cellClasses(header: FilesTableHeader): string {
     case "Name":
       return "w-[43%] font-medium text-gray-600 text-xs overflow-hidden";
     case "Type":
-      return "w-[18%] text-gray-400 text-xs overflow-hidden";
+      return "w-[18%] text-ink-400 text-xs overflow-hidden";
     case "Size":
-      return "w-[12%] md:w-[12%] xl:w-[16%] text-gray-400 text-xs overflow-hidden";
+      return "w-[12%] md:w-[12%] xl:w-[16%] text-ink-400 text-xs overflow-hidden";
     case "Usage":
       return "w-[20%] md:w-[18%] xl:w-[16%] font-medium text-gray-600 text-xs overflow-visible";
     case "DL":
@@ -347,7 +347,7 @@ export function Cell(props: CellProps) {
         return (
           <div
             className={clsx(
-              "flex items-center justify-left text-gray-400 text-xs space-x-1"
+              "flex items-center justify-left text-ink-400 text-xs space-x-1"
             )}
           >
             <button
@@ -378,7 +378,7 @@ export function Cell(props: CellProps) {
           <Link
             className={clsx(
               "flex items-center jutify-center text-gray-500 h-4 w-4 text-xs hover:text-gray-700",
-              disabled && "cursor-not-allowed hover:text-gray-400"
+              disabled && "cursor-not-allowed hover:text-ink-400"
             )}
             href={props.downloadLink}
             target="_blank"

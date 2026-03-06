@@ -5,8 +5,6 @@ import { cn } from "@sandworm/ui/lib/utils";
 
 import { SparkleAI } from "@/components/Assets/SparkleAI";
 
-
-
 // =====================================
 // Types
 // =====================================
@@ -49,7 +47,6 @@ const PanelItem = ({
     </button>
   );
 };
-
 
 // =====================================
 // AI Assistant Button (Special Styling)

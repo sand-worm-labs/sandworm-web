@@ -39,12 +39,12 @@ export function PageSettingToggle(props: PageSettingToggleProps) {
             aria-hidden="true"
             className={clsx(
               props.enabled ? "translate-x-5" : "translate-x-0",
-              "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white dark:bg-base-100 shadow ring-0 transition duration-200 ease-in-out"
+              "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white dark:bg-base-100  shadow ring-0 transition duration-200 ease-in-out"
             )}
           />
         </Switch>
       </span>
-      <span className="text-sm text-gray-500">{props.description}</span>
+      <span className="text-sm text-ink-400">{props.description}</span>
     </Switch.Group>
   );
 }
@@ -73,23 +73,23 @@ export default function PageSettingsPanel(props: Props) {
     >
       <button
         type="button"
-        className="absolute z-10 top-7 transform rounded-full border border-gray-300 text-gray-400 bg-white dark:bg-base-100 hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
+        className="absolute z-10 top-7 transform rounded-full border border-gray-300 dark:border-border-tertiary text-ink-400 bg-white dark:bg-base-100  hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
         onClick={props.onHide}
       >
         <ChevronDoubleRightIcon className="w-3 h-3" />
       </button>
-      <div className="w-[324px] flex flex-col border-l dark:border-border-tertiary border-gray-200 h-full bg-white font-body dark:bg-base-100">
-        <div className="flex justify-between border-b p-6 space-x-3">
+      <div className="w-[324px] flex flex-col border-l dark:border-border-tertiary border-border-secondary h-full bg-white font-body dark:bg-base-100 ">
+        <div className="flex justify-between border-b dark:border-border-tertiary p-6 space-x-3">
           <div>
             <h3 className="text-lg font-medium leading-6 text-ink-100 dark:text-white pr-1.5">
               Page settings
             </h3>
-            <p className="text-gray-500 text-sm pt-1">
+            <p className="text-ink-400 text-sm pt-1">
               Configure this page's behavior and default visualization mode.
             </p>
           </div>
         </div>
-        <div className="w-full divide-y divide-gray-200 border-b dark:border-border-tertiary border-gray-200 border dark:divide-[#262A30]">
+        <div className="w-full divide-y divide-border-secondary border-b dark:border-border-tertiary border-border-secondary border dark:divide-border-tertiary">
           <PageSettingToggle
             name="Auto-run pending blocks"
             description="Whether sandworm should automatically run unexecuted preceding blocks when a block is executed."

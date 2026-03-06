@@ -30,7 +30,7 @@ export default function WorkspaceRedirectPage() {
 
   return (
     <div className="loader-container h-screen">
-    <div className="bar-loader" />
-  </div>
+      <div className="bar-loader" />
+    </div>
   );
 }

@@ -115,14 +115,14 @@ export const Tooltip = ({
       {active && (
         <div
           className={clsx(
-            "font-primary pointer-events-none absolute opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1 z-[4000]",
+            "font-body  pointer-events-none absolute opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1 z-[4000]",
             getPosClass(position),
             tooltipClassname
           )}
         >
           {title && <span>{title}</span>}
           {message && (
-            <span className="inline-flex items-center justify-center text-gray-400 text-center">
+            <span className="inline-flex items-center justify-center text-ink-400 text-center">
               {message}
             </span>
           )}
@@ -260,7 +260,7 @@ export function TooltipV2<T extends Element>(props: TooltipV2Props<T>) {
                   <div
                     ref={tooltipRef}
                     className={clsx(
-                      "font-primary pointer-events-none bg-black text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1 w-36",
+                      "font-body  pointer-events-none bg-black text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1 w-36",
                       props.className
                     )}
                   >
@@ -269,7 +269,7 @@ export function TooltipV2<T extends Element>(props: TooltipV2Props<T>) {
                     )}
 
                     {props.message && (
-                      <span className="inline-flex items-center justify-center text-gray-400 text-center">
+                      <span className="inline-flex items-center justify-center text-ink-400 text-center">
                         {props.message}
                       </span>
                     )}

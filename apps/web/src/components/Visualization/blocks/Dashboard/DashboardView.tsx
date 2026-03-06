@@ -137,11 +137,11 @@ interface InnerProps {
 }
 
 const WhiteCard = ({ children }: { children: React.ReactNode }) => (
-  <div className="bg-white rounded-md h-full shadow-md">{children}</div>
+  <div className="bg-base-100 rounded-md h-full shadow-md">{children}</div>
 );
 
 const TransparentCard = ({ children }: { children: React.ReactNode }) => (
-  <div className="rounded-sm h-[calc(100%-4px)] outline outline-4 outline-offset-0 bg-dashboard-gray outline-dashboard-gray">
+  <div className="rounded-sm h-[calc(100%-4px)] outline outline-4 outline-offset-0  outline-border-tertiary">
     {children}
   </div>
 );
@@ -346,7 +346,7 @@ export default function DashboardView(props: Props) {
     <SimpleBar
       id="dashboard-wrapper"
       data-dashboard-ready="true"
-      className={clsx("px-8 py-6 font-primary", props.className)}
+      className={clsx("px-8 py-6 font-body ", props.className)}
     >
       <div className="pb-8 px-1">
         <Title

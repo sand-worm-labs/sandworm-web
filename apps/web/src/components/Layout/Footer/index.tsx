@@ -58,7 +58,7 @@ export const MainFooter = () => {
   };
 
   return (
-    <footer className="p-4 px-5 lg:text-sm text-base text-white border-t bg-black font-primary font-medium z-10 relative border-black">
+    <footer className="p-4 px-5 lg:text-sm text-base text-white border-t bg-black font-body  font-medium z-10 relative border-black">
       <motion.div
         className="container mx-auto grid lg:grid-cols-3 pt-5 pb-8 gap-y-12"
         initial="hidden"

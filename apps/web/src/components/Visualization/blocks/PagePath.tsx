@@ -18,7 +18,7 @@ export default function PagePath({ pages }: PagePathProps) {
       <ol className="flex items-center">
         <li>
           <div>
-            <Link href="/" className="text-gray-400/70 hover:text-gray-500">
+            <Link href="/" className="text-ink-400/70 hover:text-gray-500">
               <HomeIcon className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
               <span className="sr-only">Home</span>
             </Link>
@@ -39,7 +39,7 @@ export default function PagePath({ pages }: PagePathProps) {
               </div>
               <a
                 href={page.href}
-                className="text-sm font-medium text-gray-400 hover:text-gray-700 flex items-center gap-x-2"
+                className="text-sm font-medium text-ink-400 hover:text-gray-700 flex items-center gap-x-2"
                 aria-current={page.current ? "page" : undefined}
               >
                 <page.icon strokeWidth={1} className="h-4 w-4" />

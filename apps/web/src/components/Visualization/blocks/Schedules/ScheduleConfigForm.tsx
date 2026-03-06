@@ -160,7 +160,7 @@ function ScheduleConfigForm({
           <button
             onClick={onClose}
             type="button"
-            className="flex-1 flex items-center text-center justify-center  rounded-full px-3 py-1.5 text-gray-500 text-sm hover:bg-gray-100 border border-gray-200"
+            className="flex-1 flex items-center text-center justify-center  rounded-full px-3 py-1.5 text-gray-500 text-sm hover:bg-gray-100 border border-border-secondary"
           >
             Cancel
           </button>

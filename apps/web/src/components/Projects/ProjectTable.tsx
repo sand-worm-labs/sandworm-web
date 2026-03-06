@@ -69,7 +69,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
               onMouseLeave={() => setHoveredRowId(null)}
               className="border-b border-[#CED4DA] dark:border-border-tertiary hover:bg-gray-50 dark:hover:bg-[#0D0F12] transition-colors"
             >
-              <td className="p-4 sticky left-0 bg-white dark:bg-base-100 group-hover:bg-gray-50 dark:group-hover:bg-[#0D0F12]">
+              <td className="p-4 sticky left-0 bg-white dark:bg-base-100  group-hover:bg-gray-50 dark:group-hover:bg-[#0D0F12]">
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
@@ -84,7 +84,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                       className={`w-4 h-4 ${
                         project.isFavorite
                           ? "fill-[#A308F0] text-primary"
-                          : "text-gray-400 hover:text-primary"
+                          : "text-ink-400 hover:text-primary"
                       }`}
                     />
                   </button>
@@ -125,7 +125,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                   </button>
 
                   {openMenuId === project.id && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-base-100 rounded-xl shadow-lg border border-[#CED4DA] dark:border-border-tertiary pb-1 z-20">
+                    <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-base-100  rounded-xl shadow-lg border border-[#CED4DA] dark:border-border-tertiary pb-1 z-20">
                       <button
                         type="button"
                         onClick={() => {

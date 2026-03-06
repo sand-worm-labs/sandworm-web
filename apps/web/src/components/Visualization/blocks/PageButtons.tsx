@@ -36,14 +36,14 @@ const PageButtons: React.FC<PageButtonsProps> = ({
   const secondButtonLabel = getSecondButtonLabel();
   return (
     totalPages > 1 && (
-      <div className="flex items-center justify-center left-0 bottom-0 w-full font-primary">
+      <div className="flex items-center justify-center left-0 bottom-0 w-full font-body ">
         <button
           type="button"
           onClick={prevPage}
           disabled={currentPage === 0 || loading}
           className={clsx(
             currentPage !== 0 && !loading && "hover:text-gray-500",
-            "print:hidden disabled:opacity-50 text-gray-400 h-full"
+            "print:hidden disabled:opacity-50 text-ink-400 h-full"
           )}
         >
           <ChevronLeftIcon className="w-4 h-4" />
@@ -51,7 +51,7 @@ const PageButtons: React.FC<PageButtonsProps> = ({
         <button
           type="button"
           className={clsx(
-            currentPage === 0 ? "bg-gray-100 text-gray-500" : "text-gray-400 ",
+            currentPage === 0 ? "bg-gray-100 text-gray-500" : "text-ink-400 ",
             "px-1 rounded-sm h-full text-xs hover:text-gray-500"
           )}
           onClick={() => {
@@ -66,7 +66,7 @@ const PageButtons: React.FC<PageButtonsProps> = ({
             className={clsx(
               currentPage > 0 && currentPage < totalPages - 1
                 ? "bg-gray-100 text-gray-500"
-                : "text-gray-400",
+                : "text-ink-400",
               "px-1 rounded-sm h-full text-xs hover:text-gray-500"
             )}
             onClick={() => setPage(secondButtonPage)}
@@ -81,8 +81,8 @@ const PageButtons: React.FC<PageButtonsProps> = ({
           className={clsx(
             currentPage === totalPages - 1
               ? "bg-gray-100 text-gray-500"
-              : "text-gray-400",
-            "px-1 text-gray-400 rounded-sm h-full text-xs hover:text-gray-500"
+              : "text-ink-400",
+            "px-1 text-ink-400 rounded-sm h-full text-xs hover:text-gray-500"
           )}
           onClick={() => setPage(totalPages - 1)}
           disabled={totalPages > 5 && isPublic}
@@ -99,7 +99,7 @@ const PageButtons: React.FC<PageButtonsProps> = ({
           }
           className={clsx(
             currentPage !== totalPages - 1 && !loading && "hover:text-gray-500",
-            "print:hidden disabled:opacity-50 text-gray-400 rounded-sm h-full"
+            "print:hidden disabled:opacity-50 text-ink-400 rounded-sm h-full"
           )}
         >
           <ChevronRightIcon className="w-4 h-4" />

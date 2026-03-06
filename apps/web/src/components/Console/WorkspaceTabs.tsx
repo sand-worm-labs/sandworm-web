@@ -208,7 +208,7 @@ export const WorkspaceTabs = ({
             <TabsContent
               key={tab.id}
               value={tab.id}
-              className="h-full m-0 outline-none data-[state=active]:flex-1 bg-[#F9FAFD] dark:bg-base-100"
+              className="h-full m-0 outline-none data-[state=active]:flex-1 bg-[#F9FAFD] dark:bg-base-100 "
             >
               {(() => {
                 if (tab.type === "home") {

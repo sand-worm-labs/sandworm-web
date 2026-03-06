@@ -66,7 +66,7 @@ export const PreviewAttachment = ({
           ${
             isUploading
               ? "border-dashed border-gray-300 dark:border-border-tertiary bg-gray-50 dark:bg-[#121417]"
-              : "border-gray-200 dark:border-border-tertiary  bg-white dark:bg-[#121417]"
+              : "border-border-secondary dark:border-border-tertiary  bg-white dark:bg-[#121417]"
           }
           overflow-hidden
           transition-all
@@ -76,7 +76,7 @@ export const PreviewAttachment = ({
       >
         {isUploading ? (
           <div className="flex flex-col items-center justify-center gap-2 p-2 w-full">
-            <Loader2 className="w-6 h-6 text-gray-400 animate-spin" />
+            <Loader2 className="w-6 h-6 text-ink-400 animate-spin" />
             {uploadProgress && (
               <div className="w-full px-2">
                 <div className="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
@@ -98,7 +98,7 @@ export const PreviewAttachment = ({
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="flex items-center justify-center text-gray-600 dark:text-gray-400">
+          <div className="flex items-center justify-center text-gray-600 dark:text-ink-400">
             {getFileIcon()}
           </div>
         )}

@@ -83,7 +83,7 @@ function NewBlockMenuItem(props: NewBlockMenuItemProps) {
             <span className="text-sm font-medium text-gray-500">
               {props.item.name}
             </span>
-            <span className="text-xs text-gray-400">
+            <span className="text-xs text-ink-400">
               {props.item.description}
             </span>
           </div>
@@ -172,7 +172,7 @@ function NewTabButton(props: Props) {
       <Menu.Button
         ref={buttonRef}
         onClick={onOpen}
-        className="cursor-pointer text-xs px-1.5 rounded-t-sm flex items-center text-gray-400 hover:text-gray-600 h-full"
+        className="cursor-pointer text-xs px-1.5 rounded-t-sm flex items-center text-ink-400 hover:text-gray-600 h-full"
       >
         <PlusIcon className="w-3 h-3" />
       </Menu.Button>
@@ -193,7 +193,7 @@ function NewTabButton(props: Props) {
         >
           <Menu.Items
             as="div"
-            className="rounded-md bg-white shadow-xl ring-1 ring-black ring-opacity-5 focus:outline-none font-primary py-1.5 px-1.5 flex flex-col gap-y-2"
+            className="rounded-md bg-white shadow-xl ring-1 ring-black ring-opacity-5 focus:outline-none font-body  py-1.5 px-1.5 flex flex-col gap-y-2"
             ref={containerRef}
           >
             {menuItems.map(item => (

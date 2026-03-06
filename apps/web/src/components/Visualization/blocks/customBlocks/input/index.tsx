@@ -216,7 +216,7 @@ function InputBlock(props: Props) {
         props.belongsToMultiTabGroup && "border p-4 rounded-tr-md rounded-b-md",
         props.isCursorWithin && !props.isCursorInserting
           ? "border-blue-400"
-          : "border-gray-200"
+          : "border-border-secondary"
       )}
       data-block-id={blockId}
     >
@@ -287,8 +287,8 @@ function InputBlock(props: Props) {
                         aria-hidden="true"
                       />
                     </button>
-                    <div className="font-primary pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 w-72">
-                      <span className="inline-flex gap-x-1 items-center text-gray-400 text-center">
+                    <div className="font-body  pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 w-72">
+                      <span className="inline-flex gap-x-1 items-center text-ink-400 text-center">
                         {errorMessage(attrs.variable.error, attrs.inputType)}
                       </span>
                     </div>
@@ -304,7 +304,7 @@ function InputBlock(props: Props) {
             onBlur={onBlur}
             onKeyDown={unfocusOnEscape}
             className={clsx(
-              "block rounded-md border-0 py-1.5 text-ink-100 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset w-full disabled:bg-gray-100 disabled:cursor-not-allowed bg-white",
+              "block rounded-md border-0 py-1.5 text-ink-100 shadow-sm ring-1 ring-inset placeholder:text-ink-400 focus:ring-2 focus:ring-inset w-full disabled:bg-gray-100 disabled:cursor-not-allowed bg-white",
               attrs.value.error
                 ? "ring-red-200 focus:ring-red-200"
                 : "focus:ring-primary-200",
@@ -340,8 +340,8 @@ function InputBlock(props: Props) {
                       aria-hidden="true"
                     />
                   </button>
-                  <div className="font-primary pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 w-72">
-                    <span className="inline-flex gap-x-1 items-center text-gray-400">
+                  <div className="font-body  pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 w-72">
+                    <span className="inline-flex gap-x-1 items-center text-ink-400">
                       <span>
                         {errorMessage(attrs.value.error, attrs.inputType)}
                       </span>

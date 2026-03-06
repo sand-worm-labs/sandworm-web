@@ -85,7 +85,7 @@ export default function Layout({
     <div className="flex w-full h-full overflow-hidden relative">
       <MobileWarning />
 
-   {/*    <ViewerAccessBar
+      {/*    <ViewerAccessBar
         status={accessStatus}
         onRequestAccess={async () => {
           await requestWorkspaceAccess(workspaceId);
@@ -116,7 +116,7 @@ export default function Layout({
         <div
           className={clsx(
             isSideBarOpen ? "px-8" : "pr-8",
-            "shrink-0 w-full h-12 border-b border-gray-200 dark:border-border-tertiary flex justify-between",
+            "shrink-0 w-full h-12 border-b border-border-secondary dark:border-border-tertiary flex justify-between",
             topBarClassname
           )}
         >

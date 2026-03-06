@@ -334,9 +334,9 @@ export const useFiles = (
         setUploadState(state =>
           state._tag === "uploading" && state.current.status === "uploading"
             ? {
-              ...state,
-              current: { ...state.current, uploaded: progressEvent.loaded },
-            }
+                ...state,
+                current: { ...state.current, uploaded: progressEvent.loaded },
+              }
             : state
         );
       },
@@ -362,9 +362,9 @@ export const useFiles = (
       setUploadState(state =>
         state._tag === "uploading"
           ? {
-            ...state,
-            current: { ...state.current, status: "asking-replace" },
-          }
+              ...state,
+              current: { ...state.current, status: "asking-replace" },
+            }
           : state
       );
       return;

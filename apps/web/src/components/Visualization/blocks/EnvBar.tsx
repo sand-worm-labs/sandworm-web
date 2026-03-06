@@ -25,7 +25,7 @@ const EnvironmentButton = ({
   return (
     <Link
       href={`/workspace/${workspaceId}/environments/current`}
-      className="border border-gray-200 dark:border-border-tertiary  rounded-sm text-sm px-3 py-1 hover:bg-gray-50 cursor-pointer flex items-center gap-x-2"
+      className="border border-border-secondary dark:border-border-tertiary  rounded-sm text-sm px-3 py-1 hover:bg-gray-50 cursor-pointer flex items-center gap-x-2"
     >
       <CpuChipIcon className="h-4 w-4 text-ink-400" />
       <span className="text-ink-400">{name}</span>
@@ -148,7 +148,7 @@ const StatusBadge = ({
                   >
                     <ArrowPathIcon className="h-3 w-3" />
                   </button>
-                  <div className="right-0 font-primary pointer-events-none absolute -top-2 -translate-y-full w-max opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex items-center justify-center gap-y-1">
+                  <div className="right-0 font-body  pointer-events-none absolute -top-2 -translate-y-full w-max opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex items-center justify-center gap-y-1">
                     Restart environment
                   </div>
                 </div>
@@ -193,8 +193,8 @@ function EnvBar(props: Props) {
   return (
     <div
       className={clsx(
-        "flex items-center justify-between border-t border-gray-200 dark:border-border-tertiary py-2 px-4 font-primary env-bar ",
-        props.publishedAt && "bg-gray-50 dark:bg-base-100"
+        "flex items-center justify-between border-t border-border-secondary dark:border-border-tertiary py-2 px-4 font-body  env-bar ",
+        props.publishedAt && "bg-gray-50 dark:bg-base-100 "
       )}
     >
       <div className="flex items-center space-x-2">
@@ -211,7 +211,7 @@ function EnvBar(props: Props) {
             <div className={clsx(props.isViewer ? "hidden" : "")}>
               <Link
                 href={`/workspaces/${workspaceId}/environments/current/variables`}
-                className="border border-gray-200 dark:border-border-tertiary  rounded-sm text-sm px-3 py-1 hover:bg-gray-50 cursor-pointer flex items-center gap-x-2"
+                className="border border-border-secondary dark:border-border-tertiary  rounded-sm text-sm px-3 py-1 hover:bg-gray-50 cursor-pointer flex items-center gap-x-2"
               >
                 <CodeBracketIcon className="h-4 w-4 text-ink-400" />
                 <span className="text-ink-400">Environment variables</span>
@@ -221,7 +221,7 @@ function EnvBar(props: Props) {
               type="button"
               className={clsx(
                 props.isViewer ? "hidden" : "",
-                "border border-gray-200 dark:border-border-tertiary  rounded-sm text-sm px-3 py-1 hover:bg-gray-50 cursor-pointer flex items-center gap-x-2"
+                "border border-border-secondary dark:border-border-tertiary  rounded-sm text-sm px-3 py-1 hover:bg-gray-50 cursor-pointer flex items-center gap-x-2"
               )}
               onClick={props.onOpenFiles}
             >

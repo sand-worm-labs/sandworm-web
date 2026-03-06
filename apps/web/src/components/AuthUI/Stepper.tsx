@@ -17,7 +17,7 @@ interface StepperProps {
 export const Stepper: React.FC<StepperProps> = ({ steps, currentStep }) => {
   return (
     <div className="w-full pt-6 px-6">
-      <div className="flex gap-12 font-primary">
+      <div className="flex gap-12 font-body ">
         {steps.map((step, index) => {
           const active = index === currentStep;
           return (
