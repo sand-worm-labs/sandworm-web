@@ -106,8 +106,7 @@ const graphqlModule = GraphQLModule.forRootAsync<ApolloDriverConfig>({
             },
           }
           : false,
-
-      context: ({ req, res }) => ({ req, res }),
+     context: ({ request, reply }) => ({ req: request, res: reply }), 
 
     };
   },
