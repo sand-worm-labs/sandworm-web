@@ -189,34 +189,6 @@ export class AppGateway
     );
   }
 
-  // @UseGuards(WsJwtGuard)
-  // @SubscribeMessage('workspace-datasources-refresh-all')
-  // async handleRefreshAllDataSources(
-  //   @ConnectedSocket() client: Socket,
-  //   @MessageBody() data: { workspaceId: string },
-  //   @CurrentSession() session: Session,
-  // ): Promise<void> {
-  //   await this.trackWork(() =>
-  //     this.dataSourceGatewayService.refreshAllDataSources(this.server, client, data, session)
-  //   );
-  // }
-
-  // @UseGuards(WsJwtGuard)
-  // @SubscribeMessage('workspace-datasources-refresh-one')
-  // async handleRefreshOneDataSource(
-  //   @ConnectedSocket() client: Socket,
-  //   @MessageBody() data: {
-  //     workspaceId: string;
-  //     dataSourceId: string;
-  //     dataSourceType: string;
-  //   },
-  //   @CurrentSession() session: Session,
-  // ): Promise<void> {
-  //   await this.trackWork(() =>
-  //     this.dataSourceGatewayService.refreshOneDataSource(this.server, client, data, session)
-  //   );
-  // }
-
   @UseGuards(WsJwtGuard)
   @SubscribeMessage('fetch-document-comments')
   async handleFetchDocumentComments(

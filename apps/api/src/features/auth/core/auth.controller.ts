@@ -1,3 +1,5 @@
+import { FastifyReply } from 'fastify';
+import { type FastifyReply as FastifyReplyType } from 'fastify';
 import {
   Body,
   Controller,
@@ -15,8 +17,13 @@ import { AuthRegisterLoginDto } from './dto/auth-register-login.dto';
 import { AuthResetPasswordDto } from './dto/auth-reset-password.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
 import { CurrentUser } from '@sandworm/api/decorators/current-user.decorator';
-import { type FastifyReply } from 'fastify';
-import { clearAuthCookies, setAuthCookies } from './utils/response.util';
+import { TokenPair } from './types/token.type';
+import { ConfigService } from '@nestjs/config/dist/config.service';
+import { AllConfigType } from '@/core/config/config.type';
+
+
+const ACCESS_TOKEN_COOKIE = 'access_token';
+const REFRESH_TOKEN_COOKIE = 'refresh_token';
 
 @ApiTags('Auth')
 @Controller({
@@ -24,7 +31,35 @@ import { clearAuthCookies, setAuthCookies } from './utils/response.util';
   version: '1',
 })
 export class AuthController {
-  constructor(private readonly service: AuthService) { }
+  constructor(
+    private readonly service: AuthService, 
+    private readonly configService: ConfigService<AllConfigType>
+  ) { }
+  
+  public setTokenCookies(res: FastifyReply, tokens: TokenPair): void {
+    const isProduction = this.configService.get('app.nodeEnv', { infer: true }) === 'production';
+
+    res.cookie(ACCESS_TOKEN_COOKIE, tokens.accessToken, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'strict',
+      expires: tokens.accessTokenExpires,
+    });
+
+    res.cookie(REFRESH_TOKEN_COOKIE, tokens.refreshToken, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite:  isProduction ? 'none' : 'strict',
+      expires: tokens.refreshTokenExpires,
+      path: '/auth/refresh', // scope refresh cookie to refresh endpoint only
+    });
+  }
+
+  public clearTokenCookies(res: FastifyReply): void {
+    res.clearCookie(ACCESS_TOKEN_COOKIE);
+    res.clearCookie(REFRESH_TOKEN_COOKIE, { path: '/auth/refresh' });
+  }
+  
 
   @Post('email/login')
   @SerializeOptions({ groups: ['me'] })
@@ -32,9 +67,10 @@ export class AuthController {
     summary: 'Login with email and password',
     type: LoginResponseDto,
   })
-  public async login(@Body() loginDto: AuthEmailLoginDto, @Res({ passthrough: true }) response: FastifyReply): Promise<LoginResponseDto> {
+  public async login(@Body() loginDto: AuthEmailLoginDto, @Res({ passthrough: true }) response: FastifyReplyType): Promise<LoginResponseDto> {
     const { user, roles } = await this.service.validateLogin(loginDto);
-   // setAuthCookies(response, token, refreshToken, tokenExpires - Date.now());
+    const { accessToken, refreshToken, accessTokenExpires, refreshTokenExpires } = await this.service.issueTokenPair(user.id);
+    this.setTokenCookies(response, { accessToken, refreshToken, accessTokenExpires, refreshTokenExpires });
     return { user, roles };
   }
 
@@ -97,7 +133,7 @@ export class AuthController {
   @ApiAuth({
     summary: 'Refresh access token',
   })
-  public async refresh(@CurrentUser() user: { id: string;},  @Res({ passthrough: true }) res: FastifyReply,): Promise<void> {
+  public async refresh(@CurrentUser() user: { id: string;}): Promise<void> {
     // return this.service.refreshToken({
     //   sessionId: user.sessionId,
     //   hash: user.hash,
@@ -111,8 +147,8 @@ export class AuthController {
     summary: 'Logout current user',
     statusCode: 204,
   })
-  public async logout( @Res({ passthrough: true }) res: FastifyReply): Promise<void> {
-    clearAuthCookies(res);
+  public async logout(@Res({ passthrough: true }) response: FastifyReplyType): Promise<void> {
+    this.clearTokenCookies(response);
     return;
   }
 }

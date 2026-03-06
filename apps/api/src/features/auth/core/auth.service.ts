@@ -1,18 +1,16 @@
 import { UserService } from '@/features/user/user.service';
 import { AllConfigType } from '@/config/config.type';
 import { NullableType } from '@/common/types/nullable.type';
-import {
+import { 
   HttpStatus,
   Injectable,
   NotFoundException,
   UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { verifyPassword } from '@sandworm/nest-common';
-import crypto from 'crypto';
 import ms from 'ms';
 import { MailService } from '@/infrastructure/mail/mail.service';
 import { SocialInterface } from '@/features/social/interface/social.interface';
@@ -22,6 +20,8 @@ import { AuthEmailLoginDto } from './dto/auth-email-login.dto';
 import { AuthRegisterLoginDto } from './dto/auth-register-login.dto';
 import { AuthUpdateDto } from './dto/auth-update.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
+import { JwtPayloadType } from './types/jwt-payload.type';
+import { TokenPair } from './types/token.type';
 
 
 @Injectable()
@@ -32,6 +32,32 @@ export class AuthService {
     private mailService: MailService,
     private configService: ConfigService<AllConfigType>,
   ) { }
+
+   async issueTokenPair(userId: string): Promise<TokenPair> {
+    const authConfig = this.configService.getOrThrow('auth', { infer: true });
+
+    const accessExpiresIn= authConfig.expires || "15m";
+    const refreshExpiresIn = authConfig.refreshExpires || "7d";  
+
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwtService.signAsync(
+        { sub: userId },
+        { secret: authConfig.secret, expiresIn: accessExpiresIn },
+      ),
+      this.jwtService.signAsync(
+        { sub: userId },
+        { secret: authConfig.refreshSecret, expiresIn: refreshExpiresIn },
+      ),
+    ]);
+
+    const now = Date.now();
+    return {
+      accessToken,
+      refreshToken,
+      accessTokenExpires: new Date(now + ms(accessExpiresIn)),
+      refreshTokenExpires: new Date(now + ms(refreshExpiresIn)),
+    };
+  }
 
   async validateLogin(loginDto: AuthEmailLoginDto): Promise<LoginResponseDto> {
     const user = await this.usersService.findByEmailWithPassword(
@@ -309,8 +335,7 @@ export class AuthService {
     }
 
     user.password = password;
-
-    /// cookie stuff 
+    user.tokenVersion = user.tokenVersion + 1;
 
     await this.usersService.update(user.id, user);
   }
@@ -367,11 +392,6 @@ export class AuthService {
             oldPassword: 'incorrectOldPassword',
           },
         });
-      } else {
-        // await this.sessionService.deleteByUserIdWithExclude({
-        //   userId: currentUser.id,
-        //   excludeSessionId: userJwtPayload.sessionId,
-        // });
       }
     }
 
@@ -387,6 +407,7 @@ export class AuthService {
         });
       }
 
+      currentUser.tokenVersion = currentUser.tokenVersion + 1;
       const authConfig = this.configService.getOrThrow('auth', { infer: true });
 
       const hash = await this.jwtService.signAsync(
@@ -412,15 +433,24 @@ export class AuthService {
     delete userDto.oldPassword;
 
     await this.usersService.update(userId, userDto);
-
     return this.usersService.findById(userId);
   }
 
-  async refreshToken(
-  ): Promise<Omit<LoginResponseDto, 'user'>> {
-     return {
-      roles: [],
-    };  
+   async refreshTokens(rawRefreshToken: string): Promise<TokenPair> {
+    const authConfig = this.configService.getOrThrow('auth', { infer: true });
+
+    let userId: string;
+    try {
+      const payload = await this.jwtService.verifyAsync<{ sub: string }>(
+        rawRefreshToken,
+        { secret: authConfig.refreshSecret },
+      );
+      userId = payload.sub;
+    } catch {
+      throw new UnauthorizedException('Invalid or expired refresh token');
+    }
+
+    return this.issueTokenPair(userId);
   }
 
   async softDelete(user: UserResponse): Promise<void> {
