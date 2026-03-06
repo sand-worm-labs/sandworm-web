@@ -5,8 +5,6 @@
 type AuthPayload {
   id: String!
   roles: JSON
-  token: String!
-  tokenExpires: Float!
   user: User!
 }
 

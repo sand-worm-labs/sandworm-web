@@ -22,6 +22,7 @@ import { AuthUpdateDto } from './dto/auth-update.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
 import { JwtPayloadType } from './types/jwt-payload.type';
 import { TokenPair } from './types/token.type';
+import { Session } from './types/session.type';
 
 
 @Injectable()
@@ -469,6 +470,29 @@ export class AuthService {
     } catch {
       throw new UnauthorizedException('Invalid or expired token');
     }
+  }
+
+  async validateTokenAndGetUser(token: string): Promise<Session | null> {
+    const authConfig = this.configService.getOrThrow('auth', { infer: true });
+    let payload: JwtPayloadType;
+
+    try {
+      payload = await this.jwtService.verifyAsync<JwtPayloadType>(token, {
+        secret: authConfig.secret,
+      });
+    } catch {
+      return null;
+    }
+
+    const user = await this.usersService.findById(payload.sub);
+    if (!user) return null;
+
+    const roles = await this.usersService.getUserWorkspaceRoles(user.id);
+    const userWorkspaces = Object.fromEntries(
+      roles.map(e => [Object.keys(e)[0], { role: Object.values(e)[0] }])
+    );
+
+    return { id: user.id, hash: token, user, userWorkspaces };
   }
 
 }
