@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Server, Socket } from 'socket.io';
 import { z } from 'zod';
 import { uuidSchema } from '@sandworm/types';
-import { Session } from '../../../features/session/domain/session';
+import { Session } from '@/features/auth/core/types/session.type';
 import { DocumentGatewayService } from './document.gateway';
 import { EnvironmentGatewayService } from './environment.gateway';
 import { ComponentGatewayService } from './reusable-component.gateway';

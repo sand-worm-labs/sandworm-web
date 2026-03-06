@@ -3,14 +3,18 @@ import WebSocket from 'ws';
 import * as http from 'http';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { DocumentEntity } from '@sandworm/postgresql-typeorm';
+import { DocumentEntity, UserWorkspaceRole } from '@sandworm/postgresql-typeorm';
+import * as cookie from 'cookie';
+import qs from 'querystring';
+import { z } from 'zod';
 import { YjsDocumentService } from '@/features/collaboration/yjs/yjs-document.service';
 import { SessionManagerService } from '@/features/collaboration/yjs/services/session-manager.service';
 import { MessageHandlerService } from '@/features/collaboration/yjs/services/message-handler.service';
 import { SyncHandlerService } from '@/features/collaboration/yjs/services/sync-handler.service';
 import { PersistenceService } from '@/features/collaboration/yjs/services/persistence.service';
 import { WebSocketUtils } from '@/features/collaboration/yjs/utils/websocket.utils';
-import { getRequestData, getUserRole } from '@/features/collaboration/yjs/utils/validation.utils';
+import { RequestData } from './types/requestData.types';
+// import { getRequestData, getUserRole, RequestData } from '@/features/collaboration/yjs/utils/validation.utils';
 
 @Injectable()
 export class YjsGateway implements OnModuleInit, OnModuleDestroy {
@@ -57,7 +61,7 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
 
             this.logger.log(`📥 New connection from ${req.socket.remoteAddress}`);
 
-            const data = await getRequestData(req this.documentRepository);
+            const data = await this.getRequestData(req);
 
             if (!data) {
                 this.logger.warn('Invalid request, closing');
@@ -181,6 +185,76 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
     private closeConnection(session: any, conn: WebSocket) {
         WebSocketUtils.closeConnection(session, conn);
     }
+
+    private async getRequestData(req: http.IncomingMessage): Promise<RequestData | null> {
+        try {
+            const cookiesHeader = req.headers.cookie;
+            const cookies = cookie.parse(cookiesHeader ?? '');
+            const query = qs.parse(req.url?.split('?')[1] ?? '');
+
+            const docId = query['documentId'];
+            const clock = parseInt((query['clock'] ?? '').toString());
+            const isApp = query['isApp'] === 'true';
+            const userId = query['userId']?.toString() ?? null;
+
+            const args = z
+                .object({
+                    docId: z.string().uuid(),
+                    clock: z.number().int(),
+                    isApp: z.boolean(),
+                    userId: z.string().uuid().nullable().optional(),
+                })
+                .safeParse({ docId, clock, isApp, userId });
+
+            if (!args.success) {
+                this.logger.warn('Invalid query string', args.error);
+                return null;
+            }
+
+            const document = await documentRepository.findOne({
+                where: { id: args.data.docId },
+            });
+
+            if (!document) {
+                this.logger.warn(`Document ${args.data.docId} not found`);
+                return null;
+            }
+
+            const session = await sessionService.validateSessionFromAuthToken(cookies["auth-token"]);
+
+            if (!session) {
+                this.logger.warn('No valid session found');
+                return null;
+            }
+
+            const userWorkspace = session.userWorkspaces[document.workspaceId];
+
+            if (!userWorkspace) {
+                this.logger.warn(
+                    `User ${session.user.id} does not have access to workspace ${document.workspaceId}`,
+                );
+                return null;
+            }
+
+            if (args.data.userId && args.data.userId !== session.user.id) {
+                this.logger.warn('User ID mismatch');
+                return null;
+            }
+
+            return {
+                document,
+                clock: args.data.clock,
+                authUser: session.user,
+                role: userWorkspace.role as UserWorkspaceRole,
+                isApp: args.data.isApp,
+                userId: args.data.userId ?? null,
+            };
+        } catch (err) {
+            this.logger.error(`Failed to get request data: ${err}`);
+            return null;
+        }
+    }
+
 
     onModuleDestroy() {
         this.logger.log('🛑 Shutting down YJS Gateway');
