@@ -13,7 +13,6 @@ import { UseGuards, Logger, UseFilters } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { WsJwtGuard } from '@/core/guards/ws-jwt.guard';
 import { CurrentSession } from '@/core/decorators/session.decorator';
-import { Session } from '@/features/session/domain/session';
 import { WsExceptionFilter } from '@/core/filters/ws-exception.filter';
 import { v4 as uuidv4 } from 'uuid';
 import { createAdapter } from '@socket.io/postgres-adapter';
@@ -43,6 +42,7 @@ import {
   CommentDeletedEvent,
   CommentEventNames
 } from '@/events/comment.events';
+import { Session } from '@/features/auth/core/types/session.type';
 
 
 @WebSocketGateway({
