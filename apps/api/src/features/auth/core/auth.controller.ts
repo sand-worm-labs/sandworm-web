@@ -1,4 +1,4 @@
-import { FastifyReply } from 'fastify';
+import '@fastify/cookie';
 import { type FastifyReply as FastifyReplyType } from 'fastify';
 import {
   Body,

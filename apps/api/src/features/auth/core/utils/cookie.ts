@@ -1,3 +1,4 @@
+import '@fastify/cookie';
 import { type FastifyReply } from 'fastify';
 import { TokenPair } from "../types/token.type";
 
@@ -6,7 +7,7 @@ const ACCESS_TOKEN_COOKIE = 'access_token';
 const REFRESH_TOKEN_COOKIE = 'refresh_token';
 const isProduction = process.env.NODE_ENV === 'production';
 
-export function setTokenCookies(res: any, tokens: TokenPair): void {
+export function setTokenCookies(res: FastifyReply, tokens: TokenPair): void {
   const base = {
     httpOnly: true,
     secure: isProduction,

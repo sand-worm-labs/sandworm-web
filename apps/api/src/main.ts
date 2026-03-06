@@ -1,6 +1,6 @@
 import compression from '@fastify/compress';
 import helmet from '@fastify/helmet';
-import fastifyWebsocket from '@fastify/websocket';
+import fastifyCookie from '@fastify/cookie';
 import {
   ConsoleLogger,
   HttpStatus,
@@ -79,6 +79,7 @@ async function bootstrap() {
   });
 
   app.register(compression);
+  await app.register(fastifyCookie);
 
   const corsOrigin = configService.getOrThrow('app.corsOrigin', {
     infer: true,
