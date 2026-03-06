@@ -316,7 +316,7 @@ const PendingTabsContent: React.FC<PendingTabsContentProps> = ({
   return (
     <div>
       {/* Tabs */}
-      <div className="flex gap-6 border-b border-gray-200 dark:border-border-tertiary mb-4">
+      <div className="flex gap-6 border-b border-border-secondary dark:border-border-tertiary mb-4">
         <button
           type="button"
           onClick={() => setActiveTab("requests")}

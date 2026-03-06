@@ -5,6 +5,7 @@ import { Map } from "immutable";
 import { useMemo } from "react";
 
 import type { ApiDeletedDocument } from "@/types";
+import { Trash } from "@/components/Assets/Trash";
 import { timeAgo } from "@/lib";
 
 type TrashListProps = {
@@ -30,7 +31,7 @@ export default function TrashList({
   );
 
   return (
-    <ul className="divide-y divide-[">
+    <ul className="divide-y divide-border-tertiary">
       {sorted.map(doc => {
         const path: string[] = [doc.title || "Untitled"];
         let parent = doc.parentId ? docById.get(doc.parentId) : undefined;
@@ -59,7 +60,7 @@ export default function TrashList({
                   {doc.title || "Untitled"}
                 </Link>
               </p>
-              <div className="mt-1 flex items-center gap-x-2 text-xs leading-5 text-gray-500">
+              <div className="mt-1 flex items-center gap-x-2 text-xs leading-5 text-ink-400">
                 <p>{displayPath}</p>
                 <svg viewBox="0 0 2 2" className="h-0.5 w-0.5 fill-current">
                   <circle cx={1} cy={1} r={1} />
@@ -75,7 +76,7 @@ export default function TrashList({
                   className="flex p-2 hover:bg-gray-100 rounded-sm"
                   onClick={() => onRestore(doc.id)}
                 >
-                  <ArrowUturnUpIcon className="h-6 w-6 text-gray-500" />
+                  <ArrowUturnUpIcon className="h-5 w-5 text-ink-400" />
                 </button>
                 <div className="pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1">
                   <span className="inline-flex gap-x-1 items-center text-white text-center">
@@ -90,7 +91,7 @@ export default function TrashList({
                   className="flex p-2 hover:bg-gray-100 rounded-sm"
                   onClick={() => onPermanentDelete(doc.id)}
                 >
-                  <TrashIcon className="h-6 w-6 text-gray-500" />
+                  <Trash className="h-5 w-5 text-ink-400" />
                 </button>
                 <div className="pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1">
                   <span className="inline-flex gap-x-1 justify-center items-center text-white text-center">

@@ -99,13 +99,13 @@ function DatePicker(props: Props) {
           props.dateType === "datetime" ? "block" : "hidden"
         )}
       >
-        <span className="font-medium text-xs text-gray-400">
+        <span className="font-medium text-xs text-ink-400">
           Time (24h format)
         </span>
         <input
           type="time"
           step={2}
-          className="border border-gray-200 focus:border-ceramic-300 rounded-md ring-0 focus:ring-0 w-full px-2 py-1.5"
+          className="border border-border-secondary focus:border-ceramic-300 rounded-md ring-0 focus:ring-0 w-full px-2 py-1.5"
           value={time}
           onChange={onChangeTime}
         />

@@ -36,7 +36,7 @@ const MonthDaySelector = (props: WeekdaySelectorProps) => {
                 {currentValue.map(dayIndex => (
                   <div
                     key={dayIndex}
-                    className="flex items-center bg-gray-50 rounded-sm px-2 gap-x-1 py-0.5 text-sm border border-gray-200"
+                    className="flex items-center bg-gray-50 rounded-sm px-2 gap-x-1 py-0.5 text-sm border border-border-secondary"
                   >
                     <span>{monthDays[dayIndex]}</span>
                     <button

@@ -5,9 +5,10 @@ import type { Dispatch, SetStateAction, ChangeEvent } from "react";
 import React, { useRef, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 
+import { useFiles } from "../Visualization/hooks/useFiles";
+
 import useWindowSize from "./use-window-size";
 import { MultimodalInputView } from "./MultimodalInputView";
-import { useFiles } from "../Visualization/hooks/useFiles";
 
 export function MultimodalInput({
   workspaceId,

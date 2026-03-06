@@ -67,7 +67,7 @@ export const SignInForm = () => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="mt-4 space-y-2 w-full font-primary"
+      className="mt-4 space-y-2 w-full font-body "
     >
       <div>
         <input

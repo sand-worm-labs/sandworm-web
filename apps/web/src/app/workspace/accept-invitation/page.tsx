@@ -83,7 +83,7 @@ function AcceptInvitationContent() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-4">
         <div className="max-w-md w-full text-center space-y-4">
-          <div className="w-12 h-12 mx-auto rounded-xl bg-[#EDE7FF] flex items-center justify-center mb-4">
+          <div className="w-12 h-12 mx-auto rounded-xl bg-[#EDE7FF] dark:bg-base-100 flex items-center justify-center mb-4">
             <Cautious />
           </div>
           <h1 className="text-xl font-medium font-body text-ink-100 dark:text-white">
@@ -126,7 +126,7 @@ function AcceptInvitationContent() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-4">
         <div className="max-w-md w-full text-center space-y-4">
-          <div className="w-12 h-12 mx-auto rounded-xl bg-[#EDE7FF] flex items-center justify-center mb-4">
+          <div className="w-12 h-12 mx-auto rounded-xl bg-[#EDE7FF] dark:bg-base-100 flex items-center justify-center mb-4">
             <Cautious />
           </div>
           <h1 className="text-xl font-medium font-body text-ink-100 dark:text-white">
@@ -213,7 +213,7 @@ function AcceptInvitationContent() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-4">
         <div className="max-w-md w-full text-center space-y-4">
-          <div className="w-12 h-12 mx-auto rounded-xl bg-[#EDE7FF] flex items-center justify-center mb-4">
+          <div className="w-12 h-12 mx-auto rounded-xl bg-[#EDE7FF] dark:bg-base-100 flex items-center justify-center mb-4">
             <Cautious />
           </div>
           <h1 className="text-xl font-medium font-body text-ink-100">

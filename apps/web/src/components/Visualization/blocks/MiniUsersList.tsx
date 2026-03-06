@@ -95,7 +95,7 @@ function RoleDropdown({ role, onChange, disabled }: RoleDropdownProps) {
         className={clsx(
           "flex items-center gap-1.5 px-3 py-0.5 rounded-lg border text-sm font-medium transition-colors min-w-[70px]",
           "border-[#DEE2E6] dark:border-border-tertiary",
-          "bg-[#F8F9FA] dark:bg-base-100",
+          "bg-[#F8F9FA] dark:bg-base-100 ",
           "text-[#343A40] dark:text-white",
           "hover:bg-[#F8F9FA] dark:hover:bg-[#262A30]",
           disabled && "cursor-not-allowed"
@@ -292,7 +292,7 @@ export function MiniUsersList({
                 onClick={onInvite}
                 className={clsx(
                   "flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium",
-                  "bg-[#F8F9FA] dark:bg-base-100 border border-[#DEE2E6] dark:border-border-tertiary",
+                  "bg-[#F8F9FA] dark:bg-base-100  border border-[#DEE2E6] dark:border-border-tertiary",
                   "text-[#A308F0] dark:text-white hover:bg-[#F8F9FA] dark:hover:bg-[#262A30] transition-colors"
                 )}
               >

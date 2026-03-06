@@ -71,7 +71,7 @@ export default function UserForm({ workspaceId, onSubmit }: UserFormProps) {
                   name="name"
                   placeholder="John Doe"
                   required
-                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
                 <FormError msg={formState.errors.name?.message} />
               </div>
@@ -95,7 +95,7 @@ export default function UserForm({ workspaceId, onSubmit }: UserFormProps) {
                   name="email"
                   placeholder="john.doe@example.com"
                   required
-                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
                 <FormError msg={formState.errors.email?.message} />
               </div>
@@ -117,7 +117,7 @@ export default function UserForm({ workspaceId, onSubmit }: UserFormProps) {
                   })}
                   name="role"
                   required
-                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 >
                   <option value="viewer">Viewer</option>
                   <option value="editor">Editor</option>
@@ -133,7 +133,7 @@ export default function UserForm({ workspaceId, onSubmit }: UserFormProps) {
       <div className="mt-6 flex items-center justify-end gap-x-4">
         <Link
           href={`/workspaces/${workspaceId}/users`}
-          className="text-sm font-semibold leading-6 text-gray-600 border border-gray-200 px-6 py-1.5 rounded-sm shadow-sm hover:bg-gray-50"
+          className="text-sm font-semibold leading-6 text-gray-600 border border-border-secondary px-6 py-1.5 rounded-sm shadow-sm hover:bg-gray-50"
           onClick={e => {
             if (formState.isSubmitting) {
               e.preventDefault();

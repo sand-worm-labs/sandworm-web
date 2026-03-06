@@ -67,7 +67,7 @@ export const ShareDialogue = ({ url }: ShareDialogueProps) => {
           </DialogTitle>
         </DialogHeader>
 
-        <p className="text-sm text-gray-400">
+        <p className="text-sm text-ink-400">
           Share your query with others. Use the social buttons below or copy the
           link to share manually.
         </p>

@@ -31,8 +31,7 @@ import { head } from "ramda";
 import { CommandLineIcon } from "@heroicons/react/24/solid";
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import { Transition } from "@headlessui/react";
-import { useTheme } from "next-themes"
-
+import { useTheme } from "next-themes";
 
 import type { ApiDocument, ApiWorkspace } from "@/types";
 
@@ -86,7 +85,6 @@ function PythonBlock(props: Props) {
     [workspaces.data, props.document.workspaceId]
   );
   const { resolvedTheme } = useTheme();
-
 
   const hasOaiKey = useMemo(() => {
     return (
@@ -427,11 +425,11 @@ function PythonBlock(props: Props) {
       return {
         content: (ref: RefObject<HTMLDivElement>) => (
           <div
-            className="font-primary pointer-events-none w-max bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1"
+            className="font-body  pointer-events-none w-max bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1"
             ref={ref}
           >
             <span>Run code</span>
-            <span className="inline-flex gap-x-1 items-center text-gray-400">
+            <span className="inline-flex gap-x-1 items-center text-ink-400">
               <span>⌘</span>
               <span>+</span>
               <span>Enter</span>
@@ -466,7 +464,7 @@ function PythonBlock(props: Props) {
 
   return (
     <div
-      className="bg-white dark:bg-base-100 relative group/block"
+      className="bg-white dark:bg-base-100  relative group/block"
       onClick={onClickWithin}
       data-block-id={blockId}
     >
@@ -481,7 +479,7 @@ function PythonBlock(props: Props) {
         <div
           className={clsx(
             "rounded-2xl",
-            statusIsDisabled ? "" : "bg-white dark:bg-base-100",
+            statusIsDisabled ? "" : "bg-white dark:bg-base-100 ",
             props.hasMultipleTabs ? "rounded-tl-none" : ""
           )}
         >
@@ -490,13 +488,13 @@ function PythonBlock(props: Props) {
               " rounded-t-2xl",
               isCodeHidden && isResultHidden
                 ? "rounded-b-2xl"
-                : "border-b border-gray-200 dark:border-border-tertiary"
+                : "border-b border-border-secondary dark:border-border-tertiary"
             )}
             ref={d => {
               props.dragPreview?.(d);
             }}
           >
-            <div className="flex items-center justify-between px-3 pr-4 gap-x-4 font-primary h-12">
+            <div className="flex items-center justify-between px-3 pr-4 gap-x-4 font-body  h-12">
               <div className="select-none text-gray-300 text-xs flex items-center w-full h-full gap-x-1.5">
                 <div className="relative group w-4 h-4">
                   <CommandLineIcon className="absolute inset-0 h-4 w-4 text-ink-400 group-hover:opacity-0 transition-opacity" />
@@ -515,7 +513,7 @@ function PythonBlock(props: Props) {
                 <input
                   type="text"
                   className={clsx(
-                    "text-base font-primary font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-md border-0 text-ink-100 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-ink-400 py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white"
+                    "text-base font-body  font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-md border-0 text-ink-100 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-ink-400 py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white"
                   )}
                   placeholder={
                     props.isEditable
@@ -529,7 +527,7 @@ function PythonBlock(props: Props) {
               </div>
 
               {results.some(r => r.type === "error") && (
-                <div className="print:hidden flex items-center gap-x-1 text-[10px] text-gray-400 whitespace-nowrap">
+                <div className="print:hidden flex items-center gap-x-1 text-[10px] text-ink-400 whitespace-nowrap">
                   <code className="bg-red-50 text-red-700 px-1.5 py-0.5 font-mono rounded-md relative">
                     contains errors
                   </code>
@@ -573,7 +571,7 @@ function PythonBlock(props: Props) {
                   onInsertBlock={props.insertBelow ?? (() => {})}
                   diff={aiSuggestions ?? undefined}
                   disabled={statusIsDisabled}
-                  isDark={resolvedTheme === "dark"} 
+                  isDark={resolvedTheme === "dark"}
                 />
               </div>
             </div>
@@ -610,7 +608,7 @@ function PythonBlock(props: Props) {
                           <div
                             ref={ref}
                             className={clsx(
-                              "font-primary pointer-events-none absolute opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1 z-30",
+                              "font-body  pointer-events-none absolute opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1 z-30",
                               hasOaiKey ? "w-32" : "w-40"
                             )}
                           >
@@ -619,7 +617,7 @@ function PythonBlock(props: Props) {
                                 ? "Open AI edit form"
                                 : "Missing OpenAI API key"}
                             </span>
-                            <span className="inline-flex gap-x-1 items-center text-gray-400">
+                            <span className="inline-flex gap-x-1 items-center text-ink-400">
                               {hasOaiKey ? (
                                 <>
                                   <span>⌘</span>
@@ -646,7 +644,7 @@ function PythonBlock(props: Props) {
                               !props.isEditable || !hasOaiKey
                                 ? "cursor-not-allowed bg-gray-200"
                                 : "cusor-pointer hover:bg-gray-50 hover:text-gray-700",
-                              "flex items-center border rounded-sm border-gray-200 px-2 py-1 gap-x-1 text-gray-500 group relative font-primary"
+                              "flex items-center border rounded-sm border-border-secondary px-2 py-1 gap-x-1 text-gray-500 group relative font-body "
                             )}
                           >
                             <SparklesIcon className="w-3 h-3" />
@@ -663,7 +661,7 @@ function PythonBlock(props: Props) {
 
         <Transition
           show={!(isResultHidden || results.length === 0)}
-          className="text-xs border-t border-gray-200"
+          className="text-xs border-t border-border-secondary"
           enter="transition-all ease-in duration-300"
           enterFrom="max-h-0 overflow-hidden"
           enterTo="max-h-[300px] overflow-hidden"

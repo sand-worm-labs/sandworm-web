@@ -1,10 +1,8 @@
 import React from "react";
+
 import type { IconProps } from "./types";
 
-export const Terminal: React.FC<IconProps> = ({
-  size = 16,
-  className,
-}) => {
+export const Terminal: React.FC<IconProps> = ({ size = 16, className }) => {
   return (
     <svg
       width={size}

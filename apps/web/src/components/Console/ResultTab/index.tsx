@@ -285,7 +285,7 @@ function QueryResultsTable<T extends RowData>({
     return (
       <div className="w-full mt-4 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
         <p className="text-sm text-red-600 dark:text-red-400">{message}</p>
-        <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
+        <p className="text-xs text-gray-600 dark:text-ink-400 mt-2">
           Query ID: {queryId || "Unknown"}
         </p>
       </div>

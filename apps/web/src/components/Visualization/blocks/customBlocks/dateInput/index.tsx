@@ -149,7 +149,7 @@ function DateInput(props: Props) {
         props.belongsToMultiTabGroup && "border p-4 rounded-tr-md rounded-b-md",
         props.isCursorWithin && !props.isCursorInserting
           ? "border-blue-400"
-          : "border-gray-200"
+          : "border-border-secondary"
       )}
       data-block-id={blockId}
     >
@@ -176,7 +176,7 @@ function DateInput(props: Props) {
             {!props.isApp && props.isEditable && (
               <div className="flex items-center space-x-1">
                 <button onClick={toggleConfigOpen}>
-                  <Cog6ToothIcon className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                  <Cog6ToothIcon className="h-4 w-4 text-ink-400 hover:text-gray-600" />
                 </button>
                 <div
                   className={clsx(!props.isEditable && "hidden", "relative")}
@@ -221,8 +221,8 @@ function DateInput(props: Props) {
                               aria-hidden="true"
                             />
                           </button>
-                          <div className="font-primary pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 w-72">
-                            <span className="inline-flex gap-x-1 items-center text-gray-400 text-center">
+                          <div className="font-body  pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 w-72">
+                            <span className="inline-flex gap-x-1 items-center text-ink-400 text-center">
                               {invalidVariableErrorMessage(attrs.error)}
                             </span>
                           </div>

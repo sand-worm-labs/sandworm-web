@@ -30,7 +30,6 @@ export default function Comments({
   const [comments, { createComment, deleteComment }] = useComments(documentId);
   const [content, setContent] = useState("");
 
-  console.log("comm", comments);
 
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -77,7 +76,7 @@ export default function Comments({
     <Transition
       show={visible}
       as="div"
-      className="top-0 right-0 h-full absolute z-30 font-primary"
+      className="top-0 right-0 h-full absolute z-30 font-body "
       enter="transition ease-in-out duration-300 transform"
       enterFrom="translate-x-full"
       enterTo="translate-x-0"
@@ -87,13 +86,13 @@ export default function Comments({
     >
       <button
         type="button"
-        className="absolute z-10 top-7 transform rounded-full border border-gray-300 dark:border-border-tertiary text-gray-400 bg-base-100 hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2 dark:border-border-tertiary "
+        className="absolute z-10 top-7 transform rounded-full border border-gray-300 dark:border-border-tertiary text-ink-400 bg-base-100 hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2 dark:border-border-tertiary "
         onClick={onHide}
       >
         <ChevronDoubleRightIcon className="w-3 h-3" />
       </button>
       <ScrollBar
-        className="w-[354px] flex flex-col overflow-y-auto border-l dark:border-border-tertiary border-gray-200 h-full bg-white dark:bg-base-100 dark:border-t  "
+        className="w-[354px] flex flex-col overflow-y-auto border-l dark:border-border-tertiary border-border-secondary h-full bg-white dark:bg-base-100  dark:border-t  "
         ref={ref}
       >
         <h3 className="text-lg font-medium leading-6 dark:text-white text-ink-100 px-4 pt-6 xl:px-6">
@@ -102,7 +101,7 @@ export default function Comments({
         <p className="text-sm text-ink-400 px-4 mb-4  xl:px-6">
           Make comments to teammates
         </p>
-        <div className="border-t border-dashed border-gray-200 dark:border-border-tertiary" />
+        <div className="border-t border-dashed border-border-secondary dark:border-border-tertiary" />
 
         <ul className="flex-1 space-y-6 pb-6 pt-4 px-2 xl:px-6">
           {comments.map(comment => {
@@ -162,10 +161,7 @@ export default function Comments({
           })}
         </ul>
 
-        <form
-          className="sticky bottom-0 "
-          onSubmit={onComment}
-        >
+        <form className="sticky bottom-0 " onSubmit={onComment}>
           <div className=" px-2 xl:px-4">
             <div className="py-6 flex gap-x-3">
               <CommentIcon />

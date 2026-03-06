@@ -177,7 +177,7 @@ export function EditWorkspaceProfileModal({
             value={workspaceName}
             onChange={e => setWorkspaceName(e.target.value)}
             placeholder="Enter workspace name"
-            className="w-full px-4 py-3 rounded-xl bg-[#F8F9FA] dark:bg-base-100 border border-[#DEE2E6] dark:border-border-tertiary text-ink-100 placeholder:text-[#6C757D] dark:placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-[#A308F0] focus:border-transparent transition-all text-sm font-medium"
+            className="w-full px-4 py-3 rounded-xl bg-[#F8F9FA] dark:bg-base-100  border border-[#DEE2E6] dark:border-border-tertiary text-ink-100 placeholder:text-[#6C757D] dark:placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-[#A308F0] focus:border-transparent transition-all text-sm font-medium"
           />
           <ul className="mt-2 space-y-1 text-xs font-medium">
             <li className="flex items-center gap-1">
@@ -278,7 +278,7 @@ export function DeleteWorkspaceModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+                className="absolute top-4 right-4 text-ink-400 hover:text-gray-600"
               >
                 <XMarkIcon className="h-5 w-5" />
               </button>
@@ -429,20 +429,16 @@ export default function WorkspaceSettingsModal({
   };
 
   const handleCancelInvite = async (inviteId: string) => {
-    console.log("Cancelling invite:", inviteId);
     await new Promise(resolve => setTimeout(resolve, 500));
   };
 
   const onChangeRole = useCallback(
     async (id: string, role: UserWorkspaceRole) => {
       try {
-        console.log("start");
         await updateMemberRole(id, role);
-        console.log("success");
         toast.success("Role updated successfully");
       } catch (err) {
         toast.error("Failed to update role");
-        console.log("failed,", err);
       }
     },
     [updateMemberRole]
@@ -556,14 +552,14 @@ export default function WorkspaceSettingsModal({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-500 dark:hover:bg-gray-800"
+              className="rounded-lg p-1 text-ink-400 hover:bg-gray-100 hover:text-gray-500 dark:hover:bg-gray-800"
             >
               <XMarkIcon className="h-5 w-5" />
             </button>
           </div>
 
           {/* Content */}
-          <div className="px-6 py-4 space-y-0 div dark:divide-[#262A30]">
+          <div className="px-6 py-4 space-y-0 div dark:divide-border-tertiary">
             {/* Team Plan */}
             <div className="flex items-center justify-between gap-4 py-4 border-[#E9ECEF]">
               <div className="flex flex-col gap-y-2">

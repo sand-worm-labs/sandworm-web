@@ -103,7 +103,7 @@ const useBlockEditor = ({
           autocorrect: "off",
           autocapitalize: "off",
           class:
-            " min-h-full prose sm:prose-base prose-sm max-w-full rounded-sm focus:outline-0 whitespace-pre-wrap ph-no-capture",
+            " min-h-full prose sm:prose-base prose-sm max-w-full rounded-sm focus:outline-0 whitespace-pre-wrap ph-no-capture font-body",
         },
       },
     },
@@ -190,13 +190,13 @@ const RichTextBlock = (props: Props) => {
 
   const ringColor =
     editor?.isFocused && !props.belongsToMultiTabGroup && props.isEditable
-      ? " border border-[#EBD7D7]"
+      ? " border border-[#EBD7D7] dark:border-border-tertiary"
       : !editor?.isFocused &&
           !props.belongsToMultiTabGroup &&
           props.isEditable &&
           props.isCursorWithin &&
           !props.isCursorInserting
-        ? " border border-border-tertiaryborder-[#262A30]"
+        ? " border border-border-tertiary "
         : props.dashboardMode?._tag === "editing" &&
             props.dashboardMode.position === "expanded"
           ? "border border-[#EBD7D7]"
@@ -209,13 +209,13 @@ const RichTextBlock = (props: Props) => {
         props.dragPreview?.(d);
       }}
       className={clsx(
-        "ring-[#EBD7D7] ring-offset-4",
+        "ring-border-focus ring-offset-4",
         props.dashboardMode ? "px-4 py-4 h-full overflow-y-auto" : "",
         ringColor,
         {
-          "rounded-tl-none rounded-lg border border-border-tertiaryp-2 px-5":
+          "rounded-tl-none rounded-lg border border-border-tertiary p-2 px-5":
             props.belongsToMultiTabGroup,
-          "rounded-tl-none rounded-lg border border-border-tertiaryp-2 px-4 ":
+          "rounded-tl-none rounded-lg border border-border-tertiary p-2 px-4 ":
             props.belongsToMultiTabGroup &&
             props.isCursorWithin &&
             !props.isCursorInserting,

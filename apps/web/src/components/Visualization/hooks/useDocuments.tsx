@@ -17,94 +17,10 @@ import {
   useRestoreDocumentMutation,
   useUpdateDocumentMutation,
   usePublishDocumentMutation,
-  useGetWorkspaceDocumentsQuery,
 } from "@/generated/graphql";
-
-import { NEXT_PUBLIC_API_URL } from "../utils/env";
 
 import { useFavorites } from "./useFavorites";
 import { useWebsocket } from "./useWebSocket";
-
-function upsertDocumentInMemory(
-  documents: List<ApiDocument>,
-  workspaceId: string,
-  body: { id: string; parentId: string | null; version: number }
-) {
-  const documentsById = Map(documents.map(d => [d.id, d]));
-  const childrenByParentId = List(documents).groupBy(d => d.parentId);
-
-  let affectedDocuments = Map<string, ApiDocument>();
-
-  const doc = documentsById.get(body.id);
-  if (doc) {
-    if (doc.parentId === body.parentId) {
-      // nothing actually changed
-      return documents;
-    }
-
-    const oldSiblings = childrenByParentId.get(doc.parentId) ?? List();
-    // decrement orderIndex of all past siblings that came after the
-    // current document
-    oldSiblings.forEach(d => {
-      if (d.orderIndex > doc.orderIndex) {
-        affectedDocuments = affectedDocuments.set(d.id, {
-          ...d,
-          orderIndex: d.orderIndex - 1,
-        });
-      }
-    });
-
-    // place it at the end of the new siblings
-    const newSiblings = childrenByParentId.get(body.parentId) ?? List();
-    const orderIndex = newSiblings.size;
-    affectedDocuments = affectedDocuments.set(doc.id, {
-      ...doc,
-      parentId: body.parentId,
-      orderIndex,
-    });
-  } else {
-    // inserting, just place it at the end of the new siblings
-    const now = new Date();
-    const siblings = childrenByParentId.get(body.parentId) ?? List();
-    const orderIndex = siblings.size;
-    affectedDocuments = affectedDocuments.set(body.id, {
-      id: body.id,
-      title: "",
-      icon: "DocumentIcon",
-      parentId: body.parentId,
-      orderIndex,
-      isSyncedWithYjs: true,
-      workspaceId,
-      createdAt: now,
-      updatedAt: now,
-      deletedAt: null,
-      version: body.version,
-      publishedAt: null,
-      appId: "",
-      clock: 0,
-      appClock: 0,
-      userAppClock: {},
-      runUnexecutedBlocks: false,
-      runSQLSelection: false,
-      shareLinksWithoutSidebar: true,
-      hasDashboard: false,
-    });
-  }
-
-  let result: List<ApiDocument> = List();
-  documents.forEach(doc => {
-    const affectedDoc = affectedDocuments.get(doc.id);
-    if (affectedDoc) {
-      result = result.push(affectedDoc);
-      affectedDocuments = affectedDocuments.delete(doc.id);
-      return;
-    }
-
-    result = result.push(doc);
-  });
-
-  return result.push(...Array.from(affectedDocuments.values()));
-}
 
 function deleteDocumentInMemory(
   documents: List<ApiDocument>,
@@ -246,23 +162,12 @@ export function DocumentsProvider(props: Props) {
   const [state, setState] = useState<State>(Map());
 
   useEffect(() => {
-    console.log("[DocumentsProvider] socket exists:", !!socket);
-
     if (!socket) {
       return;
     }
 
-    console.log(
-      "[DocumentsProvider] REGISTERING listener for workspace-documents"
-    );
-
     const onDocuments = (rawData: unknown) => {
-      console.log("[onDocuments] rawData:", rawData);
-
       const data = Array.isArray(rawData) ? rawData[0] : rawData;
-      console.log("[onDocuments] unwrapped data:", data);
-      console.log("[onDocuments] workspaceId:", data?.workspaceId);
-      console.log("[onDocuments] documents:", data?.documents);
 
       if (!data?.workspaceId || !data?.documents) {
         console.error("Invalid workspace-documents payload:", rawData);
@@ -365,8 +270,6 @@ export function useDocuments(workspaceId: string): UseDocuments {
     [state, workspaceId]
   );
 
-  console.log("[useDocuments] workspaceId:", workspaceId);
-
   const createDocument = useCallback(
     async (data: { parentId?: string | null; version: number }) => {
       if (loading) {
@@ -384,8 +287,6 @@ export function useDocuments(workspaceId: string): UseDocuments {
             },
           },
         });
-
-        console.log("[useDocuments] state.get result:", result);
 
         if (!result.data?.createDocument) {
           throw new Error("Failed to create document");
@@ -421,8 +322,6 @@ export function useDocuments(workspaceId: string): UseDocuments {
       } */
 
       const previousStateValue = state.get(workspaceId);
-
-      console.log("prev", previousStateValue, workspaceId, id);
 
       setState(s => {
         const { loading, documents } = s.get(workspaceId) ?? {

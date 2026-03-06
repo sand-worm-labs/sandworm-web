@@ -788,7 +788,7 @@ function VisualizationBlockV2(props: Props) {
       return {
         content: (ref: RefObject<HTMLDivElement>) => (
           <div
-            className="font-primary pointer-events-none w-max bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1"
+            className="font-body  pointer-events-none w-max bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1"
             ref={ref}
           >
             <span>Refresh</span>
@@ -860,13 +860,13 @@ function VisualizationBlockV2(props: Props) {
               props.dragPreview?.(d);
             }}
           >
-            <div className="flex items-center justify-between px-3 pr-0 gap-x-4 font-primary h-12 divide-x divide-gray-200 dark:divide-border-tertiary">
+            <div className="flex items-center justify-between px-3 pr-0 gap-x-4 font-body  h-12 divide-x divide-border-secondary dark:divide-border-tertiary">
               <div className="select-none text-gray-300 text-xs flex items-center w-full h-full gap-x-0.5 px-4">
                 <ChartPie className="h-5 w-5 text-ink-400" />
                 <input
                   type="text"
                   className={clsx(
-                    "text-base font-primary font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-md border-0 text-ink-100 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-ink-400 dark:placeholder:text-ink-300   py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white dark:text-white"
+                    "text-base font-body  font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-md border-0 text-ink-100 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-ink-400 dark:placeholder:text-ink-300   py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white dark:text-white"
                   )}
                   placeholder="Visualization (click to add a title)"
                   value={attrs.title}
@@ -874,17 +874,17 @@ function VisualizationBlockV2(props: Props) {
                   disabled={!props.isEditable}
                 />
               </div>
-              <div className="print:hidden flex items-center gap-x-0 group-focus/block:opacity-100 h-full divide-x divide-gray-200 dark:divide-[#262A30]">
+              <div className="print:hidden flex items-center gap-x-0 group-focus/block:opacity-100 h-full divide-x divide-border-secondary dark:divide-border-tertiary">
                 <button
                   type="button"
                   className={clsx(
-                    "font-primary text-xs flex justify-center items-center gap-x-1.5 text-gray-400 px-2.5 whitespace-nowrap disabled:bg-white hover:bg-gray-100 disabled:cursor-not-allowed h-full min-w-[124px] dark:hover:bg-[#181C21]",
+                    "font-body  text-xs flex justify-center items-center gap-x-1.5 text-ink-400 px-2.5 whitespace-nowrap disabled:bg-white hover:bg-gray-100 disabled:cursor-not-allowed h-full min-w-[124px] dark:hover:bg-[#181C21]",
                     props.isPublicMode ? "hidden" : "inline-block"
                   )}
                   onClick={onAddFilter}
                   disabled={!props.isEditable}
                 >
-                  <FunnelIcon className="h-4 w-4 text-gray-400" />
+                  <FunnelIcon className="h-4 w-4 text-ink-400" />
                   <span>Add filter</span>
                 </button>
                 <HeaderSelect
@@ -902,7 +902,7 @@ function VisualizationBlockV2(props: Props) {
 
         <div
           className={clsx(
-            "p-2 flex flex-wrap items-center gap-2 min-h[3rem] border-b border-gray-200",
+            "p-2 flex flex-wrap items-center gap-2 min-h[3rem] border-b border-border-secondary",
             {
               hidden: attrs.input.filters.length === 0,
             }

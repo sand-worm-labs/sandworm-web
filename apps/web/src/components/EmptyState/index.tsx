@@ -78,7 +78,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   };
 
   const linkClassName =
-    "text-accent hover:underline font-medium font-body text-sm cursor-pointer";
+    "text-accent dark:text-primary hover:underline font-medium font-body text-sm cursor-pointer";
 
   return (
     <div
@@ -90,7 +90,9 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
         items-center font-body relative
       "
     >
-      <h2 className="text-[6rem] leading-[1.2] font-mono mt-[5%]">{heading} </h2>
+      <h2 className="text-[6rem] leading-[1.2] font-mono mt-[5%]">
+        {heading}{" "}
+      </h2>
       <Heading center title={title} subtitle={subtitle} />
 
       <div className="mt-6 flex flex-row gap-5 flex-wrap justify-center items-center">

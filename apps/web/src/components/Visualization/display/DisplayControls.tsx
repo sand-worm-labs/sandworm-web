@@ -141,7 +141,7 @@ function getColorFromSerie(s: Serie): string | null {
 
 function DisplayControls(props: Props) {
   return (
-    <div className="text-xs text-gray-500 flex flex-col space-y-8">
+    <div className="text-xs text-ink-400 flex flex-col space-y-8">
       {props.yAxes.map((yAxis, yI) => {
         let prefix = "";
         if (props.yAxes.length > 1) {
@@ -242,7 +242,7 @@ const GroupBySeriesDisplay = forwardRef<
     >
       <div className="flex items-center space-x-1 pl-1" ref={ref}>
         <div
-          className="text-gray-400/60 hover:text-gray-400 cursor-pointer"
+          className="text-ink-400/60 hover:text-ink-400 cursor-pointer"
           ref={el => {
             props.drag(el);
           }}
@@ -258,7 +258,7 @@ const GroupBySeriesDisplay = forwardRef<
           <input
             type="text"
             placeholder={props.group}
-            className="w-full border-0 rounded-md ring-1 ring-inset ring-gray-200 focus:ring-1 focus:ring-inset focus:ring-blue-300 bg-white pr-2.5 pl-10 text-gray-800 text-xs placeholder:text-gray-400 relative"
+            className="w-full border-0 rounded-md ring-1 ring-inset ring-gray-200 focus:ring-1 focus:ring-inset focus:ring-blue-300 bg-white pr-2.5 pl-10 text-gray-800 text-xs placeholder:text-ink-400 relative"
             disabled={!props.dataframe || !props.isEditable}
             value={props.name}
             onChange={onChangeName}
@@ -375,7 +375,7 @@ const DisplayYAxisSeries = forwardRef<HTMLDivElement, DisplayYAxisSeriesProps>(
 
     return (
       <div
-        className="rounded-md border border-gray-200 shadow-sm px-2 py-3.5 bg-gray-50"
+        className="rounded-md border border-border-secondary shadow-sm px-2 py-3.5 bg-gray-50"
         ref={d => {
           props.dragPreview(props.drop(d));
         }}
@@ -386,7 +386,7 @@ const DisplayYAxisSeries = forwardRef<HTMLDivElement, DisplayYAxisSeriesProps>(
         >
           <div className="flex items-center">
             <div
-              className="text-gray-400/60 hover:text-gray-400 cursor-grab"
+              className="text-ink-400/60 hover:text-ink-400 cursor-grab"
               ref={el => {
                 props.drag(el);
               }}
@@ -397,7 +397,7 @@ const DisplayYAxisSeries = forwardRef<HTMLDivElement, DisplayYAxisSeriesProps>(
               <input
                 type="text"
                 placeholder={props.series.column?.name?.toString() ?? ""}
-                className="w-full border-0 rounded-md ring-1 ring-inset ring-gray-200 focus:ring-1 focus:ring-inset focus:ring-blue-300 group pr-2.5 pl-10 text-gray-800 text-xs placeholder:text-gray-400 relative bg-white disabled:cursor-not-allowed disabled:bg-gray-50"
+                className="w-full border-0 rounded-md ring-1 ring-inset ring-gray-200 focus:ring-1 focus:ring-inset focus:ring-blue-300 group pr-2.5 pl-10 text-gray-800 text-xs placeholder:text-ink-400 relative bg-white disabled:cursor-not-allowed disabled:bg-gray-50"
                 disabled={
                   !props.dataframe ||
                   !props.isEditable ||

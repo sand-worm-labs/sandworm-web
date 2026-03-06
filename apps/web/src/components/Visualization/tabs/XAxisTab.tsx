@@ -240,7 +240,7 @@ const XAxisTab = ({
     NumpyNumberTypes.or(NumpyTimeDeltaTypes).safeParse(xAxis.type).success;
 
   return (
-    <div className="text-xs text-gray-500">
+    <div className="text-xs text-ink-400">
       <div className="mb-8">
         <h2 className="text-sm font-semibold text-ink-100 mb-4">X-Axis</h2>
 
@@ -255,7 +255,7 @@ const XAxisTab = ({
             name="xAxisName"
             type="text"
             placeholder="My X-Axis"
-            className="w-full border-0 rounded-md ring-1 ring-inset ring-gray-200 focus:ring-1 focus:ring-inset focus:ring-gray-300 bg-white group px-2.5 text-gray-800 text-xs placeholder:text-gray-400"
+            className="w-full border-0 rounded-md ring-1 ring-inset ring-gray-200 focus:ring-1 focus:ring-inset focus:ring-gray-300 bg-white group px-2.5 text-gray-800 text-xs placeholder:text-ink-400"
             value={xAxisName ?? ""}
             onChange={handleChangeXAxisName}
             disabled={!dataframe || !isEditable}
@@ -264,7 +264,7 @@ const XAxisTab = ({
 
         {/* Date formatting options - only show for date columns */}
         {isDateColumn && (
-          <div className="mb-6 p-4 bg-gray-50 rounded-md border border-gray-200 shadow-sm">
+          <div className="mb-6 p-4 bg-gray-50 rounded-md border border-border-secondary shadow-sm">
             <h3 className="text-xs font-medium mb-4">Date formatting</h3>
             <DateFormatControl
               currentFormat={xAxisDateFormat}
@@ -279,7 +279,7 @@ const XAxisTab = ({
 
         {/* Number formatting options - only show for number columns */}
         {isNumberColumn && (
-          <div className="mb-6 p-4 bg-gray-50 rounded-md border border-gray-200 shadow-sm">
+          <div className="mb-6 p-4 bg-gray-50 rounded-md border border-border-secondary shadow-sm">
             <h3 className="text-xs font-medium mb-1 text-ink-100">
               Label formatting
             </h3>
@@ -305,7 +305,7 @@ const XAxisTab = ({
         {xAxis && !isDateColumn && !isNumberColumn && (
           <div className="mb-6 p-4 bg-gray-50 rounded-md">
             <div className="text-center py-4">
-              <p className="text-gray-500">
+              <p className="text-ink-400">
                 No formatting options are available for this column type.
               </p>
             </div>

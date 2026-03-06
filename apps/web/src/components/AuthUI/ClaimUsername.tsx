@@ -62,10 +62,10 @@ export const ClaimUsernameStep = ({
       <Username />
 
       <div className="w-full max-w-md mx-auto space-y-4 text-center">
-        <h2 className="text-2xl font-bold font-primary text-ink-100 mt-4">
+        <h2 className="text-2xl font-bold font-body  text-ink-100 mt-4">
           Claim your Sandworm domain
         </h2>
-        <p className="text-sm font-medium text-ink-200 dark:text-white font-primary mb-4">
+        <p className="text-sm font-medium text-ink-200 dark:text-white font-body  mb-4">
           Your username is your unique profile URL where all your dashboards,
           queries, and public works live. It represents your identity across
           Sandworm.
@@ -78,19 +78,19 @@ export const ClaimUsernameStep = ({
               onChange={e => setUsername(e.target.value)}
               onBlur={() => checkUsername(username)}
               placeholder="Enter username"
-              className="bg-[#F8F9FA] dark:bg-[#1A1A1A] text-ink-500 dark:text-white border-[#DEE2E6] dark:border-border-tertiary py-6 rounded-xl font-primary font-medium text-base"
+              className="bg-[#F8F9FA] dark:bg-[#1A1A1A] text-ink-500 dark:text-white border-[#DEE2E6] dark:border-border-tertiary py-6 rounded-xl font-body  font-medium text-base"
             />
             <Button
               disabled={status !== "available" || isLoading}
               onClick={() => onSubmit(username)}
-              className="bg-black text-white rounded-lg ml-2 py-6 font-primary disabled:bg-[#868E96] disabled:text-[#DEE2E6] disabled:opacity-1"
+              className="bg-black text-white rounded-lg ml-2 py-6 font-body  disabled:bg-[#868E96] disabled:text-[#DEE2E6] disabled:opacity-1"
             >
               {isLoading ? "Creating..." : "Claim handle"}
             </Button>
           </div>
 
           <span
-            className="text-xl text-[#D0DCE4] green-gradient py-4 px-5 rounded-xl font-semibold mt-5 inline-block box-gradient dark:bg-base-100 max-w-full truncate whitespace-nowrap overflow-hidden"
+            className="text-xl text-[#D0DCE4] green-gradient py-4 px-5 rounded-xl font-semibold mt-5 inline-block box-gradient dark:bg-base-100  max-w-full truncate whitespace-nowrap overflow-hidden"
             title={
               username
                 ? `${username}.sandwormlabs.xyz`
@@ -103,15 +103,15 @@ export const ClaimUsernameStep = ({
           </span>
 
           {error && (
-            <p className="text-xs text-destructive font-primary">{error}</p>
+            <p className="text-xs text-destructive font-body ">{error}</p>
           )}
           {status === "available" && (
-            <p className="text-xs text-green-500 font-primary">
+            <p className="text-xs text-green-500 font-body ">
               Username is available!
             </p>
           )}
 
-          <ul className="text-xs font-primary space-y-1 list-disc pl-4 text-left text-ink-400">
+          <ul className="text-xs font-body  space-y-1 list-disc pl-4 text-left text-ink-400">
             <li
               className={
                 username.length > 14
@@ -148,7 +148,7 @@ export const ClaimUsername = () => {
       <ClaimUsernameStep onSubmit={() => router.push("/check-mail")} />
 
       <div className="flex-col gap-2 absolute bottom-[4rem] w-full flex items-center justify-center">
-        <p className="font-primary text-center text-xs text-ink-400 md:max-w-[300px] mt-6">
+        <p className="font-body  text-center text-xs text-ink-400 md:max-w-[300px] mt-6">
           By creating an account you agree to the{" "}
           <Link href="/terms" className="underline">
             Terms

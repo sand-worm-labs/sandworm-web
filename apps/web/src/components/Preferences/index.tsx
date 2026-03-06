@@ -54,7 +54,7 @@ const ThemeCard: React.FC<{
           className={`p-3 rounded-full ${
             selected
               ? "bg-[#EFF1F2] dark:bg-base-500  border dark:border-border-tertiary border-[#E9ECEF]"
-              : "bg-[#EFF1F2] dark:bg-base-500 text-gray-600 dark:text-gray-400 border border-[#E9ECEF] dark:border-border-tertiary"
+              : "bg-[#EFF1F2] dark:bg-base-500 text-gray-600 dark:text-ink-400 border border-[#E9ECEF] dark:border-border-tertiary"
           }`}
         >
           {option.icon}
@@ -70,7 +70,7 @@ const ThemeCard: React.FC<{
         </div>
       </div>
 
-      <div className="mt-4 rounded-2xl overflow-hidden border border-gray-200 dark:border-border-tertiary">
+      <div className="mt-4 rounded-2xl overflow-hidden border border-border-secondary dark:border-border-tertiary">
         <div className={`h-32 p-3 ${bgMap[option.id] ?? bgMap.default}`}>
           <div className="flex gap-2 mb-2">
             <div

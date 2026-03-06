@@ -153,7 +153,7 @@ export const SearchBar = () => {
       {isActive && (
         <div className="absolute z-50 top-full mt-4 left-[0px] min-w-[32rem] dark:bg-[#0C1015] bg-white border dark:border-border-tertiary rounded-xl shadow-md overflow-hidden border-[#E3E5E8]">
           {/* Search Input Inside Dropdown */}
-          <div className="px-4 py-3 border-b dark:border-border-tertiary border-gray-200">
+          <div className="px-4 py-3 border-b dark:border-border-tertiary border-border-secondary">
             <div className="relative">
               <Search
                 size={16}
@@ -169,7 +169,7 @@ export const SearchBar = () => {
                   setHighlightIndex(-1);
                 }}
                 onKeyDown={handleKeyDown}
-                className="w-full pl-10 pr-16 py-1 rounded-md dark:bg-[#1A1A1A] border dark:border-border-tertiary border-[#DEE2E6] dark:text-white placeholder:dark:text-ink-300  placeholder-[#455768] focus:outline-none focus:ring-[1p] focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4] font-primary"
+                className="w-full pl-10 pr-16 py-1 rounded-md dark:bg-[#1A1A1A] border dark:border-border-tertiary border-[#DEE2E6] dark:text-white placeholder:dark:text-ink-300  placeholder-[#455768] focus:outline-none focus:ring-[1p] focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4] font-body "
               />
               <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-text-gray select-none font-medium">
                 Press{" "}
@@ -181,7 +181,7 @@ export const SearchBar = () => {
           </div>
 
           {/* Filters Section */}
-          <div className="px-4 py-3 border-b dark:border-border-tertiary border-gray-200">
+          <div className="px-4 py-3 border-b dark:border-border-tertiary border-border-secondary">
             <div className="flex flex-wrap gap-2">
               {filters.map(filter => (
                 <button
@@ -251,7 +251,7 @@ export const SearchBar = () => {
               })}
             </div>
 
-            <hr className="my-2 dark:border-[#30363d] border-gray-200" />
+            <hr className="my-2 dark:border-[#30363d] border-border-secondary" />
 
             {/* Creators */}
             <div>
@@ -298,7 +298,7 @@ export const SearchBar = () => {
               })}
             </div>
 
-            <hr className="my-2 dark:border-border-tertiary border-gray-200 " />
+            <hr className="my-2 dark:border-border-tertiary border-border-secondary " />
 
             {/* Reports */}
             <div>
@@ -347,7 +347,7 @@ export const SearchBar = () => {
           </div>
 
           {/* Footer with Keyboard Shortcuts */}
-          <div className="px-4 py-3 border-t dark:border-border-tertiary border-gray-200 dark:bg-[#0d1117]  flex items-center justify-between text-xs text-gray-500">
+          <div className="px-4 py-3 border-t dark:border-border-tertiary border-border-secondary dark:bg-[#0d1117]  flex items-center justify-between text-xs text-gray-500">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1.5">
                 <div className="flex items-center space-x-2">

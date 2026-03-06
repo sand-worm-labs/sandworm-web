@@ -28,8 +28,9 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
 
   // TODO: Replace with polling or WebSocket event to detect approval.
   // Currently status resets to "viewing" on refresh — no persistence yet.
-  const [accessStatus, setAccessStatus] = useState<"viewing" | "sent" | "pending" | "approved">("viewing");
-
+  const [accessStatus, setAccessStatus] = useState<
+    "viewing" | "sent" | "pending" | "approved"
+  >("viewing");
 
   const shouldHideHeader =
     pathname.includes("/documents/") &&
@@ -46,8 +47,6 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
     // TODO: Poll getUserWorkspaceInfo or listen to WebSocket to transition
     // from "sent" -> "pending" -> "approved" when admin acts on the request.
   };
-
-  console.log(workspaceInfo, "workspaceinfo")
 
 
   return (

@@ -71,8 +71,6 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
 
   const { wallets, addWallets, loading: updateLoading } = useWallets();
 
-  console.log(currentUser, "current user");
-
   const mockProfile: UserProfile = {
     id: "1",
     username: "sandworm",
@@ -150,7 +148,7 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
           </div>
         ) : !currentUser ? (
           <div className=" mx-auto md:px-4 py-8">
-            <p className="text-center text-ink-200 dark:text-gray-400">
+            <p className="text-center text-ink-200 dark:text-ink-400">
               No user found
             </p>
           </div>
@@ -191,7 +189,7 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                             <button
                               type="button"
                               onClick={() => setIsModalOpen(true)}
-                              className="flex items-center gap-2 px-4 py-1 rounded-lg font-medium transition-colors text-sm border border-[#DEE2E6] dark:border-border-tertiary text-[#6C757D] dark:text-black hover:bg-[#F8F9FA] dark:hover:bg-[#262A30] bg-[#F8F9FA]"
+                              className="flex items-center gap-2 px-4 py-1 rounded-lg font-medium transition-colors text-sm border border-[#DEE2E6] dark:border-border-tertiary text-[#6C757D] dark:text-black hover:bg-[#F8F9FA]  bg-[#F8F9FA]"
                             >
                               Edit
                             </button>
@@ -273,7 +271,7 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                                   href={url as string}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="p-2.5 rounded-xl border border-[#DEE2E6] dark:border-border-tertiary hover:bg-[#A308F0] hover:border-[#A308F0] hover:text-white transition-colors text-[#1C3B5A] dark:text-gray-400 bg-[#F8F9FA] dark:bg-transparent"
+                                  className="p-2.5 rounded-xl border border-[#DEE2E6] dark:border-border-tertiary hover:bg-[#A308F0] hover:border-[#A308F0] hover:text-white transition-colors text-[#1C3B5A] dark:text-ink-400 bg-[#F8F9FA] dark:bg-transparent"
                                 >
                                   {getSocialIcon(platform)}
                                 </a>
@@ -287,20 +285,27 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                 <div className="w-full flex-1 py-12 md:py-0">
                   {wallets && wallets.length > 0 ? (
                     <div className="bg-white dark:bg-base-200 rounded-2xl md:p-6">
-                      <h2 className="px-2 py-0.5 font-medium text-ink-100 dark:text-white mb-4 bg-[#E9ECEF] inline-block text-sm rounded-lg">
+                      <h2 className="px-2 py-0.5 font-medium text-ink-100 mb-4 bg-[#E9ECEF] dark:bg-base-100  inline-block text-sm rounded-lg">
                         Main Wallets
                       </h2>
                       <div className="space-y-3">
                         {wallets.map(wallet => (
                           <div
                             key={wallet.address}
-                            className="flex items-center justify-between p-4 py-2 rounded-xl dark:border-border-tertiary   transition-colors bg-[#F8F9FA] border border-[#DEE2E6]"
+                            className="flex items-center justify-between p-4 py-2 rounded-xl dark:border-border-tertiary   transition-colors bg-[#F8F9FA] dark:bg-base-200 border border-[#DEE2E6]"
                           >
                             <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1" />
-                              <code className="text-sm text-[#6C757D] dark:text-[#6C757D] font-body font-medium">
+                            <div className="flex flex-col">
+                            <code className="text-sm text-[#6C757D] dark:text-ink-400 font-body font-medium">
                                 {truncateAddress(wallet.address)}
                               </code>
+                              {wallet.chain && (
+                                <span className="text-xs text-[#6C757D] dark:text-ink-400 mt-0.5">
+                                  {wallet.chain}
+                                </span>
+                              )}
+</div>
+                            
                             </div>
                             <button
                               type="button"
@@ -310,7 +315,7 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                               {copiedWallet === wallet.address ? (
                                 <Check className="w-4 h-4 text-primary" />
                               ) : (
-                                <Copy className="w-4 h-4 text-ink-200 dark:text-gray-400" />
+                                <Copy className="w-4 h-4 text-ink-200 dark:text-ink-400" />
                               )}
                             </button>
                           </div>
@@ -353,7 +358,7 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                 </h2>
                 <div className="text-center py-12 min-h-[20rem] flex flex-col items-center justify-center gap-2">
                   <ProjectIcon />
-                  <p className="text-ink-200 dark:text-gray-400">
+                  <p className="text-ink-200 dark:text-ink-400">
                     No projects yet
                   </p>
                 </div>

@@ -143,7 +143,7 @@ const MonthlySchedule = ({ schedule }: { schedule: MonthlyScheduleType }) => {
       <div className="font-medium">
         Monthly on the {prettyDays.join(", ")} at {hour12}:{minuteStr} {amPm}
       </div>
-      <div className="pt-0.5 flex flex-col text-gray-400 gap-y-0.5">
+      <div className="pt-0.5 flex flex-col text-ink-400 gap-y-0.5">
         <span>{getPrettyTz(timezone)}</span>
       </div>
     </div>
@@ -161,14 +161,14 @@ const CronSchedule = ({ schedule }: { schedule: CronScheduleType }) => {
     <div>
       <div className="font-medium pb-2 flex items-center gap-x-2">
         <span className="">Cron: </span>
-        <span className="rounded-sm px-2 py-1 font-mono bg-gray-100 border border-gray-200 dark:border-border-tertiary">
+        <span className="rounded-sm px-2 py-1 font-mono bg-gray-100 border border-border-secondary dark:border-border-tertiary">
           {cron}
         </span>
         <span className="group relative">
           <PortalTooltip
             ignoreScrollableAncestor
             content={
-              <div className="pointer-events-none w-[124px] bg-hunter-950 text-gray-400 text-xs p-2 rounded-md flex flex-col gap-y-1 -translate-x-1/2 translate-y-[2px]">
+              <div className="pointer-events-none w-[124px] bg-hunter-950 text-ink-400 text-xs p-2 rounded-md flex flex-col gap-y-1 -translate-x-1/2 translate-y-[2px]">
                 {tooltipText}
               </div>
             }
@@ -177,7 +177,7 @@ const CronSchedule = ({ schedule }: { schedule: CronScheduleType }) => {
           </PortalTooltip>
         </span>
       </div>
-      <div className="pt-0.5 flex flex-col text-gray-400 gap-y-0.5">
+      <div className="pt-0.5 flex flex-col text-ink-400 gap-y-0.5">
         <span>{getPrettyTz(timezone)}</span>
       </div>
     </div>
@@ -212,7 +212,7 @@ interface ScheduleListProps {
 }
 function ScheduleList(props: ScheduleListProps) {
   return (
-    <div className="w-[354px] h-full flex flex-col overflow-y-auto border-l border-gray-200 dark:border-border-tertiary font-body dark:bg-base-100">
+    <div className="w-[354px] h-full flex flex-col overflow-y-auto border-l border-border-secondary dark:border-border-tertiary font-body dark:bg-base-100 ">
       <div className="px-4 xl:px-6 pt-6 pb-5">
         <div className="flex justify-between">
           <div>
@@ -228,7 +228,7 @@ function ScheduleList(props: ScheduleListProps) {
         </div>
       </div>
 
-      <div className="border-t border-dashed border-gray-200 dark:border-border-tertiary" />
+      <div className="border-t border-dashed border-border-secondary dark:border-border-tertiary" />
 
       {props.isPublished ? (
         <div className="flex-1 flex flex-col">
@@ -236,7 +236,7 @@ function ScheduleList(props: ScheduleListProps) {
             <>
               {/* Schedule List */}
               <ScrollBar className="overflow-auto flex-1 space-y-6 pb-6 pt-4 px-2 xl:px-4 ">
-                <ul className="text-xs font-primary overflow-visible">
+                <ul className="text-xs font-body  overflow-visible">
                   {props.schedules.map((scheduledRun, i) => {
                     return (
                       <li
@@ -393,7 +393,7 @@ export default function Schedules(props: Props) {
     >
       <button
         type="button"
-        className="absolute z-10 top-7 transform rounded-full border border-gray-300 text-gray-400 dark:border-border-tertiary bg-white hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
+        className="absolute z-10 top-7 transform rounded-full border border-gray-300 text-ink-400 dark:border-border-tertiary bg-white hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
         onClick={props.onHide}
       >
         <ChevronDoubleRightIcon className="w-3 h-3" />

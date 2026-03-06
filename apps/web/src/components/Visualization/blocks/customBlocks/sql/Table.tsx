@@ -51,7 +51,7 @@ function Table(props: Props) {
       )}
     >
       <table
-        className="!w-full text-xs text-left table-auto border-spacing-0 border-separate font-primary"
+        className="!w-full text-xs text-left table-auto border-spacing-0 border-separate font-body "
         contentEditable={false}
       >
         <thead className="bg-gray-50 sticky top-0">
@@ -69,7 +69,7 @@ function Table(props: Props) {
                 >
                   <div className="flex space-x-2 items-center w-full justify-between">
                     <div className="flex items-center space-x-1">
-                      <Icon className="h-3 w-3 text-gray-400" />
+                      <Icon className="h-3 w-3 text-ink-400" />
                       <span>{column.name}</span>
                     </div>
                     {props.sort && props.sort.column === column.name ? (
@@ -102,11 +102,11 @@ function Table(props: Props) {
                       rowIndex === props.rows.length - 1 && !props.isDashboard
                         ? "border-b-0"
                         : "border-b",
-                      "px-2 py-1.5 text-ink-100 whitespace-nowrap border-gray-200 "
+                      "px-2 py-1.5 text-ink-100 whitespace-nowrap border-border-secondary "
                     )}
                   >
                     {cell === null ? (
-                      <span className="uppercase text-gray-400">null</span>
+                      <span className="uppercase text-ink-400">null</span>
                     ) : typeof cell === "object" ? (
                       JSON.stringify(cell)
                     ) : (

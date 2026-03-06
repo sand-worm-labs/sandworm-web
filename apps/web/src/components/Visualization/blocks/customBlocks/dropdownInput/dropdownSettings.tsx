@@ -34,8 +34,8 @@ export default function DropdownSettings(props: Props) {
   );
 
   return (
-    <div className="bg-gray-50 px-3 py-3 border border-gray-200 flex flex-col gap-y-2 rounded-md shadow-sm">
-      <span className="text-xs font-semibold py-1 flex gap-x-1 text-gray-400">
+    <div className="bg-gray-50 px-3 py-3 border border-border-secondary flex flex-col gap-y-2 rounded-md shadow-sm">
+      <span className="text-xs font-semibold py-1 flex gap-x-1 text-ink-400">
         <Cog6ToothIcon className="w-4 h-4" />
         Dropdown settings
       </span>
@@ -162,13 +162,13 @@ const StaticInput = (props: StaticInputProps) => {
       <div
         className={clsx(
           props.options.length > 0 ? "p-2" : "py-0.5",
-          "flex flex-wrap border border-gray-200  rounded-md shadow-sm bg-white"
+          "flex flex-wrap border border-border-secondary  rounded-md shadow-sm bg-white"
         )}
       >
         <div className="flex flex-wrap">
           {props.options.map((option, index) => (
             <div className="px-1 py-1">
-              <div className="bg-gray-50 border border-gray-200 px-2 py-1 rounded-sm flex items-center gap-x-1 text-xs">
+              <div className="bg-gray-50 border border-border-secondary px-2 py-1 rounded-sm flex items-center gap-x-1 text-xs">
                 <span>{option}</span>
                 <button
                   type="button"

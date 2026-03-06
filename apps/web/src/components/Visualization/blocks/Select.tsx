@@ -22,7 +22,7 @@ export default function Select({
     <Listbox value={value} onChange={onChange}>
       {({ open }) => (
         <div className="flex-1">
-          <Listbox.Label className="block text-xs text-gray-400 font-medium leading-6">
+          <Listbox.Label className="block text-xs text-ink-400 font-medium leading-6">
             {label}
           </Listbox.Label>
           <div className="relative">
@@ -32,7 +32,7 @@ export default function Select({
               </span>
               <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                 <ChevronUpDownIcon
-                  className="h-5 w-5 text-gray-400"
+                  className="h-5 w-5 text-ink-400"
                   aria-hidden="true"
                 />
               </span>

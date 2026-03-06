@@ -91,7 +91,7 @@ export default function ComboboxV2<T>({
         label
       )}
       <div className="relative mt-1 mb-0.5" ref={inputContainerRef}>
-        <div className="flex items-center space-x-1.5 rounded-md ring-1 ring-inset ring-gray-200 dark:ring-border-tertiary focus-within:ring-1 focus-within:ring-inset focus-within:ring-gray-300 bg-white group pl-2.5 pr-8 text-ink-100 dark:bg-base-100 dark:text-white">
+        <div className="flex items-center space-x-1.5 rounded-md ring-1 ring-inset ring-gray-200 dark:ring-border-tertiary focus-within:ring-1 focus-within:ring-inset focus-within:ring-gray-300 bg-white group pl-2.5 pr-8 text-ink-100 dark:bg-base-100  dark:text-white">
           {value && icon(value)}
           <input
             className={clsx(
@@ -127,7 +127,7 @@ export default function ComboboxV2<T>({
           onClick={onClickButton}
         >
           <ChevronUpDownIcon
-            className="h-5 w-5 text-gray-400"
+            className="h-5 w-5 text-ink-400"
             aria-hidden="true"
           />
         </button>
@@ -185,7 +185,7 @@ export default function ComboboxV2<T>({
                 </button>
               ))}
               {loadingOptions && (
-                <div className="text-center text-gray-400 py-2">Loading...</div>
+                <div className="text-center text-ink-400 py-2">Loading...</div>
               )}
             </div>
           </Transition>,

@@ -46,7 +46,7 @@ export function FeaturedExploreCard({
   return (
     <div
       onClick={() => onClick?.(id)}
-      className="bg-[#F2F3FB] dark:bg-base-100 rounded-2xl py-6 border border-gray-200 dark:border-border-tertiary p-4 cursor-pointer  transition-shadow font-body"
+      className="bg-[#F2F3FB] dark:bg-base-100  rounded-2xl py-6 border border-border-secondary dark:border-border-tertiary p-4 cursor-pointer  transition-shadow font-body"
       role="button"
       tabIndex={0}
       onKeyDown={e => {
@@ -61,7 +61,7 @@ export function FeaturedExploreCard({
           <span className="text-xs font-medium text-gray-600 bg-[#CDCDE2] px-2 py-1 rounded-md">
             {tagLabels[tag]}
           </span>
-          <span className="text-xs text-gray-400">Created {formattedDate}</span>
+          <span className="text-xs text-ink-400">Created {formattedDate}</span>
         </div>
         <button
           type="button"
@@ -69,7 +69,7 @@ export function FeaturedExploreCard({
             e.stopPropagation();
             onSave?.(id);
           }}
-          className="text-gray-400 hover:text-gray-600 transition-colors"
+          className="text-ink-400 hover:text-gray-600 transition-colors"
         >
           <Bookmark
             size={18}

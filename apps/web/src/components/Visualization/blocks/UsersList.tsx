@@ -80,7 +80,7 @@ function UserItem(props: UserItemProps) {
         </span>
       </td>
       <td className="whitespace-nowrap p-4 text-sm text-ink-100">
-        <span className="bg-[#F8F9FA] border border-[#DEE2E6] dark:bg-base-100 dark:border-border-tertiary rounded-md px-3 py-1">
+        <span className="bg-[#F8F9FA] border border-[#DEE2E6] dark:bg-base-100  dark:border-border-tertiary rounded-md px-3 py-1">
           {props.user.workspaceName || "—"} workspace
         </span>
       </td>

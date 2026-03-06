@@ -139,7 +139,7 @@ export const Projects: React.FC = () => {
 
   if (documentsState.loading) {
     return (
-      <div className="min-h-screen  dark:bg-base-100 flex items-center justify-center p-8">
+      <div className="min-h-screen  dark:bg-base-100  flex items-center justify-center p-8">
         <Loader />
       </div>
     );
@@ -220,7 +220,7 @@ export const Projects: React.FC = () => {
                         className={`w-4 h-4 ${
                           project.isFavorite
                             ? "fill-[#A308F0] text-primary"
-                            : "text-gray-400 hover:text-primary"
+                            : "text-ink-400 hover:text-primary"
                         }`}
                       />
                     </button>
@@ -239,7 +239,7 @@ export const Projects: React.FC = () => {
                       </button>
 
                       {openMenuId === project.id && (
-                        <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-base-100 rounded-xl shadow-lg border border-[#CED4DA] dark:border-border-tertiary pb-1 z-10 text-ink-200 dark:text-white">
+                        <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-base-100  rounded-xl shadow-lg border border-[#CED4DA] dark:border-border-tertiary pb-1 z-10 text-ink-200 dark:text-white">
                           <button
                             type="button"
                             onClick={() =>
@@ -293,7 +293,7 @@ export const Projects: React.FC = () => {
                     </button>
 
                     {hoveredUser === project.id && (
-                      <div className="absolute bottom-full left-0 mb-2 px-3 py-1 dark:bg-base-100 bg-white text-ink-400 border-[#E9ECEF] dark:border-border-tertiary border dark:text-white text-xs rounded shadow-[0_0.5px_4px_#2516660A] whitespace-nowrap z-20">
+                      <div className="absolute bottom-full left-0 mb-2 px-3 py-1 dark:bg-base-100  bg-white text-ink-400 border-[#E9ECEF] dark:border-border-tertiary border dark:text-white text-xs rounded shadow-[0_0.5px_4px_#2516660A] whitespace-nowrap z-20">
                         Creator: {project.creator}
                       </div>
                     )}
@@ -310,7 +310,7 @@ export const Projects: React.FC = () => {
                     </button>
 
                     {hoveredSave === project.id && (
-                      <div className="absolute bottom-full right-0 mb-2 px-4 py-1.5 dark:bg-base-100 bg-white text-ink-500 border-[#E9ECEF] dark:border-border-tertiary border dark:text-white text-xs rounded shadow-[0_0.5px_4px_#2516660A] whitespace-nowrap z-20">
+                      <div className="absolute bottom-full right-0 mb-2 px-4 py-1.5 dark:bg-base-100  bg-white text-ink-500 border-[#E9ECEF] dark:border-border-tertiary border dark:text-white text-xs rounded shadow-[0_0.5px_4px_#2516660A] whitespace-nowrap z-20">
                         <div className="space-y-1">
                           <div>
                             <span className="font-medium text-ink-400 dark:text-white">

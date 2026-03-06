@@ -147,7 +147,7 @@ export default function MultiComboboxV2<T extends object>({
             <div className="flex flex-wrap space-x-0.5">
               {value.map((val, index) => (
                 <div className="py-1" key={getKey(val)}>
-                  <div className="bg-gray-50 border border-gray-200 px-2 py-1 rounded-sm flex items-center gap-x-1 text-xs">
+                  <div className="bg-gray-50 border border-border-secondary px-2 py-1 rounded-sm flex items-center gap-x-1 text-xs">
                     <span>{getLabel(val)}</span>
                     <button
                       type="button"
@@ -168,8 +168,8 @@ export default function MultiComboboxV2<T extends object>({
 
             <input
               className={clsx(
-                "w-full truncate border-0 text-xs pl-0.5 focus:ring-0 bg-transparent font-mono placeholder:text-gray-400 disabled:cursor-not-allowed",
-                value === null && "text-gray-400"
+                "w-full truncate border-0 text-xs pl-0.5 focus:ring-0 bg-transparent font-mono placeholder:text-ink-400 disabled:cursor-not-allowed",
+                value === null && "text-ink-400"
               )}
               onChange={event => setQuery(event.target.value)}
               placeholder={placeholder}
@@ -203,7 +203,7 @@ export default function MultiComboboxV2<T extends object>({
           onClick={onClickButton}
         >
           <ChevronUpDownIcon
-            className="h-5 w-5 text-gray-400"
+            className="h-5 w-5 text-ink-400"
             aria-hidden="true"
           />
         </button>
@@ -287,7 +287,7 @@ export default function MultiComboboxV2<T extends object>({
               })}
 
               {loadingOptions && (
-                <div className="text-center text-gray-400 py-2">Loading...</div>
+                <div className="text-center text-ink-400 py-2">Loading...</div>
               )}
             </ul>
           </Transition>,

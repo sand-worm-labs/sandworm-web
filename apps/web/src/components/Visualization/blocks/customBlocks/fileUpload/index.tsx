@@ -556,7 +556,7 @@ function FileUploadBlock(props: Props) {
             props.hasMultipleTabs ? "p-2 border rounded-tl-none" : "",
             props.isCursorWithin && !props.isCursorInserting
               ? "border-blue-400 shadow-sm"
-              : "border-gray-200"
+              : "border-border-secondary"
           )}
         >
           <EmptyUploadZone isDragActive={isDragActive} />
@@ -613,7 +613,7 @@ function EmptyUploadZone({ isDragActive }: { isDragActive: boolean }) {
               <span>Upload files</span>
             </label>
           </div>
-          <span className="text-xs pl-1 text-gray-400">
+          <span className="text-xs pl-1 text-ink-400">
             or drag and drop here
           </span>
         </div>

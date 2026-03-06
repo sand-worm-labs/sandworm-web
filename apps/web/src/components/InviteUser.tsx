@@ -110,10 +110,10 @@ export default function InviteUserModal({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-[#0000001A] dark:bg-base-100/50" />
+          <div className="fixed inset-0 bg-[#0000001A] dark:bg-base-100 /50" />
         </Transition.Child>
 
-        <div className="fixed inset-0 overflow-y-auto font-primary">
+        <div className="fixed inset-0 overflow-y-auto font-body ">
           <div className="flex min-h-full items-center justify-center p-4 text-center">
             <Transition.Child
               as={Fragment}
@@ -138,7 +138,7 @@ export default function InviteUserModal({
                     type="button"
                     onClick={handleClose}
                     disabled={isSubmitting}
-                    className="rounded-lg p-1 text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+                    className="rounded-lg p-1 text-ink-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-ink-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
                   >
                     <XMarkIcon className="h-5 w-5" />
                   </button>

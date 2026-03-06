@@ -89,7 +89,7 @@ export default function ShortcutsModal(props: ShortcutsModalProps) {
           <div className="fixed inset-0 bg-[#161633] dark:bg-[#00000020] bg-opacity-20 transition-opacity font-body" />
         </Transition.Child>
 
-        <div className="fixed inset-0 z-10 w-screen overflow-y-auto font-primary">
+        <div className="fixed inset-0 z-10 w-screen overflow-y-auto font-body ">
           <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
             <Transition.Child
               as="div"
@@ -100,7 +100,7 @@ export default function ShortcutsModal(props: ShortcutsModalProps) {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-y-auto rounded-2xl bg-white dark:bg-base-100 dark:border-border-tertiary dark:border text-left  transition-all sm:my-8 px-8 py-6 w-[600px] max-h-[90vh]">
+              <Dialog.Panel className="relative transform overflow-y-auto rounded-2xl bg-white dark:bg-base-100  dark:border-border-tertiary dark:border text-left  transition-all sm:my-8 px-8 py-6 w-[600px] max-h-[90vh]">
                 <div>
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#A308F020]">
                     <ScheduleIcon />

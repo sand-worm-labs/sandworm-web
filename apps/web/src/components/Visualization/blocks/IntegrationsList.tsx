@@ -6,7 +6,7 @@ function EmptyIntegrations(props: { workspaceId: string }) {
     <div className="py-6">
       <Link href={`/workspaces/${props.workspaceId}/integrations/new`}>
         <div className="text-center py-12 bg-ceramic-50/60 rounded-xl">
-          <PuzzlePieceIcon className="h-12 w-12 text-gray-400 mx-auto" />
+          <PuzzlePieceIcon className="h-12 w-12 text-ink-400 mx-auto" />
           <h3 className="mt-2 text-sm font-semibold text-ink-100">
             No integrations
           </h3>

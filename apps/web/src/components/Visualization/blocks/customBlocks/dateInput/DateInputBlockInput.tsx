@@ -155,7 +155,7 @@ function DateInputBlockInput(props: Props) {
         onBlur={editorAPI.blur}
         onKeyDown={unfocusOnEscape}
         className={clsx(
-          "block rounded-md border-0 py-1.5 text-ink-100 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset w-full disabled:bg-gray-100 disabled:cursor-not-allowed bg-white appearance-none",
+          "block rounded-md border-0 py-1.5 text-ink-100 shadow-sm ring-1 ring-inset placeholder:text-ink-400 focus:ring-2 focus:ring-inset w-full disabled:bg-gray-100 disabled:cursor-not-allowed bg-white appearance-none",
           props.error
             ? "ring-red-200 focus:ring-red-200"
             : "focus:ring-primary-200",
@@ -171,7 +171,7 @@ function DateInputBlockInput(props: Props) {
       {ReactDOM.createPortal(
         <div
           className={clsx(
-            "absolute bg-white mt-1.5 border border-gray-200 rounded-md z-[2000] px-3 pt-1 pb-2 shadow-lg",
+            "absolute bg-white mt-1.5 border border-border-secondary rounded-md z-[2000] px-3 pt-1 pb-2 shadow-lg",
             isPickerOpen ? "block" : "hidden"
           )}
           ref={pickerContainer}
@@ -202,14 +202,14 @@ function DateInputBlockInput(props: Props) {
                 aria-hidden="true"
               />
             </button>
-            <div className="font-primary pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 w-32">
-              <span className="inline-flex gap-x-1 items-center text-gray-400">
+            <div className="font-body  pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 w-32">
+              <span className="inline-flex gap-x-1 items-center text-ink-400">
                 <span>{invalidValueErrorMessage(props.error)}</span>
               </span>
             </div>
           </>
         ) : (
-          <CalendarIcon className="w-4 h-4 text-gray-400" />
+          <CalendarIcon className="w-4 h-4 text-ink-400" />
         )}
       </div>
     </div>

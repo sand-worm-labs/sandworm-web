@@ -36,7 +36,7 @@ export function UserProfileHover({ children }: UserProfileHoverProps) {
     <HoverCard openDelay={200}>
       <HoverCardTrigger asChild>{children}</HoverCardTrigger>
       <HoverCardContent
-        className="w-80 font-primary border-[#E9ECEF] rounded-2xl dark:bg-base-100 dark:border-border-tertiary"
+        className="w-80 font-body  border-[#E9ECEF] rounded-2xl dark:bg-base-100  dark:border-border-tertiary"
         align="start"
       >
         <div className="space-y-4">
@@ -48,7 +48,7 @@ export function UserProfileHover({ children }: UserProfileHoverProps) {
               </Avatar>
               <div>
                 <p className="font-semibold text-sm">{dummyUser.name}</p>
-                <p className="text-sm text-ink-400 font-primary">
+                <p className="text-sm text-ink-400 font-body ">
                   @{dummyUser.username}
                 </p>
               </div>

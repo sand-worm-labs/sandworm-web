@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 import { FeaturedExploreCard } from "./FeaturedExploreCard";
 
 type CardTag = "featured" | "popular" | "trending" | "new";
@@ -59,7 +60,7 @@ export function FeaturedExploreSection() {
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
 
   const handleSave = (id: string) => {
-    setSavedIds((prev) => {
+    setSavedIds(prev => {
       const next = new Set(prev);
       if (next.has(id)) {
         next.delete(id);
@@ -71,12 +72,11 @@ export function FeaturedExploreSection() {
   };
 
   const handleClick = (id: string) => {
-    console.log("Clicked query:", id);
   };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
-      {mockFeaturedQueries.map((query) => (
+      {mockFeaturedQueries.map(query => (
         <FeaturedExploreCard
           key={query.id}
           id={query.id}

@@ -109,7 +109,7 @@ export function DataExplorerContent({
         {onHide && (
           <button
             type="button"
-            className="absolute z-10 top-7 transform rounded-full border border-gray-300 dark:border-border-tertiary text-gray-400 bg-white dark:bg-base-100 hover:bg-gray-100 dark:hover:bg-gray-900 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
+            className="absolute z-10 top-7 transform rounded-full border border-gray-300 dark:border-border-tertiary text-ink-400 bg-white dark:bg-base-100  hover:bg-gray-100 dark:hover:bg-gray-900 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
             onClick={onHide}
             aria-label="Close data explorer"
           >
@@ -117,7 +117,7 @@ export function DataExplorerContent({
           </button>
         )}
 
-        <Card className="h-full overflow-hidden border-l dark:border-border-tertiary border-gray-200 rounded-none w-[354px] bg-white dark:bg-base-100 gap-y-0 pt-0">
+        <Card className="h-full overflow-hidden border-l dark:border-border-tertiary border-border-secondary rounded-none w-[354px] bg-white dark:bg-base-100  gap-y-0 pt-0">
           {loading && (
             <div className="flex items-center justify-center h-full"> </div>
           )}
@@ -133,7 +133,7 @@ export function DataExplorerContent({
                     Browse and explore your blockchain data
                   </p>
                 </div>
-                <ChevronRightIcon className="h-5 w-5 text-gray-400" />
+                <ChevronRightIcon className="h-5 w-5 text-ink-400" />
               </div>
             </div>
           ) : (

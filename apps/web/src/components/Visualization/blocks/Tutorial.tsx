@@ -164,7 +164,7 @@ const TutorialStep = (props: TutorialStepProps) => {
               "text-green-700 hover:text-green-800",
             props.status !== "current" &&
               props.status !== "completed" &&
-              "text-gray-400 hover:text-gray-500"
+              "text-ink-400 hover:text-gray-500"
           )}
         >
           {props.name}
@@ -224,13 +224,13 @@ export const Tutorial = (props: TutorialProps) => {
   return (
     <div
       className={clsx(
-        "absolute bottom-0 right-4 bg-white rounded-lg w-80 z-30 border border-gray-200 font-primary overflow-hidden shadow-sm transition-transform duration-300",
+        "absolute bottom-0 right-4 bg-white rounded-lg w-80 z-30 border border-border-secondary font-body  overflow-hidden shadow-sm transition-transform duration-300",
         isWithinDocumentPage ? "-translate-y-14" : "-translate-y-4"
       )}
     >
       <div
         className={clsx(
-          "bg-gray-50 rounded-t-lg h-12 w-full border-gray-200 p-4 flex items-center justify-between",
+          "bg-gray-50 rounded-t-lg h-12 w-full border-border-secondary p-4 flex items-center justify-between",
           isCollapsed ? "" : "border-b"
         )}
       >
@@ -238,7 +238,7 @@ export const Tutorial = (props: TutorialProps) => {
           <span className="text-gray-600 font-medium ">{props.title}</span>
           <button
             type="button"
-            className="text-gray-400 text-xs font-medium inline-block"
+            className="text-ink-400 text-xs font-medium inline-block"
             onClick={props.onAdvanceTutorial}
           >
             ({props.completedSteps}/{props.totalSteps})
@@ -246,7 +246,7 @@ export const Tutorial = (props: TutorialProps) => {
         </div>
         <button
           type="button"
-          className="text-gray-400 hover:text-gray-800"
+          className="text-ink-400 hover:text-gray-800"
           onClick={() => setIsCollapsed(prev => !prev)}
         >
           <ChevronIcon className="h-3.5 w-3.5" />
@@ -263,7 +263,7 @@ export const Tutorial = (props: TutorialProps) => {
             {props.children({ isTutorialExpanded: !isCollapsed })}
           </div>
         </div>
-        <div className="w-full bg-gray-50 p-2 flex items-center justify-center gap-x-2 border-t border-gray-200">
+        <div className="w-full bg-gray-50 p-2 flex items-center justify-center gap-x-2 border-t border-border-secondary">
           {props.actionButtons}
         </div>
       </div>
@@ -318,7 +318,7 @@ export const OnboardingTutorial = () => {
   const dismissButton = (
     <button
       type="button"
-      className="text-sm w-full flex gap-x-1.5 items-center justify-center font-medium px-2 py-1.5 rounded-sm bg-white hover:bg-gray-50 text-gray-600 border border-gray-200 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400 disabled:border-gray-200"
+      className="text-sm w-full flex gap-x-1.5 items-center justify-center font-medium px-2 py-1.5 rounded-sm bg-white hover:bg-gray-50 text-gray-600 border border-border-secondary disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-ink-400 disabled:border-border-secondary"
       disabled={tutorialState.isCompleted}
       onClick={() => {
         advanceTutorial();

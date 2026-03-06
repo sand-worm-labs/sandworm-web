@@ -251,7 +251,7 @@ export default function DataSourcesList({
   }
 
   return (
-    <ul className="divide-y divide-gray-200 pt-1">
+    <ul className="divide-y divide-border-secondary pt-1">
       {orderedAPIDataSources.map(({ config: dataSource }) => (
         <li
           key={dataSource.data.id}
@@ -423,7 +423,7 @@ function EmptyAPIDataSources({ workspaceId }: EmptyAPIDataSourcesProps) {
       <Link href={`/workspaces/${workspaceId}/data-sources/new`}>
         <div className="text-center py-12 bg-ceramic-50/60 hover:bg-ceramic-50 rounded-xl">
           <svg
-            className="mx-auto h-12 w-12 text-gray-400"
+            className="mx-auto h-12 w-12 text-ink-400"
             stroke="currentColor"
             fill="none"
             viewBox="0 0 48 48"

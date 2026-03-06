@@ -82,8 +82,6 @@ function PrivateDocumentPageInner(
 
   const [{ datasources: dataSources }] = useDataSources(props.workspaceId);
 
-  console.log("datasources", dataSources, props.workspaceId);
-
   const onHideSidebar = useCallback(() => {
     setSelectedSidebar(null);
   }, [setSelectedSidebar]);
@@ -174,20 +172,15 @@ function PrivateDocumentPageInner(
     restoreDocument(props.documentId);
   }, [props.documentId, restoreDocument]);
 
-  console.log("[PrivateDocumentPageInner] props.document:", props.document);
-  console.log("[PrivateDocumentPageInner] clock:", props.document?.clock);
-  console.log(
-    "[PrivateDocumentPageInner] typeof clock:",
-    typeof props.document?.clock
-  );
-
   const clock = useMemo(() => {
     if (!props.isApp) {
       return props.document.clock ?? 0;
     }
 
     return (
-      props.document.userAppClock[props.user.id] ?? props.document.appClock ?? 0
+      props.document?.userAppClock?.[props.user.id] ??
+      props.document?.appClock ??
+      0
     );
   }, [
     props.isApp,
@@ -250,6 +243,15 @@ function PrivateDocumentPageInner(
       console.log("Visibility changed to:", visibility);
     },
     []
+  );
+
+  console.log(
+    props.document,
+    "document.appClock",
+    props?.document?.appClock,
+    "document.userAppClock[userId]",
+    props.document?.userAppClock?.[props.user.id],
+    props.document?.publishedAt
   );
 
   // ⬢ Sidebar content for NotebookPanel
@@ -351,7 +353,7 @@ function PrivateDocumentPageInner(
 
   const topBarContent = (
     <div className="flex items-center w-full justify-between gap-x-6">
-      <div className="w-full overflow-hidden flex items-center gap-x-1.5 text-sm text-gray-400 dark:text-ink-400  font-body">
+      <div className="w-full overflow-hidden flex items-center gap-x-1.5 text-sm text-ink-400 dark:text-ink-400  font-body">
         {props.isApp || props?.user?.role?.[props.workspaceId] === "viewer" ? (
           <EyeIcon className="w-4 h-4" />
         ) : (
@@ -402,8 +404,8 @@ function PrivateDocumentPageInner(
         {props?.user?.role?.[props.workspaceId] ===
         "viewer" ? null : props.isApp ? (
           <Link
-            className="flex gap-x-2 items-center rounded-md px-3 py-1 text-sm text-ink-400 bg-white dark:text-ink-100 hover:bg-gray-100 border dark:border-gray-200 border-border-tertiary disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 justify-center"
-            href={`/workspace/${props.document.workspaceId}/documents/${props.document.id}/notebook/edit`}
+            className="flex items-center rounded-md px-3 py-1 text-sm bg-white dark:bg-base-100  dark:text-ink-100  hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 group relative border border-[#E9ECEF] dark:border-border-tertiary"
+            href= {`/workspace/${props.document.workspaceId}/documents/${props.document.id}/notebook/edit`}
           >
             <PencilIcon className="w-5 h-5" />
             <span>Edit</span>
@@ -418,7 +420,7 @@ function PrivateDocumentPageInner(
           >
             <button
               type="button"
-              className="flex items-center rounded-md px-3 py-1 text-sm bg-white dark:bg-base-100 dark:text-ink-100  hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 group relative border border-[#E9ECEF] dark:border-border-tertiary"
+              className="flex items-center rounded-md px-3 py-1 text-sm bg-white dark:bg-base-100  dark:text-ink-100  hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 group relative border border-[#E9ECEF] dark:border-border-tertiary"
               onClick={onPublish}
               disabled={props.publishing}
             >
@@ -439,7 +441,7 @@ function PrivateDocumentPageInner(
 
   return (
     <Layout
-      topBarClassname={props.isApp ? "bg-gray-50 " : undefined}
+      topBarClassname={props.isApp ? "bg-base-100 " : undefined}
       topBarContent={topBarContent}
       user={props.user}
       sidebarContent={sidebarContent}

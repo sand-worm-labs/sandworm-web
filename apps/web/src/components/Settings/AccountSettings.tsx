@@ -39,7 +39,6 @@ export default function WorkspaceSettings() {
     selectedSettingsWorkspace: null,
   });
 
-  console.log(allWorkspaces, "all workspace");
 
   /* Is Admin */
   const isAdminOfWorkspace = useCallback(

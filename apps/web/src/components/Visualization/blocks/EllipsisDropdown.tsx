@@ -23,7 +23,7 @@ function MenuButton(props: MenuButtonProps) {
       as="button"
       onClick={props.onClick}
       type="button"
-      className="w-full flex items-center rounded-sm px-4 py-2 text-gray-500 dark:text-white text-sm gap-x-2  dark:hover:bg-[#181C21] hover:bg-primary/20"
+      className="w-full flex items-center rounded-sm px-4 py-2 text-ink-400 dark:text-white text-sm gap-x-2  dark:hover:bg-[#181C21] hover:bg-primary/20"
     >
       <div className="flex justify-center w-6">{props.icon}</div>
       <span>{props.text}</span>
@@ -63,7 +63,7 @@ function EllipsisDropdown(props: Props) {
       >
         <Menu.Items
           as="div"
-          className="mt-1 rounded-xl bg-white dark:bg-base-100 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none font-primary divide-y divide-gray-200 dark:divide-[#262A30] w-56 border dark:border-border-tertiary "
+          className="mt-1 rounded-xl bg-white dark:bg-base-100  shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none font-body  divide-y divide-border-secondary dark:divide-border-tertiary w-56 border dark:border-border-tertiary "
         >
           {!props.isViewer && props.onToggleFiles && (
             <MenuButton

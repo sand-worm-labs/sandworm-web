@@ -138,7 +138,7 @@ export function PythonOutput(props: ItemProps) {
               {!props.isDashboardView && (
                 <div className="w-full flex flex-col items-end">
                   <button
-                    className="bg-white rounded-md rounded-br-md border border-gray-200 p-1 hover:bg-gray-50 z-10 text-xs text-gray-400"
+                    className="bg-white rounded-md rounded-br-md border border-border-secondary p-1 hover:bg-gray-50 z-10 text-xs text-ink-400"
                     onClick={onExportToPNG}
                   >
                     PNG
@@ -194,7 +194,7 @@ export function PythonOutputWrapper(props: PythonOutputWrapperProps) {
     <div className="pt-3.5 ph-no-capture printable-block">
       <div className="px-3 text-xs text-gray-300 pb-3.5 flex items-center gap-x-0.5">
         <button
-          className="h-4 w-4 hover:text-gray-400"
+          className="h-4 w-4 hover:text-ink-400"
           onClick={props.collapseToggle}
         >
           {props.isCollapsed ? <ChevronRightIcon /> : <ChevronDownIcon />}
