@@ -17,7 +17,6 @@ import { SyncHandlerService } from "./services/sync-handler.service";
 import { PersistorFactory } from './persistors/persistor.factory'
 import { LockModule } from '@/infrastructure/lock/lock.module'
 import { PubSubModule } from '@/infrastructure/pubsub/pubsub.module'
-import { SessionModule } from '@/features/session/session.module'
 import { YjsGateway } from './yjs.gateway'
 
 @Module({
@@ -34,7 +33,6 @@ import { YjsGateway } from './yjs.gateway'
     AuthModule,
     LockModule,
     PubSubModule,
-    SessionModule
   ],
   providers: [
     YjsDocumentService,

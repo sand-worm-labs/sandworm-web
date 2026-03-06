@@ -4,7 +4,6 @@ import * as http from 'http';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DocumentEntity } from '@sandworm/postgresql-typeorm';
-import { SessionService } from '@/features/session/session.service';
 import { YjsDocumentService } from '@/features/collaboration/yjs/yjs-document.service';
 import { SessionManagerService } from '@/features/collaboration/yjs/services/session-manager.service';
 import { MessageHandlerService } from '@/features/collaboration/yjs/services/message-handler.service';
@@ -23,7 +22,6 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
         private readonly messageHandler: MessageHandlerService,
         private readonly syncHandler: SyncHandlerService,
         private readonly persistence: PersistenceService,
-        private readonly sessionService: SessionService,
         @InjectRepository(DocumentEntity)
         private readonly documentRepository: Repository<DocumentEntity>,
     ) { }
@@ -59,7 +57,7 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
 
             this.logger.log(`📥 New connection from ${req.socket.remoteAddress}`);
 
-            const data = await getRequestData(req, this.sessionService, this.documentRepository);
+            const data = await getRequestData(req this.documentRepository);
 
             if (!data) {
                 this.logger.warn('Invalid request, closing');

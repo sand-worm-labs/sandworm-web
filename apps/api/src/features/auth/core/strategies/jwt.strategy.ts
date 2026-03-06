@@ -4,6 +4,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
 import { OrNeverType } from '@/common/types/or-never.type';
 import { AllConfigType } from '@/config/config.type';
+import { JwtPayloadType } from '../types/jwt-payload.type';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {

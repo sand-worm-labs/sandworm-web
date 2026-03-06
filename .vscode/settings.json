@@ -8,15 +8,18 @@
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "cSpell.words": [
+    "avater",
     "commitlint",
     "cssnano",
     "nextauth",
     "Persistor",
     "persistors",
     "QLJSON",
+    "resuable",
     "sandworm",
     "sess",
     "tailwindcss",
+    "uuidv",
     "ydoc"
   ],
 

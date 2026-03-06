@@ -5,7 +5,6 @@ import qs from 'querystring';
 import { z } from 'zod';
 import { Repository } from 'typeorm';
 import { DocumentEntity, UserWorkspaceRole } from '@sandworm/postgresql-typeorm';
-import { SessionService } from '@/features/session/session.service';
 
 const logger = new Logger('ValidationUtils');
 
@@ -20,7 +19,6 @@ export interface RequestData {
 
 export async function getRequestData(
     req: http.IncomingMessage,
-    sessionService: SessionService,
     documentRepository: Repository<DocumentEntity>,
 ): Promise<RequestData | null> {
     try {

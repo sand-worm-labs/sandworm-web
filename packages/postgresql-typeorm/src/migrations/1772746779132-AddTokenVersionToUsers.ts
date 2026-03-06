@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class Init1772092507120 implements MigrationInterface {
-    name = 'Init1772092507120'
+export class AddTokenVersionToUsers1772746779132 implements MigrationInterface {
+    name = 'AddTokenVersionToUsers1772746779132'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
@@ -190,6 +190,7 @@ export class Init1772092507120 implements MigrationInterface {
                 "email_verified" boolean,
                 "password" character varying,
                 "last_visited_workspace_id" uuid,
+                "token_version" integer NOT NULL DEFAULT '0',
                 "settingsId" integer,
                 CONSTRAINT "UQ_fe0bb3f6520ee0469504521e710" UNIQUE ("username"),
                 CONSTRAINT "REL_76ba283779c8441fd5ff819c8c" UNIQUE ("settingsId"),
@@ -387,20 +388,6 @@ export class Init1772092507120 implements MigrationInterface {
             )
         `);
         await queryRunner.query(`
-            CREATE TABLE "sessions" (
-                "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-                "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-                "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
-                "hash" character varying NOT NULL,
-                "deletedAt" TIMESTAMP,
-                "userId" uuid,
-                CONSTRAINT "PK_3238ef96f18b355b671619111bc" PRIMARY KEY ("id")
-            )
-        `);
-        await queryRunner.query(`
-            CREATE INDEX "IDX_57de40bc620f456c7311aa3a1e" ON "sessions" ("userId")
-        `);
-        await queryRunner.query(`
             CREATE TABLE "pub_sub_payload" (
                 "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
                 "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
@@ -569,16 +556,9 @@ export class Init1772092507120 implements MigrationInterface {
                     "user_yjs_app_document_user_id"
                 ) REFERENCES "user_yjs_app_document"("yjs_app_document_id", "user_id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
-        await queryRunner.query(`
-            ALTER TABLE "sessions"
-            ADD CONSTRAINT "FK_57de40bc620f456c7311aa3a1e6" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
-        `);
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`
-            ALTER TABLE "sessions" DROP CONSTRAINT "FK_57de40bc620f456c7311aa3a1e6"
-        `);
         await queryRunner.query(`
             ALTER TABLE "yjs_update" DROP CONSTRAINT "FK_yjs_update_user_yjs_app_document_yjs_app_document"
         `);
@@ -692,12 +672,6 @@ export class Init1772092507120 implements MigrationInterface {
         `);
         await queryRunner.query(`
             DROP TABLE "pub_sub_payload"
-        `);
-        await queryRunner.query(`
-            DROP INDEX "public"."IDX_57de40bc620f456c7311aa3a1e"
-        `);
-        await queryRunner.query(`
-            DROP TABLE "sessions"
         `);
         await queryRunner.query(`
             DROP TABLE "socket_io_attachments"
