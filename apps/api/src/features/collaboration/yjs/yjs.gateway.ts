@@ -3,7 +3,7 @@ import WebSocket from 'ws';
 import * as http from 'http';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { DocumentEntity, UserWorkspaceRole } from '@sandworm/postgresql-typeorm';
+import { DocumentEntity, UserWorkspaceEntity, UserWorkspaceRole, UserWorkspaceStatus } from '@sandworm/postgresql-typeorm';
 import * as cookie from 'cookie';
 import qs from 'querystring';
 import { z } from 'zod';
@@ -22,12 +22,14 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
     private wss: WebSocket.Server;
 
     constructor(
-        private readonly sessionManager: SessionManagerService,
+       private readonly sessionManager: SessionManagerService,
         private readonly messageHandler: MessageHandlerService,
         private readonly syncHandler: SyncHandlerService,
         private readonly persistence: PersistenceService,
         @InjectRepository(DocumentEntity)
         private readonly documentRepository: Repository<DocumentEntity>,
+        @InjectRepository(UserWorkspaceEntity)
+        private readonly userWorkspaceRepository:Repository<UserWorkspaceEntity>
     ) { }
 
     onModuleInit() {
@@ -107,7 +109,7 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
                     // Revalidate role every 5 seconds
                     if (now - lastRoleUpdate > 5000) {
                         lastRoleUpdate = now;
-                        const updatedRole = await getUserRole(authUser.id, session.workspaceId);
+                        const updatedRole = await this.getUserRole(authUser.id, session.workspaceId);
                         if (updatedRole) {
                             transactionOrigin.role = updatedRole;
                         } else {
@@ -187,7 +189,7 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
     }
 
     private async getRequestData(req: http.IncomingMessage): Promise<RequestData | null> {
-        try {
+         try {
             const cookiesHeader = req.headers.cookie;
             const cookies = cookie.parse(cookiesHeader ?? '');
             const query = qs.parse(req.url?.split('?')[1] ?? '');
@@ -196,7 +198,10 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
             const clock = parseInt((query['clock'] ?? '').toString());
             const isApp = query['isApp'] === 'true';
             const userId = query['userId']?.toString() ?? null;
+            const authToken = cookies['auth-token'] ?? query['authToken']?.toString() ?? null;
 
+            this.logger.debug(`Parsed query params: docId=${docId}, clock=${clock}, isApp=${isApp}, userId=${userId}`);
+            this.logger.debug(`Parsed auth token: ${authToken}`);
             const args = z
                 .object({
                     docId: z.string().uuid(),
@@ -211,7 +216,7 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
                 return null;
             }
 
-            const document = await documentRepository.findOne({
+            const document = await this.documentRepository.findOne({
                 where: { id: args.data.docId },
             });
 
@@ -220,7 +225,7 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
                 return null;
             }
 
-            const session = await sessionService.validateSessionFromAuthToken(cookies["auth-token"]);
+            const session = await sessionService.validateSessionFromAuthToken(authToken);
 
             if (!session) {
                 this.logger.warn('No valid session found');
@@ -251,6 +256,22 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
             };
         } catch (err) {
             this.logger.error(`Failed to get request data: ${err}`);
+            return null;
+        }
+    }
+
+    private async getUserRole(
+        userId: string,
+        workspaceId: string,
+    ): Promise<UserWorkspaceRole | null> {
+        try {
+            const userWorkspace = await this.userWorkspaceRepository.findOne({
+                where: { userId, workspaceId, status: UserWorkspaceStatus.ACTIVE },
+            });
+    
+            return userWorkspace?.role ?? null;
+        } catch (err) {
+            this.logger.error(`Failed to get user role: ${err}`);
             return null;
         }
     }

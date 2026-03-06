@@ -48,8 +48,9 @@ export class UserService {
     }
 
     const foundUser = User.fromEntity(user);
+    const roles = await this.getUserWorkspaceRoles(user.id);
 
-    return { id: user.id, user: foundUser, token: currentUser.token, tokenExpires: Date.now() + 60 * 60 * 1000 };
+    return { id: user.id, user: foundUser, roles };
   }
 
   async create(

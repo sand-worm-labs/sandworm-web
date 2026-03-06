@@ -11,6 +11,7 @@
     "avater",
     "commitlint",
     "cssnano",
+    "followee",
     "nextauth",
     "Persistor",
     "persistors",
