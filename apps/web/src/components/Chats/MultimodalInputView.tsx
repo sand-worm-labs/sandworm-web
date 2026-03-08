@@ -74,6 +74,8 @@ export const MultimodalInputView = forwardRef<
     dark:text-white
     text-sm
     placeholder:text-ink-300 
+        dark:placeholder:text-ink-400 
+
     placeholder:tracking-wide
     py-4 px-5
     focus:outline-none
@@ -88,6 +90,7 @@ dark:focus:ring-[rgba(163,8,240,0.3)]
     scrollbar-thin
     scrollbar-thumb-rounded-md
     scrollbar-thumb-zinc-700
+    dark:bg-[#30302E]
   "
             rows={6}
           />
@@ -95,7 +98,7 @@ dark:focus:ring-[rgba(163,8,240,0.3)]
           <div className="absolute bottom-5 left-5">
             <Button
               type="button"
-              className="rounded-full p-2.5 h-fit m-0.5 bg-transparent dark:bg-base-100  text-black dark:text-[#C5CED9] border-[#B5C8DB] border  hover:bg-[rgba(207,211,222,0.15)] 
+              className="rounded-full p-2.5 h-fit m-0.5 bg-transparent dark:bg-[#30302E] text-black dark:text-ink-400 border-[#B5C8DB] border  hover:bg-[rgba(207,211,222,0.15)] 
     dark:hover:bg-[rgba(255,255,255,0.05)] dark:border-border-tertiary"
               onClick={onFileClick}
             >
@@ -114,7 +117,7 @@ dark:focus:ring-[rgba(163,8,240,0.3)]
             {isLoading ? (
               <Button
                 type="button"
-                className="rounded-full p-2.5 h-fit m-0.5 text-white bg-[#A308F0] "
+                className="rounded-full p-2.5 h-fit m-0.5 text-white bg-primary "
                 onClick={onStop}
                 disabled={disabled}
               >
@@ -125,8 +128,8 @@ dark:focus:ring-[rgba(163,8,240,0.3)]
                 type="button"
                 className={`rounded-full p-2.5 h-fit m-0.5 font-light ${
                   input.trim()
-                    ? "text-white bg-[#A308F0]"
-                    : "text-white bg-[#A308F0]/50"
+                    ? "text-white bg-primary"
+                    : "text-white bg-primary/50"
                 }`}
                 onClick={() => onSubmit?.()}
               >

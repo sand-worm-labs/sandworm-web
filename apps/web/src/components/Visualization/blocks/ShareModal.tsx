@@ -92,7 +92,7 @@ export default function ShareModal({
         className={cn(
           "p-2 mb-2 rounded-lg transition-colors flex items-center justify-center",
           "text-ink-400 hover:text-ink-100 dark:text-ink-100 dark:hover:text-white",
-          "hover:bg-[#F1F3F4] dark:hover:bg-[#21262d] "
+          "hover:bg-[#F1F3F4] dark:hover:bg-base-400 "
         )}
         aria-label="Share"
         title="Share"
@@ -128,7 +128,7 @@ export default function ShareModal({
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-md transform rounded-xl bg-white dark:bg-[#161B22] shadow-xl transition-all">
+                <Dialog.Panel className="w-full max-w-md transform rounded-xl bg-white dark:bg-base-400  shadow-xl transition-all">
                   {/* Header */}
                   <div className="flex items-center justify-between px-5 pt-5 pb-1">
                     <div>
@@ -165,7 +165,7 @@ export default function ShareModal({
                               "relative flex items-center gap-3 rounded-lg border px-4 py-3 cursor-pointer transition-all",
                               checked
                                 ? "border-primary-500 bg-primary-50 dark:bg-primary-500/10 ring-1 ring-primary"
-                                : "border-border-secondary dark:border-[#30363d] hover:border-gray-300 dark:hover:border-[#484f58] hover:bg-gray-50 dark:hover:bg-[#21262d]",
+                                : "border-border-secondary  hover:border-gray-300 dark:hover:border-border-secondary hover:bg-gray-50 dark:hover:bg-base-500",
                               isUpdating && "opacity-50 cursor-not-allowed"
                             )
                           }
@@ -177,7 +177,7 @@ export default function ShareModal({
                                   "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg",
                                   checked
                                     ? "bg-primary-100 dark:bg-primary-500/20 text-primary-600 dark:text-primary-400"
-                                    : "bg-gray-100 dark:bg-[#21262d] text-gray-500 dark:text-ink-400"
+                                    : "bg-gray-100 dark:bg-base-500 text-gray-500 dark:text-ink-400"
                                 )}
                               >
                                 <option.icon className="h-5 w-5" />
@@ -189,7 +189,7 @@ export default function ShareModal({
                                     "text-sm font-medium",
                                     checked
                                       ? "text-primary-900 dark:text-primary-300"
-                                      : "text-ink-100 dark:text-gray-100"
+                                      : "text-ink-100 "
                                   )}
                                 >
                                   {option.name}
@@ -218,7 +218,7 @@ export default function ShareModal({
 
                   {/* Copy Link Section */}
                   <div className="px-5 pb-5">
-                    <div className="flex items-center gap-2 rounded-lg border border-border-secondary dark:border-[#30363d] bg-gray-50 dark:bg-[#0d1117] p-1.5 pl-3">
+                    <div className="flex items-center gap-2 rounded-lg border border-border-secondary dark:border-[#30363d] bg-gray-50 dark:bg-base-100 p-1.5 pl-3">
                       <input
                         type="text"
                         readOnly
@@ -232,7 +232,7 @@ export default function ShareModal({
                           "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-all",
                           copied
                             ? "bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400"
-                            : "bg-white dark:bg-[#21262d] text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-[#30363d] border border-border-secondary dark:border-[#30363d]"
+                            : "bg-white dark:bg-base-500 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-[#30363d] border border-border-secondary dark:border-[#30363d]"
                         )}
                       >
                         {copied ? (

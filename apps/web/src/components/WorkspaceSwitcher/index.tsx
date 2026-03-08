@@ -24,7 +24,11 @@ function workspaceGradient(id: string) {
   return gradients[Math.abs(hash) % gradients.length];
 }
 
-export default function WorkspaceSwitcher() {
+export default function WorkspaceSwitcher({
+  collapsed,
+}: {
+  collapsed: boolean;
+}) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -71,9 +75,11 @@ export default function WorkspaceSwitcher() {
             d="M19 9l-7 7-7-7"
           />
         </svg>
-        <span className="text-[12px] font-medium text-ink-600  ">
-          Workspaces
-        </span>
+        {!collapsed && (
+          <span className="text-[12px] font-medium text-ink-600  ">
+            Workspaces
+          </span>
+        )}
       </div>
 
       {/* Trigger pill */}
@@ -97,9 +103,11 @@ export default function WorkspaceSwitcher() {
         />
 
         {/* Name */}
-        <span className="flex-1 text-left xl:text-sm text-[13px] font-medium text-ink-100  truncate">
-          {workspaceInfo.name}
-        </span>
+        {!collapsed && (
+          <span className="flex-1 text-left xl:text-sm text-[13px] font-medium text-ink-100  truncate">
+            {workspaceInfo.name}
+          </span>
+        )}
 
         {/* Up/down chevrons */}
         <div className="flex flex-col gap-[0px] text-[#1C3B5A] dark:text-ink-400">
@@ -143,7 +151,7 @@ export default function WorkspaceSwitcher() {
           )}
         >
           {/* Current workspace (non-clickable) */}
-          <div className="flex items-center gap-3 px-3 py-2.5 bg-[#F8F9FA] dark:bg-base-400">
+          <div className="flex items-center gap-3 px-3 py-2.5 bg-[#F8F9FA] dark:bg-base-400 min-w-[12rem]">
             <div
               className={clsx(
                 "w-6 h-6 rounded-md bg-gradient-to-br flex-shrink-0",

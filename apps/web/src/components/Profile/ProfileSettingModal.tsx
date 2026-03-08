@@ -139,7 +139,13 @@ export function ProfileSettingsModal({
                             />
                           ) : (
                             <div className="w-[88px] h-[88px] rounded-full border-2 border-border-secondary dark:border-border-tertiary bg-gray-100 dark:bg-base-400 flex items-center justify-center">
-                              <span className="text-3xl font-medium text-ink-400 dark:text-ink-400">
+                              <Image
+                                src="/img/avatar/avatar6.svg"
+                                alt=""
+                                fill
+                                className="object-cover"
+                              />
+                              <span className="text-4xl relative z-10 font-medium text-white">
                                 {(
                                   user?.firstName?.[0] ||
                                   user?.username?.[0] ||

@@ -62,7 +62,7 @@ export const ClaimUsernameStep = ({
       <Username />
 
       <div className="w-full max-w-md mx-auto space-y-4 text-center">
-        <h2 className="text-2xl font-bold font-body  text-ink-100 mt-4">
+        <h2 className="text-2xl font-bold font-primary  text-ink-100 mt-4">
           Claim your Sandworm domain
         </h2>
         <p className="text-sm font-medium text-ink-200 dark:text-white font-body  mb-4">

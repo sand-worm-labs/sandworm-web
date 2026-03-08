@@ -111,6 +111,14 @@ function Title(props: Props) {
     [editor]
   );
 
+  useEffect(() => {
+    const observer = () => {
+      console.log("[Title ydoc] fragment changed:", props.content.toJSON());
+    };
+    props.content.observeDeep(observer);
+    return () => props.content.unobserveDeep(observer);
+  }, [props.content]);
+
   return (
     <div className="font-body ">
       <TitleSkeleton visible={props.isLoading} />

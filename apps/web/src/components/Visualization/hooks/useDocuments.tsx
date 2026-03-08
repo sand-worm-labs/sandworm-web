@@ -22,6 +22,87 @@ import {
 import { useFavorites } from "./useFavorites";
 import { useWebsocket } from "./useWebSocket";
 
+function upsertDocumentInMemory(
+  documents: List<ApiDocument>,
+  workspaceId: string,
+  body: { id: string; parentId: string | null; version: number }
+) {
+  const documentsById = Map(documents.map(d => [d.id, d]));
+  const childrenByParentId = List(documents).groupBy(d => d.parentId);
+
+  let affectedDocuments = Map<string, ApiDocument>();
+
+  const doc = documentsById.get(body.id);
+  if (doc) {
+    if (doc.parentId === body.parentId) {
+      // nothing actually changed
+      return documents;
+    }
+
+    const oldSiblings = childrenByParentId.get(doc.parentId) ?? List();
+    // decrement orderIndex of all past siblings that came after the
+    // current document
+    oldSiblings.forEach(d => {
+      if (d.orderIndex > doc.orderIndex) {
+        affectedDocuments = affectedDocuments.set(d.id, {
+          ...d,
+          orderIndex: d.orderIndex - 1,
+        });
+      }
+    });
+
+    // place it at the end of the new siblings
+    const newSiblings = childrenByParentId.get(body.parentId) ?? List();
+    const orderIndex = newSiblings.size;
+    affectedDocuments = affectedDocuments.set(doc.id, {
+      ...doc,
+      parentId: body.parentId,
+      orderIndex,
+    });
+  } else {
+    // inserting, just place it at the end of the new siblings
+    const now = new Date();
+    const siblings = childrenByParentId.get(body.parentId) ?? List();
+    const orderIndex = siblings.size;
+    affectedDocuments = affectedDocuments.set(body.id, {
+      id: body.id,
+      title: "",
+      icon: "DocumentIcon",
+      parentId: body.parentId,
+      orderIndex,
+      isSyncedWithYjs: true,
+      workspaceId,
+      createdAt: now,
+      updatedAt: now,
+      deletedAt: null,
+      version: body.version,
+      publishedAt: null,
+      appId: "",
+      clock: 0,
+      appClock: 0,
+      userAppClock: {},
+      runUnexecutedBlocks: false,
+      runSQLSelection: false,
+      shareLinksWithoutSidebar: true,
+      hasDashboard: false,
+    });
+  }
+
+  let result: List<ApiDocument> = List();
+  documents.forEach(doc => {
+    const affectedDoc = affectedDocuments.get(doc.id);
+    if (affectedDoc) {
+      result = result.push(affectedDoc);
+      affectedDocuments = affectedDocuments.delete(doc.id);
+      return;
+    }
+
+    result = result.push(doc);
+  });
+
+  return result.push(...Array.from(affectedDocuments.values()));
+}
+
 function deleteDocumentInMemory(
   documents: List<ApiDocument>,
   id: string,
@@ -213,12 +294,26 @@ export function DocumentsProvider(props: Props) {
       workspaceId: string;
       document: ApiDocument;
     }) => {
+      console.log("[workspace-document-update] received:", {
+        id: data.document.id,
+        title: data.document.title,
+      });
+
       setState(s => {
         const { workspaceId } = data;
 
         const documents = s.get(workspaceId)?.documents ?? List();
 
         const document = documents.find(d => d.id === data.document.id);
+        const existing = documents.find(d => d.id === data.document.id);
+
+        console.log(
+          "[workspace-document-update] existing title:",
+          existing?.title,
+          "→ incoming:",
+          data.document.title
+        );
+
         if (document) {
           const nextDocuments = documents.map(d =>
             d.id === data.document.id ? data.document : d

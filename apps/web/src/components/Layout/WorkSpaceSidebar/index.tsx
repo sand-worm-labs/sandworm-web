@@ -81,8 +81,8 @@ export const WorkspaceSidebar = () => {
     `flex items-center gap-3 rounded-xl px-2 py-1.5 text-sm font-medium transition-colors
      ${
        pathname === href
-         ? "bg-base-600  text-primary dark:text-ink-100"
-         : "text-menu-ink dark:text-white hover:bg-base-600 hover:text-primary   hover:text-black dark:hover:text-white"
+         ? "dark:bg-base-600 bg-[#EBEBEB]  text-primary dark:text-ink-100"
+         : "text-menu-ink dark:text-white hover:bg-[#EBEBEB] dark:hover:bg-base-600 hover:text-primary   hover:text-black dark:hover:text-white"
      }`;
 
   const [
@@ -192,7 +192,7 @@ export const WorkspaceSidebar = () => {
 
   return (
     <aside
-      className={`h-full flex flex-col justify-between bg-base-500 border-r dark:border-border-tertiary border-[#E9ECEF] dark:border-border-tertiary font-body
+      className={`h-full flex flex-col justify-between bg-base-500 border-r  border-[#E9ECEF] dark:border-border-tertiary font-body
       transition-all duration-300 ease-in-out
       ${collapsed ? "w-16" : "w-[260px]"}
       `}
@@ -218,7 +218,7 @@ export const WorkspaceSidebar = () => {
           </button>
         </div>
 
-        <WorkspaceSwitcher />
+        <WorkspaceSwitcher collapsed={collapsed} />
 
         <div className="px-4 py-2.5" />
 
@@ -229,8 +229,7 @@ export const WorkspaceSidebar = () => {
                 <Link href={item.href} className={linkClasses(item.href)}>
                   <item.icon
                     size={18}
-                    color={pathname === item.href ? "#A308F0" : "#39414E"}
-                    className="text-ink-icon"
+                    className={`hover:text-[#A308F0] ${pathname === item.href ? "text-[#A308F0]" : "text-ink-icon"}`}
                   />
                   {!collapsed && item.name}
                 </Link>
