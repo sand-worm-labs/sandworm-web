@@ -13,4 +13,16 @@ export class AuthPayload {
 
   @Field(() => GraphQLJSON, { nullable: true })
   roles?: Record<string, string>[];
+
+  @StringField()
+  accessToken!: string;
+
+  @StringField()
+  refreshToken!: string;
+
+  @Field()
+  accessTokenExpires!: Date;
+
+  @Field()
+  refreshTokenExpires!: Date;
 }
