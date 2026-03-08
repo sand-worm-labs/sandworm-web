@@ -1,6 +1,6 @@
 import compression from '@fastify/compress';
 import helmet from '@fastify/helmet';
-import fastifyCookie from '@fastify/cookie';
+import cookie from '@fastify/cookie';
 import {
   ConsoleLogger,
   HttpStatus,
@@ -79,8 +79,9 @@ async function bootstrap() {
   });
 
   app.register(compression);
-  await app.register(fastifyCookie);
 
+  await app.register(cookie);
+  
   const corsOrigin = configService.getOrThrow('app.corsOrigin', {
     infer: true,
   });
@@ -150,7 +151,6 @@ async function bootstrap() {
   logger.log(`📊 GraphQL Playground http://0.0.0.0:${port}/graphql`);
   logger.log(`🔌 WebSocket endpoint ws://0.0.0.0:${port}/socket.io/`);
   logger.log(`📝 Environment: ${env}`);
-
 
 }
 

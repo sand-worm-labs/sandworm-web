@@ -3,7 +3,11 @@
 # ------------------------------------------------------
 
 type AuthPayload {
+  accessToken: String!
+  accessTokenExpires: DateTime!
   id: String!
+  refreshToken: String!
+  refreshTokenExpires: DateTime!
   roles: JSON
   user: User!
 }

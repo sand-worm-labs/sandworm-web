@@ -94,7 +94,7 @@ const graphqlModule = GraphQLModule.forRootAsync<ApolloDriverConfig>({
       includeStacktraceInErrorResponses: isLocal || isDevelopment,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
-      // ✅ Enable introspection
+      fastify: true,
       introspection: true,
 
       // ✅ Enable classic playground (more reliable)
@@ -129,8 +129,8 @@ const eventEmitterModule = EventEmitterModule.forRoot({
     i18nModule,
     WebsocketModule,
     ApiModule,
-    graphqlModule,
     eventEmitterModule,
+    graphqlModule,
   ],
   providers: [
     AppService,
@@ -139,6 +139,7 @@ const eventEmitterModule = EventEmitterModule.forRoot({
   ],
   exports: [AsyncContextProvider],
 })
+
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(RequestIdMiddleware).forRoutes('*');
