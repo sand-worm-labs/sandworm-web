@@ -141,6 +141,9 @@ export class UserEntity extends AbstractEntity {
   @OneToMany(() => UserWorkspaceEntity, (uw) => uw.inviter)
   workspacesInvitees!: Relation<UserWorkspaceEntity[]>;
 
+  @Column({ name: 'token_version', type: 'int', default: 0 })
+  tokenVersion!: number;
+
   getDisplayName(): string {
     return this.fullName || this.username || this.email || 'Anonymous';
   }

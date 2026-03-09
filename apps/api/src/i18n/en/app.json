@@ -24,7 +24,7 @@
       "unique_email": "This email address is already registered",
       "unique_follow": "You are already following this user",
       "unique_tag": "This tag already exists",
-      "unique_favorite": "You have already favorited this article",
+      "unique_favorite": "You have already favorites this article",
       "unique_slug": "This article slug is already in use"
     },
     "confirm_email": "Confirm your email",

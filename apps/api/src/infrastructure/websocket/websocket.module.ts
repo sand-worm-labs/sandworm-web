@@ -6,7 +6,6 @@ import { EnvironmentGatewayService } from './services/environment.gateway';
 import { CommentGatewayService } from './services/comments.gateway';
 import { DocumentGatewayService } from './services/document.gateway';
 import { ComponentGatewayService } from './services/reusable-component.gateway';
-import { SessionModule } from '@/features/session/session.module';
 import { JupyterModule } from '../jupyter/jupyter.module';
 import { YjsModule } from '../../features/collaboration/yjs/yjs.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -27,7 +26,7 @@ import { AuthModule } from '@/features/auth/core/auth.module';
             DocumentEntity,
             CommentEntity,
             ReusableComponentEntity
-        ]), SessionModule, JupyterModule, YjsModule, CodeExecutionModule, ReusableComponentModule, JwtModule.register({})],
+        ]),  JupyterModule, YjsModule, CodeExecutionModule, ReusableComponentModule, JwtModule.register({})],
     providers: [
         AppGateway,
         WorkspaceGatewayService,
