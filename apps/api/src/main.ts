@@ -102,6 +102,7 @@ async function bootstrap() {
       'Authorization',
       'X-File-Name',
       'X-File-Size',
+      'Cookie',
     ],
   });
 

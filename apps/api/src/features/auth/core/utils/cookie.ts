@@ -22,7 +22,6 @@ export function setTokenCookies(res: FastifyReply, tokens: TokenPair): void {
   res.setCookie(REFRESH_TOKEN_COOKIE, tokens.refreshToken, {
     ...base,
     expires: tokens.refreshTokenExpires,
-    path: '/auth/refresh',
   });
 }
 
