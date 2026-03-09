@@ -4,5 +4,5 @@ export class Session {
   id: string;
   user: UserResponse;
   hash: string;
-  userWorkspaces?: Record<string, { role: string }>;
+  roles?: Record<string, string>[]; 
 }

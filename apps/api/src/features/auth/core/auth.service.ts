@@ -488,11 +488,7 @@ export class AuthService {
     if (!user) return null;
 
     const roles = await this.usersService.getUserWorkspaceRoles(user.id);
-    const userWorkspaces = Object.fromEntries(
-      roles.map(e => [Object.keys(e)[0], { role: Object.values(e)[0] }])
-    );
-
-    return { id: user.id, hash: token, user, userWorkspaces };
+    return { id: user.id, hash: token, user,roles };
   }
 
 }
