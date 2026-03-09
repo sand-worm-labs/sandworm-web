@@ -1,12 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Server, Socket } from 'socket.io';
+import { Socket } from 'socket.io';
 import { z } from 'zod';
 import { uuidSchema } from '@sandworm/types';
-import { Session } from '../../../features/session/domain/session';
 import { JupyterService } from '../../jupyter/jupyter.service';
 import { EnvironmentEntity, EnvironmentStatus, UserWorkspaceRole } from '@sandworm/postgresql-typeorm';
+import { Session } from '@/features/auth/core/types/session.type';
 
 @Injectable()
 export class EnvironmentGatewayService {
@@ -45,9 +45,10 @@ export class EnvironmentGatewayService {
         }
 
         const { workspaceId } = payload.data;
-        const userWorkspace = session.userWorkspaces?.[workspaceId];
+        const entry = session.roles?.find(r => r[workspaceId]);
+        const role = entry?.[workspaceId];
 
-        if (!userWorkspace) {
+        if (!entry) {
             client.emit('environment-status-error', { workspaceId, error: 'forbidden' });
             return;
         }
@@ -67,9 +68,10 @@ export class EnvironmentGatewayService {
         }
 
         const { workspaceId } = payload.data;
-        const userWorkspace = session.userWorkspaces?.[workspaceId];
+        const entry = session.roles?.find(r => r[workspaceId]);
+        const role = entry?.[workspaceId];
 
-        if (!userWorkspace) {
+        if (!entry) {
             client.emit('environment-status-error', { workspaceId, error: 'forbidden' });
             return;
         }
@@ -79,7 +81,7 @@ export class EnvironmentGatewayService {
             return;
         }
 
-        if (userWorkspace.role === UserWorkspaceRole.VIEWER) {
+        if (role === UserWorkspaceRole.VIEWER) {
             client.emit('environment-status-error', { workspaceId, error: 'forbidden' });
             return;
         }

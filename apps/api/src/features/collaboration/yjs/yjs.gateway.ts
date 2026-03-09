@@ -2,15 +2,20 @@ import { Injectable, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/commo
 import WebSocket from 'ws';
 import * as http from 'http';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Auth, Repository } from 'typeorm';
 import { DocumentEntity, UserWorkspaceEntity, UserWorkspaceRole, UserWorkspaceStatus } from '@sandworm/postgresql-typeorm';
-import { SessionService } from '@/features/session/session.service';
+import * as cookie from 'cookie';
+import qs from 'querystring';
+import { z } from 'zod';
+import { YjsDocumentService } from '@/features/collaboration/yjs/yjs-document.service';
 import { SessionManagerService } from '@/features/collaboration/yjs/services/session-manager.service';
 import { MessageHandlerService } from '@/features/collaboration/yjs/services/message-handler.service';
 import { SyncHandlerService } from '@/features/collaboration/yjs/services/sync-handler.service';
 import { PersistenceService } from '@/features/collaboration/yjs/services/persistence.service';
 import { WebSocketUtils } from '@/features/collaboration/yjs/utils/websocket.utils';
-import { getRequestData } from '@/features/collaboration/yjs/utils/validation.utils';
+import { RequestData } from './types/requestData.types';
+import { AuthService } from '@/features/auth/core/auth.service';
+// import { getRequestData, getUserRole, RequestData } from '@/features/collaboration/yjs/utils/validation.utils';
 
 @Injectable()
 export class YjsGateway implements OnModuleInit, OnModuleDestroy {
@@ -18,11 +23,11 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
     private wss: WebSocket.Server;
 
     constructor(
-        private readonly sessionManager: SessionManagerService,
+       private readonly sessionManager: SessionManagerService,
         private readonly messageHandler: MessageHandlerService,
         private readonly syncHandler: SyncHandlerService,
         private readonly persistence: PersistenceService,
-        private readonly sessionService: SessionService,
+        private readonly authService:AuthService,
         @InjectRepository(DocumentEntity)
         private readonly documentRepository: Repository<DocumentEntity>,
         @InjectRepository(UserWorkspaceEntity)
@@ -60,7 +65,7 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
 
             this.logger.log(`📥 New connection from ${req.socket.remoteAddress}`);
 
-            const data = await getRequestData(req, this.sessionService, this.documentRepository);
+            const data = await this.getRequestData(req);
 
             if (!data) {
                 this.logger.warn('Invalid request, closing');
@@ -103,8 +108,8 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
                 try {
                     const now = Date.now();
 
-                    // Revalidate role every  minite
-                    if (now - lastRoleUpdate > 60000) {
+                    // Revalidate role every 5 seconds
+                    if (now - lastRoleUpdate > 5000) {
                         lastRoleUpdate = now;
                         const updatedRole = await this.getUserRole(authUser.id, session.workspaceId);
                         if (updatedRole) {
@@ -157,22 +162,6 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
         }
     }
 
-    private getUserRole(
-        userId: string,
-        workspaceId: string,
-    ): UserWorkspaceRole | null {
-        try {
-            const userWorkspace = await this.userWorkspaceRepository.findOne({
-                where: { userId, workspaceId, status: UserWorkspaceStatus.ACTIVE },
-            });
-    
-            return userWorkspace?.role ?? null;
-        } catch (err) {
-            this.logger.error(`Failed to get user role: ${err}`);
-            return null;
-        }
-    }
-
     private onYDocUpdate(session: any, update: Uint8Array, origin: any) {
         this.messageHandler.handleYDocUpdate(session, update, (msg) => this.broadcast(session, msg));
         this.sessionManager.schedulePersist(session, (s) => this.persistence.persistSession(s));
@@ -200,6 +189,96 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
     private closeConnection(session: any, conn: WebSocket) {
         WebSocketUtils.closeConnection(session, conn);
     }
+
+    private async getRequestData(req: http.IncomingMessage): Promise<RequestData | null> {
+         try {
+            const cookiesHeader = req.headers.cookie;
+            const cookies = cookie.parse(cookiesHeader ?? '');
+            const query = qs.parse(req.url?.split('?')[1] ?? '');
+
+            const docId = query['documentId'];
+            const clock = parseInt((query['clock'] ?? '').toString());
+            const isApp = query['isApp'] === 'true';
+            const userId = query['userId']?.toString() ?? null;
+            const authToken = cookies['auth-token'] ?? query['authToken']?.toString() ?? null;
+
+            this.logger.debug(`Parsed query params: docId=${docId}, clock=${clock}, isApp=${isApp}, userId=${userId}`);
+            this.logger.debug(`Parsed auth token: ${authToken}`);
+            const args = z
+                .object({
+                    docId: z.string().uuid(),
+                    clock: z.number().int(),
+                    isApp: z.boolean(),
+                    userId: z.string().uuid().nullable().optional(),
+                })
+                .safeParse({ docId, clock, isApp, userId });
+
+            if (!args.success) {
+                this.logger.warn('Invalid query string', args.error);
+                return null;
+            }
+
+            const document = await this.documentRepository.findOne({
+                where: { id: args.data.docId },
+            });
+
+            if (!document) {
+                this.logger.warn(`Document ${args.data.docId} not found`);
+                return null;
+            }
+
+            const session = await this.authService.validateTokenAndGetUser(authToken);
+
+            if (!session) {
+                this.logger.warn('No valid session found');
+                return null;
+            }
+
+            const entry = session.roles?.find(r => r[document.workspaceId]);
+            const role = entry?.[document.workspaceId];
+
+            if (!entry) {
+                this.logger.warn(
+                    `User ${session.user.id} does not have access to workspace ${document.workspaceId}`,
+                );
+                return null;
+            }
+
+            if (args.data.userId && args.data.userId !== session.user.id) {
+                this.logger.warn('User ID mismatch');
+                return null;
+            }
+
+            return {
+                document,
+                clock: args.data.clock,
+                authUser: session.user,
+                role: role as UserWorkspaceRole,
+                isApp: args.data.isApp,
+                userId: args.data.userId ?? null,
+            };
+        } catch (err) {
+            this.logger.error(`Failed to get request data: ${err}`);
+            return null;
+        }
+    }
+
+    private async getUserRole(
+        userId: string,
+        workspaceId: string,
+    ): Promise<UserWorkspaceRole | null> {
+        try {
+            const userWorkspace = await this.userWorkspaceRepository.findOne({
+                where: { userId, workspaceId, status: UserWorkspaceStatus.ACTIVE },
+            });
+    
+            return userWorkspace?.role ?? null;
+        } catch (err) {
+            this.logger.error(`Failed to get user role: ${err}`);
+            return null;
+        }
+    }
+
 
     onModuleDestroy() {
         this.logger.log('🛑 Shutting down YJS Gateway');

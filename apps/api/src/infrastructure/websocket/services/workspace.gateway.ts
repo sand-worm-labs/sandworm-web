@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Server, Socket } from 'socket.io';
 import { z } from 'zod';
 import { uuidSchema } from '@sandworm/types';
-import { Session } from '../../../features/session/domain/session';
+import { Session } from '@/features/auth/core/types/session.type';
 import { DocumentGatewayService } from './document.gateway';
 import { EnvironmentGatewayService } from './environment.gateway';
 import { ComponentGatewayService } from './reusable-component.gateway';
@@ -43,24 +43,17 @@ export class WorkspaceGatewayService {
         const { workspaceId } = payload.data;
 
         try {
-            let userWorkspace = session.userWorkspaces?.[workspaceId];
-            if (!userWorkspace) {
-                userWorkspace = await this.userWorkspaceRepository.findOne({
-                    where: {
-                        workspaceId,
-                        userId: session.user.id,
-                    },
+            const entry = session.roles?.find(r => r[workspaceId]);
+            if (!entry) {
+                const userWorkspace = await this.userWorkspaceRepository.findOne({
+                    where: { workspaceId, userId: session.user.id },
                 });
-
                 if (!userWorkspace) {
                     client.emit('workspace-error', { workspaceId, error: 'forbidden' });
                     return;
                 }
-
-                if (!session.userWorkspaces) {
-                    session.userWorkspaces = {};
-                }
-                session.userWorkspaces[workspaceId] = userWorkspace;
+                if (!session.roles) session.roles = [];
+                session.roles.push({ [workspaceId]: userWorkspace.role });
             }
 
             if (!client.rooms.has(workspaceId)) {

@@ -1,6 +1,6 @@
 import compression from '@fastify/compress';
 import helmet from '@fastify/helmet';
-import fastifyWebsocket from '@fastify/websocket';
+import cookie from '@fastify/cookie';
 import {
   ConsoleLogger,
   HttpStatus,
@@ -28,7 +28,7 @@ import { AllConfigType } from './core/config/config.type';
 import { GlobalExceptionFilter } from './core/filters/global-exception.filter';
 import { AuthGuard } from './core/guards/auth.guard';
 import { setupSwagger } from './common/utils/setup-swagger';
-import { AuthGraphqlService } from './features/auth/graphql/auth-graphql.service';
+import { AuthService } from './features/auth/core/auth.service';
 import { YjsGateway } from './features/collaboration/yjs/yjs.gateway';
 
 
@@ -80,6 +80,8 @@ async function bootstrap() {
 
   app.register(compression);
 
+  await app.register(cookie);
+  
   const corsOrigin = configService.getOrThrow('app.corsOrigin', {
     infer: true,
   });
@@ -100,10 +102,11 @@ async function bootstrap() {
       'Authorization',
       'X-File-Name',
       'X-File-Size',
+      'Cookie',
     ],
   });
 
-  app.useGlobalGuards(new AuthGuard(reflector, app.get(AuthGraphqlService)));
+  app.useGlobalGuards(new AuthGuard(reflector, app.get(AuthService)));
 
   app.useGlobalFilters(new GlobalExceptionFilter(httpAdapterHost, debug));
 
@@ -149,7 +152,6 @@ async function bootstrap() {
   logger.log(`📊 GraphQL Playground http://0.0.0.0:${port}/graphql`);
   logger.log(`🔌 WebSocket endpoint ws://0.0.0.0:${port}/socket.io/`);
   logger.log(`📝 Environment: ${env}`);
-
 
 }
 

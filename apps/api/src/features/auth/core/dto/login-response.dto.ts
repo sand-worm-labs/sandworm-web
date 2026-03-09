@@ -2,15 +2,6 @@ import { UserResponse } from '@/features/user/model/http/user.model';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class LoginResponseDto {
-  @ApiProperty()
-  token: string;
-
-  @ApiProperty()
-  refreshToken: string;
-
-  @ApiProperty()
-  tokenExpires: number;
-
   @ApiProperty({
     type: () => UserResponse,
   })
