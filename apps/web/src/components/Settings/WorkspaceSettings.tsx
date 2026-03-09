@@ -270,7 +270,7 @@ export function DeleteWorkspaceModal({
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
-            <Dialog.Panel className="w-full max-w-md rounded-xl bg-white p-6 py-8 shadow-xl relative">
+            <Dialog.Panel className="w-full max-w-md rounded-xl bg-white p-6 py-8 shadow-xl relative dark:bg-base-400  border dark:border-border-tertiary ">
               <Dialog.Title className="text-lg font-medium text-ink-100">
                 Delete Workspace
               </Dialog.Title>
@@ -294,14 +294,14 @@ export function DeleteWorkspaceModal({
                 <button
                   type="button"
                   onClick={onDelete}
-                  className="rounded-xl bg-error px-6 py-2 text-sm font-medium text-[#F8F9FA] hover:bg-red-700"
+                  className="rounded-xl bg-error px-6 py-2 text-sm font-medium text-[#F8F9FA] hover:bg-red-700 dark:bg-[#FF4444] "
                 >
                   {isDeleting ? "Deleting Workspace" : "Delete"}
                 </button>
                 <button
                   type="button"
                   onClick={onClose}
-                  className="rounded-xl border border-[#DEE2E6] bg-[#F8F9FA] px-6 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                  className="rounded-xl border border-[#DEE2E6] bg-[#F8F9FA] dark:bg-base-400 px-6 py-2 text-sm font-medium text-ink-400 hover:bg-gray-50 dark:border-border-tertiary"
                 >
                   Cancel
                 </button>

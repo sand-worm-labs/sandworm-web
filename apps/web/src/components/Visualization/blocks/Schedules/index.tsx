@@ -209,10 +209,11 @@ interface ScheduleListProps {
   onDeleteSchedule: (id: string) => () => void;
   onPublish: () => void;
   publishing: boolean;
+  onHide: () => void;
 }
 function ScheduleList(props: ScheduleListProps) {
   return (
-    <div className="w-[354px] h-full flex flex-col overflow-y-auto border-l border-border-secondary dark:border-border-tertiary font-body dark:bg-base-100 ">
+    <div className="relative w-[354px] h-full flex flex-col overflow-y-auto border-l border-border-secondary dark:border-border-tertiary font-body dark:bg-base-100 ">
       <div className="px-4 xl:px-6 pt-6 pb-5">
         <div className="flex justify-between">
           <div>
@@ -224,7 +225,13 @@ function ScheduleList(props: ScheduleListProps) {
               Schedule your notebook to run automatically
             </p>
           </div>
-          <ChevronRightIcon className="h-5 w-5 text-ink-400" />
+          <button
+            type="button"
+            className="absolute z-10 top-7 transform rounded-full border border-gray-300  text-ink-400 bg-base-100 hover:bg-gray-100 w-6 h-6 flex justify-center items-center right-3 -translate-x-1/2 dark:border-border-tertiary "
+            onClick={props.onHide}
+          >
+            <ChevronDoubleRightIcon className="w-3 h-3" />
+          </button>
         </div>
       </div>
 
@@ -383,21 +390,14 @@ export default function Schedules(props: Props) {
     <Transition
       as="div"
       show={props.visible}
-      className="top-0 right-0 h-full absolute bg-white z-30"
-      enter="transition-transform duration-300"
-      enterFrom="transform translate-x-full"
-      enterTo="transform translate-x-0"
-      leave="transition-transform duration-300"
-      leaveFrom="transform translate-x-0"
-      leaveTo="transform translate-x-full"
+      className="h-full overflow-hidden flex-shrink-0 font-body "
+      enter="transition-[width] duration-300 ease-in-out"
+      enterFrom="w-0"
+      enterTo="w-[354px]"
+      leave="transition-[width] duration-300 ease-in-out"
+      leaveFrom="w-[354px]"
+      leaveTo="w-0"
     >
-      <button
-        type="button"
-        className="absolute z-10 top-7 transform rounded-full border border-gray-300 text-ink-400 dark:border-border-tertiary bg-white hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
-        onClick={props.onHide}
-      >
-        <ChevronDoubleRightIcon className="w-3 h-3" />
-      </button>
       {showAddForm ? (
         <AddScheduleForm
           documentId={props.documentId}
@@ -413,6 +413,7 @@ export default function Schedules(props: Props) {
           onDeleteSchedule={onDeleteSchedule}
           onPublish={props.onPublish}
           publishing={props.publishing}
+          onHide={props.onHide}
         />
       )}
     </Transition>

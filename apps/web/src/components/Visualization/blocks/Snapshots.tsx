@@ -16,66 +16,47 @@ export function formatSnapshotDate(date: string): string {
   return dfns.format(new Date(date), "do 'of' MMMM, yyyy 'at' h:mm a");
 }
 
-const DefaultSnapshotsTooltip = () => {
-  return (
-    <div className="scale-0 font-body  pointer-events-none absolute left-1/2 mt-1.5 -translate-x-1/2 opacity-0 transition-opacity group-hover:scale-100 group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 w-44">
-      <div className="flex flex-col items-center justify-center text-ink-400 text-center gap-y-1">
-        <span>Each scheduled run generates a snapshot.</span>
-        <span>Create snapshots manually by clicking the save button.</span>
-      </div>
-    </div>
-  );
-};
-
 export default function Snapshots(props: Props) {
   return (
     <Transition
       as="div"
       show={props.visible}
-      className="top-0 right-0 h-full absolute bg-white z-30"
-      enter="transition-transform duration-300"
-      enterFrom="transform translate-x-full"
-      enterTo="transform translate-x-0"
-      leave="transition-transform duration-300"
-      leaveFrom="transform translate-x-0"
-      leaveTo="transform translate-x-full"
+      className="h-full overflow-hidden flex-shrink-0"
+      enter="transition-[width] duration-300 ease-in-out"
+      enterFrom="w-0"
+      enterTo="w-[354px]"
+      leave="transition-[width] duration-300 ease-in-out"
+      leaveFrom="w-[354px]"
+      leaveTo="w-0"
     >
-      <button
-        type="button"
-        className="absolute z-10 top-7 transform rounded-full border border-gray-300 dark:border-border-tertiary text-ink-400 bg-white dark:bg-base-100  hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
-        onClick={props.onHide}
-      >
-        <ChevronDoubleRightIcon className="w-3 h-3" />
-      </button>
-      <div className="w-[354px] flex flex-col border-l dark:border-border-tertiary border-border-secondary h-full bg-white dark:bg-base-100 ">
+      <div className="w-[354px] flex flex-col border-l dark:border-border-tertiary border-border-secondary h-full bg-white dark:bg-base-100 relative">
+        <button
+          type="button"
+          className="absolute z-10 top-7 transform rounded-full border border-gray-300 dark:border-border-tertiary text-ink-400 bg-white dark:bg-base-100 hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
+          onClick={props.onHide}
+        >
+          <ChevronDoubleRightIcon className="w-3 h-3" />
+        </button>
+
         <div className="flex items-center justify-between border-b dark:border-border-tertiary p-6">
-          <div className="flex items-center">
-            <div>
-              <h3 className="text-lg font-medium leading-6 text-ink-100  dark:text-white pr-1.5">
-                Snapshots
-              </h3>
-              <p className="text-ink-400 text-sm pt-1">
-                Each Scheduled Run generates a snapshot
-              </p>
-            </div>
-
-            {/*  <div className="group relative">
-              <QuestionMarkCircleIcon className="w-4 h-4 text-gray-300" />
-
-              <DefaultSnapshotsTooltip />
-            </div> */}
+          <div>
+            <h3 className="text-lg font-medium leading-6 text-ink-100 dark:text-white pr-1.5">
+              Snapshots
+            </h3>
+            <p className="text-ink-400 text-sm pt-1">
+              Each Scheduled Run generates a snapshot
+            </p>
           </div>
         </div>
+
         <ScrollBar className="overflow-auto">
           <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">
             <div className="flex flex-col gap-y-3 bg-ceramic-50/60 p-6 rounded-xl border-2 border-[#E9ECEF] dark:border-border-tertiary border-dashed items-center max-w-[260px] text-center">
               <ScheduleIcon />
-
               <div className="text-ink-300 dark:text-ink-400 text-sm space-y-1">
                 <p className="text-ink-100">No snapshots yet.</p>
                 <p>Create snapshots manually by clicking the save button.</p>
               </div>
-
               <button
                 type="button"
                 disabled

@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
+import { Transition } from "@headlessui/react";
 
 import {
   useCurrentWorkspaceInfo,
@@ -31,13 +32,14 @@ export default function WorkspaceSwitcher({
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [treeOpen, setTreeOpen] = useState(true);
   const ref = useRef<HTMLDivElement>(null);
 
   const { workspaceInfo } = useCurrentWorkspaceInfo();
   const [{ data: allWorkspaces }] = useWorkspaces();
   const { switchWorkspace, loading: isSwitching } = useSwitchWorkspace();
 
-  // Close on outside click
+  // Close dropdown on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node))
@@ -58,90 +60,192 @@ export default function WorkspaceSwitcher({
 
   const others = (allWorkspaces ?? []).filter(w => w.id !== workspaceInfo.id);
 
+  // ── Collapsed: just the avatar icon, click opens dropdown ──────────────
+  if (collapsed) {
+    return (
+      <div ref={ref} className="relative flex justify-center px-2 mt-6 mb-2">
+        <button
+          type="button"
+          onClick={() => setOpen(o => !o)}
+          className="w-7 h-7 rounded-lg flex-shrink-0 bg-gradient-to-br focus:outline-none focus:ring-2 focus:ring-primary/40 transition-transform hover:scale-105"
+          style={{ backgroundImage: undefined }}
+        >
+          <div
+            className={clsx(
+              "w-full h-full rounded-lg bg-gradient-to-br",
+              workspaceGradient(workspaceInfo.id)
+            )}
+          />
+        </button>
+
+        <Transition
+          show={open}
+          enter="transition ease-out duration-150"
+          enterFrom="opacity-0 scale-95 -translate-x-1"
+          enterTo="opacity-100 scale-100 translate-x-0"
+          leave="transition ease-in duration-100"
+          leaveFrom="opacity-100 scale-100 translate-x-0"
+          leaveTo="opacity-0 scale-95 -translate-x-1"
+        >
+          <div
+            className={clsx(
+              "absolute left-full ml-2 top-0 z-50 min-w-[12rem]",
+              "bg-white dark:bg-base-400",
+              "border border-[#E9ECEF] dark:border-border-tertiary",
+              "rounded-xl shadow-lg overflow-hidden"
+            )}
+          >
+            {/* Current */}
+            <div className="flex items-center gap-3 px-3 py-2.5 bg-[#F8F9FA] dark:bg-base-400">
+              <div
+                className={clsx(
+                  "w-6 h-6 rounded-md bg-gradient-to-br flex-shrink-0",
+                  workspaceGradient(workspaceInfo.id)
+                )}
+              />
+              <span className="flex-1 text-sm font-medium text-ink-100 truncate">
+                {workspaceInfo.name}
+              </span>
+              <span className="text-[10px] px-1.5 py-0.5 bg-[#A308F0]/10 text-primary rounded-full font-medium">
+                Current
+              </span>
+            </div>
+
+            {others.length > 0 && (
+              <>
+                <div className="h-px bg-[#E9ECEF] dark:bg-border-tertiary" />
+                {others.map(workspace => (
+                  <button
+                    key={workspace.id}
+                    type="button"
+                    onClick={() => handleSwitch(workspace.id)}
+                    disabled={isSwitching}
+                    className={clsx(
+                      "w-full flex items-center gap-3 px-3 py-2 text-left transition-colors",
+                      "hover:bg-[#F8F9FA] dark:hover:bg-[#181C21]",
+                      isSwitching && "opacity-50 cursor-not-allowed"
+                    )}
+                  >
+                    <div
+                      className={clsx(
+                        "w-5 h-5 rounded-md bg-gradient-to-br flex-shrink-0",
+                        workspaceGradient(workspace.id)
+                      )}
+                    />
+                    <span className="flex-1 text-[13px] font-medium text-ink-100 truncate">
+                      {workspace.name}
+                    </span>
+                  </button>
+                ))}
+              </>
+            )}
+
+            <div className="h-px bg-[#E9ECEF] dark:bg-border-tertiary" />
+
+            <button
+              type="button"
+              className="w-full flex items-center gap-3 px-3 py-2 text-sm text-primary hover:bg-[#A308F0]/5 transition-colors font-semibold"
+            >
+              <svg
+                className="w-4 h-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+              Create new team
+            </button>
+          </div>
+        </Transition>
+      </div>
+    );
+  }
+
+  // ── Expanded sidebar ────────────────────────────────────────────────────
   return (
     <div ref={ref} className="relative px-2 mt-6 mb-2">
-      {/* Section label */}
-      <div className="flex items-center gap-1 px-2 mb-2">
+      {/* Section label with tree-toggle arrow */}
+      <button
+        type="button"
+        onClick={() => setTreeOpen(o => !o)}
+        className="flex items-center gap-1 px-2 mb-2 w-full group"
+      >
         <svg
-          className="w-3 h-3 text-ink-300 dark:text-ink-400"
+          className={clsx(
+            "w-3 h-3 text-ink-300 dark:text-ink-400 transition-transform duration-200",
+            treeOpen ? "rotate-90" : "rotate-0"
+          )}
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
           strokeWidth={2.5}
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M19 9l-7 7-7-7"
-          />
+          {/* Right-pointing chevron; rotates to down when open */}
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
         </svg>
-        {!collapsed && (
-          <span className="text-[12px] font-medium text-ink-600  ">
-            Workspaces
-          </span>
-        )}
-      </div>
-
-      {/* Trigger pill */}
-      <button
-        type="button"
-        onClick={() => setOpen(o => !o)}
-        className={clsx(
-          "w-full flex items-center gap-3 px-3 py-1.5 rounded-xl border transition-all",
-          "bg-base-100",
-          "border-[#E9ECEF] dark:border-border-tertiary]",
-          "hover:border-[#DEE2E6] dark:border-border-tertiary",
-          "shadow-sm"
-        )}
-      >
-        {/* Avatar */}
-        <div
-          className={clsx(
-            "w-7 h-7 rounded-lg flex-shrink-0 bg-gradient-to-br",
-            workspaceGradient(workspaceInfo.id)
-          )}
-        />
-
-        {/* Name */}
-        {!collapsed && (
-          <span className="flex-1 text-left xl:text-sm text-[13px] font-medium text-ink-100  truncate">
-            {workspaceInfo.name}
-          </span>
-        )}
-
-        {/* Up/down chevrons */}
-        <div className="flex flex-col gap-[0px] text-[#1C3B5A] dark:text-ink-400">
-          <svg
-            className="w-3 h-3"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2.5}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M5 15l7-7 7 7"
-            />
-          </svg>
-          <svg
-            className="w-3 h-3"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2.5}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M19 9l-7 7-7-7"
-            />
-          </svg>
-        </div>
+        <span className="text-[12px] font-medium text-ink-600">
+          Workspaces
+        </span>
       </button>
 
+      {/* Trigger pill — only visible when tree is open */}
+      <Transition
+        show={treeOpen}
+        enter="transition ease-out duration-150"
+        enterFrom="opacity-0 -translate-y-1"
+        enterTo="opacity-100 translate-y-0"
+        leave="transition ease-in duration-100"
+        leaveFrom="opacity-100 translate-y-0"
+        leaveTo="opacity-0 -translate-y-1"
+      >
+        <button
+          type="button"
+          onClick={() => setOpen(o => !o)}
+          className={clsx(
+            "w-full flex items-center gap-3 px-3 py-1.5 rounded-xl border transition-all",
+            "bg-base-100",
+            "border-[#E9ECEF] dark:border-border-tertiary",
+            "hover:border-[#DEE2E6] dark:hover:border-border-tertiary",
+            "shadow-sm"
+          )}
+        >
+          {/* Avatar */}
+          <div
+            className={clsx(
+              "w-7 h-7 rounded-lg flex-shrink-0 bg-gradient-to-br",
+              workspaceGradient(workspaceInfo.id)
+            )}
+          />
+
+          {/* Name */}
+          <span className="flex-1 text-left xl:text-sm text-[13px] font-medium text-ink-100 truncate">
+            {workspaceInfo.name}
+          </span>
+
+          {/* Up/down chevrons */}
+          <div className="flex flex-col gap-[0px] text-[#1C3B5A] dark:text-ink-400">
+            <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+            </svg>
+            <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </button>
+      </Transition>
+
       {/* Dropdown */}
-      {open && (
+      <Transition
+        show={open && treeOpen}
+        enter="transition ease-out duration-150"
+        enterFrom="opacity-0 scale-95 -translate-y-1"
+        enterTo="opacity-100 scale-100 translate-y-0"
+        leave="transition ease-in duration-100"
+        leaveFrom="opacity-100 scale-100 translate-y-0"
+        leaveTo="opacity-0 scale-95 -translate-y-1"
+      >
         <div
           className={clsx(
             "absolute left-2 right-2 top-full mt-1.5 z-50",
@@ -187,7 +291,7 @@ export default function WorkspaceSwitcher({
                       workspaceGradient(workspace.id)
                     )}
                   />
-                  <span className="flex-1 xl:text-sm text-[13px] font-medium text-ink-100  truncate">
+                  <span className="flex-1 xl:text-sm text-[13px] font-medium text-ink-100 truncate">
                     {workspace.name}
                   </span>
                 </button>
@@ -209,16 +313,12 @@ export default function WorkspaceSwitcher({
               stroke="currentColor"
               strokeWidth={2}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 4v16m8-8H4"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
             </svg>
             Create new team
           </button>
         </div>
-      )}
+      </Transition>
     </div>
   );
 }

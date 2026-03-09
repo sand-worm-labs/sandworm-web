@@ -249,22 +249,16 @@ export default function ReusableComponents(props: Props) {
     <Transition
       as="div"
       show={props.visible}
-      className="top-0 right-0 h-full absolute bg-white dark:bg-base-100  z-30 shrink-0"
-      enter="transition-transform duration-300"
-      enterFrom="transform translate-x-full"
-      enterTo="transform translate-x-0"
-      leave="transition-transform duration-300"
-      leaveFrom="transform translate-x-0"
-      leaveTo="transform translate-x-full"
+      className="h-full overflow-hidden flex-shrink-0 font-body "
+      enter="transition-[width] duration-300 ease-in-out"
+      enterFrom="w-0"
+      enterTo="w-[354px]"
+      leave="transition-[width] duration-300 ease-in-out"
+      leaveFrom="w-[354px]"
+      leaveTo="w-0"
     >
-      <button
-        type="button"
-        className="absolute z-10 top-7 transform rounded-full border border-gray-300 dark:border-border-tertiary text-ink-400 bg-white dark:bg-base-100  hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
-        onClick={props.onHide}
-      >
-        <ChevronDoubleRightIcon className="w-3 h-3" />
-      </button>
-      <div className="w-[354px] flex flex-col border-l  border-border-secondary h-full bg-white dark:bg-base-100  font-body  dark:border-border-tertiary">
+    
+      <div className="relative w-[354px] flex flex-col border-l  border-border-secondary h-full bg-white dark:bg-base-100  font-body  dark:border-border-tertiary">
         <div className="flex justify-between border-b p-6 space-x-3 border-[#E9ECEF] dark:border-border-tertiary">
           <div>
             <h3 className="text-lg font-medium leading-6 text-ink-100 dark:text-white pr-1.5">
@@ -274,6 +268,13 @@ export default function ReusableComponents(props: Props) {
               Click a component to add it to the current page.
             </p>
           </div>
+          <button
+        type="button"
+        className="absolute z-10 top-7 transform rounded-full border border-gray-300  text-ink-400 bg-base-100 hover:bg-gray-100 w-6 h-6 flex justify-center items-center right-3 -translate-x-1/2 dark:border-border-tertiary "
+        onClick={props.onHide}
+      >
+        <ChevronDoubleRightIcon className="w-3 h-3" />
+      </button>
         </div>
         {data.size > 0 || isLoading ? (
           <>

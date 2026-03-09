@@ -54,9 +54,9 @@ export default function RunAllV2(props: Props) {
         {
           "bg-gray-200 cursor-not-allowed":
             props.disabled || status === "aborting",
-          "bg-[#0F0F0F] hover:bg-primary-300":
+          "bg-[#0F0F0F] dark:bg-white dark:text-black hover:bg-primary-300":
             !props.disabled && !loading && props.primary,
-          "bg-[#0F0F0F] ring-gray-200 text-white":
+          "bg-[#0F0F0F]  dark:bg-white dark:text-black ring-gray-200 text-white":
             !props.disabled && !loading && !props.primary,
           "bg-red-200 hover:bg-red-300":
             !props.disabled && loading && status !== "aborting",

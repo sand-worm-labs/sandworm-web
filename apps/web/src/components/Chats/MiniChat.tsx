@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { Transition } from "@headlessui/react";
+import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 
 import { AIChatIcon } from "../Assets/AIChatIcon";
 
@@ -14,14 +15,14 @@ interface MiniChatHeaderProps {
 
 export const MiniChatHeader: React.FC<MiniChatHeaderProps> = ({ onCancel }) => {
   return (
-    <header className="flex items-center justify-between px-4 py-2 bg-white dark:bg-base-100  border-b border-border-secondary dark:border-border-secondary ">
+    <header className="flex items-center justify-between  bg-white dark:bg-base-100  border-b border-border-secondary border-dashed dark:border-border-secondary ">
       <div className="flex-col flex">
-        <h3 className="text-sm font-medium leading-5 text-ink-100 ">
+        <h3 className="text-lg font-medium leading-6 dark:text-white text-ink-100 px-4 pt-6 xl:px-6 ">
           Sandworm agent
         </h3>
 
-        <p className="text-ink-400 text-xs ">
-          This allows you to create deep and insightful analysis
+        <p className="text-sm text-ink-400 px-4 mb-4  xl:px-6 ">
+          Create deep and insightful analysis
         </p>
       </div>
 
@@ -29,44 +30,97 @@ export const MiniChatHeader: React.FC<MiniChatHeaderProps> = ({ onCancel }) => {
         type="button"
         aria-label="Cancel chat"
         onClick={() => (onCancel ? onCancel() : console.log("cancel"))}
-        className="inline-flex items-center justify-center rounded-md p-1 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-slate-300"
+        className="absolute z-10 top-7 transform rounded-full border border-gray-300  text-ink-400 bg-base-100 hover:bg-gray-100 w-6 h-6 flex justify-center items-center right-3 -translate-x-1/2 dark:border-border-tertiary "
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-4 w-4"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-          aria-hidden
-        >
-          <path
-            fillRule="evenodd"
-            d="M10 8.586l4.95-4.95a1 1 0 111.414 1.414L11.414 10l4.95 4.95a1 1 0 01-1.414 1.414L10 11.414l-4.95 4.95A1 1 0 013.636 14.95L8.586 10 3.636 5.05A1 1 0 015.05 3.636L10 8.586z"
-            clipRule="evenodd"
-          />
-        </svg>
+        <ChevronDoubleRightIcon className="w-3 h-3" />
       </button>
     </header>
   );
 };
 
-export const MiniChatEmptyState: React.FC = () => {
-  return (
-    <div className="flex flex-col items-center justify-center h-full px-4 py-12 font-body  relative">
-      <div className="flex flex-col items-center relative z-10">
-        <AIChatIcon />
+// ── Example prompt cards ────────────────────────────────────────────────────
 
-        <p className=" font-body text-sm text-ink-300 dark:text-ink-400 text-center max-w-[12rem] mt-5 ">
-          Search any data type across multiple blockchains
-        </p>
-      </div>
+const EXAMPLE_PROMPTS = [
+  {
+  
+    label: "Token analytics",
+    prompt:
+      "Show me the top 20 holders of USDC on Base, including their balance changes over the past 30 days",
+  },
+  {
+   
+    label: "Python analysis",
+    prompt:
+      "Use Python to cluster wallets on Base by their transaction behaviour and flag any that look like bots",
+  },
+  {
+  
+    label: "Visualize",
+    prompt:
+      "Create a chart showing daily DEX trading volume on Base broken down by protocol over the last 60 days",
+  },
+];
+
+interface ExamplePromptsProps {
+  onSelect: (prompt: string) => void;
+}
+
+const ExamplePrompts: React.FC<ExamplePromptsProps> = ({ onSelect }) => {
+  return (
+    <div className="flex flex-col gap-2 w-full mt-6">
+      {EXAMPLE_PROMPTS.map(item => (
+        <button
+          key={item.label}
+          type="button"
+          onClick={() => onSelect(item.prompt)}
+          className="group flex items-start gap-3 w-full text-left px-4 py-2.5 rounded-xl border border-border-secondary dark:border-border-tertiary bg-white dark:bg-base-200 hover:border-primary/40 dark:hover:border-primary/40 hover:bg-primary/[0.03] dark:hover:bg-primary/[0.06] transition-all duration-150"
+        >
+        
+
+          <span className="flex flex-col min-w-0">
+            <span className="text-[11px] font-semibold text-ink-100   mb-0.5">
+              {item.label}
+            </span>
+            <span className="text-[12.5px] text-ink-400 dark:text-ink-400 leading-snug line-clamp-2 group-hover:text-ink-200 dark:group-hover:text-ink-300 transition-colors duration-150">
+              {item.prompt}
+            </span>
+          </span>
+        </button>
+      ))}
     </div>
   );
 };
+
+// ── Empty state ─────────────────────────────────────────────────────────────
+
+interface MiniChatEmptyStateProps {
+  onSelectPrompt: (prompt: string) => void;
+}
+
+export const MiniChatEmptyState: React.FC<MiniChatEmptyStateProps> = ({
+  onSelectPrompt,
+}) => {
+  return (
+    <div className="flex flex-col items-center py-8 font-body  justify-end h-full">
+      <div className="flex flex-col items-center">
+        <AIChatIcon />
+        <p className="font-body text-sm text-ink-300 dark:text-ink-400 text-center max-w-[12rem] mt-5">
+          Search any data type across multiple blockchains
+        </p>
+      </div>
+
+      <ExamplePrompts onSelect={onSelectPrompt} />
+    </div>
+  );
+};
+
+// ── Main MiniChat ───────────────────────────────────────────────────────────
 
 interface MiniChatProps {
   visible: boolean;
   onClose?: () => void;
 }
+
 export const MiniChat: React.FC<MiniChatProps> = ({ visible, onClose }) => {
   const searchParams = useSearchParams();
   const [messages, setMessages] = useState<
@@ -106,24 +160,28 @@ export const MiniChat: React.FC<MiniChatProps> = ({ visible, onClose }) => {
     }, 800);
   };
 
+  const handleExamplePrompt = (prompt: string) => {
+    handleSendMessage({ message: prompt, files: [] });
+  };
+
   return (
     <Transition
       as="div"
       show={visible}
-      className="top-0 right-0 h-full absolute z-30 font-body "
-      enter="transition ease-in-out duration-300 transform"
-      enterFrom="translate-x-full"
-      enterTo="translate-x-0"
-      leave="transition ease-in-out duration-300 transform"
-      leaveFrom="translate-x-0"
-      leaveTo="transform translate-x-full"
+      className="h-full overflow-hidden flex-shrink-0 font-body "
+      enter="transition-[width] duration-300 ease-in-out"
+      enterFrom="w-0"
+      enterTo="w-[354px]"
+      leave="transition-[width] duration-300 ease-in-out"
+      leaveFrom="w-[354px]"
+      leaveTo="w-0"
     >
-      <div className="w-[354px] flex flex-col overflow-y-auto border-l dark:border-border-tertiary border-border-secondary h-full bg-white dark:bg-base-100  ">
+      <div className=" relative w-[354px] flex flex-col overflow-y-auto border-l dark:border-border-tertiary border-border-secondary h-full bg-white dark:bg-base-100  ">
         <MiniChatHeader onCancel={onClose} />
 
         <div className="flex-1 overflow-y-auto py-6 px-4 ">
           {messages.length === 0 ? (
-            <MiniChatEmptyState />
+            <MiniChatEmptyState onSelectPrompt={handleExamplePrompt} />
           ) : (
             <div className="flex flex-col w-full gap-4">
               {messages.map(msg => (
@@ -148,7 +206,7 @@ export const MiniChat: React.FC<MiniChatProps> = ({ visible, onClose }) => {
           )}
         </div>
 
-        <div className="pb-6 md:px-4">
+        <div className="pb-4 md:px-4">
           <MiniChatInput onSend={handleSendMessage} />
         </div>
       </div>
