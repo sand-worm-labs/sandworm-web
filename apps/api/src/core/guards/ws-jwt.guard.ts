@@ -19,8 +19,8 @@ export class WsJwtGuard implements CanActivate {
         throw new WsException('Unauthorized');
       }
 
-      const payload = await this.authService.verifyAccessTokenWithSession(token);
-      const currentUser = await this.authService.me(payload);
+      const payload = await this.authService.validateTokenAndGetUser(token);
+      const currentUser = await this.authService.me(payload.user.id);
       if (!currentUser) {
         throw new WsException('Unauthorized');
       }

@@ -1,4 +1,4 @@
-import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { MercuriusDriver, MercuriusDriverConfig } from '@nestjs/mercurius';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
@@ -28,7 +28,6 @@ import googleConfig from './features/auth/google/config/google.config';
 import mailConfig from './infrastructure/mail/config/mail.config';
 import authConfig from './features/auth/core/config/auth.config';
 import { ApiModule } from './api.module';
-import { pinoLoggerConfig } from './common/logger/pino-logger.config';
 import { WebsocketModule } from './infrastructure/websocket/websocket.module';
 
 const configModule = ConfigModule.forRoot({
@@ -83,33 +82,17 @@ const i18nModule = I18nModule.forRootAsync({
   inject: [ConfigService],
 });
 
-const graphqlModule = GraphQLModule.forRootAsync<ApolloDriverConfig>({
-  driver: ApolloDriver,
+const graphqlModule = GraphQLModule.forRootAsync<MercuriusDriverConfig>({
+  driver: MercuriusDriver,
   useFactory: async (configService: ConfigService<AllConfigType>) => {
     const env = configService.get('app.nodeEnv', { infer: true });
     const isLocal: boolean = env === Environment.LOCAL;
     const isDevelopment: boolean = env === Environment.DEVELOPMENT;
-
     return {
-      debug: isLocal || isDevelopment,
-      includeStacktraceInErrorResponses: isLocal || isDevelopment,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-      sortSchema: true,
-      // ✅ Enable introspection
       introspection: true,
-
-      // ✅ Enable classic playground (more reliable)
-      playground:
-        isLocal || isDevelopment
-          ? {
-            settings: {
-              'request.credentials': 'include',
-            },
-          }
-          : false,
-
-      context: ({ req, res }) => ({ req, res }),
-
+      graphiql: isLocal || isDevelopment,
+      context: (request, reply) => ({ req: request, reply })
     };
   },
   inject: [ConfigService],
@@ -132,8 +115,8 @@ const eventEmitterModule = EventEmitterModule.forRoot({
     i18nModule,
     WebsocketModule,
     ApiModule,
-    graphqlModule,
     eventEmitterModule,
+    graphqlModule,
   ],
   providers: [
     AppService,
@@ -142,6 +125,7 @@ const eventEmitterModule = EventEmitterModule.forRoot({
   ],
   exports: [AsyncContextProvider],
 })
+
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(RequestIdMiddleware).forRoutes('*');

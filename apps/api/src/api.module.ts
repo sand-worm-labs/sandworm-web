@@ -11,7 +11,6 @@ import { FileModule } from '@/features/file/file.module';
 import { AuthModule } from '@/features/auth/core/auth.module';
 import { AuthGoogleModule } from '@/features/auth/google/auth-google.module';
 import { MailModule } from '@/infrastructure/mail/mail.module';
-import { SessionModule } from '@/features/session/session.module';
 import { MailerModule } from '@/infrastructure/mailer/mailer.module';
 import { AuthGithubModule } from '@/features/auth/github/auth-github.module';
 import { ScheduleModule } from '@/features/schedule/schedule.module';
@@ -35,7 +34,6 @@ import { DataSourcesModule } from './infrastructure/datasource/datasource.module
         // Infrastructure
         MailModule,
         MailerModule,
-        SessionModule,
         JupyterModule,
         DataSourcesModule,
 
