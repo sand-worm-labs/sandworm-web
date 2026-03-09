@@ -85,8 +85,8 @@ export class PythonCompletionService {
             return null;
         }
 
-        const userWorkspace = session.userWorkspaces?.[document.workspaceId];
-        if (!userWorkspace) {
+        const role = session.roles?.find(r => r[document.workspaceId])?.[document.workspaceId];
+        if (!role) {
             this.logger.warn(
                 `User ${session.user.id} does not have access to workspace ${document.workspaceId}`,
             );
@@ -94,7 +94,7 @@ export class PythonCompletionService {
             return null;
         }
 
-        if (userWorkspace.role === 'viewer') {
+        if (role === 'viewer') {
             this.logger.warn(
                 `User ${session.user.id} attempted completion as viewer in workspace ${document.workspaceId}`,
             );
