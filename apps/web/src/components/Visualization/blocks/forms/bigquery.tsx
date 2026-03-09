@@ -97,7 +97,7 @@ export default function BigQueryForm({
     <form className="px-4 sm:p-6 lg:p-12" onSubmit={onSubmitHandler} noValidate>
       <div className="space-y-12">
         <div className="border-b border-gray-900/10 pb-8">
-          <h2 className="text-lg font-semibold leading-7 text-gray-900">
+          <h2 className="text-lg font-semibold leading-7 text-ink-100">
             {isEditing ? "Edit" : "New"} BigQuery data source
           </h2>
           <p className="mt-1 text-sm leading-6 text-gray-500">
@@ -113,7 +113,7 @@ export default function BigQueryForm({
             <div className="col-span-full">
               <label
                 htmlFor="name"
-                className="block text-sm font-medium leading-6 text-gray-900"
+                className="block text-sm font-medium leading-6 text-ink-100"
               >
                 Display name
               </label>
@@ -129,7 +129,7 @@ export default function BigQueryForm({
                   name="name"
                   placeholder="My BigQuery database"
                   required
-                  className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
                 <FormError msg={formState.errors.name?.message} />
               </div>
@@ -138,7 +138,7 @@ export default function BigQueryForm({
             <div className="col-span-full">
               <label
                 htmlFor="cover-photo"
-                className="block text-sm font-medium leading-6 text-gray-900"
+                className="block text-sm font-medium leading-6 text-ink-100"
               >
                 Service Account JSON
               </label>
@@ -157,7 +157,7 @@ export default function BigQueryForm({
               />
 
               {isEditing && !formState.errors.serviceAccountKey && (
-                <span className="block text-sm text-gray-900 empty:before:content-['\200b'] pt-1 pb-1">
+                <span className="block text-sm text-ink-100 empty:before:content-['\200b'] pt-1 pb-1">
                   Leave empty to keep previous service account
                 </span>
               )}
@@ -165,7 +165,7 @@ export default function BigQueryForm({
             <div className="col-span-full pt-8">
               <label
                 htmlFor="additionalInfo"
-                className="block text-sm font-medium leading-6 text-gray-900"
+                className="block text-sm font-medium leading-6 text-ink-100"
               >
                 AI Additional Context{" "}
                 <span className="pl-1 text-gray-500">(optional)</span>
@@ -177,7 +177,7 @@ export default function BigQueryForm({
                   name="additionalInfo"
                   rows={5}
                   placeholder="Enter additional context for the AI assistant (examples, descriptions, etc.)"
-                  className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
               </div>
             </div>

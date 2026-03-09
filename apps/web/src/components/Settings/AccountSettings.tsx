@@ -15,10 +15,11 @@ import {
 } from "../Visualization/hooks/useWorkspaces";
 import useProperties from "../Visualization/hooks/useProperties";
 import { useSession } from "../Visualization/hooks/useAuth";
+import { WorkspaceIcon } from "../Assets/WorkspaceIcon";
 
+import { WorkspaceIcon as WorkspaceIconAvatar } from "./WorkspaceIcon";
 import CreateTeamModal from "./CreateTeam";
 import WorkspaceSettingsModal from "./WorkspaceSettings";
-import { WorkspaceIcon } from "../Assets/WorkspaceIcon";
 
 export default function WorkspaceSettings() {
   const router = useRouter();
@@ -38,7 +39,6 @@ export default function WorkspaceSettings() {
     selectedSettingsWorkspace: null,
   });
 
-  console.log(allWorkspaces, "all workspace");
 
   /* Is Admin */
   const isAdminOfWorkspace = useCallback(
@@ -83,17 +83,14 @@ export default function WorkspaceSettings() {
     allowSettings: boolean
   ) => {
     const isCurrentWorkspace = workspace.id === workspaceInfo?.id;
-
     const isAdmin = isAdminOfWorkspace(workspace.id);
 
     return (
       <div
         key={workspace.id}
         className={clsx(
-          "flex items-center px-5 py-4 border-b border-[#E9ECEF] dark:border-gray-800 transition-colors",
-          isCurrentWorkspace
-            ? "dark:bg-[#121417]"
-            : "hover:bg-gray-50 dark:hover:bg-[#181C21]"
+          "flex items-center px-5 py-4 border-b border-[#E9ECEF] dark:border-border-tertiary transition-colors",
+          isCurrentWorkspace ? "" : "hover:bg-gray-50 dark:hover:bg-[#181C21]"
         )}
       >
         {/* Workspace name with avatar */}
@@ -101,21 +98,38 @@ export default function WorkspaceSettings() {
           type="button"
           onClick={() => handleSwitchWorkspace(workspace.id)}
           disabled={isSwitching || isCurrentWorkspace}
-          className="flex-1 flex items-center gap-4 text-left cursor-pointer"
+          className="flex-1 flex items-center gap-4 text-left cursor-pointer min-w-0"
         >
-          <User />
-          <span className="font-medium text-gray-900 dark:text-white">
-            {workspace.name}
-          </span>
-          {isCurrentWorkspace && (
-            <span className="text-xs px-2 py-0.5 bg-[#A308F0]/10 text-[#A308F0] rounded-full">
-              Current
-            </span>
-          )}
+          <WorkspaceIconAvatar icon={workspace?.icon} />
+
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="font-medium text-ink-100 dark:text-white truncate">
+                {workspace.name}
+              </span>
+              {isCurrentWorkspace && (
+                <span className="text-xs px-2 py-0.5 bg-[#A308F0]/10 text-primary rounded-full whitespace-nowrap">
+                  Current
+                </span>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2 mt-0.5 sm:hidden">
+              <span className="text-xs text-[#6C757D] dark:text-ink-400">
+                {workspace.users?.length || 1}{" "}
+                {workspace.users?.length === 1 ? "member" : "members"}
+              </span>
+              <span className="text-xs text-[#6C757D] dark:text-ink-400">
+                ·
+              </span>
+              <span className="text-xs text-[#6C757D] dark:text-ink-400 capitalize">
+                {workspace.plan || "Free"}
+              </span>
+            </div>
+          </div>
         </button>
 
-        {/* Members count */}
-        <div className="w-32 flex items-center justify-center gap-2 text-sm text-[#6C757D] font-medium dark:text-gray-400">
+        <div className="hidden sm:flex w-32 items-center justify-center gap-2 text-sm text-[#6C757D] font-medium dark:text-ink-400">
           <svg
             className="w-5 h-5"
             fill="none"
@@ -135,12 +149,11 @@ export default function WorkspaceSettings() {
           </span>
         </div>
 
-        {/* Plan badge */}
-        <div className="w-24 text-center text-sm text-gray-600 dark:text-gray-400 capitalize">
+        <div className="hidden sm:block w-24 text-center text-sm text-ink-400 dark:text-ink-400 capitalize">
           {workspace.plan || "Free"}
         </div>
 
-        {/* Settings icon — only rendered when allowSettings and user is admin */}
+        {/* Settings icon */}
         <button
           type="button"
           onClick={e => {
@@ -153,8 +166,8 @@ export default function WorkspaceSettings() {
           className={clsx(
             "w-10 flex justify-center transition-colors",
             allowSettings && isAdmin
-              ? "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer"
-              : "text-gray-300 dark:text-gray-600 cursor-not-allowed opacity-40"
+              ? "text-ink-400 hover:text-gray-600 dark:hover:text-ink-300 cursor-pointer"
+              : "text-ink-300 dark:text-ink-400 cursor-not-allowed opacity-40"
           )}
           title={
             !isAdmin
@@ -187,27 +200,21 @@ export default function WorkspaceSettings() {
   };
 
   return (
-    <div className="w-full bg-white dark:bg-black h-full font-body">
+    <div className="w-full  h-full font-body">
       <div className="px-4 sm:p-6 lg:p-8">
         <div className="">
           <div className="pb-4 sm:flex flex-col mb-6">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex md:flex-row flex-col md:items-center justify-between mb-4">
               <div>
-                <h3 className="text-xl font-bold text-ink-100 dark:text-gray-100 mb-2">
+                <h3 className="text-xl font-bold text-ink-100  mb-2">
                   Account Settings
                 </h3>
-                <p className="text-[#6C757D] dark:text-gray-400">
+                <p className="text-[#6C757D] dark:text-ink-400 md:text-base text-sm">
                   Manage your workspaces, settings, permissions and billings.
                 </p>
               </div>
 
-              <div className="flex gap-x-2">
-                <button
-                  type="button"
-                  className="flex items-center gap-2 px-5 py-1 border bg-[#F8F9FA] border-[#DEE2E6] dark:border-gray-700 rounded-lg text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                >
-                  Manage Invites
-                </button>
+              <div className="flex gap-x-2 mt-4 md:mt-0 ">
                 <button
                   type="button"
                   onClick={() =>
@@ -220,14 +227,13 @@ export default function WorkspaceSettings() {
               </div>
             </div>
 
-            {/* Your Teams — workspaces the user owns */}
             <div className="transition-all duration-300 ease-in-out overflow-hidden">
-              <div className="p-4 px-0 rounded-xl dark:bg-[0C1015] grid grid-cols-2 gap-x-5">
+              <div className="p-4 px-0 rounded-xl dark:bg-[0C1015] grid md:grid-cols-2 gap-x-5">
                 <div>
                   <h4 className="text-lg font-bold mb-3 dark:text-white">
                     Your Teams
                   </h4>
-                  <p className="text-[#6C757D] mb-5 max-w-[32rem] pr-6">
+                  <p className="text-[#6C757D] dark:text-ink-400 mb-5 max-w-[32rem] pr-6 text-sm md:text-base">
                     Your workspaces can be deleted, renamed, team members added
                     etc depending on your permission level within the
                     organization.
@@ -235,7 +241,7 @@ export default function WorkspaceSettings() {
                 </div>
 
                 <div className="w-full">
-                  <div className="flex items-center px-5 py-3 text-xs font-medium text-[#6C757D] uppercase tracking-wider border-[#E9ECEF] border-b">
+                  <div className="flex items-center px-5 py-3 text-xs font-medium text-[#6C757D] dark:text-ink-400 uppercase tracking-wider border-[#E9ECEF] dark:border-border-tertiary border-b">
                     <div className="flex-1">Workspace</div>
                     <div className="w-32 text-center">Members</div>
                     <div className="w-24 text-center">Plan</div>
@@ -251,12 +257,12 @@ export default function WorkspaceSettings() {
             </div>
 
             <div className="transition-all duration-300 ease-in-out overflow-hidden mt-20">
-              <div className="p-4 px-0 rounded-xl dark:bg-[0C1015] grid grid-cols-2 gap-x-5">
+              <div className="p-4 px-0 rounded-xl dark:bg-[0C1015] grid md:grid-cols-2 gap-x-5">
                 <div>
                   <h4 className="text-lg font-bold mb-3 dark:text-white">
                     Invited Teams
                   </h4>
-                  <p className="text-[#6C757D] mb-5 max-w-[32rem] pr-6">
+                  <p className="text-[#6C757D] dark:text-ink-400 mb-5 max-w-[32rem] pr-6 text-sm md:text-base ">
                     These are workspaces you've been invited to. Settings are
                     managed by the workspace owner.
                   </p>
@@ -265,7 +271,7 @@ export default function WorkspaceSettings() {
                 <div className="w-full">
                   {invitedWorkspaces.length > 0 ? (
                     <>
-                      <div className="flex items-center px-5 py-3 text-xs font-medium text-[#6C757D] uppercase tracking-wider">
+                      <div className="flex items-center px-5 py-3 text-xs font-medium text-[#6C757D] dark:text-ink-400 uppercase tracking-wider">
                         <div className="flex-1">Workspace</div>
                         <div className="w-32 text-center">Members</div>
                         <div className="w-24 text-center">Plan</div>
@@ -280,11 +286,10 @@ export default function WorkspaceSettings() {
                     </>
                   ) : (
                     <div className="flex flex-col items-center justify-center h-[15rem] text-center">
-                      <WorkspaceIcon/>
+                      <WorkspaceIcon />
                       <p className="text-sm font-medium text-[#868E96] mt-3">
                         No workspace invites
                       </p>
-                   
                     </div>
                   )}
                 </div>
@@ -310,13 +315,10 @@ export default function WorkspaceSettings() {
           setState(s => ({ ...s, selectedSettingsWorkspace: null }))
         }
         workspace={state.selectedSettingsWorkspace}
-        // isAdmin: user owns this specific workspace
         isAdmin={
           !!state.selectedSettingsWorkspace &&
           isAdminOfWorkspace(state.selectedSettingsWorkspace.id)
         }
-        // isCurrentWorkspace: controls delete gating — can't delete the workspace
-        // you're currently on even if you own it
         isCurrentWorkspace={
           state.selectedSettingsWorkspace?.id === workspaceInfo?.id
         }

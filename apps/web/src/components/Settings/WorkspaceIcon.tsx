@@ -1,0 +1,25 @@
+import Image from "next/image";
+
+interface WorkspaceIconProps {
+  icon?: string | null;
+  size?: number;
+  className?: string;
+}
+
+export function WorkspaceIcon({
+  icon,
+  size = 32,
+  className,
+}: WorkspaceIconProps) {
+  if (!icon) return null;
+  const src = `/img/${icon.replace(/\.[^.]+$/, "")}.svg`;
+  return (
+    <Image
+      src={src}
+      alt={icon}
+      width={size}
+      height={size}
+      className={className}
+    />
+  );
+}

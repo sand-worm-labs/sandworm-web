@@ -16,16 +16,16 @@ export const SignIn = () => {
     <div className="w-full max-w-md rounded-lg  p-6 content flex flex-col justify-center items-center h-full mx-auto relative">
       <SandwormLogo width="40" height="40" />
 
-      <h2 className="text-3xl font-medium text-center text-black mb-1 mt-3 font-primary dark:text-white">
+      <h2 className="text-3xl font-medium text-center text-black mb-1 mt-3 font-body  dark:text-white">
         Welcome back
       </h2>
 
-      <p className="text-ink-200 font-body font-medium text-sm mt-1 mb-6">
+      <p className="text-ink-200  font-body font-medium text-sm mt-1 mb-6">
         Sign into Sandworm
       </p>
 
       {error === "NoAccount" && (
-        <div className="w-full text-sm font-primary bg-red-50 text-red-700 border border-red-200 rounded-md p-3 mb-3">
+        <div className="w-full text-sm font-body  bg-red-50 text-red-700 border border-red-200 rounded-md p-3 mb-3">
           No account found. Please sign up first.
         </div>
       )}
@@ -34,7 +34,7 @@ export const SignIn = () => {
 
       <div className="flex items-center gap-3 w-full my-2.5">
         <div className="h-px bg-[#E9ECEF] dark:bg-[#FFFFFF30] flex-1" />
-        <span className="text-xs text-muted-foreground font-primary">or</span>
+        <span className="text-xs text-muted-foreground font-body ">or</span>
         <div className="h-px bg-[#E9ECEF] dark:bg-[#FFFFFF30] flex-1" />
       </div>
 
@@ -54,7 +54,7 @@ export const SignIn = () => {
       </div>
 
       <div className="flex-col  gap-2 absolute bottom-[2rem] w-full flex items-center justify-center">
-        <p className="text-base text-ink-200 font-body font-medium mb-4">
+        <p className="text-base text-ink-200 dark:text-ink-400 font-body font-medium mb-4">
           Trusted by teams at
         </p>
         <PartnersSection />

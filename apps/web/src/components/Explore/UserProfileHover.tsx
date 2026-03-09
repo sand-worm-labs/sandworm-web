@@ -36,7 +36,7 @@ export function UserProfileHover({ children }: UserProfileHoverProps) {
     <HoverCard openDelay={200}>
       <HoverCardTrigger asChild>{children}</HoverCardTrigger>
       <HoverCardContent
-        className="w-80 font-primary border-[#E9ECEF] rounded-2xl dark:bg-black dark:border-[#262A30]"
+        className="w-80 font-body  border-[#E9ECEF] rounded-2xl dark:bg-base-100  dark:border-border-tertiary"
         align="start"
       >
         <div className="space-y-4">
@@ -48,7 +48,7 @@ export function UserProfileHover({ children }: UserProfileHoverProps) {
               </Avatar>
               <div>
                 <p className="font-semibold text-sm">{dummyUser.name}</p>
-                <p className="text-sm text-ink-400 font-primary">
+                <p className="text-sm text-ink-400 font-body ">
                   @{dummyUser.username}
                 </p>
               </div>
@@ -80,13 +80,13 @@ export function UserProfileHover({ children }: UserProfileHoverProps) {
             </div>
           </div>
 
-          <p className="text-sm text-muted-foreground leading-relaxed border-t border-b border-[#E9ECEF] py-3 text-ink-500 dark:text-white dark:border-[#262A30]">
+          <p className="text-sm text-muted-foreground leading-relaxed border-t border-b border-[#E9ECEF] py-3 text-ink-500 dark:text-white dark:border-border-tertiary">
             {dummyUser.bio}
           </p>
 
           <Button
             variant="outline"
-            className="w-full bg-[#F8F9FA] dark:bg-[#0C1015] border border-[#DEE2E6] dark:border-[#262A30] py-5 rounded-lg"
+            className="w-full bg-[#F8F9FA] dark:bg-[#0C1015] border border-[#DEE2E6] dark:border-border-tertiary py-5 rounded-lg"
           >
             Visit profile
           </Button>

@@ -14,25 +14,25 @@ export const ChartbarIcon: React.FC<IconProps> = ({ className, size = 16 }) => {
     >
       <path
         d="M3 13V8.5H6"
-        stroke="#868E96"
+        stroke="currentColor"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
         d="M14 13H2"
-        stroke="#868E96"
+        stroke="currentColor"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
         d="M6 13V5.5H9.5"
-        stroke="#868E96"
+        stroke="currentColor"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
         d="M9.5 13V2.5H13V13"
-        stroke="#868E96"
+        stroke="currentColor"
         strokeLinecap="round"
         strokeLinejoin="round"
       />

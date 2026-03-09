@@ -1,5 +1,4 @@
 import {
-
   PencilSquareIcon,
   PlusIcon,
   ChevronDownIcon,
@@ -21,7 +20,7 @@ import { LightningIcon } from "../Assets/Blocks/LightningIcon";
 
 const TriangleUp = () => {
   return (
-    <div className="h-3 w-3 bg-white border-t border-l border-gray-200 rotate-45 translate-y-1/2" />
+    <div className="h-3 w-3 bg-white dark:bg-base-100  border-t border-l border-border-secondary rotate-45 translate-y-1/2" />
   );
 };
 
@@ -41,7 +40,7 @@ function BlockSuggestion(props: BlockSuggestionProps) {
     <div id={props.id} className="w-full text-sm px-1 relative z-30">
       <button
         type="button"
-        className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 py-2.5 rounded-full text-[#6C757D] bg-white dark:bg-[#0C1015]    hover:border-[#A308F0] border border-[#E9ECEF] font-body font-normal text-sm  "
+        className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 py-2.5 rounded-full text-[#6C757D] dark:text-ink-400 bg-white dark:bg-base-100     hover:border-[#A308F0] border border-[#E9ECEF] dark:border-border-tertiary font-body font-normal text-sm  "
         onClick={onClick}
       >
         {props.icon}
@@ -61,7 +60,7 @@ interface MultiBlockSuggestionProps {
 function MultiBlockSuggestion(props: MultiBlockSuggestionProps) {
   return (
     <Menu as="div" className="w-full text-sm px-1 relative z-30">
-      <Menu.Button className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 rounded-full text-gray-400 bg-white dark:bg-[#0C1015]  hover:text-gray-700 relative  border border-[#abaeb0] py-2.5 hover:border-[#A308F0]">
+      <Menu.Button className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 rounded-full text-[#6C757D] dark:text-ink-400  bg-white dark:bg-base-100   hover:text-gray-700 relative  border border-[#abaeb0] dark:border-border-tertiary py-2.5 hover:border-[#A308F0]">
         {props.icon}
         <span>{props.text}</span>
         <ChevronDownIcon className="w-4 h-4" />
@@ -78,7 +77,7 @@ function MultiBlockSuggestion(props: MultiBlockSuggestionProps) {
       >
         <Menu.Items
           as="div"
-          className="w-44 mt-2 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none font-primary divide-y divide-gray-200 "
+          className="w-44 mt-2 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none font-body  divide-y divide-border-secondary "
         >
           {props.options.map((option, index) => (
             <Menu.Item>
@@ -86,7 +85,7 @@ function MultiBlockSuggestion(props: MultiBlockSuggestionProps) {
                 <button
                   type="button"
                   className={clsx(
-                    active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                    active ? "bg-gray-100 text-ink-100" : "text-gray-700",
                     index === 0 ? "rounded-t-md" : "",
                     index === props.options.length - 1 ? "rounded-b-md" : "",
                     "flex items-center gap-x-2 w-full text-sm px-4 py-3 "
@@ -148,8 +147,8 @@ function BlockList(props: BlockListProps) {
       <div className="w-full flex justify-center relative z-30">
         <TriangleUp />
       </div>
-      <div className="w-full  dark:bg-[#0C1015] py-1   flex items-center justify-center ">
-      <BlockSuggestion
+      <div className="w-full   py-1   flex items-center justify-center ">
+        <BlockSuggestion
           id="add-block-power"
           icon={<LightningIcon className="w-[20px] h-[20px]" />}
           onAdd={onAddText}
@@ -185,7 +184,7 @@ function BlockList(props: BlockListProps) {
           onAdd={onAddPivotTable}
           text="Pivot"
         />
-       
+
         <MultiBlockSuggestion
           icon={<KeyboardIcon className="w-[20px] h-[20px]" />}
           text="Input"
@@ -282,12 +281,12 @@ function PlusButton(props: Props) {
         )}
         onClick={toggleOptions}
       >
-        <div className="w-full h-[1px] bg-[#E9ECEF] dark:bg-[#181C21] font-body" />
-        <div className="flex text-[#6C757D] font-medium  justify-center items-center gap-x-1 text-[12px] whitespace-nowrap">
-          <PlusIcon className="h-3 w-3 text-[#6C757D]  dark:text-ink-300 " />
+        <div className="w-full h-[1px] bg-[#E9ECEF]  dark:bg-border-tertiary font-body" />
+        <div className="flex text-[#6C757D] dark:text-ink-400 font-medium  justify-center items-center gap-x-1 text-[12px] whitespace-nowrap">
+          <PlusIcon className="h-3 w-3 text-[#6C757D]  dark:text-ink-400 " />
           <span>Add block</span>
         </div>
-        <div className="w-full h-[1px] bg-[#E9ECEF] dark:bg-[#181C21]" />
+        <div className="w-full h-[1px] bg-[#E9ECEF] dark:bg-border-tertiary" />
       </button>
 
       {props.isEditable && (showOptions || props.alwaysOpen) && (

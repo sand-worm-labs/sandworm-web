@@ -410,7 +410,7 @@ function PivotTableBlock(props: Props) {
       return {
         content: (ref: RefObject<HTMLDivElement>) => (
           <div
-            className="font-primary pointer-events-none w-max bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1"
+            className="font-body  pointer-events-none w-max bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1"
             ref={ref}
           >
             <span>Refresh</span>
@@ -472,8 +472,8 @@ function PivotTableBlock(props: Props) {
           props.hasMultipleTabs ? "rounded-tl-none" : "rounded-tl-md",
 
           props.isCursorWithin
-            ? "border-[#EBD7D7] shadow-sm"
-            : "border-gray-200 dark:border-[#262A30]"
+            ? "border-border-tertiaryshadow-sm"
+            : "border-border-secondary dark:border-border-tertiary"
         )}
       >
         <div
@@ -483,18 +483,18 @@ function PivotTableBlock(props: Props) {
           )}
         >
           <div
-            className="border-b border-gray-200 dark:border-[#262A30] bg-gray-50 dark:bg-black rounded-t-md"
+            className="border-b border-border-secondary dark:border-border-tertiary bg-gray-50 dark:bg-base-100  rounded-t-md"
             ref={d => {
               props.dragPreview?.(d);
             }}
           >
-            <div className="flex items-center justify-between px-3 pr-0 gap-x-4 font-primary h-12 divide-x divide-gray-200 dark:divide-[#181C21]">
+            <div className="flex items-center justify-between px-3 pr-0 gap-x-4 font-body  h-12 divide-x divide-border-secondary dark:divide-border-tertiary">
               <div className="select-none text-gray-300 text-xs flex items-center w-full h-full gap-x-1.5">
-                <TableCellsIcon className="h-4 w-4 text-gray-400" />
+                <TableCellsIcon className="h-4 w-4 text-ink-400" />
                 <input
                   type="text"
                   className={clsx(
-                    "text-sm font-primary font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-md border-0 text-gray-800 dark:text-white hover:ring-1 focus:ring-1 ring-inset placeholder:text-gray-400 focus:ring-inset py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white dark:focus:ring-[#262A30] dark:focus:bg-[#181C21] "
+                    "text-sm font-body  font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-md border-0 text-gray-800 dark:text-white hover:ring-1 focus:ring-1 ring-inset placeholder:text-ink-400 focus:ring-inset py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white dark:focus:ring-[#262A30] dark:focus:bg-[#181C21] "
                   )}
                   placeholder={
                     props.isEditable
@@ -506,7 +506,7 @@ function PivotTableBlock(props: Props) {
                   disabled={!props.isEditable}
                 />
               </div>
-              <div className="print:hidden flex items-center gap-x-0 group-focus/block:opacity-100 h-full divide-x divide-gray-200 dark:divide-[#181C21]">
+              <div className="print:hidden flex items-center gap-x-0 group-focus/block:opacity-100 h-full divide-x divide-border-secondary dark:divide-border-tertiary">
                 <HeaderSelect
                   value={dataframe?.name ?? ""}
                   onChange={onChangeDataframe}

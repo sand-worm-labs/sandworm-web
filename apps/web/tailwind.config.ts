@@ -38,6 +38,7 @@ const config: Config = {
           300: "hsl(var(--base-300))",
           400: "hsl(var(--base-400))",
           500: "var(--base-500)",
+          600: "hsl(var(--base-600))",
         },
 
         gray: {
@@ -50,6 +51,8 @@ const config: Config = {
           300: "var(--ink-300)",
           400: "var(--ink-400)",
           500: "var(--ink-500)",
+          600: "var(--ink-600)",
+          icon: "var(--ink-icon)",
         },
 
         "menu-ink": "var(--menu-ink)",
@@ -59,6 +62,8 @@ const config: Config = {
 
         border: "hsl(var(--border))",
         "border-secondary": "hsl(var(--border-secondary))",
+        "border-tertiary": "hsl(var(--border-tertiary))",
+        "border-focus": "hsl(var(--border-focus))",
 
         input: "hsl(var(--input))",
         inputBg: "hsl(var(--bg-input))",

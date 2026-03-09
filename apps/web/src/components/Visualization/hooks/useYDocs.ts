@@ -81,6 +81,18 @@ function getYDoc(
   publishedAt: string | null
 ): GetYDocResult {
   const id = getDocId(documentId, isDataApp, clock, publishedAt);
+  console.log(
+    "ydoc id",
+    id,
+    "docid",
+    documentId,
+    "isDataApp",
+    isDataApp,
+    "clock",
+    clock,
+    "publosedat",
+    publishedAt
+  );
   let fromCache = cache.get(id);
   const cached = Boolean(fromCache);
   let restore = Promise.resolve();
@@ -172,7 +184,6 @@ export function useYDoc(
   useEffect(() => {
     if (syncing) {
       console.time(`${documentId} sync`);
-      console.log(`${documentId} syncing`, new Date().toISOString());
       return;
     }
     console.timeEnd(`${documentId} sync`);

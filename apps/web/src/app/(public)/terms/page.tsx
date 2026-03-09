@@ -7,7 +7,7 @@ export const metadata = {
 
 export default function Terms() {
   return (
-    <div className="bg-black text-custom-gray min-h-screen p-8 font-primary pt-24 pb-20">
+    <div className="bg-black text-custom-gray min-h-screen p-8 font-body  pt-24 pb-20">
       <div className="max-w-4xl mx-auto space-y-12 mt-12">
         <section>
           <h1 className="lg:text-4xl text-3xl font-bold mb-4 text-primary uppercase">

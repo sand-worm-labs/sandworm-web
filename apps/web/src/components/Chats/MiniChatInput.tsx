@@ -66,7 +66,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
 
   return (
     <div className="w-full">
-      <div className="bg-[#F1F3F4] dark:bg-[#121417] border border-[#E9ECEF] rounded-2xl shadow-sm dark:border-[#262A30]">
+      <div className="bg-[#F1F3F4] dark:bg-base-100 border border-[#E9ECEF] rounded-2xl shadow-sm dark:border-border-tertiary">
         {/* File Preview Section */}
         {files.length > 0 && (
           <div className="px-4 pt-3 pb-2 border-b border-gray-100">
@@ -80,7 +80,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
                   <button
                     type="button"
                     onClick={() => removeFile(index)}
-                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                    className="text-ink-400 hover:text-gray-600 transition-colors"
                     aria-label="Remove file"
                   >
                     <X className="w-4 h-4" />
@@ -99,7 +99,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
             onChange={handleTextareaChange}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
-            className="w-full resize-none bg-transparent outline-none text-gray-800 dark:text-white placeholder-text-ink-300 text-sm max-h-[300px] dark:placeholder:text-[#E1E9F1] px-3"
+            className="w-full resize-none bg-transparent outline-none text-ink-100 dark:text-white placeholder-text-ink-300 text-sm max-h-[300px] dark:placeholder:text-ink-400 px-3"
             rows={2}
             aria-label="Message input"
           />
@@ -124,7 +124,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
             className={`flex items-center justify-center w-8 h-8 rounded-xl transition-colors ${
               message.trim() || files.length > 0
                 ? "bg-[#A308F0]  hover:bg-[#A308F0]  text-white"
-                : "bg-white text-gray-400 cursor-not-allowed border border-[#DEE2E6]"
+                : "bg-white text-ink-400 cursor-not-allowed border border-[#DEE2E6]"
             }`}
             title="Send message"
             aria-label="Send message"

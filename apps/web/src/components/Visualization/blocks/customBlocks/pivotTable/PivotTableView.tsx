@@ -55,7 +55,7 @@ function PivotTableView(props: Props) {
       {props.result && !props.loadingTable && !props.error ? (
         <>
           {props.loadingPage && (
-            <div className="absolute top-0 left-0 bottom-8 right-0 bg-white dark:bg-black opacity-50 z-10 flex items-center justify-center">
+            <div className="absolute top-0 left-0 bottom-8 right-0 bg-white dark:bg-base-100  opacity-50 z-10 flex items-center justify-center">
               <LargeSpinner color="#deff80" />
             </div>
           )}
@@ -66,7 +66,7 @@ function PivotTableView(props: Props) {
               onSort={props.onSort}
             />
             {props.result.pageCount > 1 && (
-              <div className="flex w-full items-center justify-between border-t border-gray-200 dark:border-[#262A30] px-3 py-1.5 text-xs font-syne rounded-b-md bg-gray-50 dark:bg-black ">
+              <div className="flex w-full items-center justify-between border-t border-border-secondary dark:border-border-tertiary px-3 py-1.5 text-xs font-syne rounded-b-md bg-gray-50 dark:bg-base-100  ">
                 <PageButtons
                   currentPage={props.page - 1}
                   totalPages={props.result.pageCount - 1}
@@ -130,15 +130,15 @@ function PivotTableView(props: Props) {
         props.isEditable && (
           <button
             className={clsx(
-              "absolute bottom-0 bg-white rounded-tr-md border-t border-r border-gray-200 p-2 hover:bg-gray-50 z-10",
+              "absolute bottom-0 bg-white rounded-tr-md border-t border-r border-border-secondary p-2 hover:bg-gray-50 z-10",
               props.controlsHidden ? "left-0 rounded-bl-md" : "-left-[1px]"
             )}
             onClick={props.onToggleControlsHidden}
           >
             {props.controlsHidden ? (
-              <ChevronDoubleRightIcon className="h-4 w-4 text-gray-400" />
+              <ChevronDoubleRightIcon className="h-4 w-4 text-ink-400" />
             ) : (
-              <ChevronDoubleLeftIcon className="h-4 w-4 text-gray-400" />
+              <ChevronDoubleLeftIcon className="h-4 w-4 text-ink-400" />
             )}
           </button>
         )}

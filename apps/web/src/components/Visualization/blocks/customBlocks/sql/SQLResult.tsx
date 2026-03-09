@@ -182,7 +182,7 @@ function SQLSuccess(props: SQLSuccessProps) {
     <div
       className={clsx(
         "relative w-full h-full flex flex-col justify-between",
-        hasHorizontalBorder && "border-x border-gray-200 rounded-md"
+        hasHorizontalBorder && "border-x border-border-secondary rounded-md"
       )}
       ref={containerRef}
     >
@@ -204,7 +204,7 @@ function SQLSuccess(props: SQLSuccessProps) {
       >
         <div
           className={clsx(
-            "max-w-full ph-no-capture bg-white font-primary",
+            "max-w-full ph-no-capture bg-white font-body ",
             tableTopBorder === "rounded" && "rounded-md",
             (!props.dashboardMode ||
               dashboardModeHasControls(props.dashboardMode)) &&
@@ -235,7 +235,7 @@ function SQLSuccess(props: SQLSuccessProps) {
 
       <div
         className={clsx(
-          "flex w-full items-center justify-between border-gray-200 px-3 h-10 bg-gray-50 text-xs rounded-b-md text-gray-400",
+          "flex w-full items-center justify-between border-border-secondary px-3 h-10 bg-gray-50 text-xs rounded-b-md text-ink-400",
           ((props.dashboardMode &&
             (props.dashboardMode._tag === "live" ||
               props.dashboardMode.position !== "expanded")) ||
@@ -250,7 +250,7 @@ function SQLSuccess(props: SQLSuccessProps) {
           {props.isResultHidden && (
             <button
               type="button"
-              className="text-gray-300 pl-3 hover:text-gray-400 cursor-pointer"
+              className="text-gray-300 pl-3 hover:text-ink-400 cursor-pointer"
               onClick={props.toggleResultHidden}
             >
               collapsed
@@ -436,7 +436,7 @@ function SQLSyntaxError(props: {
                     type="button"
                     disabled={!props.canFixWithAI}
                     onClick={props.onFixWithAI}
-                    className="mt-4 flex items-center border rounded-sm px-2 py-1 gap-x-2  border-gray-200 hover:bg-gray-50 hover:text-gray-700 disabled:bg-gray-200 disabled:border-0 disabled:cursor-not-allowed"
+                    className="mt-4 flex items-center border rounded-sm px-2 py-1 gap-x-2  border-border-secondary hover:bg-gray-50 hover:text-gray-700 disabled:bg-gray-200 disabled:border-0 disabled:cursor-not-allowed"
                   >
                     {props.isFixingWithAI ? (
                       <>

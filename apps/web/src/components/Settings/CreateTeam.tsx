@@ -83,7 +83,7 @@ export default function CreateTeamModal({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-[31rem] transform overflow-hidden rounded-3xl bg-white dark:bg-gray-900 transition-all ">
+              <Dialog.Panel className="w-full max-w-[31rem] transform overflow-hidden rounded-3xl bg-white  dark:bg-base-400 transition-all dark:border-border-tertiary dark:border ">
                 <div className="flex items-center justify-between  px-6 py-4">
                   <Dialog.Title className="text-base font-medium text-ink-100 dark:text-white">
                     Create New Team
@@ -92,7 +92,7 @@ export default function CreateTeamModal({
                     type="button"
                     onClick={handleClose}
                     disabled={loading}
-                    className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-600 dark:hover:text-gray-300 transition-colors disabled:opacity-50"
+                    className="rounded-lg p-1 text-ink-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-600 dark:hover:text-gray-300 transition-colors disabled:opacity-50"
                   >
                     <XMarkIcon className="h-5 w-5" />
                   </button>
@@ -117,22 +117,20 @@ export default function CreateTeamModal({
                         setFormData(prev => ({ ...prev, name: e.target.value }))
                       }
                       disabled={loading}
-                      className="w-full px-4 py-3 rounded-xl bg-[#F8F9FA] dark:bg-[#262626] border border-[#DEE2E6] dark:border-[#363636] text-gray-900 dark:text-white placeholder:text-[#6C757D] dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#A308F0] focus:border-transparent transition-all text-sm font-medium"
+                      className="w-full px-4 py-3 rounded-xl bg-[#F8F9FA] dark:bg-[#262626] border border-[#DEE2E6] dark:border-[#363636] text-ink-100 dark:text-white placeholder:text-[#6C757D] dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#A308F0] focus:border-transparent transition-all text-sm font-medium"
                     />
                   </div>
 
                   <ul className="mt-2 space-y-1 text-xs font-medium">
-            <li className="flex items-center gap-1">
-              <span className="text-[#6C757D]">·</span>
-              Workspace name should be less than 40 characters
-            </li>
-            <li className="flex items-center gap-1">
-              <span className="text-[#6C757D]">·</span>
-              Cannot contain punctuation/special marks
-            </li>
-          </ul>
-
-   
+                    <li className="flex items-center gap-1">
+                      <span className="text-[#6C757D]">·</span>
+                      Workspace name should be less than 40 characters
+                    </li>
+                    <li className="flex items-center gap-1">
+                      <span className="text-[#6C757D]">·</span>
+                      Cannot contain punctuation/special marks
+                    </li>
+                  </ul>
 
                   <div className="flex items-center gap-3 pt-4 ">
                     <button

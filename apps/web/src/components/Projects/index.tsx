@@ -20,10 +20,10 @@ import { useFavorites } from "@/components/Visualization/hooks/useFavorites";
 import { UploadIcon } from "../Assets/UploadIcon";
 import { useDocuments } from "../Visualization/hooks/useDocuments";
 import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
+import { Loader } from "../Loader";
 
 import ProjectControl from "./ProjectControls";
 import { ProjectsTable } from "./ProjectTable";
-import { Loader } from "../Loader";
 
 interface Project {
   id: string;
@@ -139,8 +139,8 @@ export const Projects: React.FC = () => {
 
   if (documentsState.loading) {
     return (
-      <div className="min-h-screen  dark:bg-black flex items-center justify-center p-8">
-       <Loader/>
+      <div className="min-h-screen  dark:bg-base-100  flex items-center justify-center p-8">
+        <Loader />
       </div>
     );
   }
@@ -153,13 +153,13 @@ export const Projects: React.FC = () => {
           <h2 className="text-2xl font-medium text-ink-100 font-body mb-2 mt-3">
             No projects yet
           </h2>
-          <p className="text-ink-300 mb-1">
+          <p className="text-ink-300 dark:text-ink-400 mb-1 font-body">
             Create your first project to get started
           </p>
           <button
             type="button"
             onClick={onCreateDocumentHandler}
-            className="p-2 bg-[#F3F3FA]  rounded-xl hover:cursor-pointer text-sm border mt-6 flex px-5 items-center justify-center w-full border-[#D000FF]  text-primary mb-3 font-body font-medium "
+            className="p-2  bg-base-200 dark:bg-base-200  rounded-xl hover:cursor-pointer text-sm border mt-6 flex px-5 items-center justify-center w-full border-[#D000FF] dark:border-primary  text-primary mb-3 font-body font-medium "
           >
             <PlusSmallIcon className="h-4 w-4 mr-1 " aria-hidden="true" />
             Create Project
@@ -170,7 +170,7 @@ export const Projects: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen dark:bg-black  p-8">
+    <div className="min-h-screen dark:bg-base-200 p-8">
       <div className="flex justify-between w-full container mx-auto">
         <div className="flex items-center gap-3 mb-0">
           <span className=" rounded-full  flex items-center justify-center">
@@ -181,7 +181,7 @@ export const Projects: React.FC = () => {
         <div>
           <button
             type="button"
-            className="p-2 bg-[#F3F3FA]  rounded-xl hover:cursor-pointer text-sm border mt-6 flex px-5 items-center justify-center w-full border-[#D000FF]  text-primary mb-3 font-body font-medium"
+            className="p-2 bg-base-200  rounded-xl hover:cursor-pointer text-sm border mt-6 flex px-5 items-center justify-center w-full border-[#D000FF]  text-primary mb-3 font-body font-medium"
             onClick={onCreateDocumentHandler}
           >
             <PiPlus size={18} />
@@ -198,12 +198,12 @@ export const Projects: React.FC = () => {
             {projects.map(project => (
               <div
                 key={project.id}
-                className="bg-white dark:bg-black rounded-3xl border border-[#CED4DA] dark:border-[#262A30]  transition-all duration-200 p-4 py-3 relative group"
+                className="bg-base-100  rounded-3xl border border-border-tertiary  transition-all duration-200 p-4 py-3 relative group"
               >
                 <div className="flex items-start justify-between mb-4">
                   <Link
                     href={`/workspace/${workspaceId}/documents/${project.id}`}
-                    className="text-[0.9rem] font-medium text-gray-900 dark:text-white flex-1 pr-2 hover:underline"
+                    className="text-[0.9rem] font-medium text-ink-100 dark:text-white flex-1 pr-2 hover:underline"
                   >
                     {project.title}
                   </Link>
@@ -220,7 +220,7 @@ export const Projects: React.FC = () => {
                         className={`w-4 h-4 ${
                           project.isFavorite
                             ? "fill-[#A308F0] text-primary"
-                            : "text-gray-400 hover:text-primary"
+                            : "text-ink-400 hover:text-primary"
                         }`}
                       />
                     </button>
@@ -239,7 +239,7 @@ export const Projects: React.FC = () => {
                       </button>
 
                       {openMenuId === project.id && (
-                        <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-black rounded-xl shadow-lg border border-[#CED4DA] dark:border-[#262A30] pb-1 z-10 text-ink-200 dark:text-white">
+                        <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-base-100  rounded-xl shadow-lg border border-[#CED4DA] dark:border-border-tertiary pb-1 z-10 text-ink-200 dark:text-white">
                           <button
                             type="button"
                             onClick={() =>
@@ -279,7 +279,7 @@ export const Projects: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="bg-white dark:bg-black rounded-lg h-10 mb-4 flex items-center justify-center" />
+                <div className="bg-base-100 rounded-lg h-10 mb-4 flex items-center justify-center" />
 
                 <div className="flex items-center justify-between">
                   <div className="relative">
@@ -293,7 +293,7 @@ export const Projects: React.FC = () => {
                     </button>
 
                     {hoveredUser === project.id && (
-                      <div className="absolute bottom-full left-0 mb-2 px-3 py-1 dark:bg-black bg-white text-ink-400 border-[#E9ECEF] dark:border-[#262A30] border dark:text-white text-xs rounded shadow-[0_0.5px_4px_#2516660A] whitespace-nowrap z-20">
+                      <div className="absolute bottom-full left-0 mb-2 px-3 py-1 dark:bg-base-100  bg-white text-ink-400 border-[#E9ECEF] dark:border-border-tertiary border dark:text-white text-xs rounded shadow-[0_0.5px_4px_#2516660A] whitespace-nowrap z-20">
                         Creator: {project.creator}
                       </div>
                     )}
@@ -310,7 +310,7 @@ export const Projects: React.FC = () => {
                     </button>
 
                     {hoveredSave === project.id && (
-                      <div className="absolute bottom-full right-0 mb-2 px-4 py-1.5 dark:bg-black bg-white text-ink-500 border-[#E9ECEF] dark:border-[#262A30] border dark:text-white text-xs rounded shadow-[0_0.5px_4px_#2516660A] whitespace-nowrap z-20">
+                      <div className="absolute bottom-full right-0 mb-2 px-4 py-1.5 dark:bg-base-100  bg-white text-ink-500 border-[#E9ECEF] dark:border-border-tertiary border dark:text-white text-xs rounded shadow-[0_0.5px_4px_#2516660A] whitespace-nowrap z-20">
                         <div className="space-y-1">
                           <div>
                             <span className="font-medium text-ink-400 dark:text-white">

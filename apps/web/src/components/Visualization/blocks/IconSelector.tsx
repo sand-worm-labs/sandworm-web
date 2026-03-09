@@ -6,12 +6,13 @@ import Fuse from "fuse.js";
 import clsx from "clsx";
 import ReactDOM from "react-dom";
 
+import { Folder } from "@/components/Assets/Menu/Folder";
+import { File } from "@/components/Assets/Menu/File";
+
 import allLucideIcons from "../utils/lucideIcons";
 import { useDebounce } from "../hooks/useDebounce";
 import useDocument from "../hooks/useDocument";
 import useDropdownPosition from "../hooks/dropdownposition";
-import { Folder } from "@/components/Assets/Menu/Folder";
-import { File } from "@/components/Assets/Menu/File";
 
 const icons: Record<string, React.ComponentType<React.ComponentProps<any>>> = {
   ...allOutlineIcons,
@@ -87,7 +88,11 @@ function IconSelector(props: Props) {
         )}
         disabled={props.disabled}
       >
-        <Icon aria-hidden="true" size={18} color={"#616A79"} />
+        <Icon
+          aria-hidden="true"
+          size={18}
+          className="text-[#616A79] dark:text-ink-400"
+        />
       </Menu.Button>
 
       {ReactDOM.createPortal(
@@ -112,7 +117,7 @@ function IconSelector(props: Props) {
               <div className="relative mt-2">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                   <MagnifyingGlassIcon
-                    className="h-4 w-4 text-gray-400"
+                    className="h-4 w-4 text-ink-400"
                     aria-hidden="true"
                   />
                 </div>

@@ -101,7 +101,7 @@ export default function SignUpForm() {
             }
           : e => e.preventDefault()
       }
-      className="mt-4 space-y-3 font-primary w-full"
+      className="mt-4 space-y-3 font-body  w-full"
     >
       {step === 1 && (
         <>
@@ -111,19 +111,19 @@ export default function SignUpForm() {
             placeholder="First name"
             value={formData.firstName}
             onChange={handleChange}
-            className="mt-1 w-full rounded-3xl dark:bg-[#121417] bg-white p-2.5 px-5 text-ink-100 dark:text-white border border-[#DEE2E6] dark:border-[#262A30] focus:border-primary focus:ring-1 focus:ring-[#A308F0] outline-none text-[0.9rem]"
+            className="mt-1 w-full rounded-3xl dark:bg-base-400 bg-white p-2.5 px-5 text-ink-100 dark:text-white border border-[#DEE2E6] dark:placeholder:text-ink-400 dark:border-border-tertiary focus:border-primary focus:ring-1 focus:ring-[#A308F0] outline-none text-[0.9rem]"
           />
           <input
             name="lastName"
             placeholder="Last name"
             value={formData.lastName}
             onChange={handleChange}
-            className="mt-1 w-full rounded-3xl dark:bg-[#121417] bg-white p-2.5 px-5 text-ink-100 dark:text-white border border-[#DEE2E6] dark:border-[#262A30] focus:border-primary focus:ring-1 focus:ring-[#A308F0] outline-none text-[0.9rem]"
+            className="mt-1 w-full rounded-3xl dark:bg-base-400 bg-white p-2.5 px-5 text-ink-100 dark:text-white border border-[#DEE2E6] dark:placeholder:text-ink-400 dark:border-border-tertiary focus:border-primary focus:ring-1 focus:ring-[#A308F0] outline-none text-[0.9rem]"
           />
           <button
             type="button"
             onClick={handleNext}
-            className="w-full rounded-3xl bg-[#0F0F0F] py-3.5 text-white font-medium text-sm"
+            className="w-full rounded-3xl bg-[#0F0F0F] dark:text-black dark:bg-white py-3.5 text-white font-medium text-sm"
           >
             Continue
           </button>
@@ -139,7 +139,7 @@ export default function SignUpForm() {
             placeholder="Email"
             value={formData.email}
             onChange={handleChange}
-            className="mt-1 w-full rounded-3xl dark:bg-[#121417] bg-white p-2.5 px-5 text-ink-100 dark:text-white border border-[#DEE2E6] dark:border-[#262A30] focus:border-primary focus:ring-1 focus:ring-[#A308F0] outline-none text-[0.9rem]"
+            className="mt-1 w-full rounded-3xl  dark:bg-base-400 bg-white p-2.5 px-5 text-ink-100 dark:text-white border border-[#DEE2E6] dark:placeholder:text-ink-400 dark:border-border-tertiary focus:border-primary focus:ring-1 focus:ring-[#A308F0] outline-none text-[0.9rem]"
           />
           <input
             type="password"
@@ -147,11 +147,11 @@ export default function SignUpForm() {
             placeholder="Password"
             value={formData.password}
             onChange={handleChange}
-            className="mt-1 w-full rounded-3xl dark:bg-[#121417] bg-white p-2.5 px-5 text-ink-100 dark:text-white border border-[#DEE2E6] dark:border-[#262A30] focus:border-primary focus:ring-1 focus:ring-[#A308F0] outline-none text-[0.9rem]"
+            className="mt-1 w-full rounded-3xl  dark:bg-base-400 bg-white p-2.5 px-5 text-ink-100 dark:text-white border border-[#DEE2E6] dark:placeholder:text-ink-400 dark:border-border-tertiary focus:border-primary focus:ring-1 focus:ring-[#A308F0] outline-none text-[0.9rem]"
           />
           <button
             type="submit"
-            className="w-full rounded-3xl bg-[#0F0F0F] px-4 py-3.5 text-white font-medium text-sm font-body"
+            className="w-full rounded-3xl bg-[#0F0F0F] dark:bg-white dark:text-black px-4 py-3.5 text-white font-medium text-sm font-body"
           >
             Continue
           </button>

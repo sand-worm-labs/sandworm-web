@@ -44,7 +44,7 @@ const DragHandle = ({
   const menuContainerRef = useRef<HTMLDivElement>(null);
 
   return (
-    <Menu as="div" className="inline-block text-left dark:bg-black">
+    <Menu as="div" className="inline-block text-left dark:bg-base-100 ">
       {({ open }) => {
         const portalStyle = computeMenuPosition(
           buttonRef,
@@ -57,11 +57,11 @@ const DragHandle = ({
           <>
             <Menu.Button
               ref={buttonRef}
-              className="rounded-md hover:bg-gray-100 h-6 w-6 flex items-center justify-center  dark:bg-black"
+              className="rounded-md hover:bg-gray-100 h-6 w-6 flex items-center justify-center  dark:bg-base-100 "
             >
               <div
                 className={clsx(
-                  "h-5 w-5 text-gray-400/60 group-hover/wrapper:opacity-100  transition-opacity duration-200 ease-in-out flex items-center justify-center",
+                  "h-5 w-5 text-ink-400/60 group-hover/wrapper:opacity-100  transition-opacity duration-200 ease-in-out flex items-center justify-center",
                   isDragging ? "cursor-grabbing" : "cursor-pointer",
                   open ? "opacity-100" : "opacity-0"
                 )}
@@ -97,9 +97,9 @@ const DragHandle = ({
                 <Menu.Items
                   as="div"
                   ref={menuContainerRef}
-                  className="absolute z-30 rounded-lg dark:bg-black bg-white focus:outline-none font-primary dark:divide-[#262A30] flex flex-col text-sm text-gray-600 dark:ring-[#262A30] dark:border-[#262A30] dark:border border-[#CED4DA] border "
+                  className="absolute z-30 rounded-lg dark:bg-base-400 bg-white focus:outline-none font-body  dark:divide-border-tertiary flex flex-col text-sm text-ink-400 dark:ring-[#262A30] dark:border-border-tertiary dark:border border-[#CED4DA] border "
                 >
-                  <div className="flex flex-col  dark:divide-[#262A30]">
+                  <div className="flex flex-col  dark:divide-border-tertiary">
                     <div className="py-0.5 px-0.5">
                       {hasRunnableBlocks && (
                         <Menu.Item

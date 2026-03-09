@@ -37,7 +37,7 @@ export default function DocumentsPage() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <p className="text-gray-600">No documents found</p>
+          <p className="text-ink-400">No documents found</p>
         </div>
       </div>
     );

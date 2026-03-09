@@ -81,8 +81,8 @@ export const WorkspaceSidebar = () => {
     `flex items-center gap-3 rounded-xl px-2 py-1.5 text-sm font-medium transition-colors
      ${
        pathname === href
-         ? "bg-[#EBF7F7] dark:bg-[#181C21]  text-primary dark:text-primary"
-         : "text-menu-ink dark:text-white hover:bg-[#EBF7F7] hover:text-primary  dark:hover:bg-[#181C21] hover:text-black dark:hover:text-white"
+         ? "bg-base-600  text-primary dark:text-ink-100"
+         : "text-menu-ink dark:text-white hover:bg-base-600 hover:text-primary   hover:text-black dark:hover:text-white"
      }`;
 
   const [
@@ -102,7 +102,6 @@ export const WorkspaceSidebar = () => {
 
   const onCreateDocument = useCallback(
     async (parentId: string | null) => {
-      console.log("doc", documentsState);
       if (documentsState.loading) return;
 
       try {
@@ -193,13 +192,13 @@ export const WorkspaceSidebar = () => {
 
   return (
     <aside
-      className={`h-full flex flex-col justify-between dark:bg-[#0C1015] bg-[#FBFBFB] border-r dark:border-[#262A30] border-[#E9ECEF] font-body
+      className={`h-full flex flex-col justify-between bg-base-500 border-r dark:border-border-tertiary border-[#E9ECEF] dark:border-border-tertiary font-body
       transition-all duration-300 ease-in-out
       ${collapsed ? "w-16" : "w-[260px]"}
       `}
     >
       <div>
-        <div className="flex justify-between py-[0.69rem] px-3   bg-[#F9F9F9] dark:bg-black items-center">
+        <div className="flex justify-between py-[0.69rem] px-3   bg-[#F9F9F9] dark:bg-base-500 items-center">
           {!collapsed && (
             <Link href="/" className="flex items-center gap-2">
               <SandwormLogo width="30" height="30" />
@@ -231,6 +230,7 @@ export const WorkspaceSidebar = () => {
                   <item.icon
                     size={18}
                     color={pathname === item.href ? "#A308F0" : "#39414E"}
+                    className="text-ink-icon"
                   />
                   {!collapsed && item.name}
                 </Link>
@@ -238,7 +238,7 @@ export const WorkspaceSidebar = () => {
             ))}
           </ul>
 
-          <hr className="border-t-[1px] border-[#E6E0F1] dark:border-[#262A30] mt-4" />
+          <hr className="border-t-[1px] border-[#E6E0F1] dark:border-border-tertiary mt-4" />
 
           {/* TOOLS NAV */}
           <ul className="space-y-1.5 mt-4">
@@ -262,7 +262,7 @@ export const WorkspaceSidebar = () => {
                   type="button"
                   id="create-workspace-doc"
                   onClick={onCreateDocumentHandler}
-                  className="p-2 bg-[#F7E8FF]  rounded-xl hover:cursor-pointer text-sm border mt-6 flex px-5 items-center justify-center w-full border-[#D000FF]  text-primary mb-3 font-body font-medium  "
+                  className="p-2 bg-[#F7E8FF] dark:bg-base-500  rounded-xl hover:cursor-pointer text-sm border mt-6 flex px-5 items-center justify-center w-full border-[#D000FF]  text-primary mb-3 font-body font-medium  dark:border-[#A78BFA] dark:text-[#A78BFA] "
                 >
                   {" "}
                   <PlusSmallIcon className="h-4 w-4 mr-1 " aria-hidden="true" />

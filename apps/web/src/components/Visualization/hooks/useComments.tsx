@@ -123,16 +123,13 @@ export function CommentsProvider(props: Props) {
   // WebSocket listeners
   useEffect(() => {
     if (!socket) {
-      console.log("❌ No socket in CommentsProvider");
       return;
     }
 
-    console.log("✅ Socket exists, ID:", socket.id);
-    console.log("✅ Setting up WebSocket listeners...");
+ 
 
     const onComments = (data: any) => {
-      console.log("🎯 LISTENER FIRED: document-comments");
-      console.log("🎯 Raw data:", data);
+  
 
       // Transform WebSocket data to match our Comment type
       const transformedComments = (data.comments || []).map(transformComment);
@@ -141,8 +138,7 @@ export function CommentsProvider(props: Props) {
     socket.on("document-comments", onComments);
 
     const onComment = (data: any) => {
-      console.log("🎯 LISTENER FIRED: document-comment");
-      console.log("🎯 Raw data:", data);
+  
 
       const transformedComment = transformComment(data.comment, data.user);
 
@@ -150,11 +146,9 @@ export function CommentsProvider(props: Props) {
         const comments = state.get(transformedComment.documentId) ?? [];
 
         if (comments.some(({ id }) => id === transformedComment.id)) {
-          console.log("⚠️ Comment already exists");
           return state;
         }
 
-        console.log("✅ Adding new comment");
         return state.set(transformedComment.documentId, [
           ...comments,
           transformedComment,
@@ -164,8 +158,7 @@ export function CommentsProvider(props: Props) {
     socket.on("document-comment", onComment);
 
     const onCommentDeleted = (data: any) => {
-      console.log("🎯 LISTENER FIRED: document-comment-deleted");
-      console.log("🎯 Raw data:", data);
+   
 
       setState(state => {
         const comments = state.get(data.documentId) ?? [];
@@ -177,10 +170,8 @@ export function CommentsProvider(props: Props) {
     };
     socket.on("document-comment-deleted", onCommentDeleted);
 
-    console.log("👂 WebSocket listeners registered");
 
     return () => {
-      console.log("🧹 Cleaning up WebSocket listeners");
       socket.off("document-comments", onComments);
       socket.off("document-comment", onComment);
       socket.off("document-comment-deleted", onCommentDeleted);

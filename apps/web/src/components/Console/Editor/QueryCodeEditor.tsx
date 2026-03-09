@@ -6,10 +6,10 @@ import Editor from "@monaco-editor/react";
 import { toast } from "sonner";
 import { format } from "sql-formatter";
 import type { editor } from "monaco-editor";
+import * as Y from "yjs";
 
 import { keyCombo } from "@/lib/utils";
 import EditWithAIForm from "@/components/Visualization/blocks/EditWithAIForm";
-import * as Y from "yjs";
 
 type ExecutionType = "rpc" | "indexer";
 

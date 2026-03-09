@@ -61,7 +61,7 @@ export default function DatabricksSQLForm({
     <form className="px-4 sm:p-6 lg:p-12" onSubmit={onSubmitHandler} noValidate>
       <div className="space-y-12">
         <div className="border-b border-gray-900/10 pb-8">
-          <h2 className="text-lg font-semibold leading-7 text-gray-900">
+          <h2 className="text-lg font-semibold leading-7 text-ink-100">
             {databricksSQLDataSource ? "Edit" : "New"} Databricks SQL data
             source
           </h2>
@@ -78,7 +78,7 @@ export default function DatabricksSQLForm({
             <div className="col-span-full">
               <label
                 htmlFor="name"
-                className="block text-sm font-medium leading-6 text-gray-900"
+                className="block text-sm font-medium leading-6 text-ink-100"
               >
                 Display name
               </label>
@@ -94,7 +94,7 @@ export default function DatabricksSQLForm({
                   name="name"
                   placeholder="My Databricks SQL database"
                   required
-                  className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
                 <FormError msg={formState.errors.name?.message} />
               </div>
@@ -103,7 +103,7 @@ export default function DatabricksSQLForm({
             <div className="col-span-10">
               <label
                 htmlFor="hostname"
-                className="block text-sm font-medium leading-6 text-gray-900"
+                className="block text-sm font-medium leading-6 text-ink-100"
               >
                 Host Name
               </label>
@@ -119,7 +119,7 @@ export default function DatabricksSQLForm({
                   name="hostname"
                   placeholder="*************.cloud.databricks.com"
                   required
-                  className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
                 <FormError msg={formState.errors.hostname?.message} />
               </div>
@@ -128,7 +128,7 @@ export default function DatabricksSQLForm({
             <div className="col-span-5">
               <label
                 htmlFor="http_path"
-                className="block text-sm font-medium leading-6 text-gray-900"
+                className="block text-sm font-medium leading-6 text-ink-100"
               >
                 HTTP Path
               </label>
@@ -144,7 +144,7 @@ export default function DatabricksSQLForm({
                   name="http_path"
                   placeholder="/sql/1.0/warehouses/**********"
                   required
-                  className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
                 <FormError msg={formState.errors.http_path?.message} />
               </div>
@@ -153,7 +153,7 @@ export default function DatabricksSQLForm({
             <div className="col-span-5">
               <label
                 htmlFor="token"
-                className="block text-sm font-medium leading-6 text-gray-900"
+                className="block text-sm font-medium leading-6 text-ink-100"
               >
                 Token
               </label>
@@ -164,10 +164,10 @@ export default function DatabricksSQLForm({
                   name="token"
                   placeholder="dapi*************"
                   required
-                  className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
                 {isEditing && !formState.errors.token && (
-                  <span className="block text-sm text-gray-900 empty:before:content-['\200b'] pt-1 pb-1">
+                  <span className="block text-sm text-ink-100 empty:before:content-['\200b'] pt-1 pb-1">
                     Leave empty to keep previous token
                   </span>
                 )}
@@ -178,7 +178,7 @@ export default function DatabricksSQLForm({
             <div className="col-span-5">
               <label
                 htmlFor="catalog"
-                className="block text-sm font-medium leading-6 text-gray-900"
+                className="block text-sm font-medium leading-6 text-ink-100"
               >
                 Catalog
               </label>
@@ -188,7 +188,7 @@ export default function DatabricksSQLForm({
                   type="text"
                   name="catalog"
                   placeholder="hive_metastore"
-                  className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
               </div>
             </div>
@@ -196,7 +196,7 @@ export default function DatabricksSQLForm({
             <div className="col-span-5">
               <label
                 htmlFor="schema"
-                className="block text-sm font-medium leading-6 text-gray-900"
+                className="block text-sm font-medium leading-6 text-ink-100"
               >
                 Schema
               </label>
@@ -206,14 +206,14 @@ export default function DatabricksSQLForm({
                   type="text"
                   name="schema"
                   placeholder="default"
-                  className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
               </div>
             </div>
             <div className="col-span-full pt-8">
               <label
                 htmlFor="additionalInfo"
-                className="block text-sm font-medium leading-6 text-gray-900"
+                className="block text-sm font-medium leading-6 text-ink-100"
               >
                 AI Additional Context{" "}
                 <span className="pl-1 text-gray-500">(optional)</span>
@@ -225,7 +225,7 @@ export default function DatabricksSQLForm({
                   name="additionalInfo"
                   rows={5}
                   placeholder="Enter additional context for the AI assistant (examples, descriptions, etc.)"
-                  className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
               </div>
             </div>

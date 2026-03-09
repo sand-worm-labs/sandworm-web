@@ -41,7 +41,7 @@ export default function ShareDropdown(props: Props) {
 
   return (
     <Menu as="div" className="relative inline-block text-left h-full">
-      <Menu.Button className="flex items-center rounded-sm px-3 py-1 text-sm dark:border-[#262A30] border text-gray-500 hover:bg-gray-100  border-gray-200 overflow-hidden group max-w-[42px] xl:max-w-[94px] hover:max-w-[94px] transition-mw duration-500 bg-white dark:bg-black ">
+      <Menu.Button className="flex items-center rounded-sm px-3 py-1 text-sm dark:border-border-tertiary border text-gray-500 hover:bg-gray-100  border-border-secondary overflow-hidden group max-w-[42px] xl:max-w-[94px] hover:max-w-[94px] transition-mw duration-500 bg-white dark:bg-base-100  ">
         <ShareIcon className="min-w-4 min-h-4" />
         <span className="ml-2 opacity-0 group-hover:opacity-100 xl:opacity-100 duration-500 transition-opacity">
           Share
@@ -59,7 +59,7 @@ export default function ShareDropdown(props: Props) {
       >
         <Menu.Items
           as="div"
-          className="w-60 xl:w-72 mt-1 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none font-primary divide-y divide-gray-200"
+          className="w-60 xl:w-72 mt-1 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none font-body  divide-y divide-border-secondary"
         >
           {props.role !== "viewer" && props.onTogglePublic && (
             <Menu.Item>
@@ -71,7 +71,7 @@ export default function ShareDropdown(props: Props) {
                   >
                     <Switch.Label
                       as="span"
-                      className="text-sm leading-6 text-gray-900 flex items-center gap-x-2"
+                      className="text-sm leading-6 text-ink-100 flex items-center gap-x-2"
                       passive
                     >
                       <GlobeAltIcon className="w-4 h-4" />
@@ -118,7 +118,7 @@ export default function ShareDropdown(props: Props) {
               <button
                 type="button"
                 className={clsx(
-                  active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                  active ? "bg-gray-100 text-ink-100" : "text-gray-700",
                   "flex items-center gap-x-2 w-full text-sm px-4 py-3"
                 )}
                 onClick={onCopy}
@@ -147,7 +147,7 @@ export default function ShareDropdown(props: Props) {
                   type="button"
                   className={clsx(
                     "cursor-not-allowed",
-                    active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                    active ? "bg-gray-100 text-ink-100" : "text-gray-700",
                     "flex items-center justify-between w-full text-sm px-4 py-3"
                   )}
                   disabled

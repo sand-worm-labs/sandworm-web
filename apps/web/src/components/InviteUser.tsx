@@ -8,28 +8,42 @@ interface InviteUserModalProps {
   isOpen: boolean;
   onClose: () => void;
   workspaceName: string;
-  onInvite: (email: string, role?: string) => Promise<void>;
+  workspaceId?: string;
+  workspaces?: { id: string; name: string }[];
+  onInvite: (
+    email: string,
+    role?: string,
+    workspaceId?: string
+  ) => Promise<void>;
 }
 
 export default function InviteUserModal({
   isOpen,
   onClose,
   workspaceName,
+  workspaceId,
+  workspaces,
   onInvite,
 }: InviteUserModalProps) {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<string>("editor");
+  const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<string>(
+    workspaceId ?? workspaces?.[0]?.id ?? ""
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+
+  const isMultiWorkspace = !!workspaces?.length;
 
   const handleClose = useCallback(() => {
     if (!isSubmitting) {
       setEmail("");
-      setRole("member");
+      setRole("editor");
       setError("");
+      setSelectedWorkspaceId(workspaceId ?? workspaces?.[0]?.id ?? "");
       onClose();
     }
-  }, [isSubmitting, onClose]);
+  }, [isSubmitting, onClose, workspaceId, workspaces]);
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -40,10 +54,14 @@ export default function InviteUserModal({
         return;
       }
 
-      // Basic email validation
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
         setError("Please enter a valid email address");
+        return;
+      }
+
+      if (isMultiWorkspace && !selectedWorkspaceId) {
+        setError("Please select a workspace");
         return;
       }
 
@@ -51,9 +69,14 @@ export default function InviteUserModal({
       setError("");
 
       try {
-        await onInvite(email, role);
+        await onInvite(
+          email,
+          role,
+          isMultiWorkspace ? selectedWorkspaceId : workspaceId
+        );
         setEmail("");
-        setRole("member");
+        setRole("editor");
+        setSelectedWorkspaceId(workspaceId ?? workspaces?.[0]?.id ?? "");
         onClose();
       } catch (err) {
         setError(
@@ -63,7 +86,16 @@ export default function InviteUserModal({
         setIsSubmitting(false);
       }
     },
-    [email, role, onInvite, onClose]
+    [
+      email,
+      role,
+      selectedWorkspaceId,
+      isMultiWorkspace,
+      workspaceId,
+      workspaces,
+      onInvite,
+      onClose,
+    ]
   );
 
   return (
@@ -78,10 +110,10 @@ export default function InviteUserModal({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-[#0000001A] dark:bg-black/50" />
+          <div className="fixed inset-0 bg-[#0000001A] dark:bg-base-100 /50" />
         </Transition.Child>
 
-        <div className="fixed inset-0 overflow-y-auto font-primary">
+        <div className="fixed inset-0 overflow-y-auto font-body ">
           <div className="flex min-h-full items-center justify-center p-4 text-center">
             <Transition.Child
               as={Fragment}
@@ -96,21 +128,48 @@ export default function InviteUserModal({
                 <div className="flex items-center justify-between mb-7">
                   <Dialog.Title
                     as="h3"
-                    className="text-base font-medium leading-6 text-[#1A1A1A] dark:text-white "
+                    className="text-base font-medium leading-6 text-[#1A1A1A] dark:text-white"
                   >
-                    Invite to {workspaceName}
+                    {isMultiWorkspace
+                      ? "Invite to workspace"
+                      : `Invite to ${workspaceName}`}
                   </Dialog.Title>
                   <button
                     type="button"
                     onClick={handleClose}
                     disabled={isSubmitting}
-                    className="rounded-lg p-1 text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+                    className="rounded-lg p-1 text-ink-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-ink-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
                   >
                     <XMarkIcon className="h-5 w-5" />
                   </button>
                 </div>
 
                 <form onSubmit={handleSubmit} className="mt-4">
+                  {isMultiWorkspace && (
+                    <div className="mb-4">
+                      <label
+                        htmlFor="workspace"
+                        className="block text-sm font-medium text-[#1A1A1A] dark:text-gray-300 mb-2"
+                      >
+                        Workspace
+                      </label>
+                      <select
+                        id="workspace"
+                        value={selectedWorkspaceId}
+                        onChange={e => setSelectedWorkspaceId(e.target.value)}
+                        disabled={isSubmitting}
+                        className="w-full px-3 py-2 rounded-xl dark:bg-[#1A1A1A] border dark:border-border-tertiary border-[#DEE2E6] dark:text-white focus:outline-none focus:ring focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F8F9FA]"
+                      >
+                        <option value="">Select a workspace</option>
+                        {workspaces.map(ws => (
+                          <option key={ws.id} value={ws.id}>
+                            {ws.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
                   <div className="mb-4">
                     <label
                       htmlFor="email"
@@ -118,20 +177,18 @@ export default function InviteUserModal({
                     >
                       Email Address
                     </label>
-                    <div className="relative">
-                      <input
-                        type="email"
-                        id="email"
-                        value={email}
-                        onChange={e => {
-                          setEmail(e.target.value);
-                          setError("");
-                        }}
-                        placeholder="colleague@example.com"
-                        disabled={isSubmitting}
-                        className="w-full px-5 py-3.5 rounded-xl dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white placeholder:dark:text-ink-300  placeholder-[#868E96] focus:outline-none focus:ring focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F8F9FA] "
-                      />
-                    </div>
+                    <input
+                      type="email"
+                      id="email"
+                      value={email}
+                      onChange={e => {
+                        setEmail(e.target.value);
+                        setError("");
+                      }}
+                      placeholder="colleague@example.com"
+                      disabled={isSubmitting}
+                      className="w-full px-5 py-3.5 rounded-xl dark:bg-[#1A1A1A] border dark:border-border-tertiary border-[#DEE2E6] dark:text-white placeholder:dark:text-ink-300 placeholder-[#868E96] focus:outline-none focus:ring focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F8F9FA]"
+                    />
                   </div>
 
                   <div className="mb-4">
@@ -146,7 +203,7 @@ export default function InviteUserModal({
                       value={role}
                       onChange={e => setRole(e.target.value)}
                       disabled={isSubmitting}
-                      className="w-auto px-3 py-1 rounded-lg  dark:bg-[#1A1A1A] border dark:border-[#262A30] border-[#DEE2E6] dark:text-white focus:outline-none focus:ring focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F8F9FA]"
+                      className="w-auto px-3 py-1 rounded-lg dark:bg-[#1A1A1A] border dark:border-border-tertiary border-[#DEE2E6] dark:text-white focus:outline-none focus:ring focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F8F9FA]"
                     >
                       <option value="editor">Editor</option>
                       <option value="viewer">Viewer</option>
@@ -163,8 +220,12 @@ export default function InviteUserModal({
                   <div className="mt-6 flex gap-3">
                     <button
                       type="submit"
-                      disabled={isSubmitting || !email.trim()}
-                      className="flex-1 px-4 py-3.5 text-sm font-medium text-white bg-[#A308F0]  rounded-[16px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled={
+                        isSubmitting ||
+                        !email.trim() ||
+                        (isMultiWorkspace && !selectedWorkspaceId)
+                      }
+                      className="flex-1 px-4 py-3.5 text-sm font-medium text-white bg-[#A308F0] rounded-[16px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isSubmitting ? "Sending..." : "Send invite"}
                     </button>

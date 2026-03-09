@@ -488,7 +488,6 @@ export const useSandwormStore = create<SandwormStoreState>()(
               .split(".")[0]
               .replace(/[:]/g, "-");
             const fileName = `result-${now}.parquet`;
-            console.log(fileName, query);
 
             console.error("Parquet export functionality not implemented");
             throw new Error("Parquet export functionality not implemented");

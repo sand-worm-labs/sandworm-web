@@ -22,7 +22,7 @@ export default function Select({
     <Listbox value={value} onChange={onChange}>
       {({ open }) => (
         <div className="flex-1">
-          <Listbox.Label className="block text-xs text-gray-400 font-medium leading-6">
+          <Listbox.Label className="block text-xs text-ink-400 font-medium leading-6">
             {label}
           </Listbox.Label>
           <div className="relative">
@@ -32,7 +32,7 @@ export default function Select({
               </span>
               <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                 <ChevronUpDownIcon
-                  className="h-5 w-5 text-gray-400"
+                  className="h-5 w-5 text-ink-400"
                   aria-hidden="true"
                 />
               </span>
@@ -56,7 +56,7 @@ export default function Select({
                     className={({ active }) =>
                       clsx(
                         active ? "bg-primary-200" : "",
-                        "relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900"
+                        "relative cursor-default select-none py-2 pl-3 pr-9 text-ink-100"
                       )
                     }
                     value={option.value}
@@ -80,7 +80,7 @@ export default function Select({
                             )}
                           >
                             <CheckIcon
-                              className="text-gray-900 h-5 w-5"
+                              className="text-ink-100 h-5 w-5"
                               aria-hidden="true"
                             />
                           </span>

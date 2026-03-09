@@ -11,6 +11,8 @@ import Link from "next/link";
 import * as allOutlineIcons from "@heroicons/react/24/outline";
 
 import type { APIReusableComponent, ReusableComponentType } from "@/types";
+import { ScheduleIcon } from "@/components/Assets/ScheduleIcon";
+import { Trash } from "@/components/Assets/Trash";
 
 import allLucideIcons from "../utils/lucideIcons";
 import { useReusableComponents } from "../hooks/useReusableComponents";
@@ -18,7 +20,6 @@ import { useReusableComponents } from "../hooks/useReusableComponents";
 import { Tooltip, TooltipV2 } from "./ToolTips";
 import Spin from "./Spin";
 import ScrollBar from "./ScrollBar";
-import { ScheduleIcon } from "@/components/Assets/ScheduleIcon";
 
 const icons: Record<string, React.ComponentType<React.ComponentProps<any>>> = {
   ...allOutlineIcons,
@@ -45,7 +46,7 @@ export const SaveConfirmationModal = (props: SaveConfirmationModalProps) => {
           <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
         </Transition.Child>
 
-        <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+        <div className="fixed inset-0 z-10 w-screen overflow-y-auto ">
           <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
             <Transition.Child
               enter="ease-out duration-300"
@@ -55,32 +56,29 @@ export const SaveConfirmationModal = (props: SaveConfirmationModalProps) => {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all w-[532px]">
+              <Dialog.Panel className="relative transform overflow-hidden rounded-2xl bg-white dark:bg-base-100 px-4 pb-4 pt-5 text-left shadow-xl transition-all w-[532px] font-body">
                 <div>
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100">
-                    <SaveIcon
-                      strokeWidth={2}
-                      className="h-6 w-6 text-yellow-600"
-                    />
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full ">
+                    <ScheduleIcon />
                   </div>
                   <div className="mt-3 text-center sm:mt-5">
                     <Dialog.Title
                       as="h3"
-                      className="text-base font-semibold leading-6 text-gray-900"
+                      className="text-base font-semibold leading-6 text-ink-100"
                     >
                       Update existing component
                     </Dialog.Title>
                     <div className="mt-2 flex flex-col items-center gap-y-2">
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-ink-400">
                         You have previously saved this block as a reusable
                         component.
                       </p>
 
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-ink-400">
                         Saving this component will update all of its instances.
                       </p>
 
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-ink-100">
                         Do you want to update it?
                       </p>
                     </div>
@@ -90,7 +88,7 @@ export const SaveConfirmationModal = (props: SaveConfirmationModalProps) => {
                   <button
                     type="button"
                     onClick={props.onUpdate}
-                    className="inline-flex w-full justify-center rounded-sm bg-[#A308F0] px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm hover:bg-primary-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2"
+                    className="inline-flex w-full justify-center rounded-xl bg-[#A308F0] px-3 py-2 text-sm font-semibold text-ink-100 shadow-sm hover:bg-primary-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2"
                   >
                     Update component
                   </button>
@@ -98,7 +96,7 @@ export const SaveConfirmationModal = (props: SaveConfirmationModalProps) => {
                     type="button"
                     data-autofocus
                     onClick={props.onClose}
-                    className="mt-3 inline-flex w-full justify-center rounded-sm bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
+                    className="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-3 py-2 text-sm font-semibold text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0 dark:text-black"
                   >
                     Cancel
                   </button>
@@ -143,7 +141,7 @@ function ReusableComponentItem(props: ReusableComponentItemProps) {
     icons[props.component.document.icon ?? "DocumentIcon"] || (() => null);
 
   return (
-    <div className="px-4 py-3 font-primary block w-full">
+    <div className="px-4 py-3 font-body  block w-full">
       <div className="flex flex-col">
         <div className="flex justify-between">
           <div
@@ -155,15 +153,15 @@ function ReusableComponentItem(props: ReusableComponentItemProps) {
           <div>
             <button
               type="button"
-              className="text-gray-500 hover:text-red-500 disabled:cursor-not-allowed"
+              className="text-ink-400 dark:text-ink-100 hover:text-red-500 disabled:cursor-not-allowed shrink-0 w-5 h-5"
               onClick={onRemove}
             >
-              <TrashIcon className="w-4 h-4" />
+              <Trash className="w-5 h-5" />
             </button>
           </div>
         </div>
         <div className="flex flex-col gap-y-1">
-          <div className="flex items-center gap-x-2 font-medium text-gray-400 text-xs">
+          <div className="flex items-center gap-x-2 font-medium text-ink-400 text-xs">
             {showType(props.component.type)}
 
             <svg viewBox="0 0 2 2" className="h-0.5 w-0.5 fill-current">
@@ -171,13 +169,13 @@ function ReusableComponentItem(props: ReusableComponentItemProps) {
             </svg>
             <Link
               href={`/workspaces/${props.workspaceId}/documents/${props.component.document.id}`}
-              className="flex items-center gap-x-1 text-gray-400 hover:text-gray-500"
+              className="flex items-center gap-x-1 text-ink-400 hover:text-gray-500"
             >
               <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
               {props.component.document.title || "Untitled"}
             </Link>
           </div>
-          <div className="flex items-center gap-x-2 font-medium text-gray-400 text-xs">
+          <div className="flex items-center gap-x-2 font-medium text-ink-400 text-xs">
             Saved at{" "}
             {format(
               new Date(props.component.updatedAt),
@@ -196,14 +194,13 @@ function ReusableComponentItem(props: ReusableComponentItemProps) {
           >
             <button
               type="button"
-              className="text-gray-500 hover:text-gray-400 disabled:hover:text-gray-500 disabled:cursor-not-allowed"
+              className="text-ink-400  hover:text-ink-400 hover:underline disabled:hover:text-gray-500 disabled:cursor-not-allowed"
               onClick={onUse}
               disabled={!props.canUse}
             >
               Add to notebook
             </button>
           </Tooltip>
-          <span className="text-gray-300 px-1">/</span>
         </div>
       </div>
     </div>
@@ -252,7 +249,7 @@ export default function ReusableComponents(props: Props) {
     <Transition
       as="div"
       show={props.visible}
-      className="top-0 right-0 h-full absolute bg-white dark:bg-black z-30 shrink-0"
+      className="top-0 right-0 h-full absolute bg-white dark:bg-base-100  z-30 shrink-0"
       enter="transition-transform duration-300"
       enterFrom="transform translate-x-full"
       enterTo="transform translate-x-0"
@@ -262,18 +259,18 @@ export default function ReusableComponents(props: Props) {
     >
       <button
         type="button"
-        className="absolute z-10 top-7 transform rounded-full border border-gray-300 dark:border-[#262A30] text-gray-400 bg-white hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
+        className="absolute z-10 top-7 transform rounded-full border border-gray-300 dark:border-border-tertiary text-ink-400 bg-white dark:bg-base-100  hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
         onClick={props.onHide}
       >
         <ChevronDoubleRightIcon className="w-3 h-3" />
       </button>
-      <div className="w-[354px] flex flex-col border-l border-gray-200 h-full bg-white font-primary dark:bg-black dark:border-[#262A30]">
-        <div className="flex justify-between border-b p-6 space-x-3 border-[#E9ECEF] dark:border-[#262A30]">
+      <div className="w-[354px] flex flex-col border-l  border-border-secondary h-full bg-white dark:bg-base-100  font-body  dark:border-border-tertiary">
+        <div className="flex justify-between border-b p-6 space-x-3 border-[#E9ECEF] dark:border-border-tertiary">
           <div>
-            <h3 className="text-lg font-medium leading-6 text-gray-900 dark:text-white pr-1.5">
+            <h3 className="text-lg font-medium leading-6 text-ink-100 dark:text-white pr-1.5">
               Reusable Components
             </h3>
-            <p className="text-gray-500 text-sm pt-1">
+            <p className="text-ink-400 text-sm pt-1">
               Click a component to add it to the current page.
             </p>
           </div>
@@ -291,7 +288,7 @@ export default function ReusableComponents(props: Props) {
                   <li
                     key={component.id}
                     className={clsx(
-                      "border-gray-200 dark:border-[#262A30] border-b"
+                      "border-border-secondary dark:border-border-tertiary border-b"
                     )}
                   >
                     <ReusableComponentItem
@@ -308,7 +305,7 @@ export default function ReusableComponents(props: Props) {
           </>
         ) : (
           <div className="flex-1 p-4">
-            <div className="flex items-center justify-center h-full text-ink-300 rounded-lg border border-dashed  border-[#E9ECEF] p-8 text-center font-body font-medium flex-col bg-[#FBFBFB]">
+            <div className="flex items-center justify-center h-full text-ink-300 dark:text-ink-400 rounded-lg border border-dashed  border-[#E9ECEF] dark:border-border-tertiary p-8 text-center font-body font-medium flex-col bg-[#FBFBFB] dark:bg-base-100 ">
               <ScheduleIcon />
               <p className="mt-2 text-[0.9rem] ">
                 You have no reusable components. Save a block to create one.
@@ -358,7 +355,7 @@ export function SaveReusableComponentButton(
           {ref => (
             <button
               type="button"
-              className="rounded-sm h-6 min-w-6 flex items-center justify-center border border-gray-200 dark:border-[#262A30] text-gray-400 hover:bg-gray-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-300"
+              className="rounded-sm h-6 min-w-6 flex items-center justify-center border border-border-secondary dark:border-border-tertiary text-ink-400 hover:bg-gray-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-300"
               onClick={onSave}
               disabled={props.disabled || props.isComponentInstance}
               ref={ref}

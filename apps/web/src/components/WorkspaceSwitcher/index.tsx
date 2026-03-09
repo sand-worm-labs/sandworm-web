@@ -59,7 +59,7 @@ export default function WorkspaceSwitcher() {
       {/* Section label */}
       <div className="flex items-center gap-1 px-2 mb-2">
         <svg
-          className="w-3 h-3 text-gray-400 dark:text-gray-500"
+          className="w-3 h-3 text-ink-300 dark:text-ink-400"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -71,7 +71,7 @@ export default function WorkspaceSwitcher() {
             d="M19 9l-7 7-7-7"
           />
         </svg>
-        <span className="text-[12px] font-medium text-[#8C98A3]  ">
+        <span className="text-[12px] font-medium text-ink-600  ">
           Workspaces
         </span>
       </div>
@@ -82,9 +82,9 @@ export default function WorkspaceSwitcher() {
         onClick={() => setOpen(o => !o)}
         className={clsx(
           "w-full flex items-center gap-3 px-3 py-1.5 rounded-xl border transition-all",
-          "bg-white dark:bg-[#111418]",
-          "border-[#E9ECEF] dark:border-[#1E2328]",
-          "hover:border-[#DEE2E6] dark:hover:border-[#2A2F36]",
+          "bg-base-100",
+          "border-[#E9ECEF] dark:border-border-tertiary]",
+          "hover:border-[#DEE2E6] dark:border-border-tertiary",
           "shadow-sm"
         )}
       >
@@ -97,12 +97,12 @@ export default function WorkspaceSwitcher() {
         />
 
         {/* Name */}
-        <span className="flex-1 text-left xl:text-sm text-[13px] font-medium text-ink-100 dark:text-gray-100 truncate">
+        <span className="flex-1 text-left xl:text-sm text-[13px] font-medium text-ink-100  truncate">
           {workspaceInfo.name}
         </span>
 
         {/* Up/down chevrons */}
-        <div className="flex flex-col gap-[0px] text-[#1C3B5A]">
+        <div className="flex flex-col gap-[0px] text-[#1C3B5A] dark:text-ink-400">
           <svg
             className="w-3 h-3"
             viewBox="0 0 24 24"
@@ -137,30 +137,30 @@ export default function WorkspaceSwitcher() {
         <div
           className={clsx(
             "absolute left-2 right-2 top-full mt-1.5 z-50",
-            "bg-white dark:bg-[#111418]",
-            "border border-[#E9ECEF] dark:border-[#1E2328]",
+            "bg-white dark:bg-base-400",
+            "border border-[#E9ECEF] dark:border-border-tertiary",
             "rounded-xl shadow-lg overflow-hidden"
           )}
         >
           {/* Current workspace (non-clickable) */}
-          <div className="flex items-center gap-3 px-3 py-2.5 bg-[#F8F9FA] dark:bg-[#0C1015]">
+          <div className="flex items-center gap-3 px-3 py-2.5 bg-[#F8F9FA] dark:bg-base-400">
             <div
               className={clsx(
                 "w-6 h-6 rounded-md bg-gradient-to-br flex-shrink-0",
                 workspaceGradient(workspaceInfo.id)
               )}
             />
-            <span className="flex-1 text-sm font-medium text-ink-100 dark:text-gray-100 truncate">
+            <span className="flex-1 text-sm font-medium text-ink-100 dark:text-ink-100 truncate">
               {workspaceInfo.name}
             </span>
-            <span className="text-[10px] px-1.5 py-0.5 bg-[#A308F0]/10 text-[#A308F0] rounded-full font-medium">
+            <span className="text-[10px] px-1.5 py-0.5 bg-[#A308F0]/10 text-primary rounded-full font-medium">
               Current
             </span>
           </div>
 
           {others.length > 0 && (
             <>
-              <div className="h-px bg-[#E9ECEF] dark:bg-[#1E2328]" />
+              <div className="h-px bg-[#E9ECEF] dark:bg-border-tertiary" />
               {others.map(workspace => (
                 <button
                   key={workspace.id}
@@ -187,12 +187,12 @@ export default function WorkspaceSwitcher() {
             </>
           )}
 
-          <div className="h-px bg-[#E9ECEF] dark:bg-[#1E2328]" />
+          <div className="h-px bg-[#E9ECEF] dark:bg-border-tertiary" />
 
           {/* Create new */}
           <button
             type="button"
-            className="w-full flex items-center gap-3 px-3 py-2 text-sm text-[#A308F0] hover:bg-[#A308F0]/5 transition-colors font-semibold"
+            className="w-full flex items-center gap-3 px-3 py-2 text-sm text-primary hover:bg-[#A308F0]/5 transition-colors font-semibold"
           >
             <svg
               className="w-4 h-4"

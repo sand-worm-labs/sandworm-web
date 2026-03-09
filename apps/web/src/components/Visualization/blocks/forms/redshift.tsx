@@ -59,7 +59,7 @@ export default function RedshiftForm({
     <form className="px-4 sm:p-6 lg:p-12" onSubmit={onSubmitHandler} noValidate>
       <div className="space-y-12">
         <div className="border-b border-gray-900/10 pb-8">
-          <h2 className="text-lg font-semibold leading-7 text-gray-900">
+          <h2 className="text-lg font-semibold leading-7 text-ink-100">
             {redshiftDataSource ? "Edit" : "New"} Redshift data source
           </h2>
           <p className="mt-1 text-sm leading-6 text-gray-500">
@@ -75,7 +75,7 @@ export default function RedshiftForm({
             <div className="col-span-5">
               <label
                 htmlFor="name"
-                className="block text-sm font-medium leading-6 text-gray-900"
+                className="block text-sm font-medium leading-6 text-ink-100"
               >
                 Display name
               </label>
@@ -91,7 +91,7 @@ export default function RedshiftForm({
                   name="name"
                   placeholder="My Redshift database"
                   required
-                  className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
                 <FormError msg={formState.errors.name?.message} />
               </div>
@@ -107,7 +107,7 @@ export default function RedshiftForm({
             <div className="col-span-5">
               <label
                 htmlFor="host"
-                className="block text-sm font-medium leading-6 text-gray-900"
+                className="block text-sm font-medium leading-6 text-ink-100"
               >
                 Host
               </label>
@@ -120,7 +120,7 @@ export default function RedshiftForm({
                   name="host"
                   placeholder="example.com"
                   required
-                  className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
                 <FormError msg={formState.errors.host?.message} />
               </div>
@@ -129,7 +129,7 @@ export default function RedshiftForm({
             <div className="col-span-1">
               <label
                 htmlFor="port"
-                className="block text-sm font-medium leading-6 text-gray-900"
+                className="block text-sm font-medium leading-6 text-ink-100"
               >
                 Port
               </label>
@@ -147,7 +147,7 @@ export default function RedshiftForm({
                   name="port"
                   placeholder="5432"
                   required
-                  className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
                 <FormError msg={formState.errors.port?.message} />
               </div>
@@ -156,7 +156,7 @@ export default function RedshiftForm({
             <div className="col-span-6">
               <label
                 htmlFor="database"
-                className="block text-sm font-medium leading-6 text-gray-900"
+                className="block text-sm font-medium leading-6 text-ink-100"
               >
                 Database name
               </label>
@@ -172,7 +172,7 @@ export default function RedshiftForm({
                   name="database"
                   placeholder="db"
                   required
-                  className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
                 <FormError msg={formState.errors.database?.message} />
               </div>
@@ -181,7 +181,7 @@ export default function RedshiftForm({
             <div className="sm:col-span-3">
               <label
                 htmlFor="username"
-                className="block text-sm font-medium leading-6 text-gray-900"
+                className="block text-sm font-medium leading-6 text-ink-100"
               >
                 Username
               </label>
@@ -197,7 +197,7 @@ export default function RedshiftForm({
                   name="username"
                   placeholder="postgres"
                   required
-                  className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
                 <FormError msg={formState.errors.username?.message} />
               </div>
@@ -206,7 +206,7 @@ export default function RedshiftForm({
             <div className="sm:col-span-3">
               <label
                 htmlFor="password"
-                className="block text-sm font-medium leading-6 text-gray-900"
+                className="block text-sm font-medium leading-6 text-ink-100"
               >
                 Password
               </label>
@@ -221,10 +221,10 @@ export default function RedshiftForm({
                   type="password"
                   name="password"
                   required={!isEditing}
-                  className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
                 {isEditing && !formState.errors.password && (
-                  <span className="block text-sm text-gray-900 empty:before:content-['\200b'] pt-1 pb-1">
+                  <span className="block text-sm text-ink-100 empty:before:content-['\200b'] pt-1 pb-1">
                     Leave empty to keep previous password
                   </span>
                 )}
@@ -235,7 +235,7 @@ export default function RedshiftForm({
             <div className="col-span-full pt-8">
               <label
                 htmlFor="additionalInfo"
-                className="block text-sm font-medium leading-6 text-gray-900"
+                className="block text-sm font-medium leading-6 text-ink-100"
               >
                 AI Additional Context{" "}
                 <span className="pl-1 text-gray-500">(optional)</span>
@@ -247,7 +247,7 @@ export default function RedshiftForm({
                   name="additionalInfo"
                   rows={5}
                   placeholder="Enter additional context for the AI assistant (examples, descriptions, etc.)"
-                  className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
               </div>
             </div>

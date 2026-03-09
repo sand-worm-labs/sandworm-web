@@ -81,7 +81,7 @@ function PivotTableControls(props: Props) {
         "h-full relative overflow-y-auto z-10",
         props.isHidden
           ? "w-0"
-          : "w-1/3 border-r border-gray-200 dark:border-[#262A30]"
+          : "w-1/3 border-r border-border-secondary dark:border-border-tertiary"
       )}
     >
       <div

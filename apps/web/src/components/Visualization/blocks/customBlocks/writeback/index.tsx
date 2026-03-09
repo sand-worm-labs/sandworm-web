@@ -205,7 +205,7 @@ function WritebackBlock(props: Props) {
       return {
         content: (ref: RefObject<HTMLDivElement>) => (
           <div
-            className="font-primary pointer-events-none absolute w-max bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1"
+            className="font-body  pointer-events-none absolute w-max bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1"
             ref={ref}
           >
             <span>Refresh</span>
@@ -227,7 +227,9 @@ function WritebackBlock(props: Props) {
           props.isBlockHiddenInPublished && "border-dashed",
           props.hasMultipleTabs ? "rounded-tl-none" : "rounded-tl-md",
 
-          props.isCursorWithin ? "border-blue-400 shadow-sm" : "border-gray-200"
+          props.isCursorWithin
+            ? "border-blue-400 shadow-sm"
+            : "border-border-secondary"
         )}
       >
         <div
@@ -237,18 +239,18 @@ function WritebackBlock(props: Props) {
           )}
         >
           <div
-            className="border-b border-gray-200 bg-gray-50 rounded-t-md"
+            className="border-b border-border-secondary bg-gray-50 rounded-t-md"
             ref={d => {
               props.dragPreview?.(d);
             }}
           >
-            <div className="flex items-center justify-between px-3 pr-4 gap-x-4 font-primary h-12 divide-x divide-gray-200">
+            <div className="flex items-center justify-between px-3 pr-4 gap-x-4 font-body  h-12 divide-x divide-border-secondary">
               <div className="select-none text-gray-300 text-xs flex items-center w-full h-full gap-x-1.5">
-                <ArrowUpTrayIcon className="w-4 h-4 text-gray-400" />
+                <ArrowUpTrayIcon className="w-4 h-4 text-ink-400" />
                 <input
                   type="text"
                   className={clsx(
-                    "text-sm font-primary font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-md border-0 text-gray-800 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-gray-400 focus:ring-inset py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white"
+                    "text-sm font-body  font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-md border-0 text-gray-800 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-ink-400 focus:ring-inset py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white"
                   )}
                   placeholder={
                     props.isEditable
@@ -272,7 +274,7 @@ function WritebackBlock(props: Props) {
         <div className={clsx("flex", isCollapsed && "h-0 overflow-hidden")}>
           <div
             className={clsx(
-              "w-1/3 border-r border-gray-200 h-[372px] overflow-y-auto",
+              "w-1/3 border-r border-border-secondary h-[372px] overflow-y-auto",
               !result && "shadow-[2px_0_5px_-4px_#888]"
             )}
           >
