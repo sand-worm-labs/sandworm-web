@@ -63,30 +63,32 @@ export default function PageSettingsPanel(props: Props) {
     <Transition
       as="div"
       show={props.visible}
-      className="top-0 right-0 h-full absolute bg-white z-30 font-body"
-      enter="transition-transform duration-300"
-      enterFrom="transform translate-x-full"
-      enterTo="transform translate-x-0"
-      leave="transition-transform duration-300"
-      leaveFrom="transform translate-x-0"
-      leaveTo="transform translate-x-full"
+      className="h-full overflow-hidden flex-shrink-0 font-body "
+      enter="transition-[width] duration-300 ease-in-out"
+      enterFrom="w-0"
+      enterTo="w-[354px]"
+      leave="transition-[width] duration-300 ease-in-out"
+      leaveFrom="w-[354px]"
+      leaveTo="w-0"
     >
-      <button
-        type="button"
-        className="absolute z-10 top-7 transform rounded-full border border-gray-300 dark:border-border-tertiary text-ink-400 bg-white dark:bg-base-100  hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
-        onClick={props.onHide}
-      >
-        <ChevronDoubleRightIcon className="w-3 h-3" />
-      </button>
+    
+  
       <div className="w-[324px] flex flex-col border-l dark:border-border-tertiary border-border-secondary h-full bg-white font-body dark:bg-base-100 ">
         <div className="flex justify-between border-b dark:border-border-tertiary p-6 space-x-3">
           <div>
             <h3 className="text-lg font-medium leading-6 text-ink-100 dark:text-white pr-1.5">
               Page settings
             </h3>
-            <p className="text-ink-400 text-sm pt-1">
+            <p className="text-sm text-ink-400 pt-1 ">
               Configure this page's behavior and default visualization mode.
             </p>
+            <button
+        type="button"
+        className="absolute z-10 top-7 transform rounded-full border border-gray-300  text-ink-400 bg-base-100 hover:bg-gray-100 w-6 h-6 flex justify-center items-center right-3 -translate-x-1/2 dark:border-border-tertiary "
+        onClick={props.onHide}
+      >
+        <ChevronDoubleRightIcon className="w-3 h-3" />
+      </button>
           </div>
         </div>
         <div className="w-full divide-y divide-border-secondary border-b dark:border-border-tertiary border-border-secondary border dark:divide-border-tertiary">

@@ -447,7 +447,7 @@ function PrivateDocumentPageInner(
       sidebarContent={sidebarContent}
       onToggleChat={onToggleChat}
     >
-      <div className="w-full relative flex">
+      <div className="flex-1 min-w-0 flex overflow-hidden">
         <V2Editor
           key={selectedSidebar?._tag}
           document={props.document}

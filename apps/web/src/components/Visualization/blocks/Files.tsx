@@ -85,7 +85,7 @@ function UploadPlaceholder({
     >
       <div
         className={clsx(
-          "bg-[#FBFBFB] rounded-2xl border-2 border-dashed border-[#E9ECEF] text-ink-300 dark:bg-base-100  dark:border-border-tertiary",
+          "bg-[#FBFBFB] rounded-2xl border-2 border-dashed border-[#E9ECEF] dark:text-ink-400 text-ink-300 dark:bg-base-100  dark:border-border-tertiary",
           compact
             ? "flex items-center justify-between px-2 py-2 text-sm  "
             : "flex flex-col items-center justify-center h-full p-8 text-center"
@@ -614,13 +614,13 @@ file`;
       <Transition
         as="div"
         show={props.visible}
-        className="top-0 right-0 h-full absolute bg-white  dark:bg-base-100  z-30 font-body"
-        enter="transition-transform duration-300"
-        enterFrom="transform translate-x-full"
-        enterTo="transform translate-x-0"
-        leave="transition-transform duration-300"
-        leaveFrom="transform translate-x-0"
-        leaveTo="transform translate-x-full"
+        className="h-full overflow-hidden flex-shrink-0 font-body "
+        enter="transition-[width] duration-300 ease-in-out"
+        enterFrom="w-0"
+        enterTo="w-[354px]"
+        leave="transition-[width] duration-300 ease-in-out"
+        leaveFrom="w-[354px]"
+        leaveTo="w-0"
       >
         <input
           id="file-upload"
@@ -628,15 +628,9 @@ file`;
           type="file"
           {...getInputProps()}
         />
-        <button
-          type="button"
-          className="absolute z-10 top-7 transform rounded-full border border-[#E9ECEF] dark:border-border-tertiary  text-ink-400 bg-white  hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
-          onClick={props.onHide}
-        >
-          <ChevronDoubleRightIcon className="w-3 h-3" />
-        </button>
+      
         <div
-          className="w-[354px] flex flex-col border-l dark:border-border-tertiary border-border-secondary h-full bg-white  dark:bg-base-100 "
+          className="relative w-[354px] flex flex-col border-l dark:border-border-tertiary border-border-secondary h-full bg-white  dark:bg-base-100 "
           {...getRootProps()}
         >
           <div className="flex justify-between border-b p-6 space-x-3 border-[#E9ECEF]  dark:border-border-tertiary ">
@@ -648,6 +642,14 @@ file`;
                 Click "add" or drop files into this tab to upload them.
               </p>
             </div>
+
+            <button
+          type="button"
+          className="absolute z-10 top-7 transform rounded-full border border-gray-300  text-ink-400 bg-base-100 hover:bg-gray-100 w-6 h-6 flex justify-center items-center right-3 -translate-x-1/2 dark:border-border-tertiary"
+          onClick={props.onHide}
+        >
+          <ChevronDoubleRightIcon className="w-3 h-3" />
+        </button>
 
             {/*    <div>
               <button

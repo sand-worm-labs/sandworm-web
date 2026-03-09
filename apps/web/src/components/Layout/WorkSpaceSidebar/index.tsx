@@ -212,7 +212,7 @@ export const WorkspaceSidebar = () => {
           <button
             type="button"
             onClick={() => setCollapsed(!collapsed)}
-            className="p-1 rounded hover:bg-gray-200 dark:hover:bg-[#181C21] flex items-center justify-center"
+            className="p-1 rounded hover:bg-gray-200 dark:hover:bg-[#181C21] flex items-center justify-center text-[#868E96] dark:text-ink-400"
           >
             <SidebarIcon />
           </button>

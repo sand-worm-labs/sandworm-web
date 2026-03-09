@@ -66,7 +66,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
 
   return (
     <div className="w-full">
-      <div className="bg-[#F1F3F4] dark:bg-base-100 border border-[#E9ECEF] rounded-2xl shadow-sm dark:border-border-tertiary">
+      <div className="bg-[#F1F3F4] dark:bg-[#30302E] border border-[#E9ECEF] rounded-2xl shadow-sm dark:border-border-tertiary">
         {/* File Preview Section */}
         {files.length > 0 && (
           <div className="px-4 pt-3 pb-2 border-b border-gray-100">
@@ -99,7 +99,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
             onChange={handleTextareaChange}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
-            className="w-full resize-none bg-transparent outline-none text-ink-100 dark:text-white placeholder-text-ink-300 text-sm max-h-[300px] dark:placeholder:text-ink-400 px-3"
+            className="w-full resize-none bg-transparent outline-none text-ink-100 dark:text-white pt-1.5 placeholder-text-ink-300 text-sm max-h-[300px] dark:placeholder:text-ink-400 px-3"
             rows={2}
             aria-label="Message input"
           />
@@ -110,7 +110,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="flex items-center justify-center w-8 h-8  hover:bg-gray-100 text-gray-600 transition-colors border border-[#B5C8DB] dark:bg-[#363C46]  bg-white rounded-full dark:text-[#C5CED9] dark:border-transparent"
+            className="flex items-center justify-center w-8 h-8  hover:bg-gray-100 text-gray-600 transition-colors border border-[#B5C8DB] dark:bg-[#30302E] bg-white rounded-full dark:text-ink-400 dark:border-transparent"
             title="Attach files"
             aria-label="Attach files"
           >
@@ -124,7 +124,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
             className={`flex items-center justify-center w-8 h-8 rounded-xl transition-colors ${
               message.trim() || files.length > 0
                 ? "bg-[#A308F0]  hover:bg-[#A308F0]  text-white"
-                : "bg-white text-ink-400 cursor-not-allowed border border-[#DEE2E6]"
+                : "bg-white dark:bg-[#30302E] text-ink-400 cursor-not-allowed border border-[#DEE2E6] dark:border-border-tertiary"
             }`}
             title="Send message"
             aria-label="Send message"

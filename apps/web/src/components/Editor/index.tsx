@@ -1668,7 +1668,7 @@ const Editor = (props: Props) => {
   const lastUpdatedAt = useLastUpdatedAt(props.yDoc);
 
   return (
-    <div className="editor-v2 flex flex-col flex-grow justify-center font-body  subpixel-antialiased h-full w-full relative">
+    <div className="editor-v2 flex flex-col flex-grow justify-center font-body  subpixel-antialiased h-full w-full relative flex-1 min-w-0">
       {props.isDeleted && (
         <div className="bg-yellow-50 py-6 border-b border-yellow-200">
           <div className="flex justify-center">

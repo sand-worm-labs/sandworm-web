@@ -110,7 +110,7 @@ export default function InviteUserModal({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-[#0000001A] dark:bg-base-100 /50" />
+          <div className="fixed inset-0 bg-[#0000001A] dark:bg-base-100/20" />
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-y-auto font-body ">
@@ -124,7 +124,7 @@ export default function InviteUserModal({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-3xl bg-white dark:bg-[#0C1015] py-10 px-8 text-left align-middle shadow-xl transition-all">
+              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-3xl bg-white dark:bg-base-400 py-10 px-8 text-left align-middle shadow-xl transition-all">
                 <div className="flex items-center justify-between mb-7">
                   <Dialog.Title
                     as="h3"

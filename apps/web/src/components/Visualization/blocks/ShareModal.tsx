@@ -102,7 +102,7 @@ export default function ShareModal({
 
       {/* Modal */}
       <Transition show={isOpen} as={React.Fragment}>
-        <Dialog as="div" className="relative z-50" onClose={closeModal}>
+        <Dialog as="div" className="relative z-[99]" onClose={closeModal}>
           {/* Backdrop */}
           <Transition.Child
             as={React.Fragment}
@@ -128,7 +128,7 @@ export default function ShareModal({
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-md transform rounded-xl bg-white dark:bg-base-400  shadow-xl transition-all">
+                <Dialog.Panel className="w-full max-w-md transform rounded-2xl bg-white dark:bg-base-400  shadow-xl transition-all px-3 py-4">
                   {/* Header */}
                   <div className="flex items-center justify-between px-5 pt-5 pb-1">
                     <div>
@@ -142,7 +142,7 @@ export default function ShareModal({
                     <button
                       type="button"
                       onClick={closeModal}
-                      className="rounded-lg p-1.5 text-ink-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-[#21262d] transition-colors"
+                      className="rounded-lg p-1.5 text-ink-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-base-500 transition-colors"
                     >
                       <XMarkIcon className="h-5 w-5" />
                     </button>
@@ -162,9 +162,9 @@ export default function ShareModal({
                           disabled={isUpdating}
                           className={({ checked }) =>
                             cn(
-                              "relative flex items-center gap-3 rounded-lg border px-4 py-3 cursor-pointer transition-all",
+                              "relative flex items-center gap-3 rounded-xl border px-4 py-3 cursor-pointer transition-all",
                               checked
-                                ? "border-primary-500 bg-primary-50 dark:bg-primary-500/10 ring-1 ring-primary"
+                                ? "border-none bg-primary-50 dark:bg-primary-500/10 ring-1 ring-primary"
                                 : "border-border-secondary  hover:border-gray-300 dark:hover:border-border-secondary hover:bg-gray-50 dark:hover:bg-base-500",
                               isUpdating && "opacity-50 cursor-not-allowed"
                             )
@@ -218,12 +218,12 @@ export default function ShareModal({
 
                   {/* Copy Link Section */}
                   <div className="px-5 pb-5">
-                    <div className="flex items-center gap-2 rounded-lg border border-border-secondary dark:border-[#30363d] bg-gray-50 dark:bg-base-100 p-1.5 pl-3">
+                    <div className="flex items-center gap-2 rounded-lg border border-border-secondary  bg-gray-50 dark:bg-base-100 p-1.5 pl-3">
                       <input
                         type="text"
                         readOnly
                         value={link}
-                        className="flex-1 min-w-0 bg-transparent text-sm text-gray-600 dark:text-gray-300 outline-none truncate"
+                        className="flex-1 min-w-0 bg-transparent text-sm text-ink-400 dark:text-ink-400 outline-none truncate"
                       />
                       <button
                         type="button"
@@ -232,7 +232,7 @@ export default function ShareModal({
                           "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-all",
                           copied
                             ? "bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400"
-                            : "bg-white dark:bg-base-500 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-[#30363d] border border-border-secondary dark:border-[#30363d]"
+                            : "bg-white dark:bg-base-100 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-base-500 border border-border-secondary ]"
                         )}
                       >
                         {copied ? (
