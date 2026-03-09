@@ -23,8 +23,6 @@ export type AuthPayload = {
   __typename?: 'AuthPayload';
   id: Scalars['String']['output'];
   roles?: Maybe<Scalars['JSON']['output']>;
-  token: Scalars['String']['output'];
-  tokenExpires: Scalars['Float']['output'];
   user: User;
 };
 
@@ -1247,7 +1245,7 @@ export type RejectRoleRequestMutation = { __typename?: 'Mutation', rejectRoleReq
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentUserQuery = { __typename?: 'Query', currentUser: { __typename: 'AuthPayload', id: string, token: string, tokenExpires: number, user: { __typename?: 'User', id: string, username?: string | null, email?: string | null, createdAt?: any | null, firstName?: string | null, lastName?: string | null, fullName?: string | null, isOnboarded: boolean, avater?: string | null, followersCount: number, followingCount: number, settings?: { __typename?: 'UserSetting', statusText?: string | null, statusUpdatedAt?: any | null, socialLinks?: any | null, wallets: Array<any> } | null } } };
+export type CurrentUserQuery = { __typename?: 'Query', currentUser: { __typename: 'AuthPayload', id: string, user: { __typename?: 'User', id: string, username?: string | null, email?: string | null, createdAt?: any | null, firstName?: string | null, lastName?: string | null, fullName?: string | null, isOnboarded: boolean, avater?: string | null, followersCount: number, followingCount: number, settings?: { __typename?: 'UserSetting', statusText?: string | null, statusUpdatedAt?: any | null, socialLinks?: any | null, wallets: Array<any> } | null } } };
 
 export type GetProfileQueryVariables = Exact<{
   username: Scalars['String']['input'];
@@ -2996,8 +2994,6 @@ export const CurrentUserDocument = gql`
     query CurrentUser {
   currentUser {
     id
-    token
-    tokenExpires
     user {
       id
       username
