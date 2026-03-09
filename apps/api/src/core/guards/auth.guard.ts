@@ -31,14 +31,13 @@ export class AuthGuard implements CanActivate {
     );
 
     const request = this.getRequest(context);
-    console.dir( request , { depth: null });
     const accessToken = this.extractTokenFromCookie(request);
 
     if (isAuthOptional && !accessToken) return true;
     if (!accessToken) throw new UnauthorizedException();
-
+    let user =  await this.authService.validateTokenAndGetUser(accessToken)
     request['user'] = {
-      ...(await this.authService.verifyAccessToken(accessToken)),
+      ...user,
       token: accessToken,
     };
 
@@ -52,7 +51,7 @@ export class AuthGuard implements CanActivate {
     return context.switchToHttp().getRequest();
   }
 
-  private extractTokenFromCookie(request: FastifyRequest): string | undefined {
-    return request.cookies?.['access_token'];
+  private extractTokenFromCookie(request: FastifyRequest): string {
+    return request.cookies?.['access_token'] as string | "";
   }
 }

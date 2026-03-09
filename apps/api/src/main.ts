@@ -28,7 +28,7 @@ import { AllConfigType } from './core/config/config.type';
 import { GlobalExceptionFilter } from './core/filters/global-exception.filter';
 import { AuthGuard } from './core/guards/auth.guard';
 import { setupSwagger } from './common/utils/setup-swagger';
-import { AuthGraphqlService } from './features/auth/graphql/auth-graphql.service';
+import { AuthService } from './features/auth/core/auth.service';
 import { YjsGateway } from './features/collaboration/yjs/yjs.gateway';
 
 
@@ -106,7 +106,7 @@ async function bootstrap() {
     ],
   });
 
-  app.useGlobalGuards(new AuthGuard(reflector, app.get(AuthGraphqlService)));
+  app.useGlobalGuards(new AuthGuard(reflector, app.get(AuthService)));
 
   app.useGlobalFilters(new GlobalExceptionFilter(httpAdapterHost, debug));
 
