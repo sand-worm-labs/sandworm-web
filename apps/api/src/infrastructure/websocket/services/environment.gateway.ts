@@ -45,9 +45,10 @@ export class EnvironmentGatewayService {
         }
 
         const { workspaceId } = payload.data;
-        const userWorkspace = session.userWorkspaces?.[workspaceId];
+        const entry = session.roles?.find(r => r[workspaceId]);
+        const role = entry?.[workspaceId];
 
-        if (!userWorkspace) {
+        if (!entry) {
             client.emit('environment-status-error', { workspaceId, error: 'forbidden' });
             return;
         }
@@ -67,9 +68,10 @@ export class EnvironmentGatewayService {
         }
 
         const { workspaceId } = payload.data;
-        const userWorkspace = session.userWorkspaces?.[workspaceId];
+        const entry = session.roles?.find(r => r[workspaceId]);
+        const role = entry?.[workspaceId];
 
-        if (!userWorkspace) {
+        if (!entry) {
             client.emit('environment-status-error', { workspaceId, error: 'forbidden' });
             return;
         }
@@ -79,7 +81,7 @@ export class EnvironmentGatewayService {
             return;
         }
 
-        if (userWorkspace.role === UserWorkspaceRole.VIEWER) {
+        if (role === UserWorkspaceRole.VIEWER) {
             client.emit('environment-status-error', { workspaceId, error: 'forbidden' });
             return;
         }
