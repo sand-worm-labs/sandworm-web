@@ -5,12 +5,12 @@ import { Server, Socket } from 'socket.io';
 import { uuid, z } from 'zod';
 import { PythonSuggestion, PythonSuggestionsResult } from '@sandworm/types';
 import { getDocumentSourceWithBlockStartPos } from '@sandworm/editor';
-import { Session } from '@/features/session/domain/session';
 import { YjsDocumentService } from '@/features/collaboration/yjs/yjs-document.service';
 import { PersistorFactory } from '@/features/collaboration/yjs/persistors/persistor.factory';
 import { JupyterCompletionService } from '@/features/code-execution/jupyter-session/jupyter-completion.service';
 import { DocumentEntity } from '@sandworm/postgresql-typeorm';
 import { randomUUID } from 'crypto';
+import { Session } from '../auth/core/types/session.type';
 
 const CompletionRequestSchema = z.object({
     documentId: z.string().uuid(),
@@ -85,8 +85,8 @@ export class PythonCompletionService {
             return null;
         }
 
-        const userWorkspace = session.userWorkspaces?.[document.workspaceId];
-        if (!userWorkspace) {
+        const role = session.roles?.find(r => r[document.workspaceId])?.[document.workspaceId];
+        if (!role) {
             this.logger.warn(
                 `User ${session.user.id} does not have access to workspace ${document.workspaceId}`,
             );
@@ -94,7 +94,7 @@ export class PythonCompletionService {
             return null;
         }
 
-        if (userWorkspace.role === 'viewer') {
+        if (role === 'viewer') {
             this.logger.warn(
                 `User ${session.user.id} attempted completion as viewer in workspace ${document.workspaceId}`,
             );

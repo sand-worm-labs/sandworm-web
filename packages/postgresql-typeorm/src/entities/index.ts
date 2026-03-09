@@ -8,7 +8,6 @@ export * from './user.entity';
 export * from './user-setting.entity';
 export * from "./user-yjs-app-document.entity"
 export * from "./user-workspace.entity";
-export * from './session.entity';
 export * from './workspace.entity';
 export * from './environment.entity';
 export * from './environment_variable.entity';

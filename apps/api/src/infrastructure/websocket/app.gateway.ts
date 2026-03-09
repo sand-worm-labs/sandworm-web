@@ -13,7 +13,6 @@ import { UseGuards, Logger, UseFilters } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { WsJwtGuard } from '@/core/guards/ws-jwt.guard';
 import { CurrentSession } from '@/core/decorators/session.decorator';
-import { Session } from '@/features/session/domain/session';
 import { WsExceptionFilter } from '@/core/filters/ws-exception.filter';
 import { v4 as uuidv4 } from 'uuid';
 import { createAdapter } from '@socket.io/postgres-adapter';
@@ -43,6 +42,7 @@ import {
   CommentDeletedEvent,
   CommentEventNames
 } from '@/events/comment.events';
+import { Session } from '@/features/auth/core/types/session.type';
 
 
 @WebSocketGateway({
@@ -188,34 +188,6 @@ export class AppGateway
       this.pythonCompletionService.completePython(this.server, client, data, session)
     );
   }
-
-  // @UseGuards(WsJwtGuard)
-  // @SubscribeMessage('workspace-datasources-refresh-all')
-  // async handleRefreshAllDataSources(
-  //   @ConnectedSocket() client: Socket,
-  //   @MessageBody() data: { workspaceId: string },
-  //   @CurrentSession() session: Session,
-  // ): Promise<void> {
-  //   await this.trackWork(() =>
-  //     this.dataSourceGatewayService.refreshAllDataSources(this.server, client, data, session)
-  //   );
-  // }
-
-  // @UseGuards(WsJwtGuard)
-  // @SubscribeMessage('workspace-datasources-refresh-one')
-  // async handleRefreshOneDataSource(
-  //   @ConnectedSocket() client: Socket,
-  //   @MessageBody() data: {
-  //     workspaceId: string;
-  //     dataSourceId: string;
-  //     dataSourceType: string;
-  //   },
-  //   @CurrentSession() session: Session,
-  // ): Promise<void> {
-  //   await this.trackWork(() =>
-  //     this.dataSourceGatewayService.refreshOneDataSource(this.server, client, data, session)
-  //   );
-  // }
 
   @UseGuards(WsJwtGuard)
   @SubscribeMessage('fetch-document-comments')
