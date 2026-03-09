@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-import { useLogin, tokenStorage } from "../Visualization/hooks/useAuth";
+import { useLogin } from "../Visualization/hooks/useAuth";
 import { Spinner } from "../Spinner/Spinner";
 
 export const SignInForm = () => {
@@ -12,15 +12,6 @@ export const SignInForm = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [localError, setLocalError] = useState("");
   const [state, { loginWithPassword }] = useLogin();
-
-  useEffect(() => {
-    const token = tokenStorage.getToken();
-
-    if (token && !tokenStorage.isTokenExpired()) {
-      const callbackUrl = searchParams.get("callback") || "/workspace";
-      router.push(decodeURIComponent(callbackUrl));
-    }
-  }, [router, searchParams]);
 
   useEffect(() => {
     if (state.error === "invalid-creds") {
@@ -33,23 +24,14 @@ export const SignInForm = () => {
       setLocalError("An unexpected error occurred. Please try again.");
     }
     // 💭 todo on multiple invalid creds redirect to reset password page
+  }, [state.error]);
 
-    if (state.data && state.data.loginLink) {
-      const callbackUrl = searchParams.get("callback") || "/workspace";
-      router.push(decodeURIComponent(callbackUrl));
-    }
-  }, [state, router, searchParams]);
-
-  // ⬢ Handle Input Change
-  // =====================================
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     setLocalError("");
   }, []);
 
-  // ⬢ Handle Form Submission
-  // =====================================
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLocalError("");
@@ -61,19 +43,17 @@ export const SignInForm = () => {
       return;
     }
 
-    loginWithPassword(email, password);
+    const callbackUrl = searchParams.get("callback") || "/workspace";
+    loginWithPassword(email, password, decodeURIComponent(callbackUrl));
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="mt-4 space-y-2 w-full font-body "
-    >
+    <form onSubmit={handleSubmit} className="mt-4 space-y-2 w-full font-body">
       <div>
         <input
           type="email"
           name="email"
-          className="mt-1 w-full font-body rounded-3xl dark:bg-base-400 bg-[#FFFFFF] p-2.5 px-5 text-ink-100 dark:text-white border border-[#DEE2E6] dark:border-border-tertiary  focus:border-[#A308F0] focus:ring-1 focus:ring-[#A308F0] outline-none font-medium text-[0.9rem] placeholder:text-muted-foreground dark:placeholder:text-ink-400 "
+          className="mt-1 w-full font-body rounded-3xl dark:bg-base-400 bg-[#FFFFFF] p-2.5 px-5 text-ink-100 dark:text-white border border-[#DEE2E6] dark:border-border-tertiary focus:border-[#A308F0] focus:ring-1 focus:ring-[#A308F0] outline-none font-medium text-[0.9rem] placeholder:text-muted-foreground dark:placeholder:text-ink-400"
           placeholder="Email"
           value={formData.email}
           onChange={handleChange}
@@ -84,7 +64,7 @@ export const SignInForm = () => {
         <input
           type="password"
           name="password"
-          className="mt-1 w-full font-body rounded-3xl dark:bg-base-400 bg-[#FFFFFF] p-2.5 px-5 text-ink-100 dark:text-white border border-[#DEE2E6] focus:border-[#A308F0] focus:ring-1 focus:ring-[#A308F0] outline-none font-medium text-[0.9rem] placeholder:text-muted-foreground dark:placeholder:text-ink-400 dark:border-border-tertiary  "
+          className="mt-1 w-full font-body rounded-3xl dark:bg-base-400 bg-[#FFFFFF] p-2.5 px-5 text-ink-100 dark:text-white border border-[#DEE2E6] focus:border-[#A308F0] focus:ring-1 focus:ring-[#A308F0] outline-none font-medium text-[0.9rem] placeholder:text-muted-foreground dark:placeholder:text-ink-400 dark:border-border-tertiary"
           placeholder="Password"
           value={formData.password}
           onChange={handleChange}

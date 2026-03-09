@@ -6,7 +6,6 @@ import Cookies from "js-cookie";
 
 import { NEXT_PUBLIC_API_WS_URL } from "../utils/env";
 
-import { tokenStorage } from "./useAuth";
 
 export function getDocId(
   id: string,
@@ -39,17 +38,6 @@ function getWSProvider(
 ): WebsocketProvider {
   const id = getDocId(documentId, isDataApp, clock, publishedAt);
   const wsUrl = getYjsUrl();
-  const isDev = process.env.NODE_ENV === "development";
-  const token = tokenStorage.getToken();
-
-  if (!isDev) {
-    Cookies.set("auth-token", token ?? "", {
-      expires: 7,
-      path: "/",
-      sameSite: "none",
-      secure: false,
-    });
-  }
 
   const provider = new WebsocketProvider(wsUrl, id, yDoc, {
     connect: false,
@@ -58,14 +46,12 @@ function getWSProvider(
       clock: clock.toString(),
       isApp: isDataApp ? "true" : "false",
       userId: userId ?? "",
-      ...(isDev ? { authToken: token || "" } : {}),
     },
     resyncInterval: 30000,
   });
 
   return provider;
 }
-
 export interface IProvider {
   synced: boolean;
   connect: () => void;
