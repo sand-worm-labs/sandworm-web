@@ -4,7 +4,7 @@ import { useContext, createContext, useEffect, useState } from "react";
 import { validate } from "uuid";
 
 import { useStringQuery } from "./useQueryArgs";
-import { useSession, tokenStorage } from "./useAuth";
+import { useSession } from "./useAuth";
 
 const Context = createContext<Socket | null>(null);
 
@@ -30,9 +30,6 @@ export function WebsocketProvider({ children }: Props) {
     const socketPath =
       url.pathname === "/" ? undefined : `${url.pathname}/socket.io`;
 
-
-    const token = tokenStorage.getToken();
-
     const newSocket = io(withoutPathname, {
       withCredentials: true,
       path: socketPath,
@@ -40,9 +37,6 @@ export function WebsocketProvider({ children }: Props) {
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionAttempts: 5,
-      auth: {
-        token,
-      },
     });
 
     newSocket.on("connect", () => {
@@ -58,8 +52,6 @@ export function WebsocketProvider({ children }: Props) {
         setTimeout(() => newSocket.connect(), 1000);
       }
     });
-
-   
 
     setSocket(newSocket);
 

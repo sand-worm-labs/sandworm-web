@@ -7,7 +7,6 @@ import { useListFilesQuery, useDeleteFileMutation } from "@/generated/graphql";
 
 import { NEXT_PUBLIC_API_URL } from "../utils/env";
 
-import { tokenStorage } from "./useAuth";
 
 export type UploadFile = {
   status: "enqueued" | "uploading" | "asking-replace";
@@ -314,7 +313,6 @@ export const useFiles = (
       uploadState._tag === "uploading"
         ? uploadState.current.abortController
         : new AbortController();
-    const token = tokenStorage.getToken();
     // Upload to server
     axios({
       url: `${NEXT_PUBLIC_API_URL()}/workspaces/${workspaceId}/files?replace=${replace}`,
@@ -325,7 +323,6 @@ export const useFiles = (
         "Content-Type": "application/octet-stream",
         "X-File-Name": file.name,
         "X-File-Size": file.size.toString(),
-        Authorization: `Bearer ${token}`,
       },
       data: file,
 

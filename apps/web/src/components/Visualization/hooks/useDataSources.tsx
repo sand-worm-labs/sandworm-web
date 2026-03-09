@@ -16,7 +16,6 @@ import type { APIDataSource, DataSourceType } from "@/types";
 import { NEXT_PUBLIC_API_URL } from "../utils/env";
 
 import { useWebsocket } from "./useWebSocket";
-import { tokenStorage } from "./useAuth";
 
 export type APIDataSources = List<APIDataSource>;
 
@@ -286,18 +285,12 @@ export function DataSourcesProvider(props: Props) {
     }
     fetchedWorkspaces.current.add(workspaceId);
 
-    const token = tokenStorage.getToken();
-
     const res = await fetch(
       `${NEXT_PUBLIC_API_URL()}/v1/workspaces/${workspaceId}/data-sources`,
       {
         credentials: "include",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
       }
     );
-
 
     if (!res.ok) return;
 
@@ -324,7 +317,6 @@ export function DataSourcesProvider(props: Props) {
           body: JSON.stringify({ type }),
         }
       );
-
 
       return res.json();
     },

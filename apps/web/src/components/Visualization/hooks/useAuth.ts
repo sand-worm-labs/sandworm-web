@@ -29,9 +29,6 @@ type SignupApi = {
 type UseSignup = [AuthState, SignupApi];
 
 interface LoginResponse {
-  token: string;
-  refreshToken: string;
-  tokenExpires: number;
   email: string;
   roles?: Record<string, UserWorkspaceRole>;
   user: {
@@ -53,61 +50,6 @@ type ForgotPasswordAPI = {
 
 type UseForgotPassword = [AuthState, ForgotPasswordAPI];
 
-const TOKEN_KEY = "auth_token";
-const REFRESH_TOKEN_KEY = "auth_refresh_token";
-const TOKEN_EXPIRES_KEY = "auth_token_expires";
-const USER_ROLES_KEY = "auth_user_roles";
-
-const tokenStorage = {
-  setTokens: (
-    token: string,
-    refreshToken: string,
-    expiresIn: number,
-    roles?: Record<string, UserWorkspaceRole>
-  ) => {
-    localStorage.setItem(TOKEN_KEY, token);
-    localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
-    localStorage.setItem(TOKEN_EXPIRES_KEY, expiresIn.toString());
-    if (roles) {
-      localStorage.setItem(USER_ROLES_KEY, JSON.stringify(roles));
-    }
-  },
-
-  getToken: (): string | null => {
-    if (typeof window === "undefined") return null;
-    return localStorage.getItem(TOKEN_KEY);
-  },
-
-  getRefreshToken: (): string | null => {
-    if (typeof window === "undefined") return null;
-    return localStorage.getItem(REFRESH_TOKEN_KEY);
-  },
-
-  getTokenExpiry: (): number | null => {
-    if (typeof window === "undefined") return null;
-    const expiry = localStorage.getItem(TOKEN_EXPIRES_KEY);
-    return expiry ? parseInt(expiry, 10) : null;
-  },
-
-  getRoles: (): Record<string, UserWorkspaceRole> | null => {
-    if (typeof window === "undefined") return null;
-    const roles = localStorage.getItem(USER_ROLES_KEY);
-    return roles ? JSON.parse(roles) : null;
-  },
-
-  clearTokens: () => {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(REFRESH_TOKEN_KEY);
-    localStorage.removeItem(TOKEN_EXPIRES_KEY);
-    localStorage.removeItem(USER_ROLES_KEY);
-  },
-
-  isTokenExpired: (): boolean => {
-    const expiry = tokenStorage.getTokenExpiry();
-    if (!expiry) return true;
-    return Date.now() >= expiry - 60000;
-  },
-};
 
 export const useSignup = (): UseSignup => {
   const [state, setState] = useState<{
@@ -144,11 +86,7 @@ export const useSignup = (): UseSignup => {
       })
         .then(async res => {
           if (res.ok) {
-            setState({
-              loading: false,
-              data: { email },
-              error: undefined,
-            });
+            setState({ loading: false, data: { email }, error: undefined });
             return;
           }
 
@@ -199,58 +137,22 @@ export const useLogin = (): UseLogin => {
         .then(async res => {
           if (res.ok) {
             const data: LoginResponse = await res.json();
-
-            tokenStorage.setTokens(
-              data.token,
-              data.refreshToken,
-              data.tokenExpires,
-              data.roles
-            );
-
-            setState({
-              loading: false,
-              data,
-              error: undefined,
-            });
-
+            // Cookies are set by the server (HttpOnly auth token + is_authenticated presence cookie).
+            // Nothing to store on the client.
+            setState({ loading: false, data, error: undefined });
             window.location.href = callback || "/workspace";
-
             return;
           }
 
           if (res.status === 400 || res.status === 401 || res.status === 422) {
-            const errorData = await res.json();
-
-            if (
-              errorData.trace?.response?.errors?.password ===
-              "incorrectPassword"
-            ) {
-              setState({
-                loading: false,
-                error: "invalid-creds",
-              });
-              return;
-            }
-
-            if (errorData.trace?.response?.errors?.email) {
-              setState({
-                loading: false,
-                error: "invalid-creds",
-              });
-              return;
-            }
-
-            setState({
-              loading: false,
-              error: "invalid-creds",
-            });
+            setState({ loading: false, error: "invalid-creds" });
             return;
           }
 
           throw new Error(`Unexpected status ${res.status}`);
         })
         .catch(error => {
-          console.log(error);
+          console.error(error);
           setState(s => ({ ...s, loading: false, error: "network-error" }));
         });
     },
@@ -286,6 +188,7 @@ export const useConfirmEmail = (): UseConfirmEmail => {
     setState({ loading: true, success: false, error: undefined });
 
     fetch(`${NEXT_PUBLIC_API_URL()}/auth/email/confirm`, {
+      credentials: "include",
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ hash }),
@@ -298,9 +201,7 @@ export const useConfirmEmail = (): UseConfirmEmail => {
 
         if (res.status === 404 || res.status === 422) {
           const errorData = await res.json().catch(() => ({}));
-          const isExpired = errorData?.message
-            ?.toLowerCase()
-            .includes("expired");
+          const isExpired = errorData?.message?.toLowerCase().includes("expired");
           setState({
             loading: false,
             success: false,
@@ -342,32 +243,26 @@ export const useSession = ({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const token = tokenStorage.getToken();
-  const storedRoles = tokenStorage.getRoles();
-  const { data, loading, error, refetch } = useCurrentUserQuery({
-    skip: !token,
+
+  // Always fire — browser attaches the HttpOnly access_token cookie automatically.
+  // Query result is the auth signal.
+  const { data, loading, error } = useCurrentUserQuery({
     fetchPolicy: "network-only",
   });
 
   useEffect(() => {
-    if (token) {
-      refetch();
-    }
-  }, [token, refetch]);
-
-  useEffect(() => {
-    if (!loading && !token && redirectToLogin) {
+    if (!loading && !data?.currentUser && redirectToLogin) {
       const back = `${pathname}${searchParams.toString() ? `?${searchParams}` : ""}`;
       router.replace(`/signin?callback=${encodeURIComponent(back)}`);
     }
-  }, [loading, token, redirectToLogin, router, pathname, searchParams]);
+  }, [loading, data, redirectToLogin, router, pathname, searchParams]);
 
   return useMemo(
     () => ({
       user: data?.currentUser?.user
         ? {
             ...data.currentUser.user,
-            role: storedRoles || {},
+            role: data.currentUser.user.role || [],
             name:
               data.currentUser.user.fullName ||
               `${data.currentUser.user.firstName || ""} ${data.currentUser.user.lastName || ""}`.trim() ||
@@ -379,7 +274,7 @@ export const useSession = ({
       error: error?.message ?? null,
       isAuthenticated: !!data?.currentUser,
     }),
-    [data, loading, error, storedRoles]
+    [data, loading, error]
   );
 };
 
@@ -387,21 +282,14 @@ export const useSignout = () => {
   const router = useRouter();
 
   return useCallback(async () => {
-    const token = tokenStorage.getToken();
-    tokenStorage.clearTokens();
-
-    if (token) {
-      try {
-        await fetch(`${NEXT_PUBLIC_API_URL()}/auth/logout`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-      } catch (error) {
-        console.error("Logout API call failed:", error);
-      }
+    try {
+      await fetch(`${NEXT_PUBLIC_API_URL()}/auth/logout`, {
+        method: "POST",
+        credentials: "include", // sends the HttpOnly cookie so server can invalidate it
+        headers: { "Content-Type": "application/json" },
+      });
+    } catch (error) {
+      console.error("Logout API call failed:", error);
     }
 
     router.push("/signin");
@@ -425,19 +313,12 @@ export const useForgotPassword = (): UseForgotPassword => {
     })
       .then(async res => {
         if (res.ok) {
-          setState({
-            loading: false,
-            data: { email },
-            error: undefined,
-          });
+          setState({ loading: false, data: { email }, error: undefined });
           return;
         }
 
         if (res.status === 404) {
-          setState({
-            loading: false,
-            error: "invalid-creds",
-          });
+          setState({ loading: false, error: "invalid-creds" });
           return;
         }
 
@@ -476,29 +357,17 @@ export const useResetPassword = (): UseResetPassword => {
     })
       .then(async res => {
         if (res.ok) {
-          setState({
-            loading: false,
-            data: { success: true },
-            error: undefined,
-          });
+          setState({ loading: false, data: { success: true }, error: undefined });
           return;
         }
 
         if (res.status === 400) {
-          setState({
-            loading: false,
-            data: undefined,
-            error: "invalid-token",
-          });
+          setState({ loading: false, data: undefined, error: "invalid-token" });
           return;
         }
 
         if (res.status === 410) {
-          setState({
-            loading: false,
-            data: undefined,
-            error: "expired-token",
-          });
+          setState({ loading: false, data: undefined, error: "expired-token" });
           return;
         }
 
@@ -511,5 +380,3 @@ export const useResetPassword = (): UseResetPassword => {
 
   return useMemo(() => [state, { resetPassword }], [state, resetPassword]);
 };
-
-export { tokenStorage };
