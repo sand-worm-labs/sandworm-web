@@ -266,7 +266,7 @@ const GeneralTab = ({
   }, [chartType, dataframe?.columns]);
 
   return (
-    <div className="text-xs text-gray-500 flex flex-col space-y-8">
+    <div className="text-xs text-ink-400 flex flex-col space-y-8">
       {yAxes.length > 1 || yAxes.some(y => y.series.length > 1) ? null : (
         <div>
           <ChartTypeSelector
@@ -283,16 +283,16 @@ const GeneralTab = ({
           label={
             chartType === "trend" || chartType === "number" ? (
               <div className="flex items-center justify-between">
-                <span className="text-xs font-medium leading-6 text-gray-900">
+                <span className="text-xs font-medium leading-6 text-ink-100">
                   Period{" "}
-                  <span className="text-[10px] font-normal text-gray-400">
+                  <span className="text-[10px] font-normal text-ink-400">
                     (optional)
                   </span>
                 </span>
 
                 <PortalTooltip
                   content={
-                    <div className="font-primary bg-hunter-950 text-gray-400 text-center text-xs p-2 rounded-md w-64 -translate-x-1/2">
+                    <div className="font-body  bg-hunter-950 text-ink-400 text-center text-xs p-2 rounded-md w-64 -translate-x-1/2">
                       If provided, this column will be used to sort the data
                       before picking the number.
                     </div>
@@ -374,7 +374,7 @@ const GeneralTab = ({
                   <div className="flex items-center gap-x-1">
                     <label
                       htmlFor="histogramBin"
-                      className="text-xs text-gray-500 flex-1"
+                      className="text-xs text-ink-400 flex-1"
                     >
                       {histogramBin.type === "stepSize"
                         ? "Step size"
@@ -386,7 +386,7 @@ const GeneralTab = ({
                       value={binText}
                       onChange={onChangeBinText}
                       className={clsx(
-                        "truncate border-0 text-xs px-2 bg-transparent font-mono placeholder:text-gray-400 text-right hover:ring-1 hover:ring-inset hover:ring-gray-200 focus:ring-1 focus:ring-inset focus:ring-gray-300 rounded-md h-6 w-20",
+                        "truncate border-0 text-xs px-2 bg-transparent font-mono placeholder:text-ink-400 text-right hover:ring-1 hover:ring-inset hover:ring-gray-200 focus:ring-1 focus:ring-inset focus:ring-gray-300 rounded-md h-6 w-20",
                         binError && "ring-red-500 focus:ring-red-500"
                       )}
                       disabled={!dataframe || !isEditable}

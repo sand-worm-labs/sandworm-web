@@ -19,7 +19,7 @@ export const PartnersSection = () => {
           alt="ICN Logo"
           width={98}
           height={24}
-          className="object-contain opacity-80 hover:opacity-100 transition"
+          className="object-contain opacity-80 hover:opacity-100 transition dark:invert"
         />
       </div>
     </div>

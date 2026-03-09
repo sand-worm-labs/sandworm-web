@@ -251,7 +251,7 @@ export default function DataSourcesList({
   }
 
   return (
-    <ul className="divide-y divide-gray-200 pt-1">
+    <ul className="divide-y divide-border-secondary pt-1">
       {orderedAPIDataSources.map(({ config: dataSource }) => (
         <li
           key={dataSource.data.id}
@@ -266,7 +266,7 @@ export default function DataSourcesList({
               height={48}
             />
             <div className="min-w-0 flex-auto">
-              <p className="text-sm font-semibold leading-6 text-gray-900">
+              <p className="text-sm font-semibold leading-6 text-ink-100">
                 {dataSource.data.name}
                 {dataSource.data.isDefault && (
                   <span className="bg-blue-100 text-blue-800 border-blue-200 inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium border ml-2">
@@ -281,7 +281,7 @@ export default function DataSourcesList({
           </div>
           <div className="flex shrink-0 items-center gap-x-6">
             <div className="hidden sm:flex sm:flex-col sm:items-end">
-              <p className="text-sm leading-6 text-gray-900">
+              <p className="text-sm leading-6 text-ink-100">
                 {dataSourcePrettyName(dataSource.type)}
               </p>
               <LastConnection
@@ -290,7 +290,7 @@ export default function DataSourcesList({
               />
             </div>
             <Menu as="div" className="relative flex-none">
-              <Menu.Button className="-m-2.5 block p-2.5 text-gray-500 hover:text-gray-900">
+              <Menu.Button className="-m-2.5 block p-2.5 text-gray-500 hover:text-ink-100">
                 <span className="sr-only">Open options</span>
                 <EllipsisVerticalIcon className="h-5 w-5" aria-hidden="true" />
               </Menu.Button>
@@ -311,7 +311,7 @@ export default function DataSourcesList({
                           href={`/workspaces/${workspaceId}/data-sources/edit/${dataSource.data.id}`}
                           className={clsx(
                             active ? "bg-gray-50" : "",
-                            "block px-3 py-1 text-sm leading-6 text-gray-900"
+                            "block px-3 py-1 text-sm leading-6 text-ink-100"
                           )}
                         >
                           Edit
@@ -335,7 +335,7 @@ export default function DataSourcesList({
                           }
                           className={clsx(
                             active ? "bg-gray-50" : "",
-                            "block px-3 py-1 text-sm leading-6 text-gray-900 w-full text-left"
+                            "block px-3 py-1 text-sm leading-6 text-ink-100 w-full text-left"
                           )}
                         >
                           Ping
@@ -356,7 +356,7 @@ export default function DataSourcesList({
                           }}
                           className={clsx(
                             active ? "bg-gray-50" : "",
-                            "block px-3 py-1 text-sm leading-6 text-gray-900 w-full text-left"
+                            "block px-3 py-1 text-sm leading-6 text-ink-100 w-full text-left"
                           )}
                         >
                           Make default
@@ -376,7 +376,7 @@ export default function DataSourcesList({
                         }}
                         className={clsx(
                           active ? "bg-gray-50" : "",
-                          "block px-3 py-1 text-sm leading-6 text-gray-900 w-full text-left"
+                          "block px-3 py-1 text-sm leading-6 text-ink-100 w-full text-left"
                         )}
                       >
                         Explore schema
@@ -423,7 +423,7 @@ function EmptyAPIDataSources({ workspaceId }: EmptyAPIDataSourcesProps) {
       <Link href={`/workspaces/${workspaceId}/data-sources/new`}>
         <div className="text-center py-12 bg-ceramic-50/60 hover:bg-ceramic-50 rounded-xl">
           <svg
-            className="mx-auto h-12 w-12 text-gray-400"
+            className="mx-auto h-12 w-12 text-ink-400"
             stroke="currentColor"
             fill="none"
             viewBox="0 0 48 48"
@@ -436,7 +436,7 @@ function EmptyAPIDataSources({ workspaceId }: EmptyAPIDataSourcesProps) {
               d="M8 14v20c0 4.418 7.163 8 16 8 1.381 0 2.721-.087 4-.252M8 14c0 4.418 7.163 8 16 8s16-3.582 16-8M8 14c0-4.418 7.163-8 16-8s16 3.582 16 8m0 0v14m0-4c0 4.418-7.163 8-16 8S8 28.418 8 24m32 10v6m0 0v6m0-6h6m-6 0h-6"
             />
           </svg>
-          <h3 className="mt-2 text-sm font-semibold text-gray-900">
+          <h3 className="mt-2 text-sm font-semibold text-ink-100">
             No data sources
           </h3>
           <p className="mt-1 text-sm text-gray-500">

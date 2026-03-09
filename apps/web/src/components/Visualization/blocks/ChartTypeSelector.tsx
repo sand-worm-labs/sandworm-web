@@ -105,9 +105,9 @@ export default function ChartTypeSelector({
   return (
     <Listbox value={value} onChange={onChange} disabled={!isEditable}>
       {({ open }) => (
-        <div className="relative dark:bg-black">
+        <div className="relative dark:bg-base-100 ">
           {!compact && (
-            <div className="block text-xs font-medium leading-6 text-gray-900 pb-1">
+            <div className="block text-xs font-medium leading-6 text-ink-100 pb-1">
               {label}
             </div>
           )}
@@ -116,7 +116,7 @@ export default function ChartTypeSelector({
             ref={buttonRef}
             onClick={onClickButton}
           >
-            <div className="border border-gray-200 rounded-md px-3 flex items-center justify-between gap-x-2 w-full min-h-8">
+            <div className="border border-border-secondary dark:border-border-tertiary rounded-md px-3 flex items-center justify-between gap-x-2 w-full min-h-8">
               <div className="flex items-center justify-left gap-x-2 text-left w-full h-6">
                 <div className="h-4 w-6 rounded-sm grayscale">
                   <img src={`/images/charts/${selected.icon}`} alt="" />
@@ -144,7 +144,7 @@ export default function ChartTypeSelector({
               >
                 <Listbox.Options
                   as="div"
-                  className="w-[30rem] z-20 mt-2 divide-y divide-gray-200 overflow-hidden rounded-md bg-white  dark:bg-black shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none px-5 py-4 dark:border-[#262A30] dark:border "
+                  className="w-[30rem] z-20 mt-2 divide-y divide-border-secondary overflow-hidden rounded-md bg-white  dark:bg-base-200 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none px-5 py-4 dark:border-border-tertiary dark:border "
                 >
                   <div className="grid grid-cols-3 gap-x-4 gap-y-6 items-stretch">
                     {charts.map(option => (
@@ -156,7 +156,7 @@ export default function ChartTypeSelector({
                           clsx(
                             active
                               ? " border-primary"
-                              : "border-gray-200 dark:border-[#262A30]",
+                              : "border-border-secondary dark:border-tertiary",
                             option.comingSoon
                               ? "cursor-not-allowed"
                               : "cursor-pointer",
@@ -185,8 +185,8 @@ export default function ChartTypeSelector({
                               className={clsx(
                                 active
                                   ? "text-gray-600 dark:text-white"
-                                  : "text-gray-400 dark:text-white",
-                                "text-center px-1.5 text-[10px] absolute bottom-0 translate-y-1/2 bg-white dark:bg-black"
+                                  : "text-ink-400 dark:text-white",
+                                "text-center px-1.5 text-[10px] absolute bottom-0 translate-y-1/2 bg-white dark:bg-base-100 "
                               )}
                             >
                               {option.label}

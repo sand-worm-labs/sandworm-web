@@ -307,7 +307,7 @@ interface Props {
 function FilterValueLabel() {
   return (
     <div className="flex items-center justify-between">
-      <label className="text-xs font-medium leading-6 text-gray-900">
+      <label className="text-xs font-medium leading-6 text-ink-100">
         Value
       </label>
       <Tooltip
@@ -602,7 +602,7 @@ function FilterSelectorV2({
           if (invalidReason.type === "simple") {
             if (invalidReason.reason === "invalid-column") {
               return (
-                <div className="w-64 font-primary pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1">
+                <div className="w-64 font-body  pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1">
                   <span className="text-center">
                     The selected column does not belong to the{" "}
                     <span className="font-mono">{dataframe.name}</span>{" "}
@@ -614,7 +614,7 @@ function FilterSelectorV2({
 
             if (invalidReason.reason === "empty-value") {
               return (
-                <div className="w-64 font-primary pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1">
+                <div className="w-64 font-body  pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1">
                   <span className="text-center">
                     The value for the selected column of type{" "}
                     <span className="font-mono">{column?.type}</span> cannot be
@@ -625,7 +625,7 @@ function FilterSelectorV2({
             }
 
             return (
-              <div className="w-64 font-primary pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1">
+              <div className="w-64 font-body  pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1">
                 <span className="text-center">
                   The value{" "}
                   <span className="font-mono">
@@ -640,7 +640,7 @@ function FilterSelectorV2({
 
           // complex type
           return (
-            <div className="w-64 font-primary pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1">
+            <div className="w-64 font-body  pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1">
               <p>We received the following error:</p>
               <pre className="whitespace-pre-wrap pt-0.5">
                 {invalidReason.reason.ename} - {invalidReason.reason.evalue}
@@ -651,7 +651,7 @@ function FilterSelectorV2({
 
         if (renderedValue && renderedValue !== value) {
           return (
-            <div className="w-72 font-primary pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md gap-y-1 text-center">
+            <div className="w-72 font-body  pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md gap-y-1 text-center">
               This filter includes a Python value. The raw value is{" "}
               <span className="font-mono break-all">
                 {Array.isArray(value)
@@ -673,7 +673,7 @@ function FilterSelectorV2({
           "flex items-center gap-x-2.5 py-1.5 px-2 rounded-sm border",
           isInvalid && column
             ? "text-red-500 bg-red-50 border-red-200 hover:border-red-400/60"
-            : "text-gray-500 bg-gray-50 hover:border-gray-400/60 border-gray-200"
+            : "text-gray-500 bg-gray-50 hover:border-gray-400/60 border-border-secondary"
         )}
         disabled={disabled}
         ref={buttonRef}
@@ -686,7 +686,7 @@ function FilterSelectorV2({
               operator === "isNull" || operator === "isNotNull"
                 ? "pl-0.5"
                 : "px-0.5",
-              isInvalid ? "text-red-400" : "text-gray-400"
+              isInvalid ? "text-red-400" : "text-ink-400"
             )}
           >
             {operator
@@ -743,7 +743,7 @@ function FilterSelectorV2({
         >
           <div
             className={clsx(
-              "absolute py-4 left-0 z-20 mt-2 origin-top-right divide-y divide-gray-100 dark:divide-[#262A30] rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none px-4",
+              "absolute py-4 left-0 z-20 mt-2 origin-top-right divide-y divide-gray-100 dark:divide-border-tertiary rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none px-4",
 
               VisualizationStringFilterMultiValuesOperator.safeParse(operator)
                 .success

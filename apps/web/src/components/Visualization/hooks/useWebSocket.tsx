@@ -30,7 +30,6 @@ export function WebsocketProvider({ children }: Props) {
     const socketPath =
       url.pathname === "/" ? undefined : `${url.pathname}/socket.io`;
 
-    console.log("[WebSocket] Creating socket connection to:", withoutPathname);
 
     const token = tokenStorage.getToken();
 
@@ -55,21 +54,16 @@ export function WebsocketProvider({ children }: Props) {
     });
 
     newSocket.on("disconnect", (reason: Socket.DisconnectReason) => {
-      console.log("[WebSocket] Disconnected:", reason);
       if (reason === "io server disconnect") {
         setTimeout(() => newSocket.connect(), 1000);
       }
     });
 
-    // Debug logging
-    newSocket.onAny((eventName, ...args) => {
-      console.log("[WebSocket] Received:", eventName, args);
-    });
+   
 
     setSocket(newSocket);
 
     return () => {
-      console.log("[WebSocket] Cleaning up");
       newSocket.removeAllListeners();
       newSocket.disconnect();
     };

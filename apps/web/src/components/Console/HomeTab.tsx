@@ -161,7 +161,7 @@ export const HomeTab = () => {
             transition={{ delay: index * 0.05 }}
           >
             <Card
-              className="hover:bg-accent/50 bg-transparent transition-colors rounded-3xl border-[#CED4DA] dark:border-[#262A30]"
+              className="hover:bg-accent/50 bg-transparent transition-colors rounded-3xl border-[#CED4DA] dark:border-border-tertiary"
               onClick={() => handleNewAction("sql", item.cleaned_query)}
             >
               <CardHeader>
@@ -216,7 +216,7 @@ export const HomeTab = () => {
               className="h-full p-4 py-8 flex flex-col items-start space-y-2 hover:bg-accent hover:text-accent-foreground group w-full overflow-hidden border-[#CED4DA] border rounded-2xl "
               onClick={() => handleNewAction(action.action)}
             >
-              <div className="flex items-center space-x-2 dark:text-white text-black font-primary break-words">
+              <div className="flex items-center space-x-2 dark:text-white text-black font-body  break-words">
                 <div className="p-2 rounded-full bg-primary/10 group-hover:bg-primary/20 text-primary">
                   {action.icon}
                 </div>
@@ -273,7 +273,7 @@ export const HomeTab = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
               >
-                <Card className="hover:bg-accent/50 bg-transparent transition-colors rounded-3xl border-[#CED4DA] dark:border-[#262A30]">
+                <Card className="hover:bg-accent/50 bg-transparent transition-colors rounded-3xl border-[#CED4DA] dark:border-border-tertiary">
                   <CardHeader>
                     <CardTitle className="text-sm font-medium flex items-center space-x-2">
                       <div className="p-2 rounded-full bg-primary/10">

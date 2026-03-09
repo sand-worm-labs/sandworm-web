@@ -88,7 +88,7 @@ export default function HeaderSelect(props: Props) {
                 : "select-none cursor-not-allowed",
               !hasValue || !hasOptions
                 ? "text-red-400 bg-red-50 hover:bg-red-100"
-                : "text-gray-400 bg-gray-100 hover:bg-gray-100"
+                : "text-ink-400 bg-gray-100 hover:bg-gray-100"
             )}
           >
             <div className="flex gap-x-3 items-center font-mono overflow-hidden">
@@ -106,7 +106,7 @@ export default function HeaderSelect(props: Props) {
             </div>
             <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
               <ChevronUpDownIcon
-                className="h-3 w-3 text-gray-400"
+                className="h-3 w-3 text-ink-400"
                 aria-hidden="true"
               />
             </span>
@@ -137,16 +137,16 @@ export default function HeaderSelect(props: Props) {
                 ))}
               <>
                 {options.length > 1 && (
-                  <hr className="border-t border-gray-200" />
+                  <hr className="border-t border-border-secondary" />
                 )}
                 <DataSourceOption option={options[options.length - 1]} />
               </>
               {props.onAdd && (
                 <>
-                  <hr className="border-t border-gray-200" />
+                  <hr className="border-t border-border-secondary" />
                   <button
                     onClick={props.onAdd}
-                    className="flex items-center w-full text-left py-3 pl-3 pr-9 text-gray-900 hover:bg-blue-50 gap-x-3"
+                    className="flex items-center w-full text-left py-3 pl-3 pr-9 text-ink-100 hover:bg-blue-50 gap-x-3"
                   >
                     <PlusIcon className="h-3 w-3" aria-hidden="true" />
                     <span>{props.onAddLabel ?? ""}</span>
@@ -169,7 +169,7 @@ function DataSourceOption({ option }: { option: Option }) {
       className={({ active }) =>
         clsx(
           active ? "bg-blue-50" : "",
-          "relative select-none pl-3 pr-9 text-gray-900 hover:cursor-pointer py-3"
+          "relative select-none pl-3 pr-9 text-ink-100 hover:cursor-pointer py-3"
         )
       }
       value={option.value}
@@ -201,7 +201,7 @@ function DataSourceOption({ option }: { option: Option }) {
                 "absolute inset-y-0 right-0 flex items-center pr-4"
               )}
             >
-              <CheckIcon className="text-gray-900 h-3 w-3" aria-hidden="true" />
+              <CheckIcon className="text-ink-100 h-3 w-3" aria-hidden="true" />
             </span>
           )}
         </div>

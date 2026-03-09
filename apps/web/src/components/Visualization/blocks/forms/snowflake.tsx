@@ -60,7 +60,7 @@ export default function SnowflakeForm({
     <form className="px-4 sm:p-6 lg:p-12" onSubmit={onSubmitHandler} noValidate>
       <div className="space-y-12">
         <div className="border-b border-gray-900/10 pb-8">
-          <h2 className="text-lg font-semibold leading-7 text-gray-900">
+          <h2 className="text-lg font-semibold leading-7 text-ink-100">
             {snowflakeDataSource ? "Edit" : "New"} Snowflake data source
           </h2>
           <p className="mt-1 text-sm leading-6 text-gray-500">
@@ -76,7 +76,7 @@ export default function SnowflakeForm({
             <div className="col-span-full">
               <label
                 htmlFor="name"
-                className="block text-sm font-medium leading-6 text-gray-900"
+                className="block text-sm font-medium leading-6 text-ink-100"
               >
                 Display name
               </label>
@@ -92,7 +92,7 @@ export default function SnowflakeForm({
                   name="name"
                   placeholder="My Snowflake database"
                   required
-                  className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
                 <FormError msg={formState.errors.name?.message} />
               </div>
@@ -101,7 +101,7 @@ export default function SnowflakeForm({
             <div className="col-span-4">
               <label
                 htmlFor="database"
-                className="block text-sm font-medium leading-6 text-gray-900"
+                className="block text-sm font-medium leading-6 text-ink-100"
               >
                 Database
               </label>
@@ -117,7 +117,7 @@ export default function SnowflakeForm({
                   name="database"
                   placeholder="Database name"
                   required
-                  className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
                 <FormError msg={formState.errors.database?.message} />
               </div>
@@ -126,7 +126,7 @@ export default function SnowflakeForm({
             <div className="col-span-3">
               <label
                 htmlFor="region"
-                className="block text-sm font-medium leading-6 text-gray-900"
+                className="block text-sm font-medium leading-6 text-ink-100"
               >
                 Region
               </label>
@@ -142,7 +142,7 @@ export default function SnowflakeForm({
                   name="region"
                   placeholder="us-east-1"
                   required
-                  className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
                 <FormError msg={formState.errors.database?.message} />
               </div>
@@ -151,7 +151,7 @@ export default function SnowflakeForm({
             <div className="col-span-3">
               <label
                 htmlFor="warehouse"
-                className="block text-sm font-medium leading-6 text-gray-900"
+                className="block text-sm font-medium leading-6 text-ink-100"
               >
                 Warehouse
               </label>
@@ -167,7 +167,7 @@ export default function SnowflakeForm({
                   name="warehouse"
                   placeholder="EXAMPLE_WH"
                   required
-                  className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
                 <FormError msg={formState.errors.warehouse?.message} />
               </div>
@@ -176,7 +176,7 @@ export default function SnowflakeForm({
             <div className="col-span-4">
               <label
                 htmlFor="account"
-                className="block text-sm font-medium leading-6 text-gray-900"
+                className="block text-sm font-medium leading-6 text-ink-100"
               >
                 Account
               </label>
@@ -192,7 +192,7 @@ export default function SnowflakeForm({
                   name="account"
                   placeholder="abc12345"
                   required
-                  className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
                 <FormError msg={formState.errors.account?.message} />
               </div>
@@ -201,7 +201,7 @@ export default function SnowflakeForm({
             <div className="col-span-3">
               <label
                 htmlFor="user"
-                className="block text-sm font-medium leading-6 text-gray-900"
+                className="block text-sm font-medium leading-6 text-ink-100"
               >
                 User
               </label>
@@ -217,7 +217,7 @@ export default function SnowflakeForm({
                   name="user"
                   placeholder="user"
                   required
-                  className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
                 <FormError msg={formState.errors.user?.message} />
               </div>
@@ -226,7 +226,7 @@ export default function SnowflakeForm({
             <div className="col-span-3">
               <label
                 htmlFor="password"
-                className="block text-sm font-medium leading-6 text-gray-900"
+                className="block text-sm font-medium leading-6 text-ink-100"
               >
                 Password
               </label>
@@ -240,10 +240,10 @@ export default function SnowflakeForm({
                   })}
                   type="password"
                   name="password"
-                  className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
                 {isEditing && !formState.errors.password && (
-                  <span className="block text-sm text-gray-900 empty:before:content-['\200b'] pt-1 pb-1">
+                  <span className="block text-sm text-ink-100 empty:before:content-['\200b'] pt-1 pb-1">
                     Leave empty to keep previous password
                   </span>
                 )}
@@ -254,7 +254,7 @@ export default function SnowflakeForm({
             <div className="col-span-full pt-8">
               <label
                 htmlFor="additionalInfo"
-                className="block text-sm font-medium leading-6 text-gray-900"
+                className="block text-sm font-medium leading-6 text-ink-100"
               >
                 AI Additional Context{" "}
                 <span className="pl-1 text-gray-500">(optional)</span>
@@ -266,7 +266,7 @@ export default function SnowflakeForm({
                   name="additionalInfo"
                   rows={5}
                   placeholder="Enter additional context for the AI assistant (examples, descriptions, etc.)"
-                  className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
+                  className="block w-full rounded-md border-0 py-3 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 sm:text-md sm:leading-6"
                 />
               </div>
             </div>

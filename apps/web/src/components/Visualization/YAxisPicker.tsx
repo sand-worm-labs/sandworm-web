@@ -205,7 +205,7 @@ function YAxisPickerV2(props: Props) {
       <div className="flex justify-between items-end pb-1">
         {props.defaultChartType !== "trend" &&
           props.defaultChartType !== "number" && (
-            <div className="text-md font-medium leading-6 text-gray-900">
+            <div className="text-md font-medium leading-6 text-ink-100">
               {props.onAddYAxis ? "" : props.index === 0 ? "Left" : "Right"}{" "}
               Y-Axis
             </div>
@@ -213,7 +213,7 @@ function YAxisPickerV2(props: Props) {
         {props.onAddYAxis && (
           <button
             type="button"
-            className="text-[10px] text-gray-400 underline pb-0.5 hover:text-gray-500"
+            className="text-[10px] text-ink-400 underline pb-0.5 hover:text-gray-500"
             onClick={props.onAddYAxis}
           >
             Add Y-Axis
@@ -254,7 +254,7 @@ function YAxisPickerV2(props: Props) {
                 {(props.yAxis.series.length > 1 || props.onRemove) && (
                   <button
                     type="button"
-                    className="flex items-center jutify-center cursor-pointer text-gray-400 hover:text-red-600 text-[10px] absolute top-1 right-1 underline"
+                    className="flex items-center jutify-center cursor-pointer text-ink-400 hover:text-red-600 text-[10px] absolute top-1 right-1 underline"
                     onClick={() => onRemoveSerie(i)}
                   >
                     Remove
@@ -328,7 +328,7 @@ function YAxisPickerV2(props: Props) {
             <button
               type="button"
               onClick={onAddSerie}
-              className="text-[10px] text-gray-400 underline hover:text-gray-500"
+              className="text-[10px] text-ink-400 underline hover:text-gray-500"
             >
               + Series
             </button>

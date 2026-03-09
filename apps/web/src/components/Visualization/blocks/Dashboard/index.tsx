@@ -367,7 +367,7 @@ function DashboardContent(
           ) : null}
 
           {expanded ? (
-            <ScrollBar className="bg-white px-16 py-12 rounded-xl shadow-md max-h-[90vh] min-w-[940px] 2xl:w-[1280px] 3xl:w-[1536px]">
+            <ScrollBar className="bg-base-100 px-16 py-12 rounded-xl shadow-md max-h-[90vh] min-w-[940px] 2xl:w-[1280px] 3xl:w-[1536px]">
               <ExpandedBlockView
                 expanded={expanded}
                 document={props.document}
@@ -399,16 +399,18 @@ interface Props {
 export default function Dashboard(props: Props) {
   const clock = useMemo(() => {
     if (props.isEditing) {
-      return props.document.clock;
+      return props.document?.clock ?? 0;
     }
 
     return (
-      props.document.userAppClock[props.user.id] ?? props.document.appClock
+      props.document?.userAppClock?.[props.user.id] ??
+      props.document?.appClock ??
+      0
     );
   }, [
     props.isEditing,
-    props.document.clock,
-    props.document.userAppClock,
+    props.document?.clock,
+    props.document?.userAppClock,
     props.user,
   ]);
 
@@ -523,7 +525,7 @@ export default function Dashboard(props: Props) {
 
   const topBarContent = (
     <div className="flex items-center w-full justify-between">
-      <div className="w-full overflow-hidden flex items-center gap-x-1.5 text-sm text-gray-400 font-primary">
+      <div className="w-full overflow-hidden flex items-center gap-x-1.5 text-sm text-ink-400 font-body ">
         {props.isEditing ? (
           <SquaresPlusIcon className="w-4 h-4" />
         ) : (
@@ -573,7 +575,7 @@ export default function Dashboard(props: Props) {
             <button
               type="button"
               id="dashboard-publish-button"
-              className="flex items-center rounded-sm px-3 py-1 text-sm bg-[#A308F0] text-white hover:bg-primary-300 border border-transparent disabled:border-gray-200 disabled:bg-gray-100 disabled:cursor-not-allowed gap-x-1.5 group relative disabled:text-gray-500"
+              className="flex items-center rounded-sm px-3 py-1 text-sm bg-[#A308F0] text-white hover:bg-primary-300 border border-transparent disabled:border-border-secondary disabled:bg-gray-100 disabled:cursor-not-allowed gap-x-1.5 group relative disabled:text-gray-500"
               onClick={onPublish}
               disabled={props.publishing}
             >
@@ -590,7 +592,7 @@ export default function Dashboard(props: Props) {
         )}
         {!props.isEditing && props.role !== "viewer" && (
           <Link
-            className="flex  items-center rounded-sm px-3 py-1 text-sm text-gray-500 bg-white hover:bg-gray-100 border border-gray-200 disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 justify-center"
+            className="flex  items-center rounded-sm px-3 py-1 text-sm text-gray-500 bg-white hover:bg-gray-100 border border-border-secondary disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 justify-center"
             href={`/workspaces/${props.document.workspaceId}/documents/${props.document.id}/dashboard/edit`}
           >
             <SquaresPlusIcon className="w-4 h-4" />
@@ -615,7 +617,7 @@ export default function Dashboard(props: Props) {
 
   return (
     <Layout
-      topBarClassname={!props.isEditing ? "dark:bg-black" : undefined}
+      topBarClassname={!props.isEditing ? "dark:bg-base-100 " : undefined}
       topBarContent={topBarContent}
     >
       <div className="w-full flex relative subpixel-antialiased bg-dashboard-gray">
@@ -636,7 +638,7 @@ export default function Dashboard(props: Props) {
           )}
         </div>
 
-        <div className="w-full fixed bottom-0 bg-white dark:bg-black z-20">
+        <div className="w-full fixed bottom-0 bg-white dark:bg-base-100  z-20">
           <EnvBar
             onOpenFiles={onToggleFiles}
             publishedAt={!props.isEditing ? props.document.publishedAt : null}

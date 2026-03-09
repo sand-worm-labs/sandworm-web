@@ -83,7 +83,7 @@ function AcceptInvitationContent() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-4">
         <div className="max-w-md w-full text-center space-y-4">
-          <div className="w-12 h-12 mx-auto rounded-xl bg-[#EDE7FF] flex items-center justify-center mb-4">
+          <div className="w-12 h-12 mx-auto rounded-xl bg-[#EDE7FF] dark:bg-base-100 flex items-center justify-center mb-4">
             <Cautious />
           </div>
           <h1 className="text-xl font-medium font-body text-ink-100 dark:text-white">
@@ -126,7 +126,7 @@ function AcceptInvitationContent() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-4">
         <div className="max-w-md w-full text-center space-y-4">
-          <div className="w-12 h-12 mx-auto rounded-xl bg-[#EDE7FF] flex items-center justify-center mb-4">
+          <div className="w-12 h-12 mx-auto rounded-xl bg-[#EDE7FF] dark:bg-base-100 flex items-center justify-center mb-4">
             <Cautious />
           </div>
           <h1 className="text-xl font-medium font-body text-ink-100 dark:text-white">
@@ -213,7 +213,7 @@ function AcceptInvitationContent() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-4">
         <div className="max-w-md w-full text-center space-y-4">
-          <div className="w-12 h-12 mx-auto rounded-xl bg-[#EDE7FF] flex items-center justify-center mb-4">
+          <div className="w-12 h-12 mx-auto rounded-xl bg-[#EDE7FF] dark:bg-base-100 flex items-center justify-center mb-4">
             <Cautious />
           </div>
           <h1 className="text-xl font-medium font-body text-ink-100">
@@ -240,7 +240,7 @@ function AcceptInvitationContent() {
     <div className="flex flex-col items-center justify-center min-h-screen p-4">
       <div className="max-w-lg w-full">
         <div className="flex items-center justify-center gap-3 mb-6">
-          <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-[#DEE2E6] dark:border-[#262A30]">
+          <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-[#DEE2E6] dark:border-border-tertiary">
             <Image
               src={invitation.inviter.avatar}
               alt={invitation.inviter.name}
@@ -250,7 +250,7 @@ function AcceptInvitationContent() {
             />
           </div>
           <span className="text-ink-300 text-2xl font-light">+</span>
-          <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-[#DEE2E6] dark:border-[#262A30]">
+          <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-[#DEE2E6] dark:border-border-tertiary">
             <Image
               src={user?.avater || "/img/avatar/avatar3.svg"}
               alt="You"

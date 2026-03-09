@@ -70,8 +70,7 @@ export const MultimodalInputView = forwardRef<
     resize-none
     rounded-3xl
     border-[1.5px] border-[#E6E0F1]
-    bg-white dark:border-[#262A30]
-    dark:bg-[#121417]
+    bg-base-100 dark:border-border-tertiary
     dark:text-white
     text-sm
     placeholder:text-ink-300 
@@ -80,7 +79,7 @@ export const MultimodalInputView = forwardRef<
     focus:outline-none
     focus:border-transparent
     focus:ring-4
-   shadow-[0_3.5px_24px_rgba(120,147,208,0.09)] 
+   shadow-[0_3.5px_24px_rgba(120,147,208,0.09)] dark:shadow-none
    focus:ring-[rgba(163,8,240,0.2)]
 dark:focus:ring-[rgba(163,8,240,0.3)]
     transition-all
@@ -96,8 +95,8 @@ dark:focus:ring-[rgba(163,8,240,0.3)]
           <div className="absolute bottom-5 left-5">
             <Button
               type="button"
-              className="rounded-full p-2.5 h-fit m-0.5 bg-transparent dark:bg-[#363C46] text-black dark:text-[#C5CED9] border-[#B5C8DB] border  hover:bg-[rgba(207,211,222,0.15)] 
-    dark:hover:bg-[rgba(255,255,255,0.05)] dark:border-[#262A30]"
+              className="rounded-full p-2.5 h-fit m-0.5 bg-transparent dark:bg-base-100  text-black dark:text-[#C5CED9] border-[#B5C8DB] border  hover:bg-[rgba(207,211,222,0.15)] 
+    dark:hover:bg-[rgba(255,255,255,0.05)] dark:border-border-tertiary"
               onClick={onFileClick}
             >
               <PiPlus size={18} />
@@ -106,7 +105,7 @@ dark:focus:ring-[rgba(163,8,240,0.3)]
           <div className="flex flex-row gap-2 absolute bottom-4 right-5">
             <Button
               type="button"
-              className="rounded-full p-2.5 py-2 h-fit m-0.5 text-sm bg-[#E7EBF0] dark:bg-[#363C46] dark:text-[#C5CED9] text-black px-4 font-primary font-medium hidden"
+              className="rounded-full p-2.5 py-2 h-fit m-0.5 text-sm bg-[#E7EBF0] dark:bg-[#363C46] dark:text-[#C5CED9] text-black px-4 font-body  font-medium hidden"
               onClick={onStop}
             >
               Deep Research

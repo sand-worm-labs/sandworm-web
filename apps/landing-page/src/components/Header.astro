@@ -126,12 +126,10 @@ const navLinks = [
   let ticking = false;
   
   function updateHeaderBackground() {
-    console.log("hhh")
     const scrollY = window.scrollY;
     const threshold = 50; // Adjust this value to change when the background appears
     
     if (scrollY > threshold) {
-      console.log("true")
       headerContainer?.classList.add("bg-red-500", "backdrop-blur-md");
     } else {
       headerContainer?.classList.remove("bg-[#00000050]", "backdrop-blur-md");

@@ -23,7 +23,7 @@ function MenuButton(props: MenuButtonProps) {
       as="button"
       onClick={props.onClick}
       type="button"
-      className="w-full flex items-center rounded-sm px-4 py-2 text-gray-500 dark:text-white text-sm gap-x-2  dark:hover:bg-[#181C21] hover:bg-primary/20"
+      className="w-full flex items-center rounded-sm px-4 py-2 text-ink-400 dark:text-white text-sm gap-x-2  dark:hover:bg-[#181C21] hover:bg-primary/20"
     >
       <div className="flex justify-center w-6">{props.icon}</div>
       <span>{props.text}</span>
@@ -48,7 +48,7 @@ interface Props {
 function EllipsisDropdown(props: Props) {
   return (
     <Menu as="div" className="relative h-full w-full">
-      <Menu.Button className="flex items-center rounded-none px-3 py-3.5 text-sm text-gray-500 hover:bg-gray-100 dark:bg-black border-t border-b   h-full bg-white w-full">
+      <Menu.Button className="flex items-center rounded-none px-3 py-3.5 text-sm text-ink-400 hover:bg-gray-100 dark:bg-base-500 border-t border-b dark:border-border-tertiary   h-full bg-white w-full dark:text-ink-100 focus:ring-border-tertiary">
         <EllipsisHorizontalIcon className="w-5 h-4 shrink-0" />
       </Menu.Button>
       <Transition
@@ -63,7 +63,7 @@ function EllipsisDropdown(props: Props) {
       >
         <Menu.Items
           as="div"
-          className="mt-1 rounded-md bg-white dark:bg-black shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none font-primary divide-y divide-gray-200 dark:divide-[#262A30] w-52 "
+          className="mt-1 rounded-xl bg-white dark:bg-base-100  shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none font-body  divide-y divide-border-secondary dark:divide-border-tertiary w-56 border dark:border-border-tertiary "
         >
           {!props.isViewer && props.onToggleFiles && (
             <MenuButton

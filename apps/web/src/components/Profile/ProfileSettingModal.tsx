@@ -41,7 +41,7 @@ interface ProfileSettingsModalProps {
 }
 
 const inputClassName =
-  "w-full px-3 py-2.5 rounded-xl bg-white dark:bg-[#1A1A1A] border border-[#DEE2E6] dark:border-[#262A30] text-[#868E96] dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#A308F0]/50 focus:border-[#A308F0] transition text-sm";
+  "w-full px-3 md:py-2.5 py-1.5 rounded-xl bg-white dark:bg-base-400 border border-[#DEE2E6] dark:border-border-tertiary text-[#868E96] dark:text-white placeholder:text-ink-400 dark:placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-[#A308F0]/50 focus:border-[#A308F0] transition md:text-sm text-[13px] ";
 
 const labelClassName =
   "block text-xs font-bold text-[#6C757D] dark:text-gray-300 mb-2 uppercase font-bold";
@@ -100,9 +100,9 @@ export function ProfileSettingsModal({
               leaveFrom="opacity-100 scale-100 translate-y-0"
               leaveTo="opacity-0 scale-95 translate-y-4"
             >
-              <DialogPanel className="w-full max-w-4xl transform overflow-hidden rounded-[32px] bg-white dark:bg-[#121417] transition-all pt-5">
+              <DialogPanel className="w-full max-w-4xl transform overflow-hidden rounded-[32px] bg-white dark:bg-base-100 dark:border dark:border-border-tertiary transition-all pt-5">
                 <form onSubmit={handleSubmit}>
-                  <div className="flex items-center justify-between px-10 py-6">
+                  <div className="flex items-center justify-between md:px-10 px-5 py-6">
                     <div className="flex justify-between w-full">
                       <div>
                         <ProfileCardIcon />
@@ -112,7 +112,7 @@ export function ProfileSettingsModal({
                         >
                           Edit Profile
                         </DialogTitle>
-                        <p className="text-[#6C757D] text-sm mt-1.5">
+                        <p className="text-[#6C757D] dark:text-ink-400 text-sm mt-1.5">
                           Change details relating to how other users see your
                           account
                         </p>
@@ -123,7 +123,7 @@ export function ProfileSettingsModal({
                           <button
                             type="button"
                             disabled
-                            className="mt-3 flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-gray-400 dark:text-gray-500 border-none dark:border-[#262A30] rounded-lg dark:bg-[#121417] cursor-not-allowed opacity-50 absolute top-[50%] translate-y-[-70%]"
+                            className="mt-3 flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-ink-400 dark:text-ink-400 border-none dark:border-border-tertiary rounded-lg dark:bg-base-100 cursor-not-allowed opacity-50 absolute top-[50%] translate-y-[-70%]"
                           >
                             Click to Change Image
                           </button>
@@ -135,11 +135,11 @@ export function ProfileSettingsModal({
                               alt={
                                 user.fullName || user.username || "User avatar"
                               }
-                              className="rounded-full border-2 border-gray-200 dark:border-gray-700"
+                              className="rounded-full border-2 border-border-secondary dark:border-border-tertiary"
                             />
                           ) : (
-                            <div className="w-[88px] h-[88px] rounded-full border-2 border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-[#363C46] flex items-center justify-center">
-                              <span className="text-3xl font-medium text-gray-400 dark:text-gray-500">
+                            <div className="w-[88px] h-[88px] rounded-full border-2 border-border-secondary dark:border-border-tertiary bg-gray-100 dark:bg-base-400 flex items-center justify-center">
+                              <span className="text-3xl font-medium text-ink-400 dark:text-ink-400">
                                 {(
                                   user?.firstName?.[0] ||
                                   user?.username?.[0] ||
@@ -153,7 +153,7 @@ export function ProfileSettingsModal({
                     </div>
                   </div>
 
-                  <div className="px-10 py-6 max-h-[70vh] overflow-y-auto">
+                  <div className="md:px-10 px-5 py-6 max-h-[70vh] overflow-y-auto">
                     {updateSuccess && (
                       <div className="mb-4 p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
                         <p className="text-sm text-green-800 dark:text-green-200">
@@ -182,7 +182,7 @@ export function ProfileSettingsModal({
                               disabled
                               className={`${inputClassName} bg-gray-50 dark:bg-[#0D0F11] cursor-not-allowed opacity-60`}
                             />
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                            <p className="text-xs text-gray-500 dark:text-ink-400 mt-1">
                               Email cannot be changed
                             </p>
                           </div>
@@ -226,7 +226,7 @@ export function ProfileSettingsModal({
                               value={formData.username}
                               onChange={handleChange}
                             />
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                            <p className="text-xs text-gray-500 dark:text-ink-400 mt-1">
                               Your public name on Sandworm
                             </p>
                           </div>
@@ -290,18 +290,18 @@ export function ProfileSettingsModal({
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-end gap-3 px-6 py-4 pt-3">
+                  <div className="flex items-center justify-end gap-3 px-6 py-4 pt-3 ">
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="px-7 py-2 text-sm font-medium text-white bg-[#0F0F0F] rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className="px-7 py-2 text-sm font-medium text-white bg-[#0F0F0F] dark:bg-white dark:text-black rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                       {isSubmitting ? "Saving..." : "Save"}
                     </button>
                     <button
                       type="button"
                       onClick={handleClose}
-                      className="px-6 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white bg-[#F8F9FA] dark:bg-transparent border border-[#DEE2E6] rounded-xl hover:bg-gray-50 transition-colors"
+                      className="px-6 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-ink-100 dark:hover:text-white bg-[#F8F9FA] dark:bg-transparent border border-[#DEE2E6] rounded-xl hover:bg-gray-50 transition-colors dark:border-border-tertiary"
                     >
                       Cancel
                     </button>

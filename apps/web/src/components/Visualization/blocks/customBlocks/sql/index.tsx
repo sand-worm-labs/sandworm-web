@@ -41,6 +41,7 @@ import {
   CircleStackIcon,
 } from "@heroicons/react/24/solid";
 import { Transition } from "@headlessui/react";
+import { useTheme } from "next-themes";
 
 import type { ApiDocument, ApiWorkspace, DataSourceType } from "@/types";
 
@@ -102,6 +103,7 @@ function SQLBlock(props: Props) {
     if (!props.document) return undefined;
     return workspaces.data.find(w => w.id === props.document.workspaceId);
   }, [workspaces.data, props.document?.workspaceId]);
+  const { resolvedTheme } = useTheme();
 
   const hasOaiKey = useMemo(() => {
     return (
@@ -266,7 +268,7 @@ function SQLBlock(props: Props) {
   }, [props.block, hasOaiKey]);
 
   const dataSource = useMemo(
-    () => props.dataSources.find(d => d.config.data.id === dataSourceId),
+    () => props.dataSources.find(d => d.data.id === dataSourceId),
     [props.dataSources, dataSourceId]
   );
 
@@ -438,7 +440,7 @@ function SQLBlock(props: Props) {
   const onToggleFormatSQLCode = useCallback(() => {
     const sqlCodeFormatted = getSQLCodeFormatted(
       source,
-      dataSource?.config.type ?? null
+      dataSource?.type ?? null
     );
 
     if (!sqlCodeFormatted) {
@@ -465,10 +467,10 @@ function SQLBlock(props: Props) {
     () =>
       props.dataSources
         .map(d => ({
-          value: d.config.data.id,
-          label: d.config.data.name,
-          type: d.config.type,
-          isDemo: d.config.data.isDemo,
+          value: d.data.id,
+          label: d.data.name,
+          type: d.type,
+          isDemo: d.data.isDemo,
         }))
         .toArray(),
     [props.dataSources]
@@ -658,11 +660,11 @@ function SQLBlock(props: Props) {
       return {
         content: (ref: RefObject<HTMLDivElement>) => (
           <div
-            className="font-primary pointer-events-none absolute w-max bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 "
+            className="font-body  pointer-events-none absolute w-max bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 "
             ref={ref}
           >
             <span>Run query</span>
-            <span className="inline-flex gap-x-1 items-center text-gray-400">
+            <span className="inline-flex gap-x-1 items-center text-ink-400">
               <span>⌘</span>
               <span>+</span>
               <span>Enter</span>
@@ -727,7 +729,7 @@ function SQLBlock(props: Props) {
           {status._tag !== "idle" ? (
             <LargeSpinner color="#b8f229" />
           ) : (
-            <div className="text-gray-500">No query results</div>
+            <div className="text-ink-400">No query results</div>
           )}
         </div>
       );
@@ -774,29 +776,29 @@ function SQLBlock(props: Props) {
           props.isBlockHiddenInPublished && "border-dashed",
           props.hasMultipleTabs ? "rounded-tl-2xl" : "rounded-tl-2xl",
           {
-            "border-[#EBD7D7] shadow-sm":
+            "border-border-focus shadow-sm":
               isEditorFocused && editorState.mode === "insert",
-            "border-[#EBD7D7] shadow-sm":
+            "border-border-focus shadow-sm":
               isEditorFocused && editorState.mode === "normal",
-            "border-[#EBD7D7] dark:border-[#262A30]": !isEditorFocused,
+            "border-border-focus dark:border-border-tertiary": !isEditorFocused,
           }
         )}
       >
         <div
           className={clsx(
             "rounded-2xl",
-            statusIsDisabled ? "bg-gray-100" : "bg-white dark:bg-black",
+            statusIsDisabled ? "bg-gray-100" : "bg-white dark:bg-base-100 ",
             props.hasMultipleTabs ? "rounded-tl-none" : "",
             !(isResultHidden || !result) &&
               !isCodeHidden &&
-              "border-b border-gray-200 dark:border-[#262A30]",
+              "border-b border-border-secondary dark:border-border-tertiary",
             (isResultHidden || !result) && !isCodeHidden && "rounded-b-2xl",
             (isResultHidden || !result) && isCodeHidden && "rounded-b-2xl"
           )}
         >
           <div
             className={clsx(
-              "rounded-t-2xl dark:bg-black ",
+              "rounded-t-2xl dark:bg-base-100  ",
               props.hasMultipleTabs ? "rounded-tl-none" : "",
               isCodeHidden && (isResultHidden || !result) ? "rounded-b-2xl" : ""
             )}
@@ -806,18 +808,18 @@ function SQLBlock(props: Props) {
           >
             <div
               className={clsx(
-                "flex items-center justify-between px-3 pr-0 gap-x-4 font-primary h-12 rounded-t-2xl",
+                "flex items-center justify-between px-3 pr-0 gap-x-4 font-body  h-12 rounded-t-2xl",
                 !isCodeHidden &&
-                  "divide-x divide-gray-200 dark:divide-[#262A30]",
+                  "divide-x divide-border-secondary dark:divide-border-tertiary",
                 props.hasMultipleTabs ? "rounded-tl-none" : "",
                 isCodeHidden && (isResultHidden || !result)
                   ? "rounded-b-md"
-                  : "border-b border-gray-200 dark:border-[#262A30]"
+                  : "border-b border-border-secondary dark:border-border-tertiary"
               )}
             >
               <div className="select-none text-gray-300 text-xs flex items-center w-full h-full gap-x-1.5 px-4">
                 <div className="relative group w-4 h-4">
-                  <CircleStackIcon className="absolute inset-0 h-5 w-5 text-ink-500 group-hover:opacity-0 transition-opacity" />
+                  <CircleStackIcon className="absolute inset-0 h-5 w-5 text-ink-400 group-hover:opacity-0 transition-opacity" />
                   <button
                     type="button"
                     className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -833,7 +835,7 @@ function SQLBlock(props: Props) {
                 <input
                   type="text"
                   className={clsx(
-                    "text-base font-primary font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-2xl border-0 text-gray-800 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-gray-400 py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white"
+                    "text-base font-body  font-medium pl-1 ring-gray-200 focus:ring-border-focus block w-full rounded-lg border-0 text-ink-100 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-ink-400 py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-base-100"
                   )}
                   placeholder={
                     props.isEditable ? "SQL (click to add a title)" : "SQL"
@@ -845,7 +847,7 @@ function SQLBlock(props: Props) {
               </div>
               <Transition
                 as="div"
-                className="print:hidden flex items-center gap-x-0 group-focus/block:opacity-100 h-full divide-x divide-gray-200"
+                className="print:hidden flex items-center gap-x-0 group-focus/block:opacity-100 h-full divide-x divide-border-tertiary"
                 show={!isCodeHidden}
                 enter="transition-opacity ease-in duration-300"
                 enterFrom="opacity-0"
@@ -876,7 +878,7 @@ function SQLBlock(props: Props) {
               </Transition>
               <Transition
                 as="div"
-                className="print:hidden flex items-center gap-x-1 text-[10px] text-gray-400 whitespace-nowrap pr-3"
+                className="print:hidden flex items-center gap-x-1 text-[10px] text-ink-400 whitespace-nowrap pr-3"
                 show={!(!isCodeHidden && dataframeName?.value)}
                 enter="transition-opacity ease-in duration-300"
                 enterFrom="opacity-0"
@@ -891,8 +893,8 @@ function SQLBlock(props: Props) {
                   <code className="bg-primary-500/20 text-primary-700 px-1.5 py-0.5 font-mono rounded-md relative group cursor-pointer">
                     {copied ? "Copied!" : dataframeName?.value}
 
-                    <div className="font-primary pointer-events-none absolute -top-2 right-0 -translate-y-full opacity-0 transition-opacity scale-0 group-hover:scale-100 group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 w-56 whitespace-normal z-20">
-                      <span className="text-gray-400 text-center">
+                    <div className="font-body  pointer-events-none absolute -top-2 right-0 -translate-y-full opacity-0 transition-opacity scale-0 group-hover:scale-100 group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 w-56 whitespace-normal z-20">
+                      <span className="text-ink-400 text-center">
                         Use this variable name to reference the results as a
                         Pandas dataframe in further Python blocks.{" "}
                         <span className="underline">Click to copy</span>.
@@ -945,6 +947,7 @@ function SQLBlock(props: Props) {
                     dataSourceId={dataSourceId}
                     disabled={statusIsDisabled}
                     onSelectionChanged={onSQLSelectionChanged}
+                    isDark={resolvedTheme === "dark"}
                   />
                 </div>
               </div>
@@ -985,8 +988,8 @@ function SQLBlock(props: Props) {
                             className={clsx(
                               !props.isEditable
                                 ? "cursor-not-allowed bg-gray-200"
-                                : "cusor-pointer hover:bg-gray-50 hover:text-gray-700",
-                              "flex items-center border rounded-sm border-gray-200 px-2 py-1 gap-x-1 text-gray-500 group relative font-primary"
+                                : "cusor-pointer hover:bg-gray-50 hover:text-ink-400  dark:hover:bg-base-500",
+                              "flex items-center border rounded-sm border-border-secondary px-2 py-1 gap-x-1 text-ink-400 group relative font-body "
                             )}
                           >
                             <BookOpenIcon className="w-3 h-3" />
@@ -1009,9 +1012,9 @@ function SQLBlock(props: Props) {
                                 disabled={!props.isEditable}
                                 className={clsx(
                                   !props.isEditable || !hasOaiKey
-                                    ? "cursor-not-allowed bg-gray-200"
-                                    : "cusor-pointer hover:bg-gray-50 hover:text-gray-700",
-                                  "flex items-center border rounded-sm border-gray-200 px-2 py-1 gap-x-1 text-gray-500 group relative font-primary"
+                                    ? "cursor-not-allowed bg-gray-200 dark:bg-base-100"
+                                    : "cusor-pointer hover:bg-gray-50 dark:hover:bg-base-500 hover:text-gray-700",
+                                  "flex items-center border rounded-sm border-border-secondary px-2 py-1 gap-x-1 text-ink-400 group relative font-body "
                                 )}
                                 onClick={onAddVariable}
                               >
@@ -1030,7 +1033,7 @@ function SQLBlock(props: Props) {
                               <div
                                 ref={ref}
                                 className={clsx(
-                                  "font-primary pointer-events-none bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1 z-30",
+                                  "font-body  pointer-events-none bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1 z-30",
                                   hasOaiKey ? "w-32" : "w-40"
                                 )}
                               >
@@ -1039,7 +1042,7 @@ function SQLBlock(props: Props) {
                                     ? "Open AI edit form"
                                     : "Missing OpenAI API key"}
                                 </span>
-                                <span className="inline-flex gap-x-1 items-center text-gray-400">
+                                <span className="inline-flex gap-x-1 items-center text-ink-400">
                                   {hasOaiKey ? (
                                     <>
                                       <span>⌘</span>
@@ -1063,9 +1066,9 @@ function SQLBlock(props: Props) {
                                 onClick={onToggleEditWithAIPromptOpen}
                                 className={clsx(
                                   !props.isEditable || !hasOaiKey
-                                    ? "cursor-not-allowed bg-gray-200"
+                                    ? "cursor-not-allowed bg-gray-200 dark:bg-base-100"
                                     : "cusor-pointer hover:bg-gray-50 hover:text-gray-700",
-                                  "flex items-center border rounded-sm border-gray-200 px-2 py-1 gap-x-1 text-gray-500 group relative font-primary"
+                                  "flex items-center border rounded-sm border-border-secondary px-2 py-1 gap-x-1 text-ink-400 group relative font-body "
                                 )}
                               >
                                 <SparklesIcon className="w-3 h-3" />
@@ -1182,7 +1185,7 @@ function SQLBlock(props: Props) {
           )}
 
         {((result && !isResultHidden) || !isCodeHidden) &&
-          dataSource?.config.type === "athena" && (
+          dataSource?.type === "athena" && (
             <SQLQueryConfigurationButton
               dataSource={dataSource}
               value={configuration}

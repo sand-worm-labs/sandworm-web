@@ -72,10 +72,10 @@ export default function TrashPage() {
   }
 
   return (
-    <ScrollBar className="w-full bg-white h-full overflow-auto">
+    <ScrollBar className="w-full bg-white dark:bg-base-100  h-full overflow-auto font-body">
       <div className="px-4 sm:p-6 lg:p-8">
-        <div className="border-b border-gray-200 pb-4 sm:flex sm:items-center sm:justify-between">
-          <h3 className="text-lg font-medium leading-6 text-gray-900">Trash</h3>
+        <div className=" pb-4 sm:flex sm:items-center sm:justify-between">
+          <h3 className="text-lg font-medium leading-6 text-ink-100">Trash</h3>
         </div>
 
         {documents.size === 0 ? (
@@ -96,12 +96,12 @@ export default function TrashPage() {
 function EmptyTrash() {
   return (
     <div className="py-6 ">
-      <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-gray-200 border-dashed">
-        <HandThumbUpIcon className="h-12 w-12 text-gray-400 mx-auto" />
-        <h3 className="mt-2 text-sm font-semibold text-gray-900">
+      <div className="text-center py-12 bg-gray-50 dark:bg-base-100  rounded-xl border-2 border-border-secondary dark:border-border-tertiary border-dashed">
+        <HandThumbUpIcon className="h-12 w-12 text-ink-400 mx-auto" />
+        <h3 className="mt-2 text-sm font-semibold text-ink-100">
           Your trash is empty
         </h3>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-ink-400">
           In the vacuum of bits, your trash bin echoes the mindfulness of
           deletion.
         </p>

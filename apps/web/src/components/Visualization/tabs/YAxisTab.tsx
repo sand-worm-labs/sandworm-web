@@ -177,14 +177,14 @@ const YAxisSection = ({
 
   return (
     <div key={yAxis.id} className="mb-8">
-      <h2 className="text-sm font-semibold text-gray-900 mb-4">
+      <h2 className="text-sm font-semibold text-ink-100 mb-4">
         {axisIndex === 0 ? "Left" : "Right"} Y-Axis
       </h2>
 
       <div className="mb-6">
         <label
           htmlFor={`yAxisName-${axisIndex}`}
-          className="block text-xs font-medium leading-6 text-gray-900 pb-1"
+          className="block text-xs font-medium leading-6 text-ink-100 pb-1"
         >
           Axis name
         </label>
@@ -192,7 +192,7 @@ const YAxisSection = ({
           name={`yAxisName-${axisIndex}`}
           type="text"
           placeholder="My Y-Axis"
-          className="w-full border-0 rounded-md ring-1 ring-inset ring-gray-200 focus:ring-1 focus:ring-inset focus:ring-gray-300 bg-white group px-2.5 text-gray-800 text-xs placeholder:text-gray-400"
+          className="w-full border-0 rounded-md ring-1 ring-inset ring-gray-200 focus:ring-1 focus:ring-inset focus:ring-gray-300 bg-white group px-2.5 text-gray-800 text-xs placeholder:text-ink-400"
           value={yAxis?.name ?? ""}
           onChange={e => onChangeYAxisName(e, axisIndex)}
           disabled={!dataframe || !isEditable}
@@ -209,16 +209,16 @@ const YAxisSection = ({
         return (
           <div
             key={series.id}
-            className="mb-6 p-4 bg-gray-50 rounded-md border border-gray-200 shadow-sm"
+            className="mb-6 p-4 bg-gray-50 rounded-md border border-border-secondary shadow-sm"
           >
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-sm font-semibold text-gray-900">
+              <h2 className="text-sm font-semibold text-ink-100">
                 {axisIndex === 0 ? "Left" : "Right"} series {seriesIndex + 1}
               </h2>
-              <span className="text-xs text-gray-500 italic">{columnName}</span>
+              <span className="text-xs text-ink-400 italic">{columnName}</span>
             </div>
 
-            <h3 className="text-xs font-medium text-gray-900 mb-1">
+            <h3 className="text-xs font-medium text-ink-100 mb-1">
               Label formatting
             </h3>
 
@@ -264,7 +264,7 @@ const YAxisSection = ({
             {/* No formatting options - show for columns that are neither date nor number */}
             {!isDateType && !isNumberType && (
               <div className="text-center py-4">
-                <p className="text-gray-500">
+                <p className="text-ink-400">
                   No formatting options are available for this column type.
                 </p>
               </div>
@@ -296,7 +296,7 @@ const YAxisTab = ({
   onChangeSeriesSuffix,
 }: YAxisTabProps) => {
   return (
-    <div className="text-xs text-gray-500">
+    <div className="text-xs text-ink-400">
       {yAxes.map((yAxis, axisIndex) => (
         <YAxisSection
           key={yAxis.id}

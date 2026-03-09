@@ -140,7 +140,7 @@ function SQLQueryConfigurationButton(props: Props) {
     athenaResultReuseConfigurationResultReuseByAgeConfigurationEnabled,
   ]);
 
-  if (props.dataSource.config.type !== "athena") {
+  if (props.dataSource.type !== "athena") {
     return null;
   }
 
@@ -149,7 +149,7 @@ function SQLQueryConfigurationButton(props: Props) {
       <button
         type="button"
         ref={buttonRef}
-        className="rounded-sm h-6 min-w-6 flex items-center justify-center border border-gray-200 text-gray-400 hover:bg-gray-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-300"
+        className="rounded-sm h-6 min-w-6 flex items-center justify-center border border-border-secondary text-ink-400 hover:bg-gray-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-300"
         disabled={props.disabled}
         onClick={onToggleSettings}
       >
@@ -174,7 +174,7 @@ function SQLQueryConfigurationButton(props: Props) {
         >
           <div
             ref={popoverRef}
-            className="w-72 bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none font-primary rounded-md"
+            className="w-72 bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none font-body  rounded-md"
           >
             <div className="px-4 py-3">
               <Switch.Group
@@ -183,7 +183,7 @@ function SQLQueryConfigurationButton(props: Props) {
               >
                 <Switch.Label
                   as="span"
-                  className="text-sm leading-6 text-gray-900 flex items-center gap-x-2"
+                  className="text-sm leading-6 text-ink-100 flex items-center gap-x-2"
                   passive
                 >
                   <DatabaseZapIcon strokeWidth={2} className="w-4 h-4" />
@@ -216,7 +216,7 @@ function SQLQueryConfigurationButton(props: Props) {
               <div>
                 <label
                   htmlFor="athenaResultReuseConfigurationResultReuseByAgeConfigurationMaxAgeInMinutes"
-                  className="block text-xs font-medium leading-6 text-gray-900 pb-1"
+                  className="block text-xs font-medium leading-6 text-ink-100 pb-1"
                 >
                   Maximum age (minutes)
                 </label>
@@ -228,7 +228,7 @@ function SQLQueryConfigurationButton(props: Props) {
                     athenaResultReuseConfigurationResultReuseByAgeConfigurationEnabled
                       ? "bg-white"
                       : "bg-gray-100 cursor-not-allowed",
-                    "w-full border-0 rounded-md ring-1 ring-inset ring-gray-200 focus:ring-1 focus:ring-inset focus:ring-gray-300 px-2.5 text-gray-800 text-xs placeholder:text-gray-400"
+                    "w-full border-0 rounded-md ring-1 ring-inset ring-gray-200 focus:ring-1 focus:ring-inset focus:ring-gray-300 px-2.5 text-gray-800 text-xs placeholder:text-ink-400"
                   )}
                   value={
                     athenaResultReuseConfigurationResultReuseByAgeConfigurationMaxAgeInMinutes

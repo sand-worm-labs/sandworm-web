@@ -2,262 +2,470 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>{{title}}</title>
-    <style>
-        /* Reset styles */
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            line-height: 1.6;
-            background-color: #f4f7fa;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>{{title}}</title>
+  <style>
 
-        table {
-            border-spacing: 0;
-            border-collapse: collapse;
-        }
+     @import url(https://db.onlinewebfonts.com/c/0c3856a335fdfdb8b0652f7c3d367fdd?family=Moderat-Regular); 
+    body {
+      margin: 0;
+      padding: 0;
+       font-family: "Moderat-Regular"; 
+      line-height: 1.6;
+      background-color: #f0f0f0;
+    }
 
-        img {
-            border: 0;
-            outline: none;
-            text-decoration: none;
-            display: block;
-        }
+    table {
+      border-spacing: 0;
+      border-collapse: collapse;
+    }
 
-        /* Container styles */
-        .email-wrapper {
-            width: 100%;
-            background-color: #f4f7fa;
-            padding: 20px 0;
-        }
+    img {
+      border: 0;
+      outline: none;
+      text-decoration: none;
+    }
 
-        .email-container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        }
+    /* Wrapper */
+    .email-wrapper {
+      width: 100%;
+      background-color: #f0f0f0;
+      padding: 20px 0;
+    }
 
-        /* Header styles */
-        .email-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 40px 30px;
-            text-align: center;
-        }
+    .email-container {
+      max-width: 650px;
+      min-width: 650px;
+      margin: 0 auto;
+      background-color: #f2f5f8;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+      margin-bottom: 32px;
+    }
 
-        .email-header h1 {
-            margin: 0;
-            color: #ffffff;
-            font-size: 32px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        }
+    /* ── Navbar ── */
+    .email-navbar {
+      background-color: #ffffff;
+      padding: 14px 24px;
+      border-bottom: 1px solid #eeeeee;
+      display: flex;
+      align-items: center;
+    }
 
-        /* Body styles */
-        .email-body {
-            padding: 40px 30px;
-            color: #333333;
-        }
+    .navbar-inner {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-        .email-body h2 {
-            margin: 0 0 20px 0;
-            color: #1a1a1a;
-            font-size: 24px;
-            font-weight: 600;
-        }
+    .navbar-logo {
+      width: 28px;
+      height: 28px;
+      display: block;
+    }
 
-        .email-body p {
-            margin: 0 0 16px 0;
-            color: #555555;
-            font-size: 16px;
-            line-height: 1.7;
-        }
+    .navbar-brand {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: #111111;
+      text-transform: uppercase;
+    }
 
-        /* Button styles */
-        .button-container {
-            text-align: center;
-            margin: 35px 0;
-        }
+    /* ── Hero banner ── */
+    .email-hero {
+      position: relative;
+      overflow: hidden;
+      min-height: 160px;
+    }
 
-        .button {
-            display: inline-block;
-            padding: 16px 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #ffffff !important;
-            text-decoration: none;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 16px;
-            letter-spacing: 0.5px;
-            transition: transform 0.2s ease;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-        }
+    .hero-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
 
-        .button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
-        }
+    .hero-text {
+      flex: 1;
+    }
 
-        /* Info box styles */
-        .info-box {
-            background-color: #f8f9fa;
-            border-left: 4px solid #667eea;
-            padding: 20px;
-            margin: 25px 0;
-            border-radius: 4px;
-        }
+    .hero-welcome {
+      font-size: 13px;
+      color: #7c5cfc;
+      font-weight: 500;
+      margin: 0 0 6px 0;
+      letter-spacing: 0.02em;
+    }
 
-        .info-box p {
-            margin: 0;
-            font-size: 14px;
-            color: #666666;
-        }
+    .hero-headline {
+      font-size: 36px;
+      font-weight: 800;
+      color: #111111;
+      line-height: 1.1;
+      margin: 0;
+      letter-spacing: -1px;
+    }
 
-        /* Link fallback */
-        .link-fallback {
-            margin-top: 30px;
-            padding-top: 25px;
-            border-top: 1px solid #e5e5e5;
-        }
+    .hero-headline span {
+      color: #7c5cfc;
+    }
 
-        .link-fallback p {
-            font-size: 13px;
-            color: #999999;
-            margin-bottom: 10px;
-        }
+    .hero-image {
+      width: 650px;
+      min-height: 120px;
+      height: auto;
+      display: block;
+      flex-shrink: 0;
+    }
 
-        .link-fallback a {
-            color: #667eea;
-            word-break: break-all;
-            font-size: 13px;
-        }
+    /* ── Body ── */
+    .email-body {
+      padding: 36px 32px;
+      color: #333333; 
+    
+    }
 
-        /* Footer styles */
-        .email-footer {
-            background-color: #f8f9fa;
-            padding: 30px;
-            text-align: center;
-            border-top: 1px solid #e5e5e5;
-        }
+    .email-body h1 {
+      margin: 0 0 16px 0;
+      color: #333333;
+      font-size: 30px;
+      font-weight: 900;
+      line-height: 1.2;
+      letter-spacing: -0.5px;
+    }
 
-        .email-footer p {
-            margin: 0 0 8px 0;
-            color: #999999;
-            font-size: 13px;
-        }
+    .email-body p {
+      margin: 0 0 20px 0;
+      color: #333333;
+      font-size: 14px;
+      line-height: 1.75;
+    }
 
-        .email-footer a {
-            color: #667eea;
-            text-decoration: none;
-        }
+    /* ── Features list ── */
+    .features-label {
+      font-size: 13px;
+      color: #333333;
+      font-weight: 500;
+      margin: 0 0 12px 0;
+    }
 
-        /* Social links */
-        .social-links {
-            margin: 20px 0 0 0;
-        }
+    .features-list {
+      margin: 0 0 28px 0;
+      padding: 0;
+      list-style: none;
+      counter-reset: features;
+    }
 
-        .social-links a {
-            display: inline-block;
-            margin: 0 8px;
-            color: #999999;
-            text-decoration: none;
-            font-size: 13px;
-        }
+    .features-list li {
+      counter-increment: features;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+      font-size: 13.5px;
+      color: #333333;
+      line-height: 1.6;
+    }
 
-        /* Responsive */
-        @media only screen and (max-width: 600px) {
-            .email-container {
-                width: 100% !important;
-                border-radius: 0 !important;
-            }
+    .features-list li::before {
+      content: counter(features) ".";
+      font-weight: 700;
+      color: #333333;
+      font-size: 13px;
+      min-width: 18px;
+      padding-top: 1px;
+    }
 
-            .email-header h1 {
-                font-size: 26px !important;
-            }
+    /* ── Info bo#333333
+    .info-box {
+      background-color: #E8EDF3 ;
+      border-left: 4px solid #3C00FF;
+      padding: 16px 20px;
+      margin: 24px 0;
+      border-radius: 6px;
+    }
 
-            .email-body {
-                padding: 30px 20px !important;
-            }
+    .info-box p {
+      margin: 0;
+      font-size: 13px;
+      color: #333333;
+    }
 
-            .email-body h2 {
-                font-size: 20px !important;
-            }
+    /* ── Link fallback ── */
+    .link-fallback {
+      margin-top: 14px;
+      padding-top: 10px;
+      border-top: 1px solid #eeeeee;
+    }
 
-            .button {
-                padding: 14px 30px !important;
-                font-size: 15px !important;
-            }
-        }
-    </style>
+    .link-fallback p {
+      font-size: 12px;
+      color: #333333;
+      margin: 0 0 6px 0;
+    }
+
+    .link-fallback a {
+      color: #3C00FF;
+      word-break: break-all;
+      font-size: 12px;
+      text-decoration: none;
+    }
+
+    /* ── CTA button ── */
+    .button-container {
+      text-align: center;
+      margin: 28px 0;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 14px 36px;
+      background-color: #0f0f0f;
+      color: #ffffff !important;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.3px;
+    }
+
+    /* ── Contact box ── */
+    .contact-box, .hero-box, .help-box {
+      background-color:#E8EDF3 ;
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin: 20px 0px 0 0px;
+    }
+
+    .hero-box{
+      margin-top: 5px;
+      background-color: #ffffff;
+    }
+
+    .contact-box p {
+      margin: 0 0 4px 0;
+      font-size: 13px;
+      color: #555555;
+      line-height: 1.7;
+    }
+
+    .contact-box a {
+      color: #3C00FF;
+      text-decoration: none;
+    }
+
+    /* ── Footer ── */
+    .email-footer {
+      background-color:#E8EDF3 ;
+      padding: 24px 32px;
+      border-top: 1px solid #eeeeee;
+      border-radius: 12px;
+      margin: 0 16px 0px 16px;
+    }
+
+    .footer-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .footer-logo {
+      width: 24px;
+      height: 24px;
+    }
+
+    .footer-social {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .footer-social a {
+      display: inline-block;
+      text-decoration: none;
+    }
+
+    .footer-social img {
+      width: 20px;
+      height: 20px;
+      display: block;
+    }
+
+    .footer-links {
+      margin-bottom: 10px;
+    }
+
+    .footer-links a {
+      font-size: 12px;
+      color: #3C00FF;
+      text-decoration: underline;
+      margin-right: 14px;
+    }
+
+    .footer-copy {
+      font-size: 11px;
+      color: #5F8491;
+      margin: 0;
+    }
+
+    /* ── Responsive ── */
+    @media only screen and (max-width: 600px) {
+      .email-container {
+        width: 100% !important;
+        border-radius: 0 !important;
+      }
+
+      .hero-headline {
+        font-size: 28px !important;
+      }
+
+      .hero-image {
+        width: 90px !important;
+      }
+
+      .email-body {
+        padding: 28px 20px !important;
+      }
+
+      .email-footer {
+        padding: 20px !important;
+      }
+    }
+  </style>
 </head>
 
 <body>
-    <table class="email-wrapper" width="100%" cellpadding="0" cellspacing="0" role="presentation">
-        <tr>
-            <td align="center">
-                <table class="email-container" width="600" cellpadding="0" cellspacing="0" role="presentation">
-                    <!-- Header -->
-                    <tr>
-                        <td class="email-header">
-                            <h1>{{app_name}}</h1>
-                        </td>
-                    </tr>
+  <table class="email-wrapper" width="100%" cellpadding="0" cellspacing="0" role="presentation">
+    <tr>
+      <td align="center">
+        <table class="email-container" width="560" cellpadding="0" cellspacing="0" role="presentation">
 
-                    <!-- Body -->
-                    <tr>
-                        <td class="email-body">
-                            <h2>{{greeting}}</h2>
-                            
-                            <p>{{intro}}</p>
-                            
-                            <p>{{instruction}}</p>
-
-                            <div class="info-box">
-                                <p><strong>⏰ Important:</strong> This verification link will expire in 24 hours for security reasons.</p>
-                            </div>
-
-                            <div class="button-container">
-                                <a href="{{url}}" class="button">{{actionTitle}}</a>
-                            </div>
-
-                            <div class="link-fallback">
-                                <p>If the button above doesn't work, copy and paste this link into your browser:</p>
-                                <a href="{{url}}">{{url}}</a>
-                            </div>
-
-                            <p style="margin-top: 30px; color: #999999; font-size: 14px;">
-                                If you didn't create an account with {{app_name}}, you can safely ignore this email.
-                            </p>
-                        </td>
-                    </tr>
-
-                    <!-- Footer -->
-                    <tr>
-                        <td class="email-footer">
-                            <p><strong>{{app_name}}</strong></p>
-                            <p>Building amazing experiences together</p>
-                            
-                            <div class="social-links">
-                                <a href="#">Privacy Policy</a> • 
-                                <a href="#">Terms of Service</a> • 
-                                <a href="#">Contact Us</a>
-                            </div>
-                            
-                            <p style="margin-top: 20px;">
-                                &copy;  {{app_name}}. All rights reserved.
-                            </p>
-                        </td>
-                    </tr>
-                </table>
+          <!-- ── Navbar ── -->
+         {{!--  <tr>
+            <td class="email-navbar">
+              <table cellpadding="0" cellspacing="0" role="presentation">
+                <tr>
+                  <td>
+                    <!-- LOGO: replace src with your absolute URL, e.g. https://yourdomain.com/static/logo.png -->
+                    <img class="navbar-logo" src="{{logo_url}}" alt="{{app_name}} logo" width="28" height="28" />
+                  </td>
+                  <td style="padding-left: 8px;">
+                    <span class="navbar-brand">{{app_name}}</span>
+                  </td>
+                </tr>
+              </table>
             </td>
-        </tr>
-    </table>
+          </tr>
+ --}}
+          <!-- ── Hero banner ── -->
+          <tr class="email-hero">
+                    <!-- BANNER IMAGE: replace src with your absolute URL -->
+                    <img class="hero-image" src="{{banner_url}}" alt="Sandworm illustration" width="130" />
+                  
+          </tr>
+
+          <!-- ── Body ── -->
+          <tr>
+            <td class="email-body">
+              <div class="hero-box">
+     <h1>{{greeting}}</h1>
+
+              <p>{{intro}}</p>
+
+              {{#if features}}
+              <p class="features-label">Here's some of our features</p>
+              <ol class="features-list">
+                {{#each features}}
+                <li>{{this}}</li>
+                {{/each}}
+              </ol>
+              {{/if}}
+              </div>
+         
+
+              <div class="info-box">
+                <p><strong>Important:</strong> This verification link will expire in 24 hours for security reasons.</p>
+              </div>
+
+              <div class="button-container">
+                <a href="{{url}}" class="button">{{actionTitle}}</a>
+              </div>
+<div class="help-box">
+  <div class="link-fallback">
+                <p>If the button above doesn't work, copy and paste this link into your browser:</p>
+                <a href="{{url}}">{{url}}</a>
+              </div>
+
+              <p style="margin-top: 24px; color: #333333; font-size: 13px;">
+                If you didn't create an account with {{app_name}}, you can safely ignore this email.
+              </p>
+</div>
+            
+
+              <!-- Contact box -->
+              <div class="contact-box">
+                <p>
+                  If you have any questions, please reach out to us on
+                  <a href="{{twitter_url}}">X</a> or
+                  <a href="{{telegram_url}}">Telegram</a>.
+                  We also appreciate any feedback, please send us a message
+                  <a href="mailto:{{support_email}}">{{support_email}}</a>
+                </p>
+              </div>
+
+              <p style="margin-top: 16px; font-size: 13px; color: #333333;">
+                Join us across our social media accounts.
+              </p>
+            </td>
+          </tr>
+
+          <!-- ── Footer ── -->
+          <tr>
+            <td class="email-footer">
+          {{!--     <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                <tr>
+                  <td>
+                    <!-- Logo left -->
+                    <img class="footer-logo" src="{{logo_url}}" alt="{{app_name}}" width="24" height="24" />
+                  </td>
+                  <td align="right">
+                    <!-- Social icons: replace srcs with your icon URLs -->
+                    <table cellpadding="0" cellspacing="0" role="presentation">
+                      <tr>
+                        <td style="padding-left: 12px;">
+                          <a href="{{twitter_url}}">
+                            <img src="{{twitter_icon_url}}" alt="X / Twitter" width="20" height="20" />
+                          </a>
+                        </td>
+                        <td style="padding-left: 12px;">
+                          <a href="{{linkedin_url}}">
+                            <img src="{{linkedin_icon_url}}" alt="LinkedIn" width="20" height="20" />
+                          </a>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table> --}}
+
+              <div class="footer-links" style="margin-top: 16px;">
+                <a href="{{help_center_url}}">Help Center</a>
+                <a href="{{unsubscribe_url}}">Unsubscribe</a>
+              </div>
+
+              <p class="footer-copy">Copyright &copy;{{year}} {{app_name}}. All rights reserved.</p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
 </body>
 
 </html>

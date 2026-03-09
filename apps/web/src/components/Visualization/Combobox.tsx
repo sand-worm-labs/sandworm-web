@@ -84,19 +84,19 @@ export default function ComboboxV2<T>({
   return (
     <div>
       {label && typeof label === "string" ? (
-        <div className="block text-xs font-medium leading-6 text-gray-900">
+        <div className="block text-xs font-medium leading-6 text-ink-100">
           {label}
         </div>
       ) : (
         label
       )}
       <div className="relative mt-1 mb-0.5" ref={inputContainerRef}>
-        <div className="flex items-center space-x-1.5 rounded-md ring-1 ring-inset ring-gray-200 focus-within:ring-1 focus-within:ring-inset focus-within:ring-gray-300 bg-white group pl-2.5 pr-8 text-gray-800 dark:bg-black dark:text-white">
+        <div className="flex items-center space-x-1.5 rounded-md ring-1 ring-inset ring-gray-200 dark:ring-border-tertiary focus-within:ring-1 focus-within:ring-inset focus-within:ring-gray-300 bg-white group pl-2.5 pr-8 text-ink-100 dark:bg-base-100  dark:text-white">
           {value && icon(value)}
           <input
             className={clsx(
-              "w-full truncate border-0 text-xs pl-0.5 focus:ring-0 bg-transparent font-mono placeholder:text-gray-400 ",
-              value === null && "text-gray-400"
+              "w-full truncate border-0 text-xs pl-0.5 focus:ring-0 bg-transparent font-mono placeholder:text-ink-400 min-h-[2rem] ",
+              value === null && "text-ink-400"
             )}
             onChange={event => setQuery(event.target.value)}
             placeholder={placeholder}
@@ -127,7 +127,7 @@ export default function ComboboxV2<T>({
           onClick={onClickButton}
         >
           <ChevronUpDownIcon
-            className="h-5 w-5 text-gray-400"
+            className="h-5 w-5 text-ink-400"
             aria-hidden="true"
           />
         </button>
@@ -157,7 +157,7 @@ export default function ComboboxV2<T>({
                 <button
                   type="button"
                   key={i}
-                  className="hover:text-white hover:bg-gray-50 text-gray-900 relative select-none flex items-center gap-x-2 w-full cursor-pointer"
+                  className="hover:text-white hover:bg-gray-50 text-ink-100 relative select-none flex items-center gap-x-2 w-full cursor-pointer"
                   onClick={e => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -165,7 +165,7 @@ export default function ComboboxV2<T>({
                     setOpen(false);
                   }}
                 >
-                  <div className="text-gray-900 flex w-full items-center justify-between pl-2 pr-4 py-2 hover:bg-gray-50">
+                  <div className="text-ink-100 flex w-full items-center justify-between pl-2 pr-4 py-2 hover:bg-gray-50">
                     <div className="flex items-center gap-x-2">
                       {icon(c)}
                       <span
@@ -185,7 +185,7 @@ export default function ComboboxV2<T>({
                 </button>
               ))}
               {loadingOptions && (
-                <div className="text-center text-gray-400 py-2">Loading...</div>
+                <div className="text-center text-ink-400 py-2">Loading...</div>
               )}
             </div>
           </Transition>,

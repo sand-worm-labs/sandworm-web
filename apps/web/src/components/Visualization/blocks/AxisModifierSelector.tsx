@@ -74,7 +74,7 @@ function AxisModifierSelector({
               <span className="block truncate">{selected?.name ?? "None"}</span>
               <span className="pointer-events-none flex items-center">
                 <ChevronDownIcon
-                  className="h-4 w-4 text-gray-400"
+                  className="h-4 w-4 text-ink-400"
                   aria-hidden="true"
                 />
               </span>

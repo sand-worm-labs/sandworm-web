@@ -104,7 +104,7 @@ const NodeTypeDropdown = ({ editor }: { editor: Editor }) => {
           leaveFrom="transform opacity-100 scale-100"
           leaveTo="transform opacity-0 scale-95"
         >
-          <Menu.Items className="absolute right-0 z-10 -mr-1 mt-2 origin-top-right rounded-md dark:bg-[#0C1015] bg-white shadow-lg ring-1 ring-[#E9ECEF] ring-opacity-5 focus:outline-none whitespace-nowrap dark:ring-[#262A30]">
+          <Menu.Items className="absolute right-0 z-10 -mr-1 mt-2 origin-top-right rounded-md dark:bg-base-100 bg-white shadow-lg ring-1 ring-[#E9ECEF] ring-opacity-5 focus:outline-none whitespace-nowrap dark:ring-[#262A30]">
             <div className="py-0.5">
               {Object.values(items).map(item => (
                 <Menu.Item key={item.name}>
@@ -114,7 +114,7 @@ const NodeTypeDropdown = ({ editor }: { editor: Editor }) => {
                       onClick={() => setNodeType(item.type)}
                       className={clsx(
                         active
-                          ? "bg-gray-100 dark:bg-[#0C1015] text-gray-900 dark:text-ink-300  "
+                          ? "bg-gray-100 dark:bg-base-100 text-ink-100 dark:text-ink-300  "
                           : "text-gray-700 dark:text-ink-300",
                         "block w-full px-4 py-2 text-left dark:hover:bg-[#181C21]"
                       )}
@@ -147,15 +147,15 @@ const ToggleFormattingButton = (props: {
       type="button"
       onClick={props.onToggle}
       className={clsx(
-        isActive ? "bg-white dark:bg-black" : "",
+        isActive ? "bg-white dark:bg-base-100 " : "",
         "h-full text-sm px-2.5 hover:bg-gray-100 relative rounded-md group/toggle-button"
       )}
     >
       {props.children}
       <span className="sr-only">{props.name}</span>
-      <div className="font-primary pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 w-max opacity-0 transition-opacity group-hover/toggle-button:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 shadow-lg bg-black">
+      <div className="font-body pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 w-max opacity-0 transition-opacity group-hover/toggle-button:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 shadow-lg bg-black">
         <span>{props.name}</span>
-        <span className="text-xs text-gray-400 flex gap-x-0.5  justify-center items-center">
+        <span className="text-xs text-ink-400 flex gap-x-0.5  justify-center items-center">
           {props.shortcut.split("").map((key, i) => {
             return <span key={i}>{key}</span>;
           })}
@@ -205,7 +205,7 @@ const ColorOption = (props: {
       onClick={() => props.onShiftColor(props.color)}
     >
       <div
-        className="rounded-md border border-gray-200 p-0.5 dark:border-[#262A30]"
+        className="rounded-md border border-border-secondary p-0.5 dark:border-border-tertiary"
         style={{
           backgroundColor: props.color.type === "bg" ? props.color.hex : "#fff",
           color: props.color.type === "fg" ? props.color.hex : "#000",
@@ -267,12 +267,12 @@ const ColorTextButton = (props: { editor: Editor }) => {
         <span className="font-bold text-xs">A</span>
       </button>
 
-      <div className="font-primary pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 w-max opacity-0 transition-opacity group-hover/toggle-button:opacity-100  text-white dark:text-white text-xs p-2 rounded-md flex flex-col gap-y-1 shadow-lg bg-black ">
+      <div className="font-body pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 w-max opacity-0 transition-opacity group-hover/toggle-button:opacity-100  text-white dark:text-white text-xs p-2 rounded-md flex flex-col gap-y-1 shadow-lg bg-base-100 ">
         <span>Colors</span>
       </div>
 
       {showColorsMenu && (
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-[calc(100%+8px)] bg-white border dark:bg-[#0C1015] dark:border-[#262A30] border-gray-200 px-1 py-2 flex gap-x-2 rounded-md shadow-md z-[10]">
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-[calc(100%+8px)] bg-white border dark:bg-[#0C1015] dark:border-border-tertiary border-border-secondary px-1 py-2 flex gap-x-2 rounded-md shadow-md z-[10]">
           <div className="flex flex-col gap-y-1">
             <span className="font-medium px-2 dark:text-white">Text</span>
             {textColors.map(color => (
@@ -413,7 +413,7 @@ const FormattingToolbar = ({ editor }: { editor: Editor }) => {
         },
         duration: 100,
       }}
-      className="bg-white dark:bg-[#0C1015] ring-1 ring-inset ring-[#E9ECEF] text-gray-600  py-1 rounded-md shadow-md text-xs flex divide-x divide-[#E9ECEF] dark:divide-[#262A30] dark:ring-[#262A30]"
+      className="bg-white dark:bg-[#0C1015] ring-1 ring-inset ring-[#E9ECEF] text-gray-600  py-1 rounded-md shadow-md text-xs flex divide-x divide-[#E9ECEF] dark:divide-border-tertiary dark:ring-[#262A30]"
     >
       <div className="flex gap-x-1 items-center justify-center px-1">
         <NodeTypeDropdown editor={editor} />

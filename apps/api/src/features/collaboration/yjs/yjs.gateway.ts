@@ -2,7 +2,7 @@ import { Injectable, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/commo
 import WebSocket from 'ws';
 import * as http from 'http';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Auth, Repository } from 'typeorm';
 import { DocumentEntity, UserWorkspaceEntity, UserWorkspaceRole, UserWorkspaceStatus } from '@sandworm/postgresql-typeorm';
 import * as cookie from 'cookie';
 import qs from 'querystring';
@@ -14,6 +14,7 @@ import { SyncHandlerService } from '@/features/collaboration/yjs/services/sync-h
 import { PersistenceService } from '@/features/collaboration/yjs/services/persistence.service';
 import { WebSocketUtils } from '@/features/collaboration/yjs/utils/websocket.utils';
 import { RequestData } from './types/requestData.types';
+import { AuthService } from '@/features/auth/core/auth.service';
 // import { getRequestData, getUserRole, RequestData } from '@/features/collaboration/yjs/utils/validation.utils';
 
 @Injectable()
@@ -26,6 +27,7 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
         private readonly messageHandler: MessageHandlerService,
         private readonly syncHandler: SyncHandlerService,
         private readonly persistence: PersistenceService,
+        private readonly authService:AuthService,
         @InjectRepository(DocumentEntity)
         private readonly documentRepository: Repository<DocumentEntity>,
         @InjectRepository(UserWorkspaceEntity)
@@ -225,16 +227,17 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
                 return null;
             }
 
-            const session = await sessionService.validateSessionFromAuthToken(authToken);
+            const session = await this.authService.validateTokenAndGetUser(authToken);
 
             if (!session) {
                 this.logger.warn('No valid session found');
                 return null;
             }
 
-            const userWorkspace = session.userWorkspaces[document.workspaceId];
+            const entry = session.roles?.find(r => r[document.workspaceId]);
+            const role = entry?.[document.workspaceId];
 
-            if (!userWorkspace) {
+            if (!entry) {
                 this.logger.warn(
                     `User ${session.user.id} does not have access to workspace ${document.workspaceId}`,
                 );
@@ -250,7 +253,7 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
                 document,
                 clock: args.data.clock,
                 authUser: session.user,
-                role: userWorkspace.role as UserWorkspaceRole,
+                role: role as UserWorkspaceRole,
                 isApp: args.data.isApp,
                 userId: args.data.userId ?? null,
             };

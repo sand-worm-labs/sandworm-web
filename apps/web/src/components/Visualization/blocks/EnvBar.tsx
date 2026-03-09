@@ -25,10 +25,10 @@ const EnvironmentButton = ({
   return (
     <Link
       href={`/workspace/${workspaceId}/environments/current`}
-      className="border border-gray-200 dark:border-[#262A30]  rounded-sm text-sm px-3 py-1 hover:bg-gray-50 cursor-pointer flex items-center gap-x-2"
+      className="border border-border-secondary dark:border-border-tertiary  rounded-sm text-sm px-3 py-1 hover:bg-gray-50 cursor-pointer flex items-center gap-x-2"
     >
-      <CpuChipIcon className="h-4 w-4 text-gray-600" />
-      <span className="text-gray-700">{name}</span>
+      <CpuChipIcon className="h-4 w-4 text-ink-400" />
+      <span className="text-ink-400">{name}</span>
     </Link>
   );
 };
@@ -39,7 +39,7 @@ type BadgeProps = {
 
 const LoadingBadge = ({ children }: BadgeProps) => {
   return (
-    <span className="inline-flex items-center gap-x-1.5 rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700">
+    <span className="inline-flex items-center gap-x-1.5 rounded-full bg-blue-100 dark:bg-base-200 px-3 py-1 text-xs font-medium text-blue-700 dark:text-blue-400">
       <svg
         className="h-1.5 w-1.5 fill-blue-500"
         viewBox="0 0 6 6"
@@ -148,7 +148,7 @@ const StatusBadge = ({
                   >
                     <ArrowPathIcon className="h-3 w-3" />
                   </button>
-                  <div className="right-0 font-primary pointer-events-none absolute -top-2 -translate-y-full w-max opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex items-center justify-center gap-y-1">
+                  <div className="right-0 font-body  pointer-events-none absolute -top-2 -translate-y-full w-max opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex items-center justify-center gap-y-1">
                     Restart environment
                   </div>
                 </div>
@@ -193,13 +193,13 @@ function EnvBar(props: Props) {
   return (
     <div
       className={clsx(
-        "flex items-center justify-between border-t border-gray-200 dark:border-[#262A30] py-2 px-4 font-primary env-bar ",
-        props.publishedAt && "bg-gray-50 dark:bg-black"
+        "flex items-center justify-between border-t border-border-secondary dark:border-border-tertiary py-2 px-4 font-body  env-bar ",
+        props.publishedAt && "bg-gray-50 dark:bg-base-100 "
       )}
     >
       <div className="flex items-center space-x-2">
         {props.publishedAt ? (
-          <div className="flex items-center gap-x-1.5 text-sm text-gray-500 font-medium">
+          <div className="flex items-center gap-x-1.5 text-sm text-ink-400 font-medium">
             <NewspaperIcon className="h-4 w-4" />
             <span>{`Saved ${publishedAtDisplay} ago. ${lastUpdatedAt}`}</span>
           </div>
@@ -211,22 +211,22 @@ function EnvBar(props: Props) {
             <div className={clsx(props.isViewer ? "hidden" : "")}>
               <Link
                 href={`/workspaces/${workspaceId}/environments/current/variables`}
-                className="border border-gray-200 dark:border-[#262A30]  rounded-sm text-sm px-3 py-1 hover:bg-gray-50 cursor-pointer flex items-center gap-x-2"
+                className="border border-border-secondary dark:border-border-tertiary  rounded-sm text-sm px-3 py-1 hover:bg-gray-50 cursor-pointer flex items-center gap-x-2"
               >
-                <CodeBracketIcon className="h-4 w-4 text-gray-600" />
-                <span className="text-gray-700">Environment variables</span>
+                <CodeBracketIcon className="h-4 w-4 text-ink-400" />
+                <span className="text-ink-400">Environment variables</span>
               </Link>
             </div>
             <button
               type="button"
               className={clsx(
                 props.isViewer ? "hidden" : "",
-                "border border-gray-200 dark:border-[#262A30]  rounded-sm text-sm px-3 py-1 hover:bg-gray-50 cursor-pointer flex items-center gap-x-2"
+                "border border-border-secondary dark:border-border-tertiary  rounded-sm text-sm px-3 py-1 hover:bg-gray-50 cursor-pointer flex items-center gap-x-2"
               )}
               onClick={props.onOpenFiles}
             >
-              <FolderIcon className="h-4 w-4 text-gray-600" />
-              <span className="text-gray-700">Files</span>
+              <FolderIcon className="h-4 w-4 text-ink-400" />
+              <span className="text-ink-400">Files</span>
             </button>
           </>
         )}

@@ -258,7 +258,7 @@ function DropdownInputBlock(props: Props) {
         props.belongsToMultiTabGroup && "border p-4 rounded-tr-md rounded-b-md",
         props.isCursorWithin && !props.isCursorInserting
           ? "border-blue-400"
-          : "border-gray-200"
+          : "border-border-secondary"
       )}
       data-block-id={blockId}
     >
@@ -274,7 +274,7 @@ function DropdownInputBlock(props: Props) {
           <div className="flex items-center flex-grow space-x-1">
             <input
               data-bounding-rect="true"
-              className="block ring-0 text-sm font-medium leading-6 text-gray-900 w-full focus:ring-0 border-0 p-0 bg-transparent"
+              className="block ring-0 text-sm font-medium leading-6 text-ink-100 w-full focus:ring-0 border-0 p-0 bg-transparent"
               type="text"
               value={attrs.label}
               onChange={onChangeLabel}
@@ -283,7 +283,7 @@ function DropdownInputBlock(props: Props) {
             {!props.isApp && props.isEditable && (
               <div className="flex items-center space-x-1">
                 <button onClick={toggleConfigOpen}>
-                  <Cog6ToothIcon className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                  <Cog6ToothIcon className="h-4 w-4 text-ink-400 hover:text-gray-600" />
                 </button>
                 <div
                   className={clsx(!props.isEditable && "hidden", "relative")}
@@ -328,8 +328,8 @@ function DropdownInputBlock(props: Props) {
                               aria-hidden="true"
                             />
                           </button>
-                          <div className="font-primary pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 w-72">
-                            <span className="inline-flex gap-x-1 items-center text-gray-400 text-center">
+                          <div className="font-body  pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 w-72">
+                            <span className="inline-flex gap-x-1 items-center text-ink-400 text-center">
                               {errorMessage(
                                 attrs.variable.error,
                                 attrs.options
@@ -360,7 +360,7 @@ function DropdownInputBlock(props: Props) {
                     onFocus={onFocus}
                     onBlur={editorAPI.blur}
                     className={clsx(
-                      "block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset w-full disabled:bg-gray-100 disabled:cursor-not-allowed bg-white",
+                      "block rounded-md border-0 py-1.5 text-ink-100 shadow-sm ring-1 ring-inset placeholder:text-ink-400 focus:ring-2 focus:ring-inset w-full disabled:bg-gray-100 disabled:cursor-not-allowed bg-white",
                       attrs.value.error
                         ? "ring-red-200 focus:ring-red-200"
                         : "focus:ring-primary-200",
@@ -381,7 +381,7 @@ function DropdownInputBlock(props: Props) {
                     className="inline-block absolute inset-y-0 right-0 px-2.5 bottom-1/2 transform translate-y-1/2"
                     onClick={() => setQuery("")}
                   >
-                    <ChevronDownIcon className="w-5 h-5 text-gray-400" />
+                    <ChevronDownIcon className="w-5 h-5 text-ink-400" />
                   </button>
                 </div>
               </Combobox.Button>
@@ -406,7 +406,7 @@ function DropdownInputBlock(props: Props) {
                       className={({ active }) =>
                         clsx(
                           "cursor-default select-none relative py-2 pl-10 pr-4",
-                          active ? "bg-ceramic-100 text-black" : "text-gray-900"
+                          active ? "bg-ceramic-100 text-black" : "text-ink-100"
                         )
                       }
                     >
@@ -456,8 +456,8 @@ function DropdownInputBlock(props: Props) {
                         aria-hidden="true"
                       />
                     </button>
-                    <div className="font-primary pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 w-72">
-                      <span className="inline-flex gap-x-1 items-center text-gray-400">
+                    <div className="font-body  pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 w-72">
+                      <span className="inline-flex gap-x-1 items-center text-ink-400">
                         <span>
                           {errorMessage(attrs.value.error, attrs.options)}
                         </span>

@@ -40,7 +40,7 @@ function ScheduleConfigForm({
       onSubmit={form.handleSubmit(submitHandler)}
     >
       <div className="flex items-center justify-between py-6 sm:px-4 xl:px-6">
-        <h3 className="text-lg font-medium leading-6 text-gray-900 pt-1">
+        <h3 className="text-lg font-medium leading-6 text-ink-100 pt-1">
           Add scheduled run
         </h3>
         <button
@@ -160,7 +160,7 @@ function ScheduleConfigForm({
           <button
             onClick={onClose}
             type="button"
-            className="flex-1 flex items-center text-center justify-center  rounded-full px-3 py-1.5 text-gray-500 text-sm hover:bg-gray-100 border border-gray-200"
+            className="flex-1 flex items-center text-center justify-center  rounded-full px-3 py-1.5 text-gray-500 text-sm hover:bg-gray-100 border border-border-secondary"
           >
             Cancel
           </button>

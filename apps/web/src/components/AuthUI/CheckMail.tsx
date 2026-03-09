@@ -45,7 +45,7 @@ export const CheckMail = ({
       <div className="w-12 h-12 rounded-xl  flex items-center justify-center mb-2">
         <Mail />
       </div>
-      <h2 className="text-xl font-primary mb-1 ">{title}</h2>
+      <h2 className="text-xl font-body  mb-1 ">{title}</h2>
       <p className="text-sm font-medium text-ink-400 dark:text-white font-body max-w-md mt-2">
         {description}
       </p>

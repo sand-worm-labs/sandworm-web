@@ -14,9 +14,9 @@ interface MiniChatHeaderProps {
 
 export const MiniChatHeader: React.FC<MiniChatHeaderProps> = ({ onCancel }) => {
   return (
-    <header className="flex items-center justify-between px-4 py-2 bg-white dark:bg-black border-b border-gray-200 dark:border-slate-800 ">
+    <header className="flex items-center justify-between px-4 py-2 bg-white dark:bg-base-100  border-b border-border-secondary dark:border-border-secondary ">
       <div className="flex-col flex">
-        <h3 className="text-sm font-medium leading-5 text-slate-900 dark:text-slate-100">
+        <h3 className="text-sm font-medium leading-5 text-ink-100 ">
           Sandworm agent
         </h3>
 
@@ -51,32 +51,12 @@ export const MiniChatHeader: React.FC<MiniChatHeaderProps> = ({ onCancel }) => {
 
 export const MiniChatEmptyState: React.FC = () => {
   return (
-    <div className="flex flex-col items-center justify-center h-full px-4 py-12 font-primary relative">
-      <div
-        className="absolute inset-0"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle, #E2E8F0 1px, transparent 1px)",
-          backgroundSize: "32px 32px",
-          backgroundPosition: "center center",
-        }}
-      />
-
-      <div
-        className="absolute inset-0 [--gradient-color:white] dark:[--gradient-color:oklch(0.145_0_0)]"
-        style={{
-          background:
-            "radial-gradient(ellipse 80% 120% at 50% 50%, transparent 0%, var(--gradient-color) 70%)",
-        }}
-      />
-
+    <div className="flex flex-col items-center justify-center h-full px-4 py-12 font-body  relative">
       <div className="flex flex-col items-center relative z-10">
         <AIChatIcon />
 
-       
-
-        <p className=" font-body text-sm text-ink-300 text-center max-w-[12rem] mt-5 ">
-        Search any data type across multiple blockchains
+        <p className=" font-body text-sm text-ink-300 dark:text-ink-400 text-center max-w-[12rem] mt-5 ">
+          Search any data type across multiple blockchains
         </p>
       </div>
     </div>
@@ -130,7 +110,7 @@ export const MiniChat: React.FC<MiniChatProps> = ({ visible, onClose }) => {
     <Transition
       as="div"
       show={visible}
-      className="top-0 right-0 h-full absolute z-30 font-primary"
+      className="top-0 right-0 h-full absolute z-30 font-body "
       enter="transition ease-in-out duration-300 transform"
       enterFrom="translate-x-full"
       enterTo="translate-x-0"
@@ -138,7 +118,7 @@ export const MiniChat: React.FC<MiniChatProps> = ({ visible, onClose }) => {
       leaveFrom="translate-x-0"
       leaveTo="transform translate-x-full"
     >
-      <div className="w-[354px] flex flex-col overflow-y-auto border-l dark:border-[#262A30] border-gray-200 h-full bg-white dark:bg-black ">
+      <div className="w-[354px] flex flex-col overflow-y-auto border-l dark:border-border-tertiary border-border-secondary h-full bg-white dark:bg-base-100  ">
         <MiniChatHeader onCancel={onClose} />
 
         <div className="flex-1 overflow-y-auto py-6 px-4 ">
@@ -158,7 +138,7 @@ export const MiniChat: React.FC<MiniChatProps> = ({ visible, onClose }) => {
                       msg.isUser
                         ? "bg-[#DEFCFE] dark:bg-[#121417]"
                         : "bg-[#F1F3F4] dark:bg-[#121417]"
-                    } text-ink-500 dark:text-ink-300 px-4 py-2 rounded-2xl max-w-[75%] text-sm`}
+                    } text-ink-500 dark:text-ink-400 px-4 py-2 rounded-2xl max-w-[75%] text-sm`}
                   >
                     {msg.text}
                   </div>

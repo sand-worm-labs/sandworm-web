@@ -39,10 +39,10 @@ const Context = createContext<[InteractionState, InteractionAPI]>([
     scrollIntoView: false,
   },
   {
-    insert: () => { },
-    focus: () => { },
-    blur: () => { },
-    move: () => { },
+    insert: () => {},
+    focus: () => {},
+    blur: () => {},
+    move: () => {},
   },
 ]);
 

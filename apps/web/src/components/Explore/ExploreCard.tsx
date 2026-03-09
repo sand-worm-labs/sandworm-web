@@ -23,7 +23,7 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
       className={`${
         viewMode === "detailed"
           ? " "
-          : "border-b border-[#E9ECEF] pb-3  transition-shadow mb-1 dark:border-[#262A30] "
+          : "border-b border-[#E9ECEF] pb-3  transition-shadow mb-1 dark:border-border-tertiary "
       }`}
     >
       <div className="p-2 px-5">

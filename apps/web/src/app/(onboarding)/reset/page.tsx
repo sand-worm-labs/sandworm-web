@@ -33,9 +33,9 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="w-full max-w-md rounded-lg  p-6 content flex flex-col justify-center items-center h-full mx-auto font-primary">
+    <div className="w-full max-w-md rounded-lg  p-6 content flex flex-col justify-center items-center h-full mx-auto font-body ">
       <SandwormLogo />
-      <h2 className="text-2xl font-medium text-center text-black mb-2 mt-4 font-primary dark:text-white">
+      <h2 className="text-2xl font-medium text-center text-black mb-2 mt-4 font-body  dark:text-white">
         Reset your password
       </h2>
       <p className="mb-6 text-ink-200 text-sm text-center">

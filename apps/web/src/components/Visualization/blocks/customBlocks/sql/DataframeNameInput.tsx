@@ -130,7 +130,7 @@ function DataframeNameInput(props: Props) {
           dataframeName.error
             ? "bg-red-50 group-hover:bg-red-100"
             : "bg-transparent group-hover:bg-gray-100/50",
-          "pl-2.5 pr-8 block w-full border-0 text-gray-500 ring-0 focus:ring-0 placeholder:text-gray-400 text-xs disabled:cursor-not-allowed disabled:cursor-not-allowed h-full focus:!bg-white font-mono font-medium"
+          "pl-2.5 pr-8 block w-full border-0 text-ink-400 ring-0 focus:ring-0 placeholder:text-ink-400 text-xs disabled:cursor-not-allowed disabled:cursor-not-allowed h-full focus:!bg-white  dark:focus:bg-base-100 font-mono font-medium"
         )}
         placeholder="DataFrame name"
         value={dataframeName.newValue}
@@ -151,8 +151,8 @@ function DataframeNameInput(props: Props) {
               />
             </button>
 
-            <div className="scale-0 font-primary pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:scale-100 group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 w-72">
-              <span className="inline-flex gap-x-1 items-center text-gray-400">
+            <div className="scale-0 font-body  pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:scale-100 group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 w-72">
+              <span className="inline-flex gap-x-1 items-center text-ink-400">
                 <span>{queryNameErrorMessage(dataframeName.error)}</span>
               </span>
             </div>

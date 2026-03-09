@@ -27,10 +27,15 @@ import {
   usePendingInvites,
   usePendingRoleRequests,
   useRejectRoleRequest,
+  useWorkspaceWithMembers,
+  useRemoveUserFromWorkspace,
+  useUpdateWorkspaceMemberRole,
 } from "../Visualization/hooks/useWorkspaces";
 import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
 import MiniUsersList from "../Visualization/blocks/MiniUsersList";
 import { useSession } from "../Visualization/hooks/useAuth";
+
+import { WorkspaceIcon } from "./WorkspaceIcon";
 
 interface WorkspaceSettingsModalProps {
   isOpen: boolean;
@@ -48,52 +53,22 @@ interface WorkspaceSettingsModalProps {
   isUpdating: boolean;
   disableCustomOpenAiKey?: boolean;
 }
+const PRESET_ICONS = [
+  "red.png",
+  "blue.png",
+  "green.png",
+  "purple.png",
+  "yellow.png",
+] as const;
 
-export const ICON_COLOR_TO_AVATAR: Record<string, string> = {
-  "red.png": "/img/avatar-1.svg",
-  "blue.png": "/img/avatar-2.svg",
-  "green.png": "/img/avatar-3.svg",
-  "purple.png": "/img/avatar-4.svg",
-  "yellow.png": "/img/avatar-5.svg",
-};
-
-// Reverse map — avatar src back to backend color key
-export const AVATAR_TO_ICON_COLOR: Record<string, string> = Object.fromEntries(
-  Object.entries(ICON_COLOR_TO_AVATAR).map(([color, avatar]) => [avatar, color])
-);
-
-// Display helper: given a backend icon value, return the avatar src to render
-export function getAvatarSrc(
-  iconColor: string | null | undefined
-): string | null {
-  if (!iconColor) return null;
-  return ICON_COLOR_TO_AVATAR[iconColor] ?? null;
-}
-
-// Save helper: given an avatar src, return the backend color key to persist
-export function getIconColor(
-  avatarSrc: string | null | undefined
-): string | null {
-  if (!avatarSrc) return null;
-  return AVATAR_TO_ICON_COLOR[avatarSrc] ?? null;
-}
 interface EditWorkspaceProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
   currentName?: string;
-  currentIcon?: string | null; // backend value e.g. "red.png"
-  onSave: (data: { name: string; selectedIcon: string | null }) => void; // selectedIcon is backend value
+  currentIcon?: string | null;
+  onSave: (data: { name: string; selectedIcon: string | null }) => void;
   isLoading?: boolean;
 }
-
-// Each preset maps a display avatar to its backend color key
-const PRESET_ICONS = Object.entries(ICON_COLOR_TO_AVATAR).map(
-  ([colorKey, avatarSrc], index) => ({
-    id: index + 1,
-    avatarSrc,
-    colorKey,
-  })
-);
 
 export function EditWorkspaceProfileModal({
   isOpen,
@@ -104,19 +79,12 @@ export function EditWorkspaceProfileModal({
   isLoading = false,
 }: EditWorkspaceProfileModalProps) {
   const [workspaceName, setWorkspaceName] = useState(currentName);
-
-  // Internally track avatar src for display, convert to/from backend key at boundary
-  const [selectedAvatar, setSelectedAvatar] = useState<string | null>(
-    getAvatarSrc(currentIcon)
-  );
+  const [selectedIcon, setSelectedIcon] = useState<string | null>(currentIcon);
 
   if (!isOpen) return null;
 
   const handleSave = () => {
-    onSave({
-      name: workspaceName,
-      selectedIcon: getIconColor(selectedAvatar), // sends "red.png" etc to parent
-    });
+    onSave({ name: workspaceName, selectedIcon });
   };
 
   const isNameValid =
@@ -140,7 +108,7 @@ export function EditWorkspaceProfileModal({
         aria-label="Close modal"
       />
 
-      <div className="relative bg-white dark:bg-[#1A1A1A] rounded-3xl  w-full max-w-[31rem] mx-4 p-6 py-10 px-10">
+      <div className="relative bg-white dark:bg-base-400 dark:border dark:border-border-tertiary rounded-3xl w-full max-w-[31rem] mx-4 p-6 py-10 px-10">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-base font-medium text-ink-100 dark:text-white">
             Edit workspace Profile
@@ -150,57 +118,45 @@ export function EditWorkspaceProfileModal({
             onClick={onClose}
             className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           >
-            <XMarkIcon className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+            <XMarkIcon className="h-5 w-5 text-ink-400" />
           </button>
         </div>
 
         <div className="mb-6">
-          <label className="block text-sm font-medium text-[#1A1A1A] dark:text-gray-300 mb-3">
-            Workspace Profile
+          <label className="block text-sm font-medium text-ink-100  mb-3">
+            Workspace Icon
           </label>
           <div className="flex items-center gap-3">
-            {/* Upload Button / Selected Preview */}
-            <button
-              type="button"
-              className="relative w-14 mr-4 h-14 rounded-full border-2 border-[#DEE2E6] dark:border-gray-600 hover:border-[#A308F0] dark:hover:border-[#A308F0] transition-colors flex items-center justify-center group overflow-hidden"
-            >
-              {selectedAvatar ? (
-                <Image
-                  src={selectedAvatar}
-                  alt="Selected workspace icon"
-                  fill
+            {/* Current selection preview */}
+            <div className="relative w-14 h-14 rounded-full border-2 border-[#DEE2E6] dark:border-border-tertiary flex items-center justify-center overflow-hidden mr-4">
+              {selectedIcon ? (
+                <WorkspaceIcon
+                  icon={selectedIcon}
+                  size={56}
                   className="object-cover"
                 />
               ) : (
-                <span className="text-[10px] text-center text-gray-500 dark:text-gray-400 group-hover:text-[#A308F0] leading-tight">
-                  Click to
-                  <br />
-                  Upload
+                <span className="text-[10px] text-center text-ink-400 leading-tight">
+                  No icon
                 </span>
               )}
-            </button>
+            </div>
 
-            {/* Preset color icons rendered as avatars */}
-            {PRESET_ICONS.map(icon => {
-              const isSelected = selectedAvatar === icon.avatarSrc;
+            {PRESET_ICONS.map(colorKey => {
+              const isSelected = selectedIcon === colorKey;
               return (
                 <button
-                  key={icon.id}
+                  key={colorKey}
                   type="button"
-                  onClick={() => setSelectedAvatar(icon.avatarSrc)}
+                  onClick={() => setSelectedIcon(colorKey)}
                   className={`relative w-8 h-8 rounded-full transition-all overflow-hidden ${
                     isSelected
-                      ? "ring-2 ring-[#A308F0] ring-offset-2 dark:ring-offset-[#1A1A1A]"
+                      ? "ring-2 ring-[#A308F0] ring-offset-2 dark:ring-border-tertiary]"
                       : "hover:scale-110"
                   }`}
-                  aria-label={`${icon.colorKey.replace(".png", "")} workspace icon`}
+                  aria-label={`${colorKey.replace(".png", "")} icon`}
                 >
-                  <Image
-                    src={icon.avatarSrc}
-                    alt={`${icon.colorKey.replace(".png", "")} icon`}
-                    fill
-                    className="object-cover"
-                  />
+                  <WorkspaceIcon icon={colorKey} size={32} />
                   {isSelected && (
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                       <CheckIcon className="w-4 h-4 text-white stroke-[3]" />
@@ -221,15 +177,15 @@ export function EditWorkspaceProfileModal({
             value={workspaceName}
             onChange={e => setWorkspaceName(e.target.value)}
             placeholder="Enter workspace name"
-            className="w-full px-4 py-3 rounded-xl bg-[#F8F9FA] dark:bg-[#262626] border border-[#DEE2E6] dark:border-[#363636] text-gray-900 dark:text-white placeholder:text-[#6C757D] dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#A308F0] focus:border-transparent transition-all text-sm font-medium"
+            className="w-full px-4 py-3 rounded-xl bg-[#F8F9FA] dark:bg-base-100  border border-[#DEE2E6] dark:border-border-tertiary text-ink-100 placeholder:text-[#6C757D] dark:placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-[#A308F0] focus:border-transparent transition-all text-sm font-medium"
           />
           <ul className="mt-2 space-y-1 text-xs font-medium">
             <li className="flex items-center gap-1">
-              <span className="text-[#6C757D]">·</span>
+              <span className="text-[#6C757D] dark:text-ink-400">·</span>
               Workspace name should be less than 40 characters
             </li>
             <li className="flex items-center gap-1">
-              <span className="text-[#6C757D]">·</span>
+              <span className="text-[#6C757D]  dark:text-ink-400">·</span>
               Cannot contain punctuation/special marks
             </li>
           </ul>
@@ -239,7 +195,7 @@ export function EditWorkspaceProfileModal({
           type="button"
           onClick={handleSave}
           disabled={!isNameValid || isLoading}
-          className="w-full py-3.5 px-4 bg-[#A308F0] hover:bg-[#8a07c9] disabled:bg-[#868E96] text-[#E9ECEF] font-medium rounded-xl transition-colors disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
+          className="w-full py-3.5 px-4 bg-[#A308F0] hover:bg-[#8a07c9] disabled:bg-[#868E96] dark:disabled:bg-[#4a4a48] text-[#E9ECEF] font-medium rounded-xl transition-colors disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
         >
           {isLoading ? (
             <>
@@ -322,7 +278,7 @@ export function DeleteWorkspaceModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+                className="absolute top-4 right-4 text-ink-400 hover:text-gray-600"
               >
                 <XMarkIcon className="h-5 w-5" />
               </button>
@@ -358,25 +314,50 @@ export function DeleteWorkspaceModal({
   );
 }
 
+interface WorkspaceSettingsModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  workspace: {
+    id: string;
+    name: string;
+    icon?: string | null;
+    secrets?: {
+      hasOpenAiApiKey?: boolean;
+    };
+  } | null;
+  updateWorkspace: (id: string, name: string, icon?: string) => Promise<void>;
+  isUpdating: boolean;
+  disableCustomOpenAiKey?: boolean;
+}
+
 export default function WorkspaceSettingsModal({
   isOpen,
   onClose,
   workspace,
-  isAdmin,
   updateWorkspace,
   isUpdating,
   disableCustomOpenAiKey,
 }: WorkspaceSettingsModalProps) {
   const router = useRouter();
-  const session = useSession({ redirectToLogin: true });
+
+  const {
+    members,
+    currentUserRole,
+    isLoading: isMembersLoading,
+  } = useWorkspaceWithMembers(isOpen ? workspace?.id : undefined);
+
+  const isAdmin = currentUserRole === "admin";
+
   const { pendingRequests, refetch: refetchPendingRequests } =
     usePendingRoleRequests(workspace?.id ?? "");
   const { pendingInvites: rawPendingInvites, refetch: refetchInvites } =
     usePendingInvites(workspace?.id ?? "");
   const { approveRoleRequest } = useApproveRoleRequest(workspace?.id ?? "");
   const { rejectRoleRequest } = useRejectRoleRequest(workspace?.id ?? "");
-
-  console.log(workspace, "workspace");
+  const { updateMemberRole } = useUpdateWorkspaceMemberRole(
+    workspace?.id ?? ""
+  );
+  const { removeUser } = useRemoveUserFromWorkspace(workspace?.id ?? "");
 
   const [state, setState] = useState({
     isEditingName: false,
@@ -392,23 +373,6 @@ export default function WorkspaceSettingsModal({
     useDeleteWorkspace(currentWorkspace ?? undefined);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  console.log("woo", workspace);
-
-  const workspaceMembers: WorkspaceMember[] = [
-    {
-      id: "1",
-      name: "James Earl",
-      email: "james@example.com",
-      role: "editor",
-    },
-    {
-      id: "2",
-      name: "Camila Houst",
-      email: "camila@example.com",
-      role: "owner",
-    },
-  ];
 
   const mappedPendingRequests = useMemo(() => {
     return pendingRequests.map(req => ({
@@ -458,29 +422,39 @@ export default function WorkspaceSettingsModal({
     const success = await inviteUser(email, workspaceId, role);
     if (success) {
       toast.success(`Invitation sent to ${email}`);
+      refetchInvites();
     } else {
       toast.error("Failed to send invitation");
     }
   };
 
   const handleCancelInvite = async (inviteId: string) => {
-    console.log("Cancelling invite:", inviteId);
-
     await new Promise(resolve => setTimeout(resolve, 500));
-
-    setPendingInvites(prev => prev.filter(invite => invite.id !== inviteId));
   };
 
   const onChangeRole = useCallback(
     async (id: string, role: UserWorkspaceRole) => {
-      console.log("Change role:", id, role);
+      try {
+        await updateMemberRole(id, role);
+        toast.success("Role updated successfully");
+      } catch (err) {
+        toast.error("Failed to update role");
+      }
     },
-    []
+    [updateMemberRole]
   );
 
-  const onRemoveUser = useCallback(async (id: string) => {
-    console.log("Remove user:", id);
-  }, []);
+  const onRemoveUser = useCallback(
+    async (id: string) => {
+      try {
+        await removeUser(id);
+        toast.success("User removed from workspace");
+      } catch (err) {
+        toast.error("Failed to remove user");
+      }
+    },
+    [removeUser]
+  );
 
   useEffect(() => {
     if (!isOpen) {
@@ -511,27 +485,25 @@ export default function WorkspaceSettingsModal({
         aria-label="Close modal"
       />
 
-      {/* Modal */}
-      <div className="flex min-h-full items-center justify-center p-4 lg:min-w-[1000px]  w-auto">
-        <div className="relative w-full max-w-[1000px] xl:max-w-[1300px] transform rounded-2xl bg-white dark:bg-[#0D1014] shadow-none transition-all px-12">
+      <div className="flex min-h-full items-center justify-center p-4 lg:min-w-[1000px] w-auto">
+        <div className="relative w-full max-w-[1000px] xl:max-w-[1300px] transform rounded-2xl bg-white dark:bg-base-400 dark:border dark:border-border-tertiary shadow-none transition-all px-12">
           {/* Header */}
-          <div className="flex items-center justify-between  px-6 py-4 pt-12 ">
+          <div className="flex items-center justify-between px-6 py-4 pt-12">
             <div>
               <div className="flex gap-x-3">
-                <User />
+                <WorkspaceIcon icon={workspace?.icon} />
                 <h2 className="text-base font-semibold text-ink-100 dark:text-white capitalize flex items-center gap-2">
                   {workspace?.name} workspace
                   <button
                     type="button"
                     onClick={() => setIsEditModalOpen(true)}
-                    className="p-1 rounded  transition-colors"
+                    className="p-1 rounded transition-colors"
                   >
-                    <PencilSimple className="h-4 w-4 text-gray-500" />
+                    <PencilSimple className="h-4 w-4  dark:text-ink-400" />
                   </button>
                 </h2>
 
-                {/* Members count */}
-                <div className="w-32 flex items-center justify-center gap-2 text-sm text-[#6C757D] font-medium dark:text-gray-400 border-r border-[#1A1A1A]">
+                <div className="w-32 flex items-center justify-center gap-2 text-sm text-[#6C757D]  font-medium dark:text-ink-400 border-r border-[#1A1A1A]">
                   <svg
                     className="w-5 h-5"
                     fill="none"
@@ -546,33 +518,33 @@ export default function WorkspaceSettingsModal({
                     />
                   </svg>
                   <span>
-                    {workspace?.users?.length || 1}{" "}
-                    {workspace?.users?.length === 1 ? "member" : "members"}
+                    {isMembersLoading ? "..." : members.length}{" "}
+                    {members.length === 1 ? "member" : "members"}
                   </span>
                 </div>
 
-                <div className="px-3 flex items-center justify-center gap-2 text-sm text-[#6C757D] font-medium dark:text-gray-400 border-r border-[#1A1A1A]">
+                <div className="px-3 flex items-center justify-center gap-2 text-sm text-[#6C757D] font-medium dark:text-ink-400 border-r border-[#1A1A1A]">
                   Pro
                 </div>
 
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(true)}
-                  className="flex items-center gap-2 px-2.5 py-0.5 border bg-[#F8F9FA] border-[#DEE2E6] dark:border-gray-700 rounded-lg text-xs font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  className="flex items-center gap-2 px-2.5 py-0.5 border bg-[#F8F9FA] border-[#DEE2E6] dark:text-black dark:border-border-tertiary rounded-lg text-xs font-medium hover:bg-gray-50  transition-colors"
                 >
                   Manage Invites
                 </button>
 
                 <div className="text-primary text-[13px] font-medium">
-                  0 Pending Requests
+                  {mappedPendingRequests.length} Pending Requests
                 </div>
 
                 <div className="text-primary text-[13px] font-medium">
-                  0 Pending Invites
+                  {mappedPendingInvites.length} Pending Invites
                 </div>
               </div>
 
-              <p className="text-xs xl:text-sm mt-2 text-[#6C757D]">
+              <p className="text-xs xl:text-sm mt-2 text-[#6C757D] dark:text-ink-400">
                 Change details about your workspace
               </p>
             </div>
@@ -580,25 +552,23 @@ export default function WorkspaceSettingsModal({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-500 dark:hover:bg-gray-800"
+              className="rounded-lg p-1 text-ink-400 hover:bg-gray-100 hover:text-gray-500 dark:hover:bg-gray-800"
             >
               <XMarkIcon className="h-5 w-5" />
             </button>
           </div>
 
           {/* Content */}
-          <div className="px-6 py-4 space-y-0 div dark:divide-[#262A30]">
+          <div className="px-6 py-4 space-y-0 div dark:divide-border-tertiary">
             {/* Team Plan */}
             <div className="flex items-center justify-between gap-4 py-4 border-[#E9ECEF]">
               <div className="flex flex-col gap-y-2">
                 <label className="block text-md font-bold leading-4 dark:text-white text-ink-100">
                   Team plan
                 </label>
-
-                <p className="text-xs xl:text-sm mt-2 text-[#6C757D]">
+                <p className="text-xs xl:text-sm mt-2 text-[#6C757D] dark:text-ink-400">
                   Check your current billing status
                 </p>
-
                 <div className="flex items-center">
                   <button
                     type="button"
@@ -608,30 +578,29 @@ export default function WorkspaceSettingsModal({
                       );
                       onClose();
                     }}
-                    className="px-2.5 py-1 border border-[#DEE2E6] dark:border-gray-700 bg-[#F8F9FA] rounded-lg font-medium  hover:bg-gray-50 dark:hover:bg-gray-800 text-xs"
+                    className="px-2.5 py-1 border border-[#DEE2E6] dark:border-gray-700 dark:text-black bg-[#F8F9FA] rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-800 text-xs"
                   >
                     Change Plan
                   </button>
                 </div>
               </div>
 
-              <div className="flex w-[50%] justify-between border-b border-[#E9ECEF] pb-2">
-                <div className="flex  ">
+              <div className="flex w-[50%] justify-between border-b border-[#E9ECEF] pb-2 dark:border-border-tertiary ">
+                <div className="flex">
                   <div>
-                    <div className="text-[13px] uppercase text-[#6C757D] font-bold block mb-2.5">
+                    <div className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-2.5">
                       Current plan
                     </div>
-                    <div className="font-medium capitalize bg-[#F7E8FF] px-3 py-0.5 rounded-md text-[#A308F0] inline-block text-sm">
+                    <div className="font-medium capitalize bg-[#F7E8FF] dark:bg-[#2a1a3a] px-3 py-0.5 rounded-md text-primary inline-block text-sm">
                       Free
                     </div>
                   </div>
                 </div>
-
                 <div>
-                  <div className="text-[13px] uppercase text-[#6C757D] font-bold block mb-2.5">
+                  <div className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-2.5">
                     Available AI Credit
                   </div>
-                  <div className="font-medium text-[#6C757D] capitalize  px-2 py-0.5 block  inline-block text-sm">
+                  <div className="font-medium text-[#6C757D] dark:text-ink-400 capitalize px-2 py-0.5 block inline-block text-sm">
                     0
                   </div>
                 </div>
@@ -641,20 +610,20 @@ export default function WorkspaceSettingsModal({
             {/* AI Model Selection */}
             <div className="flex items-center justify-between gap-4 py-4">
               <div className="flex flex-col gap-y-2">
-                <label className="block text-md font-bold leading-4 dark:text-white text-ink-100 ">
+                <label className="block text-md font-bold leading-4 dark:text-white text-ink-100">
                   AI Configuration
                 </label>
-                <span className="text-xs xl:text-sm mt-2 text-[#6C757D]">
+                <span className="text-xs xl:text-sm mt-2 text-[#6C757D] dark:text-ink-400">
                   Select the default AI model for your team workspace
                 </span>
               </div>
 
               <div className="w-[50%]">
-                <div className=" text-[13px] uppercase text-[#6C757D] font-bold block mb-1.5">
+                <div className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-1.5">
                   Model
                 </div>
                 <select
-                  className="block w-full rounded-[10px] xl:py-2 border-0 py-1.5 pl-4 pr-10 text-ink-100 font-medium ring-1 ring-inset ring-[#CED4DA] focus:ring-1 focus:ring-[#A308F0] text-sm dark:bg-[#0D1014] disabled:bg-gray-100 dark:text-white dark:ring-[#262A30]"
+                  className="block w-full rounded-[10px] xl:py-2 border-0 py-1.5 pl-4 pr-10 text-ink-100 font-medium ring-1 ring-inset ring-[#CED4DA] focus:ring-1 focus:ring-[#A308F0] text-sm dark:bg-base-400 disabled:bg-gray-100 dark:text-white dark:ring-border-tertiary"
                   defaultValue="gpt-4o"
                 >
                   <option value="gpt-4o">GPT-4o (Recommended)</option>
@@ -671,17 +640,17 @@ export default function WorkspaceSettingsModal({
                   <label className="block text-md font-bold leading-4 dark:text-white text-ink-100">
                     Custom AI API Key
                   </label>
-                  <span className="text-xs xl:text-sm mt-2 text-[#6C757D]">
+                  <span className="text-xs xl:text-sm mt-2 text-[#6C757D] dark:text-ink-400">
                     Set a custom API key for your workspace
                   </span>
                 </div>
 
                 <div className="w-[50%]">
-                  <div className=" text-[13px] uppercase text-[#6C757D] font-bold block mb-1.5">
+                  <div className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-1.5">
                     set key
                   </div>
                   <select
-                    className="block w-full rounded-[10px] xl:py-2 border-0 py-1.5 pl-4 pr-10 text-ink-100 font-medium ring-1 ring-inset ring-[#CED4DA] focus:ring-1 focus:ring-[#A308F0] text-sm dark:bg-[#0D1014] disabled:bg-gray-100 dark:text-white dark:ring-[#262A30]"
+                    className="block w-full rounded-[10px] xl:py-2 border-0 py-1.5 pl-4 pr-10 text-ink-100 font-medium ring-1 ring-inset ring-[#CED4DA] focus:ring-1 focus:ring-[#A308F0] text-sm dark:bg-base-400 disabled:bg-gray-100 dark:text-white dark:ring-border-tertiary"
                     defaultValue="gpt-4o"
                   >
                     <option value="gpt-4o">
@@ -694,52 +663,53 @@ export default function WorkspaceSettingsModal({
               </div>
             )}
 
-            <div className="flex items-start justify-between gap-4 py-4 ">
+            {/* Members */}
+            <div className="flex items-start justify-between gap-4 py-4">
               <div className="flex flex-col gap-y-2">
-                <label className="block text-md font-bold leading-4 dark:text-white text-ink-100 ">
+                <label className="block text-md font-bold leading-4 dark:text-white text-ink-100">
                   Members
                 </label>
-                <span className="text-xs xl:text-sm mt-2 text-[#6C757D]">
+                <span className="text-xs xl:text-sm mt-2 text-[#6C757D] dark:text-ink-400">
                   Manage access levels for users within this workspace
                 </span>
               </div>
 
               <div className="w-[50%]">
                 <MiniUsersList
-                  currentUserEmail={session.user?.email ?? ""}
-                  users={workspace?.users}
+                  currentUserEmail={
+                    members.find(m => m.role === currentUserRole)?.email ?? ""
+                  }
+                  users={members}
                   onRemoveUser={onRemoveUser}
                   onChangeRole={onChangeRole}
-                  onInvite={() => {
-                    console.log("");
-                  }}
+                  onInvite={() => {}}
                 />
               </div>
             </div>
           </div>
 
           {/* Footer */}
-          <div className="flex justify-between gap-3  px-6 py-4 mb-20">
+          <div className="flex justify-between gap-3 px-6 py-4 mb-20">
             <div>
-              <h3 className="text-ink-100 font-bold"> Delete Workspace</h3>
-              <p className="text-xs xl:text-sm mt-2 text-[#6C757D]">
+              <h3 className="text-ink-100 font-bold">Delete Workspace</h3>
+              <p className="text-xs xl:text-sm mt-2 text-[#6C757D] dark:text-ink-400">
                 Delete this Workspace
               </p>
             </div>
 
-            <div className="w-[50%] ">
-              <h3 className="uppercase mb-2 text-[#6C757D] font-bold text-[13px]">
+            <div className="w-[50%]">
+              <h3 className="uppercase mb-2 text-[#6C757D]  dark:text-ink-400 font-bold text-[13px]">
                 Delete this workspace
               </h3>
-              <div className="flex bg-[#FFDBDB] border border-[#CED4DA] rounded-xl text-[13px] py-1 px-2 items-center gap-x-5 justify-between">
-                <span className="inline-block text-[#ff0000] ">
+              <div className="flex bg-[#FFDBDB] dark:bg-[#2a1a1a] border border-[#CED4DA] dark:border-[#5a2e2e] rounded-xl text-[13px] py-1 px-2 items-center gap-x-5 justify-between">
+                <span className="inline-block text-[#ff0000] dark:text-[#ff6b6b]">
                   Once deleted, all files, users and data will be permanently
                   lost
                 </span>
                 <button
                   onClick={() => setIsDeleteModalOpen(true)}
                   type="button"
-                  className="bg-[#F8F9FA] text-[12px] py-1 px-2 rounded-lg border border-[#DEE2E6] text-[#ff0000] font-medium inline-block"
+                  className="bg-[#F8F9FA] dark:bg-base-400 text-[12px] py-1 px-2 rounded-lg border border-[#DEE2E6] dark:border-border-tertiary text-[#ff0000] dark:text-[#ff6b6b]  font-medium inline-block"
                 >
                   Delete Workspace
                 </button>
@@ -753,11 +723,11 @@ export default function WorkspaceSettingsModal({
         isOpen={isModalOpen}
         workspaceId={workspace?.id}
         onClose={() => setIsModalOpen(false)}
-        workspaceMembers={workspaceMembers}
         pendingInvites={mappedPendingInvites}
         onSendInvite={handleSendInvite}
         onCancelInvite={handleCancelInvite}
         pendingRequests={mappedPendingRequests}
+        refetchInvite={refetchInvites}
         onApproveRequest={handleApproveRequest}
         onDenyRequest={handleDenyRequest}
       />
@@ -794,17 +764,15 @@ export default function WorkspaceSettingsModal({
         onClose={() => setIsEditModalOpen(false)}
         currentName={workspace?.name}
         onSave={async ({ name, selectedIcon }) => {
-          console.log(selectedIcon);
           if (!isAdmin) {
             alert("Only admins can update workspace settings");
             return;
           }
-
           try {
             await updateWorkspace(
               workspace?.id || "",
               name.trim(),
-              selectedIcon
+              selectedIcon ?? undefined
             );
             setIsEditModalOpen(false);
           } catch (err) {

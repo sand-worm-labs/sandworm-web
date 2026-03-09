@@ -34,6 +34,7 @@ interface UserItemProps {
   onResetPassword: (id: string) => void;
   role: UserWorkspaceRole;
 }
+
 function UserItem(props: UserItemProps) {
   const onRemoveUser = useCallback(() => {
     props.onRemoveUser(props.user.id);
@@ -59,7 +60,7 @@ function UserItem(props: UserItemProps) {
   return (
     <tr
       className={clsx(
-        "border-b border-[#E9ECEF] dark:border-[#262A30]  dark:hover:bg-[#0D0F12] transition-colors",
+        "border-b border-[#E9ECEF] dark:border-border-tertiary   transition-colors",
         props.isSelected && ""
       )}
     >
@@ -74,28 +75,34 @@ function UserItem(props: UserItemProps) {
       <td className="whitespace-nowrap p-4 text-sm font-medium text-[#1A1A1A] dark:text-white">
         <Avatar />
         <span>{props.user.name}</span>{" "}
-        <span className="text-[#6C757D] inline-block font-light">
+        <span className="text-[#6C757D] dark:text-ink-400 inline-block font-light">
           {props.user.email}
         </span>
       </td>
       <td className="whitespace-nowrap p-4 text-sm text-ink-100">
-        <span className="bg-[#F8F9FA] border border-[#DEE2E6] rounded-md px-3 py-1">
-          workspace
+        <span className="bg-[#F8F9FA] border border-[#DEE2E6] dark:bg-base-100  dark:border-border-tertiary rounded-md px-3 py-1">
+          {props.user.workspaceName || "—"} workspace
         </span>
       </td>
-      <td className="whitespace-nowrap p-4 text-sm text-[#6C757D] font-medium">
+      <td className="whitespace-nowrap p-4 text-sm text-[#6C757D] dark:text-ink-400  font-medium">
         {badge}
       </td>
-      <td className="whitespace-nowrap p-4 text-sm text-[#6C757D] font-medium">
+      <td className="whitespace-nowrap p-4 text-sm text-[#6C757D] dark:text-ink-400  font-medium">
         10 mins ago
       </td>
       <td className="whitespace-nowrap p-4 text-sm font-medium sm:pl-6 lg:pl-8 pr-4 items-end flex w-full">
         <button
           type="button"
           onClick={onRemoveUser}
-          className="text-left w-full px-3 py-1 text-sm leading-6 text-red-600 block"
+          disabled={props.isCurrentUser}
+          className={clsx(
+            "text-left w-full px-3 py-1 text-sm leading-6 block",
+            props.isCurrentUser
+              ? "text-gray-300 cursor-not-allowed"
+              : "text-red-600"
+          )}
         >
-          <Trash />
+          <Trash size={18} />
         </button>
       </td>
     </tr>
@@ -129,7 +136,13 @@ function UsersList(props: Props) {
     [props.users, props.currentUserEmail]
   );
 
-  const allSelected = selectedIds.size === users.length && users.length > 0;
+  const selectableUsers = useMemo(
+    () => users.filter(u => u.email !== props.currentUserEmail),
+    [users, props.currentUserEmail]
+  );
+
+  const allSelected =
+    selectedIds.size === selectableUsers.length && selectableUsers.length > 0;
   const someSelected = selectedIds.size > 0 && !allSelected;
 
   useEffect(() => {
@@ -150,23 +163,32 @@ function UsersList(props: Props) {
     if (allSelected) {
       setSelectedIds(new Set());
     } else {
-      setSelectedIds(new Set(users.map(u => u.id)));
+      setSelectedIds(
+        new Set(
+          users.filter(u => u.email !== props.currentUserEmail).map(u => u.id)
+        )
+      );
     }
-  }, [allSelected, users]);
+  }, [allSelected, users, props.currentUserEmail]);
 
   const handleBulkRemove = useCallback(() => {
-    selectedIds.forEach(id => props.onRemoveUser(id));
+    selectedIds.forEach(id => {
+      const user = users.find(u => u.id === id);
+      if (user?.email !== props.currentUserEmail) {
+        props.onRemoveUser(id);
+      }
+    });
     setSelectedIds(new Set());
-  }, [selectedIds, props.onRemoveUser]);
+  }, [selectedIds, users, props.currentUserEmail, props.onRemoveUser]);
 
   const selectionCount = selectedIds.size;
 
   return (
     <div className="h-full">
       <div className="overflow-visible">
-        <div className="w-full overflow-x-auto dark:border-[#262A30] border-b-0">
+        <div className="w-full overflow-x-auto dark:border-border-tertiary border-b-0">
           <table className="min-w-full border-collapse">
-            <thead className="rounded-t-2xl sticky top-0 z-10 border-b border-[#E9ECEF]">
+            <thead className="rounded-t-2xl sticky top-0 z-10 border-b border-[#E9ECEF]  dark:border-border-tertiary">
               <tr>
                 <th scope="col" className="p-4 w-10">
                   <input
@@ -174,30 +196,30 @@ function UsersList(props: Props) {
                     type="checkbox"
                     checked={allSelected}
                     onChange={handleSelectAll}
-                    className="h-4 w-4 rounded-2xl border-[#D0D5DD] text-[#7F56D9] focus:border-[#7F56D9] cursor-pointer"
+                    className="h-4 w-4 rounded-2xl border-[#D0D5DD]  dark:border-border-tertiary text-[#7F56D9] focus:border-[#7F56D9] cursor-pointer"
                   />
                 </th>
                 <th
                   scope="col"
-                  className="text-left p-4 text-xs font-bold text-ink-400 dark:text-ink-300 sticky left-0 min-w-[250px] uppercase"
+                  className="text-left p-4 text-xs font-bold text-ink-400 sticky left-0 min-w-[250px] uppercase bg-base-100"
                 >
                   user
                 </th>
                 <th
                   scope="col"
-                  className="text-left p-4 text-xs font-bold text-ink-400 dark:text-ink-300 min-w-[120px] uppercase"
+                  className="text-left p-4 text-xs font-bold text-ink-400  min-w-[120px] uppercase"
                 >
                   workspaces
                 </th>
                 <th
                   scope="col"
-                  className="text-left p-4 text-xs font-bold text-ink-400 dark:text-ink-300 min-w-[120px] uppercase"
+                  className="text-left p-4 text-xs font-bold text-ink-400 min-w-[120px] uppercase"
                 >
                   Role
                 </th>
                 <th
                   scope="col"
-                  className="text-left p-4 text-xs font-bold text-ink-400 dark:text-ink-300 min-w-[120px] uppercase"
+                  className="text-left p-4 text-xs font-bold text-ink-400  min-w-[120px] uppercase"
                 >
                   last active
                 </th>
@@ -235,7 +257,7 @@ function UsersList(props: Props) {
         className={clsx(
           "fixed bottom-6 left-1/2 -translate-x-1/2 z-50",
           "flex items-center gap-4 px-3 py-3",
-          "bg-[#0F0F0F] dark:bg-[#1A1D21] border border-[#E9ECEF] dark:border-[#262A30]",
+          "bg-[#0F0F0F] dark:bg-[#1A1D21] border border-[#E9ECEF] dark:border-border-tertiary",
           "rounded-[14px]",
           "transition-all duration-200 ease-out",
           selectionCount > 0

@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { X } from "lucide-react";
 import Image from "next/image";
+import toast from "react-hot-toast";
 
 import { User } from "./Assets/Avatar/User";
 import { useInviteUserToWorkspace } from "./Visualization/hooks/useWorkspaces";
-import toast from "react-hot-toast";
 
 // ============================================================================
 // TYPES & INTERFACES
@@ -123,7 +123,7 @@ const InviteForm: React.FC<InviteFormProps> = ({ onSendInvite }) => {
               setError("");
             }}
             placeholder="Samsonderulo@gmail.com"
-            className="flex-1 px-4 py-2.5 border border-[#DEE2E6] bg-[#F8F9FA] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#A308F0] placeholder:text-[#868E96] text-sm font-medium"
+            className="flex-1 px-4 py-2.5 border border-[#DEE2E6] bg-[#F8F9FA] dark:bg-base-400 dark:border-border-tertiary rounded-xl focus:outline-none focus:ring-2 focus:ring-[#A308F0] placeholder:text-[#868E96] dark:placeholder:text-ink-400 text-sm font-medium"
             disabled={isLoading}
           />
           {error && <p className="text-xs text-red-500">{error}</p>}
@@ -131,7 +131,7 @@ const InviteForm: React.FC<InviteFormProps> = ({ onSendInvite }) => {
         <button
           type="submit"
           disabled={isLoading || !email.trim()}
-          className="px-6 py-2.5 bg-[#A308F0] text-white disabled:text-[#E9ECEF] font-medium font-body rounded-xl disabled:bg-[#868E96] disabled:cursor-not-allowed transition-colors text-sm"
+          className="px-6 py-2.5 bg-[#A308F0] text-white disabled:text-[#E9ECEF] font-medium font-body rounded-xl disabled:bg-[#868E96] dark:disabled:bg-[#4a4a48] disabled:cursor-not-allowed transition-colors text-sm"
         >
           {isLoading ? "Sending..." : "Send invite"}
         </button>
@@ -316,14 +316,14 @@ const PendingTabsContent: React.FC<PendingTabsContentProps> = ({
   return (
     <div>
       {/* Tabs */}
-      <div className="flex gap-6 border-b border-gray-200 mb-4">
+      <div className="flex gap-6 border-b border-border-secondary dark:border-border-tertiary mb-4">
         <button
           type="button"
           onClick={() => setActiveTab("requests")}
           className={`pb-2 text-sm font-medium transition-colors relative ${
             activeTab === "requests"
-              ? "text-gray-900 border-b-2 border-gray-900"
-              : "text-[#6C757D] hover:text-gray-700"
+              ? "text-ink-100 border-b-2 border-border-tertiary"
+              : "text-[#6C757D] dark:text-ink-400 hover:text-gray-700"
           }`}
         >
           Pending requests
@@ -338,8 +338,8 @@ const PendingTabsContent: React.FC<PendingTabsContentProps> = ({
           onClick={() => setActiveTab("invites")}
           className={`pb-2 text-sm font-medium transition-colors ${
             activeTab === "invites"
-              ? "text-gray-900 border-b-2 border-gray-900"
-              : "text-[#6C757D] hover:text-gray-700"
+              ? "text-ink-100 border-b-2 border-border-tertiary"
+              : "text-[#6C757D] dark:text-ink-400 hover:text-gray-700"
           }`}
         >
           Pending invites
@@ -355,7 +355,7 @@ const PendingTabsContent: React.FC<PendingTabsContentProps> = ({
       <div className="space-y-2 divide-y divide-[#E9ECEF]">
         {activeTab === "requests" ? (
           requests.length === 0 ? (
-            <p className="text-sm text-gray-500 text-center py-8">
+            <p className="text-sm text-ink-400 text-center py-8">
               No pending requests
             </p>
           ) : (
@@ -369,7 +369,7 @@ const PendingTabsContent: React.FC<PendingTabsContentProps> = ({
             ))
           )
         ) : invites.length === 0 ? (
-          <p className="text-sm text-gray-500 text-center py-8">
+          <p className="text-sm text-ink-400 text-center py-8">
             No pending invites
           </p>
         ) : (
@@ -411,7 +411,7 @@ const WorkspaceDescription: React.FC<WorkspaceDescriptionProps> = ({
       {/* Description */}
       <div className="mt-8">
         <h3 className="text-sm font-bold mb-2 text-ink-100">Description</h3>
-        <p className="text-sm text-[#6C757D] font-medium mb-4">
+        <p className="text-sm text-[#6C757D] dark:text-ink-400 font-medium mb-4">
           Invite people to collaborate with you on your workspace. There are 3
           levels of access.
         </p>
@@ -419,19 +419,19 @@ const WorkspaceDescription: React.FC<WorkspaceDescriptionProps> = ({
         {/* Role Badges */}
         <div className="flex gap-2 mb-4 font-tertiary">
           <span className="bg-rainbow-gradient p-[1px] rounded-[8px] inline-block">
-            <span className="px-2 py-1 text-xs rounded-[7px] bg-[#F8F9FA] inline-block">
+            <span className="px-2 py-1 text-xs rounded-[7px] bg-[#F8F9FA] dark:bg-base-400 inline-block">
               Owner
             </span>
           </span>
 
           <span className="bg-rainbow-gradient p-[1px] rounded-[8px] inline-block">
-            <span className="px-2 py-1 text-xs rounded-[7px] bg-[#F8F9FA]  inline-block">
+            <span className="px-2 py-1 text-xs rounded-[7px] bg-[#F8F9FA] dark:bg-base-400  inline-block">
               Editor
             </span>
           </span>
 
           <span className="bg-rainbow-gradient p-[1px] rounded-[8px] inline-block">
-            <span className="px-2 py-1 text-xs rounded-[7px] bg-[#F8F9FA]  inline-block">
+            <span className="px-2 py-1 text-xs rounded-[7px] bg-[#F8F9FA] dark:bg-base-400  inline-block">
               Viewer
             </span>
           </span>
@@ -439,15 +439,15 @@ const WorkspaceDescription: React.FC<WorkspaceDescriptionProps> = ({
 
         {/* Role Descriptions */}
         <ul className="space-y-1 mt-2 text-sm opacity-90">
-          <li className="flex items-start gap-2 text-[#6C757D] font-medium ">
-            <span className="mt-1 text-[#6C757D]">•</span>
+          <li className="flex items-start gap-2 text-[#6C757D] dark:text-ink-400 font-medium ">
+            <span className="mt-1 text-[#6C757D] dark:text-ink-400">•</span>
             <span>Owners have full access to the workspace</span>
           </li>
-          <li className="flex items-start gap-2 text-[#6C757D] font-medium">
+          <li className="flex items-start gap-2 text-[#6C757D] dark:text-ink-400 font-medium">
             <span className="mt-1">•</span>
             <span>Editors have edit access to the workspace</span>
           </li>
-          <li className="flex items-start gap-2 text-[#6C757D] font-medium">
+          <li className="flex items-start gap-2 text-[#6C757D] dark:text-ink-400 font-medium">
             <span className="mt-1">•</span>
             <span>Viewers can only view files.</span>
           </li>
@@ -469,6 +469,7 @@ const ManageInviteModal: React.FC<ManageInviteModalProps> = ({
   pendingInvites,
   pendingRequests = [],
   onCancelInvite,
+  refetchInvite = async () => {},
   onApproveRequest = async () => {},
   onDenyRequest = async () => {},
 }) => {
@@ -478,12 +479,12 @@ const ManageInviteModal: React.FC<ManageInviteModalProps> = ({
   const handleSendInvite = async (email: string, role: UserRole) => {
     const success = await inviteUser(email, workspaceId, role);
     if (success) {
+      refetchInvite();
       toast.success(`Invitation sent to ${email}`);
     } else {
       toast.error("Failed to send invitation");
     }
   };
-
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -491,7 +492,7 @@ const ManageInviteModal: React.FC<ManageInviteModalProps> = ({
       <div className="absolute inset-0 bg-[#0000001A] " onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative bg-white rounded-3xl  max-w-6xl w-full max-h-[90vh] overflow-hidden mx-4">
+      <div className="relative bg-white dark:bg-base-400 dark:border dark:border-border-tertiary rounded-3xl  max-w-6xl w-full max-h-[90vh] overflow-hidden mx-4">
         <div className="flex h-full">
           {/* Left Panel - Main Content */}
           <div className="flex-1 p-8 overflow-y-auto">
@@ -510,7 +511,7 @@ const ManageInviteModal: React.FC<ManageInviteModalProps> = ({
             </div>
 
             {/* Invite Form */}
-            <InviteForm onSendInvite={handleSendInvite } />
+            <InviteForm onSendInvite={handleSendInvite} />
 
             {/* Pending Tabs Content */}
             <PendingTabsContent
@@ -523,7 +524,7 @@ const ManageInviteModal: React.FC<ManageInviteModalProps> = ({
           </div>
 
           {/* Right Panel - Description */}
-          <div className="w-[410px] p-4 border-l border-[#E9ECEF]">
+          <div className="w-[410px] p-4 border-l border-[#E9ECEF] dark:border-border-tertiary">
             <WorkspaceDescription members={workspaceMembers} />
           </div>
         </div>

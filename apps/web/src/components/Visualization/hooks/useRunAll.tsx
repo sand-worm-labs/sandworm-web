@@ -1,5 +1,4 @@
-import * as Y from "yjs";
-import { useYDocState } from "./useYDocs";
+import type * as Y from "yjs";
 import {
   type ExecutionQueue,
   type ExecutionStatus,
@@ -8,6 +7,8 @@ import {
 } from "@sandworm/editor";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { head } from "ramda";
+
+import { useYDocState } from "./useYDocs";
 
 type State = {
   status: ExecutionStatus;

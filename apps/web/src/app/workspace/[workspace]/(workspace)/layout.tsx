@@ -28,8 +28,9 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
 
   // TODO: Replace with polling or WebSocket event to detect approval.
   // Currently status resets to "viewing" on refresh — no persistence yet.
-  const [accessStatus, setAccessStatus] = useState<"viewing" | "sent" | "pending" | "approved">("viewing");
-
+  const [accessStatus, setAccessStatus] = useState<
+    "viewing" | "sent" | "pending" | "approved"
+  >("viewing");
 
   const shouldHideHeader =
     pathname.includes("/documents/") &&
@@ -47,17 +48,15 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
     // from "sent" -> "pending" -> "approved" when admin acts on the request.
   };
 
-  console.log(workspaceInfo, "workspaceinfo")
-
 
   return (
-    <div className="flex h-screen w-full bg-background">
+    <div className="flex h-screen w-full bg-base-100">
       <WorkspaceSidebar />
 
       <div className="flex flex-col flex-1 overflow-hidden">
         {!shouldHideHeader && <AppHeader />}
 
-        <main className="flex-1 overflow-y-auto">{children}</main>
+        <main className="flex-1 overflow-y-auto bg-base-100">{children}</main>
       </div>
 
       {isViewer && (

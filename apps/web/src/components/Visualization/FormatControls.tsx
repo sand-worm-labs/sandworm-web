@@ -147,7 +147,7 @@ export const NumberFormatControl = ({
       <div className="mt-4">
         <label
           htmlFor={`decimalPlaces-${seriesId || "x"}`}
-          className="block text-xs font-medium leading-6 text-gray-900 pb-1"
+          className="block text-xs font-medium leading-6 text-ink-100 pb-1"
         >
           Number of decimal places
         </label>
@@ -156,7 +156,7 @@ export const NumberFormatControl = ({
           type="text"
           min="0"
           max="10"
-          className="w-full border-0 rounded-md ring-1 ring-inset ring-gray-200 focus:ring-1 focus:ring-inset focus:ring-gray-300 bg-white group px-2.5 text-gray-800 text-xs placeholder:text-gray-400"
+          className="w-full border-0 rounded-md ring-1 ring-inset ring-gray-200 focus:ring-1 focus:ring-inset focus:ring-gray-300 bg-white group px-2.5 text-gray-800 text-xs placeholder:text-ink-400"
           value={decimalPlacesInput}
           onChange={handleDecimalPlacesChange}
           onBlur={handleDecimalPlacesBlur}
@@ -167,7 +167,7 @@ export const NumberFormatControl = ({
       <div className="mt-4">
         <label
           htmlFor={`multiplier-${seriesId || "x"}`}
-          className="block text-xs font-medium leading-6 text-gray-900 pb-1"
+          className="block text-xs font-medium leading-6 text-ink-100 pb-1"
         >
           Multiply by a number
         </label>
@@ -175,7 +175,7 @@ export const NumberFormatControl = ({
           name={`multiplier-${seriesId || "x"}`}
           type="text"
           step="any"
-          className="w-full border-0 rounded-md ring-1 ring-inset ring-gray-200 focus:ring-1 focus:ring-inset focus:ring-gray-300 bg-white group px-2.5 text-gray-800 text-xs placeholder:text-gray-400"
+          className="w-full border-0 rounded-md ring-1 ring-inset ring-gray-200 focus:ring-1 focus:ring-inset focus:ring-gray-300 bg-white group px-2.5 text-gray-800 text-xs placeholder:text-ink-400"
           value={multiplierInput}
           onChange={handleMultiplierChange}
           onBlur={handleMultiplierBlur}
@@ -186,7 +186,7 @@ export const NumberFormatControl = ({
       <div className="mt-4">
         <label
           htmlFor={`prefix-${seriesId || "x"}`}
-          className="block text-xs font-medium leading-6 text-gray-900 pb-1"
+          className="block text-xs font-medium leading-6 text-ink-100 pb-1"
         >
           Prefix
         </label>
@@ -194,7 +194,7 @@ export const NumberFormatControl = ({
           name={`prefix-${seriesId || "x"}`}
           type="text"
           placeholder="$"
-          className="w-full border-0 rounded-md ring-1 ring-inset ring-gray-200 focus:ring-1 focus:ring-inset focus:ring-gray-300 bg-white group px-2.5 text-gray-800 text-xs placeholder:text-gray-400"
+          className="w-full border-0 rounded-md ring-1 ring-inset ring-gray-200 focus:ring-1 focus:ring-inset focus:ring-gray-300 bg-white group px-2.5 text-gray-800 text-xs placeholder:text-ink-400"
           value={currentFormat?.prefix ?? ""}
           onChange={handlePrefixChange}
           disabled={!dataframe || !isEditable}
@@ -204,7 +204,7 @@ export const NumberFormatControl = ({
       <div className="mt-4">
         <label
           htmlFor={`suffix-${seriesId || "x"}`}
-          className="block text-xs font-medium leading-6 text-gray-900 pb-1"
+          className="block text-xs font-medium leading-6 text-ink-100 pb-1"
         >
           Suffix
         </label>
@@ -212,7 +212,7 @@ export const NumberFormatControl = ({
           name={`suffix-${seriesId || "x"}`}
           type="text"
           placeholder="dollars"
-          className="w-full border-0 rounded-md ring-1 ring-inset ring-gray-200 focus:ring-1 focus:ring-inset focus:ring-gray-300 bg-white group px-2.5 text-gray-800 text-xs placeholder:text-gray-400"
+          className="w-full border-0 rounded-md ring-1 ring-inset ring-gray-200 focus:ring-1 focus:ring-inset focus:ring-gray-300 bg-white group px-2.5 text-gray-800 text-xs placeholder:text-ink-400"
           value={currentFormat?.suffix ?? ""}
           onChange={handleSuffixChange}
           disabled={!dataframe || !isEditable}

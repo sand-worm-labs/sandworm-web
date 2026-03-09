@@ -1,5 +1,4 @@
 import { useCallback, useMemo, useState } from "react";
-import type { WorkspaceEditFormValues } from "@sandworm/types";
 import { useLazyQuery } from "@apollo/client";
 
 import type { ApiWorkspace } from "@/types";
@@ -13,22 +12,26 @@ import {
   useInviteUserToWorkspaceMutation,
   useAcceptWorkspaceInvitationMutation,
   useGetWorkspaceWithMembersQuery,
-  useGetInvitationInfoQuery,
   GetInvitationInfoDocument,
   useDeleteWorkspaceMutation,
   useGetPendingRoleRequestsQuery,
   useRequestRoleUpgradeMutation,
   useApproveRoleRequestMutation,
   useRejectRoleRequestMutation,
-  useGetPendingInvitesQuery
-  
+  useGetPendingInvitesQuery,
+  useRemoveUserFromWorkspaceMutation,
+  useBatchRemoveUsersFromWorkspaceMutation,
+  useGetAdminWorkspacesWithMembersQuery,
+  useUpdateWorkspaceMemberRoleMutation,
 } from "@/generated/graphql";
 
 import { NEXT_PUBLIC_API_URL } from "../utils/env";
 
 import { useSession } from "./useAuth";
 
-// 1. Get all user workspaces
+type WorkspaceEditFormValues = Partial<ApiWorkspace>;
+
+/* ---- Get All Users Workspaces --- */
 type UseWorkspacesAPI = {
   updateSettings: (
     workspaceId: string,
@@ -136,7 +139,7 @@ export const useUpdateWorkspace = (
   const isAdminOfWorkspace = useCallback(
     (targetId: string): boolean => {
       if (!session?.user?.id || !workspacesData?.userWorkspaces) return false;
-      const workspace = workspacesData.userWorkspaces.find(
+      const workspace = workspacesData.getUserWorkspaces.find(
         w => w.id === targetId
       );
       return workspace?.ownerId === session.user.id;
@@ -211,7 +214,6 @@ export const useSwitchWorkspace = (): UseSwitchWorkspaceReturn => {
         });
 
         if (result.data?.switchWorkspace) {
-          // Refetch workspace info to get the new current workspace
           await refetchWorkspaceInfo();
           await refetchWorkspaces();
           return true;
@@ -725,4 +727,111 @@ export const usePendingInvites = (workspaceId: string) => {
     error,
     refetch,
   };
+};
+
+export const useRemoveUserFromWorkspace = (workspaceId: string) => {
+  const { workspaceInfo } = useCurrentWorkspaceInfo();
+
+  const [removeUserMutation, { loading, error }] =
+    useRemoveUserFromWorkspaceMutation();
+
+  const isAdmin = useMemo(() => {
+    if (!workspaceInfo) return false;
+    return workspaceInfo.id === workspaceId && workspaceInfo.role === "admin";
+  }, [workspaceInfo, workspaceId]);
+
+  const removeUser = useCallback(
+    async (userId: string) => {
+      if (!isAdmin) {
+        throw new Error(
+          "You must be an admin to remove users from the workspace"
+        );
+      }
+
+      try {
+        const result = await removeUserMutation({
+          variables: { workspaceId, userId },
+        });
+
+        return result.data?.removeUserFromWorkspace ?? false;
+      } catch (err) {
+        console.error("Failed to remove user:", err);
+        throw err;
+      }
+    },
+    [isAdmin, removeUserMutation, workspaceId]
+  );
+
+  return { removeUser, loading, error: error as Error | null, isAdmin };
+};
+
+export const useBatchRemoveUsersFromWorkspace = () => {
+  const [batchRemoveMutation, { loading, error }] =
+    useBatchRemoveUsersFromWorkspaceMutation();
+
+  const batchRemoveUsers = useCallback(
+    async (removals: { userId: string; workspaceId: string }[]) => {
+      try {
+        const result = await batchRemoveMutation({
+          variables: { removals },
+        });
+
+        return result.data?.batchRemoveUsersFromWorkspace ?? false;
+      } catch (err) {
+        console.error("Failed to batch remove users:", err);
+        throw err;
+      }
+    },
+    [batchRemoveMutation]
+  );
+
+  return { batchRemoveUsers, loading, error: error as Error | null };
+};
+
+export const useAdminWorkspacesWithMembers = () => {
+  const { data, loading, error, refetch } =
+    useGetAdminWorkspacesWithMembersQuery({
+      fetchPolicy: "cache-and-network",
+    });
+
+  return {
+    workspacesWithMembers: data?.getAdminWorkspacesWithMembers ?? [],
+    isLoading: loading,
+    error,
+    refetch,
+  };
+};
+
+export const useUpdateWorkspaceMemberRole = (workspaceId: string) => {
+  const { workspaceInfo } = useCurrentWorkspaceInfo();
+
+  const [updateRoleMutation, { loading, error }] =
+    useUpdateWorkspaceMemberRoleMutation();
+
+  const isAdmin = useMemo(() => {
+    if (!workspaceInfo) return false;
+    return workspaceInfo.id === workspaceId && workspaceInfo.role === "admin";
+  }, [workspaceInfo, workspaceId]);
+
+  const updateMemberRole = useCallback(
+    async (userId: string, role: string) => {
+      if (!isAdmin) {
+        throw new Error("You must be an admin to update member roles");
+      }
+
+      try {
+        const result = await updateRoleMutation({
+          variables: { workspaceId, userId, role },
+        });
+
+        return result.data?.updateWorkspaceMemberRole ?? false;
+      } catch (err) {
+        console.error("Failed to update member role:", err);
+        throw err;
+      }
+    },
+    [isAdmin, updateRoleMutation, workspaceId]
+  );
+
+  return { updateMemberRole, loading, error: error as Error | null, isAdmin };
 };

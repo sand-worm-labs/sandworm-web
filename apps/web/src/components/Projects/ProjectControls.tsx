@@ -176,7 +176,7 @@ const ProjectControl: React.FC<ProjectControlProps> = ({
             <Button
               variant={activeView === "grid" ? "default" : "ghost"}
               size="icon"
-              className="bg-transparent border border-[#DEE2E6] p-1 rounded-sm text-ink-200 dark:border-[#262A30] hover:bg-primary/20"
+              className="bg-transparent border border-[#DEE2E6] p-1 rounded-sm text-ink-200 dark:border-border-tertiary hover:bg-primary/20"
               onClick={() => handleViewChange("grid")}
               title="Grid view"
             >
@@ -186,7 +186,7 @@ const ProjectControl: React.FC<ProjectControlProps> = ({
             <Button
               variant={activeView === "table" ? "default" : "ghost"}
               size="icon"
-              className="bg-transparent border border-[#DEE2E6]  dark:border-[#262A30] p-1 rounded-sm text-ink-200 hover:bg-primary/20"
+              className="bg-transparent border border-[#DEE2E6]  dark:border-border-tertiary p-1 rounded-sm text-ink-200 hover:bg-primary/20"
               onClick={() => handleViewChange("table")}
               title="Table view"
             >

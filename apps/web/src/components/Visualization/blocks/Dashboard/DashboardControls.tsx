@@ -218,7 +218,7 @@ function BlockListItem(props: BlockListItemProps) {
       props.onDragStart({ id, type, width, height });
 
       const dragImage = document.createElement("div");
-      dragImage.className = "shadow-md bg-white rounded-md overflow-hidden";
+      dragImage.className = "shadow-md bg-base-100 rounded-md overflow-hidden";
       dragImage.style.position = "absolute";
       dragImage.style.top = "-1000px";
       dragImage.style.left = "-1000px";
@@ -265,7 +265,7 @@ function BlockListItem(props: BlockListItemProps) {
     <div
       key={id}
       className={clsx(
-        "border border-gray-300 hover:border-ceramic-200 rounded-md bg-white relative p-2 overflow-x-hidden select-none",
+        "border border-border-secondary hover:border-ceramic-200 rounded-md bg-base-100 relative p-2 overflow-x-hidden select-none",
         props.className
       )}
       draggable
@@ -273,7 +273,7 @@ function BlockListItem(props: BlockListItemProps) {
       onPointerUp={onPointerUp}
     >
       <div className="flex flex-col gap-y-6">
-        <span className="text-gray-400 text-md font-medium">
+        <span className="text-ink-400 text-md font-medium">
           {blockTitle || "Untitled"}
         </span>
         <ScaleChild
@@ -525,7 +525,7 @@ function DashboardControls(props: Props) {
         <button
           type="button"
           onClick={props.onOpen}
-          className="bg-white dark:bg-black flex items-center rounded-l-sm px-3 py-1 text-sm text-gray-500 hover:bg-gray-100 border border-r-0 border-gray-200 group max-w-11 hover:max-w-32 overflow-hidden transition-mw group duration-500"
+          className="bg-white dark:bg-base-100  flex items-center rounded-l-sm px-3 py-1 text-sm text-gray-500 hover:bg-gray-100 border border-r-0 border-border-secondary group max-w-11 hover:max-w-32 overflow-hidden transition-mw group duration-500"
         >
           <ChevronDoubleLeftIcon className="min-w-3 min-h-3" />
           <span className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 whitespace-nowrap">
@@ -537,18 +537,18 @@ function DashboardControls(props: Props) {
   }
 
   return (
-    <div className="relative w-[400px] font-primary h-full">
+    <div className="relative w-[400px] font-body  h-full">
       <button
         type="button"
-        className="absolute z-10 top-12 transform rounded-full border border-gray-300 text-gray-400 bg-white dark:bg-black hover:bg-ceramic-200 hover:border-ceramic-200 hover:text-ceramic-400 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2 dark:border-[#262A30]"
+        className="absolute z-10 top-12 transform rounded-full border border-gray-300 text-ink-400 bg-white dark:bg-base-100  hover:bg-ceramic-200 hover:border-ceramic-200 hover:text-ceramic-400 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2 dark:border-border-tertiary"
         onClick={props.onClose}
       >
         <ChevronDoubleRightIcon className="w-3 h-3" />
       </button>
 
-      <div className="bg-white dark:bg-black border-l border-gray-200 dark:border-[#262A30] overflow-y-auto relative h-full flex flex-col justify-between">
-        <div className="bg-gray-50  dark:bg-black border-b dark:border-[#262A30]  border-gray-200 py-6 px-4 shadow-sm">
-          <h2 className=" text-lg font-medium text-gray-900 dark:text-white pb-4">
+      <div className="bg-white dark:bg-base-100  border-l border-border-secondary dark:border-border-tertiary overflow-y-auto relative h-full flex flex-col justify-between">
+        <div className="bg-gray-50  dark:bg-base-100  border-b dark:border-border-tertiary  border-border-secondary py-6 px-4 shadow-sm">
+          <h2 className=" text-lg font-medium text-ink-100 dark:text-white pb-4">
             Blocks
           </h2>
           <div className="flex flex-col space-y-3">
@@ -556,11 +556,11 @@ function DashboardControls(props: Props) {
               <input
                 type="text"
                 placeholder="Find block by title"
-                className="block w-full rounded-md border-0 pl-7 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset outline-none  focus:ring-primary text-xs h-[38px]"
+                className="block w-full rounded-md border-0 pl-7 py-2 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset outline-none  focus:ring-primary text-xs h-[38px]"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
               />
-              <MagnifyingGlassIcon className="absolute top-1 left-2 w-4 h-4 text-gray-400 translate-y-1/2" />
+              <MagnifyingGlassIcon className="absolute top-1 left-2 w-4 h-4 text-ink-400 translate-y-1/2" />
             </div>
             <MultiSelect<BlockType>
               value={types}
@@ -587,10 +587,10 @@ function DashboardControls(props: Props) {
             onExpand={props.onExpand}
           />
         </SimpleBar>
-        <div className="bg-gray-50 dark:bg-black dark:border-[#262A30] p-4 border-t border-gray-200">
+        <div className="bg-gray-50 dark:bg-base-100  dark:border-border-tertiary p-4 border-t border-border-secondary">
           <button
             type="button"
-            className="flex items-center rounded-md px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 border dark:border-[#262A30] border-gray-200 disabled:cursor-not-allowed disabled:opacity-50 gap-x-2 w-full dark:bg-black  bg-white shadow-sm justify-center"
+            className="flex items-center rounded-md px-3 py-2 text-sm text-ink-400 hover:bg-gray-100 border dark:border-border-tertiary border-border-secondary disabled:cursor-not-allowed disabled:opacity-50 gap-x-2 w-full dark:bg-base-100   bg-base-100 shadow-sm justify-center"
             onClick={addHeading}
           >
             <Heading1Icon strokeWidth={1} className="w-4 h-4" />

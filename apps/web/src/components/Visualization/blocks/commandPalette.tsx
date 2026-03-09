@@ -133,12 +133,12 @@ export default function CommandPalette({
                   <>
                     <div className="relative">
                       <MagnifyingGlassIcon
-                        className="pointer-events-none absolute left-4 top-3.5 h-5 w-5 text-gray-400"
+                        className="pointer-events-none absolute left-4 top-3.5 h-5 w-5 text-ink-400"
                         aria-hidden="true"
                       />
                       <Combobox.Input
                         autoFocus
-                        className="h-12 w-full border-0 bg-transparent pl-11 pr-4 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
+                        className="h-12 w-full border-0 bg-transparent pl-11 pr-4 text-ink-100 placeholder:text-ink-400 focus:ring-0 sm:text-sm"
                         placeholder="Search..."
                         onChange={onSearchChange}
                       />
@@ -171,7 +171,7 @@ export default function CommandPalette({
                                   onClick={() => navigateToDocument(doc)}
                                 >
                                   <IconElement
-                                    className="h-6 w-6 flex-none text-gray-400 group-data-[focus]:text-white"
+                                    className="h-6 w-6 flex-none text-ink-400 group-data-[focus]:text-white"
                                     aria-hidden="true"
                                   />
                                   <span className="ml-3 flex-auto truncate">
@@ -193,10 +193,10 @@ export default function CommandPalette({
                       searchState.results.length === 0 && (
                         <div className="px-6 py-14 text-center sm:px-14">
                           <FolderIcon
-                            className="mx-auto h-6 w-6 text-gray-400"
+                            className="mx-auto h-6 w-6 text-ink-400"
                             aria-hidden="true"
                           />
-                          <p className="mt-4 text-sm text-gray-900">
+                          <p className="mt-4 text-sm text-ink-100">
                             We couldn't find any documents with that name.
                             Please try again.
                           </p>

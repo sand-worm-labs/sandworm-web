@@ -1,16 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  Monitor,
-  Sun,
-  Moon,
-  Code,
-  Bell,
-  Layout,
-  Palette,
-  Database,
-} from "lucide-react";
+import { Monitor, Sun, Moon } from "lucide-react";
 import { useTheme } from "next-themes";
 
 type Theme = "system" | "light" | "dark";
@@ -46,44 +37,40 @@ const ThemeCard: React.FC<{
 }> = ({ option, selected, onClick }) => {
   const bgMap: Record<string, string> = {
     light: "bg-white",
-    dark: "bg-[#09091B]",
-    default: "bg-[#09091B]",
+    dark: "bg-base-600",
+    default: "bg-base-600",
   };
 
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`relative w-full p-6  border border-[#E9ECEF] transition-all text-left  rounded-3xl ${
-        selected
-          ? ""
-          : "border-[#E9ECEF]  dark:border-[#262A30]"
+      className={`relative w-full p-6  border border-[#E9ECEF] dark:border-border-tertiary transition-all text-left  rounded-3xl ${
+        selected ? "" : "border-[#E9ECEF]   dark:border-border-tertiary"
       }`}
     >
       <div className="flex items-start gap-4">
         <div
           className={`p-3 rounded-full ${
             selected
-              ? "bg-[#EFF1F2] dark:bg-[#121417]  border dark:border-[#262A30] border-[#E9ECEF]"
-              : "bg-[#EFF1F2] dark:bg-[#121417] text-gray-600 dark:text-gray-400 border border-[#E9ECEF] dark:border-[#262A30]"
+              ? "bg-[#EFF1F2] dark:bg-base-500  border dark:border-border-tertiary border-[#E9ECEF]"
+              : "bg-[#EFF1F2] dark:bg-base-500 text-gray-600 dark:text-ink-400 border border-[#E9ECEF] dark:border-border-tertiary"
           }`}
         >
           {option.icon}
         </div>
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-medium text-ink-100 ">
-              {option.label}
-            </h3>
+            <h3 className="font-medium text-ink-100 ">{option.label}</h3>
             {selected && <div className="w-2 h-2 rounded-full bg-[#A308F0]" />}
           </div>
-          <p className="text-sm text-[#6C757D]">
+          <p className="text-sm text-[#6C757D] dark:text-ink-400">
             {option.description}
           </p>
         </div>
       </div>
 
-      <div className="mt-4 rounded-2xl overflow-hidden border border-gray-200 dark:border-[#262A30]">
+      <div className="mt-4 rounded-2xl overflow-hidden border border-border-secondary dark:border-border-tertiary">
         <div className={`h-32 p-3 ${bgMap[option.id] ?? bgMap.default}`}>
           <div className="flex gap-2 mb-2">
             <div
@@ -140,15 +127,13 @@ const EditorThemeCard: React.FC<{
       onClick={onClick}
       className={`relative p-4 rounded-3xl border transition-all text-left ${
         selected
-          ? "border-[#A308F0]   dark:ring-[#A308F0]"
-          : "border-[#E9ECEF] dark:border-[#262A30] hover:border-gray-300 dark:hover:border-[#262A30]"
+          ? "border-[#A308F0]    dark:border-primary"
+          : "border-[#E9ECEF] dark:border-border-tertiary hover:border-gray-300 dark:hover:border-border-tertiary"
       }`}
     >
       <div className="flex items-center gap-3 mb-3">
-        <h4 className="font-medium text-[#1A1A1A] dark:text-gray-100 capitalize">
-          {theme.name}
-        </h4>
-        {selected && <div className="w-2 h-2 rounded-full bg-[#A308F0]" />}
+        <h4 className="font-medium text-ink-100  capitalize">{theme.name}</h4>
+        {selected && <div className="w-2 h-2 rounded-full bg-primary" />}
       </div>
       <div
         className="rounded-xl p-3 font-mono text-xs leading-relaxed"
@@ -251,25 +236,25 @@ const Preferences: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen  dark:bg-black transition-colors font-body">
+    <div className="min-h-screen   transition-colors font-body">
       <div className="max-w-6xl mx-auto px-6 py-12">
         <div className="mb-8">
           <h2 className="text-xxl font-medium text-ink-100 mb-2">
             Preferences
           </h2>
-          <p className="text-[#6C757D]">
+          <p className="text-[#6C757D] dark:text-ink-400">
             Manage your interface and privacy settings{" "}
           </p>
         </div>
 
         {/* Data & Performance */}
-        <div className="bg-white dark:bg-black  py-8 mb-6">
+        <div className=" py-8 mb-6">
           <div className="flex items-center gap-3 mb-6">
             <div>
-              <h2 className="text-lg font-medium text-ink-100 dark:text-gray-100">
+              <h2 className="text-lg font-medium text-ink-100 ">
                 Regional and Data
               </h2>
-              <p className="text-sm text-[#6C757D] max-w-[25rem] mt-2 ">
+              <p className="text-sm text-[#6C757D] dark:text-ink-400 max-w-[25rem] mt-2 ">
                 Set your region and preferred currency to be displayed.{" "}
               </p>
             </div>
@@ -277,13 +262,13 @@ const Preferences: React.FC = () => {
 
           <div className="space-y-6">
             <div>
-              <label className="block text-sm font-bold text-[#6C757D]  mb-3 uppercase">
+              <label className="block text-sm font-bold text-[#6C757D] dark:text-ink-400  mb-3 uppercase">
                 Timezone
               </label>
               <select
                 value={dateFormat}
                 onChange={e => setDateFormat(e.target.value as DateFormat)}
-                className="w-full px-5 py-2 rounded-xl border border-[#CED4DA]  bg-white dark:bg-[#121417] text-ink-100 focus:ring-2 focus:ring-[#A308F0] focus:border-transparent"
+                className="w-full px-5 py-2 rounded-xl border border-[#CED4DA]  bg-white dark:bg-base-200 dark:border-border-tertiary text-ink-100 focus:ring-2 focus:ring-[#A308F0] focus:border-transparent"
               >
                 <option value="us">US (MM/DD/YYYY)</option>
                 <option value="eu">European (DD/MM/YYYY)</option>
@@ -294,13 +279,13 @@ const Preferences: React.FC = () => {
 
           <div className="space-y-6 my-6">
             <div>
-              <label className="block text-sm font-bold text-[#6C757D]  mb-3 uppercase">
+              <label className="block text-sm font-bold text-[#6C757D] dark:text-ink-400  mb-3 uppercase">
                 Currency Display
               </label>
               <select
                 value={dateFormat}
                 onChange={e => setDateFormat(e.target.value as DateFormat)}
-                className="w-full px-5 py-2 rounded-xl border border-[#CED4DA]  bg-white dark:bg-[#121417] text-ink-100 focus:ring-2 focus:ring-[#A308F0] focus:border-transparent"
+                className="w-full px-5 py-2 rounded-xl border border-[#CED4DA]  bg-white dark:bg-base-200 dark:border-border-tertiary text-ink-100 focus:ring-2 focus:ring-[#A308F0] focus:border-transparent"
               >
                 <option value="us">USD($)</option>
                 <option value="eu">European (DD/MM/YYYY)</option>
@@ -314,10 +299,8 @@ const Preferences: React.FC = () => {
         <div className=" py-8 mb-6">
           <div className="flex items-center gap-3 mb-6">
             <div>
-              <h2 className="text-lg font-medium text-ink-100 dark:text-gray-100">
-                Appearance
-              </h2>
-              <p className="text-sm text-[#6C757D] max-w-[25rem] mt-2 ">
+              <h2 className="text-lg font-medium text-ink-100 ">Appearance</h2>
+              <p className="text-sm text-[#6C757D] dark:text-ink-400 max-w-[25rem] mt-2 ">
                 Choose how Sandworm looks to you. Select a single theme, or sync
                 it with your system.
               </p>
@@ -340,10 +323,10 @@ const Preferences: React.FC = () => {
         <div className=" py-8 mb-6">
           <div className="flex items-center gap-3 mb-6">
             <div>
-              <h2 className="text-lg font-medium text-ink-100 dark:text-gray-100">
+              <h2 className="text-lg font-medium text-ink-100 ">
                 Code Editor Theme
               </h2>
-              <p className="text-sm text-[#6C757D] max-w-[25rem] mt-2 ">
+              <p className="text-sm text-[#6C757D] dark:text-ink-400 max-w-[25rem] mt-2 ">
                 Select your preferred syntax highlighting theme for the SQL and
                 python editors.
               </p>
@@ -361,11 +344,6 @@ const Preferences: React.FC = () => {
             ))}
           </div>
         </div>
-
-    
-
-
-      
       </div>
     </div>
   );

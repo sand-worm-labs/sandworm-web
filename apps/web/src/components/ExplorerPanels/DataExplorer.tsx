@@ -1,6 +1,7 @@
 "use client";
 
 import { Rnd } from "react-rnd";
+
 import { DataExplorerContent } from "./DataExplorerContent";
 
 const getInitialPosition = () => {

@@ -30,7 +30,7 @@ function Dropdown(props: Props) {
       >
         {() => (
           <>
-            <Listbox.Label className="block text-xs font-medium leading-6 text-gray-900">
+            <Listbox.Label className="block text-xs font-medium leading-6 text-ink-100">
               {props.label}
             </Listbox.Label>
             <div className="relative pt-0.5">
@@ -38,8 +38,8 @@ function Dropdown(props: Props) {
                 className={clsx(
                   "flex items-center relative w-full cursor-default rounded-md py-1.5 pl-3 pr-10 text-left shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-600 sm:text-sm sm:leading-6 focus:bg-white",
                   props.disabled
-                    ? "bg-gray-100 cursor-not-allowed text-gray-400"
-                    : "bg-white cursor-pointer text-gray-900"
+                    ? "bg-gray-100 cursor-not-allowed text-ink-400"
+                    : "bg-white cursor-pointer text-ink-100"
                 )}
               >
                 {props.value && props.icon && (
@@ -48,14 +48,14 @@ function Dropdown(props: Props) {
                 <span
                   className={clsx(
                     "block truncate h-6",
-                    currentValueLabel ? "text-gray-900" : "text-gray-400"
+                    currentValueLabel ? "text-ink-100" : "text-ink-400"
                   )}
                 >
                   {currentValueLabel ?? props.placeholder}
                 </span>
                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                   <ChevronUpDownIcon
-                    className="h-5 w-5 text-gray-400"
+                    className="h-5 w-5 text-ink-400"
                     aria-hidden="true"
                   />
                 </span>
@@ -73,7 +73,7 @@ function Dropdown(props: Props) {
                               props.fg ?? "text-white"
                             )
                           : "",
-                        !active ? "text-gray-900" : "",
+                        !active ? "text-ink-100" : "",
                         "relative cursor-default select-none py-2 pl-3 pr-9"
                       )
                     }

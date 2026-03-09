@@ -44,7 +44,7 @@ const WeekdaySelector = (props: WeekdaySelectorProps) => {
                 {currentValue.map(dayIndex => (
                   <div
                     key={dayIndex}
-                    className="flex items-center bg-gray-50 rounded-sm px-2 gap-x-1 py-0.5 text-sm border border-gray-200 "
+                    className="flex items-center bg-gray-50 rounded-sm px-2 gap-x-1 py-0.5 text-sm border border-border-secondary "
                   >
                     <span>{orderedWeekdays[dayIndex]}</span>
                     <button
@@ -73,7 +73,7 @@ const WeekdaySelector = (props: WeekdaySelectorProps) => {
           >
             <Menu.Items
               static
-              className="absolute w-56 mt-2 origin-top-right bg-white border border-gray-200 divide-y divide-gray-100 rounded-2xl shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+              className="absolute w-56 mt-2 origin-top-right bg-white border border-border-secondary divide-y divide-gray-100 rounded-2xl shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
             >
               <div className="px-1 py-1">
                 {orderedWeekdays.map((day, dayIndex) => (

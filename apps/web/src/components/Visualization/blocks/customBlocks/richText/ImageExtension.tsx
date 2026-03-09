@@ -202,7 +202,6 @@ export default TipTapImage.extend({
                     const reader = new FileReader();
                     reader.addEventListener("loadend", () => {
                       if (reader.readyState === FileReader.DONE) {
-                        console.log("already ready");
                         resolve(reader.result as string);
                         return;
                       }
