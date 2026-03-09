@@ -1,4 +1,4 @@
-import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { MercuriusDriver, MercuriusDriverConfig } from '@nestjs/mercurius';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
@@ -82,31 +82,17 @@ const i18nModule = I18nModule.forRootAsync({
   inject: [ConfigService],
 });
 
-const graphqlModule = GraphQLModule.forRootAsync<ApolloDriverConfig>({
-  driver: ApolloDriver,
+const graphqlModule = GraphQLModule.forRootAsync<MercuriusDriverConfig>({
+  driver: MercuriusDriver,
   useFactory: async (configService: ConfigService<AllConfigType>) => {
     const env = configService.get('app.nodeEnv', { infer: true });
     const isLocal: boolean = env === Environment.LOCAL;
     const isDevelopment: boolean = env === Environment.DEVELOPMENT;
-
     return {
-      debug: isLocal || isDevelopment,
-      includeStacktraceInErrorResponses: isLocal || isDevelopment,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-      sortSchema: true,
-      fastify: true,
       introspection: true,
-
-      // ✅ Enable classic playground (more reliable)
-      playground:
-        isLocal || isDevelopment
-          ? {
-            settings: {
-              'request.credentials': 'include',
-            },
-          }
-          : false,
-     context: ({ request, reply }) => ({ req: request, response: reply }),
+      graphiql: isLocal || isDevelopment,
+      context: (request, reply) => ({ req: request, reply })
     };
   },
   inject: [ConfigService],

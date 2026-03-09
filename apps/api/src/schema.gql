@@ -2,67 +2,21 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type AuthPayload {
-  accessToken: String!
-  accessTokenExpires: DateTime!
+type User {
   id: String!
-  refreshToken: String!
-  refreshTokenExpires: DateTime!
-  roles: JSON
-  user: User!
-}
-
-type Comment {
-  authorId: String!
-  body: String!
-  createdAt: DateTime!
-  documentId: String!
-  id: String!
-  updatedAt: DateTime!
-}
-
-input CreateCommentInput {
-  body: String!
-  id: String!
-}
-
-input CreateComponentInstanceInput {
-  blockId: String!
-  documentId: String!
-}
-
-input CreateDocumentInput {
-  orderIndex: Float! = 0
-  parentId: String
-  title: String
-  version: Float!
-}
-
-input CreateReusableComponentInput {
-  blockId: String!
-  documentId: String!
-  state: String!
-  title: String!
-  type: ReusableComponentType!
-}
-
-input CreateScheduleInput {
-  cron: String
-  days: String
-  documentId: String!
-  hour: Float
-  isActive: Boolean
-  minute: Float
-  timezone: String!
-  type: ExecutionScheduleType!
-  weekdays: String
-}
-
-"""User register request"""
-input CreateUserInput {
-  email: String!
-  password: String!
-  username: String!
+  username: String
+  email: String
+  firstName: String
+  lastName: String
+  fullName: String
+  isOnboarded: Boolean!
+  avater: String
+  createdAt: DateTime
+  settings: UserSetting
+  followers: [User!]!
+  following: [User!]!
+  followersCount: Int!
+  followingCount: Int!
 }
 
 """
@@ -70,104 +24,300 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
-input DeleteCommentInput {
-  commentId: String!
-  documentId: String!
-  workspaceId: String!
+type AuthPayload {
+  id: String!
+  user: User!
+  roles: JSON
 }
 
-input DeleteDocumentInput {
-  documentId: String!
-  isPermanent: Boolean
-  workspaceId: String!
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+type UserSetting {
+  id: ID!
+  userId: ID!
+  socialLinks: JSON
+  statusText: String
+  statusUpdatedAt: DateTime
+  wallets: [JSON!]!
 }
 
-input DeleteFileInput {
-  path: String!
-  workspaceId: String!
+type Profile {
+  username: String!
+  bio: String!
+  image: String!
+  following: Boolean!
 }
 
-input DeleteScheduleInput {
-  documentId: String!
-  scheduleId: String!
-  workspaceId: String!
+type WorkspaceSecrets {
+  hasExternalModelApiKey: Boolean!
+}
+
+type Workspace {
+  id: String!
+  name: String!
+  icon: String
+  source: String
+  useCases: [String!]!
+  useContext: String
+  plan: WorkspacePlan!
+  ownerId: String!
+  users: [User!]!
+  owner: User!
+  documents: [Document!]!
+  secrets: WorkspaceSecrets!
+}
+
+"""Price plan of the workspace"""
+enum WorkspacePlan {
+  FREE
+  TRIAL
+  ENTERPRISE
+  PRO
+}
+
+type WorkspaceInvitationInfo {
+  """The workspace being invited to"""
+  workspace: Workspace!
+
+  """The user who sent the invitation"""
+  inviter: User!
+
+  """The user being invited"""
+  invitedUser: User!
+
+  """The role the user will have in the workspace"""
+  role: String!
 }
 
 type Document {
-  appClock: Float!
-  appId: String!
-  authorId: String!
-  children: [Document!]!
-  clock: Float!
-  createdAt: DateTime!
-  deletedAt: DateTime
-  hasDashboard: Boolean!
-  icon: String!
   id: String!
-  isDataApp: Boolean!
-  isSyncedWithYjs: Boolean!
-  orderIndex: Float!
-  parent: Document
-  parentId: String
-  publishedAt: DateTime
-  runSQLSelection: Boolean!
-  runUnexecutedBlocks: Boolean!
-  shareLinksWithoutSidebar: Boolean!
   slug: String!
   title: String!
-  updatedAt: DateTime!
-  userAppClock: JSON!
-  version: Float!
+  authorId: String!
   workspaceId: String!
+  parentId: String
+  runUnexecutedBlocks: Boolean!
+  runSQLSelection: Boolean!
+  shareLinksWithoutSidebar: Boolean!
+  icon: String!
+  orderIndex: Float!
+  deletedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  version: Float!
+  publishedAt: DateTime
+  isDataApp: Boolean!
+  isSyncedWithYjs: Boolean!
+  hasDashboard: Boolean!
+  appId: String!
+  clock: Float!
+  appClock: Float!
+  userAppClock: JSON!
+  children: [Document!]!
+  parent: Document
 }
 
-input DuplicateDocumentInput {
+type WorkspaceMember {
+  userId: String!
+  role: String!
+  requestedRole: String
+  user: User
+  workspaceName: String
+  workspaceId: String
+}
+
+type WorkspaceInfo {
+  id: String!
+  name: String!
+  ownerId: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  role: String!
+}
+
+type Comment {
+  id: String!
+  body: String!
   documentId: String!
-  workspaceId: String!
+  authorId: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 type Environment {
   id: String!
-  lastActivityAt: DateTime!
-  resourceVersion: Float!
-  status: EnvironmentStatus!
   workspaceId: String!
+  status: EnvironmentStatus!
+  resourceVersion: Float!
+  lastActivityAt: DateTime!
 }
 
 """The status of the Jupyter environment"""
 enum EnvironmentStatus {
-  FAILING
   RUNNING
-  STARTING
   STOPPED
+  FAILING
+  STARTING
   STOPPING
 }
 
 type EnvironmentVariable {
   id: String!
   name: String!
-  updatedAt: DateTime!
   value: String!
   workspaceId: String!
+  updatedAt: DateTime!
 }
 
-input EnvironmentVariableInput {
+type SandwormFile {
   name: String!
-  value: String!
+  path: String!
+  relCwdPath: String!
+  size: Float!
+  mimeType: String
+  isDirectory: Boolean!
+  createdAt: Float!
+}
+
+type Schedule {
+  id: String!
+  type: ExecutionScheduleType!
+  hour: Float
+  minute: Float
+  cron: String
+  weekdays: String
+  days: String
+  timezone: String
+  isActive: Boolean!
+  lastExecutedAt: DateTime
+  nextExecutionAt: DateTime
+  documentId: String!
 }
 
 """The type of execution schedule"""
 enum ExecutionScheduleType {
-  CRON
-  DAILY
   HOURLY
-  MONTHLY
+  DAILY
   WEEKLY
+  MONTHLY
+  CRON
 }
 
-input FavoriteDocumentInput {
+type ReusableComponent {
+  id: String!
+  title: String!
+  type: ReusableComponentType!
+  state: String!
+  blockId: String!
   documentId: String!
-  workspaceId: String!
+  instancesCreated: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  instances: [ReusableComponentInstance!]!
+}
+
+enum ReusableComponentType {
+  SQL
+  PYTHON
+}
+
+type ReusableComponentInstance {
+  id: String!
+  blockId: String!
+  reusableComponentId: String!
+  documentId: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Query {
+  """Get current user (from token)"""
+  currentUser: AuthPayload!
+
+  """Get all users"""
+  getAllUsers(input: GetAllUsersInput!): Int!
+
+  """Users who follow a given user"""
+  getUserFollowers(userId: String!): [User!]!
+
+  """Users that a given user is following"""
+  getUserFollowing(userId: String!): [User!]!
+
+  """Get environment details for a workspace"""
+  environment(workspaceId: String!): Environment!
+
+  """Get current environment status"""
+  environmentStatus(workspaceId: String!): EnvironmentStatus!
+
+  """Get all environment variables (values are masked)"""
+  environmentVariables(workspaceId: String!): [EnvironmentVariable!]!
+
+  """Get a reusable component by ID"""
+  getComponent(componentId: String!, workspaceId: String!): ReusableComponent!
+
+  """Get all reusable components in a workspace"""
+  getWorkspaceComponents(workspaceId: String!): [ReusableComponent!]!
+
+  """Get Profile"""
+  profile(
+    """Username of the profile"""
+    username: String!
+  ): Profile!
+
+  """Get workspace by ID"""
+  getWorkspace(workspaceId: String!): Workspace!
+
+  """Get User workspaces"""
+  getUserWorkspaces: [Workspace!]!
+
+  """Get user workspace info with role"""
+  getUserWorkspaceInfo: WorkspaceInfo!
+
+  """Get workspace members"""
+  getWorkspaceMembers(workspaceId: String!): [WorkspaceMember!]!
+
+  """Get all workspaces the current user is an admin of, with their members"""
+  getAdminWorkspacesWithMembers: [WorkspaceMember!]!
+
+  """Get all pending invites for a workspace"""
+  getPendingInvites(workspaceId: String!): [WorkspaceMember!]!
+
+  """Get pending role requests for a workspace"""
+  getPendingRoleRequests(workspaceId: String!): [WorkspaceMember!]!
+
+  """Get invitation details from hash without accepting it"""
+  getInvitationInfo(hash: String!): WorkspaceInvitationInfo!
+
+  """Get a single document by ID"""
+  getDocument(documentId: String!, workspaceId: String!): Document!
+
+  """Get User favorite documents"""
+  getFavoriteDocuments(workspaceId: String!): [Document!]!
+
+  """Get all documents in a workspace"""
+  getWorkspaceDocuments(workspaceId: String!): [Document!]!
+
+  """Get all comments for a document"""
+  comments(documentId: String!): [Comment!]!
+
+  """Get a single comment by ID"""
+  comment(commentId: String!): Comment!
+
+  """List all files in a workspace"""
+  listFiles(input: ListFilesInput!): [SandwormFile!]!
+
+  """Check if a file exists"""
+  fileExists(workspaceId: String!, fileName: String!): Boolean!
+  tags: [String!]!
+
+  """Get a single schedule by ID"""
+  schedule(scheduleId: String!): Schedule!
+
+  """Get all schedules for a document"""
+  schedules(input: ListSchedulesInput!): [Schedule!]!
 }
 
 input GetAllUsersInput {
@@ -177,18 +327,193 @@ input GetAllUsersInput {
   sortOrder: String! = "DESC"
 }
 
-"""
-The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
-"""
-scalar JSON
-
 input ListFilesInput {
-  path: String
   workspaceId: String!
+  path: String
 }
 
 input ListSchedulesInput {
   documentId: String!
+}
+
+type Mutation {
+  """Register new user"""
+  createUser(input: CreateUserInput!): User!
+
+  """Update current user"""
+  updateUser(input: UpdateUserInput!): User!
+
+  """Update social links for the current user"""
+  updateSocialLinks(input: SocialLinksInput!): Boolean!
+
+  """Update wallets for the current user"""
+  updateWallets(wallets: [WalletInput!]!): Boolean!
+
+  """Update status text for the current user"""
+  updateStatusText(statusText: String!): Boolean!
+
+  """Restart the Jupyter environment"""
+  restartEnvironment(input: RestartEnvironmentInput!): Environment!
+
+  """Add or remove environment variables"""
+  setEnvironmentVariables(workspaceId: String!, input: SetEnvironmentVariablesInput!): [EnvironmentVariable!]!
+
+  """Delete a single environment variable"""
+  deleteEnvironmentVariable(workspaceId: String!, variableId: String!): Boolean!
+
+  """Sign in"""
+  login(input: LoginInput!): AuthPayload!
+
+  """Create a new reusable component"""
+  createComponent(workspaceId: String!, input: CreateReusableComponentInput!): ReusableComponent!
+
+  """Update a reusable component"""
+  updateComponent(componentId: String!, workspaceId: String!, input: UpdateReusableComponentInput!): ReusableComponent!
+
+  """Delete a reusable component"""
+  deleteComponent(componentId: String!, workspaceId: String!): Boolean!
+
+  """Create a component instance"""
+  createComponentInstance(componentId: String!, workspaceId: String!, input: CreateComponentInstanceInput!): ReusableComponentInstance!
+
+  """Delete a component instance"""
+  deleteComponentInstance(componentId: String!, blockId: String!, workspaceId: String!): Boolean!
+
+  """Follow User"""
+  followUser(
+    """Username of the profile"""
+    username: String!
+  ): Profile!
+
+  """Unfollow User"""
+  unfollowUser(
+    """Username of the profile"""
+    username: String!
+  ): Profile!
+
+  """Create a new workspace"""
+  createWorkspace(name: String!): Workspace!
+
+  """Delete a workspace"""
+  deleteWorkspace(workspaceId: String!): Boolean!
+
+  """Update workspace info"""
+  updateWorkspace(workspaceId: String!, name: String, icon: String): Workspace!
+
+  """Switch to a different workspace"""
+  switchWorkspace(workspaceId: String!): Boolean!
+
+  """Remove a user from workspace"""
+  removeUserFromWorkspace(workspaceId: String!, userId: String!): Boolean!
+
+  """Remove multiple users from workspaces"""
+  batchRemoveUsersFromWorkspace(removals: [RemoveUserFromWorkspaceInput!]!): Boolean!
+
+  """Invite a user to workspace by email"""
+  inviteUserToWorkspace(workspaceId: String!, email: String!, role: String): Boolean!
+
+  """Accept workspace invitation with hash from email"""
+  acceptWorkspaceInvitation(hash: String!): Boolean!
+
+  """Request a role upgrade in a workspace"""
+  requestRoleUpgrade(workspaceId: String!, role: String!): Boolean!
+
+  """Approve a pending role request"""
+  approveRoleRequest(workspaceId: String!, userId: String!): Boolean!
+
+  """Reject a pending role request"""
+  rejectRoleRequest(workspaceId: String!, userId: String!): Boolean!
+
+  """Update a user role in a workspace"""
+  updateWorkspaceMemberRole(workspaceId: String!, userId: String!, role: String!): Boolean!
+
+  """Create a new document in a workspace"""
+  createDocument(workspaceId: String!, input: CreateDocumentInput!): Document!
+
+  """Update document metadata"""
+  updateDocument(documentId: String!, workspaceId: String!, input: UpdateDocumentInput!): Document!
+
+  """Soft delete or permanently delete a document"""
+  deleteDocument(input: DeleteDocumentInput!): Boolean!
+
+  """Restore a previously deleted document"""
+  restoreDocument(input: RestoreDocumentInput!): Document!
+
+  """Create a fork/duplicate of a document"""
+  duplicateDocument(input: DuplicateDocumentInput!): Document!
+
+  """Mark a document as a favorite"""
+  addFavoriteDocument(input: FavoriteDocumentInput!): Document!
+
+  """Unmark a document as a favorite"""
+  removeFavoriteDocument(input: FavoriteDocumentInput!): Document!
+
+  """Publish a document"""
+  publishDocument(workspaceId: String!, documentId: String!): Document!
+
+  """Unpublish a document"""
+  unpublishDocument(workspaceId: String!, documentId: String!): Document!
+
+  """Create a new comment on a document"""
+  createComment(documentId: String!, input: CreateCommentInput!): Comment!
+
+  """Delete a comment (only by comment author)"""
+  deleteComment(input: DeleteCommentInput!): Boolean!
+
+  """Delete a file from the workspace"""
+  deleteFile(input: DeleteFileInput!): Boolean!
+
+  """Create a new execution schedule for a document"""
+  createSchedule(workspaceId: String!, input: CreateScheduleInput!): Schedule!
+
+  """Update an existing schedule"""
+  updateSchedule(scheduleId: String!, input: UpdateScheduleInput!): Schedule!
+
+  """Delete a schedule"""
+  deleteSchedule(input: DeleteScheduleInput!): Boolean!
+}
+
+"""User register request"""
+input CreateUserInput {
+  email: String!
+  username: String!
+  password: String!
+}
+
+"""User update request"""
+input UpdateUserInput {
+  email: String
+  username: String
+  bio: String
+  image: String
+}
+
+input SocialLinksInput {
+  telegram: String
+  twitter: String
+  github: String
+  discord: String
+  email: String
+  warpcast: String
+}
+
+input WalletInput {
+  chain: String!
+  address: String!
+}
+
+input RestartEnvironmentInput {
+  workspaceId: String!
+}
+
+input SetEnvironmentVariablesInput {
+  add: [EnvironmentVariableInput!]!
+  remove: [String!]!
+}
+
+input EnvironmentVariableInput {
+  name: String!
+  value: String!
 }
 
 """Login input"""
@@ -200,235 +525,22 @@ input LoginInput {
   password: String!
 }
 
-type Mutation {
-  """Accept workspace invitation with hash from email"""
-  acceptWorkspaceInvitation(hash: String!): Boolean!
-
-  """Mark a document as a favorite"""
-  addFavoriteDocument(input: FavoriteDocumentInput!): Document!
-
-  """Approve a pending role request"""
-  approveRoleRequest(userId: String!, workspaceId: String!): Boolean!
-
-  """Remove multiple users from workspaces"""
-  batchRemoveUsersFromWorkspace(removals: [RemoveUserFromWorkspaceInput!]!): Boolean!
-
-  """Create a new comment on a document"""
-  createComment(documentId: String!, input: CreateCommentInput!): Comment!
-
-  """Create a new reusable component"""
-  createComponent(input: CreateReusableComponentInput!, workspaceId: String!): ReusableComponent!
-
-  """Create a component instance"""
-  createComponentInstance(componentId: String!, input: CreateComponentInstanceInput!, workspaceId: String!): ReusableComponentInstance!
-
-  """Create a new document in a workspace"""
-  createDocument(input: CreateDocumentInput!, workspaceId: String!): Document!
-
-  """Create a new execution schedule for a document"""
-  createSchedule(input: CreateScheduleInput!, workspaceId: String!): Schedule!
-
-  """Register new user"""
-  createUser(input: CreateUserInput!): User!
-
-  """Create a new workspace"""
-  createWorkspace(name: String!): Workspace!
-
-  """Delete a comment (only by comment author)"""
-  deleteComment(input: DeleteCommentInput!): Boolean!
-
-  """Delete a reusable component"""
-  deleteComponent(componentId: String!, workspaceId: String!): Boolean!
-
-  """Delete a component instance"""
-  deleteComponentInstance(blockId: String!, componentId: String!, workspaceId: String!): Boolean!
-
-  """Soft delete or permanently delete a document"""
-  deleteDocument(input: DeleteDocumentInput!): Boolean!
-
-  """Delete a single environment variable"""
-  deleteEnvironmentVariable(variableId: String!, workspaceId: String!): Boolean!
-
-  """Delete a file from the workspace"""
-  deleteFile(input: DeleteFileInput!): Boolean!
-
-  """Delete a schedule"""
-  deleteSchedule(input: DeleteScheduleInput!): Boolean!
-
-  """Delete a workspace"""
-  deleteWorkspace(workspaceId: String!): Boolean!
-
-  """Create a fork/duplicate of a document"""
-  duplicateDocument(input: DuplicateDocumentInput!): Document!
-
-  """Follow User"""
-  followUser(
-    """Username of the profile"""
-    username: String!
-  ): Profile!
-
-  """Invite a user to workspace by email"""
-  inviteUserToWorkspace(email: String!, role: String, workspaceId: String!): Boolean!
-
-  """Sign in"""
-  login(input: LoginInput!): AuthPayload!
-
-  """Publish a document"""
-  publishDocument(documentId: String!, workspaceId: String!): Document!
-
-  """Reject a pending role request"""
-  rejectRoleRequest(userId: String!, workspaceId: String!): Boolean!
-
-  """Unmark a document as a favorite"""
-  removeFavoriteDocument(input: FavoriteDocumentInput!): Document!
-
-  """Remove a user from workspace"""
-  removeUserFromWorkspace(userId: String!, workspaceId: String!): Boolean!
-
-  """Request a role upgrade in a workspace"""
-  requestRoleUpgrade(role: String!, workspaceId: String!): Boolean!
-
-  """Restart the Jupyter environment"""
-  restartEnvironment(input: RestartEnvironmentInput!): Environment!
-
-  """Restore a previously deleted document"""
-  restoreDocument(input: RestoreDocumentInput!): Document!
-
-  """Add or remove environment variables"""
-  setEnvironmentVariables(input: SetEnvironmentVariablesInput!, workspaceId: String!): [EnvironmentVariable!]!
-
-  """Switch to a different workspace"""
-  switchWorkspace(workspaceId: String!): Boolean!
-
-  """Unfollow User"""
-  unfollowUser(
-    """Username of the profile"""
-    username: String!
-  ): Profile!
-
-  """Unpublish a document"""
-  unpublishDocument(documentId: String!, workspaceId: String!): Document!
-
-  """Update a reusable component"""
-  updateComponent(componentId: String!, input: UpdateReusableComponentInput!, workspaceId: String!): ReusableComponent!
-
-  """Update document metadata"""
-  updateDocument(documentId: String!, input: UpdateDocumentInput!, workspaceId: String!): Document!
-
-  """Update an existing schedule"""
-  updateSchedule(input: UpdateScheduleInput!, scheduleId: String!): Schedule!
-
-  """Update social links for the current user"""
-  updateSocialLinks(input: SocialLinksInput!): Boolean!
-
-  """Update status text for the current user"""
-  updateStatusText(statusText: String!): Boolean!
-
-  """Update current user"""
-  updateUser(input: UpdateUserInput!): User!
-
-  """Update wallets for the current user"""
-  updateWallets(wallets: [WalletInput!]!): Boolean!
-
-  """Update workspace info"""
-  updateWorkspace(icon: String, name: String, workspaceId: String!): Workspace!
-
-  """Update a user role in a workspace"""
-  updateWorkspaceMemberRole(role: String!, userId: String!, workspaceId: String!): Boolean!
+input CreateReusableComponentInput {
+  documentId: String!
+  blockId: String!
+  title: String!
+  type: ReusableComponentType!
+  state: String!
 }
 
-type Profile {
-  bio: String!
-  following: Boolean!
-  image: String!
-  username: String!
+input UpdateReusableComponentInput {
+  title: String
+  state: String
 }
 
-type Query {
-  """Get a single comment by ID"""
-  comment(commentId: String!): Comment!
-
-  """Get all comments for a document"""
-  comments(documentId: String!): [Comment!]!
-
-  """Get current user (from token)"""
-  currentUser: AuthPayload!
-
-  """Get environment details for a workspace"""
-  environment(workspaceId: String!): Environment!
-
-  """Get current environment status"""
-  environmentStatus(workspaceId: String!): EnvironmentStatus!
-
-  """Get all environment variables (values are masked)"""
-  environmentVariables(workspaceId: String!): [EnvironmentVariable!]!
-
-  """Check if a file exists"""
-  fileExists(fileName: String!, workspaceId: String!): Boolean!
-
-  """Get all workspaces the current user is an admin of, with their members"""
-  getAdminWorkspacesWithMembers: [WorkspaceMember!]!
-
-  """Get all users"""
-  getAllUsers(input: GetAllUsersInput!): Int!
-
-  """Get a reusable component by ID"""
-  getComponent(componentId: String!, workspaceId: String!): ReusableComponent!
-
-  """Get a single document by ID"""
-  getDocument(documentId: String!, workspaceId: String!): Document!
-
-  """Get User favorite documents"""
-  getFavoriteDocuments(workspaceId: String!): [Document!]!
-
-  """Get invitation details from hash without accepting it"""
-  getInvitationInfo(hash: String!): WorkspaceInvitationInfo!
-
-  """Get all pending invites for a workspace"""
-  getPendingInvites(workspaceId: String!): [WorkspaceMember!]!
-
-  """Get pending role requests for a workspace"""
-  getPendingRoleRequests(workspaceId: String!): [WorkspaceMember!]!
-
-  """Users who follow a given user"""
-  getUserFollowers(userId: String!): [User!]!
-
-  """Users that a given user is following"""
-  getUserFollowing(userId: String!): [User!]!
-
-  """Get user workspace info with role"""
-  getUserWorkspaceInfo: WorkspaceInfo!
-
-  """Get User workspaces"""
-  getUserWorkspaces: [Workspace!]!
-
-  """Get workspace by ID"""
-  getWorkspace(workspaceId: String!): Workspace!
-
-  """Get all reusable components in a workspace"""
-  getWorkspaceComponents(workspaceId: String!): [ReusableComponent!]!
-
-  """Get all documents in a workspace"""
-  getWorkspaceDocuments(workspaceId: String!): [Document!]!
-
-  """Get workspace members"""
-  getWorkspaceMembers(workspaceId: String!): [WorkspaceMember!]!
-
-  """List all files in a workspace"""
-  listFiles(input: ListFilesInput!): [SandwormFile!]!
-
-  """Get Profile"""
-  profile(
-    """Username of the profile"""
-    username: String!
-  ): Profile!
-
-  """Get a single schedule by ID"""
-  schedule(scheduleId: String!): Schedule!
-
-  """Get all schedules for a document"""
-  schedules(input: ListSchedulesInput!): [Schedule!]!
-  tags: [String!]!
+input CreateComponentInstanceInput {
+  documentId: String!
+  blockId: String!
 }
 
 input RemoveUserFromWorkspaceInput {
@@ -436,200 +548,84 @@ input RemoveUserFromWorkspaceInput {
   workspaceId: String!
 }
 
-input RestartEnvironmentInput {
-  workspaceId: String!
-}
-
-input RestoreDocumentInput {
-  documentId: String!
-  workspaceId: String!
-}
-
-type ReusableComponent {
-  blockId: String!
-  createdAt: DateTime!
-  documentId: String!
-  id: String!
-  instances: [ReusableComponentInstance!]!
-  instancesCreated: Boolean!
-  state: String!
-  title: String!
-  type: ReusableComponentType!
-  updatedAt: DateTime!
-}
-
-type ReusableComponentInstance {
-  blockId: String!
-  createdAt: DateTime!
-  documentId: String!
-  id: String!
-  reusableComponentId: String!
-  updatedAt: DateTime!
-}
-
-enum ReusableComponentType {
-  PYTHON
-  SQL
-}
-
-type SandwormFile {
-  createdAt: Float!
-  isDirectory: Boolean!
-  mimeType: String
-  name: String!
-  path: String!
-  relCwdPath: String!
-  size: Float!
-}
-
-type Schedule {
-  cron: String
-  days: String
-  documentId: String!
-  hour: Float
-  id: String!
-  isActive: Boolean!
-  lastExecutedAt: DateTime
-  minute: Float
-  nextExecutionAt: DateTime
-  timezone: String
-  type: ExecutionScheduleType!
-  weekdays: String
-}
-
-input SetEnvironmentVariablesInput {
-  add: [EnvironmentVariableInput!]!
-  remove: [String!]!
-}
-
-input SocialLinksInput {
-  discord: String
-  email: String
-  github: String
-  telegram: String
-  twitter: String
-  warpcast: String
+input CreateDocumentInput {
+  title: String
+  parentId: String
+  version: Float!
+  orderIndex: Float! = 0
 }
 
 input UpdateDocumentInput {
-  orderIndex: Float!
-  parentId: String
-  runSQLSelection: Boolean
-  runUnexecutedBlocks: Boolean
-  shareLinksWithoutSidebar: Boolean
   title: String
+  parentId: String
+  orderIndex: Float!
+  runUnexecutedBlocks: Boolean
+  runSQLSelection: Boolean
+  shareLinksWithoutSidebar: Boolean
 }
 
-input UpdateReusableComponentInput {
-  state: String
-  title: String
+input DeleteDocumentInput {
+  workspaceId: String!
+  documentId: String!
+  isPermanent: Boolean
+}
+
+input RestoreDocumentInput {
+  workspaceId: String!
+  documentId: String!
+}
+
+input DuplicateDocumentInput {
+  workspaceId: String!
+  documentId: String!
+}
+
+input FavoriteDocumentInput {
+  workspaceId: String!
+  documentId: String!
+}
+
+input CreateCommentInput {
+  id: String!
+  body: String!
+}
+
+input DeleteCommentInput {
+  workspaceId: String!
+  documentId: String!
+  commentId: String!
+}
+
+input DeleteFileInput {
+  workspaceId: String!
+  path: String!
+}
+
+input CreateScheduleInput {
+  documentId: String!
+  type: ExecutionScheduleType!
+  hour: Float
+  minute: Float
+  cron: String
+  weekdays: String
+  days: String
+  timezone: String!
+  isActive: Boolean
 }
 
 input UpdateScheduleInput {
-  cron: String
-  days: String
-  hour: Float
-  isActive: Boolean
-  minute: Float
-  timezone: String
   type: ExecutionScheduleType
+  hour: Float
+  minute: Float
+  cron: String
   weekdays: String
+  days: String
+  timezone: String
+  isActive: Boolean
 }
 
-"""User update request"""
-input UpdateUserInput {
-  bio: String
-  email: String
-  image: String
-  username: String
-}
-
-type User {
-  avater: String
-  createdAt: DateTime
-  email: String
-  firstName: String
-  followers: [User!]!
-  followersCount: Int!
-  following: [User!]!
-  followingCount: Int!
-  fullName: String
-  id: String!
-  isOnboarded: Boolean!
-  lastName: String
-  settings: UserSetting
-  username: String
-}
-
-type UserSetting {
-  id: ID!
-  socialLinks: JSON
-  statusText: String
-  statusUpdatedAt: DateTime
-  userId: ID!
-  wallets: [JSON!]!
-}
-
-input WalletInput {
-  address: String!
-  chain: String!
-}
-
-type Workspace {
-  documents: [Document!]!
-  icon: String
-  id: String!
-  name: String!
-  owner: User!
-  ownerId: String!
-  plan: WorkspacePlan!
-  secrets: WorkspaceSecrets!
-  source: String
-  useCases: [String!]!
-  useContext: String
-  users: [User!]!
-}
-
-type WorkspaceInfo {
-  createdAt: DateTime!
-  id: String!
-  name: String!
-  ownerId: String!
-  role: String!
-  updatedAt: DateTime!
-}
-
-type WorkspaceInvitationInfo {
-  """The user being invited"""
-  invitedUser: User!
-
-  """The user who sent the invitation"""
-  inviter: User!
-
-  """The role the user will have in the workspace"""
-  role: String!
-
-  """The workspace being invited to"""
-  workspace: Workspace!
-}
-
-type WorkspaceMember {
-  requestedRole: String
-  role: String!
-  user: User
-  userId: String!
-  workspaceId: String
-  workspaceName: String
-}
-
-"""Price plan of the workspace"""
-enum WorkspacePlan {
-  ENTERPRISE
-  FREE
-  PRO
-  TRIAL
-}
-
-type WorkspaceSecrets {
-  hasExternalModelApiKey: Boolean!
+input DeleteScheduleInput {
+  workspaceId: String!
+  documentId: String!
+  scheduleId: String!
 }

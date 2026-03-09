@@ -1,10 +1,12 @@
 import '@fastify/cookie';
+import { type FastifyReply } from 'fastify';
 import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
 import { Public } from '@sandworm/nest-common';
 import { AuthGraphqlService } from './auth-graphql.service';
 import { LoginInput } from './dto/auth-graphql.dto';
 import { AuthPayload } from './models/auth-payload';
 import { AuthService } from '../core/auth.service';
+import { setTokenCookies } from '../core/utils/cookie';
 
 @Resolver()
 export class AuthGraphqlResolver {
@@ -18,6 +20,7 @@ export class AuthGraphqlResolver {
   async login(@Args('input') input: LoginInput,  @Context() ctx: any): Promise<AuthPayload> {
     let user = await this.authGraphqlService.login(input);
     const tokenPair = await this.authService.issueTokenPair(user.id);
-    return  { ...user, ...tokenPair };
+    setTokenCookies(ctx.reply as FastifyReply, tokenPair);
+    return  { ...user };
   }
 }

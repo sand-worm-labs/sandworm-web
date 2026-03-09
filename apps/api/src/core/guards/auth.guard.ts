@@ -31,6 +31,7 @@ export class AuthGuard implements CanActivate {
     );
 
     const request = this.getRequest(context);
+    console.dir( request , { depth: null });
     const accessToken = this.extractTokenFromCookie(request);
 
     if (isAuthOptional && !accessToken) return true;
