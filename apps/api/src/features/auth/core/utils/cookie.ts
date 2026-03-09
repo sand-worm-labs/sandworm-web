@@ -1,6 +1,7 @@
 import '@fastify/cookie';
 import { type FastifyReply } from 'fastify';
 import { TokenPair } from "../types/token.type";
+import { path } from 'ramda';
 
 
 const ACCESS_TOKEN_COOKIE = 'access_token';
@@ -12,6 +13,7 @@ export function setTokenCookies(res: FastifyReply, tokens: TokenPair): void {
     httpOnly: true,
     secure: isProduction,
     sameSite: 'strict' as const,
+    path:"/"
   };
 
   res.setCookie(ACCESS_TOKEN_COOKIE, tokens.accessToken, {
