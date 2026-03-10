@@ -1,9 +1,10 @@
 import '@fastify/cookie';
-import { type FastifyReply as FastifyReplyType } from 'fastify';
+import { type FastifyReply as FastifyReplyType , type FastifyRequest} from 'fastify';
 import {
   Body,
   Controller,
   Post,
+  Req,
   Res,
   SerializeOptions,
 } from '@nestjs/common';
@@ -16,8 +17,7 @@ import { AuthForgotPasswordDto } from './dto/auth-forgot-password.dto';
 import { AuthRegisterLoginDto } from './dto/auth-register-login.dto';
 import { AuthResetPasswordDto } from './dto/auth-reset-password.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
-import { CurrentUser } from '@sandworm/api/decorators/current-user.decorator';
-import { clearTokenCookies, setTokenCookies } from './utils/cookie';
+import { clearTokenCookies, setTokenCookies, getTokenFromCookie, ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE } from './utils/cookie';
 
 @ApiTags('Auth')
 @Controller({
@@ -99,17 +99,15 @@ export class AuthController {
 
   @Post('refresh')
   @SerializeOptions({ groups: ['me'] })
-  @ApiAuth({
-    summary: 'Refresh access token',
-  })
-  public async refresh(@CurrentUser() user: { id: string;}): Promise<void> {
-    // return this.service.refreshToken({
-    //   sessionId: user.sessionId,
-    //   hash: user.hash,
-    // });
-    //setAuthCookies(response, token, refreshToken, tokenExpires - Date.now());
-    return
-  }
+  @ApiPublic({ summary: 'Refresh access token' })
+public async refresh(
+  @Req() request: FastifyRequest,
+  @Res({ passthrough: true }) response: FastifyReplyType,
+): Promise<void> {
+  const token = getTokenFromCookie(request, REFRESH_TOKEN_COOKIE);
+  const tokens = await this.service.refreshTokens(token);
+  setTokenCookies(response, tokens);
+}
 
   @Post('logout')
   @ApiAuth({
