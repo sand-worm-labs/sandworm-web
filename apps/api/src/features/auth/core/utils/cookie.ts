@@ -1,11 +1,17 @@
 import '@fastify/cookie';
-import { type FastifyReply } from 'fastify';
+import { FastifyRequest, type FastifyReply } from 'fastify';
 import { TokenPair } from "../types/token.type";
-import { path } from 'ramda';
 
+export const ACCESS_TOKEN_COOKIE = 'access_token';
+export const REFRESH_TOKEN_COOKIE = 'refresh_token';
 
-const ACCESS_TOKEN_COOKIE = 'access_token';
-const REFRESH_TOKEN_COOKIE = 'refresh_token';
+export const COOKIES = {
+  ACCESS_TOKEN: ACCESS_TOKEN_COOKIE,
+  REFRESH_TOKEN: REFRESH_TOKEN_COOKIE,
+} as const;
+
+export type CookieName = typeof COOKIES[keyof typeof COOKIES];
+
 const isProduction = process.env.NODE_ENV === 'production';
 
 export function setTokenCookies(res: FastifyReply, tokens: TokenPair): void {
@@ -30,4 +36,8 @@ export function setTokenCookies(res: FastifyReply, tokens: TokenPair): void {
 export function clearTokenCookies(res: any): void {
   res.clearCookie(ACCESS_TOKEN_COOKIE);
   res.clearCookie(REFRESH_TOKEN_COOKIE, { path: '/auth/refresh' });
+}
+
+export function getTokenFromCookie(req: FastifyRequest, cookie:CookieName): string | null {
+  return req.cookies?.[cookie];
 }

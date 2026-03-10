@@ -10,11 +10,10 @@ import AppProvider from "./AppProvider";
 
 const GRAPHQL_URL = `${NEXT_PUBLIC_API_URL()}/graphql`;
 
-
 const refreshAccessToken = async (): Promise<void> => {
   const response = await fetch(`${NEXT_PUBLIC_API_URL()}/auth/refresh`, {
     method: "POST",
-    credentials: "include", 
+    credentials: "include",
   });
 
   if (!response.ok) {

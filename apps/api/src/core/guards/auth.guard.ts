@@ -10,6 +10,7 @@ import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { IS_AUTH_OPTIONAL, IS_PUBLIC } from '@sandworm/nest-common';
 import { type FastifyRequest } from 'fastify';
+import { ACCESS_TOKEN_COOKIE } from '@/features/auth/core/utils/cookie';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -52,6 +53,6 @@ export class AuthGuard implements CanActivate {
   }
 
   private extractTokenFromCookie(request: FastifyRequest): string {
-    return request.cookies?.['access_token'] as string | "";
+    return request.cookies?.[ACCESS_TOKEN_COOKIE] as string | "";
   }
 }

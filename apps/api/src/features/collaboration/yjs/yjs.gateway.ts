@@ -15,6 +15,7 @@ import { PersistenceService } from '@/features/collaboration/yjs/services/persis
 import { WebSocketUtils } from '@/features/collaboration/yjs/utils/websocket.utils';
 import { RequestData } from './types/requestData.types';
 import { AuthService } from '@/features/auth/core/auth.service';
+import { ACCESS_TOKEN_COOKIE } from '@/features/auth/core/utils/cookie';
 // import { getRequestData, getUserRole, RequestData } from '@/features/collaboration/yjs/utils/validation.utils';
 
 @Injectable()
@@ -200,7 +201,7 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
             const clock = parseInt((query['clock'] ?? '').toString());
             const isApp = query['isApp'] === 'true';
             const userId = query['userId']?.toString() ?? null;
-            const authToken = cookies['auth-token'] ?? query['authToken']?.toString() ?? null;
+            const authToken = cookies[ACCESS_TOKEN_COOKIE] as string;
 
             this.logger.debug(`Parsed query params: docId=${docId}, clock=${clock}, isApp=${isApp}, userId=${userId}`);
             this.logger.debug(`Parsed auth token: ${authToken}`);
