@@ -4,8 +4,8 @@ import { TokenPair } from "../types/token.type";
 import { path } from 'ramda';
 
 
-const ACCESS_TOKEN_COOKIE = 'access_token';
-const REFRESH_TOKEN_COOKIE = 'refresh_token';
+export const ACCESS_TOKEN_COOKIE = 'access_token';
+export const REFRESH_TOKEN_COOKIE = 'refresh_token';
 const isProduction = process.env.NODE_ENV === 'production';
 
 export function setTokenCookies(res: FastifyReply, tokens: TokenPair): void {
