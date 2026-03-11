@@ -201,7 +201,7 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
             const clock = parseInt((query['clock'] ?? '').toString());
             const isApp = query['isApp'] === 'true';
             const userId = query['userId']?.toString() ?? null;
-            const authToken = cookies[ACCESS_TOKEN_COOKIE] as string;
+            const authToken = cookies[ACCESS_TOKEN_COOKIE] || query[ACCESS_TOKEN_COOKIE]?.toString() || null ;
 
             this.logger.debug(`Parsed query params: docId=${docId}, clock=${clock}, isApp=${isApp}, userId=${userId}`);
             this.logger.debug(`Parsed auth token: ${authToken}`);
