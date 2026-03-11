@@ -21,6 +21,6 @@ export class AuthGraphqlResolver {
     let user = await this.authGraphqlService.login(input);
     const tokenPair = await this.authService.issueTokenPair(user.id);
     setTokenCookies(ctx.reply as FastifyReply, tokenPair);
-    return  { ...user };
+    return  { ...user, token: process.env.NODE_ENV === 'development' ? tokenPair.accessToken : null };
   }
 }

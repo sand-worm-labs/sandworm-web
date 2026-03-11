@@ -8,6 +8,9 @@ export class AuthPayload {
   @StringField()
   id!: string;
 
+  @StringField({ nullable: true })
+  token?: string;
+
   @Field(() => User)
   user!: User;
 
