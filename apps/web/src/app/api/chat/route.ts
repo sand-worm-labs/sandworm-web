@@ -19,9 +19,7 @@ export type BlockSpec =
 
 export interface NotebookAIRequest {
   prompt: string;
-  // Available data sources to give the model context
   dataSources?: { id: string; name: string; type: string }[];
-  // Existing dataframe names from executed blocks
   dataframes?: string[];
 }
 
