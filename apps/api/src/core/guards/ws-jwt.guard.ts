@@ -2,9 +2,7 @@ import { AuthService } from '@/features/auth/core/auth.service';
 import { ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE } from '@/features/auth/core/utils/cookie';
 import { Injectable, CanActivate, ExecutionContext, Logger } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
-import { FastifyRequest } from 'fastify';
 import { Socket } from 'socket.io';
-import { array } from 'zod';
 
 @Injectable()
 export class WsJwtGuard implements CanActivate {
@@ -16,6 +14,7 @@ export class WsJwtGuard implements CanActivate {
     try {
       const client: Socket = context.switchToWs().getClient();
       const token = this.extractTokenFromHandshake(client);
+      
 
       if (!token) {
         throw new WsException('Unauthorized');
@@ -35,9 +34,31 @@ export class WsJwtGuard implements CanActivate {
     }
   }
 
-  private extractTokenFromHandshake(client: Socket): string | null {
-    let authCookie =  client.request.headers.cookie.split(`; `).filter(c => c.startsWith(ACCESS_TOKEN_COOKIE) || c.startsWith(REFRESH_TOKEN_COOKIE));
-    let authTokens  = Object.fromEntries(authCookie.map(c => [c.slice(0, c.indexOf('=')), c.slice(c.indexOf('=') + 1)]));
-    return authTokens[ACCESS_TOKEN_COOKIE] || null;
+  private extractTokenFromHandshake(client: Socket): string | undefined {
+    // 1. Primary: HttpOnly cookie
+    const cookieHeader = client.request?.headers?.cookie;
+    if (cookieHeader) {
+      const cookies = Object.fromEntries(
+        cookieHeader.split('; ').map(c => [c.slice(0, c.indexOf('=')), c.slice(c.indexOf('=') + 1)])
+      );
+      if (cookies[ACCESS_TOKEN_COOKIE]) return cookies[ACCESS_TOKEN_COOKIE];
+    }
+
+    // 2. Handshake auth object (io(url, { auth: { token } }))
+    const authToken = client.handshake?.auth?.token;
+    if (authToken) return authToken;
+
+    // 3. Query parameter (io(url, { query: { token } }))
+    const queryToken = client.handshake?.query?.token;
+    if (queryToken && typeof queryToken === 'string') return queryToken;
+
+    // 4. Authorization header (Bearer <token>)
+    const authHeader = client.handshake?.headers?.authorization;
+    if (authHeader) {
+      const [type, tokenValue] = authHeader.split(' ');
+      if (type === 'Bearer' && tokenValue) return tokenValue;
+    }
+
+    return undefined;
   }
 }
