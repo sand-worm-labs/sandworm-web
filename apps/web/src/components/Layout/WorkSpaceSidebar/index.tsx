@@ -229,7 +229,7 @@ export const WorkspaceSidebar = () => {
                 <Link href={item.href} className={linkClasses(item.href)}>
                   <item.icon
                     size={18}
-                    className={`hover:text-[#A308F0] ${pathname === item.href ? "text-[#A308F0]" : "text-ink-icon"}`}
+                    className={`hover:text-[#A308F0] ${pathname === item.href ? "text-[#A308F0] dark:text-ink-100" : "text-ink-icon"}`}
                   />
                   {!collapsed && item.name}
                 </Link>

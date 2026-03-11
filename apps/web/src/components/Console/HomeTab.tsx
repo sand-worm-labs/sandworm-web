@@ -213,7 +213,7 @@ export const HomeTab = () => {
           >
             <button
               type="button"
-              className="h-full p-4 py-8 flex flex-col items-start space-y-2 hover:bg-accent hover:text-accent-foreground group w-full overflow-hidden border-[#CED4DA] border rounded-2xl "
+              className="h-full p-4 py-8 flex flex-col items-start space-y-2 hover:bg-accent hover:text-accent-foreground group w-full overflow-hidden border-[#CED4DA] border rounded-2xl   dark:border-border-tertiary"
               onClick={() => handleNewAction(action.action)}
             >
               <div className="flex items-center space-x-2 dark:text-white text-black font-body  break-words">
@@ -230,7 +230,7 @@ export const HomeTab = () => {
         ))}
       </motion.div>
 
-      <Tabs defaultValue="recent" className=" pt-5 border-t border-[#E9ECEF]">
+      <Tabs defaultValue="recent" className=" pt-5 border-t border-[#E9ECEF]  dark:border-border-tertiary">
         <TabsList className="w-full justify-start px-0 pb-8">
           <TabsTrigger
             value="recent"

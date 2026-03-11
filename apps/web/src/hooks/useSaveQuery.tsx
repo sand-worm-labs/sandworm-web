@@ -1,5 +1,4 @@
 import { useState, useCallback } from "react";
-import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 
 import {
@@ -7,9 +6,10 @@ import {
   type CreateQueryPayload,
 } from "@/services/axios/queryService";
 import { useQueryStore } from "@/store/queries";
+import { useSession } from "@/components/Visualization/hooks/useAuth";
 
 export const useSaveQuery = () => {
-  const { data: session } = useSession();
+  const session = useSession({ redirectToLogin: true });
   const { loadQueries } = useQueryStore();
 
   const [loading, setLoading] = useState(false);
