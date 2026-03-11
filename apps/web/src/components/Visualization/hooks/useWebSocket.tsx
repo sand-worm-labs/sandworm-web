@@ -24,7 +24,7 @@ export function WebsocketProvider({ children }: Props) {
     }
 
     const url = new URL(
-      process.env.NEXT_PUBLIC_API_URL || "http://localhost:8003"
+      process.env.NEXT_PUBLIC_API_WS_URL || "http://localhost:8003"
     );
     const withoutPathname = url.origin;
     const socketPath =
