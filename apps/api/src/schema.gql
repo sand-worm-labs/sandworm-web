@@ -26,6 +26,7 @@ scalar DateTime
 
 type AuthPayload {
   id: String!
+  token: String
   user: User!
   roles: JSON
 }
