@@ -2,12 +2,11 @@ import { Injectable, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/commo
 import WebSocket from 'ws';
 import * as http from 'http';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Auth, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { DocumentEntity, UserWorkspaceEntity, UserWorkspaceRole, UserWorkspaceStatus } from '@sandworm/postgresql-typeorm';
 import * as cookie from 'cookie';
 import qs from 'querystring';
 import { z } from 'zod';
-import { YjsDocumentService } from '@/features/collaboration/yjs/yjs-document.service';
 import { SessionManagerService } from '@/features/collaboration/yjs/services/session-manager.service';
 import { MessageHandlerService } from '@/features/collaboration/yjs/services/message-handler.service';
 import { SyncHandlerService } from '@/features/collaboration/yjs/services/sync-handler.service';
@@ -16,7 +15,6 @@ import { WebSocketUtils } from '@/features/collaboration/yjs/utils/websocket.uti
 import { RequestData } from './types/requestData.types';
 import { AuthService } from '@/features/auth/core/auth.service';
 import { ACCESS_TOKEN_COOKIE } from '@/features/auth/core/utils/cookie';
-// import { getRequestData, getUserRole, RequestData } from '@/features/collaboration/yjs/utils/validation.utils';
 
 @Injectable()
 export class YjsGateway implements OnModuleInit, OnModuleDestroy {
