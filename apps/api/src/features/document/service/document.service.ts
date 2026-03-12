@@ -18,13 +18,6 @@ import {
 } from '../dto/document.dto';
 import { Document } from '../model/document.model';
 import { DocumentTreeService } from './document-tree.service';
-import { EventEmitter2, EventEmitterReadinessWatcher } from '@nestjs/event-emitter';
-import {
-  WorkspaceDocumentsEvent,
-  DocumentUpdateEvent,
-  EventNames
-} from '@/core/events/document.events';
-
 @Injectable()
 export class DocumentService {
   private readonly logger = new Logger(DocumentService.name);
@@ -37,8 +30,6 @@ export class DocumentService {
     @InjectRepository(YjsDocumentEntity)
     private readonly yjsDocumentRepository: Repository<YjsDocumentEntity>,
     private readonly documentTreeService: DocumentTreeService,
-    private readonly eventEmitter: EventEmitter2,
-    private readonly eventEmitterReadinessWatcher: EventEmitterReadinessWatcher,
   ) { }
 
   async getDocument(
@@ -54,14 +45,6 @@ export class DocumentService {
     }
 
     return Document.fromEntity(document);
-  }
-
-  async getWorkspaceDocuments(workspaceId: string): Promise<Document[]> {
-    const documents = await this.documentRepository.find({
-      where: { workspaceId },
-    });
-
-    return Document.fromEntities(documents);
   }
 
   async getChildren(parentId: string): Promise<Document[]> {
@@ -90,7 +73,7 @@ export class DocumentService {
     const document = Document.fromEntity(documentEntity);
 
     // Emit events
-    await this.emitDocumentUpdate(workspaceId, document);
+    await this.documentTreeService.emitDocumentUpdate(workspaceId, document);
 
     this.logger.log(`Document created: ${document.id} in workspace ${workspaceId}`);
 
@@ -127,7 +110,7 @@ export class DocumentService {
 
     // Handle title update
     if (input.title !== undefined && input.title !== document.title) {
-      await this.documentTreeService.updateDocument(
+      await this.documentTreeService.updateDocumentTitle(
         documentId,
         workspaceId,
         input.title,
@@ -159,7 +142,7 @@ export class DocumentService {
     const result = Document.fromEntity(updatedDocument);
 
     // Emit events
-    await this.emitDocumentUpdate(workspaceId, result);
+    await this.documentTreeService.emitDocumentUpdate(workspaceId, result);
 
     this.logger.log(`Document updated: ${documentId}`);
 
@@ -186,7 +169,7 @@ export class DocumentService {
     );
 
     // Emit events
-    await this.emitWorkspaceDocuments(workspaceId);
+    await this.documentTreeService.emitWorkspaceDocuments(workspaceId);
 
     this.logger.log(`Document deleted: ${documentId} (permanent: ${isPermanent})`);
 
@@ -213,7 +196,7 @@ export class DocumentService {
     const result = Document.fromEntity(restoredDocument);
 
     // Emit events
-    await this.emitWorkspaceDocuments(workspaceId);
+    await this.documentTreeService.emitWorkspaceDocuments(workspaceId);
 
     this.logger.log(`Document restored: ${documentId}`);
 
@@ -242,7 +225,7 @@ export class DocumentService {
     const result = Document.fromEntity(duplicatedDocument);
 
     // Emit events
-    await this.emitWorkspaceDocuments(workspaceId);
+    await this.documentTreeService.emitWorkspaceDocuments(workspaceId);
 
     this.logger.log(`Document duplicated: ${documentId} -> ${result.id}`);
 
@@ -343,7 +326,7 @@ export class DocumentService {
     const result = Document.fromEntity(document);
 
     // Emit events
-    await this.emitDocumentUpdate(workspaceId, result);
+    await this.documentTreeService.emitDocumentUpdate(workspaceId, result);
 
     this.logger.log(`Document published: ${documentId}`);
 
@@ -368,33 +351,10 @@ export class DocumentService {
     const result = Document.fromEntity(document);
 
     // Emit events
-    await this.emitDocumentUpdate(workspaceId, result);
+    await this.documentTreeService.emitDocumentUpdate(workspaceId, result);
 
     this.logger.log(`Document unpublished: ${documentId}`);
 
     return result;
-  }
-
-  // ========================================
-  // Event Emission Helpers
-  // ========================================
-  private async emitDocumentUpdate(workspaceId: string, document: Document): Promise<void> {
-    await this.eventEmitterReadinessWatcher.waitUntilReady();
-
-    this.eventEmitter.emit(
-      EventNames.DOCUMENT_UPDATE,
-      new DocumentUpdateEvent(workspaceId, document),
-    );
-  }
-
-  private async emitWorkspaceDocuments(workspaceId: string): Promise<void> {
-    await this.eventEmitterReadinessWatcher.waitUntilReady();
-
-    const documents = await this.getWorkspaceDocuments(workspaceId);
-
-    this.eventEmitter.emit(
-      EventNames.WORKSPACE_DOCUMENTS,
-      new WorkspaceDocumentsEvent(workspaceId, documents),
-    );
   }
 }
