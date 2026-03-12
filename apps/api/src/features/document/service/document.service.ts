@@ -7,7 +7,7 @@ import {
   FavoriteEntity,
   YjsDocumentEntity,
 } from '@sandworm/postgresql-typeorm';
-import { Not, Repository, In } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import {
   CreateDocumentInput,
   DeleteDocumentInput,
