@@ -3,9 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DocumentEntity, YjsDocumentEntity } from '@sandworm/postgresql-typeorm';
 import PQueue from 'p-queue';
-import { ValidationException } from '@sandworm/graphql';
 import { Doc, encodeStateAsUpdate } from 'yjs';
-import { ErrorCode } from '@/core/constants/error-code.constant';
+import { EventEmitter2, EventEmitterReadinessWatcher } from '@nestjs/event-emitter';
+import {
+  WorkspaceDocumentsEvent,
+  DocumentUpdateEvent,
+  EventNames
+} from '@/core/events/document.events';
+import { Document } from '../model/document.model';
 
 const queues = new Map<string, PQueue>();
 
@@ -18,6 +23,8 @@ export class DocumentTreeService {
         private readonly documentRepository: Repository<DocumentEntity>,
         @InjectRepository(YjsDocumentEntity)
         private readonly yjsDocumentRepository: Repository<YjsDocumentEntity>,
+        private readonly eventEmitter: EventEmitter2,
+        private readonly eventEmitterReadinessWatcher: EventEmitterReadinessWatcher,
     ) { }
 
     private async wrapInQueue<T>(
@@ -172,7 +179,7 @@ export class DocumentTreeService {
         });
     }
 
-    async updateDocument(
+    async updateDocumentTitle(
         id: string,
         workspaceId: string,
         title: string,
@@ -465,5 +472,35 @@ export class DocumentTreeService {
 
             return duplicate;
         });
+    }
+    async getWorkspaceDocuments(workspaceId: string): Promise<Document[]> {
+        const documents = await this.documentRepository.find({
+        where: { workspaceId },
+        });
+
+        return Document.fromEntities(documents);
+    }
+
+    // ========================================
+    // Event Emission Helpers
+    // ========================================
+    public async emitDocumentUpdate(workspaceId: string, document: Document): Promise<void> {
+        await this.eventEmitterReadinessWatcher.waitUntilReady();
+
+        this.eventEmitter.emit(
+        EventNames.DOCUMENT_UPDATE,
+        new DocumentUpdateEvent(workspaceId, document),
+        );
+    }
+
+    public async emitWorkspaceDocuments(workspaceId: string): Promise<void> {
+        await this.eventEmitterReadinessWatcher.waitUntilReady();
+
+        const documents = await this.getWorkspaceDocuments(workspaceId);
+
+        this.eventEmitter.emit(
+        EventNames.WORKSPACE_DOCUMENTS,
+        new WorkspaceDocumentsEvent(workspaceId, documents),
+        );
     }
 }

@@ -12,6 +12,7 @@
     "commitlint",
     "cssnano",
     "dataframes",
+    "favorited",
     "followee",
     "nextauth",
     "Persistor",
@@ -21,6 +22,7 @@
     "sandworm",
     "sess",
     "tailwindcss",
+    "unfavorited",
     "uuidv",
     "Writeback",
     "ydoc"
