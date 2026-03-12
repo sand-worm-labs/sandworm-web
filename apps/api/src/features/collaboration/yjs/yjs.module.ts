@@ -19,6 +19,7 @@ import { PersistorFactory } from './persistors/persistor.factory'
 import { LockModule } from '@/infrastructure/lock/lock.module'
 import { PubSubModule } from '@/infrastructure/pubsub/pubsub.module'
 import { YjsGateway } from './yjs.gateway'
+import { DocumentModule } from '@/features/document/document.module'
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { YjsGateway } from './yjs.gateway'
     AuthModule,
     LockModule,
     PubSubModule,
+    DocumentModule
   ],
   providers: [
     YjsDocumentService,

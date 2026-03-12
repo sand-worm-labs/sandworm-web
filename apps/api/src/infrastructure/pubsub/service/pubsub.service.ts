@@ -1,10 +1,25 @@
+import { AllConfigType } from '@/core/config/config.type';
 import { Injectable, OnModuleDestroy, Logger } from '@nestjs/common';
-import { publish, subscribe } from '@sandworm/postgresql-typeorm';
+import { ConfigService } from '@nestjs/config';
+import { publish, subscribe, initPubSub } from '@sandworm/postgresql-typeorm';
 
 @Injectable()
 export class PubSubService implements OnModuleDestroy {
     private readonly logger = new Logger(PubSubService.name);
     private readonly subscriptions = new Set<() => Promise<void>>();
+
+    constructor(
+        private configService: ConfigService<AllConfigType>,) {
+        
+    }
+     async onModuleInit(): Promise<void> {
+        const db = this.configService.get('database', { infer: true });
+        initPubSub({
+            connectionString: `postgresql://${db.username}:${db.password}@${db.host}:${db.port}/${db.name}`,
+            ssl: db.sslEnabled ? { rejectUnauthorized: db.rejectUnauthorized, ca: db.ca || undefined } : false,
+        });
+        this.logger.log('PubSub initialized');
+    }
 
     async publish(channel: string, message: string): Promise<void> {
         await publish(channel, message);

@@ -11,6 +11,8 @@
     "avater",
     "commitlint",
     "cssnano",
+    "dataframes",
+    "favorited",
     "followee",
     "nextauth",
     "Persistor",
@@ -20,7 +22,10 @@
     "sandworm",
     "sess",
     "tailwindcss",
+    "undelete",
+    "unfavorited",
     "uuidv",
+    "Writeback",
     "ydoc"
   ],
 
