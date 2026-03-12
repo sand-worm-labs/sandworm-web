@@ -7,6 +7,7 @@ interface MiniChatInputProps {
   placeholder?: string;
   maxHeight?: number;
   acceptedFileTypes?: string;
+  disabled: boolean;
 }
 
 export const MiniChatInput: React.FC<MiniChatInputProps> = ({
@@ -14,6 +15,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
   placeholder = "Create a bar chart with tokens above $1m market cap on Base.",
   maxHeight = 200,
   acceptedFileTypes = ".csv,.pdf,.doc,.docx,.txt,.xls,.xlsx",
+  disabled
 }) => {
   const [message, setMessage] = useState<string>("");
   const [files, setFiles] = useState<File[]>([]);

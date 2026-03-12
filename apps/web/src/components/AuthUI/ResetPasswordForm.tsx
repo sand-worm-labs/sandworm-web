@@ -117,7 +117,7 @@ export const ResetPasswordForm = ({
       <button
         type="submit"
         disabled={state.loading}
-        className="w-full rounded-3xl bg-[#0F0F0F] px-4 py-3.5 text-white text-sm font-medium disabled:bg-[#868E96]"
+        className="w-full rounded-3xl bg-[#0F0F0F] dark:bg-white dark:text-black px-4 py-3.5 text-white text-sm font-medium disabled:bg-[#868E96]"
       >
         {state.loading ? "Updating..." : "Update Password"}
       </button>

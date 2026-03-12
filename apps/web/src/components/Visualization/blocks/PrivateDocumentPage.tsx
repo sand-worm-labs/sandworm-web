@@ -531,6 +531,7 @@ function PrivateDocumentPageInner(
             <MiniChat
               visible={selectedSidebar?._tag === "chat"}
               onClose={onHideSidebar}
+              yDoc={yDoc}
             />
           </>
         )}

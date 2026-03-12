@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@aarkue/tiptap-math-extension": "^1.4.0",
+    "@ai-sdk/google": "^3.0.43",
     "@apollo/client": "^3.14.0",
     "@auth/drizzle-adapter": "^1.10.0",
     "@bprogress/next": "^3.2.12",
@@ -89,7 +90,7 @@
     "@tiptap/starter-kit": "^3.7.2",
     "@types/react-paginate": "^7.1.4",
     "@uidotdev/usehooks": "^2.4.1",
-    "ai": "5.0.52",
+    "ai": "6.0.116",
     "axios": "^1.8.3",
     "bcrypt": "^5.1.1",
     "class-variance-authority": "^0.7.1",
