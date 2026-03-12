@@ -256,6 +256,15 @@ type Query {
   """Get all environment variables (values are masked)"""
   environmentVariables(workspaceId: String!): [EnvironmentVariable!]!
 
+  """Get a single document by ID"""
+  getDocument(documentId: String!, workspaceId: String!): Document!
+
+  """Get User favorite documents"""
+  getFavoriteDocuments(workspaceId: String!): [Document!]!
+
+  """Get all documents in a workspace"""
+  getWorkspaceDocuments(workspaceId: String!): [Document!]!
+
   """Get a reusable component by ID"""
   getComponent(componentId: String!, workspaceId: String!): ReusableComponent!
 
@@ -291,15 +300,6 @@ type Query {
 
   """Get invitation details from hash without accepting it"""
   getInvitationInfo(hash: String!): WorkspaceInvitationInfo!
-
-  """Get a single document by ID"""
-  getDocument(documentId: String!, workspaceId: String!): Document!
-
-  """Get User favorite documents"""
-  getFavoriteDocuments(workspaceId: String!): [Document!]!
-
-  """Get all documents in a workspace"""
-  getWorkspaceDocuments(workspaceId: String!): [Document!]!
 
   """Get all comments for a document"""
   comments(documentId: String!): [Comment!]!
@@ -365,6 +365,33 @@ type Mutation {
   """Sign in"""
   login(input: LoginInput!): AuthPayload!
 
+  """Create a new document in a workspace"""
+  createDocument(workspaceId: String!, input: CreateDocumentInput!): Document!
+
+  """Update document metadata"""
+  updateDocument(documentId: String!, workspaceId: String!, input: UpdateDocumentInput!): Document!
+
+  """Soft delete or permanently delete a document"""
+  deleteDocument(input: DeleteDocumentInput!): Boolean!
+
+  """Restore a previously deleted document"""
+  restoreDocument(input: RestoreDocumentInput!): Document!
+
+  """Create a fork/duplicate of a document"""
+  duplicateDocument(input: DuplicateDocumentInput!): Document!
+
+  """Mark a document as a favorite"""
+  addFavoriteDocument(input: FavoriteDocumentInput!): Document!
+
+  """Unmark a document as a favorite"""
+  removeFavoriteDocument(input: FavoriteDocumentInput!): Document!
+
+  """Publish a document"""
+  publishDocument(workspaceId: String!, documentId: String!): Document!
+
+  """Unpublish a document"""
+  unpublishDocument(workspaceId: String!, documentId: String!): Document!
+
   """Create a new reusable component"""
   createComponent(workspaceId: String!, input: CreateReusableComponentInput!): ReusableComponent!
 
@@ -427,33 +454,6 @@ type Mutation {
 
   """Update a user role in a workspace"""
   updateWorkspaceMemberRole(workspaceId: String!, userId: String!, role: String!): Boolean!
-
-  """Create a new document in a workspace"""
-  createDocument(workspaceId: String!, input: CreateDocumentInput!): Document!
-
-  """Update document metadata"""
-  updateDocument(documentId: String!, workspaceId: String!, input: UpdateDocumentInput!): Document!
-
-  """Soft delete or permanently delete a document"""
-  deleteDocument(input: DeleteDocumentInput!): Boolean!
-
-  """Restore a previously deleted document"""
-  restoreDocument(input: RestoreDocumentInput!): Document!
-
-  """Create a fork/duplicate of a document"""
-  duplicateDocument(input: DuplicateDocumentInput!): Document!
-
-  """Mark a document as a favorite"""
-  addFavoriteDocument(input: FavoriteDocumentInput!): Document!
-
-  """Unmark a document as a favorite"""
-  removeFavoriteDocument(input: FavoriteDocumentInput!): Document!
-
-  """Publish a document"""
-  publishDocument(workspaceId: String!, documentId: String!): Document!
-
-  """Unpublish a document"""
-  unpublishDocument(workspaceId: String!, documentId: String!): Document!
 
   """Create a new comment on a document"""
   createComment(documentId: String!, input: CreateCommentInput!): Comment!
@@ -526,29 +526,6 @@ input LoginInput {
   password: String!
 }
 
-input CreateReusableComponentInput {
-  documentId: String!
-  blockId: String!
-  title: String!
-  type: ReusableComponentType!
-  state: String!
-}
-
-input UpdateReusableComponentInput {
-  title: String
-  state: String
-}
-
-input CreateComponentInstanceInput {
-  documentId: String!
-  blockId: String!
-}
-
-input RemoveUserFromWorkspaceInput {
-  userId: String!
-  workspaceId: String!
-}
-
 input CreateDocumentInput {
   title: String
   parentId: String
@@ -584,6 +561,29 @@ input DuplicateDocumentInput {
 input FavoriteDocumentInput {
   workspaceId: String!
   documentId: String!
+}
+
+input CreateReusableComponentInput {
+  documentId: String!
+  blockId: String!
+  title: String!
+  type: ReusableComponentType!
+  state: String!
+}
+
+input UpdateReusableComponentInput {
+  title: String
+  state: String
+}
+
+input CreateComponentInstanceInput {
+  documentId: String!
+  blockId: String!
+}
+
+input RemoveUserFromWorkspaceInput {
+  userId: String!
+  workspaceId: String!
 }
 
 input CreateCommentInput {

@@ -194,6 +194,7 @@ export class DocumentTreeService {
 
         document.title = title;
         await this.documentRepository.save(document);
+        await this .emitWorkspaceDocuments(workspaceId);
 
         return document;
     }

@@ -112,6 +112,7 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
             origin.role = updatedRole;
           }
 
+          console.dir(doc, { depth: 1 });
           this.handleMessage(doc, new Uint8Array(message), origin);
         } catch (err) {
           this.logger.error(`Message error: ${err}`);
