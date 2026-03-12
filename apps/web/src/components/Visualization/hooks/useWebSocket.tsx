@@ -17,6 +17,7 @@ export function WebsocketProvider({ children }: Props) {
   const [socket, setSocket] = useState<Socket | null>(null);
   const session = useSession({ redirectToLogin: false });
   const workspaceId = useStringQuery("workspace");
+  console.log(session, "session");
 
   useEffect(() => {
     if (!session.user?.id) {
@@ -37,6 +38,7 @@ export function WebsocketProvider({ children }: Props) {
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionAttempts: 5,
+      auth: { token: session.user?.token },
     });
 
     newSocket.on("connect", () => {

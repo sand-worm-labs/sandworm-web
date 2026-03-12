@@ -137,6 +137,7 @@ export const useLogin = (): UseLogin => {
         .then(async res => {
           if (res.ok) {
             const data: LoginResponse = await res.json();
+            console.log(data, "data")
             // Cookies are set by the server (HttpOnly auth token + is_authenticated presence cookie).
             // Nothing to store on the client.
             setState({ loading: false, data, error: undefined });
@@ -226,10 +227,13 @@ export type SessionUser = ApiUser & {
   role?: Array<Record<string, UserWorkspaceRole>>;
   picture?: string | null;
   lastVisitedWorkspaceId?: string | null;
+  token: string | null;
+
 };
 
 type UseSessionReturn = {
   user: SessionUser | null;
+  token: string | null;
   loading: boolean;
   error: string | null;
   isAuthenticated: boolean;
@@ -262,7 +266,8 @@ export const useSession = ({
       user: data?.currentUser?.user
         ? {
             ...data.currentUser.user,
-            role: data.currentUser.user.role || [],
+            role: data.currentUser.roles || [],
+            token: data.currentUser.token,
             name:
               data.currentUser.user.fullName ||
               `${data.currentUser.user.firstName || ""} ${data.currentUser.user.lastName || ""}`.trim() ||

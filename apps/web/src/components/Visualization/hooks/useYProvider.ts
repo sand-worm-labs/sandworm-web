@@ -6,6 +6,7 @@ import Cookies from "js-cookie";
 
 import { NEXT_PUBLIC_API_WS_URL } from "../utils/env";
 
+import { useSession } from "./useAuth";
 
 export function getDocId(
   id: string,
@@ -34,10 +35,12 @@ function getWSProvider(
   isDataApp: boolean,
   clock: number,
   userId: string | null,
-  publishedAt: string | null
+  publishedAt: string | null,
+  accessToken: string | null
 ): WebsocketProvider {
   const id = getDocId(documentId, isDataApp, clock, publishedAt);
   const wsUrl = getYjsUrl();
+  console.log("istoke val", accessToken);
 
   const provider = new WebsocketProvider(wsUrl, id, yDoc, {
     connect: false,
@@ -46,6 +49,7 @@ function getWSProvider(
       clock: clock.toString(),
       isApp: isDataApp ? "true" : "false",
       userId: userId ?? "",
+      access_token: accessToken ?? "",
     },
     resyncInterval: 30000,
   });
@@ -125,12 +129,21 @@ export function useProvider(
   userId: string | null,
   publishedAt: string | null
 ): IProvider {
+  const session = useSession({ redirectToLogin: false });
   const [provider, setProvider] = useState<Provider>(
     // must be a function to avoid creating a new provider on every render
     // which would cause the provider to leak
     () =>
       new Provider(
-        getWSProvider(yDoc, documentId, isDataApp, clock, userId, publishedAt)
+        getWSProvider(
+          yDoc,
+          documentId,
+          isDataApp,
+          clock,
+          userId,
+          publishedAt,
+          session.user?.token ?? null
+        )
       )
   );
 
@@ -144,10 +157,26 @@ export function useProvider(
     provider.destroy();
     setProvider(
       new Provider(
-        getWSProvider(yDoc, documentId, isDataApp, clock, userId, publishedAt)
+        getWSProvider(
+          yDoc,
+          documentId,
+          isDataApp,
+          clock,
+          userId,
+          publishedAt,
+          session.user?.token ?? null
+        )
       )
     );
-  }, [yDoc, documentId, isDataApp, clock, userId, publishedAt]);
+  }, [
+    yDoc,
+    documentId,
+    isDataApp,
+    clock,
+    userId,
+    publishedAt,
+    session.user?.token,
+  ]);
 
   useEffect(
     () => () => {
