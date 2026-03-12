@@ -14,6 +14,7 @@ import { PersistorFactory } from './persistors/persistor.factory';
 import { PubSubProviderFactory } from '@/infrastructure/pubsub/pubsub-provider.factory';
 import { Persistor } from './interfaces';
 import { Server, Socket } from 'socket.io';
+import { DocumentTreeService } from "@/features/document/service/document-tree.service";
 
 export interface LoadYDocResult {
     yDoc: Y.Doc;
@@ -46,6 +47,7 @@ export class YjsDocumentService implements OnModuleDestroy {
         private readonly documentRepo: Repository<DocumentEntity>,
         private readonly persistorFactory: PersistorFactory,
         private readonly pubSubProviderFactory: PubSubProviderFactory,
+        private readonly documentTreeService: DocumentTreeService
     ) {
         const cacheConfig: YDocCacheConfig = {
             maxSize: this.getCacheSizeFromEnv(),
@@ -310,6 +312,9 @@ export class YjsDocumentService implements OnModuleDestroy {
 
         return yDoc;
     }
+    async updateTitleWithWorkspace(documentId: string, workspaceId: string, title: string) {
+        await this.documentTreeService.updateDocumentTitle(documentId, workspaceId, title);
+    }
 
     private async createYDoc(
         id: string,
@@ -327,6 +332,7 @@ export class YjsDocumentService implements OnModuleDestroy {
             loadStateResult,
             persistor,
             this.pubSubProviderFactory,
+            (title: string) =>  this.updateTitleWithWorkspace(documentId, workspaceId, title)
         );
 
         this.docs.set(id, newYDoc);
