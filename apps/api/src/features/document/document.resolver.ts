@@ -17,10 +17,14 @@ import {
   DuplicateDocumentInput,
   FavoriteDocumentInput,
 } from './dto/document.dto';
+import { DocumentTreeService } from './service/document-tree.service';
 
 @Resolver(() => Document)
 export class DocumentResolver {
-  constructor(private readonly documentService: DocumentService) { }
+  constructor(
+    private readonly documentService: DocumentService, 
+    private readonly documentTreeService: DocumentTreeService
+  ) { }
 
   @Query(() => Document, {
     name: 'getDocument',
@@ -51,7 +55,7 @@ export class DocumentResolver {
   async getWorkspaceDocuments(
     @Args('workspaceId') workspaceId: string,
   ): Promise<Document[]> {
-    return this.documentService.getWorkspaceDocuments(workspaceId);
+    return this.documentTreeService.getWorkspaceDocuments(workspaceId);
   }
 
   @Mutation(() => Document, {
