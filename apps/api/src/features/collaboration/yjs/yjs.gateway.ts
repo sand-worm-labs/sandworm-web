@@ -3,290 +3,354 @@ import WebSocket from 'ws';
 import * as http from 'http';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { DocumentEntity, UserWorkspaceEntity, UserWorkspaceRole, UserWorkspaceStatus } from '@sandworm/postgresql-typeorm';
+import { encoding, decoding } from 'lib0';
+import * as syncProtocol from 'y-protocols/sync';
+import * as awarenessProtocol from 'y-protocols/awareness';
 import * as cookie from 'cookie';
 import qs from 'querystring';
 import { z } from 'zod';
-import { SessionManagerService } from '@/features/collaboration/yjs/services/session-manager.service';
-import { MessageHandlerService } from '@/features/collaboration/yjs/services/message-handler.service';
-import { SyncHandlerService } from '@/features/collaboration/yjs/services/sync-handler.service';
-import { PersistenceService } from '@/features/collaboration/yjs/services/persistence.service';
-import { WebSocketUtils } from '@/features/collaboration/yjs/utils/websocket.utils';
-import { RequestData } from './types/requestData.types';
+import {
+  DocumentEntity,
+  UserWorkspaceEntity,
+  UserWorkspaceRole,
+  UserWorkspaceStatus,
+  YjsAppDocumentEntity,
+} from '@sandworm/postgresql-typeorm';
 import { AuthService } from '@/features/auth/core/auth.service';
 import { ACCESS_TOKEN_COOKIE } from '@/features/auth/core/utils/cookie';
+import { YjsDocumentService } from './yjs-document.service';
+import { PersistorFactory } from './persistors/persistor.factory';
+import { WSSharedDocV2 } from './shared-doc/ws-shared-doc';
+import { TransactionOrigin } from './interfaces';
+import { MESSAGE_AWARENESS, MESSAGE_SYNC, PING_TIMEOUT } from './types/yjs.types';
+
+interface RequestData {
+  document: DocumentEntity;
+  clock: number;
+  authUser: any;
+  role: UserWorkspaceRole;
+  isApp: boolean;
+  userId: string | null;
+  yjsAppDocumentId: string | null;
+}
 
 @Injectable()
 export class YjsGateway implements OnModuleInit, OnModuleDestroy {
-    private readonly logger = new Logger(YjsGateway.name);
-    private wss: WebSocket.Server;
+  private readonly logger = new Logger(YjsGateway.name);
+  private wss: WebSocket.Server;
 
-    constructor(
-       private readonly sessionManager: SessionManagerService,
-        private readonly messageHandler: MessageHandlerService,
-        private readonly syncHandler: SyncHandlerService,
-        private readonly persistence: PersistenceService,
-        private readonly authService:AuthService,
-        @InjectRepository(DocumentEntity)
-        private readonly documentRepository: Repository<DocumentEntity>,
-        @InjectRepository(UserWorkspaceEntity)
-        private readonly userWorkspaceRepository:Repository<UserWorkspaceEntity>
-    ) { }
+  constructor(
+    private readonly yjsDocumentService: YjsDocumentService,
+    private readonly persistorFactory: PersistorFactory,
+    private readonly authService: AuthService,
+    @InjectRepository(DocumentEntity)
+    private readonly documentRepository: Repository<DocumentEntity>,
+    @InjectRepository(UserWorkspaceEntity)
+    private readonly userWorkspaceRepository: Repository<UserWorkspaceEntity>,
+    @InjectRepository(YjsAppDocumentEntity)
+    private readonly yjsAppDocumentRepository: Repository<YjsAppDocumentEntity>,
+  ) {}
 
-    onModuleInit() {
-        this.logger.log('YJS Gateway initialized');
-    }
+  onModuleInit() {
+    this.logger.log('YJS Gateway initialized');
+  }
 
-    public init(port: number) {
-        this.logger.log('='.repeat(80));
-        this.logger.log('Initializing YJS WebSocket server');
-        this.logger.log('='.repeat(80));
+  public init(port: number) {
+    this.wss = new WebSocket.Server({ port: port + 2 });
+    this.wss.on('connection', async (socket, req) => {
+      await this.handleConnection(socket, req);
+    });
+    this.logger.log(`YJS WebSocket server running on port ${port + 2}`);
+  }
 
-        this.wss = new WebSocket.Server({ port: port + 2 });
+  private async handleConnection(client: WebSocket, req: http.IncomingMessage) {
+    try {
+      const url = new URL(req.url!, `http://${req.headers.host}`);
+      if (!url.pathname.startsWith('/yjs')) {
+        client.close(1008, 'Invalid path');
+        return;
+      }
 
-        this.wss.on('connection', async (socket, req) => {
-            await this.handleConnection(socket, req);
-        });
+      const data = await this.getRequestData(req);
+      if (!data) {
+        client.close(1008, 'Invalid request');
+        return;
+      }
 
-        this.sessionManager.startCleanup((session) => this.persistence.persistSession(session));
+      const { document, userId, authUser, role, isApp, clock, yjsAppDocumentId } = data;
 
-        this.logger.log(`🚀 WebSocket server running on port ${port + 2} at /yjs`);
-        this.logger.log('='.repeat(80));
-    }
+      const doc = await this.getDoc(document, isApp, userId, yjsAppDocumentId);
+      if (!doc) {
+        client.close(1011, 'Failed to load document');
+        return;
+      }
 
-    private async handleConnection(client: WebSocket, req: http.IncomingMessage) {
+      // Clock validation
+      if (doc.clock !== clock) {
+        this.logger.warn(`Clock mismatch: client=${clock} doc=${doc.clock} for ${doc.id}`);
+        client.close(1008, 'Clock mismatch');
+        return;
+      }
+
+      doc.conns.set(client, new Set());
+      client.binaryType = 'arraybuffer';
+
+      const origin: TransactionOrigin = { conn: client, user: authUser, role };
+      let lastRoleUpdate = Date.now();
+
+      client.on('message', async (message: ArrayBuffer) => {
         try {
-            const url = new URL(req.url, `http://${req.headers.host}`);
-            if (!url.pathname.startsWith('/yjs')) {
-                client.close(1008, 'Invalid path');
-                return;
+          // Revalidate role every 5s
+          const now = Date.now();
+          if (now - lastRoleUpdate > 5000) {
+            lastRoleUpdate = now;
+            const updatedRole = await this.getUserRole(authUser.id, document.workspaceId);
+            if (!updatedRole) {
+              this.closeConn(doc, client);
+              return;
             }
+            origin.role = updatedRole;
+          }
 
-            this.logger.log(`📥 New connection from ${req.socket.remoteAddress}`);
-
-            const data = await this.getRequestData(req);
-
-            if (!data) {
-                this.logger.warn('Invalid request, closing');
-                client.close(1008, 'Invalid request data');
-                return;
-            }
-
-            const { document, userId, authUser, role, isApp, clock } = data;
-
-            const session = await this.sessionManager.getOrCreateSession(
-                document.id,
-                document.workspaceId,
-                isApp,
-                userId,
-                (sess, update, origin) => this.onYDocUpdate(sess, update, origin),
-                (sess, changes, origin) => this.onAwarenessUpdate(sess, changes, origin),
-            );
-
-            // Validate clock
-            if (session.clock !== clock) {
-                const isValid = await this.persistence.validateAndFixClock(session, clock);
-                if (!isValid) {
-                    this.logger.error('Clock validation failed, closing');
-                    client.close(1008, 'Clock validation failed');
-                    return;
-                }
-            }
-
-            this.logger.log(`✅ Connected: ${authUser.email} → ${session.documentId}`);
-
-            // Register connection
-            session.conns.set(client, new Set());
-            client.binaryType = 'arraybuffer';
-
-            const transactionOrigin = { conn: client, user: authUser, role };
-            let lastRoleUpdate = Date.now();
-
-            // Message handler
-            client.on('message', async (message: ArrayBuffer) => {
-                try {
-                    const now = Date.now();
-
-                    // Revalidate role every 5 seconds
-                    if (now - lastRoleUpdate > 5000) {
-                        lastRoleUpdate = now;
-                        const updatedRole = await this.getUserRole(authUser.id, session.workspaceId);
-                        if (updatedRole) {
-                            transactionOrigin.role = updatedRole;
-                        } else {
-                            this.logger.warn(`User ${authUser.id} lost access`);
-                            this.closeConnection(session, client);
-                            return;
-                        }
-                    }
-
-                    this.messageHandler.handleMessage(
-                        session,
-                        new Uint8Array(message),
-                        transactionOrigin,
-                        (msg) => this.send(session, client, msg),
-                    );
-                } catch (err) {
-                    if ((err as Error).message === 'VIEWER_WRITE_REJECTED') {
-                        this.closeConnection(session, client);
-                    } else {
-                        this.logger.error(`Error handling message: ${err}`);
-                    }
-                }
-            });
-
-
-            WebSocketUtils.setupPingPong(session, client, authUser.id, (s, c) =>
-                this.closeConnection(s, c),
-            );
-
-            // Close handler
-            client.on('close', () => {
-                this.logger.log(`🔌 Closed: ${authUser.email}`);
-                this.closeConnection(session, client);
-            });
-
-            client.on('error', (error) => {
-                this.logger.error(`WebSocket error: ${error.message}`);
-            });
-
-            await this.syncHandler.sendInitialState(session, (msg) =>
-                this.send(session, client, msg),
-            );
-
-            this.logger.log(`✨ ${authUser.email} ready`);
+          this.handleMessage(doc, new Uint8Array(message), origin);
         } catch (err) {
-            this.logger.error(`Connection failed: ${err}`, err);
-            client.close(1011, 'Internal server error');
+          this.logger.error(`Message error: ${err}`);
         }
-    }
+      });
 
-    private onYDocUpdate(session: any, update: Uint8Array, origin: any) {
-        this.messageHandler.handleYDocUpdate(session, update, (msg) => this.broadcast(session, msg));
-        this.sessionManager.schedulePersist(session, (s) => this.persistence.persistSession(s));
-    }
+      client.on('close', () => {
+        this.closeConn(doc, client);
+      });
 
-    private onAwarenessUpdate(session: any, changes: any, origin: any) {
-        this.messageHandler.handleAwarenessUpdate(session, changes, origin, (msg) =>
-            this.broadcast(session, msg),
+      client.on('error', (err) => {
+        this.logger.error(`WebSocket error: ${err.message}`);
+      });
+
+      this.setupPing(doc, client, authUser.id);
+      this.sendInitialState(doc, client);
+
+      this.logger.log(`Connected: ${authUser.email} → ${doc.id}`);
+    } catch (err) {
+      this.logger.error(`Connection failed: ${err}`);
+      client.close(1011, 'Internal server error');
+    }
+  }
+
+  private handleMessage(doc: WSSharedDocV2, message: Uint8Array, origin: TransactionOrigin) {
+    try {
+      const encoder = encoding.createEncoder();
+      const decoder = decoding.createDecoder(message);
+      const msgType = decoding.readVarUint(decoder);
+
+      switch (msgType) {
+        case MESSAGE_SYNC: {
+          encoding.writeVarUint(encoder, MESSAGE_SYNC);
+          const syncType = decoding.readVarUint(decoder);
+          switch (syncType) {
+            case syncProtocol.messageYjsSyncStep1:
+              doc.readSyncStep1(decoder, encoder);
+              break;
+            case syncProtocol.messageYjsSyncStep2:
+              doc.readSyncStep2(decoder, origin);
+              break;
+            case syncProtocol.messageYjsUpdate:
+              doc.readUpdate(decoder, origin);
+              break;
+          }
+          if (encoding.length(encoder) > 1) {
+            this.send(doc, origin.conn, encoding.toUint8Array(encoder));
+          }
+          break;
+        }
+        case MESSAGE_AWARENESS: {
+          awarenessProtocol.applyAwarenessUpdate(
+            doc.awareness,
+            decoding.readVarUint8Array(decoder),
+            origin,
+          );
+          break;
+        }
+      }
+    } catch (err) {
+      this.logger.error(`Failed to handle message: ${err}`);
+    }
+  }
+
+  private sendInitialState(doc: WSSharedDocV2, conn: WebSocket) {
+    // Sync step 1
+    const syncEncoder = encoding.createEncoder();
+    encoding.writeVarUint(syncEncoder, MESSAGE_SYNC);
+    syncProtocol.writeSyncStep1(syncEncoder, doc.ydoc);
+    this.send(doc, conn, encoding.toUint8Array(syncEncoder));
+
+    // Awareness
+    const states = doc.awareness.getStates();
+    if (states.size > 0) {
+      const awarenessEncoder = encoding.createEncoder();
+      encoding.writeVarUint(awarenessEncoder, MESSAGE_AWARENESS);
+      encoding.writeVarUint8Array(
+        awarenessEncoder,
+        awarenessProtocol.encodeAwarenessUpdate(doc.awareness, Array.from(states.keys())),
+      );
+      this.send(doc, conn, encoding.toUint8Array(awarenessEncoder));
+    }
+  }
+
+  private send(doc: WSSharedDocV2, conn: WebSocket, message: Uint8Array) {
+    if (conn.readyState !== WebSocket.OPEN) {
+      this.closeConn(doc, conn);
+      return;
+    }
+    try {
+      conn.send(message, (err) => {
+        if (err) {
+          this.closeConn(doc, conn);
+          if ((err as any).code !== 'EPIPE') {
+            this.logger.error(`Send error: ${err.message}`);
+          }
+        }
+      });
+    } catch (err) {
+      this.closeConn(doc, conn);
+    }
+  }
+
+  private closeConn(doc: WSSharedDocV2, conn: WebSocket) {
+    const controlledIds = doc.conns.get(conn);
+    if (controlledIds !== undefined) {
+      doc.conns.delete(conn);
+      awarenessProtocol.removeAwarenessStates(doc.awareness, Array.from(controlledIds), null);
+    }
+    try { conn.close(); } catch {}
+  }
+
+  private setupPing(doc: WSSharedDocV2, conn: WebSocket, userId: string) {
+    let pongReceived = true;
+
+    const interval = setInterval(() => {
+      if (!pongReceived) {
+        if (doc.conns.has(conn)) {
+          this.logger.warn(`Client ${userId} missed pong`);
+          this.closeConn(doc, conn);
+        }
+        clearInterval(interval);
+        return;
+      }
+      if (doc.conns.has(conn)) {
+        pongReceived = false;
+        try { conn.ping(); } catch {
+          this.closeConn(doc, conn);
+          clearInterval(interval);
+        }
+      }
+    }, PING_TIMEOUT);
+
+    conn.on('pong', () => { pongReceived = true; });
+    conn.once('close', () => clearInterval(interval));
+  }
+
+  private async getDoc(
+    document: DocumentEntity,
+    isApp: boolean,
+    userId: string | null,
+    yjsAppDocumentId: string | null,
+  ): Promise<WSSharedDocV2 | null> {
+    try {
+      if (isApp && yjsAppDocumentId) {
+        const docId = this.persistorFactory.getDocId(document.id, {
+          id: yjsAppDocumentId,
+          userId,
+        });
+        const persistor = this.persistorFactory.createAppPersistor(
+          document.id,
+          yjsAppDocumentId,
+          userId,
         );
-    }
+        return await this.yjsDocumentService.getYDoc(docId, document.id, document.workspaceId, persistor);
+      }
 
-    private broadcast(session: any, message: Uint8Array) {
-        let count = 0;
-        session.conns.forEach((_, conn) => {
-            this.send(session, conn, message);
-            count++;
+      const docId = this.persistorFactory.getDocId(document.id, null);
+      const persistor = this.persistorFactory.createDocumentPersistor(document.id);
+      return await this.yjsDocumentService.getYDoc(docId, document.id, document.workspaceId, persistor);
+    } catch (err) {
+      this.logger.error(`Failed to get doc: ${err}`);
+      return null;
+    }
+  }
+
+  private async getRequestData(req: http.IncomingMessage): Promise<RequestData | null> {
+    try {
+      const cookies = cookie.parse(req.headers.cookie ?? '');
+      const query = qs.parse(req.url?.split('?')[1] ?? '');
+
+      const docId = query['documentId'];
+      const clock = parseInt((query['clock'] ?? '').toString());
+      const isApp = query['isApp'] === 'true';
+      const userId = query['userId']?.toString() ?? null;
+      const authToken = cookies[ACCESS_TOKEN_COOKIE] ?? query[ACCESS_TOKEN_COOKIE]?.toString() ?? null;
+
+      const args = z.object({
+        docId: z.string().uuid(),
+        clock: z.number().int(),
+        isApp: z.boolean(),
+        userId: z.string().uuid().nullable().optional(),
+      }).safeParse({ docId, clock, isApp, userId });
+
+      if (!args.success) {
+        this.logger.warn('Invalid query params', args.error);
+        return null;
+      }
+
+      const document = await this.documentRepository.findOne({ where: { id: args.data.docId } });
+      if (!document) return null;
+
+      const session = await this.authService.validateTokenAndGetUser(authToken);
+      if (!session) return null;
+
+      const entry = session.roles?.find(r => r[document.workspaceId]);
+      const role = entry?.[document.workspaceId];
+      if (!role) return null;
+
+      if (args.data.userId && args.data.userId !== session.user.id) return null;
+
+      let yjsAppDocumentId: string | null = null;
+      if (args.data.isApp) {
+        const appDoc = await this.yjsAppDocumentRepository.findOne({
+          where: { documentId: args.data.docId },
+          order: { createdAt: 'DESC' },
         });
-        this.logger.debug(`Broadcasted to ${count} connections`);
+        if (!appDoc) return null;
+        yjsAppDocumentId = appDoc.id;
+      }
+
+      return {
+        document,
+        clock: args.data.clock,
+        authUser: session.user,
+        role: role as UserWorkspaceRole,
+        isApp: args.data.isApp,
+        userId: args.data.userId ?? null,
+        yjsAppDocumentId,
+      };
+    } catch (err) {
+      this.logger.error(`getRequestData failed: ${err}`);
+      return null;
     }
+  }
 
-    private send(session: any, conn: WebSocket, message: Uint8Array) {
-        WebSocketUtils.send(session, conn, message, (s, c) => this.closeConnection(s, c));
+  private async getUserRole(userId: string, workspaceId: string): Promise<UserWorkspaceRole | null> {
+    try {
+      const uw = await this.userWorkspaceRepository.findOne({
+        where: { userId, workspaceId, status: UserWorkspaceStatus.ACTIVE },
+      });
+      return uw?.role ?? null;
+    } catch {
+      return null;
     }
+  }
 
-    private closeConnection(session: any, conn: WebSocket) {
-        WebSocketUtils.closeConnection(session, conn);
-    }
-
-    private async getRequestData(req: http.IncomingMessage): Promise<RequestData | null> {
-         try {
-            const cookiesHeader = req.headers.cookie;
-            const cookies = cookie.parse(cookiesHeader ?? '');
-            const query = qs.parse(req.url?.split('?')[1] ?? '');
-
-            const docId = query['documentId'];
-            const clock = parseInt((query['clock'] ?? '').toString());
-            const isApp = query['isApp'] === 'true';
-            const userId = query['userId']?.toString() ?? null;
-            const authToken = cookies[ACCESS_TOKEN_COOKIE] || query[ACCESS_TOKEN_COOKIE]?.toString() || null ;
-
-            this.logger.debug(`Parsed query params: docId=${docId}, clock=${clock}, isApp=${isApp}, userId=${userId}`);
-            this.logger.debug(`Parsed auth token: ${authToken}`);
-            const args = z
-                .object({
-                    docId: z.string().uuid(),
-                    clock: z.number().int(),
-                    isApp: z.boolean(),
-                    userId: z.string().uuid().nullable().optional(),
-                })
-                .safeParse({ docId, clock, isApp, userId });
-
-            if (!args.success) {
-                this.logger.warn('Invalid query string', args.error);
-                return null;
-            }
-
-            const document = await this.documentRepository.findOne({
-                where: { id: args.data.docId },
-            });
-
-            if (!document) {
-                this.logger.warn(`Document ${args.data.docId} not found`);
-                return null;
-            }
-
-            const session = await this.authService.validateTokenAndGetUser(authToken);
-
-            if (!session) {
-                this.logger.warn('No valid session found');
-                return null;
-            }
-
-            const entry = session.roles?.find(r => r[document.workspaceId]);
-            const role = entry?.[document.workspaceId];
-
-            if (!entry) {
-                this.logger.warn(
-                    `User ${session.user.id} does not have access to workspace ${document.workspaceId}`,
-                );
-                return null;
-            }
-
-            if (args.data.userId && args.data.userId !== session.user.id) {
-                this.logger.warn('User ID mismatch');
-                return null;
-            }
-
-            return {
-                document,
-                clock: args.data.clock,
-                authUser: session.user,
-                role: role as UserWorkspaceRole,
-                isApp: args.data.isApp,
-                userId: args.data.userId ?? null,
-            };
-        } catch (err) {
-            this.logger.error(`Failed to get request data: ${err}`);
-            return null;
-        }
-    }
-
-    private async getUserRole(
-        userId: string,
-        workspaceId: string,
-    ): Promise<UserWorkspaceRole | null> {
-        try {
-            const userWorkspace = await this.userWorkspaceRepository.findOne({
-                where: { userId, workspaceId, status: UserWorkspaceStatus.ACTIVE },
-            });
-    
-            return userWorkspace?.role ?? null;
-        } catch (err) {
-            this.logger.error(`Failed to get user role: ${err}`);
-            return null;
-        }
-    }
-
-
-    onModuleDestroy() {
-        this.logger.log('🛑 Shutting down YJS Gateway');
-
-        if (this.wss) {
-            this.wss.close();
-        }
-
-        this.sessionManager.destroyAll((session) => this.persistence.persistSession(session));
-        this.logger.log('✅ Shutdown complete');
-    }
+  onModuleDestroy() {
+    this.logger.log('Shutting down YJS Gateway');
+    this.wss?.close();
+  }
 }
