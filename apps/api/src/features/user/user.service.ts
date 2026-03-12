@@ -50,7 +50,7 @@ export class UserService {
     const foundUser = User.fromEntity(user);
     const roles = await this.getUserWorkspaceRoles(user.id);
 
-    return { id: user.id, user: foundUser, roles };
+    return { id: user.id, user: foundUser, roles, token: process.env.NODE_ENV === 'development' ? currentUser.token : null};
   }
 
   async create(

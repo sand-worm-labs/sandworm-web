@@ -194,7 +194,7 @@ export const WorkspaceSidebar = () => {
     <aside
       className={`h-full flex flex-col justify-between bg-base-500 border-r  border-[#E9ECEF] dark:border-border-tertiary font-body
       transition-all duration-300 ease-in-out
-      ${collapsed ? "w-16" : "w-[260px]"}
+      ${collapsed ? "w-16" : "w-[18rem]"}
       `}
     >
       <div>
