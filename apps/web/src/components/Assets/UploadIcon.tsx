@@ -1,6 +1,6 @@
 import React from "react";
 
-export const UploadIcon = (className: string) => {
+export const UploadIcon = ({ className }: { className: string }) => {
   return (
     <svg
       width="41"
