@@ -67,7 +67,6 @@ function upsertDocumentInMemory(
     affectedDocuments = affectedDocuments.set(body.id, {
       id: body.id,
       title: "",
-      icon: "DocumentIcon",
       parentId: body.parentId,
       orderIndex,
       isSyncedWithYjs: true,
