@@ -139,15 +139,6 @@ type WorkspaceInfo {
   role: String!
 }
 
-type Comment {
-  id: String!
-  body: String!
-  documentId: String!
-  authorId: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-}
-
 type Environment {
   id: String!
   workspaceId: String!
@@ -170,6 +161,15 @@ type EnvironmentVariable {
   name: String!
   value: String!
   workspaceId: String!
+  updatedAt: DateTime!
+}
+
+type Comment {
+  id: String!
+  body: String!
+  documentId: String!
+  authorId: String!
+  createdAt: DateTime!
   updatedAt: DateTime!
 }
 
