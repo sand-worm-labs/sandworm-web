@@ -12,7 +12,6 @@ type EditorTheme =
   | "nord"
   | "solarized"
   | "material";
-type FontSize = "small" | "medium" | "large";
 type DateFormat = "us" | "eu" | "iso";
 
 interface ThemeOption {
@@ -156,14 +155,7 @@ const EditorThemeCard: React.FC<{
 const Preferences: React.FC = () => {
   const { theme, setTheme } = useTheme();
   const [editorTheme, setEditorTheme] = useState<EditorTheme>("monokai");
-  const [fontSize, setFontSize] = useState<FontSize>("medium");
   const [dateFormat, setDateFormat] = useState<DateFormat>("us");
-  const [autoSave, setAutoSave] = useState(true);
-  const [lineNumbers, setLineNumbers] = useState(true);
-  const [notifications, setNotifications] = useState(true);
-  const [soundEffects, setSoundEffects] = useState(false);
-  const [compactMode, setCompactMode] = useState(false);
-  const [queryTimeout, setQueryTimeout] = useState(30);
 
   const themeOptions: ThemeOption[] = [
     {

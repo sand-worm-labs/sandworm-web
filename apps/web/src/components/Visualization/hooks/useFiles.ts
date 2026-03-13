@@ -7,7 +7,6 @@ import { useListFilesQuery, useDeleteFileMutation } from "@/generated/graphql";
 
 import { NEXT_PUBLIC_API_URL } from "../utils/env";
 
-
 export type UploadFile = {
   status: "enqueued" | "uploading" | "asking-replace";
   replace: boolean;

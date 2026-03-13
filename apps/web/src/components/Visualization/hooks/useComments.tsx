@@ -6,12 +6,10 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 
 import {
-  useGetDocumentCommentsQuery,
   useCreateCommentMutation,
   useDeleteCommentMutation,
 } from "@/generated/graphql";
@@ -71,7 +69,6 @@ type UseComments = [Comment[], Omit<API, "setComments">];
 
 // Helper function to transform GraphQL/WebSocket data to Comment type
 function transformComment(c: any, userData?: any): Comment {
-  // Check for user data passed separately (WebSocket) or nested (GraphQL)
   const user = userData || c.author;
 
   return {
@@ -93,7 +90,6 @@ export function useComments(documentId: string): UseComments {
   const [state, api] = useContext(Context);
   const socket = useWebsocket();
 
-  // Request comments via WebSocket only
   useEffect(() => {
     if (socket && documentId) {
       socket.emit("fetch-document-comments", { documentId });
@@ -126,11 +122,7 @@ export function CommentsProvider(props: Props) {
       return;
     }
 
- 
-
     const onComments = (data: any) => {
-  
-
       // Transform WebSocket data to match our Comment type
       const transformedComments = (data.comments || []).map(transformComment);
       setState(state => state.set(data.documentId, transformedComments));
@@ -138,8 +130,6 @@ export function CommentsProvider(props: Props) {
     socket.on("document-comments", onComments);
 
     const onComment = (data: any) => {
-  
-
       const transformedComment = transformComment(data.comment, data.user);
 
       setState(state => {
@@ -158,8 +148,6 @@ export function CommentsProvider(props: Props) {
     socket.on("document-comment", onComment);
 
     const onCommentDeleted = (data: any) => {
-   
-
       setState(state => {
         const comments = state.get(data.documentId) ?? [];
         return state.set(
@@ -169,7 +157,6 @@ export function CommentsProvider(props: Props) {
       });
     };
     socket.on("document-comment-deleted", onCommentDeleted);
-
 
     return () => {
       socket.off("document-comments", onComments);

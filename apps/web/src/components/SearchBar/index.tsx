@@ -144,14 +144,14 @@ export const SearchBar = () => {
       <button
         type="button"
         onClick={() => setIsActive(true)}
-        className="p-2 rounded-lg dark:bg-[#1A1A1A] border dark:border-border-tertiary border-[#DEE2E6] dark:text-white text-ink-200 hover:bg-gray-100 dark:hover:bg-[#21262d] transition-colors bg-[#F1F3F4]"
+        className="p-2 rounded-lg dark:bg-base-100 border dark:border-border-tertiary border-[#DEE2E6] dark:text-white text-ink-200 hover:bg-gray-100 dark:hover:bg-[#21262d] transition-colors bg-[#F1F3F4]"
         aria-label="Open search"
       >
         <Search size={18} />
       </button>
 
       {isActive && (
-        <div className="absolute z-50 top-full mt-4 left-[0px] min-w-[32rem] dark:bg-[#0C1015] bg-white border dark:border-border-tertiary rounded-xl shadow-md overflow-hidden border-[#E3E5E8]">
+        <div className="absolute z-50 top-full mt-4 left-[0px] min-w-[32rem] dark:bg-base-100 bg-white border dark:border-border-tertiary rounded-xl shadow-md overflow-hidden border-[#E3E5E8]">
           {/* Search Input Inside Dropdown */}
           <div className="px-4 py-3 border-b dark:border-border-tertiary border-border-secondary">
             <div className="relative">
@@ -251,7 +251,7 @@ export const SearchBar = () => {
               })}
             </div>
 
-            <hr className="my-2 dark:border-[#30363d] border-border-secondary" />
+            <hr className="my-2 dark:border-border-secondary border-border-secondary" />
 
             {/* Creators */}
             <div>

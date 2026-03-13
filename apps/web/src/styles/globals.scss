@@ -364,10 +364,14 @@ input:-webkit-autofill:active {
 .dark input:-webkit-autofill:hover,
 .dark input:-webkit-autofill:focus,
 .dark input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 30px #121417 inset !important;
+  -webkit-box-shadow: 0 0 0 30px #30302E inset !important;
   -webkit-text-fill-color: #ffffff !important;
   border: 1px solid #262a30 !important;
   transition: background-color 5000s ease-in-out 0s;
+  -webkit-transition: background-color 5000s ease-in-out 0s;
+  -moz-transition: background-color 5000s ease-in-out 0s;
+  -ms-transition: background-color 5000s ease-in-out 0s;
+  -o-transition: background-color 5000s ease-in-out 0s;
 }
 
 [type="text"],

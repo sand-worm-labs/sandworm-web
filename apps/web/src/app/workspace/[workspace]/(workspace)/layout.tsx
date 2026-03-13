@@ -39,6 +39,8 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
   const isOnNotebook = pathname.includes("/notebook");
 
   // Role comes directly from getUserWorkspaceInfo — always fresh, never stale
+
+  console.log(workspaceInfo, "workspace");
   const isViewer = workspaceInfo?.role === "viewer";
 
   const handleRequestAccess = async () => {
@@ -47,7 +49,6 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
     // TODO: Poll getUserWorkspaceInfo or listen to WebSocket to transition
     // from "sent" -> "pending" -> "approved" when admin acts on the request.
   };
-
 
   return (
     <div className="flex h-screen w-full bg-base-100">
