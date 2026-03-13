@@ -23,7 +23,7 @@ export function getDocId(
 }
 
 function getYjsUrl() {
-  const baseUrl = NEXT_PUBLIC_API_WS_URL(); // ws://localhost:8003
+  const baseUrl = NEXT_PUBLIC_API_WS_URL();
   const url = new URL(baseUrl);
   url.port = (parseInt(url.port, 10) + 2).toString();
   return `${url.toString()}yjs`;

@@ -230,7 +230,10 @@ export const HomeTab = () => {
         ))}
       </motion.div>
 
-      <Tabs defaultValue="recent" className=" pt-5 border-t border-[#E9ECEF]  dark:border-border-tertiary">
+      <Tabs
+        defaultValue="recent"
+        className=" pt-5 border-t border-[#E9ECEF]  dark:border-border-tertiary"
+      >
         <TabsList className="w-full justify-start px-0 pb-8">
           <TabsTrigger
             value="recent"

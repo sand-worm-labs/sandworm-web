@@ -54,6 +54,7 @@ module.exports = {
     "import/extensions": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "react/require-default-props": "off",
+    "no-nested-ternary": "off",
     "import/order": [
       "warn",
       {

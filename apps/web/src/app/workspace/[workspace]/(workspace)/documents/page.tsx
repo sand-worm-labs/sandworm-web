@@ -33,7 +33,7 @@ export default function DocumentsPage() {
     );
   }
 
-  if (!state.loading && documents?.length === 0) {
+  if (!state.loading && documents?.size === 0) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">

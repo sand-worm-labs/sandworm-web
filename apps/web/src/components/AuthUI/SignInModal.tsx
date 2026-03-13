@@ -19,7 +19,7 @@ export const SignInModal = () => {
 
   return (
     <Dialog open={signInOpen} onOpenChange={closeSignIn}>
-      <DialogContent className="sm:max-w-3xl p-0 py-12 pb-5 overflow-hidden border-[#ffffff30] bg-white dark:bg-[#000] dark:text-white rounded-2xl ">
+      <DialogContent className="sm:max-w-3xl p-0 py-12 pb-5 overflow-hidden border-[#ffffff30] bg-white dark:bg-base-100 dark:text-white rounded-2xl ">
         <div className="grid grid-cols-6  h-full">
           <div className="col-span-3 flex flex-col justify-center p-8 pr-[6rem]">
             <DialogTitle>

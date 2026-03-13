@@ -43,10 +43,7 @@ export const ForgotPasswordForm = ({ onSuccess }: ForgotPasswordFormProps) => {
 
   const errorMessage = getErrorMessage(state.error);
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="mt-4 space-y-4 w-full font-body "
-    >
+    <form onSubmit={handleSubmit} className="mt-4 space-y-4 w-full font-body ">
       <div>
         <label className="block text-sm font-medium dark:text-white text-ink-200">
           Email

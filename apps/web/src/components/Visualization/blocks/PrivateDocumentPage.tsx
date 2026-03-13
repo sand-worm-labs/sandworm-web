@@ -154,14 +154,6 @@ function PrivateDocumentPageInner(
   );
   const isViewer = roleEntry?.[props.workspaceId] === "viewer";
 
-  console.log(
-    props?.user?.role?.[props.workspaceId],
-
-    "user",
-    isViewer,
-    props?.user?.role
-  );
-
   const isDeleted = !isNil(props.document.deletedAt);
 
   const [isFullScreen, { toggle: onToggleFullScreen }] = useFullScreenDocument(
@@ -246,15 +238,6 @@ function PrivateDocumentPageInner(
     []
   );
 
-  console.log(
-    props.document,
-    "document.appClock",
-    props?.document?.appClock,
-    "document.userAppClock[userId]",
-    props.document?.userAppClock?.[props.user.id],
-    props.document?.publishedAt
-  );
-
   // ⬢ Sidebar content for NotebookPanel
   // =====================================
   const sidebarContent = useMemo(
@@ -329,7 +312,6 @@ function PrivateDocumentPageInner(
           isViewer={isViewer}
           isDeleted={isDeleted}
           isFullScreen={isFullScreen}
-          position="sidebar"
         />
       </>
     ),
@@ -362,8 +344,7 @@ function PrivateDocumentPageInner(
         )}
         <span className="w-full truncate">
           <span className="font-semibold">
-            {props.isApp ||
-           isViewer ? (
+            {props.isApp || isViewer ? (
               <span className="text-ink-400">Viewing</span>
             ) : (
               "Editing"
@@ -390,7 +371,7 @@ function PrivateDocumentPageInner(
           />
         )}
 
-        {isViewer  ? null : props.isApp ? (
+        {isViewer ? null : props.isApp ? (
           <Link
             className="flex items-center rounded-md px-3 py-1 text-sm bg-white dark:bg-base-100  dark:text-ink-100  hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 group relative border border-[#E9ECEF] dark:border-border-tertiary"
             href={`/workspace/${props.document.workspaceId}/documents/${props.document.id}/notebook/edit`}
