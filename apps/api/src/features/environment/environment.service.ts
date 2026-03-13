@@ -89,7 +89,6 @@ export class EnvironmentService {
       environment.startedAt = new Date();
       await this.environmentRepository.save(environment);
 
-      // Emit RUNNING status
       await this.emitStatusUpdate(workspaceId, {
         status: environment.status,
         startedAt: environment.startedAt,
@@ -104,13 +103,11 @@ export class EnvironmentService {
         error,
       );
 
-      // Update to ERROR status
       await this.environmentRepository.update(
         { workspaceId },
         { status: EnvironmentStatus.STOPPED },
       );
 
-      // Emit error event
       await this.emitStatusError(workspaceId, error);
 
       throw error;

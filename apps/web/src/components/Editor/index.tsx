@@ -1007,7 +1007,7 @@ file`;
           onDeleteTab={hasMultipleTabs ? onDeleteCurrentTab : null}
           onDeleteBlock={onRemoveBlockGroup}
           onHideAllTabs={onHideAllTabs}
-          menuPosition={isSideBarOpen ? "left" : "right"}
+          menuPosition={isSideBarOpen ? "bottom" : "right"}
         />
       </div>
       <div className="flex-grow max-w-full">
