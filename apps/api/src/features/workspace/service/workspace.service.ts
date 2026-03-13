@@ -24,6 +24,7 @@ import {
 } from '@/common/utils/uuid';
 import { WorkspaceInfo } from '../model/workspace-info.model';
 import { getRandomIconColor } from '@/common/utils/color';
+import { EnvironmentService } from '@/features/environment/environment.service';
 
 @Injectable()
 export class WorkspaceService {
@@ -37,7 +38,8 @@ export class WorkspaceService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(DocumentEntity)
-    private readonly documentRepository: Repository<DocumentEntity>
+    private readonly documentRepository: Repository<DocumentEntity>,
+    private readonly environmentService: EnvironmentService,
   ) { }
 
 
@@ -118,7 +120,8 @@ export class WorkspaceService {
     });
 
     await this.workspaceMembersRepository.save(userWorkspace);
-
+    await this.environmentService.getEnvironment(savedWorkspace.id);
+    
     return Workspace.fromEntity(savedWorkspace);
   }
 

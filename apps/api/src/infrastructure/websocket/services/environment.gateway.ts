@@ -27,6 +27,7 @@ export class EnvironmentGatewayService {
 
             const status = environment?.status ?? 'Stopped';
             const startedAt = environment?.startedAt?.toISOString() ?? null;
+            console.dir({ status, startedAt }, { depth: 1 });
 
             client.emit('environment-status-update', {
                 workspaceId,

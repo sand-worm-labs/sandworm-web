@@ -15,12 +15,6 @@ export class EnvironmentSeeder1732019848275 implements Seeder {
     const workspaces = await workspaceRepository.find();
 
     for (const workspace of workspaces) {
-      // skip if environment already exists for this workspace
-      const existing = await environmentRepository.findOne({
-        where: { workspaceId: workspace.id },
-      });
-      if (existing) continue;
-
       const environment = environmentRepository.create({
         workspaceId: workspace.id,
         status: EnvironmentStatus.STOPPED,
