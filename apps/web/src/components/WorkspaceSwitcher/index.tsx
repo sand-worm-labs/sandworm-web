@@ -32,7 +32,7 @@ export default function WorkspaceSwitcher({
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [treeOpen, setTreeOpen] = useState(true);
+  const [treeOpen, setTreeOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   const { workspaceInfo } = useCurrentWorkspaceInfo();

@@ -39,6 +39,8 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
   const isOnNotebook = pathname.includes("/notebook");
 
   // Role comes directly from getUserWorkspaceInfo — always fresh, never stale
+
+  console.log(workspaceInfo, "workspace")
   const isViewer = workspaceInfo?.role === "viewer";
 
   const handleRequestAccess = async () => {
