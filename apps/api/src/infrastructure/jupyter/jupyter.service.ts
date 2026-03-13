@@ -48,8 +48,6 @@ export class JupyterService implements IJupyterService, OnModuleInit, OnModuleDe
     await this.start();
   }
 
-
-
   async onModuleDestroy(): Promise<void> {
     this.logger.log('JupyterService shutting down');
     this.isPolling = false;
@@ -92,7 +90,6 @@ export class JupyterService implements IJupyterService, OnModuleInit, OnModuleDe
         headers: { Authorization: `token ${token}` },
         signal: AbortSignal.timeout(5000), // don't hang forever
       })
-
       if (res.ok) {
         this.logger.log('Jupyter server is reachable on init')
         // optionally bulk-update all workspace environments to Running
@@ -161,8 +158,6 @@ export class JupyterService implements IJupyterService, OnModuleInit, OnModuleDe
         headers: { Authorization: `token ${this.token}` },
       });
     }
-
-    // Re-bind so the workspace is ready for execution again
     await this.bindWorkspace(workspaceId);
   }
 
@@ -332,6 +327,7 @@ export class JupyterService implements IJupyterService, OnModuleInit, OnModuleDe
     status: EnvironmentStatus,
     startedAt: Date | null,
   ): void {
+    console.dir({ status, startedAt, workspaceId }, { depth: 1 });
     this.eventEmitter.emit(
       EventNames.ENVIRONMENT_STATUS_UPDATE,
       new EnvironmentStatusEvent(

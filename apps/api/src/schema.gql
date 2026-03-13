@@ -121,24 +121,6 @@ type Document {
   parent: Document
 }
 
-type WorkspaceMember {
-  userId: String!
-  role: String!
-  requestedRole: String
-  user: User
-  workspaceName: String
-  workspaceId: String
-}
-
-type WorkspaceInfo {
-  id: String!
-  name: String!
-  ownerId: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  role: String!
-}
-
 type Environment {
   id: String!
   workspaceId: String!
@@ -162,6 +144,24 @@ type EnvironmentVariable {
   value: String!
   workspaceId: String!
   updatedAt: DateTime!
+}
+
+type WorkspaceMember {
+  userId: String!
+  role: String!
+  requestedRole: String
+  user: User
+  workspaceName: String
+  workspaceId: String
+}
+
+type WorkspaceInfo {
+  id: String!
+  name: String!
+  ownerId: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  role: String!
 }
 
 type Comment {
