@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class AddTokenVersionToUsers1772746779132 implements MigrationInterface {
-    name = 'AddTokenVersionToUsers1772746779132'
+export class Init1773395873162 implements MigrationInterface {
+    name = 'Init1773395873162'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
@@ -225,7 +225,7 @@ export class AddTokenVersionToUsers1772746779132 implements MigrationInterface {
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "workspace_id" uuid NOT NULL,
                 "status" "public"."environment_status_enum" NOT NULL DEFAULT 'Stopped',
-                "started_at" TIMESTAMP,
+                "started_at" TIMESTAMP NOT NULL,
                 "last_activity_at" TIMESTAMP,
                 "resource_version" integer NOT NULL DEFAULT '0',
                 "jupyter_token" character varying NOT NULL DEFAULT '',

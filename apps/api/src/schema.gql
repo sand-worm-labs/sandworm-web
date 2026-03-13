@@ -121,6 +121,31 @@ type Document {
   parent: Document
 }
 
+type Environment {
+  id: String!
+  workspaceId: String!
+  status: EnvironmentStatus!
+  resourceVersion: Float!
+  lastActivityAt: DateTime!
+}
+
+"""The status of the Jupyter environment"""
+enum EnvironmentStatus {
+  RUNNING
+  STOPPED
+  FAILING
+  STARTING
+  STOPPING
+}
+
+type EnvironmentVariable {
+  id: String!
+  name: String!
+  value: String!
+  workspaceId: String!
+  updatedAt: DateTime!
+}
+
 type WorkspaceMember {
   userId: String!
   role: String!
@@ -145,31 +170,6 @@ type Comment {
   documentId: String!
   authorId: String!
   createdAt: DateTime!
-  updatedAt: DateTime!
-}
-
-type Environment {
-  id: String!
-  workspaceId: String!
-  status: EnvironmentStatus!
-  resourceVersion: Float!
-  lastActivityAt: DateTime!
-}
-
-"""The status of the Jupyter environment"""
-enum EnvironmentStatus {
-  RUNNING
-  STOPPED
-  FAILING
-  STARTING
-  STOPPING
-}
-
-type EnvironmentVariable {
-  id: String!
-  name: String!
-  value: String!
-  workspaceId: String!
   updatedAt: DateTime!
 }
 

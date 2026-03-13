@@ -69,6 +69,8 @@ function errorMessage(
           retry.
         </>
       );
+    default:
+      return null;
   }
 }
 

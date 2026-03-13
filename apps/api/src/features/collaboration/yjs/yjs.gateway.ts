@@ -80,8 +80,14 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
       const { document, userId, authUser, role, isApp, clock, yjsAppDocumentId } = data;
 
       const doc = await this.getDoc(document, isApp, userId, yjsAppDocumentId);
+
       if (!doc) {
         client.close(1011, 'Failed to load document');
+        return;
+      }
+
+      if (role === UserWorkspaceRole.VIEWER) {
+        this.closeConn(doc, client);
         return;
       }
 
@@ -104,15 +110,17 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
           const now = Date.now();
           if (now - lastRoleUpdate > 5000) {
             lastRoleUpdate = now;
+
             const updatedRole = await this.getUserRole(authUser.id, document.workspaceId);
-            if (!updatedRole) {
+
+            if (!updatedRole || updatedRole === UserWorkspaceRole.VIEWER) {
               this.closeConn(doc, client);
               return;
             }
+
             origin.role = updatedRole;
           }
 
-          console.dir(doc, { depth: 1 });
           this.handleMessage(doc, new Uint8Array(message), origin);
         } catch (err) {
           this.logger.error(`Message error: ${err}`);
