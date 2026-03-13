@@ -405,6 +405,8 @@ function PivotTableBlock(props: Props) {
         case "aborting":
         case "completed":
           return null;
+        default:
+          return null;
       }
     } else {
       return {
