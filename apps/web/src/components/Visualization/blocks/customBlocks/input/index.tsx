@@ -46,6 +46,8 @@ function errorMessage(
               It should be a valid string.
             </>
           );
+        default:
+          return null;
       }
     }
     case "unexpected-error":
@@ -55,6 +57,8 @@ function errorMessage(
           retry.
         </>
       );
+    default:
+      return null;
   }
 }
 

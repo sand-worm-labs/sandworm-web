@@ -1,6 +1,6 @@
 import React from "react";
 
-export const UploadIcon = () => {
+export const UploadIcon = ({ className }: { className: string }) => {
   return (
     <svg
       width="41"
@@ -8,6 +8,7 @@ export const UploadIcon = () => {
       viewBox="0 0 41 41"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      className={className}
     >
       <rect
         x="0.5"
