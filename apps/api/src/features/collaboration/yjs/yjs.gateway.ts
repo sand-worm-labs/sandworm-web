@@ -86,11 +86,6 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
         return;
       }
 
-      if (role === UserWorkspaceRole.VIEWER) {
-        this.closeConn(doc, client);
-        return;
-      }
-
       // Clock validation
       if (doc.clock !== clock) {
         this.logger.warn(`Clock mismatch: client=${clock} doc=${doc.clock} for ${doc.id}`);
