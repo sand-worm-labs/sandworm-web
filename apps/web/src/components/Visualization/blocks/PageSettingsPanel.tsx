@@ -71,8 +71,6 @@ export default function PageSettingsPanel(props: Props) {
       leaveFrom="w-[354px]"
       leaveTo="w-0"
     >
-    
-  
       <div className="w-[324px] flex flex-col border-l dark:border-border-tertiary border-border-secondary h-full bg-white font-body dark:bg-base-100 ">
         <div className="flex justify-between border-b dark:border-border-tertiary p-6 space-x-3">
           <div>
@@ -83,12 +81,12 @@ export default function PageSettingsPanel(props: Props) {
               Configure this page's behavior and default visualization mode.
             </p>
             <button
-        type="button"
-        className="absolute z-10 top-7 transform rounded-full border border-gray-300  text-ink-400 bg-base-100 hover:bg-gray-100 w-6 h-6 flex justify-center items-center right-3 -translate-x-1/2 dark:border-border-tertiary "
-        onClick={props.onHide}
-      >
-        <ChevronDoubleRightIcon className="w-3 h-3" />
-      </button>
+              type="button"
+              className="absolute z-10 top-7 transform rounded-full border border-gray-300  text-ink-400 bg-base-100 hover:bg-gray-100 w-6 h-6 flex justify-center items-center right-3 -translate-x-1/2 dark:border-border-tertiary "
+              onClick={props.onHide}
+            >
+              <ChevronDoubleRightIcon className="w-3 h-3" />
+            </button>
           </div>
         </div>
         <div className="w-full divide-y divide-border-secondary border-b dark:border-border-tertiary border-border-secondary border dark:divide-border-tertiary">

@@ -106,7 +106,6 @@ function applyBlockSpec(
       );
       break;
     }
-    
   }
 }
 

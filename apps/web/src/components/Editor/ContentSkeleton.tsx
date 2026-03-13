@@ -57,13 +57,13 @@ export function ContentSkeleton({ visible }: Props) {
   const [show, setShow] = useResettableState(() => false, [visible]);
 
   useEffect(() => {
-    if (!visible) return;
+    if (!visible) return () => {};
     const t = setTimeout(() => setShow(true), TIMEOUT_TO_SHOW);
     return () => clearTimeout(t);
   }, [visible, setShow]);
 
   const rows = useMemo(() => {
-    const ROW_HEIGHT = 22; // px incl gap
+    const ROW_HEIGHT = 22;
     const viewportHeight =
       typeof window !== "undefined" ? window.innerHeight : 800;
     const rowsNeeded = Math.ceil(viewportHeight / ROW_HEIGHT) * 2;

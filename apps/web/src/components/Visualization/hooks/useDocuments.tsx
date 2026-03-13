@@ -243,7 +243,7 @@ export function DocumentsProvider(props: Props) {
 
   useEffect(() => {
     if (!socket) {
-      console.log("no socket")
+      console.log("no socket");
       return;
     }
 
@@ -343,7 +343,6 @@ export function DocumentsProvider(props: Props) {
     };
   }, [socket]);
 
-  
   const value: [State, React.Dispatch<React.SetStateAction<State>>] = useMemo(
     () => [state, setState],
     [state, setState]

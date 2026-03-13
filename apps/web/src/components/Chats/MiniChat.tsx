@@ -4,12 +4,13 @@ import React, { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { Transition } from "@headlessui/react";
 import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
-import * as Y from "yjs";
+import type * as Y from "yjs";
 
 import { AIChatIcon } from "../Assets/AIChatIcon";
-import { MiniChatInput } from "./MiniChatInput";
 import { useNotebookAI } from "../Visualization/hooks/useNotebookAI";
 import type { APIDataSources } from "../Visualization/hooks/useDataSources";
+
+import { MiniChatInput } from "./MiniChatInput";
 
 // ── Types ───────────────────────────────────────────────────────────────────
 
@@ -185,9 +186,7 @@ export const MiniChat: React.FC<MiniChatProps> = ({
   };
 
   const replaceMessage = (id: string, update: Partial<Message>) => {
-    setMessages(prev =>
-      prev.map(m => (m.id === id ? { ...m, ...update } : m))
-    );
+    setMessages(prev => prev.map(m => (m.id === id ? { ...m, ...update } : m)));
   };
 
   const handleSend = async (text: string) => {
@@ -234,7 +233,9 @@ export const MiniChat: React.FC<MiniChatProps> = ({
 
         <div className="flex-1 overflow-y-auto py-6 px-4">
           {messages.length === 0 ? (
-            <MiniChatEmptyState onSelectPrompt={text => void handleSend(text)} />
+            <MiniChatEmptyState
+              onSelectPrompt={text => void handleSend(text)}
+            />
           ) : (
             <div className="flex flex-col w-full gap-4">
               {messages.map(msg =>

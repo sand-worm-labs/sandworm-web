@@ -1,13 +1,12 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 import { useLogin } from "../Visualization/hooks/useAuth";
 import { Spinner } from "../Spinner/Spinner";
 
 export const SignInForm = () => {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [localError, setLocalError] = useState("");

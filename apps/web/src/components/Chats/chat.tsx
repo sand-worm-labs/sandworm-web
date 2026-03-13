@@ -101,6 +101,7 @@ export function Chat({
             setAttachments={setAttachments}
             messages={messages}
             append={append}
+            workspaceId={workspaceId}
           />
         </form>
 
