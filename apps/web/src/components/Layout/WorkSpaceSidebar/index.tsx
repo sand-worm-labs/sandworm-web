@@ -31,7 +31,7 @@ interface NavItem {
 export const WorkspaceSidebar = () => {
   const pathname = usePathname();
   const workspaceId = useStringQuery("workspace");
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const router = useRouter();
   const documentId = useStringQuery("document");
   const favoriteDocument: any = [];
@@ -194,7 +194,7 @@ export const WorkspaceSidebar = () => {
     <aside
       className={`h-full flex flex-col justify-between bg-base-500 border-r  border-[#E9ECEF] dark:border-border-tertiary font-body
       transition-all duration-300 ease-in-out
-      ${collapsed ? "w-16" : "w-[18rem]"}
+      ${collapsed ? "w-16" : "w-[17.5rem]"}
       `}
     >
       <div>
