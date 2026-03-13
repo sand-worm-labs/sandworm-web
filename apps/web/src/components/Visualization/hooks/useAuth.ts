@@ -50,7 +50,6 @@ type ForgotPasswordAPI = {
 
 type UseForgotPassword = [AuthState, ForgotPasswordAPI];
 
-
 export const useSignup = (): UseSignup => {
   const [state, setState] = useState<{
     loading: boolean;
@@ -137,8 +136,7 @@ export const useLogin = (): UseLogin => {
         .then(async res => {
           if (res.ok) {
             const data: LoginResponse = await res.json();
-            // Cookies are set by the server (HttpOnly auth token + is_authenticated presence cookie).
-            // Nothing to store on the client.
+
             setState({ loading: false, data, error: undefined });
             window.location.href = callback || "/workspace";
             return;
@@ -201,7 +199,9 @@ export const useConfirmEmail = (): UseConfirmEmail => {
 
         if (res.status === 404 || res.status === 422) {
           const errorData = await res.json().catch(() => ({}));
-          const isExpired = errorData?.message?.toLowerCase().includes("expired");
+          const isExpired = errorData?.message
+            ?.toLowerCase()
+            .includes("expired");
           setState({
             loading: false,
             success: false,
@@ -226,6 +226,7 @@ export type SessionUser = ApiUser & {
   role?: Array<Record<string, UserWorkspaceRole>>;
   picture?: string | null;
   lastVisitedWorkspaceId?: string | null;
+  token: string | null;
 };
 
 type UseSessionReturn = {
@@ -244,8 +245,6 @@ export const useSession = ({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // Always fire — browser attaches the HttpOnly access_token cookie automatically.
-  // Query result is the auth signal.
   const { data, loading, error } = useCurrentUserQuery({
     fetchPolicy: "network-only",
   });
@@ -262,7 +261,8 @@ export const useSession = ({
       user: data?.currentUser?.user
         ? {
             ...data.currentUser.user,
-            role: data.currentUser.user.role || [],
+            role: data.currentUser.roles || [],
+            token: data.currentUser.token,
             name:
               data.currentUser.user.fullName ||
               `${data.currentUser.user.firstName || ""} ${data.currentUser.user.lastName || ""}`.trim() ||
@@ -285,7 +285,7 @@ export const useSignout = () => {
     try {
       await fetch(`${NEXT_PUBLIC_API_URL()}/auth/logout`, {
         method: "POST",
-        credentials: "include", // sends the HttpOnly cookie so server can invalidate it
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
       });
     } catch (error) {
@@ -357,7 +357,11 @@ export const useResetPassword = (): UseResetPassword => {
     })
       .then(async res => {
         if (res.ok) {
-          setState({ loading: false, data: { success: true }, error: undefined });
+          setState({
+            loading: false,
+            data: { success: true },
+            error: undefined,
+          });
           return;
         }
 

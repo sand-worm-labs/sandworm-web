@@ -4,6 +4,8 @@
 query CurrentUser {
   currentUser {
     id
+    token
+    roles
     user {
       id
       username
