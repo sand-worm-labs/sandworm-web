@@ -12,6 +12,7 @@ import { WorkspaceResolver } from './workspace.resolver';
 import { ConfigModule } from '@nestjs/config';
 import { MailModule } from '@/infrastructure/mail/mail.module';
 import { WorkspaceMembershipService } from './service/workspace-membership.service';
+import { EnvironmentModule } from '../environment/environment.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { WorkspaceMembershipService } from './service/workspace-membership.servi
     JwtModule.register({}),
     ConfigModule,
     MailModule,
+    EnvironmentModule
   ],
   providers: [WorkspaceService, WorkspaceMembershipService, WorkspaceResolver],
   exports: [WorkspaceService],

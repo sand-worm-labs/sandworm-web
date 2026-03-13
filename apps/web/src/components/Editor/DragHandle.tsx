@@ -38,13 +38,13 @@ const DragHandle = ({
   onDuplicateTab: (() => void) | null;
   onDuplicateBlock: () => void;
   onHideAllTabs: () => void;
-  menuPosition: "left" | "right";
+  menuPosition: "left" | "right" | "bottom";
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const menuContainerRef = useRef<HTMLDivElement>(null);
 
   return (
-    <Menu as="div" className="inline-block text-left dark:bg-base-100 ">
+    <Menu as="div" className="inline-block text-left dark:bg-base-100  ">
       {({ open }) => {
         const portalStyle = computeMenuPosition(
           buttonRef,
