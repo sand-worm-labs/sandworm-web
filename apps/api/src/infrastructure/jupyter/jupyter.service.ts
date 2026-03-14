@@ -327,7 +327,6 @@ export class JupyterService implements IJupyterService, OnModuleInit, OnModuleDe
     status: EnvironmentStatus,
     startedAt: Date | null,
   ): void {
-    console.dir({ status, startedAt, workspaceId }, { depth: 1 });
     this.eventEmitter.emit(
       EventNames.ENVIRONMENT_STATUS_UPDATE,
       new EnvironmentStatusEvent(

@@ -10,7 +10,6 @@ export class WorkspaceSeeder1732019848274 implements Seeder {
     dataSource: DataSource,
     factoryManager: SeederFactoryManager
   ): Promise<any> {
-    // Get random users
     const userRepository = dataSource.getRepository(UserEntity);
     const userWorkspaceRepository = dataSource.getRepository(UserWorkspaceEntity);
 
