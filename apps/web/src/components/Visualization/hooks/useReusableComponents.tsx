@@ -121,6 +121,7 @@ export function ReusableComponentsProvider({ workspaceId, children }: Props) {
 
   // Sync query data to state
   useEffect(() => {
+  
     if (data?.getWorkspaceComponents) {
       setState(prev => {
         const next = new Map(prev);
@@ -206,6 +207,7 @@ export function ReusableComponentsProvider({ workspaceId, children }: Props) {
       documentTitle: string,
       documentIcon: string
     ) => {
+
       // Optimistic update
       setState(prev => {
         const next = new Map(prev);

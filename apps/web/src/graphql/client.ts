@@ -1,3 +1,4 @@
+
 import {
   ApolloClient,
   InMemoryCache,
@@ -31,6 +32,7 @@ export const createApolloClient = ({
   graphqlUrl,
   refreshAccessToken,
 }: CreateClientOpts): ApolloClient<NormalizedCacheObject> => {
+
   // 1) Error handling link
   const errorLink = onError(
     ({ graphQLErrors, networkError, operation, forward }) => {
@@ -98,10 +100,7 @@ export const createApolloClient = ({
       if (networkError) {
         console.error(`[Network error]: ${networkError.message}`, networkError);
         if ("statusCode" in networkError && networkError.statusCode === 400) {
-          console.error(
-            "400 Bad Request — Operation:",
-            operation.operationName
-          );
+          console.error("400 Bad Request — Operation:", operation.operationName);
         }
       }
     }

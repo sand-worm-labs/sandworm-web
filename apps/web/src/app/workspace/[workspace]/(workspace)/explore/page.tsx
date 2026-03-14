@@ -181,7 +181,6 @@ async function getStarredQueries(page = "1") {
     const data = await axios.get<QueryResponse>(
       `/api/query?type=stars&page=${page}&limit=10`
     );
-    console.log(data);
     return { data: mockQueryResponse, hasError: true };
   } catch (error) {
     console.error("Failed to fetch starred queries:", error);

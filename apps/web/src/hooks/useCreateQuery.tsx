@@ -1,15 +1,14 @@
 import { useState, useCallback } from "react";
+import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 
 import type { CreateQueryPayload } from "@/services/axios/queryService";
 import { createQuery } from "@/services/axios/queryService";
 import { useSandwormStore } from "@/store";
 import { useQueryStore } from "@/store/queries";
-import { useSession } from "@/components/Visualization/hooks/useAuth";
 
 export const useCreateQuery = () => {
-  const session = useSession({ redirectToLogin: true });
-
+  const { data: session } = useSession();
   const { replaceTabId, closeTab, createTab } = useSandwormStore();
   const { loadQueries } = useQueryStore();
 

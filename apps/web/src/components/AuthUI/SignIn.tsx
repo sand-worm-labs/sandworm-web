@@ -43,7 +43,7 @@ export const SignIn = () => {
       <div className="flex justify-between w-full text-sm font-body mt-3">
         <Link
           href="/signup"
-          className="text-accent dark:text-primary hover:underline font-medium"
+          className="text-accent hover:underline font-medium"
         >
           Sign Up
         </Link>

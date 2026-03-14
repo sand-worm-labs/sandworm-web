@@ -31,7 +31,9 @@ export const SignUp = () => {
 
           <div className="flex items-center gap-3 w-full my-2.5">
             <div className="h-px bg-[#E9ECEF] dark:bg-[#FFFFFF30] flex-1" />
-            <span className="text-xs text-muted-foreground font-body ">or</span>
+            <span className="text-xs text-muted-foreground font-body ">
+              or
+            </span>
             <div className="h-px bg-[#E9ECEF] dark:bg-[#FFFFFF30] flex-1" />
           </div>
         </>
@@ -42,10 +44,7 @@ export const SignUp = () => {
       {!isUsernameStep && (
         <p className="text-center text-ink-500 dark:text-ink-400 font-body  text-sm mt-4">
           Have an account?
-          <Link
-            href="/signin"
-            className="text-accent dark:text-primary hover:underline ml-1"
-          >
+          <Link href="/signin" className="text-accent hover:underline ml-1">
             Sign In
           </Link>
         </p>

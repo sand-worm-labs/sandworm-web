@@ -46,7 +46,7 @@ export default function ForgotPasswordPage() {
       <div className="text-center flex justify-between items-center">
         <Link
           href="/reset"
-          className="text-ink-100   hover:underline mt-4 text-sm font-body"
+          className="text-ink-100  hover:underline mt-4 text-sm font-body"
         >
           Back to Login
         </Link>

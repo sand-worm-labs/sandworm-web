@@ -3,6 +3,7 @@ import {
   CodeBracketIcon,
   CpuChipIcon,
   FolderIcon,
+  // NewspaperIcon,
 } from "@heroicons/react/20/solid";
 import { NewspaperIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
@@ -174,7 +175,7 @@ interface Props {
   isViewer: boolean;
 }
 function EnvBar(props: Props) {
-  const workspaceId = useStringQuery("workspace");
+  const workspaceId = useStringQuery("workspaceId");
   const { status, loading, restart } = useEnvironmentStatus(workspaceId);
   restart();
   console.dir({ status, loading, restart });

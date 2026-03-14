@@ -2,7 +2,10 @@ import React from "react";
 
 import type { IconProps } from "./types";
 
-export const Folder: React.FC<IconProps> = ({ size = 12, className }) => {
+export const Folder: React.FC<IconProps> = ({
+  size = 12,
+  className,
+}) => {
   return (
     <svg
       width={size}

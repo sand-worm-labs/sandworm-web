@@ -71,7 +71,8 @@ export function FeaturedExploreSection() {
     });
   };
 
-  const handleClick = (id: string) => {};
+  const handleClick = (id: string) => {
+  };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">

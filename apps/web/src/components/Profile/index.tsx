@@ -295,16 +295,17 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                             className="flex items-center justify-between p-4 py-2 rounded-xl dark:border-border-tertiary   transition-colors bg-[#F8F9FA] dark:bg-base-200 border border-[#DEE2E6]"
                           >
                             <div className="flex-1">
-                              <div className="flex flex-col">
-                                <code className="text-sm text-[#6C757D] dark:text-ink-400 font-body font-medium">
-                                  {truncateAddress(wallet.address)}
-                                </code>
-                                {wallet.chain && (
-                                  <span className="text-xs text-[#6C757D] dark:text-ink-400 mt-0.5">
-                                    {wallet.chain}
-                                  </span>
-                                )}
-                              </div>
+                            <div className="flex flex-col">
+                            <code className="text-sm text-[#6C757D] dark:text-ink-400 font-body font-medium">
+                                {truncateAddress(wallet.address)}
+                              </code>
+                              {wallet.chain && (
+                                <span className="text-xs text-[#6C757D] dark:text-ink-400 mt-0.5">
+                                  {wallet.chain}
+                                </span>
+                              )}
+</div>
+                            
                             </div>
                             <button
                               type="button"

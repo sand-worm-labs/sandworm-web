@@ -78,7 +78,7 @@ export const ClaimUsernameStep = ({
               onChange={e => setUsername(e.target.value)}
               onBlur={() => checkUsername(username)}
               placeholder="Enter username"
-              className="bg-[#F8F9FA] dark:bg-base-400 text-ink-500 dark:text-white border-[#DEE2E6] dark:border-border-tertiary dark:placeholder:text-ink-400  py-6 rounded-xl font-body  font-medium text-base"
+              className="bg-[#F8F9FA] dark:bg-[#1A1A1A] text-ink-500 dark:text-white border-[#DEE2E6] dark:border-border-tertiary py-6 rounded-xl font-body  font-medium text-base"
             />
             <Button
               disabled={status !== "available" || isLoading}
