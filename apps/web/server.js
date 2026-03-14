@@ -15,7 +15,7 @@ app.prepare().then(() => {
   })
     .on("upgrade", (req, socket, head) => {
       proxy.ws(req, socket, head, {
-        target: "ws://192.168.1.76:8080",
+        target: "ws://localhost:8003",
         changeOrigin: true,
       });
     })
