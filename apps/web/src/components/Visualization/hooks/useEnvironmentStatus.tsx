@@ -66,6 +66,13 @@ export function EnvironmentStatusProvider(props: Props) {
       status: EnvironmentStatus;
       startedAt: string | null;
     }) => {
+      if (data.status !== "Stopped" || data.startedAt !== null) {
+        console.log(
+          "[environment-status-update] non-default value received:",
+          data
+        );
+      }
+
       setState(s =>
         s.set(data.workspaceId, {
           loading: false,
@@ -78,6 +85,8 @@ export function EnvironmentStatusProvider(props: Props) {
     socket.on("environment-status-update", onStatus);
 
     const onError = (data: { workspaceId: string; error: string }) => {
+      console.log("[environment-status-error] received:", data);
+
       setState(s =>
         s.set(data.workspaceId, {
           ...(s.get(data.workspaceId) ?? getDefaultStateItem()),

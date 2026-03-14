@@ -243,8 +243,13 @@ export function DocumentsProvider(props: Props) {
 
   useEffect(() => {
     if (!socket) {
+      console.log("no socket");
       return;
     }
+
+    socket.onAny((event, ...args) => {
+      console.log("[socket] event:", event, args);
+    });
 
     const onDocuments = (rawData: unknown) => {
       const data = Array.isArray(rawData) ? rawData[0] : rawData;

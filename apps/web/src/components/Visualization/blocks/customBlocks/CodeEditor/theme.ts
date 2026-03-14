@@ -105,7 +105,6 @@ export function materialDark(disabled: boolean): Extension {
   ];
 }
 
-
 export function editorTheme(disabled: boolean, dark: boolean): Extension {
   return dark ? materialDark(disabled) : materialLight(disabled);
 }

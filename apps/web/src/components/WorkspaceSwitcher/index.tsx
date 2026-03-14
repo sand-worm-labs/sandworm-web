@@ -32,7 +32,7 @@ export default function WorkspaceSwitcher({
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [treeOpen, setTreeOpen] = useState(true);
+  const [treeOpen, setTreeOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   const { workspaceInfo } = useCurrentWorkspaceInfo();
@@ -153,7 +153,11 @@ export default function WorkspaceSwitcher({
                 stroke="currentColor"
                 strokeWidth={2}
               >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 4v16m8-8H4"
+                />
               </svg>
               Create new team
             </button>
@@ -185,9 +189,7 @@ export default function WorkspaceSwitcher({
           {/* Right-pointing chevron; rotates to down when open */}
           <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
         </svg>
-        <span className="text-[12px] font-medium text-ink-600">
-          Workspaces
-        </span>
+        <span className="text-[12px] font-medium text-ink-600">Workspaces</span>
       </button>
 
       {/* Trigger pill — only visible when tree is open */}
@@ -226,11 +228,31 @@ export default function WorkspaceSwitcher({
 
           {/* Up/down chevrons */}
           <div className="flex flex-col gap-[0px] text-[#1C3B5A] dark:text-ink-400">
-            <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+            <svg
+              className="w-3 h-3"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2.5}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M5 15l7-7 7 7"
+              />
             </svg>
-            <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            <svg
+              className="w-3 h-3"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2.5}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M19 9l-7 7-7-7"
+              />
             </svg>
           </div>
         </button>
@@ -313,7 +335,11 @@ export default function WorkspaceSwitcher({
               stroke="currentColor"
               strokeWidth={2}
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 4v16m8-8H4"
+              />
             </svg>
             Create new team
           </button>
