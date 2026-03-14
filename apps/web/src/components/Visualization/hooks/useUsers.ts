@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
 
 import type { ApiUser, UserWorkspaceRole, WorkspaceUser } from "@/types";
-import { useGetWorkspaceQuery } from "@/generated/graphql"; 
+import { useGetWorkspaceQuery } from "@/generated/graphql";
 
 import { NEXT_PUBLIC_API_URL } from "../utils/env";
 import type { UserFormValues } from "../blocks/forms/user";
