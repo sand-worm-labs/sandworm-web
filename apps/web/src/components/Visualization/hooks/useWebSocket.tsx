@@ -17,7 +17,6 @@ export function WebsocketProvider({ children }: Props) {
   const [socket, setSocket] = useState<Socket | null>(null);
   const session = useSession({ redirectToLogin: false });
   const workspaceId = useStringQuery("workspace");
-  console.log(session, "session");
 
   useEffect(() => {
     if (!session.user?.id) {
@@ -25,7 +24,7 @@ export function WebsocketProvider({ children }: Props) {
     }
 
     const url = new URL(
-      process.env.NEXT_PUBLIC_API_WS_URL || "http://localhost:8003"
+      process.env.NEXT_PUBLIC_API_URL || "http://localhost:8003"
     );
     const withoutPathname = url.origin;
     const socketPath =
@@ -38,7 +37,6 @@ export function WebsocketProvider({ children }: Props) {
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionAttempts: 5,
-      auth: { token: session.user?.token },
     });
 
     newSocket.on("connect", () => {

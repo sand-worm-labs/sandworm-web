@@ -31,7 +31,7 @@ interface NavItem {
 export const WorkspaceSidebar = () => {
   const pathname = usePathname();
   const workspaceId = useStringQuery("workspace");
-  const [collapsed, setCollapsed] = useState(true);
+  const [collapsed, setCollapsed] = useState(false);
   const router = useRouter();
   const documentId = useStringQuery("document");
   const favoriteDocument: any = [];
@@ -194,7 +194,7 @@ export const WorkspaceSidebar = () => {
     <aside
       className={`h-full flex flex-col justify-between bg-base-500 border-r  border-[#E9ECEF] dark:border-border-tertiary font-body
       transition-all duration-300 ease-in-out
-      ${collapsed ? "w-16" : "w-[17.5rem]"}
+      ${collapsed ? "w-16" : "w-[18rem]"}
       `}
     >
       <div>
@@ -229,7 +229,7 @@ export const WorkspaceSidebar = () => {
                 <Link href={item.href} className={linkClasses(item.href)}>
                   <item.icon
                     size={18}
-                    className={`hover:text-[#A308F0] ${pathname === item.href ? "text-[#A308F0] dark:text-ink-100" : "text-ink-icon"}`}
+                    className={`hover:text-[#A308F0] ${pathname === item.href ? "text-[#A308F0]" : "text-ink-icon"}`}
                   />
                   {!collapsed && item.name}
                 </Link>

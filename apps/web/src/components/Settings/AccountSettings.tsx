@@ -39,6 +39,7 @@ export default function WorkspaceSettings() {
     selectedSettingsWorkspace: null,
   });
 
+
   /* Is Admin */
   const isAdminOfWorkspace = useCallback(
     (targetId: string): boolean => {

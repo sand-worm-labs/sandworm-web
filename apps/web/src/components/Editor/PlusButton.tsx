@@ -59,7 +59,7 @@ interface MultiBlockSuggestionProps {
 
 function MultiBlockSuggestion(props: MultiBlockSuggestionProps) {
   return (
-    <Menu as="div" className="w-full text-sm px-1 relative z-[50]">
+    <Menu as="div" className="w-full text-sm px-1 relative z-30">
       <Menu.Button className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 rounded-full text-[#6C757D] dark:text-ink-400  bg-white dark:bg-base-100   hover:text-gray-700 relative  border border-[#abaeb0] dark:border-border-tertiary py-2.5 hover:border-[#A308F0]">
         {props.icon}
         <span>{props.text}</span>
@@ -77,7 +77,7 @@ function MultiBlockSuggestion(props: MultiBlockSuggestionProps) {
       >
         <Menu.Items
           as="div"
-          className="w-44 mt-2 rounded-lg bg-white dark:bg-base-100  shadow-lg ring-1 ring-black dark:ring-border-tertiary ring-opacity-5 focus:outline-none font-body  divide-y divide-border-secondary z-[99] relative "
+          className="w-44 mt-2 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none font-body  divide-y divide-border-secondary "
         >
           {props.options.map((option, index) => (
             <Menu.Item>
@@ -85,7 +85,7 @@ function MultiBlockSuggestion(props: MultiBlockSuggestionProps) {
                 <button
                   type="button"
                   className={clsx(
-                    active ? "bg-base-100 text-ink-100" : "text-ink-400",
+                    active ? "bg-gray-100 text-ink-100" : "text-gray-700",
                     index === 0 ? "rounded-t-md" : "",
                     index === props.options.length - 1 ? "rounded-b-md" : "",
                     "flex items-center gap-x-2 w-full text-sm px-4 py-3 "
@@ -143,11 +143,11 @@ function BlockList(props: BlockListProps) {
   }, [props.onAddBlock]);
 
   return (
-    <div className="w-full absolute z-30 -translate-y-2 font-body ">
+    <div className="w-full absolute z-30 -translate-y-2 font-body">
       <div className="w-full flex justify-center relative z-30">
         <TriangleUp />
       </div>
-      <div className="w-full   py-1   flex items-center justify-center overflow-hidden ">
+      <div className="w-full   py-1   flex items-center justify-center ">
         <BlockSuggestion
           id="add-block-power"
           icon={<LightningIcon className="w-[20px] h-[20px]" />}
@@ -267,7 +267,7 @@ function PlusButton(props: Props) {
   return (
     <div
       {...btnDivProps}
-      className="w-full group relative py-2 "
+      className="w-full group relative py-2"
       ref={wrapperRef}
     >
       <button

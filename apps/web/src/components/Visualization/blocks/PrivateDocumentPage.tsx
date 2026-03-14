@@ -8,6 +8,7 @@ import { BookUpIcon } from "lucide-react";
 import clsx from "clsx";
 import { AITasks, ExecutionQueue } from "@sandworm/editor";
 import { useHotkeys } from "react-hotkeys-hook";
+import * as Y from "yjs";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/20/solid";
 
 import type { ApiDocument } from "@/types";
@@ -16,6 +17,7 @@ import { DataExplorerContent } from "@/components/ExplorerPanels/DataExplorerCon
 import { MiniChat } from "@/components/Chats/MiniChat";
 import { ClockCountdown } from "@/components/Assets/ClockCountdown";
 import { ChatIcon } from "@/components/Assets/ChatIcon";
+import { Share } from "@/components/Assets/Share";
 
 import { useDataSources } from "../hooks/useDataSources";
 import { useDocuments } from "../hooks/useDocuments";
@@ -148,11 +150,16 @@ function PrivateDocumentPageInner(
   }, []);
 
   const router = useRouter();
-
-  const roleEntry = props?.user?.role?.find(
-    entry => props.workspaceId in entry
+  const shareLinkWithoutSidebar = props.document.shareLinksWithoutSidebar;
+  const copyLink = useMemo(
+    () =>
+      `${NEXT_PUBLIC_PUBLIC_URL()}/workspace/${props.workspaceId}/documents/${
+        props.documentId
+      }/notebook${shareLinkWithoutSidebar ? `?sidebarCollapsed=true` : ""}`,
+    [props.workspaceId, props.documentId, shareLinkWithoutSidebar]
   );
-  const isViewer = roleEntry?.[props.workspaceId] === "viewer";
+
+  const isViewer = props?.user?.role?.[props.workspaceId] === "viewer";
 
   const isDeleted = !isNil(props.document.deletedAt);
 
@@ -238,6 +245,15 @@ function PrivateDocumentPageInner(
     []
   );
 
+  console.log(
+    props.document,
+    "document.appClock",
+    props?.document?.appClock,
+    "document.userAppClock[userId]",
+    props.document?.userAppClock?.[props.user.id],
+    props.document?.publishedAt
+  );
+
   // ⬢ Sidebar content for NotebookPanel
   // =====================================
   const sidebarContent = useMemo(
@@ -312,6 +328,7 @@ function PrivateDocumentPageInner(
           isViewer={isViewer}
           isDeleted={isDeleted}
           isFullScreen={isFullScreen}
+          position="sidebar"
         />
       </>
     ),
@@ -337,14 +354,15 @@ function PrivateDocumentPageInner(
   const topBarContent = (
     <div className="flex items-center w-full justify-between gap-x-6">
       <div className="w-full overflow-hidden flex items-center gap-x-1.5 text-sm text-ink-400 dark:text-ink-400  font-body">
-        {props.isApp || isViewer ? (
+        {props.isApp || props?.user?.role?.[props.workspaceId] === "viewer" ? (
           <EyeIcon className="w-4 h-4" />
         ) : (
           <PencilIcon className="w-4 h-4" />
         )}
         <span className="w-full truncate">
           <span className="font-semibold">
-            {props.isApp || isViewer ? (
+            {props.isApp ||
+            props?.user?.role?.[props.workspaceId] === "viewer" ? (
               <span className="text-ink-400">Viewing</span>
             ) : (
               "Editing"
@@ -371,10 +389,23 @@ function PrivateDocumentPageInner(
           />
         )}
 
-        {isViewer ? null : props.isApp ? (
+        {/*  <ShareDropdown
+          link={copyLink}
+          isPublic={false}
+          onTogglePublic={() => {}}
+          workspaceId={props.workspaceId}
+          documentId={props.documentId}
+          documentTitle={documentTitle}
+          role={props?.user?.role?.[props.workspaceId]}
+          isDashboard={false}
+          isApp={props.isApp}
+        /> */}
+
+        {props?.user?.role?.[props.workspaceId] ===
+        "viewer" ? null : props.isApp ? (
           <Link
             className="flex items-center rounded-md px-3 py-1 text-sm bg-white dark:bg-base-100  dark:text-ink-100  hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 group relative border border-[#E9ECEF] dark:border-border-tertiary"
-            href={`/workspace/${props.document.workspaceId}/documents/${props.document.id}/notebook/edit`}
+            href= {`/workspace/${props.document.workspaceId}/documents/${props.document.id}/notebook/edit`}
           >
             <PencilIcon className="w-5 h-5" />
             <span>Edit</span>
@@ -424,7 +455,9 @@ function PrivateDocumentPageInner(
           isPublicViewer={false}
           isDeleted={isDeleted}
           onRestoreDocument={onRestoreDocument}
-          isEditable={!props.isApp && !isViewer}
+          isEditable={
+            !props.isApp && props.user.role[props.workspaceId] !== "viewer"
+          }
           isPDF={false}
           isApp={props.isApp}
           userId={props.user.id}
@@ -498,7 +531,6 @@ function PrivateDocumentPageInner(
             <MiniChat
               visible={selectedSidebar?._tag === "chat"}
               onClose={onHideSidebar}
-              yDoc={yDoc}
             />
           </>
         )}

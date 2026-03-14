@@ -257,6 +257,7 @@ export default function ReusableComponents(props: Props) {
       leaveFrom="w-[354px]"
       leaveTo="w-0"
     >
+    
       <div className="relative w-[354px] flex flex-col border-l  border-border-secondary h-full bg-white dark:bg-base-100  font-body  dark:border-border-tertiary">
         <div className="flex justify-between border-b p-6 space-x-3 border-[#E9ECEF] dark:border-border-tertiary">
           <div>
@@ -268,12 +269,12 @@ export default function ReusableComponents(props: Props) {
             </p>
           </div>
           <button
-            type="button"
-            className="absolute z-10 top-7 transform rounded-full border border-gray-300  text-ink-400 bg-base-100 hover:bg-gray-100 w-6 h-6 flex justify-center items-center right-3 -translate-x-1/2 dark:border-border-tertiary "
-            onClick={props.onHide}
-          >
-            <ChevronDoubleRightIcon className="w-3 h-3" />
-          </button>
+        type="button"
+        className="absolute z-10 top-7 transform rounded-full border border-gray-300  text-ink-400 bg-base-100 hover:bg-gray-100 w-6 h-6 flex justify-center items-center right-3 -translate-x-1/2 dark:border-border-tertiary "
+        onClick={props.onHide}
+      >
+        <ChevronDoubleRightIcon className="w-3 h-3" />
+      </button>
         </div>
         {data.size > 0 || isLoading ? (
           <>

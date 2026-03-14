@@ -2,12 +2,43 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Head from "next/head";
 
 import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
 import PrivateDocumentPage from "@/components/Visualization/blocks/PrivateDocumentPage";
 import { useSession } from "@/components/Visualization/hooks/useAuth";
 import useDocument from "@/components/Visualization/hooks/useDocument";
-import type { SessionUser } from "@/components/Visualization/hooks/useAuth";
+
+type UserWorkspaceRole = "editor" | "viewer" | "admin";
+
+type SessionUser = {
+  id: string;
+  email: string;
+  name: string;
+  picture: string | null;
+  lastVisitedWorkspaceId: string;
+  createdAt: string;
+  updatedAt: string;
+  roles: Record<string, UserWorkspaceRole>;
+};
+
+export default function NotebookPage() {
+  const session = useSession({ redirectToLogin: true });
+  const workspaceId = useStringQuery("workspace");
+  const documentId = useStringQuery("document");
+
+  if (session.user) {
+    return (
+      <Notebook
+        workspaceId={workspaceId}
+        documentId={documentId}
+        user={session.user}
+      />
+    );
+  }
+
+  return null;
+}
 
 interface Props {
   workspaceId: string;
@@ -33,46 +64,27 @@ function Notebook(props: Props) {
 
     if (document.publishedAt === null) {
       router.replace(
-        `/workspace/${props.workspaceId}/documents/${props.documentId}/notebook/edit${window.location.search}`
+        `/workspace/${props.workspaceId}/documents/${props.documentId}/notebook/edit${location.search}`
       );
     }
   }, [document, loading, props.user]);
-
-  useEffect(() => {
-    if (document) {
-      window.document.title = `${document.title || "Untitled"} - Sandworm`;
-    }
-  }, [document?.title]);
 
   if (loading || !document || document.publishedAt === null) {
     return null;
   }
 
   return (
-    <PrivateDocumentPage
-      key={props.documentId}
-      workspaceId={props.workspaceId}
-      documentId={props.documentId}
-      user={props.user}
-      isApp
-    />
-  );
-}
-
-export default function NotebookPage() {
-  const session = useSession({ redirectToLogin: true });
-  const workspaceId = useStringQuery("workspace");
-  const documentId = useStringQuery("document");
-
-  if (session.user) {
-    return (
-      <Notebook
-        workspaceId={workspaceId}
-        documentId={documentId}
-        user={session.user}
+    <>
+      <Head>
+        <title>{document.title || "Untitled"} - Sandworm</title>
+      </Head>
+      <PrivateDocumentPage
+        key={props.documentId}
+        workspaceId={props.workspaceId}
+        documentId={props.documentId}
+        user={props.user}
+        isApp
       />
-    );
-  }
-
-  return null;
+    </>
+  );
 }

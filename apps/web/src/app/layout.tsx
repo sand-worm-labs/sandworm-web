@@ -30,6 +30,7 @@ const azeretMono = AzeretMono({
 
 const GTAG_ID = "G-GQB5QS1LHQ";
 
+
 // ⬢ Root Layout
 // =====================================
 export default async function RootLayout({ children }: ChildrenProps) {

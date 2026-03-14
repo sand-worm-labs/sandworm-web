@@ -628,7 +628,7 @@ file`;
           type="file"
           {...getInputProps()}
         />
-
+      
         <div
           className="relative w-[354px] flex flex-col border-l dark:border-border-tertiary border-border-secondary h-full bg-white  dark:bg-base-100 "
           {...getRootProps()}
@@ -644,12 +644,12 @@ file`;
             </div>
 
             <button
-              type="button"
-              className="absolute z-10 top-7 transform rounded-full border border-gray-300  text-ink-400 bg-base-100 hover:bg-gray-100 w-6 h-6 flex justify-center items-center right-3 -translate-x-1/2 dark:border-border-tertiary"
-              onClick={props.onHide}
-            >
-              <ChevronDoubleRightIcon className="w-3 h-3" />
-            </button>
+          type="button"
+          className="absolute z-10 top-7 transform rounded-full border border-gray-300  text-ink-400 bg-base-100 hover:bg-gray-100 w-6 h-6 flex justify-center items-center right-3 -translate-x-1/2 dark:border-border-tertiary"
+          onClick={props.onHide}
+        >
+          <ChevronDoubleRightIcon className="w-3 h-3" />
+        </button>
 
             {/*    <div>
               <button

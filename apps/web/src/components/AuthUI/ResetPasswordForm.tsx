@@ -45,7 +45,7 @@ export const ResetPasswordForm = ({
     const result = passwordSchema.safeParse(password);
 
     if (!result.success) {
-      setLocalError(result?.error?.errors?.[0]?.message ?? "");
+      setLocalError(result.error.errors[0].message);
       return;
     }
 
@@ -80,7 +80,10 @@ export const ResetPasswordForm = ({
   const apiErrorMessage = getErrorMessage(state.error);
 
   return (
-    <form onSubmit={handleSubmit} className="mt-4 space-y-4 w-full font-body ">
+    <form
+      onSubmit={handleSubmit}
+      className="mt-4 space-y-4 w-full font-body "
+    >
       <div>
         <label className="block text-sm font-medium text-ink-200 dark:text-gray-300">
           New Password
@@ -114,7 +117,7 @@ export const ResetPasswordForm = ({
       <button
         type="submit"
         disabled={state.loading}
-        className="w-full rounded-3xl bg-[#0F0F0F] dark:bg-white dark:text-black px-4 py-3.5 text-white text-sm font-medium disabled:bg-[#868E96]"
+        className="w-full rounded-3xl bg-[#0F0F0F] px-4 py-3.5 text-white text-sm font-medium disabled:bg-[#868E96]"
       >
         {state.loading ? "Updating..." : "Update Password"}
       </button>

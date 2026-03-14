@@ -89,6 +89,7 @@ export default function Comments({
       >
         <h3 className="text-lg font-medium leading-6 dark:text-white text-ink-100 px-4 pt-6 xl:px-6">
           Comments
+
           <span className="ml-3 text-ink-400 ">{comments?.length}</span>
         </h3>
         <p className="text-sm text-ink-400 px-4 mb-4  xl:px-6">

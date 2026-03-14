@@ -3,6 +3,7 @@ import { encoding, decoding } from 'lib0';
 import * as awarenessProtocol from 'y-protocols/awareness';
 import { SyncHandlerService } from './sync-handler.service';
 import { MESSAGE_SYNC, MESSAGE_AWARENESS, DocumentSession } from '../types/yjs.types';
+import { WSSharedDocV2 } from '../shared-doc/ws-shared-doc';
 
 
 @Injectable()
@@ -12,7 +13,7 @@ export class MessageHandlerService {
     constructor(private readonly syncHandler: SyncHandlerService) { }
 
     handleMessage(
-        session: DocumentSession,
+        session: WSSharedDocV2,
         message: Uint8Array,
         transactionOrigin: any,
         sendFn: (message: Uint8Array) => void,
@@ -54,7 +55,7 @@ export class MessageHandlerService {
     }
 
     handleYDocUpdate(
-        session: DocumentSession,
+        session: WSSharedDocV2,
         update: Uint8Array,
         broadcastFn: (message: Uint8Array) => void,
     ) {
@@ -70,7 +71,7 @@ export class MessageHandlerService {
     }
 
     handleAwarenessUpdate(
-        session: DocumentSession,
+        session: WSSharedDocV2,
         changes: { added: number[]; updated: number[]; removed: number[] },
         origin: any,
         broadcastFn: (message: Uint8Array) => void,
