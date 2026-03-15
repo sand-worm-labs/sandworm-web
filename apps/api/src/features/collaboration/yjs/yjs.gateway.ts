@@ -103,9 +103,9 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
 
       client.on('message', async (message: ArrayBuffer) => {
         try {
-          // Revalidate role every 5s
+          // Revalidate role every 1 minute
           const now = Date.now();
-          if (now - lastRoleUpdate > 5000) {
+          if (now - lastRoleUpdate > 60000) {
             lastRoleUpdate = now;
 
             const updatedRole = await this.getUserRole(authUser.id, document.workspaceId);
