@@ -161,7 +161,7 @@ export class ScheduleService {
 
     await this.scheduleRepository.save(schedule);
 
-    this.logger.log(`Schedule updated: ${scheduleId}`);
+    
 
     return Schedule.fromEntity(schedule);
   }
@@ -185,7 +185,7 @@ export class ScheduleService {
 
     await this.scheduleRepository.delete({ id: scheduleId });
 
-    this.logger.log(`Schedule deleted: ${scheduleId}`);
+    
 
     return true;
   }

@@ -88,7 +88,7 @@ export class EnvironmentGatewayService {
 
         try {
             await this.jupyterService.restart(workspaceId);
-            this.logger.log(`Environment restarted for workspace ${workspaceId}`);
+            
         } catch (error) {
             this.logger.error(`Failed to restart environment for workspace ${workspaceId}`, error);
             client.emit('environment-status-error', { workspaceId, error: 'unexpected' });

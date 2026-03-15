@@ -37,7 +37,7 @@ export class CommentGatewayService {
             });
 
             if (!document) {
-                this.logger.warn(`Document ${payload.data.documentId} not found`);
+                
                 return;
             }
 

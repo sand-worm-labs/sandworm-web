@@ -51,7 +51,7 @@ export class ComponentGatewayService {
             )?.workspaceId;
 
             if (!workspaceId) {
-                this.logger.error(`Could not find workspace for component ${component.id}`);
+                
                 return;
             }
 
