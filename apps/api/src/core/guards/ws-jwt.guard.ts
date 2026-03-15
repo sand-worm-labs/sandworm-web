@@ -13,20 +13,15 @@ export class WsJwtGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     try {
       const client: Socket = context.switchToWs().getClient();
+      if (client.data.session) return true;
       const token = this.extractTokenFromHandshake(client);
-      
-
-      if (!token) {
-        throw new WsException('Unauthorized');
-      }
+    
+      if (!token) throw new WsException('Unauthorized');
 
       const payload = await this.authService.validateTokenAndGetUser(token);
-      const currentUser = await this.authService.me(payload.user.id);
       
-      if (!currentUser) {
-        throw new WsException('Unauthorized');
-      }
-      client.data.session = { payload, user: currentUser };
+      if (!payload.user) throw new WsException('Unauthorized');
+      client.data.session = { payload, user: payload.user };
       return true;
     } catch (error) {
       throw new WsException('Unauthorized');
