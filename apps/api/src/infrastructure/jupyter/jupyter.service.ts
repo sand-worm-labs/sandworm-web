@@ -11,6 +11,7 @@ import { GetFileResult, IJupyterService, EnvironmentVariables } from './jupyter.
 import { SandwormFile } from '@sandworm/types';
 import { EnvironmentEntity, EnvironmentStatus } from '@sandworm/postgresql-typeorm';
 import { EnvironmentStatusEvent, EventNames } from '@/events/environment.events';
+import { LockService } from "@/infrastructure/lock/lock.services";
 
 @Injectable()
 export class JupyterService implements IJupyterService, OnModuleInit, OnModuleDestroy {
@@ -34,6 +35,7 @@ export class JupyterService implements IJupyterService, OnModuleInit, OnModuleDe
     @InjectRepository(EnvironmentEntity)
     private readonly environmentRepository: Repository<EnvironmentEntity>,
     private readonly configService: ConfigService,
+    private readonly lockService: LockService,
     private readonly eventEmitter: EventEmitter2,
   ) {
     this.protocol = this.configService.get('JUPYTER_PROTOCOL') ?? 'http';
@@ -60,7 +62,6 @@ export class JupyterService implements IJupyterService, OnModuleInit, OnModuleDe
 
   async start(): Promise<void> {
     this.isPolling = true;
-    await this.pingJupyterServer()
     this.logger.log('Starting Jupyter status polling');
     await this.poll();
   }
@@ -77,29 +78,6 @@ export class JupyterService implements IJupyterService, OnModuleInit, OnModuleDe
     );
 
     this.globalPollTimeout = setTimeout(() => this.poll(), 5000);
-  }
-
-
-  private async pingJupyterServer() {
-    const baseUrl = this.getBaseURL()
-    const token = this.configService.get('JUPYTER_TOKEN')
-
-    try {
-      const res = await fetch(`${baseUrl}/api/status`, {
-        headers: { Authorization: `token ${token}` },
-        signal: AbortSignal.timeout(5000), // don't hang forever
-      })
-      if (res.ok) {
-        this.logger.log('Jupyter server is reachable on init')
-        // optionally bulk-update all workspace environments to Running
-        //await this.environmentService.markAllRunning()
-      } else {
-        this.logger.warn(`Jupyter responded with ${res.status} on init`)
-      }
-    } catch (err) {
-      this.logger.error({ err }, 'Jupyter server unreachable on init — will retry in polling loop')
-      // don't throw — let the app boot, polling loop will reconcile
-    }
   }
 
   private async checkAndUpdateStatus(env: EnvironmentEntity): Promise<void> {
@@ -140,25 +118,34 @@ export class JupyterService implements IJupyterService, OnModuleInit, OnModuleDe
   }
 
   async stop(workspaceId: string): Promise<void> {
-    this.sessionManagers.get(workspaceId)?.dispose();
-    this.kernelManagers.get(workspaceId)?.dispose();
+    const sm = this.sessionManagers.get(workspaceId);
+    const km = this.kernelManagers.get(workspaceId);
+    
+    if (sm && !sm.isDisposed) sm.dispose();
+    if (km && !km.isDisposed) km.dispose();
+    
     this.sessionManagers.delete(workspaceId);
     this.kernelManagers.delete(workspaceId);
     this.jupyterExtensions.delete(workspaceId);
   }
 
   async restart(workspaceId: string): Promise<void> {
-    this.logger.log(`Restarting Jupyter kernel for workspace ${workspaceId}`);
-    // console.dir(services, { depth: 1 });
-    await this.stop(workspaceId);
-    const kernelId = await this.getActiveKernelId(workspaceId);
-    if (kernelId) {
-      await fetch(`${this.getBaseURL()}/api/kernels/${kernelId}/restart`, {
-        method: 'POST',
-        headers: { Authorization: `token ${this.token}` },
-      });
-    }
-    await this.bindWorkspace(workspaceId);
+    await this.lockService.acquireLock(`jupyter:restart:${workspaceId}`, async () => {
+      this.logger.log(`Restarting Jupyter kernel for workspace ${workspaceId}`);
+      this.emitStatusUpdate(workspaceId, EnvironmentStatus.STOPPING, null);
+      await this.stop(workspaceId);
+      this.emitStatusUpdate(workspaceId, EnvironmentStatus.STOPPED, null);
+
+      const kernelId = await this.getActiveKernelId(workspaceId);
+      if (kernelId) {
+        await fetch(`${this.getBaseURL()}/api/kernels/${kernelId}/restart`, {
+          method: 'POST',
+          headers: { Authorization: `token ${this.token}` },
+        });
+      }
+      await this.bindWorkspace(workspaceId);
+      this.emitStatusUpdate(workspaceId, EnvironmentStatus.RUNNING, null);
+    });
   }
 
   async ensureRunning(workspaceId: string): Promise<void> {

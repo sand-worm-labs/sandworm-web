@@ -20,7 +20,7 @@ import { YjsDocumentService } from './yjs-document.service';
 import { PersistorFactory } from './persistors/persistor.factory';
 import { WSSharedDocV2 } from './shared-doc/ws-shared-doc';
 import { TransactionOrigin } from './interfaces';
-import { MESSAGE_AWARENESS, MESSAGE_SYNC, PING_TIMEOUT } from './types/yjs.types';
+import { PING_TIMEOUT } from './types/yjs.types';
 import { MessageHandlerService } from './services/message-handler.service';
 import { SyncHandlerService } from './services/sync-handler.service';
 
