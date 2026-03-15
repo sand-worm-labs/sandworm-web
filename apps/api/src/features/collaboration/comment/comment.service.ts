@@ -63,9 +63,6 @@ export class CommentService {
 
     await this.commentRepository.save(commentEntity);
 
-
-    this.logger.log(`Comment created: ${commentEntity.id} on document ${documentId}`);
-
     const comment = Comment.fromEntity(commentEntity);
     let userFound = await this.userRepository.findOne({ where: { id: authorId } });
     let user = User.fromEntity(userFound);
@@ -96,8 +93,6 @@ export class CommentService {
     }
 
     await this.commentRepository.delete({ id: input.commentId });
-
-    this.logger.log(`Comment deleted: ${input.commentId}`);
 
     await this.eventEmitterReadinessWatcher.waitUntilReady();
 

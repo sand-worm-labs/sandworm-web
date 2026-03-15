@@ -66,7 +66,7 @@ export class SyncHandlerService {
 
         const awarenessStates = session.awareness.getStates();
         if (awarenessStates.size > 0) {
-            this.logger.debug(`📤 Sending ${awarenessStates.size} awareness states`);
+            
 
             const awarenessEncoder = encoding.createEncoder();
             encoding.writeVarUint(awarenessEncoder, 1); // messageAwareness

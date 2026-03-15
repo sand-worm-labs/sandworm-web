@@ -47,10 +47,10 @@ export class MessageHandlerService {
                     break;
 
                 default:
-                    this.logger.warn(`Unknown message type: ${messageType}`);
+                    
             }
         } catch (err) {
-            this.logger.error(`Failed to handle message: ${err}`);
+            
         }
     }
 
@@ -59,7 +59,7 @@ export class MessageHandlerService {
         update: Uint8Array,
         broadcastFn: (message: Uint8Array) => void,
     ) {
-        this.logger.debug(`📝 Document update for ${session.documentId}`);
+        
 
         const encoder = encoding.createEncoder();
         encoding.writeVarUint(encoder, MESSAGE_SYNC);
