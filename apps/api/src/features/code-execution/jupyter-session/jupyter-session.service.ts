@@ -139,8 +139,8 @@ export class JupyterSessionService {
         }
     }
 
-    private async getServerSettings(workspaceId: string) {
-        const serverSettings = await this.jupyterManager.getServerSettings(workspaceId);
+    private async getServerSettings(_workspaceId: string) {
+        const serverSettings = await this.jupyterManager.getServerSettings();
         return serverSettings;
     }
 }
