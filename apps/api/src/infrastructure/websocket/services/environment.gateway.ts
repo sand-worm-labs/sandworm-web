@@ -91,7 +91,7 @@ export class EnvironmentGatewayService {
             
         } catch (error) {
             this.logger.error(`Failed to restart environment for workspace ${workspaceId}`, error);
-            client.emit('environment-status-error', { workspaceId, error: 'unexpected' });
+            client.emit('environment-status-error', { workspaceId, error:`unexpected ${error}` });
         }
     }
 }
