@@ -1,4 +1,5 @@
 import * as Y from "yjs";
+import { Output } from "@sandworm/types";
 import {
   BlockType,
   BaseBlock,
@@ -7,22 +8,39 @@ import {
   getBaseAttributes,
   duplicateBaseAttributes,
 } from "./index.js";
-import { ExecutionStatus } from "../execution/item.js";
+import { ResultStatus } from "../index.js";
+import { clone } from "ramda";
+
+export type PowerToolboxInputs = Record<string, string | number | boolean | string[]>;
 
 export type PowerToolboxBlock = BaseBlock<BlockType.PowerToolbox> & {
-  // The selected tool from the catalog, e.g. "staking.validator_apy"
+  // Selected tool from the catalog, e.g. "protocols.attestation"
   toolId: string | null;
 
   // Denormalized from catalog for display without loading the full catalog
   toolLabel: string | null;
   toolCategory: string | null;
 
-  // User-configured input values, keyed by the input.key from the catalog
-  // Using Y.Map so individual input changes are granular CRDT ops
-  inputs: Y.Map<unknown>;
+  // User-configured input values keyed by input.key from the catalog schema.
+  // Plain JSON — not a Y.Map. Inputs are replaced atomically on form submit,
+  // not collaboratively edited key-by-key, so CRDT granularity buys nothing here.
+  inputs: PowerToolboxInputs;
 
-  // Last execution result snapshot (not collaborative — overwritten on each run)
-  outputSnapshot: Y.Map<unknown>;
+  // Snapshot of inputs at the last execution. Dirty detection is
+  // JSON.stringify(inputs) !== JSON.stringify(lastExecutedInputs),
+  // not a source-string comparison like PythonBlock uses.
+  lastExecutedInputs: PowerToolboxInputs | null;
+
+  // The Python source rendered by generate(inputs). Stored so the backend can
+  // execute it through PythonExecutorService without re-rendering on every run.
+  generatedSource: string;
+
+  // Execution result outputs (stdout, stderr, errors, rich display data).
+  result: Output[];
+
+  // ISO strings set by the executor on start and completion.
+  startedAt: string;
+  executedAt: string;
 };
 
 export const isPowerToolboxBlock = (
@@ -44,8 +62,12 @@ export const makePowerToolboxBlock = (
     toolId: null,
     toolLabel: null,
     toolCategory: null,
-    inputs: new Y.Map(),
-    outputSnapshot: new Y.Map(),
+    inputs: {},
+    lastExecutedInputs: null,
+    generatedSource: "",
+    result: [],
+    startedAt: "",
+    executedAt: "",
   };
 
   for (const [key, value] of Object.entries(attrs)) {
@@ -64,34 +86,37 @@ export function getPowerToolboxAttributes(
     toolId: getAttributeOr(block, "toolId", null),
     toolLabel: getAttributeOr(block, "toolLabel", null),
     toolCategory: getAttributeOr(block, "toolCategory", null),
-    inputs: getAttributeOr(block, "inputs", new Y.Map()),
-    outputSnapshot: getAttributeOr(block, "outputSnapshot", new Y.Map()),
+    inputs: getAttributeOr(block, "inputs", {}),
+    lastExecutedInputs: getAttributeOr(block, "lastExecutedInputs", null),
+    generatedSource: getAttributeOr(block, "generatedSource", ""),
+    result: getPowerToolboxResult(block),
+    startedAt: getAttributeOr(block, "startedAt", ""),
+    executedAt: getAttributeOr(block, "executedAt", ""),
   };
 }
 
 export function duplicatePowerToolboxBlock(
   newId: string,
-  block: Y.XmlElement<PowerToolboxBlock>
+  block: Y.XmlElement<PowerToolboxBlock>,
+  options?: { noState?: boolean }
 ): Y.XmlElement<PowerToolboxBlock> {
   const prevAttrs = getPowerToolboxAttributes(block);
 
-  // Deep-copy the inputs map so the duplicate is independent
-  const newInputs = new Y.Map<unknown>();
-  prevAttrs.inputs.forEach((value, key) => {
-    newInputs.set(key, value);
-  });
-
-  const newAttrs: PowerToolboxBlock = {
+  const nextAttrs: PowerToolboxBlock = {
     ...duplicateBaseAttributes(newId, prevAttrs),
     toolId: prevAttrs.toolId,
     toolLabel: prevAttrs.toolLabel,
     toolCategory: prevAttrs.toolCategory,
-    inputs: newInputs,
-    outputSnapshot: new Y.Map(),
+    inputs: options?.noState ? {} : clone(prevAttrs.inputs),
+    lastExecutedInputs: options?.noState ? null : clone(prevAttrs.lastExecutedInputs),
+    generatedSource: options?.noState ? "" : prevAttrs.generatedSource,
+    result: options?.noState ? [] : clone(prevAttrs.result),
+    startedAt: options?.noState ? "" : prevAttrs.startedAt,
+    executedAt: options?.noState ? "" : prevAttrs.executedAt,
   };
 
   const yBlock = new Y.XmlElement<PowerToolboxBlock>("block");
-  for (const [key, value] of Object.entries(newAttrs)) {
+  for (const [key, value] of Object.entries(nextAttrs)) {
     // @ts-ignore
     yBlock.setAttribute(key, value);
   }
@@ -99,14 +124,50 @@ export function duplicatePowerToolboxBlock(
   return yBlock;
 }
 
-export function getPowerToolboxBlockExecStatus(
+export function getPowerToolboxBlockResultStatus(
   block: Y.XmlElement<PowerToolboxBlock>
-): ExecutionStatus {
-  const attrs = getPowerToolboxAttributes(block);
-
-  if (!attrs.toolId) {
+): ResultStatus {
+  const executedAt = block.getAttribute("executedAt");
+  if (!executedAt) {
     return "idle";
   }
 
-  return "completed";
+  const result = block.getAttribute("result");
+  if (!result) {
+    return "idle";
+  }
+
+  const hasError = (result as Output[]).some(o => o.type === "error");
+  return hasError ? "error" : "success";
+}
+
+export function getPowerToolboxResult(
+  block: Y.XmlElement<PowerToolboxBlock>
+): Output[] {
+  return getAttributeOr(block, "result", []);
+}
+
+export function getPowerToolboxBlockExecutedAt(
+  block: Y.XmlElement<PowerToolboxBlock>
+): Date | null {
+  const executedAt = getAttributeOr(block, "executedAt", "").trim();
+  return executedAt === "" ? null : new Date(executedAt);
+}
+
+export function getPowerToolboxBlockIsDirty(
+  block: Y.XmlElement<PowerToolboxBlock>
+): boolean {
+  const { inputs, lastExecutedInputs } = getPowerToolboxAttributes(block);
+  return JSON.stringify(inputs) !== JSON.stringify(lastExecutedInputs);
+}
+
+export function getPowerToolboxBlockErrorMessage(
+  block: Y.XmlElement<PowerToolboxBlock>
+): string | null {
+  const result = getPowerToolboxResult(block);
+  const errorOutput = result.find(o => o.type === "error");
+  if (errorOutput && errorOutput.type === "error") {
+    return `${errorOutput.ename} - ${errorOutput.evalue}`;
+  }
+  return null;
 }
