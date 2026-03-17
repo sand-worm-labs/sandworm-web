@@ -19,12 +19,16 @@ import { getQueryDuration } from '@/common/utils/validation';
 @Injectable()
 export class SqlBlockExecutorService {
   private readonly logger = new Logger(SqlBlockExecutorService.name);
-  private readonly dataFrameService: DataFrameService;
-  private readonly queryExecutionService: QueryExecutionService;
-  private readonly blockExecutorDataframeService: BlockExecutorDataframeService;
 
 
-  constructor(private readonly eventEmitter: EventEmitter2) { }
+
+  constructor(
+    private readonly dataFrameService: DataFrameService,
+    private readonly queryExecutionService: QueryExecutionService,
+    private readonly blockExecutorDataframeService: BlockExecutorDataframeService,
+    private readonly eventEmitter: EventEmitter2
+  ) { }
+
 
   async run(
     executionItem: ExecutionQueueItem,
