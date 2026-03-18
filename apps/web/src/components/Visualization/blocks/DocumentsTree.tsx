@@ -351,6 +351,7 @@ interface NodeComponentProps {
 function NodeComponent(props: NodeComponentProps) {
   const role: UserWorkspaceRole = props.role ?? "viewer";
   const isViewer = role === "viewer";
+  
 
   const [isExpanded, setIsExpanded] = useIsDocExpanded(
     props.document,
@@ -561,9 +562,9 @@ function NodeComponent(props: NodeComponentProps) {
                 className="flex items-center flex-1 overflow-auto"
                 href={`/workspace/${props.workspaceId}/documents/${props.document.id}`}
               >
-                <span className="truncate">
-                  {props.document.title || "Untitled"}
-                </span>
+              <span className={clsx("truncate", props.level > 0 && "italic")}>
+  {props.document.title || "Untitled"}
+</span>
               </Link>
               <DropDown
                 documentId={props.document.id}
@@ -590,7 +591,7 @@ function NodeComponent(props: NodeComponentProps) {
             >
               {props.descendants.size === 0 && (
                 <li
-                  className="text-ink-400 text-sm font-medium leading-6 py-1 rounded-sm pointer-events-none overflow-auto truncate"
+                  className="text-ink-400 text-sm font-medium leading-6 py-1 rounded-sm pointer-events-none overflow-auto truncate italic"
                   style={{ paddingLeft: `${props.level + 3}rem` }}
                 >
                   No documents inside
@@ -632,6 +633,7 @@ function NodeComponent(props: NodeComponentProps) {
 }
 
 function DocumentTree(props: Props) {
+
   const trees = useMemo(
     () =>
       props.flat

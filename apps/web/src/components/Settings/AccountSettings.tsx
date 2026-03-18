@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 
 import type { ApiWorkspace } from "@/types";
 
-import { User } from "../Assets/Avatar/User";
 import {
   useCurrentWorkspaceInfo,
   useSwitchWorkspace,
@@ -39,7 +38,6 @@ export default function WorkspaceSettings() {
     selectedSettingsWorkspace: null,
   });
 
-  /* Is Admin */
   const isAdminOfWorkspace = useCallback(
     (targetId: string): boolean => {
       if (!session?.user?.id || !allWorkspaces) return false;
@@ -92,7 +90,6 @@ export default function WorkspaceSettings() {
           isCurrentWorkspace ? "" : "hover:bg-gray-50 dark:hover:bg-[#181C21]"
         )}
       >
-        {/* Workspace name with avatar */}
         <button
           type="button"
           onClick={() => handleSwitchWorkspace(workspace.id)}
@@ -107,8 +104,16 @@ export default function WorkspaceSettings() {
                 {workspace.name}
               </span>
               {isCurrentWorkspace && (
-                <span className="text-xs px-2 py-0.5 bg-[#A308F0]/10 text-primary rounded-full whitespace-nowrap">
-                  Current
+                <span className="w-5 h-5 rounded-full border border-[#7F56D9] flex items-center justify-center">
+                  <svg
+                    className="w-3 h-3 text-[#7F56D9]"
+                    viewBox="0 0 12 12"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <polyline points="2,6 5,9 10,3" />
+                  </svg>
                 </span>
               )}
             </div>
@@ -152,7 +157,6 @@ export default function WorkspaceSettings() {
           {workspace.plan || "Free"}
         </div>
 
-        {/* Settings icon */}
         <button
           type="button"
           onClick={e => {
@@ -298,7 +302,6 @@ export default function WorkspaceSettings() {
         </div>
       </div>
 
-      {/* Create Team Modal */}
       <CreateTeamModal
         isOpen={state.showCreateModal}
         onClose={() => setState(s => ({ ...s, showCreateModal: false }))}
@@ -307,7 +310,6 @@ export default function WorkspaceSettings() {
         }}
       />
 
-      {/* Workspace Settings Modal */}
       <WorkspaceSettingsModal
         isOpen={!!state.selectedSettingsWorkspace}
         onClose={() =>

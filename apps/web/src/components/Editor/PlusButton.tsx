@@ -60,7 +60,7 @@ interface MultiBlockSuggestionProps {
 function MultiBlockSuggestion(props: MultiBlockSuggestionProps) {
   return (
     <Menu as="div" className="w-full text-sm px-1 relative z-[50]">
-      <Menu.Button className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 rounded-full text-[#6C757D] dark:text-ink-400 bg-white dark:bg-base-100 hover:text-gray-700 relative border border-[#abaeb0] dark:border-border-tertiary py-2.5 hover:border-[#A308F0]">
+      <Menu.Button className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 rounded-full text-[#6C757D] dark:text-ink-400 bg-white dark:bg-base-100 hover:text-gray-700 relative border border-[#E9ECEF]  dark:border-border-tertiary py-2.5 hover:border-[#A308F0]">
         {props.icon}
         <span>{props.text}</span>
         <ChevronDownIcon className="w-4 h-4" />
@@ -144,9 +144,7 @@ function BlockList(props: BlockListProps) {
     props.onAddBlock(BlockType.DropdownInput);
   }, [props.onAddBlock]);
 
-  const onAddWriteback = useCallback(() => {
-    props.onAddBlock(BlockType.Writeback);
-  }, [props.onAddBlock]);
+
 
   const onAddDateInput = useCallback(() => {
     props.onAddBlock(BlockType.DateInput);
@@ -157,7 +155,7 @@ function BlockList(props: BlockListProps) {
       <div className="w-full flex justify-center relative z-30">
         <TriangleUp />
       </div>
-      <div className="w-full py-1 flex items-center justify-center overflow-hidden">
+      <div className="w-full py-1 flex items-center justify-center overflow-hidden bg-base-100 ">
         <BlockSuggestion
           id="add-block-power"
           icon={<LightningIcon className="w-[20px] h-[20px]" />}

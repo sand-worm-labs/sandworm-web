@@ -250,6 +250,7 @@ function ExpandedBlockView(props: ExpandedBlockViewProps) {
       />
     ),
     onVisualizationV2: () => null,
+    onPowerToolbox: () => null,
   });
 }
 function DashboardContent(
