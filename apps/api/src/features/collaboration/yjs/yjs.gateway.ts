@@ -3,8 +3,6 @@ import WebSocket from 'ws';
 import * as http from 'http';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { encoding, decoding } from 'lib0';
-import * as syncProtocol from 'y-protocols/sync';
 import * as awarenessProtocol from 'y-protocols/awareness';
 import * as cookie from 'cookie';
 import qs from 'querystring';
@@ -20,9 +18,11 @@ import { AuthService } from '@/features/auth/core/auth.service';
 import { ACCESS_TOKEN_COOKIE } from '@/features/auth/core/utils/cookie';
 import { YjsDocumentService } from './yjs-document.service';
 import { PersistorFactory } from './persistors/persistor.factory';
-import { WSSharedDocV2 } from './shared-doc/ws-shared-doc';
+import { SharedDoc } from './shared-doc/ws-shared-doc';
 import { TransactionOrigin } from './interfaces';
-import { MESSAGE_AWARENESS, MESSAGE_SYNC, PING_TIMEOUT } from './types/yjs.types';
+import { PING_TIMEOUT } from './types/yjs.types';
+import { MessageHandlerService } from './services/message-handler.service';
+import { SyncHandlerService } from './services/sync-handler.service';
 
 interface RequestData {
   document: DocumentEntity;
@@ -43,6 +43,8 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
     private readonly yjsDocumentService: YjsDocumentService,
     private readonly persistorFactory: PersistorFactory,
     private readonly authService: AuthService,
+    private readonly messageHandler: MessageHandlerService,
+    private readonly syncHandler: SyncHandlerService,
     @InjectRepository(DocumentEntity)
     private readonly documentRepository: Repository<DocumentEntity>,
     @InjectRepository(UserWorkspaceEntity)
@@ -86,11 +88,6 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
         return;
       }
 
-      if (role === UserWorkspaceRole.VIEWER) {
-        this.closeConn(doc, client);
-        return;
-      }
-
       // Clock validation
       if (doc.clock !== clock) {
         this.logger.warn(`Clock mismatch: client=${clock} doc=${doc.clock} for ${doc.id}`);
@@ -106,9 +103,9 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
 
       client.on('message', async (message: ArrayBuffer) => {
         try {
-          // Revalidate role every 5s
+          // Revalidate role every 1 minute
           const now = Date.now();
-          if (now - lastRoleUpdate > 5000) {
+          if (now - lastRoleUpdate > 60000) {
             lastRoleUpdate = now;
 
             const updatedRole = await this.getUserRole(authUser.id, document.workspaceId);
@@ -121,7 +118,7 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
             origin.role = updatedRole;
           }
 
-          this.handleMessage(doc, new Uint8Array(message), origin);
+          this.messageHandler.handleMessage(doc, new Uint8Array(message), origin, (msg) => this.send(doc, client, msg),);
         } catch (err) {
           this.logger.error(`Message error: ${err}`);
         }
@@ -136,7 +133,7 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
       });
 
       this.setupPing(doc, client, authUser.id);
-      this.sendInitialState(doc, client);
+      this.syncHandler.sendInitialState(doc, (message) => this.send(doc, client, message));
 
       this.logger.log(`Connected: ${authUser.email} → ${doc.id}`);
     } catch (err) {
@@ -145,67 +142,8 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  private handleMessage(doc: WSSharedDocV2, message: Uint8Array, origin: TransactionOrigin) {
-    try {
-      const encoder = encoding.createEncoder();
-      const decoder = decoding.createDecoder(message);
-      const msgType = decoding.readVarUint(decoder);
 
-      switch (msgType) {
-        case MESSAGE_SYNC: {
-          encoding.writeVarUint(encoder, MESSAGE_SYNC);
-          const syncType = decoding.readVarUint(decoder);
-          switch (syncType) {
-            case syncProtocol.messageYjsSyncStep1:
-              doc.readSyncStep1(decoder, encoder);
-              break;
-            case syncProtocol.messageYjsSyncStep2:
-              doc.readSyncStep2(decoder, origin);
-              break;
-            case syncProtocol.messageYjsUpdate:
-              doc.readUpdate(decoder, origin);
-              break;
-          }
-          if (encoding.length(encoder) > 1) {
-            this.send(doc, origin.conn, encoding.toUint8Array(encoder));
-          }
-          break;
-        }
-        case MESSAGE_AWARENESS: {
-          awarenessProtocol.applyAwarenessUpdate(
-            doc.awareness,
-            decoding.readVarUint8Array(decoder),
-            origin,
-          );
-          break;
-        }
-      }
-    } catch (err) {
-      this.logger.error(`Failed to handle message: ${err}`);
-    }
-  }
-
-  private sendInitialState(doc: WSSharedDocV2, conn: WebSocket) {
-    // Sync step 1
-    const syncEncoder = encoding.createEncoder();
-    encoding.writeVarUint(syncEncoder, MESSAGE_SYNC);
-    syncProtocol.writeSyncStep1(syncEncoder, doc.ydoc);
-    this.send(doc, conn, encoding.toUint8Array(syncEncoder));
-
-    // Awareness
-    const states = doc.awareness.getStates();
-    if (states.size > 0) {
-      const awarenessEncoder = encoding.createEncoder();
-      encoding.writeVarUint(awarenessEncoder, MESSAGE_AWARENESS);
-      encoding.writeVarUint8Array(
-        awarenessEncoder,
-        awarenessProtocol.encodeAwarenessUpdate(doc.awareness, Array.from(states.keys())),
-      );
-      this.send(doc, conn, encoding.toUint8Array(awarenessEncoder));
-    }
-  }
-
-  private send(doc: WSSharedDocV2, conn: WebSocket, message: Uint8Array) {
+  private send(doc: SharedDoc, conn: WebSocket, message: Uint8Array) {
     if (conn.readyState !== WebSocket.OPEN) {
       this.closeConn(doc, conn);
       return;
@@ -224,7 +162,7 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  private closeConn(doc: WSSharedDocV2, conn: WebSocket) {
+  private closeConn(doc: SharedDoc, conn: WebSocket) {
     const controlledIds = doc.conns.get(conn);
     if (controlledIds !== undefined) {
       doc.conns.delete(conn);
@@ -233,7 +171,7 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
     try { conn.close(); } catch {}
   }
 
-  private setupPing(doc: WSSharedDocV2, conn: WebSocket, userId: string) {
+  private setupPing(doc: SharedDoc, conn: WebSocket, userId: string) {
     let pongReceived = true;
 
     const interval = setInterval(() => {
@@ -263,7 +201,7 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
     isApp: boolean,
     userId: string | null,
     yjsAppDocumentId: string | null,
-  ): Promise<WSSharedDocV2 | null> {
+  ): Promise<SharedDoc | null> {
     try {
       if (isApp && yjsAppDocumentId) {
         const docId = this.persistorFactory.getDocId(document.id, {

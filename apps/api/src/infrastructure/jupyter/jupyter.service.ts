@@ -5,21 +5,21 @@ import { ConfigService } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Readable } from 'stream';
 import path from 'path';
-import services from '@jupyterlab/services';
-
+import { KernelManager, SessionManager, ServerConnection } from '@jupyterlab/services';
 import { SandwormJupyterExtension } from './Jupyter.extension.js';
 import { GetFileResult, IJupyterService, EnvironmentVariables } from './jupyter.interface';
 import { SandwormFile } from '@sandworm/types';
 import { EnvironmentEntity, EnvironmentStatus } from '@sandworm/postgresql-typeorm';
 import { EnvironmentStatusEvent, EventNames } from '@/events/environment.events';
+import { LockService } from "@/infrastructure/lock/lock.services";
 
 @Injectable()
 export class JupyterService implements IJupyterService, OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(JupyterService.name);
 
   // Per-workspace JupyterLab services (only needed for code execution)
-  private readonly kernelManagers = new Map<string, services.KernelManager>();
-  private readonly sessionManagers = new Map<string, services.SessionManager>();
+  private readonly kernelManagers = new Map<string, KernelManager>();
+  private readonly sessionManagers = new Map<string, SessionManager>();
   private readonly jupyterExtensions = new Map<string, SandwormJupyterExtension>();
 
   // Single global poll loop replacing per-workspace watchTimeouts
@@ -35,6 +35,7 @@ export class JupyterService implements IJupyterService, OnModuleInit, OnModuleDe
     @InjectRepository(EnvironmentEntity)
     private readonly environmentRepository: Repository<EnvironmentEntity>,
     private readonly configService: ConfigService,
+    private readonly lockService: LockService,
     private readonly eventEmitter: EventEmitter2,
   ) {
     this.protocol = this.configService.get('JUPYTER_PROTOCOL') ?? 'http';
@@ -61,7 +62,6 @@ export class JupyterService implements IJupyterService, OnModuleInit, OnModuleDe
 
   async start(): Promise<void> {
     this.isPolling = true;
-    await this.pingJupyterServer()
     this.logger.log('Starting Jupyter status polling');
     await this.poll();
   }
@@ -78,29 +78,6 @@ export class JupyterService implements IJupyterService, OnModuleInit, OnModuleDe
     );
 
     this.globalPollTimeout = setTimeout(() => this.poll(), 5000);
-  }
-
-
-  private async pingJupyterServer() {
-    const baseUrl = this.getBaseURL()
-    const token = this.configService.get('JUPYTER_TOKEN')
-
-    try {
-      const res = await fetch(`${baseUrl}/api/status`, {
-        headers: { Authorization: `token ${token}` },
-        signal: AbortSignal.timeout(5000), // don't hang forever
-      })
-      if (res.ok) {
-        this.logger.log('Jupyter server is reachable on init')
-        // optionally bulk-update all workspace environments to Running
-        //await this.environmentService.markAllRunning()
-      } else {
-        this.logger.warn(`Jupyter responded with ${res.status} on init`)
-      }
-    } catch (err) {
-      this.logger.error({ err }, 'Jupyter server unreachable on init — will retry in polling loop')
-      // don't throw — let the app boot, polling loop will reconcile
-    }
   }
 
   private async checkAndUpdateStatus(env: EnvironmentEntity): Promise<void> {
@@ -132,8 +109,8 @@ export class JupyterService implements IJupyterService, OnModuleInit, OnModuleDe
     if (this.kernelManagers.has(workspaceId)) return;
 
     const serverSettings = await this.getServerSettings();
-    const kernelManager = new services.KernelManager({ serverSettings });
-    const sessionManager = new services.SessionManager({ kernelManager, serverSettings });
+    const kernelManager = new KernelManager({ serverSettings });
+    const sessionManager = new SessionManager({ kernelManager, serverSettings });
 
     this.kernelManagers.set(workspaceId, kernelManager);
     this.sessionManagers.set(workspaceId, sessionManager);
@@ -141,24 +118,34 @@ export class JupyterService implements IJupyterService, OnModuleInit, OnModuleDe
   }
 
   async stop(workspaceId: string): Promise<void> {
-    this.sessionManagers.get(workspaceId)?.dispose();
-    this.kernelManagers.get(workspaceId)?.dispose();
+    const sm = this.sessionManagers.get(workspaceId);
+    const km = this.kernelManagers.get(workspaceId);
+    
+    if (sm && !sm.isDisposed) sm.dispose();
+    if (km && !km.isDisposed) km.dispose();
+    
     this.sessionManagers.delete(workspaceId);
     this.kernelManagers.delete(workspaceId);
     this.jupyterExtensions.delete(workspaceId);
   }
 
   async restart(workspaceId: string): Promise<void> {
-    this.logger.log(`Restarting Jupyter kernel for workspace ${workspaceId}`);
-    await this.stop(workspaceId);
-    const kernelId = await this.getActiveKernelId(workspaceId);
-    if (kernelId) {
-      await fetch(`${this.getBaseURL()}/api/kernels/${kernelId}/restart`, {
-        method: 'POST',
-        headers: { Authorization: `token ${this.token}` },
-      });
-    }
-    await this.bindWorkspace(workspaceId);
+    await this.lockService.acquireLock(`jupyter:restart:${workspaceId}`, async () => {
+      this.logger.log(`Restarting Jupyter kernel for workspace ${workspaceId}`);
+      this.emitStatusUpdate(workspaceId, EnvironmentStatus.STOPPING, null);
+      await this.stop(workspaceId);
+      this.emitStatusUpdate(workspaceId, EnvironmentStatus.STOPPED, null);
+
+      const kernelId = await this.getActiveKernelId(workspaceId);
+      if (kernelId) {
+        await fetch(`${this.getBaseURL()}/api/kernels/${kernelId}/restart`, {
+          method: 'POST',
+          headers: { Authorization: `token ${this.token}` },
+        });
+      }
+      await this.bindWorkspace(workspaceId);
+      this.emitStatusUpdate(workspaceId, EnvironmentStatus.RUNNING, null);
+    });
   }
 
   async ensureRunning(workspaceId: string): Promise<void> {
@@ -282,26 +269,24 @@ export class JupyterService implements IJupyterService, OnModuleInit, OnModuleDe
     return this.jupyterExtensions.get(workspaceId)!;
   }
 
-  async getServerSettings(): Promise<services.ServerConnection.ISettings> {
+  async getServerSettings(): Promise<ServerConnection.ISettings> {
     const wsUrl = this.getBaseURL().replace(
       this.protocol,
       this.protocol === 'https' ? 'wss' : 'ws',
     );
-    return {
+    // console.dir(services, { depth: 1 });
+    return ServerConnection.makeSettings({
       baseUrl: this.getBaseURL(),
       appUrl: this.getBaseURL(),
       wsUrl,
       token: this.token,
       appendToken: true,
-      // @ts-ignore
-      serializer: services.serialize,
       fetch,
       Request,
       Headers,
-      // @ts-ignore
-      WebSocket,
+      WebSocket: WebSocket as any,
       init: {},
-    } as services.ServerConnection.ISettings;
+    })
   }
 
   private async getFilepath(workspaceId: string, fileName: string): Promise<string> {
@@ -327,7 +312,6 @@ export class JupyterService implements IJupyterService, OnModuleInit, OnModuleDe
     status: EnvironmentStatus,
     startedAt: Date | null,
   ): void {
-    console.dir({ status, startedAt, workspaceId }, { depth: 1 });
     this.eventEmitter.emit(
       EventNames.ENVIRONMENT_STATUS_UPDATE,
       new EnvironmentStatusEvent(

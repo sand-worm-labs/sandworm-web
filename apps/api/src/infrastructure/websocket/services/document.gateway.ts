@@ -47,7 +47,7 @@ export class DocumentGatewayService {
                 where: { id: documentId },
             });
             if (!document) {
-                this.logger.warn(`Document ${documentId} not found for broadcast`);
+                
                 return;
             }
 

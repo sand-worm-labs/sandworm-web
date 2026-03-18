@@ -10,8 +10,6 @@ import {
 } from '@sandworm/graphql';
 import { lowerCaseTransformer } from '@sandworm/nest-common';
 import { Transform } from 'class-transformer';
-import { GraphQLJSON } from 'graphql-type-json';
-
 @InputType({ description: 'User register request' })
 export class CreateUserInput {
   @EmailField()

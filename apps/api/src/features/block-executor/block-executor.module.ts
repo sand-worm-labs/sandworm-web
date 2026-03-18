@@ -1,6 +1,7 @@
-import { Module } from '@nestjs/common';
-import { EventEmitterModule } from '@nestjs/event-emitter';
+import { Module, forwardRef } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { CodeExecutionModule } from '@/features/code-execution/code-execution.module';
 import blockExecutorConfig from './config/block-executor.config';
 import { BlockExecutorDataframeService } from './services/block-executor-dataframe.service';
 import { PythonBlockExecutorService } from './services/executors/python-block-executor.service';
@@ -11,29 +12,29 @@ import { DropdownInputBlockExecutorService } from './services/executors/dropdown
 import { PivotTableBlockExecutorService } from './services/executors/pivot-table-block-executor.service';
 import { VisualizationBlockExecutorService } from './services/executors/visualization-block-executor.service';
 
-
 const executorServices = [
-    PythonBlockExecutorService,
-    SqlBlockExecutorService,
-    InputBlockExecutorService,
-    DateInputBlockExecutorService,
-    DropdownInputBlockExecutorService,
-    PivotTableBlockExecutorService,
-    VisualizationBlockExecutorService,
+  PythonBlockExecutorService,
+  SqlBlockExecutorService,
+  InputBlockExecutorService,
+  DateInputBlockExecutorService,
+  DropdownInputBlockExecutorService,
+  PivotTableBlockExecutorService,
+  VisualizationBlockExecutorService,
 ];
 
 @Module({
-    imports: [
-        EventEmitterModule.forRoot(),
-        ConfigModule.forFeature(blockExecutorConfig),
-    ],
-    providers: [
-        BlockExecutorDataframeService,
-        ...executorServices,
-    ],
-    exports: [
-        BlockExecutorDataframeService,
-        ...executorServices,
-    ],
+  imports: [
+    EventEmitterModule.forRoot(),
+    ConfigModule.forFeature(blockExecutorConfig),
+    forwardRef(() => CodeExecutionModule),
+  ],
+  providers: [
+    BlockExecutorDataframeService,
+    ...executorServices,
+  ],
+  exports: [
+    BlockExecutorDataframeService,
+    ...executorServices,
+  ],
 })
 export class BlockExecutorModule { }

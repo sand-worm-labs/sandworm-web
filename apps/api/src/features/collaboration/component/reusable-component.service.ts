@@ -99,7 +99,6 @@ export class ReusableComponentService {
         // Emit component update event
         await this.emitComponentUpdate(workspaceId, savedComponent);
 
-        this.logger.log(`Component created: ${savedComponent.id} in workspace ${workspaceId}`);
 
         return ReusableComponent.fromEntity(savedComponent);
     }
@@ -139,9 +138,6 @@ export class ReusableComponentService {
 
         // Emit component update event
         await this.emitComponentUpdate(workspaceId, updatedComponent);
-
-        this.logger.log(`Component updated: ${componentId}`);
-
         return ReusableComponent.fromEntity(updatedComponent);
     }
 

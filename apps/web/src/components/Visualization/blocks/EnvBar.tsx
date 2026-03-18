@@ -176,9 +176,7 @@ interface Props {
 function EnvBar(props: Props) {
   const workspaceId = useStringQuery("workspace");
   const { status, loading, restart } = useEnvironmentStatus(workspaceId);
-
-/*   console.dir({ status, loading, restart });
- */  const publishedAtDisplay = dfns.formatDistanceToNow(
+  const publishedAtDisplay = dfns.formatDistanceToNow(
     props.publishedAt ?? new Date()
   );
 

@@ -3,6 +3,7 @@ import { encoding, decoding } from 'lib0';
 import * as syncProtocol from 'y-protocols/sync';
 import { UserWorkspaceRole } from '@sandworm/postgresql-typeorm';
 import { DocumentSession } from '../types/yjs.types';
+import { SharedDoc } from '../shared-doc/ws-shared-doc';
 
 
 @Injectable()
@@ -12,7 +13,7 @@ export class SyncHandlerService {
     readSyncMessage(
         decoder: decoding.Decoder,
         encoder: encoding.Encoder,
-        session: DocumentSession,
+        session: SharedDoc,
         transactionOrigin: any,
     ): number {
         const messageType = decoding.readVarUint(decoder);
@@ -20,7 +21,7 @@ export class SyncHandlerService {
         switch (messageType) {
             case syncProtocol.messageYjsSyncStep1:
                 this.logger.debug('🔄 Processing sync step 1');
-                syncProtocol.readSyncStep1(decoder, encoder, session.yDoc);
+                syncProtocol.readSyncStep1(decoder, encoder, session.ydoc);
                 break;
 
             case syncProtocol.messageYjsSyncStep2:
@@ -31,7 +32,7 @@ export class SyncHandlerService {
                     throw new Error('VIEWER_WRITE_REJECTED');
                 }
 
-                syncProtocol.readSyncStep2(decoder, session.yDoc, transactionOrigin);
+                syncProtocol.readSyncStep2(decoder, session.ydoc, transactionOrigin);
                 break;
 
             case syncProtocol.messageYjsUpdate:
@@ -42,7 +43,7 @@ export class SyncHandlerService {
                     throw new Error('VIEWER_WRITE_REJECTED');
                 }
 
-                syncProtocol.readUpdate(decoder, session.yDoc, transactionOrigin);
+                syncProtocol.readUpdate(decoder, session.ydoc, transactionOrigin);
                 break;
 
             default:
@@ -53,19 +54,19 @@ export class SyncHandlerService {
     }
 
     async sendInitialState(
-        session: DocumentSession,
+        session: SharedDoc,
         sendFn: (message: Uint8Array) => void,
     ) {
         this.logger.debug('📤 Sending sync step 1');
 
         const syncEncoder = encoding.createEncoder();
         encoding.writeVarUint(syncEncoder, 0); // messageSync
-        syncProtocol.writeSyncStep1(syncEncoder, session.yDoc);
+        syncProtocol.writeSyncStep1(syncEncoder, session.ydoc);
         sendFn(encoding.toUint8Array(syncEncoder));
 
         const awarenessStates = session.awareness.getStates();
         if (awarenessStates.size > 0) {
-            this.logger.debug(`📤 Sending ${awarenessStates.size} awareness states`);
+            
 
             const awarenessEncoder = encoding.createEncoder();
             encoding.writeVarUint(awarenessEncoder, 1); // messageAwareness

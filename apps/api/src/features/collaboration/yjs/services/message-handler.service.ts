@@ -3,6 +3,7 @@ import { encoding, decoding } from 'lib0';
 import * as awarenessProtocol from 'y-protocols/awareness';
 import { SyncHandlerService } from './sync-handler.service';
 import { MESSAGE_SYNC, MESSAGE_AWARENESS, DocumentSession } from '../types/yjs.types';
+import { SharedDoc } from '../shared-doc/ws-shared-doc';
 
 
 @Injectable()
@@ -12,7 +13,7 @@ export class MessageHandlerService {
     constructor(private readonly syncHandler: SyncHandlerService) { }
 
     handleMessage(
-        session: DocumentSession,
+        session: SharedDoc,
         message: Uint8Array,
         transactionOrigin: any,
         sendFn: (message: Uint8Array) => void,
@@ -46,19 +47,19 @@ export class MessageHandlerService {
                     break;
 
                 default:
-                    this.logger.warn(`Unknown message type: ${messageType}`);
+                    
             }
         } catch (err) {
-            this.logger.error(`Failed to handle message: ${err}`);
+            
         }
     }
 
     handleYDocUpdate(
-        session: DocumentSession,
+        session: SharedDoc,
         update: Uint8Array,
         broadcastFn: (message: Uint8Array) => void,
     ) {
-        this.logger.debug(`📝 Document update for ${session.documentId}`);
+        
 
         const encoder = encoding.createEncoder();
         encoding.writeVarUint(encoder, MESSAGE_SYNC);
@@ -70,7 +71,7 @@ export class MessageHandlerService {
     }
 
     handleAwarenessUpdate(
-        session: DocumentSession,
+        session: SharedDoc,
         changes: { added: number[]; updated: number[]; removed: number[] },
         origin: any,
         broadcastFn: (message: Uint8Array) => void,
