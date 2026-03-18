@@ -644,7 +644,7 @@ function DocumentTree(props: Props) {
   );
 
   return (
-    <ul className="space-y-1 max-h-[18rem] overflow-y-auto">
+    <ul className="space-y-1 max-h-[25rem] overflow-y-auto">
       {trees.map((node, i) => {
         const isLast = i === trees.size - 1;
         return (

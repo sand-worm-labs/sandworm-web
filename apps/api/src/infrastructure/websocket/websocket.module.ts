@@ -13,6 +13,7 @@ import { CommentEntity, DocumentEntity, EnvironmentEntity, ReusableComponentEnti
 import { CodeExecutionModule } from '@/features/code-execution/code-execution.module';
 import { ReusableComponentModule } from '@/features/collaboration/component/reusable-component.module';
 import { AuthModule } from '@/features/auth/core/auth.module';
+import { PythonCompletionService } from '@/features/code-execution/python-completion.service';
 
 @Module({
     imports: [
@@ -34,6 +35,7 @@ import { AuthModule } from '@/features/auth/core/auth.module';
         CommentGatewayService,
         DocumentGatewayService,
         ComponentGatewayService,
+        PythonCompletionService
     ],
     exports: [AppGateway],
 })

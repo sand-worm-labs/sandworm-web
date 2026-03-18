@@ -18,6 +18,8 @@ import { LockModule } from '@/infrastructure/lock/lock.module'
 import { PubSubModule } from '@/infrastructure/pubsub/pubsub.module'
 import { YjsGateway } from './yjs.gateway'
 import { DocumentModule } from '@/features/document/document.module'
+import { BlockExecutorModule } from '@/features/block-executor/block-executor.module'
+import { DocumentExecutorService } from './executor/document-executor.service'
 
 @Module({
   imports: [
@@ -34,14 +36,16 @@ import { DocumentModule } from '@/features/document/document.module'
     AuthModule,
     LockModule,
     PubSubModule,
-    DocumentModule
+    DocumentModule,
+    BlockExecutorModule
   ],
   providers: [
     YjsDocumentService,
     PersistorFactory,
     MessageHandlerService,
     SyncHandlerService,
-    YjsGateway
+    YjsGateway,
+    DocumentExecutorService
   ],
   exports: [
     YjsDocumentService,
