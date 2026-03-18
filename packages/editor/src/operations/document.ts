@@ -27,11 +27,13 @@ import {
   getBlocks,
   getDashboard,
   getLayout,
+  makePowerToolboxBlock,
   makeVisualizationV2Block,
   removeBlocksFromDashboard,
   switchBlockType,
 } from "../index.js";
 import { makePivotTableBlock } from "../blocks/pivotTable.js";
+
 
 export type AddBlockGroupBlock =
   | {
@@ -41,7 +43,8 @@ export type AddBlockGroupBlock =
         | BlockType.DropdownInput
         | BlockType.DateInput
         | BlockType.FileUpload
-        | BlockType.Writeback;
+        | BlockType.Writeback
+        | BlockType.PowerToolbox;
     }
   | {
       type: BlockType.Python;
@@ -115,6 +118,9 @@ const createBlock = (block: AddBlockGroupBlock, yBlockDefs: Y.Map<YBlock>) => {
     case BlockType.PivotTable:
       yBlock = makePivotTableBlock(blockId, yBlockDefs, block.dataframeName);
       break;
+      case BlockType.PowerToolbox:
+  yBlock = makePowerToolboxBlock(blockId);
+  break;
   }
 
   yBlockDefs.set(blockId, yBlock);
@@ -464,6 +470,7 @@ export const removeDashboardBlock = (
       yBlockDefs.delete(blockId);
     },
     onPivotTable: () => {},
+    onPowerToolbox: () => null
   });
 };
 

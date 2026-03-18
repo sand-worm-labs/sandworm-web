@@ -247,9 +247,7 @@ export function DocumentsProvider(props: Props) {
       return;
     }
 
-    socket.onAny((event, ...args) => {
-      console.log("[socket] event:", event, args);
-    });
+
 
     const onDocuments = (rawData: unknown) => {
       const data = Array.isArray(rawData) ? rawData[0] : rawData;
@@ -298,10 +296,7 @@ export function DocumentsProvider(props: Props) {
       workspaceId: string;
       document: ApiDocument;
     }) => {
-      console.log("[workspace-document-update] received:", {
-        id: data.document.id,
-        title: data.document.title,
-      });
+  
 
       setState(s => {
         const { workspaceId } = data;
@@ -311,12 +306,7 @@ export function DocumentsProvider(props: Props) {
         const document = documents.find(d => d.id === data.document.id);
         const existing = documents.find(d => d.id === data.document.id);
 
-        console.log(
-          "[workspace-document-update] existing title:",
-          existing?.title,
-          "→ incoming:",
-          data.document.title
-        );
+    
 
         if (document) {
           const nextDocuments = documents.map(d =>
