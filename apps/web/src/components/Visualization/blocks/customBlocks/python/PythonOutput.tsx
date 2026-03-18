@@ -87,7 +87,7 @@ export function PythonOutputs(props: Props) {
           key={i}
           className={clsx(
             ["plotly"].includes(output.type) ? "flex-grow" : "",
-            "bg-white overflow-x-auto"
+            "bg-base-100 overflow-x-auto"
           )}
         >
           <PythonOutput
@@ -138,7 +138,7 @@ export function PythonOutput(props: ItemProps) {
               {!props.isDashboardView && (
                 <div className="w-full flex flex-col items-end">
                   <button
-                    className="bg-white rounded-md rounded-br-md border border-border-secondary p-1 hover:bg-gray-50 z-10 text-xs text-ink-400"
+                    className="bg-base-600 rounded-md rounded-br-md border border-border-secondary p-1 px-3 z-10 text-xs text-ink-400"
                     onClick={onExportToPNG}
                   >
                     PNG
