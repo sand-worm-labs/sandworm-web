@@ -57,7 +57,7 @@ export class PythonCompletionService {
             if (!document) {
                 return { status: 'invalid-payload' };
             }
-
+            console.dir(document);
             // Get completion
             return await this.getCompletion(server, document, blockId, position);
         } catch (err) {

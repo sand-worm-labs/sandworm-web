@@ -18,7 +18,7 @@ import { AuthService } from '@/features/auth/core/auth.service';
 import { ACCESS_TOKEN_COOKIE } from '@/features/auth/core/utils/cookie';
 import { YjsDocumentService } from './yjs-document.service';
 import { PersistorFactory } from './persistors/persistor.factory';
-import { WSSharedDocV2 } from './shared-doc/ws-shared-doc';
+import { SharedDoc } from './shared-doc/ws-shared-doc';
 import { TransactionOrigin } from './interfaces';
 import { PING_TIMEOUT } from './types/yjs.types';
 import { MessageHandlerService } from './services/message-handler.service';
@@ -143,7 +143,7 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
   }
 
 
-  private send(doc: WSSharedDocV2, conn: WebSocket, message: Uint8Array) {
+  private send(doc: SharedDoc, conn: WebSocket, message: Uint8Array) {
     if (conn.readyState !== WebSocket.OPEN) {
       this.closeConn(doc, conn);
       return;
@@ -162,7 +162,7 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  private closeConn(doc: WSSharedDocV2, conn: WebSocket) {
+  private closeConn(doc: SharedDoc, conn: WebSocket) {
     const controlledIds = doc.conns.get(conn);
     if (controlledIds !== undefined) {
       doc.conns.delete(conn);
@@ -171,7 +171,7 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
     try { conn.close(); } catch {}
   }
 
-  private setupPing(doc: WSSharedDocV2, conn: WebSocket, userId: string) {
+  private setupPing(doc: SharedDoc, conn: WebSocket, userId: string) {
     let pongReceived = true;
 
     const interval = setInterval(() => {
@@ -201,7 +201,7 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
     isApp: boolean,
     userId: string | null,
     yjsAppDocumentId: string | null,
-  ): Promise<WSSharedDocV2 | null> {
+  ): Promise<SharedDoc | null> {
     try {
       if (isApp && yjsAppDocumentId) {
         const docId = this.persistorFactory.getDocId(document.id, {

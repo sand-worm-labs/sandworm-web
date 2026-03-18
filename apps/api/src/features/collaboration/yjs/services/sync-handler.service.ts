@@ -3,7 +3,7 @@ import { encoding, decoding } from 'lib0';
 import * as syncProtocol from 'y-protocols/sync';
 import { UserWorkspaceRole } from '@sandworm/postgresql-typeorm';
 import { DocumentSession } from '../types/yjs.types';
-import { WSSharedDocV2 } from '../shared-doc/ws-shared-doc';
+import { SharedDoc } from '../shared-doc/ws-shared-doc';
 
 
 @Injectable()
@@ -13,7 +13,7 @@ export class SyncHandlerService {
     readSyncMessage(
         decoder: decoding.Decoder,
         encoder: encoding.Encoder,
-        session: WSSharedDocV2,
+        session: SharedDoc,
         transactionOrigin: any,
     ): number {
         const messageType = decoding.readVarUint(decoder);
@@ -54,7 +54,7 @@ export class SyncHandlerService {
     }
 
     async sendInitialState(
-        session: WSSharedDocV2,
+        session: SharedDoc,
         sendFn: (message: Uint8Array) => void,
     ) {
         this.logger.debug('📤 Sending sync step 1');
