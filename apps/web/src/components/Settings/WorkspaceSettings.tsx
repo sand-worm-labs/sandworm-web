@@ -11,13 +11,11 @@ import React, {
 } from "react";
 import { XMarkIcon, CheckIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { Dialog, Transition } from "@headlessui/react";
 import toast from "react-hot-toast";
 
 import type { ApiUser } from "@/types";
 
-import { User } from "../Assets/Avatar/User";
 import { PencilSimple } from "../Assets/PencilSimple";
 import ManageInviteModal from "../ManageInvite";
 import {
@@ -33,7 +31,6 @@ import {
 } from "../Visualization/hooks/useWorkspaces";
 import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
 import MiniUsersList from "../Visualization/blocks/MiniUsersList";
-import { useSession } from "../Visualization/hooks/useAuth";
 
 import { WorkspaceIcon } from "./WorkspaceIcon";
 
