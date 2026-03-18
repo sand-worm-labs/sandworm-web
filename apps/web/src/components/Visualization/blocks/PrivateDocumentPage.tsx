@@ -40,6 +40,7 @@ import PageSettingsPanel from "./PageSettingsPanel";
 import { Tooltip } from "./ToolTips";
 import { ContentSkeleton, TitleSkeleton } from "./ContentSkeleton";
 import ShareModal from "./ShareModal";
+import { PencilSimple } from "@/components/Assets/PencilSimple";
 
 // this is needed because this component only works with the browser
 const V2Editor = dynamic(() => import("@/components/Editor"), {
@@ -340,7 +341,7 @@ function PrivateDocumentPageInner(
         {props.isApp || isViewer ? (
           <EyeIcon className="w-4 h-4" />
         ) : (
-          <PencilIcon className="w-4 h-4" />
+          <PencilSimple  className="w-4 h-4" />
         )}
         <span className="w-full truncate">
           <span className="font-semibold">

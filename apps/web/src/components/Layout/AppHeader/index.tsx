@@ -2,19 +2,42 @@
 
 import { useState, type FC } from "react";
 import { X, Search } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 import { ThemeTogggle } from "@/components/Theme/ThemeToggle";
 
 import { SearchBar } from "../../SearchBar";
 
+const ROUTE_TITLES: Record<string, string> = {
+  "/": "Home",
+  "/workspace": "Home",
+  "/explore": "Explore",
+  "/session": "Projects",
+  "/favorites": "Favorites",
+};
+
+function getRouteTitle(pathname: string): string {
+  if (ROUTE_TITLES[pathname]) return ROUTE_TITLES[pathname];
+
+  const segments = pathname.split("/").filter(Boolean);
+
+  for (let i = segments.length - 1; i >= 0; i--) {
+    const segment = `/${segments[i]}`;
+    if (ROUTE_TITLES[segment]) return ROUTE_TITLES[segment];
+  }
+  return "Sandworm";
+}
+
 export const AppHeader: FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const title = getRouteTitle(pathname);
 
   return (
-    <header className="bg-[#FBFBFB] dark:bg-base-200 px-8 py-2 flex justify-between items-center  border-[#E9ECEF] dark:border-border-tertiary ">
+    <header className="bg-[#FBFBFB] dark:bg-base-200 px-8 py-2 flex justify-between items-center border-[#E9ECEF] dark:border-border-tertiary">
       <div className="hidden md:flex items-center gap-4">
         <SearchBar />
-        <span className="text-lg font-medium">Home</span>
+        <span className="text-lg font-medium">{title}</span>
       </div>
 
       <div className="flex items-center">
