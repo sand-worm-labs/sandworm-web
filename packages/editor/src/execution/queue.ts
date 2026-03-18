@@ -335,6 +335,7 @@ export class ExecutionQueue {
         onFileUpload: () => null,
         onRichText: () => null,
         onDashboardHeader: () => null,
+        onPowerToolbox: () => null
       }
     );
   }
