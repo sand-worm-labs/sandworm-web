@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import { PlusSmallIcon } from "@heroicons/react/24/outline";
 import type { MouseEventHandler } from "react";
+import { ChevronRightIcon, ChevronDownIcon } from "lucide-react";
 
 import { AccountDropdown } from "@/components/AccountDropdown";
 import DocumentTree from "@/components/Visualization/blocks/DocumentsTree";
@@ -31,13 +32,15 @@ interface NavItem {
 export const WorkspaceSidebar = () => {
   const pathname = usePathname();
   const workspaceId = useStringQuery("workspace");
-  const [collapsed, setCollapsed] = useState(true);
+  const [collapsed, setCollapsed] = useState(false);
   const router = useRouter();
   const documentId = useStringQuery("document");
   const favoriteDocument: any = [];
   const unfavoriteDocument: any = [];
   const session = useSession({ redirectToLogin: true });
   const user = session?.user;
+  const [isSectionOpen, setIsSectionOpen] = useState(true);
+  const [isToolsOpen, setIsToolsOpen] = useState(false);
 
   const mainNav: NavItem[] = [
     { name: " Home", href: `/workspace/${workspaceId}`, icon: House },
@@ -237,22 +240,42 @@ export const WorkspaceSidebar = () => {
             ))}
           </ul>
 
-          <hr className="border-t-[1px] border-[#E6E0F1] dark:border-border-tertiary mt-4" />
+          <hr className="border-t-[1px] border-transparent dark:border-transparent mt-5" />
 
-          {/* TOOLS NAV */}
-          <ul className="space-y-1.5 mt-4">
-            {toolsNav.map(item => (
-              <li key={item.name}>
-                <Link href={item.href} className={linkClasses(item.href)}>
-                  <item.icon
-                    size={18}
-                    color={pathname === item.href ? "#A308F0" : "#39414E"}
-                  />
-                  {!collapsed && item.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <div>
+            <button
+              type="button"
+              onClick={() => setIsToolsOpen(v => !v)}
+              className="w-full flex items-center gap-x-1 px-1 py-1 mb-1 text-[12px] font-medium  dark:text-ink-400 text-[#8C98A3] font-body"
+            >
+              {!collapsed && (
+                <>
+                  {isToolsOpen ? (
+                    <ChevronDownIcon className="h-4 w-4" />
+                  ) : (
+                    <ChevronRightIcon className="h-4 w-4" />
+                  )}
+                  <span>More</span>
+                </>
+              )}
+            </button>
+
+            {isToolsOpen && (
+              <ul className="space-y-1.5 mt-1">
+                {toolsNav.map(item => (
+                  <li key={item.name}>
+                    <Link href={item.href} className={linkClasses(item.href)}>
+                      <item.icon
+                        size={18}
+                        color={pathname === item.href ? "#A308F0" : "#39414E"}
+                      />
+                      {!collapsed && item.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
 
           {!collapsed && (
             <ul>
@@ -268,19 +291,36 @@ export const WorkspaceSidebar = () => {
                   <span>New Project</span>
                 </button>
               )}
-              <DocumentTree
-                workspaceId={workspaceId}
-                current={documentId}
-                documents={documents}
-                onDuplicate={onDuplicateDocument}
-                onDelete={onDeleteDocument}
-                onFavorite={onFavoriteDocument}
-                onUnfavorite={onUnfavoriteDocument}
-                onSetIcon={onSetIcon}
-                role={user?.role?.[0]?.[workspaceId] ?? "viewer"}
-                onCreate={onCreateDocument}
-                onUpdateParent={onUpdateDocumentParent}
-              />
+              <div>
+                <button
+                  type="button"
+                  onClick={() => setIsSectionOpen(v => !v)}
+                  className="w-full flex items-center gap-x-1 px-1 py-1 mb-1 text-[12px] font-medium  dark:text-ink-400 text-[#8C98A3] font-body"
+                >
+                  {isSectionOpen ? (
+                    <ChevronDownIcon className="h-4 w-4" />
+                  ) : (
+                    <ChevronRightIcon className="h-4 w-4" />
+                  )}
+                  <span>Recent Projects</span>
+                </button>
+
+                {isSectionOpen && (
+                  <DocumentTree
+                    workspaceId={workspaceId}
+                    current={documentId}
+                    documents={documents}
+                    onDuplicate={onDuplicateDocument}
+                    onDelete={onDeleteDocument}
+                    onFavorite={onFavoriteDocument}
+                    onUnfavorite={onUnfavoriteDocument}
+                    onSetIcon={onSetIcon}
+                    role={user?.role?.[0]?.[workspaceId] ?? "viewer"}
+                    onCreate={onCreateDocument}
+                    onUpdateParent={onUpdateDocumentParent}
+                  />
+                )}
+              </div>
             </ul>
           )}
         </nav>

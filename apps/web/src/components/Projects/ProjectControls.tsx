@@ -9,6 +9,9 @@ import {
 import { Button } from "@sandworm/ui/components/button";
 import { Badge } from "@sandworm/ui/components/badge";
 import { IoFilterOutline } from "react-icons/io5";
+import { PiSquareSplitVerticalFill, PiListThin } from "react-icons/pi";
+
+import { cn } from "@/lib/utils";
 
 type ViewType = "grid" | "table";
 
@@ -167,30 +170,32 @@ const ProjectControl: React.FC<ProjectControlProps> = ({
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/*  <Button variant="ghost" size="icon">
-              <Settings className="w-4 h-4 text-ink-200" />
-            </Button> */}
-
-            <div className="w-px h-6 bg-gray-300  dark:bg-[#262A30] mx-1" />
+            <div className="w-px h-6 bg-border-tertiary   mx-1" />
 
             <Button
-              variant={activeView === "grid" ? "default" : "ghost"}
+              variant="ghost"
               size="icon"
-              className="bg-transparent border border-[#DEE2E6] p-1 rounded-sm text-ink-200 dark:border-border-tertiary hover:bg-primary/20"
+              className={cn(
+                "h-8 w-8 rounded-md hover:bg-primary/20",
+                activeView === "grid" && "text-primary"
+              )}
               onClick={() => handleViewChange("grid")}
               title="Grid view"
             >
-              <Grid3x3 className="w-4 h-4" />
+              <PiSquareSplitVerticalFill className="text-xl" />
             </Button>
 
             <Button
-              variant={activeView === "table" ? "default" : "ghost"}
+              variant="ghost"
               size="icon"
-              className="bg-transparent border border-[#DEE2E6]  dark:border-border-tertiary p-1 rounded-sm text-ink-200 hover:bg-primary/20"
+              className={cn(
+                "h-8 w-8 rounded-md hover:bg-primary/20",
+                activeView === "table" && " text-primary"
+              )}
               onClick={() => handleViewChange("table")}
               title="Table view"
             >
-              <List className="w-4 h-4" />
+              <PiListThin className="text-xl" />
             </Button>
           </div>
         </div>
