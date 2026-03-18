@@ -15,13 +15,14 @@ import { SidebarIcon } from "@/components/Assets/SidebarIcon";
 import { useDocuments } from "@/components/Visualization/hooks/useDocuments";
 import { useSession } from "@/components/Visualization/hooks/useAuth";
 import { ProjectIcon } from "@/components/Assets/Menu/ProjectIcon";
-import { MagnifyingGlass } from "@/components/Assets/Menu/MagnifyingGlass";
 import { Star } from "@/components/Assets/Menu/Star";
 import { SquaresFour } from "@/components/Assets/Menu/SquaresFour";
 import { House } from "@/components/Assets/Menu/House";
 import { Terminal } from "@/components/Assets/Menu/Terminal";
 import { Trash } from "@/components/Assets/Trash";
 import WorkspaceSwitcher from "@/components/WorkspaceSwitcher";
+import { Binoculars } from "@/components/Assets/Menu/Binoculars";
+
 
 interface NavItem {
   name: string;
@@ -52,7 +53,7 @@ export const WorkspaceSidebar = () => {
     {
       name: "Explore",
       href: `/workspace/${workspaceId}/explore`,
-      icon: MagnifyingGlass,
+      icon: Binoculars,
     },
   ];
 
@@ -84,8 +85,8 @@ export const WorkspaceSidebar = () => {
     `flex items-center gap-3 rounded-xl px-2 py-1.5 text-sm font-medium transition-colors
      ${
        pathname === href
-         ? "dark:bg-base-600 bg-[#EBEBEB]  text-primary dark:text-ink-100"
-         : "text-menu-ink dark:text-white hover:bg-[#EBEBEB] dark:hover:bg-base-600 hover:text-primary   hover:text-black dark:hover:text-white"
+         ? "dark:bg-base-600 bg-base-600  text-primary dark:text-ink-100"
+         : "text-menu-ink dark:text-white hover:bg-base-600 dark:hover:bg-base-600 hover:text-primary   hover:text-black dark:hover:text-white"
      }`;
 
   const [
@@ -195,7 +196,7 @@ export const WorkspaceSidebar = () => {
 
   return (
     <aside
-      className={`h-full flex flex-col justify-between bg-base-500 border-r  border-[#E9ECEF] dark:border-border-tertiary font-body
+      className={`h-full flex flex-col justify-between bg-[#FEFFFF] dark:bg-base-500 border-r  border-[#E9ECEF] dark:border-border-tertiary font-body
       transition-all duration-300 ease-in-out
       ${collapsed ? "w-16" : "w-[17.5rem]"}
       `}
@@ -223,7 +224,7 @@ export const WorkspaceSidebar = () => {
 
         <WorkspaceSwitcher collapsed={collapsed} />
 
-        <div className="px-4 py-2.5" />
+        <div className="px-4 py-1.5" />
 
         <nav className="flex-1 px-3">
           <ul className="space-y-1.5">

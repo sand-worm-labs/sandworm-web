@@ -10,6 +10,7 @@ import {
   useSwitchWorkspace,
   useWorkspaces,
 } from "../Visualization/hooks/useWorkspaces";
+import CreateTeamModal from "../Settings/CreateTeam";
 
 function workspaceGradient(id: string) {
   const gradients = [
@@ -38,6 +39,7 @@ export default function WorkspaceSwitcher({
   const { workspaceInfo } = useCurrentWorkspaceInfo();
   const [{ data: allWorkspaces }] = useWorkspaces();
   const { switchWorkspace, loading: isSwitching } = useSwitchWorkspace();
+  const [isCreateTeamOpen, setIsCreateTeamOpen] = useState(false);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -95,7 +97,6 @@ export default function WorkspaceSwitcher({
               "rounded-xl shadow-lg overflow-hidden"
             )}
           >
-            {/* Current */}
             <div className="flex items-center gap-3 px-3 py-2.5 bg-[#F8F9FA] dark:bg-base-400">
               <div
                 className={clsx(
@@ -144,6 +145,8 @@ export default function WorkspaceSwitcher({
 
             <button
               type="button"
+              onClick={() => setIsCreateTeamOpen(true)}
+
               className="w-full flex items-center gap-3 px-3 py-2 text-sm text-primary hover:bg-[#A308F0]/5 transition-colors font-semibold"
             >
               <svg
@@ -163,6 +166,13 @@ export default function WorkspaceSwitcher({
             </button>
           </div>
         </Transition>
+        <CreateTeamModal
+          isOpen={isCreateTeamOpen}
+          onClose={() => setIsCreateTeamOpen(false)}
+          onSuccess={workspaceId => {
+            setIsCreateTeamOpen(false);
+          }}
+        />
       </div>
     );
   }
@@ -207,10 +217,10 @@ export default function WorkspaceSwitcher({
           onClick={() => setOpen(o => !o)}
           className={clsx(
             "w-full flex items-center gap-3 px-3 py-1.5 rounded-xl border transition-all",
-            "bg-base-100",
-            "border-[#E9ECEF] dark:border-border-tertiary",
+            "dark:bg-base-100",
+            "border-none dark:border-border-tertiary",
             "hover:border-[#DEE2E6] dark:hover:border-border-tertiary",
-            "shadow-sm"
+            "shadow-none"
           )}
         >
           {/* Avatar */}
@@ -226,7 +236,6 @@ export default function WorkspaceSwitcher({
             {workspaceInfo.name}
           </span>
 
-          {/* Up/down chevrons */}
           <div className="flex flex-col gap-[0px] text-[#1C3B5A] dark:text-ink-400">
             <svg
               className="w-3 h-3"
@@ -276,7 +285,6 @@ export default function WorkspaceSwitcher({
             "rounded-xl shadow-lg overflow-hidden"
           )}
         >
-          {/* Current workspace (non-clickable) */}
           <div className="flex items-center gap-3 px-3 py-2.5 bg-[#F8F9FA] dark:bg-base-400 min-w-[12rem]">
             <div
               className={clsx(
@@ -287,8 +295,16 @@ export default function WorkspaceSwitcher({
             <span className="flex-1 text-sm font-medium text-ink-100 dark:text-ink-100 truncate">
               {workspaceInfo.name}
             </span>
-            <span className="text-[10px] px-1.5 py-0.5 bg-[#A308F0]/10 text-primary rounded-full font-medium">
-              Current
+            <span className="w-5 h-5 rounded-full border border-[#7F56D9] flex items-center justify-center">
+              <svg
+                className="w-3 h-3 text-[#7F56D9]"
+                viewBox="0 0 12 12"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <polyline points="2,6 5,9 10,3" />
+              </svg>
             </span>
           </div>
 
@@ -326,7 +342,9 @@ export default function WorkspaceSwitcher({
           {/* Create new */}
           <button
             type="button"
-            className="w-full flex items-center gap-3 px-3 py-2 text-sm text-primary hover:bg-[#A308F0]/5 transition-colors font-semibold"
+            onClick={() => setIsCreateTeamOpen(true)}
+
+            className="w-full flex items-center gap-3 px-3 py-2 text-sm text-ink-100 hover:bg-[#A308F0]/5 transition-colors font-medium"
           >
             <svg
               className="w-4 h-4"
@@ -345,6 +363,14 @@ export default function WorkspaceSwitcher({
           </button>
         </div>
       </Transition>
+
+      <CreateTeamModal
+        isOpen={isCreateTeamOpen}
+        onClose={() => setIsCreateTeamOpen(false)}
+        onSuccess={workspaceId => {
+          setIsCreateTeamOpen(false);
+        }}
+      />
     </div>
   );
 }

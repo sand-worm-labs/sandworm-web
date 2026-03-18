@@ -101,7 +101,7 @@ function ChevronRight({ className }: { className?: string }) {
     >
       <path
         d="M6 12l4-4-4-4"
-        strokeWidth="1.5"
+        strokeWidth="0.9"
         strokeLinecap="round"
         strokeLinejoin="round"
         className="stroke-current"
@@ -185,11 +185,14 @@ function CategoryRow({
     >
       <span
         className={clsx(
-          "flex items-center justify-center w-8 h-8 rounded-lg shrink-0",
-          isActive ? "bg-[#EBF7F7]" : "hover:bg-[#EBF7F7]"
+          "flex items-center justify-center w-8 h-8 rounded-lg shrink-0 ",
+          isActive ? "bg-[#DFEDED]" : "hover:bg-[#DFEDED] bg-[#EBF7F7]"
         )}
       >
-        <BoltIcon className="text-[#1C3B5A]" />
+        <BoltIcon   className={clsx(
+            "transition-colors",
+            isActive ? "text-[#005DE7]" : "text-[#1C3B5A]"
+          )}/>
       </span>
 
       <span className="flex-1 min-w-0">
@@ -204,7 +207,7 @@ function CategoryRow({
       <ChevronRight
         className={clsx(
           "transition-colors",
-          isActive ? "text-white/50" : "text-white/20"
+          isActive ? "text-ink-100" : "text-ink-400"
         )}
       />
     </button>
@@ -296,7 +299,7 @@ function KeyHint({
         <kbd
           key={k}
           className={clsx(
-            "inline-flex items-center justify-center",
+            "inline-flex items-center justify-center font-body lowercase",
             "min-w-[20px] h-5 px-1 rounded",
             " text-[14px] leading-none",
             muted
@@ -307,7 +310,7 @@ function KeyHint({
           {k}
         </kbd>
       ))}
-      <span className="ml-0.5"> to {label}</span>
+      <span className="ml-0.5 font-body lowercase"> to {label}</span>
     </span>
   );
 }
@@ -517,7 +520,7 @@ export function PowerToolboxModal({
 
               <div
                 ref={listRef}
-                className="px-2 pb-2 max-h-[360px] overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent"
+                className="px-2 pb-2 max-h-[460px] overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent"
               >
                 {isSearching && (
                   <div>
