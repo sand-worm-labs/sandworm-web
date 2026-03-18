@@ -191,6 +191,7 @@ function BlockPreview(props: BlockPreviewProps) {
     ),
     onDashboardHeader: () => null,
     onWriteback: () => null,
+    onPowerToolbox: () => null,
   });
 }
 
@@ -456,6 +457,7 @@ function DashboardControls(props: Props) {
                 onFileUpload: () => null,
                 onDashboardHeader: () => null,
                 onWriteback: () => null,
+                onPowerToolbox: () => null,
               });
             }) ?? [];
 

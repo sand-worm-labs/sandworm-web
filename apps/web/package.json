@@ -22,6 +22,8 @@
   "dependencies": {
     "@aarkue/tiptap-math-extension": "^1.4.0",
     "@ai-sdk/google": "^3.0.43",
+    "@ai-sdk/openai": "^3.0.41",
+    "@ai-sdk/openai-compatible": "^2.0.35",
     "@apollo/client": "^3.14.0",
     "@auth/drizzle-adapter": "^1.10.0",
     "@bprogress/next": "^3.2.12",
@@ -134,6 +136,8 @@
     "next": "catalog:react",
     "next-auth": "5.0.0-beta.30",
     "next-themes": "catalog:react",
+    "overlayscrollbars": "^2.14.0",
+    "overlayscrollbars-react": "^0.5.6",
     "papaparse": "^5.5.2",
     "pg": "^8.16.3",
     "postgres": "^3.4.7",

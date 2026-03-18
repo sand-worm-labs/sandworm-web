@@ -3,6 +3,10 @@ import { google } from "@ai-sdk/google";
 import { z } from "zod";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import { createOpenAI } from "@ai-sdk/openai";
+import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
+
+
 
 export type BlockSpec =
   | { type: "title"; text: string }
@@ -28,6 +32,14 @@ export interface NotebookAIResponse {
   documentTitle: string | null;
 }
 
+console.log("key:", process.env.AGENTROUTER_API_KEY);
+
+const agentrouter = createOpenAICompatible({
+  name: "agentrouter",
+  baseURL: "https://agentrouter.org/v1",
+  apiKey: process.env.AGENTROUTER_API_KEY!,
+});
+
 export async function POST(req: NextRequest) {
   const body: NotebookAIRequest = await req.json();
   const { prompt } = body;
@@ -35,7 +47,7 @@ export async function POST(req: NextRequest) {
   let documentTitle: string | null = null;
 
   const result = await generateText({
-    model: google("gemini-2.5-flash"),
+    model: agentrouter("deepseek-v3.2"),
     maxSteps: 2,
     system: `You are an AI assistant that helps users build blockchain analytics notebooks.
 

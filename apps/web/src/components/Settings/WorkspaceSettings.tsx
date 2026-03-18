@@ -11,13 +11,11 @@ import React, {
 } from "react";
 import { XMarkIcon, CheckIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { Dialog, Transition } from "@headlessui/react";
 import toast from "react-hot-toast";
 
 import type { ApiUser } from "@/types";
 
-import { User } from "../Assets/Avatar/User";
 import { PencilSimple } from "../Assets/PencilSimple";
 import ManageInviteModal from "../ManageInvite";
 import {
@@ -33,7 +31,6 @@ import {
 } from "../Visualization/hooks/useWorkspaces";
 import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
 import MiniUsersList from "../Visualization/blocks/MiniUsersList";
-import { useSession } from "../Visualization/hooks/useAuth";
 
 import { WorkspaceIcon } from "./WorkspaceIcon";
 
@@ -470,318 +467,341 @@ export default function WorkspaceSettingsModal({
   if (!isOpen || !workspace) return null;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div
-        className="fixed inset-0 bg-[#0000001A] transition-opacity"
-        onClick={onClose}
-        onKeyDown={(e: React.KeyboardEvent) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            onClose();
-          }
-        }}
-        role="button"
-        tabIndex={0}
-        aria-label="Close modal"
-      />
+    <Transition show={isOpen} as={Fragment}>
+      <div className="fixed inset-0 z-50 overflow-y-auto">
+        <Transition.Child
+          as={Fragment}
+          enter="ease-out duration-200"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-150"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div
+            className="fixed inset-0 bg-[#0000001A]"
+            onClick={onClose}
+            onKeyDown={(e: React.KeyboardEvent) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onClose();
+              }
+            }}
+            role="button"
+            tabIndex={0}
+            aria-label="Close modal"
+          />
+        </Transition.Child>
 
-      <div className="flex min-h-full items-center justify-center p-4 lg:min-w-[1000px] w-auto">
-        <div className="relative w-full max-w-[1000px] xl:max-w-[1300px] transform rounded-2xl bg-white dark:bg-base-400 dark:border dark:border-border-tertiary shadow-none transition-all px-12">
-          {/* Header */}
-          <div className="flex items-center justify-between px-6 py-4 pt-12">
-            <div>
-              <div className="flex gap-x-3">
-                <WorkspaceIcon icon={workspace?.icon} />
-                <h2 className="text-base font-semibold text-ink-100 dark:text-white capitalize flex items-center gap-2">
-                  {workspace?.name} workspace
-                  <button
-                    type="button"
-                    onClick={() => setIsEditModalOpen(true)}
-                    className="p-1 rounded transition-colors"
-                  >
-                    <PencilSimple className="h-4 w-4  dark:text-ink-400" />
-                  </button>
-                </h2>
+        <div className="flex min-h-full items-center justify-center p-4 lg:min-w-[1000px] w-auto">
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-200"
+            enterFrom="opacity-0 scale-95"
+            enterTo="opacity-100 scale-100"
+            leave="ease-in duration-150"
+            leaveFrom="opacity-100 scale-100"
+            leaveTo="opacity-0 scale-95"
+          >
+            <div className="relative w-full max-w-[1000px] xl:max-w-[1300px] transform rounded-2xl bg-white dark:bg-base-400 dark:border dark:border-border-tertiary shadow-none transition-all px-12">
+              {/* Header */}
+              <div className="flex items-center justify-between px-6 py-4 pt-12">
+                <div>
+                  <div className="flex gap-x-3">
+                    <WorkspaceIcon icon={workspace?.icon} />
+                    <h2 className="text-base font-semibold text-ink-100 dark:text-white capitalize flex items-center gap-2">
+                      {workspace?.name} workspace
+                      <button
+                        type="button"
+                        onClick={() => setIsEditModalOpen(true)}
+                        className="p-1 rounded transition-colors"
+                      >
+                        <PencilSimple className="h-4 w-4  dark:text-ink-400" />
+                      </button>
+                    </h2>
 
-                <div className="w-32 flex items-center justify-center gap-2 text-sm text-[#6C757D]  font-medium dark:text-ink-400 border-r border-[#1A1A1A]">
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                    />
-                  </svg>
-                  <span>
-                    {isMembersLoading ? "..." : members.length}{" "}
-                    {members.length === 1 ? "member" : "members"}
-                  </span>
-                </div>
+                    <div className="w-32 flex items-center justify-center gap-2 text-sm text-[#6C757D]  font-medium dark:text-ink-400 border-r border-[#1A1A1A]">
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={1.5}
+                          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                        />
+                      </svg>
+                      <span>
+                        {isMembersLoading ? "..." : members.length}{" "}
+                        {members.length === 1 ? "member" : "members"}
+                      </span>
+                    </div>
 
-                <div className="px-3 flex items-center justify-center gap-2 text-sm text-[#6C757D] font-medium dark:text-ink-400 border-r border-[#1A1A1A]">
-                  Pro
+                    <div className="px-3 flex items-center justify-center gap-2 text-sm text-[#6C757D] font-medium dark:text-ink-400 border-r border-[#1A1A1A]">
+                      Pro
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setIsModalOpen(true)}
+                      className="flex items-center gap-2 px-2.5 py-0.5 border bg-[#F8F9FA] border-[#DEE2E6] dark:text-black dark:border-border-tertiary rounded-lg text-xs font-medium hover:bg-gray-50  transition-colors"
+                    >
+                      Manage Invites
+                    </button>
+
+                    <div className="text-primary text-[13px] font-medium">
+                      {mappedPendingRequests.length} Pending Requests
+                    </div>
+
+                    <div className="text-primary text-[13px] font-medium">
+                      {mappedPendingInvites.length} Pending Invites
+                    </div>
+                  </div>
+
+                  <p className="text-xs xl:text-sm mt-2 text-[#6C757D] dark:text-ink-400">
+                    Change details about your workspace
+                  </p>
                 </div>
 
                 <button
                   type="button"
-                  onClick={() => setIsModalOpen(true)}
-                  className="flex items-center gap-2 px-2.5 py-0.5 border bg-[#F8F9FA] border-[#DEE2E6] dark:text-black dark:border-border-tertiary rounded-lg text-xs font-medium hover:bg-gray-50  transition-colors"
+                  onClick={onClose}
+                  className="rounded-lg p-1 text-ink-400 hover:bg-gray-100 hover:text-gray-500 dark:hover:bg-gray-800"
                 >
-                  Manage Invites
+                  <XMarkIcon className="h-5 w-5" />
                 </button>
-
-                <div className="text-primary text-[13px] font-medium">
-                  {mappedPendingRequests.length} Pending Requests
-                </div>
-
-                <div className="text-primary text-[13px] font-medium">
-                  {mappedPendingInvites.length} Pending Invites
-                </div>
               </div>
 
-              <p className="text-xs xl:text-sm mt-2 text-[#6C757D] dark:text-ink-400">
-                Change details about your workspace
-              </p>
-            </div>
-
-            <button
-              type="button"
-              onClick={onClose}
-              className="rounded-lg p-1 text-ink-400 hover:bg-gray-100 hover:text-gray-500 dark:hover:bg-gray-800"
-            >
-              <XMarkIcon className="h-5 w-5" />
-            </button>
-          </div>
-
-          {/* Content */}
-          <div className="px-6 py-4 space-y-0 div dark:divide-border-tertiary">
-            {/* Team Plan */}
-            <div className="flex items-center justify-between gap-4 py-4 border-[#E9ECEF]">
-              <div className="flex flex-col gap-y-2">
-                <label className="block text-md font-bold leading-4 dark:text-white text-ink-100">
-                  Team plan
-                </label>
-                <p className="text-xs xl:text-sm mt-2 text-[#6C757D] dark:text-ink-400">
-                  Check your current billing status
-                </p>
-                <div className="flex items-center">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      router.push(
-                        `/workspace/${workspace?.id}/settings/billing`
-                      );
-                      onClose();
-                    }}
-                    className="px-2.5 py-1 border border-[#DEE2E6] dark:border-gray-700 dark:text-black bg-[#F8F9FA] rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-800 text-xs"
-                  >
-                    Change Plan
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex w-[50%] justify-between border-b border-[#E9ECEF] pb-2 dark:border-border-tertiary ">
-                <div className="flex">
-                  <div>
-                    <div className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-2.5">
-                      Current plan
+              {/* Content */}
+              <div className="px-6 py-4 space-y-0 div dark:divide-border-tertiary">
+                {/* Team Plan */}
+                <div className="flex items-center justify-between gap-4 py-4 border-[#E9ECEF]">
+                  <div className="flex flex-col gap-y-2">
+                    <label className="block text-md font-bold leading-4 dark:text-white text-ink-100">
+                      Team plan
+                    </label>
+                    <p className="text-xs xl:text-sm mt-2 text-[#6C757D] dark:text-ink-400">
+                      Check your current billing status
+                    </p>
+                    <div className="flex items-center">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          router.push(
+                            `/workspace/${workspace?.id}/settings/billing`
+                          );
+                          onClose();
+                        }}
+                        className="px-2.5 py-1 border border-[#DEE2E6] dark:border-gray-700 dark:text-black bg-[#F8F9FA] rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-800 text-xs"
+                      >
+                        Change Plan
+                      </button>
                     </div>
-                    <div className="font-medium capitalize bg-[#F7E8FF] dark:bg-[#2a1a3a] px-3 py-0.5 rounded-md text-primary inline-block text-sm">
-                      Free
+                  </div>
+
+                  <div className="flex w-[50%] justify-between border-b border-[#E9ECEF] pb-2 dark:border-border-tertiary ">
+                    <div className="flex">
+                      <div>
+                        <div className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-2.5">
+                          Current plan
+                        </div>
+                        <div className="font-medium capitalize bg-[#F7E8FF] dark:bg-[#2a1a3a] px-3 py-0.5 rounded-md text-primary inline-block text-sm">
+                          Free
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-2.5">
+                        Available AI Credit
+                      </div>
+                      <div className="font-medium text-[#6C757D] dark:text-ink-400 capitalize px-2 py-0.5 block inline-block text-sm">
+                        0
+                      </div>
                     </div>
                   </div>
                 </div>
+
+                {/* AI Model Selection */}
+                <div className="flex items-center justify-between gap-4 py-4">
+                  <div className="flex flex-col gap-y-2">
+                    <label className="block text-md font-bold leading-4 dark:text-white text-ink-100">
+                      AI Configuration
+                    </label>
+                    <span className="text-xs xl:text-sm mt-2 text-[#6C757D] dark:text-ink-400">
+                      Select the default AI model for your team workspace
+                    </span>
+                  </div>
+
+                  <div className="w-[50%]">
+                    <div className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-1.5">
+                      Model
+                    </div>
+                    <select
+                      className="block w-full rounded-[10px] xl:py-2 border-0 py-1.5 pl-4 pr-10 text-ink-100 font-medium ring-1 ring-inset ring-[#CED4DA] focus:ring-1 focus:ring-[#A308F0] text-sm dark:bg-base-400 disabled:bg-gray-100 dark:text-white dark:ring-border-tertiary"
+                      defaultValue="gpt-4o"
+                    >
+                      <option value="gpt-4o">GPT-4o (Recommended)</option>
+                      <option value="gpt-4">GPT-4</option>
+                      <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Custom OpenAI API Key */}
+                {!disableCustomOpenAiKey && (
+                  <div className="flex items-center justify-between gap-4 py-4">
+                    <div className="flex flex-col gap-y-2">
+                      <label className="block text-md font-bold leading-4 dark:text-white text-ink-100">
+                        Custom AI API Key
+                      </label>
+                      <span className="text-xs xl:text-sm mt-2 text-[#6C757D] dark:text-ink-400">
+                        Set a custom API key for your workspace
+                      </span>
+                    </div>
+
+                    <div className="w-[50%]">
+                      <div className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-1.5">
+                        set key
+                      </div>
+                      <select
+                        className="block w-full rounded-[10px] xl:py-2 border-0 py-1.5 pl-4 pr-10 text-ink-100 font-medium ring-1 ring-inset ring-[#CED4DA] focus:ring-1 focus:ring-[#A308F0] text-sm dark:bg-base-400 disabled:bg-gray-100 dark:text-white dark:ring-border-tertiary"
+                        defaultValue="gpt-4o"
+                      >
+                        <option value="gpt-4o">
+                          Not set - Using sandworm default quotas
+                        </option>
+                        <option value="gpt-4">GPT-4</option>
+                        <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                      </select>
+                    </div>
+                  </div>
+                )}
+
+                {/* Members */}
+                <div className="flex items-start justify-between gap-4 py-4">
+                  <div className="flex flex-col gap-y-2">
+                    <label className="block text-md font-bold leading-4 dark:text-white text-ink-100">
+                      Members
+                    </label>
+                    <span className="text-xs xl:text-sm mt-2 text-[#6C757D] dark:text-ink-400">
+                      Manage access levels for users within this workspace
+                    </span>
+                  </div>
+
+                  <div className="w-[50%]">
+                    <MiniUsersList
+                      currentUserEmail={
+                        members.find(m => m.role === currentUserRole)?.email ??
+                        ""
+                      }
+                      users={members}
+                      onRemoveUser={onRemoveUser}
+                      onChangeRole={onChangeRole}
+                      onInvite={() => {}}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="flex justify-between gap-3 px-6 py-4 mb-20">
                 <div>
-                  <div className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-2.5">
-                    Available AI Credit
-                  </div>
-                  <div className="font-medium text-[#6C757D] dark:text-ink-400 capitalize px-2 py-0.5 block inline-block text-sm">
-                    0
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* AI Model Selection */}
-            <div className="flex items-center justify-between gap-4 py-4">
-              <div className="flex flex-col gap-y-2">
-                <label className="block text-md font-bold leading-4 dark:text-white text-ink-100">
-                  AI Configuration
-                </label>
-                <span className="text-xs xl:text-sm mt-2 text-[#6C757D] dark:text-ink-400">
-                  Select the default AI model for your team workspace
-                </span>
-              </div>
-
-              <div className="w-[50%]">
-                <div className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-1.5">
-                  Model
-                </div>
-                <select
-                  className="block w-full rounded-[10px] xl:py-2 border-0 py-1.5 pl-4 pr-10 text-ink-100 font-medium ring-1 ring-inset ring-[#CED4DA] focus:ring-1 focus:ring-[#A308F0] text-sm dark:bg-base-400 disabled:bg-gray-100 dark:text-white dark:ring-border-tertiary"
-                  defaultValue="gpt-4o"
-                >
-                  <option value="gpt-4o">GPT-4o (Recommended)</option>
-                  <option value="gpt-4">GPT-4</option>
-                  <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Custom OpenAI API Key */}
-            {!disableCustomOpenAiKey && (
-              <div className="flex items-center justify-between gap-4 py-4">
-                <div className="flex flex-col gap-y-2">
-                  <label className="block text-md font-bold leading-4 dark:text-white text-ink-100">
-                    Custom AI API Key
-                  </label>
-                  <span className="text-xs xl:text-sm mt-2 text-[#6C757D] dark:text-ink-400">
-                    Set a custom API key for your workspace
-                  </span>
+                  <h3 className="text-ink-100 font-bold">Delete Workspace</h3>
+                  <p className="text-xs xl:text-sm mt-2 text-[#6C757D] dark:text-ink-400">
+                    Delete this Workspace
+                  </p>
                 </div>
 
                 <div className="w-[50%]">
-                  <div className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-1.5">
-                    set key
+                  <h3 className="uppercase mb-2 text-[#6C757D]  dark:text-ink-400 font-bold text-[13px]">
+                    Delete this workspace
+                  </h3>
+                  <div className="flex bg-[#FFDBDB] dark:bg-[#2a1a1a] border border-[#CED4DA] dark:border-[#5a2e2e] rounded-xl text-[13px] py-1 px-2 items-center gap-x-5 justify-between">
+                    <span className="inline-block text-[#ff0000] dark:text-[#ff6b6b]">
+                      Once deleted, all files, users and data will be
+                      permanently lost
+                    </span>
+                    <button
+                      onClick={() => setIsDeleteModalOpen(true)}
+                      type="button"
+                      className="bg-[#F8F9FA] dark:bg-base-400 text-[12px] py-1 px-2 rounded-lg border border-[#DEE2E6] dark:border-border-tertiary text-[#ff0000] dark:text-[#ff6b6b]  font-medium inline-block"
+                    >
+                      Delete Workspace
+                    </button>
                   </div>
-                  <select
-                    className="block w-full rounded-[10px] xl:py-2 border-0 py-1.5 pl-4 pr-10 text-ink-100 font-medium ring-1 ring-inset ring-[#CED4DA] focus:ring-1 focus:ring-[#A308F0] text-sm dark:bg-base-400 disabled:bg-gray-100 dark:text-white dark:ring-border-tertiary"
-                    defaultValue="gpt-4o"
-                  >
-                    <option value="gpt-4o">
-                      Not set - Using sandworm default quotas
-                    </option>
-                    <option value="gpt-4">GPT-4</option>
-                    <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-                  </select>
                 </div>
               </div>
-            )}
-
-            {/* Members */}
-            <div className="flex items-start justify-between gap-4 py-4">
-              <div className="flex flex-col gap-y-2">
-                <label className="block text-md font-bold leading-4 dark:text-white text-ink-100">
-                  Members
-                </label>
-                <span className="text-xs xl:text-sm mt-2 text-[#6C757D] dark:text-ink-400">
-                  Manage access levels for users within this workspace
-                </span>
-              </div>
-
-              <div className="w-[50%]">
-                <MiniUsersList
-                  currentUserEmail={
-                    members.find(m => m.role === currentUserRole)?.email ?? ""
-                  }
-                  users={members}
-                  onRemoveUser={onRemoveUser}
-                  onChangeRole={onChangeRole}
-                  onInvite={() => {}}
-                />
-              </div>
             </div>
-          </div>
-
-          {/* Footer */}
-          <div className="flex justify-between gap-3 px-6 py-4 mb-20">
-            <div>
-              <h3 className="text-ink-100 font-bold">Delete Workspace</h3>
-              <p className="text-xs xl:text-sm mt-2 text-[#6C757D] dark:text-ink-400">
-                Delete this Workspace
-              </p>
-            </div>
-
-            <div className="w-[50%]">
-              <h3 className="uppercase mb-2 text-[#6C757D]  dark:text-ink-400 font-bold text-[13px]">
-                Delete this workspace
-              </h3>
-              <div className="flex bg-[#FFDBDB] dark:bg-[#2a1a1a] border border-[#CED4DA] dark:border-[#5a2e2e] rounded-xl text-[13px] py-1 px-2 items-center gap-x-5 justify-between">
-                <span className="inline-block text-[#ff0000] dark:text-[#ff6b6b]">
-                  Once deleted, all files, users and data will be permanently
-                  lost
-                </span>
-                <button
-                  onClick={() => setIsDeleteModalOpen(true)}
-                  type="button"
-                  className="bg-[#F8F9FA] dark:bg-base-400 text-[12px] py-1 px-2 rounded-lg border border-[#DEE2E6] dark:border-border-tertiary text-[#ff0000] dark:text-[#ff6b6b]  font-medium inline-block"
-                >
-                  Delete Workspace
-                </button>
-              </div>
-            </div>
-          </div>
+          </Transition.Child>
         </div>
+
+        <ManageInviteModal
+          isOpen={isModalOpen}
+          workspaceId={workspace?.id}
+          onClose={() => setIsModalOpen(false)}
+          pendingInvites={mappedPendingInvites}
+          onSendInvite={handleSendInvite}
+          onCancelInvite={handleCancelInvite}
+          pendingRequests={mappedPendingRequests}
+          refetchInvite={refetchInvites}
+          onApproveRequest={handleApproveRequest}
+          onDenyRequest={handleDenyRequest}
+        />
+
+        <DeleteWorkspaceModal
+          isOpen={isDeleteModalOpen}
+          onClose={() => setIsDeleteModalOpen(false)}
+          onDelete={async () => {
+            try {
+              await deleteWorkspace(workspace?.id ?? "");
+              setIsDeleteModalOpen(false);
+              onClose();
+            } catch (error) {
+              console.error("Failed to delete workspace:", error);
+            }
+          }}
+          workspaceName={workspace?.name}
+          isDeleting={isDeleting}
+          errorMessage={
+            deleteError === "current_workspace"
+              ? "You cannot delete the workspace you are currently in."
+              : deleteError === "last_workspace"
+                ? "You cannot delete your last workspace."
+                : deleteError === "unauthorized"
+                  ? "You must be an admin to delete this workspace."
+                  : deleteError === "unexpected"
+                    ? "Something went wrong. Please try again."
+                    : undefined
+          }
+        />
+
+        <EditWorkspaceProfileModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          currentName={workspace?.name}
+          onSave={async ({ name, selectedIcon }) => {
+            if (!isAdmin) {
+              alert("Only admins can update workspace settings");
+              return;
+            }
+            try {
+              await updateWorkspace(
+                workspace?.id || "",
+                name.trim(),
+                selectedIcon ?? undefined
+              );
+              setIsEditModalOpen(false);
+            } catch (err) {
+              console.error("Failed to update workspace name:", err);
+              alert("Failed to update team name. Please try again.");
+            }
+          }}
+          isLoading={isUpdating}
+        />
       </div>
-
-      <ManageInviteModal
-        isOpen={isModalOpen}
-        workspaceId={workspace?.id}
-        onClose={() => setIsModalOpen(false)}
-        pendingInvites={mappedPendingInvites}
-        onSendInvite={handleSendInvite}
-        onCancelInvite={handleCancelInvite}
-        pendingRequests={mappedPendingRequests}
-        refetchInvite={refetchInvites}
-        onApproveRequest={handleApproveRequest}
-        onDenyRequest={handleDenyRequest}
-      />
-
-      <DeleteWorkspaceModal
-        isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        onDelete={async () => {
-          try {
-            await deleteWorkspace(workspace?.id ?? "");
-            setIsDeleteModalOpen(false);
-            onClose();
-          } catch (error) {
-            console.error("Failed to delete workspace:", error);
-          }
-        }}
-        workspaceName={workspace?.name}
-        isDeleting={isDeleting}
-        errorMessage={
-          deleteError === "current_workspace"
-            ? "You cannot delete the workspace you are currently in."
-            : deleteError === "last_workspace"
-              ? "You cannot delete your last workspace."
-              : deleteError === "unauthorized"
-                ? "You must be an admin to delete this workspace."
-                : deleteError === "unexpected"
-                  ? "Something went wrong. Please try again."
-                  : undefined
-        }
-      />
-
-      <EditWorkspaceProfileModal
-        isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
-        currentName={workspace?.name}
-        onSave={async ({ name, selectedIcon }) => {
-          if (!isAdmin) {
-            alert("Only admins can update workspace settings");
-            return;
-          }
-          try {
-            await updateWorkspace(
-              workspace?.id || "",
-              name.trim(),
-              selectedIcon ?? undefined
-            );
-            setIsEditModalOpen(false);
-          } catch (err) {
-            console.error("Failed to update workspace name:", err);
-            alert("Failed to update team name. Please try again.");
-          }
-        }}
-        isLoading={isUpdating}
-      />
-    </div>
+    </Transition>
   );
 }

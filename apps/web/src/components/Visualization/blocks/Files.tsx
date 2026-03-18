@@ -179,7 +179,7 @@ function FileItem(props: FileItemProps) {
   }, [props.onDelete, props.file]);
 
   return (
-    <div className="px-4 py-3 font-body  border border-[#E9ECEF] rounded-xl my-2 bg-[#FBFBFB] dark:bg-base-100 dark:border-border-tertiary">
+    <div className="px-4 py-3 font-body  border border-[#E9ECEF] rounded-xl my-2  dark:bg-base-100 dark:border-border-tertiary">
       <div>
         <div className="flex justify-between pb-0.5">
           <div
@@ -360,7 +360,7 @@ function ReplaceDialog(props: ReplaceDialogProps) {
           leaveFrom="opacity-100"
           leaveTo="opacity-0 font-body "
         >
-          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+          <div className="fixed inset-0 bg-[#0000001A] transition-opacity" />
         </Transition.Child>
 
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
@@ -639,7 +639,7 @@ file`;
                 Files
               </h3>
               <p className="text-ink-400 text-sm pt-1">
-                Click "add" or drop files into this tab to upload them.
+              Upload files to your notebook for analysis
               </p>
             </div>
 

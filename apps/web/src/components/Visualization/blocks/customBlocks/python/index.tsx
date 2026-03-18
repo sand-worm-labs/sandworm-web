@@ -22,6 +22,7 @@ import {
   updateYText,
   isExecutionStatusLoading,
 } from "@sandworm/editor";
+import { CodeIcon } from "@/components/Assets/Blocks/CodeIcon";
 import clsx from "clsx";
 import type { RefObject } from "react";
 import { useCallback, useMemo, useState } from "react";
@@ -497,7 +498,7 @@ function PythonBlock(props: Props) {
             <div className="flex items-center justify-between px-3 pr-4 gap-x-4 font-body  h-12">
               <div className="select-none text-gray-300 text-xs flex items-center w-full h-full gap-x-1.5">
                 <div className="relative group w-4 h-4">
-                  <CommandLineIcon className="absolute inset-0 h-4 w-4 text-ink-400 group-hover:opacity-0 transition-opacity" />
+                  <CodeIcon className="absolute inset-0 h-4 w-4 text-ink-400 group-hover:opacity-0 transition-opacity" />
                   <button
                     type="button"
                     className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -513,7 +514,7 @@ function PythonBlock(props: Props) {
                 <input
                   type="text"
                   className={clsx(
-                    "text-base font-body  font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-md border-0 text-ink-100 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-ink-400 py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white"
+                    "text-base font-body  font-medium pl-1 ring-border-secondary focus:ring-primary/40 block w-full rounded-md border-0 text-ink-100 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-ink-400 py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white focus-visible:ring-none focus-visible:outline-none"
                   )}
                   placeholder={
                     props.isEditable
@@ -528,7 +529,7 @@ function PythonBlock(props: Props) {
 
               {results.some(r => r.type === "error") && (
                 <div className="print:hidden flex items-center gap-x-1 text-[10px] text-ink-400 whitespace-nowrap">
-                  <code className="bg-red-50 text-red-700 px-1.5 py-0.5 font-mono rounded-md relative">
+                  <code className="bg-red-50 text-error px-1.5 py-0.5 font-mono rounded-md relative">
                     contains errors
                   </code>
                 </div>

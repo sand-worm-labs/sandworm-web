@@ -44,6 +44,7 @@ import {
   isRunnableBlock,
   getClosestDataframe,
   getBlockFlatPosition,
+  getBlocks,
 } from "@sandworm/editor";
 import type { DataFrame } from "@sandworm/types";
 import {
@@ -70,7 +71,7 @@ import {
   MinusCircleIcon,
   PlayIcon,
 } from "@heroicons/react/24/outline";
-import SimpleBar from "simplebar-react";
+import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import { DocumentIcon } from "@heroicons/react/24/solid";
 
 import { useOnClickOutside } from "@/hooks/useOnClickOutside";
@@ -104,6 +105,7 @@ import {
 } from "../Visualization/hooks/useYDocs";
 import useSideBar from "../Visualization/hooks/useSideBar";
 import { ElementType } from "../Visualization/blocks/DragLayer";
+import AnalyticsBlock from "../Visualization/blocks/customBlocks/PowerToolbox/AnalyticsBlock";
 
 import RemoveBlockDashboardConflictDialog from "./RemoveBlockDashboardConflictDialog";
 import { widthClasses } from "./constants";
@@ -130,6 +132,7 @@ const Dropzone = ({
   onAddBlock,
   writebackEnabled,
   workspaceId,
+  onAddAnalyticsBlock,
 }: {
   dropIndex: number;
   isLast: boolean;
@@ -148,6 +151,7 @@ const Dropzone = ({
   onAddBlock: (type: BlockType, index: number) => void;
   writebackEnabled: boolean;
   workspaceId: string;
+  onAddAnalyticsBlock: () => void;
 }) => {
   const [{ isOver, canDrop }, drop] = useDrop(
     () => ({
@@ -187,6 +191,7 @@ const Dropzone = ({
         onAddBlock={addBlockHandler}
         isEditable={isEditable}
         writebackEnabled={writebackEnabled}
+        onAddAnalyticsBlock={onAddAnalyticsBlock}
       />
     </div>
   );
@@ -1138,6 +1143,7 @@ const V2EditorRow = (props: {
   executionQueue: ExecutionQueue;
   aiTasks: AITasks;
   isFullScreen: boolean;
+  onAddAnalyticsBlock: () => void;
 }) => {
   const isLast = props.index === props.totalBlocks - 1;
   return (
@@ -1152,6 +1158,7 @@ const V2EditorRow = (props: {
           onDropItem={props.onDropItem}
           onCheckCanDrop={props.onCheckCanDrop}
           writebackEnabled={props.writebackEnabled}
+          onAddAnalyticsBlock={props.onAddAnalyticsBlock}
         />
       )}
       <DraggableTabbedBlock
@@ -1187,6 +1194,7 @@ const V2EditorRow = (props: {
           onDropItem={props.onDropItem}
           onCheckCanDrop={props.onCheckCanDrop}
           writebackEnabled={props.writebackEnabled}
+          onAddAnalyticsBlock={props.onAddAnalyticsBlock}
         />
       </div>
     </div>
@@ -1453,6 +1461,29 @@ const Editor = (props: Props) => {
     focusCursorBlock,
   });
 
+  const onAddAnalyticsBlock = useCallback(
+    (toolId: string) => {
+      props.yDoc.transact(() => {
+        const newBlockId = onAddBlock(
+          BlockType.PowerToolbox,
+          layout.value.length
+        );
+
+        if (newBlockId) {
+          // Read from the live Y.Doc map, not the stale blocks.value snapshot
+          const liveBlocks = getBlocks(props.yDoc);
+          const block = liveBlocks.get(newBlockId);
+          if (block) {
+            block.setAttribute("toolId", toolId);
+            console.log("toolId set", block.getAttribute("toolId"));
+            console.log("layout length", layout.value.length);
+          }
+        }
+      });
+    },
+    [onAddBlock, layout.value, props.yDoc]
+  );
+
   const onAddGroupedBlock = useCallback(
     (
       type: BlockType,
@@ -1637,6 +1668,7 @@ const Editor = (props: Props) => {
           executionQueue={props.executionQueue}
           aiTasks={props.aiTasks}
           isFullScreen={props.isFullScreen}
+          onAddAnalyticsBlock={onAddAnalyticsBlock}
         />
       );
     });
@@ -1701,11 +1733,20 @@ const Editor = (props: Props) => {
         />
       )}
 
-      <SimpleBar
+      <OverlayScrollbarsComponent
         id="editor-scrollview"
-        scrollableNodeProps={{ ref: props.scrollViewRef }}
+        element="div"
+        options={{ scrollbars: { autoHide: "scroll" } }}
+        events={{
+          initialized: instance => {
+            if (props.scrollViewRef) {
+              props.scrollViewRef.current = instance.elements()
+                .scrollEventElement as HTMLDivElement;
+            }
+          },
+        }}
         className={clsx("h-full w-full", {
-          "overflow-y-auto overflow-x-hidden": !props.isPDF,
+          "overflow-y-auto overflow-x-hidden px-5": !props.isPDF,
         })}
       >
         <div
@@ -1748,6 +1789,7 @@ const Editor = (props: Props) => {
                         onAddBlock={addBlockToBottom}
                         isEditable={props.isEditable}
                         writebackEnabled={hasWriteback}
+                        onAddAnalyticsBlock={onAddAnalyticsBlock}
                       />
                     </div>
                   )}
@@ -1758,7 +1800,7 @@ const Editor = (props: Props) => {
             {!props.isPDF && <div className="pb-20" />}
           </div>
         </div>
-      </SimpleBar>
+      </OverlayScrollbarsComponent>
 
       <RemoveBlockDashboardConflictDialog
         yDoc={props.yDoc}
@@ -2050,6 +2092,27 @@ function TabRef(props: TabRefProps) {
         dashboardMode={null}
         isCursorWithin={isCursorWithin}
         isCursorInserting={isCursorInserting}
+        userId={props.userId}
+        executionQueue={props.executionQueue}
+        isFullScreen={props.isFullScreen}
+      />
+    ),
+    onPowerToolbox: block => (
+      <AnalyticsBlock
+        block={block}
+        blocks={props.blocks}
+        isEditable={props.isEditable}
+        document={props.document}
+        dragPreview={props.hasMultipleTabs ? null : props.dragPreview}
+        isPDF={props.isPDF}
+        dashboardMode={null}
+        hasMultipleTabs={props.hasMultipleTabs}
+        isBlockHiddenInPublished={props.tab.isHiddenInPublished}
+        onToggleIsBlockHiddenInPublished={
+          props.onToggleIsBlockHiddenInPublished
+        }
+        insertBelow={props.insertBelow}
+        isPublicMode={props.isPublicViewer}
         userId={props.userId}
         executionQueue={props.executionQueue}
         isFullScreen={props.isFullScreen}
