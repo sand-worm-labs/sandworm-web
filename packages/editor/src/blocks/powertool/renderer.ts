@@ -121,8 +121,8 @@ export function renderTool(
     __tool_name: definition.name,
     // Pre-render the common WHERE fragments so templates stay readable.
     // Templates that need a non-default column pass the clause manually.
-    __time_where: timeWhere(params.days as string ?? "30"),
-    __protocol_where: protocolWhere(params.protocol as string),
+    __time_where: timeWhere((params["days"] as string) ?? "30"),
+    __protocol_where: protocolWhere(params["protocol"] as string),
   };
 
   const sql = interpolate(template, augmented);
