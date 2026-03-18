@@ -75,7 +75,7 @@ export class DocumentService {
     // Emit events
     await this.documentTreeService.emitDocumentUpdate(workspaceId, document);
 
-    this.logger.log(`Document created: ${document.id} in workspace ${workspaceId}`);
+    
 
     return document;
   }
@@ -144,7 +144,7 @@ export class DocumentService {
     // Emit events
     await this.documentTreeService.emitDocumentUpdate(workspaceId, result);
 
-    this.logger.log(`Document updated: ${documentId}`);
+    
 
     return result;
   }
@@ -171,7 +171,7 @@ export class DocumentService {
     // Emit events
     await this.documentTreeService.emitWorkspaceDocuments(workspaceId);
 
-    this.logger.log(`Document deleted: ${documentId} (permanent: ${isPermanent})`);
+    
 
     return true;
   }
@@ -198,7 +198,7 @@ export class DocumentService {
     // Emit events
     await this.documentTreeService.emitWorkspaceDocuments(workspaceId);
 
-    this.logger.log(`Document restored: ${documentId}`);
+    
 
     return result;
   }
@@ -227,7 +227,7 @@ export class DocumentService {
     // Emit events
     await this.documentTreeService.emitWorkspaceDocuments(workspaceId);
 
-    this.logger.log(`Document duplicated: ${documentId} -> ${result.id}`);
+    
 
     return result;
   }
@@ -253,7 +253,7 @@ export class DocumentService {
 
     await this.favoriteRepository.save(favorite);
 
-    this.logger.log(`Document favorited: ${documentId} by user ${userId}`);
+    
 
     return Document.fromEntity(document);
   }
@@ -303,7 +303,7 @@ export class DocumentService {
 
     await this.favoriteRepository.delete({ userId, documentId });
 
-    this.logger.log(`Document unfavorited: ${documentId} by user ${userId}`);
+    
 
     return Document.fromEntity(document);
   }
@@ -328,7 +328,7 @@ export class DocumentService {
     // Emit events
     await this.documentTreeService.emitDocumentUpdate(workspaceId, result);
 
-    this.logger.log(`Document published: ${documentId}`);
+    
 
     return result;
   }
@@ -353,7 +353,7 @@ export class DocumentService {
     // Emit events
     await this.documentTreeService.emitDocumentUpdate(workspaceId, result);
 
-    this.logger.log(`Document unpublished: ${documentId}`);
+    
 
     return result;
   }

@@ -14,33 +14,34 @@ import { PivotTableService } from './pivot-table/pivot-table.service';
 import { VariableService } from './variable.service';
 import { JupyterModule } from '@/infrastructure/jupyter/jupyter.module';
 import { PythonCompletionService } from './python-completion.service';
-import { YjsModule } from '../collaboration/yjs/yjs.module';
 
 @Module({
-    imports: [
-        TypeOrmModule.forFeature([EnvironmentVariableEntity, DocumentEntity]),
-        JupyterModule,
-        YjsModule
-    ],
-    providers: [
-        PythonCompletionService,
-        JupyterSessionService,
-        KernelLifecycleService,
-        JupyterCompletionService,
-        PythonExecutorService,
-        DataFrameService,
-        DuckDBQueryService,
-        PythonQueryRunnerService,
-        QueryExecutionService,
-        VisualizationService,
-        PivotTableService,
-        VariableService,
-    ],
-    exports: [
-        JupyterSessionService,
-        PythonCompletionService,
-        QueryExecutionService,
-        DataFrameService
-    ],
+  imports: [
+    TypeOrmModule.forFeature([EnvironmentVariableEntity, DocumentEntity]),
+    JupyterModule
+  ],
+  providers: [
+      JupyterSessionService,
+      KernelLifecycleService,
+      JupyterCompletionService, 
+      PythonExecutorService,
+      DataFrameService,
+      DuckDBQueryService,
+      PythonQueryRunnerService,
+      QueryExecutionService,
+      VisualizationService,
+      PivotTableService,
+      VariableService,
+  ],
+  exports: [
+      JupyterSessionService,
+      JupyterCompletionService,  
+      PythonExecutorService,
+      QueryExecutionService,
+      DataFrameService,
+      VisualizationService,
+      PivotTableService,
+      VariableService,
+  ],
 })
 export class CodeExecutionModule { }

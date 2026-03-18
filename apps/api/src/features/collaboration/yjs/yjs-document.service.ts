@@ -8,13 +8,14 @@ import {
     UserYjsAppDocumentEntity,
     DocumentEntity,
 } from "@sandworm/postgresql-typeorm";
-import { WSSharedDocV2 } from './shared-doc/ws-shared-doc';
+import { SharedDoc } from './shared-doc/ws-shared-doc';
 import { LRUCache } from 'lru-cache';
 import { PersistorFactory } from './persistors/persistor.factory';
 import { PubSubProviderFactory } from '@/infrastructure/pubsub/pubsub-provider.factory';
 import { Persistor } from './interfaces';
 import { Server, Socket } from 'socket.io';
 import { DocumentTreeService } from "@/features/document/service/document-tree.service";
+import { DocumentExecutorService } from "./executor/document-executor.service";
 
 export interface LoadYDocResult {
     yDoc: Y.Doc;
@@ -31,9 +32,9 @@ interface YDocCacheConfig {
 @Injectable()
 export class YjsDocumentService implements OnModuleDestroy {
     private readonly logger = new Logger(YjsDocumentService.name);
-    private readonly docs = new Map<string, WSSharedDocV2>();
-    private readonly docsCache: LRUCache<string, WSSharedDocV2>;
-    private readonly creationPromises = new Map<string, Promise<WSSharedDocV2>>();
+    private readonly docs = new Map<string, SharedDoc>();
+    private readonly docsCache: LRUCache<string, SharedDoc>;
+    private readonly creationPromises = new Map<string, Promise<SharedDoc>>();
     private cleanupInterval?: NodeJS.Timeout;
 
     constructor(
@@ -47,13 +48,14 @@ export class YjsDocumentService implements OnModuleDestroy {
         private readonly documentRepo: Repository<DocumentEntity>,
         private readonly persistorFactory: PersistorFactory,
         private readonly pubSubProviderFactory: PubSubProviderFactory,
-        private readonly documentTreeService: DocumentTreeService
+        private readonly documentTreeService: DocumentTreeService,
+        private readonly documentExecutorService: DocumentExecutorService
     ) {
         const cacheConfig: YDocCacheConfig = {
             maxSize: this.getCacheSizeFromEnv(),
         };
 
-        this.docsCache = new LRUCache<string, WSSharedDocV2>({
+        this.docsCache = new LRUCache<string, SharedDoc>({
             maxSize: cacheConfig.maxSize,
             sizeCalculation: (doc) => doc.getByteLength(),
             dispose: async (doc, id) => {
@@ -261,7 +263,7 @@ export class YjsDocumentService implements OnModuleDestroy {
         documentId: string,
         workspaceId: string,
         persistor: Persistor
-    ): Promise<WSSharedDocV2> {
+    ): Promise<SharedDoc> {
         this.logger.debug({
             id,
             documentId,
@@ -322,16 +324,17 @@ export class YjsDocumentService implements OnModuleDestroy {
         workspaceId: string,
         persistor: Persistor,
         tx?: EntityManager,
-    ): Promise<WSSharedDocV2> {
+    ): Promise<SharedDoc> {
         const loadStateResult = await persistor.load(tx);
 
-        const newYDoc = await WSSharedDocV2.make(
+        const newYDoc = await SharedDoc.make(
             id,
             documentId,
             workspaceId,
             loadStateResult,
             persistor,
             this.pubSubProviderFactory,
+            this.documentExecutorService, 
             (title: string) =>  this.updateTitleWithWorkspace(documentId, workspaceId, title)
         );
 
@@ -347,7 +350,7 @@ export class YjsDocumentService implements OnModuleDestroy {
         documentId: string,
         server: Server,
         workspaceId: string,
-        callback: (yDoc: WSSharedDocV2) => T | Promise<T>,
+        callback: (yDoc: SharedDoc) => T | Promise<T>,
         persistor: Persistor
     ): Promise<T> {
         const doc = await this.getYDoc(
@@ -490,11 +493,11 @@ export class YjsDocumentService implements OnModuleDestroy {
         return 100 * 1024 * 1024;
     }
 
-    private incrementUpdating(doc: WSSharedDocV2): void {
+    private incrementUpdating(doc: SharedDoc): void {
         (doc as any).updating = ((doc as any).updating || 0) + 1;
     }
 
-    private decrementUpdating(doc: WSSharedDocV2): void {
+    private decrementUpdating(doc: SharedDoc): void {
         (doc as any).updating = Math.max(((doc as any).updating || 0) - 1, 0);
     }
 

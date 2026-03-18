@@ -13,9 +13,12 @@ import { VisualizationService } from '@/features/code-execution/visualization/vi
 @Injectable()
 export class VisualizationBlockExecutorService {
     private readonly logger = new Logger(VisualizationBlockExecutorService.name);
-    private readonly visualizationService: VisualizationService;
 
-    constructor(private readonly eventEmitter: EventEmitter2) { }
+    constructor(
+        private readonly eventEmitter: EventEmitter2,  
+        private readonly visualizationService: VisualizationService
+    ) { }
+
 
     async run(
         context: { workspaceId: string; sessionId: string },

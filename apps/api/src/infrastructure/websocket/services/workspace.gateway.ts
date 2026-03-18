@@ -67,7 +67,7 @@ export class WorkspaceGatewayService {
 
             await this.emitInitialData(client, workspaceId);
 
-            this.logger.log(`User ${session.user.id} joined workspace ${workspaceId}`);
+            
         } catch (error) {
             this.logger.error(
                 `Error joining workspace ${workspaceId} for user ${session.user.id}`,
@@ -87,7 +87,7 @@ export class WorkspaceGatewayService {
 
         try {
             await client.leave(workspaceId);
-            this.logger.log(`User ${session.user.id} left workspace ${workspaceId}`);
+            
         } catch (error) {
             this.logger.error(
                 `Error leaving workspace ${workspaceId} for user ${session.user.id}`,

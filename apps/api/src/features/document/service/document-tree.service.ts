@@ -145,7 +145,7 @@ export class DocumentTreeService {
             });
 
             await this.documentRepository.save(document);
-            this.logger.log(`Created document ${document.id} in workspace ${workspaceId}`);
+            
 
             // --- STEP 3: Attempt to create YJS document, but do not fail main creation
             try {
@@ -160,7 +160,7 @@ export class DocumentTreeService {
                 });
 
                 await this.yjsDocumentRepository.save(yjsDocument);
-                this.logger.log(`Created YJS document for document ${document.id}`);
+                
             } catch (err) {
                 this.logger.warn(
                     { err, workspaceId, authorId, documentId: document.id },
@@ -194,7 +194,7 @@ export class DocumentTreeService {
 
         document.title = title;
         await this.documentRepository.save(document);
-        await this .emitWorkspaceDocuments(workspaceId);
+        await this.emitDocumentUpdate(workspaceId, Document.fromEntity(document));
 
         return document;
     }

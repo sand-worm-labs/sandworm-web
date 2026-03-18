@@ -110,7 +110,7 @@ export class AppGateway
   }
 
   handleConnection(client: Socket): void {
-    this.logger.log(`Client connected: ${client.id}`);
+    
 
     client.on('error', (error) => {
       this.logger.error(`Socket error for client ${client.id}`, error);
@@ -118,11 +118,11 @@ export class AppGateway
   }
 
   async handleDisconnect(client: Socket): Promise<void> {
-    this.logger.log(`Client disconnected: ${client.id}`);
+    
 
     // Wait for ongoing work to finish
     while (this.workInProgress.size > 0) {
-      this.logger.log(`Waiting for ${this.workInProgress.size} operations to complete`);
+      
       await Promise.all(this.workInProgress.values());
     }
   }
@@ -135,7 +135,7 @@ export class AppGateway
     @MessageBody() data: { workspaceId: string },
     @CurrentSession() session: Session,
   ): Promise<void> {
-    this.logger.log(`Joining workspace: ${data.workspaceId}`, `${{ ...session }}`);
+    
     await this.trackWork(() =>
       this.workspaceGatewayService.joinWorkspace(client, data, session)
     );
@@ -207,7 +207,7 @@ export class AppGateway
       workspaceId: event.workspaceId,
       documents: event.documents,
     });
-    this.logger.debug(`Broadcasted workspace documents for ${event.workspaceId}`);
+    
   }
 
   @OnEvent(DocumentEventNames.DOCUMENT_UPDATE)
@@ -216,7 +216,7 @@ export class AppGateway
       workspaceId: event.workspaceId,
       document: event.document,
     });
-    this.logger.debug(`Broadcasted document update: ${event.document.id}`);
+    
   }
 
   // Environment Events
@@ -227,7 +227,7 @@ export class AppGateway
       status: event.status,
       startedAt: event.startedAt,
     });
-    this.logger.debug(`Broadcasted environment status for ${event.workspaceId}: ${event.status}`);
+    
   }
 
   @OnEvent(EnvironmentEventNames.ENVIRONMENT_STATUS_ERROR)
@@ -236,7 +236,7 @@ export class AppGateway
       workspaceId: event.workspaceId,
       error: event.error,
     });
-    this.logger.debug(`Broadcasted environment error for ${event.workspaceId}`);
+    
   }
 
   // Component Events
@@ -246,7 +246,7 @@ export class AppGateway
       workspaceId: event.workspaceId,
       components: event.components,
     });
-    this.logger.debug(`Broadcasted workspace components for ${event.workspaceId}`);
+    
   }
 
   @OnEvent(ComponentEventNames.COMPONENT_UPDATE)
@@ -255,7 +255,7 @@ export class AppGateway
       workspaceId: event.workspaceId,
       component: event.component,
     });
-    this.logger.debug(`Broadcasted component update: ${event.component.id}`);
+    
   }
 
   @OnEvent(ComponentEventNames.COMPONENT_REMOVED)
@@ -264,7 +264,7 @@ export class AppGateway
       workspaceId: event.workspaceId,
       componentId: event.componentId,
     });
-    this.logger.debug(`Broadcasted component removed: ${event.componentId}`);
+    
   }
 
   // Comment Events
@@ -277,7 +277,7 @@ export class AppGateway
       comment: event.comment,
       user: event.user,
     });
-    this.logger.debug(`Broadcasted comment created for document ${event.documentId}`);
+    
   }
 
   @OnEvent(CommentEventNames.COMMENT_DELETED)
@@ -287,7 +287,7 @@ export class AppGateway
       documentId: event.documentId,
       commentId: event.commentId,
     });
-    this.logger.debug(`Broadcasted comment deleted: ${event.commentId}`);
+    
   }
 
 
