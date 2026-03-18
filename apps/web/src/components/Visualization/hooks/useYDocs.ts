@@ -237,6 +237,7 @@ export function useYDoc(
         onDashboardHeader: () => null,
         onWriteback: () => null,
         onPivotTable: () => null,
+        onPowerToolbox: () => null,
       });
 
       if (componentId) {

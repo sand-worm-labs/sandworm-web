@@ -54,7 +54,6 @@ export type SQLBlock = BaseBlock<BlockType.SQL> & {
   aiSuggestions: Y.Text | null;
   configuration: SQLQueryConfiguration | null;
   sort: TableSort | null;
-
   // wether the block originated from a reusable component and the id of the component
   componentId: string | null;
 };

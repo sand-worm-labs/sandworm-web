@@ -7,8 +7,8 @@ import {
   getAttributeOr,
   getBaseAttributes,
   duplicateBaseAttributes,
-} from "./index.js";
-import { ResultStatus } from "../index.js";
+} from "../index.js";
+import { ResultStatus } from "../../index.js";
 import { clone } from "ramda";
 
 export type PowerToolboxInputs = Record<string, string | number | boolean | string[]>;
@@ -171,3 +171,40 @@ export function getPowerToolboxBlockErrorMessage(
   }
   return null;
 }
+
+export type {
+  ParamType,
+  UiHint,
+  SelectOption,
+  ParamDefinition,
+  SupportedLanguage,
+  GenerateResult,
+  ToolDefinition,
+  ToolCategory,
+  ToolTemplate,
+  TemplateMap,
+  ResolvedParams,
+} from "./types.js";
+
+export {
+  interpolate,
+  timeWhere,
+  protocolWhere,
+  wrapSqlInPython,
+  dfNameFromToolId,
+  renderTool,
+} from "./renderer.js";
+
+export {
+  OptionsRegistry,
+  getAllTools,
+  getAllCategories,
+  getToolsByCategory,
+  getToolById,
+  getCategoryById,
+  searchTools,
+  getToolCount,
+  getToolCountByCategory,
+  renderToolById,
+  registerTool,
+} from "./registory.js";

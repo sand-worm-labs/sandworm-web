@@ -68,6 +68,13 @@ import {
   getVisualizationV2BlockResultStatus,
   VisualizationV2Block,
 } from "./visualization-v2.js";
+import {
+  PowerToolboxBlock,
+  duplicatePowerToolboxBlock,
+  getPowerToolboxBlockExecutedAt,
+  getPowerToolboxBlockResultStatus,
+  getPowerToolboxBlockErrorMessage,
+} from "./powertool/index.js";
 
 export enum BlockType {
   RichText = "RICH_TEXT",
@@ -82,6 +89,7 @@ export enum BlockType {
   DashboardHeader = "DASHBOARD_HEADER",
   Writeback = "WRITEBACK",
   PivotTable = "PIVOT_TABLE",
+  PowerToolbox = "POWER_TOOLBOX"
 }
 
 export type ResultStatus = "idle" | "error" | "success";
@@ -104,7 +112,8 @@ export type Block =
   | DashboardHeaderBlock
   | WritebackBlock
   | PivotTableBlock
-  | VisualizationV2Block;
+  | VisualizationV2Block
+  | PowerToolboxBlock;
 
 export type YBlock = Y.XmlElement<Block>;
 
@@ -142,6 +151,7 @@ export const getResultStatus = (
     onDashboardHeader: () => "idle",
     onWriteback: getWritebackBlockResultStatus,
     onPivotTable: getPivotTableBlockResultStatus,
+    onPowerToolbox: getPowerToolboxBlockResultStatus,
   });
 
 export const getPrettyTitle = (type: BlockType): string => {
@@ -169,6 +179,8 @@ export const getPrettyTitle = (type: BlockType): string => {
       return "Writeback";
     case BlockType.PivotTable:
       return "Pivot Table";
+      case BlockType.PowerToolbox:
+        return "Power Toolbox"; 
   }
 };
 
@@ -245,6 +257,7 @@ export function isExecutableBlock(block: YBlock): boolean {
     onFileUpload: () => false,
     onDashboardHeader: () => false,
     onPivotTable: () => true,
+    onPowerToolbox: () => true,
   });
 }
 
@@ -262,6 +275,7 @@ export function isInputBlock(block: YBlock): boolean {
     onFileUpload: () => false,
     onDashboardHeader: () => false,
     onPivotTable: () => false,
+    onPowerToolbox: () => false,
   });
 }
 
@@ -305,6 +319,7 @@ export function duplicateBlock(
     onWriteback: block => duplicateWritebackBlock(newBlockId, block, options),
     onPivotTable: block =>
       duplicatePivotTableBlock(newBlockId, block, blocks, !duplicatingDocument),
+    onPowerToolbox: block => duplicatePowerToolboxBlock(newBlockId, block, options),
   });
 }
 
@@ -322,6 +337,7 @@ function getExecutedAt(block: YBlock, blocks: Y.Map<YBlock>): Date | null {
     onFileUpload: () => null,
     onDashboardHeader: () => null,
     onPivotTable: block => getPivotTableBlockExecutedAt(block, blocks),
+    onPowerToolbox: block => getPowerToolboxBlockExecutedAt(block),
   });
 }
 
@@ -407,6 +423,7 @@ export function getErrorMessage(block: YBlock): string | null {
     onFileUpload: () => null,
     onDashboardHeader: () => null,
     onPivotTable: getPivotTableBlockErrorMessage,
+    onPowerToolbox: () => null,
   });
 }
 
@@ -424,6 +441,7 @@ export const isRunnableBlock = <B extends YBlock>(block: B): boolean => {
     onFileUpload: () => false,
     onDashboardHeader: () => false,
     onPivotTable: () => true,
+    onPowerToolbox: () => true,
   });
 };
 
@@ -451,3 +469,4 @@ export * from "./dateInput.js";
 export * from "./fileUpload.js";
 export * from "./writeback.js";
 export * from "./pivotTable.js";
+export * from "./powertool/index.js";
