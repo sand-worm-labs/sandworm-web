@@ -256,6 +256,8 @@ function SQLBlock(props: Props) {
       case "enqueued":
       case "aborting":
         return true;
+      default:
+        return false;
     }
   })();
 
@@ -380,6 +382,8 @@ function SQLBlock(props: Props) {
         }
         return <LoadingQueryText startExecutionTime={startQueryTime ?? null} />;
       case "unknown":
+        return null;
+      default:
         return null;
     }
   }, [
@@ -654,6 +658,8 @@ function SQLBlock(props: Props) {
         case "unknown":
         case "aborting":
         case "completed":
+          return null;
+        default:
           return null;
       }
     } else if (props.dataSources.size > 0 || headerSelectValue === "duckdb") {

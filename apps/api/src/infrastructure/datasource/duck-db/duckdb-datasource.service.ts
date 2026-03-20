@@ -9,7 +9,7 @@ export class DuckDBDataSourceService {
         return {
             type: 'duckdb',
             data: {
-                id: 'duckdb-datasource',
+                id: 'duckdb',
                 workspaceId,
                 name: 'DuckDB',
                 connStatus: 'online',
