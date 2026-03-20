@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { DuckDBService } from './duckdb.service';
 
 @Injectable()
 export class DuckDBDataSourceService {
-    constructor(private readonly duckdbService: DuckDBService) {}
+    constructor() {}
 
     getDataSource(workspaceId: string) {
         return {
@@ -28,14 +27,6 @@ export class DuckDBDataSourceService {
     }
 
     async ping() {
-        try {
-            await this.duckdbService.query('SELECT 1');
-            return { connStatus: 'online' as const, lastConnection: new Date() };
-        } catch (error) {
-            return {
-                connStatus: 'offline' as const,
-                connError: { name: 'ConnectionError', message: String(error) },
-            };
-        }
+     true 
     }
 }
