@@ -62,8 +62,6 @@ def _sandworm_make_duckdb_query():
     dashboard_page_size = ${resultOptions.dashboardPageSize}
 
     try:
-        duckdb.install_extension("spatial")
-        duckdb.load_extension("spatial")
         query = duckdb.query(${JSON.stringify(sql)})
 
         if query is None:
@@ -86,10 +84,10 @@ def _sandworm_make_duckdb_query():
             "count": len(df),
             "page": 0,
             "pageSize": page_size,
-            "pageCount": int(len(df) / page_size + 1),
+            "pageCount": int(len(df) / page_size + 1) if page_size > 0 else 1,
             "dashboardPage": 0,
             "dashboardPageSize": dashboard_page_size,
-            "dashboardPageCount": int(len(df) / dashboard_page_size + 1),
+            "dashboardPageCount": int(len(df) / dashboard_page_size + 1) if dashboard_page_size > 0 else 1,
             "dashboardRows": rows[:dashboard_page_size],
         }
 
