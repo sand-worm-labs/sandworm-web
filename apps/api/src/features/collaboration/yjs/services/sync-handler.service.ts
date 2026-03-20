@@ -2,7 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { encoding, decoding } from 'lib0';
 import * as syncProtocol from 'y-protocols/sync';
 import { UserWorkspaceRole } from '@sandworm/postgresql-typeorm';
-import { DocumentSession } from '../types/yjs.types';
 import { SharedDoc } from '../shared-doc/ws-shared-doc';
 
 

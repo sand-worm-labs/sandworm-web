@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { encoding, decoding } from 'lib0';
 import * as awarenessProtocol from 'y-protocols/awareness';
 import { SyncHandlerService } from './sync-handler.service';
-import { MESSAGE_SYNC, MESSAGE_AWARENESS, DocumentSession } from '../types/yjs.types';
+import { MESSAGE_SYNC, MESSAGE_AWARENESS } from '../types/yjs.types';
 import { SharedDoc } from '../shared-doc/ws-shared-doc';
 
 
