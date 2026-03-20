@@ -13,7 +13,7 @@ export class SandwormCloudDataSourceService {
                 connStatus: 'online',
                 lastConnection: new Date().toISOString(),
                 connError: null,
-                isDefault: true,
+                isDefault: false,
                 isDemo: false,
                 createdAt: new Date(0).toISOString(),
                 updatedAt: new Date().toISOString(),
