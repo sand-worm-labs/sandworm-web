@@ -8,14 +8,12 @@ import {
 import { SandwormCloudDataSourceService } from './sandworm-cloud/sandworm-cloud-datasource.service';
 import { SandwormCloudQueryService } from './sandworm-cloud/sandworm-cloud-query.service';
 import { DuckDBDataSourceService } from './duck-db/duckdb-datasource.service';
-import { DuckDBQueryService } from './duck-db/duckdb-query.service';
 
 @Controller('v1/workspaces/:workspaceId/data-sources')
 export class DataSourcesController {
     constructor(
         private readonly queryService: SandwormCloudQueryService,
         private readonly dataSourceService: SandwormCloudDataSourceService,
-        private readonly duckdbQueryService: DuckDBQueryService,
         private readonly duckdbDataSourceService: DuckDBDataSourceService,
     ) {}
 
@@ -49,9 +47,6 @@ export class DataSourcesController {
     ) {
         if (dataSourceId === 'sandwormcloud-datasource') {
             return this.queryService.getSchema();
-        }
-        if (dataSourceId === 'duckdb-datasource') {
-            return this.duckdbQueryService.getSchema();
         }
         throw new ForbiddenException('Unknown datasource');
     }
