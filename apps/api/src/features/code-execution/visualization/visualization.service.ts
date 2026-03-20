@@ -14,9 +14,10 @@ import {
 } from '@sandworm/editor';
 import AggregateError from 'aggregate-error';
 import { z } from 'zod';
-import { Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { JupyterService } from '@/infrastructure/jupyter/jupyter.service';
 import { PythonExecutorService } from '../python-executor.service';
+import { In } from 'typeorm';
 
 const CreateVisualizationResult = z.union([
     z.object({
@@ -48,15 +49,15 @@ interface VisualizationConfig {
 }
 
 
+@Injectable()
 export class VisualizationService {
 
     private readonly logger = new Logger(VisualizationService.name)
-    private readonly jupyterManager: JupyterService;
-    private readonly executorService: PythonExecutorService;
 
-    constructor(
+    constructor(    
+        private readonly jupyterManager: JupyterService,
+        private readonly executorService: PythonExecutorService
     ) { }
-
 
     async createVisualization(
         context: { workspaceId: string; sessionId: string },
