@@ -287,7 +287,7 @@ function SQLSuccess(props: SQLSuccessProps) {
               <button
                 type="button"
                 className={clsx(
-                  " bg-white hover:bg-gray-100 border border-gray-300 py-0.5 px-2 rounded-sm text-gray-500 flex items-center gap-x-1 disabled:bg-gray-200 disabled:border-0 disabled:cursor-not-allowed h-full"
+                  " bg-white hover:bg-gray-100 border border-gray-300 py-0.5 px-2 rounded-sm text-ink-400  flex items-center gap-x-1 disabled:bg-gray-200 disabled:border-0 disabled:cursor-not-allowed h-full"
                 )}
                 disabled={props.isAddVisualizationDisabled}
                 onClick={props.onAddVisualization}
@@ -315,7 +315,7 @@ function SQLSuccess(props: SQLSuccessProps) {
                   csvRes.loading
                     ? "bg-gray-100"
                     : "bg-white hover:bg-gray-100 border border-gray-300",
-                  "py-0.5 px-2 rounded-sm text-gray-500 flex items-center gap-x-1 h-full aspect-square"
+                  "py-0.5 px-2 rounded-sm text-ink-400  flex items-center gap-x-1 h-full aspect-square"
                 )}
                 onClick={onDownloadCSV}
               >

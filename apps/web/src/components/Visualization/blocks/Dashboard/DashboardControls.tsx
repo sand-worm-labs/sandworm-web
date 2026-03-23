@@ -87,24 +87,24 @@ function getTypeIcon(t: BlockType): JSX.Element {
   switch (t) {
     case BlockType.VisualizationV2:
     case BlockType.Visualization:
-      return <ChartPieIcon className="w-4 h-4 text-gray-500" />;
+      return <ChartPieIcon className="w-4 h-4 text-ink-400 " />;
     case BlockType.Python:
-      return <CommandLineIcon className="w-4 h-4 text-gray-500" />;
+      return <CommandLineIcon className="w-4 h-4 text-ink-400 " />;
     case BlockType.SQL:
-      return <CircleStackIcon className="w-4 h-4 text-gray-500" />;
+      return <CircleStackIcon className="w-4 h-4 text-ink-400 " />;
     case BlockType.PivotTable:
-      return <TableCellsIcon className="w-4 h-4 text-gray-500" />;
+      return <TableCellsIcon className="w-4 h-4 text-ink-400 " />;
     case BlockType.Input:
     case BlockType.DateInput:
     case BlockType.DropdownInput:
-      return <PencilSquareIcon className="w-4 h-4 text-gray-500" />;
+      return <PencilSquareIcon className="w-4 h-4 text-ink-400 " />;
     case BlockType.RichText:
-      return <Bars3CenterLeftIcon className="w-4 h-4 text-gray-500" />;
+      return <Bars3CenterLeftIcon className="w-4 h-4 text-ink-400 " />;
     case BlockType.FileUpload:
     case BlockType.DashboardHeader:
     case BlockType.Writeback:
     default:
-      return <QuestionMarkCircleIcon className="w-4 h-4 text-gray-500" />;
+      return <QuestionMarkCircleIcon className="w-4 h-4 text-ink-400 " />;
   }
 }
 
@@ -527,7 +527,7 @@ function DashboardControls(props: Props) {
         <button
           type="button"
           onClick={props.onOpen}
-          className="bg-white dark:bg-base-100  flex items-center rounded-l-sm px-3 py-1 text-sm text-gray-500 hover:bg-gray-100 border border-r-0 border-border-secondary group max-w-11 hover:max-w-32 overflow-hidden transition-mw group duration-500"
+          className="bg-white dark:bg-base-100  flex items-center rounded-l-sm px-3 py-1 text-sm text-ink-400  hover:bg-gray-100 border border-r-0 border-border-secondary group max-w-11 hover:max-w-32 overflow-hidden transition-mw group duration-500"
         >
           <ChevronDoubleLeftIcon className="min-w-3 min-h-3" />
           <span className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 whitespace-nowrap">

@@ -62,12 +62,12 @@ function AxisModifierSelector({
     >
       {({ open }) => (
         <>
-          <Listbox.Label className="block text-xs leading-6 text-gray-500">
+          <Listbox.Label className="block text-xs leading-6 text-ink-400 ">
             {label}
           </Listbox.Label>
           <div className="relative">
             <Listbox.Button
-              className="w-full cursor-pointer text-gray-500 text-xs leading-6 flex items-center justify-end gap-x-1 "
+              className="w-full cursor-pointer text-ink-400  text-xs leading-6 flex items-center justify-end gap-x-1 "
               ref={buttonRef}
               onClick={onClickButton}
             >

@@ -26,7 +26,7 @@ export default function Select({
             {label}
           </Listbox.Label>
           <div className="relative">
-            <Listbox.Button className=" relative w-full cursor-default rounded-sm bg-white py-1 pl-3 pr-10 text-left text-gray-500 ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-200 sm:text-sm sm:leading-6">
+            <Listbox.Button className=" relative w-full cursor-default rounded-sm bg-white py-1 pl-3 pr-10 text-left text-ink-400  ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-200 sm:text-sm sm:leading-6">
               <span className="block truncate">
                 {options.find(option => option.value === value)?.label}
               </span>

@@ -213,7 +213,7 @@ function YAxisPickerV2(props: Props) {
         {props.onAddYAxis && (
           <button
             type="button"
-            className="text-[10px] text-ink-400 underline pb-0.5 hover:text-gray-500"
+            className="text-[10px] text-ink-400 underline pb-0.5 hover:text-ink-400 "
             onClick={props.onAddYAxis}
           >
             Add Y-Axis
@@ -328,7 +328,7 @@ function YAxisPickerV2(props: Props) {
             <button
               type="button"
               onClick={onAddSerie}
-              className="text-[10px] text-ink-400 underline hover:text-gray-500"
+              className="text-[10px] text-ink-400 underline hover:text-ink-400 "
             >
               + Series
             </button>

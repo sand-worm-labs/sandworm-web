@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 import type { CreateQueryPayload } from "@/services/axios/queryService";
 import { createQuery } from "@/services/axios/queryService";

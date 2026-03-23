@@ -22,9 +22,13 @@ import clsx from "clsx";
 import { useHotkeys } from "react-hotkeys-hook";
 import type { DataFrame, UserWorkspaceRole } from "@sandworm/types";
 
+import { ChatIcon } from "@/components/Assets/ChatIcon";
+import { ClockCountdown } from "@/components/Assets/ClockCountdown";
 import { DataExplorer } from "@/components/ExplorerPanels/DataExplorer";
 import type { ApiDocument, SessionUser } from "@/types";
 
+import { NEXT_PUBLIC_PUBLIC_URL } from "../../utils/env";
+import ShareModal from "../ShareModal";
 import { useDataSources } from "../../hooks/useDataSources";
 import { useLastUpdatedAt, useYDoc, useYDocState } from "../../hooks/useYDocs";
 import Layout from "../../Layout";
@@ -440,6 +444,11 @@ export default function Dashboard(props: Props) {
 
   const router = useRouter();
 
+  const roleEntry = props?.user?.role?.find(
+    entry => props.document.workspaceId in entry
+  );
+  const isViewer = roleEntry?.[props.document.workspaceId] === "viewer";
+
   const onPublish = useCallback(async () => {
     if (props.publishing) {
       return;
@@ -454,7 +463,7 @@ export default function Dashboard(props: Props) {
   const shareLinkWithoutSidebar = props.document.shareLinksWithoutSidebar;
   const copyLink = useMemo(
     () =>
-      `${process.env.NEXT_PUBLIC_PUBLIC_URL}/workspaces/${
+      `${process.env.NEXT_PUBLIC_PUBLIC_URL}/workspace/${
         props.document.workspaceId
       }/documents/${props.document.id}/dashboard${
         shareLinkWithoutSidebar ? "?sidebarCollapsed=true" : ""
@@ -518,11 +527,72 @@ export default function Dashboard(props: Props) {
 
   const isDeleted = !isNil(props.document.deletedAt);
 
+  const handleVisibilityChange = useCallback(
+    async (visibility: "private" | "team" | "community") => {
+      console.log("Visibility changed to:", visibility);
+    },
+    []
+  );
+
   const onGoToApp = useCallback(() => {
     router.push(
       `/workspaces/${props.document.workspaceId}/documents/${props.document.id}/dashboard`
     );
   }, [router]);
+
+  // ⬢ Sidebar content for NotebookPanel
+  // =====================================
+  const sidebarContent = useMemo(
+    () => (
+      <>
+        <div className="flex flex-col">
+          <button
+            type="button"
+            onClick={onToggleComments}
+            className="flex items-center justify-center rounded-xl px-0.5 py-1.5 text-sm  hover:bg-[#F1F2F4] dark:bg-base-500 dark:hover:bg-base-200 dark:text-ink-100  h-full bg-white mb-1.5"
+            title="Comments"
+          >
+            <ChatIcon size={22} />
+          </button>
+
+          {/* Schedules Button - Only show if not viewer and not deleted */}
+          {!isViewer && !isDeleted && (
+            <button
+              type="button"
+              onClick={onToggleSchedules}
+              className="flex items-center justify-center rounded-xl px-0.5 py-1.5 text-sm  hover:bg-[#F1F2F4] dark:bg-base-500  h-full bg-white mb-1.5 dark:text-ink-100"
+              title="Schedules"
+            >
+              <ClockCountdown size={22} />
+            </button>
+          )}
+        </div>
+
+        <ShareModal
+          link={`${NEXT_PUBLIC_PUBLIC_URL()}/workspace/${props.workspaceId}/documents/${props.documentId}/notebook`}
+          initialVisibility="private"
+          onVisibilityChange={handleVisibilityChange}
+        />
+        <EllipsisDropdown
+          onToggleSchedules={onToggleSchedules}
+          onToggleSnapshots={onToggleSnapshots}
+          onToggleComments={onToggleComments}
+          onToggleFiles={onToggleFiles}
+          onToggleSchemaExplorer={onToggleSchemaExplorer}
+          isViewer={props.role === "viewer"}
+          isDeleted={isDeleted}
+          isFullScreen={false}
+        />
+      </>
+    ),
+    [
+      onToggleSchedules,
+      onToggleSnapshots,
+      onToggleComments,
+      onToggleFiles,
+      isDeleted,
+    ]
+  );
 
   const topBarContent = (
     <div className="flex items-center w-full justify-between">
@@ -559,12 +629,7 @@ export default function Dashboard(props: Props) {
             tooltipActive={!props.document.publishedAt}
           />
         )}
-        <ShareDropdown
-          link={copyLink}
-          isPublic={false}
-          onTogglePublic={() => {}}
-          role={props.role}
-        />
+
         {props.role !== "viewer" && props.isEditing && (
           <Tooltip
             title="Click to save"
@@ -576,7 +641,7 @@ export default function Dashboard(props: Props) {
             <button
               type="button"
               id="dashboard-publish-button"
-              className="flex items-center rounded-sm px-3 py-1 text-sm bg-[#A308F0] text-white hover:bg-primary-300 border border-transparent disabled:border-border-secondary disabled:bg-gray-100 disabled:cursor-not-allowed gap-x-1.5 group relative disabled:text-gray-500"
+              className="flex items-center rounded-sm px-3 py-1 text-sm bg-[#A308F0] text-white hover:bg-primary-300 border border-transparent disabled:border-border-secondary disabled:bg-gray-100 disabled:cursor-not-allowed gap-x-1.5 group relative disabled:text-ink-400 "
               onClick={onPublish}
               disabled={props.publishing}
             >
@@ -593,23 +658,13 @@ export default function Dashboard(props: Props) {
         )}
         {!props.isEditing && props.role !== "viewer" && (
           <Link
-            className="flex  items-center rounded-sm px-3 py-1 text-sm text-gray-500 bg-white hover:bg-gray-100 border border-border-secondary disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 justify-center"
+            className="flex  items-center rounded-sm px-3 py-1 text-sm text-ink-400  bg-white hover:bg-gray-100 border border-border-secondary disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 justify-center"
             href={`/workspaces/${props.document.workspaceId}/documents/${props.document.id}/dashboard/edit`}
           >
             <SquaresPlusIcon className="w-4 h-4" />
             <span>Edit</span>
           </Link>
         )}
-        <EllipsisDropdown
-          onToggleSchedules={onToggleSchedules}
-          onToggleSnapshots={onToggleSnapshots}
-          onToggleComments={onToggleComments}
-          onToggleFiles={onToggleFiles}
-          onToggleSchemaExplorer={onToggleSchemaExplorer}
-          isViewer={props.role === "viewer"}
-          isDeleted={isDeleted}
-          isFullScreen={false}
-        />
       </div>
     </div>
   );
@@ -620,8 +675,9 @@ export default function Dashboard(props: Props) {
     <Layout
       topBarClassname={!props.isEditing ? "dark:bg-base-100 " : undefined}
       topBarContent={topBarContent}
+      sidebarContent={sidebarContent}
     >
-      <div className="w-full flex relative subpixel-antialiased bg-dashboard-gray">
+      <div className="w-full flex relative subpixel-antialiased bg-dashboard-gray flex-1 min-w-0">
         <div className="w-full flex flex-col relative">
           {syncing ? (
             <DashboardSkeleton />

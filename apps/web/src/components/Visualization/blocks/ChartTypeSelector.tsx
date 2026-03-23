@@ -123,7 +123,7 @@ export default function ChartTypeSelector({
                 </div>
                 {!compact && <span>{selected.label}</span>}
               </div>
-              <ChevronDownIcon className="h-4 w-4 text-gray-500" />
+              <ChevronDownIcon className="h-4 w-4 text-ink-400 " />
             </div>
           </Listbox.Button>
 
@@ -195,7 +195,7 @@ export default function ChartTypeSelector({
                             {option.comingSoon && (
                               <div className="absolute h-3/4 w-5/6 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-2 py-1 flex items-center justify-center">
                                 <div className="absolute h-full w-full top-0 left-0 bg-gray-100 opacity-80 rounded-md" />
-                                <div className="relative text-xs text-gray-500 whitespace-nowrap">
+                                <div className="relative text-xs text-ink-400  whitespace-nowrap">
                                   Coming soon
                                 </div>
                               </div>

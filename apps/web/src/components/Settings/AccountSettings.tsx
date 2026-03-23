@@ -19,6 +19,7 @@ import { WorkspaceIcon } from "../Assets/WorkspaceIcon";
 import { WorkspaceIcon as WorkspaceIconAvatar } from "./WorkspaceIcon";
 import CreateTeamModal from "./CreateTeam";
 import WorkspaceSettingsModal from "./WorkspaceSettings";
+import { toast } from "sonner";
 
 export default function WorkspaceSettings() {
   const router = useRouter();
@@ -62,14 +63,13 @@ export default function WorkspaceSettings() {
     try {
       const success = await switchWorkspace(targetWorkspaceId);
       if (success) {
-        router.push(`/workspace/${targetWorkspaceId}/settings/account`);
+        router.push(`/workspace/${targetWorkspaceId}/settings/account?switched=1`);
       }
     } catch (err) {
       console.error("Failed to switch workspace:", err);
       alert("Failed to switch team. Please try again.");
     }
   };
-
   const handleOpenSettings = (targetWorkspaceId: string) => {
     const target = allWorkspaces.find(w => w.id === targetWorkspaceId) ?? null;
     setState(s => ({ ...s, selectedSettingsWorkspace: target }));

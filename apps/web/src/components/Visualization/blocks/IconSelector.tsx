@@ -79,7 +79,6 @@ function IconSelector(props: Props) {
       <Menu.Button
         as="div"
         ref={buttonRef}
-        onClick={onOpen}
         className={clsx(
           {
             "hover:bg-ceramic-200": !props.disabled,
@@ -95,7 +94,7 @@ function IconSelector(props: Props) {
         />
       </Menu.Button>
 
-      {ReactDOM.createPortal(
+    {/*   {ReactDOM.createPortal(
         <Transition
           as="div"
           style={{
@@ -136,7 +135,7 @@ function IconSelector(props: Props) {
           </Menu.Items>
         </Transition>,
         document.body
-      )}
+      )} */}
     </Menu>
   );
 }

@@ -88,7 +88,7 @@ function FilesTable(props: Props) {
       )}
     >
       <div className="bg-gray-50 text-xs py-2 rounded-t-md">
-        <div className="flex items-center text-ink-400 hover:text-gray-500 px-3 h-[1.6rem]">
+        <div className="flex items-center text-ink-400 hover:text-ink-400  px-3 h-[1.6rem]">
           <button
             type="button"
             className="print:hidden h-4 w-4 hover:text-ink-400 rounded-sm mr-0.5"
@@ -99,7 +99,7 @@ function FilesTable(props: Props) {
           <input
             type="text"
             className={clsx(
-              "w-1/2 font-body  bg-transparent pl-1 ring-gray-200 focus:ring-gray-400 block rounded-md border-0 text-gray-500 hover:ring-1 focus:ring-1 ring-inset placeholder:text-ink-400 focus:ring-inset h-full py-0 text-xs disabled:ring-0 h-full"
+              "w-1/2 font-body  bg-transparent pl-1 ring-gray-200 focus:ring-gray-400 block rounded-md border-0 text-ink-400  hover:ring-1 focus:ring-1 ring-inset placeholder:text-ink-400 focus:ring-inset h-full py-0 text-xs disabled:ring-0 h-full"
             )}
             placeholder="Files"
             value={props.title}
@@ -160,19 +160,19 @@ function FilesTable(props: Props) {
             </p>
             <div className="flex justify-center gap-x-4">
               <button
-                className="px-4 py-2 text-sm text-gray-500 hover:text-gray-800"
+                className="px-4 py-2 text-sm text-ink-400  hover:text-gray-800"
                 onClick={props.onReplaceYes}
               >
                 Yes
               </button>
               <button
-                className="px-4 py-2 text-sm text-gray-500 hover:text-gray-800"
+                className="px-4 py-2 text-sm text-ink-400  hover:text-gray-800"
                 onClick={props.onReplaceAll}
               >
                 Yes to all
               </button>
               <button
-                className="px-4 py-2 text-sm text-gray-500 hover:text-gray-800"
+                className="px-4 py-2 text-sm text-ink-400  hover:text-gray-800"
                 onClick={props.onReplaceNo}
               >
                 No
@@ -353,7 +353,7 @@ export function Cell(props: CellProps) {
             <button
               className={clsx(
                 "cursor-pointer disabled:cursor-not-allowed hover:text-primary-700",
-                !disabled && "hover:text-gray-500"
+                !disabled && "hover:text-ink-400 "
               )}
               disabled={disabled}
               onClick={onPythonUsage}
@@ -364,7 +364,7 @@ export function Cell(props: CellProps) {
             <button
               className={clsx(
                 "cursor-pointer disabled:cursor-not-allowed hover:text-primary-700",
-                !disabled && "hover:text-gray-500"
+                !disabled && "hover:text-ink-400 "
               )}
               onClick={onQueryUsage}
               disabled={disabled}
@@ -377,7 +377,7 @@ export function Cell(props: CellProps) {
         return (
           <Link
             className={clsx(
-              "flex items-center jutify-center text-gray-500 h-4 w-4 text-xs hover:text-gray-700",
+              "flex items-center jutify-center text-ink-400  h-4 w-4 text-xs hover:text-gray-700",
               disabled && "cursor-not-allowed hover:text-ink-400"
             )}
             href={props.downloadLink}
@@ -389,7 +389,7 @@ export function Cell(props: CellProps) {
       case "Del":
         return (
           <button
-            className="flex items-center jutify-center cursor-pointer text-gray-500 hover:text-red-600 h-4 w-4 text-xs"
+            className="flex items-center jutify-center cursor-pointer text-ink-400  hover:text-red-600 h-4 w-4 text-xs"
             onClick={onDelete}
             disabled={props.isDeleting}
           >

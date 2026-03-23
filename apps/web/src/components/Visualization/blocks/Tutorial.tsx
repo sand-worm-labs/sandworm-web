@@ -164,7 +164,7 @@ const TutorialStep = (props: TutorialStepProps) => {
               "text-green-700 hover:text-green-800",
             props.status !== "current" &&
               props.status !== "completed" &&
-              "text-ink-400 hover:text-gray-500"
+              "text-ink-400 hover:text-ink-400 "
           )}
         >
           {props.name}
@@ -178,7 +178,7 @@ const TutorialStep = (props: TutorialStepProps) => {
             props.status === "current" ? "delay-[1000ms]" : "delay-[200ms]"
           )}
         >
-          <div className="text-xs text-gray-500 flex flex-col gap-y-1.5">
+          <div className="text-xs text-ink-400  flex flex-col gap-y-1.5">
             {props.description}
           </div>
 

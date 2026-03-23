@@ -57,7 +57,7 @@ export default function AxisSelector({
 
   const renderIcon = useCallback((column: DataFrameColumn | null) => {
     return column ? (
-      <ColumnIcon type={column.type} className="h-3 w-3 text-gray-500" />
+      <ColumnIcon type={column.type} className="h-3 w-3 text-ink-400 " />
     ) : null;
   }, []);
 

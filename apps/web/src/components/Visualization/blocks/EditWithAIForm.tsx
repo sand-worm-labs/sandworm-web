@@ -109,7 +109,7 @@ function EditWithAIForm(props: Props) {
       >
         <button
           type="button"
-          className="text-ink-400 hover:text-gray-500"
+          className="text-ink-400 hover:text-ink-400 "
           onClick={props.onClose}
         >
           <XMarkIcon className="h-3 w-3" />

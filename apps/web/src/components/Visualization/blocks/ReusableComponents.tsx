@@ -169,7 +169,7 @@ function ReusableComponentItem(props: ReusableComponentItemProps) {
             </svg>
             <Link
               href={`/workspaces/${props.workspaceId}/documents/${props.component.document.id}`}
-              className="flex items-center gap-x-1 text-ink-400 hover:text-gray-500"
+              className="flex items-center gap-x-1 text-ink-400 hover:text-ink-400 "
             >
               <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
               {props.component.document.title || "Untitled"}
@@ -194,7 +194,7 @@ function ReusableComponentItem(props: ReusableComponentItemProps) {
           >
             <button
               type="button"
-              className="text-ink-400  hover:text-ink-400 hover:underline disabled:hover:text-gray-500 disabled:cursor-not-allowed"
+              className="text-ink-400  hover:text-ink-400 hover:underline disabled:hover:text-ink-400  disabled:cursor-not-allowed"
               onClick={onUse}
               disabled={!props.canUse}
             >

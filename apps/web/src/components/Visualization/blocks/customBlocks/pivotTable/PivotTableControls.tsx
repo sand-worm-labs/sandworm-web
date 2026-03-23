@@ -91,7 +91,7 @@ function PivotTableControls(props: Props) {
         )}
       >
         <div className="w-full h-full px-4 py-5">
-          <div className="text-xs text-gray-500 flex flex-col space-y-8">
+          <div className="text-xs text-ink-400  flex flex-col space-y-8">
             <PivotTableGroup
               dataframe={props.dataframe}
               label="Rows"

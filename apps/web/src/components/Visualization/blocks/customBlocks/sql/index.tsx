@@ -1143,13 +1143,13 @@ function SQLBlock(props: Props) {
               {status._tag !== "idle" ? (
                 <div>
                   {status._tag === "enqueued" ? (
-                    <ClockIcon className="w-3 h-3 text-gray-500" />
+                    <ClockIcon className="w-3 h-3 text-ink-400 " />
                   ) : (
-                    <StopIcon className="w-3 h-3 text-gray-500" />
+                    <StopIcon className="w-3 h-3 text-ink-400 " />
                   )}
                 </div>
               ) : (
-                <PlayIcon className="w-3 h-3 text-gray-500" />
+                <PlayIcon className="w-3 h-3 text-ink-400 " />
               )}
             </button>
           )}

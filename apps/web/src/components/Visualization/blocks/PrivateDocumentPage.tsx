@@ -16,6 +16,7 @@ import { DataExplorerContent } from "@/components/ExplorerPanels/DataExplorerCon
 import { MiniChat } from "@/components/Chats/MiniChat";
 import { ClockCountdown } from "@/components/Assets/ClockCountdown";
 import { ChatIcon } from "@/components/Assets/ChatIcon";
+import { PencilSimple } from "@/components/Assets/PencilSimple";
 
 import { useDataSources } from "../hooks/useDataSources";
 import { useDocuments } from "../hooks/useDocuments";
@@ -40,7 +41,6 @@ import PageSettingsPanel from "./PageSettingsPanel";
 import { Tooltip } from "./ToolTips";
 import { ContentSkeleton, TitleSkeleton } from "./ContentSkeleton";
 import ShareModal from "./ShareModal";
-import { PencilSimple } from "@/components/Assets/PencilSimple";
 
 // this is needed because this component only works with the browser
 const V2Editor = dynamic(() => import("@/components/Editor"), {
@@ -273,7 +273,7 @@ function PrivateDocumentPageInner(
             <button
               type="button"
               onClick={onToggleFullScreen}
-              className="flex items-center justify-center rounded-none px-3 py-3 text-sm text-gray-500 dark:text-ink-100 hover:bg-gray-100 dark:bg-base-500 h-full bg-white  w-full"
+              className="flex items-center justify-center rounded-none px-3 py-3 text-sm text-ink-400  dark:text-ink-100 hover:bg-gray-100 dark:bg-base-500 h-full bg-white  w-full"
               title={
                 isFullScreen ? "Shrink horizontally" : "Stretch horizontally"
               }
@@ -341,7 +341,7 @@ function PrivateDocumentPageInner(
         {props.isApp || isViewer ? (
           <EyeIcon className="w-4 h-4" />
         ) : (
-          <PencilSimple  className="w-4 h-4" />
+          <PencilSimple className="w-4 h-4" />
         )}
         <span className="w-full truncate">
           <span className="font-semibold">
