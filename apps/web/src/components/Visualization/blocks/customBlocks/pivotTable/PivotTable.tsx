@@ -88,7 +88,7 @@ const renderHeaders = (
       {columnNames[depth] ? (
         <th
           key={`${depth}-0`}
-          className="border-b border-r px-2 py-1.5 text-gray-500 whitespace-nowrap font-normal"
+          className="border-b border-r px-2 py-1.5 text-ink-400  whitespace-nowrap font-normal"
           align="right"
         >
           {columnNames[depth]}
@@ -96,7 +96,7 @@ const renderHeaders = (
       ) : (
         <th
           key={`${depth}-0`}
-          className="border-b border-r px-2 py-1.5 text-gray-500 whitespace-nowrap font-normal hover:cursor-pointer hover:bg-gray-100"
+          className="border-b border-r px-2 py-1.5 text-ink-400  whitespace-nowrap font-normal hover:cursor-pointer hover:bg-gray-100"
           align="right"
           onClick={() => {
             onSortByRow(lastRow);
@@ -148,7 +148,7 @@ const renderHeaders = (
             colSpan={hasChildren ? getColSpan(node) : 1}
             rowSpan={hasChildren ? 1 : maxDepth - depth + 1}
             className={clsx(
-              "border-b border-r px-2 py-1.5 text-gray-500 whitespace-nowrap font-normal",
+              "border-b border-r px-2 py-1.5 text-ink-400  whitespace-nowrap font-normal",
               !hasChildren && "hover:cursor-pointer hover:bg-gray-100"
             )}
             onClick={
@@ -221,7 +221,7 @@ const renderAllHeaders = (
             <th
               key={`row-header-label-${headerIndex}`}
               rowSpan={maxDepth}
-              className="border-b border-r px-2 py-1.5 text-gray-500 whitespace-nowrap font-normal hover:cursor-pointer hover:bg-gray-100"
+              className="border-b border-r px-2 py-1.5 text-ink-400  whitespace-nowrap font-normal hover:cursor-pointer hover:bg-gray-100"
               align="right"
               onClick={() => {
                 onSortByRow(rowName);
@@ -289,7 +289,7 @@ function PivotTable(props: Props) {
       return [
         <td
           key={`cell-${rowIndex}-${node.colIndex}`}
-          className="border-b border-r px-2 py-1.5 text-gray-500 whitespace-nowrap font-normal"
+          className="border-b border-r px-2 py-1.5 text-ink-400  whitespace-nowrap font-normal"
         >
           {renderJson(props.result.data.data[rowIndex][node.colIndex])}
         </td>,
@@ -306,7 +306,7 @@ function PivotTable(props: Props) {
           (header, headerIndex) => (
             <td
               key={`row-header-${rowIndex}-${headerIndex}`}
-              className="border-b border-r px-2 py-1.5 text-gray-500 whitespace-nowrap font-normal"
+              className="border-b border-r px-2 py-1.5 text-ink-400  whitespace-nowrap font-normal"
             >
               {renderJson(header)}
             </td>

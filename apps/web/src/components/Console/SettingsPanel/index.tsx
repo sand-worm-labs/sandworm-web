@@ -55,7 +55,7 @@ export const SettingsPanel: React.FC = () => {
       <CardContent className=" py-4 h-[calc(100%-60px)] overflow-y-auto px-4 ">
         <div className="flex flex-col space-y-4">
           <div className="grid gap-2">
-            <Label htmlFor="chain" className="text-sm text-gray-500">
+            <Label htmlFor="chain" className="text-sm text-ink-400 ">
               Chain
             </Label>
             <Select
@@ -79,7 +79,7 @@ export const SettingsPanel: React.FC = () => {
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="rpc" className="text-sm text-gray-500">
+            <Label htmlFor="rpc" className="text-sm text-ink-400 ">
               RPC URL
             </Label>
             <Input
@@ -96,7 +96,7 @@ export const SettingsPanel: React.FC = () => {
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="theme" className="text-sm text-gray-500">
+            <Label htmlFor="theme" className="text-sm text-ink-400 ">
               Editor Theme
             </Label>
             <Select
@@ -122,7 +122,7 @@ export const SettingsPanel: React.FC = () => {
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="default-chain" className="text-sm text-gray-500">
+            <Label htmlFor="default-chain" className="text-sm text-ink-400 ">
               Default Chain (Explorer)
             </Label>
             <Select
@@ -146,7 +146,7 @@ export const SettingsPanel: React.FC = () => {
           </div>
 
           <div className="flex items-center justify-between pt-3">
-            <Label htmlFor="shortcuts" className="text-sm text-gray-500">
+            <Label htmlFor="shortcuts" className="text-sm text-ink-400 ">
               Shortcuts Panel
             </Label>
             <Switch
@@ -165,7 +165,7 @@ export const SettingsPanel: React.FC = () => {
 
           {/* Beta Feature Toggle */}
           <div className="flex items-center justify-between py-3">
-            <Label htmlFor="beta" className="text-sm text-gray-500">
+            <Label htmlFor="beta" className="text-sm text-ink-400 ">
               Enable Experimental Features
             </Label>
             <Switch

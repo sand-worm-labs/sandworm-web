@@ -394,27 +394,7 @@ const AddLinkButton = (props: {
 
 const FormattingToolbar = ({ editor }: { editor: Editor }) => {
   return (
-    <BubbleMenu
-      editor={editor}
-      tippyOptions={{
-        hideOnClick: true,
-
-        placement: "top-start",
-        popperOptions: {
-          strategy: "fixed",
-          modifiers: [
-            {
-              name: "flip",
-              options: {
-                fallbackPlacements: ["bottom", "right"],
-              },
-            },
-          ],
-        },
-        duration: 100,
-      }}
-      className="bg-white dark:bg-[#0C1015] ring-1 ring-inset ring-[#E9ECEF] text-gray-600  py-1 rounded-md shadow-md text-xs flex divide-x divide-[#E9ECEF] dark:divide-border-tertiary dark:ring-[#262A30]"
-    >
+    <div onMouseDown={e => e.preventDefault()}  className="bg-white dark:bg-[#0C1015] ring-1 ring-inset ring-[#E9ECEF] text-gray-600 py-1 rounded-md shadow-md text-xs flex divide-x divide-[#E9ECEF] dark:divide-border-tertiary dark:ring-[#262A30] w-fit mx-auto mb-1">
       <div className="flex gap-x-1 items-center justify-center px-1">
         <NodeTypeDropdown editor={editor} />
       </div>
@@ -438,7 +418,6 @@ const FormattingToolbar = ({ editor }: { editor: Editor }) => {
         >
           <em className="italic">i</em>
         </ToggleFormattingButton>
-
         <ToggleFormattingButton
           name="Underline"
           shortcut="⌘+u"
@@ -448,7 +427,6 @@ const FormattingToolbar = ({ editor }: { editor: Editor }) => {
         >
           <u className="underline">U</u>
         </ToggleFormattingButton>
-
         <ToggleFormattingButton
           name="Strikethrough"
           shortcut="⌘+⇧+x"
@@ -458,24 +436,19 @@ const FormattingToolbar = ({ editor }: { editor: Editor }) => {
         >
           <s className="line-through">S</s>
         </ToggleFormattingButton>
-
         <ColorTextButton editor={editor} />
       </div>
 
       <div className="flex gap-x-1 items-center justify-center px-1">
         <AddLinkButton
-          onLink={url => {
-            editor.chain().setLink({ href: url }).run();
-          }}
-          onUnlink={() => {
-            editor.chain().focus().unsetLink().run();
-          }}
+          onLink={url => editor.chain().setLink({ href: url }).run()}
+          onUnlink={() => editor.chain().focus().unsetLink().run()}
           editor={editor}
         >
           <LinkIcon className="h-4 w-4" />
         </AddLinkButton>
       </div>
-    </BubbleMenu>
+    </div>
   );
 };
 

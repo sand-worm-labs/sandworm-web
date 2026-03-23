@@ -347,7 +347,7 @@ export const SearchBar = () => {
           </div>
 
           {/* Footer with Keyboard Shortcuts */}
-          <div className="px-4 py-3 border-t dark:border-border-tertiary border-border-secondary dark:bg-[#0d1117]  flex items-center justify-between text-xs text-gray-500">
+          <div className="px-4 py-3 border-t dark:border-border-tertiary border-border-secondary dark:bg-[#0d1117]  flex items-center justify-between text-xs text-ink-400 ">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1.5">
                 <div className="flex items-center space-x-2">

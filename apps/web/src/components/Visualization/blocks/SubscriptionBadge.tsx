@@ -68,7 +68,7 @@ export function FeaturesDialog({
                     >
                       You're using sandworm's open source version
                     </Dialog.Title>
-                    <div className="pt-4 pb-2 text-md text-gray-500 flex flex-0 flex-col items-center gap-y-6 px-3">
+                    <div className="pt-4 pb-2 text-md text-ink-400  flex flex-0 flex-col items-center gap-y-6 px-3">
                       <div className="flex flex-col gap-y-3 text-left">
                         <p>
                           sandworm's open-source version includes an unlimited

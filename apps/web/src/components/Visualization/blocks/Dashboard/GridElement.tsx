@@ -349,7 +349,7 @@ function GridElement(props: Props) {
         >
           <button
             type="button"
-            className="flex items-center jutify-center cursor-pointer text-gray-500 hover:text-primary-600 h-4 w-4 text-xs bg-white"
+            className="flex items-center jutify-center cursor-pointer text-ink-400  hover:text-primary-600 h-4 w-4 text-xs bg-white"
             onClick={() => {
               if (blockType === BlockType.DashboardHeader) {
                 setIsEditingHeader(!isEditingHeader);
@@ -363,7 +363,7 @@ function GridElement(props: Props) {
 
           <button
             type="button"
-            className="flex items-center jutify-center cursor-pointer text-gray-500 hover:text-red-600 h-4 w-4 text-xs bg-white"
+            className="flex items-center jutify-center cursor-pointer text-ink-400  hover:text-red-600 h-4 w-4 text-xs bg-white"
             onClick={onDelete}
           >
             <TrashIcon />

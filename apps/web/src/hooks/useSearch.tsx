@@ -1,4 +1,3 @@
-// useSearchStore.ts
 import { create } from "zustand";
 
 type SearchState = {

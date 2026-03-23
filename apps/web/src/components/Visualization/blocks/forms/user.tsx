@@ -47,7 +47,7 @@ export default function UserForm({ workspaceId, onSubmit }: UserFormProps) {
           <h2 className="text-lg font-semibold leading-7 text-ink-100">
             Invite user
           </h2>
-          <p className="mt-1 text-sm leading-6 text-gray-500">
+          <p className="mt-1 text-sm leading-6 text-ink-400 ">
             Add a user to the current workspace.
           </p>
 

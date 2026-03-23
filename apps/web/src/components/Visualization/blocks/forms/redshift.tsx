@@ -62,7 +62,7 @@ export default function RedshiftForm({
           <h2 className="text-lg font-semibold leading-7 text-ink-100">
             {redshiftDataSource ? "Edit" : "New"} Redshift data source
           </h2>
-          <p className="mt-1 text-sm leading-6 text-gray-500">
+          <p className="mt-1 text-sm leading-6 text-ink-400 ">
             {redshiftDataSource ? "Edit" : "Add"} a Redshift database for
             Briefer to pull data from. Our fixed IP address is{" "}
             <code className="bg-gray-100 px-1 py-0.5 rounded-md text-red-500 text-xs">
@@ -238,7 +238,7 @@ export default function RedshiftForm({
                 className="block text-sm font-medium leading-6 text-ink-100"
               >
                 AI Additional Context{" "}
-                <span className="pl-1 text-gray-500">(optional)</span>
+                <span className="pl-1 text-ink-400 ">(optional)</span>
               </label>
               <div className="mt-2">
                 <textarea

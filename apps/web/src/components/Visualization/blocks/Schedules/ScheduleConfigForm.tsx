@@ -45,7 +45,7 @@ function ScheduleConfigForm({
         </h3>
         <button
           type="button"
-          className="text-gray-500 hover:bg-gray-100 hover:text-gray-700 flex items-center justify-center gap-x-2 text-sm p-1 rounded-sm"
+          className="text-ink-400  hover:bg-gray-100 hover:text-gray-700 flex items-center justify-center gap-x-2 text-sm p-1 rounded-sm"
           onClick={onClose}
         >
           <XMarkIcon className="h-4 w-4" />
@@ -160,7 +160,7 @@ function ScheduleConfigForm({
           <button
             onClick={onClose}
             type="button"
-            className="flex-1 flex items-center text-center justify-center  rounded-full px-3 py-1.5 text-gray-500 text-sm hover:bg-gray-100 border border-border-secondary"
+            className="flex-1 flex items-center text-center justify-center  rounded-full px-3 py-1.5 text-ink-400  text-sm hover:bg-gray-100 border border-border-secondary"
           >
             Cancel
           </button>

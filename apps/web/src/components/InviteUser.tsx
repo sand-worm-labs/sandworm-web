@@ -138,7 +138,7 @@ export default function InviteUserModal({
                     type="button"
                     onClick={handleClose}
                     disabled={isSubmitting}
-                    className="rounded-lg p-1 text-ink-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-ink-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+                    className="rounded-lg p-1 text-ink-400 hover:text-ink-400  dark:text-ink-400  dark:hover:text-ink-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
                   >
                     <XMarkIcon className="h-5 w-5" />
                   </button>

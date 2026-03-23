@@ -750,6 +750,15 @@ function VisualizationBlockV2(props: Props) {
     (!hasAValidYAxis && attrs.input.chartType !== "histogram") ||
     !props.isEditable;
 
+  console.log(
+    "viz result",
+    attrs.output?.result,
+    dataframe,
+    attrs.title,
+    attrs.input,
+    attrs
+  );
+
   // ⬢ Tooltip Content
   // =====================================
   const runTooltipContent = useMemo(() => {
@@ -1010,13 +1019,13 @@ function VisualizationBlockV2(props: Props) {
                 {status !== "idle" ? (
                   <div>
                     {status === "enqueued" ? (
-                      <ClockIcon className="w-3 h-3 text-gray-500" />
+                      <ClockIcon className="w-3 h-3 text-ink-400 " />
                     ) : (
-                      <StopIcon className="w-3 h-3 text-gray-500" />
+                      <StopIcon className="w-3 h-3 text-ink-400 " />
                     )}
                   </div>
                 ) : (
-                  <PlayIcon className="w-3 h-3 text-gray-500" />
+                  <PlayIcon className="w-3 h-3 text-ink-400 " />
                 )}
               </button>
             )}

@@ -3,7 +3,7 @@
 import { UserPlusIcon } from "@heroicons/react/20/solid";
 import React, { useCallback, useState, useMemo } from "react";
 import clsx from "clsx";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 import type { UserWorkspaceRole } from "@/types";
 import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
