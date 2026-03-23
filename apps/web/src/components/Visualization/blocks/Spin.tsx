@@ -4,7 +4,7 @@ interface Props {
 }
 export default function Spin(props: Props) {
   return (
-    <div className={`w-3 h-3 text-gray-500 ${props.wrapperClassName ?? ""}`}>
+    <div className={`w-3 h-3 text-ink-400  ${props.wrapperClassName ?? ""}`}>
       <svg
         className={`animate-spin h-3 w-3 ${props.className ?? ""}`}
         xmlns="http://www.w3.org/2000/svg"

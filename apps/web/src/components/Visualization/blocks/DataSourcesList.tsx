@@ -194,7 +194,7 @@ function LastConnection({
           )}
         />
       </div>
-      <p className="text-xs leading-5 text-gray-500 flex space-x-2 items-center">
+      <p className="text-xs leading-5 text-ink-400  flex space-x-2 items-center">
         <button
           type="button"
           className={
@@ -274,7 +274,7 @@ export default function DataSourcesList({
                   </span>
                 )}
               </p>
-              <p className="mt-1 flex text-xs leading-5 text-gray-500">
+              <p className="mt-1 flex text-xs leading-5 text-ink-400 ">
                 <span className="truncate">{databaseUrl(dataSource)}</span>
               </p>
             </div>
@@ -290,7 +290,7 @@ export default function DataSourcesList({
               />
             </div>
             <Menu as="div" className="relative flex-none">
-              <Menu.Button className="-m-2.5 block p-2.5 text-gray-500 hover:text-ink-100">
+              <Menu.Button className="-m-2.5 block p-2.5 text-ink-400  hover:text-ink-100">
                 <span className="sr-only">Open options</span>
                 <EllipsisVerticalIcon className="h-5 w-5" aria-hidden="true" />
               </Menu.Button>
@@ -439,7 +439,7 @@ function EmptyAPIDataSources({ workspaceId }: EmptyAPIDataSourcesProps) {
           <h3 className="mt-2 text-sm font-semibold text-ink-100">
             No data sources
           </h3>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-ink-400 ">
             Add a data source to start running analyses.
           </p>
         </div>

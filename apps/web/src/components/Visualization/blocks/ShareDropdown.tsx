@@ -41,7 +41,7 @@ export default function ShareDropdown(props: Props) {
 
   return (
     <Menu as="div" className="relative inline-block text-left h-full">
-      <Menu.Button className="flex items-center rounded-sm px-3 py-1 text-sm dark:border-border-tertiary border text-gray-500 hover:bg-gray-100  border-border-secondary overflow-hidden group max-w-[42px] xl:max-w-[94px] hover:max-w-[94px] transition-mw duration-500 bg-white dark:bg-base-100  ">
+      <Menu.Button className="flex items-center rounded-sm px-3 py-1 text-sm dark:border-border-tertiary border text-ink-400  hover:bg-gray-100  border-border-secondary overflow-hidden group max-w-[42px] xl:max-w-[94px] hover:max-w-[94px] transition-mw duration-500 bg-white dark:bg-base-100  ">
         <ShareIcon className="min-w-4 min-h-4" />
         <span className="ml-2 opacity-0 group-hover:opacity-100 xl:opacity-100 duration-500 transition-opacity">
           Share
@@ -105,7 +105,7 @@ export default function ShareDropdown(props: Props) {
                       </Switch>
                     </Tooltip>
                   </Switch.Group>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-ink-400 ">
                     Public documents are available to anyone with the link, but
                     code is not executable.
                   </p>

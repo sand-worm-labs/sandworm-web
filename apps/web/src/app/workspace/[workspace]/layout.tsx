@@ -43,7 +43,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <Toaster
           position="bottom-right"
           toastOptions={{
-            className: " border border-neutral-700 shadow-xl rounded-none  ",
+            className: " border border-border-secondary shadow-xl rounded-xl text-ink-100  ",
           }}
         />
       </ProgressProvider>

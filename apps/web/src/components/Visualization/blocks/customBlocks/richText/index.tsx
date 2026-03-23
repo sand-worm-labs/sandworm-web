@@ -61,7 +61,7 @@ const useBlockEditor = ({
         }),
         Link.extend({ inclusive: false }).configure({
           HTMLAttributes: {
-            class: "cursor-pointer text-gray-500 hover:text-gray-700",
+            class: "cursor-pointer text-ink-400  hover:text-gray-700",
             target: "_blank",
           },
         }),
@@ -190,7 +190,7 @@ const RichTextBlock = (props: Props) => {
 
   const ringColor =
     editor?.isFocused && !props.belongsToMultiTabGroup && props.isEditable
-      ? " border border-[#EBD7D7] dark:border-border-tertiary"
+      ? " border border-border-focus dark:border-border-tertiary"
       : !editor?.isFocused &&
           !props.belongsToMultiTabGroup &&
           props.isEditable &&
@@ -199,7 +199,7 @@ const RichTextBlock = (props: Props) => {
         ? " border border-border-tertiary "
         : props.dashboardMode?._tag === "editing" &&
             props.dashboardMode.position === "expanded"
-          ? "border border-[#EBD7D7]"
+          ? "border border-border-focus"
           : "";
 
   return (
@@ -208,26 +208,35 @@ const RichTextBlock = (props: Props) => {
       ref={d => {
         props.dragPreview?.(d);
       }}
-      className={clsx(
-        "ring-border-focus ring-offset-4",
-        props.dashboardMode ? "px-4 py-4 h-full overflow-y-auto" : "",
-        ringColor,
-        {
-          "rounded-tl-none rounded-lg border border-border-tertiary p-2 px-5":
-            props.belongsToMultiTabGroup,
-          "rounded-tl-none rounded-lg border border-border-tertiary p-2 px-4 ":
-            props.belongsToMultiTabGroup &&
-            props.isCursorWithin &&
-            !props.isCursorInserting,
-          "rounded-lg": !props.belongsToMultiTabGroup,
-        }
-      )}
       data-block-id={id}
+      className="flex flex-col"
     >
-      <div className={editor?.isFocused ? "block" : "hidden"}>
-        <div>{editor && <FormattingToolbar editor={editor} />}</div>
+      {/* Toolbar lives OUTSIDE the bordered editor box */}
+      <div
+        className={editor?.isFocused ? "flex justify-center mb-1" : "hidden"}
+      >
+        {editor && <FormattingToolbar editor={editor} />}
       </div>
-      <EditorContent editor={editor} />
+
+      {/* Bordered editor box */}
+      <div
+        className={clsx(
+          "ring-border-focus ring-offset-4",
+          props.dashboardMode ? "px-4 py-4 h-full overflow-y-auto" : "",
+          ringColor,
+          {
+            "rounded-tl-none rounded-lg border border-border-tertiary p-2 px-5":
+              props.belongsToMultiTabGroup,
+            "rounded-tl-none rounded-lg border border-border-tertiary p-2 px-4":
+              props.belongsToMultiTabGroup &&
+              props.isCursorWithin &&
+              !props.isCursorInserting,
+            "rounded-lg": !props.belongsToMultiTabGroup,
+          }
+        )}
+      >
+        <EditorContent editor={editor} />
+      </div>
     </div>
   );
 };

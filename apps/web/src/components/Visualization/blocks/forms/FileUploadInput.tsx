@@ -68,7 +68,7 @@ export default function FileUploadInput<T extends FieldValues>(
             <div className="mx-auto h-12 w-12 text-primary-600 relative">
               <DocumentCheckIcon className="" aria-hidden="true" />
               <XCircleIcon
-                className="h-6 w-6 text-xs text-gray-500 hover:text-red-600 cursor-pointer absolute right-0 bottom-0 translate-y-1/4 translate-x-1/4 bg-gray-50 hover:bg-red-50 rounded-full"
+                className="h-6 w-6 text-xs text-ink-400  hover:text-red-600 cursor-pointer absolute right-0 bottom-0 translate-y-1/4 translate-x-1/4 bg-gray-50 hover:bg-red-50 rounded-full"
                 onClick={removeFile}
               />
             </div>
@@ -92,7 +92,7 @@ export default function FileUploadInput<T extends FieldValues>(
               </label>
             </div>
             {props.subLabel && (
-              <p className="text-sm pl-1 text-gray-500">{props.subLabel}</p>
+              <p className="text-sm pl-1 text-ink-400 ">{props.subLabel}</p>
             )}
             <FormError msg={controller.fieldState.error?.message} />
           </>

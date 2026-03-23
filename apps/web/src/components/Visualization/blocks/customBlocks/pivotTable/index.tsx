@@ -429,7 +429,7 @@ function PivotTableBlock(props: Props) {
           {isExecutionStatusLoading(execStatus) ? (
             <LargeSpinner color="#b8f229" />
           ) : (
-            <div className="text-gray-500">No query results</div>
+            <div className="text-ink-400 ">No query results</div>
           )}
         </div>
       );
@@ -589,13 +589,13 @@ function PivotTableBlock(props: Props) {
               {isExecutionStatusLoading(execStatus) ? (
                 <div>
                   {execStatus === "enqueued" ? (
-                    <ClockIcon className="w-3 h-3 text-gray-500" />
+                    <ClockIcon className="w-3 h-3 text-ink-400 " />
                   ) : (
-                    <StopIcon className="w-3 h-3 text-gray-500" />
+                    <StopIcon className="w-3 h-3 text-ink-400 " />
                   )}
                 </div>
               ) : (
-                <PlayIcon className="w-3 h-3 text-gray-500" />
+                <PlayIcon className="w-3 h-3 text-ink-400 " />
               )}
             </button>
           )}

@@ -177,7 +177,7 @@ export default function ShareModal({
                                   "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg",
                                   checked
                                     ? "bg-primary-100 dark:bg-primary-500/20 text-primary-600 dark:text-primary-400"
-                                    : "bg-gray-100 dark:bg-base-500 text-gray-500 dark:text-ink-400"
+                                    : "bg-gray-100 dark:bg-base-500 text-ink-400  dark:text-ink-400"
                                 )}
                               >
                                 <option.icon className="h-5 w-5" />
@@ -200,7 +200,7 @@ export default function ShareModal({
                                     "text-sm",
                                     checked
                                       ? "text-primary-700 dark:text-primary-400"
-                                      : "text-gray-500 dark:text-ink-400"
+                                      : "text-ink-400  dark:text-ink-400"
                                   )}
                                 >
                                   {option.description}

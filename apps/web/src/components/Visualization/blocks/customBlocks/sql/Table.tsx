@@ -62,7 +62,7 @@ function Table(props: Props) {
                 <th
                   scope="col"
                   className={clsx(
-                    "p-2 text-gray-500 whitespace-nowrap font-medium border-b hover:bg-gray-100 cursor-pointer",
+                    "p-2 text-ink-400  whitespace-nowrap font-medium border-b hover:bg-gray-100 cursor-pointer",
                     props.topBorder && "border-t"
                   )}
                   onClick={onChangeSort(column.name.toString())}

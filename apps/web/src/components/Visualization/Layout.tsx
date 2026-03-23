@@ -125,7 +125,7 @@ export default function Layout({
               type="button"
               className={clsx(
                 isSideBarOpen ? "hidden" : "mr-8",
-                "relative h-12 w-12 bg-ceramic-50 text-gray-500 hover:bg-ceramic-100 flex-shrink-0"
+                "relative h-12 w-12 bg-ceramic-50 text-ink-400  hover:bg-ceramic-100 flex-shrink-0"
               )}
               onClick={toggleSideBar(true)}
             >

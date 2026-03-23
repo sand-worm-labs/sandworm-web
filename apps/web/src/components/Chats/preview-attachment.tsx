@@ -85,7 +85,7 @@ export const PreviewAttachment = ({
                     style={{ width: `${progressPercent}%` }}
                   />
                 </div>
-                <p className="text-[10px] text-center text-gray-500 mt-1">
+                <p className="text-[10px] text-center text-ink-400  mt-1">
                   {progressPercent}%
                 </p>
               </div>
@@ -121,12 +121,12 @@ export const PreviewAttachment = ({
           {getFileName()}
         </p>
         {!isUploading && contentType && (
-          <p className="text-[10px] text-center text-gray-500 dark:text-gray-500 truncate w-full">
+          <p className="text-[10px] text-center text-ink-400  dark:text-ink-400  truncate w-full">
             {contentType.split("/")[1]?.toUpperCase() || "FILE"}
           </p>
         )}
         {isUploading && !uploadProgress && (
-          <p className="text-[10px] text-center text-gray-500 dark:text-gray-500">
+          <p className="text-[10px] text-center text-ink-400  dark:text-ink-400 ">
             Queued...
           </p>
         )}

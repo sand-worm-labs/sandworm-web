@@ -37,7 +37,7 @@ const ConfigurationsMenuLink = ({
       className={clsx(
         isActive
           ? "text-gray-800 bg-ceramic-100/50"
-          : "text-gray-500 hover:bg-ceramic-100/80",
+          : "text-ink-400  hover:bg-ceramic-100/80",
         "group text-sm font-medium leading-6 w-full flex py-1 hover:text-ceramic-600"
       )}
     >
@@ -62,7 +62,7 @@ const ConfigurationsMenuButton = ({
       onClick={handleClick}
       className={clsx(
         "group text-sm font-medium leading-6 w-full flex py-1 hover:text-ceramic-600",
-        "text-gray-500 hover:bg-ceramic-100/80"
+        "text-ink-400  hover:bg-ceramic-100/80"
       )}
     >
       <div className="w-full flex items-center gap-x-2 px-4 relative">

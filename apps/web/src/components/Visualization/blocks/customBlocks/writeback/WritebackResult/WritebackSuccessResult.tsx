@@ -40,7 +40,7 @@ function WritebackSuccessResult(props: WritebackSuccessResultProps) {
                         <td className="whitespace-nowrap py-3 pl-4 pr-3 text-xs font-medium text-ink-100 bg-gray-50">
                           {label}
                         </td>
-                        <td className="break-all py-3 pl-3 pr-4 text-xs text-gray-500">
+                        <td className="break-all py-3 pl-3 pr-4 text-xs text-ink-400 ">
                           {value}
                         </td>
                       </tr>
@@ -51,7 +51,7 @@ function WritebackSuccessResult(props: WritebackSuccessResultProps) {
                           <td className="whitespace-nowrap py-4 pl-4 pr-3 text-xs font-medium text-ink-100 sm:pl-6 bg-gray-50">
                             Target
                           </td>
-                          <td className="whitespace-nowrap py-4 pl-3 pr-4 text-xs text-gray-500">
+                          <td className="whitespace-nowrap py-4 pl-3 pr-4 text-xs text-ink-400 ">
                             {datasource?.data.name ?? "Unknown target"}
                           </td>
                         </tr>
@@ -59,7 +59,7 @@ function WritebackSuccessResult(props: WritebackSuccessResultProps) {
                           <td className="whitespace-nowrap py-4 pl-4 pr-3 text-xs font-medium text-ink-100 sm:pl-6 bg-gray-50">
                             Table
                           </td>
-                          <td className="px-3 py-4 text-xs text-gray-500 break-all">
+                          <td className="px-3 py-4 text-xs text-ink-400  break-all">
                             {props.result.tableName}
                           </td>
                         </tr>
@@ -67,7 +67,7 @@ function WritebackSuccessResult(props: WritebackSuccessResultProps) {
                           <td className="whitespace-nowrap py-4 pl-4 pr-3 text-xs font-medium text-ink-100 sm:pl-6 bg-gray-50">
                             Overwritten
                           </td>
-                          <td className="px-3 py-4 text-xs text-gray-500 break-all">
+                          <td className="px-3 py-4 text-xs text-ink-400  break-all">
                             {props.result.overwritten ? "Yes" : "No"}
                           </td>
                         </tr>
@@ -75,7 +75,7 @@ function WritebackSuccessResult(props: WritebackSuccessResultProps) {
                           <td className="whitespace-nowrap py-4 pl-4 pr-3 text-xs font-medium text-ink-100 sm:pl-6 bg-gray-50">
                             Lines created
                           </td>
-                          <td className="px-3 py-4 text-xs text-gray-500 break-all">
+                          <td className="px-3 py-4 text-xs text-ink-400  break-all">
                             {props.result.insertedRows}
                           </td>
                         </tr>
@@ -83,7 +83,7 @@ function WritebackSuccessResult(props: WritebackSuccessResultProps) {
                           <td className="whitespace-nowrap py-4 pl-4 pr-3 text-xs font-medium text-ink-100 sm:pl-6 bg-gray-50">
                             Lines updated
                           </td>
-                          <td className="px-3 py-4 text-xs text-gray-500 break-all">
+                          <td className="px-3 py-4 text-xs text-ink-400  break-all">
                             {props.result.updatedRows}
                           </td>
                         </tr>
@@ -91,7 +91,7 @@ function WritebackSuccessResult(props: WritebackSuccessResultProps) {
                           <td className="whitespace-nowrap py-4 pl-4 pr-3 text-xs font-medium text-ink-100 sm:pl-6 bg-gray-50">
                             Lines ignored
                           </td>
-                          <td className="px-3 py-4 text-xs text-gray-500 break-all">
+                          <td className="px-3 py-4 text-xs text-ink-400  break-all">
                             {props.result.ignoredRows}
                           </td>
                         </tr>

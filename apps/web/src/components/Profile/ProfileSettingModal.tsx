@@ -188,7 +188,7 @@ export function ProfileSettingsModal({
                               disabled
                               className={`${inputClassName} bg-gray-50 dark:bg-[#0D0F11] cursor-not-allowed opacity-60`}
                             />
-                            <p className="text-xs text-gray-500 dark:text-ink-400 mt-1">
+                            <p className="text-xs text-ink-400  dark:text-ink-400 mt-1">
                               Email cannot be changed
                             </p>
                           </div>
@@ -232,7 +232,7 @@ export function ProfileSettingsModal({
                               value={formData.username}
                               onChange={handleChange}
                             />
-                            <p className="text-xs text-gray-500 dark:text-ink-400 mt-1">
+                            <p className="text-xs text-ink-400  dark:text-ink-400 mt-1">
                               Your public name on Sandworm
                             </p>
                           </div>

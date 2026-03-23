@@ -38,7 +38,7 @@ export function UserControl({
       <div className="flex items-center gap-3">
         {/* Search Input */}
         <div className="relative flex-1">
-          <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400 dark:text-gray-500" />
+          <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400 dark:text-ink-400 " />
           <input
             type="text"
             placeholder="Search Name or email..."

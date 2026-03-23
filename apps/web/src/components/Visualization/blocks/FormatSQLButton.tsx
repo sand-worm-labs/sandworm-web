@@ -28,7 +28,7 @@ function FormatSQLButton(props: Props) {
                 onClick={props.onFormat}
                 disabled={props.disabled}
               >
-                <CodeBracketIcon className="w-3 h-3 text-ink-400 group-hover:text-gray-500" />
+                <CodeBracketIcon className="w-3 h-3 text-ink-400 group-hover:text-ink-400 " />
               </Menu.Button>
             )}
           </TooltipV2>

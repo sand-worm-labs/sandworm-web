@@ -17,7 +17,7 @@ function WritebackTableName(props: Props) {
   );
 
   return (
-    <div className="text-xs text-gray-500">
+    <div className="text-xs text-ink-400 ">
       <label
         htmlFor="tableName"
         className="block text-xs font-medium leading-6 text-ink-100 pb-1"

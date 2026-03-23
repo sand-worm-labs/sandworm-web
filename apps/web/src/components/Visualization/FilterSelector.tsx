@@ -673,7 +673,7 @@ function FilterSelectorV2({
           "flex items-center gap-x-2.5 py-1.5 px-2 rounded-sm border",
           isInvalid && column
             ? "text-red-500 bg-red-50 border-red-200 hover:border-red-400/60"
-            : "text-gray-500 bg-gray-50 hover:border-gray-400/60 border-border-secondary"
+            : "text-ink-400  bg-gray-50 hover:border-gray-400/60 border-border-secondary"
         )}
         disabled={disabled}
         ref={buttonRef}

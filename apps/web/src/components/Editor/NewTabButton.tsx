@@ -80,7 +80,7 @@ function NewBlockMenuItem(props: NewBlockMenuItemProps) {
         >
           {props.item.icon}
           <div className="flex flex-col text-left">
-            <span className="text-sm font-medium text-gray-500">
+            <span className="text-sm font-medium text-ink-400 ">
               {props.item.name}
             </span>
             <span className="text-xs text-ink-400">
