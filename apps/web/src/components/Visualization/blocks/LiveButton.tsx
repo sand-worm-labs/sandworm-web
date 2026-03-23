@@ -18,7 +18,7 @@ function LiveButton(props: Props) {
     >
       <button
         type="button"
-        className="flex items-center rounded-md px-3 py-1 text-sm bg-white dark:bg-base-100   hover:bg-gray-100 dark:hover:bg-[#181C21] text-gray-500 dark:text-ink-100 border dark:border-border-tertiary border-border-secondary dark:border-border-tertiary disabled:cursor-not-allowed disabled:bg-gray-100  group overflow-hidden group max-w-[42px] xl:max-w-[136px] hover:max-w-[136px] transition-mw duration-500 font-body"
+        className="flex items-center rounded-md px-3 py-1 text-sm bg-white dark:bg-base-100   hover:bg-gray-100 dark:hover:bg-[#181C21] text-ink-400  dark:text-ink-100 border dark:border-border-tertiary border-border-secondary dark:border-border-tertiary disabled:cursor-not-allowed disabled:bg-gray-100  group overflow-hidden group max-w-[42px] xl:max-w-[136px] hover:max-w-[136px] transition-mw duration-500 font-body"
         onClick={props.onClick}
         disabled={props.disabled}
       >

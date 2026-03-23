@@ -38,7 +38,7 @@ const LabelsTab = ({
   );
 
   return (
-    <div className="text-xs text-gray-500 flex flex-col space-y-8">
+    <div className="text-xs text-ink-400  flex flex-col space-y-8">
       <div className="flex flex-col gap-y-3">
         <VisualizationToggleV2
           label="Show labels"

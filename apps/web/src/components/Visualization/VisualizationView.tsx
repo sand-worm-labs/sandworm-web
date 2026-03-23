@@ -13,7 +13,7 @@ import {
   XMarkIcon,
 } from "@heroicons/react/20/solid";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
-import type {
+import  {
   DataFrame,
   TimeUnit,
   Series,
@@ -103,6 +103,7 @@ function VisualizationViewV2(props: Props) {
                   data.{" "}
                 </span>
                 <button
+                type="button"
                   className="absolute right-2.5"
                   onClick={props.onHideTooManyDataPointsWarning}
                 >

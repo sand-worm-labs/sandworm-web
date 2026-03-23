@@ -210,7 +210,7 @@ export const TableContent = <T,>({
                       <span>Loading more...</span>
                     </div>
                   ) : (
-                    <span className="text-gray-500 dark:text-ink-400">
+                    <span className="text-ink-400  dark:text-ink-400">
                       Scroll to load more
                     </span>
                   )}

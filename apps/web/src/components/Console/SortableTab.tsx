@@ -120,7 +120,7 @@ export const SortableTab = ({ tab, isActive }: SortableTabProps) => {
           {tab.type === "sql" && (
             // eslint-disable-next-line jsx-a11y/no-static-element-interactions
             <span
-              className="cursor-pointer hover:bg-red-500/10 p-1 rounded transition-colors  flex items-center space-x-1 text-xs text-gray-500"
+              className="cursor-pointer hover:bg-red-500/10 p-1 rounded transition-colors  flex items-center space-x-1 text-xs text-ink-400 "
               onClick={e => {
                 e.stopPropagation();
                 closeTab(tab.id);

@@ -12,7 +12,7 @@ import React, {
 import { XMarkIcon, CheckIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 import { Dialog, Transition } from "@headlessui/react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 import type { ApiUser } from "@/types";
 
@@ -569,7 +569,7 @@ export default function WorkspaceSettingsModal({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="rounded-lg p-1 text-ink-400 hover:bg-gray-100 hover:text-gray-500 dark:hover:bg-gray-800"
+                  className="rounded-lg p-1 text-ink-400 hover:bg-gray-100 hover:text-ink-400  dark:hover:bg-gray-800"
                 >
                   <XMarkIcon className="h-5 w-5" />
                 </button>

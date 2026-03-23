@@ -117,7 +117,7 @@ export default function CreateTeamModal({
                         setFormData(prev => ({ ...prev, name: e.target.value }))
                       }
                       disabled={loading}
-                      className="w-full px-4 py-3 rounded-xl bg-[#F8F9FA] dark:bg-[#262626] border border-[#DEE2E6] dark:border-[#363636] text-ink-100 dark:text-white placeholder:text-[#6C757D] dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#A308F0] focus:border-transparent transition-all text-sm font-medium"
+                      className="w-full px-4 py-3 rounded-xl bg-[#F8F9FA] dark:bg-[#262626] border border-[#DEE2E6] dark:border-[#363636] text-ink-100 dark:text-white placeholder:text-[#6C757D] dark:placeholder:text-ink-400  focus:outline-none focus:ring-2 focus:ring-[#A308F0] focus:border-transparent transition-all text-sm font-medium"
                     />
                   </div>
 

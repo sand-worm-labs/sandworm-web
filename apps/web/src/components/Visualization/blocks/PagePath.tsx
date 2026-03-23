@@ -18,7 +18,7 @@ export default function PagePath({ pages }: PagePathProps) {
       <ol className="flex items-center">
         <li>
           <div>
-            <Link href="/" className="text-ink-400/70 hover:text-gray-500">
+            <Link href="/" className="text-ink-400/70 hover:text-ink-400 ">
               <HomeIcon className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
               <span className="sr-only">Home</span>
             </Link>

@@ -11,16 +11,7 @@ type LargeSpinnerProps = {
 };
 
 function LargeSpinner({ color }: LargeSpinnerProps) {
-  return (
-    <RotateLoader
-      color={
-        color || "#e4eed9" // primary-300
-      }
-      loading
-      cssOverride={override}
-      size={20}
-    />
-  );
+  return <div className="bar-loader" />;
 }
 
 export default LargeSpinner;

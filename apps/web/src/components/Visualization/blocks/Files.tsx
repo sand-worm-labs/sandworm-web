@@ -217,7 +217,7 @@ function FileItem(props: FileItemProps) {
         >
           <button
             type="button"
-            className="text-ink-400 hover:text-ink-400 disabled:hover:text-gray-500 disabled:cursor-not-allowed bg-[#F7E8FF] dark:text-ink-100 dark:bg-[#2a1a3a]
+            className="text-ink-400 hover:text-ink-400 disabled:hover:text-ink-400  disabled:cursor-not-allowed bg-[#F7E8FF] dark:text-ink-100 dark:bg-[#2a1a3a]
  rounded-md px-1.5 py-0.5"
             onClick={onUseInPython}
             disabled={props.isDeleting || !props.canUse}
@@ -233,7 +233,7 @@ function FileItem(props: FileItemProps) {
         >
           <button
             type="button"
-            className="text-ink-400 hover:text-ink-400 disabled:hover:text-gray-500 disabled:cursor-not-allowed  bg-[#F7E8FF] dark:text-ink-100 dark:bg-[#2a1a3a] rounded-md px-1.5 py-0.5"
+            className="text-ink-400 hover:text-ink-400 disabled:hover:text-ink-400  disabled:cursor-not-allowed  bg-[#F7E8FF] dark:text-ink-100 dark:bg-[#2a1a3a] rounded-md px-1.5 py-0.5"
             onClick={onUseInSQL}
             disabled={props.isDeleting || !props.canUse}
           >
@@ -285,7 +285,7 @@ function UploadingItem(props: UploadingItemProps) {
           </div>
           <button
             type="button"
-            className="text-gray-500 hover:text-red-500 disabled:cursor-not-allowed text-xs"
+            className="text-ink-400  hover:text-red-500 disabled:cursor-not-allowed text-xs"
             onClick={onAbort}
             disabled={props.upload.status !== "uploading"}
           >

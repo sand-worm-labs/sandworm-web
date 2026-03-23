@@ -10,7 +10,7 @@ function EmptyIntegrations(props: { workspaceId: string }) {
           <h3 className="mt-2 text-sm font-semibold text-ink-100">
             No integrations
           </h3>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-ink-400 ">
             Click here to add an integration
           </p>
         </div>

@@ -10,7 +10,7 @@ export const QueryCard: React.FC<{ version: VersionEntry }> = ({ version }) => {
   return (
     <div className="p-3 border-b transition-colors">
       <div className="flex justify-between items-center mb-1">
-        <span className="text-xs text-gray-500">{version.createdAt}</span>
+        <span className="text-xs text-ink-400 ">{version.createdAt}</span>
         <button
           type="button"
           className="p-1 hover:bg-white/15 rounded-full"

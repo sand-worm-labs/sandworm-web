@@ -46,7 +46,7 @@ export default function MobileWarning() {
                     >
                       sandworm works best on desktop
                     </Dialog.Title>
-                    <div className="mt-4 text-sm text-gray-500 flex flex-col gap-y-4">
+                    <div className="mt-4 text-sm text-ink-400  flex flex-col gap-y-4">
                       <p>
                         Hey there! We love mobile too, but sandworm works best
                         on desktop resolutions.

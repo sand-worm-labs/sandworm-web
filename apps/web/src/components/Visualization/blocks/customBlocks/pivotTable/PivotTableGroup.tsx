@@ -52,7 +52,7 @@ function PivotTableGroup<
           {props.label}
         </div>
         <button
-          className="text-[10px] text-ink-400 underline pb-0.5 hover:text-gray-500"
+          className="text-[10px] text-ink-400 underline pb-0.5 hover:text-ink-400 "
           onClick={props.onAdd}
         >
           {props.addLabel}

@@ -22,7 +22,7 @@ import DragList from "../DragList";
 //  Constants
 // =====================================
 const presetColors = [
-  "#5470c6",
+  "#A308F0",
   "#91cc75",
   "#fac858",
   "#ee6666",

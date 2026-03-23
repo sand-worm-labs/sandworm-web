@@ -52,7 +52,7 @@ function HiddenInPublishedButton(props: Props) {
                   ref={ref}
                   className="rounded-sm border border-border-secondary dark:border-border-tertiary h-6 min-w-6 flex items-center justify-center relative group hover:bg-gray-50"
                 >
-                  <EyeIcon className="w-3 h-3 text-ink-400 group-hover:text-gray-500" />
+                  <EyeIcon className="w-3 h-3 text-ink-400 group-hover:text-ink-400 " />
                 </Menu.Button>
               )}
             </TooltipV2>

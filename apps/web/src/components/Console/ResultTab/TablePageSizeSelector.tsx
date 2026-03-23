@@ -19,7 +19,7 @@ export const TablePageSizeSelector = <T,>({
 }: ITablePageSizeSelectorProps<T>) => {
   return (
     <div className="flex items-center space-x-2">
-      <Label htmlFor="page-size" className="text-xs text-gray-500">
+      <Label htmlFor="page-size" className="text-xs text-ink-400 ">
         Rows:
       </Label>
       <Select onValueChange={value => table.setPageSize(Number(value))}>

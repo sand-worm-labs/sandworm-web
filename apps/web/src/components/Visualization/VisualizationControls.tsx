@@ -12,7 +12,7 @@ import type {
   NumberFormat,
 } from "@sandworm/types";
 import { useCallback, useEffect, useState } from "react";
-import type {
+import  {
   VisualizationV2BlockInput,
   VisualizationV2BlockOutputResult,
   getDefaultDateFormat,
