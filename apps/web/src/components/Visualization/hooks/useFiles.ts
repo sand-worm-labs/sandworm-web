@@ -89,6 +89,8 @@ export const useFiles = (
 
   const files = useMemo(() => data?.listFiles ?? [], [data]);
 
+  console.log("files", files);
+
   /* ========================================
      STEP 2: Delete functionality
      ======================================== */

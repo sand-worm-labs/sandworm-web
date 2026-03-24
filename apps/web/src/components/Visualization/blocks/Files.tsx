@@ -17,7 +17,12 @@ import {
   getBlocks,
   getLayout,
 } from "@sandworm/editor";
-import { CloudArrowUpIcon as CloudArrowUpIconSolid } from "@heroicons/react/20/solid";
+import {
+  CloudArrowUpIcon as CloudArrowUpIconSolid,
+  ChevronRightIcon,
+  EyeIcon,
+} from "@heroicons/react/20/solid";
+import { PiFolders } from "react-icons/pi";
 
 import { Cautious } from "@/components/Assets/Cautious";
 import { UploadIcon } from "@/components/Assets/UploadIcon";
@@ -151,114 +156,6 @@ function UploadResultItem(props: UploadResultItemProps) {
           </div>
         </div>
         <div className="font-medium text-ink-400 text-xs">{message}</div>
-      </div>
-    </div>
-  );
-}
-
-interface FileItemProps {
-  workspaceId: string;
-  file: SandwormFile;
-  onUseInPython: (file: SandwormFile) => void;
-  onUseInSQL: (file: SandwormFile) => void;
-  onDelete: (file: SandwormFile) => void;
-  isDeleting: boolean;
-  canUse: boolean;
-}
-function FileItem(props: FileItemProps) {
-  const onUseInPython = useCallback(() => {
-    props.onUseInPython(props.file);
-  }, [props.onUseInPython, props.file]);
-
-  const onUseInSQL = useCallback(() => {
-    props.onUseInSQL(props.file);
-  }, [props.onUseInSQL, props.file]);
-
-  const onRemove = useCallback(() => {
-    props.onDelete(props.file);
-  }, [props.onDelete, props.file]);
-
-  return (
-    <div className="px-4 py-3 font-body  border border-[#E9ECEF] rounded-xl my-2  dark:bg-base-100 dark:border-border-tertiary">
-      <div>
-        <div className="flex justify-between pb-0.5">
-          <div
-            className="font-medium pr-2 text-sm break-all"
-            title={props.file.name}
-          >
-            {props.file.name}
-          </div>
-          <div>
-            <button
-              type="button"
-              className="text-ink-400 dark:text-ink-100 hover:text-red-500 disabled:cursor-not-allowed"
-              onClick={onRemove}
-              disabled={props.isDeleting}
-            >
-              {props.isDeleting ? <Spin /> : <Trash className="w-5 h-5" />}
-            </button>
-          </div>
-        </div>
-        <div className="flex items-center gap-x-2 font-medium text-[#6C757D] dark:text-ink-400 text-xs">
-          {formatBytes(props.file.size)}
-          <svg viewBox="0 0 2 2" className="h-0.5 w-0.5 fill-current">
-            <circle cx={1} cy={1} r={1} />
-          </svg>
-          {props.file.mimeType ?? "unknown"}
-        </div>
-      </div>
-      <div className="flex pt-3 text-[0.7rem] font-medium space-x-2.5">
-        <Tooltip
-          position="manual"
-          title=""
-          message="You must be editing a notebook to use this file."
-          active={!props.canUse}
-          tooltipClassname="-top-1 w-44 -translate-y-full"
-        >
-          <button
-            type="button"
-            className="text-ink-400 hover:text-ink-400 disabled:hover:text-ink-400  disabled:cursor-not-allowed bg-[#F7E8FF] dark:text-ink-100 dark:bg-[#2a1a3a]
- rounded-md px-1.5 py-0.5"
-            onClick={onUseInPython}
-            disabled={props.isDeleting || !props.canUse}
-          >
-            Use in Python
-          </button>
-        </Tooltip>
-        <Tooltip
-          title=""
-          message="You must be editing a notebook to use this file."
-          active={!props.canUse}
-          tooltipClassname="w-44"
-        >
-          <button
-            type="button"
-            className="text-ink-400 hover:text-ink-400 disabled:hover:text-ink-400  disabled:cursor-not-allowed  bg-[#F7E8FF] dark:text-ink-100 dark:bg-[#2a1a3a] rounded-md px-1.5 py-0.5"
-            onClick={onUseInSQL}
-            disabled={props.isDeleting || !props.canUse}
-          >
-            Query in SQL
-          </button>
-        </Tooltip>
-        <div
-          className={clsx(
-            "text-ink-400  bg-[#F7E8FF] dark:text-ink-100 dark:bg-[#2a1a3a] rounded-md px-1.5 py-0.5",
-            props.isDeleting ? "cursor-not-allowed" : "hover:text-ink-400"
-          )}
-        >
-          {props.isDeleting ? (
-            "Download"
-          ) : (
-            <Link
-              href={`${NEXT_PUBLIC_API_URL()}/workspaces/${
-                props.workspaceId
-              }/files/file?path=${encodeURIComponent(props.file.relCwdPath)}`}
-              target="_blank"
-            >
-              Download
-            </Link>
-          )}
-        </div>
       </div>
     </div>
   );
@@ -422,6 +319,146 @@ function ReplaceDialog(props: ReplaceDialogProps) {
   );
 }
 
+interface FileItemProps {
+  workspaceId: string;
+  file: SandwormFile;
+  onUseInPython: (file: SandwormFile) => void;
+  onUseInSQL: (file: SandwormFile) => void;
+  onDelete: (file: SandwormFile) => void;
+  isDeleting: boolean;
+  canUse: boolean;
+}
+function FileItem(props: FileItemProps) {
+  const onUseInPython = useCallback(() => {
+    props.onUseInPython(props.file);
+  }, [props.onUseInPython, props.file]);
+
+  const onUseInSQL = useCallback(() => {
+    props.onUseInSQL(props.file);
+  }, [props.onUseInSQL, props.file]);
+
+  const onRemove = useCallback(() => {
+    props.onDelete(props.file);
+  }, [props.onDelete, props.file]);
+
+  return (
+    <div className="px-4 py-3 font-body  border border-[#E9ECEF] rounded-xl my-2  dark:bg-base-100 dark:border-border-tertiary">
+      <div>
+        <div className="flex justify-between pb-0.5">
+          <div
+            className="font-medium pr-2 text-sm break-all"
+            title={props.file.name}
+          >
+            {props.file.name}
+          </div>
+          <div>
+            <button
+              type="button"
+              className="text-ink-400 dark:text-ink-100 hover:text-red-500 disabled:cursor-not-allowed"
+              onClick={onRemove}
+              disabled={props.isDeleting}
+            >
+              {props.isDeleting ? <Spin /> : <Trash className="w-5 h-5" />}
+            </button>
+          </div>
+        </div>
+        <div className="flex items-center gap-x-2 font-medium text-[#6C757D] dark:text-ink-400 text-xs">
+          {formatBytes(props.file.size)}
+          <svg viewBox="0 0 2 2" className="h-0.5 w-0.5 fill-current">
+            <circle cx={1} cy={1} r={1} />
+          </svg>
+          {props.file.mimeType ?? "unknown"}
+        </div>
+      </div>
+      <div className="flex pt-3 text-[0.7rem] font-medium space-x-2.5">
+        <Tooltip
+          position="manual"
+          title=""
+          message="You must be editing a notebook to use this file."
+          active={!props.canUse}
+          tooltipClassname="-top-1 w-44 -translate-y-full"
+        >
+          <button
+            type="button"
+            className="text-ink-400 hover:text-ink-400 disabled:hover:text-ink-400  disabled:cursor-not-allowed bg-[#F7E8FF] dark:text-ink-100 dark:bg-[#2a1a3a]
+ rounded-md px-1.5 py-0.5"
+            onClick={onUseInPython}
+            disabled={props.isDeleting || !props.canUse}
+          >
+            Use in Python
+          </button>
+        </Tooltip>
+        <Tooltip
+          title=""
+          message="You must be editing a notebook to use this file."
+          active={!props.canUse}
+          tooltipClassname="w-44"
+        >
+          <button
+            type="button"
+            className="text-ink-400 hover:text-ink-400 disabled:hover:text-ink-400  disabled:cursor-not-allowed  bg-[#F7E8FF] dark:text-ink-100 dark:bg-[#2a1a3a] rounded-md px-1.5 py-0.5"
+            onClick={onUseInSQL}
+            disabled={props.isDeleting || !props.canUse}
+          >
+            Query in SQL
+          </button>
+        </Tooltip>
+        <div
+          className={clsx(
+            "text-ink-400  bg-[#F7E8FF] dark:text-ink-100 dark:bg-[#2a1a3a] rounded-md px-1.5 py-0.5",
+            props.isDeleting ? "cursor-not-allowed" : "hover:text-ink-400"
+          )}
+        >
+          {props.isDeleting ? (
+            "Download"
+          ) : (
+            <Link
+              href={`${NEXT_PUBLIC_API_URL()}/workspaces/${
+                props.workspaceId
+              }/files/file?path=${encodeURIComponent(props.file.relCwdPath)}`}
+              target="_blank"
+            >
+              Download
+            </Link>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface FolderItemProps {
+  file: SandwormFile;
+  onNavigate: (path: string) => void;
+}
+
+function FolderItem({ file, onNavigate }: FolderItemProps) {
+  const onClick = useCallback(() => {
+    onNavigate(file.path);
+  }, [file.path, onNavigate]);
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="w-full text-left px-4 py-3 font-body border border-[#E9ECEF] rounded-xl my-2 dark:bg-base-100 dark:border-border-tertiary  transition-colors group"
+    >
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-x-2 min-w-0">
+          <PiFolders className="w-4 h-4 hover:text-[#A308F0] text-ink-4. 00 flex-shrink-0" />
+          <span
+            className="font-medium text-sm break-all text-ink-100 group-hover:text-[#A308F0] transition-colors"
+            title={file.name}
+          >
+            {file.name}
+          </span>
+        </div>
+        <ChevronRightIcon className="w-4 h-4 text-ink-400 flex-shrink-0 ml-2 group-hover:text-[#A308F0] transition-colors" />
+      </div>
+    </button>
+  );
+}
+
 interface Props {
   workspaceId: string;
   visible: boolean;
@@ -436,6 +473,8 @@ export default function Files(props: Props) {
   );
 
   const [search, setSearch] = useState("");
+  const [cwd, setCwd] = useState("/home/sandwormuser");
+  const [showHidden, setShowHidden] = useState(false);
 
   const onUseInPython = useCallback(
     (file: SandwormFile) => {
@@ -579,30 +618,71 @@ file`;
   const isAskingReplace =
     upload._tag === "uploading" && upload.current.status === "asking-replace";
 
+  const breadcrumbs = useMemo(() => {
+    const root = "/home/sandwormuser";
+    const rel = cwd.replace(root, "");
+    const parts = rel ? rel.split("/").filter(Boolean) : [];
+    const crumbs: { label: string; path: string }[] = [
+      { label: "/home/sandwormuser", path: root },
+    ];
+    let acc = root;
+    parts.forEach(p => {
+      acc += `/${p}`;
+      crumbs.push({ label: p, path: acc });
+    });
+    return crumbs;
+  }, [cwd]);
+
+  const onNavigate = useCallback((path: string) => {
+    setCwd(path);
+    setSearch("");
+  }, []);
+
   const actualFiles = useMemo(
     () =>
       files.filter(file => {
+        // scope to current directory
+        const parent = file.path.substring(0, file.path.lastIndexOf("/"));
+        if (parent !== cwd) return false;
+
+        // dotfile toggle
+        if (!showHidden && file.name.startsWith(".")) return false;
+
+        // search
         const s = search.trim();
-        if (s !== "") {
-          const name = file.name.trim();
-          return name.toLowerCase().includes(s.toLowerCase());
-        }
+        if (s !== "" && !file.name.toLowerCase().includes(s.toLowerCase()))
+          return false;
 
-        if (upload._tag === "idle") {
-          return true;
-        }
-
+        // hide file currently uploading
         if (
+          upload._tag === "uploading" &&
           upload.current.file.name === file.relCwdPath &&
           upload.current.status === "uploading"
-        ) {
+        )
           return false;
-        }
 
         return true;
       }),
-    [files, upload, search]
+    [files, upload, search, cwd, showHidden]
   );
+
+  const dirs = useMemo(
+    () =>
+      actualFiles
+        .filter(f => f.isDirectory)
+        .sort((a, b) => a.name.localeCompare(b.name)),
+    [actualFiles]
+  );
+
+  const regularFiles = useMemo(
+    () =>
+      actualFiles
+        .filter(f => !f.isDirectory)
+        .sort((a, b) => a.name.localeCompare(b.name)),
+    [actualFiles]
+  );
+
+  console.log(actualFiles, files, "file");
 
   const results = useMemo(
     () => upload.results.filter(f => f.outcome !== "success"),
@@ -639,7 +719,7 @@ file`;
                 Files
               </h3>
               <p className="text-ink-400 text-sm pt-1">
-              Upload files to your notebook for analysis
+                Upload files to your notebook for analysis
               </p>
             </div>
 
@@ -650,16 +730,6 @@ file`;
             >
               <ChevronDoubleRightIcon className="w-3 h-3" />
             </button>
-
-            {/*    <div>
-              <button
-                type="button"
-                className="flex items-center gap-x-2 rounded-lg bg-[#A308F0] px-3 py-1 text-sm hover:bg-primary-300 text-white disabled:cursor-not-allowed disabled:bg-gray-200"
-                onClick={openUpload}
-              >
-                Add
-              </button>
-            </div> */}
           </div>
           {(upload._tag === "uploading" || results.length > 0) && (
             <>
@@ -694,7 +764,7 @@ file`;
           )}
           {(actualFiles.length > 0 || upload._tag === "idle") && (
             <>
-              <div className="relative flex px-4 py-2 text-xs font-medium border-b border-[#E9ECEF] dark:bg-base-100  dark:border-border-tertiary  text-ink-400 justify-between">
+              {/*    <div className="relative flex px-4 py-2 text-xs font-medium border-b border-[#E9ECEF] dark:bg-base-100  dark:border-border-tertiary  text-ink-400 justify-between">
                 <div className="flex gap-x-1">
                   <span className="font-mono">/home/sandwormuser</span>
                 </div>
@@ -707,6 +777,47 @@ file`;
                 >
                   <Info />
                 </Tooltip>
+              </div> */}
+
+              <div className="relative flex items-center px-4 py-2 text-xs font-medium border-b border-[#E9ECEF] dark:bg-base-100 dark:border-border-tertiary text-ink-400 justify-between gap-x-2">
+                <div className="flex items-center gap-x-1 overflow-hidden flex-1 font-mono min-w-0">
+                  {breadcrumbs.map((crumb, i) => (
+                    <React.Fragment key={crumb.path}>
+                      {i > 0 && (
+                        <span className="text-ink-300 flex-shrink-0">/</span>
+                      )}
+                      {i < breadcrumbs.length - 1 ? (
+                        <button
+                          type="button"
+                          onClick={() => onNavigate(crumb.path)}
+                          className="hover:text-[#A308F0] transition-colors truncate flex-shrink-0"
+                        >
+                          {crumb.label}
+                        </button>
+                      ) : (
+                        <span className="text-ink-100 truncate">
+                          {crumb.label}
+                        </span>
+                      )}
+                    </React.Fragment>
+                  ))}
+                </div>
+
+                {/* Dotfile toggle */}
+                <button
+                  type="button"
+                  onClick={() => setShowHidden(v => !v)}
+                  className={clsx(
+                    "flex items-center gap-x-1 flex-shrink-0 text-[0.65rem] font-medium px-1.5 py-0.5 rounded-md transition-colors",
+                    showHidden
+                      ? "bg-[#F7E8FF] text-[#A308F0] dark:bg-[#2a1a3a] dark:text-[#A308F0]"
+                      : "text-ink-400 hover:text-ink-100"
+                  )}
+                  title={showHidden ? "Hide dotfiles" : "Show dotfiles"}
+                >
+                  <EyeIcon className="w-3 h-3" />
+                  {showHidden ? "Hidden" : ".files"}
+                </button>
               </div>
               <div className="px-4 py-0 flex items-center border-b dark:border-border-tertiary border-border-secondary group focus-within:border-[#7104A8]">
                 <MagnifyingGlassIcon className="h-4 w-4 text-ink-300  group-focus-within:text-[#7104A8]" />
@@ -722,22 +833,25 @@ file`;
                 <UploadPlaceholder compact onClick={openUpload} />
               )}
               {actualFiles.length > 0 ? (
-                <ul className="flex-1  overflow-y-auto px-3">
-                  {actualFiles
-                    .filter(f => !f.isDirectory)
-                    .map(file => (
-                      <li key={file.path}>
-                        <FileItem
-                          workspaceId={props.workspaceId}
-                          file={file}
-                          onUseInPython={onUseInPython}
-                          onUseInSQL={onUseInSQL}
-                          onDelete={onRemove}
-                          isDeleting={deleting[file.name] ?? false}
-                          canUse={props.yDoc !== undefined}
-                        />
-                      </li>
-                    ))}
+                <ul className="flex-1 overflow-y-auto px-3">
+                  {dirs.map(file => (
+                    <li key={file.path}>
+                      <FolderItem file={file} onNavigate={onNavigate} />
+                    </li>
+                  ))}
+                  {regularFiles.map(file => (
+                    <li key={file.path}>
+                      <FileItem
+                        workspaceId={props.workspaceId}
+                        file={file}
+                        onUseInPython={onUseInPython}
+                        onUseInSQL={onUseInSQL}
+                        onDelete={onRemove}
+                        isDeleting={deleting[file.name] ?? false}
+                        canUse={props.yDoc !== undefined}
+                      />
+                    </li>
+                  ))}{" "}
                 </ul>
               ) : (
                 !isDragActive && (
