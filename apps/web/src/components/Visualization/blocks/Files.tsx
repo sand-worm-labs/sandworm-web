@@ -474,6 +474,11 @@ export default function Files(props: Props) {
 
   const [search, setSearch] = useState("");
   const [cwd, setCwd] = useState("/home/sandwormuser");
+  const relPath = cwd.replace("/home/sandwormuser", ".") || "./";
+
+  console.log("[Files] cwd:", cwd);          
+console.log("[Files] relPath:", relPath); 
+
   const [showHidden, setShowHidden] = useState(false);
 
   const onUseInPython = useCallback(
@@ -596,7 +601,7 @@ file`;
       onAbort,
       onRemoveResult,
     },
-  ] = useFiles(props.workspaceId, props.visible ? 5000 : 0);
+  ] = useFiles(props.workspaceId, props.visible ? 5000 : 0, relPath);
 
   const onRemove = useCallback(
     (file: SandwormFile) => {
@@ -641,29 +646,22 @@ file`;
   const actualFiles = useMemo(
     () =>
       files.filter(file => {
-        // scope to current directory
-        const parent = file.path.substring(0, file.path.lastIndexOf("/"));
-        if (parent !== cwd) return false;
-
-        // dotfile toggle
         if (!showHidden && file.name.startsWith(".")) return false;
-
-        // search
+  
         const s = search.trim();
         if (s !== "" && !file.name.toLowerCase().includes(s.toLowerCase()))
           return false;
-
-        // hide file currently uploading
+  
         if (
           upload._tag === "uploading" &&
           upload.current.file.name === file.relCwdPath &&
           upload.current.status === "uploading"
         )
           return false;
-
+  
         return true;
       }),
-    [files, upload, search, cwd, showHidden]
+    [files, upload, search, showHidden]
   );
 
   const dirs = useMemo(
