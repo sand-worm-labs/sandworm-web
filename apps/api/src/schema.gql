@@ -164,6 +164,18 @@ type WorkspaceInfo {
   role: String!
 }
 
+type OpenRouterModel {
+  id: ID!
+  name: String!
+  details: JSON!
+}
+
+type OpenRouterAccountCredits {
+  totalCredits: Float!
+  usedCredits: Float!
+  availableCredits: Float!
+}
+
 type Comment {
   id: String!
   body: String!
@@ -232,18 +244,6 @@ type ReusableComponentInstance {
   documentId: String!
   createdAt: DateTime!
   updatedAt: DateTime!
-}
-
-type OpenRouterModel {
-  id: ID!
-  name: String!
-  details: JSON!
-}
-
-type OpenRouterAccountCredits {
-  totalCredits: Float!
-  usedCredits: Float!
-  availableCredits: Float!
 }
 
 type Query {
