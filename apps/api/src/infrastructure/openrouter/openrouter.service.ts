@@ -13,35 +13,12 @@ import {
   type CreateKeysRequest,
   CreateKeysLimitReset,
 } from '@openrouter/sdk/models/operations';
+import { OpenRouterModel } from './model/openrouter.model';
 
 export interface AccountCredits {
   totalCredits: number;
   usedCredits: number;
   availableCredits: number;
-}
-
-export interface ModelPricing {
-  prompt: string;
-  completion: string;
-  image?: string;
-  request?: string;
-}
-
-export interface OpenRouterModel {
-  id: string;
-  name: string;
-  description?: string;
-  contextLength: number;
-  pricing: ModelPricing;
-  topProvider: {
-    contextLength: number;
-    maxCompletionTokens: number | null;
-  };
-  architecture: {
-    modality: string;
-    tokenizer: string;
-    instructType: string | null;
-  };
 }
 
 @Injectable()
@@ -125,32 +102,14 @@ export class OpenRouterService {
   }
 
   async getModels(): Promise<OpenRouterModel[]> {
-    const data = await this.client.models.list();
-
-    return data.data.map((m) => ({
-      id: m.id,
-      name: m.name,
-      description: m.description,
-      contextLength: m.contextLength,
-      pricing: {
-        prompt: m.pricing?.prompt,
-        completion: m.pricing?.completion,
-        image: m.pricing?.image,
-        request: m.pricing?.request,
-      },
-      topProvider: {
-        contextLength: m.topProvider?.contextLength,
-        maxCompletionTokens: m.topProvider?.maxCompletionTokens ?? null,
-      },
-      architecture: {
-        modality: m.architecture?.modality,
-        tokenizer: m.architecture?.tokenizer,
-        instructType: m.architecture?.instructType ?? null,
-      },
-    }));
+    const { data } = await this.client.models.list();
+    return data.map(model => {
+      const { id, name, ...details } = model;
+      return {id: model.id,name: model.name,details }
+    });
   }
 
-  async getModel(modelId: string): Promise<OpenRouterModel | null> {
+  async getModel(modelId: string): Promise<OpenRouterModel| null> {
     const models = await this.getModels();
     return models.find((m) => m.id === modelId) ?? null;
   }
