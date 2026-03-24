@@ -9,6 +9,7 @@
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "cSpell.words": [
     "avater",
+    "Byok",
     "commitlint",
     "cssnano",
     "dataframe",

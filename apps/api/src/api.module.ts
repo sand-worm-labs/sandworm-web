@@ -18,6 +18,7 @@ import { JupyterModule } from './infrastructure/jupyter/jupyter.module';
 import { WebsocketModule } from './infrastructure/websocket/websocket.module';
 import { YjsModule } from './features/collaboration/yjs/yjs.module';
 import { DataSourcesModule } from './infrastructure/datasource/datasource.module';
+import { OpenRouterModule } from './infrastructure/openrouter/openrouter.module';
 
 @Module({
     imports: [
@@ -36,6 +37,7 @@ import { DataSourcesModule } from './infrastructure/datasource/datasource.module
         MailerModule,
         JupyterModule,
         DataSourcesModule,
+        OpenRouterModule,
 
         // Features
         WorkspaceModule,
