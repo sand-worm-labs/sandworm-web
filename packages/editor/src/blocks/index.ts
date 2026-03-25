@@ -41,13 +41,7 @@ import {
   DashboardHeaderBlock,
   duplicateDashboardHeaderBlock,
 } from "./dashboard.js";
-import {
-  WritebackBlock,
-  duplicateWritebackBlock,
-  getWritebackBlockErrorMessage,
-  getWritebackBlockExecutedAt,
-  getWritebackBlockResultStatus,
-} from "./writeback.js";
+
 import {
   DateInputBlock,
   duplicateDateInputBlock,
@@ -87,7 +81,6 @@ export enum BlockType {
   DateInput = "DATE_INPUT",
   FileUpload = "FILE_UPLOAD",
   DashboardHeader = "DASHBOARD_HEADER",
-  Writeback = "WRITEBACK",
   PivotTable = "PIVOT_TABLE",
   PowerToolbox = "POWER_TOOLBOX"
 }
@@ -99,6 +92,7 @@ export type BaseBlock<T extends BlockType> = {
   index: number | null;
   title: string;
   type: T;
+  isAiInput: boolean; 
 };
 
 export type Block =
@@ -110,7 +104,6 @@ export type Block =
   | DateInputBlock
   | FileUploadBlock
   | DashboardHeaderBlock
-  | WritebackBlock
   | PivotTableBlock
   | VisualizationV2Block
   | PowerToolboxBlock;
@@ -149,7 +142,6 @@ export const getResultStatus = (
     onRichText: () => "idle",
     onFileUpload: () => "idle",
     onDashboardHeader: () => "idle",
-    onWriteback: getWritebackBlockResultStatus,
     onPivotTable: getPivotTableBlockResultStatus,
     onPowerToolbox: getPowerToolboxBlockResultStatus,
   });
@@ -175,8 +167,6 @@ export const getPrettyTitle = (type: BlockType): string => {
       return "Files";
     case BlockType.DashboardHeader:
       return "Dashboard Header";
-    case BlockType.Writeback:
-      return "Writeback";
     case BlockType.PivotTable:
       return "Pivot Table";
       case BlockType.PowerToolbox:
@@ -227,8 +217,9 @@ export function getBaseAttributes<T extends BlockType>(
   const index = getAttributeOr(block, "index", null);
   const title = getAttributeOr(block, "title", "");
   const type = getAttributeOrThrow(block, "type") as T;
+  const isAiInput = getAttributeOr(block, "isAiInput", false) as boolean;
 
-  return { id, index, title, type };
+  return { id, index, title, type, isAiInput };
 }
 
 export function duplicateBaseAttributes<T extends BlockType>(
@@ -240,6 +231,7 @@ export function duplicateBaseAttributes<T extends BlockType>(
     index: prevAttributes.index,
     title: prevAttributes.title,
     type: prevAttributes.type,
+    isAiInput: prevAttributes.isAiInput,
   };
 }
 
@@ -251,7 +243,6 @@ export function isExecutableBlock(block: YBlock): boolean {
     onVisualizationV2: () => true,
     onInput: () => true,
     onDropdownInput: () => true,
-    onWriteback: () => true,
     onDateInput: () => true,
     onRichText: () => false,
     onFileUpload: () => false,
@@ -269,7 +260,6 @@ export function isInputBlock(block: YBlock): boolean {
     onVisualizationV2: () => false,
     onInput: () => true,
     onDropdownInput: () => true,
-    onWriteback: () => false,
     onDateInput: () => true,
     onRichText: () => false,
     onFileUpload: () => false,
@@ -316,7 +306,6 @@ export function duplicateBlock(
     onFileUpload: block => duplicateFileUploadBlock(newBlockId, block),
     onDashboardHeader: block =>
       duplicateDashboardHeaderBlock(newBlockId, block),
-    onWriteback: block => duplicateWritebackBlock(newBlockId, block, options),
     onPivotTable: block =>
       duplicatePivotTableBlock(newBlockId, block, blocks, !duplicatingDocument),
     onPowerToolbox: block => duplicatePowerToolboxBlock(newBlockId, block, options),
@@ -331,7 +320,6 @@ function getExecutedAt(block: YBlock, blocks: Y.Map<YBlock>): Date | null {
     onVisualizationV2: block => getVisualizationV2BlockExecutedAt(block),
     onInput: block => getInputBlockExecutedAt(block, blocks),
     onDropdownInput: block => getDropdownInputBlockExecutedAt(block, blocks),
-    onWriteback: block => getWritebackBlockExecutedAt(block),
     onDateInput: block => getDateInputBlockExecutedAt(block, blocks),
     onRichText: () => null,
     onFileUpload: () => null,
@@ -415,7 +403,6 @@ export function getErrorMessage(block: YBlock): string | null {
     onSQL: getSQLBlockErrorMessage,
     onVisualization: () => null, // VisualizationBlock type removed
     onVisualizationV2: getVisualizationV2BlockErrorMessage,
-    onWriteback: getWritebackBlockErrorMessage,
     onInput: () => null,
     onDropdownInput: () => null,
     onDateInput: () => null,
@@ -433,7 +420,6 @@ export const isRunnableBlock = <B extends YBlock>(block: B): boolean => {
     onSQL: () => true,
     onVisualization: () => true, // VisualizationBlock type removed
     onVisualizationV2: () => true,
-    onWriteback: () => true,
     onInput: () => true,
     onDropdownInput: () => true,
     onDateInput: () => true,
@@ -467,6 +453,5 @@ export * from "./input.js";
 export * from "./dropdownInput.js";
 export * from "./dateInput.js";
 export * from "./fileUpload.js";
-export * from "./writeback.js";
 export * from "./pivotTable.js";
 export * from "./powertool/index.js";
