@@ -1,0 +1,15 @@
+query GetOpenRouterModels {
+  openRouterModels {
+    id
+    name
+    details
+  }
+}
+
+query GetOpenRouterModel($modelId: String!) {
+  openRouterModel(modelId: $modelId) {
+    id
+    name
+    details
+  }
+}
