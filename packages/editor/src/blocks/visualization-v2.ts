@@ -306,7 +306,8 @@ export function isVisualizationV2Block(
 
 export function makeVisualizationV2Block(
   id: string,
-  input?: Partial<VisualizationV2BlockInput>
+  input?: Partial<VisualizationV2BlockInput>,
+  isAiInput?: boolean
 ): Y.XmlElement<VisualizationV2Block> {
   const yBlock = new Y.XmlElement<VisualizationV2Block>("block");
 
@@ -319,6 +320,7 @@ export function makeVisualizationV2Block(
     output: null,
     controlsHidden: false,
     error: null,
+    isAiInput: isAiInput ?? false
   };
 
   for (const [key, value] of Object.entries(attrs)) {

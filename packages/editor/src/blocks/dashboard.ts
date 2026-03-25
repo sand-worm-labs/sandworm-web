@@ -7,7 +7,8 @@ export type DashboardHeaderBlock = BaseBlock<BlockType.DashboardHeader> & {
 
 export const makeDashboardHeaderBlock = (
   id: string,
-  init?: Partial<DashboardHeaderBlock>
+  init?: Partial<DashboardHeaderBlock>,
+  isAiInput?: boolean
 ): Y.XmlElement<DashboardHeaderBlock> => {
   const yBlock = new Y.XmlElement<DashboardHeaderBlock>("block");
 
@@ -19,6 +20,7 @@ export const makeDashboardHeaderBlock = (
     title: "",
     content: "",
     ...(init ?? {}),
+    isAiInput: isAiInput ?? false
   };
 
   for (const [key, value] of Object.entries(attrs)) {

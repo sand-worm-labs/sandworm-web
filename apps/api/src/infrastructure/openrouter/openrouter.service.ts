@@ -33,7 +33,8 @@ export class OpenRouterService {
   }
 
   async provisionKey(workspaceId: string, limitUsd?: number) {
-    const { defaultCap, limitReset } = this.configService.get('openrouter', { infer: true });
+    const { defaultCap, limitReset, provisioningKey } = this.configService.get('openrouter', { infer: true });
+    console.dir({defaultCap, limitReset, provisioningKey}, {depth: 1})
     const limit = limitUsd ?? defaultCap ?? 2.0;
     const limitResetType = (limitReset as CreateKeysLimitReset) ?? CreateKeysLimitReset.Monthly;
     const request: CreateKeysRequest = {
