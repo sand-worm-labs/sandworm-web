@@ -541,6 +541,20 @@ export type MutationUpdateWorkspaceMemberRoleArgs = {
   workspaceId: Scalars['String']['input'];
 };
 
+export type OpenRouterAccountCredits = {
+  __typename?: 'OpenRouterAccountCredits';
+  availableCredits: Scalars['Float']['output'];
+  totalCredits: Scalars['Float']['output'];
+  usedCredits: Scalars['Float']['output'];
+};
+
+export type OpenRouterModel = {
+  __typename?: 'OpenRouterModel';
+  details: Scalars['JSON']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+};
+
 export type Profile = {
   __typename?: 'Profile';
   bio: Scalars['String']['output'];
@@ -599,6 +613,12 @@ export type Query = {
   getWorkspaceMembers: Array<WorkspaceMember>;
   /** List all files in a workspace */
   listFiles: Array<SandwormFile>;
+  /** Get OpenRouter account credit usage */
+  openRouterAccountCredits: OpenRouterAccountCredits;
+  /** Get a specific OpenRouter model by ID */
+  openRouterModel?: Maybe<OpenRouterModel>;
+  /** List all available OpenRouter models */
+  openRouterModels: Array<OpenRouterModel>;
   /** Get Profile */
   profile: Profile;
   /** Get a single schedule by ID */
@@ -709,6 +729,11 @@ export type QueryGetWorkspaceMembersArgs = {
 
 export type QueryListFilesArgs = {
   input: ListFilesInput;
+};
+
+
+export type QueryOpenRouterModelArgs = {
+  modelId: Scalars['String']['input'];
 };
 
 
@@ -1348,6 +1373,18 @@ export type FileExistsQueryVariables = Exact<{
 
 
 export type FileExistsQuery = { __typename?: 'Query', fileExists: boolean };
+
+export type GetOpenRouterModelsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetOpenRouterModelsQuery = { __typename?: 'Query', openRouterModels: Array<{ __typename?: 'OpenRouterModel', id: string, name: string, details: any }> };
+
+export type GetOpenRouterModelQueryVariables = Exact<{
+  modelId: Scalars['String']['input'];
+}>;
+
+
+export type GetOpenRouterModelQuery = { __typename?: 'Query', openRouterModel?: { __typename?: 'OpenRouterModel', id: string, name: string, details: any } | null };
 
 export type GetSchedulesQueryVariables = Exact<{
   input: ListSchedulesInput;
@@ -3727,6 +3764,89 @@ export type FileExistsQueryHookResult = ReturnType<typeof useFileExistsQuery>;
 export type FileExistsLazyQueryHookResult = ReturnType<typeof useFileExistsLazyQuery>;
 export type FileExistsSuspenseQueryHookResult = ReturnType<typeof useFileExistsSuspenseQuery>;
 export type FileExistsQueryResult = Apollo.QueryResult<FileExistsQuery, FileExistsQueryVariables>;
+export const GetOpenRouterModelsDocument = gql`
+    query GetOpenRouterModels {
+  openRouterModels {
+    id
+    name
+    details
+  }
+}
+    `;
+
+/**
+ * __useGetOpenRouterModelsQuery__
+ *
+ * To run a query within a React component, call `useGetOpenRouterModelsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetOpenRouterModelsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetOpenRouterModelsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetOpenRouterModelsQuery(baseOptions?: Apollo.QueryHookOptions<GetOpenRouterModelsQuery, GetOpenRouterModelsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetOpenRouterModelsQuery, GetOpenRouterModelsQueryVariables>(GetOpenRouterModelsDocument, options);
+      }
+export function useGetOpenRouterModelsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetOpenRouterModelsQuery, GetOpenRouterModelsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetOpenRouterModelsQuery, GetOpenRouterModelsQueryVariables>(GetOpenRouterModelsDocument, options);
+        }
+export function useGetOpenRouterModelsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetOpenRouterModelsQuery, GetOpenRouterModelsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetOpenRouterModelsQuery, GetOpenRouterModelsQueryVariables>(GetOpenRouterModelsDocument, options);
+        }
+export type GetOpenRouterModelsQueryHookResult = ReturnType<typeof useGetOpenRouterModelsQuery>;
+export type GetOpenRouterModelsLazyQueryHookResult = ReturnType<typeof useGetOpenRouterModelsLazyQuery>;
+export type GetOpenRouterModelsSuspenseQueryHookResult = ReturnType<typeof useGetOpenRouterModelsSuspenseQuery>;
+export type GetOpenRouterModelsQueryResult = Apollo.QueryResult<GetOpenRouterModelsQuery, GetOpenRouterModelsQueryVariables>;
+export const GetOpenRouterModelDocument = gql`
+    query GetOpenRouterModel($modelId: String!) {
+  openRouterModel(modelId: $modelId) {
+    id
+    name
+    details
+  }
+}
+    `;
+
+/**
+ * __useGetOpenRouterModelQuery__
+ *
+ * To run a query within a React component, call `useGetOpenRouterModelQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetOpenRouterModelQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetOpenRouterModelQuery({
+ *   variables: {
+ *      modelId: // value for 'modelId'
+ *   },
+ * });
+ */
+export function useGetOpenRouterModelQuery(baseOptions: Apollo.QueryHookOptions<GetOpenRouterModelQuery, GetOpenRouterModelQueryVariables> & ({ variables: GetOpenRouterModelQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetOpenRouterModelQuery, GetOpenRouterModelQueryVariables>(GetOpenRouterModelDocument, options);
+      }
+export function useGetOpenRouterModelLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetOpenRouterModelQuery, GetOpenRouterModelQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetOpenRouterModelQuery, GetOpenRouterModelQueryVariables>(GetOpenRouterModelDocument, options);
+        }
+export function useGetOpenRouterModelSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetOpenRouterModelQuery, GetOpenRouterModelQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetOpenRouterModelQuery, GetOpenRouterModelQueryVariables>(GetOpenRouterModelDocument, options);
+        }
+export type GetOpenRouterModelQueryHookResult = ReturnType<typeof useGetOpenRouterModelQuery>;
+export type GetOpenRouterModelLazyQueryHookResult = ReturnType<typeof useGetOpenRouterModelLazyQuery>;
+export type GetOpenRouterModelSuspenseQueryHookResult = ReturnType<typeof useGetOpenRouterModelSuspenseQuery>;
+export type GetOpenRouterModelQueryResult = Apollo.QueryResult<GetOpenRouterModelQuery, GetOpenRouterModelQueryVariables>;
 export const GetSchedulesDocument = gql`
     query GetSchedules($input: ListSchedulesInput!) {
   schedules(input: $input) {

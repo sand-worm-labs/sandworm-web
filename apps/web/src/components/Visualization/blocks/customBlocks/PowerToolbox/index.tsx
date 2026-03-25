@@ -240,7 +240,7 @@ function ToolRow({
       className={clsx(
         "w-full flex items-center gap-3 px-4 py-3 text-left",
         "transition-colors duration-75 rounded-lg",
-        isActive ? "bg-[#EBF7F7]" : "hover:bg-[#EBF7F7]"
+        isActive ? "hover:bg-[#EBF7F7]" : "hover:bg-[#EBF7F7]"
       )}
     >
       <span

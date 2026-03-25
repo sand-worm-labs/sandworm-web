@@ -31,6 +31,8 @@ import {
 } from "../Visualization/hooks/useWorkspaces";
 import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
 import MiniUsersList from "../Visualization/blocks/MiniUsersList";
+import { useOpenRouterModels } from "../Visualization/hooks/useOpenRouterModel";
+import { ModelPickerModal } from "../Visualization/blocks/ModelPicker";
 
 import { WorkspaceIcon } from "./WorkspaceIcon";
 
@@ -45,7 +47,7 @@ interface WorkspaceSettingsModalProps {
       hasOpenAiApiKey?: boolean;
     };
   } | null;
-  isAdmin: boolean;
+  isAdmin?: boolean;
   updateWorkspace: (id: string, name: string, icon?: string) => Promise<void>;
   isUpdating: boolean;
   disableCustomOpenAiKey?: boolean;
@@ -124,7 +126,6 @@ export function EditWorkspaceProfileModal({
             Workspace Icon
           </label>
           <div className="flex items-center gap-3">
-            {/* Current selection preview */}
             <div className="relative w-14 h-14 rounded-full border-2 border-[#DEE2E6] dark:border-border-tertiary flex items-center justify-center overflow-hidden mr-4">
               {selectedIcon ? (
                 <WorkspaceIcon
@@ -368,6 +369,16 @@ export default function WorkspaceSettingsModal({
   const currentWorkspace = useStringQuery("workspace");
   const [{ loading: isDeleting, error: deleteError }, { deleteWorkspace }] =
     useDeleteWorkspace(currentWorkspace ?? undefined);
+  const {
+    models,
+    loading,
+    error,
+    selectedModelId,
+    isPickerOpen,
+    openPicker,
+    closePicker,
+    selectModel,
+  } = useOpenRouterModels();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -575,9 +586,7 @@ export default function WorkspaceSettingsModal({
                 </button>
               </div>
 
-              {/* Content */}
               <div className="px-6 py-4 space-y-0 div dark:divide-border-tertiary">
-                {/* Team Plan */}
                 <div className="flex items-center justify-between gap-4 py-4 border-[#E9ECEF]">
                   <div className="flex flex-col gap-y-2">
                     <label className="block text-md font-bold leading-4 dark:text-white text-ink-100">
@@ -617,7 +626,7 @@ export default function WorkspaceSettingsModal({
                       <div className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-2.5">
                         Available AI Credit
                       </div>
-                      <div className="font-medium text-[#6C757D] dark:text-ink-400 capitalize px-2 py-0.5 block inline-block text-sm">
+                      <div className="font-medium text-[#6C757D] dark:text-ink-400 capitalize px-2 py-0.5  inline-block text-sm">
                         0
                       </div>
                     </div>
@@ -639,18 +648,31 @@ export default function WorkspaceSettingsModal({
                     <div className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-1.5">
                       Model
                     </div>
-                    <select
-                      className="block w-full rounded-[10px] xl:py-2 border-0 py-1.5 pl-4 pr-10 text-ink-100 font-medium ring-1 ring-inset ring-[#CED4DA] focus:ring-1 focus:ring-[#A308F0] text-sm dark:bg-base-400 disabled:bg-gray-100 dark:text-white dark:ring-border-tertiary"
-                      defaultValue="gpt-4o"
+                    <button
+                      type="button"
+                      onClick={openPicker}
+                      className="flex items-center justify-between w-full rounded-[10px] xl:py-2 py-1.5 pl-4 pr-3 ring-1 ring-inset ring-[#CED4DA] dark:ring-border-tertiary focus:ring-[#A308F0] dark:bg-base-400 text-sm font-medium text-ink-100 dark:text-white transition-colors hover:ring-[#A308F0]/50"
                     >
-                      <option value="gpt-4o">GPT-4o (Recommended)</option>
-                      <option value="gpt-4">GPT-4</option>
-                      <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-                    </select>
+                      <span className="text-[#6C757D] dark:text-ink-400">
+                        Select a model
+                      </span>
+                      <svg
+                        className="w-4 h-4 text-[#6C757D] shrink-0"
+                        viewBox="0 0 16 16"
+                        fill="none"
+                      >
+                        <path
+                          d="M4 6L8 10L12 6"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </button>
                   </div>
                 </div>
 
-                {/* Custom OpenAI API Key */}
                 {!disableCustomOpenAiKey && (
                   <div className="flex items-center justify-between gap-4 py-4">
                     <div className="flex flex-col gap-y-2">
@@ -680,7 +702,6 @@ export default function WorkspaceSettingsModal({
                   </div>
                 )}
 
-                {/* Members */}
                 <div className="flex items-start justify-between gap-4 py-4">
                   <div className="flex flex-col gap-y-2">
                     <label className="block text-md font-bold leading-4 dark:text-white text-ink-100">
@@ -800,6 +821,17 @@ export default function WorkspaceSettingsModal({
             }
           }}
           isLoading={isUpdating}
+        />
+
+        <ModelPickerModal
+          isOpen={isPickerOpen}
+          onClose={closePicker}
+          onSelect={selectModel}
+          models={models}
+          loading={loading}
+          error={error}
+          selectedModelId={selectedModelId}
+          title="Select Model"
         />
       </div>
     </Transition>

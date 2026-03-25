@@ -11,7 +11,7 @@ const nextConfig = {
   rewrites: async () => [
     {
       source: "/api/:path*",
-      destination: "http://192.168.1.76:8080/:path*",
+      destination: "http://192.168.1.76:8003/:path*",
     },
   ],
   images: {
