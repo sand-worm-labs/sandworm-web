@@ -36,7 +36,8 @@ export const isDropdownInputBlock = (
 
 export const makeDropdownInputBlock = (
   id: string,
-  blocks: Y.Map<YBlock>
+  blocks: Y.Map<YBlock>,
+  isAiInput?: boolean
 ): Y.XmlElement<DropdownInputBlock> => {
   const yBlock = new Y.XmlElement<DropdownInputBlock>('block')
 
@@ -59,6 +60,7 @@ export const makeDropdownInputBlock = (
     executedAt: null,
     dataframeName: null,
     columnName: null,
+    isAiInput: isAiInput ?? false
   }
 
   for (const [key, value] of Object.entries(attrs)) {

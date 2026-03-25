@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unstable-nested-components */
 import type { Awareness } from "y-protocols/awareness";
 import clsx from "clsx";
 import type { ReactNode } from "react";
@@ -58,7 +59,6 @@ import {
   PencilSquareIcon,
   QueueListIcon,
   CommandLineIcon as CommandLineSmallIcon,
-  ArrowUpTrayIcon,
   CalendarIcon,
 } from "@heroicons/react/20/solid";
 import { descend, head, sortWith } from "ramda";
@@ -86,7 +86,6 @@ import useEditorAwareness, {
 import { SQLExtensionProvider } from "../Visualization/blocks/customBlocks/CodeEditor/sql";
 import VisualizationV2Block from "../Visualization";
 import SQLBlock from "../Visualization/blocks/customBlocks/sql";
-import WritebackBlock from "../Visualization/blocks/customBlocks/writeback";
 import type { IProvider } from "../Visualization/hooks/useYProvider";
 import type { APIDataSources } from "../Visualization/hooks/useDataSources";
 import { useEnvironmentStatus } from "../Visualization/hooks/useEnvironmentStatus";
@@ -220,8 +219,6 @@ export function getTabIcon(
       return DocumentArrowUpIcon;
     case BlockType.DashboardHeader:
       return ExclamationTriangleIcon;
-    case BlockType.Writeback:
-      return ArrowUpTrayIcon;
     case BlockType.PivotTable:
       return Bars3CenterLeftIcon;
     default:
@@ -1381,7 +1378,7 @@ const Editor = (props: Props) => {
     }
   }, [editorState.cursorBlockId, editorAPI.insert]);
 
-  const [removeBlockDialog, setRemoveBlockDialog] =
+  const [_removeBlockDialog, setRemoveBlockDialog] =
     useState<RemoveBlockDashboardConflictResult | null>(null);
   const onRemoveBlock = useCallback(
     (blockGroupId: string, blockId: string) => {
@@ -1631,7 +1628,7 @@ const Editor = (props: Props) => {
       );
       if (!blockId || tabs.length === 0) {
         if (i === 0) {
-          return <div key={i} className="h-10" />;
+          return <div className="h-10" />;
         }
 
         return null;
@@ -1871,14 +1868,14 @@ interface TabRefProps {
 function TabRef(props: TabRefProps) {
   const [editorState] = useEditorAwareness();
 
-  const block = props.blocks.get(props.tab.blockId);
-  if (!block) {
+  const blockData = props.blocks.get(props.tab.blockId);
+  if (!blockData) {
     return <div>Block not found</div>;
   }
   const isCursorWithin = editorState.cursorBlockId === props.tab.blockId;
   const isCursorInserting = editorState.mode === "insert";
 
-  const jsx = switchBlockType(block, {
+  const jsx = switchBlockType(blockData, {
     onRichText: block => (
       <RichTextBlock
         block={block}
@@ -2055,26 +2052,6 @@ function TabRef(props: TabRefProps) {
       />
     ),
     onDashboardHeader: () => null,
-    onWriteback: block => (
-      <WritebackBlock
-        workspaceId={props.document.workspaceId}
-        block={block}
-        hasMultipleTabs={props.hasMultipleTabs}
-        isEditable={props.isEditable}
-        dragPreview={props.dragPreview}
-        dataSources={props.dataSources}
-        dataframes={props.dataframes}
-        isBlockHiddenInPublished={props.tab.isHiddenInPublished}
-        onToggleIsBlockHiddenInPublished={
-          props.onToggleIsBlockHiddenInPublished
-        }
-        isCursorWithin={isCursorWithin}
-        isCursorInserting={isCursorInserting}
-        userId={props.userId}
-        executionQueue={props.executionQueue}
-        isFullScreen={props.isFullScreen}
-      />
-    ),
     onPivotTable: block => (
       <PivotTableBlock
         workspaceId={props.document.workspaceId}

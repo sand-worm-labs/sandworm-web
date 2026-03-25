@@ -27,7 +27,7 @@ export const isFileUploadBlock = (
   return block.getAttribute('type') === BlockType.FileUpload
 }
 
-export function makeFileUploadBlock(id: string): Y.XmlElement<FileUploadBlock> {
+export function makeFileUploadBlock(id: string, isAiInput?: boolean): Y.XmlElement<FileUploadBlock> {
   const block = new Y.XmlElement<FileUploadBlock>('block')
 
   const attrs: FileUploadBlock = {
@@ -37,6 +37,7 @@ export function makeFileUploadBlock(id: string): Y.XmlElement<FileUploadBlock> {
     type: BlockType.FileUpload,
     uploadedFiles: [],
     areFilesHidden: false,
+    isAiInput: isAiInput ?? false
   }
 
   for (const [key, value] of Object.entries(attrs)) {

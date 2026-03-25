@@ -20,7 +20,6 @@ import {
   makeSQLBlock,
 } from "../blocks/index.js";
 import { makeRichTextBlock } from "../blocks/richText.js";
-import { makeWritebackBlock } from "../blocks/writeback.js";
 import { makeDateInputBlock } from "../blocks/dateInput.js";
 import {
   YDashboardItem,
@@ -43,7 +42,6 @@ export type AddBlockGroupBlock =
         | BlockType.DropdownInput
         | BlockType.DateInput
         | BlockType.FileUpload
-        | BlockType.Writeback
         | BlockType.PowerToolbox;
     }
   | {
@@ -112,15 +110,12 @@ const createBlock = (block: AddBlockGroupBlock, yBlockDefs: Y.Map<YBlock>) => {
         content: block.content,
       });
       break;
-    case BlockType.Writeback:
-      yBlock = makeWritebackBlock(blockId);
-      break;
     case BlockType.PivotTable:
       yBlock = makePivotTableBlock(blockId, yBlockDefs, block.dataframeName);
       break;
-      case BlockType.PowerToolbox:
-  yBlock = makePowerToolboxBlock(blockId);
-  break;
+    case BlockType.PowerToolbox:
+      yBlock = makePowerToolboxBlock(blockId);
+      break;
   }
 
   yBlockDefs.set(blockId, yBlock);
@@ -465,7 +460,6 @@ export const removeDashboardBlock = (
     onSQL: () => {},
     onVisualization: () => {},
     onVisualizationV2: () => {},
-    onWriteback: () => {},
     onDashboardHeader: () => {
       yBlockDefs.delete(blockId);
     },

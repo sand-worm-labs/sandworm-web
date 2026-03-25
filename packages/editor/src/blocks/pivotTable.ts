@@ -47,7 +47,8 @@ export type PivotTableBlock = BaseBlock<BlockType.PivotTable> & {
 export const makePivotTableBlock = (
   id: string,
   blocks: Y.Map<YBlock>,
-  dataframeName: string | null = null
+  dataframeName: string | null = null,
+  isAiInput?: boolean
 ): Y.XmlElement<PivotTableBlock> => {
   const yBlock = new Y.XmlElement<PivotTableBlock>("block");
 
@@ -67,6 +68,7 @@ export const makePivotTableBlock = (
     updatedAt: null,
     page: 1,
     result: null,
+    isAiInput: isAiInput ?? false
   };
 
   for (const [key, value] of Object.entries(attrs)) {

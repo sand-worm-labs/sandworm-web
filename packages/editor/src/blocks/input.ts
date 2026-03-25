@@ -35,7 +35,8 @@ export const isTextInputBlock = (
 
 export const makeInputBlock = (
   id: string,
-  blocks: Y.Map<YBlock>
+  blocks: Y.Map<YBlock>,
+  isAiInput?: boolean
 ): Y.XmlElement<InputBlock> => {
   const yBlock = new Y.XmlElement<InputBlock>('block')
 
@@ -55,6 +56,7 @@ export const makeInputBlock = (
     variable,
     inputType: 'text',
     executedAt: null,
+    isAiInput: isAiInput ?? false
   }
 
   for (const [key, value] of Object.entries(attrs)) {
