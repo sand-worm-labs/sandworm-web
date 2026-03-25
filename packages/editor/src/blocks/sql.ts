@@ -69,7 +69,8 @@ export const makeSQLBlock = (
     dataSourceId?: string | null;
     isFileDataSource?: boolean;
     source?: string;
-  }
+  },
+  isAiInput?: boolean
 ): Y.XmlElement<SQLBlock> => {
   const yBlock = new Y.XmlElement<SQLBlock>("block");
   const attrs: SQLBlock = {
@@ -96,6 +97,7 @@ export const makeSQLBlock = (
     componentId: null,
     configuration: null,
     sort: null,
+    isAiInput: isAiInput ?? false
   };
 
   for (const [key, value] of Object.entries(attrs)) {
