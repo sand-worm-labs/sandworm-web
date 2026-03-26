@@ -69,4 +69,4 @@ RUN groupadd -g 1001 sandworm && usermod -aG sandworm sandwormuser
 USER sandwormuser
 WORKDIR /home/sandwormuser
 
-COPY ./example-data/ /home/sandwormuser/example-data
+COPY ./example-data/ /home/sandwormuser

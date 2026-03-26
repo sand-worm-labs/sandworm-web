@@ -19,7 +19,7 @@ export const isRichTextBlock = (
   return block.getAttribute("type") === BlockType.RichText;
 };
 
-export const makeRichTextBlock = (id: string): Y.XmlElement<RichTextBlock> => {
+export const makeRichTextBlock = (id: string, isAiInput?: boolean): Y.XmlElement<RichTextBlock> => {
   const yBlock = new Y.XmlElement<RichTextBlock>("block");
 
   const attrs: RichTextBlock = {
@@ -28,6 +28,7 @@ export const makeRichTextBlock = (id: string): Y.XmlElement<RichTextBlock> => {
     title: "",
     type: BlockType.RichText,
     content: new Y.XmlFragment(),
+    isAiInput: isAiInput ?? false
   };
 
   for (const [key, value] of Object.entries(attrs)) {

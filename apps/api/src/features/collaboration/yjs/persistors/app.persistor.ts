@@ -308,7 +308,7 @@ export class AppPersistor implements Persistor {
           onVisualizationV2: () => false,
           onFileUpload: () => false,
           onDashboardHeader: () => false,
-          onWriteback: () => false,
+          onPowerToolbox: () => false,
           onPivotTable: () => false,
         });
       },
@@ -324,7 +324,7 @@ export class AppPersistor implements Persistor {
           onVisualizationV2: () => false,
           onFileUpload: () => false,
           onDashboardHeader: () => false,
-          onWriteback: () => false,
+          onPowerToolbox: () => false,
           onPivotTable: () => false,
         });
       },
@@ -340,7 +340,7 @@ export class AppPersistor implements Persistor {
           onVisualizationV2: () => false,
           onFileUpload: () => false,
           onDashboardHeader: () => false,
-          onWriteback: () => false,
+          onPowerToolbox: () => false,
           onPivotTable: () => false,
         });
       },
@@ -356,7 +356,7 @@ export class AppPersistor implements Persistor {
           onVisualizationV2: () => false,
           onFileUpload: () => false,
           onDashboardHeader: () => false,
-          onWriteback: () => false,
+          onPowerToolbox: () => false,
           onPivotTable: () => false,
         });
       },
@@ -372,8 +372,8 @@ export class AppPersistor implements Persistor {
           onVisualization: () => false,
           onFileUpload: () => false,
           onDashboardHeader: () => false,
-          onWriteback: () => false,
           onPivotTable: () => false,
+          onPowerToolbox: () => false
         });
       },
       onInput: (prevBlock) => {
@@ -392,7 +392,7 @@ export class AppPersistor implements Persistor {
           onVisualizationV2: () => false,
           onFileUpload: () => false,
           onDashboardHeader: () => false,
-          onWriteback: () => false,
+          onPowerToolbox: () => false,
           onPivotTable: () => false,
         });
       },
@@ -412,7 +412,7 @@ export class AppPersistor implements Persistor {
           onVisualizationV2: () => false,
           onFileUpload: () => false,
           onDashboardHeader: () => false,
-          onWriteback: () => false,
+          onPowerToolbox: () => false,
           onPivotTable: () => false,
         });
       },
@@ -428,7 +428,7 @@ export class AppPersistor implements Persistor {
           onVisualizationV2: () => false,
           onFileUpload: () => false,
           onDashboardHeader: () => false,
-          onWriteback: () => false,
+          onPowerToolbox: () => false,
           onPivotTable: () => false,
         });
       },
@@ -444,7 +444,7 @@ export class AppPersistor implements Persistor {
           onVisualization: () => false,
           onVisualizationV2: () => false,
           onDashboardHeader: () => false,
-          onWriteback: () => false,
+          onPowerToolbox: () => false,
           onPivotTable: () => false,
         });
       },
@@ -460,22 +460,13 @@ export class AppPersistor implements Persistor {
           onVisualization: () => false,
           onVisualizationV2: () => false,
           onFileUpload: () => false,
-          onWriteback: () => false,
+          onPowerToolbox: () => false,
           onPivotTable: () => false,
         });
       },
-      onWriteback: (prevBlock) => {
+      onPowerToolbox: (prevBlock) => {
         return switchBlockType(nextBlock, {
-          onWriteback: (nextBlock) => {
-            const prevAttrs = prevBlock.getAttributes();
-            const nextAttrs = nextBlock.getAttributes();
-
-            if (compareText(prevAttrs.tableName, nextAttrs.tableName) !== 0) {
-              return false;
-            }
-
-            return equals(omit(['tableName'], prevAttrs), omit(['tableName'], nextAttrs));
-          },
+          onPowerToolbox: (nextBlock) => equals(prevBlock.getAttributes(), nextBlock.getAttributes()),
           onInput: () => false,
           onDropdownInput: () => false,
           onDateInput: () => false,
@@ -506,7 +497,7 @@ export class AppPersistor implements Persistor {
           onVisualizationV2: () => false,
           onFileUpload: () => false,
           onDashboardHeader: () => false,
-          onWriteback: () => false,
+          onPowerToolbox: () => false,
         });
       },
     });

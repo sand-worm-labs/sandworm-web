@@ -32,7 +32,8 @@ export const isPythonBlock = (
 
 export const makePythonBlock = (
   id: string,
-  options?: { source?: string }
+  options?: { source?: string },
+  isAiInput?: boolean
 ): Y.XmlElement<PythonBlock> => {
   const yBlock = new Y.XmlElement<PythonBlock>("block");
   const attrs: PythonBlock = {
@@ -51,6 +52,7 @@ export const makePythonBlock = (
     isEditWithAIPromptOpen: false,
     aiSuggestions: null,
     componentId: null,
+    isAiInput: isAiInput ?? false,
   };
 
   for (const [key, value] of Object.entries(attrs)) {

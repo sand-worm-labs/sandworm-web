@@ -50,7 +50,8 @@ export const isPowerToolboxBlock = (
 };
 
 export const makePowerToolboxBlock = (
-  id: string
+  id: string,
+  isAiInput?: boolean
 ): Y.XmlElement<PowerToolboxBlock> => {
   const yBlock = new Y.XmlElement<PowerToolboxBlock>("block");
 
@@ -68,6 +69,7 @@ export const makePowerToolboxBlock = (
     result: [],
     startedAt: "",
     executedAt: "",
+    isAiInput: isAiInput ?? false
   };
 
   for (const [key, value] of Object.entries(attrs)) {

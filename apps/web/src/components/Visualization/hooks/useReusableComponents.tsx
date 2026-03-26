@@ -203,8 +203,7 @@ export function ReusableComponentsProvider({ workspaceId, children }: Props) {
     async (
       workspaceId: string,
       data: Omit<NewReusableComponent, "id"> & { id: string },
-      documentTitle: string,
-      documentIcon: string
+      documentTitle: string
     ) => {
       // Optimistic update
       setState(prev => {
@@ -217,7 +216,6 @@ export function ReusableComponentsProvider({ workspaceId, children }: Props) {
             document: {
               id: data.documentId,
               title: documentTitle,
-              icon: documentIcon,
             },
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),

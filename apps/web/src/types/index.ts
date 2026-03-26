@@ -312,7 +312,6 @@ export type APIReusableComponent = Omit<
   document: {
     id: string;
     title: string;
-    icon: string;
   };
 };
 

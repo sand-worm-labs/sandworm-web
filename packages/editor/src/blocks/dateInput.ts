@@ -153,7 +153,8 @@ export type DateInputBlock = BaseBlock<BlockType.DateInput> & {
 
 export const makeDateInputBlock = (
   id: string,
-  blocks: Y.Map<YBlock>
+  blocks: Y.Map<YBlock>,
+  isAiInput?: boolean
 ): Y.XmlElement<DateInputBlock> => {
   const yBlock = new Y.XmlElement<DateInputBlock>("block");
 
@@ -174,6 +175,7 @@ export const makeDateInputBlock = (
     configOpen: true,
     dateType: "date",
     error: null,
+    isAiInput: isAiInput ?? false
   };
 
   for (const [key, value] of Object.entries(attrs)) {

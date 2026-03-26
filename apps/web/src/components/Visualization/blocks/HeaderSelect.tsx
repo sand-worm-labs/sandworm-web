@@ -20,6 +20,7 @@ interface Props {
 }
 export default function HeaderSelect(props: Props) {
   const { options, value, disabled } = props;
+  console.log("options", options);
 
   const hasOptions = options.length > 0;
   const isDisabled = disabled || !hasOptions;
@@ -32,6 +33,7 @@ export default function HeaderSelect(props: Props) {
   const onChange = useCallback(
     (newValue: string) => {
       if (!isDisabled) {
+        console.log("onChange", newValue);
         props.onChange(newValue);
       }
     },
