@@ -355,4 +355,15 @@ export class WorkspaceService {
 
     await this.workspaceRepository.save(workspace);
   }
+
+  async hasModelAiKey(workspaceId: string): Promise<boolean> {
+    const workspace = await this.workspaceRepository.findOne({
+      where: { id: workspaceId },
+    });
+  
+    if (!workspace) {
+      throw new NotFoundException('Workspace not found');
+    }
+    return workspace.assistantModel !== 'gpt-3.5-turbo'
+  }
 }
