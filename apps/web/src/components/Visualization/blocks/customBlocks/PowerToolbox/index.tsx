@@ -189,10 +189,12 @@ function CategoryRow({
           isActive ? "bg-[#DFEDED]" : "hover:bg-[#DFEDED] bg-[#EBF7F7]"
         )}
       >
-        <BoltIcon   className={clsx(
+        <BoltIcon
+          className={clsx(
             "transition-colors",
             isActive ? "text-[#005DE7]" : "text-[#1C3B5A]"
-          )}/>
+          )}
+        />
       </span>
 
       <span className="flex-1 min-w-0">

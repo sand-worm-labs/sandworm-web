@@ -6,8 +6,12 @@ import { PiPaperPlaneTilt, PiPlus, PiX } from "react-icons/pi";
 import { Button } from "@sandworm/ui/components/button";
 import { Textarea } from "@sandworm/ui/components/textarea";
 
+import { ModelQuickSelect } from "../Visualization/blocks/ModelQuickSelect";
+import { useOpenRouterModels } from "../Visualization/hooks/useOpenRouterModel";
+
 import { StopIcon } from "./icons";
 import { PreviewAttachment } from "./preview-attachment";
+import { ModelPickerModal } from "../Visualization/blocks/ModelPicker";
 
 interface MultimodalInputUIProps {
   input: string;
@@ -48,6 +52,17 @@ export const MultimodalInputView = forwardRef<
     },
     ref
   ) => {
+    const {
+      models,
+      loading,
+      error,
+      selectedModelId,
+      isPickerOpen,
+      openPicker,
+      closePicker,
+      selectModel,
+    } = useOpenRouterModels();
+
     return (
       <>
         <div className="relative w-full flex flex-col gap-4">
@@ -114,6 +129,13 @@ dark:focus:ring-[rgba(163,8,240,0.3)]
               Deep Research
             </Button>
 
+            <ModelQuickSelect
+              models={models}
+              selectedModelId={selectedModelId}
+              onSelect={selectModel}
+              onBrowseAll={openPicker}
+            />
+
             {isLoading ? (
               <Button
                 type="button"
@@ -167,6 +189,16 @@ dark:focus:ring-[rgba(163,8,240,0.3)]
             ))}
           </div>
         )}
+        <ModelPickerModal
+  isOpen={isPickerOpen}
+  onClose={closePicker}
+  onSelect={selectModel}
+  models={models}
+  loading={loading}
+  error={error}
+  selectedModelId={selectedModelId}
+  title="Select Model"
+/>
       </>
     );
   }
