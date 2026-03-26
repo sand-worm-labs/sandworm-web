@@ -115,7 +115,6 @@ export function MultimodalInput({
         });
       }
 
-      // Handle aborted uploads
       const abortedUploads = upload.results.filter(
         r => r.outcome === "aborted"
       );

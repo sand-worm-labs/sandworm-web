@@ -28,6 +28,10 @@ const nextConfig = {
         hostname: "raw.githubusercontent.com",
         pathname: "/trustwallet/assets/master/blockchains/**",
       },
+      {
+        protocol: "https",
+        hostname: "www.google.com",
+      },
     ],
   },
 };

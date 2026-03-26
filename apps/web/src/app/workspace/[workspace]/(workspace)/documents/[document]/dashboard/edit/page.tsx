@@ -24,7 +24,8 @@ export default function DashboardEditPage() {
     return null;
   }
 
-  const role = session.user.roles?.[workspaceId] ?? "viewer";
+
+  const role = session.user.role?.[workspaceId] ?? "viewer";
 
   return (
     <>
