@@ -14,6 +14,7 @@ import { ErrorCode } from '@/constants/error-code.constant';
 import { JupyterService } from '@/infrastructure/jupyter/jupyter.service';
 import { EventEmitter2, EventEmitterReadinessWatcher } from '@nestjs/event-emitter';
 import { EnvironmentStatusEvent, EventNames } from '@/events/environment.events';
+import { AI_ENV_KEYS, AIProvider } from '@/core/constants/app.constant';
 
 @Injectable()
 export class EnvironmentService {
@@ -123,6 +124,14 @@ export class EnvironmentService {
     });
 
     return EnvironmentVariable.fromEntities(entities);
+  }
+
+  async getEnvironmentVariable(workspaceId: string, name: string): Promise<EnvironmentVariable> {
+    const entity = await this.envVarRepository.findOne({
+      where: { workspaceId, name },
+    });
+
+    return EnvironmentVariable.fromEntity(entity);
   }
 
   async setEnvironmentVariables(
