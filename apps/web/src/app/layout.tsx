@@ -8,6 +8,7 @@ import type { Metadata } from "next";
 
 import type { ChildrenProps } from "@/types";
 import { RootProvider } from "@/providers/RootProvider";
+import CookieBanner from "@/components/CookieBanner";
 
 // ⬢ Constants
 // =====================================
@@ -50,6 +51,7 @@ export default async function RootLayout({ children }: ChildrenProps) {
       </Script>
       <body className={`${azeretMono.className} h-full w-screen `}>
         <RootProvider>{children}</RootProvider>
+        <CookieBanner />
       </body>
     </html>
   );

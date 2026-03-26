@@ -22,52 +22,51 @@ export interface NormalizedModel {
   description: string | null;
 }
 
-const normalizeModel = (raw: RawModel): NormalizedModel => {
+const REASONING_KEYWORDS = [
+  "r1",
+  "thinking",
+  "o1",
+  "o3",
+  "o4",
+  "qwq",
+  "reasoning",
+];
+
+function parsePricePerM(raw: string | null | undefined): number | null {
+  if (!raw) return null;
+  const parsed = parseFloat(raw);
+  return Number.isNaN(parsed) ? null : parsed * 1_000_000;
+}
+
+function deriveIsFree(raw: RawModel, promptRaw: number | null): boolean {
+  return promptRaw === 0 || raw.id.endsWith(":free");
+}
+
+function deriveIsReasoning(id: string): boolean {
+  const lower = id.toLowerCase();
+  return REASONING_KEYWORDS.some(kw => lower.includes(kw));
+}
+
+function normalizeModel(raw: RawModel): NormalizedModel {
   const d = raw.details;
 
-  const contextLength =
-    d?.contextLength ?? d?.topProvider?.contextLength ?? null;
-
   const promptRaw = d?.pricing?.prompt ? parseFloat(d.pricing.prompt) : null;
-  const outputRaw = d?.pricing?.completion
-    ? parseFloat(d.pricing.completion)
-    : null;
-  const promptPerM = promptRaw != null ? promptRaw * 1_000_000 : null;
-  const outputPerM = outputRaw != null ? outputRaw * 1_000_000 : null;
-  const isFree = promptRaw === 0 || raw.id.endsWith(":free");
-
-  const inputModalities = d?.details?.architecture?.inputModalities ?? ["text"];
-  const outputModalities = d?.details?.architecture?.outputModalities ?? [
-    "text",
-  ];
-
-  const supportsTools = (d?.supportedParameters ?? []).includes("tools");
-
-  const idLower = raw.id.toLowerCase();
-  const isReasoning =
-    idLower.includes("r1") ||
-    idLower.includes("thinking") ||
-    idLower.includes("o1") ||
-    idLower.includes("o3") ||
-    idLower.includes("o4") ||
-    idLower.includes("qwq") ||
-    idLower.includes("reasoning");
 
   return {
     id: raw.id,
     name: raw.name,
     provider: raw.id.split("/")[0] ?? "unknown",
-    contextLength,
-    isFree,
-    promptPricePerM: promptPerM,
-    outputPricePerM: outputPerM,
-    inputModalities,
-    outputModalities,
-    supportsTools,
-    isReasoning,
+    contextLength: d?.contextLength ?? d?.topProvider?.contextLength ?? null,
+    isFree: deriveIsFree(raw, promptRaw),
+    promptPricePerM: parsePricePerM(d?.pricing?.prompt),
+    outputPricePerM: parsePricePerM(d?.pricing?.completion),
+    inputModalities: d?.details?.architecture?.inputModalities ?? ["text"],
+    outputModalities: d?.details?.architecture?.outputModalities ?? ["text"],
+    supportsTools: (d?.supportedParameters ?? []).includes("tools"),
+    isReasoning: deriveIsReasoning(raw.id),
     description: d?.description ?? null,
   };
-};
+}
 
 export const useOpenRouterModels = () => {
   const { data, loading, error } = useGetOpenRouterModelsQuery();
@@ -87,6 +86,7 @@ export const useOpenRouterModels = () => {
 
   const openPicker = useCallback(() => setIsPickerOpen(true), []);
   const closePicker = useCallback(() => setIsPickerOpen(false), []);
+
   const selectModel = useCallback((modelId: string) => {
     setSelectedModelId(modelId);
     setIsPickerOpen(false);
