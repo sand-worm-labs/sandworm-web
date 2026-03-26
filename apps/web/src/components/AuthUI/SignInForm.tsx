@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
+import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 
 import { useLogin } from "../Visualization/hooks/useAuth";
 import { Spinner } from "../Spinner/Spinner";
@@ -11,6 +12,7 @@ export const SignInForm = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [localError, setLocalError] = useState("");
   const [state, { loginWithPassword }] = useLogin();
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (state.error === "invalid-creds") {
@@ -59,15 +61,27 @@ export const SignInForm = () => {
         />
       </div>
 
-      <div>
+      <div className="relative">
         <input
-          type="password"
+          type={showPassword ? "text" : "password"}
           name="password"
-          className="mt-1 w-full font-body rounded-3xl dark:bg-base-400 bg-[#FFFFFF] p-2.5 px-5 text-ink-100 dark:text-white border border-[#DEE2E6] focus:border-[#A308F0] focus:ring-1 focus:ring-[#A308F0] outline-none font-medium text-[0.9rem] placeholder:text-muted-foreground dark:placeholder:text-ink-400 dark:border-border-tertiary"
+          className="mt-1 w-full font-body rounded-3xl dark:bg-base-400 bg-[#FFFFFF] p-2.5 px-5 pr-12 text-ink-100 dark:text-white border border-[#DEE2E6] focus:border-[#A308F0] focus:ring-1 focus:ring-[#A308F0] outline-none font-medium text-[0.9rem] placeholder:text-muted-foreground dark:placeholder:text-ink-400 dark:border-border-tertiary"
           placeholder="Password"
           value={formData.password}
           onChange={handleChange}
         />
+        <button
+          type="button"
+          onClick={() => setShowPassword(prev => !prev)}
+          className="absolute right-4 top-1/2 translate-y-[-50%] text-ink-400 dark:text-ink-400 hover:text-ink-100 dark:hover:text-white transition-colors"
+          tabIndex={-1}
+        >
+          {showPassword ? (
+            <MdVisibilityOff size={18} />
+          ) : (
+            <MdVisibility size={18} />
+          )}
+        </button>
       </div>
 
       {localError && (
@@ -77,7 +91,7 @@ export const SignInForm = () => {
       <button
         type="submit"
         disabled={state.loading}
-        className="w-full rounded-3xl bg-[#0F0F0F] dark:bg-white dark:text-black px-4 py-3.5 text-white font-medium disabled:bg-[#868E96] text-sm font-body flex items-center justify-center gap-2"
+        className="w-full rounded-3xl bg-[#0F0F0F] hover:opacity-85 dark:bg-white dark:text-black px-4 py-3.5 text-white font-medium disabled:bg-[#868E96] text-sm font-body flex items-center justify-center gap-2"
       >
         {state.loading ? (
           <>
