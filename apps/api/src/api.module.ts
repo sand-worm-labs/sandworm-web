@@ -19,6 +19,7 @@ import { WebsocketModule } from './infrastructure/websocket/websocket.module';
 import { YjsModule } from './features/collaboration/yjs/yjs.module';
 import { DataSourcesModule } from './infrastructure/datasource/datasource.module';
 import { OpenRouterModule } from './infrastructure/openrouter/openrouter.module';
+import { ChatModule } from '@/features/chat/chat.module';
 
 @Module({
     imports: [
@@ -40,6 +41,7 @@ import { OpenRouterModule } from './infrastructure/openrouter/openrouter.module'
         OpenRouterModule,
 
         // Features
+        ChatModule,
         WorkspaceModule,
         DocumentModule,
         CommentModule,

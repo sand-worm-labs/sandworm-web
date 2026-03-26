@@ -29,7 +29,9 @@ export class OpenRouterResolver {
     name: 'openRouterAccountCredits',
     description: 'Get OpenRouter account credit usage',
   })
-  async getAccountCredits(): Promise<OpenRouterAccountCredits> {
-    return this.openRouterService.getAccountCredits();
+  async getAccountCredits(
+    @Args('workspaceId') workspaceId: string,
+  ): Promise<OpenRouterAccountCredits> {
+      return this.openRouterService.getAccountCredits(workspaceId);
   }
 }

@@ -92,7 +92,7 @@ export class OpenRouterService {
     }
   }
 
-  async getAccountCredits(): Promise<AccountCredits> {
+  async getAccountCredits(workspaceId: string): Promise<AccountCredits> {
     const { data } = await this.client.credits.getCredits();
 
     return {
