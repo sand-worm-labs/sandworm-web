@@ -364,6 +364,7 @@ export class WorkspaceResolver {
 
   @ResolveField(() => WorkspaceSecrets)
   async secrets(@Parent() workspace: Workspace): Promise<WorkspaceSecrets> {
-    return { hasExternalModelApiKey: false };
+    let hasAiModelApiKey =  await this.workspaceService.hasModelAiKey(workspace.id);
+    return { hasAiModelApiKey, };
   }
 }

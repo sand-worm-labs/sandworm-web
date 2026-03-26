@@ -26,6 +26,7 @@ import { WorkspaceInfo } from '../model/workspace-info.model';
 import { getRandomIconColor } from '@/common/utils/color';
 import { EnvironmentService } from '@/features/environment/environment.service';
 import { OpenRouterService } from '@/infrastructure/openrouter/openrouter.service';
+import { AI_ENV_KEYS, AIProvider } from '@/core/constants/app.constant';
 
 @Injectable()
 export class WorkspaceService {
@@ -123,10 +124,20 @@ export class WorkspaceService {
 
     await this.workspaceMembersRepository.save(userWorkspace);
     await this.environmentService.getEnvironment(savedWorkspace.id);
-    let key = await this.openRouterService.provisionKey(savedWorkspace.id);
-    console.dir({key, pppp:"hhhhh"})
+    await this.setupAIKey(savedWorkspace.id, AIProvider.OPENROUTER);
  
     return Workspace.fromEntity(savedWorkspace);
+  }
+ 
+  async setupAIKey(workspaceId: string, provider: AIProvider) {
+    const envKey = AI_ENV_KEYS[provider];
+
+    const key = await this.openRouterService.provisionKey(workspaceId);
+
+    await this.environmentService.setEnvironmentVariables(workspaceId, {
+      add: [{ name: envKey, value: key.data.hash }],
+      remove: [],
+    });
   }
 
   async deleteWorkspace(workspaceId: string, ownerId: string): Promise<void> {
@@ -354,5 +365,22 @@ export class WorkspaceService {
     workspace.assistantModel = model.trim();
 
     await this.workspaceRepository.save(workspace);
+  }
+
+  async hasModelAiKey(workspaceId: string): Promise<boolean> {
+    const workspace = await this.workspaceRepository.findOne({
+      where: { id: workspaceId },
+    });
+  
+    if (!workspace) {
+      throw new NotFoundException('Workspace not found');
+    }
+    let foundKey = await this.environmentService.getEnvironmentVariable(workspace.id, AIProvider.OPENROUTER)
+    if(process.env.NODE_ENV === 'development') {
+       await this.setupAIKey(workspace.id, AIProvider.OPENROUTER)
+       return true
+    }
+
+    return !!foundKey
   }
 }

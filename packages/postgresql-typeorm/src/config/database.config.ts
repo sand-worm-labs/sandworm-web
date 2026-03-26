@@ -75,6 +75,9 @@ class EnvironmentVariablesValidator {
   @IsString()
   @IsOptional()
   DATABASE_CERT: string;
+
+  @IsString()
+  ENVIRONMENT_VARIABLES_ENCRYPTION_KEY: string;
 }
 
 export default registerAs<DatabaseConfig>('database', () => {
@@ -100,5 +103,6 @@ export default registerAs<DatabaseConfig>('database', () => {
     ca: process.env.DATABASE_CA,
     key: process.env.DATABASE_KEY,
     cert: process.env.DATABASE_CERT,
+    environmentVariablesEncryptionKey: process.env.ENVIRONMENT_VARIABLES_ENCRYPTION_KEY,
   };
 });

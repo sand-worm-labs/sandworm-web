@@ -23,7 +23,7 @@ registerEnumType(UserWorkspaceRole, {
 @ObjectType()
 export class WorkspaceSecrets {
   @BooleanField()
-  hasExternalModelApiKey!: boolean;
+  hasAiModelApiKey!: boolean;
 }
 
 @ObjectType()
