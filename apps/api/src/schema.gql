@@ -164,6 +164,18 @@ type WorkspaceInfo {
   role: String!
 }
 
+type OpenRouterModel {
+  id: ID!
+  name: String!
+  details: JSON!
+}
+
+type OpenRouterAccountCredits {
+  totalCredits: Float!
+  usedCredits: Float!
+  availableCredits: Float!
+}
+
 type Comment {
   id: String!
   body: String!
@@ -276,6 +288,15 @@ type Query {
     """Username of the profile"""
     username: String!
   ): Profile!
+
+  """List all available OpenRouter models"""
+  openRouterModels: [OpenRouterModel!]!
+
+  """Get a specific OpenRouter model by ID"""
+  openRouterModel(modelId: String!): OpenRouterModel
+
+  """Get OpenRouter account credit usage"""
+  openRouterAccountCredits: OpenRouterAccountCredits!
 
   """Get workspace by ID"""
   getWorkspace(workspaceId: String!): Workspace!

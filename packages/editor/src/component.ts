@@ -106,6 +106,7 @@ export function updateBlockFromComponent(
       dashboardPage: compAttrs.dashboardPage,
       dashboardPageSize: compAttrs.dashboardPageSize,
       sort: clone(compAttrs.sort),
+      isAiInput: false
     }
     for (const [key, value] of Object.entries(nextAttrs)) {
       block.setAttribute(
@@ -123,6 +124,7 @@ export function updateBlockFromComponent(
     const nextAttributes: PythonComponentAttrs = {
       title: clone(compAttrs.title),
       source: duplicateYText(compAttrs.source),
+      isAiInput: false
     }
 
     for (const [key, value] of Object.entries(nextAttributes)) {

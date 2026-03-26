@@ -26,6 +26,9 @@ export class MessageEntity extends AbstractEntity {
   @Column()
   role!: string;
 
+  @Column()
+  model!: string;
+
   @Column("jsonb")
   parts!: MessagePart;
 

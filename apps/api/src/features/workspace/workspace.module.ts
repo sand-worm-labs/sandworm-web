@@ -13,6 +13,7 @@ import { ConfigModule } from '@nestjs/config';
 import { MailModule } from '@/infrastructure/mail/mail.module';
 import { WorkspaceMembershipService } from './service/workspace-membership.service';
 import { EnvironmentModule } from '../environment/environment.module';
+import { OpenRouterModule } from '@/infrastructure/openrouter/openrouter.module';
 
 @Module({
   imports: [
@@ -25,7 +26,8 @@ import { EnvironmentModule } from '../environment/environment.module';
     JwtModule.register({}),
     ConfigModule,
     MailModule,
-    EnvironmentModule
+    EnvironmentModule,
+    OpenRouterModule
   ],
   providers: [WorkspaceService, WorkspaceMembershipService, WorkspaceResolver],
   exports: [WorkspaceService],

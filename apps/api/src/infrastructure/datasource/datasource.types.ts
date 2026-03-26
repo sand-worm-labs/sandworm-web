@@ -1,7 +1,13 @@
-// DataSourceColumn
+export interface DuckDBDataSource extends BaseDataSource {
+    path: string; 
+    notes: string;
+    readOnly: boolean;
+}
+
+
 export interface DataSourceColumn {
     name: string;
-    type: string; // e.g., 'string', 'bigint', 'timestamp', 'decimal', 'boolean', etc.
+    type: string; 
 }
 
 // DataSourceTable
@@ -32,7 +38,6 @@ export interface DataSourceConnectionError {
 
 
 export interface SandwormCloudDataSource extends BaseDataSource {
-    // Trino connection fields
     host: string;
     port: string;
     catalog: string;
@@ -47,6 +52,6 @@ export interface SandwormCloudDataSource extends BaseDataSource {
     apiEndpoint?: string;
 }
 
-// Add to DataSource union type in @briefer/types
 export type DataSource =
-    | { type: 'sandwormcloud'; data: SandwormCloudDataSource };
+    | { type: 'sandwormcloud'; data: SandwormCloudDataSource }
+    | { type: 'duckdb'; data: DuckDBDataSource };

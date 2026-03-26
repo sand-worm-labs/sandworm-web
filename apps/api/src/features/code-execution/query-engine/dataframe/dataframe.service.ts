@@ -131,7 +131,7 @@ sort_config = json.loads(${JSON.stringify(JSON.stringify(sort))})
 if not ("${dataframeName}" in globals()):
     import pandas as pd
     try:
-      ${dataframeName} = pd.read_parquet("/home/sandwormuser/.briefer/query-${queryId}.parquet.gzip")
+      ${dataframeName} = pd.read_parquet("/home/sandwormuser/.sandworm/query-${queryId}.parquet.gzip")
     except:
       print(json.dumps({"type": "not-found"}))
 
@@ -172,11 +172,11 @@ if "${dataframeName}" in globals():
 
       "page": ${pageOptions.page},
       "pageSize": ${pageOptions.pageSize},
-      "pageCount": int(len(${dataframeName}) / ${pageOptions.pageSize} + 1),
+      "pageCount": int(len(${dataframeName}) / ${pageOptions.pageSize} + 1) if ${pageOptions.pageSize} > 0 else 1,
 
       "dashboardPage": ${pageOptions.dashboardPage},
       "dashboardPageSize": ${pageOptions.dashboardPageSize},
-      "dashboardPageCount": int(len(${dataframeName}) / ${pageOptions.dashboardPageSize} + 1),
+      "dashboardPageCount": int(len(${dataframeName}) / ${pageOptions.dashboardPageSize} + 1) if ${pageOptions.dashboardPageSize} > 0 else 1,
       "dashboardRows": dashboard_rows,
     }
     print(json.dumps(result))`;

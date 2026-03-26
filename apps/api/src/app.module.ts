@@ -29,6 +29,7 @@ import mailConfig from './infrastructure/mail/config/mail.config';
 import authConfig from './features/auth/core/config/auth.config';
 import { ApiModule } from './api.module';
 import { WebsocketModule } from './infrastructure/websocket/websocket.module';
+import openrouterConfig from './infrastructure/openrouter/config/openrouter.config';
 
 const configModule = ConfigModule.forRoot({
   isGlobal: true,
@@ -39,6 +40,7 @@ const configModule = ConfigModule.forRoot({
     jupyterConfig,
     googleConfig,
     mailConfig,
+    openrouterConfig
   ],
   envFilePath: ['.env'],
 });

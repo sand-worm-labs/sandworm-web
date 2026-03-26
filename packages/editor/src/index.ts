@@ -22,7 +22,6 @@ import {
   getDropdownInputAttributes,
 } from "./blocks/dropdownInput.js";
 import { YDashboardItem } from "./dashboard.js";
-import { WritebackBlock } from "./blocks/writeback.js";
 import { DateInputBlock, getDateInputAttributes } from "./blocks/dateInput.js";
 import { PivotTableBlock } from "./blocks/pivotTable.js";
 import {
@@ -219,7 +218,6 @@ ${attrs.variable} = pytz.timezone('${attrs.value.timezone}').localize(datetime.d
         onVisualizationV2: () => {},
         onFileUpload: () => {},
         onDashboardHeader: () => {},
-        onWriteback: () => {},
         onPivotTable: () => {},
         onPowerToolbox: () => {},
       });
@@ -280,12 +278,6 @@ export function getLastUpdatedAt(doc: Y.Doc): string | null {
       onRichText: () => {},
       onFileUpload: () => {},
       onDashboardHeader: () => {},
-      onWriteback: block => {
-        const result = block.getAttribute("result");
-        if (result && (!lastUpdatedAt || result.executedAt > lastUpdatedAt)) {
-          lastUpdatedAt = result.executedAt;
-        }
-      },
       onPivotTable: block => {
         const updatedAt = block.getAttribute("updatedAt");
         if (updatedAt && (!lastUpdatedAt || updatedAt > lastUpdatedAt)) {
@@ -312,7 +304,6 @@ export function switchBlockType<T>(
     onDateInput: (block: Y.XmlElement<DateInputBlock>) => T;
     onFileUpload: (block: Y.XmlElement<FileUploadBlock>) => T;
     onDashboardHeader: (block: Y.XmlElement<DashboardHeaderBlock>) => T;
-    onWriteback: (block: Y.XmlElement<WritebackBlock>) => T;
     onPivotTable: (block: Y.XmlElement<PivotTableBlock>) => T;
     onPowerToolbox: (block: Y.XmlElement<PowerToolboxBlock>) => T;
   }
@@ -343,8 +334,6 @@ export function switchBlockType<T>(
       return handles.onDashboardHeader(
         block as Y.XmlElement<DashboardHeaderBlock>
       );
-    case BlockType.Writeback:
-      return handles.onWriteback(block as Y.XmlElement<WritebackBlock>);
     case BlockType.PivotTable:
       return handles.onPivotTable(block as Y.XmlElement<PivotTableBlock>);
       case BlockType.PowerToolbox:
