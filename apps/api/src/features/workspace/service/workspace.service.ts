@@ -299,4 +299,60 @@ export class WorkspaceService {
 
     return Workspace.fromEntities(workspaces);
   }
+
+  async getWorkspaceDefaultAiModel(workspaceId: string, userId: string): Promise<string> {
+    await this.validateAndGetUser(userId, 'User');
+    const membership = await this.workspaceMembersRepository.findOne({
+      where: { workspaceId, userId, status: UserWorkspaceStatus.ACTIVE },
+    });
+
+    if (!membership) {
+      throw new BadRequestException(
+        'You must be a member of this workspace',
+      );
+    }
+
+    const workspace = await this.workspaceRepository.findOne({
+      where: { id: workspaceId },
+    });
+  
+    if (!workspace) {
+      throw new NotFoundException('Workspace not found');
+    }
+    return workspace.assistantModel
+  }
+
+  async setWorkspaceDefaultAiModel(workspaceId: string,userId: string, model: string): Promise<void> {  
+    validateUUID(workspaceId, 'Workspace ID');
+    validateUUID(userId, 'User ID');
+    validateNonEmptyString(model, 'Model');
+
+    const membership = await this.workspaceMembersRepository.findOne({
+      where: { workspaceId, userId, status: UserWorkspaceStatus.ACTIVE },
+    });
+
+    if (!membership) {
+      throw new BadRequestException(
+        'You must be a member of this workspace',
+      );
+    }
+
+    if (membership.role !== UserWorkspaceRole.ADMIN) {
+      throw new BadRequestException(
+        'Only admins can change the default AI model',
+      );
+    }
+
+    const workspace = await this.workspaceRepository.findOne({
+      where: { id: workspaceId },
+    });
+
+    if (!workspace) {
+      throw new NotFoundException('Workspace not found');
+    }
+
+    workspace.assistantModel = model.trim();
+
+    await this.workspaceRepository.save(workspace);
+  }
 }
