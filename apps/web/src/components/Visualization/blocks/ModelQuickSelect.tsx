@@ -326,9 +326,9 @@ export function ModelQuickSelect({
           "font-body text-xs font-medium border transition-all duration-150",
           open
             ? "bg-[#A308F0]/10 border-[#A308F0]/50 text-[#A308F0]"
-            : "bg-[#E7EBF0] dark:bg-[#363C46] border-transparent",
+            : "  border-transparent",
           !open &&
-            "text-black dark:text-[#C5CED9] hover:bg-[rgba(207,211,222,0.6)] dark:hover:bg-[rgba(255,255,255,0.08)]"
+            "text-ink-100  hover:bg-[rgba(207,211,222,0.6)] dark:hover:bg-[rgba(255,255,255,0.08)]"
         )}
       >
         {activeModel && (

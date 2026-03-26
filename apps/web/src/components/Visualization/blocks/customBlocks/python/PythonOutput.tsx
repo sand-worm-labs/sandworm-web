@@ -209,33 +209,25 @@ export function PythonOutputWrapper(props: PythonOutputWrapperProps) {
 }
 
 function HTMLOutput(props: { output: PythonHTMLOutput }) {
-  const clean = useMemo(
-    () =>
-      getDomPurify().sanitize(props.output.html, {
-        ALLOWED_TAGS: [
-          "table",
-          "caption",
-          "tr",
-          "th",
-          "td",
-          "thead",
-          "tbody",
-          "tfoot",
-          "colgroup",
-          "col",
-        ],
-      }),
-    [props.output.html]
-  );
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [height, setHeight] = React.useState(500);
 
   return (
-    <div
-      className="python-html-output printable-block"
-      dangerouslySetInnerHTML={{ __html: clean }}
+    <iframe
+      ref={iframeRef}
+      srcDoc={props.output.html}
+      sandbox="allow-scripts"
+      style={{ width: "100%", height, border: "none" }}
+      onLoad={() => {
+        // auto-size to content if possible
+        try {
+          const h = iframeRef.current?.contentDocument?.body?.scrollHeight;
+          if (h && h > 0) setHeight(h);
+        } catch {}
+      }}
     />
   );
 }
-
 const MAX_PIE_LABELS = 1000;
 
 function PythonPlotOutput(props: {

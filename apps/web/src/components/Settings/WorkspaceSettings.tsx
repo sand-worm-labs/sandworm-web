@@ -551,9 +551,7 @@ export default function WorkspaceSettingsModal({
                       </span>
                     </div>
 
-                    <div className="px-3 flex items-center justify-center gap-2 text-sm text-[#6C757D] font-medium dark:text-ink-400 border-r border-[#1A1A1A]">
-                      Pro
-                    </div>
+                    <div className="px-3 flex items-center justify-center gap-2 text-sm text-[#6C757D] font-medium dark:text-ink-400 border-r border-[#1A1A1A]" />
 
                     <button
                       type="button"
@@ -672,36 +670,6 @@ export default function WorkspaceSettingsModal({
                     </button>
                   </div>
                 </div>
-
-                {!disableCustomOpenAiKey && (
-                  <div className="flex items-center justify-between gap-4 py-4">
-                    <div className="flex flex-col gap-y-2">
-                      <label className="block text-md font-bold leading-4 dark:text-white text-ink-100">
-                        Custom AI API Key
-                      </label>
-                      <span className="text-xs xl:text-sm mt-2 text-[#6C757D] dark:text-ink-400">
-                        Set a custom API key for your workspace
-                      </span>
-                    </div>
-
-                    <div className="w-[50%]">
-                      <div className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-1.5">
-                        set key
-                      </div>
-                      <select
-                        className="block w-full rounded-[10px] xl:py-2 border-0 py-1.5 pl-4 pr-10 text-ink-100 font-medium ring-1 ring-inset ring-[#CED4DA] focus:ring-1 focus:ring-[#A308F0] text-sm dark:bg-base-400 disabled:bg-gray-100 dark:text-white dark:ring-border-tertiary"
-                        defaultValue="gpt-4o"
-                      >
-                        <option value="gpt-4o">
-                          Not set - Using sandworm default quotas
-                        </option>
-                        <option value="gpt-4">GPT-4</option>
-                        <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-                      </select>
-                    </div>
-                  </div>
-                )}
-
                 <div className="flex items-start justify-between gap-4 py-4">
                   <div className="flex flex-col gap-y-2">
                     <label className="block text-md font-bold leading-4 dark:text-white text-ink-100">
