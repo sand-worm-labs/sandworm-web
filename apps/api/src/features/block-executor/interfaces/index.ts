@@ -5,4 +5,3 @@ export * from './sql-block-executor.interface';
 export * from './input-block-executor.interface';
 export * from './pivot-table-block-executor.interface';
 export * from './visualization-block-executor.interface';
-export * from './writeback-block-executor.interface';

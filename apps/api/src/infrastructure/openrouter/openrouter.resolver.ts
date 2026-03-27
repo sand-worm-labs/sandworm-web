@@ -1,4 +1,5 @@
 import { Args, Query, Resolver } from '@nestjs/graphql';
+import { CurrentUser } from '@sandworm/graphql';
 import { OpenRouterService } from './openrouter.service';
 import { OpenRouterModel, OpenRouterAccountCredits } from './model/openrouter.model';
 
@@ -30,8 +31,9 @@ export class OpenRouterResolver {
     description: 'Get OpenRouter account credit usage',
   })
   async getAccountCredits(
+    @CurrentUser('id') userId: string,
     @Args('workspaceId') workspaceId: string,
   ): Promise<OpenRouterAccountCredits> {
-      return this.openRouterService.getAccountCredits(workspaceId);
+      return this.openRouterService.getAccountCredits(workspaceId, userId);
   }
 }
