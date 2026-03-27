@@ -45,7 +45,7 @@ export class WorkspaceEntity extends AbstractEntity {
   @Column({ name: 'owner_id', nullable: true })
   ownerId!: string;
 
-  @Column({ name: 'assistant_model', default: 'gpt-4o' })
+  @Column({ name: 'assistant_model', default: 'anthropic/claude-sonnet-4.6' })
   assistantModel!: string;
 
   // Relations
