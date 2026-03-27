@@ -65,6 +65,7 @@ type Workspace {
   useContext: String
   plan: WorkspacePlan!
   ownerId: String!
+  assistantModel: String!
   users: [User!]!
   owner: User!
   documents: [Document!]!
@@ -339,7 +340,6 @@ type Query {
 
   """Get pending role requests for a workspace"""
   getPendingRoleRequests(workspaceId: String!): [WorkspaceMember!]!
-  getWorkspaceDefaultAiModel(workspaceId: String!): String!
 
   """Get invitation details from hash without accepting it"""
   getInvitationInfo(hash: String!): WorkspaceInvitationInfo!

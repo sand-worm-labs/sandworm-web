@@ -353,14 +353,12 @@ export class WorkspaceService {
     if (!workspace) {
       throw new NotFoundException('Workspace not found');
     }
-
-    let foundKey = await this.environmentService.getEnvironmentVariable(workspace.id, AIProvider.OPENROUTER)
-    if(process.env.NODE_ENV === 'development') {
-       await this.setupAIKey(workspace.id, AIProvider.OPENROUTER)
-       return true
+    const foundKey = await this.environmentService.getEnvironmentVariable(workspace.id, AI_ENV_KEYS[AIProvider.OPENROUTER]);
+    if (!foundKey) {
+      await this.setupAIKey(workspace.id, AIProvider.OPENROUTER);
+      return true;
     }
-
-    return !!foundKey
+    return true;
   }
 
   async getWorkspaceAiHash(workspaceId: string): Promise<string | null> {
