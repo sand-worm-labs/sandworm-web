@@ -2,7 +2,7 @@ import {
   Injectable,
   Logger,
   NotFoundException,
-  BadRequestException
+  BadRequestException,
 } from '@nestjs/common';
 import { In, Repository } from 'typeorm';
 import {
@@ -42,7 +42,7 @@ export class WorkspaceService {
     @InjectRepository(DocumentEntity)
     private readonly documentRepository: Repository<DocumentEntity>,
     private readonly environmentService: EnvironmentService,
-    private readonly openRouterService: OpenRouterService
+    private readonly openRouterService: OpenRouterService, 
   ) { }
 
 
