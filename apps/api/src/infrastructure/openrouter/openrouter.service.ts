@@ -1,8 +1,13 @@
 import {
+  forwardRef,
+  Inject,
   Injectable,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { OpenRouter } from '@openrouter/sdk';
 import { AllConfigType } from '@/config/config.type';
 import {
@@ -14,8 +19,11 @@ import {
   CreateKeysLimitReset,
 } from '@openrouter/sdk/models/operations';
 import { OpenRouterModel } from './model/openrouter.model';
-import { WorkspaceService } from '@/features/workspace/service/workspace.service';
+import { WorkspaceEntity } from '@sandworm/postgresql-typeorm';
 import { WorkspaceMembershipService } from "@/features/workspace/service/workspace-membership.service";
+import { EnvironmentService } from '@/features/environment/environment.service';
+import { AI_ENV_KEYS, AIProvider } from '@/core/constants/app.constant';
+import { validateUUID } from '@/common/utils/uuid';
 
 export interface AccountCredits {
   totalCredits: number;
@@ -30,7 +38,10 @@ export class OpenRouterService {
 
   constructor(
     private readonly configService: ConfigService<AllConfigType>,
-    private readonly workspaceService: WorkspaceService,
+    @InjectRepository(WorkspaceEntity)
+    private readonly workspaceRepository: Repository<WorkspaceEntity>,
+    private readonly environmentService: EnvironmentService,
+    @Inject(forwardRef(() => WorkspaceMembershipService))
     private readonly workspaceMembershipService: WorkspaceMembershipService
   ) {
     this.client = new OpenRouter({
@@ -97,10 +108,20 @@ export class OpenRouterService {
     }
   }
 
+  private async getWorkspaceAiHash(workspaceId: string): Promise<string | null> {
+    validateUUID(workspaceId, 'Workspace ID');
+    const workspace = await this.workspaceRepository.findOne({ where: { id: workspaceId } });
+    if (!workspace) {
+      throw new NotFoundException('Workspace not found');
+    }
+    const envKey = AI_ENV_KEYS[AIProvider.OPENROUTER];
+    const aiEnvKey = await this.environmentService.getEnvironmentVariable(workspaceId, envKey);
+    return aiEnvKey.value || null;
+  }
+
   async getAccountCredits(workspaceId: string, userId:string): Promise<AccountCredits> {
     await this.workspaceMembershipService.assertActiveMember(workspaceId, userId);
-    const workspaceHash = await this.workspaceService.getWorkspaceAiHash(workspaceId)
-
+    const workspaceHash = await this.getWorkspaceAiHash(workspaceId);
     const { data } = await this.client.apiKeys.get({ hash: workspaceHash });
 
     return {
