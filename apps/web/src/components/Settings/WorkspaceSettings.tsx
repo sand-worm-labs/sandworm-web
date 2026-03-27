@@ -33,6 +33,7 @@ import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
 import MiniUsersList from "../Visualization/blocks/MiniUsersList";
 import { useOpenRouterModels } from "../Visualization/hooks/useOpenRouterModel";
 import { ModelPickerModal } from "../Visualization/blocks/ModelPicker";
+import InviteUserModal from "../InviteUser";
 
 import { WorkspaceIcon } from "./WorkspaceIcon";
 
@@ -407,6 +408,8 @@ export default function WorkspaceSettingsModal({
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+
   const currentWorkspace = useStringQuery("workspace");
   const [{ loading: isDeleting, error: deleteError }, { deleteWorkspace }] =
     useDeleteWorkspace(currentWorkspace ?? undefined);
@@ -758,7 +761,8 @@ export default function WorkspaceSettingsModal({
                       users={members}
                       onRemoveUser={onRemoveUser}
                       onChangeRole={onChangeRole}
-                      onInvite={() => {}}
+                      onInvite={() => setIsInviteModalOpen(true)}
+
                     />
                   </div>
                 </div>
@@ -834,6 +838,14 @@ export default function WorkspaceSettingsModal({
                     ? "Something went wrong. Please try again."
                     : undefined
           }
+        />
+
+        <InviteUserModal
+          isOpen={isInviteModalOpen}
+          onClose={() => setIsInviteModalOpen(false)}
+          workspaceName={workspace.name}
+          workspaceId={workspace.id}
+          onInvite={handleSendInvite}
         />
 
         <EditWorkspaceProfileModal

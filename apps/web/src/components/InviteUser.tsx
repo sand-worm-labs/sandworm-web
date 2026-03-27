@@ -211,11 +211,7 @@ export default function InviteUserModal({
                     </select>
                   </div>
 
-                  {error && (
-                    <p className="mb-4 text-sm text-red-600 dark:text-red-400">
-                      {error}
-                    </p>
-                  )}
+                  {error && <p className="mb-4 text-sm text-error ">{error}</p>}
 
                   <div className="mt-6 flex gap-3">
                     <button
