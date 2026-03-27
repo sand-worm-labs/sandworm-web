@@ -383,4 +383,20 @@ export class WorkspaceService {
 
     return !!foundKey
   }
+
+  async getWorkspaceAiHash(workspaceId: string): Promise<string | null> {
+    validateUUID(workspaceId, 'Workspace ID');
+
+    const workspace = await this.workspaceRepository.findOne({
+      where: { id: workspaceId },
+    });
+
+    if (!workspace) {
+      throw new NotFoundException('Workspace not found');
+    }
+
+    const envKey = AI_ENV_KEYS[AIProvider.OPENROUTER];
+    const aiEnvKey =  await this.environmentService.getEnvironmentVariable(workspaceId, envKey);
+    return aiEnvKey.value || null
+  }
 }
