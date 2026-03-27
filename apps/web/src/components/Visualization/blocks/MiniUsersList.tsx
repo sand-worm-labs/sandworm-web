@@ -302,7 +302,6 @@ export function MiniUsersList({
           </div>
         </div>
 
-        {/* Capped preview */}
         {previewUsers.map(user => (
           <MiniUserItem
             key={user.id}
@@ -314,7 +313,6 @@ export function MiniUsersList({
         ))}
       </div>
 
-      {/* View all modal */}
       <Transition show={modalOpen} as={Fragment}>
         <Dialog
           onClose={() => setModalOpen(false)}
@@ -346,7 +344,6 @@ export function MiniUsersList({
               leaveTo="opacity-0 scale-95 translate-y-2"
             >
               <DialogPanel className="w-full max-w-md bg-white dark:bg-base-400 dark:bg-[#0D0F12] rounded-2xl border border-[#DEE2E6] dark:border-border-tertiary shadow-xl flex flex-col max-h-[80vh] overflow-hidden font-body">
-                {/* Modal header */}
                 <div className="flex items-center justify-between px-5 py-4 border-b border-[#DEE2E6] dark:border-border-tertiary flex-shrink-0">
                   <DialogTitle className="text-sm font-semibold text-[#1A1A1A] dark:text-white">
                     All members{" "}
@@ -371,7 +368,6 @@ export function MiniUsersList({
                   </button>
                 </div>
 
-                {/* Scrollable list */}
                 <div className="overflow-y-auto flex-1">
                   {sorted.map(user => (
                     <MiniUserItem
@@ -389,7 +385,6 @@ export function MiniUsersList({
         </Dialog>
       </Transition>
 
-      {/* Bulk action bar */}
       <div
         className={clsx(
           "fixed bottom-6 left-1/2 -translate-x-1/2 z-50",
