@@ -126,11 +126,13 @@ export class EnvironmentService {
     return EnvironmentVariable.fromEntities(entities);
   }
 
-  async getEnvironmentVariable(workspaceId: string, name: string): Promise<EnvironmentVariable> {
+  async getEnvironmentVariable(workspaceId: string, name: string): Promise<EnvironmentVariable | null> {
     const entity = await this.envVarRepository.findOne({
       where: { workspaceId, name },
     });
-
+    if(!entity) {
+       return null
+    }
     return EnvironmentVariable.fromEntity(entity);
   }
 
