@@ -311,28 +311,6 @@ export class WorkspaceService {
     return Workspace.fromEntities(workspaces);
   }
 
-  async getWorkspaceDefaultAiModel(workspaceId: string, userId: string): Promise<string> {
-    await this.validateAndGetUser(userId, 'User');
-    const membership = await this.workspaceMembersRepository.findOne({
-      where: { workspaceId, userId, status: UserWorkspaceStatus.ACTIVE },
-    });
-
-    if (!membership) {
-      throw new BadRequestException(
-        'You must be a member of this workspace',
-      );
-    }
-
-    const workspace = await this.workspaceRepository.findOne({
-      where: { id: workspaceId },
-    });
-  
-    if (!workspace) {
-      throw new NotFoundException('Workspace not found');
-    }
-    return workspace.assistantModel
-  }
-
   async setWorkspaceDefaultAiModel(workspaceId: string,userId: string, model: string): Promise<void> {  
     validateUUID(workspaceId, 'Workspace ID');
     validateUUID(userId, 'User ID');
@@ -375,6 +353,7 @@ export class WorkspaceService {
     if (!workspace) {
       throw new NotFoundException('Workspace not found');
     }
+
     let foundKey = await this.environmentService.getEnvironmentVariable(workspace.id, AIProvider.OPENROUTER)
     if(process.env.NODE_ENV === 'development') {
        await this.setupAIKey(workspace.id, AIProvider.OPENROUTER)
