@@ -27,6 +27,18 @@ export type AuthPayload = {
   user: User;
 };
 
+export type Chat = {
+  __typename?: 'Chat';
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['String']['output'];
+  lastContext?: Maybe<Scalars['JSON']['output']>;
+  messages?: Maybe<Array<Message>>;
+  private: Scalars['Boolean']['output'];
+  title: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+  userId: Scalars['String']['output'];
+};
+
 export type Comment = {
   __typename?: 'Comment';
   authorId: Scalars['String']['output'];
@@ -35,6 +47,10 @@ export type Comment = {
   documentId: Scalars['String']['output'];
   id: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
+};
+
+export type CreateChatInput = {
+  title: Scalars['String']['input'];
 };
 
 export type CreateCommentInput = {
@@ -208,6 +224,17 @@ export type LoginInput = {
   password: Scalars['String']['input'];
 };
 
+export type Message = {
+  __typename?: 'Message';
+  attachments?: Maybe<Scalars['JSON']['output']>;
+  chatId: Scalars['String']['output'];
+  content: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['String']['output'];
+  parts?: Maybe<Scalars['JSON']['output']>;
+  role: Scalars['String']['output'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   /** Accept workspace invitation with hash from email */
@@ -218,6 +245,8 @@ export type Mutation = {
   approveRoleRequest: Scalars['Boolean']['output'];
   /** Remove multiple users from workspaces */
   batchRemoveUsersFromWorkspace: Scalars['Boolean']['output'];
+  /** Create a new chat */
+  createChat: Chat;
   /** Create a new comment on a document */
   createComment: Comment;
   /** Create a new reusable component */
@@ -232,6 +261,8 @@ export type Mutation = {
   createUser: User;
   /** Create a new workspace */
   createWorkspace: Workspace;
+  /** Delete a chat and its messages */
+  deleteChat: Scalars['Boolean']['output'];
   /** Delete a comment (only by comment author) */
   deleteComment: Scalars['Boolean']['output'];
   /** Delete a reusable component */
@@ -270,14 +301,19 @@ export type Mutation = {
   restartEnvironment: Environment;
   /** Restore a previously deleted document */
   restoreDocument: Document;
+  /** Add a user message to a chat */
+  sendMessage: Message;
   /** Add or remove environment variables */
   setEnvironmentVariables: Array<EnvironmentVariable>;
+  setWorkspaceDefaultAiModel: Scalars['Boolean']['output'];
   /** Switch to a different workspace */
   switchWorkspace: Scalars['Boolean']['output'];
   /** Unfollow User */
   unfollowUser: Profile;
   /** Unpublish a document */
   unpublishDocument: Document;
+  /** Update chat title or visibility */
+  updateChat: Chat;
   /** Update a reusable component */
   updateComponent: ReusableComponent;
   /** Update document metadata */
@@ -320,6 +356,11 @@ export type MutationBatchRemoveUsersFromWorkspaceArgs = {
 };
 
 
+export type MutationCreateChatArgs = {
+  input: CreateChatInput;
+};
+
+
 export type MutationCreateCommentArgs = {
   documentId: Scalars['String']['input'];
   input: CreateCommentInput;
@@ -358,6 +399,11 @@ export type MutationCreateUserArgs = {
 
 export type MutationCreateWorkspaceArgs = {
   name: Scalars['String']['input'];
+};
+
+
+export type MutationDeleteChatArgs = {
+  chatId: Scalars['String']['input'];
 };
 
 
@@ -466,8 +512,19 @@ export type MutationRestoreDocumentArgs = {
 };
 
 
+export type MutationSendMessageArgs = {
+  input: SendMessageInput;
+};
+
+
 export type MutationSetEnvironmentVariablesArgs = {
   input: SetEnvironmentVariablesInput;
+  workspaceId: Scalars['String']['input'];
+};
+
+
+export type MutationSetWorkspaceDefaultAiModelArgs = {
+  model: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
 };
 
@@ -485,6 +542,11 @@ export type MutationUnfollowUserArgs = {
 export type MutationUnpublishDocumentArgs = {
   documentId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateChatArgs = {
+  input: UpdateChatInput;
 };
 
 
@@ -565,6 +627,12 @@ export type Profile = {
 
 export type Query = {
   __typename?: 'Query';
+  /** Get a chat with its messages */
+  chat: Chat;
+  /** Get messages for a chat */
+  chatMessages: Array<Message>;
+  /** List all chats for the current user */
+  chats: Array<Chat>;
   /** Get a single comment by ID */
   comment: Comment;
   /** Get all comments for a document */
@@ -626,6 +694,16 @@ export type Query = {
   /** Get all schedules for a document */
   schedules: Array<Schedule>;
   tags: Array<Scalars['String']['output']>;
+};
+
+
+export type QueryChatArgs = {
+  chatId: Scalars['String']['input'];
+};
+
+
+export type QueryChatMessagesArgs = {
+  chatId: Scalars['String']['input'];
 };
 
 
@@ -732,6 +810,11 @@ export type QueryListFilesArgs = {
 };
 
 
+export type QueryOpenRouterAccountCreditsArgs = {
+  workspaceId: Scalars['String']['input'];
+};
+
+
 export type QueryOpenRouterModelArgs = {
   modelId: Scalars['String']['input'];
 };
@@ -821,6 +904,11 @@ export type Schedule = {
   weekdays?: Maybe<Scalars['String']['output']>;
 };
 
+export type SendMessageInput = {
+  chatId: Scalars['String']['input'];
+  content: Scalars['String']['input'];
+};
+
 export type SetEnvironmentVariablesInput = {
   add: Array<EnvironmentVariableInput>;
   remove: Array<Scalars['String']['input']>;
@@ -833,6 +921,12 @@ export type SocialLinksInput = {
   telegram?: InputMaybe<Scalars['String']['input']>;
   twitter?: InputMaybe<Scalars['String']['input']>;
   warpcast?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateChatInput = {
+  chatId: Scalars['String']['input'];
+  private?: InputMaybe<Scalars['Boolean']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateDocumentInput = {
@@ -903,6 +997,7 @@ export type WalletInput = {
 
 export type Workspace = {
   __typename?: 'Workspace';
+  assistantModel: Scalars['String']['output'];
   documents: Array<Document>;
   icon?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
@@ -959,7 +1054,7 @@ export enum WorkspacePlan {
 
 export type WorkspaceSecrets = {
   __typename?: 'WorkspaceSecrets';
-  hasExternalModelApiKey: Scalars['Boolean']['output'];
+  hasAiModelApiKey: Scalars['Boolean']['output'];
 };
 
 export type CreateUserMutationVariables = Exact<{
@@ -1386,6 +1481,13 @@ export type GetOpenRouterModelQueryVariables = Exact<{
 
 export type GetOpenRouterModelQuery = { __typename?: 'Query', openRouterModel?: { __typename?: 'OpenRouterModel', id: string, name: string, details: any } | null };
 
+export type GetOpenRouterAccountCreditsQueryVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+}>;
+
+
+export type GetOpenRouterAccountCreditsQuery = { __typename?: 'Query', openRouterAccountCredits: { __typename?: 'OpenRouterAccountCredits', totalCredits: number, usedCredits: number, availableCredits: number } };
+
 export type GetSchedulesQueryVariables = Exact<{
   input: ListSchedulesInput;
 }>;
@@ -1408,7 +1510,7 @@ export type GetUserWorkspaceInfoQuery = { __typename?: 'Query', getUserWorkspace
 export type GetUserWorkspacesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetUserWorkspacesQuery = { __typename?: 'Query', getUserWorkspaces: Array<{ __typename?: 'Workspace', id: string, name: string, plan: WorkspacePlan, icon?: string | null, source?: string | null, useCases: Array<string>, useContext?: string | null, ownerId: string, owner: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null }, users: Array<{ __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null }> }> };
+export type GetUserWorkspacesQuery = { __typename?: 'Query', getUserWorkspaces: Array<{ __typename?: 'Workspace', id: string, name: string, plan: WorkspacePlan, icon?: string | null, source?: string | null, useCases: Array<string>, useContext?: string | null, ownerId: string, assistantModel: string, owner: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null }, users: Array<{ __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null }> }> };
 
 export type GetWorkspaceWithMembersQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
@@ -3847,6 +3949,48 @@ export type GetOpenRouterModelQueryHookResult = ReturnType<typeof useGetOpenRout
 export type GetOpenRouterModelLazyQueryHookResult = ReturnType<typeof useGetOpenRouterModelLazyQuery>;
 export type GetOpenRouterModelSuspenseQueryHookResult = ReturnType<typeof useGetOpenRouterModelSuspenseQuery>;
 export type GetOpenRouterModelQueryResult = Apollo.QueryResult<GetOpenRouterModelQuery, GetOpenRouterModelQueryVariables>;
+export const GetOpenRouterAccountCreditsDocument = gql`
+    query GetOpenRouterAccountCredits($workspaceId: String!) {
+  openRouterAccountCredits(workspaceId: $workspaceId) {
+    totalCredits
+    usedCredits
+    availableCredits
+  }
+}
+    `;
+
+/**
+ * __useGetOpenRouterAccountCreditsQuery__
+ *
+ * To run a query within a React component, call `useGetOpenRouterAccountCreditsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetOpenRouterAccountCreditsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetOpenRouterAccountCreditsQuery({
+ *   variables: {
+ *      workspaceId: // value for 'workspaceId'
+ *   },
+ * });
+ */
+export function useGetOpenRouterAccountCreditsQuery(baseOptions: Apollo.QueryHookOptions<GetOpenRouterAccountCreditsQuery, GetOpenRouterAccountCreditsQueryVariables> & ({ variables: GetOpenRouterAccountCreditsQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetOpenRouterAccountCreditsQuery, GetOpenRouterAccountCreditsQueryVariables>(GetOpenRouterAccountCreditsDocument, options);
+      }
+export function useGetOpenRouterAccountCreditsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetOpenRouterAccountCreditsQuery, GetOpenRouterAccountCreditsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetOpenRouterAccountCreditsQuery, GetOpenRouterAccountCreditsQueryVariables>(GetOpenRouterAccountCreditsDocument, options);
+        }
+export function useGetOpenRouterAccountCreditsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetOpenRouterAccountCreditsQuery, GetOpenRouterAccountCreditsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetOpenRouterAccountCreditsQuery, GetOpenRouterAccountCreditsQueryVariables>(GetOpenRouterAccountCreditsDocument, options);
+        }
+export type GetOpenRouterAccountCreditsQueryHookResult = ReturnType<typeof useGetOpenRouterAccountCreditsQuery>;
+export type GetOpenRouterAccountCreditsLazyQueryHookResult = ReturnType<typeof useGetOpenRouterAccountCreditsLazyQuery>;
+export type GetOpenRouterAccountCreditsSuspenseQueryHookResult = ReturnType<typeof useGetOpenRouterAccountCreditsSuspenseQuery>;
+export type GetOpenRouterAccountCreditsQueryResult = Apollo.QueryResult<GetOpenRouterAccountCreditsQuery, GetOpenRouterAccountCreditsQueryVariables>;
 export const GetSchedulesDocument = gql`
     query GetSchedules($input: ListSchedulesInput!) {
   schedules(input: $input) {
@@ -4004,6 +4148,7 @@ export const GetUserWorkspacesDocument = gql`
     useCases
     useContext
     ownerId
+    assistantModel
     owner {
       id
       username

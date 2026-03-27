@@ -312,6 +312,47 @@ export function DeleteWorkspaceModal({
   );
 }
 
+function formatCredit(value: number): string {
+  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
+  if (value >= 1_000) return `${(value / 1_000).toFixed(1)}K`;
+  return value.toFixed(2);
+}
+
+// ─── COMPONENTS ──────────────────────────────────────────────────────────────
+
+function CreditArc({ pct }: { pct: number }) {
+  const r = 14;
+  const cx = 18;
+  const cy = 18;
+  const circumference = 2 * Math.PI * r;
+  const dash = circumference * Math.min(pct, 1);
+
+  return (
+    <svg width="36" height="36" className="-rotate-90">
+      {/* track */}
+      <circle
+        cx={cx}
+        cy={cy}
+        r={r}
+        fill="none"
+        strokeWidth="3"
+        className="stroke-[#E9ECEF] dark:stroke-border-tertiary"
+      />
+      {/* fill */}
+      <circle
+        cx={cx}
+        cy={cy}
+        r={r}
+        fill="none"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeDasharray={`${dash} ${circumference}`}
+        className="stroke-primary transition-all duration-700"
+      />
+    </svg>
+  );
+}
+
 interface WorkspaceSettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -378,7 +419,10 @@ export default function WorkspaceSettingsModal({
     openPicker,
     closePicker,
     selectModel,
-  } = useOpenRouterModels();
+    credits,
+  } = useOpenRouterModels(currentWorkspace);
+
+  console.log(credits, "credot");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -609,23 +653,48 @@ export default function WorkspaceSettingsModal({
                     </div>
                   </div>
 
-                  <div className="flex w-[50%] justify-between border-b border-[#E9ECEF] pb-2 dark:border-border-tertiary ">
-                    <div className="flex">
-                      <div>
-                        <div className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-2.5">
-                          Current plan
-                        </div>
-                        <div className="font-medium capitalize bg-[#F7E8FF] dark:bg-[#2a1a3a] px-3 py-0.5 rounded-md text-primary inline-block text-sm">
-                          Free
-                        </div>
+                  <div className="flex w-[50%] justify-between border-b border-[#E9ECEF] pb-2 dark:border-border-tertiary items-center">
+                    {/* Plan */}
+                    <div>
+                      <span className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-2.5">
+                        Current Plan
+                      </span>
+                      <div className="font-medium capitalize bg-[#F7E8FF] dark:bg-[#2a1a3a] px-3 py-0.5 rounded-md text-primary inline-block text-sm">
+                        Free
                       </div>
                     </div>
+
+                    {/* Credits */}
                     <div>
-                      <div className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-2.5">
-                        Available AI Credit
-                      </div>
-                      <div className="font-medium text-[#6C757D] dark:text-ink-400 capitalize px-2 py-0.5  inline-block text-sm">
-                        0
+                      <span className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-2.5">
+                        AI Credits
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <CreditArc
+                          pct={
+                            credits
+                              ? credits.usedCredits / credits.totalCredits
+                              : 0
+                          }
+                        />
+                        <div className="flex flex-col leading-tight">
+                          <span className="text-sm font-semibold text-ink-900 dark:text-ink-100">
+                            $
+                            {credits
+                              ? formatCredit(credits.availableCredits)
+                              : "—"}
+                            <span className="text-xs font-normal text-[#6C757D] dark:text-ink-400">
+                              {" "}
+                              / $
+                              {credits
+                                ? formatCredit(credits.totalCredits)
+                                : "—"}
+                            </span>
+                          </span>
+                          <span className="text-[11px] text-[#6C757D] dark:text-ink-400">
+                            available (USD)
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -652,7 +721,7 @@ export default function WorkspaceSettingsModal({
                       className="flex items-center justify-between w-full rounded-[10px] xl:py-2 py-1.5 pl-4 pr-3 ring-1 ring-inset ring-[#CED4DA] dark:ring-border-tertiary focus:ring-[#A308F0] dark:bg-base-400 text-sm font-medium text-ink-100 dark:text-white transition-colors hover:ring-[#A308F0]/50"
                     >
                       <span className="text-[#6C757D] dark:text-ink-400">
-                        Select a model
+                        {/* {workspace?.assistantModel} */}
                       </span>
                       <svg
                         className="w-4 h-4 text-[#6C757D] shrink-0"

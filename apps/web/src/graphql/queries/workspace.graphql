@@ -22,6 +22,7 @@ query GetUserWorkspaces {
     useCases
     useContext
     ownerId
+    assistantModel
     owner {
       id
       username
@@ -36,6 +37,7 @@ query GetUserWorkspaces {
       firstName
       lastName
     }
+  
   }
 }
 

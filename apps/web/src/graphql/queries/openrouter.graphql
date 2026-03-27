@@ -13,3 +13,11 @@ query GetOpenRouterModel($modelId: String!) {
     details
   }
 }
+
+query GetOpenRouterAccountCredits($workspaceId: String!) {
+  openRouterAccountCredits(workspaceId: $workspaceId) {
+    totalCredits
+    usedCredits
+    availableCredits
+  }
+}

@@ -2,8 +2,11 @@ import { useState, useCallback, useMemo } from "react";
 
 import {
   useGetOpenRouterModelsQuery,
+  useGetOpenRouterAccountCreditsQuery,
   type GetOpenRouterModelsQuery,
 } from "@/generated/graphql";
+
+// ─── TYPES ───────────────────────────────────────────────────────────────────
 
 type RawModel = GetOpenRouterModelsQuery["openRouterModels"][number];
 
@@ -22,6 +25,14 @@ export interface NormalizedModel {
   description: string | null;
 }
 
+export interface AccountCredits {
+  totalCredits: number;
+  usedCredits: number;
+  availableCredits: number;
+}
+
+// ─── CONSTANTS ───────────────────────────────────────────────────────────────
+
 const REASONING_KEYWORDS = [
   "r1",
   "thinking",
@@ -31,6 +42,8 @@ const REASONING_KEYWORDS = [
   "qwq",
   "reasoning",
 ];
+
+// ─── UTILS ───────────────────────────────────────────────────────────────────
 
 function parsePricePerM(raw: string | null | undefined): number | null {
   if (!raw) return null;
@@ -49,7 +62,6 @@ function deriveIsReasoning(id: string): boolean {
 
 function normalizeModel(raw: RawModel): NormalizedModel {
   const d = raw.details;
-
   const promptRaw = d?.pricing?.prompt ? parseFloat(d.pricing.prompt) : null;
 
   return {
@@ -68,8 +80,19 @@ function normalizeModel(raw: RawModel): NormalizedModel {
   };
 }
 
-export const useOpenRouterModels = () => {
+// ─── HOOK ────────────────────────────────────────────────────────────────────
+
+export const useOpenRouterModels = (workspaceId: string) => {
   const { data, loading, error } = useGetOpenRouterModelsQuery();
+
+  const {
+    data: creditsData,
+    loading: creditsLoading,
+    error: creditsError,
+  } = useGetOpenRouterAccountCreditsQuery({
+    variables: { workspaceId },
+    skip: !workspaceId,
+  });
 
   const [selectedModelId, setSelectedModelId] = useState<string | null>(null);
   const [isPickerOpen, setIsPickerOpen] = useState(false);
@@ -84,6 +107,11 @@ export const useOpenRouterModels = () => {
     [models, selectedModelId]
   );
 
+  const credits = useMemo<AccountCredits | null>(
+    () => creditsData?.openRouterAccountCredits ?? null,
+    [creditsData]
+  );
+
   const openPicker = useCallback(() => setIsPickerOpen(true), []);
   const closePicker = useCallback(() => setIsPickerOpen(false), []);
 
@@ -93,6 +121,7 @@ export const useOpenRouterModels = () => {
   }, []);
 
   return {
+    // models
     models,
     loading,
     error,
@@ -102,5 +131,8 @@ export const useOpenRouterModels = () => {
     isPickerOpen,
     openPicker,
     closePicker,
+    credits,
+    creditsLoading,
+    creditsError,
   };
 };

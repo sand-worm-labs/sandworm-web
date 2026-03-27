@@ -22,7 +22,6 @@ import {
   updateYText,
   isExecutionStatusLoading,
 } from "@sandworm/editor";
-import { CodeIcon } from "@/components/Assets/Blocks/CodeIcon";
 import clsx from "clsx";
 import type { RefObject } from "react";
 import { useCallback, useMemo, useState } from "react";
@@ -34,6 +33,7 @@ import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import { Transition } from "@headlessui/react";
 import { useTheme } from "next-themes";
 
+import { CodeIcon } from "@/components/Assets/Blocks/CodeIcon";
 import type { ApiDocument, ApiWorkspace } from "@/types";
 
 import { useBlockExecutions } from "../../../hooks/useBlockExecution";
@@ -79,7 +79,6 @@ interface Props {
   isFullScreen: boolean;
 }
 function PythonBlock(props: Props) {
-  const properties = useProperties();
   const [workspaces] = useWorkspaces();
   const currentWorkspace: ApiWorkspace | undefined = useMemo(
     () => workspaces.data.find(w => w.id === props.document.workspaceId),
@@ -88,11 +87,8 @@ function PythonBlock(props: Props) {
   const { resolvedTheme } = useTheme();
 
   const hasOaiKey = useMemo(() => {
-    return (
-      !properties.data?.disableCustomOpenAiKey &&
-      (currentWorkspace?.secrets?.hasOpenAiApiKey ?? false)
-    );
-  }, [currentWorkspace, properties.data]);
+    return currentWorkspace?.secrets?.hasAiModelApiKey ?? false;
+  }, [currentWorkspace]);
 
   const {
     status: envStatus,
