@@ -96,7 +96,6 @@ interface Props {
   isFullScreen: boolean;
 }
 function SQLBlock(props: Props) {
-  const properties = useProperties();
 
   const [workspaces] = useWorkspaces();
   const currentWorkspace: ApiWorkspace | undefined = useMemo(() => {
@@ -106,11 +105,8 @@ function SQLBlock(props: Props) {
   const { resolvedTheme } = useTheme();
 
   const hasOaiKey = useMemo(() => {
-    return (
-      !properties.data?.disableCustomOpenAiKey &&
-      (currentWorkspace?.secrets?.hasOpenAiApiKey ?? false)
-    );
-  }, [currentWorkspace, properties.data]);
+    return currentWorkspace?.secrets?.hasAiModelApiKey ?? false;
+  }, [currentWorkspace]);
 
   const [localResultHidden, setLocalResultHidden] = useState<boolean | null>(
     null

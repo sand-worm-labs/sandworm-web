@@ -226,7 +226,7 @@ export type WorkspaceUser = ApiUser & {
 
 export type ApiWorkspace = Workspace & {
   secrets: {
-    hasOpenAiApiKey: boolean;
+    hasAiModelApiKey: boolean;
   };
   users: any;
 };
