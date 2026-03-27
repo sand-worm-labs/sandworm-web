@@ -322,17 +322,6 @@ export class WorkspaceResolver {
     return true;
   }
 
-  @Query(() => String)
-  async getWorkspaceDefaultAiModel(
-    @Args('workspaceId') workspaceId: string,
-    @CurrentUser('id') userId: string,
-  ): Promise<string> {
-    return this.workspaceService.getWorkspaceDefaultAiModel(
-      workspaceId,
-      userId,
-    );
-  }
-
   @Public()
   @Query(() => WorkspaceInvitationInfo, {
     description: 'Get invitation details from hash without accepting it',
