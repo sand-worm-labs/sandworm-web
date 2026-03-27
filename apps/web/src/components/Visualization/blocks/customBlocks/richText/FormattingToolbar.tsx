@@ -1,10 +1,10 @@
-import { Fragment, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { Editor } from "@tiptap/react";
-import { BubbleMenu } from "@tiptap/react/menus";
-import { Menu, Transition } from "@headlessui/react";
-import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import { ChevronDownIcon, PhotoIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 import { CheckIcon, LinkIcon } from "@heroicons/react/24/solid";
+
+// ─── TYPES ───
 
 type NodeType =
   | "paragraph"
@@ -14,6 +14,12 @@ type NodeType =
   | "bullet-list"
   | "numbered-list"
   | "task-list";
+
+type OpenMenu = "node-type" | "color" | null;
+
+type ColorSpec = { name: string; type: "fg" | "bg"; hex: string };
+
+// ─── CONSTANTS ───
 
 const items: Record<NodeType, { name: string; type: NodeType }> = {
   paragraph: { name: "Paragraph", type: "paragraph" },
@@ -25,147 +31,6 @@ const items: Record<NodeType, { name: string; type: NodeType }> = {
   "task-list": { name: "Task list", type: "task-list" },
 };
 
-const getCurrentType = (editor: Editor): NodeType => {
-  const isHeading = editor.isActive("heading");
-  if (isHeading) {
-    const { level } = editor.getAttributes("heading");
-    switch (level) {
-      case 1:
-        return "heading-1";
-      case 2:
-        return "heading-2";
-      case 3:
-        return "heading-3";
-      default:
-        return "heading-1";
-    }
-  }
-
-  const isBulletList = editor.isActive("bulletList");
-  if (isBulletList) return "bullet-list";
-
-  const isOrderedList = editor.isActive("orderedList");
-  if (isOrderedList) return "numbered-list";
-
-  const isTaskList = editor.isActive("taskList");
-  if (isTaskList) return "task-list";
-
-  return "paragraph";
-};
-
-const NodeTypeDropdown = ({ editor }: { editor: Editor }) => {
-  const currentType: NodeType = getCurrentType(editor);
-
-  const setNodeType = useCallback(
-    (nodeType: NodeType) => {
-      switch (nodeType) {
-        case "paragraph":
-          editor.chain().focus().setParagraph().run();
-          break;
-        case "heading-1":
-          editor.chain().focus().setHeading({ level: 1 }).run();
-          break;
-        case "heading-2":
-          editor.chain().focus().setHeading({ level: 2 }).run();
-          break;
-        case "heading-3":
-          editor.chain().focus().setHeading({ level: 3 }).run();
-          break;
-        case "bullet-list":
-          editor.chain().focus().toggleBulletList().run();
-          break;
-        case "numbered-list":
-          editor.chain().focus().toggleOrderedList().run();
-          break;
-        case "task-list":
-          editor.chain().focus().toggleTaskList().run();
-          break;
-        default:
-          editor.chain().focus().setParagraph().run();
-          break;
-      }
-    },
-    [editor]
-  );
-
-  return (
-    <div className="inline-flex">
-      <Menu as="div" className="relative block">
-        <Menu.Button className="relative inline-flex gap-x-1 items-center hover:bg-gray-100 py-1.5 px-1.5 rounded-md dark:hover:bg-[#181C21]">
-          {items[currentType].name}
-          <ChevronDownIcon className="h-4 w-4" aria-hidden="true" />
-        </Menu.Button>
-        <Transition
-          as={Fragment}
-          enter="transition ease-out duration-100"
-          enterFrom="transform opacity-0 scale-95"
-          enterTo="transform opacity-100 scale-100"
-          leave="transition ease-in duration-75"
-          leaveFrom="transform opacity-100 scale-100"
-          leaveTo="transform opacity-0 scale-95"
-        >
-          <Menu.Items className="absolute right-0 z-10 -mr-1 mt-2 origin-top-right rounded-md dark:bg-base-100 bg-white shadow-lg ring-1 ring-[#E9ECEF] ring-opacity-5 focus:outline-none whitespace-nowrap dark:ring-[#262A30]">
-            <div className="py-0.5">
-              {Object.values(items).map(item => (
-                <Menu.Item key={item.name}>
-                  {({ active }) => (
-                    <button
-                      type="button"
-                      onClick={() => setNodeType(item.type)}
-                      className={clsx(
-                        active
-                          ? "bg-gray-100 dark:bg-base-100 text-ink-100 dark:text-ink-300  "
-                          : "text-gray-700 dark:text-ink-300",
-                        "block w-full px-4 py-2 text-left dark:hover:bg-[#181C21]"
-                      )}
-                    >
-                      {item.name}
-                    </button>
-                  )}
-                </Menu.Item>
-              ))}
-            </div>
-          </Menu.Items>
-        </Transition>
-      </Menu>
-    </div>
-  );
-};
-
-const ToggleFormattingButton = (props: {
-  children: React.ReactNode;
-  name: string;
-  shortcut: string;
-  type: string;
-  onToggle: () => void;
-  editor: Editor;
-}) => {
-  const isActive = props.editor.isActive(props.type);
-
-  return (
-    <button
-      type="button"
-      onClick={props.onToggle}
-      className={clsx(
-        isActive ? "bg-white dark:bg-base-100 " : "",
-        "h-full text-sm px-2.5 hover:bg-gray-100 relative rounded-md group/toggle-button"
-      )}
-    >
-      {props.children}
-      <span className="sr-only">{props.name}</span>
-      <div className="font-body pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 w-max opacity-0 transition-opacity group-hover/toggle-button:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 shadow-lg bg-black">
-        <span>{props.name}</span>
-        <span className="text-xs text-ink-400 flex gap-x-0.5  justify-center items-center">
-          {props.shortcut.split("").map((key, i) => {
-            return <span key={i}>{key}</span>;
-          })}
-        </span>
-      </div>
-    </button>
-  );
-};
-
-type ColorSpec = { name: string; type: "fg" | "bg"; hex: string };
 const bgColors: ColorSpec[] = [
   { name: "Default", type: "bg", hex: "transparent" },
   { name: "Gray", type: "bg", hex: "#ebeced" },
@@ -180,7 +45,6 @@ const bgColors: ColorSpec[] = [
 ];
 
 const textColors: ColorSpec[] = [
-  // This corresponds to --tw-prose-body
   { name: "Default", type: "fg", hex: "#374151" },
   { name: "Gray", type: "fg", hex: "#455768" },
   { name: "Brown", type: "fg", hex: "#64473a" },
@@ -193,43 +57,169 @@ const textColors: ColorSpec[] = [
   { name: "Red", type: "fg", hex: "#e03e3e" },
 ];
 
-const ColorOption = (props: {
-  color: ColorSpec;
-  onShiftColor: (color: ColorSpec) => void;
-  isSelected: boolean;
+// ─── UTILS ───
+
+const stopBlur = (e: React.MouseEvent) => e.preventDefault();
+
+const getCurrentType = (editor: Editor): NodeType => {
+  if (editor.isActive("heading")) {
+    const { level } = editor.getAttributes("heading");
+    switch (level) {
+      case 1: return "heading-1";
+      case 2: return "heading-2";
+      case 3: return "heading-3";
+      default: return "heading-1";
+    }
+  }
+  if (editor.isActive("bulletList")) return "bullet-list";
+  if (editor.isActive("orderedList")) return "numbered-list";
+  if (editor.isActive("taskList")) return "task-list";
+  return "paragraph";
+};
+
+// ─── NODE TYPE DROPDOWN ───
+
+const NodeTypeDropdown = ({
+  editor,
+  open,
+  onToggle,
+  onClose,
+}: {
+  editor: Editor;
+  open: boolean;
+  onToggle: () => void;
+  onClose: () => void;
 }) => {
+  const currentType: NodeType = getCurrentType(editor);
+
+  const setNodeType = useCallback(
+    (nodeType: NodeType) => {
+      onClose(); // FIX: was calling nonexistent setOpen(false)
+      switch (nodeType) {
+        case "paragraph": editor.chain().focus().setParagraph().run(); break;
+        case "heading-1": editor.chain().focus().setHeading({ level: 1 }).run(); break;
+        case "heading-2": editor.chain().focus().setHeading({ level: 2 }).run(); break;
+        case "heading-3": editor.chain().focus().setHeading({ level: 3 }).run(); break;
+        case "bullet-list": editor.chain().focus().toggleBulletList().run(); break;
+        case "numbered-list": editor.chain().focus().toggleOrderedList().run(); break;
+        case "task-list": editor.chain().focus().toggleTaskList().run(); break;
+        default: editor.chain().focus().setParagraph().run();
+      }
+    },
+    [editor, onClose]
+  );
+
+  return (
+    <div className="inline-flex relative">
+      <button
+        type="button"
+        onMouseDown={stopBlur}
+        onClick={onToggle}
+        className="relative inline-flex gap-x-1 items-center hover:bg-gray-100 py-1.5 px-1.5 rounded-md dark:hover:bg-[#181C21]"
+      >
+        {items[currentType].name}
+        <ChevronDownIcon className="h-4 w-4" aria-hidden="true" />
+      </button>
+
+      {open && (
+        <>
+          <div className="fixed inset-0 z-40" onMouseDown={onClose} />
+          <div className="absolute left-0 top-8 z-50 rounded-md dark:bg-base-100 bg-white shadow-lg ring-1 ring-[#E9ECEF] ring-opacity-5 whitespace-nowrap dark:ring-[#262A30]">
+            <div className="py-0.5">
+              {Object.values(items).map(item => (
+                <button
+                  key={item.name}
+                  type="button"
+                  onMouseDown={stopBlur}
+                  onClick={() => setNodeType(item.type)}
+                  className="block w-full px-4 py-2 text-left text-gray-700 dark:text-ink-300 hover:bg-gray-100 dark:hover:bg-[#181C21]"
+                >
+                  {item.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
+// ─── TOGGLE FORMATTING BUTTON ───
+
+const ToggleFormattingButton = (props: {
+  children: React.ReactNode;
+  name: string;
+  shortcut: string;
+  type: string;
+  onToggle: () => void;
+  editor: Editor;
+}) => {
+  const isActive = props.editor.isActive(props.type);
+
   return (
     <button
       type="button"
-      className="flex gap-x-1 items-center hover:bg-gray-100 px-2 py-1 rounded-md w-full dark:hover:bg-[#181C21]"
-      onClick={() => props.onShiftColor(props.color)}
+      onMouseDown={stopBlur}
+      onClick={props.onToggle}
+      className={clsx(
+        isActive ? "bg-gray-100 dark:bg-base-100" : "",
+        "h-full text-sm px-2.5 hover:bg-gray-100 dark:hover:bg-[#181C21] relative rounded-md group/toggle-button"
+      )}
     >
-      <div
-        className="rounded-md border border-border-secondary p-0.5 dark:border-border-tertiary"
-        style={{
-          backgroundColor: props.color.type === "bg" ? props.color.hex : "#fff",
-          color: props.color.type === "fg" ? props.color.hex : "#000",
-        }}
-      >
-        <span className="text-[10px] px-1">A</span>
-      </div>
-      <div className="flex items-center justify-between gap-x-8 w-full">
-        <span>{props.color.name}</span>
-        <span className={clsx({ "opacity-0": !props.isSelected })}>
-          <CheckIcon className="h-3 w-3 text-gray-600" />
+      {props.children}
+      <span className="sr-only">{props.name}</span>
+      <div className="font-body pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 w-max opacity-0 transition-opacity group-hover/toggle-button:opacity-100 bg-black text-white text-xs p-2 rounded-md flex flex-col gap-y-1 shadow-lg z-[9999]">
+        <span>{props.name}</span>
+        <span className="text-xs text-gray-400 flex gap-x-0.5 justify-center items-center">
+          {props.shortcut.split("").map((key, i) => (
+            <span key={i}>{key}</span>
+          ))}
         </span>
       </div>
     </button>
   );
 };
 
-const ColorTextButton = (props: { editor: Editor }) => {
-  const [showColorsMenu, setShowColorsMenu] = useState(false);
+// ─── COLOR OPTION ───
 
-  const toggleShowColorsMenu = useCallback(() => {
-    setShowColorsMenu(prev => !prev);
-  }, [setShowColorsMenu]);
+const ColorOption = (props: {
+  color: ColorSpec;
+  onShiftColor: (color: ColorSpec) => void;
+  isSelected: boolean;
+}) => (
+  <button
+    type="button"
+    onMouseDown={stopBlur}
+    className="flex gap-x-1 items-center hover:bg-gray-100 px-2 py-1 rounded-md w-full dark:hover:bg-[#181C21]"
+    onClick={() => props.onShiftColor(props.color)}
+  >
+    <div
+      className="rounded-md border border-border-secondary p-0.5 dark:border-border-tertiary"
+      style={{
+        backgroundColor: props.color.type === "bg" ? props.color.hex : "#fff",
+        color: props.color.type === "fg" ? props.color.hex : "#000",
+      }}
+    >
+      <span className="text-[10px] px-1">A</span>
+    </div>
+    <div className="flex items-center justify-between gap-x-8 w-full">
+      <span>{props.color.name}</span>
+      <span className={clsx({ "opacity-0": !props.isSelected })}>
+        <CheckIcon className="h-3 w-3 text-gray-600" />
+      </span>
+    </div>
+  </button>
+);
 
+// ─── COLOR TEXT BUTTON ───
+
+const ColorTextButton = (props: {
+  editor: Editor;
+  open: boolean;       // FIX: now controlled by parent, no internal state
+  onToggle: () => void;
+  onClose: () => void;
+}) => {
   const currentColor = props.editor.getAttributes("textStyle").color;
   const currentBgColor = props.editor.getAttributes("highlight").color;
 
@@ -244,68 +234,119 @@ const ColorTextButton = (props: { editor: Editor }) => {
     [props.editor]
   );
 
-  useEffect(() => {
+/*   useEffect(() => {
     if (props.editor.view.state.selection.empty) {
-      setShowColorsMenu(false);
+      props.onClose();
     }
-  }, [setShowColorsMenu, props.editor.view.state.selection.empty]);
+  }, [props.editor.view.state.selection.empty, props.onClose]); */
 
   return (
     <div className="pr-0.5 py-[1px] h-full relative group/toggle-button">
       <button
         type="button"
-        onClick={toggleShowColorsMenu}
-        className={clsx(
-          "h-full text-sm px-2.5  rounded-md ring-1 ring-inset ring-gray-200 dark:ring-[#262A30] relative overflow-hidden"
-        )}
+        onMouseDown={stopBlur}
+        onClick={props.onToggle}
+        className="h-full text-sm px-2.5 rounded-md ring-1 ring-inset ring-gray-200 dark:ring-[#262A30] relative"
         style={{
           color: currentColor ?? "inherit",
           backgroundColor: currentBgColor ?? "inherit",
         }}
       >
-        <div className="h-full w-full absolute top-0 left-0 flex items-center justify-center hover:bg-gray-100/30" />
+        <div className="h-full w-full absolute top-0 left-0 flex items-center justify-center hover:bg-gray-100/30 rounded-md" />
         <span className="font-bold text-xs">A</span>
       </button>
 
-      <div className="font-body pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 w-max opacity-0 transition-opacity group-hover/toggle-button:opacity-100  text-white dark:text-white text-xs p-2 rounded-md flex flex-col gap-y-1 shadow-lg bg-base-100 ">
+      <div className="font-body pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 w-max opacity-0 transition-opacity group-hover/toggle-button:opacity-100 bg-black text-white text-xs p-2 rounded-md shadow-lg z-[9999]">
         <span>Colors</span>
       </div>
 
-      {showColorsMenu && (
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-[calc(100%+8px)] bg-white border dark:bg-[#0C1015] dark:border-border-tertiary border-border-secondary px-1 py-2 flex gap-x-2 rounded-md shadow-md z-[10]">
-          <div className="flex flex-col gap-y-1">
-            <span className="font-medium px-2 dark:text-white">Text</span>
-            {textColors.map(color => (
-              <ColorOption
-                key={color.name}
-                color={color}
-                onShiftColor={onShiftColor}
-                isSelected={
-                  (color.name === "Default" && !currentColor) ||
-                  color.hex === currentColor
-                }
-              />
-            ))}
+      {props.open && (
+        <>
+          <div className="fixed inset-0 z-40" onMouseDown={props.onClose} />
+          <div
+            onMouseDown={stopBlur}
+            className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-white border dark:bg-[#0C1015] dark:border-border-tertiary border-border-secondary px-1 py-2 flex gap-x-2 rounded-md shadow-md z-50"
+          >
+            <div className="flex flex-col gap-y-1">
+              <span className="font-medium px-2 dark:text-white">Text</span>
+              {textColors.map(color => (
+                <ColorOption
+                  key={color.name}
+                  color={color}
+                  onShiftColor={onShiftColor}
+                  isSelected={
+                    (color.name === "Default" && !currentColor) ||
+                    color.hex === currentColor
+                  }
+                />
+              ))}
+            </div>
+            <div className="flex flex-col gap-y-1">
+              <span className="font-medium px-2 dark:text-white">Background</span>
+              {bgColors.map(color => (
+                <ColorOption
+                  key={color.name}
+                  color={color}
+                  onShiftColor={onShiftColor}
+                  isSelected={
+                    (color.name === "Default" && !currentBgColor) ||
+                    color.hex === currentBgColor
+                  }
+                />
+              ))}
+            </div>
           </div>
-          <div className="flex flex-col gap-y-1">
-            <span className="font-medium px-2 dark:text-white">Background</span>
-            {bgColors.map(color => (
-              <ColorOption
-                key={color.name}
-                color={color}
-                onShiftColor={onShiftColor}
-                isSelected={
-                  (color.name === "Default" && !currentBgColor) ||
-                  color.hex === currentBgColor
-                }
-              />
-            ))}
-          </div>
-        </div>
+        </>
       )}
     </div>
   );
 };
+
+// ─── ADD IMAGE BUTTON ───
+
+const AddImageButton = ({ editor }: { editor: Editor }) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const onFileChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const src = reader.result as string;
+        editor.chain().focus().setImage({ src, alt: file.name }).run();
+      };
+      reader.readAsDataURL(file);
+      e.target.value = "";
+    },
+    [editor]
+  );
+
+  return (
+    <div className="relative h-full">
+      <button
+        type="button"
+        onMouseDown={stopBlur}
+        onClick={() => inputRef.current?.click()}
+        className="h-full text-sm px-2.5 hover:bg-gray-100 dark:hover:bg-[#181C21] relative rounded-md group/toggle-button"
+      >
+        <PhotoIcon className="h-4 w-4" />
+        <div className="font-body pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 w-max opacity-0 transition-opacity group-hover/toggle-button:opacity-100 bg-black text-white text-xs p-2 rounded-md shadow-lg z-[9999]">
+          <span>Insert image</span>
+        </div>
+      </button>
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={onFileChange}
+      />
+    </div>
+  );
+};
+
+// ─── ADD LINK BUTTON ───
 
 const AddLinkButton = (props: {
   children: React.ReactNode;
@@ -321,24 +362,19 @@ const AddLinkButton = (props: {
 
   const toggleShowLinkForm = useCallback(() => {
     setShowLinkForm(prev => {
-      if (!prev) {
-        setTimeout(() => inputRef.current?.focus(), 0);
-      } else {
-        setUrl("");
-      }
-
+      if (!prev) setTimeout(() => inputRef.current?.focus(), 0);
+      else setUrl("");
       return !prev;
     });
-  }, [setShowLinkForm, setUrl]);
+  }, []);
 
   const onClickLinkButton = useCallback(() => {
     if (isActive) {
       props.onUnlink();
       return;
     }
-
     toggleShowLinkForm();
-  }, [isActive, props.editor, toggleShowLinkForm]);
+  }, [isActive, props.onUnlink, toggleShowLinkForm]);
 
   const onSubmit = useCallback(
     (e: React.FormEvent) => {
@@ -353,12 +389,13 @@ const AddLinkButton = (props: {
     if (props.editor.view.state.selection.empty) {
       setShowLinkForm(false);
     }
-  }, [toggleShowLinkForm, props.editor.view.state.selection.empty]);
+  }, [props.editor.view.state.selection.empty]);
 
   return (
     <div className="relative h-full">
       <button
         type="button"
+        onMouseDown={stopBlur}
         onClick={onClickLinkButton}
         className={clsx(
           isActive ? "bg-gray-100 dark:bg-[#0C1015]" : "",
@@ -366,37 +403,50 @@ const AddLinkButton = (props: {
         )}
       >
         {props.children}
+        <div className="font-body pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 w-max opacity-0 transition-opacity group-hover/toggle-button:opacity-100 bg-black text-white text-xs p-2 rounded-md shadow-lg z-[9999]">
+          <span>{isActive ? "Remove link" : "Add link"}</span>
+        </div>
       </button>
-      <form
-        className={clsx(
-          "absolute top-0 left-1/2 -translate-x-1/2 -translate-y-[calc(100%+8px)] bg-white dark:bg-[#0C1015] p-1.5 ring-1 ring-inset ring-gray-300 rounded-md dark:ring-[#262A30] flex items-center gap-x-1.5 h-8 shadow-md",
-          { hidden: !showLinkForm }
-        )}
-        onSubmit={onSubmit}
-      >
-        <input
-          className="text-xs focus:outline-none  px-1 py-0.5 border-0 rounded-sm ring-1 ring-gray-200 dark-ring-[#262A30]  focus:ring-1 focus:ring-gray-300 placeholder-gray-300 w-48"
-          placeholder="Enter a link and press Enter"
-          ref={inputRef}
-          onChange={e => setUrl(e.target.value)}
-          value={url}
-        />
-        <button
-          type="submit"
-          className="bg-primary-100 hover:bg-[#A308F0] h-full px-2 ring-1 ring-primary-400 rounded-sm"
+
+      {showLinkForm && (
+        <form
+          onMouseDown={stopBlur}
+          className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-white dark:bg-[#0C1015] p-1.5 ring-1 ring-inset ring-gray-300 rounded-md dark:ring-[#262A30] flex items-center gap-x-1.5 h-8 shadow-md z-[9999]"
+          onSubmit={onSubmit}
         >
-          <CheckIcon className="h-4 w-4 text-gray-600" />
-        </button>
-      </form>
+          <input
+            className="text-xs focus:outline-none px-1 py-0.5 border-0 rounded-sm ring-1 ring-gray-200 focus:ring-1 focus:ring-gray-300 placeholder-gray-300 w-48"
+            placeholder="Enter a link and press Enter"
+            ref={inputRef}
+            onChange={e => setUrl(e.target.value)}
+            value={url}
+          />
+          <button
+            type="submit"
+            className="bg-primary-100 hover:bg-[#A308F0] h-full px-2 ring-1 ring-primary-400 rounded-sm"
+          >
+            <CheckIcon className="h-4 w-4 text-gray-600" />
+          </button>
+        </form>
+      )}
     </div>
   );
 };
 
+// ─── MAIN TOOLBAR ───
+
 const FormattingToolbar = ({ editor }: { editor: Editor }) => {
+  const [openMenu, setOpenMenu] = useState<OpenMenu>(null);
+
   return (
-    <div onMouseDown={e => e.preventDefault()}  className="bg-white dark:bg-[#0C1015] ring-1 ring-inset ring-[#E9ECEF] text-gray-600 py-1 rounded-md shadow-md text-xs flex divide-x divide-[#E9ECEF] dark:divide-border-tertiary dark:ring-[#262A30] w-fit mx-auto mb-1">
+    <div className="bg-white dark:bg-[#0C1015] text-gray-600 py-1 text-xs flex divide-x divide-[#E9ECEF] dark:divide-border-tertiary w-fit">
       <div className="flex gap-x-1 items-center justify-center px-1">
-        <NodeTypeDropdown editor={editor} />
+        <NodeTypeDropdown
+          editor={editor}
+          open={openMenu === "node-type"}
+          onToggle={() => setOpenMenu(prev => prev === "node-type" ? null : "node-type")}
+          onClose={() => setOpenMenu(null)}
+        />
       </div>
 
       <div className="flex gap-x-1 items-center justify-center px-1">
@@ -436,7 +486,12 @@ const FormattingToolbar = ({ editor }: { editor: Editor }) => {
         >
           <s className="line-through">S</s>
         </ToggleFormattingButton>
-        <ColorTextButton editor={editor} />
+        <ColorTextButton
+          editor={editor}
+          open={openMenu === "color"}
+          onToggle={() => setOpenMenu(prev => prev === "color" ? null : "color")}
+          onClose={() => setOpenMenu(null)}
+        />
       </div>
 
       <div className="flex gap-x-1 items-center justify-center px-1">
@@ -447,6 +502,7 @@ const FormattingToolbar = ({ editor }: { editor: Editor }) => {
         >
           <LinkIcon className="h-4 w-4" />
         </AddLinkButton>
+        <AddImageButton editor={editor} />
       </div>
     </div>
   );
