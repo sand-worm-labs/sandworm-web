@@ -10,7 +10,6 @@ import { AIChatIcon } from "@/components/Assets/AIChatIcon";
 
 import type { NormalizedModel } from "../hooks/useOpenRouterModel";
 
-
 const PROVIDER_DOMAINS: Record<string, string> = {
   anthropic: "anthropic.com",
   openai: "openai.com",
@@ -115,8 +114,6 @@ function ProviderIcon({
   );
 }
 
-// ─── Info icon ────────────────────────────────────────────────────────────────
-
 function InfoIcon({ active }: { active: boolean }) {
   return (
     <svg
@@ -146,7 +143,6 @@ function InfoIcon({ active }: { active: boolean }) {
   );
 }
 
-// ─── Capabilities ─────────────────────────────────────────────────────────────
 
 type Cap = "free" | "vision" | "video" | "tools" | "reasoning";
 
@@ -229,14 +225,12 @@ function PriceHint({ model }: { model: NormalizedModel }) {
   );
 }
 
-
 const fmtCtx = (n: number | null) => {
   if (!n) return "—";
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(0)}M`;
   if (n >= 1_000) return `${Math.round(n / 1_000)}K`;
   return String(n);
 };
-
 
 const RECOMMENDED: { id: string; reason: string }[] = [
   { id: "anthropic/claude-sonnet-4.5", reason: "Best for complex notebooks" },
@@ -253,7 +247,6 @@ const RECOMMENDED: { id: string; reason: string }[] = [
   { id: "minimax/minimax-m1", reason: "1M token context window" },
 ];
 const REC_MAP = new Map(RECOMMENDED.map(r => [r.id, r.reason]));
-
 
 function ModelRow({
   model,
@@ -775,7 +768,6 @@ export const ModelPickerModal = ({
           )}
         </div>
 
-        {/* Footer */}
         <div className="flex items-center justify-between px-4 py-3 border-t border-border-tertiary shrink-0 gap-3">
           <div className="flex items-center gap-2.5 min-w-0">
             {pendingModel && (

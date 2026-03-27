@@ -236,6 +236,8 @@
      overflow-x: hidden;
      scroll-behavior: smooth;
      color: var(--ink-100);
+     scrollbar-gutter: stable;
+
    }
    
    body {

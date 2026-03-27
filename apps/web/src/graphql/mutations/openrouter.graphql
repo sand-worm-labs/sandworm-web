@@ -1,0 +1,3 @@
+mutation SetWorkspaceDefaultAiModel($workspaceId: String!, $model: String!) {
+  setWorkspaceDefaultAiModel(workspaceId: $workspaceId, model: $model)
+}

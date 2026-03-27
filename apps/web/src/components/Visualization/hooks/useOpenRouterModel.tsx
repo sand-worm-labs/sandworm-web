@@ -3,10 +3,9 @@ import { useState, useCallback, useMemo } from "react";
 import {
   useGetOpenRouterModelsQuery,
   useGetOpenRouterAccountCreditsQuery,
+  useSetWorkspaceDefaultAiModelMutation,
   type GetOpenRouterModelsQuery,
 } from "@/generated/graphql";
-
-// ─── TYPES ───────────────────────────────────────────────────────────────────
 
 type RawModel = GetOpenRouterModelsQuery["openRouterModels"][number];
 
@@ -82,7 +81,10 @@ function normalizeModel(raw: RawModel): NormalizedModel {
 
 // ─── HOOK ────────────────────────────────────────────────────────────────────
 
-export const useOpenRouterModels = (workspaceId: string) => {
+export const useOpenRouterModels = (
+  workspaceId: string,
+  initialModelId?: string
+) => {
   const { data, loading, error } = useGetOpenRouterModelsQuery();
 
   const {
@@ -94,7 +96,12 @@ export const useOpenRouterModels = (workspaceId: string) => {
     skip: !workspaceId,
   });
 
-  const [selectedModelId, setSelectedModelId] = useState<string | null>(null);
+  const [setDefaultModel, { loading: settingDefault, error: setDefaultError }] =
+    useSetWorkspaceDefaultAiModelMutation();
+
+  const [selectedModelId, setSelectedModelId] = useState<string | null>(
+    initialModelId ?? null
+  );
   const [isPickerOpen, setIsPickerOpen] = useState(false);
 
   const models = useMemo<NormalizedModel[]>(
@@ -115,10 +122,17 @@ export const useOpenRouterModels = (workspaceId: string) => {
   const openPicker = useCallback(() => setIsPickerOpen(true), []);
   const closePicker = useCallback(() => setIsPickerOpen(false), []);
 
-  const selectModel = useCallback((modelId: string) => {
-    setSelectedModelId(modelId);
-    setIsPickerOpen(false);
-  }, []);
+  const selectModel = useCallback(
+    async (modelId: string) => {
+      setSelectedModelId(modelId);
+      setIsPickerOpen(false);
+
+      await setDefaultModel({
+        variables: { workspaceId, model: modelId },
+      });
+    },
+    [workspaceId, setDefaultModel]
+  );
 
   return {
     // models
@@ -134,5 +148,7 @@ export const useOpenRouterModels = (workspaceId: string) => {
     credits,
     creditsLoading,
     creditsError,
+    settingDefault,
+    setDefaultError,
   };
 };
