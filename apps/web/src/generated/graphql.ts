@@ -1254,6 +1254,14 @@ export type DeleteFileMutationVariables = Exact<{
 
 export type DeleteFileMutation = { __typename?: 'Mutation', deleteFile: boolean };
 
+export type SetWorkspaceDefaultAiModelMutationVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+  model: Scalars['String']['input'];
+}>;
+
+
+export type SetWorkspaceDefaultAiModelMutation = { __typename?: 'Mutation', setWorkspaceDefaultAiModel: boolean };
+
 export type CreateScheduleMutationVariables = Exact<{
   workspaceId: Scalars['String']['input'];
   input: CreateScheduleInput;
@@ -1510,7 +1518,7 @@ export type GetUserWorkspaceInfoQuery = { __typename?: 'Query', getUserWorkspace
 export type GetUserWorkspacesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetUserWorkspacesQuery = { __typename?: 'Query', getUserWorkspaces: Array<{ __typename?: 'Workspace', id: string, name: string, plan: WorkspacePlan, icon?: string | null, source?: string | null, useCases: Array<string>, useContext?: string | null, ownerId: string, assistantModel: string, owner: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null }, users: Array<{ __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null }> }> };
+export type GetUserWorkspacesQuery = { __typename?: 'Query', getUserWorkspaces: Array<{ __typename?: 'Workspace', id: string, name: string, plan: WorkspacePlan, icon?: string | null, source?: string | null, useCases: Array<string>, useContext?: string | null, ownerId: string, assistantModel: string, owner: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null }, users: Array<{ __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null }>, secrets: { __typename?: 'WorkspaceSecrets', hasAiModelApiKey: boolean } }> };
 
 export type GetWorkspaceWithMembersQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
@@ -1529,7 +1537,7 @@ export type GetWorkspaceQueryVariables = Exact<{
 }>;
 
 
-export type GetWorkspaceQuery = { __typename?: 'Query', getWorkspace: { __typename?: 'Workspace', id: string, name: string, plan: WorkspacePlan, source?: string | null, useCases: Array<string>, useContext?: string | null, ownerId: string, icon?: string | null, owner: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null }, users: Array<{ __typename?: 'User', id: string, firstName?: string | null, lastName?: string | null, email?: string | null, avater?: string | null }>, documents: Array<{ __typename?: 'Document', id: string, title: string, slug: string, authorId: string, parentId?: string | null }> } };
+export type GetWorkspaceQuery = { __typename?: 'Query', getWorkspace: { __typename?: 'Workspace', id: string, name: string, plan: WorkspacePlan, source?: string | null, useCases: Array<string>, useContext?: string | null, ownerId: string, icon?: string | null, assistantModel: string, owner: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null }, users: Array<{ __typename?: 'User', id: string, firstName?: string | null, lastName?: string | null, email?: string | null, avater?: string | null }>, documents: Array<{ __typename?: 'Document', id: string, title: string, slug: string, authorId: string, parentId?: string | null }> } };
 
 export type GetWorkspaceDocumentsQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
@@ -2647,6 +2655,38 @@ export function useDeleteFileMutation(baseOptions?: Apollo.MutationHookOptions<D
 export type DeleteFileMutationHookResult = ReturnType<typeof useDeleteFileMutation>;
 export type DeleteFileMutationResult = Apollo.MutationResult<DeleteFileMutation>;
 export type DeleteFileMutationOptions = Apollo.BaseMutationOptions<DeleteFileMutation, DeleteFileMutationVariables>;
+export const SetWorkspaceDefaultAiModelDocument = gql`
+    mutation SetWorkspaceDefaultAiModel($workspaceId: String!, $model: String!) {
+  setWorkspaceDefaultAiModel(workspaceId: $workspaceId, model: $model)
+}
+    `;
+export type SetWorkspaceDefaultAiModelMutationFn = Apollo.MutationFunction<SetWorkspaceDefaultAiModelMutation, SetWorkspaceDefaultAiModelMutationVariables>;
+
+/**
+ * __useSetWorkspaceDefaultAiModelMutation__
+ *
+ * To run a mutation, you first call `useSetWorkspaceDefaultAiModelMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSetWorkspaceDefaultAiModelMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [setWorkspaceDefaultAiModelMutation, { data, loading, error }] = useSetWorkspaceDefaultAiModelMutation({
+ *   variables: {
+ *      workspaceId: // value for 'workspaceId'
+ *      model: // value for 'model'
+ *   },
+ * });
+ */
+export function useSetWorkspaceDefaultAiModelMutation(baseOptions?: Apollo.MutationHookOptions<SetWorkspaceDefaultAiModelMutation, SetWorkspaceDefaultAiModelMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SetWorkspaceDefaultAiModelMutation, SetWorkspaceDefaultAiModelMutationVariables>(SetWorkspaceDefaultAiModelDocument, options);
+      }
+export type SetWorkspaceDefaultAiModelMutationHookResult = ReturnType<typeof useSetWorkspaceDefaultAiModelMutation>;
+export type SetWorkspaceDefaultAiModelMutationResult = Apollo.MutationResult<SetWorkspaceDefaultAiModelMutation>;
+export type SetWorkspaceDefaultAiModelMutationOptions = Apollo.BaseMutationOptions<SetWorkspaceDefaultAiModelMutation, SetWorkspaceDefaultAiModelMutationVariables>;
 export const CreateScheduleDocument = gql`
     mutation CreateSchedule($workspaceId: String!, $input: CreateScheduleInput!) {
   createSchedule(workspaceId: $workspaceId, input: $input) {
@@ -4163,6 +4203,9 @@ export const GetUserWorkspacesDocument = gql`
       firstName
       lastName
     }
+    secrets {
+      hasAiModelApiKey
+    }
   }
 }
     `;
@@ -4315,6 +4358,7 @@ export const GetWorkspaceDocument = gql`
     useContext
     ownerId
     icon
+    assistantModel
     owner {
       id
       username

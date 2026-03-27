@@ -7,11 +7,6 @@ import Image from "next/image";
 
 import type { NormalizedModel } from "../hooks/useOpenRouterModel";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// PROVIDER META
-// → move to: utils/providerMeta.ts
-// ─────────────────────────────────────────────────────────────────────────────
-
 const PROVIDER_DOMAINS: Record<string, string> = {
   anthropic: "anthropic.com",
   openai: "openai.com",
@@ -69,11 +64,6 @@ const PROVIDER_COLORS: Record<string, string> = {
   "z-ai": "#1e40af",
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// CONSTANTS
-// → move to: utils/modelConstants.ts
-// ─────────────────────────────────────────────────────────────────────────────
-
 const QUICK_SELECT_DEFAULTS = [
   "anthropic/claude-sonnet-4.5",
   "openai/gpt-4.1-mini",
@@ -83,11 +73,6 @@ const QUICK_SELECT_DEFAULTS = [
 
 const RECENT_STORAGE_KEY = "sandworm:recent-models";
 const MAX_RECENT = 4;
-
-// ─────────────────────────────────────────────────────────────────────────────
-// UTILS
-// → move to: utils/modelUtils.ts
-// ─────────────────────────────────────────────────────────────────────────────
 
 function getRecentModelIds(): string[] {
   if (typeof window === "undefined") return [];
@@ -139,11 +124,6 @@ function buildQuickList(
   return result;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// SHARED UI — ProviderIcon
-// → move to: components/ProviderIcon.tsx
-// ─────────────────────────────────────────────────────────────────────────────
-
 function ProviderIcon({
   provider,
   size = 16,
@@ -186,10 +166,6 @@ function ProviderIcon({
     />
   );
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// INTERNAL ICONS
-// ─────────────────────────────────────────────────────────────────────────────
 
 function ChevronDownIcon({ open }: { open: boolean }) {
   return (
@@ -248,20 +224,12 @@ function ArrowRightIcon() {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// COMPONENT PROPS
-// ─────────────────────────────────────────────────────────────────────────────
-
 export interface ModelQuickSelectProps {
   models: NormalizedModel[];
   selectedModelId: string | null;
   onSelect: (modelId: string) => void;
-  onBrowseAll: () => void; // → opens ModelPickerModal via openPicker from useOpenRouterModels
+  onBrowseAll: () => void;
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// COMPONENT
-// ─────────────────────────────────────────────────────────────────────────────
 
 export function ModelQuickSelect({
   models,
@@ -287,9 +255,8 @@ export function ModelQuickSelect({
     return () => document.removeEventListener("mousedown", handler);
   }, [open]);
 
-  // Close on Escape
   useEffect(() => {
-    if (!open) return;
+    if (!open) return () => {};
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") setOpen(false);
     };
@@ -317,7 +284,6 @@ export function ModelQuickSelect({
 
   return (
     <div ref={containerRef} className="relative">
-      {/* ── Trigger ── */}
       <button
         type="button"
         onClick={() => setOpen(v => !v)}
@@ -326,7 +292,7 @@ export function ModelQuickSelect({
           "font-body text-xs font-medium border transition-all duration-150",
           open
             ? "bg-[#A308F0]/10 border-[#A308F0]/50 text-[#A308F0]"
-            : "  border-transparent",
+            : " bg-[#E7EBF0] dark:bg-transparent  border-transparent",
           !open &&
             "text-ink-100  hover:bg-[rgba(207,211,222,0.6)] dark:hover:bg-[rgba(255,255,255,0.08)]"
         )}
@@ -340,7 +306,6 @@ export function ModelQuickSelect({
         <ChevronDownIcon open={open} />
       </button>
 
-      {/* ── Popover ── */}
       <Transition
         show={open}
         enter="transition ease-out duration-150"
@@ -351,7 +316,6 @@ export function ModelQuickSelect({
         leaveTo="opacity-0 translate-y-1 scale-95"
       >
         <div className="absolute bottom-full right-0 mb-2 w-[260px] z-50 bg-base-100 border border-border-secondary rounded-xl shadow-2xl py-1.5 overflow-hidden">
-          {/* Quick list */}
           {quickList.map(m => (
             <button
               key={m.id}
@@ -372,10 +336,8 @@ export function ModelQuickSelect({
             </button>
           ))}
 
-          {/* Divider */}
           <div className="mx-3 my-1.5 h-px bg-border-tertiary" />
 
-          {/* Browse all → opens ModelPickerModal */}
           <button
             type="button"
             onClick={handleBrowseAll}

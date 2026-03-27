@@ -15,6 +15,8 @@ import { PreviewAttachment } from "./preview-attachment";
 
 interface MultimodalInputUIProps {
   input: string;
+  workspaceId: string;
+  currentModel?: string;
   onInputChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   isLoading?: boolean;
   onStop?: () => void;
@@ -49,6 +51,8 @@ export const MultimodalInputView = forwardRef<
       onSubmit,
       onRemoveAttachment,
       onAbortUpload,
+      workspaceId,
+      currentModel,
     },
     ref
   ) => {
@@ -61,7 +65,7 @@ export const MultimodalInputView = forwardRef<
       openPicker,
       closePicker,
       selectModel,
-    } = useOpenRouterModels();
+    } = useOpenRouterModels(workspaceId, currentModel);
 
     return (
       <>

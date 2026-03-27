@@ -5,8 +5,8 @@ import type { Dispatch, SetStateAction, ChangeEvent } from "react";
 import React, { useRef, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 
-
 import { useFiles } from "../Visualization/hooks/useFiles";
+import { useWorkspace } from "../Visualization/hooks/useWorkspaces";
 
 import useWindowSize from "./use-window-size";
 import { MultimodalInputView } from "./MultimodalInputView";
@@ -46,6 +46,10 @@ export function MultimodalInput({
   const { width } = useWindowSize();
 
   const [fileState, fileAPI] = useFiles(workspaceId);
+  const { workspace } = useWorkspace(workspaceId);
+  const currentModel = workspace?.assistantModel;
+
+  console.log(currentModel, workspace);
 
   const adjustHeight = () => {
     if (textareaRef.current) {
@@ -237,6 +241,8 @@ export function MultimodalInput({
 
       <MultimodalInputView
         ref={textareaRef}
+        currentModel={currentModel}
+        workspaceId={workspaceId}
         input={input}
         onInputChange={handleInput}
         isLoading={isLoading}

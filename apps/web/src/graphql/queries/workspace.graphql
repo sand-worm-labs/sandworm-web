@@ -37,7 +37,9 @@ query GetUserWorkspaces {
       firstName
       lastName
     }
-  
+   secrets{
+    hasAiModelApiKey
+   }
   }
 }
 
@@ -91,6 +93,8 @@ query GetWorkspace($workspaceId: String!) {
     useContext
     ownerId
     icon
+        assistantModel
+
     owner {
       id
       username

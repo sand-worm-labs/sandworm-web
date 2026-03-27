@@ -57,7 +57,7 @@ function RoleDropdown({ role, onChange, disabled }: RoleDropdownProps) {
   const portalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) return () => {};
     const handler = (e: MouseEvent) => {
       const target = e.target as Node;
       const outsideButton = ref.current && !ref.current.contains(target);
@@ -76,7 +76,7 @@ function RoleDropdown({ role, onChange, disabled }: RoleDropdownProps) {
       const rect = buttonRef.current.getBoundingClientRect();
       setCoords({
         top: rect.bottom + window.scrollY + 4,
-        left: rect.right + window.scrollX - 144, // 144 = w-[9rem]
+        left: rect.right + window.scrollX - 144,
         width: rect.width,
       });
     }
@@ -271,7 +271,6 @@ export function MiniUsersList({
   return (
     <div className="relative w-full">
       <div className="rounded-xl border border-[#DEE2E6] dark:border-border-tertiary overflow-hidden">
-        {/* Header */}
         <div className="flex items-center justify-between px-4 py-2 border-b border-[#CED4DA] dark:border-border-tertiary">
           <span className="text-sm font-medium text-[#6C757D] dark:text-white">
             {users.length} member{users.length !== 1 ? "s" : ""}
