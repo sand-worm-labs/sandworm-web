@@ -14,6 +14,8 @@ import {
   CreateKeysLimitReset,
 } from '@openrouter/sdk/models/operations';
 import { OpenRouterModel } from './model/openrouter.model';
+import { WorkspaceService } from '@/features/workspace/service/workspace.service';
+import { WorkspaceMembershipService } from "@/features/workspace/service/workspace-membership.service";
 
 export interface AccountCredits {
   totalCredits: number;
@@ -26,15 +28,18 @@ export class OpenRouterService {
   private readonly logger = new Logger(OpenRouterService.name);
   private readonly client: OpenRouter;
 
-  constructor(private readonly configService: ConfigService<AllConfigType>) {
+  constructor(
+    private readonly configService: ConfigService<AllConfigType>,
+    private readonly workspaceService: WorkspaceService,
+    private readonly workspaceMembershipService: WorkspaceMembershipService
+  ) {
     this.client = new OpenRouter({
       apiKey: this.configService.getOrThrow('openrouter.provisioningKey', { infer: true }),
     });
   }
 
   async provisionKey(workspaceId: string, limitUsd?: number) {
-    const { defaultCap, limitReset, provisioningKey } = this.configService.get('openrouter', { infer: true });
-    console.dir({defaultCap, limitReset, provisioningKey}, {depth: 1})
+    const { defaultCap, limitReset } = this.configService.get('openrouter', { infer: true });
     const limit = limitUsd ?? defaultCap ?? 2.0;
     const limitResetType = (limitReset as CreateKeysLimitReset) ?? CreateKeysLimitReset.Monthly;
     const request: CreateKeysRequest = {
@@ -92,13 +97,16 @@ export class OpenRouterService {
     }
   }
 
-  async getAccountCredits(workspaceId: string): Promise<AccountCredits> {
-    const { data } = await this.client.credits.getCredits();
+  async getAccountCredits(workspaceId: string, userId:string): Promise<AccountCredits> {
+    await this.workspaceMembershipService.assertActiveMember(workspaceId, userId);
+    const workspaceHash = await this.workspaceService.getWorkspaceAiHash(workspaceId)
+
+    const { data } = await this.client.apiKeys.get({ hash: workspaceHash });
 
     return {
-      totalCredits: data.totalCredits,
-      usedCredits: data.totalUsage,
-      availableCredits: data.totalCredits - data.totalUsage,
+      totalCredits: data.limit,
+      usedCredits: data.usage,
+      availableCredits: data.limitRemaining,
     };
   }
 
