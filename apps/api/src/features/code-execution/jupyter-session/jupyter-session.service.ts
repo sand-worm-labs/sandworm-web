@@ -6,6 +6,7 @@ import * as services from '@jupyterlab/services';
 import { decrypt } from '@sandworm/nest-common';
 import { EnvironmentVariableEntity } from '@sandworm/postgresql-typeorm';
 import { JupyterService } from '@/infrastructure/jupyter/jupyter.service';
+import { AllConfigType } from '@/core/config/config.type';
 
 export type Jupyter = {
     session: services.Session.ISessionConnection;
@@ -20,7 +21,7 @@ export class JupyterSessionService {
     constructor(
         @InjectRepository(EnvironmentVariableEntity)
         private readonly environmentVariableRepository: Repository<EnvironmentVariableEntity>,
-        private readonly config: ConfigService,
+        private readonly config: ConfigService<AllConfigType>,
         private readonly jupyterManager: JupyterService,
     ) { }
 
@@ -61,13 +62,14 @@ export class JupyterSessionService {
         }
 
         const encryptedVariables = await this.environmentVariableRepository.find({ where: { workspaceId } });
-        const encryptionKey = this.config.get<string>('ENVIRONMENT_VARIABLES_ENCRYPTION_KEY');
-        const variables = encryptedVariables.map(v => ({
-            name: decrypt(v.name, encryptionKey),
-            value: decrypt(v.value, encryptionKey),
-        }));
+        const encryptionKey = this.config.get('database.environmentVariablesEncryptionKey', { infer: true });
+        this.logger.debug({...encryptedVariables, encryptionKey});
+        // const variables = encryptedVariables.map(v => ({
+        //     name: decrypt(v.name, encryptionKey),
+        //     value: decrypt(v.value, encryptionKey),
+        // }));
 
-        await this.setEnvironmentVariables(session.kernel, { add: variables, remove: [] });
+        await this.setEnvironmentVariables(session.kernel, { add: [], remove: [] });
 
         return { session, kernel: session.kernel };
     }
