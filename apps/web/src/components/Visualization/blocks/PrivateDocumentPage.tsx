@@ -239,6 +239,7 @@ function PrivateDocumentPageInner(
     []
   );
 
+
   // ⬢ Sidebar content for NotebookPanel
   // =====================================
   const sidebarContent = useMemo(

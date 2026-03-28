@@ -92,8 +92,8 @@ const useBlockEditor = ({
           inline: true,
         }),
       ],
-      onUpdate({ editor }) {
-        const content = editor.getJSON()?.content;
+      onUpdate({ editor: currentEditor }) {
+        const content = currentEditor.getJSON()?.content;
         const firstLineContent = content?.[0]?.content?.[0]?.text ?? "";
         setTitle(firstLineContent);
       },
@@ -104,7 +104,7 @@ const useBlockEditor = ({
           autocorrect: "off",
           autocapitalize: "off",
           class:
-            " min-h-full prose sm:prose-base prose-sm max-w-full rounded-sm focus:outline-0 whitespace-pre-wrap ph-no-capture font-body",
+            " min-h-full prose sm:prose-base prose-sm max-w-full rounded-sm focus:outline-0 whitespace-pre-wrap ph-no-capture font-body sandworm-prose",
         },
       },
     },
