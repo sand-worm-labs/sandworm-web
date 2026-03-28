@@ -300,6 +300,8 @@ function PlusButton(props: Props) {
 
   const btnDivProps = props.isLast ? { id: "last-plus-button" } : {};
 
+  console.log(props.isEditable, "hello", props.alwaysOpen)
+
   return (
     <>
       <div
