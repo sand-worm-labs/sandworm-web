@@ -1,0 +1,197 @@
+"use client";
+
+import { PencilIcon } from "@heroicons/react/24/outline";
+import Link from "next/link";
+import React from "react";
+import clsx from "clsx";
+
+import ScrollBar from "@/components/Visualization/blocks/ScrollBar";
+import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
+import { useSession } from "@/components/Visualization/hooks/useAuth";
+
+const requirements = `jupyter_server==2.12.1
+  ipykernel==6.27.1
+  matplotlib==3.8.2
+  numpy==1.26.2
+  pandas==1.5.3
+  psycopg2==2.9.9
+  plotly==5.18.0
+  scipy==1.11.4
+  transformers==4.36.0
+  ipywidgets==7.8.1
+  seaborn==0.13.0
+  altair==5.2.0
+  altair-viewer
+  altair-transform==0.2.0
+  boto3==1.35.5
+  vegafusion==1.5.0
+  vegafusion-python-embed==1.5.0
+  vl-convert-python==1.2.0
+  tiktoken==0.5.2
+  polars==0.19.19
+  SQLAlchemy==1.4.50
+  google-api-core==2.15.0
+  google-api-python-client==1.6.7
+  google-api-support==0.1.4
+  google-auth==2.25.2
+  google-auth-httplib2==0.2.0
+  google-auth-oauthlib==1.2.0
+  google-cloud-aiplatform==1.38.0
+  google-cloud-appengine-logging==1.4.0
+  google-cloud-audit-log==0.2.5
+  google-cloud-bigquery==3.14.0
+  google-cloud-bigquery-connection==1.14.0
+  google-cloud-bigquery-storage==2.24.0
+  google-cloud-billing==1.12.0
+  google-cloud-core==2.4.1
+  google-cloud-functions==1.14.0
+  google-cloud-iam==2.13.0
+  google-cloud-logging==3.9.0
+  google-cloud-resource-manager==1.11.0
+  google-cloud-storage==2.14.0
+  google-crc32c==1.5.0
+  google-pasta==0.2.0
+  google-resumable-media==2.7.0
+  googleapis-common-protos==1.62.0
+  db-dtypes==1.2.0
+  fastparquet==2024.2.0
+  oracledb==2.2.0
+  redshift-connector==2.0.917
+  sqlalchemy-redshift==0.8.14
+  trino==0.329.0
+  duckdb==1.0.0
+  openpyxl==3.1.2
+  mysqlclient==2.2.4
+  pymongo==4.8.0
+  snowflake-connector-python==3.12.2
+  snowflake-sqlalchemy==1.6.1`;
+
+export default function CurrentEnvironmentPage() {
+  const session = useSession({ redirectToLogin: true });
+  const workspaceId = useStringQuery("workspace");
+
+  if (!session.user) {
+    return null;
+  }
+
+  return (
+    <ScrollBar className="w-full bg-base-100 h-full overflow-auto">
+      <div className="px-4 sm:p-6 lg:p-8">
+        <div className="border-b border-border-secondary  pb-4 flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-medium leading-6 text-ink-100 ">
+              Python 3.9
+            </h2>
+            <p className="mt-1 text-sm leading-6 text-ink-400">
+              This is the environment for your documents.{" "}
+            </p>
+          </div>
+
+          <div className={clsx("flex items-center", "hidden")}>
+            <Link
+              href={`/workspace/${workspaceId}/environments/new`}
+              className="flex items-center gap-x-2 rounded-sm shadow-sm px-3.5 py-2.5 text-sm font-semibold hover:bg-gray-100 border border-border-secondary "
+            >
+              <PencilIcon className="h-4 w-4" /> Edit environment
+            </Link>
+          </div>
+        </div>
+
+        <div className="py-6">
+          <div className="bg-base-100 border border-border-secondary  rounded-xl overflow-hidden">
+            <div className="px-4 py-5 sm:px-6 bg-ceramic-50/60">
+              <h2
+                id="applicant-information-title"
+                className="text-md font-medium leading-6 text-ink-100 "
+              >
+                Compute
+              </h2>
+              <p className="mt-1 max-w-2xl text-sm text-ink-400">
+                Information about the compute resources for this environment.
+              </p>
+            </div>
+            <div className="border-t border-border-secondary  py-5 px-6">
+              <dl className="grid grid-cols-1 gap-x-4 gap-y-8 md:grid-cols-2">
+                <div className="sm:col-span-1">
+                  <dt className="text-sm font-medium text-ink-400">Memory</dt>
+                  <dd className="mt-1 text-sm text-ink-100 ">
+                    Local machine memory
+                  </dd>
+                </div>
+                <div className="sm:col-span-1">
+                  <dt className="text-sm font-medium text-ink-400">CPU</dt>
+                  <dd className="mt-1 text-sm text-ink-100 ">
+                    Local machine CPU
+                  </dd>
+                </div>
+                <div className="sm:col-span-1">
+                  <dt className="text-sm font-medium text-ink-400">GPU</dt>
+                  <dd className="mt-1 text-sm text-ink-100 ">
+                    Local machine GPU
+                  </dd>
+                </div>
+                <div className="sm:col-span-1">
+                  <dt className="text-sm font-medium text-ink-400">
+                    Network Performance
+                  </dt>
+                  <dd className="mt-1 text-sm text-ink-100 ">
+                    Up to 5 Gigabit
+                  </dd>
+                </div>
+                <div className="sm:col-span-2">
+                  <dt className="text-sm font-medium text-ink-400">Notes</dt>
+                  <dd className="mt-1 text-sm text-ink-100 ">
+                    This is the default environment for your documents.
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          </div>
+        </div>
+
+        <div className="py-6">
+          <div className="bg-base-100 border border-border-secondary  rounded-xl overflow-hidden">
+            <div className="px-4 py-5 sm:px-6 bg-ceramic-50/60">
+              <h2
+                id="applicant-information-title"
+                className="text-md font-medium leading-6 text-ink-100 "
+              >
+                Python
+              </h2>
+              <p className="mt-1 max-w-2xl text-sm text-ink-400">
+                Information about the Python tooling for this environment.
+              </p>
+            </div>
+            <div className="border-t border-border-secondary  px-4 py-5 px-6">
+              <dl className="grid grid-cols-1 gap-x-4 gap-y-8 grid-cols-2">
+                <div className="sm:col-span-1">
+                  <dt className="text-sm font-medium text-ink-400">Version</dt>
+                  <dd className="mt-1 text-sm text-ink-100 ">3.9</dd>
+                </div>
+                <div className="sm:col-span-1">
+                  <dt className="text-sm font-medium text-ink-400">
+                    Pip version
+                  </dt>
+                  <dd className="mt-1 text-sm text-ink-100 ">23.0.1</dd>
+                </div>
+                <div className="sm:col-span-2">
+                  <dt className="text-sm font-medium text-ink-400 flex items-center gap-x-2">
+                    <span>Libraries</span>
+                    <span className="font-mono text-xs">
+                      (requirements.txt)
+                    </span>
+                  </dt>
+                  <dd className="mt-1 text-xs text-ink-100 marker:py-1">
+                    <pre className="bg-base-200 rounded-xl max-h-96 p-4 overflow-y-scroll overflow-x-auto border border-border-secondary ">
+                      {requirements}
+                    </pre>
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ScrollBar>
+  );
+}
