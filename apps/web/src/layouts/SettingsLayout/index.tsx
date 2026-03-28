@@ -2,21 +2,21 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import Image from "next/image";
 import { UserRound, ChevronLeft } from "lucide-react";
+import { Button } from "@sandworm/ui/components/button";
 
 import { User } from "@/components/Assets/User";
 import { SliderHorizontal } from "@/components/Assets/SliderHorizontal";
 import { GearIcon } from "@/components/Assets/GearIcon";
 import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
-import { useSession } from "@/components/Visualization/hooks/useAuth";
+import { useSignout } from "@/components/Visualization/hooks/useAuth";
 
 export default function SettingsLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { user: session } = useSession({ redirectToLogin: true });
+  const signout = useSignout();
   const pathname = usePathname();
   const workspaceId = useStringQuery("workspace");
 
@@ -43,8 +43,6 @@ export default function SettingsLayout({
     },
   ];
 
-  if (status === "loading") return null;
-
   return (
     <div className=" w-full">
       <div className="flex items-center gap-2 py-3 border-b border-[#F1F3F4] dark:border-border-tertiary px-10 text-[1.1rem] dark:bg-base-500">
@@ -58,9 +56,9 @@ export default function SettingsLayout({
         <span>Settings</span>
       </div>
 
-      <div className="flex min-h-screen  md:flex-row flex-col ">
+      <div className="flex flex-1 min-h-0 md:flex-row flex-col ">
         <div
-          className=" p-6 px-3 border-r dark:border-borderLight my-12  border-[#E9ECEF] dark:border-border-tertiary bg-[#FEFFFF] dark:bg-base-500  shrink-0 flex-none"
+          className="p-6 px-3 border-r dark:border-borderLight my-12 border-[#E9ECEF] dark:border-border-tertiary bg-[#FEFFFF] dark:bg-base-500 flex-col justify-between flex self-stretch"
           style={{ width: 250 }}
         >
           <ul className="mt-4  flex flex-col w-full">
@@ -80,6 +78,14 @@ export default function SettingsLayout({
               </li>
             ))}
           </ul>
+
+          <Button
+            variant="destructive"
+            onClick={signout}
+            className="w-full text-[0.8rem] py-2 bg-[#FF0000] dark:bg-[#FF4444] font-body"
+          >
+            <span>Sign Out</span>
+          </Button>
         </div>
 
         <hr className="md:hidden" />

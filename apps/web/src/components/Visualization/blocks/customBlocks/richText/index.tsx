@@ -17,12 +17,11 @@ import clsx from "clsx";
 import { useCallback, useEffect } from "react";
 import type { ConnectDragPreview } from "react-dnd";
 
-import ImageExtension from "./ImageExtension";
-
 import "katex/dist/katex.min.css";
 import useEditorAwareness from "../../../hooks/useEditorAwareness";
 import type { DashboardMode } from "../../Dashboard";
 
+import ImageExtension from "./ImageExtension";
 import FormattingToolbar from "./FormattingToolbar";
 
 const useBlockEditor = ({
@@ -98,7 +97,6 @@ const useBlockEditor = ({
         const firstLineContent = content?.[0]?.content?.[0]?.text ?? "";
         setTitle(firstLineContent);
       },
-    
 
       editorProps: {
         attributes: {
@@ -115,7 +113,6 @@ const useBlockEditor = ({
 
   useEffect(
     () => () => {
-      // cleanup after unmount
       editor?.destroy();
 
       // manually destroy collaboration undo manager
@@ -172,7 +169,7 @@ const RichTextBlock = (props: Props) => {
 
   useEffect(() => {
     if (!editor) {
-      return;
+      return () => {};
     }
 
     const onFocus = () => {
@@ -181,7 +178,6 @@ const RichTextBlock = (props: Props) => {
     editor.on("focus", onFocus);
 
     const onBlur = () => {
-      console.log("editor blur — activeElement:", document.activeElement);
       editorAPI.blur();
     };
     editor.on("blur", onBlur);
@@ -215,7 +211,6 @@ const RichTextBlock = (props: Props) => {
       data-block-id={id}
       className="flex flex-col"
     >
-      {/* Bordered editor box with toolbar inside */}
       <div
         className={clsx(
           "ring-border-focus ring-offset-4",
@@ -224,7 +219,7 @@ const RichTextBlock = (props: Props) => {
           {
             "rounded-tl-none rounded-lg border border-border-tertiary":
               props.belongsToMultiTabGroup,
-            "rounded-tl-none rounded-lg border border-border-tertiary":
+            "rounded-tl-none rounded-lg border border-border-secondary":
               props.belongsToMultiTabGroup &&
               props.isCursorWithin &&
               !props.isCursorInserting,
@@ -232,10 +227,12 @@ const RichTextBlock = (props: Props) => {
           }
         )}
       >
-        {/* Toolbar anchored inside the block, above content */}
         <div
-          onMouseDown={e => console.log("toolbar mousedown — target:", e.target)}
-
+          role="toolbar"
+          aria-label="Text formatting tools"
+          onMouseDown={e =>
+            console.log("toolbar mousedown — target:", e.target)
+          }
           className={clsx(
             "overflow-visible transition-all duration-150 ease-out",
             editor?.isFocused ? "max-h-12 opacity-100" : "max-h-0 opacity-0"
@@ -248,7 +245,6 @@ const RichTextBlock = (props: Props) => {
           )}
         </div>
 
-        {/* Editor content */}
         <div
           className={clsx(
             props.dashboardMode

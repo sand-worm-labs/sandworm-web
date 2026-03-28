@@ -4,8 +4,6 @@ import { ChevronDownIcon, PhotoIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 import { CheckIcon, LinkIcon } from "@heroicons/react/24/solid";
 
-// ─── TYPES ───
-
 type NodeType =
   | "paragraph"
   | "heading-1"
@@ -18,8 +16,6 @@ type NodeType =
 type OpenMenu = "node-type" | "color" | null;
 
 type ColorSpec = { name: string; type: "fg" | "bg"; hex: string };
-
-// ─── CONSTANTS ───
 
 const items: Record<NodeType, { name: string; type: NodeType }> = {
   paragraph: { name: "Paragraph", type: "paragraph" },
@@ -57,18 +53,20 @@ const textColors: ColorSpec[] = [
   { name: "Red", type: "fg", hex: "#e03e3e" },
 ];
 
-// ─── UTILS ───
-
 const stopBlur = (e: React.MouseEvent) => e.preventDefault();
 
 const getCurrentType = (editor: Editor): NodeType => {
   if (editor.isActive("heading")) {
     const { level } = editor.getAttributes("heading");
     switch (level) {
-      case 1: return "heading-1";
-      case 2: return "heading-2";
-      case 3: return "heading-3";
-      default: return "heading-1";
+      case 1:
+        return "heading-1";
+      case 2:
+        return "heading-2";
+      case 3:
+        return "heading-3";
+      default:
+        return "heading-1";
     }
   }
   if (editor.isActive("bulletList")) return "bullet-list";
@@ -76,8 +74,6 @@ const getCurrentType = (editor: Editor): NodeType => {
   if (editor.isActive("taskList")) return "task-list";
   return "paragraph";
 };
-
-// ─── NODE TYPE DROPDOWN ───
 
 const NodeTypeDropdown = ({
   editor,
@@ -94,16 +90,31 @@ const NodeTypeDropdown = ({
 
   const setNodeType = useCallback(
     (nodeType: NodeType) => {
-      onClose(); // FIX: was calling nonexistent setOpen(false)
+      onClose();
       switch (nodeType) {
-        case "paragraph": editor.chain().focus().setParagraph().run(); break;
-        case "heading-1": editor.chain().focus().setHeading({ level: 1 }).run(); break;
-        case "heading-2": editor.chain().focus().setHeading({ level: 2 }).run(); break;
-        case "heading-3": editor.chain().focus().setHeading({ level: 3 }).run(); break;
-        case "bullet-list": editor.chain().focus().toggleBulletList().run(); break;
-        case "numbered-list": editor.chain().focus().toggleOrderedList().run(); break;
-        case "task-list": editor.chain().focus().toggleTaskList().run(); break;
-        default: editor.chain().focus().setParagraph().run();
+        case "paragraph":
+          editor.chain().focus().setParagraph().run();
+          break;
+        case "heading-1":
+          editor.chain().focus().setHeading({ level: 1 }).run();
+          break;
+        case "heading-2":
+          editor.chain().focus().setHeading({ level: 2 }).run();
+          break;
+        case "heading-3":
+          editor.chain().focus().setHeading({ level: 3 }).run();
+          break;
+        case "bullet-list":
+          editor.chain().focus().toggleBulletList().run();
+          break;
+        case "numbered-list":
+          editor.chain().focus().toggleOrderedList().run();
+          break;
+        case "task-list":
+          editor.chain().focus().toggleTaskList().run();
+          break;
+        default:
+          editor.chain().focus().setParagraph().run();
       }
     },
     [editor, onClose]
@@ -115,7 +126,7 @@ const NodeTypeDropdown = ({
         type="button"
         onMouseDown={stopBlur}
         onClick={onToggle}
-        className="relative inline-flex gap-x-1 items-center hover:bg-gray-100 py-1.5 px-1.5 rounded-md dark:hover:bg-[#181C21]"
+        className="relative inline-flex gap-x-1 items-center hover:bg-primary/20 py-1.5 px-1.5 rounded-md dark:hover:bg-base-600 "
       >
         {items[currentType].name}
         <ChevronDownIcon className="h-4 w-4" aria-hidden="true" />
@@ -123,8 +134,13 @@ const NodeTypeDropdown = ({
 
       {open && (
         <>
-          <div className="fixed inset-0 z-40" onMouseDown={onClose} />
-          <div className="absolute left-0 top-8 z-50 rounded-md dark:bg-base-100 bg-white shadow-lg ring-1 ring-[#E9ECEF] ring-opacity-5 whitespace-nowrap dark:ring-[#262A30]">
+          <button
+            className="fixed inset-0 z-40"
+            onMouseDown={onClose}
+            type="button"
+            aria-label="Close menu"
+          />
+          <div className="absolute left-0 top-8 z-50 rounded-xl dark:bg-base-100 bg-white ring-1 ring-border-tertiary  whitespace-nowrap  ">
             <div className="py-0.5">
               {Object.values(items).map(item => (
                 <button
@@ -132,7 +148,7 @@ const NodeTypeDropdown = ({
                   type="button"
                   onMouseDown={stopBlur}
                   onClick={() => setNodeType(item.type)}
-                  className="block w-full px-4 py-2 text-left text-gray-700 dark:text-ink-300 hover:bg-gray-100 dark:hover:bg-[#181C21]"
+                  className="block w-full px-4 py-2 text-left text-ink-400 hover:bg-primary/15 dark:hover:bg-base-600 dark:text-ink-100 font-medium   "
                 >
                   {item.name}
                 </button>
@@ -144,8 +160,6 @@ const NodeTypeDropdown = ({
     </div>
   );
 };
-
-// ─── TOGGLE FORMATTING BUTTON ───
 
 const ToggleFormattingButton = (props: {
   children: React.ReactNode;
@@ -164,24 +178,22 @@ const ToggleFormattingButton = (props: {
       onClick={props.onToggle}
       className={clsx(
         isActive ? "bg-gray-100 dark:bg-base-100" : "",
-        "h-full text-sm px-2.5 hover:bg-gray-100 dark:hover:bg-[#181C21] relative rounded-md group/toggle-button"
+        "h-full text-sm px-2.5 hover:bg-primary/20 dark:hover:bg-base-600  relative rounded-md group/toggle-button"
       )}
     >
       {props.children}
       <span className="sr-only">{props.name}</span>
       <div className="font-body pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 w-max opacity-0 transition-opacity group-hover/toggle-button:opacity-100 bg-black text-white text-xs p-2 rounded-md flex flex-col gap-y-1 shadow-lg z-[9999]">
         <span>{props.name}</span>
-        <span className="text-xs text-gray-400 flex gap-x-0.5 justify-center items-center">
-          {props.shortcut.split("").map((key, i) => (
-            <span key={i}>{key}</span>
+        <span className="text-xs text-ink-400 flex gap-x-0.5 justify-center items-center">
+          {props.shortcut.split("").map(key => (
+            <span key={key}>{key}</span>
           ))}
         </span>
       </div>
     </button>
   );
 };
-
-// ─── COLOR OPTION ───
 
 const ColorOption = (props: {
   color: ColorSpec;
@@ -191,7 +203,7 @@ const ColorOption = (props: {
   <button
     type="button"
     onMouseDown={stopBlur}
-    className="flex gap-x-1 items-center hover:bg-gray-100 px-2 py-1 rounded-md w-full dark:hover:bg-[#181C21]"
+    className="flex gap-x-1 items-center hover:bg-primary/20 px-2 py-1 rounded-lg w-full dark:hover:bg-base-600 "
     onClick={() => props.onShiftColor(props.color)}
   >
     <div
@@ -212,11 +224,9 @@ const ColorOption = (props: {
   </button>
 );
 
-// ─── COLOR TEXT BUTTON ───
-
 const ColorTextButton = (props: {
   editor: Editor;
-  open: boolean;       // FIX: now controlled by parent, no internal state
+  open: boolean;
   onToggle: () => void;
   onClose: () => void;
 }) => {
@@ -233,12 +243,6 @@ const ColorTextButton = (props: {
     },
     [props.editor]
   );
-
-/*   useEffect(() => {
-    if (props.editor.view.state.selection.empty) {
-      props.onClose();
-    }
-  }, [props.editor.view.state.selection.empty, props.onClose]); */
 
   return (
     <div className="pr-0.5 py-[1px] h-full relative group/toggle-button">
@@ -262,10 +266,15 @@ const ColorTextButton = (props: {
 
       {props.open && (
         <>
-          <div className="fixed inset-0 z-40" onMouseDown={props.onClose} />
+          <button
+            type="button"
+            aria-label="Close menu"
+            className="fixed inset-0 z-40"
+            onMouseDown={props.onClose}
+          />
           <div
-            onMouseDown={stopBlur}
-            className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-white border dark:bg-[#0C1015] dark:border-border-tertiary border-border-secondary px-1 py-2 flex gap-x-2 rounded-md shadow-md z-50"
+            onPointerDown={stopBlur}
+            className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-base-100 border  dark:border-border-tertiary border-border-tertiary px-1 py-2 flex gap-x-2 rounded-xl z-50"
           >
             <div className="flex flex-col gap-y-1">
               <span className="font-medium px-2 dark:text-white">Text</span>
@@ -282,7 +291,9 @@ const ColorTextButton = (props: {
               ))}
             </div>
             <div className="flex flex-col gap-y-1">
-              <span className="font-medium px-2 dark:text-white">Background</span>
+              <span className="font-medium px-2 dark:text-white">
+                Background
+              </span>
               {bgColors.map(color => (
                 <ColorOption
                   key={color.name}
@@ -301,8 +312,6 @@ const ColorTextButton = (props: {
     </div>
   );
 };
-
-// ─── ADD IMAGE BUTTON ───
 
 const AddImageButton = ({ editor }: { editor: Editor }) => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -328,7 +337,7 @@ const AddImageButton = ({ editor }: { editor: Editor }) => {
         type="button"
         onMouseDown={stopBlur}
         onClick={() => inputRef.current?.click()}
-        className="h-full text-sm px-2.5 hover:bg-gray-100 dark:hover:bg-[#181C21] relative rounded-md group/toggle-button"
+        className="h-full text-sm px-2.5 hover:bg-primary/20 dark:hover:bg-base-600  relative rounded-md group/toggle-button"
       >
         <PhotoIcon className="h-4 w-4" />
         <div className="font-body pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 w-max opacity-0 transition-opacity group-hover/toggle-button:opacity-100 bg-black text-white text-xs p-2 rounded-md shadow-lg z-[9999]">
@@ -345,8 +354,6 @@ const AddImageButton = ({ editor }: { editor: Editor }) => {
     </div>
   );
 };
-
-// ─── ADD LINK BUTTON ───
 
 const AddLinkButton = (props: {
   children: React.ReactNode;
@@ -399,7 +406,7 @@ const AddLinkButton = (props: {
         onClick={onClickLinkButton}
         className={clsx(
           isActive ? "bg-gray-100 dark:bg-[#0C1015]" : "",
-          "h-full text-sm px-2.5 dark:hover:bg-[#181C21] hover:bg-gray-100 relative rounded-md group/toggle-button"
+          "h-full text-sm px-2.5 dark:hover:bg-base-600 hover:bg-primary/20 relative rounded-md group/toggle-button"
         )}
       >
         {props.children}
@@ -410,7 +417,7 @@ const AddLinkButton = (props: {
 
       {showLinkForm && (
         <form
-          onMouseDown={stopBlur}
+          onPointerDown={stopBlur}
           className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-white dark:bg-[#0C1015] p-1.5 ring-1 ring-inset ring-gray-300 rounded-md dark:ring-[#262A30] flex items-center gap-x-1.5 h-8 shadow-md z-[9999]"
           onSubmit={onSubmit}
         >
@@ -433,8 +440,6 @@ const AddLinkButton = (props: {
   );
 };
 
-// ─── MAIN TOOLBAR ───
-
 const FormattingToolbar = ({ editor }: { editor: Editor }) => {
   const [openMenu, setOpenMenu] = useState<OpenMenu>(null);
 
@@ -444,7 +449,9 @@ const FormattingToolbar = ({ editor }: { editor: Editor }) => {
         <NodeTypeDropdown
           editor={editor}
           open={openMenu === "node-type"}
-          onToggle={() => setOpenMenu(prev => prev === "node-type" ? null : "node-type")}
+          onToggle={() =>
+            setOpenMenu(prev => (prev === "node-type" ? null : "node-type"))
+          }
           onClose={() => setOpenMenu(null)}
         />
       </div>
@@ -489,7 +496,9 @@ const FormattingToolbar = ({ editor }: { editor: Editor }) => {
         <ColorTextButton
           editor={editor}
           open={openMenu === "color"}
-          onToggle={() => setOpenMenu(prev => prev === "color" ? null : "color")}
+          onToggle={() =>
+            setOpenMenu(prev => (prev === "color" ? null : "color"))
+          }
           onClose={() => setOpenMenu(null)}
         />
       </div>
