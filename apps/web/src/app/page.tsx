@@ -1,19 +1,15 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { redirect } from "next/navigation";
 
 import { useSession } from "@/components/Visualization/hooks/useAuth";
 
-export default function RootPage() {
-  const router = useRouter();
-  const { isAuthenticated, loading } = useSession({ redirectToLogin: true });
+export default async function RootPage() {
+  const session = await useSession({ redirectToLogin: true });
 
-  useEffect(() => {
-    if (!loading && isAuthenticated) {
-      router.replace("/workspace");
-    }
-  }, [loading, isAuthenticated, router]);
+  if (!session) {
+    redirect("/signin");
+  }
 
-  return null;
+  redirect("/workspace");
 }

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 
 import { useSignup } from "../Visualization/hooks/useAuth";
 
@@ -16,6 +17,7 @@ export default function SignUpForm() {
   const stepParam = Number(searchParams.get("step") ?? "1") as Step;
   const [step, setStep] = useState<Step>(stepParam);
   const [localError, setLocalError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -141,14 +143,28 @@ export default function SignUpForm() {
             onChange={handleChange}
             className="mt-1 w-full rounded-3xl  dark:bg-base-400 bg-white p-2.5 px-5 text-ink-100 dark:text-white border border-[#DEE2E6] dark:placeholder:text-ink-400 dark:border-border-tertiary focus:border-primary focus:ring-1 focus:ring-[#A308F0] outline-none text-[0.9rem]"
           />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
-            className="mt-1 w-full rounded-3xl  dark:bg-base-400 bg-white p-2.5 px-5 text-ink-100 dark:text-white border border-[#DEE2E6] dark:placeholder:text-ink-400 dark:border-border-tertiary focus:border-primary focus:ring-1 focus:ring-[#A308F0] outline-none text-[0.9rem]"
-          />
+          <div className="relative">
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={handleChange}
+              className="mt-1 w-full font-body rounded-3xl dark:bg-base-400 bg-[#FFFFFF] p-2.5 px-5 pr-12 text-ink-100 dark:text-white border border-[#DEE2E6] focus:border-[#A308F0] focus:ring-1 focus:ring-[#A308F0] outline-none font-medium text-[0.9rem] placeholder:text-muted-foreground dark:placeholder:text-ink-400 dark:border-border-tertiary"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(prev => !prev)}
+              className="absolute right-4 top-1/2 translate-y-[-50%] text-ink-400 dark:text-ink-400 hover:text-ink-100 dark:hover:text-white transition-colors"
+              tabIndex={-1}
+            >
+              {showPassword ? (
+                <MdVisibilityOff size={18} />
+              ) : (
+                <MdVisibility size={18} />
+              )}
+            </button>
+          </div>
           <button
             type="submit"
             className="w-full rounded-3xl bg-[#0F0F0F] dark:bg-white dark:text-black px-4 py-3.5 text-white font-medium text-sm font-body"

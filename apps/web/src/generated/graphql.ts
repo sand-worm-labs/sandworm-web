@@ -27,6 +27,18 @@ export type AuthPayload = {
   user: User;
 };
 
+export type Chat = {
+  __typename?: 'Chat';
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['String']['output'];
+  lastContext?: Maybe<Scalars['JSON']['output']>;
+  messages?: Maybe<Array<Message>>;
+  private: Scalars['Boolean']['output'];
+  title: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+  userId: Scalars['String']['output'];
+};
+
 export type Comment = {
   __typename?: 'Comment';
   authorId: Scalars['String']['output'];
@@ -35,6 +47,10 @@ export type Comment = {
   documentId: Scalars['String']['output'];
   id: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
+};
+
+export type CreateChatInput = {
+  title: Scalars['String']['input'];
 };
 
 export type CreateCommentInput = {
@@ -208,6 +224,17 @@ export type LoginInput = {
   password: Scalars['String']['input'];
 };
 
+export type Message = {
+  __typename?: 'Message';
+  attachments?: Maybe<Scalars['JSON']['output']>;
+  chatId: Scalars['String']['output'];
+  content: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['String']['output'];
+  parts?: Maybe<Scalars['JSON']['output']>;
+  role: Scalars['String']['output'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   /** Accept workspace invitation with hash from email */
@@ -218,6 +245,8 @@ export type Mutation = {
   approveRoleRequest: Scalars['Boolean']['output'];
   /** Remove multiple users from workspaces */
   batchRemoveUsersFromWorkspace: Scalars['Boolean']['output'];
+  /** Create a new chat */
+  createChat: Chat;
   /** Create a new comment on a document */
   createComment: Comment;
   /** Create a new reusable component */
@@ -232,6 +261,8 @@ export type Mutation = {
   createUser: User;
   /** Create a new workspace */
   createWorkspace: Workspace;
+  /** Delete a chat and its messages */
+  deleteChat: Scalars['Boolean']['output'];
   /** Delete a comment (only by comment author) */
   deleteComment: Scalars['Boolean']['output'];
   /** Delete a reusable component */
@@ -270,14 +301,19 @@ export type Mutation = {
   restartEnvironment: Environment;
   /** Restore a previously deleted document */
   restoreDocument: Document;
+  /** Add a user message to a chat */
+  sendMessage: Message;
   /** Add or remove environment variables */
   setEnvironmentVariables: Array<EnvironmentVariable>;
+  setWorkspaceDefaultAiModel: Scalars['Boolean']['output'];
   /** Switch to a different workspace */
   switchWorkspace: Scalars['Boolean']['output'];
   /** Unfollow User */
   unfollowUser: Profile;
   /** Unpublish a document */
   unpublishDocument: Document;
+  /** Update chat title or visibility */
+  updateChat: Chat;
   /** Update a reusable component */
   updateComponent: ReusableComponent;
   /** Update document metadata */
@@ -320,6 +356,11 @@ export type MutationBatchRemoveUsersFromWorkspaceArgs = {
 };
 
 
+export type MutationCreateChatArgs = {
+  input: CreateChatInput;
+};
+
+
 export type MutationCreateCommentArgs = {
   documentId: Scalars['String']['input'];
   input: CreateCommentInput;
@@ -358,6 +399,11 @@ export type MutationCreateUserArgs = {
 
 export type MutationCreateWorkspaceArgs = {
   name: Scalars['String']['input'];
+};
+
+
+export type MutationDeleteChatArgs = {
+  chatId: Scalars['String']['input'];
 };
 
 
@@ -466,8 +512,19 @@ export type MutationRestoreDocumentArgs = {
 };
 
 
+export type MutationSendMessageArgs = {
+  input: SendMessageInput;
+};
+
+
 export type MutationSetEnvironmentVariablesArgs = {
   input: SetEnvironmentVariablesInput;
+  workspaceId: Scalars['String']['input'];
+};
+
+
+export type MutationSetWorkspaceDefaultAiModelArgs = {
+  model: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
 };
 
@@ -485,6 +542,11 @@ export type MutationUnfollowUserArgs = {
 export type MutationUnpublishDocumentArgs = {
   documentId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateChatArgs = {
+  input: UpdateChatInput;
 };
 
 
@@ -541,6 +603,20 @@ export type MutationUpdateWorkspaceMemberRoleArgs = {
   workspaceId: Scalars['String']['input'];
 };
 
+export type OpenRouterAccountCredits = {
+  __typename?: 'OpenRouterAccountCredits';
+  availableCredits: Scalars['Float']['output'];
+  totalCredits: Scalars['Float']['output'];
+  usedCredits: Scalars['Float']['output'];
+};
+
+export type OpenRouterModel = {
+  __typename?: 'OpenRouterModel';
+  details: Scalars['JSON']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+};
+
 export type Profile = {
   __typename?: 'Profile';
   bio: Scalars['String']['output'];
@@ -551,6 +627,12 @@ export type Profile = {
 
 export type Query = {
   __typename?: 'Query';
+  /** Get a chat with its messages */
+  chat: Chat;
+  /** Get messages for a chat */
+  chatMessages: Array<Message>;
+  /** List all chats for the current user */
+  chats: Array<Chat>;
   /** Get a single comment by ID */
   comment: Comment;
   /** Get all comments for a document */
@@ -599,6 +681,12 @@ export type Query = {
   getWorkspaceMembers: Array<WorkspaceMember>;
   /** List all files in a workspace */
   listFiles: Array<SandwormFile>;
+  /** Get OpenRouter account credit usage */
+  openRouterAccountCredits: OpenRouterAccountCredits;
+  /** Get a specific OpenRouter model by ID */
+  openRouterModel?: Maybe<OpenRouterModel>;
+  /** List all available OpenRouter models */
+  openRouterModels: Array<OpenRouterModel>;
   /** Get Profile */
   profile: Profile;
   /** Get a single schedule by ID */
@@ -606,6 +694,16 @@ export type Query = {
   /** Get all schedules for a document */
   schedules: Array<Schedule>;
   tags: Array<Scalars['String']['output']>;
+};
+
+
+export type QueryChatArgs = {
+  chatId: Scalars['String']['input'];
+};
+
+
+export type QueryChatMessagesArgs = {
+  chatId: Scalars['String']['input'];
 };
 
 
@@ -712,6 +810,16 @@ export type QueryListFilesArgs = {
 };
 
 
+export type QueryOpenRouterAccountCreditsArgs = {
+  workspaceId: Scalars['String']['input'];
+};
+
+
+export type QueryOpenRouterModelArgs = {
+  modelId: Scalars['String']['input'];
+};
+
+
 export type QueryProfileArgs = {
   username: Scalars['String']['input'];
 };
@@ -796,6 +904,11 @@ export type Schedule = {
   weekdays?: Maybe<Scalars['String']['output']>;
 };
 
+export type SendMessageInput = {
+  chatId: Scalars['String']['input'];
+  content: Scalars['String']['input'];
+};
+
 export type SetEnvironmentVariablesInput = {
   add: Array<EnvironmentVariableInput>;
   remove: Array<Scalars['String']['input']>;
@@ -808,6 +921,12 @@ export type SocialLinksInput = {
   telegram?: InputMaybe<Scalars['String']['input']>;
   twitter?: InputMaybe<Scalars['String']['input']>;
   warpcast?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateChatInput = {
+  chatId: Scalars['String']['input'];
+  private?: InputMaybe<Scalars['Boolean']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateDocumentInput = {
@@ -878,6 +997,7 @@ export type WalletInput = {
 
 export type Workspace = {
   __typename?: 'Workspace';
+  assistantModel: Scalars['String']['output'];
   documents: Array<Document>;
   icon?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
@@ -934,7 +1054,7 @@ export enum WorkspacePlan {
 
 export type WorkspaceSecrets = {
   __typename?: 'WorkspaceSecrets';
-  hasExternalModelApiKey: Scalars['Boolean']['output'];
+  hasAiModelApiKey: Scalars['Boolean']['output'];
 };
 
 export type CreateUserMutationVariables = Exact<{
@@ -1133,6 +1253,14 @@ export type DeleteFileMutationVariables = Exact<{
 
 
 export type DeleteFileMutation = { __typename?: 'Mutation', deleteFile: boolean };
+
+export type SetWorkspaceDefaultAiModelMutationVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+  model: Scalars['String']['input'];
+}>;
+
+
+export type SetWorkspaceDefaultAiModelMutation = { __typename?: 'Mutation', setWorkspaceDefaultAiModel: boolean };
 
 export type CreateScheduleMutationVariables = Exact<{
   workspaceId: Scalars['String']['input'];
@@ -1349,6 +1477,25 @@ export type FileExistsQueryVariables = Exact<{
 
 export type FileExistsQuery = { __typename?: 'Query', fileExists: boolean };
 
+export type GetOpenRouterModelsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetOpenRouterModelsQuery = { __typename?: 'Query', openRouterModels: Array<{ __typename?: 'OpenRouterModel', id: string, name: string, details: any }> };
+
+export type GetOpenRouterModelQueryVariables = Exact<{
+  modelId: Scalars['String']['input'];
+}>;
+
+
+export type GetOpenRouterModelQuery = { __typename?: 'Query', openRouterModel?: { __typename?: 'OpenRouterModel', id: string, name: string, details: any } | null };
+
+export type GetOpenRouterAccountCreditsQueryVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+}>;
+
+
+export type GetOpenRouterAccountCreditsQuery = { __typename?: 'Query', openRouterAccountCredits: { __typename?: 'OpenRouterAccountCredits', totalCredits: number, usedCredits: number, availableCredits: number } };
+
 export type GetSchedulesQueryVariables = Exact<{
   input: ListSchedulesInput;
 }>;
@@ -1371,7 +1518,7 @@ export type GetUserWorkspaceInfoQuery = { __typename?: 'Query', getUserWorkspace
 export type GetUserWorkspacesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetUserWorkspacesQuery = { __typename?: 'Query', getUserWorkspaces: Array<{ __typename?: 'Workspace', id: string, name: string, plan: WorkspacePlan, icon?: string | null, source?: string | null, useCases: Array<string>, useContext?: string | null, ownerId: string, owner: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null }, users: Array<{ __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null }> }> };
+export type GetUserWorkspacesQuery = { __typename?: 'Query', getUserWorkspaces: Array<{ __typename?: 'Workspace', id: string, name: string, plan: WorkspacePlan, icon?: string | null, source?: string | null, useCases: Array<string>, useContext?: string | null, ownerId: string, assistantModel: string, owner: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null }, users: Array<{ __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null }>, secrets: { __typename?: 'WorkspaceSecrets', hasAiModelApiKey: boolean } }> };
 
 export type GetWorkspaceWithMembersQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
@@ -1390,7 +1537,7 @@ export type GetWorkspaceQueryVariables = Exact<{
 }>;
 
 
-export type GetWorkspaceQuery = { __typename?: 'Query', getWorkspace: { __typename?: 'Workspace', id: string, name: string, plan: WorkspacePlan, source?: string | null, useCases: Array<string>, useContext?: string | null, ownerId: string, icon?: string | null, owner: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null }, users: Array<{ __typename?: 'User', id: string, firstName?: string | null, lastName?: string | null, email?: string | null, avater?: string | null }>, documents: Array<{ __typename?: 'Document', id: string, title: string, slug: string, authorId: string, parentId?: string | null }> } };
+export type GetWorkspaceQuery = { __typename?: 'Query', getWorkspace: { __typename?: 'Workspace', id: string, name: string, plan: WorkspacePlan, source?: string | null, useCases: Array<string>, useContext?: string | null, ownerId: string, icon?: string | null, assistantModel: string, owner: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null }, users: Array<{ __typename?: 'User', id: string, firstName?: string | null, lastName?: string | null, email?: string | null, avater?: string | null }>, documents: Array<{ __typename?: 'Document', id: string, title: string, slug: string, authorId: string, parentId?: string | null }> } };
 
 export type GetWorkspaceDocumentsQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
@@ -2508,6 +2655,38 @@ export function useDeleteFileMutation(baseOptions?: Apollo.MutationHookOptions<D
 export type DeleteFileMutationHookResult = ReturnType<typeof useDeleteFileMutation>;
 export type DeleteFileMutationResult = Apollo.MutationResult<DeleteFileMutation>;
 export type DeleteFileMutationOptions = Apollo.BaseMutationOptions<DeleteFileMutation, DeleteFileMutationVariables>;
+export const SetWorkspaceDefaultAiModelDocument = gql`
+    mutation SetWorkspaceDefaultAiModel($workspaceId: String!, $model: String!) {
+  setWorkspaceDefaultAiModel(workspaceId: $workspaceId, model: $model)
+}
+    `;
+export type SetWorkspaceDefaultAiModelMutationFn = Apollo.MutationFunction<SetWorkspaceDefaultAiModelMutation, SetWorkspaceDefaultAiModelMutationVariables>;
+
+/**
+ * __useSetWorkspaceDefaultAiModelMutation__
+ *
+ * To run a mutation, you first call `useSetWorkspaceDefaultAiModelMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSetWorkspaceDefaultAiModelMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [setWorkspaceDefaultAiModelMutation, { data, loading, error }] = useSetWorkspaceDefaultAiModelMutation({
+ *   variables: {
+ *      workspaceId: // value for 'workspaceId'
+ *      model: // value for 'model'
+ *   },
+ * });
+ */
+export function useSetWorkspaceDefaultAiModelMutation(baseOptions?: Apollo.MutationHookOptions<SetWorkspaceDefaultAiModelMutation, SetWorkspaceDefaultAiModelMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SetWorkspaceDefaultAiModelMutation, SetWorkspaceDefaultAiModelMutationVariables>(SetWorkspaceDefaultAiModelDocument, options);
+      }
+export type SetWorkspaceDefaultAiModelMutationHookResult = ReturnType<typeof useSetWorkspaceDefaultAiModelMutation>;
+export type SetWorkspaceDefaultAiModelMutationResult = Apollo.MutationResult<SetWorkspaceDefaultAiModelMutation>;
+export type SetWorkspaceDefaultAiModelMutationOptions = Apollo.BaseMutationOptions<SetWorkspaceDefaultAiModelMutation, SetWorkspaceDefaultAiModelMutationVariables>;
 export const CreateScheduleDocument = gql`
     mutation CreateSchedule($workspaceId: String!, $input: CreateScheduleInput!) {
   createSchedule(workspaceId: $workspaceId, input: $input) {
@@ -3727,6 +3906,131 @@ export type FileExistsQueryHookResult = ReturnType<typeof useFileExistsQuery>;
 export type FileExistsLazyQueryHookResult = ReturnType<typeof useFileExistsLazyQuery>;
 export type FileExistsSuspenseQueryHookResult = ReturnType<typeof useFileExistsSuspenseQuery>;
 export type FileExistsQueryResult = Apollo.QueryResult<FileExistsQuery, FileExistsQueryVariables>;
+export const GetOpenRouterModelsDocument = gql`
+    query GetOpenRouterModels {
+  openRouterModels {
+    id
+    name
+    details
+  }
+}
+    `;
+
+/**
+ * __useGetOpenRouterModelsQuery__
+ *
+ * To run a query within a React component, call `useGetOpenRouterModelsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetOpenRouterModelsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetOpenRouterModelsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetOpenRouterModelsQuery(baseOptions?: Apollo.QueryHookOptions<GetOpenRouterModelsQuery, GetOpenRouterModelsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetOpenRouterModelsQuery, GetOpenRouterModelsQueryVariables>(GetOpenRouterModelsDocument, options);
+      }
+export function useGetOpenRouterModelsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetOpenRouterModelsQuery, GetOpenRouterModelsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetOpenRouterModelsQuery, GetOpenRouterModelsQueryVariables>(GetOpenRouterModelsDocument, options);
+        }
+export function useGetOpenRouterModelsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetOpenRouterModelsQuery, GetOpenRouterModelsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetOpenRouterModelsQuery, GetOpenRouterModelsQueryVariables>(GetOpenRouterModelsDocument, options);
+        }
+export type GetOpenRouterModelsQueryHookResult = ReturnType<typeof useGetOpenRouterModelsQuery>;
+export type GetOpenRouterModelsLazyQueryHookResult = ReturnType<typeof useGetOpenRouterModelsLazyQuery>;
+export type GetOpenRouterModelsSuspenseQueryHookResult = ReturnType<typeof useGetOpenRouterModelsSuspenseQuery>;
+export type GetOpenRouterModelsQueryResult = Apollo.QueryResult<GetOpenRouterModelsQuery, GetOpenRouterModelsQueryVariables>;
+export const GetOpenRouterModelDocument = gql`
+    query GetOpenRouterModel($modelId: String!) {
+  openRouterModel(modelId: $modelId) {
+    id
+    name
+    details
+  }
+}
+    `;
+
+/**
+ * __useGetOpenRouterModelQuery__
+ *
+ * To run a query within a React component, call `useGetOpenRouterModelQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetOpenRouterModelQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetOpenRouterModelQuery({
+ *   variables: {
+ *      modelId: // value for 'modelId'
+ *   },
+ * });
+ */
+export function useGetOpenRouterModelQuery(baseOptions: Apollo.QueryHookOptions<GetOpenRouterModelQuery, GetOpenRouterModelQueryVariables> & ({ variables: GetOpenRouterModelQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetOpenRouterModelQuery, GetOpenRouterModelQueryVariables>(GetOpenRouterModelDocument, options);
+      }
+export function useGetOpenRouterModelLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetOpenRouterModelQuery, GetOpenRouterModelQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetOpenRouterModelQuery, GetOpenRouterModelQueryVariables>(GetOpenRouterModelDocument, options);
+        }
+export function useGetOpenRouterModelSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetOpenRouterModelQuery, GetOpenRouterModelQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetOpenRouterModelQuery, GetOpenRouterModelQueryVariables>(GetOpenRouterModelDocument, options);
+        }
+export type GetOpenRouterModelQueryHookResult = ReturnType<typeof useGetOpenRouterModelQuery>;
+export type GetOpenRouterModelLazyQueryHookResult = ReturnType<typeof useGetOpenRouterModelLazyQuery>;
+export type GetOpenRouterModelSuspenseQueryHookResult = ReturnType<typeof useGetOpenRouterModelSuspenseQuery>;
+export type GetOpenRouterModelQueryResult = Apollo.QueryResult<GetOpenRouterModelQuery, GetOpenRouterModelQueryVariables>;
+export const GetOpenRouterAccountCreditsDocument = gql`
+    query GetOpenRouterAccountCredits($workspaceId: String!) {
+  openRouterAccountCredits(workspaceId: $workspaceId) {
+    totalCredits
+    usedCredits
+    availableCredits
+  }
+}
+    `;
+
+/**
+ * __useGetOpenRouterAccountCreditsQuery__
+ *
+ * To run a query within a React component, call `useGetOpenRouterAccountCreditsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetOpenRouterAccountCreditsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetOpenRouterAccountCreditsQuery({
+ *   variables: {
+ *      workspaceId: // value for 'workspaceId'
+ *   },
+ * });
+ */
+export function useGetOpenRouterAccountCreditsQuery(baseOptions: Apollo.QueryHookOptions<GetOpenRouterAccountCreditsQuery, GetOpenRouterAccountCreditsQueryVariables> & ({ variables: GetOpenRouterAccountCreditsQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetOpenRouterAccountCreditsQuery, GetOpenRouterAccountCreditsQueryVariables>(GetOpenRouterAccountCreditsDocument, options);
+      }
+export function useGetOpenRouterAccountCreditsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetOpenRouterAccountCreditsQuery, GetOpenRouterAccountCreditsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetOpenRouterAccountCreditsQuery, GetOpenRouterAccountCreditsQueryVariables>(GetOpenRouterAccountCreditsDocument, options);
+        }
+export function useGetOpenRouterAccountCreditsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetOpenRouterAccountCreditsQuery, GetOpenRouterAccountCreditsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetOpenRouterAccountCreditsQuery, GetOpenRouterAccountCreditsQueryVariables>(GetOpenRouterAccountCreditsDocument, options);
+        }
+export type GetOpenRouterAccountCreditsQueryHookResult = ReturnType<typeof useGetOpenRouterAccountCreditsQuery>;
+export type GetOpenRouterAccountCreditsLazyQueryHookResult = ReturnType<typeof useGetOpenRouterAccountCreditsLazyQuery>;
+export type GetOpenRouterAccountCreditsSuspenseQueryHookResult = ReturnType<typeof useGetOpenRouterAccountCreditsSuspenseQuery>;
+export type GetOpenRouterAccountCreditsQueryResult = Apollo.QueryResult<GetOpenRouterAccountCreditsQuery, GetOpenRouterAccountCreditsQueryVariables>;
 export const GetSchedulesDocument = gql`
     query GetSchedules($input: ListSchedulesInput!) {
   schedules(input: $input) {
@@ -3884,6 +4188,7 @@ export const GetUserWorkspacesDocument = gql`
     useCases
     useContext
     ownerId
+    assistantModel
     owner {
       id
       username
@@ -3897,6 +4202,9 @@ export const GetUserWorkspacesDocument = gql`
       email
       firstName
       lastName
+    }
+    secrets {
+      hasAiModelApiKey
     }
   }
 }
@@ -4050,6 +4358,7 @@ export const GetWorkspaceDocument = gql`
     useContext
     ownerId
     icon
+    assistantModel
     owner {
       id
       username

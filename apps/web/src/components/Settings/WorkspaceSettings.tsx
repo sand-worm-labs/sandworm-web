@@ -31,6 +31,9 @@ import {
 } from "../Visualization/hooks/useWorkspaces";
 import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
 import MiniUsersList from "../Visualization/blocks/MiniUsersList";
+import { useOpenRouterModels } from "../Visualization/hooks/useOpenRouterModel";
+import { ModelPickerModal } from "../Visualization/blocks/ModelPicker";
+import InviteUserModal from "../InviteUser";
 
 import { WorkspaceIcon } from "./WorkspaceIcon";
 
@@ -45,7 +48,7 @@ interface WorkspaceSettingsModalProps {
       hasOpenAiApiKey?: boolean;
     };
   } | null;
-  isAdmin: boolean;
+  isAdmin?: boolean;
   updateWorkspace: (id: string, name: string, icon?: string) => Promise<void>;
   isUpdating: boolean;
   disableCustomOpenAiKey?: boolean;
@@ -90,140 +93,160 @@ export function EditWorkspaceProfileModal({
     !/[^\w\s]/.test(workspaceName);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div
-        className="absolute inset-0 bg-[#0000001A]"
-        onClick={onClose}
-        onKeyDown={(e: React.KeyboardEvent) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            onClose();
-          }
-        }}
-        role="button"
-        tabIndex={0}
-        aria-label="Close modal"
-      />
+    <Transition appear show={isOpen} as={Fragment}>
+      <Dialog as="div" className="relative z-50" onClose={onClose}>
+        <Transition.Child
+          as={Fragment}
+          enter="ease-out duration-300"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-200"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div className="fixed inset-0 bg-[#0000001A]" />
+        </Transition.Child>
 
-      <div className="relative bg-white dark:bg-base-400 dark:border dark:border-border-tertiary rounded-3xl w-full max-w-[31rem] mx-4 p-6 py-10 px-10">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-base font-medium text-ink-100 dark:text-white">
-            Edit workspace Profile
-          </h2>
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-          >
-            <XMarkIcon className="h-5 w-5 text-ink-400" />
-          </button>
-        </div>
+        <div className="fixed inset-0 overflow-y-auto font-body">
+          <div className="flex min-h-full items-center justify-center p-4">
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0 scale-95"
+              enterTo="opacity-100 scale-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100 scale-100"
+              leaveTo="opacity-0 scale-95"
+            >
+              <Dialog.Panel className="relative bg-white dark:bg-base-400 dark:border dark:border-border-tertiary rounded-3xl w-full max-w-md  mx-4 p-6 py-10 px-10">
+                <div className="flex items-center justify-between mb-6">
+                  <Dialog.Title
+                    as="h2"
+                    className="text-base font-medium text-ink-100 dark:text-white"
+                  >
+                    Edit workspace Profile
+                  </Dialog.Title>
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  >
+                    <XMarkIcon className="h-5 w-5 text-ink-400" />
+                  </button>
+                </div>
 
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-ink-100  mb-3">
-            Workspace Icon
-          </label>
-          <div className="flex items-center gap-3">
-            {/* Current selection preview */}
-            <div className="relative w-14 h-14 rounded-full border-2 border-[#DEE2E6] dark:border-border-tertiary flex items-center justify-center overflow-hidden mr-4">
-              {selectedIcon ? (
-                <WorkspaceIcon
-                  icon={selectedIcon}
-                  size={56}
-                  className="object-cover"
-                />
-              ) : (
-                <span className="text-[10px] text-center text-ink-400 leading-tight">
-                  No icon
-                </span>
-              )}
-            </div>
-
-            {PRESET_ICONS.map(colorKey => {
-              const isSelected = selectedIcon === colorKey;
-              return (
-                <button
-                  key={colorKey}
-                  type="button"
-                  onClick={() => setSelectedIcon(colorKey)}
-                  className={`relative w-8 h-8 rounded-full transition-all overflow-hidden ${
-                    isSelected
-                      ? "ring-2 ring-[#A308F0] ring-offset-2 dark:ring-border-tertiary]"
-                      : "hover:scale-110"
-                  }`}
-                  aria-label={`${colorKey.replace(".png", "")} icon`}
-                >
-                  <WorkspaceIcon icon={colorKey} size={32} />
-                  {isSelected && (
-                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                      <CheckIcon className="w-4 h-4 text-white stroke-[3]" />
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-ink-100 mb-3">
+                    Workspace Icon
+                  </label>
+                  <div className="flex items-center gap-3">
+                    <div className="relative w-14 h-14 rounded-full border-2 border-[#DEE2E6] dark:border-border-tertiary flex items-center justify-center overflow-hidden mr-4">
+                      {selectedIcon ? (
+                        <WorkspaceIcon
+                          icon={selectedIcon}
+                          size={56}
+                          className="object-cover"
+                        />
+                      ) : (
+                        <span className="text-[10px] text-center text-ink-400 leading-tight">
+                          No icon
+                        </span>
+                      )}
                     </div>
+
+                    {PRESET_ICONS.map(colorKey => {
+                      const isSelected = selectedIcon === colorKey;
+                      return (
+                        <button
+                          key={colorKey}
+                          type="button"
+                          onClick={() => setSelectedIcon(colorKey)}
+                          className={`relative w-8 h-8 rounded-full transition-all overflow-hidden ${
+                            isSelected
+                              ? "ring-2 ring-[#A308F0] ring-offset-2 dark:ring-border-tertiary"
+                              : "hover:scale-110"
+                          }`}
+                          aria-label={`${colorKey.replace(".png", "")} icon`}
+                        >
+                          <WorkspaceIcon icon={colorKey} size={32} />
+                          {isSelected && (
+                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                              <CheckIcon className="w-4 h-4 text-white stroke-[3]" />
+                            </div>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="mb-10">
+                  <label className="block text-sm font-medium text-[#1A1A1A] dark:text-gray-300 mb-3">
+                    Workspace Name
+                  </label>
+                  <input
+                    type="text"
+                    value={workspaceName}
+                    onChange={e => setWorkspaceName(e.target.value)}
+                    placeholder="Enter workspace name"
+                    className="w-full px-4 py-3 rounded-xl bg-[#F8F9FA] dark:bg-base-100 border border-[#DEE2E6] dark:border-border-tertiary text-ink-100 placeholder:text-[#6C757D] dark:placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-[#A308F0] focus:border-transparent transition-all text-sm font-medium"
+                  />
+                  <ul className="mt-2 space-y-1 text-xs font-medium">
+                    <li className="flex items-center gap-1">
+                      <span className="text-[#6C757D] dark:text-ink-400">
+                        ·
+                      </span>
+                      Workspace name should be less than 40 characters
+                    </li>
+                    <li className="flex items-center gap-1">
+                      <span className="text-[#6C757D] dark:text-ink-400">
+                        ·
+                      </span>
+                      Cannot contain punctuation/special marks
+                    </li>
+                  </ul>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleSave}
+                  disabled={!isNameValid || isLoading}
+                  className="w-full py-3.5 px-4 bg-[#A308F0] hover:bg-[#8a07c9] disabled:bg-[#868E96] dark:disabled:bg-[#4a4a48] text-[#E9ECEF] font-medium rounded-xl transition-colors disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
+                >
+                  {isLoading ? (
+                    <>
+                      <svg
+                        className="animate-spin h-4 w-4"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        />
+                      </svg>
+                      Saving...
+                    </>
+                  ) : (
+                    "Save Changes"
                   )}
                 </button>
-              );
-            })}
+              </Dialog.Panel>
+            </Transition.Child>
           </div>
         </div>
-
-        <div className="mb-10">
-          <label className="block text-sm font-medium text-[#1A1A1A] dark:text-gray-300 mb-3">
-            Workspace Name
-          </label>
-          <input
-            type="text"
-            value={workspaceName}
-            onChange={e => setWorkspaceName(e.target.value)}
-            placeholder="Enter workspace name"
-            className="w-full px-4 py-3 rounded-xl bg-[#F8F9FA] dark:bg-base-100  border border-[#DEE2E6] dark:border-border-tertiary text-ink-100 placeholder:text-[#6C757D] dark:placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-[#A308F0] focus:border-transparent transition-all text-sm font-medium"
-          />
-          <ul className="mt-2 space-y-1 text-xs font-medium">
-            <li className="flex items-center gap-1">
-              <span className="text-[#6C757D] dark:text-ink-400">·</span>
-              Workspace name should be less than 40 characters
-            </li>
-            <li className="flex items-center gap-1">
-              <span className="text-[#6C757D]  dark:text-ink-400">·</span>
-              Cannot contain punctuation/special marks
-            </li>
-          </ul>
-        </div>
-
-        <button
-          type="button"
-          onClick={handleSave}
-          disabled={!isNameValid || isLoading}
-          className="w-full py-3.5 px-4 bg-[#A308F0] hover:bg-[#8a07c9] disabled:bg-[#868E96] dark:disabled:bg-[#4a4a48] text-[#E9ECEF] font-medium rounded-xl transition-colors disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
-        >
-          {isLoading ? (
-            <>
-              <svg
-                className="animate-spin h-4 w-4"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                />
-              </svg>
-              Saving...
-            </>
-          ) : (
-            "Save Changes"
-          )}
-        </button>
-      </div>
-    </div>
+      </Dialog>
+    </Transition>
   );
 }
 
@@ -311,6 +334,47 @@ export function DeleteWorkspaceModal({
   );
 }
 
+function formatCredit(value: number): string {
+  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
+  if (value >= 1_000) return `${(value / 1_000).toFixed(1)}K`;
+  return value.toFixed(2);
+}
+
+// ─── COMPONENTS ──────────────────────────────────────────────────────────────
+
+function CreditArc({ pct }: { pct: number }) {
+  const r = 14;
+  const cx = 18;
+  const cy = 18;
+  const circumference = 2 * Math.PI * r;
+  const dash = circumference * Math.min(pct, 1);
+
+  return (
+    <svg width="36" height="36" className="-rotate-90">
+      {/* track */}
+      <circle
+        cx={cx}
+        cy={cy}
+        r={r}
+        fill="none"
+        strokeWidth="3"
+        className="stroke-[#E9ECEF] dark:stroke-border-tertiary"
+      />
+      {/* fill */}
+      <circle
+        cx={cx}
+        cy={cy}
+        r={r}
+        fill="none"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeDasharray={`${dash} ${circumference}`}
+        className="stroke-primary transition-all duration-700"
+      />
+    </svg>
+  );
+}
+
 interface WorkspaceSettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -333,7 +397,6 @@ export default function WorkspaceSettingsModal({
   workspace,
   updateWorkspace,
   isUpdating,
-  disableCustomOpenAiKey,
 }: WorkspaceSettingsModalProps) {
   const router = useRouter();
 
@@ -365,9 +428,24 @@ export default function WorkspaceSettingsModal({
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+
   const currentWorkspace = useStringQuery("workspace");
   const [{ loading: isDeleting, error: deleteError }, { deleteWorkspace }] =
     useDeleteWorkspace(currentWorkspace ?? undefined);
+  const {
+    models,
+    loading,
+    error,
+    selectedModelId,
+    isPickerOpen,
+    openPicker,
+    closePicker,
+    selectModel,
+    credits,
+  } = useOpenRouterModels(currentWorkspace);
+
+  console.log(credits, "credot");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -507,7 +585,7 @@ export default function WorkspaceSettingsModal({
               {/* Header */}
               <div className="flex items-center justify-between px-6 py-4 pt-12">
                 <div>
-                  <div className="flex gap-x-3">
+                  <div className="flex gap-x-3 items-center">
                     <WorkspaceIcon icon={workspace?.icon} />
                     <h2 className="text-base font-semibold text-ink-100 dark:text-white capitalize flex items-center gap-2">
                       {workspace?.name} workspace
@@ -540,9 +618,7 @@ export default function WorkspaceSettingsModal({
                       </span>
                     </div>
 
-                    <div className="px-3 flex items-center justify-center gap-2 text-sm text-[#6C757D] font-medium dark:text-ink-400 border-r border-[#1A1A1A]">
-                      Pro
-                    </div>
+                    <div className="px-3 flex items-center justify-center gap-2 text-sm text-[#6C757D] font-medium dark:text-ink-400 border-r border-[#1A1A1A]" />
 
                     <button
                       type="button"
@@ -575,9 +651,7 @@ export default function WorkspaceSettingsModal({
                 </button>
               </div>
 
-              {/* Content */}
               <div className="px-6 py-4 space-y-0 div dark:divide-border-tertiary">
-                {/* Team Plan */}
                 <div className="flex items-center justify-between gap-4 py-4 border-[#E9ECEF]">
                   <div className="flex flex-col gap-y-2">
                     <label className="block text-md font-bold leading-4 dark:text-white text-ink-100">
@@ -602,23 +676,48 @@ export default function WorkspaceSettingsModal({
                     </div>
                   </div>
 
-                  <div className="flex w-[50%] justify-between border-b border-[#E9ECEF] pb-2 dark:border-border-tertiary ">
-                    <div className="flex">
-                      <div>
-                        <div className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-2.5">
-                          Current plan
-                        </div>
-                        <div className="font-medium capitalize bg-[#F7E8FF] dark:bg-[#2a1a3a] px-3 py-0.5 rounded-md text-primary inline-block text-sm">
-                          Free
-                        </div>
+                  <div className="flex w-[50%] justify-between border-b border-[#E9ECEF] pb-2 dark:border-border-tertiary items-center">
+                    {/* Plan */}
+                    <div>
+                      <span className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-2.5">
+                        Current Plan
+                      </span>
+                      <div className="font-medium capitalize bg-[#F7E8FF] dark:bg-[#2a1a3a] px-3 py-0.5 rounded-md text-primary inline-block text-sm">
+                        Free
                       </div>
                     </div>
+
+                    {/* Credits */}
                     <div>
-                      <div className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-2.5">
-                        Available AI Credit
-                      </div>
-                      <div className="font-medium text-[#6C757D] dark:text-ink-400 capitalize px-2 py-0.5 block inline-block text-sm">
-                        0
+                      <span className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-2.5">
+                        AI Credits
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <CreditArc
+                          pct={
+                            credits
+                              ? credits.usedCredits / credits.totalCredits
+                              : 0
+                          }
+                        />
+                        <div className="flex flex-col leading-tight">
+                          <span className="text-sm font-semibold text-ink-900 dark:text-ink-100">
+                            $
+                            {credits
+                              ? formatCredit(credits.availableCredits)
+                              : "—"}
+                            <span className="text-xs font-normal text-[#6C757D] dark:text-ink-400">
+                              {" "}
+                              / $
+                              {credits
+                                ? formatCredit(credits.totalCredits)
+                                : "—"}
+                            </span>
+                          </span>
+                          <span className="text-[11px] text-[#6C757D] dark:text-ink-400">
+                            available (USD)
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -639,48 +738,30 @@ export default function WorkspaceSettingsModal({
                     <div className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-1.5">
                       Model
                     </div>
-                    <select
-                      className="block w-full rounded-[10px] xl:py-2 border-0 py-1.5 pl-4 pr-10 text-ink-100 font-medium ring-1 ring-inset ring-[#CED4DA] focus:ring-1 focus:ring-[#A308F0] text-sm dark:bg-base-400 disabled:bg-gray-100 dark:text-white dark:ring-border-tertiary"
-                      defaultValue="gpt-4o"
+                    <button
+                      type="button"
+                      onClick={openPicker}
+                      className="flex items-center justify-between w-full rounded-[10px] xl:py-2 py-1.5 pl-4 pr-3 ring-1 ring-inset ring-[#CED4DA] dark:ring-border-tertiary focus:ring-[#A308F0] dark:bg-base-400 text-sm font-medium text-ink-100 dark:text-white transition-colors hover:ring-[#A308F0]/50"
                     >
-                      <option value="gpt-4o">GPT-4o (Recommended)</option>
-                      <option value="gpt-4">GPT-4</option>
-                      <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-                    </select>
+                      <span className="text-[#6C757D] dark:text-ink-400">
+                        {selectedModelId ?? workspace?.assistantModel}
+                      </span>
+                      <svg
+                        className="w-4 h-4 text-[#6C757D] shrink-0"
+                        viewBox="0 0 16 16"
+                        fill="none"
+                      >
+                        <path
+                          d="M4 6L8 10L12 6"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </button>
                   </div>
                 </div>
-
-                {/* Custom OpenAI API Key */}
-                {!disableCustomOpenAiKey && (
-                  <div className="flex items-center justify-between gap-4 py-4">
-                    <div className="flex flex-col gap-y-2">
-                      <label className="block text-md font-bold leading-4 dark:text-white text-ink-100">
-                        Custom AI API Key
-                      </label>
-                      <span className="text-xs xl:text-sm mt-2 text-[#6C757D] dark:text-ink-400">
-                        Set a custom API key for your workspace
-                      </span>
-                    </div>
-
-                    <div className="w-[50%]">
-                      <div className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-1.5">
-                        set key
-                      </div>
-                      <select
-                        className="block w-full rounded-[10px] xl:py-2 border-0 py-1.5 pl-4 pr-10 text-ink-100 font-medium ring-1 ring-inset ring-[#CED4DA] focus:ring-1 focus:ring-[#A308F0] text-sm dark:bg-base-400 disabled:bg-gray-100 dark:text-white dark:ring-border-tertiary"
-                        defaultValue="gpt-4o"
-                      >
-                        <option value="gpt-4o">
-                          Not set - Using sandworm default quotas
-                        </option>
-                        <option value="gpt-4">GPT-4</option>
-                        <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-                      </select>
-                    </div>
-                  </div>
-                )}
-
-                {/* Members */}
                 <div className="flex items-start justify-between gap-4 py-4">
                   <div className="flex flex-col gap-y-2">
                     <label className="block text-md font-bold leading-4 dark:text-white text-ink-100">
@@ -700,7 +781,7 @@ export default function WorkspaceSettingsModal({
                       users={members}
                       onRemoveUser={onRemoveUser}
                       onChangeRole={onChangeRole}
-                      onInvite={() => {}}
+                      onInvite={() => setIsInviteModalOpen(true)}
                     />
                   </div>
                 </div>
@@ -778,6 +859,14 @@ export default function WorkspaceSettingsModal({
           }
         />
 
+        <InviteUserModal
+          isOpen={isInviteModalOpen}
+          onClose={() => setIsInviteModalOpen(false)}
+          workspaceName={workspace.name}
+          workspaceId={workspace.id}
+          onInvite={handleSendInvite}
+        />
+
         <EditWorkspaceProfileModal
           isOpen={isEditModalOpen}
           onClose={() => setIsEditModalOpen(false)}
@@ -800,6 +889,17 @@ export default function WorkspaceSettingsModal({
             }
           }}
           isLoading={isUpdating}
+        />
+
+        <ModelPickerModal
+          isOpen={isPickerOpen}
+          onClose={closePicker}
+          onSelect={selectModel}
+          models={models}
+          loading={loading}
+          error={error}
+          selectedModelId={selectedModelId}
+          title="Select Model"
         />
       </div>
     </Transition>
