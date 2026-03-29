@@ -262,7 +262,7 @@ export class Init1773395873162 implements MigrationInterface {
                 "use_context" character varying,
                 "plan" "public"."workspaces_plan_enum" NOT NULL DEFAULT 'free',
                 "owner_id" uuid,
-                "assistant_model" character varying NOT NULL DEFAULT 'gpt-4o',
+                "assistant_model" character varying NOT NULL DEFAULT 'anthropic/claude-sonnet-4.6',
                 CONSTRAINT "PK_workspace_id" PRIMARY KEY ("id")
             )
         `);

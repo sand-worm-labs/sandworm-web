@@ -2,7 +2,7 @@ import {
   Injectable,
   Logger,
   NotFoundException,
-  BadRequestException
+  BadRequestException,
 } from '@nestjs/common';
 import { In, Repository } from 'typeorm';
 import {
@@ -26,6 +26,7 @@ import { WorkspaceInfo } from '../model/workspace-info.model';
 import { getRandomIconColor } from '@/common/utils/color';
 import { EnvironmentService } from '@/features/environment/environment.service';
 import { OpenRouterService } from '@/infrastructure/openrouter/openrouter.service';
+import { AI_ENV_KEYS, AIProvider } from '@/core/constants/app.constant';
 
 @Injectable()
 export class WorkspaceService {
@@ -41,7 +42,7 @@ export class WorkspaceService {
     @InjectRepository(DocumentEntity)
     private readonly documentRepository: Repository<DocumentEntity>,
     private readonly environmentService: EnvironmentService,
-    private readonly openRouterService: OpenRouterService
+    private readonly openRouterService: OpenRouterService, 
   ) { }
 
 
@@ -123,10 +124,20 @@ export class WorkspaceService {
 
     await this.workspaceMembersRepository.save(userWorkspace);
     await this.environmentService.getEnvironment(savedWorkspace.id);
-    let key = await this.openRouterService.provisionKey(savedWorkspace.id);
-    console.dir({key, pppp:"hhhhh"})
+    await this.setupAIKey(savedWorkspace.id, AIProvider.OPENROUTER);
  
     return Workspace.fromEntity(savedWorkspace);
+  }
+ 
+  async setupAIKey(workspaceId: string, provider: AIProvider) {
+    const envKey = AI_ENV_KEYS[provider];
+
+    const key = await this.openRouterService.provisionKey(workspaceId);
+
+    await this.environmentService.setEnvironmentVariables(workspaceId, {
+      add: [{ name: envKey, value: key.data.hash }],
+      remove: [],
+    });
   }
 
   async deleteWorkspace(workspaceId: string, ownerId: string): Promise<void> {
@@ -300,28 +311,6 @@ export class WorkspaceService {
     return Workspace.fromEntities(workspaces);
   }
 
-  async getWorkspaceDefaultAiModel(workspaceId: string, userId: string): Promise<string> {
-    await this.validateAndGetUser(userId, 'User');
-    const membership = await this.workspaceMembersRepository.findOne({
-      where: { workspaceId, userId, status: UserWorkspaceStatus.ACTIVE },
-    });
-
-    if (!membership) {
-      throw new BadRequestException(
-        'You must be a member of this workspace',
-      );
-    }
-
-    const workspace = await this.workspaceRepository.findOne({
-      where: { id: workspaceId },
-    });
-  
-    if (!workspace) {
-      throw new NotFoundException('Workspace not found');
-    }
-    return workspace.assistantModel
-  }
-
   async setWorkspaceDefaultAiModel(workspaceId: string,userId: string, model: string): Promise<void> {  
     validateUUID(workspaceId, 'Workspace ID');
     validateUUID(userId, 'User ID');
@@ -354,5 +343,37 @@ export class WorkspaceService {
     workspace.assistantModel = model.trim();
 
     await this.workspaceRepository.save(workspace);
+  }
+
+  async hasModelAiKey(workspaceId: string): Promise<boolean> {
+    const workspace = await this.workspaceRepository.findOne({
+      where: { id: workspaceId },
+    });
+  
+    if (!workspace) {
+      throw new NotFoundException('Workspace not found');
+    }
+    const foundKey = await this.environmentService.getEnvironmentVariable(workspace.id, AI_ENV_KEYS[AIProvider.OPENROUTER]);
+    if (!foundKey) {
+      await this.setupAIKey(workspace.id, AIProvider.OPENROUTER);
+      return true;
+    }
+    return true;
+  }
+
+  async getWorkspaceAiHash(workspaceId: string): Promise<string | null> {
+    validateUUID(workspaceId, 'Workspace ID');
+
+    const workspace = await this.workspaceRepository.findOne({
+      where: { id: workspaceId },
+    });
+
+    if (!workspace) {
+      throw new NotFoundException('Workspace not found');
+    }
+
+    const envKey = AI_ENV_KEYS[AIProvider.OPENROUTER];
+    const aiEnvKey =  await this.environmentService.getEnvironmentVariable(workspaceId, envKey);
+    return aiEnvKey.value || null
   }
 }

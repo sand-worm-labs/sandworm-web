@@ -23,7 +23,7 @@ registerEnumType(UserWorkspaceRole, {
 @ObjectType()
 export class WorkspaceSecrets {
   @BooleanField()
-  hasExternalModelApiKey!: boolean;
+  hasAiModelApiKey!: boolean;
 }
 
 @ObjectType()
@@ -52,6 +52,9 @@ export class Workspace {
   @UUIDField()
   ownerId!: string;
 
+  @StringField()
+  assistantModel: string;
+
   static fromEntity(entity: WorkspaceEntity): Workspace {
     const workspace = new Workspace();
     workspace.id = entity.id;
@@ -62,6 +65,7 @@ export class Workspace {
     workspace.useContext = entity.useContext;
     workspace.plan = entity.plan;
     workspace.ownerId = entity.ownerId;
+    workspace.assistantModel = entity.assistantModel;
     return workspace;
   }
 
