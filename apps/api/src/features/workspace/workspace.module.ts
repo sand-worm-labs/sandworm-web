@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import {
@@ -27,9 +27,9 @@ import { OpenRouterModule } from '@/infrastructure/openrouter/openrouter.module'
     ConfigModule,
     MailModule,
     EnvironmentModule,
-    OpenRouterModule
+    forwardRef(() => OpenRouterModule)
   ],
   providers: [WorkspaceService, WorkspaceMembershipService, WorkspaceResolver],
-  exports: [WorkspaceService],
+  exports: [WorkspaceService, WorkspaceMembershipService],
 })
 export class WorkspaceModule { }
