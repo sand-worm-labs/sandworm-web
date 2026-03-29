@@ -107,7 +107,6 @@ function MultiBlockSuggestion(props: MultiBlockSuggestionProps) {
 interface BlockListProps {
   workspaceId: string;
   onAddBlock: (type: BlockType) => void;
-  writebackEnabled: boolean;
   onOpenToolbox: () => void;
 }
 
@@ -143,8 +142,6 @@ function BlockList(props: BlockListProps) {
   const onAddDropdownInput = useCallback(() => {
     props.onAddBlock(BlockType.DropdownInput);
   }, [props.onAddBlock]);
-
-
 
   const onAddDateInput = useCallback(() => {
     props.onAddBlock(BlockType.DateInput);
@@ -300,8 +297,6 @@ function PlusButton(props: Props) {
 
   const btnDivProps = props.isLast ? { id: "last-plus-button" } : {};
 
-  console.log(props.isEditable, "hello", props.alwaysOpen)
-
   return (
     <>
       <div
@@ -332,7 +327,6 @@ function PlusButton(props: Props) {
           <BlockList
             workspaceId={props.workspaceId}
             onAddBlock={addBlockHandler}
-            writebackEnabled={props.writebackEnabled}
             onOpenToolbox={handleOpenToolbox}
           />
         )}
