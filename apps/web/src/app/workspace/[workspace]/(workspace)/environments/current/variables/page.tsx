@@ -11,39 +11,20 @@ import { uniq } from "ramda";
 import clsx from "clsx";
 import { useRouter } from "next/router";
 
-import Layout from "@/components/Layout";
 import type { EnvVar } from "@/hooks/useEnvironmentVariables";
-import { useEnvironmentVariables } from "@/hooks/useEnvironmentVariables";
-import { useStringQuery } from "@/hooks/useQueryArgs";
-import Spin from "@/components/Spin";
 import FormError from "@/components/forms/formError";
-import EnvBar from "@/components/EnvBar";
-import { useEnvironmentStatus } from "@/hooks/useEnvironmentStatus";
+Spin
+
+
 import { useSession } from "@/components/Visualization/hooks/useAuth";
 import ScrollBar from "@/components/Visualization/blocks/ScrollBar";
 import Files from "@/components/Visualization/blocks/Files";
+import { useEnvironmentStatus } from "@/components/Visualization/hooks/useEnvironmentStatus";
+import EnvBar from "@/components/Visualization/blocks/EnvBar";
+import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
+import Spin from "@/components/Visualization/blocks/Spin";
 
-const pagePath = (workspaceId: string) => [
-  { name: "Configurations", icon: Cog8ToothIcon, href: "#", current: false },
-  {
-    name: "Environments",
-    icon: CpuChipIcon,
-    href: `/workspaces/${workspaceId}/environments`,
-    current: true,
-  },
-  {
-    name: "Current Environment",
-    icon: CommandLineIcon,
-    href: `/workspaces/${workspaceId}/environments/current`,
-    current: true,
-  },
-  {
-    name: "Environment Variables",
-    icon: CodeBracketIcon,
-    href: `/workspaces/${workspaceId}/environments/current`,
-    current: true,
-  },
-];
+
 
 const envVarRegex = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
 
@@ -166,7 +147,6 @@ export default function EnvirontVariablesPage() {
   }
 
   return (
-    <Layout pagePath={pagePath(workspaceId)} user={session.data}>
       <div className="flex flex-col flex-grow h-full">
         <ScrollBar className="w-full bg-white h-full overflow-auto">
           <div className="px-4 sm:p-6 lg:p-8">
@@ -253,7 +233,6 @@ export default function EnvirontVariablesPage() {
           lastUpdatedAt={null}
         />
       </div>
-    </Layout>
   );
 }
 
