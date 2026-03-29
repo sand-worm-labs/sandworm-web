@@ -74,20 +74,29 @@ function createNewUploadFile(file: File): UploadFile {
 
 export const useFiles = (
   workspaceId: string,
-  refreshInterval?: number
+  refreshInterval?: number,
+  path: string = "./"
 ): UseFiles => {
   /* ========================================
      STEP 1: Fetch existing files from server
      ======================================== */
 
+  console.log("[useFiles] called with path:", path);
+
   const { data, refetch } = useListFilesQuery({
-    variables: { input: { path: "./", workspaceId } },
+    variables: { input: { path: "./data", workspaceId } },
     skip: !workspaceId,
+    fetchPolicy: "network-only",
+    nextFetchPolicy: "network-only",
     pollInterval:
       refreshInterval && refreshInterval > 0 ? refreshInterval : undefined,
   });
 
-  const files = useMemo(() => data?.listFiles ?? [], [data]);
+  const files = useMemo(() => {
+    console.log("[useFiles] raw data from query:", data);
+    console.log("[useFiles] files resolved:", data?.listFiles);
+    return data?.listFiles ?? [];
+  }, [data]);
 
   /* ========================================
      STEP 2: Delete functionality

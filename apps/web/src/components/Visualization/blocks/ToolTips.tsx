@@ -269,7 +269,7 @@ export function TooltipV2<T extends Element>(props: TooltipV2Props<T>) {
                     )}
 
                     {props.message && (
-                      <span className="inline-flex items-center justify-center text-ink-400 text-center">
+                      <span className="inline-flex items-center justify-center text-white text-center">
                         {props.message}
                       </span>
                     )}

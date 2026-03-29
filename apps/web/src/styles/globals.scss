@@ -217,6 +217,94 @@
 }
 
 /* ╔════════════════════════════════════════════╗
+   ║                Rich Text Editor            ║
+   ╚════════════════════════════════════════════╝ */
+.sandworm-prose.tiptap {
+  outline: none;
+}
+
+.sandworm-prose h1 {
+  font-size: 2rem; 
+  font-weight: 500;
+  line-height: 1.2;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  color: var(--color-ink-400, #374151);
+  color: "Moderat", sans-serif;
+}
+
+.sandworm-prose h2 {
+  font-size: 1.75rem;
+  font-weight: 500;
+  line-height: 1.3;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.sandworm-prose h3 {
+  font-size: 1.5rem; 
+  font-weight: 500;
+  margin-top: 0.8rem;
+  margin-bottom: 0.4rem;
+}
+
+.sandworm-prose ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.sandworm-prose ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.sandworm-prose li p {
+  margin: 0.25rem 0;
+}
+
+.sandworm-prose ul[data-type="taskList"] {
+  list-style: none;
+  padding: 0;
+  margin-left: 0.5rem;
+}
+
+.sandworm-prose ul[data-type="taskList"] li {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.sandworm-prose ul[data-type="taskList"] li > label {
+  flex: 0 0 auto;
+  margin-right: 0.75rem;
+  user-select: none;
+}
+
+.sandworm-prose ul[data-type="taskList"] li > div {
+  flex: 1 1 auto;
+}
+
+.sandworm-prose ul[data-type="taskList"] input[type="checkbox"] {
+  cursor: pointer;
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-top: 0.2rem;
+  accent-color: #A308F0; 
+}
+
+.sandworm-prose .is-empty::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #adb5bd;
+  pointer-events: none;
+  height: 0;
+}
+
+/* ╔════════════════════════════════════════════╗
    ║                Common + Layouts            ║
    ╚════════════════════════════════════════════╝ */
    *,
@@ -236,6 +324,8 @@
      overflow-x: hidden;
      scroll-behavior: smooth;
      color: var(--ink-100);
+     scrollbar-gutter: stable;
+
    }
    
    body {
@@ -244,9 +334,7 @@
      accent-color: #a308f0;
    }
 
-h1 {
-  font-family: "Helvetica Neue";
-}
+
 
 .loader-container {
   display: flex;
@@ -356,7 +444,6 @@ h6 {
 }
 
 /* ════════════ Resets ════════════ */
-/* Light mode – autofill looks like normal input */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
@@ -367,7 +454,6 @@ input:-webkit-autofill:active {
   transition: background-color 5000s ease-in-out 0s;
 }
 
-/* Dark mode – autofill looks like normal input */
 .dark input:-webkit-autofill,
 .dark input:-webkit-autofill:hover,
 .dark input:-webkit-autofill:focus,

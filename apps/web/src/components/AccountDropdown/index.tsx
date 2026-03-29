@@ -113,7 +113,6 @@ const NavItem = ({
   );
 };
 
-// ─── Main component ──────────────────────────────────────────────
 export const AccountDropdown = () => {
   const session = useSession({ redirectToLogin: true });
   const openSignIn = useModalStore(state => state.openSignIn);
@@ -174,7 +173,6 @@ export const AccountDropdown = () => {
           className="w-64 rounded-2xl border-[#E9ECEF] dark:border-border-tertiary dark:bg-base-400 shadow-md border p-2 ml-6"
           align="start"
         >
-          {/* ── User header ── */}
           <div className="flex items-center justify-between px-2 py-2 mb-1 border-b border-[#E9ECEF] dark:border-border-tertiary ">
             <div className="flex items-center gap-3">
               <Avatar className="h-8 w-8">
@@ -208,7 +206,6 @@ export const AccountDropdown = () => {
             </Button>
           </div>
 
-          {/* ── Nav list ── */}
           <NavItem
             icon={<BookIcon size={18} />}
             label="Docs"
@@ -233,7 +230,6 @@ export const AccountDropdown = () => {
 
           <DropdownMenuSeparator className="my-1 dark:bg-[#262A30]" />
 
-          {/* ── Sign out ── */}
           <Button
             variant="destructive"
             onClick={signout}

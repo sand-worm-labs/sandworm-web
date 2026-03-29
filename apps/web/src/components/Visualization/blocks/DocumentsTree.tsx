@@ -206,7 +206,6 @@ function DropDown(props: DropDownProps) {
 
   return (
     <>
-      {/* Separate Plus Button (not part of Menu) */}
       <button
         type="button"
         className={clsx(

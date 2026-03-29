@@ -57,7 +57,7 @@ function RoleDropdown({ role, onChange, disabled }: RoleDropdownProps) {
   const portalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) return () => {};
     const handler = (e: MouseEvent) => {
       const target = e.target as Node;
       const outsideButton = ref.current && !ref.current.contains(target);
@@ -76,7 +76,7 @@ function RoleDropdown({ role, onChange, disabled }: RoleDropdownProps) {
       const rect = buttonRef.current.getBoundingClientRect();
       setCoords({
         top: rect.bottom + window.scrollY + 4,
-        left: rect.right + window.scrollX - 144, // 144 = w-[9rem]
+        left: rect.right + window.scrollX - 144,
         width: rect.width,
       });
     }
@@ -271,7 +271,6 @@ export function MiniUsersList({
   return (
     <div className="relative w-full">
       <div className="rounded-xl border border-[#DEE2E6] dark:border-border-tertiary overflow-hidden">
-        {/* Header */}
         <div className="flex items-center justify-between px-4 py-2 border-b border-[#CED4DA] dark:border-border-tertiary">
           <span className="text-sm font-medium text-[#6C757D] dark:text-white">
             {users.length} member{users.length !== 1 ? "s" : ""}
@@ -302,7 +301,6 @@ export function MiniUsersList({
           </div>
         </div>
 
-        {/* Capped preview */}
         {previewUsers.map(user => (
           <MiniUserItem
             key={user.id}
@@ -314,7 +312,6 @@ export function MiniUsersList({
         ))}
       </div>
 
-      {/* View all modal */}
       <Transition show={modalOpen} as={Fragment}>
         <Dialog
           onClose={() => setModalOpen(false)}
@@ -346,7 +343,6 @@ export function MiniUsersList({
               leaveTo="opacity-0 scale-95 translate-y-2"
             >
               <DialogPanel className="w-full max-w-md bg-white dark:bg-base-400 dark:bg-[#0D0F12] rounded-2xl border border-[#DEE2E6] dark:border-border-tertiary shadow-xl flex flex-col max-h-[80vh] overflow-hidden font-body">
-                {/* Modal header */}
                 <div className="flex items-center justify-between px-5 py-4 border-b border-[#DEE2E6] dark:border-border-tertiary flex-shrink-0">
                   <DialogTitle className="text-sm font-semibold text-[#1A1A1A] dark:text-white">
                     All members{" "}
@@ -371,7 +367,6 @@ export function MiniUsersList({
                   </button>
                 </div>
 
-                {/* Scrollable list */}
                 <div className="overflow-y-auto flex-1">
                   {sorted.map(user => (
                     <MiniUserItem
@@ -389,7 +384,6 @@ export function MiniUsersList({
         </Dialog>
       </Transition>
 
-      {/* Bulk action bar */}
       <div
         className={clsx(
           "fixed bottom-6 left-1/2 -translate-x-1/2 z-50",

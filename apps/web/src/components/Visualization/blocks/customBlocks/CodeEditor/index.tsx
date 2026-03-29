@@ -7,7 +7,7 @@ import {
   useImperativeHandle,
   useRef,
 } from "react";
-import type { ChangeSpec } from "@codemirror/state";
+import type { ChangeSpec, Extension } from "@codemirror/state";
 import { Annotation, Compartment, EditorState } from "@codemirror/state";
 import { MergeView } from "@codemirror/merge";
 import { vscodeKeymap } from "@replit/codemirror-vscode-keymap";
@@ -19,7 +19,7 @@ import { historyField } from "@codemirror/commands";
 
 import useEditorAwareness from "../../../hooks/useEditorAwareness";
 
-import { materialLight, editorTheme } from "./theme";
+import { editorTheme } from "./theme";
 import { useSQLExtension } from "./sql";
 import { usePythonExtension } from "./python";
 
@@ -598,7 +598,6 @@ const CodeEditor = forwardRef<CodeEditorRef, Props>(
 
     useEffect(
       () => () => {
-        // cleanup after unmount
         viewRef.current?.destroy();
         mergeRef.current?.view.destroy();
       },

@@ -1,5 +1,3 @@
-// https://github.com/ueberdosis/tiptap/issues/333#issuecomment-1864553525
-
 import {
   NodeViewWrapper,
   type NodeViewProps,
@@ -32,7 +30,7 @@ const useEvent = <T extends (...args: any[]) => any>(handler: T): T => {
 };
 
 const MIN_WIDTH = 60;
-const BORDER_COLOR = "rgb(93, 138, 66)"; // bg-ceramic-500
+const BORDER_COLOR = "rgb(93, 138, 66)";
 
 const ResizableImageTemplate = ({ node, updateAttributes }: NodeViewProps) => {
   const containerRef = useRef<HTMLDivElement>(null);

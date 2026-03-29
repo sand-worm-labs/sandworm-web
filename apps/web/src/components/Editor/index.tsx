@@ -1777,6 +1777,7 @@ const Editor = (props: Props) => {
                 <>
                   {domBlocks}
 
+
                   {domBlocks.length === 0 && (
                     <div className="w-full">
                       <PlusButton

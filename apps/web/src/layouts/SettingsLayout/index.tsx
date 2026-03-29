@@ -2,24 +2,21 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import Image from "next/image";
-import {
-  UserRound,
-  Settings,
-  SlidersHorizontal,
-  Users,
-  ChevronLeft,
-} from "lucide-react";
+import { UserRound, ChevronLeft } from "lucide-react";
+import { Button } from "@sandworm/ui/components/button";
 
+import { User } from "@/components/Assets/User";
+import { SliderHorizontal } from "@/components/Assets/SliderHorizontal";
+import { GearIcon } from "@/components/Assets/GearIcon";
 import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
-import { useSession } from "@/components/Visualization/hooks/useAuth";
+import { useSignout } from "@/components/Visualization/hooks/useAuth";
 
 export default function SettingsLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { user: session } = useSession({ redirectToLogin: true });
+  const signout = useSignout();
   const pathname = usePathname();
   const workspaceId = useStringQuery("workspace");
 
@@ -27,26 +24,24 @@ export default function SettingsLayout({
     {
       name: "Profile",
       href: `/workspace/${workspaceId}/settings/profile`,
-      icon: <UserRound size={16} />,
+      icon: <UserRound size={18} />,
     },
     {
       name: "Account",
       href: `/workspace/${workspaceId}/settings/account`,
-      icon: <Settings size={16} />,
+      icon: <GearIcon size={18} />,
     },
     {
       name: "Preferences",
       href: `/workspace/${workspaceId}/settings/preferences`,
-      icon: <SlidersHorizontal size={16} />,
+      icon: <SliderHorizontal size={18} />,
     },
     {
       name: "Users",
       href: `/workspace/${workspaceId}/settings/users`,
-      icon: <Users size={16} />,
+      icon: <User size={18} />,
     },
   ];
-
-  if (status === "loading") return null;
 
   return (
     <div className=" w-full">
@@ -61,14 +56,17 @@ export default function SettingsLayout({
         <span>Settings</span>
       </div>
 
-      <div className="flex min-h-screen  md:flex-row flex-col ">
-        <div className=" p-6 px-3 border-r dark:border-borderLight my-12 min-w-[35rem] border-[#E9ECEF] dark:border-border-tertiary bg-[#FEFFFF] dark:bg-base-500">
-          <ul className="mt-4  flex flex-col w-full ">
+      <div className="flex flex-1 min-h-0 md:flex-row flex-col ">
+        <div
+          className="p-6 px-3 border-r dark:border-borderLight my-12 border-[#E9ECEF] dark:border-border-tertiary bg-[#FEFFFF] dark:bg-base-500 flex-col justify-between flex self-stretch"
+          style={{ width: 250 }}
+        >
+          <ul className="mt-4  flex flex-col w-full">
             {tabs.map(tab => (
               <li key={tab.href}>
                 <Link
                   href={tab.href}
-                  className={`border-l-4  px-8 py-1.5 text-sm font-medium mb-1 flex space-x-2  items-center rounded-xl  ${
+                  className={`border-l-4  px-4 py-1.5 text-sm font-medium mb-1.5 flex space-x-2  items-center rounded-xl  ${
                     pathname === tab.href
                       ? " bg-[#EBF7F7] dark:bg-[#181C21]  text-primary"
                       : "text-text-gray hover:bg-dark-translucent"
@@ -80,11 +78,19 @@ export default function SettingsLayout({
               </li>
             ))}
           </ul>
+
+          <Button
+            variant="destructive"
+            onClick={signout}
+            className="w-full text-[0.8rem] py-2 bg-[#FF0000] dark:bg-[#FF4444] font-body"
+          >
+            <span>Sign Out</span>
+          </Button>
         </div>
 
         <hr className="md:hidden" />
 
-        <main className="flex-1 p-6  px-2 md:px-6 dark:bg-base-100  ">
+        <main className="flex-1 p-6  px-2 md:px-6 dark:bg-base-100 bg-[#FEFFFF]   ">
           <div className=" border-t-8 border-l-8 h-20 ml-4">{children}</div>
         </main>
       </div>

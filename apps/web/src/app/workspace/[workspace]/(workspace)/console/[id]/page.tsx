@@ -1,9 +1,11 @@
+import type { Metadata } from "next";
+
 import { WorkSpace } from "@/components/Console/WorkSpace";
 import { fetchQueryById } from "@/services/axios/queryService";
-import { auth } from "@/services/auth";
 import type { Query } from "@/types";
+import { useSession } from "@/components/Visualization/hooks/useAuth";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Query Editor – Sandworm",
   description:
     "View and edit your saved WQL query. Fork, test, and visualize results in real time.",
@@ -14,7 +16,7 @@ export default async function ConsolePage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const session = await auth();
+  const session = useSession({ redirectToLogin: true });
   const currentUserId = session?.user?.id || "";
   const { id } = await params;
   let initialQuery: Query | undefined;

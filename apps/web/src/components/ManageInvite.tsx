@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, Fragment } from "react";
 import { X } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
-
+import { Dialog, Transition } from "@headlessui/react";
 
 import { User } from "./Assets/Avatar/User";
 import { useInviteUserToWorkspace } from "./Visualization/hooks/useWorkspaces";
@@ -488,49 +488,68 @@ const ManageInviteModal: React.FC<ManageInviteModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-[#0000001A] " onClick={onClose} />
+    <Transition appear show={isOpen} as={Fragment}>
+      <Dialog as="div" className="relative z-50" onClose={onClose}>
+        <Transition.Child
+          as={Fragment}
+          enter="ease-out duration-300"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-200"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div className="fixed inset-0 bg-[#0000001A]" />
+        </Transition.Child>
 
-      {/* Modal */}
-      <div className="relative bg-white dark:bg-base-400 dark:border dark:border-border-tertiary rounded-3xl  max-w-6xl w-full max-h-[90vh] overflow-hidden mx-4">
-        <div className="flex h-full">
-          {/* Left Panel - Main Content */}
-          <div className="flex-1 p-8 overflow-y-auto">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-medium text-ink-100">
-                Manage Invite
-              </h2>
-              <button
-                type="button"
-                onClick={onClose}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <X className="w-5 h-5 text-[#1C3B5A]" />
-              </button>
-            </div>
+        <div className="fixed inset-0 z-50 overflow-y-auto font-body">
+          <div className="flex min-h-full items-center justify-center p-4">
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0 scale-95"
+              enterTo="opacity-100 scale-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100 scale-100"
+              leaveTo="opacity-0 scale-95"
+            >
+              <Dialog.Panel className="relative bg-white dark:bg-base-400 dark:border dark:border-border-tertiary rounded-3xl max-w-6xl w-full max-h-[90vh] overflow-hidden mx-4 transition-all">
+                <div className="flex h-full">
+                  <div className="flex-1 p-8 overflow-y-auto">
+                    <div className="flex items-center justify-between mb-6">
+                      <h2 className="text-xl font-medium text-ink-100">
+                        Manage Invite
+                      </h2>
+                      <button
+                        type="button"
+                        onClick={onClose}
+                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                      >
+                        <X className="w-5 h-5 text-[#1C3B5A]" />
+                      </button>
+                    </div>
 
-            {/* Invite Form */}
-            <InviteForm onSendInvite={handleSendInvite} />
+                    <InviteForm onSendInvite={handleSendInvite} />
 
-            {/* Pending Tabs Content */}
-            <PendingTabsContent
-              invites={pendingInvites}
-              requests={pendingRequests}
-              onCancelInvite={onCancelInvite}
-              onApproveRequest={onApproveRequest}
-              onDenyRequest={onDenyRequest}
-            />
-          </div>
+                    <PendingTabsContent
+                      invites={pendingInvites}
+                      requests={pendingRequests}
+                      onCancelInvite={onCancelInvite}
+                      onApproveRequest={onApproveRequest}
+                      onDenyRequest={onDenyRequest}
+                    />
+                  </div>
 
-          {/* Right Panel - Description */}
-          <div className="w-[410px] p-4 border-l border-[#E9ECEF] dark:border-border-tertiary">
-            <WorkspaceDescription members={workspaceMembers} />
+                  <div className="w-[410px] p-4 border-l border-[#E9ECEF] dark:border-border-tertiary">
+                    <WorkspaceDescription members={workspaceMembers} />
+                  </div>
+                </div>
+              </Dialog.Panel>
+            </Transition.Child>
           </div>
         </div>
-      </div>
-    </div>
+      </Dialog>
+    </Transition>
   );
 };
 

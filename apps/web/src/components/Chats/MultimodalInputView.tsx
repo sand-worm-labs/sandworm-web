@@ -6,11 +6,17 @@ import { PiPaperPlaneTilt, PiPlus, PiX } from "react-icons/pi";
 import { Button } from "@sandworm/ui/components/button";
 import { Textarea } from "@sandworm/ui/components/textarea";
 
+import { ModelQuickSelect } from "../Visualization/blocks/ModelQuickSelect";
+import { useOpenRouterModels } from "../Visualization/hooks/useOpenRouterModel";
+import { ModelPickerModal } from "../Visualization/blocks/ModelPicker";
+
 import { StopIcon } from "./icons";
 import { PreviewAttachment } from "./preview-attachment";
 
 interface MultimodalInputUIProps {
   input: string;
+  workspaceId: string;
+  currentModel?: string;
   onInputChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   isLoading?: boolean;
   onStop?: () => void;
@@ -45,9 +51,22 @@ export const MultimodalInputView = forwardRef<
       onSubmit,
       onRemoveAttachment,
       onAbortUpload,
+      workspaceId,
+      currentModel,
     },
     ref
   ) => {
+    const {
+      models,
+      loading,
+      error,
+      selectedModelId,
+      isPickerOpen,
+      openPicker,
+      closePicker,
+      selectModel,
+    } = useOpenRouterModels(workspaceId, currentModel);
+
     return (
       <>
         <div className="relative w-full flex flex-col gap-4">
@@ -105,7 +124,7 @@ dark:focus:ring-[rgba(163,8,240,0.3)]
               <PiPlus size={18} />
             </Button>
           </div>
-          <div className="flex flex-row gap-2 absolute bottom-4 right-5">
+          <div className="flex flex-row gap-2 absolute bottom-4 right-5 items-center">
             <Button
               type="button"
               className="rounded-full p-2.5 py-2 h-fit m-0.5 text-sm bg-[#E7EBF0] dark:bg-[#363C46] dark:text-[#C5CED9] text-black px-4 font-body  font-medium hidden"
@@ -113,6 +132,13 @@ dark:focus:ring-[rgba(163,8,240,0.3)]
             >
               Deep Research
             </Button>
+
+            <ModelQuickSelect
+              models={models}
+              selectedModelId={selectedModelId}
+              onSelect={selectModel}
+              onBrowseAll={openPicker}
+            />
 
             {isLoading ? (
               <Button
@@ -167,6 +193,16 @@ dark:focus:ring-[rgba(163,8,240,0.3)]
             ))}
           </div>
         )}
+        <ModelPickerModal
+          isOpen={isPickerOpen}
+          onClose={closePicker}
+          onSelect={selectModel}
+          models={models}
+          loading={loading}
+          error={error}
+          selectedModelId={selectedModelId}
+          title="Select Model"
+        />
       </>
     );
   }
