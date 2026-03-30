@@ -39,19 +39,20 @@ import type { ConnectDragPreview } from "react-dnd";
 import { equals, head, omit } from "ramda";
 import { ChartPie } from "lucide-react";
 
-import { TooltipV2 } from "@/components/Visualization/blocks/ToolTips";
-
-import HeaderSelect from "./blocks/HeaderSelect";
-import useEditorAwareness from "./hooks/useEditorAwareness";
-import { useBlockExecutions } from "./hooks/useBlockExecution";
-import { useYMemo } from "./hooks/useYMemo";
+import { TooltipV2 } from "@/components/Editor/blocks/ToolTips";
+import HeaderSelect from "@/components/Editor/blocks/HeaderSelect";
 import {
   dashboardModeHasControls,
   type DashboardMode,
-} from "./blocks/Dashboard";
-import useFullScreenDocument from "./hooks/useFullScreenDocument";
-import { useEnvironmentStatus } from "./hooks/useEnvironmentStatus";
-import HiddenInPublishedButton from "./blocks/HiddenInPublishedButton";
+} from "@/components/Editor/blocks/Dashboard";
+import HiddenInPublishedButton from "@/components/Editor/blocks/HiddenInPublishedButton";
+
+import useEditorAwareness from "../Editor/hooks/useEditorAwareness";
+import { useBlockExecutions } from "../Editor/hooks/useBlockExecution";
+import { useYMemo } from "../Editor/hooks/useYMemo";
+import useFullScreenDocument from "../Editor/hooks/useFullScreenDocument";
+import { useEnvironmentStatus } from "../Editor/hooks/useEnvironmentStatus";
+
 import { getAggFunction } from "./YAxisPicker";
 import VisualizationControlsV2 from "./VisualizationControls";
 import VisualizationViewV2 from "./VisualizationView";

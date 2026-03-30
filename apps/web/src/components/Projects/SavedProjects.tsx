@@ -15,9 +15,9 @@ import { PiPlus } from "react-icons/pi";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 
-import { useFavorites } from "@/components/Visualization/hooks/useFavorites";
+import { useFavorites } from "@/components/Editor/hooks/useFavorites";
 
-import { useDocuments } from "../Visualization/hooks/useDocuments";
+import { useDocuments } from "../Editor/hooks/useDocuments";
 import { Loader } from "../Loader";
 import { UploadIcon } from "../Assets/UploadIcon";
 

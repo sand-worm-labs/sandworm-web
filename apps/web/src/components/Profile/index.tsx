@@ -17,10 +17,10 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 
-import { useCurrentUser } from "../Visualization/hooks/useCurrentUser";
+import { useCurrentUser } from "../Editor/hooks/useCurrentUser";
 import { Loader } from "../Loader";
 import { ProjectIcon } from "../Assets/ProjectIcon";
-import { useWallets } from "../Visualization/hooks/useWallets";
+import { useWallets } from "../Editor/hooks/useWallets";
 
 import { ProfileSettingsModal } from "./ProfileSettingModal";
 import { ManageWalletsModal, AddWalletModal } from "./ManageWalletModal";

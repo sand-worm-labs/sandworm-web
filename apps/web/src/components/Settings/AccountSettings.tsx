@@ -11,9 +11,9 @@ import {
   useSwitchWorkspace,
   useUpdateWorkspace,
   useWorkspaces,
-} from "../Visualization/hooks/useWorkspaces";
-import useProperties from "../Visualization/hooks/useProperties";
-import { useSession } from "../Visualization/hooks/useAuth";
+} from "../Editor/hooks/useWorkspaces";
+import useProperties from "../Editor/hooks/useProperties";
+import { useSession } from "../Editor/hooks/useAuth";
 import { WorkspaceIcon } from "../Assets/WorkspaceIcon";
 
 import { WorkspaceIcon as WorkspaceIconAvatar } from "./WorkspaceIcon";

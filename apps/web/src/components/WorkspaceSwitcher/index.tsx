@@ -4,12 +4,13 @@ import React, { useState, useRef, useEffect } from "react";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import { Transition } from "@headlessui/react";
+import { toast } from "sonner";
 
 import {
   useCurrentWorkspaceInfo,
   useSwitchWorkspace,
   useWorkspaces,
-} from "../Visualization/hooks/useWorkspaces";
+} from "../Editor/hooks/useWorkspaces";
 import CreateTeamModal from "../Settings/CreateTeam";
 
 function workspaceGradient(id: string) {
@@ -22,6 +23,7 @@ function workspaceGradient(id: string) {
   ];
   let hash = 0;
   for (let i = 0; i < id.length; i++)
+    // eslint-disable-next-line no-bitwise
     hash = id.charCodeAt(i) + ((hash << 5) - hash);
   return gradients[Math.abs(hash) % gradients.length];
 }
@@ -41,7 +43,6 @@ export default function WorkspaceSwitcher({
   const { switchWorkspace, loading: isSwitching } = useSwitchWorkspace();
   const [isCreateTeamOpen, setIsCreateTeamOpen] = useState(false);
 
-  // Close dropdown on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node))
@@ -62,7 +63,6 @@ export default function WorkspaceSwitcher({
 
   const others = (allWorkspaces ?? []).filter(w => w.id !== workspaceInfo.id);
 
-  // ── Collapsed: just the avatar icon, click opens dropdown ──────────────
   if (collapsed) {
     return (
       <div ref={ref} className="relative flex justify-center px-2 mt-6 mb-2">
@@ -146,7 +146,6 @@ export default function WorkspaceSwitcher({
             <button
               type="button"
               onClick={() => setIsCreateTeamOpen(true)}
-
               className="w-full flex items-center gap-3 px-3 py-2 text-sm text-primary hover:bg-[#A308F0]/5 transition-colors font-semibold"
             >
               <svg
@@ -169,7 +168,7 @@ export default function WorkspaceSwitcher({
         <CreateTeamModal
           isOpen={isCreateTeamOpen}
           onClose={() => setIsCreateTeamOpen(false)}
-          onSuccess={workspaceId => {
+          onSuccess={() => {
             setIsCreateTeamOpen(false);
           }}
         />
@@ -177,10 +176,8 @@ export default function WorkspaceSwitcher({
     );
   }
 
-  // ── Expanded sidebar ────────────────────────────────────────────────────
   return (
     <div ref={ref} className="relative px-2 mt-6 mb-2">
-      {/* Section label with tree-toggle arrow */}
       <button
         type="button"
         onClick={() => setTreeOpen(o => !o)}
@@ -196,13 +193,11 @@ export default function WorkspaceSwitcher({
           stroke="currentColor"
           strokeWidth={2.5}
         >
-          {/* Right-pointing chevron; rotates to down when open */}
           <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
         </svg>
         <span className="text-[12px] font-medium text-ink-600">Workspaces</span>
       </button>
 
-      {/* Trigger pill — only visible when tree is open */}
       <Transition
         show={treeOpen}
         enter="transition ease-out duration-150"
@@ -223,7 +218,6 @@ export default function WorkspaceSwitcher({
             "shadow-none"
           )}
         >
-          {/* Avatar */}
           <div
             className={clsx(
               "w-7 h-7 rounded-lg flex-shrink-0 bg-gradient-to-br",
@@ -231,7 +225,6 @@ export default function WorkspaceSwitcher({
             )}
           />
 
-          {/* Name */}
           <span className="flex-1 text-left xl:text-sm text-[13px] font-medium text-ink-100 truncate">
             {workspaceInfo.name}
           </span>
@@ -267,7 +260,6 @@ export default function WorkspaceSwitcher({
         </button>
       </Transition>
 
-      {/* Dropdown */}
       <Transition
         show={open && treeOpen}
         enter="transition ease-out duration-150"
@@ -339,11 +331,9 @@ export default function WorkspaceSwitcher({
 
           <div className="h-px bg-[#E9ECEF] dark:bg-border-tertiary" />
 
-          {/* Create new */}
           <button
             type="button"
             onClick={() => setIsCreateTeamOpen(true)}
-
             className="w-full flex items-center gap-3 px-3 py-2 text-sm text-ink-100 hover:bg-[#A308F0]/5 transition-colors font-medium"
           >
             <svg
@@ -367,7 +357,8 @@ export default function WorkspaceSwitcher({
       <CreateTeamModal
         isOpen={isCreateTeamOpen}
         onClose={() => setIsCreateTeamOpen(false)}
-        onSuccess={workspaceId => {
+        onSuccess={() => {
+          toast.success("Workspace created successful");
           setIsCreateTeamOpen(false);
         }}
       />

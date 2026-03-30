@@ -3,12 +3,12 @@
 import dynamic from "next/dynamic";
 import Head from "next/head";
 
-import { useSession } from "@/components/Visualization/hooks/useAuth";
-import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
-import useDocument from "@/components/Visualization/hooks/useDocument";
+import { useSession } from "@/components/Editor/hooks/useAuth";
+import { useStringQuery } from "@/components/Editor/hooks/useQueryArgs";
+import useDocument from "@/components/Editor/hooks/useDocument";
 
 const Dashboard = dynamic(
-  () => import("@/components/Visualization/blocks/Dashboard"),
+  () => import("@/components/Editor/blocks/Dashboard"),
   { ssr: false }
 );
 
@@ -20,12 +20,12 @@ export default function DashboardPage() {
 
   const [{ document, loading }] = useDocument(workspaceId, documentId);
 
-  // Wait until everything is ready
   if (!session.user || loading || !document) {
     return null;
   }
 
-  const role = session.user.roles?.[workspaceId] ?? "viewer";
+  const role =
+    session?.user?.role?.find(r => r[workspaceId])?.[workspaceId] ?? "viewer";
 
   return (
     <>

@@ -4,7 +4,7 @@ import Image from "next/image";
 
 import type { Query, QueryPagination } from "@/types";
 import { ExploreCard } from "@/components/Explore/ExploreCard";
-import { useSession } from "@/components/Visualization/hooks/useAuth";
+import { useSession } from "@/components/Editor/hooks/useAuth";
 
 interface IQueryListProps {
   queries: Query[] | null;

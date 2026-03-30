@@ -6,10 +6,10 @@ import clsx from "clsx";
 import { toast } from "sonner";
 
 import type { UserWorkspaceRole } from "@/types";
-import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
-import { useSession } from "@/components/Visualization/hooks/useAuth";
-import UsersList from "@/components/Visualization/blocks/UsersList";
-import ScrollBar from "@/components/Visualization/blocks/ScrollBar";
+import { useStringQuery } from "@/components/Editor/hooks/useQueryArgs";
+import { useSession } from "@/components/Editor/hooks/useAuth";
+import UsersList from "@/components/Editor/blocks/UsersList";
+import ScrollBar from "@/components/Editor/blocks/ScrollBar";
 import {
   UserControl,
   type RoleFilter,
@@ -19,7 +19,7 @@ import {
   useInviteUserToWorkspace,
   useAdminWorkspacesWithMembers,
   useBatchRemoveUsersFromWorkspace,
-} from "@/components/Visualization/hooks/useWorkspaces";
+} from "@/components/Editor/hooks/useWorkspaces";
 import { Loader } from "@/components/Loader";
 
 export default function UsersPage() {
@@ -51,7 +51,7 @@ export default function UsersPage() {
       return {
         id: member.userId,
         userId: member.userId,
-        role: member.role,
+        role: member.role as UserWorkspaceRole,
         email: member.user?.email ?? "",
         username: member.user?.username ?? null,
         firstName: member.user?.firstName ?? null,
@@ -81,8 +81,9 @@ export default function UsersPage() {
     };
 
     members.forEach(member => {
-      if (member.role && roleCounts[member.role] !== undefined) {
-        roleCounts[member.role]++;
+      const { role } = member;
+      if (role && roleCounts[role] !== undefined) {
+        roleCounts[role] = (roleCounts[role] ?? 0) + 1;
       }
     });
 
@@ -117,7 +118,8 @@ export default function UsersPage() {
     const enabledRoles = roleFilters.filter(f => f.enabled).map(f => f.role);
     if (enabledRoles.length > 0) {
       filtered = filtered.filter(
-        member => member.role && enabledRoles.includes(member.role as any)
+        member =>
+          member.role && enabledRoles.includes(member.role as UserWorkspaceRole)
       );
     }
 
@@ -258,7 +260,7 @@ export default function UsersPage() {
             onRemoveUser={onRemoveUser}
             onChangeRole={onChangeRole}
             onResetPassword={onResetPassword}
-            role="admin"
+            userRole="admin"
           />
         </div>
       </ScrollBar>

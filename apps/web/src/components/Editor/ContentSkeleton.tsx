@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { useEffect, useMemo } from "react";
 
-import useResettableState from "../Visualization/hooks/useResettableState";
+import useResettableState from "./hooks/useResettableState";
 
 const TIMEOUT_TO_SHOW = 200;
 

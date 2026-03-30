@@ -15,11 +15,11 @@ import { PlusSmallIcon } from "@heroicons/react/24/outline";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 
-import { useFavorites } from "@/components/Visualization/hooks/useFavorites";
+import { useFavorites } from "@/components/Editor/hooks/useFavorites";
 
 import { UploadIcon } from "../Assets/UploadIcon";
-import { useDocuments } from "../Visualization/hooks/useDocuments";
-import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
+import { useDocuments } from "../Editor/hooks/useDocuments";
+import { useStringQuery } from "../Editor/hooks/useQueryArgs";
 import { Loader } from "../Loader";
 
 import ProjectControl from "./ProjectControls";

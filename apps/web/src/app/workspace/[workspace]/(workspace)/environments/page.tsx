@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
+import { useStringQuery } from "@/components/Editor/hooks/useQueryArgs";
 
 export default function EnvironmentsPage() {
   const router = useRouter();

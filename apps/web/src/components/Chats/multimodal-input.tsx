@@ -5,8 +5,8 @@ import type { Dispatch, SetStateAction, ChangeEvent } from "react";
 import React, { useRef, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 
-import { useFiles } from "../Visualization/hooks/useFiles";
-import { useWorkspace } from "../Visualization/hooks/useWorkspaces";
+import { useFiles } from "../Editor/hooks/useFiles";
+import { useWorkspace } from "../Editor/hooks/useWorkspaces";
 
 import useWindowSize from "./use-window-size";
 import { MultimodalInputView } from "./MultimodalInputView";
@@ -165,10 +165,8 @@ export function MultimodalInput({
 
       if (validFiles.length === 0) return;
 
-      // Use the useFiles hook's onDrop to handle uploads
       fileAPI.onDrop(validFiles);
 
-      // Reset file input
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
@@ -187,7 +185,6 @@ export function MultimodalInput({
     fileInputRef.current?.click();
   };
 
-  // Handle file replacement dialog
   const isAskingReplace =
     fileState.upload._tag === "uploading" &&
     fileState.upload.current.status === "asking-replace";

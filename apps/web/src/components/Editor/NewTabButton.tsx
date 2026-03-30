@@ -20,8 +20,8 @@ import { createPortal } from "react-dom";
 import { Table2Icon } from "lucide-react";
 import type { FeatureFlags } from "@sandworm/types";
 
-import useDropdownPosition from "../Visualization/hooks/dropdownposition";
-import type { APIDataSources } from "../Visualization/hooks/useDataSources";
+import useDropdownPosition from "./hooks/dropdownposition";
+import type { APIDataSources } from "./hooks/useDataSources";
 
 type Item = {
   name: string;

@@ -7,8 +7,8 @@ import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 import type * as Y from "yjs";
 
 import { AIChatIcon } from "../Assets/AIChatIcon";
-import { useNotebookAI } from "../Visualization/hooks/useNotebookAI";
-import type { APIDataSources } from "../Visualization/hooks/useDataSources";
+import { useNotebookAI } from "../Editor/hooks/useNotebookAI";
+import type { APIDataSources } from "../Editor/hooks/useDataSources";
 
 import { MiniChatInput } from "./MiniChatInput";
 

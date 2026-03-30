@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import type { DataFrame } from "@sandworm/types";
 import type { VisualizationV2BlockInput } from "@sandworm/editor";
 
-import AxisModifierSelector from "../blocks/AxisModifierSelector";
+import AxisModifierSelector from "../../Editor/blocks/AxisModifierSelector";
 import VisualizationToggleV2 from "../VisualizationToggle";
 
 interface LabelsTabProps {

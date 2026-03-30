@@ -3,7 +3,7 @@
 import React from "react";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
-import { GOOGLE_CLIENT_ID } from "@/components/Visualization/utils/env";
+import { GOOGLE_CLIENT_ID } from "@/utils/env";
 
 export default function AppProvider({
   children,

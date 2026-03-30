@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 
 import { GraphQLProvider } from "@/graphql/provider";
-import { NEXT_PUBLIC_API_URL } from "@/components/Visualization/utils/env";
+import { NEXT_PUBLIC_API_URL } from "@/utils/env";
 
 import { ThemeProvider } from "./ThemeProvider";
 import AppProvider from "./AppProvider";
