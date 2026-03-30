@@ -1,10 +1,10 @@
 "use client";
 
 import React, { forwardRef } from "react";
-import type { Attachment } from "ai";
 import { PiPaperPlaneTilt, PiPlus, PiX } from "react-icons/pi";
 import { Button } from "@sandworm/ui/components/button";
 import { Textarea } from "@sandworm/ui/components/textarea";
+import TextareaAutosize from "react-textarea-autosize";
 
 import { ModelQuickSelect } from "../Editor/blocks/ModelQuickSelect";
 import { useOpenRouterModels } from "../Editor/hooks/useOpenRouterModel";
@@ -12,6 +12,13 @@ import { ModelPickerModal } from "../Editor/blocks/ModelPicker";
 
 import { StopIcon } from "./icons";
 import { PreviewAttachment } from "./preview-attachment";
+
+export interface Attachment {
+  name?: string;
+  contentType?: string;
+  url: string;
+  size?: number;
+}
 
 interface MultimodalInputUIProps {
   input: string;
@@ -70,101 +77,97 @@ export const MultimodalInputView = forwardRef<
     return (
       <>
         <div className="relative w-full flex flex-col gap-4">
-          <Textarea
-            ref={ref}
-            placeholder="Start a query..."
-            value={input}
-            onChange={onInputChange}
-            onKeyDown={e => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                if (input.trim() && !isLoading && !disabled) {
-                  onSubmit?.();
-                }
-              }
-            }}
+          <div
             className="
-    min-h-[50px]
-    overflow-hidden
-    resize-none
+    relative flex flex-col
+    w-full min-h-[130px]
     rounded-3xl
     border-[1.5px] border-[#E6E0F1]
-    bg-base-100 dark:border-border-tertiary
-    dark:text-white
-    text-sm
-    placeholder:text-ink-300 
-        dark:placeholder:text-ink-400 
-
-    placeholder:tracking-wide
-    py-4 px-5
-    focus:outline-none
-    focus:border-transparent
-    focus:ring-4
-   shadow-[0_3.5px_24px_rgba(120,147,208,0.09)] dark:shadow-none
-   focus:ring-[rgba(163,8,240,0.2)]
-dark:focus:ring-[rgba(163,8,240,0.3)]
-    transition-all
-    duration-300
-    ease-in-out
-    scrollbar-thin
-    scrollbar-thumb-rounded-md
-    scrollbar-thumb-zinc-700
-    dark:bg-[#30302E]
+    bg-base-100 dark:border-border-tertiary dark:bg-[#30302E]
+    shadow-[0_3.5px_24px_rgba(120,147,208,0.09)] dark:shadow-none
+    focus-within:ring-4 focus-within:ring-[rgba(163,8,240,0.2)]
+    dark:focus-within:ring-[rgba(163,8,240,0.3)]
+    transition-all duration-300 ease-in-out
   "
-            rows={6}
-          />
-
-          <div className="absolute bottom-5 left-5">
-            <Button
-              type="button"
-              className="rounded-full p-2.5 h-fit m-0.5 bg-transparent dark:bg-[#30302E] text-black dark:text-ink-400 border-[#B5C8DB] border  hover:bg-[rgba(207,211,222,0.15)] 
-    dark:hover:bg-[rgba(255,255,255,0.05)] dark:border-border-tertiary"
-              onClick={onFileClick}
-            >
-              <PiPlus size={18} />
-            </Button>
-          </div>
-          <div className="flex flex-row gap-2 absolute bottom-4 right-5 items-center">
-            <Button
-              type="button"
-              className="rounded-full p-2.5 py-2 h-fit m-0.5 text-sm bg-[#E7EBF0] dark:bg-[#363C46] dark:text-[#C5CED9] text-black px-4 font-body  font-medium hidden"
-              onClick={onStop}
-            >
-              Deep Research
-            </Button>
-
-            <ModelQuickSelect
-              models={models}
-              selectedModelId={selectedModelId}
-              onSelect={selectModel}
-              onBrowseAll={openPicker}
+          >
+            <TextareaAutosize
+              ref={ref}
+              placeholder="Start a query..."
+              value={input}
+              onChange={onInputChange}
+              onKeyDown={e => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  if (input.trim() && !isLoading && !disabled) {
+                    onSubmit?.();
+                  }
+                }
+              }}
+              minRows={3}
+              maxRows={14}
+              className="
+        w-full
+        bg-transparent
+        border-none
+        focus:ring-0
+        resize-none
+        pt-4 px-5 pb-2 /* Small bottom padding for text */
+        text-sm text-black dark:text-white
+        placeholder:text-ink-300 dark:placeholder:text-ink-400
+        scrollbar-thin
+        outline-none    
+    focus:outline-none 
+      "
             />
 
-            {isLoading ? (
-              <Button
-                type="button"
-                className="rounded-full p-2.5 h-fit m-0.5 text-white bg-primary "
-                onClick={onStop}
-                disabled={disabled}
-              >
-                <StopIcon size={18} />
-              </Button>
-            ) : (
-              <Button
-                type="button"
-                className={`rounded-full p-2.5 h-fit m-0.5 font-light ${
-                  input.trim()
-                    ? "text-white bg-primary"
-                    : "text-white bg-primary/50"
-                }`}
-                onClick={() => onSubmit?.()}
-              >
-                <PiPaperPlaneTilt size={18} strokeWidth={0.5} />
-              </Button>
-            )}
+            <div className="flex flex-row items-center justify-between px-4 pb-3">
+              {/* Left Action */}
+              <div className="flex items-center">
+                <Button
+                  type="button"
+                  className="rounded-full p-2.5 h-fit bg-transparent dark:bg-transparent text-black dark:text-ink-400 border-[#B5C8DB] border hover:bg-[rgba(207,211,222,0.15)] dark:hover:bg-[rgba(255,255,255,0.05)] dark:border-border-tertiary"
+                  onClick={onFileClick}
+                >
+                  <PiPlus size={18} />
+                </Button>
+              </div>
+
+              {/* Right Actions */}
+              <div className="flex flex-row gap-2 items-center">
+                <ModelQuickSelect
+                  models={models}
+                  selectedModelId={selectedModelId}
+                  onSelect={selectModel}
+                  onBrowseAll={openPicker}
+                />
+
+                {isLoading ? (
+                  <Button
+                    type="button"
+                    className="rounded-full p-2.5 h-fit text-white bg-primary"
+                    onClick={onStop}
+                    disabled={disabled}
+                  >
+                    <StopIcon size={18} />
+                  </Button>
+                ) : (
+                  <Button
+                    type="button"
+                    className={`rounded-full p-2.5 h-fit font-light transition-colors ${
+                      input.trim()
+                        ? "text-white bg-primary"
+                        : "text-white bg-primary/30 cursor-not-allowed"
+                    }`}
+                    onClick={() => input.trim() && onSubmit?.()}
+                  >
+                    <PiPaperPlaneTilt size={18} strokeWidth={0.5} />
+                  </Button>
+                )}
+              </div>
+            </div>
           </div>
         </div>
-        {/* Attachments Preview */}
+
         {(attachments.length > 0 || uploadQueue.length > 0) && (
           <div className="flex flex-row gap-2 overflow-x-auto pb-2 mt-2">
             {attachments.map((attachment, index) => (
@@ -174,7 +177,7 @@ dark:focus:ring-[rgba(163,8,240,0.3)]
                   <button
                     type="button"
                     onClick={() => onRemoveAttachment(index)}
-                    className="absolute -top-0 -right-0 bg-red-500 hover:bg-red-600 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute -top-0 -right-0 bg-error hover:bg-error text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
                     aria-label="Remove attachment"
                   >
                     <PiX size={12} />
