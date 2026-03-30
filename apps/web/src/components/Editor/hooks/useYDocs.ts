@@ -235,7 +235,6 @@ export function useYDoc(
         onDateInput: () => null,
         onFileUpload: () => null,
         onDashboardHeader: () => null,
-        onWriteback: () => null,
         onPivotTable: () => null,
         onPowerToolbox: () => null,
       });
