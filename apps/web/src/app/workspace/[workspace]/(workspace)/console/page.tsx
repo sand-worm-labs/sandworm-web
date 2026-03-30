@@ -1,7 +1,7 @@
 "use client";
 
 import { WorkSpace } from "@/components/Console/WorkSpace";
-import { useSession } from "@/components/Visualization/hooks/useAuth";
+import { useSession } from "@/components/Editor/hooks/useAuth";
 
 export default function ConsolePage() {
   const session = useSession({ redirectToLogin: true });

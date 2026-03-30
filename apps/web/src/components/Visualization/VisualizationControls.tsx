@@ -12,14 +12,15 @@ import type {
   NumberFormat,
 } from "@sandworm/types";
 import { useCallback, useEffect, useState } from "react";
-import  {
-  VisualizationV2BlockInput,
-  VisualizationV2BlockOutputResult,
+import {
+  type VisualizationV2BlockInput,
+  type VisualizationV2BlockOutputResult,
   getDefaultDateFormat,
   getDefaultNumberFormat,
 } from "@sandworm/editor";
 
-import ScrollBar from "./blocks/ScrollBar";
+import ScrollBar from "@/components/Editor/blocks/ScrollBar";
+
 import type { Tab } from "./VisualizationSettingTabs";
 import VisualizationSettingsTabsV2 from "./VisualizationSettingTabs";
 

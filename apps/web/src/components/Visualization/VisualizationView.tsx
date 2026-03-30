@@ -13,12 +13,14 @@ import {
   XMarkIcon,
 } from "@heroicons/react/20/solid";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
-import  {
+import type {
   DataFrame,
   TimeUnit,
   Series,
   DateFormat,
   NumberFormat,
+} from "@sandworm/types";
+import {
   NumpyDateTypes,
   exhaustiveCheck,
   NumpyNumberTypes,
@@ -33,10 +35,11 @@ import type {
 } from "@sandworm/editor";
 import { head, uniq } from "ramda";
 
+import useResettableState from "../Editor/hooks/useResettableState";
+import useSideBar from "../Editor/hooks/useSideBar";
+
 import { findMaxFontSize, measureText } from "./measureText";
-import useResettableState from "./hooks/useResettableState";
-import useSideBar from "./hooks/useSideBar";
-import LargeSpinner from "./blocks/LargeSpinner";
+import LargeSpinner from "../Editor/blocks/LargeSpinner";
 
 const FONT_FAMILY = ["Inter", ...twFontFamiliy.sans].join(", ");
 
@@ -103,7 +106,7 @@ function VisualizationViewV2(props: Props) {
                   data.{" "}
                 </span>
                 <button
-                type="button"
+                  type="button"
                   className="absolute right-2.5"
                   onClick={props.onHideTooManyDataPointsWarning}
                 >

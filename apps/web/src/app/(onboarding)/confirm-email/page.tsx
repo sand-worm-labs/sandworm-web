@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 
 import { Mail } from "@/components/Assets/Mail";
-import { useConfirmEmail } from "@/components/Visualization/hooks/useAuth";
+import { useConfirmEmail } from "@/components/Editor/hooks/useAuth";
 import { Cautious } from "@/components/Assets/Cautious";
 import { OnboardingFooter } from "@/components/AuthUI/OnboardingFooter";
 

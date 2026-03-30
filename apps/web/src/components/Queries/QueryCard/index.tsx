@@ -19,7 +19,7 @@ import { useQueryLike } from "@/hooks/useLikeQuery";
 import { useModalStore } from "@/store/auth";
 import { useForkQuery } from "@/hooks";
 
-import { useStringQuery } from "../../Visualization/hooks/useQueryArgs";
+import { useStringQuery } from "../../Editor/hooks/useQueryArgs";
 
 interface QueryCardProps {
   query: Query;

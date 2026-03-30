@@ -9,7 +9,7 @@ import {
   useCurrentWorkspaceInfo,
   useSwitchWorkspace,
   useWorkspaces,
-} from "../Visualization/hooks/useWorkspaces";
+} from "../Editor/hooks/useWorkspaces";
 import CreateTeamModal from "../Settings/CreateTeam";
 
 function workspaceGradient(id: string) {

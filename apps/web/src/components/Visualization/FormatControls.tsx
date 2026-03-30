@@ -6,8 +6,8 @@ import {
   NUMBER_STYLE_OPTIONS,
   NUMBER_SEPARATOR_OPTIONS,
 } from "@sandworm/editor";
+import AxisModifierSelector from "@/components/Editor/blocks/AxisModifierSelector";
 
-import AxisModifierSelector from "./blocks/AxisModifierSelector";
 import VisualizationToggleV2 from "./VisualizationToggle";
 
 // Generic interface for number formatting props

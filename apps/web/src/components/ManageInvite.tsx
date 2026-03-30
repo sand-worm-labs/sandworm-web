@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Dialog, Transition } from "@headlessui/react";
 
 import { User } from "./Assets/Avatar/User";
-import { useInviteUserToWorkspace } from "./Visualization/hooks/useWorkspaces";
+import { useInviteUserToWorkspace } from "./Editor/hooks/useWorkspaces";
 
 // ============================================================================
 // TYPES & INTERFACES

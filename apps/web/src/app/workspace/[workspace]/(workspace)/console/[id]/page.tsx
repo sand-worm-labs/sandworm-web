@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { WorkSpace } from "@/components/Console/WorkSpace";
 import { fetchQueryById } from "@/services/axios/queryService";
 import type { Query } from "@/types";
-import { useSession } from "@/components/Visualization/hooks/useAuth";
+import { useSession } from "@/components/Editor/hooks/useAuth";
 
 export const metadata: Metadata = {
   title: "Query Editor – Sandworm",

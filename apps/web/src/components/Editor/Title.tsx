@@ -8,7 +8,7 @@ import { mergeAttributes, Node } from "@tiptap/core";
 import clsx from "clsx";
 import { useEffect } from "react";
 
-import { TitleSkeleton } from "../Visualization/blocks/ContentSkeleton";
+import { TitleSkeleton } from "../Editor/blocks/ContentSkeleton";
 
 export type Level = 1 | 2 | 3 | 4 | 5 | 6;
 

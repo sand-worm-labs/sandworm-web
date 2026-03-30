@@ -9,7 +9,7 @@ import type { editor } from "monaco-editor";
 import * as Y from "yjs";
 
 import { keyCombo } from "@/lib/utils";
-import EditWithAIForm from "@/components/Visualization/blocks/EditWithAIForm";
+import EditWithAIForm from "@/components/Editor/blocks/EditWithAIForm";
 
 type ExecutionType = "rpc" | "indexer";
 

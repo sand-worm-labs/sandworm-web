@@ -6,11 +6,11 @@ import { useState } from "react";
 
 import { WorkspaceSidebar } from "@/components/Layout/WorkSpaceSidebar";
 import { AppHeader } from "@/components/Layout/AppHeader";
-import { useSession } from "@/components/Visualization/hooks/useAuth";
+import { useSession } from "@/components/Editor/hooks/useAuth";
 import {
   useRequestRoleUpgrade,
   useCurrentWorkspaceInfo,
-} from "@/components/Visualization/hooks/useWorkspaces";
+} from "@/components/Editor/hooks/useWorkspaces";
 import { ViewerAccessBar } from "@/components/ViewerAccessBar";
 
 interface WorkspaceLayoutProps {

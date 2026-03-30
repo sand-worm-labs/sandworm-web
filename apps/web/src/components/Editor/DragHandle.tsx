@@ -13,7 +13,7 @@ import clsx from "clsx";
 import { useRef } from "react";
 import { createPortal } from "react-dom";
 
-import { computeMenuPosition } from "../Visualization/utils/dom";
+import { computeMenuPosition } from "../../utils/dom";
 
 const DragHandle = ({
   isDragging,

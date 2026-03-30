@@ -18,9 +18,9 @@ import { sortWith } from "ramda";
 import { useCallback, useMemo } from "react";
 import { createDefaultSeries } from "@sandworm/editor";
 
-import ChartTypeSelector from "@/components/Visualization/blocks/ChartTypeSelector";
-import AxisSelector from "@/components/Visualization/blocks/AxisSelector";
-import AxisModifierSelector from "@/components/Visualization/blocks/AxisModifierSelector";
+import ChartTypeSelector from "@/components/Editor/blocks/ChartTypeSelector";
+import AxisSelector from "@/components/Editor/blocks/AxisSelector";
+import AxisModifierSelector from "@/components/Editor/blocks/AxisModifierSelector";
 
 interface Props {
   index: number;

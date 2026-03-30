@@ -8,12 +8,12 @@ import type { MouseEventHandler } from "react";
 import { ChevronRightIcon, ChevronDownIcon } from "lucide-react";
 
 import { AccountDropdown } from "@/components/AccountDropdown";
-import DocumentTree from "@/components/Visualization/blocks/DocumentsTree";
-import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
+import DocumentTree from "@/components/Editor/blocks/DocumentsTree";
+import { useStringQuery } from "@/components/Editor/hooks/useQueryArgs";
 import { SandwormLogo } from "@/components/Assets";
 import { SidebarIcon } from "@/components/Assets/SidebarIcon";
-import { useDocuments } from "@/components/Visualization/hooks/useDocuments";
-import { useSession } from "@/components/Visualization/hooks/useAuth";
+import { useDocuments } from "@/components/Editor/hooks/useDocuments";
+import { useSession } from "@/components/Editor/hooks/useAuth";
 import { ProjectIcon } from "@/components/Assets/Menu/ProjectIcon";
 import { Star } from "@/components/Assets/Menu/Star";
 import { SquaresFour } from "@/components/Assets/Menu/SquaresFour";

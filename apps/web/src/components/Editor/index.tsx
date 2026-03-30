@@ -77,34 +77,34 @@ import { DocumentIcon } from "@heroicons/react/24/solid";
 import { useOnClickOutside } from "@/hooks/useOnClickOutside";
 import type { ApiDocument, UserWorkspaceRole } from "@/types";
 
-import RunAllV2 from "../Visualization/blocks/RunAllV2";
-import PivotTableBlock from "../Visualization/blocks/customBlocks/pivotTable";
-import useHotkeys from "../Visualization/hooks/useHotkeys";
+import RunAllV2 from "../Editor/blocks/RunAllV2";
+import PivotTableBlock from "../Editor/blocks/customBlocks/pivotTable";
+import useHotkeys from "./hooks/useHotkeys";
 import useEditorAwareness, {
   EditorAwarenessProvider,
-} from "../Visualization/hooks/useEditorAwareness";
-import { SQLExtensionProvider } from "../Visualization/blocks/customBlocks/CodeEditor/sql";
+} from "./hooks/useEditorAwareness";
+import { SQLExtensionProvider } from "../Editor/blocks/customBlocks/CodeEditor/sql";
 import VisualizationV2Block from "../Visualization";
-import SQLBlock from "../Visualization/blocks/customBlocks/sql";
-import type { IProvider } from "../Visualization/hooks/useYProvider";
-import type { APIDataSources } from "../Visualization/hooks/useDataSources";
-import { useEnvironmentStatus } from "../Visualization/hooks/useEnvironmentStatus";
-import useScrollDetection from "../Visualization/hooks/useScrollDetection";
-import DateInputBlock from "../Visualization/blocks/customBlocks/dateInput";
-import DropdownInputBlock from "../Visualization/blocks/customBlocks/dropdownInput";
-import FileUploadBlock from "../Visualization/blocks/customBlocks/fileUpload";
-import InputBlock from "../Visualization/blocks/customBlocks/input";
+import SQLBlock from "../Editor/blocks/customBlocks/sql";
+import type { IProvider } from "./hooks/useYProvider";
+import type { APIDataSources } from "./hooks/useDataSources";
+import { useEnvironmentStatus } from "./hooks/useEnvironmentStatus";
+import useScrollDetection from "./hooks/useScrollDetection";
+import DateInputBlock from "../Editor/blocks/customBlocks/dateInput";
+import DropdownInputBlock from "../Editor/blocks/customBlocks/dropdownInput";
+import FileUploadBlock from "../Editor/blocks/customBlocks/fileUpload";
+import InputBlock from "../Editor/blocks/customBlocks/input";
 import VisualizationBlock from "../Visualization";
-import PythonBlock from "../Visualization/blocks/customBlocks/python";
-import RichTextBlock from "../Visualization/blocks/customBlocks/richText";
-import EnvBar from "../Visualization/blocks/EnvBar";
+import PythonBlock from "../Editor/blocks/customBlocks/python";
+import RichTextBlock from "../Editor/blocks/customBlocks/richText";
+import EnvBar from "../Editor/blocks/EnvBar";
 import {
   useLastUpdatedAt,
   useYDocState,
-} from "../Visualization/hooks/useYDocs";
-import useSideBar from "../Visualization/hooks/useSideBar";
-import { ElementType } from "../Visualization/blocks/DragLayer";
-import AnalyticsBlock from "../Visualization/blocks/customBlocks/PowerToolbox/AnalyticsBlock";
+} from "./hooks/useYDocs";
+import useSideBar from "./hooks/useSideBar";
+import { ElementType } from "../Editor/blocks/DragLayer";
+import AnalyticsBlock from "../Editor/blocks/customBlocks/PowerToolbox/AnalyticsBlock";
 
 import RemoveBlockDashboardConflictDialog from "./RemoveBlockDashboardConflictDialog";
 import { widthClasses } from "./constants";

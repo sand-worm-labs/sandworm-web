@@ -6,11 +6,11 @@ import { Loader2 } from "lucide-react";
 import Image from "next/image";
 
 import { Cautious } from "@/components/Assets/Cautious";
-import { useSession } from "@/components/Visualization/hooks/useAuth";
+import { useSession } from "@/components/Editor/hooks/useAuth";
 import {
   useAcceptInvitation,
   useGetInvitationInfo,
-} from "@/components/Visualization/hooks/useWorkspaces";
+} from "@/components/Editor/hooks/useWorkspaces";
 import { Mail } from "@/components/Assets/Mail";
 
 function AcceptInvitationContent() {
