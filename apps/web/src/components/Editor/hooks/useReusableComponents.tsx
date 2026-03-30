@@ -100,7 +100,7 @@ export const useReusableComponents = (
 };
 
 interface Props {
-  workspaceId: string;
+  workspaceId?: string;
   children: React.ReactNode;
 }
 

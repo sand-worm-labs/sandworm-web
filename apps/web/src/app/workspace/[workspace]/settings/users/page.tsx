@@ -27,8 +27,6 @@ export default function UsersPage() {
   const session = useSession({ redirectToLogin: true });
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
-  console.log(session.user, "user")
-
   const {
     workspacesWithMembers,
     isLoading: workspaceLoading,
@@ -83,8 +81,9 @@ export default function UsersPage() {
     };
 
     members.forEach(member => {
-      if (member.role && roleCounts[member.role] !== undefined) {
-        roleCounts[member.role]++;
+      const { role } = member;
+      if (role && roleCounts[role] !== undefined) {
+        roleCounts[role] = (roleCounts[role] ?? 0) + 1;
       }
     });
 

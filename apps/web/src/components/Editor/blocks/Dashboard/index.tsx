@@ -25,13 +25,13 @@ import type { DataFrame, UserWorkspaceRole } from "@sandworm/types";
 import { ChatIcon } from "@/components/Assets/ChatIcon";
 import { ClockCountdown } from "@/components/Assets/ClockCountdown";
 import { DataExplorer } from "@/components/ExplorerPanels/DataExplorer";
-import type { ApiDocument, SessionUser } from "@/types";
-
+import type { ApiDocument } from "@/types";
 import { NEXT_PUBLIC_PUBLIC_URL } from "@/utils/env";
+import Layout from "@/components/Visualization/Layout";
+
 import ShareModal from "../ShareModal";
 import { useDataSources } from "../../hooks/useDataSources";
 import { useLastUpdatedAt, useYDoc, useYDocState } from "../../hooks/useYDocs";
-import Layout from "@/components/Visualization/Layout";
 import DashboardNotebookGroupButton from "../DashboarNotebookGroupButton";
 import EllipsisDropdown from "../EllipsisDropdown";
 import Comments from "../Comments";
@@ -52,6 +52,7 @@ import InputBlock from "../customBlocks/input";
 import DateInputBlock from "../customBlocks/dateInput";
 import PivotTableBlock from "../customBlocks/pivotTable";
 import DropdownInputBlock from "../customBlocks/dropdownInput";
+import type { SessionUser } from "../../hooks/useAuth";
 
 import DashboardSkeleton from "./DashboardSkeleton";
 import DashboardControls from "./DashboardControls";
@@ -399,6 +400,7 @@ interface Props {
   role: UserWorkspaceRole;
   isEditing: boolean;
   publishing: boolean;
+  publish: () => Promise<void>;
 }
 export default function Dashboard(props: Props) {
   const clock = useMemo(() => {
@@ -458,17 +460,6 @@ export default function Dashboard(props: Props) {
       `/workspaces/${props.document.workspaceId}/documents/${props.document.id}/dashboard`
     );
   }, [props.publish, props.publishing]);
-
-  const shareLinkWithoutSidebar = props.document.shareLinksWithoutSidebar;
-  const copyLink = useMemo(
-    () =>
-      `${process.env.NEXT_PUBLIC_PUBLIC_URL}/workspace/${
-        props.document.workspaceId
-      }/documents/${props.document.id}/dashboard${
-        shareLinkWithoutSidebar ? "?sidebarCollapsed=true" : ""
-      }`,
-    [props.document.workspaceId, props.document.id, shareLinkWithoutSidebar]
-  );
 
   const documentTitle = useMemo(
     () => props.document.title || "Untitled",
@@ -669,6 +660,19 @@ export default function Dashboard(props: Props) {
   );
 
   const lastUpdatedAt = useLastUpdatedAt(yDoc);
+
+  if (publishing) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          <p className="text-sm font-medium animate-pulse">
+            Publishing changes...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <Layout
