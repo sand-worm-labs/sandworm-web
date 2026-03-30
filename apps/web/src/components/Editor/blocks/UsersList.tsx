@@ -115,7 +115,7 @@ type Props = {
   onRemoveUser: (id: string) => void;
   onChangeRole: (id: string, role: UserWorkspaceRole) => void;
   onResetPassword: (id: string) => void;
-  role: UserWorkspaceRole;
+  userRole: UserWorkspaceRole;
 };
 
 function UsersList(props: Props) {
@@ -244,7 +244,7 @@ function UsersList(props: Props) {
                     onRemoveUser={props.onRemoveUser}
                     onChangeRole={props.onChangeRole}
                     onResetPassword={props.onResetPassword}
-                    role={props.role}
+                    role={props.userRole}
                   />
                 );
               })}

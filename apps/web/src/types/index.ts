@@ -115,10 +115,10 @@ export interface User {
   name: string | null;
   lastName: string | null;
   fullName: string | null;
-  avater: string | null;
-  isOnboarded: boolean;
-  followersCount: number;
-  followingCount: number;
+  avater?: string | null;
+  isOnboarded?: boolean;
+  followersCount?: number;
+  followingCount?: number;
   __typename?: string;
   settings?: UserSetting;
 }
