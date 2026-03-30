@@ -6,8 +6,12 @@ import { useCallback, useState } from "react";
 import { uniq } from "ramda";
 import clsx from "clsx";
 import { useRouter } from "next/router";
+import { toast } from "sonner";
 
-import type { EnvVar } from "@/hooks/useEnvironmentVariables";
+import {
+  useEnvironmentVariables,
+  type EnvVar,
+} from "@/components/Editor/hooks/useEnvironmentVariables";
 import FormError from "@/components/Editor/blocks/forms/formError";
 import { useSession } from "@/components/Editor/hooks/useAuth";
 import ScrollBar from "@/components/Editor/blocks/ScrollBar";
@@ -175,7 +179,7 @@ export default function EnvirontVariablesPage() {
           setRemoved([]);
         })
         .catch(() => {
-          alert("Something went wrong");
+          toast.error("Something went wrong");
         })
         .finally(() => {
           setSaving(false);
