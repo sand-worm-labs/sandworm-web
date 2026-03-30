@@ -338,7 +338,7 @@ export function ModelQuickSelect({
           <button
             type="button"
             onClick={handleBrowseAll}
-            className="w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-white/[0.05] transition-colors duration-100 group"
+            className="w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-primary/15 transition-colors duration-100 group"
           >
             <span className="font-body text-[12px] text-ink-400 group-hover:text-ink-200 transition-colors">
               Browse all models
