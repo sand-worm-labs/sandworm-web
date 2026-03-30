@@ -27,6 +27,8 @@ export default function UsersPage() {
   const session = useSession({ redirectToLogin: true });
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
+  console.log(session.user, "user")
+
   const {
     workspacesWithMembers,
     isLoading: workspaceLoading,

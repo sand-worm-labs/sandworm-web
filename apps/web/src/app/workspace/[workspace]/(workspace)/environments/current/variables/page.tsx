@@ -132,6 +132,8 @@ export default function EnvirontVariablesPage() {
   const [removed, setRemoved] = useState<string[]>([]);
 
   const variables = (swr.data ?? []).filter(v => !removed.includes(v.id));
+  const isViewer =
+    session?.user?.role?.find(r => r[workspaceId])?.[workspaceId] === "viewer";
 
   const onAdd = useCallback(() => {
     setAdded(prev => [...prev, { id: uuidv4(), name: "", value: "" }]);
@@ -304,7 +306,7 @@ export default function EnvirontVariablesPage() {
         userId={session.user?.id ?? null}
       />
       <EnvBar
-        isViewer={session.user?.roles[workspaceId] === "viewer"}
+        isViewer={isViewer}
         onOpenFiles={onToggleFilesOpen}
         publishedAt={null}
         lastUpdatedAt={null}
