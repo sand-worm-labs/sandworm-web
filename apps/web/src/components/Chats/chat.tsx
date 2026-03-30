@@ -3,8 +3,8 @@
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
-import { useDocuments } from "../Visualization/hooks/useDocuments";
+import { useStringQuery } from "../Editor/hooks/useQueryArgs";
+import { useDocuments } from "../Editor/hooks/useDocuments";
 
 import { MultimodalInput } from "./multimodal-input";
 import { ExamplePrompts } from "./example-prompts";

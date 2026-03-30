@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { z } from "zod";
 
-import { useResetPassword } from "../Visualization/hooks/useAuth";
+import { useResetPassword } from "../Editor/hooks/useAuth";
 
 // ⬢ Password Validation Schema
 // =====================================

@@ -3,8 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-import { useSession } from "@/components/Visualization/hooks/useAuth";
-import { useCurrentWorkspaceInfo } from "@/components/Visualization/hooks/useWorkspaces";
+import { useSession } from "@/components/Editor/hooks/useAuth";
+import { useCurrentWorkspaceInfo } from "@/components/Editor/hooks/useWorkspaces";
 
 export default function WorkspaceRedirectPage() {
   const router = useRouter();

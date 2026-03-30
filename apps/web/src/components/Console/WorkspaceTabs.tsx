@@ -30,7 +30,7 @@ import {
 import { useSandwormStore } from "@/store";
 import type { Query } from "@/types";
 
-import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
+import { useStringQuery } from "../Editor/hooks/useQueryArgs";
 
 import { HomeTab } from "./HomeTab";
 import { SortableTab } from "./SortableTab";

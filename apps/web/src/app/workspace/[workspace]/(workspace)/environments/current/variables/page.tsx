@@ -13,18 +13,15 @@ import { useRouter } from "next/router";
 
 import type { EnvVar } from "@/hooks/useEnvironmentVariables";
 import FormError from "@/components/forms/formError";
-Spin
+import { useSession } from "@/components/Editor/hooks/useAuth";
+import ScrollBar from "@/components/Editor/blocks/ScrollBar";
+import Files from "@/components/Editor/blocks/Files";
+import { useEnvironmentStatus } from "@/components/Editor/hooks/useEnvironmentStatus";
+import EnvBar from "@/components/Editor/blocks/EnvBar";
+import { useStringQuery } from "@/components/Editor/hooks/useQueryArgs";
+import Spin from "@/components/Editor/blocks/Spin";
 
-
-import { useSession } from "@/components/Visualization/hooks/useAuth";
-import ScrollBar from "@/components/Visualization/blocks/ScrollBar";
-import Files from "@/components/Visualization/blocks/Files";
-import { useEnvironmentStatus } from "@/components/Visualization/hooks/useEnvironmentStatus";
-import EnvBar from "@/components/Visualization/blocks/EnvBar";
-import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
-import Spin from "@/components/Visualization/blocks/Spin";
-
-
+Spin;
 
 const envVarRegex = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
 
@@ -147,92 +144,88 @@ export default function EnvirontVariablesPage() {
   }
 
   return (
-      <div className="flex flex-col flex-grow h-full">
-        <ScrollBar className="w-full bg-white h-full overflow-auto">
-          <div className="px-4 sm:p-6 lg:p-8">
-            <div className="border-b border-gray-200 pb-4">
-              <h2 className="text-lg font-semibold leading-7 text-gray-900">
-                Environment variables
-              </h2>
-              <p className="pt-1 text-sm leading-6 text-gray-500">
-                These environment variables are available in Python blocks
-                through{" "}
-                <span className="font-mono px-1 py-0.5 bg-gray-100 rounded-sm">
-                  os.getenv("VAR_NAME")
-                </span>
-                .
-              </p>
-            </div>
-            <form onSubmit={onSave}>
-              <div className="flex flex-col border-b border-gray-200 py-4 space-y-4">
-                <div className="flex flex-col space-y-2">
-                  {variables.map(v => (
-                    <EnvVarInput
-                      key={v.id}
-                      variable={v}
-                      onRemove={onRemove}
-                      disabled={saving}
-                    />
-                  ))}
-                  {added.map(v => (
-                    <EnvVarInput
-                      variable={v}
-                      onChange={onChange}
-                      onRemove={onRemoveAdded}
-                      disabled={saving}
-                      error={errors[v.id]}
-                    />
-                  ))}
-                </div>
-                <div>
-                  <button
-                    type="button"
-                    onClick={onAdd}
-                    className="flex items-center gap-x-2 text-sm font-semibold leading-6 text-gray-600 border border-gray-400 px-6 py-1.5 rounded-sm shadow-sm hover:bg-gray-50"
-                  >
-                    New variable
-                  </button>
-                </div>
-              </div>
-              <div className="mt-6 flex items-center justify-end gap-x-4">
-                <button
-                  onClick={onCancel}
-                  type="button"
-                  className="text-sm font-semibold leading-6 text-gray-600 border border-gray-400 px-6 py-1.5 rounded-sm shadow-sm hover:bg-gray-50"
-                  disabled={saving}
-                >
-                  {added.length === 0 && removed.length === 0
-                    ? "Back"
-                    : "Cancel"}
-                </button>
-                <button
-                  type="submit"
-                  className="flex items-center gap-x-2 rounded-sm shadow-sm bg-primary-200 px-6 py-2.5 text-sm font-semibold hover:bg-primary-300 border-stone-950 disabled:bg-gray-300 disabled:cursor-not-allowed"
-                  disabled={
-                    (added.length === 0 && removed.length === 0) ||
-                    swr.isLoading
-                  }
-                >
-                  {saving && <Spin />}
-                  Save
-                </button>
-              </div>
-            </form>
+    <div className="flex flex-col flex-grow h-full">
+      <ScrollBar className="w-full bg-white h-full overflow-auto">
+        <div className="px-4 sm:p-6 lg:p-8">
+          <div className="border-b border-gray-200 pb-4">
+            <h2 className="text-lg font-semibold leading-7 text-gray-900">
+              Environment variables
+            </h2>
+            <p className="pt-1 text-sm leading-6 text-gray-500">
+              These environment variables are available in Python blocks through{" "}
+              <span className="font-mono px-1 py-0.5 bg-gray-100 rounded-sm">
+                os.getenv("VAR_NAME")
+              </span>
+              .
+            </p>
           </div>
-        </ScrollBar>
-        <Files
-          workspaceId={workspaceId}
-          visible={filesOpen}
-          onHide={() => setFilesOpen(false)}
-          userId={session.user?.id ?? null}
-        />
-        <EnvBar
-          isViewer={session.user?.roles[workspaceId] === "viewer"}
-          onOpenFiles={onToggleFilesOpen}
-          publishedAt={null}
-          lastUpdatedAt={null}
-        />
-      </div>
+          <form onSubmit={onSave}>
+            <div className="flex flex-col border-b border-gray-200 py-4 space-y-4">
+              <div className="flex flex-col space-y-2">
+                {variables.map(v => (
+                  <EnvVarInput
+                    key={v.id}
+                    variable={v}
+                    onRemove={onRemove}
+                    disabled={saving}
+                  />
+                ))}
+                {added.map(v => (
+                  <EnvVarInput
+                    variable={v}
+                    onChange={onChange}
+                    onRemove={onRemoveAdded}
+                    disabled={saving}
+                    error={errors[v.id]}
+                  />
+                ))}
+              </div>
+              <div>
+                <button
+                  type="button"
+                  onClick={onAdd}
+                  className="flex items-center gap-x-2 text-sm font-semibold leading-6 text-gray-600 border border-gray-400 px-6 py-1.5 rounded-sm shadow-sm hover:bg-gray-50"
+                >
+                  New variable
+                </button>
+              </div>
+            </div>
+            <div className="mt-6 flex items-center justify-end gap-x-4">
+              <button
+                onClick={onCancel}
+                type="button"
+                className="text-sm font-semibold leading-6 text-gray-600 border border-gray-400 px-6 py-1.5 rounded-sm shadow-sm hover:bg-gray-50"
+                disabled={saving}
+              >
+                {added.length === 0 && removed.length === 0 ? "Back" : "Cancel"}
+              </button>
+              <button
+                type="submit"
+                className="flex items-center gap-x-2 rounded-sm shadow-sm bg-primary-200 px-6 py-2.5 text-sm font-semibold hover:bg-primary-300 border-stone-950 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                disabled={
+                  (added.length === 0 && removed.length === 0) || swr.isLoading
+                }
+              >
+                {saving && <Spin />}
+                Save
+              </button>
+            </div>
+          </form>
+        </div>
+      </ScrollBar>
+      <Files
+        workspaceId={workspaceId}
+        visible={filesOpen}
+        onHide={() => setFilesOpen(false)}
+        userId={session.user?.id ?? null}
+      />
+      <EnvBar
+        isViewer={session.user?.roles[workspaceId] === "viewer"}
+        onOpenFiles={onToggleFilesOpen}
+        publishedAt={null}
+        lastUpdatedAt={null}
+      />
+    </div>
   );
 }
 

@@ -9,7 +9,7 @@ import clsx from "clsx";
 import ReactDOM from "react-dom";
 import { useStableKeys } from "@sandworm/ui/lib/utils";
 
-import useDropdownPosition from "./hooks/dropdownposition";
+import useDropdownPosition from "../Editor/hooks/dropdownposition";
 
 // 🎨 Interface / Props Definition
 // =====================================

@@ -8,8 +8,8 @@ import { Button } from "@sandworm/ui/components/button";
 import { User } from "@/components/Assets/User";
 import { SliderHorizontal } from "@/components/Assets/SliderHorizontal";
 import { GearIcon } from "@/components/Assets/GearIcon";
-import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
-import { useSignout } from "@/components/Visualization/hooks/useAuth";
+import { useStringQuery } from "@/components/Editor/hooks/useQueryArgs";
+import { useSignout } from "@/components/Editor/hooks/useAuth";
 
 export default function SettingsLayout({
   children,

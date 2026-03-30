@@ -17,7 +17,7 @@ import { Checkbox } from "@sandworm/ui/components/checkbox";
 import { useCreateQuery } from "@/hooks/useCreateQuery";
 import { useSaveQuery } from "@/hooks/useSaveQuery";
 
-import { useSession } from "../Visualization/hooks/useAuth";
+import { useSession } from "../Editor/hooks/useAuth";
 
 interface SaveModalProps {
   open: boolean;

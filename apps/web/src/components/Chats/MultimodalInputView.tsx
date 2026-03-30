@@ -6,9 +6,9 @@ import { PiPaperPlaneTilt, PiPlus, PiX } from "react-icons/pi";
 import { Button } from "@sandworm/ui/components/button";
 import { Textarea } from "@sandworm/ui/components/textarea";
 
-import { ModelQuickSelect } from "../Visualization/blocks/ModelQuickSelect";
-import { useOpenRouterModels } from "../Visualization/hooks/useOpenRouterModel";
-import { ModelPickerModal } from "../Visualization/blocks/ModelPicker";
+import { ModelQuickSelect } from "../Editor/blocks/ModelQuickSelect";
+import { useOpenRouterModels } from "../Editor/hooks/useOpenRouterModel";
+import { ModelPickerModal } from "../Editor/blocks/ModelPicker";
 
 import { StopIcon } from "./icons";
 import { PreviewAttachment } from "./preview-attachment";

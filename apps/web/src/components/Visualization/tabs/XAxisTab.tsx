@@ -1,5 +1,5 @@
 import type { ChangeEvent } from "react";
-import { FocusEvent, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type {
   DataFrameColumn,
   DataFrame,

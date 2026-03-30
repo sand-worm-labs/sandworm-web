@@ -7,8 +7,8 @@ import { Card, CardContent } from "@sandworm/ui/components/card";
 import { ArrowRight } from "lucide-react";
 
 import { ToolsiIlustration } from "@/components/Assets/ToolsiIlustration";
-import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
-import { useDocuments } from "@/components/Visualization/hooks/useDocuments";
+import { useStringQuery } from "@/components/Editor/hooks/useQueryArgs";
+import { useDocuments } from "@/components/Editor/hooks/useDocuments";
 import SquareFour from "@/components/Assets/SquareFour";
 
 type Tool = {

@@ -1,29 +1,14 @@
 "use client";
 
-import {
-  Cog8ToothIcon,
-  HandThumbUpIcon,
-  TrashIcon,
-} from "@heroicons/react/24/outline";
+import { HandThumbUpIcon } from "@heroicons/react/24/outline";
 import React, { useCallback, useMemo } from "react";
 
 import type { ApiDeletedDocument } from "@/types";
-import { useSession } from "@/components/Visualization/hooks/useAuth";
-import TrashList from "@/components/Visualization/blocks/TrashList";
-import ScrollBar from "@/components/Visualization/blocks/ScrollBar";
-import { useDocuments } from "@/components/Visualization/hooks/useDocuments";
-import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
-import { Loader } from "@/components/Loader";
-
-const pagePath = (workspaceId: string) => [
-  { name: "Configurations", icon: Cog8ToothIcon, href: "#", current: false },
-  {
-    name: "Trash",
-    icon: TrashIcon,
-    href: `/workspace/${workspaceId}/trash`,
-    current: true,
-  },
-];
+import { useSession } from "@/components/Editor/hooks/useAuth";
+import TrashList from "@/components/Editor/blocks/TrashList";
+import ScrollBar from "@/components/Editor/blocks/ScrollBar";
+import { useDocuments } from "@/components/Editor/hooks/useDocuments";
+import { useStringQuery } from "@/components/Editor/hooks/useQueryArgs";
 
 export default function TrashPage() {
   const workspaceId = useStringQuery("workspace");

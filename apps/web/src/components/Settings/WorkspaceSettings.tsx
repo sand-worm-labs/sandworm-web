@@ -28,11 +28,11 @@ import {
   useWorkspaceWithMembers,
   useRemoveUserFromWorkspace,
   useUpdateWorkspaceMemberRole,
-} from "../Visualization/hooks/useWorkspaces";
-import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
-import MiniUsersList from "../Visualization/blocks/MiniUsersList";
-import { useOpenRouterModels } from "../Visualization/hooks/useOpenRouterModel";
-import { ModelPickerModal } from "../Visualization/blocks/ModelPicker";
+} from "../Editor/hooks/useWorkspaces";
+import { useStringQuery } from "../Editor/hooks/useQueryArgs";
+import MiniUsersList from "../Editor/blocks/MiniUsersList";
+import { useOpenRouterModels } from "../Editor/hooks/useOpenRouterModel";
+import { ModelPickerModal } from "../Editor/blocks/ModelPicker";
 import InviteUserModal from "../InviteUser";
 
 import { WorkspaceIcon } from "./WorkspaceIcon";

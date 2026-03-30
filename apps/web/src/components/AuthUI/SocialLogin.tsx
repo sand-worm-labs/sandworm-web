@@ -11,7 +11,7 @@ import {
   NEXT_PUBLIC_API_URL,
   GITHUB_CLIENT_ID,
   REDIRECT_URI,
-} from "@/components/Visualization/utils/env";
+} from "@/utils/env";
 
 type SocialLoginProps = {
   variant?: "signup" | "signin";

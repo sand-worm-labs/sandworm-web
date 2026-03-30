@@ -3,11 +3,11 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
-import PrivateDocumentPage from "@/components/Visualization/blocks/PrivateDocumentPage";
-import { useSession } from "@/components/Visualization/hooks/useAuth";
-import useDocument from "@/components/Visualization/hooks/useDocument";
-import type { SessionUser } from "@/components/Visualization/hooks/useAuth";
+import { useStringQuery } from "@/components/Editor/hooks/useQueryArgs";
+import PrivateDocumentPage from "@/components/Editor/blocks/PrivateDocumentPage";
+import { useSession } from "@/components/Editor/hooks/useAuth";
+import useDocument from "@/components/Editor/hooks/useDocument";
+import type { SessionUser } from "@/components/Editor/hooks/useAuth";
 
 interface Props {
   workspaceId: string;

@@ -12,7 +12,7 @@ import {
 
 import { useSandwormStore } from "@/store";
 
-import { useStringQuery } from "../../Visualization/hooks/useQueryArgs";
+import { useStringQuery } from "../../Editor/hooks/useQueryArgs";
 
 export const CreateQueryButton = () => {
   const router = useRouter();

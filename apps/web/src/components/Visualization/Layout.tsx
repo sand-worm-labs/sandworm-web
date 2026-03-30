@@ -5,16 +5,14 @@ import { usePathname } from "next/navigation";
 import { useHotkeys } from "react-hotkeys-hook";
 
 import NotebookPanel from "../Layout/NotebookPanel";
-import { ViewerAccessBar } from "../ViewerAccessBar";
-
-import { useStringQuery } from "./hooks/useQueryArgs";
-import useSideBar from "./hooks/useSideBar";
-import type { Page } from "./blocks/PagePath";
-import MobileWarning from "./blocks/MobileWarning";
-import CommandPalette from "./blocks/commandPalette";
-import { FeaturesDialog } from "./blocks/SubscriptionBadge";
-import PagePath from "./blocks/PagePath";
-import DragLayer from "./blocks/DragLayer";
+import { useStringQuery } from "../Editor/hooks/useQueryArgs";
+import useSideBar from "../Editor/hooks/useSideBar";
+import type { Page } from "../Editor/blocks/PagePath";
+import MobileWarning from "../Editor/blocks/MobileWarning";
+import CommandPalette from "../Editor/blocks/commandPalette";
+import { FeaturesDialog } from "../Editor/blocks/SubscriptionBadge";
+import PagePath from "../Editor/blocks/PagePath";
+import DragLayer from "../Editor/blocks/DragLayer";
 
 interface Props {
   children: React.ReactNode;

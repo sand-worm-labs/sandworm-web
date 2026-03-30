@@ -6,10 +6,10 @@ import clsx from "clsx";
 import { toast } from "sonner";
 
 import type { UserWorkspaceRole } from "@/types";
-import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
-import { useSession } from "@/components/Visualization/hooks/useAuth";
-import UsersList from "@/components/Visualization/blocks/UsersList";
-import ScrollBar from "@/components/Visualization/blocks/ScrollBar";
+import { useStringQuery } from "@/components/Editor/hooks/useQueryArgs";
+import { useSession } from "@/components/Editor/hooks/useAuth";
+import UsersList from "@/components/Editor/blocks/UsersList";
+import ScrollBar from "@/components/Editor/blocks/ScrollBar";
 import {
   UserControl,
   type RoleFilter,
@@ -19,7 +19,7 @@ import {
   useInviteUserToWorkspace,
   useAdminWorkspacesWithMembers,
   useBatchRemoveUsersFromWorkspace,
-} from "@/components/Visualization/hooks/useWorkspaces";
+} from "@/components/Editor/hooks/useWorkspaces";
 import { Loader } from "@/components/Loader";
 
 export default function UsersPage() {

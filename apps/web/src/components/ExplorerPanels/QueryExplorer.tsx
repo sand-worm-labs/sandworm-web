@@ -14,7 +14,7 @@ import type { Query } from "@/types";
 import { useModalStore } from "@/store/auth";
 import { useQueryStore } from "@/store/queries";
 
-import { useSession } from "../Visualization/hooks/useAuth";
+import { useSession } from "../Editor/hooks/useAuth";
 
 import { QueryExplorerCardList } from "./QueryExplorerCardList";
 
