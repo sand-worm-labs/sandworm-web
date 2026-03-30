@@ -103,7 +103,7 @@ export const MultimodalInputView = forwardRef<
                 }
               }}
               minRows={3}
-              maxRows={14}
+              maxRows={20}
               className="
         w-full
         bg-transparent

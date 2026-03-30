@@ -1,18 +1,14 @@
+"use client";
+
 import { v4 as uuidv4 } from "uuid";
 import { XCircleIcon } from "@heroicons/react/20/solid";
-import {
-  CpuChipIcon,
-  Cog8ToothIcon,
-  CommandLineIcon,
-  CodeBracketIcon,
-} from "@heroicons/react/24/outline";
 import { useCallback, useState } from "react";
 import { uniq } from "ramda";
 import clsx from "clsx";
 import { useRouter } from "next/router";
 
 import type { EnvVar } from "@/hooks/useEnvironmentVariables";
-import FormError from "@/components/forms/formError";
+import FormError from "@/components/Editor/blocks/forms/formError";
 import { useSession } from "@/components/Editor/hooks/useAuth";
 import ScrollBar from "@/components/Editor/blocks/ScrollBar";
 import Files from "@/components/Editor/blocks/Files";
@@ -20,8 +16,6 @@ import { useEnvironmentStatus } from "@/components/Editor/hooks/useEnvironmentSt
 import EnvBar from "@/components/Editor/blocks/EnvBar";
 import { useStringQuery } from "@/components/Editor/hooks/useQueryArgs";
 import Spin from "@/components/Editor/blocks/Spin";
-
-Spin;
 
 const envVarRegex = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
 
@@ -35,7 +29,90 @@ function errorToMessage(error: ErrorType): string {
       return "Duplicated name, you can't have two variables with the same name.";
     case "empty-name":
       return "Invalid name, can't be empty.";
+    default:
+      return "An unexpected error occurred. Please try again.";
   }
+}
+
+interface EnvVarInputProps {
+  variable: EnvVar;
+  onChange?: (v: EnvVar) => void;
+  onRemove: (v: EnvVar) => void;
+  disabled: boolean;
+  error?: ErrorType;
+}
+function EnvVarInput(props: EnvVarInputProps) {
+  const onChangeName = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      props.onChange?.({ ...props.variable, name: e.target.value });
+    },
+    [props.variable, props.onChange]
+  );
+
+  const onChangeValue = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      props.onChange?.({ ...props.variable, value: e.target.value });
+    },
+    [props.variable, props.onChange]
+  );
+
+  const onRemove = useCallback(() => {
+    props.onRemove(props.variable);
+  }, [props.variable, props.onRemove]);
+
+  return (
+    <div>
+      <div className="flex space-x-4">
+        <div className="flex-1 w-full">
+          <label
+            htmlFor={`name-${props.variable.id}`}
+            className="block text-sm font-medium leading-6 text-gray-900"
+          >
+            Name
+          </label>
+          <input
+            id={`name-${props.variable.id}`}
+            type="text"
+            value={props.variable.name}
+            placeholder="MY_VARIABLE_NAME"
+            className={clsx(
+              "h-9 block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 disabled:bg-gray-100 disabled:text-gray-300",
+              props.error && "ring-1 ring-error-600"
+            )}
+            onChange={onChangeName}
+            disabled={!props.onChange || props.disabled}
+          />
+          {props.error && <FormError msg={errorToMessage(props.error)} />}
+        </div>
+        <div className="flex-1 w-full">
+          <label
+            htmlFor={`val-${props.variable.id}`}
+            className="block text-sm font-medium leading-6 text-gray-900"
+          >
+            Value
+          </label>
+          <textarea
+            rows={1}
+            id={`val-${props.variable.id}`}
+            value={props.variable.value}
+            className="h-9 block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 6 disabled:bg-gray-100 disabled:text-gray-300"
+            onChange={onChangeValue}
+            disabled={!props.onChange || props.disabled}
+          />
+        </div>
+        <div className="pt-6">
+          <button
+            type="button"
+            className="flex items-center justify-center cursor-pointer text-gray-600 disabled:cursor-not-allowed w-9 h-9 rounded-md hover:text-error "
+            onClick={onRemove}
+            disabled={props.disabled}
+          >
+            <XCircleIcon className="h-5 w-5" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function EnvirontVariablesPage() {
@@ -61,27 +138,30 @@ export default function EnvirontVariablesPage() {
       e.preventDefault();
       const newErrors: Record<string, ErrorType> = {};
 
-      for (const v of added) {
+      added.forEach(v => {
         if (!v.name) {
           newErrors[v.id] = "empty-name";
-          continue;
+          return;
         }
 
         if (!envVarRegex.test(v.name)) {
           newErrors[v.id] = "invalid-name";
-          continue;
+          return;
         }
 
         if (variables.some(x => x.name === v.name)) {
           newErrors[v.id] = "duplicated-name";
-          continue;
+          return;
         }
 
-        if (added.some(x => x.id !== v.id && x.name === v.name)) {
+        const isDuplicateInAdded = added.some(
+          x => x.id !== v.id && x.name === v.name
+        );
+
+        if (isDuplicateInAdded) {
           newErrors[v.id] = "duplicated-name";
-          continue;
         }
-      }
+      });
 
       if (Object.keys(newErrors).length > 0) {
         setErrors(newErrors);
@@ -139,7 +219,7 @@ export default function EnvirontVariablesPage() {
     setFilesOpen(prev => !prev);
   }, []);
 
-  if (!session.data) {
+  if (!session.user) {
     return null;
   }
 
@@ -225,87 +305,6 @@ export default function EnvirontVariablesPage() {
         publishedAt={null}
         lastUpdatedAt={null}
       />
-    </div>
-  );
-}
-
-interface EnvVarInputProps {
-  variable: EnvVar;
-  onChange?: (v: EnvVar) => void;
-  onRemove: (v: EnvVar) => void;
-  disabled: boolean;
-  error?: ErrorType;
-}
-function EnvVarInput(props: EnvVarInputProps) {
-  const onChangeName = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      props.onChange?.({ ...props.variable, name: e.target.value });
-    },
-    [props.variable, props.onChange]
-  );
-
-  const onChangeValue = useCallback(
-    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      props.onChange?.({ ...props.variable, value: e.target.value });
-    },
-    [props.variable, props.onChange]
-  );
-
-  const onRemove = useCallback(() => {
-    props.onRemove(props.variable);
-  }, [props.variable, props.onRemove]);
-
-  return (
-    <div>
-      <div className="flex space-x-4">
-        <div className="flex-1 w-full">
-          <label
-            htmlFor={`name-${props.variable.id}`}
-            className="block text-sm font-medium leading-6 text-gray-900"
-          >
-            Name
-          </label>
-          <input
-            id={`name-${props.variable.id}`}
-            type="text"
-            value={props.variable.name}
-            placeholder="MY_VARIABLE_NAME"
-            className={clsx(
-              "h-9 block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 disabled:bg-gray-100 disabled:text-gray-300",
-              props.error && "ring-1 ring-red-800"
-            )}
-            onChange={onChangeName}
-            disabled={!props.onChange || props.disabled}
-          />
-          {props.error && <FormError msg={errorToMessage(props.error)} />}
-        </div>
-        <div className="flex-1 w-full">
-          <label
-            htmlFor={`val-${props.variable.id}`}
-            className="block text-sm font-medium leading-6 text-gray-900"
-          >
-            Value
-          </label>
-          <textarea
-            rows={1}
-            id={`val-${props.variable.id}`}
-            value={props.variable.value}
-            className="h-9 block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 6 disabled:bg-gray-100 disabled:text-gray-300"
-            onChange={onChangeValue}
-            disabled={!props.onChange || props.disabled}
-          />
-        </div>
-        <div className="pt-6">
-          <button
-            type="button"
-            className="flex items-center justify-center cursor-pointer text-gray-600 disabled:cursor-not-allowed w-9 h-9 rounded-md hover:text-error "
-            onClick={onRemove}
-            disabled={props.disabled}
-          >
-            <XCircleIcon className="h-5 w-5" />
-          </button>
-        </div>
-      </div>
     </div>
   );
 }
