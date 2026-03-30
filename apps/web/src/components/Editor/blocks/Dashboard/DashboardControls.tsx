@@ -76,8 +76,6 @@ function getTypeLabel(t: BlockType) {
       return "File Upload";
     case BlockType.DashboardHeader:
       return "Dashboard Header";
-    case BlockType.Writeback:
-      return "Writeback";
     default:
       return "";
   }
@@ -102,7 +100,6 @@ function getTypeIcon(t: BlockType): JSX.Element {
       return <Bars3CenterLeftIcon className="w-4 h-4 text-ink-400 " />;
     case BlockType.FileUpload:
     case BlockType.DashboardHeader:
-    case BlockType.Writeback:
     default:
       return <QuestionMarkCircleIcon className="w-4 h-4 text-ink-400 " />;
   }
@@ -190,7 +187,6 @@ function BlockPreview(props: BlockPreviewProps) {
       </div>
     ),
     onDashboardHeader: () => null,
-    onWriteback: () => null,
     onPowerToolbox: () => null,
   });
 }
@@ -251,9 +247,6 @@ function BlockListItem(props: BlockListItemProps) {
       case BlockType.PivotTable:
       case BlockType.Python:
       case BlockType.RichText:
-      case BlockType.Writeback:
-        props.onExpand(props.block);
-        break;
       case BlockType.FileUpload:
       case BlockType.DashboardHeader:
         return;
@@ -456,7 +449,6 @@ function DashboardControls(props: Props) {
                 onPivotTable: () => block,
                 onFileUpload: () => null,
                 onDashboardHeader: () => null,
-                onWriteback: () => null,
                 onPowerToolbox: () => null,
               });
             }) ?? [];
@@ -498,7 +490,6 @@ function DashboardControls(props: Props) {
                   }
                   break;
                 case BlockType.RichText:
-                case BlockType.Writeback:
                 case BlockType.FileUpload:
                 case BlockType.DashboardHeader:
                   // these do not show up in the list in the first place

@@ -88,7 +88,6 @@ export function getMins(t: BlockType): { minW: number; minH: number } {
       return { minW: 2, minH: 2 };
     case BlockType.DashboardHeader:
       return { minW: 2, minH: 1 };
-    case BlockType.Writeback:
     case BlockType.FileUpload:
       return { minW: 0, minH: 0 };
     default:
@@ -113,7 +112,6 @@ export function getDefaults(t: BlockType): { minW: number; minH: number } {
     case BlockType.DashboardHeader:
       return { minW: 4, minH: 1 };
     case BlockType.FileUpload:
-    case BlockType.Writeback:
       return { minW: 0, minH: 0 };
     default:
       return { minW: 0, minH: 0 };
