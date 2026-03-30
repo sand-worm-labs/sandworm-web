@@ -111,15 +111,13 @@ function buildQuickList(
     seen.add(id);
   };
 
-  for (const id of recentIds) {
-    if (result.length >= MAX_RECENT) break;
-    tryAdd(id);
-  }
+  const candidates = [...recentIds, ...QUICK_SELECT_DEFAULTS];
 
-  for (const id of QUICK_SELECT_DEFAULTS) {
-    if (result.length >= MAX_RECENT) break;
-    tryAdd(id);
-  }
+  candidates.forEach(id => {
+    if (result.length < MAX_RECENT) {
+      tryAdd(id);
+    }
+  });
 
   return result;
 }
@@ -245,9 +243,8 @@ export function ModelQuickSelect({
     setRecentIds(getRecentModelIds());
   }, []);
 
-  // Close on outside click
   useEffect(() => {
-    if (!open) return;
+    if (!open) return () => {};
     const handler = (e: MouseEvent) => {
       if (!containerRef.current?.contains(e.target as Node)) setOpen(false);
     };
@@ -291,7 +288,7 @@ export function ModelQuickSelect({
           "flex items-center gap-1.5 rounded-full px-3 py-2 h-fit",
           "font-body text-xs font-medium border transition-all duration-150",
           open
-            ? "bg-[#A308F0]/10 border-[#A308F0]/50 text-[#A308F0]"
+            ? "bg-[rgba(207,211,222,0.6)] "
             : " bg-[#E7EBF0] dark:bg-transparent  border-transparent",
           !open &&
             "text-ink-100  hover:bg-[rgba(207,211,222,0.6)] dark:hover:bg-[rgba(255,255,255,0.08)]"
@@ -315,7 +312,7 @@ export function ModelQuickSelect({
         leaveFrom="opacity-100 translate-y-0 scale-100"
         leaveTo="opacity-0 translate-y-1 scale-95"
       >
-        <div className="absolute bottom-full right-0 mb-2 w-[260px] z-50 bg-base-100 border border-border-secondary rounded-xl shadow-2xl py-1.5 overflow-hidden">
+        <div className="absolute top-[3rem] left-0 mb-2 w-[260px] z-50 bg-base-100 border border-border-tertiary rounded-2xl shadow-2xl py-1.5 overflow-hidden">
           {quickList.map(m => (
             <button
               key={m.id}
@@ -325,7 +322,7 @@ export function ModelQuickSelect({
                 "w-full flex items-center gap-2.5 px-3 py-2 text-left transition-colors duration-100",
                 m.id === selectedModelId
                   ? "bg-[#A308F0]/08 text-[#A308F0]"
-                  : "hover:bg-white/[0.05] text-ink-100"
+                  : "hover:bg-primary/15 text-ink-100"
               )}
             >
               <ProviderIcon provider={m.provider} size={18} />

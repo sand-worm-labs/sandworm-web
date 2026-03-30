@@ -120,7 +120,6 @@ export const MultimodalInputView = forwardRef<
             />
 
             <div className="flex flex-row items-center justify-between px-4 pb-3">
-              {/* Left Action */}
               <div className="flex items-center">
                 <Button
                   type="button"
@@ -131,7 +130,6 @@ export const MultimodalInputView = forwardRef<
                 </Button>
               </div>
 
-              {/* Right Actions */}
               <div className="flex flex-row gap-2 items-center">
                 <ModelQuickSelect
                   models={models}
