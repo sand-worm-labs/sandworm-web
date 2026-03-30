@@ -3,7 +3,6 @@
 import React, { forwardRef } from "react";
 import { PiPaperPlaneTilt, PiPlus, PiX } from "react-icons/pi";
 import { Button } from "@sandworm/ui/components/button";
-import { Textarea } from "@sandworm/ui/components/textarea";
 import TextareaAutosize from "react-textarea-autosize";
 
 import { ModelQuickSelect } from "../Editor/blocks/ModelQuickSelect";
@@ -80,7 +79,7 @@ export const MultimodalInputView = forwardRef<
           <div
             className="
     relative flex flex-col
-    w-full min-h-[130px]
+    w-full min-h-[120px]
     rounded-3xl
     border-[1.5px] border-[#E6E0F1]
     bg-base-100 dark:border-border-tertiary dark:bg-[#30302E]
