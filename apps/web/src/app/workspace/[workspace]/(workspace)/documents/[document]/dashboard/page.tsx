@@ -20,12 +20,12 @@ export default function DashboardPage() {
 
   const [{ document, loading }] = useDocument(workspaceId, documentId);
 
-  // Wait until everything is ready
   if (!session.user || loading || !document) {
     return null;
   }
 
-  const role = session.user.roles?.[workspaceId] ?? "viewer";
+  const role =
+    session?.user?.role?.find(r => r[workspaceId])?.[workspaceId] ?? "viewer";
 
   return (
     <>
