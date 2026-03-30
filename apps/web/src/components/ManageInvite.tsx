@@ -47,10 +47,10 @@ interface ManageInviteModalProps {
   workspaceMembers: WorkspaceMember[];
   pendingInvites: PendingInvite[];
   pendingRequests?: PendingRequest[];
-  onSendInvite: (email: string, role: UserRole) => Promise<void>;
   onCancelInvite: (inviteId: string) => Promise<void>;
   onApproveRequest?: (requestId: string) => Promise<void>;
   onDenyRequest?: (requestId: string) => Promise<void>;
+  refetchInvite: () => void;
 }
 
 // ============================================================================
@@ -127,7 +127,7 @@ const InviteForm: React.FC<InviteFormProps> = ({ onSendInvite }) => {
             className="flex-1 px-4 py-2.5 border border-[#DEE2E6] bg-[#F8F9FA] dark:bg-base-400 dark:border-border-tertiary rounded-xl focus:outline-none focus:ring-2 focus:ring-[#A308F0] placeholder:text-[#868E96] dark:placeholder:text-ink-400 text-sm font-medium"
             disabled={isLoading}
           />
-          {error && <p className="text-xs text-red-500">{error}</p>}
+          {error && <p className="text-xs text-error">{error}</p>}
         </div>
         <button
           type="submit"
@@ -205,7 +205,6 @@ const PendingRequestItem: React.FC<PendingRequestItemProps> = ({
         )}
       </div>
 
-      {/* Actions */}
       <div className="flex items-center gap-2 flex-shrink-0">
         <button
           type="button"
@@ -256,10 +255,8 @@ const PendingInviteItem: React.FC<PendingInviteItemProps> = ({
 
   return (
     <div className="flex items-start gap-3 p-4 ">
-      {/* Avatar */}
       <User size={30} />
 
-      {/* Content */}
       <div className="flex-1 min-w-0">
         <p className=" mb-1">
           <span className="font-medium text-ink-100 mr-1">{invite.name} </span>
@@ -275,7 +272,6 @@ const PendingInviteItem: React.FC<PendingInviteItemProps> = ({
         </div>
       </div>
 
-      {/* Actions */}
       <div className="flex items-center gap-3 flex-shrink-0">
         <span className="text-xs text-[#6C757D] font-medium bg-[#F8F9FA] py-1 px-2.5 rounded-md">
           Pending
@@ -316,7 +312,6 @@ const PendingTabsContent: React.FC<PendingTabsContentProps> = ({
 
   return (
     <div>
-      {/* Tabs */}
       <div className="flex gap-6 border-b border-border-secondary dark:border-border-tertiary mb-4">
         <button
           type="button"
@@ -352,7 +347,6 @@ const PendingTabsContent: React.FC<PendingTabsContentProps> = ({
         </button>
       </div>
 
-      {/* Tab Content */}
       <div className="space-y-2 divide-y divide-[#E9ECEF]">
         {activeTab === "requests" ? (
           requests.length === 0 ? (
@@ -395,9 +389,7 @@ interface WorkspaceDescriptionProps {
   members: WorkspaceMember[];
 }
 
-const WorkspaceDescription: React.FC<WorkspaceDescriptionProps> = ({
-  members,
-}) => {
+const WorkspaceDescription: React.FC<WorkspaceDescriptionProps> = () => {
   return (
     <div className=" rounded-xl p-1 px-0 w-full text-ink-100">
       <div className="relative w-full">
@@ -409,7 +401,6 @@ const WorkspaceDescription: React.FC<WorkspaceDescriptionProps> = ({
           className="object-cover w-full"
         />
       </div>
-      {/* Description */}
       <div className="mt-8">
         <h3 className="text-sm font-bold mb-2 text-ink-100">Description</h3>
         <p className="text-sm text-[#6C757D] dark:text-ink-400 font-medium mb-4">
@@ -417,7 +408,6 @@ const WorkspaceDescription: React.FC<WorkspaceDescriptionProps> = ({
           levels of access.
         </p>
 
-        {/* Role Badges */}
         <div className="flex gap-2 mb-4 font-tertiary">
           <span className="bg-rainbow-gradient p-[1px] rounded-[8px] inline-block">
             <span className="px-2 py-1 text-xs rounded-[7px] bg-[#F8F9FA] dark:bg-base-400 inline-block">
@@ -438,7 +428,6 @@ const WorkspaceDescription: React.FC<WorkspaceDescriptionProps> = ({
           </span>
         </div>
 
-        {/* Role Descriptions */}
         <ul className="space-y-1 mt-2 text-sm opacity-90">
           <li className="flex items-start gap-2 text-[#6C757D] dark:text-ink-400 font-medium ">
             <span className="mt-1 text-[#6C757D] dark:text-ink-400">•</span>

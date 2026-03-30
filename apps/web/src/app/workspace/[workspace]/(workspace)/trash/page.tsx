@@ -9,6 +9,24 @@ import TrashList from "@/components/Editor/blocks/TrashList";
 import ScrollBar from "@/components/Editor/blocks/ScrollBar";
 import { useDocuments } from "@/components/Editor/hooks/useDocuments";
 import { useStringQuery } from "@/components/Editor/hooks/useQueryArgs";
+import { Loader } from "@/components/Loader";
+
+function EmptyTrash() {
+  return (
+    <div className="py-6 ">
+      <div className="text-center py-12 bg-gray-50 dark:bg-base-100  rounded-xl border-2 border-border-secondary dark:border-border-tertiary border-dashed">
+        <HandThumbUpIcon className="h-12 w-12 text-ink-400 mx-auto" />
+        <h3 className="mt-2 text-sm font-semibold text-ink-100">
+          Your trash is empty
+        </h3>
+        <p className="mt-1 text-sm text-ink-400">
+          In the vacuum of bits, your trash bin echoes the mindfulness of
+          deletion.
+        </p>
+      </div>
+    </div>
+  );
+}
 
 export default function TrashPage() {
   const workspaceId = useStringQuery("workspace");
@@ -43,15 +61,10 @@ export default function TrashPage() {
     return null;
   }
 
-  // Add loading state check
   if (state.loading) {
     return (
       <div className="items-center justify-center flex fixed top-0 bottom-0 w-full left-0 z-10 h-screen">
-        <div className="loader">
-          {Array.from({ length: 9 }).map((_, i) => (
-            <div key={i} className={`square sq${i + 1}`} />
-          ))}
-        </div>
+        <Loader />
       </div>
     );
   }
@@ -75,22 +88,5 @@ export default function TrashPage() {
         )}
       </div>
     </ScrollBar>
-  );
-}
-
-function EmptyTrash() {
-  return (
-    <div className="py-6 ">
-      <div className="text-center py-12 bg-gray-50 dark:bg-base-100  rounded-xl border-2 border-border-secondary dark:border-border-tertiary border-dashed">
-        <HandThumbUpIcon className="h-12 w-12 text-ink-400 mx-auto" />
-        <h3 className="mt-2 text-sm font-semibold text-ink-100">
-          Your trash is empty
-        </h3>
-        <p className="mt-1 text-sm text-ink-400">
-          In the vacuum of bits, your trash bin echoes the mindfulness of
-          deletion.
-        </p>
-      </div>
-    </div>
   );
 }
