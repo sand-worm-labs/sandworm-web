@@ -10,14 +10,16 @@ interface ErrorStateProps {
 const getErrorType = (
   error: Error & { statusCode?: number; code?: string }
 ) => {
-  // Check status code first
+  // ⬢ Check status code
+  // =====================================
   if (error.statusCode) {
     if (error.statusCode >= 500) return "server";
     if (error.statusCode === 404) return "notfound";
     if (error.statusCode === 403 || error.statusCode === 401) return "auth";
   }
 
-  // Check error name/code
+  // ⬢ Check error name/code
+  // =====================================
   if (error.name === "ServerError" || error.code === "ECONNREFUSED")
     return "server";
   if (error.name === "NetworkError" || error.code === "NETWORK_ERROR")
@@ -25,7 +27,8 @@ const getErrorType = (
   if (error.name === "DatabaseError" || error.code?.includes("POSTGRES"))
     return "database";
 
-  // Check message content
+  // ⬢ Check message content
+  // =====================================
   const msg = error.message.toLowerCase();
   if (
     msg.includes("server") ||
@@ -47,8 +50,6 @@ const getErrorType = (
 
 const ErrorPage: React.FC<ErrorStateProps> = ({ error, reset }) => {
   const errorType = getErrorType(error);
-  /*   const isDev = process.env.NODE_ENV === "development";
-   */
   const isDev = false;
   const errorConfigs = {
     server: {
@@ -124,6 +125,7 @@ const ErrorPage: React.FC<ErrorStateProps> = ({ error, reset }) => {
       showReportBug: true,
       showGoBack: true,
       showTwitterUpdates: false,
+      quickLinks: [],
     },
   };
 
@@ -147,7 +149,6 @@ const ErrorPage: React.FC<ErrorStateProps> = ({ error, reset }) => {
         onRefresh={reset}
       />
 
-      {/* Error details for development */}
       {isDev && (
         <div className="fixed bottom-4 left-4 right-4 bg-red-900/90 text-white p-4 rounded-lg max-w-2xl mx-auto font-mono text-xs overflow-auto max-h-40">
           <div className="font-bold mb-2"> Development Error Details:</div>

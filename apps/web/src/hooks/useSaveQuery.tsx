@@ -6,7 +6,7 @@ import {
   type CreateQueryPayload,
 } from "@/services/axios/queryService";
 import { useQueryStore } from "@/store/queries";
-import { useSession } from "@/components/Visualization/hooks/useAuth";
+import { useSession } from "@/components/Editor/hooks/useAuth";
 
 export const useSaveQuery = () => {
   const session = useSession({ redirectToLogin: true });

@@ -3,13 +3,13 @@
 import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
+import { useStringQuery } from "@/components/Editor/hooks/useQueryArgs";
 import {
   ContentSkeleton,
   TitleSkeleton,
 } from "@/components/Editor/ContentSkeleton";
-import { useSession } from "@/components/Visualization/hooks/useAuth";
-import useDocument from "@/components/Visualization/hooks/useDocument";
+import { useSession } from "@/components/Editor/hooks/useAuth";
+import useDocument from "@/components/Editor/hooks/useDocument";
 
 interface PrivateDocumentPageProps {
   workspaceId: string;

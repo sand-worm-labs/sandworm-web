@@ -17,7 +17,7 @@ import {
   CardTitle,
 } from "@sandworm/ui/components/card";
 
-import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
+import { useStringQuery } from "../Editor/hooks/useQueryArgs";
 
 interface ExampleQuery {
   title: string;

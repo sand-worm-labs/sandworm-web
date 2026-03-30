@@ -17,11 +17,11 @@ import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
 import { sortWith } from "ramda";
 import clsx from "clsx";
 
-import ChartTypeSelector from "../blocks/ChartTypeSelector";
-import AxisSelector from "../blocks/AxisSelector";
-import AxisModifierSelector from "../blocks/AxisModifierSelector";
-import { PortalTooltip } from "../blocks/ToolTips";
-import useResettableState from "../hooks/useResettableState";
+import ChartTypeSelector from "../../Editor/blocks/ChartTypeSelector";
+import AxisSelector from "../../Editor/blocks/AxisSelector";
+import AxisModifierSelector from "../../Editor/blocks/AxisModifierSelector";
+import { PortalTooltip } from "../../Editor/blocks/ToolTips";
+import useResettableState from "../../Editor/hooks/useResettableState";
 import YAxisPickerV2 from "../YAxisPicker";
 
 interface GeneralTabProps {

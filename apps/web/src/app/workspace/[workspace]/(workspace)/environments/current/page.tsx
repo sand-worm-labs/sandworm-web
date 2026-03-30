@@ -5,9 +5,9 @@ import Link from "next/link";
 import React from "react";
 import clsx from "clsx";
 
-import ScrollBar from "@/components/Visualization/blocks/ScrollBar";
-import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
-import { useSession } from "@/components/Visualization/hooks/useAuth";
+import ScrollBar from "@/components/Editor/blocks/ScrollBar";
+import { useStringQuery } from "@/components/Editor/hooks/useQueryArgs";
+import { useSession } from "@/components/Editor/hooks/useAuth";
 
 const requirements = `jupyter_server==2.12.1
   ipykernel==6.27.1

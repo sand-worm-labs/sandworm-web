@@ -3,8 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo } from "react";
 
-import { useStringQuery } from "@/components/Visualization/hooks/useQueryArgs";
-import { useDocuments } from "@/components/Visualization/hooks/useDocuments";
+import { useStringQuery } from "@/components/Editor/hooks/useQueryArgs";
+import { useDocuments } from "@/components/Editor/hooks/useDocuments";
 import { Loader } from "@/components/Loader";
 
 export default function DocumentsPage() {

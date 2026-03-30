@@ -172,6 +172,7 @@
     "react-sizeme": "^3.0.2",
     "react-spinners": "^0.17.0",
     "react-syntax-highlighter": "^15.6.1",
+    "react-textarea-autosize": "^8.5.9",
     "react-use": "17.4.0",
     "react-window": "^2.2.3",
     "recommended": "link: plugin:cypress/recommended",

@@ -19,8 +19,8 @@ import Image from "next/image";
 
 import { useModalStore } from "@/store/auth";
 
-import { useStringQuery } from "../Visualization/hooks/useQueryArgs";
-import { useSession, useSignout } from "../Visualization/hooks/useAuth";
+import { useStringQuery } from "../Editor/hooks/useQueryArgs";
+import { useSession, useSignout } from "../Editor/hooks/useAuth";
 import { BookIcon } from "../Assets/BookIcon";
 import { GearIcon } from "../Assets/GearIcon";
 import { QuestionIcon } from "../Assets/QuestionIcon";

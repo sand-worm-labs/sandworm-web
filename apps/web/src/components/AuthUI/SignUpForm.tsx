@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 
-import { useSignup } from "../Visualization/hooks/useAuth";
+import { useSignup } from "../Editor/hooks/useAuth";
 
 import { ClaimUsernameStep } from "./ClaimUsername";
 

@@ -2,8 +2,8 @@
 
 import { useState, useCallback, useEffect } from "react";
 
-import { useForgotPassword } from "../Visualization/hooks/useAuth";
-import type { UseAuthError } from "../Visualization/hooks/useAuth";
+import { useForgotPassword } from "../Editor/hooks/useAuth";
+import type { UseAuthError } from "../Editor/hooks/useAuth";
 
 type ForgotPasswordFormProps = {
   onSuccess?: (email: string) => void;

@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 
-import { useLogin } from "../Visualization/hooks/useAuth";
+import { useLogin } from "../Editor/hooks/useAuth";
 import { Spinner } from "../Spinner/Spinner";
 
 export const SignInForm = () => {

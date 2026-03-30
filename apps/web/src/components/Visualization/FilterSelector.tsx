@@ -32,9 +32,9 @@ import clsx from "clsx";
 import { equals, identity } from "ramda";
 import ReactDOM from "react-dom";
 
-import { Tooltip } from "./blocks/ToolTips";
-import useDropdownPosition from "./hooks/dropdownposition";
-import AxisSelector from "./blocks/AxisSelector";
+import { Tooltip } from "../Editor/blocks/ToolTips";
+import useDropdownPosition from "../Editor/hooks/dropdownposition";
+import AxisSelector from "../Editor/blocks/AxisSelector";
 import MultiComboboxV2 from "./MultiCombobox";
 import Combobox from "./Combobox";
 
