@@ -51,7 +51,7 @@ export default function UsersPage() {
       return {
         id: member.userId,
         userId: member.userId,
-        role: member.role,
+        role: member.role as UserWorkspaceRole,
         email: member.user?.email ?? "",
         username: member.user?.username ?? null,
         firstName: member.user?.firstName ?? null,
@@ -118,7 +118,8 @@ export default function UsersPage() {
     const enabledRoles = roleFilters.filter(f => f.enabled).map(f => f.role);
     if (enabledRoles.length > 0) {
       filtered = filtered.filter(
-        member => member.role && enabledRoles.includes(member.role as any)
+        member =>
+          member.role && enabledRoles.includes(member.role as UserWorkspaceRole)
       );
     }
 
@@ -259,7 +260,7 @@ export default function UsersPage() {
             onRemoveUser={onRemoveUser}
             onChangeRole={onChangeRole}
             onResetPassword={onResetPassword}
-            role="admin"
+            userRole="admin"
           />
         </div>
       </ScrollBar>
