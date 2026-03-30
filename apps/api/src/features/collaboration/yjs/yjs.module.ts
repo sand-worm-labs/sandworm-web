@@ -20,6 +20,7 @@ import { YjsGateway } from './yjs.gateway'
 import { DocumentModule } from '@/features/document/document.module'
 import { BlockExecutorModule } from '@/features/block-executor/block-executor.module'
 import { DocumentExecutorService } from './executor/document-executor.service'
+import { YjsDocumentController } from './yjs.controller'
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { DocumentExecutorService } from './executor/document-executor.service'
     DocumentModule,
     BlockExecutorModule
   ],
+  controllers: [YjsDocumentController],
   providers: [
     YjsDocumentService,
     PersistorFactory,
