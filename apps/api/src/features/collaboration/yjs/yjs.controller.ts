@@ -1,0 +1,81 @@
+import { 
+  Controller, 
+  Get, 
+  Param, 
+  Query, 
+  NotFoundException,
+  UseInterceptors,
+  ClassSerializerInterceptor
+} from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiQuery } from '@nestjs/swagger';
+import { ApiAuth, ApiPublic } from '@sandworm/api/decorators/http.decorators';
+import { YjsDocumentService } from './yjs-document.service';
+import { PersistorFactory } from './persistors/persistor.factory';
+// import { serializeDocForAI } from '@sandworm/editor';
+
+@ApiTags('Documents')
+@Controller({
+  path: 'documents',
+  version: '1',
+})
+
+export class YjsDocumentController {
+  constructor(
+    private readonly yjsService: YjsDocumentService,
+    private readonly persistorFactory: PersistorFactory,
+  ) {}
+
+  @Get(':documentId/ai-context')
+  @ApiAuth({
+    summary: 'Retrieve serialized notebook context for AI processing',
+  })
+  @ApiPublic({
+    summary: 'Register a new user',
+    statusCode: 200,
+  })
+  @ApiQuery({ name: 'focusedBlockId', required: false, description: 'The block ID the user is currently interacting with' })
+  @ApiQuery({ name: 'workspaceId', required: true, description: 'The workspace ownership context' })
+  async getDocContext(
+    @Param('documentId') documentId: string,
+    @Query('workspaceId') workspaceId: string,
+    @Query('focusedBlockId') focusedBlockId?: string,
+  ) {
+    try {
+      // 1. Resolve internal Doc ID (handles the 'edit' vs 'app' logic internally)
+      const id = this.yjsService.getDocId(documentId, null);
+
+      // 2. Initialize the persistence layer for this specific document
+      const persistor = this.persistorFactory.createDocumentPersistor(documentId);
+
+      // 3. Get the SharedDoc. 
+      // getYDoc handles the LRU cache lookup and mutex creation automatically.
+      const sharedDoc = await this.yjsService.getYDoc(
+        id,
+        documentId,
+        workspaceId,
+        persistor,
+      );
+
+      if (!sharedDoc) {
+        throw new NotFoundException(`Document ${documentId} not found or failed to load.`);
+      }
+
+      // 4. Transform binary CRDT to JSON for the Python AI Service
+      // This is the clean JSON context we discussed earlier.
+     // const context = serializeDocForAI(sharedDoc.ydoc, focusedBlockId);
+
+      return {
+        documentId,
+        workspaceId,
+        focusedBlockId: focusedBlockId || null,
+        timestamp: new Date().toISOString(),
+        blocks: sharedDoc.ydoc.toJSON()
+      };
+    } catch (error: any) {
+      // Logic for handling database or Yjs sync errors
+      throw error instanceof NotFoundException 
+        ? error 
+        : new NotFoundException(`Error retrieving AI context: ${error.message}`);
+    }
+  }
+}
