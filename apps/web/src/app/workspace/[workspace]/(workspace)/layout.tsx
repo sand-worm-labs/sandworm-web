@@ -12,6 +12,7 @@ import {
   useCurrentWorkspaceInfo,
 } from "@/components/Editor/hooks/useWorkspaces";
 import { ViewerAccessBar } from "@/components/ViewerAccessBar";
+import { Loader } from "@/components/Loader";
 
 interface WorkspaceLayoutProps {
   children: ReactNode;
@@ -36,10 +37,6 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
     pathname.includes("/documents/") &&
     (pathname.endsWith("/edit") || pathname.includes("/notebook"));
 
-  const isOnNotebook = pathname.includes("/notebook");
-
-  // Role comes directly from getUserWorkspaceInfo — always fresh, never stale
-
   console.log(workspaceInfo, "workspace");
   const isViewer = workspaceInfo?.role === "viewer";
 
@@ -49,6 +46,14 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
     // TODO: Poll getUserWorkspaceInfo or listen to WebSocket to transition
     // from "sent" -> "pending" -> "approved" when admin acts on the request.
   };
+
+  if (sessionLoading) {
+    return (
+      <div className="w-full h-full flex items-center justify-center">
+        <Loader />
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen w-full bg-base-100">
