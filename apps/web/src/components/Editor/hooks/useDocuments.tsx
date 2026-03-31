@@ -24,6 +24,8 @@ import {
 import { useFavorites } from "./useFavorites";
 import { useWebsocket } from "./useWebSocket";
 
+// ⬢ Delete document in Memory
+// =====================================
 function deleteDocumentInMemory(
   documents: List<ApiDocument>,
   id: string,
@@ -110,6 +112,9 @@ function deleteDocumentInMemory(
   return result;
 }
 
+// =====================================
+// ⬢ Types
+// =====================================
 type StateValue = {
   loading: boolean;
   documents: List<ApiDocument>;
@@ -157,6 +162,10 @@ const Context = createContext<
 type Props = {
   children: React.ReactNode;
 };
+
+// =====================================
+// ⬢ Documents Provider
+// =====================================
 export function DocumentsProvider(props: Props) {
   const socket = useWebsocket();
   const [state, setState] = useState<State>(Map());
@@ -253,6 +262,9 @@ export function DocumentsProvider(props: Props) {
   return <Context.Provider value={value}>{props.children}</Context.Provider>;
 }
 
+// =====================================
+// ⬢ Use Documents Hook
+// =====================================
 export function useDocuments(workspaceId: string): UseDocuments {
   const [state, setState] = useContext(Context);
   const [, { unfavoriteDocument }] = useFavorites(workspaceId);
@@ -269,6 +281,8 @@ export function useDocuments(workspaceId: string): UseDocuments {
     [state, workspaceId]
   );
 
+  // ⬢ Create Document
+  // =====================================
   const createDocument = useCallback(
     async (data: { parentId?: string | null; version: number }) => {
       if (loading) {
@@ -302,23 +316,14 @@ export function useDocuments(workspaceId: string): UseDocuments {
     [loading, workspaceId, createDocumentMutation]
   );
 
+  // ⬢ Delete Document
+  // =====================================
   const deleteDocument = useCallback(
     async (id: string, isPermanent?: boolean) => {
       const thisDocument = documents.find(d => d.id === id);
       if (loading || !thisDocument) {
         return;
       }
-
-      /* Allow the last document in the workspace to be deleted */
-      /*   if (!isPermanent && !thisDocument.parentId) {
-        const rootNonDeletedDocuments = documents.filter(
-          d => !d.deletedAt && !d.parentId
-        );
-
-        if (rootNonDeletedDocuments.size === 1) {
-          return;
-        }
-      } */
 
       const previousStateValue = state.get(workspaceId);
 
@@ -371,6 +376,8 @@ export function useDocuments(workspaceId: string): UseDocuments {
     ]
   );
 
+  // ⬢ Duplicate Document
+  // =====================================
   const duplicateDocument = useCallback(
     async (id: string) => {
       if (loading) {
@@ -437,6 +444,8 @@ export function useDocuments(workspaceId: string): UseDocuments {
     [workspaceId, loading, setState, duplicateDocumentMutation]
   );
 
+  // ⬢ Restore Document
+  // =====================================
   const restoreDocument = useCallback(
     async (id: string) => {
       if (loading) {
@@ -464,6 +473,8 @@ export function useDocuments(workspaceId: string): UseDocuments {
     [workspaceId, loading, restoreDocumentMutation]
   );
 
+  // ⬢ Update Parent
+  // =====================================
   const updateParent = useCallback(
     async (
       id: string,
@@ -580,6 +591,8 @@ export function useDocuments(workspaceId: string): UseDocuments {
     [documents, workspaceId, state, setState, updateDocumentMutation]
   );
 
+  // ⬢ Publish Document
+  // =====================================
   const publish = useCallback(
     async (id: string) => {
       const document = documents.find(doc => doc.id === id);
@@ -627,6 +640,8 @@ export function useDocuments(workspaceId: string): UseDocuments {
     [documents, workspaceId, setState, publishDocumentMutation]
   );
 
+  // ⬢ Update Document Settings
+  // =====================================
   const updateDocumentSettings = useCallback(
     async (
       id: string,
