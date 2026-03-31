@@ -8,6 +8,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { toast } from "sonner";
 
 import {
   useCreateCommentMutation,
@@ -17,6 +18,9 @@ import {
 import { useSession } from "./useAuth";
 import { useWebsocket } from "./useWebSocket";
 
+// =====================================
+// ⬢ Types
+// =====================================
 export type Comment = {
   user: {
     name: string;
@@ -46,6 +50,9 @@ type API = {
 
 type State = Map<string, Comment[]>;
 
+// =====================================
+// ⬢ Comment Context
+// =====================================
 const Context = createContext<[State, API]>([
   Map(),
   {
@@ -67,7 +74,9 @@ const Context = createContext<[State, API]>([
 
 type UseComments = [Comment[], Omit<API, "setComments">];
 
-// Helper function to transform GraphQL/WebSocket data to Comment type
+// =====================================
+// ⬢  Transform GraphQL/WebSocket data to Comment type
+// =====================================
 function transformComment(c: any, userData?: any): Comment {
   const user = userData || c.author;
 
@@ -86,6 +95,10 @@ function transformComment(c: any, userData?: any): Comment {
     },
   };
 }
+
+// =====================================
+// ⬢ Use Comments
+// =====================================
 export function useComments(documentId: string): UseComments {
   const [state, api] = useContext(Context);
   const socket = useWebsocket();
@@ -96,7 +109,7 @@ export function useComments(documentId: string): UseComments {
     }
   }, [socket, documentId]);
 
-  const { setComments, ...publicApi } = api;
+  const { ...publicApi } = api;
 
   return useMemo(
     (): UseComments => [state.get(documentId) ?? [], publicApi],
@@ -108,6 +121,9 @@ interface Props {
   children: React.ReactNode;
 }
 
+// =====================================
+// ⬢ Comment Provider
+// =====================================
 export function CommentsProvider(props: Props) {
   const [state, setState] = useState<State>(Map());
   const socket = useWebsocket();
@@ -119,27 +135,26 @@ export function CommentsProvider(props: Props) {
   // WebSocket listeners
   useEffect(() => {
     if (!socket) {
-      return;
+      return () => {};
     }
 
     const onComments = (data: any) => {
-      // Transform WebSocket data to match our Comment type
       const transformedComments = (data.comments || []).map(transformComment);
-      setState(state => state.set(data.documentId, transformedComments));
+      setState(prev => prev.set(data.documentId, transformedComments));
     };
     socket.on("document-comments", onComments);
 
     const onComment = (data: any) => {
       const transformedComment = transformComment(data.comment, data.user);
 
-      setState(state => {
-        const comments = state.get(transformedComment.documentId) ?? [];
+      setState(prev => {
+        const comments = prev.get(transformedComment.documentId) ?? [];
 
         if (comments.some(({ id }) => id === transformedComment.id)) {
-          return state;
+          return prev;
         }
 
-        return state.set(transformedComment.documentId, [
+        return prev.set(transformedComment.documentId, [
           ...comments,
           transformedComment,
         ]);
@@ -148,9 +163,9 @@ export function CommentsProvider(props: Props) {
     socket.on("document-comment", onComment);
 
     const onCommentDeleted = (data: any) => {
-      setState(state => {
-        const comments = state.get(data.documentId) ?? [];
-        return state.set(
+      setState(prev => {
+        const comments = prev.get(data.documentId) ?? [];
+        return prev.set(
           data.documentId,
           comments.filter(c => c.id !== data.commentId)
         );
@@ -166,7 +181,7 @@ export function CommentsProvider(props: Props) {
   }, [socket]);
 
   const setComments = useCallback((documentId: string, comments: Comment[]) => {
-    setState(state => state.set(documentId, comments));
+    setState(prev => prev.set(documentId, comments));
   }, []);
 
   const createComment = useCallback(
@@ -179,7 +194,9 @@ export function CommentsProvider(props: Props) {
       const now = new Date().toISOString();
       const comment: Comment = {
         user: {
-          name: user.firstName,
+          name: user.firstName
+            ? `${user.firstName} ${user.lastName || ""}`.trim()
+            : user.name || user.username || "Unknown User",
           picture: user.avater || null,
         },
         id: uuidv4(),
@@ -190,9 +207,9 @@ export function CommentsProvider(props: Props) {
         updatedAt: now,
       };
 
-      setState(state => {
-        const comments = state.get(documentId) ?? [];
-        return state.set(documentId, [...comments, comment]);
+      setState(prev => {
+        const comments = prev.get(documentId) ?? [];
+        return prev.set(documentId, [...comments, comment]);
       });
 
       try {
@@ -210,10 +227,10 @@ export function CommentsProvider(props: Props) {
           throw new Error("Failed to create comment");
         }
       } catch (error) {
-        alert("Failed to create comment");
-        setState(state => {
-          const comments = state.get(documentId) ?? [];
-          return state.set(
+        toast.error("Failed to create comment");
+        setState(prev => {
+          const comments = prev.get(documentId) ?? [];
+          return prev.set(
             documentId,
             comments.filter(c => c.id !== comment.id)
           );
@@ -230,9 +247,9 @@ export function CommentsProvider(props: Props) {
         return;
       }
 
-      setState(state => {
-        const comments = state.get(documentId) ?? [];
-        return state.set(
+      setState(prev => {
+        const comments = prev.get(documentId) ?? [];
+        return prev.set(
           documentId,
           comments.filter(c => c.id !== commentId)
         );
@@ -253,10 +270,10 @@ export function CommentsProvider(props: Props) {
           throw new Error("Failed to delete comment");
         }
       } catch (error) {
-        alert("Failed to delete comment");
-        setState(state => {
-          const comments = state.get(documentId) ?? [];
-          return state.set(documentId, [...comments, comment]);
+        toast.error("Failed to delete comment");
+        setState(prev => {
+          const comments = prev.get(documentId) ?? [];
+          return prev.set(documentId, [...comments, comment]);
         });
       }
     },
