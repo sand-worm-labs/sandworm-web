@@ -132,7 +132,6 @@ export function CommentsProvider(props: Props) {
   const [createCommentMutation] = useCreateCommentMutation();
   const [deleteCommentMutation] = useDeleteCommentMutation();
 
-  // WebSocket listeners
   useEffect(() => {
     if (!socket) {
       return () => {};

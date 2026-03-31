@@ -9,6 +9,9 @@ import {
   type SocialLinksInput,
 } from "@/generated/graphql";
 
+// =====================================
+// ⬢ Types
+// =====================================
 type UseCurrentUserReturn = {
   updateUser: (input: UpdateUserInput) => Promise<void>;
   updateSocialLinks: (input: SocialLinksInput) => Promise<void>;
@@ -24,6 +27,9 @@ type UseCurrentUserReturn = {
   refetch: () => void;
 };
 
+// =====================================
+// ⬢ Use CurrentUser
+// =====================================
 export const useCurrentUser = (): UseCurrentUserReturn => {
   const {
     data,
