@@ -10,6 +10,9 @@ import React, {
 
 import { useWebsocket } from "./useWebSocket";
 
+// =====================================
+// ⬢ Types
+// =====================================
 export type EnvironmentStatus =
   | "Running"
   | "Stopped"
@@ -43,6 +46,14 @@ type Props = {
   children: React.ReactNode;
 };
 
+type UseEnvironmentStatus = {
+  status: EnvironmentStatus;
+  loading: boolean;
+  error: string | null;
+  restart: () => void;
+  startedAt: string | null;
+};
+
 function getDefaultStateItem(): StateItem {
   return {
     loading: true,
@@ -52,13 +63,16 @@ function getDefaultStateItem(): StateItem {
   };
 }
 
+// =====================================
+// ⬢  Environment Status Provider
+// =====================================
 export function EnvironmentStatusProvider(props: Props) {
   const socket = useWebsocket();
   const [state, setState] = useState<State>(Map());
 
   useEffect(() => {
     if (!socket) {
-      return;
+      return () => {};
     }
 
     const onStatus = (data: {
@@ -66,9 +80,6 @@ export function EnvironmentStatusProvider(props: Props) {
       status: EnvironmentStatus;
       startedAt: string | null;
     }) => {
-      if (data.status !== "Stopped" || data.startedAt !== null) {
-      }
-
       setState(s =>
         s.set(data.workspaceId, {
           loading: false,
@@ -81,7 +92,6 @@ export function EnvironmentStatusProvider(props: Props) {
     socket.on("environment-status-update", onStatus);
 
     const onError = (data: { workspaceId: string; error: string }) => {
-
       setState(s =>
         s.set(data.workspaceId, {
           ...(s.get(data.workspaceId) ?? getDefaultStateItem()),
@@ -99,11 +109,11 @@ export function EnvironmentStatusProvider(props: Props) {
 
   useEffect(() => {
     if (!socket) {
-      return;
+      return () => {};
     }
 
     const onDisconnect = () => {
-      setState(s => s.map(s => ({ ...s, loading: true, error: null })));
+      setState(s => s.map(item => ({ ...item, loading: true, error: null })));
     };
     socket.on("disconnect", onDisconnect);
 
@@ -147,13 +157,9 @@ export function EnvironmentStatusProvider(props: Props) {
   return <Context.Provider value={value}>{props.children}</Context.Provider>;
 }
 
-type UseEnvironmentStatus = {
-  status: EnvironmentStatus;
-  loading: boolean;
-  error: string | null;
-  restart: () => void;
-  startedAt: string | null;
-};
+// =====================================
+// ⬢  Use Environment Status Hook
+// =====================================
 export function useEnvironmentStatus(
   workspaceId: string
 ): UseEnvironmentStatus {

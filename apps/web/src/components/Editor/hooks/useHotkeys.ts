@@ -32,9 +32,8 @@ const useChords = (chords: string[]) => {
     { scopes: ["editor"] }
   );
 
-  // reset chords on any other key press
   useEffect(() => {
-    const resetChords = (e: KeyboardEvent) => {
+    const resetChords = () => {
       if (chordState) {
         setChordState(null);
       }
@@ -49,6 +48,9 @@ const useChords = (chords: string[]) => {
   return chordState;
 };
 
+// =====================================
+// ⬢  Use Hot Keys
+// =====================================
 const useHotkeysHook = (actions: EditorActions) => {
   const chord = useChords(["a", "b", "d"]);
 
@@ -112,6 +114,8 @@ const useHotkeysHook = (actions: EditorActions) => {
           break;
         case "m":
           actions.addBlock(BlockType.RichText, position);
+          break;
+        default:
           break;
       }
     },
