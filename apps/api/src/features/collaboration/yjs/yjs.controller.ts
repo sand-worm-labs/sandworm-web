@@ -60,9 +60,7 @@ export class YjsDocumentController {
         throw new NotFoundException(`Document ${documentId} not found or failed to load.`);
       }
 
-      // 4. Transform binary CRDT to JSON for the Python AI Service
-      // This is the clean JSON context we discussed earlier.
-     // const context = serializeDocForAI(sharedDoc.ydoc, focusedBlockId);
+       //const context = serializeDocForAI(sharedDoc.ydoc, focusedBlockId);
 
       return {
         documentId,
