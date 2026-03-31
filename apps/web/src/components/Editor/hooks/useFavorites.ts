@@ -7,6 +7,9 @@ import {
   GetFavoriteDocumentsDocument,
 } from "@/generated/graphql";
 
+// =====================================
+// ⬢ Types
+// =====================================
 type API = {
   favoriteDocument: (docId: string) => Promise<void>;
   unfavoriteDocument: (docId: string, refetch?: boolean) => Promise<void>;
@@ -18,8 +21,11 @@ type UseFavorites = [
   { data: any; loading: boolean; error?: any },
 ];
 
+// =====================================
+// ⬢ Use Favorites
+// =====================================
 export const useFavorites = (workspaceId: string): UseFavorites => {
-  const { data, refetch, loading, error } = useGetFavoriteDocumentsQuery({
+  const { data, loading, error } = useGetFavoriteDocumentsQuery({
     variables: { workspaceId },
     skip: !workspaceId,
     fetchPolicy: "cache-and-network",
@@ -33,6 +39,8 @@ export const useFavorites = (workspaceId: string): UseFavorites => {
     [data]
   );
 
+  // ⬢ Add to favorite
+  // =====================================
   const favoriteDocument = useCallback(
     async (docId: string) => {
       try {
@@ -50,14 +58,16 @@ export const useFavorites = (workspaceId: string): UseFavorites => {
             },
           ],
         });
-      } catch (error) {
-        console.error("Failed to favorite document:", error);
+      } catch (err) {
+        console.error("Failed to favorite document:", err);
         throw error;
       }
     },
     [workspaceId, addFavoriteMutation]
   );
 
+  // ⬢ Remove from favorite
+  // =====================================
   const unfavoriteDocument = useCallback(
     async (docId: string, shouldRefetch = true) => {
       try {
@@ -77,7 +87,7 @@ export const useFavorites = (workspaceId: string): UseFavorites => {
               ]
             : [],
         });
-      } catch (error) {
+      } catch (err) {
         console.error("Failed to unfavorite document:", error);
         throw error;
       }
