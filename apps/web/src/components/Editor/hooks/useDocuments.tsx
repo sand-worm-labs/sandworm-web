@@ -18,6 +18,7 @@ import {
   useRestoreDocumentMutation,
   useUpdateDocumentMutation,
   usePublishDocumentMutation,
+  type UpdateDocumentInput,
 } from "@/generated/graphql";
 
 import { useFavorites } from "./useFavorites";
@@ -127,7 +128,6 @@ type API = {
   duplicateDocument: (id: string) => Promise<ApiDocument>;
   deleteDocument: (id: string, isPermanent?: boolean) => Promise<void>;
   restoreDocument: (id: string) => Promise<void>;
-  setIcon: (id: string, icon: string) => Promise<void>;
   updateParent: (
     id: string,
     parentId: string | null,
@@ -255,7 +255,7 @@ export function DocumentsProvider(props: Props) {
 
 export function useDocuments(workspaceId: string): UseDocuments {
   const [state, setState] = useContext(Context);
-  const [{ unfavoriteDocument }] = useFavorites(workspaceId);
+  const [, { unfavoriteDocument }] = useFavorites(workspaceId);
   const [createDocumentMutation] = useCreateDocumentMutation();
   const [deleteDocumentMutation] = useDeleteDocumentMutation();
   const [duplicateDocumentMutation] = useDuplicateDocumentMutation();
@@ -584,7 +584,7 @@ export function useDocuments(workspaceId: string): UseDocuments {
     async (id: string) => {
       const document = documents.find(doc => doc.id === id);
       if (!document) {
-        return () => {};
+        return;
       }
 
       try {
@@ -663,7 +663,7 @@ export function useDocuments(workspaceId: string): UseDocuments {
           variables: {
             workspaceId,
             documentId: id,
-            input: settings,
+            input: settings as UpdateDocumentInput,
           },
         });
 
