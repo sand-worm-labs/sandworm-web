@@ -6,7 +6,6 @@ import type { ApiDocument } from "@/types";
 import { useDocuments } from "./useDocuments";
 
 type API = {
-  setIcon: (icon: string) => Promise<void>;
   publish: () => Promise<void>;
   toggleRunUnexecutedBlocks: () => Promise<void>;
   toggleRunSQLSelection: () => Promise<void>;
@@ -30,11 +29,6 @@ function useDocument(workspaceId: string, documentId: string): UseDocument {
   );
 
   const currRunUnexecutedBlocks = document?.runUnexecutedBlocks ?? false;
-
-  const setIcon = useCallback(
-    (icon: string) => api.setIcon(documentId, icon),
-    [api, documentId]
-  );
 
   const [publishing, setPublishing] = useState(false);
   const publish = useCallback(async () => {
@@ -100,7 +94,6 @@ function useDocument(workspaceId: string, documentId: string): UseDocument {
     () => [
       { document, loading, publishing },
       {
-        setIcon,
         publish,
         toggleRunUnexecutedBlocks,
         toggleRunSQLSelection,
@@ -109,7 +102,6 @@ function useDocument(workspaceId: string, documentId: string): UseDocument {
     ],
     [
       loading,
-      setIcon,
       publish,
       toggleRunUnexecutedBlocks,
       toggleRunSQLSelection,
