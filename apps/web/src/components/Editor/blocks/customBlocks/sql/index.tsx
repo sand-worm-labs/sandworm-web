@@ -42,6 +42,7 @@ import {
 } from "@heroicons/react/24/solid";
 import { Transition } from "@headlessui/react";
 import { useTheme } from "next-themes";
+import { toast } from "sonner";
 
 import type { ApiDocument, ApiWorkspace, DataSourceType } from "@/types";
 

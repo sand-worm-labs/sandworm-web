@@ -7,6 +7,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import {toast} from "sonner";
 
 import type {
   NewReusableComponent,
@@ -238,10 +239,15 @@ export function ReusableComponentsProvider({ workspaceId, children }: Props) {
             },
           },
         });
+        toast.success("Component saved", {
+          description: `"${data.title}" is now available across your workspace`,
+        });
       } catch {
         console.error("Mutation error:", error);
 
-        alert("Failed to create reusable component");
+        toast.error("Failed to save component", {
+          description: "Your changes were not saved. Try again.",
+        });
         setState(prev => {
           const next = new Map(prev);
           const components = next.get(workspaceId) ?? List();
@@ -289,6 +295,9 @@ export function ReusableComponentsProvider({ workspaceId, children }: Props) {
             input: data,
           },
         });
+        toast.success("Component updated", {
+          description: `"${data.title ?? "Component"}" has been updated`,
+        });
       } catch {
         if (prevComponent) {
           setState(prev => {
@@ -302,7 +311,9 @@ export function ReusableComponentsProvider({ workspaceId, children }: Props) {
             return next;
           });
         }
-        alert("Failed to update reusable component");
+        toast.error("Failed to update component", {
+          description: "Reverted to the previous version.",
+        });
       }
     },
     [state, updateComponentMutation]
@@ -329,7 +340,7 @@ export function ReusableComponentsProvider({ workspaceId, children }: Props) {
           variables: { workspaceId, componentId: id },
         });
       } catch {
-        alert("Failed to remove reusable component");
+        toast.error("Failed to remove component");
         setState(prev => {
           const next = new Map(prev);
           const components = next.get(workspaceId) ?? List();
