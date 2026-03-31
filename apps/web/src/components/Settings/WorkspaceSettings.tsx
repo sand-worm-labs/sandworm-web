@@ -168,7 +168,7 @@ export function EditWorkspaceProfileModal({
                           }`}
                           aria-label={`${colorKey.replace(".png", "")} icon`}
                         >
-                          <WorkspaceIcon icon={colorKey} size={32} />
+                          <WorkspaceIcon icon={colorKey} size={48} />
                           {isSelected && (
                             <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                               <CheckIcon className="w-4 h-4 text-white stroke-[3]" />

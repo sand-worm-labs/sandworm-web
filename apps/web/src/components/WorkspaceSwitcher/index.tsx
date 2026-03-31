@@ -12,21 +12,7 @@ import {
   useWorkspaces,
 } from "../Editor/hooks/useWorkspaces";
 import CreateTeamModal from "../Settings/CreateTeam";
-
-function workspaceGradient(id: string) {
-  const gradients = [
-    "from-violet-500 to-indigo-500",
-    "from-fuchsia-500 to-pink-500",
-    "from-cyan-500 to-blue-500",
-    "from-emerald-500 to-teal-500",
-    "from-orange-500 to-rose-500",
-  ];
-  let hash = 0;
-  for (let i = 0; i < id.length; i++)
-    // eslint-disable-next-line no-bitwise
-    hash = id.charCodeAt(i) + ((hash << 5) - hash);
-  return gradients[Math.abs(hash) % gradients.length];
-}
+import { WorkspaceIcon } from "../Settings/WorkspaceIcon";
 
 export default function WorkspaceSwitcher({
   collapsed,
@@ -63,6 +49,14 @@ export default function WorkspaceSwitcher({
 
   const others = (allWorkspaces ?? []).filter(w => w.id !== workspaceInfo.id);
 
+  console.log(workspaceInfo, "info")
+
+  const renderIcon = (iconName: string, size: number) => (
+    <div className="flex-shrink-0">
+      <WorkspaceIcon icon={iconName} size={size} className="rounded-lg" />
+    </div>
+  );
+
   if (collapsed) {
     return (
       <div ref={ref} className="relative flex justify-center px-2 mt-6 mb-2">
@@ -72,12 +66,7 @@ export default function WorkspaceSwitcher({
           className="w-7 h-7 rounded-lg flex-shrink-0 bg-gradient-to-br focus:outline-none focus:ring-2 focus:ring-primary/40 transition-transform hover:scale-105"
           style={{ backgroundImage: undefined }}
         >
-          <div
-            className={clsx(
-              "w-full h-full rounded-lg bg-gradient-to-br",
-              workspaceGradient(workspaceInfo.id)
-            )}
-          />
+          {renderIcon(workspaceInfo.icon, 28)}
         </button>
 
         <Transition
@@ -98,12 +87,8 @@ export default function WorkspaceSwitcher({
             )}
           >
             <div className="flex items-center gap-3 px-3 py-2.5 bg-[#F8F9FA] dark:bg-base-400">
-              <div
-                className={clsx(
-                  "w-6 h-6 rounded-md bg-gradient-to-br flex-shrink-0",
-                  workspaceGradient(workspaceInfo.id)
-                )}
-              />
+            {renderIcon(workspaceInfo.icon, 28)}
+
               <span className="flex-1 text-sm font-medium text-ink-100 truncate">
                 {workspaceInfo.name}
               </span>
@@ -127,12 +112,7 @@ export default function WorkspaceSwitcher({
                       isSwitching && "opacity-50 cursor-not-allowed"
                     )}
                   >
-                    <div
-                      className={clsx(
-                        "w-5 h-5 rounded-md bg-gradient-to-br flex-shrink-0",
-                        workspaceGradient(workspace.id)
-                      )}
-                    />
+                   {renderIcon(workspaceInfo.icon, 28)}
                     <span className="flex-1 text-[13px] font-medium text-ink-100 truncate">
                       {workspace.name}
                     </span>
@@ -218,12 +198,7 @@ export default function WorkspaceSwitcher({
             "shadow-none"
           )}
         >
-          <div
-            className={clsx(
-              "w-7 h-7 rounded-lg flex-shrink-0 bg-gradient-to-br",
-              workspaceGradient(workspaceInfo.id)
-            )}
-          />
+         {renderIcon(workspaceInfo.icon, 28)}
 
           <span className="flex-1 text-left xl:text-sm text-[13px] font-medium text-ink-100 truncate">
             {workspaceInfo.name}
@@ -278,12 +253,7 @@ export default function WorkspaceSwitcher({
           )}
         >
           <div className="flex items-center gap-3 px-3 py-2.5 bg-[#F8F9FA] dark:bg-base-400 min-w-[12rem]">
-            <div
-              className={clsx(
-                "w-6 h-6 rounded-md bg-gradient-to-br flex-shrink-0",
-                workspaceGradient(workspaceInfo.id)
-              )}
-            />
+          {renderIcon(workspaceInfo.icon, 28)}
             <span className="flex-1 text-sm font-medium text-ink-100 dark:text-ink-100 truncate">
               {workspaceInfo.name}
             </span>
@@ -315,12 +285,7 @@ export default function WorkspaceSwitcher({
                     isSwitching && "opacity-50 cursor-not-allowed"
                   )}
                 >
-                  <div
-                    className={clsx(
-                      "w-5 h-5 rounded-md bg-gradient-to-br flex-shrink-0",
-                      workspaceGradient(workspace.id)
-                    )}
-                  />
+                 {renderIcon(workspaceInfo.icon, 28)}
                   <span className="flex-1 xl:text-sm text-[13px] font-medium text-ink-100 truncate">
                     {workspace.name}
                   </span>
