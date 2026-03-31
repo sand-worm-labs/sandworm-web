@@ -5,7 +5,7 @@ import { XCircleIcon } from "@heroicons/react/20/solid";
 import { useCallback, useState } from "react";
 import { uniq } from "ramda";
 import clsx from "clsx";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import {

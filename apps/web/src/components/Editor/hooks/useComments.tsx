@@ -183,6 +183,8 @@ export function CommentsProvider(props: Props) {
     setState(prev => prev.set(documentId, comments));
   }, []);
 
+  // ⬢ Create Comment
+  // =====================================
   const createComment = useCallback(
     async (workspaceId: string, documentId: string, content: string) => {
       const user = session?.user;
@@ -239,6 +241,8 @@ export function CommentsProvider(props: Props) {
     [session, createCommentMutation]
   );
 
+  // ⬢ Delete Comment
+  // =====================================
   const deleteComment = useCallback(
     async (workspaceId: string, documentId: string, commentId: string) => {
       const comment = state.get(documentId)?.find(c => c.id === commentId);
