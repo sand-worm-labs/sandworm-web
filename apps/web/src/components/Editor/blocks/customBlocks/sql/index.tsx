@@ -42,7 +42,6 @@ import {
 } from "@heroicons/react/24/solid";
 import { Transition } from "@headlessui/react";
 import { useTheme } from "next-themes";
-import { toast } from "sonner";
 
 import type { ApiDocument, ApiWorkspace, DataSourceType } from "@/types";
 
@@ -987,6 +986,7 @@ function SQLBlock(props: Props) {
                         !isAIFixing &&
                         headerSelectValue !== "duckdb" && (
                           <button
+                          type="button"
                             onClick={onSchemaExplorer}
                             className={clsx(
                               !props.isEditable
@@ -1064,6 +1064,7 @@ function SQLBlock(props: Props) {
                           >
                             {ref => (
                               <button
+                              type="button"
                                 ref={ref}
                                 disabled={!props.isEditable}
                                 onClick={onToggleEditWithAIPromptOpen}
@@ -1125,6 +1126,7 @@ function SQLBlock(props: Props) {
         <TooltipV2<HTMLButtonElement> {...runTooltipContent} active>
           {ref => (
             <button
+            type="button"
               ref={ref}
               onClick={onRunAbort}
               disabled={isRunButtonDisabled}

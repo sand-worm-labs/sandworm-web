@@ -1374,7 +1374,7 @@ export type RejectRoleRequestMutation = { __typename?: 'Mutation', rejectRoleReq
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentUserQuery = { __typename?: 'Query', currentUser: { __typename: 'AuthPayload', id: string, token?: string | null, roles?: any | null, user: { __typename?: 'User', id: string, username?: string | null, email?: string | null, createdAt?: any | null, firstName?: string | null, lastName?: string | null, fullName?: string | null, isOnboarded: boolean, avater?: string | null, followersCount: number, followingCount: number, settings?: { __typename?: 'UserSetting', statusText?: string | null, statusUpdatedAt?: any | null, socialLinks?: any | null, wallets: Array<any> } | null } } };
+export type CurrentUserQuery = { __typename?: 'Query', currentUser: { __typename: 'AuthPayload', id: string, token?: string | null, roles?: any | null, user: { __typename?: 'User', id: string, username?: string | null, email?: string | null, createdAt?: any | null, firstName?: string | null, lastName?: string | null, fullName?: string | null, isOnboarded: boolean, avater?: string | null, followersCount: number, followingCount: number, settings?: { __typename?: 'UserSetting', id: string, userId: string, statusText?: string | null, statusUpdatedAt?: any | null, socialLinks?: any | null, wallets: Array<any> } | null } } };
 
 export type GetProfileQueryVariables = Exact<{
   username: Scalars['String']['input'];
@@ -3189,6 +3189,8 @@ export const CurrentUserDocument = gql`
       followersCount
       followingCount
       settings {
+        id
+        userId
         statusText
         statusUpdatedAt
         socialLinks

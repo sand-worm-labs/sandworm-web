@@ -6,16 +6,29 @@ import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import type { ApiUser, UserWorkspaceRole } from "@/types";
 import { useCurrentUserQuery } from "@/generated/graphql";
 
-import { NEXT_PUBLIC_API_URL, NEXT_PUBLIC_PUBLIC_URL } from "../../../utils/env";
+import {
+  NEXT_PUBLIC_API_URL,
+  NEXT_PUBLIC_PUBLIC_URL,
+} from "../../../utils/env";
 
-export type UseAuthError = "unexpected" | "invalid-creds" | "network-error";
+// =====================================
+// ⬢ Types
+// =====================================
+export type UseAuthError =
+  | "unexpected"
+  | "invalid-creds"
+  | "network-error"
+  | "invalid-token"
+  | "expired-token";
 
-type AuthState = {
+type AuthState<T = { email: string; loginLink?: string }> = {
   loading: boolean;
-  data?: { email: string; loginLink?: string };
+  data?: T;
   error?: UseAuthError;
 };
 
+// ⬢ Use SignUp Types
+// =====================================
 type SignupApi = {
   signupWithEmail: (
     email: string,
@@ -27,6 +40,18 @@ type SignupApi = {
 };
 
 type UseSignup = [AuthState, SignupApi];
+
+// ⬢ Use Login Types
+// =====================================
+type LoginAPI = {
+  loginWithPassword: (
+    email: string,
+    password: string,
+    callback?: string
+  ) => void;
+};
+
+type UseLogin = [AuthState, LoginAPI];
 
 interface LoginResponse {
   email: string;
@@ -44,12 +69,61 @@ interface LoginResponse {
   };
 }
 
+// ⬢ Use Forgot password Types
+// =====================================
 type ForgotPasswordAPI = {
   sendResetEmail: (email: string) => void;
 };
 
 type UseForgotPassword = [AuthState, ForgotPasswordAPI];
 
+// ⬢ Confirm Email types
+// =====================================
+type ConfirmEmailState = {
+  loading: boolean;
+  success: boolean;
+  error?: "expired" | "invalid" | "unexpected";
+};
+
+type ConfirmEmailAPI = {
+  confirmEmail: (hash: string) => void;
+};
+
+type UseConfirmEmail = [ConfirmEmailState, ConfirmEmailAPI];
+
+// ⬢ Use session types
+// =====================================
+export type SessionUser = ApiUser & {
+  userHash?: string;
+  role?: Array<Record<string, UserWorkspaceRole>>;
+  picture?: string | null;
+  lastVisitedWorkspaceId?: string | null;
+  token: string | null;
+};
+
+type UseSessionReturn = {
+  user: SessionUser | null;
+  loading: boolean;
+  error: string | null;
+  isAuthenticated: boolean;
+};
+
+// ⬢ Use ResetPassword Type
+// =====================================
+type ResetPasswordState = AuthState<{ success: boolean }>;
+
+type ResetPasswordCallbacks = {
+  resetPassword: (password: string, hash: string) => void;
+};
+
+type UseResetPassword = [ResetPasswordState, ResetPasswordCallbacks];
+
+// =====================================
+// ⬢ Main Auth Hook
+// =====================================
+
+// ⬢ Use SignUp Hook
+// =====================================
 export const useSignup = (): UseSignup => {
   const [state, setState] = useState<{
     loading: boolean;
@@ -107,16 +181,8 @@ export const useSignup = (): UseSignup => {
   return useMemo(() => [state, { signupWithEmail }], [state, signupWithEmail]);
 };
 
-type LoginAPI = {
-  loginWithPassword: (
-    email: string,
-    password: string,
-    callback?: string
-  ) => void;
-};
-
-type UseLogin = [AuthState, LoginAPI];
-
+// ⬢ Use Login Hook
+// =====================================
 export const useLogin = (): UseLogin => {
   const [state, setState] = useState<AuthState>({
     loading: false,
@@ -163,18 +229,8 @@ export const useLogin = (): UseLogin => {
   );
 };
 
-type ConfirmEmailState = {
-  loading: boolean;
-  success: boolean;
-  error?: "expired" | "invalid" | "unexpected";
-};
-
-type ConfirmEmailAPI = {
-  confirmEmail: (hash: string) => void;
-};
-
-type UseConfirmEmail = [ConfirmEmailState, ConfirmEmailAPI];
-
+// ⬢ Use Confirm Email Hook
+// =====================================
 export const useConfirmEmail = (): UseConfirmEmail => {
   const [state, setState] = useState<ConfirmEmailState>({
     loading: false,
@@ -221,21 +277,8 @@ export const useConfirmEmail = (): UseConfirmEmail => {
   return useMemo(() => [state, { confirmEmail }], [state, confirmEmail]);
 };
 
-export type SessionUser = ApiUser & {
-  userHash: string;
-  role?: Array<Record<string, UserWorkspaceRole>>;
-  picture?: string | null;
-  lastVisitedWorkspaceId?: string | null;
-  token: string | null;
-};
-
-type UseSessionReturn = {
-  user: SessionUser | null;
-  loading: boolean;
-  error: string | null;
-  isAuthenticated: boolean;
-};
-
+// ⬢ Use session hook
+// =====================================
 export const useSession = ({
   redirectToLogin = false,
 }: {
@@ -259,16 +302,16 @@ export const useSession = ({
   return useMemo(
     () => ({
       user: data?.currentUser?.user
-        ? {
+        ? ({
             ...data.currentUser.user,
             role: data.currentUser.roles || [],
-            token: data.currentUser.token,
+            token: data.currentUser.token ?? null,
             name:
               data.currentUser.user.fullName ||
               `${data.currentUser.user.firstName || ""} ${data.currentUser.user.lastName || ""}`.trim() ||
               data.currentUser.user.username ||
               "Unknown User",
-          }
+          } satisfies SessionUser)
         : null,
       loading,
       error: error?.message ?? null,
@@ -278,6 +321,8 @@ export const useSession = ({
   );
 };
 
+// ⬢ Use Signout Hook
+// =====================================
 export const useSignout = () => {
   const router = useRouter();
 
@@ -296,6 +341,8 @@ export const useSignout = () => {
   }, [router]);
 };
 
+// ⬢ Use ForgotPassword Hook
+// =====================================
 export const useForgotPassword = (): UseForgotPassword => {
   const [state, setState] = useState<AuthState>({
     loading: false,
@@ -332,14 +379,8 @@ export const useForgotPassword = (): UseForgotPassword => {
   return useMemo(() => [state, { sendResetEmail }], [state, sendResetEmail]);
 };
 
-type ResetPasswordState = AuthState<{ success: boolean }>;
-
-type ResetPasswordCallbacks = {
-  resetPassword: (password: string, hash: string) => void;
-};
-
-type UseResetPassword = [ResetPasswordState, ResetPasswordCallbacks];
-
+// ⬢ Use ResetPassword Hook
+// =====================================
 export const useResetPassword = (): UseResetPassword => {
   const [state, setState] = useState<ResetPasswordState>({
     loading: false,

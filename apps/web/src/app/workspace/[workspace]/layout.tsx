@@ -44,7 +44,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           position="bottom-right"
           toastOptions={{
             className:
-              " border border-border-secondary shadow-xl rounded-xl text-ink-100  ",
+              " border border-border-secondary shadow-xl rounded-2xl text-ink-100 bg-base-100 ",
           }}
         />
       </ProgressProvider>
