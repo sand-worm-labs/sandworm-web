@@ -221,6 +221,7 @@ export class WorkspaceService {
       ownerId: workspace.ownerId,
       createdAt: workspace.createdAt,
       updatedAt: workspace.updatedAt,
+      icon: workspace.icon,
       role: membership.role,
     };
   }
