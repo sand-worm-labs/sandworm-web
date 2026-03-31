@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
+import { toast } from "sonner";
 
 import type { ApiDocument } from "@/types";
 
@@ -41,7 +42,7 @@ function useDocument(workspaceId: string, documentId: string): UseDocument {
     try {
       await api.publish(documentId);
     } catch (err) {
-      alert("Failed to save document");
+      toast.success("Failed to save document");
     } finally {
       setPublishing(false);
     }
@@ -54,7 +55,7 @@ function useDocument(workspaceId: string, documentId: string): UseDocument {
         runUnexecutedBlocks: newRunUnexecutedBlocks,
       });
     } catch (err) {
-      alert("Failed to update document settings");
+      toast.error("Failed to update document settings");
     }
   }, [
     workspaceId,
@@ -70,7 +71,7 @@ function useDocument(workspaceId: string, documentId: string): UseDocument {
         runSQLSelection: newRunSQLSelection,
       });
     } catch (err) {
-      alert("Failed to update document settings");
+      toast.error("Failed to update document settings");
     }
   }, [
     workspaceId,
@@ -86,7 +87,7 @@ function useDocument(workspaceId: string, documentId: string): UseDocument {
         shareLinksWithoutSidebar: newShareLinksWithoutSidebar,
       });
     } catch (err) {
-      alert("Failed to update document settings");
+      toast.error("Failed to update document settings");
     }
   }, [
     workspaceId,
