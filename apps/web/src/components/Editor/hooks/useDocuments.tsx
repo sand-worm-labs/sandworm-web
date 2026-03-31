@@ -8,6 +8,7 @@ import React, {
   useCallback,
 } from "react";
 import { equals } from "ramda";
+import { toast } from "sonner";
 
 import type { Document, ApiDocument } from "@/types";
 import {
@@ -21,86 +22,6 @@ import {
 
 import { useFavorites } from "./useFavorites";
 import { useWebsocket } from "./useWebSocket";
-
-function upsertDocumentInMemory(
-  documents: List<ApiDocument>,
-  workspaceId: string,
-  body: { id: string; parentId: string | null; version: number }
-) {
-  const documentsById = Map(documents.map(d => [d.id, d]));
-  const childrenByParentId = List(documents).groupBy(d => d.parentId);
-
-  let affectedDocuments = Map<string, ApiDocument>();
-
-  const doc = documentsById.get(body.id);
-  if (doc) {
-    if (doc.parentId === body.parentId) {
-      // nothing actually changed
-      return documents;
-    }
-
-    const oldSiblings = childrenByParentId.get(doc.parentId) ?? List();
-    // decrement orderIndex of all past siblings that came after the
-    // current document
-    oldSiblings.forEach(d => {
-      if (d.orderIndex > doc.orderIndex) {
-        affectedDocuments = affectedDocuments.set(d.id, {
-          ...d,
-          orderIndex: d.orderIndex - 1,
-        });
-      }
-    });
-
-    // place it at the end of the new siblings
-    const newSiblings = childrenByParentId.get(body.parentId) ?? List();
-    const orderIndex = newSiblings.size;
-    affectedDocuments = affectedDocuments.set(doc.id, {
-      ...doc,
-      parentId: body.parentId,
-      orderIndex,
-    });
-  } else {
-    // inserting, just place it at the end of the new siblings
-    const now = new Date();
-    const siblings = childrenByParentId.get(body.parentId) ?? List();
-    const orderIndex = siblings.size;
-    affectedDocuments = affectedDocuments.set(body.id, {
-      id: body.id,
-      title: "",
-      parentId: body.parentId,
-      orderIndex,
-      isSyncedWithYjs: true,
-      workspaceId,
-      createdAt: now,
-      updatedAt: now,
-      deletedAt: null,
-      version: body.version,
-      publishedAt: null,
-      appId: "",
-      clock: 0,
-      appClock: 0,
-      userAppClock: {},
-      runUnexecutedBlocks: false,
-      runSQLSelection: false,
-      shareLinksWithoutSidebar: true,
-      hasDashboard: false,
-    });
-  }
-
-  let result: List<ApiDocument> = List();
-  documents.forEach(doc => {
-    const affectedDoc = affectedDocuments.get(doc.id);
-    if (affectedDoc) {
-      result = result.push(affectedDoc);
-      affectedDocuments = affectedDocuments.delete(doc.id);
-      return;
-    }
-
-    result = result.push(doc);
-  });
-
-  return result.push(...Array.from(affectedDocuments.values()));
-}
 
 function deleteDocumentInMemory(
   documents: List<ApiDocument>,
@@ -154,7 +75,6 @@ function deleteDocumentInMemory(
       }
     });
 
-    // set deletedAt to target document and all children recursively
     const stack = [doc];
     let current = stack.pop();
     while (current) {
@@ -243,11 +163,8 @@ export function DocumentsProvider(props: Props) {
 
   useEffect(() => {
     if (!socket) {
-      console.log("no socket");
-      return;
+      return () => {};
     }
-
-
 
     const onDocuments = (rawData: unknown) => {
       const data = Array.isArray(rawData) ? rawData[0] : rawData;
@@ -296,17 +213,12 @@ export function DocumentsProvider(props: Props) {
       workspaceId: string;
       document: ApiDocument;
     }) => {
-  
-
       setState(s => {
         const { workspaceId } = data;
 
         const documents = s.get(workspaceId)?.documents ?? List();
 
         const document = documents.find(d => d.id === data.document.id);
-        const existing = documents.find(d => d.id === data.document.id);
-
-    
 
         if (document) {
           const nextDocuments = documents.map(d =>
@@ -343,9 +255,7 @@ export function DocumentsProvider(props: Props) {
 
 export function useDocuments(workspaceId: string): UseDocuments {
   const [state, setState] = useContext(Context);
-  const [_, { unfavoriteDocument }] = useFavorites(workspaceId);
-  const socket = useWebsocket();
-
+  const [{ unfavoriteDocument }] = useFavorites(workspaceId);
   const [createDocumentMutation] = useCreateDocumentMutation();
   const [deleteDocumentMutation] = useDeleteDocumentMutation();
   const [duplicateDocumentMutation] = useDuplicateDocumentMutation();
@@ -385,7 +295,7 @@ export function useDocuments(workspaceId: string): UseDocuments {
 
         return newDoc as Document;
       } catch (e) {
-        alert("Something went wrong");
+        toast.error("Something went wrong");
         throw e;
       }
     },
@@ -412,15 +322,16 @@ export function useDocuments(workspaceId: string): UseDocuments {
 
       const previousStateValue = state.get(workspaceId);
 
-      setState(s => {
-        const { loading, documents } = s.get(workspaceId) ?? {
+      setState(prev => {
+        const { loading: prevLoading, documents: prevDocuments } = prev.get(
+          workspaceId
+        ) ?? {
           loading: true,
           documents: List(),
         };
-
-        return s.set(workspaceId, {
-          loading,
-          documents: deleteDocumentInMemory(documents, id, isPermanent),
+        return prev.set(workspaceId, {
+          loading: prevLoading,
+          documents: deleteDocumentInMemory(prevDocuments, id, isPermanent),
         });
       });
 
@@ -446,7 +357,7 @@ export function useDocuments(workspaceId: string): UseDocuments {
         } else {
           setState(s => s.delete(workspaceId));
         }
-        alert("Something went wrong");
+        toast.error("Something went wrong");
       }
     },
     [
@@ -489,11 +400,11 @@ export function useDocuments(workspaceId: string): UseDocuments {
 
         const doc = result.data.duplicateDocument as ApiDocument;
 
-        setState(s => {
-          const documents = s.get(workspaceId)?.documents ?? List();
+        setState(prev => {
+          const prevDocuments = prev.get(workspaceId)?.documents ?? List();
 
           let updated = false;
-          let newDocuments = documents.map(d => {
+          let newDocuments = prevDocuments.map(d => {
             if (d.id === doc.id) {
               updated = true;
               return doc;
@@ -505,7 +416,7 @@ export function useDocuments(workspaceId: string): UseDocuments {
             newDocuments = newDocuments.push(doc);
           }
 
-          return s.set(workspaceId, {
+          return prev.set(workspaceId, {
             loading: false,
             documents: newDocuments,
           });
@@ -513,7 +424,7 @@ export function useDocuments(workspaceId: string): UseDocuments {
 
         return doc;
       } catch (e) {
-        alert("Something went wrong");
+        toast.error("Something went wrong");
         setState(s =>
           s.set(workspaceId, {
             loading: false,
@@ -546,7 +457,7 @@ export function useDocuments(workspaceId: string): UseDocuments {
           throw new Error("Failed to restore document");
         }
       } catch (e) {
-        alert("Something went wrong");
+        toast.error("Something went wrong");
         throw e;
       }
     },
@@ -617,20 +528,18 @@ export function useDocuments(workspaceId: string): UseDocuments {
       }
 
       const previousStateValue = state.get(workspaceId);
-      setState(s => {
-        const { loading, documents } = s.get(workspaceId) ?? {
+      setState(prev => {
+        const { loading: prevLoading, documents: prevDocuments } = prev.get(
+          workspaceId
+        ) ?? {
           loading: true,
           documents: List(),
         };
-
-        return s.set(workspaceId, {
-          loading,
-          documents: documents.map(doc => {
+        return prev.set(workspaceId, {
+          loading: prevLoading,
+          documents: prevDocuments.map(doc => {
             const affectedDoc = affectedDocuments.get(doc.id);
-            if (affectedDoc) {
-              return affectedDoc;
-            }
-
+            if (affectedDoc) return affectedDoc;
             if (doc.id === id) {
               return {
                 ...doc,
@@ -638,7 +547,6 @@ export function useDocuments(workspaceId: string): UseDocuments {
                 orderIndex: actualOrderIndex,
               };
             }
-
             return doc;
           }),
         });
@@ -660,7 +568,7 @@ export function useDocuments(workspaceId: string): UseDocuments {
           throw new Error("Failed to update document parent");
         }
       } catch (e) {
-        alert("Something went wrong");
+        toast.error("Something went wrong");
         if (previousStateValue) {
           setState(s => s.set(workspaceId, previousStateValue));
         } else {
@@ -676,7 +584,7 @@ export function useDocuments(workspaceId: string): UseDocuments {
     async (id: string) => {
       const document = documents.find(doc => doc.id === id);
       if (!document) {
-        return;
+        return () => {};
       }
 
       try {
@@ -691,14 +599,16 @@ export function useDocuments(workspaceId: string): UseDocuments {
           throw new Error(`Error publishing Document(${id})`);
         }
 
-        setState(s => {
-          const { loading, documents } = s.get(workspaceId) ?? {
+        setState(prev => {
+          const { loading: prevLoading, documents: prevDocuments } = prev.get(
+            workspaceId
+          ) ?? {
             loading: true,
             documents: List(),
           };
-          return s.set(workspaceId, {
-            loading,
-            documents: documents.map(doc =>
+          return prev.set(workspaceId, {
+            loading: prevLoading,
+            documents: prevDocuments.map(doc =>
               doc.id === id
                 ? {
                     ...doc,
@@ -710,7 +620,7 @@ export function useDocuments(workspaceId: string): UseDocuments {
           });
         });
       } catch (e) {
-        alert("Failed to publish document");
+        toast.error("Failed to publish document");
         throw e;
       }
     },
@@ -733,21 +643,17 @@ export function useDocuments(workspaceId: string): UseDocuments {
 
       const previousStateValue = state.get(workspaceId);
 
-      setState(s => {
-        const { loading, documents } = s.get(workspaceId) ?? {
+      setState(prev => {
+        const { loading: prevLoading, documents: prevDocuments } = prev.get(
+          workspaceId
+        ) ?? {
           loading: true,
           documents: List(),
         };
-
-        return s.set(workspaceId, {
-          loading,
-          documents: documents.map(doc =>
-            doc.id === id
-              ? {
-                  ...doc,
-                  ...settings,
-                }
-              : doc
+        return prev.set(workspaceId, {
+          loading: prevLoading,
+          documents: prevDocuments.map(doc =>
+            doc.id === id ? { ...doc, ...settings } : doc
           ),
         });
       });
@@ -765,7 +671,7 @@ export function useDocuments(workspaceId: string): UseDocuments {
           throw new Error(`Error changing settings for Document(${id})`);
         }
       } catch (e) {
-        alert("Something went wrong");
+        toast.error("Something went wrong");
         if (previousStateValue) {
           setState(s => s.set(workspaceId, previousStateValue));
         } else {
