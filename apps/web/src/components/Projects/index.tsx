@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { PiPlus } from "react-icons/pi";
 import { PlusSmallIcon } from "@heroicons/react/24/outline";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 import { useFavorites } from "@/components/Editor/hooks/useFavorites";
@@ -37,7 +37,6 @@ interface Project {
 type MenuAction = "duplicate" | "newTab" | "trash";
 
 export const Projects: React.FC = () => {
-  const pathname = usePathname();
   const workspaceId = useStringQuery("workspace");
   const router = useRouter();
   const [activeView, setActiveView] = useState<"grid" | "table">("grid");

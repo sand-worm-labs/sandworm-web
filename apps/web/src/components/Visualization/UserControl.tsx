@@ -19,7 +19,6 @@ interface UserControlProps {
   roleFilters: RoleFilter[];
   onRoleFilterChange: (role: string, enabled: boolean) => void;
   onResetFilters: () => void;
-  totalUsers: number;
 }
 
 export function UserControl({
@@ -28,7 +27,6 @@ export function UserControl({
   roleFilters,
   onRoleFilterChange,
   onResetFilters,
-  totalUsers,
 }: UserControlProps) {
   const activeFiltersCount = roleFilters.filter(f => f.enabled).length;
 

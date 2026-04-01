@@ -77,35 +77,32 @@ import { DocumentIcon } from "@heroicons/react/24/solid";
 import { useOnClickOutside } from "@/hooks/useOnClickOutside";
 import type { ApiDocument, UserWorkspaceRole } from "@/types";
 
-import RunAllV2 from "../Editor/blocks/RunAllV2";
-import PivotTableBlock from "../Editor/blocks/customBlocks/pivotTable";
-import useHotkeys from "./hooks/useHotkeys";
+import VisualizationV2Block from "../Visualization";
+import VisualizationBlock from "../Visualization";
+
+import DateInputBlock from "./blocks/customBlocks/dateInput";
+import DropdownInputBlock from "./blocks/customBlocks/dropdownInput";
+import FileUploadBlock from "./blocks/customBlocks/fileUpload";
+import InputBlock from "./blocks/customBlocks/input";
+import PythonBlock from "./blocks/customBlocks/python";
+import RichTextBlock from "./blocks/customBlocks/richText";
+import EnvBar from "./blocks/EnvBar";
+import { ElementType } from "./blocks/DragLayer";
+import { useLastUpdatedAt, useYDocState } from "./hooks/useYDocs";
+import useSideBar from "./hooks/useSideBar";
+import AnalyticsBlock from "./blocks/customBlocks/PowerToolbox/AnalyticsBlock";
+import useScrollDetection from "./hooks/useScrollDetection";
+import { useEnvironmentStatus } from "./hooks/useEnvironmentStatus";
+import type { APIDataSources } from "./hooks/useDataSources";
+import { SQLExtensionProvider } from "./blocks/customBlocks/CodeEditor/sql";
+import SQLBlock from "./blocks/customBlocks/sql";
 import useEditorAwareness, {
   EditorAwarenessProvider,
 } from "./hooks/useEditorAwareness";
-import { SQLExtensionProvider } from "../Editor/blocks/customBlocks/CodeEditor/sql";
-import VisualizationV2Block from "../Visualization";
-import SQLBlock from "../Editor/blocks/customBlocks/sql";
 import type { IProvider } from "./hooks/useYProvider";
-import type { APIDataSources } from "./hooks/useDataSources";
-import { useEnvironmentStatus } from "./hooks/useEnvironmentStatus";
-import useScrollDetection from "./hooks/useScrollDetection";
-import DateInputBlock from "../Editor/blocks/customBlocks/dateInput";
-import DropdownInputBlock from "../Editor/blocks/customBlocks/dropdownInput";
-import FileUploadBlock from "../Editor/blocks/customBlocks/fileUpload";
-import InputBlock from "../Editor/blocks/customBlocks/input";
-import VisualizationBlock from "../Visualization";
-import PythonBlock from "../Editor/blocks/customBlocks/python";
-import RichTextBlock from "../Editor/blocks/customBlocks/richText";
-import EnvBar from "../Editor/blocks/EnvBar";
-import {
-  useLastUpdatedAt,
-  useYDocState,
-} from "./hooks/useYDocs";
-import useSideBar from "./hooks/useSideBar";
-import { ElementType } from "../Editor/blocks/DragLayer";
-import AnalyticsBlock from "../Editor/blocks/customBlocks/PowerToolbox/AnalyticsBlock";
-
+import PivotTableBlock from "./blocks/customBlocks/pivotTable";
+import RunAllV2 from "./blocks/RunAllV2";
+import useHotkeys from "./hooks/useHotkeys";
 import RemoveBlockDashboardConflictDialog from "./RemoveBlockDashboardConflictDialog";
 import { widthClasses } from "./constants";
 import NewTabButton from "./NewTabButton";
@@ -916,8 +913,6 @@ file`;
     props.userId,
     environmentStartedAt,
   ]);
-
-  const popupContainerRef = useRef<HTMLDivElement>(null);
 
   const onDuplicateBlockGroup = useCallback(() => {
     props.onDuplicateBlockGroup(props.id);
@@ -1776,7 +1771,6 @@ const Editor = (props: Props) => {
               {!props.isSyncing && (
                 <>
                   {domBlocks}
-
 
                   {domBlocks.length === 0 && (
                     <div className="w-full">

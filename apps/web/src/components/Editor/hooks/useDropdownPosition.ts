@@ -2,6 +2,9 @@ import { exhaustiveCheck } from "@sandworm/types";
 import type { CSSProperties, RefObject } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+// =====================================
+// ⬢ Use Dropdown Position
+// =====================================
 function useDropdownPosition(
   buttonRef: RefObject<HTMLElement>,
   dropdownRef: RefObject<HTMLElement>,
@@ -13,7 +16,7 @@ function useDropdownPosition(
   useEffect(() => {
     if (!buttonRef.current || !dropdownRef.current) {
       setStyle({});
-      return;
+      return () => {};
     }
 
     const button = buttonRef.current;
@@ -50,9 +53,7 @@ function useDropdownPosition(
     };
   }, [buttonRef, dropdownRef, position, padding]); // , tick])
 
-  const onToggle = useCallback(() => {
-    // setTick((tick) => tick + 1)
-  }, []);
+  const onToggle = useCallback(() => {}, []);
 
   return useMemo(() => [style, onToggle], [style, onToggle]);
 }

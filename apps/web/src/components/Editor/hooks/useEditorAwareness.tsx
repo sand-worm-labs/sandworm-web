@@ -15,6 +15,9 @@ import {
 } from "react";
 import { useHotkeysContext } from "react-hotkeys-hook";
 
+// =====================================
+// ⬢ Types
+// =====================================
 export type InteractionState = {
   mode: "normal" | "insert";
   cursorBlockId: string | null;
@@ -32,6 +35,17 @@ export type InteractionAPI = {
   move: Move;
 };
 
+type UseEditorAwareness = [InteractionState, InteractionAPI];
+
+interface Props {
+  scrollViewRef: React.RefObject<HTMLDivElement>;
+  children: React.ReactNode;
+  yDoc: Y.Doc;
+}
+
+// =====================================
+// ⬢ Context
+// =====================================
 const Context = createContext<[InteractionState, InteractionAPI]>([
   {
     mode: "normal",
@@ -46,13 +60,9 @@ const Context = createContext<[InteractionState, InteractionAPI]>([
   },
 ]);
 
-type UseEditorAwareness = [InteractionState, InteractionAPI];
-
-interface Props {
-  scrollViewRef: React.RefObject<HTMLDivElement>;
-  children: React.ReactNode;
-  yDoc: Y.Doc;
-}
+// =====================================
+// ⬢ Editor Awareness Provider
+// =====================================
 export function EditorAwarenessProvider(props: Props) {
   const { disableScope, enableScope } = useHotkeysContext();
   const [state, setState] = useState<InteractionState>({
@@ -155,7 +165,6 @@ export function EditorAwarenessProvider(props: Props) {
 
   useEffect(() => {
     if (state.cursorBlockId && state.scrollIntoView) {
-      // find where data-block-id is equal to the cursorBlockId
       const el = document.querySelector(
         `[data-block-id="${state.cursorBlockId}"]`
       );
@@ -163,18 +172,15 @@ export function EditorAwarenessProvider(props: Props) {
         return;
       }
 
-      // const scrollViewTop = scrollViewRef.current.getBoundingClientRect().top
       const scrollRect = props.scrollViewRef.current.getBoundingClientRect();
       const elRect = el.getBoundingClientRect();
 
-      // if el height is larger than scroll view visible height, scroll to the top of the el
       if (elRect.height > scrollRect.height) {
         props.scrollViewRef.current.scrollBy({
           top: elRect.top - scrollRect.top - 48,
           behavior: "smooth",
         });
       } else {
-        // scroll el so that it's center is at the center of the scroll view
         const top =
           elRect.top -
           scrollRect.top -
@@ -192,7 +198,6 @@ export function EditorAwarenessProvider(props: Props) {
   }, [state.cursorBlockId, state.scrollIntoView, props.scrollViewRef]);
 
   useEffect(() => {
-    // if there is a click outside the scroll view, set mode to normal
     const handler = (e: MouseEvent) => {
       if (!props.scrollViewRef.current) {
         return;

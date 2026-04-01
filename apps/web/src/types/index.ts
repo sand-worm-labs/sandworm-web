@@ -109,18 +109,18 @@ export interface Wallet {
 
 export interface User {
   id: string;
-  email: string | null;
-  username: string | null;
-  firstName: string | null;
-  name: string | null;
-  lastName: string | null;
-  fullName: string | null;
+  email?: string | null;
+  username?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  fullName?: string | null;
+  name?: string | null;
   avater?: string | null;
   isOnboarded?: boolean;
   followersCount?: number;
   followingCount?: number;
   __typename?: string;
-  settings?: UserSetting;
+  settings?: UserSetting | null;
 }
 
 export type FieldType = "string" | "integer" | "bigint";
@@ -194,18 +194,20 @@ export type ApiDocument = Document & {
 
 export type UserWorkspaceRole = "editor" | "viewer" | "admin";
 
+export type Plan = "free" | "pro";
+
 type Workspace = {
   id: string;
-  createdAt: Date;
-  updatedAt: Date;
   name: string;
   source: string | null;
   useCases: string[];
   useContext: string | null;
-  plan: $Enums.Plan;
+  plan: Plan;
   ownerId: string;
-  secretsId: string | null;
   assistantModel: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  secretsId?: string | null;
 };
 
 export type EnvironmentStatus =
@@ -284,36 +286,9 @@ export type ExecutionSchedule = {
   id: string;
 } & ScheduleParams;
 
-type ReusableComponent = {
-  id: string;
-  state: Buffer;
-  type: $Enums.ReusableComponentType;
-  title: string;
-  blockId: string;
-  documentId: string;
-  createdAt: Date;
-  updatedAt: Date;
-  instancesCreated: boolean;
-};
-
 export type ApiDeletedDocument = ApiDocument & {
   deletedAt: Date;
 };
-
-export type APIReusableComponent = Omit<
-  ReusableComponent,
-  "state" | "createdAt" | "updatedAt"
-> & {
-  state: string;
-  createdAt: string;
-  updatedAt: string;
-  document: {
-    id: string;
-    title: string;
-  };
-};
-
-export type ReusableComponentType = "sql" | "python";
 
 export type SessionUser = {
   id: string;
@@ -324,4 +299,8 @@ export type SessionUser = {
   createdAt: string;
   updatedAt: string;
   roles: Record<string, UserWorkspaceRole>;
+};
+
+export type CreateSchedulePayload = {
+  scheduleParams: ScheduleParams;
 };

@@ -1,15 +1,13 @@
-import type { TrinoDataSource } from "@sandworm/database";
 import Link from "next/link";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
+import type { TrinoDataSource } from "@/types";
 import { GATEWAY_IP } from "@/utils/info";
-import { readFile } from "@/utils/file";
 
 import Spin from "../Spin";
 
 import FormError from "./formError";
-import FileUploadInput from "./FileUploadInput";
 
 export type TrinoDataSourceInput = TrinoDataSource & {
   password: string;
@@ -33,7 +31,7 @@ export default function TrinoForm({
 }: TrinoFormProps) {
   const isEditing = Boolean(trinoDataSource);
 
-  const { register, handleSubmit, formState, reset, control } =
+  const { register, handleSubmit, formState, reset } =
     useForm<TrinoDataSourceFormValues>({
       mode: "onChange",
       defaultValues: { readOnly: true, notes: "" },

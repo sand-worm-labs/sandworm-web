@@ -14,7 +14,7 @@ import Color from "@tiptap/extension-color";
 import MathExtension from "@aarkue/tiptap-math-extension";
 import type { RichTextBlock } from "@sandworm/editor";
 import clsx from "clsx";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { ConnectDragPreview } from "react-dnd";
 
 import "katex/dist/katex.min.css";
@@ -33,6 +33,7 @@ const useBlockEditor = ({
   isEditable: boolean;
   setTitle: (title: string) => void;
 }) => {
+  const [isSpellcheckEnabled] = useState(false);
   const editor = useEditor(
     {
       immediatelyRender: false,
@@ -103,6 +104,7 @@ const useBlockEditor = ({
           autocomplete: "off",
           autocorrect: "off",
           autocapitalize: "off",
+          spellcheck: isSpellcheckEnabled ? "true" : "false",
           class:
             " min-h-full prose sm:prose-base prose-sm max-w-full rounded-sm focus:outline-0 whitespace-pre-wrap ph-no-capture font-body sandworm-prose",
         },

@@ -1,11 +1,11 @@
 import { useCallback, useMemo, useState } from "react";
+import { toast } from "sonner";
 
 import type { ApiDocument } from "@/types";
 
 import { useDocuments } from "./useDocuments";
 
 type API = {
-  setIcon: (icon: string) => Promise<void>;
   publish: () => Promise<void>;
   toggleRunUnexecutedBlocks: () => Promise<void>;
   toggleRunSQLSelection: () => Promise<void>;
@@ -30,18 +30,13 @@ function useDocument(workspaceId: string, documentId: string): UseDocument {
 
   const currRunUnexecutedBlocks = document?.runUnexecutedBlocks ?? false;
 
-  const setIcon = useCallback(
-    (icon: string) => api.setIcon(documentId, icon),
-    [api, documentId]
-  );
-
   const [publishing, setPublishing] = useState(false);
   const publish = useCallback(async () => {
     setPublishing(true);
     try {
       await api.publish(documentId);
     } catch (err) {
-      alert("Failed to save document");
+      toast.success("Failed to save document");
     } finally {
       setPublishing(false);
     }
@@ -54,7 +49,7 @@ function useDocument(workspaceId: string, documentId: string): UseDocument {
         runUnexecutedBlocks: newRunUnexecutedBlocks,
       });
     } catch (err) {
-      alert("Failed to update document settings");
+      toast.error("Failed to update document settings");
     }
   }, [
     workspaceId,
@@ -70,7 +65,7 @@ function useDocument(workspaceId: string, documentId: string): UseDocument {
         runSQLSelection: newRunSQLSelection,
       });
     } catch (err) {
-      alert("Failed to update document settings");
+      toast.error("Failed to update document settings");
     }
   }, [
     workspaceId,
@@ -86,7 +81,7 @@ function useDocument(workspaceId: string, documentId: string): UseDocument {
         shareLinksWithoutSidebar: newShareLinksWithoutSidebar,
       });
     } catch (err) {
-      alert("Failed to update document settings");
+      toast.error("Failed to update document settings");
     }
   }, [
     workspaceId,
@@ -99,7 +94,6 @@ function useDocument(workspaceId: string, documentId: string): UseDocument {
     () => [
       { document, loading, publishing },
       {
-        setIcon,
         publish,
         toggleRunUnexecutedBlocks,
         toggleRunSQLSelection,
@@ -108,7 +102,6 @@ function useDocument(workspaceId: string, documentId: string): UseDocument {
     ],
     [
       loading,
-      setIcon,
       publish,
       toggleRunUnexecutedBlocks,
       toggleRunSQLSelection,

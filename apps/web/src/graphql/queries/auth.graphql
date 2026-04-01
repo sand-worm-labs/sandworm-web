@@ -19,6 +19,8 @@ query CurrentUser {
       followersCount
       followingCount
       settings {
+        id
+        userId
         statusText
         statusUpdatedAt
         socialLinks

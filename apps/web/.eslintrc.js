@@ -96,7 +96,15 @@ module.exports = {
     // 'simple-import-sort/exports': 'error',
     // 'simple-import-sort/imports': 'error',
     "sort-keys": "off",
-    "no-unused-vars": "error",
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        argsIgnorePattern: "^_",
+        varsIgnorePattern: "^_",
+        caughtErrorsIgnorePattern: "^_",
+      },
+    ],
     "no-plusplus": ["error", { allowForLoopAfterthoughts: true }],
     "react/function-component-definition": [
       2,

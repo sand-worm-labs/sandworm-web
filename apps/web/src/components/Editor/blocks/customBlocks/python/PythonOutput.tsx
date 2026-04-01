@@ -8,13 +8,12 @@ import type {
   PythonPlotlyOutput,
 } from "@sandworm/types";
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
-import type { DOMPurifyI } from "dompurify";
-import createDomPurify from "dompurify";
 import React, { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import debounce from "lodash.debounce";
 import type { PythonBlock } from "@sandworm/editor";
 
 import { downloadFile } from "@/utils/file";
+
 import useResettableState from "../../../hooks/useResettableState";
 
 import PythonError from "./PythonError";
@@ -31,17 +30,6 @@ interface Props {
   isDashboardView: boolean;
   lazyRender: boolean;
   blockId: string;
-}
-
-let domPurify: DOMPurifyI;
-
-function getDomPurify() {
-  if (domPurify) {
-    return domPurify;
-  }
-
-  domPurify = createDomPurify(window);
-  return domPurify;
 }
 
 const EXPENSIVE_TYPES = new Set<PythonBlock["result"][0]["type"]>([

@@ -93,7 +93,7 @@ const XAxisTab = ({
 
   // Handler for toggling time display
   const onToggleShowTime = useCallback(
-    (seriesId: string | undefined) => {
+    (_seriesId: string | undefined) => {
       if (xAxisDateFormat) {
         onChangeXAxisDateFormat({
           ...xAxisDateFormat,

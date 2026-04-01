@@ -7,6 +7,9 @@ import type {
 import { getBaseAttributes } from "@sandworm/editor";
 import { useEffect, useState } from "react";
 
+// =====================================
+// ⬢ UseAITasksHook
+// =====================================
 export function useAITasks(
   aiTasks: AITasks,
   block?: YBlock,

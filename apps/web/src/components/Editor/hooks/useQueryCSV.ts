@@ -2,6 +2,9 @@ import { useCallback, useMemo, useState } from "react";
 
 import { NEXT_PUBLIC_API_URL } from "../../../utils/env";
 
+// =====================================
+// ⬢ Types
+// =====================================
 export type CSVResult = {
   data?: Blob;
   loading: boolean;
@@ -12,6 +15,9 @@ export type CSVAPI = (queryId: string, name: string) => Promise<Blob>;
 
 export type UseCSV = [CSVResult, CSVAPI];
 
+// =====================================
+// ⬢ Use CSV
+// =====================================
 export const useCSV = (workspaceId: string, documentId: string): UseCSV => {
   const [state, setState] = useState<CSVResult>({
     data: undefined,

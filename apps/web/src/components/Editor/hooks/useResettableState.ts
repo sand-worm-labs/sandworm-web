@@ -1,6 +1,9 @@
 import type { DependencyList, SetStateAction, Dispatch } from "react";
 import { useState, useEffect, useRef, useMemo } from "react";
 
+// =====================================
+// ⬢ Use Resettable State
+// =====================================
 export default function useResettableState<T>(
   initialValue: () => T,
   deps: DependencyList
@@ -14,9 +17,7 @@ export default function useResettableState<T>(
 
   useEffect(() => {
     setStoredValue(valueRef.current());
-    /* eslint-disable react-hooks/exhaustive-deps */
   }, deps);
-  /* eslint-enable react-hooks/exhaustive-deps */
 
   return useMemo(
     () => [storedValue, setStoredValue],

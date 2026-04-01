@@ -10,9 +10,9 @@ import {
 import { useTheme } from "next-themes"
 import { Toaster as Sonner, type ToasterProps } from "sonner"
 
-function CheckMarkIcon(){
+function CheckMarkIcon({classNames}: {classNames: string}){
   return (
-    <svg width="35" height="35" viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg  viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg" className={classNames}>
 <rect x="0.5" y="0.5" width="34" height="34" rx="12" stroke="url(#paint0_linear_4117_36387)"/>
 <g filter="url(#filter0_i_4117_36387)">
 <rect x="3.49902" y="3.5" width="28" height="28" rx="8.4" fill="url(#paint1_linear_4117_36387)"/>
@@ -88,7 +88,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       theme={theme as ToasterProps["theme"]}
       className="toaster group"
       icons={{
-        success: <CheckMarkIcon  />,
+        success: <CheckMarkIcon classNames="size-6" />,
         info: <InfoIcon className="size-4" />,
         warning: <TriangleAlertIcon className="size-4" />,
         error: <OctagonXIcon className="size-4" />,
@@ -96,10 +96,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       }}
       style={
         {
-          "--normal-bg": "var(--popover)",
-          "--normal-text": "var(--popover-foreground)",
-          "--normal-border": "var(--border)",
-          "--border-radius": "var(--radius)",
+          borderRadius: "1rem"
         } as React.CSSProperties
       }
       {...props}

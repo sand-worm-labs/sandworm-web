@@ -8,7 +8,7 @@ import { mergeAttributes, Node } from "@tiptap/core";
 import clsx from "clsx";
 import { useEffect } from "react";
 
-import { TitleSkeleton } from "../Editor/blocks/ContentSkeleton";
+import { TitleSkeleton } from "./blocks/ContentSkeleton";
 
 export type Level = 1 | 2 | 3 | 4 | 5 | 6;
 
@@ -83,8 +83,9 @@ function Title(props: Props) {
           autocomplete: "off",
           autocorrect: "off",
           autocapitalize: "off",
+          spellcheck: "false",
           class:
-            "min-h-full prose sm:prose-base prose-sm max-w-full rounded-sm focus:outline-0",
+            "min-h-full prose sm:prose-base prose-sm max-w-full rounded-sm focus:outline-0 px-2",
         },
       },
     },
