@@ -198,16 +198,16 @@ export type Plan = "free" | "pro";
 
 type Workspace = {
   id: string;
-  createdAt: Date;
-  updatedAt: Date;
   name: string;
   source: string | null;
   useCases: string[];
   useContext: string | null;
   plan: Plan;
   ownerId: string;
-  secretsId: string | null;
   assistantModel: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  secretsId?: string | null;
 };
 
 export type EnvironmentStatus =
