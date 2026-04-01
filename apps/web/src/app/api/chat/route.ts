@@ -1,9 +1,7 @@
 import { generateText, tool } from "ai";
-import { google } from "@ai-sdk/google";
 import { z } from "zod";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { createOpenAI } from "@ai-sdk/openai";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 
 export type BlockSpec =
@@ -48,7 +46,6 @@ export async function POST(req: NextRequest) {
     model: agentrouter("deepseek-v3.2"),
     maxSteps: 2,
     system: `You are an AI assistant that helps users build blockchain analytics notebooks.
-
 For every user request, always call setDocumentTitle with a short, descriptive, professional title 
 that captures the analytical intent — not the user's exact words. For example if the user says 
 "eth transaction analysis", a good title is "Ethereum Transaction Flow Analysis" or 

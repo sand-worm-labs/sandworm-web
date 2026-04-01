@@ -2,10 +2,7 @@ import type * as Y from "yjs";
 import { useCallback, useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import * as R from "ramda";
-import {
-  ExclamationTriangleIcon,
-  Squares2X2Icon,
-} from "@heroicons/react/24/outline";
+import { Squares2X2Icon } from "@heroicons/react/24/outline";
 import type { RemoveBlockDashboardConflictResult } from "@sandworm/editor";
 import { removeBlock } from "@sandworm/editor";
 
@@ -14,7 +11,8 @@ interface Props {
   state: RemoveBlockDashboardConflictResult | null;
   onClose: () => void;
 }
-function RemoveTabDashboardConflictDialog(props: Props) {
+
+export function RemoveTabDashboardConflictDialog(props: Props) {
   const [state, setState] = useState(props.state);
   useEffect(() => {
     if (props.state && !R.equals(state, props.state)) {
@@ -102,4 +100,4 @@ function RemoveTabDashboardConflictDialog(props: Props) {
   );
 }
 
-export default RemoveBlockDashboardConflictDialog;
+export default RemoveTabDashboardConflictDialog;

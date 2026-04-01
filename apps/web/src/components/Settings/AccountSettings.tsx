@@ -67,7 +67,7 @@ export default function WorkspaceSettings() {
       }
     } catch (err) {
       console.error("Failed to switch workspace:", err);
-      alert("Failed to switch team. Please try again.");
+      toast.error("Failed to switch team. Please try again.");
     }
   };
   const handleOpenSettings = (targetWorkspaceId: string) => {

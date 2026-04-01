@@ -41,7 +41,7 @@ function ExecutionStatusText({
   status,
   resultStatus,
   executedAt,
-  startedAt,
+  _startedAt,
   envStatus,
   isDirty,
   onEditParams,
@@ -49,7 +49,7 @@ function ExecutionStatusText({
   status: string;
   resultStatus: "idle" | "running" | "success" | "error";
   executedAt: string;
-  startedAt: string;
+  _startedAt: string;
   envStatus: string;
   isDirty: boolean;
   onEditParams: () => void;
@@ -225,17 +225,14 @@ function AnalyticsBlock(props: Props) {
     editorAPI.focus(blockId, { scrollIntoView: false });
   }, [blockId, editorAPI]);
 
-  const onRun = useCallback(
-    (_source: string) => {
-      props.executionQueue.enqueueBlock(
-        blockId,
-        props.userId,
-        environmentStartedAt,
-        { _tag: "analytics" }
-      );
-    },
-    [props.executionQueue, blockId, props.userId, environmentStartedAt]
-  );
+  const onRun = useCallback(() => {
+    props.executionQueue.enqueueBlock(
+      blockId,
+      props.userId,
+      environmentStartedAt,
+      { _tag: "analytics" }
+    );
+  }, [props.executionQueue, blockId, props.userId, environmentStartedAt]);
 
   const onRunAbort = useCallback(() => {
     switch (status) {

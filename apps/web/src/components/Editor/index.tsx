@@ -914,8 +914,6 @@ file`;
     environmentStartedAt,
   ]);
 
-  const popupContainerRef = useRef<HTMLDivElement>(null);
-
   const onDuplicateBlockGroup = useCallback(() => {
     props.onDuplicateBlockGroup(props.id);
   }, [props.id, props.onDuplicateBlockGroup]);
