@@ -2,12 +2,14 @@ import type { Awareness } from "y-protocols/awareness";
 import type * as Y from "yjs";
 import { useEffect, useRef, useState } from "react";
 import { WebsocketProvider } from "y-websocket";
-import Cookies from "js-cookie";
 
 import { NEXT_PUBLIC_API_WS_URL } from "../../../utils/env";
 
 import { useSession } from "./useAuth";
 
+// =====================================
+// ⬢ Utils
+// =====================================
 export function getDocId(
   id: string,
   isDataApp: boolean,
@@ -40,9 +42,8 @@ function getWSProvider(
 ): WebsocketProvider {
   const id = getDocId(documentId, isDataApp, clock, publishedAt);
   const wsUrl = getYjsUrl();
-  console.log("istoke val", accessToken);
 
-  const provider = new WebsocketProvider(wsUrl, id, yDoc, {
+  return new WebsocketProvider(wsUrl, id, yDoc, {
     connect: false,
     params: {
       documentId,
@@ -53,9 +54,11 @@ function getWSProvider(
     },
     resyncInterval: 30000,
   });
-
-  return provider;
 }
+
+// =====================================
+// ⬢ Types
+// =====================================
 export interface IProvider {
   synced: boolean;
   connect: () => void;
@@ -65,6 +68,9 @@ export interface IProvider {
   offSynced: (cb: (synced: boolean) => void) => void;
 }
 
+// =====================================
+// ⬢ Provider
+// =====================================
 class Provider implements IProvider {
   private _synced = false;
 
@@ -72,20 +78,19 @@ class Provider implements IProvider {
 
   constructor(private wsProvider: WebsocketProvider) {
     this._synced = this.wsProvider.synced;
-
-    this.wsProvider.on("synced", this.onWSSynced);
+    // ⬢ NOTE — y-websocket emits "sync" (not "synced") when the document
+    // has been synchronised with the server. Using "synced" was a bug —
+    // the callback would never fire and the doc would appear stuck syncing.
+    this.wsProvider.on("sync", this.onWSSynced);
   }
 
-  private onWSSynced = async () => {
+  private onWSSynced = () => {
     if (!this.wsProvider.wsconnected) {
       return;
     }
 
     this._synced = this.wsProvider.synced;
-
-    for (const cb of this.onSyncCbs) {
-      cb(this._synced);
-    }
+    this.onSyncCbs.forEach(cb => cb(this._synced));
   };
 
   public get synced() {
@@ -121,6 +126,9 @@ class Provider implements IProvider {
   }
 }
 
+// =====================================
+// ⬢ useProvider
+// =====================================
 export function useProvider(
   yDoc: Y.Doc,
   documentId: string,
@@ -130,9 +138,11 @@ export function useProvider(
   publishedAt: string | null
 ): IProvider {
   const session = useSession({ redirectToLogin: false });
+
+  // ── state ──
+  // ⬢ NOTE — useState with initialiser function to avoid creating a new
+  // provider on every render, which would cause the previous one to leak.
   const [provider, setProvider] = useState<Provider>(
-    // must be a function to avoid creating a new provider on every render
-    // which would cause the provider to leak
     () =>
       new Provider(
         getWSProvider(
@@ -148,6 +158,8 @@ export function useProvider(
   );
 
   const isFirst = useRef(true);
+
+  // Recreate provider when any connection param changes
   useEffect(() => {
     if (isFirst.current) {
       isFirst.current = false;
@@ -180,9 +192,10 @@ export function useProvider(
 
   useEffect(
     () => () => {
-      // cleanup after the component is unmounted
       provider.destroy();
     },
+    // ⬢ NOTE — Empty deps is intentional — this only runs on unmount.
+    // The provider at unmount time is captured via closure ref.
     []
   );
 

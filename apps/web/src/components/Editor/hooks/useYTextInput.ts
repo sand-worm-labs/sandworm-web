@@ -6,6 +6,10 @@ type UseYTextInput = {
   value: string;
   onChange: (value: string) => void;
 };
+
+// =====================================
+// ⬢ useYTextInput
+// =====================================
 function useYTextInput(text: Y.Text): UseYTextInput {
   const [value, setValue] = useState(text.toString());
   useEffect(() => {
@@ -19,8 +23,8 @@ function useYTextInput(text: Y.Text): UseYTextInput {
   }, [text]);
 
   const onChange = useCallback(
-    (value: string) => {
-      updateYText(text, value);
+    (newValue: string) => {
+      updateYText(text, newValue);
     },
     [text]
   );

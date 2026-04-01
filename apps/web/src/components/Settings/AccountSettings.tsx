@@ -3,6 +3,7 @@
 import React, { useState, useMemo, useCallback } from "react";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import type { ApiWorkspace } from "@/types";
 
@@ -18,7 +19,6 @@ import { WorkspaceIcon } from "../Assets/WorkspaceIcon";
 import { WorkspaceIcon as WorkspaceIconAvatar } from "./WorkspaceIcon";
 import CreateTeamModal from "./CreateTeam";
 import WorkspaceSettingsModal from "./WorkspaceSettings";
-import { toast } from "sonner";
 
 export default function WorkspaceSettings() {
   const router = useRouter();
@@ -61,7 +61,9 @@ export default function WorkspaceSettings() {
     try {
       const success = await switchWorkspace(targetWorkspaceId);
       if (success) {
-        router.push(`/workspace/${targetWorkspaceId}/settings/account?switched=1`);
+        router.push(
+          `/workspace/${targetWorkspaceId}/settings/account?switched=1`
+        );
       }
     } catch (err) {
       console.error("Failed to switch workspace:", err);
@@ -323,7 +325,7 @@ export default function WorkspaceSettings() {
         }
         updateWorkspace={updateWorkspace}
         isUpdating={isUpdating}
-        disableCustomOpenAiKey={properties.data?.disableCustomOpenAiKey}
+        disableCustomOpenAiKey={false}
       />
     </div>
   );
