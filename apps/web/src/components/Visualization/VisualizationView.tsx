@@ -37,9 +37,9 @@ import { head, uniq } from "ramda";
 
 import useResettableState from "../Editor/hooks/useResettableState";
 import useSideBar from "../Editor/hooks/useSideBar";
+import LargeSpinner from "../Editor/blocks/LargeSpinner";
 
 import { findMaxFontSize, measureText } from "./measureText";
-import LargeSpinner from "../Editor/blocks/LargeSpinner";
 
 const FONT_FAMILY = ["Inter", ...twFontFamiliy.sans].join(", ");
 

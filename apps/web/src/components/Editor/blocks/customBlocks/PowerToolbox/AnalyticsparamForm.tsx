@@ -3,7 +3,7 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import type * as Y from "yjs";
 import clsx from "clsx";
-import  {
+import type {
   PowerToolboxBlock,
   getToolById,
   renderToolById,
@@ -12,9 +12,9 @@ import  {
   type ResolvedParams,
 } from "@sandworm/editor";
 
-import { ParamField, type FieldValue } from "./ParamsField";
 import { BoltIcon } from "@/components/Assets/BoltIcon";
 
+import { ParamField, type FieldValue } from "./ParamsField";
 
 interface AnalyticsParamFormProps {
   /** The Yjs block element — used to read/write toolId, inputs, generatedSource */
@@ -104,7 +104,6 @@ function buildInitialValues(
   return values;
 }
 
-
 // ─── Param pill ───────────────────────────────────────────────────────────────
 
 function ParamPill({ label, value }: { label: string; value: FieldValue }) {
@@ -132,7 +131,6 @@ function ParamPill({ label, value }: { label: string; value: FieldValue }) {
 }
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
-
 
 function RunIcon() {
   return (
@@ -166,8 +164,6 @@ function Spinner() {
     </svg>
   );
 }
-
-
 
 export function AnalyticsParamForm({
   block,
@@ -278,7 +274,6 @@ export function AnalyticsParamForm({
     }
   }, [tool, values, block, onRun]);
 
-
   if (!tool) {
     return (
       <div className="px-4 py-6 text-sm text-ink-300 text-center">
@@ -287,11 +282,8 @@ export function AnalyticsParamForm({
     );
   }
 
-
   return (
-    <div
-      className={clsx("rounded-lg ", "bg-base-100")}
-    >
+    <div className={clsx("rounded-lg ", "bg-base-100")}>
       <div
         className={clsx(
           "flex items-center justify-between px-4 py-3",
@@ -299,8 +291,7 @@ export function AnalyticsParamForm({
         )}
       >
         <div className="flex items-center gap-2.5">
-         
-            <BoltIcon />
+          <BoltIcon />
           <div>
             <p className="text-sm font-medium text-ink-100  leading-tight">
               {tool.name}
@@ -367,7 +358,7 @@ export function AnalyticsParamForm({
             ))}
         </div>
 
-     {/*    <div className="flex items-center gap-2 shrink-0">
+        {/*    <div className="flex items-center gap-2 shrink-0">
           {onCancel && !isEditing && (
             <button
             type="button"

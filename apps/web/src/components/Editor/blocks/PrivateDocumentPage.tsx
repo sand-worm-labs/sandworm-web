@@ -17,11 +17,11 @@ import { MiniChat } from "@/components/Chats/MiniChat";
 import { ClockCountdown } from "@/components/Assets/ClockCountdown";
 import { ChatIcon } from "@/components/Assets/ChatIcon";
 import { PencilSimple } from "@/components/Assets/PencilSimple";
+import { NEXT_PUBLIC_PUBLIC_URL } from "@/utils/env";
 
 import { useDataSources } from "../hooks/useDataSources";
 import { useDocuments } from "../hooks/useDocuments";
 import useFullScreenDocument from "../hooks/useFullScreenDocument";
-import { NEXT_PUBLIC_PUBLIC_URL } from "@/utils/env";
 import type { SessionUser } from "../hooks/useAuth";
 import Layout from "../../Visualization/Layout";
 import { useYDoc } from "../hooks/useYDocs";
@@ -238,7 +238,6 @@ function PrivateDocumentPageInner(
     },
     []
   );
-
 
   // ⬢ Sidebar content for NotebookPanel
   // =====================================

@@ -16,7 +16,8 @@ import { ChartbarIcon } from "../Assets/Blocks/ChartbarIcon";
 import { CubeIcon } from "../Assets/Blocks/CubeIcon";
 import { KeyboardIcon } from "../Assets/Blocks/KeyboardIcon";
 import { LightningIcon } from "../Assets/Blocks/LightningIcon";
-import { PowerToolboxModal } from "../Editor/blocks/customBlocks/PowerToolbox";
+
+import { PowerToolboxModal } from "./blocks/customBlocks/PowerToolbox";
 
 const TriangleUp = () => {
   return (

@@ -5,12 +5,11 @@ import type { IconProps } from "./Menu/types";
 export const User: React.FC<IconProps> = ({ size = 188, className }) => {
   return (
     <svg
-    width={size}
-    height={size}
+      width={size}
+      height={size}
       viewBox="0 0 16 16"
       fill="none"
       className={className}
-
       xmlns="http://www.w3.org/2000/svg"
     >
       <path

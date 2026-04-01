@@ -49,7 +49,7 @@ export default function WorkspaceSwitcher({
 
   const others = (allWorkspaces ?? []).filter(w => w.id !== workspaceInfo.id);
 
-  console.log(workspaceInfo, "info")
+  console.log(workspaceInfo, "info");
 
   const renderIcon = (iconName: string, size: number) => (
     <div className="flex-shrink-0">
@@ -87,7 +87,7 @@ export default function WorkspaceSwitcher({
             )}
           >
             <div className="flex items-center gap-3 px-3 py-2.5 bg-[#F8F9FA] dark:bg-base-400">
-            {renderIcon(workspaceInfo.icon, 28)}
+              {renderIcon(workspaceInfo.icon, 28)}
 
               <span className="flex-1 text-sm font-medium text-ink-100 truncate">
                 {workspaceInfo.name}
@@ -112,7 +112,7 @@ export default function WorkspaceSwitcher({
                       isSwitching && "opacity-50 cursor-not-allowed"
                     )}
                   >
-                   {renderIcon(workspaceInfo.icon, 28)}
+                    {renderIcon(workspaceInfo.icon, 28)}
                     <span className="flex-1 text-[13px] font-medium text-ink-100 truncate">
                       {workspace.name}
                     </span>
@@ -198,7 +198,7 @@ export default function WorkspaceSwitcher({
             "shadow-none"
           )}
         >
-         {renderIcon(workspaceInfo.icon, 28)}
+          {renderIcon(workspaceInfo.icon, 28)}
 
           <span className="flex-1 text-left xl:text-sm text-[13px] font-medium text-ink-100 truncate">
             {workspaceInfo.name}
@@ -253,7 +253,7 @@ export default function WorkspaceSwitcher({
           )}
         >
           <div className="flex items-center gap-3 px-3 py-2.5 bg-[#F8F9FA] dark:bg-base-400 min-w-[12rem]">
-          {renderIcon(workspaceInfo.icon, 28)}
+            {renderIcon(workspaceInfo.icon, 28)}
             <span className="flex-1 text-sm font-medium text-ink-100 dark:text-ink-100 truncate">
               {workspaceInfo.name}
             </span>
@@ -285,7 +285,7 @@ export default function WorkspaceSwitcher({
                     isSwitching && "opacity-50 cursor-not-allowed"
                   )}
                 >
-                 {renderIcon(workspaceInfo.icon, 28)}
+                  {renderIcon(workspaceInfo.icon, 28)}
                   <span className="flex-1 xl:text-sm text-[13px] font-medium text-ink-100 truncate">
                     {workspace.name}
                   </span>

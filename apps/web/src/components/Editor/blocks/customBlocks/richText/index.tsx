@@ -17,7 +17,6 @@ import clsx from "clsx";
 import { useCallback, useEffect, useState } from "react";
 import type { ConnectDragPreview } from "react-dnd";
 
-
 import "katex/dist/katex.min.css";
 import useEditorAwareness from "../../../hooks/useEditorAwareness";
 import type { DashboardMode } from "../../Dashboard";

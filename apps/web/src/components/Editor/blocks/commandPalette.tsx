@@ -8,8 +8,8 @@ import Fuse from "fuse.js";
 import clsx from "clsx";
 
 import type { ApiDocument } from "@/types";
-
 import allLucideIcons from "@/utils/lucideIcons";
+
 import { useDebounce } from "../hooks/useDebounce";
 import { useDocuments } from "../hooks/useDocuments";
 

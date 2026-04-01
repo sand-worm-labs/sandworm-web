@@ -95,7 +95,6 @@ interface Props {
   isFullScreen: boolean;
 }
 function SQLBlock(props: Props) {
-
   const [workspaces] = useWorkspaces();
   const currentWorkspace: ApiWorkspace | undefined = useMemo(() => {
     if (!props.document) return undefined;
@@ -985,7 +984,7 @@ function SQLBlock(props: Props) {
                         !isAIFixing &&
                         headerSelectValue !== "duckdb" && (
                           <button
-                          type="button"
+                            type="button"
                             onClick={onSchemaExplorer}
                             className={clsx(
                               !props.isEditable
@@ -1063,7 +1062,7 @@ function SQLBlock(props: Props) {
                           >
                             {ref => (
                               <button
-                              type="button"
+                                type="button"
                                 ref={ref}
                                 disabled={!props.isEditable}
                                 onClick={onToggleEditWithAIPromptOpen}
@@ -1125,7 +1124,7 @@ function SQLBlock(props: Props) {
         <TooltipV2<HTMLButtonElement> {...runTooltipContent} active>
           {ref => (
             <button
-            type="button"
+              type="button"
               ref={ref}
               onClick={onRunAbort}
               disabled={isRunButtonDisabled}
