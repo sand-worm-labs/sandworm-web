@@ -12,6 +12,9 @@ type EditorActions = {
   focusCursorBlock: () => void;
 };
 
+// =====================================
+// ⬢ Use Chords
+// =====================================
 const useChords = (chords: string[]) => {
   const [chordState, setChordState] = useState<string | null>(null);
 
