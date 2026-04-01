@@ -143,7 +143,6 @@ function InfoIcon({ active }: { active: boolean }) {
   );
 }
 
-
 type Cap = "free" | "vision" | "video" | "tools" | "reasoning";
 
 const CAP_META: Record<Cap, { label: string; cls: string }> = {

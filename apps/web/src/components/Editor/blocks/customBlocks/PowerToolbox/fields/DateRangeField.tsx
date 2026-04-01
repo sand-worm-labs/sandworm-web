@@ -3,6 +3,7 @@
 import { useState } from "react";
 import clsx from "clsx";
 import type { ParamDefinition } from "@sandworm/editor";
+
 import { FieldLabel, FieldError } from "./AddressField";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -35,8 +36,8 @@ export function DateRangeField({
     touched && value.from && value.to && value.from > value.to
       ? "Start date must be before end date"
       : touched
-      ? error
-      : undefined;
+        ? error
+        : undefined;
 
   return (
     <div className="flex flex-col gap-1.5">
@@ -47,9 +48,7 @@ export function DateRangeField({
           label="From"
           value={value.from}
           max={value.to || today}
-          onChange={from =>
-            onChange({ ...value, from })
-          }
+          onChange={from => onChange({ ...value, from })}
           onBlur={() => setTouched(true)}
         />
         <DateInput
@@ -57,9 +56,7 @@ export function DateRangeField({
           value={value.to}
           min={value.from}
           max={today}
-          onChange={to =>
-            onChange({ ...value, to })
-          }
+          onChange={to => onChange({ ...value, to })}
           onBlur={() => setTouched(true)}
         />
       </div>

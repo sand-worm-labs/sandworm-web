@@ -1,6 +1,11 @@
 import { useCallback, useMemo } from "react";
+import type { Reference } from "@apollo/client";
 
-import type { ExecutionSchedule, CreateSchedulePayload } from "@/types";
+import type {
+  ExecutionSchedule,
+  CreateSchedulePayload,
+  ScheduleParams,
+} from "@/types";
 import type { ExecutionScheduleType } from "@/generated/graphql";
 import {
   useGetSchedulesQuery,
@@ -8,6 +13,9 @@ import {
   useDeleteScheduleMutation,
 } from "@/generated/graphql";
 
+// =====================================
+// ⬢ Types
+// =====================================
 type API = {
   createSchedule: (
     payload: CreateSchedulePayload
@@ -22,6 +30,91 @@ type UseSchedules = {
   api: API;
 };
 
+// =====================================
+// ⬢ Utils
+// =====================================
+// ⬢ NOTE — ScheduleParams is a discriminated union. Fields like `hour`,
+// `minute`, `cron` only exist on specific members. We must narrow by
+// `type` before accessing them, otherwise TS flags missing properties.
+function buildScheduleInput(documentId: string, params: ScheduleParams) {
+  const base = {
+    documentId,
+    type: params.type as ExecutionScheduleType,
+    timezone: params.timezone,
+  };
+
+  switch (params.type) {
+    case "HOURLY":
+      return { ...base, minute: params.minute };
+    case "DAILY":
+      return { ...base, hour: params.hour, minute: params.minute };
+    case "WEEKLY":
+      return {
+        ...base,
+        hour: params.hour,
+        minute: params.minute,
+        weekdays: params.weekdays as unknown as string,
+      };
+    case "MONTHLY":
+      return {
+        ...base,
+        hour: params.hour,
+        minute: params.minute,
+        days: params.days as unknown as string,
+      };
+    case "CRON":
+      return { ...base, cron: params.cron };
+    default:
+      throw new Error(`Unknown schedule type`);
+  }
+}
+
+function buildOptimisticSchedule(documentId: string, params: ScheduleParams) {
+  const base = {
+    __typename: "Schedule" as const,
+    id: `temp-${Date.now()}`,
+    documentId,
+    type: params.type as ExecutionScheduleType,
+    timezone: params.timezone,
+    hour: null as number | null,
+    minute: null as number | null,
+    cron: null as string | null,
+    weekdays: null as string | null,
+    days: null as string | null,
+    isActive: true,
+    lastExecutedAt: null,
+    nextExecutionAt: null,
+  };
+
+  switch (params.type) {
+    case "HOURLY":
+      return { ...base, minute: params.minute };
+    case "DAILY":
+      return { ...base, hour: params.hour, minute: params.minute };
+    case "WEEKLY":
+      return {
+        ...base,
+        hour: params.hour,
+        minute: params.minute,
+        weekdays: params.weekdays as unknown as string,
+      };
+    case "MONTHLY":
+      return {
+        ...base,
+        hour: params.hour,
+        minute: params.minute,
+        days: params.days as unknown as string,
+      };
+    case "CRON":
+      return { ...base, cron: params.cron };
+    default:
+      return base;
+  }
+}
+
+// =====================================
+// ⬢ useSchedules
+// =====================================
 export const useSchedules = (
   workspaceId: string,
   documentId: string
@@ -31,7 +124,10 @@ export const useSchedules = (
     skip: !documentId,
   });
 
-  const schedules = useMemo(() => data?.schedules ?? [], [data?.schedules]);
+  const schedules = useMemo(
+    () => (data?.schedules ?? []) as ExecutionSchedule[],
+    [data?.schedules]
+  );
 
   const [createScheduleMutation] = useCreateScheduleMutation();
   const [deleteScheduleMutation] = useDeleteScheduleMutation();
@@ -40,58 +136,25 @@ export const useSchedules = (
     async (payload: CreateSchedulePayload): Promise<ExecutionSchedule> => {
       const { scheduleParams } = payload;
 
-      const input = {
-        documentId,
-        type: scheduleParams.type,
-        timezone: scheduleParams.timezone,
-        // Only include fields relevant to the schedule type
-        ...(scheduleParams.hour !== undefined && { hour: scheduleParams.hour }),
-        ...(scheduleParams.minute !== undefined && {
-          minute: scheduleParams.minute,
-        }),
-        ...(scheduleParams.cron && { cron: scheduleParams.cron }),
-        ...(scheduleParams.weekdays && { weekdays: scheduleParams.weekdays }),
-        ...(scheduleParams.days && { days: scheduleParams.days }),
-        ...(scheduleParams.isActive !== undefined && {
-          isActive: scheduleParams.isActive,
-        }),
-      };
-
       const result = await createScheduleMutation({
         variables: {
           workspaceId,
-          input,
+          input: buildScheduleInput(documentId, scheduleParams),
         },
-        // Optimistic response MUST include ALL fields from the mutation selection set
-        // Every field must be present, use null for fields not applicable to this schedule type
         optimisticResponse: {
           __typename: "Mutation",
-          createSchedule: {
-            __typename: "Schedule",
-            id: `temp-${Date.now()}`,
-            documentId,
-            type: scheduleParams.type as ExecutionScheduleType,
-            // All fields must be present - use null for inapplicable ones
-            hour: scheduleParams.hour ?? null,
-            minute: scheduleParams.minute ?? null,
-            cron: scheduleParams.cron ?? null,
-            weekdays: scheduleParams.weekdays ?? null,
-            days: scheduleParams.days ?? null,
-            timezone: scheduleParams.timezone,
-            isActive: scheduleParams.isActive ?? true,
-            lastExecutedAt: null,
-            nextExecutionAt: null,
-          },
+          createSchedule: buildOptimisticSchedule(documentId, scheduleParams),
         },
-        update: (cache, { data }) => {
-          if (!data?.createSchedule) return;
+        update: (cache, { data: mutationData }) => {
+          if (!mutationData?.createSchedule) return;
 
           cache.modify({
             fields: {
-              schedules(existingSchedules = [], { toReference }) {
-                const newScheduleRef = toReference(data.createSchedule);
-                if (!newScheduleRef) return existingSchedules;
-                return [...existingSchedules, newScheduleRef];
+              schedules(existingSchedules, { toReference }) {
+                const current = existingSchedules ?? [];
+                const newScheduleRef = toReference(mutationData.createSchedule);
+                if (!newScheduleRef) return current;
+                return [...current, newScheduleRef];
               },
             },
           });
@@ -112,24 +175,21 @@ export const useSchedules = (
     async (scheduleId: string): Promise<void> => {
       const result = await deleteScheduleMutation({
         variables: {
-          input: {
-            workspaceId,
-            documentId,
-            scheduleId,
-          },
+          input: { workspaceId, documentId, scheduleId },
         },
         optimisticResponse: {
           __typename: "Mutation",
           deleteSchedule: true,
         },
-        update: (cache, { data }) => {
-          if (!data?.deleteSchedule) return;
+        update: (cache, { data: mutationData }) => {
+          if (!mutationData?.deleteSchedule) return;
 
           cache.modify({
             fields: {
-              schedules(existingSchedules = [], { readField }) {
-                return existingSchedules.filter(
-                  (scheduleRef: unknown) =>
+              schedules(existingSchedules, { readField }) {
+                const current = (existingSchedules ?? []) as Reference[];
+                return current.filter(
+                  (scheduleRef: Reference) =>
                     readField("id", scheduleRef) !== scheduleId
                 );
               },

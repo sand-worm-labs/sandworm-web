@@ -6,8 +6,6 @@ import { NextResponse } from "next/server";
 import { createOpenAI } from "@ai-sdk/openai";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 
-
-
 export type BlockSpec =
   | { type: "title"; text: string }
   | {
