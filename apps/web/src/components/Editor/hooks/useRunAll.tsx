@@ -10,6 +10,9 @@ import { head } from "ramda";
 
 import { useYDocState } from "./useYDocs";
 
+// =====================================
+// ⬢ Types
+// =====================================
 type State = {
   status: ExecutionStatus;
   total: number;
@@ -24,6 +27,10 @@ type UseRunAll = [
     abort: () => void;
   },
 ];
+
+// =====================================
+// ⬢ Use Run All
+// =====================================
 function useRunAll(
   yDoc: Y.Doc,
   executionQueue: ExecutionQueue,

@@ -1,33 +1,42 @@
 import { createContext, useContext, useState, useEffect, useMemo } from "react";
 
-type SideBarWidth = number;
-const MIN_SIDEBAR_WIDTH = 300;
-const MAX_SIDEBAR_WIDTH = 500;
-const DEFAULT_SIDEBAR_WIDTH = 320;
-const DEFAULT_SMALL_SCREEN_WIDTH = 300; // Default width for small screens
+// =====================================
+// ⬢ Constants
+// =====================================
+export const MIN_SIDEBAR_WIDTH = 300;
+export const MAX_SIDEBAR_WIDTH = 500;
+export const DEFAULT_SIDEBAR_WIDTH = 320;
+export const DEFAULT_SMALL_SCREEN_WIDTH = 300;
 
-// Define the State type as an object with isOpen and width properties
+const SMALL_SCREEN_BREAKPOINT = 768;
+const STORAGE_KEY = "sidebar-width";
+
+// =====================================
+// ⬢ Types
+// =====================================
+type SideBarWidth = number;
+
 type SideBarState = {
   isOpen: boolean;
   width: SideBarWidth;
 };
 
-// Define the API type with methods to manipulate the state
 type SideBarAPI = {
   toggle: (open?: boolean) => void;
   resize: (width: SideBarWidth) => void;
-  open: (state?: boolean) => void;
+  open: (value?: boolean) => void;
   close: () => void;
 };
 
-// Combined context type
-type Context = {
+type SideBarContext = {
   state: SideBarState;
   api: SideBarAPI;
 };
 
-// Default context
-const initialContext: Context = {
+// =====================================
+// ⬢ Context
+// =====================================
+const initialContext: SideBarContext = {
   state: {
     isOpen: true,
     width: DEFAULT_SIDEBAR_WIDTH,
@@ -40,49 +49,61 @@ const initialContext: Context = {
   },
 };
 
-const Context = createContext<Context>(initialContext);
+const Context = createContext<SideBarContext>(initialContext);
 
-export default function useSideBar(): Context {
+// =====================================
+// ⬢ Hook
+// =====================================
+export default function useSideBar(): SideBarContext {
   return useContext(Context);
 }
 
-export function SideBarProvider({ children }: { children: React.ReactNode }) {
-  const [isOpen, setIsOpen] = useState(
-    () =>
-      new URLSearchParams(location.search).get("sidebarCollapsed") !== "true"
+// =====================================
+// ⬢ Utils
+// =====================================
+function getInitialWidth(): SideBarWidth {
+  const isSmallScreen = window.innerWidth < SMALL_SCREEN_BREAKPOINT;
+  if (isSmallScreen) {
+    return DEFAULT_SMALL_SCREEN_WIDTH;
+  }
+
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (stored) {
+    const parsed = parseInt(stored, 10);
+    if (
+      !Number.isNaN(parsed) &&
+      parsed >= MIN_SIDEBAR_WIDTH &&
+      parsed <= MAX_SIDEBAR_WIDTH
+    ) {
+      return parsed;
+    }
+  }
+
+  return DEFAULT_SIDEBAR_WIDTH;
+}
+
+function getInitialOpen(): boolean {
+  return (
+    new URLSearchParams(window.location.search).get("sidebarCollapsed") !==
+    "true"
   );
+}
 
-  const [width, setWidth] = useState<SideBarWidth>(() => {
-    // Try to get stored width from localStorage
-    const storedWidth = localStorage.getItem("sidebar-width");
-    const isSmallScreen = window.innerWidth < 768;
+// =====================================
+// ⬢ Provider
+// =====================================
+export function SideBarProvider({ children }: { children: React.ReactNode }) {
+  const [isOpen, setIsOpen] = useState<boolean>(getInitialOpen);
+  const [width, setWidth] = useState<SideBarWidth>(getInitialWidth);
 
-    if (isSmallScreen) {
-      return DEFAULT_SMALL_SCREEN_WIDTH;
-    }
-
-    if (storedWidth) {
-      const parsedWidth = parseInt(storedWidth, 10);
-      if (
-        !isNaN(parsedWidth) &&
-        parsedWidth >= MIN_SIDEBAR_WIDTH &&
-        parsedWidth <= MAX_SIDEBAR_WIDTH
-      ) {
-        return parsedWidth;
-      }
-    }
-    return DEFAULT_SIDEBAR_WIDTH;
-  });
-
-  // Save width to localStorage when it changes
+  // 🔁 Effects
   useEffect(() => {
-    localStorage.setItem("sidebar-width", width.toString());
+    localStorage.setItem(STORAGE_KEY, width.toString());
   }, [width]);
 
-  // Update width when window is resized
   useEffect(() => {
     const handleResize = () => {
-      const isSmallScreen = window.innerWidth < 768;
+      const isSmallScreen = window.innerWidth < SMALL_SCREEN_BREAKPOINT;
       if (isSmallScreen && width > DEFAULT_SMALL_SCREEN_WIDTH) {
         setWidth(DEFAULT_SMALL_SCREEN_WIDTH);
       } else if (width < MIN_SIDEBAR_WIDTH) {
@@ -92,39 +113,26 @@ export function SideBarProvider({ children }: { children: React.ReactNode }) {
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [width, setWidth]);
+  }, [width]);
 
-  // Create the state and API objects
-  const state: SideBarState = useMemo(
-    () => ({
-      isOpen,
-      width,
-    }),
+  // ⬢ derived
+  const sidebarState: SideBarState = useMemo(
+    () => ({ isOpen, width }),
     [isOpen, width]
   );
 
   const api: SideBarAPI = useMemo(
     () => ({
       toggle: (open?: boolean) => {
-        if (open !== undefined) {
-          setIsOpen(open);
-        } else {
-          setIsOpen(prevOpen => !prevOpen);
-        }
+        setIsOpen(open !== undefined ? open : prev => !prev);
       },
       resize: (newWidth: SideBarWidth) => {
-        const clampedWidth = Math.max(
-          MIN_SIDEBAR_WIDTH,
-          Math.min(MAX_SIDEBAR_WIDTH, newWidth)
+        setWidth(
+          Math.max(MIN_SIDEBAR_WIDTH, Math.min(MAX_SIDEBAR_WIDTH, newWidth))
         );
-        setWidth(clampedWidth);
       },
-      open: (state?: boolean) => {
-        if (state !== undefined) {
-          setIsOpen(state);
-        } else {
-          setIsOpen(true);
-        }
+      open: (value?: boolean) => {
+        setIsOpen(value !== undefined ? value : true);
       },
       close: () => {
         setIsOpen(false);
@@ -133,14 +141,10 @@ export function SideBarProvider({ children }: { children: React.ReactNode }) {
     []
   );
 
-  const value = useMemo(() => ({ state, api }), [state, api]);
+  const value = useMemo(
+    () => ({ state: sidebarState, api }),
+    [sidebarState, api]
+  );
 
   return <Context.Provider value={value}>{children}</Context.Provider>;
 }
-
-export {
-  MIN_SIDEBAR_WIDTH,
-  MAX_SIDEBAR_WIDTH,
-  DEFAULT_SIDEBAR_WIDTH,
-  DEFAULT_SMALL_SCREEN_WIDTH,
-};

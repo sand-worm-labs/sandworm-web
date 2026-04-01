@@ -6,6 +6,9 @@ import {
   type WalletInput,
 } from "@/generated/graphql";
 
+// =====================================
+// ⬢ Types
+// =====================================
 type UseWalletsReturn = {
   wallets: WalletInput[];
   addWallets: (wallets: WalletInput[]) => Promise<void>;
@@ -14,6 +17,9 @@ type UseWalletsReturn = {
   error: Error | null;
 };
 
+// =====================================
+// ⬢ Use Wallet Hook
+// =====================================
 export const useWallets = (): UseWalletsReturn => {
   const {
     data,
