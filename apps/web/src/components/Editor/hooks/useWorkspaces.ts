@@ -29,13 +29,18 @@ import { NEXT_PUBLIC_API_URL } from "../../../utils/env";
 
 import { useSession } from "./useAuth";
 
+// =====================================
+// ⬢ Types
+// =====================================
 type WorkspaceEditFormValues = Partial<ApiWorkspace>;
 
-/* ---- Get All Users Workspaces --- */
+// =====================================
+// ⬢ useWorkspaces
+// =====================================
 type UseWorkspacesAPI = {
   updateSettings: (
     workspaceId: string,
-    data: WorkspaceEditFormValues
+    formData: WorkspaceEditFormValues
   ) => Promise<ApiWorkspace>;
 };
 
@@ -50,18 +55,25 @@ export const useWorkspaces = (): UseWorkspaces => {
   });
 
   const updateSettings = useCallback(
-    async (workspaceId: string, data: WorkspaceEditFormValues) => {
+    async (workspaceId: string, formData: WorkspaceEditFormValues) => {
       const res = await fetch(
         `${NEXT_PUBLIC_API_URL()}/v1/workspaces/${workspaceId}`,
         {
           credentials: "include",
           method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
         }
       );
+
+      // ⬢ NOTE — Always check res.ok before parsing. A 4xx/5xx response
+      // will still have a parseable body but it won't be a valid ApiWorkspace.
+      if (!res.ok) {
+        throw new Error(
+          `Failed to update workspace settings: ${res.status} ${res.statusText}`
+        );
+      }
+
       const workspace: ApiWorkspace = await res.json();
       refetch();
       return workspace;
@@ -72,7 +84,7 @@ export const useWorkspaces = (): UseWorkspaces => {
   return useMemo(
     () => [
       {
-        data: (data?.getUserWorkspaces ?? []) as ApiWorkspace[],
+        data: (data?.getUserWorkspaces ?? []) as unknown as ApiWorkspace[],
         isLoading: loading,
       },
       { updateSettings },
@@ -81,7 +93,9 @@ export const useWorkspaces = (): UseWorkspaces => {
   );
 };
 
-// 2. Get a specific workspace by ID
+// =====================================
+// ⬢ useWorkspace
+// =====================================
 export const useWorkspace = (workspaceId: string) => {
   const { data, loading, error, refetch } = useGetWorkspaceQuery({
     variables: { workspaceId },
@@ -90,13 +104,16 @@ export const useWorkspace = (workspaceId: string) => {
   });
 
   return {
-    workspace: data?.getWorkspace as ApiWorkspace | null,
+    workspace: data?.getWorkspace as unknown as ApiWorkspace | null,
     isLoading: loading,
     error,
     refetch,
   };
 };
 
+// =====================================
+// ⬢ useCurrentWorkspaceInfo
+// =====================================
 export const useCurrentWorkspaceInfo = () => {
   const { data, loading, error, refetch } = useGetUserWorkspaceInfoQuery({
     fetchPolicy: "cache-and-network",
@@ -110,12 +127,19 @@ export const useCurrentWorkspaceInfo = () => {
   };
 };
 
-// 3. Update workspace wrapper with admin check
+// =====================================
+// ⬢ useUpdateWorkspace
+// =====================================
 type UseUpdateWorkspaceReturn = {
-  updateWorkspace: (workspaceId: string, name: string) => Promise<void>;
+  updateWorkspace: (
+    workspaceId: string,
+    name: string,
+    icon?: string
+  ) => Promise<void>;
   loading: boolean;
   error: Error | null;
   isAdmin: boolean;
+  isAdminOfWorkspace: (targetId: string) => boolean;
 };
 
 export const useUpdateWorkspace = (
@@ -123,13 +147,10 @@ export const useUpdateWorkspace = (
 ): UseUpdateWorkspaceReturn => {
   const session = useSession({ redirectToLogin: false });
 
-  const {
-    data: workspacesData,
-    loading: workspacesLoading,
-    refetch: refetchWorkspaces,
-  } = useGetUserWorkspacesQuery({
-    fetchPolicy: "cache-and-network",
-  });
+  const { data: workspacesData, refetch: refetchWorkspaces } =
+    useGetUserWorkspacesQuery({
+      fetchPolicy: "cache-and-network",
+    });
 
   const { refetch: refetchWorkspaceInfo } = useCurrentWorkspaceInfo();
 
@@ -138,11 +159,12 @@ export const useUpdateWorkspace = (
 
   const isAdminOfWorkspace = useCallback(
     (targetId: string): boolean => {
-      if (!session?.user?.id || !workspacesData?.userWorkspaces) return false;
+      if (!session?.user?.id || !workspacesData?.getUserWorkspaces)
+        return false;
       const workspace = workspacesData.getUserWorkspaces.find(
         w => w.id === targetId
       );
-      return workspace?.ownerId === session.user.id;
+      return workspace?.ownerId === session.user?.id;
     },
     [workspacesData, session?.user?.id]
   );
@@ -167,8 +189,6 @@ export const useUpdateWorkspace = (
           await refetchWorkspaceInfo();
           await refetchWorkspaces();
         }
-
-        return result.data?.updateWorkspace;
       } catch (err) {
         console.error("Failed to update workspace:", err);
         throw err;
@@ -191,6 +211,9 @@ export const useUpdateWorkspace = (
   };
 };
 
+// =====================================
+// ⬢ useSwitchWorkspace
+// =====================================
 type UseSwitchWorkspaceReturn = {
   switchWorkspace: (workspaceId: string) => Promise<boolean>;
   loading: boolean;
@@ -235,7 +258,9 @@ export const useSwitchWorkspace = (): UseSwitchWorkspaceReturn => {
   };
 };
 
-// 4. Invite user to workspace
+// =====================================
+// ⬢ useInviteUserToWorkspace
+// =====================================
 type UseInviteUserToWorkspaceReturn = {
   inviteUser: (
     email: string,
@@ -257,13 +282,10 @@ export const useInviteUserToWorkspace = (
   const [inviteUserMutation, { loading, error }] =
     useInviteUserToWorkspaceMutation();
 
-  // Check if current user is admin
   const isAdmin = useMemo(() => {
     if (!workspaceInfo || !session?.user?.id) return false;
-
     const targetWorkspaceId = workspaceId || workspaceInfo.id;
     if (workspaceInfo.id !== targetWorkspaceId) return false;
-
     return workspaceInfo.role === "admin";
   }, [workspaceInfo, session?.user?.id, workspaceId]);
 
@@ -277,15 +299,10 @@ export const useInviteUserToWorkspace = (
 
       try {
         const result = await inviteUserMutation({
-          variables: {
-            email,
-            workspaceId: targetWorkspaceId,
-            role,
-          },
+          variables: { email, workspaceId: targetWorkspaceId, role },
         });
 
         if (result.data?.inviteUserToWorkspace) {
-          // Optionally refetch workspace info to get updated members list
           await refetchWorkspaceInfo();
           return true;
         }
@@ -307,6 +324,9 @@ export const useInviteUserToWorkspace = (
   };
 };
 
+// =====================================
+// ⬢ useAcceptInvitation
+// =====================================
 type AcceptInvitationState = {
   loading: boolean;
   success: boolean;
@@ -331,7 +351,6 @@ export const useAcceptInvitation = (): UseAcceptInvitation => {
   });
 
   const { refetch: refetchWorkspaceInfo } = useCurrentWorkspaceInfo();
-
   const [acceptMutation] = useAcceptWorkspaceInvitationMutation();
 
   const acceptInvitation = useCallback(
@@ -339,9 +358,7 @@ export const useAcceptInvitation = (): UseAcceptInvitation => {
       setState({ loading: true, success: false, error: undefined });
 
       try {
-        const result = await acceptMutation({
-          variables: { hash },
-        });
+        const result = await acceptMutation({ variables: { hash } });
 
         if (result.data?.acceptWorkspaceInvitation) {
           await refetchWorkspaces();
@@ -379,6 +396,9 @@ export const useAcceptInvitation = (): UseAcceptInvitation => {
   );
 };
 
+// =====================================
+// ⬢ useWorkspaceWithMembers
+// =====================================
 export type WorkspaceMember = {
   id: string;
   userId: string;
@@ -442,6 +462,9 @@ export const useWorkspaceWithMembers = (workspaceId: string | undefined) => {
   };
 };
 
+// =====================================
+// ⬢ useGetInvitationInfo
+// =====================================
 type GetInvitationInfoState = {
   loading: boolean;
   data: GetInvitationInfoQuery["getInvitationInfo"] | null;
@@ -470,9 +493,7 @@ export const useGetInvitationInfo = (): UseGetInvitationInfo => {
       setState({ loading: true, data: null, error: undefined });
 
       try {
-        const result = await fetchInvitationInfo({
-          variables: { hash },
-        });
+        const result = await fetchInvitationInfo({ variables: { hash } });
 
         if (result.data?.getInvitationInfo) {
           setState({
@@ -512,6 +533,9 @@ export const useGetInvitationInfo = (): UseGetInvitationInfo => {
   );
 };
 
+// =====================================
+// ⬢ useDeleteWorkspace
+// =====================================
 type DeleteWorkspaceError =
   | "current_workspace"
   | "last_workspace"
@@ -533,16 +557,10 @@ type UseDeleteWorkspace = [DeleteWorkspaceState, DeleteWorkspaceAPI];
 export const useDeleteWorkspace = (
   currentWorkspaceId?: string
 ): UseDeleteWorkspace => {
-  const session = useSession({ redirectToLogin: false });
-  const { workspaceInfo } = useCurrentWorkspaceInfo();
-
   const { data: workspacesData, refetch: refetchWorkspaces } =
-    useGetUserWorkspacesQuery({
-      fetchPolicy: "cache-and-network",
-    });
+    useGetUserWorkspacesQuery({ fetchPolicy: "cache-and-network" });
 
   const [deleteWorkspaceMutation, { loading }] = useDeleteWorkspaceMutation();
-
   const [error, setError] = useState<DeleteWorkspaceError>(undefined);
 
   const deleteWorkspace = useCallback(
@@ -590,7 +608,6 @@ export const useDeleteWorkspace = (
     [
       currentWorkspaceId,
       workspacesData,
-      workspaceInfo,
       deleteWorkspaceMutation,
       refetchWorkspaces,
     ]
@@ -604,7 +621,9 @@ export const useDeleteWorkspace = (
   return useMemo(() => [state, { deleteWorkspace }], [state, deleteWorkspace]);
 };
 
-// Pending role requests for a workspace (admin only)
+// =====================================
+// ⬢ usePendingRoleRequests
+// =====================================
 export const usePendingRoleRequests = (workspaceId: string) => {
   const { data, loading, error, refetch } = useGetPendingRoleRequestsQuery({
     variables: { workspaceId },
@@ -620,7 +639,9 @@ export const usePendingRoleRequests = (workspaceId: string) => {
   };
 };
 
-// Request a role upgrade (any member)
+// =====================================
+// ⬢ useRequestRoleUpgrade
+// =====================================
 export const useRequestRoleUpgrade = (workspaceId: string) => {
   const [requestRoleUpgradeMutation, { loading, error }] =
     useRequestRoleUpgradeMutation();
@@ -644,7 +665,9 @@ export const useRequestRoleUpgrade = (workspaceId: string) => {
   return { requestRoleUpgrade, loading, error: error as Error | null };
 };
 
-// Approve a pending role request (admin only)
+// =====================================
+// ⬢ useApproveRoleRequest
+// =====================================
 export const useApproveRoleRequest = (workspaceId: string) => {
   const { workspaceInfo } = useCurrentWorkspaceInfo();
 
@@ -679,7 +702,9 @@ export const useApproveRoleRequest = (workspaceId: string) => {
   return { approveRoleRequest, loading, error: error as Error | null, isAdmin };
 };
 
-// Reject a pending role request (admin only)
+// =====================================
+// ⬢ useRejectRoleRequest
+// =====================================
 export const useRejectRoleRequest = (workspaceId: string) => {
   const { workspaceInfo } = useCurrentWorkspaceInfo();
 
@@ -714,6 +739,9 @@ export const useRejectRoleRequest = (workspaceId: string) => {
   return { rejectRoleRequest, loading, error: error as Error | null, isAdmin };
 };
 
+// =====================================
+// ⬢ usePendingInvites
+// =====================================
 export const usePendingInvites = (workspaceId: string) => {
   const { data, loading, error, refetch } = useGetPendingInvitesQuery({
     variables: { workspaceId },
@@ -729,6 +757,9 @@ export const usePendingInvites = (workspaceId: string) => {
   };
 };
 
+// =====================================
+// ⬢ useRemoveUserFromWorkspace
+// =====================================
 export const useRemoveUserFromWorkspace = (workspaceId: string) => {
   const { workspaceInfo } = useCurrentWorkspaceInfo();
 
@@ -765,6 +796,9 @@ export const useRemoveUserFromWorkspace = (workspaceId: string) => {
   return { removeUser, loading, error: error as Error | null, isAdmin };
 };
 
+// =====================================
+// ⬢ useBatchRemoveUsersFromWorkspace
+// =====================================
 export const useBatchRemoveUsersFromWorkspace = () => {
   const [batchRemoveMutation, { loading, error }] =
     useBatchRemoveUsersFromWorkspaceMutation();
@@ -772,10 +806,7 @@ export const useBatchRemoveUsersFromWorkspace = () => {
   const batchRemoveUsers = useCallback(
     async (removals: { userId: string; workspaceId: string }[]) => {
       try {
-        const result = await batchRemoveMutation({
-          variables: { removals },
-        });
-
+        const result = await batchRemoveMutation({ variables: { removals } });
         return result.data?.batchRemoveUsersFromWorkspace ?? false;
       } catch (err) {
         console.error("Failed to batch remove users:", err);
@@ -788,6 +819,9 @@ export const useBatchRemoveUsersFromWorkspace = () => {
   return { batchRemoveUsers, loading, error: error as Error | null };
 };
 
+// =====================================
+// ⬢ useAdminWorkspacesWithMembers
+// =====================================
 export const useAdminWorkspacesWithMembers = () => {
   const { data, loading, error, refetch } =
     useGetAdminWorkspacesWithMembersQuery({
@@ -802,6 +836,9 @@ export const useAdminWorkspacesWithMembers = () => {
   };
 };
 
+// =====================================
+// ⬢ useUpdateWorkspaceMemberRole
+// =====================================
 export const useUpdateWorkspaceMemberRole = (workspaceId: string) => {
   const { workspaceInfo } = useCurrentWorkspaceInfo();
 
