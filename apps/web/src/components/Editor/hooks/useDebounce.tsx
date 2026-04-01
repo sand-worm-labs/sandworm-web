@@ -17,7 +17,6 @@ export const useDebounce = (
   const functionRef = useRef<(...args: any[]) => any>(callback);
   const debounceRef = useRef<(...args: any[]) => void>();
 
-  // Update callback in ref on change
   useEffect(() => {
     functionRef.current = callback;
   }, [callback]);

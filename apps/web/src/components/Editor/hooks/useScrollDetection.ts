@@ -1,7 +1,14 @@
 import type { RefObject } from "react";
 import { useCallback, useEffect, useState } from "react";
 
+// =====================================
+// ⬢ Use Scroll Detection
+// =====================================
 const useScrollDetection = (containerRef: RefObject<HTMLDivElement>) => {
+  const [isScrolledAllTheWayLeft, setIsScrolledAllTheWayLeft] = useState(true);
+  const [isScrolledAllTheWayRight, setIsScrolledAllTheWayRight] =
+    useState(false);
+
   const [isScrollable, setIsScrollable] = useState(
     (containerRef.current &&
       containerRef.current.scrollWidth > containerRef.current.clientWidth) ??
@@ -10,7 +17,7 @@ const useScrollDetection = (containerRef: RefObject<HTMLDivElement>) => {
 
   useEffect(() => {
     if (!containerRef.current) {
-      return;
+      return () => {};
     }
 
     const tabContainer = containerRef.current;
@@ -50,19 +57,17 @@ const useScrollDetection = (containerRef: RefObject<HTMLDivElement>) => {
     };
   }, [containerRef]);
 
-  const [isScrolledAllTheWayLeft, setIsScrolledAllTheWayLeft] = useState(true);
-  const [isScrolledAllTheWayRight, setIsScrolledAllTheWayRight] =
-    useState(false);
-
   const onClickScrollLeft = useCallback(() => {
-    if (containerRef.current) {
-      containerRef.current.scrollLeft -= 100;
+    const el = containerRef.current;
+    if (el) {
+      el.scrollLeft -= 100;
     }
   }, [containerRef]);
 
   const onClickScrollRight = useCallback(() => {
-    if (containerRef.current) {
-      containerRef.current.scrollLeft += 100;
+    const el = containerRef.current;
+    if (el) {
+      el.scrollLeft += 100;
     }
   }, [containerRef]);
 

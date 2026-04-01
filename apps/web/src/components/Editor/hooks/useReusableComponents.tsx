@@ -21,6 +21,7 @@ import {
   useDeleteComponentMutation,
   useCreateComponentInstanceMutation,
   useDeleteComponentInstanceMutation,
+  ReusableComponentType as GQLComponentType,
 } from "@/generated/graphql";
 
 import { useWebsocket } from "./useWebSocket";
@@ -104,8 +105,8 @@ export const useReusableComponents = (
 ): UseReusableComponents => {
   const [state, api] = useContext(Context);
   return useMemo(() => {
-    const data = state.get(workspaceId);
-    return [{ data: data ?? List(), isLoading: !data }, api];
+    const componentData = state.get(workspaceId);
+    return [{ data: componentData ?? List(), isLoading: !componentData }, api];
   }, [state, workspaceId, api]);
 };
 
@@ -121,7 +122,7 @@ export function ReusableComponentsProvider({ workspaceId, children }: Props) {
   const socket = useWebsocket();
   const [state, setState] = useState<State>(new Map());
 
-  const { data } = useGetWorkspaceComponentsQuery({
+  const { data: componentsData } = useGetWorkspaceComponentsQuery({
     variables: { workspaceId },
     skip: !workspaceId,
   });
@@ -133,17 +134,19 @@ export function ReusableComponentsProvider({ workspaceId, children }: Props) {
   const [deleteInstanceMutation] = useDeleteComponentInstanceMutation();
 
   useEffect(() => {
-    if (data?.getWorkspaceComponents) {
+    if (componentsData?.getWorkspaceComponents) {
       setState(prev => {
         const next = new Map(prev);
         next.set(
           workspaceId,
-          List(data.getWorkspaceComponents as APIReusableComponent[])
+          List(
+            componentsData.getWorkspaceComponents as unknown as APIReusableComponent[]
+          )
         );
         return next;
       });
     }
-  }, [data, workspaceId]);
+  }, [componentsData, workspaceId]);
 
   useEffect(() => {
     if (!socket || !workspaceId) return;
@@ -151,7 +154,7 @@ export function ReusableComponentsProvider({ workspaceId, children }: Props) {
     socket.emit("fetch-workspace-components", { workspaceId });
   }, [socket, workspaceId]);
 
-  // ⬢ Socket listenners
+  // ⬢ Socket listeners
   // =====================================
   useEffect(() => {
     if (!socket) return () => {};
@@ -212,21 +215,23 @@ export function ReusableComponentsProvider({ workspaceId, children }: Props) {
     };
   }, [socket]);
 
+  // ⬢ Create Reusable Component
+  // =====================================
   const create = useCallback(
     async (
-      workspaceId: string,
-      data: Omit<NewReusableComponent, "id"> & { id: string },
+      wsId: string,
+      componentData: Omit<NewReusableComponent, "id"> & { id: string },
       documentTitle: string
     ) => {
       setState(prev => {
         const next = new Map(prev);
-        const components = next.get(workspaceId) ?? List();
+        const components = next.get(wsId) ?? List();
         next.set(
-          workspaceId,
+          wsId,
           components.push({
-            ...data,
+            ...componentData,
             document: {
-              id: data.documentId,
+              id: componentData.documentId,
               title: documentTitle,
             },
             createdAt: new Date().toISOString(),
@@ -240,31 +245,33 @@ export function ReusableComponentsProvider({ workspaceId, children }: Props) {
       try {
         await createComponentMutation({
           variables: {
-            workspaceId,
+            workspaceId: wsId,
             input: {
-              blockId: data.blockId,
-              documentId: data.documentId,
-              state: data.state,
-              title: data.title,
-              type: data.type.toUpperCase() as ReusableComponentType,
+              blockId: componentData.blockId,
+              documentId: componentData.documentId,
+              state: componentData.state,
+              title: componentData.title,
+              type:
+                componentData.type === "sql"
+                  ? GQLComponentType.Sql
+                  : GQLComponentType.Python,
             },
           },
         });
         toast.success("Component saved", {
-          description: `"${data.title}" is now available across your workspace`,
+          description: `"${componentData.title}" is now available across your workspace`,
         });
-      } catch {
-        console.error("Mutation error:", error);
-
+      } catch (err) {
+        console.error("Mutation error:", err);
         toast.error("Failed to save component", {
           description: "Your changes were not saved. Try again.",
         });
         setState(prev => {
           const next = new Map(prev);
-          const components = next.get(workspaceId) ?? List();
+          const components = next.get(wsId) ?? List();
           next.set(
-            workspaceId,
-            components.filter(c => c.id !== data.id)
+            wsId,
+            components.filter(c => c.id !== componentData.id)
           );
           return next;
         });
@@ -273,24 +280,25 @@ export function ReusableComponentsProvider({ workspaceId, children }: Props) {
     [createComponentMutation]
   );
 
+  // ⬢ Update Reusable Component
+  // =====================================
   const update = useCallback(
-    async (workspaceId: string, id: string, data: UpdateReusableComponent) => {
-      const prevComponent = state.get(workspaceId)?.find(c => c.id === id);
+    async (wsId: string, id: string, updateData: UpdateReusableComponent) => {
+      const prevComponent = state.get(wsId)?.find(c => c.id === id);
 
-      // Optimistic update
       setState(prev => {
         const next = new Map(prev);
-        const components = next.get(workspaceId) ?? List();
+        const components = next.get(wsId) ?? List();
         const index = components.findIndex(c => c.id === id);
         const component = components.get(index);
 
         if (index === -1 || !component) return prev;
 
         next.set(
-          workspaceId,
+          wsId,
           components.set(index, {
             ...component,
-            ...data,
+            ...updateData,
             id,
             updatedAt: new Date().toISOString(),
           })
@@ -301,24 +309,25 @@ export function ReusableComponentsProvider({ workspaceId, children }: Props) {
       try {
         await updateComponentMutation({
           variables: {
-            workspaceId,
+            workspaceId: wsId,
             componentId: id,
-            input: data,
+            input: updateData,
           },
         });
         toast.success("Component updated", {
-          description: `"${data.title ?? "Component"}" has been updated`,
+          description: `"${updateData.title ?? "Component"}" has been updated`,
         });
-      } catch {
+      } catch (err) {
+        console.error("Mutation error:", err);
         if (prevComponent) {
           setState(prev => {
             const next = new Map(prev);
-            const components = next.get(workspaceId) ?? List();
+            const components = next.get(wsId) ?? List();
             const index = components.findIndex(c => c.id === id);
 
             if (index === -1) return prev;
 
-            next.set(workspaceId, components.set(index, prevComponent));
+            next.set(wsId, components.set(index, prevComponent));
             return next;
           });
         }
@@ -330,17 +339,18 @@ export function ReusableComponentsProvider({ workspaceId, children }: Props) {
     [state, updateComponentMutation]
   );
 
+  // ⬢ Delete Reusable Component
+  // =====================================
   const remove = useCallback(
-    async (workspaceId: string, id: string) => {
-      const prevComponent = state.get(workspaceId)?.find(c => c.id === id);
+    async (wsId: string, id: string) => {
+      const prevComponent = state.get(wsId)?.find(c => c.id === id);
       if (!prevComponent) return;
 
-      // Optimistic update
       setState(prev => {
         const next = new Map(prev);
-        const components = next.get(workspaceId) ?? List();
+        const components = next.get(wsId) ?? List();
         next.set(
-          workspaceId,
+          wsId,
           components.filter(c => c.id !== id)
         );
         return next;
@@ -348,14 +358,18 @@ export function ReusableComponentsProvider({ workspaceId, children }: Props) {
 
       try {
         await deleteComponentMutation({
-          variables: { workspaceId, componentId: id },
+          variables: { workspaceId: wsId, componentId: id },
         });
-      } catch {
-        toast.error("Failed to remove component");
+        toast.success("Component removed");
+      } catch (err) {
+        console.error("Mutation error:", err);
+        toast.error("Failed to remove component", {
+          description: "The component is still active. Try again.",
+        });
         setState(prev => {
           const next = new Map(prev);
-          const components = next.get(workspaceId) ?? List();
-          next.set(workspaceId, components.push(prevComponent));
+          const components = next.get(wsId) ?? List();
+          next.set(wsId, components.push(prevComponent));
           return next;
         });
       }
@@ -365,16 +379,16 @@ export function ReusableComponentsProvider({ workspaceId, children }: Props) {
 
   const createInstance = useCallback(
     async (
-      workspaceId: string,
+      wsId: string,
       componentId: string,
-      data: { documentId: string; blockId: string }
+      instanceData: { documentId: string; blockId: string }
     ) => {
       try {
         await createInstanceMutation({
           variables: {
-            workspaceId,
+            workspaceId: wsId,
             componentId,
-            input: data,
+            input: instanceData,
           },
         });
       } catch {
@@ -385,10 +399,10 @@ export function ReusableComponentsProvider({ workspaceId, children }: Props) {
   );
 
   const removeInstance = useCallback(
-    async (workspaceId: string, componentId: string, blockId: string) => {
+    async (wsId: string, componentId: string, blockId: string) => {
       try {
         await deleteInstanceMutation({
-          variables: { workspaceId, componentId, blockId },
+          variables: { workspaceId: wsId, componentId, blockId },
         });
       } catch {
         throw new Error("Failed to remove component instance");
