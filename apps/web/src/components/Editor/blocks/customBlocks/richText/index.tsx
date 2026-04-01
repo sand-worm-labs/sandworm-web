@@ -33,7 +33,7 @@ const useBlockEditor = ({
   isEditable: boolean;
   setTitle: (title: string) => void;
 }) => {
-  const [isSpellcheckEnabled, setIsSpellcheckEnabled] = useState(false);
+  const [isSpellcheckEnabled] = useState(false);
   const editor = useEditor(
     {
       immediatelyRender: false,

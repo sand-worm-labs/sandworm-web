@@ -1,6 +1,6 @@
 import ReactDOM from "react-dom";
 import type * as Y from "yjs";
-import { IMaskInput } from "react-imask";
+import { type IMaskInput } from "react-imask";
 import { useCallback, useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import type { DateInputValue } from "@sandworm/editor";
@@ -59,13 +59,6 @@ function DateInputBlockInput(props: Props) {
     props.newValue
   );
   const newValue = dateInputValueFromString(newTextValue, props.value);
-
-  const onChangeEvent = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      onChangeNewTextValue(e.target.value);
-    },
-    [onChangeNewTextValue]
-  );
 
   const inputRef = useRef<IMaskInput>(null);
 
@@ -196,7 +189,7 @@ function DateInputBlockInput(props: Props) {
           <ClockIcon className="w-4 h-4 text-gray-300" />
         ) : props.error && !isLoading ? (
           <>
-            <button onClick={props.onSave}>
+            <button type="button" onClick={props.onSave}>
               <ExclamationCircleIcon
                 className="h-4 w-4 text-red-300"
                 aria-hidden="true"

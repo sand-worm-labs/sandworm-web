@@ -1,4 +1,4 @@
-import { ArrowUturnUpIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { ArrowUturnUpIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import type { List } from "immutable";
 import { Map } from "immutable";

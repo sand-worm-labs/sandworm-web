@@ -989,7 +989,7 @@ function getTimeAxis(
   input: VisualizationV2BlockInput
 ) {
   const intervalOrder: {
-    [T in TimeUnit]: number;
+    [_T in TimeUnit]: number;
   } = {
     seconds: 0,
     minutes: 1,

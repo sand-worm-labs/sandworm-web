@@ -51,7 +51,6 @@ interface WorkspaceSettingsModalProps {
   isAdmin?: boolean;
   updateWorkspace: (id: string, name: string, icon?: string) => Promise<void>;
   isUpdating: boolean;
-  disableCustomOpenAiKey?: boolean;
 }
 const PRESET_ICONS = [
   "red.png",
@@ -388,7 +387,6 @@ interface WorkspaceSettingsModalProps {
   } | null;
   updateWorkspace: (id: string, name: string, icon?: string) => Promise<void>;
   isUpdating: boolean;
-  disableCustomOpenAiKey?: boolean;
 }
 
 export default function WorkspaceSettingsModal({
@@ -419,7 +417,7 @@ export default function WorkspaceSettingsModal({
   );
   const { removeUser } = useRemoveUserFromWorkspace(workspace?.id ?? "");
 
-  const [state, setState] = useState({
+  const [setState] = useState({
     isEditingName: false,
     isEditingOpenAIKey: false,
     newName: "",
@@ -503,7 +501,7 @@ export default function WorkspaceSettingsModal({
     }
   };
 
-  const handleCancelInvite = async (inviteId: string) => {
+  const handleCancelInvite = async () => {
     await new Promise(resolve => setTimeout(resolve, 500));
   };
 

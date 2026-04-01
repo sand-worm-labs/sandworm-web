@@ -3,10 +3,9 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import type * as Y from "yjs";
 import clsx from "clsx";
-import type {
-  PowerToolboxBlock,
+import {
+  type PowerToolboxBlock,
   getToolById,
-  renderToolById,
   type ToolDefinition,
   type ParamDefinition,
   type ResolvedParams,
@@ -20,59 +19,11 @@ interface AnalyticsParamFormProps {
   /** The Yjs block element — used to read/write toolId, inputs, generatedSource */
   block: Y.XmlElement<PowerToolboxBlock>;
 
-  /**
-   * Called after the form commits to Yjs and the generated source is ready.
-   * The parent block component should trigger execution here.
-   */
-  onRun: (source: string) => void;
-
   /** Called when the user explicitly cancels / discards the form. */
   onCancel?: () => void;
 
   /** If true, the form renders in edit mode over an already-executed block. */
   isEditing?: boolean;
-}
-
-// ─── Validation ───────────────────────────────────────────────────────────────
-
-function validateField(
-  param: ParamDefinition,
-  value: FieldValue
-): string | undefined {
-  if (!param.required) return undefined;
-
-  if (value === undefined || value === null) return "Required";
-  if (typeof value === "string" && value.trim() === "") return "Required";
-  if (Array.isArray(value) && value.length === 0)
-    return "At least one entry required";
-
-  if (
-    (param.type === "address" || param.type === "token_address") &&
-    !/^0x[0-9a-fA-F]{40}$/.test(value as string)
-  ) {
-    return "Must be a valid EVM address";
-  }
-
-  if (
-    param.type === "schema_uid" &&
-    !/^0x[0-9a-fA-F]{64}$/.test(value as string)
-  ) {
-    return "Must be a valid schema UID (0x + 64 hex chars)";
-  }
-
-  return undefined;
-}
-
-function validateAll(
-  params: ParamDefinition[],
-  values: Record<string, FieldValue>
-): Record<string, string> {
-  const errors: Record<string, string> = {};
-  for (const param of params) {
-    const err = validateField(param, values[param.key]);
-    if (err) errors[param.key] = err;
-  }
-  return errors;
 }
 
 // ─── Default values ───────────────────────────────────────────────────────────
@@ -130,44 +81,8 @@ function ParamPill({ label, value }: { label: string; value: FieldValue }) {
   );
 }
 
-// ─── Icons ────────────────────────────────────────────────────────────────────
-
-function RunIcon() {
-  return (
-    <svg viewBox="0 0 14 14" fill="none" className="w-3 h-3">
-      <path
-        d="M3 2l9 5-9 5V2z"
-        strokeWidth="1.3"
-        strokeLinejoin="round"
-        className="stroke-current fill-current"
-      />
-    </svg>
-  );
-}
-
-function Spinner() {
-  return (
-    <svg className="w-3 h-3 animate-spin" viewBox="0 0 14 14" fill="none">
-      <circle
-        cx="7"
-        cy="7"
-        r="5"
-        strokeWidth="1.5"
-        className="stroke-white/20"
-      />
-      <path
-        d="M7 2a5 5 0 0 1 5 5"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        className="stroke-current"
-      />
-    </svg>
-  );
-}
-
 export function AnalyticsParamForm({
   block,
-  onRun,
   onCancel,
   isEditing = false,
 }: AnalyticsParamFormProps) {
@@ -186,7 +101,6 @@ export function AnalyticsParamForm({
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitAttempted, setSubmitAttempted] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [renderError, setRenderError] = useState<string | undefined>();
 
   // Re-initialise if the tool changes (e.g. block reuse — edge case)
@@ -197,7 +111,7 @@ export function AnalyticsParamForm({
       setSubmitAttempted(false);
       setRenderError(undefined);
     }
-  }, [toolId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [toolId]);
 
   const handleChange = useCallback(
     (key: string, value: FieldValue) => {
@@ -213,66 +127,6 @@ export function AnalyticsParamForm({
     },
     [submitAttempted]
   );
-
-  const handleSubmit = useCallback(() => {
-    if (!tool) return;
-
-    setSubmitAttempted(true);
-    setRenderError(undefined);
-
-    const validationErrors = validateAll(tool.params, values);
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      // Coerce FieldValue → ResolvedParams (string | number | boolean | string[])
-      const resolved: ResolvedParams = {};
-      for (const param of tool.params) {
-        const v = values[param.key];
-        if (
-          param.type === "date_range" &&
-          typeof v === "object" &&
-          !Array.isArray(v)
-        ) {
-          // Flatten date range into two separate keys: key_from, key_to
-          resolved[`${param.key}_from`] = (v as { from: string }).from;
-          resolved[`${param.key}_to`] = (v as { to: string }).to;
-        } else {
-          resolved[param.key] = v as string | number | boolean | string[];
-        }
-      }
-
-      // Render the SQL template into Python source
-      const { source } = renderToolById(tool.id, resolved);
-
-      // Commit to Yjs in a single transaction
-      if (block.doc) {
-        block.doc.transact(() => {
-          block.setAttribute("inputs", resolved);
-          block.setAttribute("generatedSource", source);
-          block.setAttribute("toolLabel", tool.name);
-          block.setAttribute("toolCategory", tool.categoryId);
-        });
-      } else {
-        block.setAttribute("inputs", resolved);
-        block.setAttribute("generatedSource", source);
-        block.setAttribute("toolLabel", tool.name);
-        block.setAttribute("toolCategory", tool.categoryId);
-      }
-
-      onRun(source);
-    } catch (err) {
-      setRenderError(
-        err instanceof Error ? err.message : "Failed to generate source"
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
-  }, [tool, values, block, onRun]);
 
   if (!tool) {
     return (
@@ -357,48 +211,6 @@ export function AnalyticsParamForm({
               <ParamPill key={p.key} label={p.label} value={values[p.key]} />
             ))}
         </div>
-
-        {/*    <div className="flex items-center gap-2 shrink-0">
-          {onCancel && !isEditing && (
-            <button
-            type="button"
-              onClick={onCancel}
-              className={clsx(
-                "px-3 py-1.5 rounded-lg text-xs font-medium",
-                "text-ink-400  hover:text-ink-400 hover:bg-white/[0.04]",
-                "border border-white/[0.06] transition-colors"
-              )}
-            >
-              Cancel
-            </button>
-          )}
-
-          <button
-                      type="button"
-
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-            className={clsx(
-              "flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg",
-              "text-xs font-semibold transition-all",
-              isSubmitting
-                ? "bg-[#A308F0]/30 text-ink-400  cursor-not-allowed"
-                : "bg-[#A308F0] hover:bg-[#b30aff] text-white shadow-lg shadow-[#A308F0]/20"
-            )}
-          >
-            {isSubmitting ? (
-              <>
-                <Spinner />
-                Generating...
-              </>
-            ) : (
-              <>
-                <RunIcon />
-                {isEditing ? "Re-run" : "Run"}
-              </>
-            )}
-          </button>
-        </div> */}
       </div>
     </div>
   );

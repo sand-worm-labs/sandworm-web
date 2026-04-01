@@ -166,7 +166,7 @@ const StaticInput = (props: StaticInputProps) => {
         )}
       >
         <div className="flex flex-wrap">
-          {props.options.map((option, index) => (
+          {props.options.map(option => (
             <div className="px-1 py-1">
               <div className="bg-gray-50 border border-border-secondary px-2 py-1 rounded-sm flex items-center gap-x-1 text-xs">
                 <span>{option}</span>

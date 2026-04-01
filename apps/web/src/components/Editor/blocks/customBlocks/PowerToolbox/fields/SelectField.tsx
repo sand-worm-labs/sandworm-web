@@ -1,10 +1,26 @@
 "use client";
 
-import { useCallback, useId } from "react";
+import { useCallback } from "react";
 import clsx from "clsx";
-import type { ParamDefinition, SelectOption } from "@sandworm/editor";
+import type { ParamDefinition } from "@sandworm/editor";
 
 import { FieldLabel, FieldError } from "./AddressField";
+
+// ─── Icon ─────────────────────────────────────────────────────────────────────
+
+function ChevronDown() {
+  return (
+    <svg viewBox="0 0 14 14" fill="none" className="w-3.5 h-3.5">
+      <path
+        d="M3 5l4 4 4-4"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="stroke-current"
+      />
+    </svg>
+  );
+}
 
 // ─── Single select ────────────────────────────────────────────────────────────
 
@@ -22,7 +38,6 @@ export function SelectField({
   error,
 }: SelectFieldProps) {
   const options = param.options ?? [];
-  const selected = options.find(o => o.value === value);
 
   return (
     <div className="flex flex-col gap-1.5">
@@ -138,21 +153,5 @@ export function ChainMultiSelect({
 
       {error && <FieldError message={error} />}
     </div>
-  );
-}
-
-// ─── Icon ─────────────────────────────────────────────────────────────────────
-
-function ChevronDown() {
-  return (
-    <svg viewBox="0 0 14 14" fill="none" className="w-3.5 h-3.5">
-      <path
-        d="M3 5l4 4 4-4"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="stroke-current"
-      />
-    </svg>
   );
 }
