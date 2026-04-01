@@ -23,7 +23,6 @@ import { Trash } from "@/components/Assets/Trash";
 import WorkspaceSwitcher from "@/components/WorkspaceSwitcher";
 import { Binoculars } from "@/components/Assets/Menu/Binoculars";
 
-
 interface NavItem {
   name: string;
   href: string;

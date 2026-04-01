@@ -9,6 +9,9 @@ type UseFullScreenDocument = [
     toggle: () => void;
   },
 ];
+// =====================================
+// ⬢  use FullScreen Document
+// =====================================
 function useFullScreenDocument(documentId: string): UseFullScreenDocument {
   const session = useSession({ redirectToLogin: true });
   const user = session?.user;

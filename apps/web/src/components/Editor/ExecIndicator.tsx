@@ -8,7 +8,7 @@ import type { ExecutionQueue, TabRef, YBlock } from "@sandworm/editor";
 import { getResultStatus } from "@sandworm/editor";
 import { head } from "ramda";
 
-import Spin from "../Editor/blocks/Spin";
+import Spin from "./blocks/Spin";
 import { useBlockExecutions } from "./hooks/useBlockExecution";
 
 interface Props {

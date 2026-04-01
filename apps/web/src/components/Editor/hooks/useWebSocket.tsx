@@ -6,33 +6,56 @@ import { validate } from "uuid";
 import { useStringQuery } from "./useQueryArgs";
 import { useSession } from "./useAuth";
 
+// =====================================
+// ⬢ Constants
+// =====================================
+const WS_URL = process.env.NEXT_PUBLIC_API_WS_URL || "http://localhost:8003";
+
+// =====================================
+// ⬢ Context
+// =====================================
 const Context = createContext<Socket | null>(null);
 
+// =====================================
+// ⬢ Utils
+// =====================================
+function buildSocketConfig(rawUrl: string): {
+  origin: string;
+  path: string | undefined;
+} {
+  const url = new URL(rawUrl);
+  return {
+    origin: url.origin,
+    path: url.pathname === "/" ? undefined : `${url.pathname}/socket.io`,
+  };
+}
+
+// =====================================
+// ⬢ Provider
+// =====================================
 interface Props {
   children: React.ReactNode;
 }
 
-// Provider contains all logic - only mounted once
 export function WebsocketProvider({ children }: Props) {
+  // ── state ──
   const [socket, setSocket] = useState<Socket | null>(null);
+
+  // ── hooks ──
   const session = useSession({ redirectToLogin: false });
   const workspaceId = useStringQuery("workspace");
 
+  // ── effects ──
   useEffect(() => {
     if (!session.user?.id) {
-      return;
+      return () => {};
     }
 
-    const url = new URL(
-      process.env.NEXT_PUBLIC_API_WS_URL || "http://localhost:8003"
-    );
-    const withoutPathname = url.origin;
-    const socketPath =
-      url.pathname === "/" ? undefined : `${url.pathname}/socket.io`;
+    const { origin, path } = buildSocketConfig(WS_URL);
 
-    const newSocket = io(withoutPathname, {
+    const newSocket = io(origin, {
       withCredentials: true,
-      path: socketPath,
+      path,
       transports: ["websocket", "polling"],
       reconnection: true,
       reconnectionDelay: 1000,
@@ -44,8 +67,8 @@ export function WebsocketProvider({ children }: Props) {
       console.log("[WebSocket] Connected, id:", newSocket.id);
     });
 
-    newSocket.on("connect_error", error => {
-      console.error("[WebSocket] Connection error:", error.message);
+    newSocket.on("connect_error", err => {
+      console.error("[WebSocket] Connection error:", err.message);
     });
 
     newSocket.on("disconnect", (reason: Socket.DisconnectReason) => {
@@ -64,7 +87,7 @@ export function WebsocketProvider({ children }: Props) {
 
   useEffect(() => {
     if (!socket || !validate(workspaceId)) {
-      return;
+      return () => {};
     }
 
     const onConnect = () => {
@@ -84,6 +107,9 @@ export function WebsocketProvider({ children }: Props) {
   return <Context.Provider value={socket}>{children}</Context.Provider>;
 }
 
-export function useWebsocket() {
+// =====================================
+// ⬢ Use Websocket Hook
+// =====================================
+export function useWebsocket(): Socket | null {
   return useContext(Context);
 }

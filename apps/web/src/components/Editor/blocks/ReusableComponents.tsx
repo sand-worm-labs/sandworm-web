@@ -43,7 +43,7 @@ export const SaveConfirmationModal = (props: SaveConfirmationModalProps) => {
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+          <div className="fixed inset-0 bg-[#0000001A] transition-opacity" />
         </Transition.Child>
 
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto ">
@@ -56,12 +56,12 @@ export const SaveConfirmationModal = (props: SaveConfirmationModalProps) => {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden rounded-2xl bg-white dark:bg-base-100 px-4 pb-4 pt-5 text-left shadow-xl transition-all w-[532px] font-body">
+              <Dialog.Panel className="relative transform overflow-hidden rounded-2xl bg-white dark:bg-base-100 px-4 pb-4 pt-5 text-left transition-all w-[532px] font-body">
                 <div>
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full ">
                     <ScheduleIcon />
                   </div>
-                  <div className="mt-3 text-center sm:mt-5">
+                  <div className="mt-1 text-center sm:mt-1 mb-5">
                     <Dialog.Title
                       as="h3"
                       className="text-base font-semibold leading-6 text-ink-100"
@@ -69,26 +69,26 @@ export const SaveConfirmationModal = (props: SaveConfirmationModalProps) => {
                       Update existing component
                     </Dialog.Title>
                     <div className="mt-2 flex flex-col items-center gap-y-2">
-                      <p className="text-sm text-ink-400">
+                      <p className="text-sm text-ink-100 font-medium">
                         You have previously saved this block as a reusable
-                        component.
+                        component.{" "}
+                        <span className="text-sm text-error font-medium">
+                          Saving this component will update all of its
+                          instances.
+                        </span>
                       </p>
 
-                      <p className="text-sm text-ink-400">
-                        Saving this component will update all of its instances.
-                      </p>
-
-                      <p className="text-sm text-ink-100">
+                      <p className="text-sm text-ink-100 font-medium">
                         Do you want to update it?
                       </p>
                     </div>
                   </div>
                 </div>
-                <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
+                <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3 px-5">
                   <button
                     type="button"
                     onClick={props.onUpdate}
-                    className="inline-flex w-full justify-center rounded-xl bg-[#A308F0] px-3 py-2 text-sm font-semibold text-ink-100 shadow-sm hover:bg-primary-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2"
+                    className="inline-flex w-full justify-center rounded-xl bg-[#A308F0] px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2  sm:col-start-2"
                   >
                     Update component
                   </button>
@@ -96,7 +96,7 @@ export const SaveConfirmationModal = (props: SaveConfirmationModalProps) => {
                     type="button"
                     data-autofocus
                     onClick={props.onClose}
-                    className="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-3 py-2 text-sm font-semibold text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0 dark:text-black"
+                    className="mt-3 inline-flex w-full justify-center rounded-xl bg-[#F8F9FA] px-3 py-2 text-sm font-medium text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0 dark:text-black"
                   >
                     Cancel
                   </button>

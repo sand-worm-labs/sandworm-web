@@ -19,8 +19,7 @@ export function MultimodalInput({
   stop,
   attachments,
   setAttachments,
-  messages,
-  append,
+
   handleSubmit,
 }: {
   workspaceId: string;

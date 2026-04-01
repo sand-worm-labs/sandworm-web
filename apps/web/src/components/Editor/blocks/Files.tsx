@@ -27,9 +27,9 @@ import { PiFolders } from "react-icons/pi";
 import { Cautious } from "@/components/Assets/Cautious";
 import { UploadIcon } from "@/components/Assets/UploadIcon";
 import { Trash } from "@/components/Assets/Trash";
+import { NEXT_PUBLIC_API_URL } from "@/utils/env";
 
 import type { UploadResult, UploadFile } from "../hooks/useFiles";
-import { NEXT_PUBLIC_API_URL } from "@/utils/env";
 import { useEnvironmentStatus } from "../hooks/useEnvironmentStatus";
 import { useFiles } from "../hooks/useFiles";
 
@@ -475,8 +475,8 @@ export default function Files(props: Props) {
   const [cwd, setCwd] = useState("/home/sandwormuser");
   const relPath = cwd.replace("/home/sandwormuser", ".") || "./";
 
-  console.log("[Files] cwd:", cwd);          
-console.log("[Files] relPath:", relPath); 
+  console.log("[Files] cwd:", cwd);
+  console.log("[Files] relPath:", relPath);
 
   const [showHidden, setShowHidden] = useState(false);
 
@@ -646,18 +646,18 @@ file`;
     () =>
       files.filter(file => {
         if (!showHidden && file.name.startsWith(".")) return false;
-  
+
         const s = search.trim();
         if (s !== "" && !file.name.toLowerCase().includes(s.toLowerCase()))
           return false;
-  
+
         if (
           upload._tag === "uploading" &&
           upload.current.file.name === file.relCwdPath &&
           upload.current.status === "uploading"
         )
           return false;
-  
+
         return true;
       }),
     [files, upload, search, showHidden]

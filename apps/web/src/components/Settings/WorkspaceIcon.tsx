@@ -12,7 +12,7 @@ export function WorkspaceIcon({
   className,
 }: WorkspaceIconProps) {
   if (!icon) return null;
-  const src = `/img/${icon.replace(/\.[^.]+$/, "")}.svg`;
+  const src = `/img/${icon.replace(/\.[^.]+$/, "")}.png`;
   return (
     <Image
       src={src}

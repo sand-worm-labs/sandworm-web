@@ -3,6 +3,7 @@
 import React, { useState, useMemo, useCallback } from "react";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import type { ApiWorkspace } from "@/types";
 
@@ -12,20 +13,17 @@ import {
   useUpdateWorkspace,
   useWorkspaces,
 } from "../Editor/hooks/useWorkspaces";
-import useProperties from "../Editor/hooks/useProperties";
 import { useSession } from "../Editor/hooks/useAuth";
 import { WorkspaceIcon } from "../Assets/WorkspaceIcon";
 
 import { WorkspaceIcon as WorkspaceIconAvatar } from "./WorkspaceIcon";
 import CreateTeamModal from "./CreateTeam";
 import WorkspaceSettingsModal from "./WorkspaceSettings";
-import { toast } from "sonner";
 
 export default function WorkspaceSettings() {
   const router = useRouter();
 
   const session = useSession({ redirectToLogin: true });
-  const properties = useProperties();
   const { workspaceInfo } = useCurrentWorkspaceInfo();
   const [{ data: allWorkspaces }] = useWorkspaces();
   const { updateWorkspace, loading: isUpdating } = useUpdateWorkspace();
@@ -63,11 +61,13 @@ export default function WorkspaceSettings() {
     try {
       const success = await switchWorkspace(targetWorkspaceId);
       if (success) {
-        router.push(`/workspace/${targetWorkspaceId}/settings/account?switched=1`);
+        router.push(
+          `/workspace/${targetWorkspaceId}/settings/account?switched=1`
+        );
       }
     } catch (err) {
       console.error("Failed to switch workspace:", err);
-      alert("Failed to switch team. Please try again.");
+      toast.error("Failed to switch team. Please try again.");
     }
   };
   const handleOpenSettings = (targetWorkspaceId: string) => {
@@ -325,7 +325,7 @@ export default function WorkspaceSettings() {
         }
         updateWorkspace={updateWorkspace}
         isUpdating={isUpdating}
-        disableCustomOpenAiKey={properties.data?.disableCustomOpenAiKey}
+        disableCustomOpenAiKey={false}
       />
     </div>
   );

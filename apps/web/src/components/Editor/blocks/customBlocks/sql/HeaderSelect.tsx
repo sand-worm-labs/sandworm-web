@@ -58,7 +58,7 @@ export default function HeaderSelect(props: Props) {
     : "No data sources";
 
   const onChange = useCallback(
-    (value: string) => {
+    (_value: string) => {
       if (!isDisabled) {
         const option = options.find(option => option.value === value);
         if (option) {
@@ -77,7 +77,7 @@ export default function HeaderSelect(props: Props) {
       onChange={onChange}
       disabled={isDisabled}
     >
-      {({ open, disabled }) => (
+      {({ open, _disabled }) => (
         <div className="relative overflow-visible font-normal h-full w-56 max-w-56">
           <Listbox.Button
             as="div"

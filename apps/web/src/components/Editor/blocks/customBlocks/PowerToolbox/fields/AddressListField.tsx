@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback, useId } from "react";
+import { useState, useRef, useCallback } from "react";
 import clsx from "clsx";
 import type { ParamDefinition } from "@sandworm/editor";
 
@@ -33,7 +33,6 @@ export function AddressListField({
   const [draft, setDraft] = useState("");
   const [draftError, setDraftError] = useState<string | undefined>();
   const inputRef = useRef<HTMLInputElement>(null);
-  const labelId = useId();
 
   const isUid = param.type === "schema_uid";
 
@@ -169,6 +168,7 @@ export function AddressListField({
         </p>
         {value.length > 0 && (
           <button
+            type="button"
             onClick={() => onChange([])}
             className="text-[11px] text-ink-400    hover:text-error   transition-colors"
           >
@@ -205,6 +205,7 @@ function EntryPill({
     >
       <span className="truncate">{display}</span>
       <button
+        type="button"
         onClick={e => {
           e.stopPropagation();
           onRemove();

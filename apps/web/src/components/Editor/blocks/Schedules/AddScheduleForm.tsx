@@ -29,8 +29,7 @@ function AddScheduleForm({ documentId, onClose, onSubmit }: Props) {
   const onSubmitHandler = useCallback(
     async (data: ScheduleFormValues) => {
       try {
-        const { amPm, notifyOnFailure, days, weekdays, hour, type, ...rest } =
-          data;
+        const { amPm, days, weekdays, hour, type, ...rest } = data;
 
         // Convert hour to 24-hour format
         let hour24 = hour;
