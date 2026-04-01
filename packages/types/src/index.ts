@@ -39,6 +39,15 @@ export const uuidSchema = z.string().refine((uuid) => validateUUID(uuid), {
   message: 'Invalid UUID format',
 });
 
+export const base64Schema = z.string().refine((base64) => {
+  try {
+    Buffer.from(base64, 'base64')
+    return true
+  } catch {
+    return false
+  }
+})
+
 // ═══════════════════════════════════════════════
 //  NumPy Data Types
 // ═══════════════════════════════════════════════
@@ -1157,3 +1166,51 @@ export function migrateSuccessSQLResult(
 export type FeatureFlags = {
   visualizationsV2: boolean;
 };
+
+type ReusableComponent = {
+  id: string;
+  state: Buffer;
+  type: ReusableComponentType;
+  title: string;
+  blockId: string;
+  documentId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  instancesCreated: boolean;
+};
+
+export type APIReusableComponent = Omit<
+  ReusableComponent,
+  "state" | "createdAt" | "updatedAt"
+> & {
+  state: string;
+  createdAt: string;
+  updatedAt: string;
+  document: {
+    id: string;
+    title: string;
+  };
+};
+
+export const ReusableComponentTypeEnum = z.enum(["sql", "python"]);
+
+export type ReusableComponentType = z.infer<typeof ReusableComponentTypeEnum>;
+
+export const NewReusableComponent = z.object({
+  id: uuidSchema.optional(),
+  blockId: uuidSchema,
+  documentId: uuidSchema,
+  state: base64Schema,
+  title: z.string(),
+  type: ReusableComponentTypeEnum,
+});
+
+
+export const UpdateReusableComponent = z.object({
+  state: base64Schema,
+  title: z.string(),
+})
+export type UpdateReusableComponent = z.infer<typeof UpdateReusableComponent>
+
+export type NewReusableComponent = z.infer<typeof NewReusableComponent>;
+

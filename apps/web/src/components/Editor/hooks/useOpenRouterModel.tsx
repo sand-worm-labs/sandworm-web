@@ -7,6 +7,9 @@ import {
   type GetOpenRouterModelsQuery,
 } from "@/generated/graphql";
 
+// =====================================
+// ⬢ Types
+// =====================================
 type RawModel = GetOpenRouterModelsQuery["openRouterModels"][number];
 
 export interface NormalizedModel {
@@ -30,8 +33,9 @@ export interface AccountCredits {
   availableCredits: number;
 }
 
-// ─── CONSTANTS ───────────────────────────────────────────────────────────────
-
+// =====================================
+// ⬢ Constants
+// =====================================
 const REASONING_KEYWORDS = [
   "r1",
   "thinking",
@@ -42,8 +46,9 @@ const REASONING_KEYWORDS = [
   "reasoning",
 ];
 
-// ─── UTILS ───────────────────────────────────────────────────────────────────
-
+// =====================================
+// ⬢ Utilities
+// =====================================
 function parsePricePerM(raw: string | null | undefined): number | null {
   if (!raw) return null;
   const parsed = parseFloat(raw);
@@ -79,8 +84,9 @@ function normalizeModel(raw: RawModel): NormalizedModel {
   };
 }
 
-// ─── HOOK ────────────────────────────────────────────────────────────────────
-
+// =====================================
+// ⬢  Use Open Router Models
+// =====================================
 export const useOpenRouterModels = (
   workspaceId: string,
   initialModelId?: string
@@ -135,7 +141,6 @@ export const useOpenRouterModels = (
   );
 
   return {
-    // models
     models,
     loading,
     error,

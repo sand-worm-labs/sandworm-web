@@ -5,10 +5,6 @@ import type { YBlock, YBlockGroup } from "@sandworm/editor";
 
 import type { NotebookAIRequest, BlockSpec } from "@/app/api/chat/route";
 
-/**
- * Writes a title string into a RichText block's Y.XmlFragment.
- * The Tiptap Collaboration extension expects: <title>text</title>
- */
 function writeTitleToFragment(fragment: Y.XmlFragment, text: string) {
   if (fragment.length > 0) {
     fragment.delete(0, fragment.length);
@@ -36,7 +32,7 @@ function applyBlockSpec(
       );
       const block = yBlocks.get(blockId);
       if (block) {
-        const fragment = block.getAttribute("content") as
+        const fragment = block.getAttribute("title") as
           | Y.XmlFragment
           | undefined;
         if (fragment) {
@@ -56,7 +52,7 @@ function applyBlockSpec(
       );
       const block = yBlocks.get(blockId);
       if (block && spec.text) {
-        const fragment = block.getAttribute("content") as
+        const fragment = block.getAttribute("title") as
           | Y.XmlFragment
           | undefined;
         if (fragment) {
@@ -116,6 +112,9 @@ interface UseNotebookAIOptions {
   dataframes?: string[];
 }
 
+// =====================================
+// ⬢ Use Notebook Ai
+// =====================================
 export function useNotebookAI({
   yDoc,
   insertAtIndex,

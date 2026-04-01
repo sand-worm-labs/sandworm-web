@@ -8,11 +8,14 @@ interface UseKeyboardNavOptions {
   enabled: boolean;
 }
 
-/**
- * Handles ↑ ↓ Enter Esc keyboard navigation f"or the PowerToolbox modal.
- * Returns the active index and a setter so the component can also update
- * it on mouse hover for a unified highlight state.
- */
+// =====================================
+// ⬢ Use Power Toolbox Keyboard
+// =====================================
+//  Handles ↑ ↓ Enter Esc keyboard navigation f"or the PowerToolbox modal.
+//  Returns the active index and a setter so the component can also update
+// it on mouse hover for a unified highlight state.
+// =====================================
+
 export function usePowerToolboxKeyboard({
   itemCount,
   onSelect,
@@ -26,7 +29,7 @@ export function usePowerToolboxKeyboard({
   }, []);
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled) return () => {};
 
     const handleKey = (e: KeyboardEvent) => {
       switch (e.key) {
@@ -37,7 +40,6 @@ export function usePowerToolboxKeyboard({
           document
             .querySelector(`[data-ptb-index="${next}"]`)
             ?.scrollIntoView({ block: "nearest" });
-          // Trigger re-render via a CustomEvent the component listens to.
           document.dispatchEvent(
             new CustomEvent("ptb:active", { detail: next })
           );
@@ -78,6 +80,8 @@ export function usePowerToolboxKeyboard({
           }
           break;
         }
+        default:
+          break;
       }
     };
 

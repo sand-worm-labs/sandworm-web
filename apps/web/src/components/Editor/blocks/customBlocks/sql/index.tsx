@@ -59,7 +59,6 @@ import LargeSpinner from "../../LargeSpinner";
 import type { APIDataSources } from "../../../hooks/useDataSources";
 import useEditorAwareness from "../../../hooks/useEditorAwareness";
 import { useWorkspaces } from "../../../hooks/useWorkspaces";
-import useProperties from "../../../hooks/useProperties";
 import { SaveReusableComponentButton } from "../../ReusableComponents";
 import { useReusableComponents } from "../../../hooks/useReusableComponents";
 import { useBlockExecutions } from "../../../hooks/useBlockExecution";

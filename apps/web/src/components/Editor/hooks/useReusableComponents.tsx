@@ -7,13 +7,13 @@ import {
   useMemo,
   useState,
 } from "react";
-import {toast} from "sonner";
-
+import { toast } from "sonner";
 import type {
   NewReusableComponent,
   APIReusableComponent,
   UpdateReusableComponent,
-} from "@/types";
+} from "@sandworm/types";
+
 import {
   useGetWorkspaceComponentsQuery,
   useCreateComponentMutation,
@@ -25,6 +25,9 @@ import {
 
 import { useWebsocket } from "./useWebSocket";
 
+// =====================================
+// ⬢ Types
+// =====================================
 export type ReusableComponents = List<APIReusableComponent>;
 
 type API = {
@@ -54,6 +57,14 @@ type API = {
 
 type State = Map<string, ReusableComponents>;
 
+type UseReusableComponents = [
+  { data: ReusableComponents; isLoading: boolean },
+  API,
+];
+
+// =====================================
+// ⬢ Context
+// =====================================
 const Context = createContext<[State, API]>([
   new Map(),
   {
@@ -85,11 +96,9 @@ const Context = createContext<[State, API]>([
   },
 ]);
 
-type UseReusableComponents = [
-  { data: ReusableComponents; isLoading: boolean },
-  API,
-];
-
+// =====================================
+// ⬢ Use Reusable Components Hook
+// =====================================
 export const useReusableComponents = (
   workspaceId: string
 ): UseReusableComponents => {
@@ -101,15 +110,18 @@ export const useReusableComponents = (
 };
 
 interface Props {
-  workspaceId?: string;
+  workspaceId: string;
   children: React.ReactNode;
 }
 
+// =====================================
+// ⬢  Reusable Components Provider
+// =====================================
 export function ReusableComponentsProvider({ workspaceId, children }: Props) {
   const socket = useWebsocket();
   const [state, setState] = useState<State>(new Map());
 
-  const { data, loading } = useGetWorkspaceComponentsQuery({
+  const { data } = useGetWorkspaceComponentsQuery({
     variables: { workspaceId },
     skip: !workspaceId,
   });
@@ -120,7 +132,6 @@ export function ReusableComponentsProvider({ workspaceId, children }: Props) {
   const [createInstanceMutation] = useCreateComponentInstanceMutation();
   const [deleteInstanceMutation] = useDeleteComponentInstanceMutation();
 
-  // Sync query data to state
   useEffect(() => {
     if (data?.getWorkspaceComponents) {
       setState(prev => {
@@ -140,9 +151,10 @@ export function ReusableComponentsProvider({ workspaceId, children }: Props) {
     socket.emit("fetch-workspace-components", { workspaceId });
   }, [socket, workspaceId]);
 
-  // Socket listeners
+  // ⬢ Socket listenners
+  // =====================================
   useEffect(() => {
-    if (!socket) return;
+    if (!socket) return () => {};
 
     const onReusableComponents = (payload: {
       workspaceId: string;
@@ -206,7 +218,6 @@ export function ReusableComponentsProvider({ workspaceId, children }: Props) {
       data: Omit<NewReusableComponent, "id"> & { id: string },
       documentTitle: string
     ) => {
-      // Optimistic update
       setState(prev => {
         const next = new Map(prev);
         const components = next.get(workspaceId) ?? List();

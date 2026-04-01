@@ -1,6 +1,10 @@
 import { type DependencyList, useEffect, useRef } from "react";
 
 type Effect<T> = (prev: T) => void | (() => void);
+
+// =====================================
+// ⬢ Use Previous Effects
+// =====================================
 function usePreviousEffect<T>(
   effect: Effect<T>,
   value: T,

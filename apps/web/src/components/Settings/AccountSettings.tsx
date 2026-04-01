@@ -12,7 +12,6 @@ import {
   useUpdateWorkspace,
   useWorkspaces,
 } from "../Editor/hooks/useWorkspaces";
-import useProperties from "../Editor/hooks/useProperties";
 import { useSession } from "../Editor/hooks/useAuth";
 import { WorkspaceIcon } from "../Assets/WorkspaceIcon";
 
@@ -25,7 +24,6 @@ export default function WorkspaceSettings() {
   const router = useRouter();
 
   const session = useSession({ redirectToLogin: true });
-  const properties = useProperties();
   const { workspaceInfo } = useCurrentWorkspaceInfo();
   const [{ data: allWorkspaces }] = useWorkspaces();
   const { updateWorkspace, loading: isUpdating } = useUpdateWorkspace();
