@@ -48,8 +48,22 @@ module.exports = {
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/consistent-type-imports": "error",
     "@typescript-eslint/explicit-module-boundary-types": "off",
-    "@typescript-eslint/no-use-before-define": ["error"],
-    "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
+    "@typescript-eslint/no-use-before-define": [
+      "error",
+      {
+        functions: false,
+        classes: true,
+        variables: true,
+      },
+    ],
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        argsIgnorePattern: "^_",
+        varsIgnorePattern: "^_",
+        caughtErrorsIgnorePattern: "^_",
+      },
+    ],
     "consistent-return": "error",
     "import/extensions": "off",
     "@typescript-eslint/no-explicit-any": "off",
@@ -86,7 +100,8 @@ module.exports = {
     "jsx-a11y/label-has-associated-control": "off",
     "no-console": "off",
     "no-underscore-dangle": "off",
-    "no-use-before-define": "error",
+    "no-use-before-define": "off",
+
     "react/jsx-filename-extension": [1, { extensions: [".ts", ".tsx"] }],
     "react/jsx-props-no-spreading": ["off", { custom: "ignore" }],
     "react/destructuring-assignment": "off",
@@ -97,14 +112,7 @@ module.exports = {
     // 'simple-import-sort/imports': 'error',
     "sort-keys": "off",
     "no-unused-vars": "off",
-    "@typescript-eslint/no-unused-vars": [
-      "error",
-      {
-        argsIgnorePattern: "^_",
-        varsIgnorePattern: "^_",
-        caughtErrorsIgnorePattern: "^_",
-      },
-    ],
+
     "no-plusplus": ["error", { allowForLoopAfterthoughts: true }],
     "react/function-component-definition": [
       2,
