@@ -79,14 +79,17 @@ function adjustCasing(currentWord: string, suggestion: string): string {
 function getSchemaFromSchemas(
   schemas: Map<string, DataSourceSchema>
 ): SQLNamespace {
-  return Array.from(schemas.entries()).reduce<SQLNamespace>(
+  return Array.from(schemas.entries()).reduce<Record<string, string[]>>(
     (namespace, [schemaName, schema]) =>
-      Object.entries(schema.tables).reduce((ns, [tableName, table]) => {
-        ns[`${schemaName}.${tableName}`] = table.columns.map(
-          column => column.name
-        );
-        return ns;
-      }, namespace),
+      Object.entries(schema.tables).reduce(
+        (ns, [tableName, table]) => ({
+          ...ns,
+          [`${schemaName}.${tableName}`]: table.columns.map(
+            column => column.name
+          ),
+        }),
+        namespace
+      ),
     {}
   );
 }
@@ -209,13 +212,12 @@ interface Props {
 
 export function SQLExtensionProvider(props: Props) {
   const [{ datasources, schemas }] = useDataSources(props.workspaceId);
-  const [extensionMap, setExtensionMap] =
-    useState<Map<string, Extension>>(Map());
+  const extensionMapRef = useRef<Map<string, Extension>>(Map());
 
   const getExtension = useCallback(
     (workspaceId: string, dataSourceId: string | null): Extension => {
       const key = `${workspaceId}-${dataSourceId}`;
-      const cached = extensionMap.get(key);
+      const cached = extensionMapRef.current.get(key);
       if (cached) return cached;
 
       const datasource =
@@ -223,26 +225,23 @@ export function SQLExtensionProvider(props: Props) {
       const schema = dataSourceId ? schemas.get(dataSourceId) : null;
       const newExtension = language(datasource, schema ?? Map());
 
-      setExtensionMap(prev => prev.set(key, newExtension));
-
+      extensionMapRef.current = extensionMapRef.current.set(key, newExtension);
       return newExtension;
     },
-    [extensionMap, datasources, schemas]
+    [datasources, schemas]
   );
 
   const lastUpdate = useRef(0);
 
   useEffect(() => {
     const update = () => {
-      setExtensionMap(prev =>
-        prev.map((_, key) => {
-          const [, dataSourceId] = key.split("-");
-          const datasource =
-            datasources?.find(ds => ds.data.id === dataSourceId) ?? null;
-          const schema = dataSourceId ? schemas.get(dataSourceId) : null;
-          return language(datasource, schema ?? Map());
-        })
-      );
+      extensionMapRef.current = extensionMapRef.current.map((_, key) => {
+        const [, dataSourceId] = key.split("-");
+        const datasource =
+          datasources?.find(ds => ds.data.id === dataSourceId) ?? null;
+        const schema = dataSourceId ? schemas.get(dataSourceId) : null;
+        return language(datasource, schema ?? Map());
+      });
     };
 
     if (Date.now() - lastUpdate.current > 5000) {
@@ -251,9 +250,6 @@ export function SQLExtensionProvider(props: Props) {
       return () => {};
     }
 
-    // ⚠️ FLAG: Math.max here always resolves to 5000 since the >5000 case is
-    // already handled by the if-branch above. Likely should be Math.min.
-    // Leaving as-is — changing throttle behaviour is a product decision.
     const timeToWait = Math.max(5000, 5000 - (Date.now() - lastUpdate.current));
     const timeout = setTimeout(() => {
       update();
