@@ -141,6 +141,7 @@ export function DataSourcesProvider(props: Props) {
           schemas: state.get(data.workspaceId)?.schemas ?? Map(),
         })
       );
+      console.log(data, "datasource");
     };
     socket.on("workspace-datasources", onDataSources);
 
