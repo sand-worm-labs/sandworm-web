@@ -247,7 +247,9 @@ function SandwormResult(props: {
   }, [measureDiv.current, size]);
 
   useEffect(() => {
-    if (size || !measureDiv.current) return;
+    if (size || !measureDiv.current) {
+      return undefined;
+    }
     const el = measureDiv.current;
     const ro = new ResizeObserver(() => {
       const { width, height } = el.getBoundingClientRect();
