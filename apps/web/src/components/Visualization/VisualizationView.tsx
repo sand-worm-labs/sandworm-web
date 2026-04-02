@@ -238,9 +238,27 @@ function SandwormResult(props: {
   useLayoutEffect(() => {
     if (!size && measureDiv.current) {
       const { width, height } = measureDiv.current.getBoundingClientRect();
-      setSize({ width, height });
+      // ⬢ NOTE — only set if dimensions are valid. 0x0 means container isn't
+      // laid out yet — let the ResizeObserver below catch the real dimensions.
+      if (width > 0 && height > 0) {
+        setSize({ width, height });
+      }
     }
   }, [measureDiv.current, size]);
+
+  useEffect(() => {
+    if (size || !measureDiv.current) return;
+    const el = measureDiv.current;
+    const ro = new ResizeObserver(() => {
+      const { width, height } = el.getBoundingClientRect();
+      if (width > 0 && height > 0) {
+        setSize({ width, height });
+        ro.disconnect();
+      }
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [size]);
 
   useEffect(() => {
     if (!container.current) {
