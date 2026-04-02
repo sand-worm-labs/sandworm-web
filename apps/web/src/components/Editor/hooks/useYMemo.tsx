@@ -5,6 +5,14 @@ import type * as Y from "yjs";
 
 import useResettableState from "./useResettableState";
 
+interface YObservable {
+  observeDeep: (fn: () => void) => void;
+  unobserveDeep: (fn: () => void) => void;
+}
+
+// =====================================
+// ⬢ useYElementMemo
+// =====================================
 export function useYElementMemo<T extends { [key: string]: ValueTypes }, R>(
   cb: (v: Y.XmlElement<T>) => R,
   yVal: Y.XmlElement<T>,
@@ -27,10 +35,9 @@ export function useYElementMemo<T extends { [key: string]: ValueTypes }, R>(
   return result;
 }
 
-interface YObservable {
-  observeDeep: (fn: () => void) => void;
-  unobserveDeep: (fn: () => void) => void;
-}
+// =====================================
+// ⬢ useYMemo
+// =====================================
 export function useYMemo<O extends YObservable, T>(
   observables: O[],
   fn: () => T,
@@ -40,18 +47,17 @@ export function useYMemo<O extends YObservable, T>(
 
   useEffect(() => {
     const onUpdate = () => {
-      console.log('[useYMemo] observer fired');
       setValue(fn());
     };
 
-    for (const observable of observables) {
+    observables.forEach(observable => {
       observable.observeDeep(onUpdate);
-    }
+    });
 
     return () => {
-      for (const observable of observables) {
+      observables.forEach(observable => {
         observable.unobserveDeep(onUpdate);
-      }
+      });
     };
   }, [...observables, ...deps]);
 
