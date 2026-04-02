@@ -1,3 +1,6 @@
+// =====================================
+// ⬢ Onboarding Footer
+// =====================================
 export function OnboardingFooter() {
   return (
     <footer className="flex flex-col items-center gap-1.5 text-[0.8rem] text-ink-300 dark:text-ink-300 py-4 font-body font-medium">

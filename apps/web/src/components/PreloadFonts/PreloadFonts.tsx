@@ -1,7 +1,6 @@
 export function PreloadedFonts() {
   return (
     <>
-      {/* Custom Fonts */}
       <link
         rel="preload"
         href="/fonts/inter/inter-black.ttf"

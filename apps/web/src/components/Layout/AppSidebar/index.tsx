@@ -34,7 +34,9 @@ interface AppSidebarProps {
   currentView: ViewType;
   setCurrentView: (view: ViewType) => void;
 }
-
+// =====================================
+// ⬢ App Sidebar
+// =====================================
 export const AppSidebar = ({
   currentView,
   setCurrentView,

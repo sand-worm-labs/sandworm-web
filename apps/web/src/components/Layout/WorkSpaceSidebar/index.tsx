@@ -29,6 +29,9 @@ interface NavItem {
   icon: React.ElementType;
 }
 
+// =====================================
+// ⬢ Workspace Sidebar Main
+// =====================================
 export const WorkspaceSidebar = () => {
   const pathname = usePathname();
   const workspaceId = useStringQuery("workspace");
@@ -42,6 +45,8 @@ export const WorkspaceSidebar = () => {
   const [isSectionOpen, setIsSectionOpen] = useState(true);
   const [isToolsOpen, setIsToolsOpen] = useState(false);
 
+  // ⬢ Constants
+  // =====================================
   const mainNav: NavItem[] = [
     { name: " Home", href: `/workspace/${workspaceId}`, icon: House },
     {
@@ -93,7 +98,6 @@ export const WorkspaceSidebar = () => {
     {
       createDocument,
       duplicateDocument,
-      setIcon,
       deleteDocument,
       updateParent: updateDocumentParent,
     },
@@ -103,6 +107,8 @@ export const WorkspaceSidebar = () => {
     doc => doc.deletedAt === null && doc.version >= 1
   );
 
+  // ⬢ CreateDocument
+  // =====================================
   const onCreateDocument = useCallback(
     async (parentId: string | null) => {
       if (documentsState.loading) return;
@@ -126,6 +132,8 @@ export const WorkspaceSidebar = () => {
       [onCreateDocument]
     );
 
+  // ⬢ Delete Document
+  // =====================================
   const onDeleteDocument = useCallback(
     (id: string) => {
       if (documentsState.loading) {
@@ -137,6 +145,8 @@ export const WorkspaceSidebar = () => {
     [documentsState, deleteDocument]
   );
 
+  // ⬢ Duplicate Document
+  // =====================================
   const onDuplicateDocument = useCallback(
     async (id: string) => {
       if (documentsState.loading) {
@@ -149,6 +159,8 @@ export const WorkspaceSidebar = () => {
     [documentsState, duplicateDocument, router, workspaceId]
   );
 
+  // ⬢ Favorite Document
+  // =====================================
   const onFavoriteDocument = useCallback(
     (docId: string) => {
       if (documentsState.loading) {
@@ -160,6 +172,8 @@ export const WorkspaceSidebar = () => {
     [documentsState, workspaceId, favoriteDocument]
   );
 
+  // ⬢ Unfavorite Document
+  // =====================================
   const onUnfavoriteDocument = useCallback(
     (docId: string) => {
       if (documentsState.loading) {
@@ -171,17 +185,8 @@ export const WorkspaceSidebar = () => {
     [workspaceId, unfavoriteDocument]
   );
 
-  const onSetIcon = useCallback(
-    (id: string, icon: string) => {
-      if (documentsState.loading) {
-        return;
-      }
-
-      setIcon(id, icon);
-    },
-    [documentsState, setIcon]
-  );
-
+  // ⬢ Update Document Parent
+  // =====================================
   const onUpdateDocumentParent = useCallback(
     async (id: string, parentId: string | null, orderIndex: number) => {
       if (documentsState.loading) {
@@ -314,7 +319,6 @@ export const WorkspaceSidebar = () => {
                     onDelete={onDeleteDocument}
                     onFavorite={onFavoriteDocument}
                     onUnfavorite={onUnfavoriteDocument}
-                    onSetIcon={onSetIcon}
                     role={user?.role?.[0]?.[workspaceId] ?? "viewer"}
                     onCreate={onCreateDocument}
                     onUpdateParent={onUpdateDocumentParent}

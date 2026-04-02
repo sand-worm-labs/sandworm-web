@@ -60,7 +60,7 @@ export default function TrinoForm({
             {trinoDataSource ? "Edit" : "New"} Trino data source
           </h2>
           <p className="mt-1 text-sm leading-6 text-ink-400 ">
-            {trinoDataSource ? "Edit" : "Add"} a Trino database for Briefer to
+            {trinoDataSource ? "Edit" : "Add"} a Trino database for Sandworm to
             pull data from. Our fixed IP address is{" "}
             <code className="bg-gray-100 px-1 py-0.5 rounded-md text-red-500 text-xs">
               {GATEWAY_IP()}

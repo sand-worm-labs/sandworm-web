@@ -58,6 +58,34 @@ import DashboardSkeleton from "./DashboardSkeleton";
 import DashboardControls from "./DashboardControls";
 import DashboardView from "./DashboardView";
 
+export type DashboardMode =
+  | {
+      _tag: "live";
+    }
+  | {
+      _tag: "editing";
+      position: "dashboard" | "sidebar" | "expanded";
+    };
+
+export function dashboardModeHasControls(mode: DashboardMode): boolean {
+  switch (mode._tag) {
+    case "live":
+      return false;
+    case "editing":
+      switch (mode.position) {
+        case "sidebar":
+        case "dashboard":
+          return false;
+        case "expanded":
+          return true;
+        default:
+          return false;
+      }
+    default:
+      return false;
+  }
+}
+
 export type DraggingBlock = {
   id: string;
   type: BlockType;

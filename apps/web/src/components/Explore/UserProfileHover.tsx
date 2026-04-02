@@ -29,7 +29,8 @@ const dummyUser = {
   avatarUrl: "/placeholder.svg",
 };
 
-// UserProfileHover Component
+// =====================================
+// ⬢ UserProfileHover Component
 // =====================================
 export function UserProfileHover({ children }: UserProfileHoverProps) {
   return (

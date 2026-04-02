@@ -17,6 +17,9 @@ interface AddWalletModalProps {
   existingAddresses: string[];
 }
 
+// =====================================
+// ⬢  Add Wallet Modal
+// =====================================
 export const AddWalletModal = ({
   isOpen,
   onClose,
@@ -66,7 +69,6 @@ export const AddWalletModal = ({
         onClose={handleClose}
         initialFocus={addressInputRef}
       >
-        {/* Backdrop */}
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-200"
@@ -79,7 +81,7 @@ export const AddWalletModal = ({
           <div className="absolute inset-0 bg-black/20" />
         </Transition.Child>
 
-        {/* Panel */}
+        {/* ✦ Panel ✦ */}
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-200"
@@ -104,7 +106,7 @@ export const AddWalletModal = ({
               </button>
             </div>
 
-            {/* Fields */}
+            {/* ✦ Fields ✦ */}
             <div className="space-y-3">
               <div>
                 <input
@@ -140,7 +142,7 @@ export const AddWalletModal = ({
               />
             </div>
 
-            {/* Actions */}
+            {/* ✦ Actions ✦ */}
             <div className="flex gap-2 mt-5">
               <button
                 type="button"
@@ -164,8 +166,9 @@ export const AddWalletModal = ({
   );
 };
 
-// ─── ManageWalletsModal ───────────────────────────────────────────────────────
-
+// =====================================
+// ⬢ Manage Wallets Modal
+// =====================================
 interface ManageWalletsModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -212,7 +215,6 @@ export const ManageWalletsModal = ({
           className="fixed inset-0 z-50 flex items-center justify-center text-ink-100"
           onClose={onClose}
         >
-          {/* Backdrop */}
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-200"
@@ -225,7 +227,6 @@ export const ManageWalletsModal = ({
             <div className="absolute inset-0 bg-[#0000001A]" />
           </Transition.Child>
 
-          {/* Panel */}
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-200"
@@ -236,7 +237,6 @@ export const ManageWalletsModal = ({
             leaveTo="opacity-0 scale-95 translate-y-1"
           >
             <Dialog.Panel className="relative bg-white dark:bg-base-400 dark:border dark:border-border-tertiary rounded-2xl shadow-xl w-full max-w-md mx-4 p-6 font-body">
-              {/* Header */}
               <div className="flex items-center justify-between mb-5">
                 <Dialog.Title className="text-base font-medium text-ink-100 dark:text-white">
                   Manage Wallets
@@ -250,7 +250,7 @@ export const ManageWalletsModal = ({
                 </button>
               </div>
 
-              {/* Wallet List */}
+              {/* ✦ Wallet List ✦ */}
               <div className="space-y-2 max-h-72 overflow-y-auto pr-0.5">
                 {wallets.length === 0 ? (
                   <p className="text-center text-sm text-ink-200 dark:text-ink-400 py-8">
@@ -304,7 +304,7 @@ export const ManageWalletsModal = ({
                 )}
               </div>
 
-              {/* Footer Actions */}
+              {/* ✦ Footer Actions ✦ */}
               <div className="flex gap-3 mt-10">
                 <button
                   type="button"

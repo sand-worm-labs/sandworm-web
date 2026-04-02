@@ -4,6 +4,9 @@ import { usePathname } from "next/navigation";
 
 import { AppFooter } from "@/components/Layout/AppFooter";
 
+// =====================================
+// ⬢Footer Wrapper
+// =====================================
 export const FooterWrapper = () => {
   const pathname = usePathname();
   const hideFooterOnPath = "/workspace/explore";

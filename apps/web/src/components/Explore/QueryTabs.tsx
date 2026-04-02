@@ -8,6 +8,9 @@ import { cn } from "@/lib/utils";
 
 type Tab = "all" | "forked" | "starred";
 
+// =====================================
+// ⬢ QueryTabs - should be explore tab
+// =====================================
 export function QueryTabs() {
   const router = useRouter();
   const pathname = usePathname();

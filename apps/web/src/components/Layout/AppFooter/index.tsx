@@ -2,6 +2,9 @@ import Link from "next/link";
 
 import { footerLinks, socialLinks } from "@/data";
 
+// =====================================
+// ⬢ App Footer
+// =====================================
 export const AppFooter = () => {
   return (
     <footer className="p-4 text-sm text-text-gray border-t border-borderLight mb-12 md:mb-0">
