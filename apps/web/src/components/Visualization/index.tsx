@@ -45,7 +45,7 @@ import HeaderSelect from "@/components/Editor/blocks/HeaderSelect";
 import {
   dashboardModeHasControls,
   type DashboardMode,
-} from "@/components/Editor/blocks/Dashboard";
+} from "@/components/Editor/blocks/Dashboard/dashboard-types";
 import HiddenInPublishedButton from "@/components/Editor/blocks/HiddenInPublishedButton";
 
 import useEditorAwareness from "../Editor/hooks/useEditorAwareness";
@@ -170,6 +170,30 @@ interface Props {
   userId: string | null;
   isFullScreen: boolean;
 }
+
+// =====================================
+// ⬢ RunTooltipRefreshContent
+// =====================================
+function RunTooltipRefreshContent({
+  divRef,
+}: {
+  divRef: RefObject<HTMLDivElement>;
+}) {
+  return (
+    <div
+      className="font-body pointer-events-none w-max bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1"
+      ref={divRef}
+    >
+      <span>Refresh</span>
+    </div>
+  );
+}
+
+const IDLE_TOOLTIP_CONTENT = {
+  content: (ref: RefObject<HTMLDivElement>) => (
+    <RunTooltipRefreshContent divRef={ref} />
+  ),
+};
 
 // =====================================
 // ⬢ VisualizationBlockV2
@@ -402,8 +426,6 @@ function VisualizationBlockV2(props: Props) {
     props.block.setAttribute("controlsHidden", !attrs.controlsHidden);
   }, [attrs.controlsHidden, props.block]);
 
-  // ⬢ NOTE — no-promise-executor-return: the executor must not return a value.
-  // Replaced `new Promise(r => setTimeout(r, 500))` with an explicit wrapper.
   const onExportToPNG = async () => {
     if (attrs.input.chartType === "number" || attrs.input.chartType === "trend")
       return;
@@ -557,10 +579,8 @@ function VisualizationBlockV2(props: Props) {
     [props.block]
   );
 
-  // ── effects ──
-
   useEffect(() => {
-    if (!dataframe) return;
+    if (!dataframe) return () => {};
 
     let timeout: NodeJS.Timeout | null = null;
 
@@ -640,7 +660,6 @@ function VisualizationBlockV2(props: Props) {
     }
   }, [isDirty, props.block, onRun]);
 
-  // ── derived ──
 
   const [isFullScreen] = useFullScreenDocument(props.document.id);
 
@@ -705,7 +724,8 @@ function VisualizationBlockV2(props: Props) {
     (!hasAValidYAxis && attrs.input.chartType !== "histogram") ||
     !props.isEditable;
 
-  // ── tooltip content ──
+  // ⬢ Tooltip Content
+  // =====================================
 
   const runTooltipContent = useMemo(() => {
     if (status !== "idle") {
@@ -747,21 +767,12 @@ function VisualizationBlockV2(props: Props) {
           break;
       }
     } else {
-      return {
-        content: (ref: RefObject<HTMLDivElement>) => (
-          <div
-            className="font-body pointer-events-none w-max bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1"
-            ref={ref}
-          >
-            <span>Refresh</span>
-          </div>
-        ),
-      };
+      return IDLE_TOOLTIP_CONTENT;
     }
   }, [status, envStatus, envLoading, execution, isRunButtonDisabled]);
 
-  // ── render ──
-
+  // ⬢ Render
+  // =====================================
   if (props.dashboardMode && !dashboardModeHasControls(props.dashboardMode)) {
     return (
       <VisualizationViewV2
