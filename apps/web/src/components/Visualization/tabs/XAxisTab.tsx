@@ -15,6 +15,9 @@ import type { VisualizationV2BlockInput } from "@sandworm/editor";
 import { parseDecimalPlaces, parseMultiplier } from "../VisualizationControls";
 import { NumberFormatControl, DateFormatControl } from "../FormatControls";
 
+// =====================================
+// ⬢ Types
+// =====================================
 interface XAxisTabProps {
   dataframe: DataFrame | null;
   xAxis: DataFrameColumn | null;
@@ -31,6 +34,9 @@ interface XAxisTabProps {
   isEditable: boolean;
 }
 
+// =====================================
+// ⬢ XAxs Tab
+// =====================================
 const XAxisTab = ({
   dataframe,
   xAxis,
@@ -42,7 +48,6 @@ const XAxisTab = ({
   onChangeXAxisNumberFormat,
   isEditable,
 }: XAxisTabProps) => {
-  // State variables to track raw input strings for number formatting
   const [decimalPlacesInput, setDecimalPlacesInput] = useState<string>(
     () => xAxisNumberFormat?.decimalPlaces?.toString() || "2"
   );
@@ -72,7 +77,7 @@ const XAxisTab = ({
 
   // Handler for date format changes
   const onChangeDateStyle = useCallback(
-    (seriesId: string | undefined, dateStyle: string | null) => {
+    (_seriesId: string | undefined, dateStyle: string | null) => {
       if (!dateStyle) return;
 
       if (xAxisDateFormat) {

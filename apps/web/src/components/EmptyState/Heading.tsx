@@ -6,6 +6,9 @@ interface HeadingProps {
   center?: boolean;
 }
 
+// =====================================
+// ⬢ Heading Component
+// =====================================
 export const Heading: React.FC<HeadingProps> = ({
   title,
   subtitle,

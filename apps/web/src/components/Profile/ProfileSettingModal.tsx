@@ -40,12 +40,18 @@ interface ProfileSettingsModalProps {
   error: unknown;
 }
 
+// =====================================
+// ⬢ Constants
+// =====================================
 const inputClassName =
   "w-full px-3 md:py-2.5 py-1.5 rounded-xl bg-white dark:bg-base-400 border border-[#DEE2E6] dark:border-border-tertiary text-[#868E96] dark:text-white placeholder:text-ink-400 dark:placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-[#A308F0]/50 focus:border-[#A308F0] transition md:text-sm text-[13px] ";
 
 const labelClassName =
   "block text-xs font-bold text-[#6C757D] dark:text-gray-300 mb-2 uppercase font-bold";
 
+// =====================================
+// ⬢ Profile Settings Modal
+// =====================================
 export function ProfileSettingsModal({
   isOpen,
   onClose,

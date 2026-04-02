@@ -5,6 +5,7 @@ import {
   AvatarImage,
 } from "@sandworm/ui/components/avatar";
 import { Badge } from "@sandworm/ui/components/badge";
+import Image from "next/image";
 
 import type { Query } from "@/types";
 
@@ -17,6 +18,9 @@ interface ExploreCardProps {
   viewMode: ViewMode;
 }
 
+// =====================================
+// ⬢ Explore Card
+// =====================================
 export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
   return (
     <div
@@ -37,7 +41,12 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
                   <AvatarImage src={query.image} />
                 ) : (
                   <AvatarFallback>
-                    <img src="/img/avatar.svg" alt="fallback avatar" />
+                    <Image
+                      src="/img/avatar.svg"
+                      alt="fallback avatar"
+                      width={32}
+                      height={32}
+                    />
                   </AvatarFallback>
                 )}
               </Avatar>

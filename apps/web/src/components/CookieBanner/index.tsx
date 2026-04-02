@@ -2,10 +2,16 @@
 
 import { useState, useEffect } from "react";
 
+// =====================================
+// ⬢ Constants and Type
+// =====================================
 const CONSENT_KEY = "sandworm_cookie_consent";
 
 type ConsentState = "accepted" | "declined" | null;
 
+// =====================================
+// ⬢ Utils
+// =====================================
 function getStoredConsent(): ConsentState {
   if (typeof window === "undefined") return null;
   return (localStorage.getItem(CONSENT_KEY) as ConsentState) ?? null;
@@ -15,6 +21,9 @@ function storeConsent(state: "accepted" | "declined"): void {
   localStorage.setItem(CONSENT_KEY, state);
 }
 
+// =====================================
+// ⬢ Cookie Banner
+// =====================================
 export default function CookieBanner() {
   const [visible, setVisible] = useState(false);
   const [leaving, setLeaving] = useState(false);

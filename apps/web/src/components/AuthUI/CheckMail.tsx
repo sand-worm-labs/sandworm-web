@@ -8,6 +8,9 @@ type CheckMailProps = {
   onResend?: () => void;
 };
 
+// =====================================
+// ⬢ CheckMail Main Component
+// =====================================
 export const CheckMail = ({
   variant = "signup",
   email,

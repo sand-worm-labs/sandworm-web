@@ -8,6 +8,9 @@ import { ThemeTogggle } from "@/components/Theme/ThemeToggle";
 
 import { SearchBar } from "../../SearchBar";
 
+// =====================================
+// ⬢ Constants
+// =====================================
 const ROUTE_TITLES: Record<string, string> = {
   "/": "Home",
   "/workspace": "Home",
@@ -16,6 +19,9 @@ const ROUTE_TITLES: Record<string, string> = {
   "/favorites": "Favorites",
 };
 
+// =====================================
+// ⬢ Utils
+// =====================================
 function getRouteTitle(pathname: string): string {
   if (ROUTE_TITLES[pathname]) return ROUTE_TITLES[pathname];
 
@@ -28,6 +34,9 @@ function getRouteTitle(pathname: string): string {
   return "Sandworm";
 }
 
+// =====================================
+// ⬢ App Header
+// =====================================
 export const AppHeader: FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();

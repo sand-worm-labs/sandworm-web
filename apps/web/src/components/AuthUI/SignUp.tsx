@@ -9,6 +9,9 @@ import { SandwormLogo } from "../Assets";
 import { SocialLogin } from "./SocialLogin";
 import SignUpForm from "./SignUpForm";
 
+// =====================================
+// ⬢ SignUp Component
+// =====================================
 export const SignUp = () => {
   const searchParams = useSearchParams();
   const isUsernameStep = searchParams.get("step") === "3";

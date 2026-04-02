@@ -5,6 +5,9 @@ import type { VisualizationV2BlockInput } from "@sandworm/editor";
 import AxisModifierSelector from "../../Editor/blocks/AxisModifierSelector";
 import VisualizationToggleV2 from "../VisualizationToggle";
 
+// =====================================
+// ⬢ Types
+// =====================================
 interface LabelsTabProps {
   dataframe: DataFrame | null;
   isEditable: boolean;
@@ -14,6 +17,9 @@ interface LabelsTabProps {
   ) => void;
 }
 
+// =====================================
+// ⬢ LabelTab Component
+// =====================================
 const LabelsTab = ({
   dataframe,
   isEditable,

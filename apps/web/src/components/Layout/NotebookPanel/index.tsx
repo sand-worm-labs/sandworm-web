@@ -6,7 +6,7 @@ import { cn } from "@sandworm/ui/lib/utils";
 import { SparkleAI } from "@/components/Assets/SparkleAI";
 
 // =====================================
-// Types
+// ⬢ Types
 // =====================================
 type PanelAction = {
   id: string;
@@ -16,7 +16,7 @@ type PanelAction = {
 };
 
 // =====================================
-// Panel Item Component
+// ⬢ Panel Item Component
 // =====================================
 const PanelItem = ({
   action,
@@ -49,7 +49,7 @@ const PanelItem = ({
 };
 
 // =====================================
-// AI Assistant Button (Special Styling)
+// ⬢ AI Assistant Button
 // =====================================
 const AIAssistantButton = ({ onClick }: { onClick?: () => void }) => (
   <button
@@ -64,7 +64,7 @@ const AIAssistantButton = ({ onClick }: { onClick?: () => void }) => (
 );
 
 // =====================================
-// Props
+// ⬢ Props
 // =====================================
 interface NotebookPanelProps {
   sidebarContent?: React.ReactNode;
@@ -72,7 +72,7 @@ interface NotebookPanelProps {
 }
 
 // =====================================
-// Notebook Panel Component
+// ⬢ Notebook Panel Component
 // =====================================
 export const NotebookPanel = ({
   sidebarContent,
@@ -95,27 +95,7 @@ export const NotebookPanel = ({
         "w-14 z-[99]"
       )}
     >
-      {/* Top Section */}
       <div className="flex flex-col items-center  gap-x-0 w-full">
-        {/*   {panelSections.map((section, sectionIndex) => (
-          <div key={section.id} className="flex flex-col items-center gap-1  ">
-            {section.items.map(item => (
-              <PanelItem
-                key={item.id}
-                action={item}
-                isActive={activeItem === item.id}
-                onClick={() => handleItemClick(item.id)}
-              />
-            ))}
-           {sectionIndex < panelSections.length - 1 && (
-              <div className="py-2">
-                <PanelDivider />
-              </div> 
-            )}
-          </div>
-        ))} */}
-
-        {/* Sidebar Content (EllipsisDropdown) */}
         {sidebarContent && (
           <>
             <div className="py-2 pt-0 w-full" />
@@ -125,10 +105,8 @@ export const NotebookPanel = ({
         )}
       </div>
 
-      {/* Spacer */}
       <div className="flex-1" />
 
-      {/* Bottom Section */}
       <div className="flex flex-col items-center justify-center gap-1 w-full">
         {bottomActions.map(action => (
           <PanelItem
@@ -139,7 +117,6 @@ export const NotebookPanel = ({
           />
         ))}
 
-        {/* AI Assistant Button */}
         <div className="pt-2 w-full">
           <AIAssistantButton onClick={onToggleChat} />
         </div>

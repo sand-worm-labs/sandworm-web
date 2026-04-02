@@ -660,7 +660,6 @@ function VisualizationBlockV2(props: Props) {
     }
   }, [isDirty, props.block, onRun]);
 
-
   const [isFullScreen] = useFullScreenDocument(props.document.id);
 
   const onChangeYAxes = useCallback(

@@ -9,6 +9,9 @@ type ForgotPasswordFormProps = {
   onSuccess?: (email: string) => void;
 };
 
+// =====================================
+// ⬢ Forgot Password Form Main Component
+// =====================================
 export const ForgotPasswordForm = ({ onSuccess }: ForgotPasswordFormProps) => {
   const [email, setEmail] = useState("");
   const [state, { sendResetEmail }] = useForgotPassword();
@@ -58,7 +61,7 @@ export const ForgotPasswordForm = ({ onSuccess }: ForgotPasswordFormProps) => {
         />
       </div>
 
-      {errorMessage && <p className="text-sm text-red-500">{errorMessage}</p>}
+      {errorMessage && <p className="text-sm text-error">{errorMessage}</p>}
 
       <button
         type="submit"

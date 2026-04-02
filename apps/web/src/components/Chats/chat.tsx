@@ -9,6 +9,9 @@ import { useDocuments } from "../Editor/hooks/useDocuments";
 import { MultimodalInput } from "./multimodal-input";
 import { ExamplePrompts } from "./example-prompts";
 
+// =====================================
+// ⬢ Types
+// =====================================
 type Attachment = {
   url: string;
   name: string;
@@ -21,6 +24,9 @@ type Message = {
   content: string;
 };
 
+// =====================================
+// ⬢ Chat Main
+// =====================================
 export function Chat({
   initialMessages,
 }: {

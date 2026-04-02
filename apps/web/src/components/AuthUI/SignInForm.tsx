@@ -7,6 +7,9 @@ import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import { useLogin } from "../Editor/hooks/useAuth";
 import { Spinner } from "../Spinner/Spinner";
 
+// =====================================
+// ⬢ Sign In Form Main Component
+// =====================================
 export const SignInForm = () => {
   const searchParams = useSearchParams();
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -14,6 +17,8 @@ export const SignInForm = () => {
   const [state, { loginWithPassword }] = useLogin();
   const [showPassword, setShowPassword] = useState(false);
 
+  // ⬢ API Error Mapping
+  // =====================================
   useEffect(() => {
     if (state.error === "invalid-creds") {
       setLocalError("Invalid email or password. Please try again.");
@@ -27,12 +32,16 @@ export const SignInForm = () => {
     // 💭 todo on multiple invalid creds redirect to reset password page
   }, [state.error]);
 
+  // ⬢ Handle Form Change
+  // =====================================
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     setLocalError("");
   }, []);
 
+  // ⬢ Submit Handler
+  // =====================================
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLocalError("");

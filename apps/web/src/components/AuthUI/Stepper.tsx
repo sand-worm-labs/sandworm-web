@@ -3,6 +3,9 @@
 import React from "react";
 import Link from "next/link";
 
+// =====================================
+// ⬢ Types
+// =====================================
 interface Step {
   name: string;
   href: string;
@@ -14,6 +17,9 @@ interface StepperProps {
   currentStep: number;
 }
 
+// =====================================
+// ⬢ Stepper
+// =====================================
 export const Stepper: React.FC<StepperProps> = ({ steps, currentStep }) => {
   return (
     <div className="w-full pt-6 px-6">

@@ -10,6 +10,9 @@ interface EmptyStateProps {
   };
 }
 
+// =====================================
+// ⬢ Empty Query State
+// =====================================
 export const EmptyQueryState = ({
   message,
   imageSrc = "/img/nodata.svg",

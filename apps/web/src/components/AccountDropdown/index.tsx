@@ -26,6 +26,9 @@ import { GearIcon } from "../Assets/GearIcon";
 import { QuestionIcon } from "../Assets/QuestionIcon";
 import { ThumbsUpIcon } from "../Assets/ThumbsUpIcon";
 
+// =====================================
+// ⬢ use Share Profile
+// =====================================
 const useShareProfile = (username: string) => {
   const [copied, setCopied] = useState(false);
 
@@ -63,6 +66,9 @@ const useShareProfile = (username: string) => {
   return { shareProfile, copied };
 };
 
+// =====================================
+// ⬢ Nav Items
+// =====================================
 interface NavItemProps {
   icon: React.ReactNode;
   label: string;
@@ -113,6 +119,9 @@ const NavItem = ({
   );
 };
 
+// =====================================
+// ⬢ Account Dropdown Main Component
+// =====================================
 export const AccountDropdown = () => {
   const session = useSession({ redirectToLogin: true });
   const openSignIn = useModalStore(state => state.openSignIn);

@@ -36,6 +36,9 @@ interface Project {
 
 type MenuAction = "duplicate" | "newTab" | "trash";
 
+// =====================================
+// ⬢ Projects
+// =====================================
 export const Projects: React.FC = () => {
   const workspaceId = useStringQuery("workspace");
   const router = useRouter();
