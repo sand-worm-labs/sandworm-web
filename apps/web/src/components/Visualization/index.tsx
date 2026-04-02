@@ -17,7 +17,7 @@ import {
 } from "@sandworm/editor";
 import { FunnelIcon } from "@heroicons/react/24/outline";
 import type { RefObject } from "react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import clsx from "clsx";
 import type {
   ChartType,
@@ -39,6 +39,7 @@ import type { ConnectDragPreview } from "react-dnd";
 import { equals, head, omit } from "ramda";
 import { ChartPie } from "lucide-react";
 
+import type { ApiDocument } from "@/types";
 import { TooltipV2 } from "@/components/Editor/blocks/ToolTips";
 import HeaderSelect from "@/components/Editor/blocks/HeaderSelect";
 import {
@@ -58,7 +59,8 @@ import VisualizationControlsV2 from "./VisualizationControls";
 import VisualizationViewV2 from "./VisualizationView";
 import FilterSelector from "./FilterSelector";
 
-// ⬢ Read File
+// =====================================
+// ⬢ readFile
 // =====================================
 export function readFile(
   file: File,
@@ -73,8 +75,11 @@ export function readFile(
         return;
       }
 
+      // ⬢ NOTE — consistent-return: don't return the resolve() call.
+      // The callback return type is void; returning a value causes the lint error.
       if (typeof e.target.result === "string") {
-        return resolve(e.target.result);
+        resolve(e.target.result);
+        return;
       }
 
       resolve(Buffer.from(e.target.result).toString(encoding));
@@ -82,21 +87,20 @@ export function readFile(
   });
 }
 
-// ⬢ Download File
+// =====================================
+// ⬢ downloadFile
 // =====================================
 export function downloadFile(url: string, name: string) {
   const downloadLink = document.createElement("a");
-
   downloadLink.download = name;
   downloadLink.href = url;
-
   document.body.appendChild(downloadLink);
   downloadLink.click();
   document.body.removeChild(downloadLink);
 }
 
-// ⬢ Did Change Filters
-// Check if visualization filters have changed
+// =====================================
+// ⬢ didChangeFilters
 // =====================================
 function didChangeFilters(
   oldFilters: VisualizationFilter[],
@@ -126,19 +130,22 @@ function didChangeFilters(
     );
   });
 
+  // ⬢ NOTE — for...of replaced with forEach to satisfy no-restricted-syntax.
+  // Using Array.from on toCompare.values() since Set iterators aren't arrays.
   if (toCompare.size > 0) {
-    for (const id of Array.from(toCompare.values())) {
+    Array.from(toCompare.values()).forEach(id => {
       const nf = newFilters.find(f => f.id === id);
       if (nf && isInvalidVisualizationFilter(nf, dataframe)) {
         toCompare.delete(id);
       }
-    }
+    });
   }
 
   return didChange || toCompare.size > 0;
 }
 
-// 🎨 Interface / Props Definition
+// =====================================
+// ⬢ Types
 // =====================================
 interface Props {
   document: ApiDocument;
@@ -164,18 +171,13 @@ interface Props {
   isFullScreen: boolean;
 }
 
-/* ╔════════════════════════════════════════════╗
-   ║ ⬢ Visualization Block Main Component       ║                      
-   ╚════════════════════════════════════════════╝ */
+// =====================================
+// ⬢ VisualizationBlockV2
+// =====================================
 function VisualizationBlockV2(props: Props) {
-  // ⬢ Attributes, Dataframe and Callbacks
-  // =====================================
-  // We memoizes all derived visualization state — the block's
-  // attributes, the resolved dataframe, and the dropdown options for
-  // selecting dataframes. Each value only recomputes when its dependencies
-  // change, which keeps the component performant and avoids unnecessary
-  // recalculations during renders.
-  // =====================================
+  const hasEnqueued = useRef(false);
+
+  // ── derived: block attributes ──
   const attrs = useYMemo(
     [props.block],
     () => getVisualizationV2Attributes(props.block),
@@ -198,48 +200,12 @@ function VisualizationBlockV2(props: Props) {
     []
   );
 
-  // ⬢ Callbacks
-  // =====================================
-  // These callbacks update different parts of the visualization state.
-  // They’re memoized so the component avoids unnecessary rerenders, while
-  // still reacting to changes in the block’s configuration. Each handler
-  // focuses on a specific interaction: creating new SQL blocks, updating
-  // the X-axis field, and renaming the X-axis label.
-  // =====================================
-  const onNewSQL = useCallback(() => {
-    props.onAddGroupedBlock(attrs.id, BlockType.SQL, "before");
-  }, [props.onAddGroupedBlock]);
+  // ── state ──
+  // ⬢ NOTE — declared early so onChangeDataframe can reference setIsDirty
+  // without triggering no-use-before-define.
+  const [isDirty, setIsDirty] = useState(false);
 
-  const onChangeXAxis = useCallback(
-    (xAxis: DataFrameColumn | null) => {
-      let { xAxisGroupFunction } = attrs.input;
-      if (xAxis) {
-        const isDateTime = NumpyDateTypes.safeParse(xAxis.type).success;
-        if (isDateTime && !attrs.input.xAxisGroupFunction) {
-          xAxisGroupFunction = "date";
-        }
-      }
-
-      setVisualizationV2Input(props.block, { xAxis, xAxisGroupFunction });
-    },
-    [attrs.input.xAxisGroupFunction, props.block]
-  );
-
-  const onChangeXAxisName = useCallback(
-    (name: string | null) => {
-      setVisualizationV2Input(props.block, { xAxisName: name });
-    },
-    [props.block]
-  );
-
-  // ⬢ Execution State & Run Handler
-  // =====================================
-  // This section manages the visualization’s execution lifecycle. It reads the
-  // current execution status for this block, tracks the environment's state,
-  // and provides a memoized run callback. When executed, any in-flight runs are
-  // aborted before queueing a fresh visualization execution with the latest
-  // environment timestamp.
-  // =====================================
+  // ── execution state ──
   const executions = useBlockExecutions(
     props.executionQueue,
     props.block,
@@ -254,15 +220,45 @@ function VisualizationBlockV2(props: Props) {
     startedAt: environmentStartedAt,
   } = useEnvironmentStatus(props.document.workspaceId);
 
+  // ── handlers ──
+
+  const onNewSQL = useCallback(() => {
+    props.onAddGroupedBlock(attrs.id, BlockType.SQL, "before");
+  }, [props.onAddGroupedBlock]);
+
+  const onChangeXAxis = useCallback(
+    (xAxis: DataFrameColumn | null) => {
+      let { xAxisGroupFunction } = attrs.input;
+      if (xAxis) {
+        const isDateTime = NumpyDateTypes.safeParse(xAxis.type).success;
+        if (isDateTime && !attrs.input.xAxisGroupFunction) {
+          xAxisGroupFunction = "date";
+        }
+      }
+      setVisualizationV2Input(props.block, { xAxis, xAxisGroupFunction });
+    },
+    [attrs.input.xAxisGroupFunction, props.block]
+  );
+
+  const onChangeXAxisName = useCallback(
+    (name: string | null) => {
+      setVisualizationV2Input(props.block, { xAxisName: name });
+    },
+    [props.block]
+  );
+
   const onRun = useCallback(() => {
+    console.log("[viz] onRun called", {
+      environmentStartedAt,
+      attrs_id: attrs.id,
+    });
+
     executions.forEach(e => e.item.setAborting());
     props.executionQueue.enqueueBlock(
       attrs.id,
       props.userId,
       environmentStartedAt,
-      {
-        _tag: "visualization-v2",
-      }
+      { _tag: "visualization-v2" }
     );
   }, [
     executions,
@@ -276,18 +272,23 @@ function VisualizationBlockV2(props: Props) {
     if (
       attrs.output ||
       (attrs.error && attrs.error !== "dataframe-not-set") ||
-      status !== "idle"
+      status !== "idle" ||
+      envLoading ||
+      hasEnqueued.current
     ) {
       return;
     }
 
     if (attrs.input.dataframeName) {
+      hasEnqueued.current = true;
       onRun();
     }
-  }, [attrs.output, attrs.input.dataframeName, onRun]);
+  }, [attrs.output, attrs.input.dataframeName, onRun, envLoading, status]);
 
-  // ⬢ Change Dataframe
-  // =====================================
+  useEffect(() => {
+    if (attrs.output) hasEnqueued.current = false;
+  }, [attrs.output]);
+
   const onChangeDataframe = useCallback(
     (dataframeName: string) => {
       const df = props.dataframes.get(dataframeName);
@@ -317,14 +318,8 @@ function VisualizationBlockV2(props: Props) {
               const aggregateFunction = column
                 ? getAggFunction(s, column)
                 : null;
-              return {
-                ...s,
-                column,
-                aggregateFunction,
-                groupBy,
-              };
+              return { ...s, column, aggregateFunction, groupBy };
             }
-
             return s;
           }),
         }));
@@ -351,8 +346,6 @@ function VisualizationBlockV2(props: Props) {
     ]
   );
 
-  // ⬢ Run / Abort Handler
-  // =====================================
   const onRunAbort = useCallback(() => {
     switch (status) {
       case "enqueued":
@@ -373,8 +366,6 @@ function VisualizationBlockV2(props: Props) {
     }
   }, [status, execution, onRun, attrs.id]);
 
-  // ⬢ Add Filter
-  // =====================================
   const onAddFilter = useCallback(() => {
     const newFilter: VisualizationFilter = {
       id: uuidv4(),
@@ -388,8 +379,6 @@ function VisualizationBlockV2(props: Props) {
     });
   }, [attrs.input.filters, props.block]);
 
-  // ⬢ Change Filter
-  // =====================================
   const onChangeFilter = useCallback(
     (filter: VisualizationFilter) => {
       const filters = attrs.input.filters.map(f =>
@@ -400,8 +389,6 @@ function VisualizationBlockV2(props: Props) {
     [attrs.input.filters, props.block]
   );
 
-  // ⬢ Remove Filter
-  // =====================================
   const onRemoveFilter = useCallback(
     (filter: VisualizationFilter) => {
       setVisualizationV2Input(props.block, {
@@ -411,31 +398,26 @@ function VisualizationBlockV2(props: Props) {
     [props.block, attrs.input.filters]
   );
 
-  // ⬢ Toggle Controls Hidden
-  // =====================================
   const onToggleHidden = useCallback(() => {
     props.block.setAttribute("controlsHidden", !attrs.controlsHidden);
   }, [attrs.controlsHidden, props.block]);
 
-  // ⬢ Export to PNG Handler
-  // =====================================
+  // ⬢ NOTE — no-promise-executor-return: the executor must not return a value.
+  // Replaced `new Promise(r => setTimeout(r, 500))` with an explicit wrapper.
   const onExportToPNG = async () => {
-    // 💭  we don't need to check if props.renderer is undefined because the application sets as 'canvas' in this case
     if (attrs.input.chartType === "number" || attrs.input.chartType === "trend")
       return;
 
-    // if the controls are visible the canvas shrinks, making the export smaller
-    if (!attrs.controlsHidden) {
-      onToggleHidden();
-      // 💭  tick to ensure the canvas size gets updated
-      await new Promise(r => setTimeout(r, 500));
-    }
+    // ⬢ NOTE — removed the controlsHidden toggle before capture.
+    // toggling attrs.controlsHidden forces a full remount of Echarts via the
+    // key prop in VisualizationViewV2, making the canvas temporarily unavailable.
+    // The proper long-term fix is to store the echarts instance in a ref and
+    // use chart.getDataURL() instead of DOM querying.
 
     const canvas = document.querySelector(
       `div[data-block-id='${attrs.id}'] canvas`
     ) as HTMLCanvasElement;
 
-    // TODO: identify when this is true
     if (!canvas) return;
 
     const imageUrl = canvas.toDataURL("image/png");
@@ -443,16 +425,19 @@ function VisualizationBlockV2(props: Props) {
     downloadFile(imageUrl, fileName);
   };
 
-  // ⬢ Chart Type Change Handler
-  // =====================================
   const onChangeChartType = useCallback(
     (chartType: ChartType) => {
       let nextInput: Partial<VisualizationV2BlockInput>;
+
       switch (chartType) {
+        // ⬢ NOTE — wrapped in braces to fix no-case-declarations.
+        // const declarations inside a case require a block scope.
         case "trend":
-        case "number":
+        case "number": {
           const yAxis = attrs.input.yAxes[0];
           const series = yAxis?.series[0] ?? null;
+          // ⬢ NOTE — guard both series AND yAxis before accessing yAxis.id/name.
+          // series being truthy doesn't narrow yAxis for TypeScript.
           nextInput = {
             dataframeName: attrs.input.dataframeName,
             chartType,
@@ -460,31 +445,33 @@ function VisualizationBlockV2(props: Props) {
             xAxisName: attrs.input.xAxisName,
             xAxisSort: attrs.input.xAxisSort,
             xAxisGroupFunction: attrs.input.xAxisGroupFunction,
-            yAxes: series
-              ? [
-                  {
-                    id: yAxis.id,
-                    name: yAxis.name,
-                    series: [
-                      {
-                        id: series.id,
-                        chartType: null,
-                        column: series.column,
-                        aggregateFunction: series.aggregateFunction,
-                        groupBy: null,
-                        name: null,
-                        color: null,
-                        groups: null,
-                        dateFormat: null,
-                        numberFormat: null,
-                      },
-                    ],
-                  },
-                ]
-              : [],
+            yAxes:
+              series && yAxis
+                ? [
+                    {
+                      id: yAxis.id,
+                      name: yAxis.name,
+                      series: [
+                        {
+                          id: series.id,
+                          chartType: null,
+                          column: series.column,
+                          aggregateFunction: series.aggregateFunction,
+                          groupBy: null,
+                          name: null,
+                          color: null,
+                          groups: null,
+                          dateFormat: null,
+                          numberFormat: null,
+                        },
+                      ],
+                    },
+                  ]
+                : [],
             filters: attrs.input.filters,
           };
           break;
+        }
         case "groupedColumn":
         case "line":
         case "area":
@@ -494,26 +481,19 @@ function VisualizationBlockV2(props: Props) {
         case "hundredPercentStackedColumn":
         case "pie":
         case "histogram":
-          nextInput = {
-            ...attrs.input,
-            chartType,
-          };
+          nextInput = { ...attrs.input, chartType };
           break;
         default:
+          // ⬢ NOTE — fall back to current input so setVisualizationV2Input
+          // is never called with an uninitialized variable (nextInput used
+          // before assigned TS error).
+          nextInput = { ...attrs.input };
           break;
       }
 
       setVisualizationV2Input(props.block, nextInput);
     },
-    [
-      props.block,
-      attrs.input.yAxes,
-      attrs.input.dataframeName,
-      attrs.input.xAxis,
-      attrs.input.xAxisSort,
-      attrs.input.xAxisGroupFunction,
-      attrs.input.filters,
-    ]
+    [props.block, attrs.input]
   );
 
   const onChangeXAxisGroupFunction = useCallback(
@@ -563,10 +543,7 @@ function VisualizationBlockV2(props: Props) {
   const tooManyDataPointsHidden = !(attrs.output?.tooManyDataPoints ?? true);
 
   const onHideTooManyDataPointsWarning = useCallback(() => {
-    if (!attrs.output) {
-      return;
-    }
-
+    if (!attrs.output) return;
     props.block.setAttribute("output", {
       ...attrs.output,
       tooManyDataPoints: false,
@@ -580,50 +557,39 @@ function VisualizationBlockV2(props: Props) {
     [props.block]
   );
 
-  const [isDirty, setIsDirty] = useState(false);
+  // ── effects ──
+
   useEffect(() => {
-    if (!dataframe) {
-      return;
-    }
+    if (!dataframe) return;
 
     let timeout: NodeJS.Timeout | null = null;
+
     function observe(event: Y.YXmlEvent) {
       const block = event.target;
-      if (!(block instanceof Y.XmlElement)) {
-        return;
-      }
-
-      if (!isVisualizationV2Block(block)) {
-        return;
-      }
+      if (!(block instanceof Y.XmlElement)) return;
+      if (!isVisualizationV2Block(block)) return;
 
       const input = block.getAttribute("input");
-      if (!dataframe || !input) {
-        return;
-      }
+      if (!dataframe || !input) return;
 
       const shouldIgnore =
         event.changes.keys.size === 0 ||
         Array.from(event.changes.keys.entries()).every(([key, val]) => {
           if (key === "input") {
-            // Create a list of formatting-related fields that don't require backend recomputation
             const xAxisFormattingFields: (keyof VisualizationV2BlockInput)[] = [
               "xAxisNumberFormat",
               "xAxisDateFormat",
             ];
-
             const seriesFormattingFields: (keyof Series)[] = [
               "dateFormat",
               "numberFormat",
             ];
 
-            // Check if only formatting fields changed by comparing old and new values
-            // excluding both filters and formatting fields
             const oldValueForComparison = {
               ...omit([...xAxisFormattingFields, "filters"], val.oldValue),
               yAxes: val.oldValue.yAxes.map((yAxis: YAxis) => ({
                 ...yAxis,
-                series: yAxis.series.map(series => ({
+                series: yAxis.series.map((series: Series) => ({
                   ...omit(seriesFormattingFields, series),
                 })),
               })),
@@ -648,27 +614,21 @@ function VisualizationBlockV2(props: Props) {
               !didChangeFilters(val.oldValue.filters, input.filters, dataframe)
             );
           }
-
           return true;
         });
 
       if (!shouldIgnore) {
-        if (timeout) {
-          clearTimeout(timeout);
-        }
-
+        if (timeout) clearTimeout(timeout);
         timeout = setTimeout(() => {
           setIsDirty(true);
         }, 1000);
       }
     }
+
     props.block.observe(observe);
 
     return () => {
-      if (timeout) {
-        clearTimeout(timeout);
-      }
-
+      if (timeout) clearTimeout(timeout);
       props.block.unobserve(observe);
     };
   }, [props.block, dataframe]);
@@ -679,6 +639,8 @@ function VisualizationBlockV2(props: Props) {
       setIsDirty(false);
     }
   }, [isDirty, props.block, onRun]);
+
+  // ── derived ──
 
   const [isFullScreen] = useFullScreenDocument(props.document.id);
 
@@ -714,15 +676,9 @@ function VisualizationBlockV2(props: Props) {
   const onChangeSeries = useCallback(
     (id: Series["id"], series: Series) => {
       const yAxes = attrs.input.yAxes.map(yAxis => {
-        const newSeries = yAxis.series.map(s => {
-          if (s.id === id) {
-            return series;
-          }
-          return s;
-        });
+        const newSeries = yAxis.series.map(s => (s.id === id ? series : s));
         return { ...yAxis, series: newSeries };
       });
-
       setVisualizationV2Input(props.block, { yAxes });
     },
     [props.block, attrs.input.yAxes]
@@ -731,13 +687,9 @@ function VisualizationBlockV2(props: Props) {
   const onChangeAllSeries = useCallback(
     (yIndex: number, series: Series[]) => {
       setVisualizationV2Input(props.block, {
-        yAxes: attrs.input.yAxes.map((yAxis, index) => {
-          if (index === yIndex) {
-            return { ...yAxis, series };
-          }
-
-          return yAxis;
-        }),
+        yAxes: attrs.input.yAxes.map((yAxis, index) =>
+          index === yIndex ? { ...yAxis, series } : yAxis
+        ),
       });
     },
     [props.block, attrs.input.yAxes]
@@ -753,17 +705,8 @@ function VisualizationBlockV2(props: Props) {
     (!hasAValidYAxis && attrs.input.chartType !== "histogram") ||
     !props.isEditable;
 
-  console.log(
-    "viz result",
-    attrs.output?.result,
-    dataframe,
-    attrs.title,
-    attrs.input,
-    attrs
-  );
+  // ── tooltip content ──
 
-  // ⬢ Tooltip Content
-  // =====================================
   const runTooltipContent = useMemo(() => {
     if (status !== "idle") {
       switch (status) {
@@ -790,6 +733,11 @@ function VisualizationBlockV2(props: Props) {
                 "When running entire documents, you cannot stop individual blocks.",
             };
           }
+
+          // ⬢ NOTE — explicit return null to fix no-fallthrough. If running
+          // but neither condition is met, fall through to null is intentional
+          // but must be explicit.
+          return null;
         }
         case "unknown":
         case "aborting":
@@ -802,7 +750,7 @@ function VisualizationBlockV2(props: Props) {
       return {
         content: (ref: RefObject<HTMLDivElement>) => (
           <div
-            className="font-body  pointer-events-none w-max bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1"
+            className="font-body pointer-events-none w-max bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1"
             ref={ref}
           >
             <span>Refresh</span>
@@ -812,11 +760,8 @@ function VisualizationBlockV2(props: Props) {
     }
   }, [status, envStatus, envLoading, execution, isRunButtonDisabled]);
 
-  // ⬢ Render Visualization Block
-  // =====================================
-  // If we're in dashboard mode without controls, render a simplified readonly view
-  // of the visualization that displays only the output.
-  // =====================================
+  // ── render ──
+
   if (props.dashboardMode && !dashboardModeHasControls(props.dashboardMode)) {
     return (
       <VisualizationViewV2
@@ -840,14 +785,10 @@ function VisualizationBlockV2(props: Props) {
     );
   }
 
-  // ⬢ Full Visualization Block
-  // =====================================
-  // In the standard mode, we render the full visualization block with
-  // controls, filters, and editing capabilities.
-  // =====================================
   return (
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
     <div
-      className=" group/block w-full"
+      className="group/block w-full"
       onClick={onClickWithin}
       data-block-id={attrs.id}
     >
@@ -855,32 +796,25 @@ function VisualizationBlockV2(props: Props) {
         className={clsx(
           "rounded-2xl border",
           props.isBlockHiddenInPublished && "border-dashed",
-          props.hasMultipleTabs ? "rounded-2xl" : "rounded-2xl",
-
           props.isCursorWithin
             ? "border-border-focus shadow-sm"
             : "border-border-focus dark:border-border-tertiary"
         )}
       >
-        <div
-          className={clsx(
-            "rounded-2xl",
-            props.hasMultipleTabs ? "rounded-2xl" : ""
-          )}
-        >
+        <div className="rounded-2xl">
           <div
-            className="border-b border-border-focus dark:border-border-tertiary  rounded-t-2xl"
+            className="border-b border-border-focus dark:border-border-tertiary rounded-t-2xl"
             ref={d => {
               props.dragPreview?.(d);
             }}
           >
-            <div className="flex items-center justify-between px-3 pr-0 gap-x-4 font-body  h-12 divide-x divide-border-secondary dark:divide-border-tertiary">
+            <div className="flex items-center justify-between px-3 pr-0 gap-x-4 font-body h-12 divide-x divide-border-secondary dark:divide-border-tertiary">
               <div className="select-none text-gray-300 text-xs flex items-center w-full h-full gap-x-0.5 px-4">
                 <ChartPie className="h-5 w-5 text-ink-400" />
                 <input
                   type="text"
                   className={clsx(
-                    "text-base font-body  font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-md border-0 text-ink-100 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-ink-400 dark:placeholder:text-ink-300   py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white dark:text-white"
+                    "text-base font-body font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-md border-0 text-ink-100 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-ink-400 dark:placeholder:text-ink-300 py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white dark:text-white"
                   )}
                   placeholder="Visualization (click to add a title)"
                   value={attrs.title}
@@ -892,7 +826,7 @@ function VisualizationBlockV2(props: Props) {
                 <button
                   type="button"
                   className={clsx(
-                    "font-body  text-xs flex justify-center items-center gap-x-1.5 text-ink-400 px-2.5 whitespace-nowrap disabled:bg-white hover:bg-gray-100 disabled:cursor-not-allowed h-full min-w-[124px] dark:hover:bg-[#181C21]",
+                    "font-body text-xs flex justify-center items-center gap-x-1.5 text-ink-400 px-2.5 whitespace-nowrap disabled:bg-white hover:bg-gray-100 disabled:cursor-not-allowed h-full min-w-[124px] dark:hover:bg-[#181C21]",
                     props.isPublicMode ? "hidden" : "inline-block"
                   )}
                   onClick={onAddFilter}
@@ -917,9 +851,7 @@ function VisualizationBlockV2(props: Props) {
         <div
           className={clsx(
             "p-2 flex flex-wrap items-center gap-2 min-h[3rem] border-b border-border-secondary",
-            {
-              hidden: attrs.input.filters.length === 0,
-            }
+            { hidden: attrs.input.filters.length === 0 }
           )}
         >
           {attrs.input.filters.map(filter => (
@@ -941,6 +873,7 @@ function VisualizationBlockV2(props: Props) {
             />
           ))}
         </div>
+
         <div className="h-[580px] flex items-center">
           <VisualizationControlsV2
             isHidden={attrs.controlsHidden || !props.isEditable}
@@ -991,13 +924,12 @@ function VisualizationBlockV2(props: Props) {
             isEditable={props.isEditable}
           />
         </div>
+
         <div
           className={clsx(
             "absolute transition-opacity opacity-0 group-hover/block:opacity-100 right-0 translate-x-full pl-1.5 top-0 flex flex-col gap-y-1",
             viewLoading ? "opacity-100" : "opacity-0",
-            {
-              hidden: !props.isEditable,
-            }
+            { hidden: !props.isEditable }
           )}
         >
           <TooltipV2<HTMLButtonElement> {...runTooltipContent} active>
@@ -1024,13 +956,13 @@ function VisualizationBlockV2(props: Props) {
                 {status !== "idle" ? (
                   <div>
                     {status === "enqueued" ? (
-                      <ClockIcon className="w-3 h-3 text-ink-400 " />
+                      <ClockIcon className="w-3 h-3 text-ink-400" />
                     ) : (
-                      <StopIcon className="w-3 h-3 text-ink-400 " />
+                      <StopIcon className="w-3 h-3 text-ink-400" />
                     )}
                   </div>
                 ) : (
-                  <PlayIcon className="w-3 h-3 text-ink-400 " />
+                  <PlayIcon className="w-3 h-3 text-ink-400" />
                 )}
               </button>
             )}

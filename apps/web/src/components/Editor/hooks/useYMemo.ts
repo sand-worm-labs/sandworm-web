@@ -40,6 +40,7 @@ export function useYMemo<O extends YObservable, T>(
 
   useEffect(() => {
     const onUpdate = () => {
+      console.log("[useYMemo] observer fired");
       setValue(fn());
     };
 
@@ -52,7 +53,7 @@ export function useYMemo<O extends YObservable, T>(
         observable.unobserveDeep(onUpdate);
       }
     };
-  }, [observables, ...deps]);
+  }, [...observables, ...deps]);
 
   return value;
 }
