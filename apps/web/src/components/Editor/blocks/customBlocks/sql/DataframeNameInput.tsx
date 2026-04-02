@@ -142,6 +142,7 @@ function DataframeNameInput(props: Props) {
         {dataframeName.error ? (
           <>
             <button
+              type="button"
               disabled={dataframeName.error !== "unexpected"}
               onClick={onRetry}
             >

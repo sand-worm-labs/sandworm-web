@@ -1009,6 +1009,7 @@ function SQLBlock(props: Props) {
                           >
                             {ref => (
                               <button
+                                type="button"
                                 ref={ref}
                                 disabled={!props.isEditable}
                                 className={clsx(

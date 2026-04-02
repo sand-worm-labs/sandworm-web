@@ -160,18 +160,21 @@ function FilesTable(props: Props) {
             </p>
             <div className="flex justify-center gap-x-4">
               <button
+                type="button"
                 className="px-4 py-2 text-sm text-ink-400  hover:text-gray-800"
                 onClick={props.onReplaceYes}
               >
                 Yes
               </button>
               <button
+                type="button"
                 className="px-4 py-2 text-sm text-ink-400  hover:text-gray-800"
                 onClick={props.onReplaceAll}
               >
                 Yes to all
               </button>
               <button
+                type="button"
                 className="px-4 py-2 text-sm text-ink-400  hover:text-gray-800"
                 onClick={props.onReplaceNo}
               >
@@ -351,6 +354,7 @@ export function Cell(props: CellProps) {
             )}
           >
             <button
+              type="button"
               className={clsx(
                 "cursor-pointer disabled:cursor-not-allowed hover:text-primary-700",
                 !disabled && "hover:text-ink-400 "
@@ -362,6 +366,7 @@ export function Cell(props: CellProps) {
             </button>
             <span>/</span>
             <button
+              type="button"
               className={clsx(
                 "cursor-pointer disabled:cursor-not-allowed hover:text-primary-700",
                 !disabled && "hover:text-ink-400 "
@@ -389,6 +394,7 @@ export function Cell(props: CellProps) {
       case "Del":
         return (
           <button
+            type="button"
             className="flex items-center jutify-center cursor-pointer text-ink-400  hover:text-red-600 h-4 w-4 text-xs"
             onClick={onDelete}
             disabled={props.isDeleting}
