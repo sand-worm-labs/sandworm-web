@@ -31,6 +31,8 @@ function queryNameErrorMessage(
           icon to retry.
         </>
       );
+    default:
+      break;
   }
 }
 

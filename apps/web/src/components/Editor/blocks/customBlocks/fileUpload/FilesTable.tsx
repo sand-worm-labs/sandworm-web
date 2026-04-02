@@ -402,6 +402,8 @@ export function Cell(props: CellProps) {
             {props.isDeleting ? <Spin /> : <TrashIcon />}
           </button>
         );
+      default:
+        break;
     }
   }, [
     props.header,

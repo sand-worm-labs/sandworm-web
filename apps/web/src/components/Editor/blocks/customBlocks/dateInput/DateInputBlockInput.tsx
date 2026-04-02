@@ -31,6 +31,8 @@ function invalidValueErrorMessage(
           retry.
         </>
       );
+    default:
+      break;
   }
 }
 

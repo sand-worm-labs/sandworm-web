@@ -415,6 +415,8 @@ function PythonBlock(props: Props) {
         case "aborting":
         case "completed":
           return null;
+        default:
+          break;
       }
     } else {
       return {

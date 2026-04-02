@@ -50,6 +50,8 @@ function invalidVariableErrorMessage(
           retry.
         </>
       );
+    default:
+      break;
   }
 }
 

@@ -262,6 +262,8 @@ const GeneralTab = ({
             dataframe?.columns ?? []
           )[0] ?? null
         );
+      default:
+        break;
     }
   }, [chartType, dataframe?.columns]);
 

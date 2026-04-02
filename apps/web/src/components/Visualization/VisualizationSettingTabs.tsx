@@ -16,6 +16,8 @@ function tabToName(tab: Tab): string {
       return "Y-Axis";
     case "labels":
       return "Labels";
+    default:
+      break;
   }
 }
 

@@ -41,6 +41,8 @@ export function computeMenuPosition(
         top: referenceRect.top + referenceRect.height + padding,
         left: referenceRect.left,
       };
+    default:
+      return {};
   }
 }
 
@@ -86,12 +88,9 @@ export function computeTooltipPosition(
   const referenceMiddleX = referenceRect.left + referenceRect.width / 2;
 
   switch (tooltipPosition) {
-    case "top":
+    case "top": {
       let left = referenceMiddleX - tooltipRect.width / 2;
       const top = referenceRect.top - tooltipRect.height - padding;
-
-      // if tooltip is out of screen, move it to the left so that its right
-      // edge is aligned with the right edge of referenceRect
       const safeMargin = 36;
       const rightEdgeInScreen =
         (isPortal ? 0 : commonRect.left) + left + tooltipRect.width;
@@ -100,9 +99,8 @@ export function computeTooltipPosition(
         left = referenceRect.right - tooltipRect.width;
       }
 
-      return {
-        top,
-        left,
-      };
-  }
+      return { top, left };
+    }
+    default:
+      return {};
 }
