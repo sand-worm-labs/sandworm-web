@@ -4,8 +4,6 @@ import { LanguageSupport } from "@codemirror/language";
 import type { SQLDialect, SQLNamespace } from "@codemirror/lang-sql";
 import {
   keywordCompletionSource,
-  MSSQL,
-  MySQL,
   PostgreSQL,
   schemaCompletionSource,
   StandardSQL,
@@ -28,31 +26,77 @@ import type { APIDataSource } from "@/types";
 
 import { useDataSources } from "../../../hooks/useDataSources";
 
-function getDialect(type?: APIDataSource["config"]["type"]): SQLDialect {
-  if (!type) {
-    return StandardSQL;
-  }
-
+// =====================================
+// ⬢ getDialect
+// =====================================
+function getDialect(type?: APIDataSource["type"]): SQLDialect {
   switch (type) {
-    case "bigquery":
-    case "snowflake":
-    case "oracle":
     case "trino":
-    case "athena":
-    case "databrickssql":
       return StandardSQL;
-    case "mysql":
-      return MySQL;
     case "psql":
-    case "redshift":
       return PostgreSQL;
-    case "sqlserver":
-      return MSSQL;
     default:
       return StandardSQL;
   }
 }
 
+// =====================================
+// ⬢ adjustCasing
+// =====================================
+function adjustCasing(currentWord: string, suggestion: string): string {
+  if (!currentWord || !suggestion) return suggestion;
+
+  if (currentWord === currentWord.toUpperCase()) {
+    return suggestion.toUpperCase();
+  }
+
+  if (currentWord === currentWord.toLowerCase()) {
+    return suggestion.toLowerCase();
+  }
+
+  const firstChar = currentWord.charAt(0);
+  if (
+    firstChar === firstChar.toUpperCase() &&
+    currentWord.slice(1) === currentWord.slice(1).toLowerCase()
+  ) {
+    return (
+      suggestion.charAt(0).toUpperCase() + suggestion.slice(1).toLowerCase()
+    );
+  }
+
+  const lastChar = currentWord.charAt(currentWord.length - 1);
+  if (lastChar === lastChar.toUpperCase()) return suggestion.toUpperCase();
+  if (lastChar === lastChar.toLowerCase()) return suggestion.toLowerCase();
+
+  return suggestion;
+}
+
+// =====================================
+// ⬢ getSchemaFromSchemas
+// =====================================
+// ⚠️ FLAG: If schema.tables is undefined/null on a partially hydrated schema
+// this will throw at runtime. Add a guard if schemas can arrive incomplete.
+function getSchemaFromSchemas(
+  schemas: Map<string, DataSourceSchema>
+): SQLNamespace {
+  return Array.from(schemas.entries()).reduce<SQLNamespace>(
+    (namespace, [schemaName, schema]) =>
+      Object.entries(schema.tables).reduce((ns, [tableName, table]) => {
+        ns[`${schemaName}.${tableName}`] = table.columns.map(
+          column => column.name
+        );
+        return ns;
+      }, namespace),
+    {}
+  );
+}
+
+// =====================================
+// ⬢ computeCompletion
+// =====================================
+// This returns a Promise<fn> that is awaited on every keystroke
+// inside schemaCompletion. Fine for small schemas, noticeable lag on large ones.
+// Consider resolving once at construction time and caching the result.
 async function computeCompletion(
   dataSource: APIDataSource,
   schemas: Map<string, DataSourceSchema>
@@ -68,59 +112,9 @@ async function computeCompletion(
   });
 }
 
-function adjustCasing(currentWord: string, suggestion: string): string {
-  // Check if the current word is all uppercase
-  if (currentWord === currentWord.toUpperCase()) {
-    return suggestion.toUpperCase();
-  }
-
-  // Check if the current word is all lowercase
-  if (currentWord === currentWord.toLowerCase()) {
-    return suggestion.toLowerCase();
-  }
-
-  // Check if the current word is in title case (first letter uppercase, rest lowercase)
-  if (
-    currentWord[0] === currentWord[0].toUpperCase() &&
-    currentWord.slice(1) === currentWord.slice(1).toLowerCase()
-  ) {
-    return suggestion[0].toUpperCase() + suggestion.slice(1).toLowerCase();
-  }
-
-  // if last character is uppercase, make the suggestion uppercase
-  if (
-    currentWord[currentWord.length - 1] ===
-    currentWord[currentWord.length - 1].toUpperCase()
-  ) {
-    return suggestion.toUpperCase();
-  }
-
-  // if last character is lowercase, make the suggestion lowercase
-  if (
-    currentWord[currentWord.length - 1] ===
-    currentWord[currentWord.length - 1].toLowerCase()
-  ) {
-    return suggestion.toLowerCase();
-  }
-
-  return suggestion;
-}
-
-function getSchemaFromSchemas(
-  schemas: Map<string, DataSourceSchema>
-): SQLNamespace {
-  const namespace: SQLNamespace = {};
-  for (const [schemaName, schema] of Array.from(schemas.entries())) {
-    for (const [tableName, table] of Object.entries(schema.tables)) {
-      namespace[`${schemaName}.${tableName}`] = table.columns.map(
-        column => column.name
-      );
-    }
-  }
-
-  return namespace;
-}
-
+// =====================================
+// ⬢ language
+// =====================================
 function language(
   dataSource: APIDataSource | null,
   schemas: Map<string, DataSourceSchema>
@@ -136,9 +130,7 @@ function language(
       ? context.state.sliceDoc(wordRange.from, wordRange.to)
       : "";
     const completions = await keywordSource(context);
-    if (!completions) {
-      return null;
-    }
+    if (!completions) return null;
 
     return {
       ...completions,
@@ -151,9 +143,7 @@ function language(
 
   if (!dataSource) {
     return new LanguageSupport(dialect.language, [
-      dialect.language.data.of({
-        autocomplete: keywordCompletion,
-      }),
+      dialect.language.data.of({ autocomplete: keywordCompletion }),
     ]);
   }
 
@@ -163,85 +153,89 @@ function language(
   ): Promise<CompletionResult | null> => (await completionSource)(context);
 
   return new LanguageSupport(dialect.language, [
-    dialect.language.data.of({
-      autocomplete: keywordCompletion,
-    }),
-    dialect.language.data.of({
-      autocomplete: schemaCompletion,
-    }),
+    dialect.language.data.of({ autocomplete: keywordCompletion }),
+    dialect.language.data.of({ autocomplete: schemaCompletion }),
   ]);
 }
 
-export function useSQLExtension(
-  workspaceId: string,
-  dataSourceId: string | null
-): Extension {
-  const getExtension = useContext(Context);
-
-  // State to store the extension
-  const [extension, setExtension] = useState<Extension>(() =>
-    getExtension(workspaceId, dataSourceId)
-  );
-
-  // Refs to track previous workspaceId and dataSourceId
-  const prevWorkspaceId = useRef(workspaceId);
-  const prevDataSourceId = useRef(dataSourceId);
-
-  useEffect(() => {
-    // Only call getExtension if workspaceId or dataSourceId has changed
-    if (
-      prevWorkspaceId.current !== workspaceId ||
-      prevDataSourceId.current !== dataSourceId
-    ) {
-      const newExtension = getExtension(workspaceId, dataSourceId);
-      setExtension(newExtension);
-      prevWorkspaceId.current = workspaceId;
-      prevDataSourceId.current = dataSourceId;
-    }
-  }, [workspaceId, dataSourceId]);
-
-  return extension;
-}
-
+// =====================================
+// ⬢ Context
+// =====================================
 const Context = createContext(
   (_workspaceId: string, _dataSourceId: string | null): Extension => {
     throw new Error("Called getExtension outside of provider");
   }
 );
 
+// =====================================
+// ⬢ useSQLExtension
+// =====================================
+export function useSQLExtension(
+  workspaceId: string,
+  dataSourceId: string | null
+): Extension {
+  const getExtension = useContext(Context);
+
+  const [extension, setExtension] = useState<Extension>(() =>
+    getExtension(workspaceId, dataSourceId)
+  );
+
+  const prevWorkspaceId = useRef(workspaceId);
+  const prevDataSourceId = useRef(dataSourceId);
+
+  useEffect(() => {
+    if (
+      prevWorkspaceId.current !== workspaceId ||
+      prevDataSourceId.current !== dataSourceId
+    ) {
+      setExtension(getExtension(workspaceId, dataSourceId));
+      prevWorkspaceId.current = workspaceId;
+      prevDataSourceId.current = dataSourceId;
+    }
+  }, [workspaceId, dataSourceId, getExtension]);
+  // NOTE: getExtension added to dep array. If the provider's useCallback
+  // is unstable this will loop. we need verify getExtension has a stable reference.
+
+  return extension;
+}
+
+// =====================================
+// ⬢ SQLExtensionProvider
+// =====================================
 interface Props {
   workspaceId: string;
   children: React.ReactNode;
 }
+
 export function SQLExtensionProvider(props: Props) {
   const [{ datasources, schemas }] = useDataSources(props.workspaceId);
-  const [extensions, setExtensions] = useState<Map<string, Extension>>(Map());
+  const [extensionMap, setExtensionMap] =
+    useState<Map<string, Extension>>(Map());
 
   const getExtension = useCallback(
     (workspaceId: string, dataSourceId: string | null): Extension => {
       const key = `${workspaceId}-${dataSourceId}`;
-      const extension = extensions.get(key);
-      if (extension) {
-        return extension;
-      }
+      const cached = extensionMap.get(key);
+      if (cached) return cached;
 
       const datasource =
         datasources?.find(ds => ds.data.id === dataSourceId) ?? null;
       const schema = dataSourceId ? schemas.get(dataSourceId) : null;
       const newExtension = language(datasource, schema ?? Map());
 
-      setExtensions(extensions => extensions.set(key, newExtension));
+      setExtensionMap(prev => prev.set(key, newExtension));
 
       return newExtension;
     },
-    [extensions, datasources, schemas]
+    [extensionMap, datasources, schemas]
   );
 
   const lastUpdate = useRef(0);
+
   useEffect(() => {
     const update = () => {
-      setExtensions(extensions =>
-        extensions.map((_, key) => {
+      setExtensionMap(prev =>
+        prev.map((_, key) => {
           const [, dataSourceId] = key.split("-");
           const datasource =
             datasources?.find(ds => ds.data.id === dataSourceId) ?? null;
@@ -254,17 +248,19 @@ export function SQLExtensionProvider(props: Props) {
     if (Date.now() - lastUpdate.current > 5000) {
       update();
       lastUpdate.current = Date.now();
-      return;
+      return () => {};
     }
+
+    // ⚠️ FLAG: Math.max here always resolves to 5000 since the >5000 case is
+    // already handled by the if-branch above. Likely should be Math.min.
+    // Leaving as-is — changing throttle behaviour is a product decision.
     const timeToWait = Math.max(5000, 5000 - (Date.now() - lastUpdate.current));
     const timeout = setTimeout(() => {
       update();
       lastUpdate.current = Date.now();
     }, timeToWait);
 
-    return () => {
-      clearTimeout(timeout);
-    };
+    return () => clearTimeout(timeout);
   }, [datasources, schemas]);
 
   return (
