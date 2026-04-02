@@ -284,7 +284,7 @@ function DropdownInputBlock(props: Props) {
             />
             {!props.isApp && props.isEditable && (
               <div className="flex items-center space-x-1">
-                <button onClick={toggleConfigOpen}>
+                <button type="button" onClick={toggleConfigOpen}>
                   <Cog6ToothIcon className="h-4 w-4 text-ink-400 hover:text-gray-600" />
                 </button>
                 <div
@@ -322,6 +322,7 @@ function DropdownInputBlock(props: Props) {
                       ) : attrs.variable.error ? (
                         <>
                           <button
+                            type="button"
                             disabled={attrs.variable.error === null}
                             onClick={onRetryVariable}
                           >
@@ -452,7 +453,7 @@ function DropdownInputBlock(props: Props) {
                   <ClockIcon className="w-4 h-4 text-gray-300" />
                 ) : attrs.value.error ? (
                   <>
-                    <button onClick={onRetryValue}>
+                    <button type="button" onClick={onRetryValue}>
                       <ExclamationCircleIcon
                         className="h-4 w-4 text-red-300"
                         aria-hidden="true"

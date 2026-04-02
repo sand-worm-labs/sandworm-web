@@ -114,6 +114,7 @@ function PivotTableView(props: Props) {
               <span className="text-lg text-gray-300">No data</span>
               {!props.dataframe && (
                 <button
+                  type="button"
                   className="text-xs text-gray-300 hover:underline"
                   onClick={props.onNewSQL}
                 >
@@ -129,6 +130,7 @@ function PivotTableView(props: Props) {
         dashboardModeHasControls(props.dashboardMode)) &&
         props.isEditable && (
           <button
+            type="button"
             className={clsx(
               "absolute bottom-0 bg-white rounded-tr-md border-t border-r border-border-secondary p-2 hover:bg-gray-50 z-10",
               props.controlsHidden ? "left-0 rounded-bl-md" : "-left-[1px]"

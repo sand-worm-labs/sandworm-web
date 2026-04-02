@@ -145,6 +145,7 @@ export default function HeaderSelect(props: Props) {
                 <>
                   <hr className="border-t border-border-secondary" />
                   <button
+                    type="button"
                     onClick={props.onAdd}
                     className="flex items-center w-full text-left py-3 pl-3 pr-9 text-ink-100 hover:bg-blue-50 gap-x-3"
                   >

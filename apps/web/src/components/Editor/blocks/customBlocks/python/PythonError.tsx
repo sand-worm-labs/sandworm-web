@@ -69,6 +69,7 @@ export function PythonErrorUI(props: PythonErrorUIProps) {
               active={!props.canFixWithAI}
             >
               <button
+                type="button"
                 onClick={props.onFixWithAI}
                 className={clsx(
                   "mt-2 flex items-center border rounded-sm px-2 py-1 gap-x-2 font-syne border-border-secondary hover:bg-gray-50 hover:text-gray-700 disabled:bg-gray-200 disabled:border-0 disabled:cursor-not-allowed"
