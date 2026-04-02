@@ -41,8 +41,14 @@ import LargeSpinner from "../Editor/blocks/LargeSpinner";
 
 import { findMaxFontSize, measureText } from "./measureText";
 
+// =====================================
+// ⬢ Constants
+// =====================================
 const FONT_FAMILY = ["Inter", ...twFontFamiliy.sans].join(", ");
 
+// =====================================
+// ⬢ Types
+// =====================================
 interface Props {
   title: string;
   input: VisualizationV2BlockInput;
@@ -66,6 +72,10 @@ interface Props {
   hasControls: boolean;
   isEditable: boolean;
 }
+
+// =====================================
+// ⬢ VisualizationViewV2
+// =====================================
 function VisualizationViewV2(props: Props) {
   const {
     state: { isOpen: isSideBarOpen },
@@ -74,7 +84,6 @@ function VisualizationViewV2(props: Props) {
 
   return (
     <div
-      // we use key to force re-render when controlsHidden changes
       key={key}
       className={clsx(
         !props.controlsHidden && props.hasControls && "w-2/3",
@@ -209,6 +218,9 @@ function VisualizationViewV2(props: Props) {
   );
 }
 
+// =====================================
+// ⬢ SandwormResult
+// =====================================
 function SandwormResult(props: {
   title: string;
   input: VisualizationV2BlockInput;
@@ -222,6 +234,7 @@ function SandwormResult(props: {
 
   const measureDiv = useRef<HTMLDivElement>(null);
   const container = useRef<HTMLDivElement>(null);
+
   useLayoutEffect(() => {
     if (!size && measureDiv.current) {
       const { width, height } = measureDiv.current.getBoundingClientRect();
@@ -231,12 +244,12 @@ function SandwormResult(props: {
 
   useEffect(() => {
     if (!container.current) {
-      return;
+      return () => {};
     }
 
     const parent = container.current.parentElement;
     if (!parent) {
-      return;
+      return () => {};
     }
 
     const observer = new ResizeObserver(
@@ -247,21 +260,21 @@ function SandwormResult(props: {
         // infinite loops due to mismatching floating points
         const widthDiff = Math.abs((size?.width ?? 0) - width);
         const heightDiff = Math.abs((size?.height ?? 0) - height);
-        if (size && widthDiff < 1 && heightDiff < 1) {
-          return;
+
+        // ⬢ NOTE — consistent-return: removed early return in favour of
+        // conditional setSize to keep the callback return type uniform (void).
+        if (!size || widthDiff >= 1 || heightDiff >= 1) {
+          setSize(prev => {
+            if (
+              width &&
+              height &&
+              (!prev || prev.width !== width || prev.height !== height)
+            ) {
+              return null;
+            }
+            return prev;
+          });
         }
-
-        setSize(size => {
-          if (
-            width &&
-            height &&
-            (!size || size.width !== width || size.height !== height)
-          ) {
-            return null;
-          }
-
-          return size;
-        });
       }, 500)
     );
 
@@ -293,6 +306,8 @@ function SandwormResult(props: {
           return getTimeAxis(axis, props.result, props.input);
         case "category":
           return getCategoryAxis(axis);
+        default:
+          return getCategoryAxis(axis);
       }
     });
 
@@ -304,20 +319,21 @@ function SandwormResult(props: {
           ...series.label,
           formatter: (param: { dataIndex: number }) => {
             const seriesId = series.id.split(":")[0];
-            let seriesInput: Series | null = null;
-            for (const yAxis of props.input.yAxes) {
-              for (const s of yAxis.series) {
-                if (s.id === seriesId) {
-                  seriesInput = s;
-                  break;
-                }
-              }
-            }
 
+            // ⬢ NOTE — flatMap/find replaces nested for...of loops
+            const seriesInput: Series | null =
+              props.input.yAxes
+                .flatMap(yAxis => yAxis.series)
+                .find(s => s.id === seriesId) ?? null;
+
+            const key = series.encode?.y ?? series.id.split(":").pop() ?? "";
             const value =
               props.result.dataset[series.datasetIndex]?.source[
                 param.dataIndex
-              ]?.[series.encode?.y ?? series.id.split(":").pop() ?? ""];
+              ]?.[key];
+
+            // ⬢ NOTE — guard against undefined value before passing to formatters
+            if (value === undefined) return "";
 
             if (seriesInput?.column) {
               if (NumpyDateTypes.safeParse(seriesInput.column.type).success) {
@@ -405,16 +421,16 @@ function SandwormResult(props: {
       tooltip: {
         ...props.result.tooltip,
         formatter(params) {
-          if (!Array.isArray(params)) {
-            params = [params];
-          }
-          const first = Array.isArray(params) ? head(params) : params;
+          // ⬢ NOTE — avoid no-param-reassign by creating a local copy
+          const paramList = Array.isArray(params) ? params : [params];
+          const first = paramList[0];
           if (!first || !props.input.xAxis?.name) {
             return "";
           }
           const rowIdx = first.dataIndex;
-          const xValue =
-            props.result.dataset[0].source[rowIdx][props.input.xAxis.name];
+          // ⬢ NOTE — xAxis.name and dataset source value may be undefined
+          const xAxisName = props.input.xAxis.name;
+          const xValue = props.result.dataset[0]?.source[rowIdx]?.[xAxisName];
           const xFormatted = (() => {
             const axis = head(xAxes);
             if (!axis) {
@@ -423,80 +439,82 @@ function SandwormResult(props: {
 
             switch (axis._tag) {
               case "value":
-                return formatNumberAxis(xValue, props.input.xAxisNumberFormat, {
-                  min: axis.min,
-                  max: axis.max,
-                });
+                return xValue !== undefined
+                  ? formatNumberAxis(xValue, props.input.xAxisNumberFormat, {
+                      min: axis.min,
+                      max: axis.max,
+                    })
+                  : "";
               case "time":
-                return formatDateTimeAxis(xValue, props.input.xAxisDateFormat, {
-                  min: axis.min,
-                  max: axis.max,
-                  hideDay: axis.hideDay,
-                  minIntervalUnit: "year",
-                });
-
+                return xValue !== undefined
+                  ? formatDateTimeAxis(xValue, props.input.xAxisDateFormat, {
+                      min: axis.min,
+                      max: axis.max,
+                      hideDay: axis.hideDay,
+                      minIntervalUnit: "year",
+                    })
+                  : "";
               case "category":
-                return xValue;
+                return xValue ?? "";
+              default:
+                return xValue ?? "";
             }
           })();
 
-          let yValues = "";
+          // ⬢ NOTE — replaced nested for...of loops with reduce + flatMap.
+          // counter limits total tooltip rows to 15 across all series.
           let counter = 0;
-          for (const [i, param] of Array.from(params.entries())) {
-            if (counter > 15) {
-              break;
-            }
+          const yValues = paramList.reduce<string>((acc, param, i) => {
+            if (counter > 15) return acc;
 
             const dataset = props.result.dataset[i];
-            const row = dataset.source[param.dataIndex] ?? [];
-            let result = "";
-            for (const [key, value] of Object.entries(row)) {
-              if (
-                key === props.input.xAxis?.name ||
-                value === 0 ||
-                value === ""
-              ) {
-                continue;
-              }
+            const row = dataset?.source[param.dataIndex] ?? {};
 
-              let seriesInput: Series | null = null;
-              for (const yAxis of props.input.yAxes) {
-                for (const series of yAxis.series) {
-                  if (series.id === key) {
-                    seriesInput = series;
-                    break;
+            const rowHtml = Object.entries(row)
+              .filter(
+                ([key, value]) =>
+                  key !== props.input.xAxis?.name && value !== 0 && value !== ""
+              )
+              .map(([key, value]) => {
+                if (counter > 15) return "";
+
+                const seriesInput: Series | null =
+                  props.input.yAxes
+                    .flatMap(yAxis => yAxis.series)
+                    .find(series => series.id === key) ?? null;
+
+                let formattedValue: unknown = value;
+                if (seriesInput?.column) {
+                  if (
+                    NumpyDateTypes.safeParse(seriesInput.column.type).success
+                  ) {
+                    formattedValue = formatDateTime(
+                      value as string | number,
+                      seriesInput.dateFormat
+                    );
+                  } else if (
+                    NumpyNumberTypes.safeParse(seriesInput.column.type)
+                      .success &&
+                    typeof value === "number" &&
+                    seriesInput.numberFormat
+                  ) {
+                    formattedValue = formatNumber(
+                      value,
+                      seriesInput.numberFormat
+                    );
                   }
                 }
-              }
 
-              let formattedValue = value;
-              if (seriesInput?.column) {
-                if (NumpyDateTypes.safeParse(seriesInput.column.type).success) {
-                  formattedValue = formatDateTime(
-                    value,
-                    seriesInput.dateFormat
-                  );
-                } else if (
-                  NumpyNumberTypes.safeParse(seriesInput.column.type).success &&
-                  typeof value === "number" &&
-                  seriesInput.numberFormat
-                ) {
-                  formattedValue = formatNumber(
-                    value,
-                    seriesInput.numberFormat
-                  );
-                }
-              }
+                counter += 1;
+                return `<div style="display: flex; align-items: center; justify-content: space-between; gap: 20px;">
+                  <div>${param.marker ?? ""}${param.seriesName ?? key}</div>
+                  <div>${formattedValue}</div>
+                </div>`;
+              })
+              .join("");
 
-              result += `<div style="display: flex; align-items: center; justify-content: space-between; gap: 20px;">
-                      <div>${param.marker ?? ""}${param.seriesName ?? key}</div>
-                      <div>${formattedValue}</div>
-                    </div>`;
-              counter++;
-            }
-
-            yValues += result;
-          }
+            return acc + rowHtml;
+          }, "");
 
           return `
             <div>
@@ -534,11 +552,15 @@ function SandwormResult(props: {
   );
 }
 
+// =====================================
+// ⬢ Echarts
+// =====================================
 interface EchartsProps {
   width: number;
   height: number;
   option: echarts.EChartsOption;
 }
+
 function Echarts(props: EchartsProps) {
   const ref = useRef<HTMLDivElement>(null);
   const hiddenRef = useRef<HTMLDivElement>(null);
@@ -547,14 +569,13 @@ function Echarts(props: EchartsProps) {
 
   // First render in hidden div to calculate layout
   useEffect(() => {
-    if (!hiddenRef.current) return;
+    if (!hiddenRef.current) return () => {};
 
     const hiddenChart = echarts.init(hiddenRef.current, null, {
       renderer: "svg",
     });
     const hiddenChartOption = {
       ...props.option,
-      // set animation to be as fast as possible, since finished event does not get fired when no animation
       animationDelay: 0,
       animationDuration: 1,
       xAxis: (props.option.xAxis
@@ -588,17 +609,23 @@ function Echarts(props: EchartsProps) {
         const labels = hiddenChart.getZr().dom?.querySelectorAll("text") ?? [];
         let hasOverlap = false;
 
+        // ⬢ NOTE — guarding labels[i] and labels[i+1] against undefined
+        // before calling getBoundingClientRect to avoid TS2532.
         for (let i = 0; i < labels.length - 1; i++) {
-          const rect1 = labels[i].getBoundingClientRect();
-          const rect2 = labels[i + 1].getBoundingClientRect();
-          if (
-            rect1.right > rect2.left &&
-            rect1.left < rect2.right &&
-            rect1.bottom > rect2.top &&
-            rect1.top < rect2.bottom
-          ) {
-            hasOverlap = true;
-            break;
+          const label1 = labels[i];
+          const label2 = labels[i + 1];
+          if (label1 && label2) {
+            const rect1 = label1.getBoundingClientRect();
+            const rect2 = label2.getBoundingClientRect();
+            if (
+              rect1.right > rect2.left &&
+              rect1.left < rect2.right &&
+              rect1.bottom > rect2.top &&
+              rect1.top < rect2.bottom
+            ) {
+              hasOverlap = true;
+              break;
+            }
           }
         }
 
@@ -618,7 +645,6 @@ function Echarts(props: EchartsProps) {
       setFinalOption({
         ...props.option,
         xAxis: nextXAxes,
-        // if isRotated we need additional padding left
         grid: props.option.grid
           ? Array.isArray(props.option.grid)
             ? props.option.grid.map(grid => ({
@@ -630,9 +656,7 @@ function Echarts(props: EchartsProps) {
                 left: isRotated ? "60" : props.option.grid.left,
               }
           : isRotated
-            ? {
-                left: "60",
-              }
+            ? { left: "60" }
             : undefined,
       });
       setIsReady(true);
@@ -649,10 +673,14 @@ function Echarts(props: EchartsProps) {
   // Only render the visible chart once we have the final layout
   useEffect(() => {
     if (!ref.current || !isReady) {
-      return;
+      return () => {};
     }
 
-    const chart = echarts.init(ref.current, null, { renderer: "canvas" });
+    const chart = echarts.init(ref.current, null, {
+      renderer: "canvas",
+      width: props.width,
+      height: props.height,
+    });
     chart.setOption(finalOption);
 
     return () => {
@@ -678,6 +706,9 @@ function Echarts(props: EchartsProps) {
   );
 }
 
+// =====================================
+// ⬢ BigNumberVisualization
+// =====================================
 function BigNumberVisualization(props: {
   title: string;
   input: VisualizationV2BlockInput;
@@ -694,7 +725,6 @@ function BigNumberVisualization(props: {
     }
 
     const x = props.input.xAxis?.name?.toString() ?? y;
-    // Check if the X-axis column is a date type using NumpyDateTypes.safeParse
     const isDateColumn = props.input.xAxis?.type
       ? NumpyDateTypes.safeParse(props.input.xAxis.type).success
       : false;
@@ -707,33 +737,35 @@ function BigNumberVisualization(props: {
       throw new Error("Invalid result");
     }
 
-    let displayY = latest[y].toString();
+    const rawY = latest[y];
+    let displayY = rawY !== undefined ? String(rawY) : "";
     if (
-      typeof latest[y] === "number" &&
+      typeof rawY === "number" &&
       props.input.yAxes[0]?.series[0]?.numberFormat
     ) {
       displayY = formatNumber(
-        latest[y],
-        props.input.yAxes[0]?.series[0]?.numberFormat
+        rawY,
+        props.input.yAxes[0].series[0].numberFormat
       );
     }
 
-    // Format the X value (date) if needed
-    let lastDisplayX = latest[x].toString();
-    if (props.input.xAxisDateFormat && isDateColumn) {
-      lastDisplayX = formatDateTime(latest[x], props.input.xAxisDateFormat);
+    const rawX = latest[x];
+    let lastDisplayX = rawX !== undefined ? String(rawX) : "";
+    if (props.input.xAxisDateFormat && isDateColumn && rawX !== undefined) {
+      lastDisplayX = formatDateTime(rawX, props.input.xAxisDateFormat);
     }
 
     const lastValue = {
       x: latest[x],
       displayX: lastDisplayX,
-      y: Number(latest[y]),
+      y: rawY !== undefined ? Number(rawY) : Number.NaN,
       displayY,
     };
 
     let prevDisplayY = "N/A";
     if (prev) {
-      prevDisplayY = prev[y].toString();
+      prevDisplayY = prev[y]?.toString() ?? "N/A";
+
       if (
         typeof prev[y] === "number" &&
         props.input.yAxes[0]?.series[0]?.numberFormat
@@ -745,10 +777,12 @@ function BigNumberVisualization(props: {
       }
     }
 
-    // Format the previous X value (date) if needed
     let prevDisplayX = prev?.[x] ? String(prev[x]) : "N/A";
     if (props.input.xAxisDateFormat && isDateColumn && prev) {
-      prevDisplayX = formatDateTime(prev[x], props.input.xAxisDateFormat);
+      const prevXVal = prev[x];
+      if (prevXVal !== undefined) {
+        prevDisplayX = formatDateTime(prevXVal, props.input.xAxisDateFormat);
+      }
     }
 
     const prevValue = {
@@ -800,9 +834,7 @@ function BigNumberVisualization(props: {
 
     const trendWidth =
       measureText(`↑ ${trendDisplay}`, prevYValueFontSize, "500", FONT_FAMILY)
-        .width +
-      // four for padding
-      4;
+        .width + 4;
 
     const prevXValueWidth = measureText(
       `• vs. ${prevValue.displayX}`,
@@ -909,7 +941,9 @@ function BigNumberVisualization(props: {
     return null;
   }
 }
-
+// =====================================
+// ⬢ getValuesMinInterval
+// =====================================
 function getValuesMinInterval(xValues: number[]): number {
   if (xValues.length === 0) {
     return 0;
@@ -918,21 +952,23 @@ function getValuesMinInterval(xValues: number[]): number {
   let minDiff = Infinity;
 
   for (let i = 0; i < xValues.length - 1; i++) {
-    const a = xValues[i];
-    const b = xValues[i + 1];
-    if (a === b) {
-      continue;
-    }
-
-    const diff = Math.abs(a - b);
-    if (diff < minDiff) {
-      minDiff = diff;
+    const a = xValues[i]!;
+    const b = xValues[i + 1]!;
+    // ⬢ NOTE — no-continue: inverted condition instead of continue
+    if (a !== b) {
+      const diff = Math.abs(a - b);
+      if (diff < minDiff) {
+        minDiff = diff;
+      }
     }
   }
 
   return minDiff;
 }
 
+// =====================================
+// ⬢ getValueAxis
+// =====================================
 function getValueAxis(
   axis: XAxis,
   result: VisualizationV2BlockOutputResult,
@@ -949,7 +985,7 @@ function getValueAxis(
   );
   const values = result.dataset
     .flatMap(d => xFields.flatMap(f => d.source.flatMap(r => r[f.toString()])))
-    .filter(v => typeof v === "number");
+    .filter((v): v is number => typeof v === "number");
 
   if (values.length > 0) {
     interval = getValuesMinInterval(values);
@@ -971,26 +1007,21 @@ function getValueAxis(
       },
       min: interval !== "auto" ? min - interval / 2 : "dataMin",
       max: interval !== "auto" ? max + interval / 2 : "dataMax",
-      ...(interval !== "auto"
-        ? {
-            minInterval: interval,
-          }
-        : {}),
-      splitLine: {
-        show: false,
-      },
+      ...(interval !== "auto" ? { minInterval: interval } : {}),
+      splitLine: { show: false },
     },
   };
 }
 
+// =====================================
+// ⬢ getTimeAxis
+// =====================================
 function getTimeAxis(
   axis: XAxis,
   result: VisualizationV2BlockOutputResult,
   input: VisualizationV2BlockInput
 ) {
-  const intervalOrder: {
-    [_T in TimeUnit]: number;
-  } = {
+  const intervalOrder: { [_T in TimeUnit]: number } = {
     seconds: 0,
     minutes: 1,
     hours: 2,
@@ -1004,32 +1035,42 @@ function getTimeAxis(
   const xFields = result.series
     .map(s => s.encode?.x)
     .filter((x): x is string | number => x !== undefined);
+
+  // ⬢ NOTE — filter out undefined values before constructing Date to avoid
+  // passing undefined to new Date() which produces an invalid date silently.
   const values = result.dataset
     .flatMap(d =>
-      xFields.flatMap(f => d.source.flatMap(r => new Date(r[f.toString()])))
+      xFields.flatMap(f =>
+        d.source
+          .map(r => r[f.toString()])
+          .filter((v): v is string | number => v !== undefined)
+          .map(v => new Date(v))
+      )
     )
     .filter(date => dfns.isValid(date));
 
-  let min = values[0];
-  let max = values[0];
+  // ⬢ NOTE — values[0] may be undefined if no valid dates found.
+  // Default to epoch so min/max are always Date (not Date | undefined).
+  let min: Date = values[0] ?? new Date(0);
+  let max: Date = values[0] ?? new Date(0);
   let minIntervalUnit: TimeUnit = "year";
+
   for (let i = 0; i < values.length - 1; i++) {
     const a = values[i];
     const b = values[i + 1];
-    if (!a || !b || !dfns.isValid(a) || !dfns.isValid(b)) {
-      continue;
+    // ⬢ NOTE — no-continue: inverted condition, skip invalid pairs
+    if (a && b && dfns.isValid(a) && dfns.isValid(b)) {
+      const intervalUnit = getIntervalUnit(a, b);
+
+      if (intervalOrder[intervalUnit] < intervalOrder[minIntervalUnit]) {
+        minIntervalUnit = intervalUnit;
+      }
+
+      min =
+        a.getTime() < min.getTime() ? a : b.getTime() < min.getTime() ? b : min;
+      max =
+        a.getTime() > max.getTime() ? a : b.getTime() > max.getTime() ? b : max;
     }
-
-    const intervalUnit = getIntervalUnit(a, b);
-
-    if (intervalOrder[intervalUnit] < intervalOrder[minIntervalUnit]) {
-      minIntervalUnit = intervalUnit;
-    }
-
-    min =
-      a.getTime() < min.getTime() ? a : b.getTime() < min.getTime() ? b : min;
-    max =
-      a.getTime() > max.getTime() ? a : b.getTime() > max.getTime() ? b : max;
   }
 
   const hideDay = values.every(v => {
@@ -1045,6 +1086,8 @@ function getTimeAxis(
       case "hours":
       case "minutes":
       case "seconds":
+        return false;
+      default:
         return false;
     }
   });
@@ -1067,6 +1110,8 @@ function getTimeAxis(
         return 60 * 1000;
       case "seconds":
         return 1000;
+      default:
+        return 0;
     }
   })();
 
@@ -1091,57 +1136,44 @@ function getTimeAxis(
         showMaxLabel: true,
         showMinLabel: true,
       },
-      axisTick: {
-        show: false,
-      },
-      min: (min?.getTime() ?? 0) - minInterval / 2,
-      max: (max?.getTime() ?? 0) + minInterval / 2,
+      axisTick: { show: false },
+      min: min.getTime() - minInterval / 2,
+      max: max.getTime() + minInterval / 2,
       minInterval,
-      splitLine: {
-        show: false,
-      },
+      splitLine: { show: false },
     },
   };
 }
 
+// =====================================
+// ⬢ getIntervalUnit
+// =====================================
 function getIntervalUnit(a: Date, b: Date): TimeUnit {
   const years = Math.abs(dfns.differenceInYears(b, a));
-  if (years >= 1) {
-    return "year";
-  }
+  if (years >= 1) return "year";
 
   const months = Math.abs(dfns.differenceInMonths(b, a));
-  if (months >= 3) {
-    return "quarter";
-  }
-
-  if (months >= 1) {
-    return "month";
-  }
+  if (months >= 3) return "quarter";
+  if (months >= 1) return "month";
 
   const weeks = Math.abs(dfns.differenceInWeeks(b, a));
-  if (weeks >= 1) {
-    return "week";
-  }
+  if (weeks >= 1) return "week";
 
   const days = Math.abs(dfns.differenceInDays(b, a));
-  if (days >= 1) {
-    return "date";
-  }
+  if (days >= 1) return "date";
 
   const hours = Math.abs(dfns.differenceInHours(b, a));
-  if (hours >= 1) {
-    return "hours";
-  }
+  if (hours >= 1) return "hours";
 
   const minutes = Math.abs(dfns.differenceInMinutes(b, a));
-  if (minutes >= 1) {
-    return "minutes";
-  }
+  if (minutes >= 1) return "minutes";
 
   return "seconds";
 }
 
+// =====================================
+// ⬢ getCategoryAxis
+// =====================================
 function getCategoryAxis(axis: XAxis) {
   return {
     _tag: "category" as const,
@@ -1154,17 +1186,17 @@ function getCategoryAxis(axis: XAxis) {
           if (typeof value === "number") {
             return value.toString();
           }
-
           return value.length > 20 ? `${value.slice(0, 20)}...` : value;
         },
       },
-      splitLine: {
-        show: false,
-      },
+      splitLine: { show: false },
     },
   };
 }
 
+// =====================================
+// ⬢ formatDateTime
+// =====================================
 function formatDateTime(
   value: string | number,
   format: DateFormat | null
@@ -1173,14 +1205,12 @@ function formatDateTime(
 
   let formatString = format?.dateStyle || "";
 
-  // Add time format if showTime is true and timeFormat is provided
   if (format && format.showTime && format.timeFormat) {
     formatString = formatString
       ? `${formatString} ${format.timeFormat}`
       : format.timeFormat;
   }
 
-  // Use the configured format if available, otherwise fall back to default formatting
   if (formatString) {
     return dfns.format(asDate, formatString);
   }
@@ -1188,6 +1218,9 @@ function formatDateTime(
   return dfns.format(value, "MMMM d, yyyy");
 }
 
+// =====================================
+// ⬢ formatDateTimeAxis
+// =====================================
 function formatDateTimeAxis(
   value: string | number,
   format: DateFormat | null,
@@ -1203,19 +1236,16 @@ function formatDateTimeAxis(
     return "";
   }
 
-  // Use the custom date format if available
   if (format) {
     return formatDateTime(value, format);
   }
 
-  // Fall back to default formatting based on interval
   switch (minIntervalUnit) {
     case "year":
       if (hideDay) {
         return dfns.format(value, "yyyy");
       }
       return dfns.format(value, "MMMM d, yyyy");
-
     case "quarter":
     case "month":
     case "week":
@@ -1224,30 +1254,31 @@ function formatDateTimeAxis(
         return dfns.format(value, "MMMM yyyy");
       }
       return dfns.format(value, "MMMM d, yyyy");
-
     case "hours":
     case "minutes":
       return dfns.format(value, "MMMM d, yyyy, h:mm a");
     case "seconds":
       return dfns.format(value, "MMMM d, yyyy, h:mm:ss a");
+    default:
+      return "";
   }
 }
 
+// =====================================
+// ⬢ formatNumber
+// =====================================
 function formatNumber(value: number, format: NumberFormat): string {
   try {
     let num = value;
 
-    // Apply multiplier
     if (format.multiplier !== 1) {
       num *= format.multiplier;
     }
 
-    // Create format string for d3-format based on the configuration
     let formatString = "";
     let isPercentage = false;
     let isScientific = false;
 
-    // Handle style
     switch (format.style) {
       case "percent":
         isPercentage = true;
@@ -1262,22 +1293,18 @@ function formatNumber(value: number, format: NumberFormat): string {
         exhaustiveCheck(format.style);
     }
 
-    // Handle decimals
     if (Number.isInteger(num)) {
-      formatString += ".0f"; // No decimal places for integers
+      formatString += ".0f";
     } else if (format.decimalPlaces <= 0) {
-      formatString += ".0f"; // No decimal places - use .0f instead of ~f
+      formatString += ".0f";
     } else {
-      formatString += `.${format.decimalPlaces}f`; // Fixed decimal places
+      formatString += `.${format.decimalPlaces}f`;
     }
 
     let formatted = (() => {
-      // Handle scientific notation separately
       if (isScientific) {
-        // Use JavaScript's native toExponential
         const sciFormatted = num.toExponential(format.decimalPlaces);
 
-        // Apply appropriate decimal separator based on separator style
         switch (format.separatorStyle) {
           case "999 999,99":
           case "999.999,99":
@@ -1292,26 +1319,22 @@ function formatNumber(value: number, format: NumberFormat): string {
 
       switch (format.separatorStyle) {
         case "999 999,99": {
-          const format = d3Format(`,${formatString}`)(num);
-          const decimalPos = format.lastIndexOf(".");
+          const formattedStr = d3Format(`,${formatString}`)(num);
+          const decimalPos = formattedStr.lastIndexOf(".");
           if (decimalPos === -1) {
-            return format.replace(/,/g, " ");
+            return formattedStr.replace(/,/g, " ");
           }
-          const result = format.replace(/,/g, " ");
-          return `${result.substring(0, decimalPos)},${result.substring(
-            decimalPos + 1
-          )}`;
+          const result = formattedStr.replace(/,/g, " ");
+          return `${result.substring(0, decimalPos)},${result.substring(decimalPos + 1)}`;
         }
         case "999.999,99": {
-          const format = d3Format(`,${formatString}`)(num);
-          const decimalPos = format.lastIndexOf(".");
+          const formattedStr = d3Format(`,${formatString}`)(num);
+          const decimalPos = formattedStr.lastIndexOf(".");
           if (decimalPos === -1) {
-            return format.replace(/,/g, ".");
+            return formattedStr.replace(/,/g, ".");
           }
-          const result = format.replace(/,/g, ".");
-          return `${result.substring(0, decimalPos)},${result.substring(
-            decimalPos + 1
-          )}`;
+          const result = formattedStr.replace(/,/g, ".");
+          return `${result.substring(0, decimalPos)},${result.substring(decimalPos + 1)}`;
         }
         case "999,999.99":
           return d3Format(`,${formatString}`)(num);
@@ -1327,7 +1350,6 @@ function formatNumber(value: number, format: NumberFormat): string {
       formatted += "%";
     }
 
-    // Add prefix and suffix
     if (format.prefix) {
       formatted = format.prefix + formatted;
     }
@@ -1342,22 +1364,22 @@ function formatNumber(value: number, format: NumberFormat): string {
   }
 }
 
+// =====================================
+// ⬢ formatNumberAxis
+// =====================================
 function formatNumberAxis(
   value: string | number,
   format: NumberFormat | null,
   { min, max }: { min: number; max: number }
 ): string {
-  // Hide values outside the min/max range
   if (typeof value === "number" && (value < min || value > max)) {
     return "";
   }
 
-  // If number formatting options are specified, use them
   if (format && typeof value === "number") {
     return formatNumber(value, format);
   }
 
-  // Default formatting
   return value.toString();
 }
 

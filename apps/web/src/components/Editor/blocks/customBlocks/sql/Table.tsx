@@ -240,6 +240,8 @@ export function getColumnTypeIcon(
     case "b1":
     case "boolean":
       return FlagIcon;
+    default:
+      break;
   }
 }
 

@@ -430,6 +430,8 @@ function FileUploadBlock(props: Props) {
               ...s,
               rest: [...s.rest, first, ...files],
             };
+          default:
+            break;
         }
       });
 

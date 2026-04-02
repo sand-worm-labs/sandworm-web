@@ -500,6 +500,8 @@ export const ModelPickerModal = ({
           setFocusedIdx(0);
           break;
         }
+        default:
+          break;
       }
     },
     [

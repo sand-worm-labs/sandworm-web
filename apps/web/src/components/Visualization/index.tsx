@@ -499,6 +499,8 @@ function VisualizationBlockV2(props: Props) {
             chartType,
           };
           break;
+        default:
+          break;
       }
 
       setVisualizationV2Input(props.block, nextInput);
@@ -793,6 +795,8 @@ function VisualizationBlockV2(props: Props) {
         case "aborting":
         case "completed":
           return null;
+        default:
+          break;
       }
     } else {
       return {
