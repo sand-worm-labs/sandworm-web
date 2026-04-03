@@ -19,18 +19,13 @@ interface Props {
   onToggleIsCodeHidden?: () => void;
   isOutputHidden: boolean;
   onToggleIsOutputHidden?: () => void;
+  hasMultipleTabs?: boolean;
 }
 function HiddenInPublishedButton(props: Props) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  // const { onOpen, dropdownPosition, containerRef } = useDropdownPosition(
-  //   buttonRef,
-  //   'top'
-  // )
-  // const menuPosition = useMenuPosition(buttonRef, containerRef, 'left', 6)
 
-  // console.log(menuPosition)
-
+  console.log(props.hasMultipleTabs);
   return (
     <Menu as="div" className="inline-block">
       {({ open }) => {

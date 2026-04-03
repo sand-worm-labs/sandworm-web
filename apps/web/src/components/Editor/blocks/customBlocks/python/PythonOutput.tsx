@@ -18,6 +18,7 @@ import useResettableState from "../../../hooks/useResettableState";
 
 import PythonError from "./PythonError";
 
+// @ts-expect-error @types/react-plotly.js incompatible with @types/react@19
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 
 interface Props {
@@ -45,7 +46,7 @@ export function PythonOutputs(props: Props) {
 
   useEffect(() => {
     if (!props.lazyRender || rendered === props.outputs.length) {
-      return;
+      return () => {};
     }
 
     const cb = () => {
@@ -72,6 +73,7 @@ export function PythonOutputs(props: Props) {
     <div className={props.className}>
       {props.outputs.slice(0, rendered).map((output, i) => (
         <div
+          // eslint-disable-next-line react/no-array-index-key
           key={i}
           className={clsx(
             ["plotly"].includes(output.type) ? "flex-grow" : "",
@@ -102,6 +104,7 @@ interface ItemProps {
   canFixWithAI: boolean;
   blockId: string;
 }
+
 export function PythonOutput(props: ItemProps) {
   const onExportToPNG = () => {
     if (props.output.type !== "image" || props.output.format !== "png") return;
@@ -118,9 +121,10 @@ export function PythonOutput(props: ItemProps) {
         case "png":
           return (
             <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                className="printable-block"
-                alt="generated image"
+                className="printable-block w-full"
+                alt="generated figure"
                 src={`data:image/${props.output.format};base64, ${props.output.data}`}
               />
               {!props.isDashboardView && (
@@ -136,6 +140,8 @@ export function PythonOutput(props: ItemProps) {
               )}
             </>
           );
+        default:
+          return null;
       }
     case "stdio":
       return (
@@ -169,6 +175,8 @@ export function PythonOutput(props: ItemProps) {
           onFixWithAI={props.onFixWithAI}
         />
       );
+    default:
+      return null;
   }
 }
 
@@ -206,14 +214,16 @@ function HTMLOutput(props: { output: PythonHTMLOutput }) {
     <iframe
       ref={iframeRef}
       srcDoc={props.output.html}
+      title={`HTML block `}
       sandbox="allow-scripts"
       style={{ width: "100%", height, border: "none" }}
       onLoad={() => {
-        // auto-size to content if possible
         try {
           const h = iframeRef.current?.contentDocument?.body?.scrollHeight;
           if (h && h > 0) setHeight(h);
-        } catch {}
+        } catch {
+          // auto-size is best-effort; cross-origin or sandboxed frames may block access
+        }
       }}
     />
   );
@@ -289,12 +299,12 @@ function DashboardPlotOutput(props: { output: PythonPlotlyOutput }) {
 
   useEffect(() => {
     if (!container.current) {
-      return;
+      return () => {};
     }
 
     const parent = container.current.parentElement;
     if (!parent) {
-      return;
+      return () => {};
     }
 
     const observer = new ResizeObserver(
