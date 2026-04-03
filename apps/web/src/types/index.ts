@@ -170,6 +170,7 @@ export interface IconProps {
 export type Document = {
   id: string;
   title: string;
+  icon?: string;
   orderIndex: number;
   createdAt: Date;
   updatedAt: Date;

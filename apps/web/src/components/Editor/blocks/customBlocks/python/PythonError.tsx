@@ -43,7 +43,7 @@ interface PythonErrorUIProps {
 }
 export function PythonErrorUI(props: PythonErrorUIProps) {
   return (
-    <div className="text-xs">
+    <div className="text-xs font-body">
       <div className="flex border border-red-300 p-2 gap-x-3 text-xs overflow-hidden">
         <ExclamationTriangleIcon className="text-red-500 h-6 w-6" />
         <div>
@@ -54,8 +54,8 @@ export function PythonErrorUI(props: PythonErrorUIProps) {
           <pre className="whitespace-pre-wrap">
             {props.ename} - {props.evalue}
           </pre>
-          {props.traceback.map((line, i) => (
-            <pre key={i} className="whitespace-pre-wrap">
+          {props.traceback.map(line => (
+            <pre key={line} className="whitespace-pre-wrap">
               <Ansi>{line}</Ansi>
             </pre>
           ))}
