@@ -201,7 +201,7 @@ const IDLE_TOOLTIP_CONTENT = {
 function VisualizationBlockV2(props: Props) {
   const hasEnqueued = useRef(false);
 
-  // ── derived: block attributes ──
+  // ✦  derived: block attributes
   const attrs = useYMemo(
     [props.block],
     () => getVisualizationV2Attributes(props.block),
@@ -224,12 +224,11 @@ function VisualizationBlockV2(props: Props) {
     []
   );
 
-  // ── state ──
   // ⬢ NOTE — declared early so onChangeDataframe can reference setIsDirty
   // without triggering no-use-before-define.
   const [isDirty, setIsDirty] = useState(false);
 
-  // ── execution state ──
+  // ✦  execution state ✦
   const executions = useBlockExecutions(
     props.executionQueue,
     props.block,
@@ -244,8 +243,8 @@ function VisualizationBlockV2(props: Props) {
     startedAt: environmentStartedAt,
   } = useEnvironmentStatus(props.document.workspaceId);
 
-  // ── handlers ──
-
+  // ⬢ Handlers
+  // =====================================
   const onNewSQL = useCallback(() => {
     props.onAddGroupedBlock(attrs.id, BlockType.SQL, "before");
   }, [props.onAddGroupedBlock]);
@@ -452,14 +451,10 @@ function VisualizationBlockV2(props: Props) {
       let nextInput: Partial<VisualizationV2BlockInput>;
 
       switch (chartType) {
-        // ⬢ NOTE — wrapped in braces to fix no-case-declarations.
-        // const declarations inside a case require a block scope.
         case "trend":
         case "number": {
           const yAxis = attrs.input.yAxes[0];
           const series = yAxis?.series[0] ?? null;
-          // ⬢ NOTE — guard both series AND yAxis before accessing yAxis.id/name.
-          // series being truthy doesn't narrow yAxis for TypeScript.
           nextInput = {
             dataframeName: attrs.input.dataframeName,
             chartType,
@@ -506,9 +501,6 @@ function VisualizationBlockV2(props: Props) {
           nextInput = { ...attrs.input, chartType };
           break;
         default:
-          // ⬢ NOTE — fall back to current input so setVisualizationV2Input
-          // is never called with an uninitialized variable (nextInput used
-          // before assigned TS error).
           nextInput = { ...attrs.input };
           break;
       }
@@ -726,6 +718,7 @@ function VisualizationBlockV2(props: Props) {
   // ⬢ Tooltip Content
   // =====================================
 
+  // eslint-disable-next-line consistent-return
   const runTooltipContent = useMemo(() => {
     if (status !== "idle") {
       switch (status) {

@@ -1,4 +1,8 @@
 let canvas: HTMLCanvasElement | null = null;
+
+// =====================================
+// ⬢ Measure Text
+// =====================================
 export function measureText(
   text: string,
   size: number,
@@ -26,13 +30,9 @@ export function findMaxFontSize(
   font: string
 ): number {
   let fontSize = initialFontSize;
-  while (true) {
-    const measure = measureText(text, fontSize, weight, font);
-    if (measure.width > maximumTextWidth) {
-      fontSize--;
-    } else {
-      break;
-    }
+
+  while (measureText(text, fontSize, weight, font).width > maximumTextWidth) {
+    fontSize -= 1;
   }
 
   return fontSize;
