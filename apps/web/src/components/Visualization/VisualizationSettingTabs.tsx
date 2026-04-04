@@ -1,8 +1,16 @@
 import clsx from "clsx";
 
+// =====================================
+// ⬢ Types
+// =====================================
 export type Tab = "general" | "display" | "x-axis" | "y-axis" | "labels";
 
 const tabs: Tab[] = ["general", "display", "x-axis", "y-axis", "labels"];
+
+interface Props {
+  tab: Tab;
+  onChange: (tab: Tab) => void;
+}
 
 function tabToName(tab: Tab): string {
   switch (tab) {
@@ -17,14 +25,13 @@ function tabToName(tab: Tab): string {
     case "labels":
       return "Labels";
     default:
-      break;
+      return "";
   }
 }
 
-interface Props {
-  tab: Tab;
-  onChange: (tab: Tab) => void;
-}
+// =====================================
+// ⬢ Visualization Settings Tabs
+// =====================================
 export default function VisualizationSettingsTabsV2(props: Props) {
   return (
     <div className="w-full border-b border-border-secondary pt-5 sticky top-0 bg-white dark:bg-base-100   z-10">

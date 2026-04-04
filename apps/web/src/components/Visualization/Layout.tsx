@@ -10,7 +10,6 @@ import useSideBar from "../Editor/hooks/useSideBar";
 import type { Page } from "../Editor/blocks/PagePath";
 import MobileWarning from "../Editor/blocks/MobileWarning";
 import CommandPalette from "../Editor/blocks/commandPalette";
-import { FeaturesDialog } from "../Editor/blocks/SubscriptionBadge";
 import PagePath from "../Editor/blocks/PagePath";
 import DragLayer from "../Editor/blocks/DragLayer";
 
@@ -23,6 +22,9 @@ interface Props {
   onToggleChat?: () => void;
 }
 
+// =====================================
+// ⬢ Layout
+// =====================================
 export default function Layout({
   children,
   pagePath,
@@ -32,14 +34,17 @@ export default function Layout({
   onToggleChat,
 }: Props) {
   const [isSearchOpen, setSearchOpen] = useState(false);
-  useHotkeys(["mod+k"], () => {
-    setSearchOpen(prev => !prev);
-  });
+  const pathname = usePathname();
+  const workspaceId = useStringQuery("workspace");
 
   const {
     state: { isOpen: isSideBarOpen },
     api: sideBarApi,
   } = useSideBar();
+
+  useHotkeys(["mod+k"], () => {
+    setSearchOpen(prev => !prev);
+  });
 
   const toggleSideBar = useCallback(
     (state: boolean) => {
@@ -47,10 +52,6 @@ export default function Layout({
     },
     [sideBarApi.toggle]
   );
-
-  const pathname = usePathname();
-
-  const workspaceId = useStringQuery("workspace");
 
   const scrollRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -63,13 +64,11 @@ export default function Layout({
       }
     };
 
-    // Run when route changes (pathname updates)
     return () => {
       saveScroll();
     };
   }, [pathname, workspaceId]);
 
-  // Restore scroll position when returning to this route
   useEffect(() => {
     const scroll = localStorage.getItem(`scroll-${workspaceId}`);
     if (scroll && scrollRef.current) {
@@ -77,20 +76,9 @@ export default function Layout({
     }
   }, [workspaceId]);
 
-  const [isUpgradeDialogOpen, setUpgradeDialogOpen] = useState(false);
-
   return (
     <div className="flex w-full h-full overflow-hidden relative">
       <MobileWarning />
-
-      {/*    <ViewerAccessBar
-        status={accessStatus}
-        onRequestAccess={async () => {
-          await requestWorkspaceAccess(workspaceId);
-          setAccessStatus("pending");
-        }}
-      /> */}
-
       <DragLayer />
 
       <CommandPalette
@@ -99,18 +87,13 @@ export default function Layout({
         setOpen={setSearchOpen}
       />
 
-      <FeaturesDialog
-        open={isUpgradeDialogOpen}
-        setOpen={setUpgradeDialogOpen}
-        currentPlan="open-source"
-      />
       <main
         className="flex flex-col h-screen flex-1 overflow-hidden relative"
         style={{
           transition: "flex 0.2s ease-in-out",
         }}
       >
-        {/* TOP BAR */}
+        {/* ✦ Top Bar ✦ */}
         <div
           className={clsx(
             isSideBarOpen ? "px-8" : "pr-8",
@@ -135,12 +118,9 @@ export default function Layout({
           </div>
         </div>
 
-        {/* BODY */}
+        {/* ✦ Body - Editor and NotebookPanel ✦ */}
         <div className="flex-grow flex overflow-hidden">
-          {/* Editor */}
           {children}
-
-          {/* Right panel */}
 
           <NotebookPanel
             sidebarContent={sidebarContent}
