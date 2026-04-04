@@ -1,5 +1,3 @@
-/* eslint-disable no-nested-ternary */
-
 "use client";
 
 import React, {
@@ -9,15 +7,13 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
-import { XMarkIcon, CheckIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
-import { Dialog, Transition } from "@headlessui/react";
+import { Transition } from "@headlessui/react";
 import { toast } from "sonner";
 
-import type { ApiUser } from "@/types";
+import type { UserWorkspaceRole } from "@/types";
 
-import { PencilSimple } from "../Assets/PencilSimple";
-import ManageInviteModal from "../ManageInvite";
 import {
   useApproveRoleRequest,
   useDeleteWorkspace,
@@ -30,317 +26,243 @@ import {
   useUpdateWorkspaceMemberRole,
 } from "../Editor/hooks/useWorkspaces";
 import { useStringQuery } from "../Editor/hooks/useQueryArgs";
-import MiniUsersList from "../Editor/blocks/MiniUsersList";
 import { useOpenRouterModels } from "../Editor/hooks/useOpenRouterModel";
+import MiniUsersList from "../Editor/blocks/MiniUsersList";
 import { ModelPickerModal } from "../Editor/blocks/ModelPicker";
+import ManageInviteModal from "../ManageInvite";
 import InviteUserModal from "../InviteUser";
+import { PencilSimple } from "../Assets/PencilSimple";
 
+import EditWorkspaceProfileModal from "./EditWorkspaceProfileModal";
 import { WorkspaceIcon } from "./WorkspaceIcon";
+import { DeleteWorkspaceModal } from "./DeleteWorkspaceModal";
 
+// =====================================
+// ⬢ Types
+// =====================================
 interface WorkspaceSettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
   workspace: {
     id: string;
     name: string;
-    users: ApiUser;
-    secrets?: {
-      hasOpenAiApiKey?: boolean;
-    };
+    icon?: string | null;
+    assistantModel?: string;
+    secrets?: { hasAiModelApiKey?: boolean };
   } | null;
-  isAdmin?: boolean;
   updateWorkspace: (id: string, name: string, icon?: string) => Promise<void>;
   isUpdating: boolean;
-}
-const PRESET_ICONS = [
-  "red.png",
-  "blue.png",
-  "green.png",
-  "purple.png",
-  "yellow.png",
-] as const;
-
-interface EditWorkspaceProfileModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  currentName?: string;
-  currentIcon?: string | null;
-  onSave: (data: { name: string; selectedIcon: string | null }) => void;
-  isLoading?: boolean;
+  _isAdmin?: boolean;
+  isCurrentWorkspace: boolean;
+  disableCustomAiModelKey: boolean;
 }
 
-export function EditWorkspaceProfileModal({
-  isOpen,
-  onClose,
-  currentName = "",
-  currentIcon = null,
-  onSave,
-  isLoading = false,
-}: EditWorkspaceProfileModalProps) {
-  const [workspaceName, setWorkspaceName] = useState(currentName);
-  const [selectedIcon, setSelectedIcon] = useState<string | null>(currentIcon);
-
-  if (!isOpen) return null;
-
-  const handleSave = () => {
-    onSave({ name: workspaceName, selectedIcon });
-  };
-
-  const isNameValid =
-    workspaceName.trim().length > 0 &&
-    workspaceName.length <= 40 &&
-    !/[^\w\s]/.test(workspaceName);
-
-  return (
-    <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-50" onClose={onClose}>
-        <Transition.Child
-          as={Fragment}
-          enter="ease-out duration-300"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="ease-in duration-200"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          <div className="fixed inset-0 bg-[#0000001A]" />
-        </Transition.Child>
-
-        <div className="fixed inset-0 overflow-y-auto font-body">
-          <div className="flex min-h-full items-center justify-center p-4">
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0 scale-95"
-              enterTo="opacity-100 scale-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100 scale-100"
-              leaveTo="opacity-0 scale-95"
-            >
-              <Dialog.Panel className="relative bg-white dark:bg-base-400 dark:border dark:border-border-tertiary rounded-3xl w-full max-w-md  mx-4 p-6 py-10 px-10">
-                <div className="flex items-center justify-between mb-6">
-                  <Dialog.Title
-                    as="h2"
-                    className="text-base font-medium text-ink-100 dark:text-white"
-                  >
-                    Edit workspace Profile
-                  </Dialog.Title>
-                  <button
-                    type="button"
-                    onClick={onClose}
-                    className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                  >
-                    <XMarkIcon className="h-5 w-5 text-ink-400" />
-                  </button>
-                </div>
-
-                <div className="mb-6">
-                  <label className="block text-sm font-medium text-ink-100 mb-3">
-                    Workspace Icon
-                  </label>
-                  <div className="flex items-center gap-3">
-                    <div className="relative w-14 h-14 rounded-full border-2 border-[#DEE2E6] dark:border-border-tertiary flex items-center justify-center overflow-hidden mr-4">
-                      {selectedIcon ? (
-                        <WorkspaceIcon
-                          icon={selectedIcon}
-                          size={56}
-                          className="object-cover"
-                        />
-                      ) : (
-                        <span className="text-[10px] text-center text-ink-400 leading-tight">
-                          No icon
-                        </span>
-                      )}
-                    </div>
-
-                    {PRESET_ICONS.map(colorKey => {
-                      const isSelected = selectedIcon === colorKey;
-                      return (
-                        <button
-                          key={colorKey}
-                          type="button"
-                          onClick={() => setSelectedIcon(colorKey)}
-                          className={`relative w-8 h-8 rounded-full transition-all overflow-hidden ${
-                            isSelected
-                              ? "ring-2 ring-[#A308F0] ring-offset-2 dark:ring-border-tertiary"
-                              : "hover:scale-110"
-                          }`}
-                          aria-label={`${colorKey.replace(".png", "")} icon`}
-                        >
-                          <WorkspaceIcon icon={colorKey} size={48} />
-                          {isSelected && (
-                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                              <CheckIcon className="w-4 h-4 text-white stroke-[3]" />
-                            </div>
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <div className="mb-10">
-                  <label className="block text-sm font-medium text-[#1A1A1A] dark:text-gray-300 mb-3">
-                    Workspace Name
-                  </label>
-                  <input
-                    type="text"
-                    value={workspaceName}
-                    onChange={e => setWorkspaceName(e.target.value)}
-                    placeholder="Enter workspace name"
-                    className="w-full px-4 py-3 rounded-xl bg-[#F8F9FA] dark:bg-base-100 border border-[#DEE2E6] dark:border-border-tertiary text-ink-100 placeholder:text-[#6C757D] dark:placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-[#A308F0] focus:border-transparent transition-all text-sm font-medium"
-                  />
-                  <ul className="mt-2 space-y-1 text-xs font-medium">
-                    <li className="flex items-center gap-1">
-                      <span className="text-[#6C757D] dark:text-ink-400">
-                        ·
-                      </span>
-                      Workspace name should be less than 40 characters
-                    </li>
-                    <li className="flex items-center gap-1">
-                      <span className="text-[#6C757D] dark:text-ink-400">
-                        ·
-                      </span>
-                      Cannot contain punctuation/special marks
-                    </li>
-                  </ul>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={handleSave}
-                  disabled={!isNameValid || isLoading}
-                  className="w-full py-3.5 px-4 bg-[#A308F0] hover:bg-[#8a07c9] disabled:bg-[#868E96] dark:disabled:bg-[#4a4a48] text-[#E9ECEF] font-medium rounded-xl transition-colors disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
-                >
-                  {isLoading ? (
-                    <>
-                      <svg
-                        className="animate-spin h-4 w-4"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        />
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        />
-                      </svg>
-                      Saving...
-                    </>
-                  ) : (
-                    "Save Changes"
-                  )}
-                </button>
-              </Dialog.Panel>
-            </Transition.Child>
-          </div>
-        </div>
-      </Dialog>
-    </Transition>
-  );
-}
-
-interface DeleteWorkspaceModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onDelete: () => void;
-  workspaceName: string;
-  isDeleting: boolean;
-}
-
-export function DeleteWorkspaceModal({
-  isOpen,
-  onClose,
-  onDelete,
-  workspaceName,
-  isDeleting,
-}: DeleteWorkspaceModalProps) {
-  return (
-    <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-50" onClose={onClose}>
-        <Transition.Child
-          as={Fragment}
-          enter="ease-out duration-200"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="ease-in duration-150"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          <div className="fixed inset-0 bg-[#0000001A]" />
-        </Transition.Child>
-
-        <div className="fixed inset-0 flex items-center justify-center p-4 font-body">
-          <Transition.Child
-            as={Fragment}
-            enter="ease-out duration-200"
-            enterFrom="opacity-0 scale-95"
-            enterTo="opacity-100 scale-100"
-            leave="ease-in duration-150"
-            leaveFrom="opacity-100 scale-100"
-            leaveTo="opacity-0 scale-95"
-          >
-            <Dialog.Panel className="w-full max-w-md rounded-xl bg-white p-6 py-8 shadow-xl relative dark:bg-base-400  border dark:border-border-tertiary ">
-              <Dialog.Title className="text-lg font-medium text-ink-100">
-                Delete Workspace
-              </Dialog.Title>
-
-              <button
-                type="button"
-                onClick={onClose}
-                className="absolute top-4 right-4 text-ink-400 hover:text-gray-600"
-              >
-                <XMarkIcon className="h-5 w-5" />
-              </button>
-
-              <p className="mt-3 text-sm text-ink-100">
-                You are about to delete workspace{" "}
-                <span className="font-semibold text-primary">
-                  {workspaceName}
-                </span>
-              </p>
-
-              <div className="mt-6 flex justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={onDelete}
-                  className="rounded-xl bg-error px-6 py-2 text-sm font-medium text-[#F8F9FA] hover:bg-red-700 dark:bg-[#FF4444] "
-                >
-                  {isDeleting ? "Deleting Workspace" : "Delete"}
-                </button>
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="rounded-xl border border-[#DEE2E6] bg-[#F8F9FA] dark:bg-base-400 px-6 py-2 text-sm font-medium text-ink-400 hover:bg-gray-50 dark:border-border-tertiary"
-                >
-                  Cancel
-                </button>
-              </div>
-            </Dialog.Panel>
-          </Transition.Child>
-        </div>
-      </Dialog>
-    </Transition>
-  );
-}
-
+// =====================================
+// ⬢ Utils
+// =====================================
 function formatCredit(value: number): string {
   if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
   if (value >= 1_000) return `${(value / 1_000).toFixed(1)}K`;
   return value.toFixed(2);
 }
 
-// ─── COMPONENTS ──────────────────────────────────────────────────────────────
+function resolveDeleteError(
+  error: string | null | undefined
+): string | undefined {
+  switch (error) {
+    case "current_workspace":
+      return "You cannot delete the workspace you are currently in.";
+    case "last_workspace":
+      return "You cannot delete your last workspace.";
+    case "unauthorized":
+      return "You must be an admin to delete this workspace.";
+    case "unexpected":
+      return "Something went wrong. Please try again.";
+    default:
+      return undefined;
+  }
+}
 
+// =====================================
+// ⬢ useWorkspaceSettings
+// =====================================
+function useWorkspaceSettings(
+  workspaceId: string | undefined,
+  isOpen: boolean
+) {
+  const {
+    members,
+    currentUserRole,
+    isLoading: isMembersLoading,
+  } = useWorkspaceWithMembers(isOpen ? workspaceId : undefined);
+
+  const { pendingRequests, refetch: refetchPendingRequests } =
+    usePendingRoleRequests(workspaceId ?? "");
+  const { pendingInvites: rawPendingInvites, refetch: refetchInvites } =
+    usePendingInvites(workspaceId ?? "");
+
+  const { approveRoleRequest } = useApproveRoleRequest(workspaceId ?? "");
+  const { rejectRoleRequest } = useRejectRoleRequest(workspaceId ?? "");
+  const { updateMemberRole } = useUpdateWorkspaceMemberRole(workspaceId ?? "");
+  const { removeUser } = useRemoveUserFromWorkspace(workspaceId ?? "");
+  const { inviteUser } = useInviteUserToWorkspace(workspaceId);
+
+  const currentWorkspace = useStringQuery("workspace");
+  const [{ loading: isDeleting, error: deleteError }, { deleteWorkspace }] =
+    useDeleteWorkspace(currentWorkspace ?? undefined);
+
+  const openRouterModels = useOpenRouterModels(currentWorkspace);
+
+  const isAdmin = currentUserRole === "admin";
+
+  const mappedPendingRequests = useMemo(
+    () =>
+      pendingRequests.map(req => ({
+        id: req.userId,
+        name: req.user
+          ? `${req.user.firstName ?? ""} ${req.user.lastName ?? ""}`.trim() ||
+            req.user.username ||
+            req.user.email ||
+            ""
+          : req.userId,
+        email: req.user?.email ?? "",
+        requestedRole:
+          (req.requestedRole as UserWorkspaceRole) ??
+          ("editor" as UserWorkspaceRole),
+        requestedAt: new Date(),
+      })),
+    [pendingRequests]
+  );
+
+  const mappedPendingInvites = useMemo(
+    () =>
+      rawPendingInvites.map(invite => ({
+        id: invite.userId,
+        name: invite.user
+          ? `${invite.user.firstName ?? ""} ${invite.user.lastName ?? ""}`.trim() ||
+            invite.user.username ||
+            invite.user.email ||
+            ""
+          : invite.userId,
+        email: invite.user?.email ?? "",
+        role: invite.role as UserWorkspaceRole,
+        invitedAt: new Date(),
+      })),
+    [rawPendingInvites]
+  );
+
+  const handleApproveRequest = async (userId: string) => {
+    await approveRoleRequest(userId);
+    refetchPendingRequests();
+  };
+
+  const handleDenyRequest = async (userId: string) => {
+    await rejectRoleRequest(userId);
+    refetchPendingRequests();
+  };
+
+  const handleSendInvite = async (
+    email: string,
+    role: UserWorkspaceRole,
+    wId: string
+  ) => {
+    const success = await inviteUser(email, wId, role);
+    if (success) {
+      toast.success(`Invitation sent to ${email}`);
+      refetchInvites();
+    } else {
+      toast.error("Failed to send invitation");
+    }
+  };
+
+  const handleCancelInvite = async () => {
+    await new Promise(resolve => {
+      setTimeout(resolve, 500);
+    });
+  };
+
+  const onChangeRole = useCallback(
+    async (id: string, role: UserWorkspaceRole) => {
+      try {
+        await updateMemberRole(id, role);
+        toast.success("Role updated successfully");
+      } catch {
+        toast.error("Failed to update role");
+      }
+    },
+    [updateMemberRole]
+  );
+
+  const onRemoveUser = useCallback(
+    async (id: string) => {
+      try {
+        await removeUser(id);
+        toast.success("User removed from workspace");
+      } catch {
+        toast.error("Failed to remove user");
+      }
+    },
+    [removeUser]
+  );
+
+  return {
+    members,
+    currentUserRole,
+    isMembersLoading,
+    isAdmin,
+    mappedPendingRequests,
+    mappedPendingInvites,
+    refetchInvites,
+    handleApproveRequest,
+    handleDenyRequest,
+    handleSendInvite,
+    handleCancelInvite,
+    onChangeRole,
+    onRemoveUser,
+    isDeleting,
+    deleteError,
+    deleteWorkspace,
+    ...openRouterModels,
+  };
+}
+
+// =====================================
+// ⬢ Settings Row
+// =====================================
+function SettingsRow({
+  label,
+  description,
+  action,
+  children,
+  align = "center",
+}: {
+  label: string;
+  description: string;
+  action?: React.ReactNode;
+  children: React.ReactNode;
+  align?: "center" | "start";
+}) {
+  return (
+    <div
+      className={`flex ${align === "start" ? "items-start" : "items-center"} justify-between gap-4 py-4`}
+    >
+      <div className="flex flex-col gap-y-2">
+        <label className="block text-md font-bold leading-4 dark:text-white text-ink-100">
+          {label}
+        </label>
+        <p className="text-xs xl:text-sm mt-2 text-[#6C757D] dark:text-ink-400">
+          {description}
+        </p>
+        {action}
+      </div>
+      <div className="w-[50%]">{children}</div>
+    </div>
+  );
+}
+
+// =====================================
+// ⬢ Credit Arc
+// =====================================
 function CreditArc({ pct }: { pct: number }) {
   const r = 14;
   const cx = 18;
@@ -350,7 +272,6 @@ function CreditArc({ pct }: { pct: number }) {
 
   return (
     <svg width="36" height="36" className="-rotate-90">
-      {/* track */}
       <circle
         cx={cx}
         cy={cy}
@@ -359,7 +280,6 @@ function CreditArc({ pct }: { pct: number }) {
         strokeWidth="3"
         className="stroke-[#E9ECEF] dark:stroke-border-tertiary"
       />
-      {/* fill */}
       <circle
         cx={cx}
         cy={cy}
@@ -374,177 +294,371 @@ function CreditArc({ pct }: { pct: number }) {
   );
 }
 
-interface WorkspaceSettingsModalProps {
-  isOpen: boolean;
+// =====================================
+// ⬢ Worskpace Plan
+// =====================================
+function TeamPlanSection({
+  workspaceId,
+  credits,
+  onClose,
+}: {
+  workspaceId: string;
+  credits: ReturnType<typeof useOpenRouterModels>["credits"];
   onClose: () => void;
-  workspace: {
-    id: string;
-    name: string;
-    icon?: string | null;
-    secrets?: {
-      hasOpenAiApiKey?: boolean;
-    };
-  } | null;
-  updateWorkspace: (id: string, name: string, icon?: string) => Promise<void>;
-  isUpdating: boolean;
+}) {
+  const router = useRouter();
+
+  return (
+    <SettingsRow
+      label="Team plan"
+      description="Check your current billing status"
+      action={
+        <button
+          type="button"
+          onClick={() => {
+            router.push(`/workspace/${workspaceId}/settings/billing`);
+            onClose();
+          }}
+          className="px-2.5 py-1 border border-[#DEE2E6] dark:border-gray-700 dark:text-black bg-[#F8F9FA] rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-800 text-xs"
+        >
+          Change Plan
+        </button>
+      }
+    >
+      <div className="flex w-full justify-between border-b border-[#E9ECEF] pb-2 dark:border-border-tertiary items-center">
+        {/* ✦ Plan Badge ✦ */}
+        <div>
+          <span className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-2.5">
+            Current Plan
+          </span>
+          <div className="font-medium capitalize bg-[#F7E8FF] dark:bg-[#2a1a3a] px-3 py-0.5 rounded-md text-primary inline-block text-sm">
+            Free
+          </div>
+        </div>
+
+        {/* ✦ Credits ✦ */}
+        <div>
+          <span className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-2.5">
+            AI Credits
+          </span>
+          <div className="flex items-center gap-2">
+            <CreditArc
+              pct={credits ? credits.usedCredits / credits.totalCredits : 0}
+            />
+            <div className="flex flex-col leading-tight">
+              <span className="text-sm font-semibold text-ink-900 dark:text-ink-100">
+                ${credits ? formatCredit(credits.availableCredits) : "—"}
+                <span className="text-xs font-normal text-[#6C757D] dark:text-ink-400">
+                  {" "}
+                  / ${credits ? formatCredit(credits.totalCredits) : "—"}
+                </span>
+              </span>
+              <span className="text-[11px] text-[#6C757D] dark:text-ink-400">
+                available (USD)
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </SettingsRow>
+  );
 }
 
+// =====================================
+// ⬢ AI Config Section
+// =====================================
+function AIConfigSection({
+  selectedModelId,
+  assistantModel,
+  onOpenPicker,
+}: {
+  selectedModelId: string | null;
+  assistantModel?: string;
+  onOpenPicker: () => void;
+}) {
+  return (
+    <SettingsRow
+      label="AI Configuration"
+      description="Select the default AI model for your team workspace"
+    >
+      <div className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-1.5">
+        Model
+      </div>
+      <button
+        type="button"
+        onClick={onOpenPicker}
+        className="flex items-center justify-between w-full rounded-[10px] xl:py-2 py-1.5 pl-4 pr-3 ring-1 ring-inset ring-[#CED4DA] dark:ring-border-tertiary focus:ring-[#A308F0] dark:bg-base-400 text-sm font-medium text-ink-100 dark:text-white transition-colors hover:ring-[#A308F0]/50"
+      >
+        <span className="text-[#6C757D] dark:text-ink-400">
+          {selectedModelId ?? assistantModel}
+        </span>
+        <svg
+          className="w-4 h-4 text-[#6C757D] shrink-0"
+          viewBox="0 0 16 16"
+          fill="none"
+        >
+          <path
+            d="M4 6L8 10L12 6"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </button>
+    </SettingsRow>
+  );
+}
+
+// =====================================
+// ⬢ Workspace Members Section
+// =====================================
+function MembersSection({
+  members,
+  currentUserRole,
+  onChangeRole,
+  onRemoveUser,
+  onInvite,
+}: {
+  members: ReturnType<typeof useWorkspaceSettings>["members"];
+  currentUserRole: string | undefined;
+  onChangeRole: (id: string, role: UserWorkspaceRole) => Promise<void>;
+  onRemoveUser: (id: string) => Promise<void>;
+  onInvite: () => void;
+}) {
+  return (
+    <SettingsRow
+      label="Members"
+      description="Manage access levels for users within this workspace"
+      align="start"
+    >
+      <MiniUsersList
+        currentUserEmail={
+          members.find(m => m.role === currentUserRole)?.email ?? ""
+        }
+        users={members}
+        onRemoveUser={onRemoveUser}
+        onChangeRole={onChangeRole}
+        onInvite={onInvite}
+      />
+    </SettingsRow>
+  );
+}
+
+// =====================================
+// ⬢ Dangerzone Section
+// =====================================
+function DangerZoneSection({ onDelete }: { onDelete: () => void }) {
+  return (
+    <SettingsRow label="Delete Workspace" description="Delete this Workspace">
+      <h3 className="uppercase mb-2 text-[#6C757D] dark:text-ink-400 font-bold text-[13px]">
+        Delete this workspace
+      </h3>
+      <div className="flex bg-[#FFDBDB] dark:bg-[#2a1a1a] border border-[#CED4DA] dark:border-[#5a2e2e] rounded-xl text-[13px] py-1 px-2 items-center gap-x-5 justify-between">
+        <span className="inline-block text-[#ff0000] dark:text-[#ff6b6b]">
+          Once deleted, all files, users and data will be permanently lost
+        </span>
+        <button
+          type="button"
+          onClick={onDelete}
+          className="bg-[#F8F9FA] dark:bg-base-400 text-[12px] py-1 px-2 rounded-lg border border-[#DEE2E6] dark:border-border-tertiary text-[#ff0000] dark:text-[#ff6b6b] font-medium inline-block"
+        >
+          Delete Workspace
+        </button>
+      </div>
+    </SettingsRow>
+  );
+}
+
+// =====================================
+// ⬢ Settings Header
+// =====================================
+function SettingsHeader({
+  workspace,
+  isMembersLoading,
+  memberCount,
+  pendingRequestsCount,
+  pendingInvitesCount,
+  onClose,
+  onEdit,
+  onManageInvites,
+}: {
+  workspace: NonNullable<WorkspaceSettingsModalProps["workspace"]>;
+  isMembersLoading: boolean;
+  memberCount: number;
+  pendingRequestsCount: number;
+  pendingInvitesCount: number;
+  onClose: () => void;
+  onEdit: () => void;
+  onManageInvites: () => void;
+}) {
+  return (
+    <div className="flex items-center justify-between px-6 py-4 pt-12">
+      <div>
+        <div className="flex gap-x-3 items-center">
+          <WorkspaceIcon icon={workspace.icon} />
+
+          <h2 className="text-base font-semibold text-ink-100 dark:text-white capitalize flex items-center gap-2">
+            {workspace.name} workspace
+            <button
+              type="button"
+              onClick={onEdit}
+              className="p-1 rounded transition-colors"
+            >
+              <PencilSimple className="h-4 w-4 dark:text-ink-400" />
+            </button>
+          </h2>
+
+          <div className="w-32 flex items-center justify-center gap-2 text-sm text-[#6C757D] font-medium dark:text-ink-400 border-r border-[#1A1A1A]">
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+              />
+            </svg>
+            <span>
+              {isMembersLoading ? "..." : memberCount}{" "}
+              {memberCount === 1 ? "member" : "members"}
+            </span>
+          </div>
+
+          <button
+            type="button"
+            onClick={onManageInvites}
+            className="flex items-center gap-2 px-2.5 py-0.5 border bg-[#F8F9FA] border-[#DEE2E6] dark:text-black dark:border-border-tertiary rounded-lg text-xs font-medium hover:bg-gray-50 transition-colors"
+          >
+            Manage Invites
+          </button>
+
+          <span className="text-primary text-[13px] font-medium">
+            {pendingRequestsCount} Pending Requests
+          </span>
+          <span className="text-primary text-[13px] font-medium">
+            {pendingInvitesCount} Pending Invites
+          </span>
+        </div>
+
+        <p className="text-xs xl:text-sm mt-2 text-[#6C757D] dark:text-ink-400">
+          Change details about your workspace
+        </p>
+      </div>
+
+      <button
+        type="button"
+        onClick={onClose}
+        className="rounded-lg p-1 text-ink-400 hover:bg-gray-100 hover:text-ink-400 dark:hover:bg-gray-800"
+      >
+        <XMarkIcon className="h-5 w-5" />
+      </button>
+    </div>
+  );
+}
+
+// =====================================
+// ⬢ Main Workspace Setting Modal
+// =====================================
 export default function WorkspaceSettingsModal({
   isOpen,
   onClose,
   workspace,
   updateWorkspace,
   isUpdating,
+  _isAdmin,
+  isCurrentWorkspace,
+  disableCustomAiModelKey,
 }: WorkspaceSettingsModalProps) {
-  const router = useRouter();
-
-  const {
-    members,
-    currentUserRole,
-    isLoading: isMembersLoading,
-  } = useWorkspaceWithMembers(isOpen ? workspace?.id : undefined);
-
-  const isAdmin = currentUserRole === "admin";
-
-  const { pendingRequests, refetch: refetchPendingRequests } =
-    usePendingRoleRequests(workspace?.id ?? "");
-  const { pendingInvites: rawPendingInvites, refetch: refetchInvites } =
-    usePendingInvites(workspace?.id ?? "");
-  const { approveRoleRequest } = useApproveRoleRequest(workspace?.id ?? "");
-  const { rejectRoleRequest } = useRejectRoleRequest(workspace?.id ?? "");
-  const { updateMemberRole } = useUpdateWorkspaceMemberRole(
-    workspace?.id ?? ""
-  );
-  const { removeUser } = useRemoveUserFromWorkspace(workspace?.id ?? "");
-
-  const [setState] = useState({
-    isEditingName: false,
-    isEditingOpenAIKey: false,
-    newName: "",
-    newOpenAIKey: "",
-  });
-
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [isManageOpen, setIsManageOpen] = useState(false);
 
-  const currentWorkspace = useStringQuery("workspace");
-  const [{ loading: isDeleting, error: deleteError }, { deleteWorkspace }] =
-    useDeleteWorkspace(currentWorkspace ?? undefined);
+  const settings = useWorkspaceSettings(workspace?.id, isOpen);
+  console.log(isCurrentWorkspace, disableCustomAiModelKey);
   const {
+    members,
+    currentUserRole,
+    isMembersLoading,
+    isAdmin,
+    mappedPendingRequests,
+    mappedPendingInvites,
+    refetchInvites,
+    handleApproveRequest,
+    handleDenyRequest,
+    handleSendInvite,
+    handleCancelInvite,
+    onChangeRole,
+    onRemoveUser,
+    isDeleting,
+    deleteError,
+    deleteWorkspace,
     models,
-    loading,
-    error,
+    loading: modelsLoading,
+    error: modelsError,
     selectedModelId,
     isPickerOpen,
     openPicker,
     closePicker,
     selectModel,
     credits,
-  } = useOpenRouterModels(currentWorkspace);
-
-  console.log(credits, "credot");
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const mappedPendingRequests = useMemo(() => {
-    return pendingRequests.map(req => ({
-      id: req.userId,
-      name: req.user
-        ? `${req.user.firstName ?? ""} ${req.user.lastName ?? ""}`.trim() ||
-          req.user.username ||
-          req.user.email
-        : req.userId,
-      email: req.user?.email ?? "",
-      requestedRole: req.requestedRole ?? "editor",
-      requestedAt: new Date(),
-    }));
-  }, [pendingRequests]);
-
-  const mappedPendingInvites = useMemo(() => {
-    return rawPendingInvites.map(invite => ({
-      id: invite.userId,
-      name: invite.user
-        ? `${invite.user.firstName ?? ""} ${invite.user.lastName ?? ""}`.trim() ||
-          invite.user.username ||
-          invite.user.email
-        : invite.userId,
-      email: invite.user?.email ?? "",
-      role: invite.role,
-      invitedAt: new Date(),
-    }));
-  }, [rawPendingInvites]);
-
-  const handleApproveRequest = async (userId: string) => {
-    await approveRoleRequest(userId);
-    refetchPendingRequests();
-  };
-
-  const handleDenyRequest = async (userId: string) => {
-    await rejectRoleRequest(userId);
-    refetchPendingRequests();
-  };
-
-  const { inviteUser } = useInviteUserToWorkspace(workspace?.id);
-
-  const handleSendInvite = async (
-    email: string,
-    role: UserRole,
-    workspaceId: string
-  ) => {
-    const success = await inviteUser(email, workspaceId, role);
-    if (success) {
-      toast.success(`Invitation sent to ${email}`);
-      refetchInvites();
-    } else {
-      toast.error("Failed to send invitation");
-    }
-  };
-
-  const handleCancelInvite = async () => {
-    await new Promise(resolve => setTimeout(resolve, 500));
-  };
-
-  const onChangeRole = useCallback(
-    async (id: string, role: UserWorkspaceRole) => {
-      try {
-        await updateMemberRole(id, role);
-        toast.success("Role updated successfully");
-      } catch (err) {
-        toast.error("Failed to update role");
-      }
-    },
-    [updateMemberRole]
-  );
-
-  const onRemoveUser = useCallback(
-    async (id: string) => {
-      try {
-        await removeUser(id);
-        toast.success("User removed from workspace");
-      } catch (err) {
-        toast.error("Failed to remove user");
-      }
-    },
-    [removeUser]
-  );
+  } = settings;
 
   useEffect(() => {
     if (!isOpen) {
-      setState({
-        isEditingName: false,
-        isEditingOpenAIKey: false,
-        newName: "",
-        newOpenAIKey: "",
-      });
+      setIsEditModalOpen(false);
+      setIsDeleteModalOpen(false);
+      setIsInviteModalOpen(false);
+      setIsManageOpen(false);
     }
   }, [isOpen]);
 
   if (!isOpen || !workspace) return null;
 
+  const handleSave = async ({
+    name,
+    selectedIcon,
+  }: {
+    name: string;
+    selectedIcon?: string | null;
+  }) => {
+    if (!isAdmin) {
+      toast.error("Only admins can update workspace settings");
+      return;
+    }
+    try {
+      await updateWorkspace(
+        workspace.id,
+        name.trim(),
+        selectedIcon ?? undefined
+      );
+      setIsEditModalOpen(false);
+    } catch (err) {
+      console.error("Failed to update workspace name:", err);
+      toast.error("Failed to update team name. Please try again.");
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await deleteWorkspace(workspace.id);
+      setIsDeleteModalOpen(false);
+      onClose();
+    } catch (err) {
+      toast.error(resolveDeleteError(deleteError));
+      console.error("Failed to delete workspace:", err);
+    }
+  };
+
   return (
     <Transition show={isOpen} as={Fragment}>
       <div className="fixed inset-0 z-50 overflow-y-auto">
+        {/* ✦ Backdrop ✦ */}
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-200"
@@ -569,6 +683,7 @@ export default function WorkspaceSettingsModal({
           />
         </Transition.Child>
 
+        {/* ✦ Panel ✦ */}
         <div className="flex min-h-full items-center justify-center p-4 lg:min-w-[1000px] w-auto">
           <Transition.Child
             as={Fragment}
@@ -580,249 +695,52 @@ export default function WorkspaceSettingsModal({
             leaveTo="opacity-0 scale-95"
           >
             <div className="relative w-full max-w-[1000px] xl:max-w-[1300px] transform rounded-2xl bg-white dark:bg-base-400 dark:border dark:border-border-tertiary shadow-none transition-all px-12">
-              {/* Header */}
-              <div className="flex items-center justify-between px-6 py-4 pt-12">
-                <div>
-                  <div className="flex gap-x-3 items-center">
-                    <WorkspaceIcon icon={workspace?.icon} />
-                    <h2 className="text-base font-semibold text-ink-100 dark:text-white capitalize flex items-center gap-2">
-                      {workspace?.name} workspace
-                      <button
-                        type="button"
-                        onClick={() => setIsEditModalOpen(true)}
-                        className="p-1 rounded transition-colors"
-                      >
-                        <PencilSimple className="h-4 w-4  dark:text-ink-400" />
-                      </button>
-                    </h2>
+              <SettingsHeader
+                workspace={workspace}
+                isMembersLoading={isMembersLoading}
+                memberCount={members.length}
+                pendingRequestsCount={mappedPendingRequests.length}
+                pendingInvitesCount={mappedPendingInvites.length}
+                onClose={onClose}
+                onEdit={() => setIsEditModalOpen(true)}
+                onManageInvites={() => setIsManageOpen(true)}
+              />
 
-                    <div className="w-32 flex items-center justify-center gap-2 text-sm text-[#6C757D]  font-medium dark:text-ink-400 border-r border-[#1A1A1A]">
-                      <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={1.5}
-                          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                        />
-                      </svg>
-                      <span>
-                        {isMembersLoading ? "..." : members.length}{" "}
-                        {members.length === 1 ? "member" : "members"}
-                      </span>
-                    </div>
-
-                    <div className="px-3 flex items-center justify-center gap-2 text-sm text-[#6C757D] font-medium dark:text-ink-400 border-r border-[#1A1A1A]" />
-
-                    <button
-                      type="button"
-                      onClick={() => setIsModalOpen(true)}
-                      className="flex items-center gap-2 px-2.5 py-0.5 border bg-[#F8F9FA] border-[#DEE2E6] dark:text-black dark:border-border-tertiary rounded-lg text-xs font-medium hover:bg-gray-50  transition-colors"
-                    >
-                      Manage Invites
-                    </button>
-
-                    <div className="text-primary text-[13px] font-medium">
-                      {mappedPendingRequests.length} Pending Requests
-                    </div>
-
-                    <div className="text-primary text-[13px] font-medium">
-                      {mappedPendingInvites.length} Pending Invites
-                    </div>
-                  </div>
-
-                  <p className="text-xs xl:text-sm mt-2 text-[#6C757D] dark:text-ink-400">
-                    Change details about your workspace
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="rounded-lg p-1 text-ink-400 hover:bg-gray-100 hover:text-ink-400  dark:hover:bg-gray-800"
-                >
-                  <XMarkIcon className="h-5 w-5" />
-                </button>
+              <div className="px-6 py-4 space-y-0">
+                <TeamPlanSection
+                  workspaceId={workspace.id}
+                  credits={credits}
+                  onClose={onClose}
+                />
+                <AIConfigSection
+                  selectedModelId={selectedModelId}
+                  assistantModel={workspace.assistantModel}
+                  onOpenPicker={openPicker}
+                />
+                <MembersSection
+                  members={members}
+                  currentUserRole={currentUserRole ?? undefined}
+                  onChangeRole={onChangeRole}
+                  onRemoveUser={onRemoveUser}
+                  onInvite={() => setIsInviteModalOpen(true)}
+                />
               </div>
 
-              <div className="px-6 py-4 space-y-0 div dark:divide-border-tertiary">
-                <div className="flex items-center justify-between gap-4 py-4 border-[#E9ECEF]">
-                  <div className="flex flex-col gap-y-2">
-                    <label className="block text-md font-bold leading-4 dark:text-white text-ink-100">
-                      Team plan
-                    </label>
-                    <p className="text-xs xl:text-sm mt-2 text-[#6C757D] dark:text-ink-400">
-                      Check your current billing status
-                    </p>
-                    <div className="flex items-center">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          router.push(
-                            `/workspace/${workspace?.id}/settings/billing`
-                          );
-                          onClose();
-                        }}
-                        className="px-2.5 py-1 border border-[#DEE2E6] dark:border-gray-700 dark:text-black bg-[#F8F9FA] rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-800 text-xs"
-                      >
-                        Change Plan
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="flex w-[50%] justify-between border-b border-[#E9ECEF] pb-2 dark:border-border-tertiary items-center">
-                    {/* Plan */}
-                    <div>
-                      <span className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-2.5">
-                        Current Plan
-                      </span>
-                      <div className="font-medium capitalize bg-[#F7E8FF] dark:bg-[#2a1a3a] px-3 py-0.5 rounded-md text-primary inline-block text-sm">
-                        Free
-                      </div>
-                    </div>
-
-                    {/* Credits */}
-                    <div>
-                      <span className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-2.5">
-                        AI Credits
-                      </span>
-                      <div className="flex items-center gap-2">
-                        <CreditArc
-                          pct={
-                            credits
-                              ? credits.usedCredits / credits.totalCredits
-                              : 0
-                          }
-                        />
-                        <div className="flex flex-col leading-tight">
-                          <span className="text-sm font-semibold text-ink-900 dark:text-ink-100">
-                            $
-                            {credits
-                              ? formatCredit(credits.availableCredits)
-                              : "—"}
-                            <span className="text-xs font-normal text-[#6C757D] dark:text-ink-400">
-                              {" "}
-                              / $
-                              {credits
-                                ? formatCredit(credits.totalCredits)
-                                : "—"}
-                            </span>
-                          </span>
-                          <span className="text-[11px] text-[#6C757D] dark:text-ink-400">
-                            available (USD)
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* AI Model Selection */}
-                <div className="flex items-center justify-between gap-4 py-4">
-                  <div className="flex flex-col gap-y-2">
-                    <label className="block text-md font-bold leading-4 dark:text-white text-ink-100">
-                      AI Configuration
-                    </label>
-                    <span className="text-xs xl:text-sm mt-2 text-[#6C757D] dark:text-ink-400">
-                      Select the default AI model for your team workspace
-                    </span>
-                  </div>
-
-                  <div className="w-[50%]">
-                    <div className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-1.5">
-                      Model
-                    </div>
-                    <button
-                      type="button"
-                      onClick={openPicker}
-                      className="flex items-center justify-between w-full rounded-[10px] xl:py-2 py-1.5 pl-4 pr-3 ring-1 ring-inset ring-[#CED4DA] dark:ring-border-tertiary focus:ring-[#A308F0] dark:bg-base-400 text-sm font-medium text-ink-100 dark:text-white transition-colors hover:ring-[#A308F0]/50"
-                    >
-                      <span className="text-[#6C757D] dark:text-ink-400">
-                        {selectedModelId ?? workspace?.assistantModel}
-                      </span>
-                      <svg
-                        className="w-4 h-4 text-[#6C757D] shrink-0"
-                        viewBox="0 0 16 16"
-                        fill="none"
-                      >
-                        <path
-                          d="M4 6L8 10L12 6"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-                <div className="flex items-start justify-between gap-4 py-4">
-                  <div className="flex flex-col gap-y-2">
-                    <label className="block text-md font-bold leading-4 dark:text-white text-ink-100">
-                      Members
-                    </label>
-                    <span className="text-xs xl:text-sm mt-2 text-[#6C757D] dark:text-ink-400">
-                      Manage access levels for users within this workspace
-                    </span>
-                  </div>
-
-                  <div className="w-[50%]">
-                    <MiniUsersList
-                      currentUserEmail={
-                        members.find(m => m.role === currentUserRole)?.email ??
-                        ""
-                      }
-                      users={members}
-                      onRemoveUser={onRemoveUser}
-                      onChangeRole={onChangeRole}
-                      onInvite={() => setIsInviteModalOpen(true)}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Footer */}
-              <div className="flex justify-between gap-3 px-6 py-4 mb-20">
-                <div>
-                  <h3 className="text-ink-100 font-bold">Delete Workspace</h3>
-                  <p className="text-xs xl:text-sm mt-2 text-[#6C757D] dark:text-ink-400">
-                    Delete this Workspace
-                  </p>
-                </div>
-
-                <div className="w-[50%]">
-                  <h3 className="uppercase mb-2 text-[#6C757D]  dark:text-ink-400 font-bold text-[13px]">
-                    Delete this workspace
-                  </h3>
-                  <div className="flex bg-[#FFDBDB] dark:bg-[#2a1a1a] border border-[#CED4DA] dark:border-[#5a2e2e] rounded-xl text-[13px] py-1 px-2 items-center gap-x-5 justify-between">
-                    <span className="inline-block text-[#ff0000] dark:text-[#ff6b6b]">
-                      Once deleted, all files, users and data will be
-                      permanently lost
-                    </span>
-                    <button
-                      onClick={() => setIsDeleteModalOpen(true)}
-                      type="button"
-                      className="bg-[#F8F9FA] dark:bg-base-400 text-[12px] py-1 px-2 rounded-lg border border-[#DEE2E6] dark:border-border-tertiary text-[#ff0000] dark:text-[#ff6b6b]  font-medium inline-block"
-                    >
-                      Delete Workspace
-                    </button>
-                  </div>
-                </div>
+              <div className="px-6 py-4 mb-20">
+                <DangerZoneSection
+                  onDelete={() => setIsDeleteModalOpen(true)}
+                />
               </div>
             </div>
           </Transition.Child>
         </div>
 
+        {/* ✦ SubModals ✦ */}
         <ManageInviteModal
-          isOpen={isModalOpen}
-          workspaceId={workspace?.id}
-          onClose={() => setIsModalOpen(false)}
+          isOpen={isManageOpen}
+          workspaceId={workspace.id}
+          onClose={() => setIsManageOpen(false)}
           pendingInvites={mappedPendingInvites}
-          onSendInvite={handleSendInvite}
           onCancelInvite={handleCancelInvite}
           pendingRequests={mappedPendingRequests}
           refetchInvite={refetchInvites}
@@ -833,28 +751,9 @@ export default function WorkspaceSettingsModal({
         <DeleteWorkspaceModal
           isOpen={isDeleteModalOpen}
           onClose={() => setIsDeleteModalOpen(false)}
-          onDelete={async () => {
-            try {
-              await deleteWorkspace(workspace?.id ?? "");
-              setIsDeleteModalOpen(false);
-              onClose();
-            } catch (error) {
-              console.error("Failed to delete workspace:", error);
-            }
-          }}
-          workspaceName={workspace?.name}
+          onDelete={handleDelete}
+          workspaceName={workspace.name}
           isDeleting={isDeleting}
-          errorMessage={
-            deleteError === "current_workspace"
-              ? "You cannot delete the workspace you are currently in."
-              : deleteError === "last_workspace"
-                ? "You cannot delete your last workspace."
-                : deleteError === "unauthorized"
-                  ? "You must be an admin to delete this workspace."
-                  : deleteError === "unexpected"
-                    ? "Something went wrong. Please try again."
-                    : undefined
-          }
         />
 
         <InviteUserModal
@@ -868,24 +767,8 @@ export default function WorkspaceSettingsModal({
         <EditWorkspaceProfileModal
           isOpen={isEditModalOpen}
           onClose={() => setIsEditModalOpen(false)}
-          currentName={workspace?.name}
-          onSave={async ({ name, selectedIcon }) => {
-            if (!isAdmin) {
-              alert("Only admins can update workspace settings");
-              return;
-            }
-            try {
-              await updateWorkspace(
-                workspace?.id || "",
-                name.trim(),
-                selectedIcon ?? undefined
-              );
-              setIsEditModalOpen(false);
-            } catch (err) {
-              console.error("Failed to update workspace name:", err);
-              alert("Failed to update team name. Please try again.");
-            }
-          }}
+          currentName={workspace.name}
+          onSave={handleSave}
           isLoading={isUpdating}
         />
 
@@ -894,8 +777,8 @@ export default function WorkspaceSettingsModal({
           onClose={closePicker}
           onSelect={selectModel}
           models={models}
-          loading={loading}
-          error={error}
+          loading={modelsLoading}
+          error={modelsError}
           selectedModelId={selectedModelId}
           title="Select Model"
         />

@@ -4,20 +4,19 @@ import Image from "next/image";
 import { toast } from "sonner";
 import { Dialog, Transition } from "@headlessui/react";
 
+import type { UserWorkspaceRole } from "@/types";
+
 import { User } from "./Assets/Avatar/User";
 import { useInviteUserToWorkspace } from "./Editor/hooks/useWorkspaces";
 
 // ============================================================================
-// TYPES & INTERFACES
+// TYPES
 // ============================================================================
-
-type UserRole = "owner" | "editor" | "viewer";
-
 interface WorkspaceMember {
   id: string;
   name: string;
   email: string;
-  role: UserRole;
+  role: UserWorkspaceRole;
   avatar?: string;
 }
 
@@ -25,7 +24,7 @@ interface PendingInvite {
   id: string;
   name: string;
   email: string;
-  role: UserRole;
+  role: UserWorkspaceRole;
   invitedAt: Date;
   avatar?: string;
 }
@@ -34,7 +33,7 @@ interface PendingRequest {
   id: string;
   name: string;
   email: string;
-  requestedRole: UserRole;
+  requestedRole: UserWorkspaceRole;
   requestedAt: Date;
   message?: string;
   avatar?: string;
@@ -44,7 +43,6 @@ interface ManageInviteModalProps {
   isOpen: boolean;
   onClose: () => void;
   workspaceId: string;
-  workspaceMembers: WorkspaceMember[];
   pendingInvites: PendingInvite[];
   pendingRequests?: PendingRequest[];
   onCancelInvite: (inviteId: string) => Promise<void>;
@@ -79,7 +77,7 @@ const getTimeAgo = (date: Date) => {
 // ============================================================================
 
 interface InviteFormProps {
-  onSendInvite: (email: string, role: UserRole) => Promise<void>;
+  onSendInvite: (email: string, role: UserWorkspaceRole) => Promise<void>;
 }
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -386,7 +384,7 @@ const PendingTabsContent: React.FC<PendingTabsContentProps> = ({
 // ============================================================================
 
 interface WorkspaceDescriptionProps {
-  members: WorkspaceMember[];
+  members?: WorkspaceMember[];
 }
 
 const WorkspaceDescription: React.FC<WorkspaceDescriptionProps> = () => {
@@ -455,7 +453,6 @@ const ManageInviteModal: React.FC<ManageInviteModalProps> = ({
   isOpen,
   onClose,
   workspaceId,
-  workspaceMembers,
   pendingInvites,
   pendingRequests = [],
   onCancelInvite,
@@ -466,7 +463,7 @@ const ManageInviteModal: React.FC<ManageInviteModalProps> = ({
   if (!isOpen) return null;
   const { inviteUser } = useInviteUserToWorkspace(workspaceId);
 
-  const handleSendInvite = async (email: string, role: UserRole) => {
+  const handleSendInvite = async (email: string, role: UserWorkspaceRole) => {
     const success = await inviteUser(email, workspaceId, role);
     if (success) {
       refetchInvite();
@@ -530,7 +527,7 @@ const ManageInviteModal: React.FC<ManageInviteModalProps> = ({
                   </div>
 
                   <div className="w-[410px] p-4 border-l border-[#E9ECEF] dark:border-border-tertiary">
-                    <WorkspaceDescription members={workspaceMembers} />
+                    <WorkspaceDescription />
                   </div>
                 </div>
               </Dialog.Panel>
@@ -545,11 +542,9 @@ const ManageInviteModal: React.FC<ManageInviteModalProps> = ({
 // ============================================================================
 // EXPORTS
 // ============================================================================
-
 export default ManageInviteModal;
 export type {
   ManageInviteModalProps,
-  UserRole,
   WorkspaceMember,
   PendingInvite,
   PendingRequest,

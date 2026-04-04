@@ -1,11 +1,40 @@
 import { useEffect, useState } from "react";
 
+// =====================================
+// ⬢ Types
+// =====================================
 export interface MousePosition {
   x?: number;
   y?: number;
 }
+
+// =====================================
+// ⬢ Utils
+// =====================================
+const calcPosition = (value: number, total: number) => value - total / 2;
+
+const throttle = <T, F extends (...args: any[]) => any>(
+  func: (this: T, ...args: Parameters<F>) => ReturnType<F>,
+  limit: number
+): ((this: T, ...args: Parameters<F>) => void) => {
+  let inThrottle: boolean;
+
+  return function throttled(this: T, ...args: Parameters<F>) {
+    if (!inThrottle) {
+      func.apply(this, args);
+      inThrottle = true;
+      setTimeout(() => {
+        inThrottle = false;
+      }, limit);
+    }
+  };
+};
+
+// =====================================
+// ⬢ use Mouse Position
+// =====================================
 /**
- * Custom hook to find the position of the cusror or touch
+ * Custom hook to track the position of the cursor or touch input.
  */
 export const useMousePosition = (): MousePosition => {
   const [mousePosition, setMousePosition] = useState<MousePosition>({
@@ -21,9 +50,10 @@ export const useMousePosition = (): MousePosition => {
       let y: number;
 
       if ("touches" in event) {
-        const { clientX, clientY } = (event as TouchEvent).touches[0];
-        x = calcPosition(clientX, innerWidth);
-        y = calcPosition(clientY, innerHeight);
+        const touch = (event as TouchEvent).touches[0];
+        if (!touch) return;
+        x = calcPosition(touch.clientX, innerWidth);
+        y = calcPosition(touch.clientY, innerHeight);
       } else {
         x = calcPosition(event.clientX, innerWidth);
         y = calcPosition(event.clientY, innerHeight);
@@ -43,27 +73,3 @@ export const useMousePosition = (): MousePosition => {
 
   return mousePosition;
 };
-
-/**
- * Function to add some debounce for tracking mouse position
- */
-const throttle = <T, F extends (...args: any[]) => any>(
-  func: (this: T, ...args: Parameters<F>) => ReturnType<F>,
-  limit: number
-): ((this: T, ...args: Parameters<F>) => void) => {
-  let inThrottle: boolean;
-
-  return function (this: T, ...args: Parameters<F>) {
-    const context = this;
-    if (!inThrottle) {
-      func.apply(context, args);
-      inThrottle = true;
-      setTimeout(() => (inThrottle = false), limit);
-    }
-  };
-};
-
-/**
- * Function to calculate the position of mouse
- */
-const calcPosition = (value: number, total: number) => value - total / 2;

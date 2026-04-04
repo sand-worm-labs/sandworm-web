@@ -1,3 +1,6 @@
+// =====================================
+// ⬢ Read File
+// =====================================
 export function readFile(
   file: File,
   encoding: BufferEncoding = "utf8"
@@ -12,7 +15,8 @@ export function readFile(
       }
 
       if (typeof e.target.result === "string") {
-        return resolve(e.target.result);
+        resolve(e.target.result);
+        return;
       }
 
       resolve(Buffer.from(e.target.result).toString(encoding));
@@ -20,6 +24,9 @@ export function readFile(
   });
 }
 
+// =====================================
+// ⬢ Download File
+// =====================================
 export function downloadFile(url: string, name: string) {
   const downloadLink = document.createElement("a");
 

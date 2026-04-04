@@ -37,10 +37,6 @@ query GetWorkspaceComponents($workspaceId: String!) {
       createdAt
       updatedAt
     }
-    document {
-      id
-      title
-    }
     createdAt
     updatedAt
   }

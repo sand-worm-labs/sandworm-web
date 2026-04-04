@@ -210,6 +210,7 @@ type Workspace = {
   createdAt?: Date;
   updatedAt?: Date;
   secretsId?: string | null;
+  icon?: string;
 };
 
 export type EnvironmentStatus =

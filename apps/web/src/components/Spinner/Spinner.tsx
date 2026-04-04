@@ -1,5 +1,8 @@
 import React from "react";
 
+// =====================================
+// ⬢ Spinner
+// =====================================
 export const Spinner = () => {
   return (
     <svg

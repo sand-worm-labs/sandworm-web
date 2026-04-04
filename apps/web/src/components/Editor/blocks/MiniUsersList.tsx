@@ -22,6 +22,8 @@ import { createPortal } from "react-dom";
 
 import type { UserWorkspaceRole, WorkspaceUser } from "@/types";
 
+import type { WorkspaceMember } from "../hooks/useWorkspaces";
+
 const ROLES: {
   value: UserWorkspaceRole;
   label: string;
@@ -217,7 +219,7 @@ function MiniUserItem({
 
 type MiniUsersListProps = {
   currentUserEmail: string;
-  users: WorkspaceUser[];
+  users: WorkspaceMember[];
   onChangeRole: (id: string, role: UserWorkspaceRole) => void;
   onRemoveUser: (id: string) => void;
   onInvite?: () => void;

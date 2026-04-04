@@ -12,7 +12,7 @@ import {
 } from "@sandworm/types";
 import type { VisualizationV2BlockInput } from "@sandworm/editor";
 
-import { parseDecimalPlaces, parseMultiplier } from "../VisualizationControls";
+import { parseDecimalPlaces, parseMultiplier } from "../utils";
 import { NumberFormatControl, DateFormatControl } from "../FormatControls";
 
 // =====================================

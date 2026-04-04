@@ -12,6 +12,9 @@ interface CreateTeamModalProps {
   onSuccess?: (workspaceId: string) => void;
 }
 
+// =====================================
+// ⬢ Create Team Modal
+// =====================================
 export default function CreateTeamModal({
   isOpen,
   onClose,
@@ -98,7 +101,7 @@ export default function CreateTeamModal({
                   </button>
                 </div>
 
-                {/* Form */}
+                {/* ✦ Form ✦ */}
                 <form onSubmit={handleSubmit} className="p-6 space-y-5">
                   <div>
                     <label

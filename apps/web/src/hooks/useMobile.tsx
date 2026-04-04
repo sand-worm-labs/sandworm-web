@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 
+// =====================================
+// ⬢ Use Is Mobile
+// =====================================
 // this hooks will be useful to check mobile view 📱. we use 768 which is same breakpoint with tailwind
 export const useIsMobile = (): boolean => {
   const [isMobile, setIsMobile] = useState(false);

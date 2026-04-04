@@ -8,6 +8,9 @@ import {
 import { useQueryStore } from "@/store/queries";
 import { useSession } from "@/components/Editor/hooks/useAuth";
 
+// =====================================
+// ⬢ Use Save Query
+// =====================================
 export const useSaveQuery = () => {
   const session = useSession({ redirectToLogin: true });
   const { loadQueries } = useQueryStore();
@@ -18,7 +21,7 @@ export const useSaveQuery = () => {
   const save = useCallback(
     async (payload: Omit<CreateQueryPayload, "creator"> & { id: string }) => {
       if (!session?.user?.id) {
-        toast.error("You need to login first to save this query 🤨");
+        toast.error("You need to login first to save this query ");
         return null;
       }
 
@@ -33,11 +36,11 @@ export const useSaveQuery = () => {
       try {
         const response = await patchUserQuery(data);
         await loadQueries(session.user.id); // sneaky ik
-        toast.success("Query saved! 💾");
+        toast.success("Query saved! ");
         return response;
       } catch (err: any) {
         console.error("Save query error:", err);
-        toast.error("Failed to save query 💀");
+        toast.error("Failed to save query ");
         setError("Save failed.");
         return null;
       } finally {
