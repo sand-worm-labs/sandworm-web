@@ -1015,6 +1015,7 @@ export type Workspace = {
 export type WorkspaceInfo = {
   __typename?: 'WorkspaceInfo';
   createdAt: Scalars['DateTime']['output'];
+  icon: Scalars['String']['output'];
   id: Scalars['String']['output'];
   name: Scalars['String']['output'];
   ownerId: Scalars['String']['output'];
@@ -1513,7 +1514,7 @@ export type GetScheduleQuery = { __typename?: 'Query', schedule: { __typename?: 
 export type GetUserWorkspaceInfoQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetUserWorkspaceInfoQuery = { __typename?: 'Query', getUserWorkspaceInfo: { __typename?: 'WorkspaceInfo', id: string, name: string, ownerId: string, createdAt: any, updatedAt: any, role: string } };
+export type GetUserWorkspaceInfoQuery = { __typename?: 'Query', getUserWorkspaceInfo: { __typename?: 'WorkspaceInfo', id: string, name: string, ownerId: string, createdAt: any, updatedAt: any, role: string, icon: string } };
 
 export type GetUserWorkspacesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -4144,6 +4145,7 @@ export const GetUserWorkspaceInfoDocument = gql`
     createdAt
     updatedAt
     role
+    icon
   }
 }
     `;

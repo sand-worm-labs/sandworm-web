@@ -1,7 +1,5 @@
 # Authentication Mutations
 
-# Sign in with email and password
-
 # Register a new user
 mutation CreateUser($input: CreateUserInput!) {
   createUser(input: $input) {

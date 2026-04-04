@@ -42,6 +42,7 @@ type UseWorkspacesAPI = {
     workspaceId: string,
     formData: WorkspaceEditFormValues
   ) => Promise<ApiWorkspace>;
+  refetch: () => void;
 };
 
 type UseWorkspaces = [
@@ -87,9 +88,9 @@ export const useWorkspaces = (): UseWorkspaces => {
         data: (data?.getUserWorkspaces ?? []) as unknown as ApiWorkspace[],
         isLoading: loading,
       },
-      { updateSettings },
+      { updateSettings, refetch },
     ],
-    [data, loading, updateSettings]
+    [data, loading, updateSettings, refetch]
   );
 };
 

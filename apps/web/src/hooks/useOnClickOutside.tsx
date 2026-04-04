@@ -1,5 +1,8 @@
 import { useEffect } from "react";
 
+// =====================================
+// ⬢ is Mouse Inside
+// =====================================
 export function isInside(
   box: Pick<DOMRect, "left" | "right" | "top" | "bottom">,
   x: number,
@@ -28,6 +31,9 @@ function isInsideRef(
   return isInside(rect, event.clientX, event.clientY);
 }
 
+// =====================================
+// ⬢ use OnClick Outside First Version
+// =====================================
 export function useOnClickOutside(
   handler: (e: MouseEvent | TouchEvent) => void,
   ref: React.RefObject<HTMLElement | null>,
@@ -35,7 +41,7 @@ export function useOnClickOutside(
 ) {
   useEffect(() => {
     if (!active) {
-      return;
+      return () => {};
     }
 
     function onEvent(event: MouseEvent | TouchEvent) {
@@ -56,6 +62,9 @@ export function useOnClickOutside(
   }, [ref, active]);
 }
 
+// =====================================
+// ⬢ use OnClick Outside Second Version
+// =====================================
 export function useOnClickOutside2(
   handler: (e: MouseEvent | TouchEvent) => void,
   ref1: React.RefObject<HTMLElement | null>,
@@ -64,7 +73,7 @@ export function useOnClickOutside2(
 ) {
   useEffect(() => {
     if (!active) {
-      return;
+      return () => {};
     }
 
     function onEvent(event: MouseEvent | TouchEvent) {

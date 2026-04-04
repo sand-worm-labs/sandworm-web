@@ -3,6 +3,9 @@
 import { useState, useEffect, useCallback } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 
+// =====================================
+// ⬢ Types
+// =====================================
 interface ProfileFormData {
   username: string;
   bio: string;
@@ -57,6 +60,9 @@ const initialFormData: ProfileFormData = {
   lastName: "",
 };
 
+// =====================================
+// ⬢ use Profile Form Hook
+// =====================================
 export function useProfileForm({
   user,
   updateProfile,

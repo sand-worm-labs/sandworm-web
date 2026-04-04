@@ -1,9 +1,6 @@
-/**
- * Apollo Provider wrapper
- * - Cookie-based auth — no token props needed
- * - Singleton client per graphqlUrl
- */
-
+// =====================================
+// ⬢Apollo Provider wrapper
+// =====================================
 import React, { useMemo } from "react";
 import { ApolloProvider } from "@apollo/client/react";
 
