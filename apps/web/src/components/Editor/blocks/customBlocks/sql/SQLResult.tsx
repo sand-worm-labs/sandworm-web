@@ -17,7 +17,7 @@ import { Transition } from "@headlessui/react";
 import { Tooltip, TooltipV2 } from "../../ToolTips";
 import type { DashboardMode } from "../../Dashboard";
 // eslint-disable-next-line import/no-cycle
-import { dashboardModeHasControls } from "../../Dashboard";
+import { dashboardModeHasControls } from "../../Dashboard/dashboard-types";
 import LargeSpinner from "../../LargeSpinner";
 import { useCSV } from "../../../hooks/useQueryCSV";
 import Spin from "../../Spin";
@@ -25,6 +25,9 @@ import PageButtons from "../../PageButtons";
 
 import Table from "./Table";
 
+// =====================================
+// ⬢ Utils
+// =====================================
 function formatMs(ms: number) {
   if (ms < 1000) {
     return `${ms}ms`;
@@ -37,6 +40,9 @@ function formatMs(ms: number) {
   return `${(ms / 60000).toFixed(2)}m`;
 }
 
+// =====================================
+// ⬢ Types
+// =====================================
 interface SQLSuccessProps {
   blockId: string;
   documentId: string;
@@ -59,6 +65,10 @@ interface SQLSuccessProps {
   onChangeDashboardPageSize: (size: number) => void;
   hasTitle: boolean;
 }
+
+// =====================================
+// ⬢ SQL Sucess
+// =====================================
 function SQLSuccess(props: SQLSuccessProps) {
   const result = useMemo(
     () => migrateSuccessSQLResult(props.result),
@@ -336,6 +346,9 @@ function SQLSuccess(props: SQLSuccessProps) {
   );
 }
 
+// =====================================
+// ⬢ SQL Aborted
+// =====================================
 function SQLAborted(props: {
   dashboardMode: DashboardMode | null;
   toggleResultHidden: () => void;
@@ -377,6 +390,9 @@ function SQLAborted(props: {
   );
 }
 
+// =====================================
+// ⬢ SQL Syntax Error
+// =====================================
 function SQLSyntaxError(props: {
   result: SyntaxErrorRunQueryResult;
   isFixingWithAI: boolean;
@@ -460,6 +476,9 @@ function SQLSyntaxError(props: {
   );
 }
 
+// =====================================
+// ⬢ SQL Python Error
+// =====================================
 function SQLPythonError(props: {
   result: PythonErrorRunQueryResult;
   dashboardMode: DashboardMode | null;
@@ -511,6 +530,9 @@ function SQLPythonError(props: {
   );
 }
 
+// =====================================
+// ⬢ SQL Result Main Component
+// =====================================
 interface Props {
   blockId: string;
   documentId: string;

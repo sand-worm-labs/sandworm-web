@@ -32,7 +32,7 @@ import {
 import clsx from "clsx";
 import type { ConnectDragPreview } from "react-dnd";
 import { useRouter } from "next/navigation";
-import type { SQLQueryConfiguration, TableSort } from "@sandworm/types";
+import type { TableSort } from "@sandworm/types";
 import { exhaustiveCheck } from "@sandworm/types";
 import { head } from "ramda";
 import {
@@ -47,7 +47,7 @@ import type { ApiDocument, ApiWorkspace, DataSourceType } from "@/types";
 
 import { TooltipV2 } from "../../ToolTips";
 import type { DashboardMode } from "../../Dashboard";
-import { dashboardModeHasControls } from "../../Dashboard";
+import { dashboardModeHasControls } from "../../Dashboard/dashboard-types";
 import HeaderSelect from "../../HeaderSelect";
 import { useEnvironmentStatus } from "../../../hooks/useEnvironmentStatus";
 import {
@@ -70,7 +70,6 @@ import FormatSQLButton from "../../FormatSQLButton";
 import ApproveDiffButons from "../../ApproveDiffButtons";
 import EditWithAIForm from "../../EditWithAIForm";
 
-import SQLQueryConfigurationButton from "./SQLQueryConfigurationButton";
 import DataframeNameInput from "./DataframeNameInput";
 import SQLResult from "./SQLResult";
 
@@ -94,6 +93,67 @@ interface Props {
   aiTasks: AITasks;
   isFullScreen: boolean;
 }
+
+function AIEditTooltipContent({
+  tooltipRef,
+  hasOaiKey,
+}: {
+  tooltipRef: RefObject<HTMLDivElement>;
+  hasOaiKey: boolean;
+}) {
+  return (
+    <div
+      ref={tooltipRef}
+      className={clsx(
+        "font-body pointer-events-none absolute opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1 z-30",
+        hasOaiKey ? "w-32" : "w-40"
+      )}
+    >
+      <span className="text-center">
+        {hasOaiKey ? " AI edit form" : "Missing AI API key"}
+      </span>
+      <span className="inline-flex gap-x-1 items-center text-ink-400">
+        {hasOaiKey ? (
+          <>
+            <span>⌘</span>
+            <span>+</span>
+            <span>e</span>
+          </>
+        ) : (
+          <span>Admins can add an AI key in settings.</span>
+        )}
+      </span>
+    </div>
+  );
+}
+
+// =====================================
+// ⬢ Tooltip Content Components
+// =====================================
+function RunQueryTooltipContent({
+  tooltipRef,
+}: {
+  tooltipRef: RefObject<HTMLDivElement>;
+}) {
+  return (
+    <div
+      className="font-body pointer-events-none w-max bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1"
+      ref={tooltipRef}
+    >
+      <span>Run code</span>
+      <span className="inline-flex gap-x-1 items-center text-ink-400">
+        <span>⌘</span>
+        <span>+</span>
+        <span>Enter</span>
+      </span>
+    </div>
+  );
+}
+
+const renderRunQueryTooltip = (ref: RefObject<HTMLDivElement>) => (
+  <RunQueryTooltipContent tooltipRef={ref} />
+);
+
 function SQLBlock(props: Props) {
   const [workspaces] = useWorkspaces();
   const currentWorkspace: ApiWorkspace | undefined = useMemo(() => {
@@ -349,6 +409,7 @@ function SQLBlock(props: Props) {
   }, [status, execution, onRun, blockId]);
 
   const { source, configuration } = getSQLAttributes(props.block, props.blocks);
+  console.log(configuration);
   const lastQuery = props.block.getAttribute("lastQuery");
   const startQueryTime = props.block.getAttribute("startQueryTime");
   const lastQueryTime = props.block.getAttribute("lastQueryTime");
@@ -407,7 +468,7 @@ function SQLBlock(props: Props) {
 
   const onFixWithAI = useCallback(() => {
     if (!hasOaiKey) {
-      return;
+      return () => {};
     }
 
     if (aiTask?.getMetadata()._tag === "fix-sql") {
@@ -495,7 +556,7 @@ function SQLBlock(props: Props) {
           type: "sql",
         },
         props.document.title,
-        props.document.icon
+        props.document.icon || ""
       );
     } else if (!isComponentInstance) {
       // can only update component if it is not an instance
@@ -515,13 +576,6 @@ function SQLBlock(props: Props) {
     isComponentInstance,
     props.document.title,
   ]);
-
-  const onChangeConfiguration = useCallback(
-    (value: SQLQueryConfiguration) => {
-      props.block.setAttribute("configuration", value);
-    },
-    [props.block]
-  );
 
   const onChangeSort = useCallback(
     (sort: TableSort | null) => {
@@ -658,19 +712,7 @@ function SQLBlock(props: Props) {
       }
     } else if (props.dataSources.size > 0 || headerSelectValue === "duckdb") {
       return {
-        content: (ref: RefObject<HTMLDivElement>) => (
-          <div
-            className="font-body  pointer-events-none absolute w-max bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 "
-            ref={ref}
-          >
-            <span>Run query</span>
-            <span className="inline-flex gap-x-1 items-center text-ink-400">
-              <span>⌘</span>
-              <span>+</span>
-              <span>Enter</span>
-            </span>
-          </div>
-        ),
+        content: renderRunQueryTooltip,
       };
     } else {
       return {
@@ -735,6 +777,13 @@ function SQLBlock(props: Props) {
       );
     }
 
+    const aiEditTooltipContent = useCallback(
+      (ref: RefObject<HTMLDivElement>) => (
+        <AIEditTooltipContent tooltipRef={ref} hasOaiKey={hasOaiKey} />
+      ),
+      [hasOaiKey]
+    );
+
     return (
       <SQLResult
         page={page}
@@ -767,6 +816,7 @@ function SQLBlock(props: Props) {
   return (
     <div
       className="relative group/block"
+      role="presentation"
       onClick={onClickWithin}
       data-block-id={blockId}
     >
@@ -778,7 +828,7 @@ function SQLBlock(props: Props) {
           {
             "border-border-focus shadow-sm":
               isEditorFocused && editorState.mode === "insert",
-            "border-border-focus shadow-sm":
+            "border-border-focus shadow-none":
               isEditorFocused && editorState.mode === "normal",
             "border-border-focus dark:border-border-tertiary": !isEditorFocused,
           }
@@ -1031,34 +1081,7 @@ function SQLBlock(props: Props) {
                         props.isEditable &&
                         !isAIFixing && (
                           <TooltipV2<HTMLButtonElement>
-                            content={ref => (
-                              <div
-                                ref={ref}
-                                className={clsx(
-                                  "font-body  pointer-events-none bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1 z-30",
-                                  hasOaiKey ? "w-32" : "w-40"
-                                )}
-                              >
-                                <span className="text-center">
-                                  {hasOaiKey
-                                    ? "Open AI edit form"
-                                    : "Missing OpenAI API key"}
-                                </span>
-                                <span className="inline-flex gap-x-1 items-center text-ink-400">
-                                  {hasOaiKey ? (
-                                    <>
-                                      <span>⌘</span>
-                                      <span>+</span>
-                                      <span>e</span>
-                                    </>
-                                  ) : (
-                                    <span>
-                                      Admins can add an OpenAI key in settings.
-                                    </span>
-                                  )}
-                                </span>
-                              </div>
-                            )}
+                            content={aiEditTooltipContent}
                             active
                           >
                             {ref => (
@@ -1188,7 +1211,7 @@ function SQLBlock(props: Props) {
             />
           )}
 
-        {((result && !isResultHidden) || !isCodeHidden) &&
+        {/*   {((result && !isResultHidden) || !isCodeHidden) &&
           dataSource?.type === "athena" && (
             <SQLQueryConfigurationButton
               dataSource={dataSource}
@@ -1196,7 +1219,7 @@ function SQLBlock(props: Props) {
               onChange={onChangeConfiguration}
               disabled={!props.isEditable}
             />
-          )}
+          )} */}
       </div>
     </div>
   );

@@ -29,7 +29,7 @@ import {
 import { Transition } from "@headlessui/react";
 import { InformationCircleIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
-import { equals, identity } from "ramda";
+import { equals } from "ramda";
 import ReactDOM from "react-dom";
 
 import { Tooltip } from "../Editor/blocks/ToolTips";
@@ -781,24 +781,24 @@ function FilterSelectorV2({
                       {VisualizationStringFilterMultiValuesOperator.safeParse(
                         operator
                       ).success ? (
-                        <MultiComboboxV2
+                        <MultiComboboxV2<string>
                           label={<FilterValueLabel />}
-                          value={Array.from(value)}
+                          value={Array.from(value) as string[]}
                           options={
                             "categories" in column
                               ? (column.categories?.map(c => c.toString()) ??
                                 [])
                               : []
                           }
-                          onChange={setValue}
+                          onChange={(selected: string[]) => setValue(selected)}
                           search={(options, query) =>
                             options.filter(c => c.includes(query))
                           }
-                          getLabel={value => value}
+                          getLabel={opt => opt}
                           icon={() => null}
                           placeholder="Value"
                           disabled={disabled}
-                          valueFromQuery={identity}
+                          valueFromQuery={(query: string) => query}
                         />
                       ) : (
                         <div>
@@ -807,7 +807,9 @@ function FilterSelectorV2({
                             className="w-full truncate border-0 text-xs  rounded-md ring-1 ring-inset ring-gray-200 focus-within:ring-1 focus-within:ring-inset focus-within:ring-gray-300 bg-white text-gray-800"
                             type="text"
                             value={
-                              Array.isArray(value) ? (value[0] ?? null) : value
+                              Array.isArray(value)
+                                ? (value[0] ?? "")
+                                : (value ?? "")
                             }
                             onChange={onChangeValue}
                             placeholder="Value"

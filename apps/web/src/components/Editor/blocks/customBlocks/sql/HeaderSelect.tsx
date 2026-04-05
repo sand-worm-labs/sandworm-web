@@ -11,6 +11,9 @@ import type { DataSourceType } from "@/types";
 
 import { databaseImages } from "../../DataSourcesList";
 
+// =====================================
+// ⬢ Types
+// =====================================
 type Option = {
   value: string;
   label: string;
@@ -27,6 +30,10 @@ interface Props {
   onAdd?: () => void;
   onAddLabel?: string;
 }
+
+// =====================================
+// ⬢ Header Select Component
+// =====================================
 export default function HeaderSelect(props: Props) {
   const { value, disabled } = props;
   const options = useMemo(
@@ -60,7 +67,7 @@ export default function HeaderSelect(props: Props) {
   const onChange = useCallback(
     (_value: string) => {
       if (!isDisabled) {
-        const option = options.find(option => option.value === value);
+        const option = options.find(opt => opt.value === value);
         if (option) {
           props.onChange(option);
         }
@@ -77,7 +84,7 @@ export default function HeaderSelect(props: Props) {
       onChange={onChange}
       disabled={isDisabled}
     >
-      {({ open, _disabled }) => (
+      {({ open }) => (
         <div className="relative overflow-visible font-normal h-full w-56 max-w-56">
           <Listbox.Button
             as="div"
@@ -121,7 +128,7 @@ export default function HeaderSelect(props: Props) {
           >
             <Listbox.Options
               as="div"
-              className="mt-[1px] absolute z-10 max-h-60 w-full overflow-auto bg-white text-base shadow-lg ring-1 ring-gray-200 focus:outline-none sm:text-xs w-[calc(100%-1px)]"
+              className="mt-[1px] absolute z-10 max-h-60  overflow-auto bg-white text-base shadow-lg ring-1 ring-gray-200 focus:outline-none sm:text-xs w-[calc(100%-1px)]"
             >
               {options
                 .slice(0, options.length - 1)
@@ -139,7 +146,7 @@ export default function HeaderSelect(props: Props) {
                 {options.length > 1 && (
                   <hr className="border-t border-border-secondary" />
                 )}
-                <DataSourceOption option={options[options.length - 1]} />
+                <DataSourceOption option={options.at(-1)!} />
               </>
               {props.onAdd && (
                 <>
@@ -162,6 +169,9 @@ export default function HeaderSelect(props: Props) {
   );
 }
 
+// =====================================
+// ⬢ DataSource Option
+// =====================================
 function DataSourceOption({ option }: { option: Option }) {
   return (
     <Listbox.Option
@@ -177,7 +187,7 @@ function DataSourceOption({ option }: { option: Option }) {
     >
       {({ selected, active }) => (
         <div className="flex gap-x-3 items-center font-mono overflow-hidden">
-          {option.type == "duckdb" ? (
+          {option.type === "duckdb" ? (
             <span className="text-[10px]">🐤</span>
           ) : (
             <img
