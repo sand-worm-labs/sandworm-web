@@ -1068,6 +1068,9 @@ importers:
       '@types/react-color':
         specifier: ^3.0.13
         version: 3.0.13(@types/react@18.3.26)
+      '@types/react-copy-to-clipboard':
+        specifier: ^5.0.7
+        version: 5.0.7
       '@types/react-dom':
         specifier: catalog:react
         version: 18.3.7(@types/react@18.3.26)
@@ -6663,6 +6666,9 @@ packages:
     resolution: {integrity: sha512-2c/9FZ4ixC5T3JzN0LP5Cke2Mf0MKOP2Eh0NPDPWmuVH3NjPyhEjqNMQpN1Phr5m74egAy+p2lYNAFrX1z9Yrg==}
     peerDependencies:
       '@types/react': '*'
+
+  '@types/react-copy-to-clipboard@5.0.7':
+    resolution: {integrity: sha512-Gft19D+as4M+9Whq1oglhmK49vqPhcLzk8WfvfLvaYMIPYanyfLy0+CwFucMJfdKoSFyySPmkkWn8/E6voQXjQ==}
 
   '@types/react-dom@18.3.7':
     resolution: {integrity: sha512-MEe3UeoENYVFXzoXEWsvcpg6ZvlrFNlOQ7EOsvhI3CfAXwzPfO8Qwuxd40nepsYKqyyVQnTdEfv68q91yLcKrQ==}
@@ -21754,6 +21760,10 @@ snapshots:
     dependencies:
       '@types/react': 18.3.26
       '@types/reactcss': 1.2.13(@types/react@18.3.26)
+
+  '@types/react-copy-to-clipboard@5.0.7':
+    dependencies:
+      '@types/react': 19.2.2
 
   '@types/react-dom@18.3.7(@types/react@18.3.26)':
     dependencies:

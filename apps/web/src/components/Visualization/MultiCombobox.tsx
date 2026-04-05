@@ -48,7 +48,7 @@ const ComboboxLabel = ({ label }: { label?: string | JSX.Element }) => {
 // =====================================
 // ⬢ MultiComboboxV2 Component
 // =====================================
-export default function MultiComboboxV2<T extends object>({
+export default function MultiComboboxV2<T>({
   label,
   value,
   options,
