@@ -10,6 +10,10 @@ import { useCallback } from "react";
 
 import ScrollBar from "../../ScrollBar";
 
+// =====================================
+// ⬢ Utils
+// =====================================
+
 function renderJson(j?: Json): string {
   if (j === undefined) {
     return "-";
@@ -22,6 +26,10 @@ function renderJson(j?: Json): string {
   return j.toString();
 }
 
+// =====================================
+// ⬢ Types
+// =====================================
+
 interface TreeNode {
   name: string;
   value: Json;
@@ -30,17 +38,34 @@ interface TreeNode {
   colIndex: number;
 }
 
+// =====================================
+// ⬢ Tree Helpers
+// =====================================
+
+// FIX no-use-before-define: moved getColSpan and calculateMaxDepth above renderHeaders
+const getColSpan = (node: TreeNode): number => {
+  if (node.children.length === 0) {
+    return 1;
+  }
+  return node.children.reduce((sum, child) => sum + getColSpan(child), 0);
+};
+
+const calculateMaxDepth = (node: TreeNode): number => {
+  if (node.children.length === 0) {
+    return 1;
+  }
+  return 1 + Math.max(...node.children.map(calculateMaxDepth));
+};
+
 function buildTree(columns: Json[][]): TreeNode[] {
   const root: TreeNode[] = [];
 
-  for (let colIndex = 0; colIndex < columns.length; colIndex++) {
-    const columnPath = columns[colIndex];
+  columns.forEach((columnPath, colIndex) => {
     let currentLevel = root;
-
     const [metric, ...categories] = columnPath;
-
     let parent: TreeNode | null = null;
-    for (const category of categories) {
+
+    categories.forEach(category => {
       let node = currentLevel.find(n => n.name === renderJson(category));
       if (!node) {
         node = {
@@ -54,19 +79,23 @@ function buildTree(columns: Json[][]): TreeNode[] {
       }
       parent = node;
       currentLevel = node.children;
-    }
+    });
 
     currentLevel.push({
       name: renderJson(metric),
-      value: metric,
+      value: metric ?? null,
       children: [],
       colIndex,
       parent,
     });
-  }
+  });
 
   return root;
 }
+
+// =====================================
+// ⬢ Header Renderers
+// =====================================
 
 const renderHeaders = (
   nodes: TreeNode[],
@@ -87,7 +116,7 @@ const renderHeaders = (
     <>
       {columnNames[depth] ? (
         <th
-          key={`${depth}-0`}
+          key={`${depth}-row-label`}
           className="border-b border-r px-2 py-1.5 text-ink-400  whitespace-nowrap font-normal"
           align="right"
         >
@@ -95,7 +124,7 @@ const renderHeaders = (
         </th>
       ) : (
         <th
-          key={`${depth}-0`}
+          key={`${depth}-row-sort`}
           className="border-b border-r px-2 py-1.5 text-ink-400  whitespace-nowrap font-normal hover:cursor-pointer hover:bg-gray-100"
           align="right"
           onClick={() => {
@@ -118,7 +147,7 @@ const renderHeaders = (
           </div>
         </th>
       )}
-      {nodes.map((node, index) => {
+      {nodes.map(node => {
         let sortDirection: "asc" | "desc" | "none" = "none";
         if (sort && sort._tag === "column") {
           if (sort.metric === node.name) {
@@ -144,7 +173,7 @@ const renderHeaders = (
         const hasChildren = node.children.length > 0;
         return (
           <th
-            key={`${depth}-${index}`}
+            key={`${depth}-${node.name}-${node.colIndex}`}
             colSpan={hasChildren ? getColSpan(node) : 1}
             rowSpan={hasChildren ? 1 : maxDepth - depth + 1}
             className={clsx(
@@ -182,36 +211,22 @@ const renderHeaders = (
   );
 };
 
-const getColSpan = (node: TreeNode): number => {
-  if (node.children.length === 0) {
-    return 1;
-  }
-  return node.children.reduce((sum, child) => sum + getColSpan(child), 0);
-};
-
-const calculateMaxDepth = (node: TreeNode): number => {
-  if (node.children.length === 0) {
-    return 1;
-  }
-  return 1 + Math.max(...node.children.map(calculateMaxDepth));
-};
-
 const renderAllHeaders = (
   pivotRows: string[],
   pivotColumns: string[],
   nodes: TreeNode[],
-  depth: number = 0,
   maxDepth: number,
   sort: PivotTableSort | null,
   onSortByRow: (row: string) => void,
-  onSortByColumn: (node: TreeNode, order: "asc" | "desc" | "none") => void
+  onSortByColumn: (node: TreeNode, order: "asc" | "desc" | "none") => void,
+  depth: number = 0
 ): JSX.Element[] => {
   if (!nodes.length) return [];
 
   return [
     <tr key={`header-${depth}`}>
       {depth === 0 &&
-        pivotRows.slice(0, -1).map((rowName, headerIndex) => {
+        pivotRows.slice(0, -1).map(rowName => {
           let sortDirection: "asc" | "desc" | "none" = "none";
           if (sort && sort._tag === "row" && sort.row === rowName) {
             sortDirection = sort.order;
@@ -219,7 +234,7 @@ const renderAllHeaders = (
 
           return (
             <th
-              key={`row-header-label-${headerIndex}`}
+              key={`row-header-label-${rowName}`}
               rowSpan={maxDepth}
               className="border-b border-r px-2 py-1.5 text-ink-400  whitespace-nowrap font-normal hover:cursor-pointer hover:bg-gray-100"
               align="right"
@@ -249,7 +264,7 @@ const renderAllHeaders = (
         depth,
         maxDepth,
         pivotColumns,
-        pivotRows[pivotRows.length - 1],
+        pivotRows.at(-1) ?? "",
         sort,
         onSortByRow,
         onSortByColumn
@@ -259,20 +274,28 @@ const renderAllHeaders = (
       pivotRows,
       pivotColumns,
       nodes.flatMap(node => node.children),
-      depth + 1,
       maxDepth,
       sort,
       onSortByRow,
-      onSortByColumn
+      onSortByColumn,
+      depth + 1
     ),
   ];
 };
+
+// =====================================
+// ⬢ Props
+// =====================================
 
 interface Props {
   result: PivotTableResult;
   sort: PivotTableSort | null;
   onSort: (sort: PivotTableSort | null) => void;
 }
+
+// =====================================
+// ⬢ Component
+// =====================================
 
 function PivotTable(props: Props) {
   const tree = buildTree(props.result.data.columns);
@@ -291,7 +314,7 @@ function PivotTable(props: Props) {
           key={`cell-${rowIndex}-${node.colIndex}`}
           className="border-b border-r px-2 py-1.5 text-ink-400  whitespace-nowrap font-normal"
         >
-          {renderJson(props.result.data.data[rowIndex][node.colIndex])}
+          {renderJson(props.result.data.data[rowIndex]?.[node.colIndex])}
         </td>,
       ];
     }
@@ -300,21 +323,26 @@ function PivotTable(props: Props) {
   };
 
   const renderBodyRows = () => {
-    return props.result.data.index.map((rowHeader, rowIndex) => (
-      <tr key={`row-${rowIndex}`}>
-        {(Array.isArray(rowHeader) ? rowHeader : [rowHeader]).map(
-          (header, headerIndex) => (
+    return props.result.data.index.map(rowHeader => {
+      const rowKey = `row-${JSON.stringify(rowHeader)}`;
+      const headers = Array.isArray(rowHeader) ? rowHeader : [rowHeader];
+
+      return (
+        <tr key={rowKey}>
+          {headers.map(header => (
             <td
-              key={`row-header-${rowIndex}-${headerIndex}`}
+              key={`row-header-${JSON.stringify(rowHeader)}-${JSON.stringify(header)}`}
               className="border-b border-r px-2 py-1.5 text-ink-400  whitespace-nowrap font-normal"
             >
               {renderJson(header)}
             </td>
-          )
-        )}
-        {tree.flatMap(node => renderCells(node, rowIndex))}
-      </tr>
-    ));
+          ))}
+          {tree.flatMap(node =>
+            renderCells(node, props.result.data.index.indexOf(rowHeader))
+          )}
+        </tr>
+      );
+    });
   };
 
   const onSortByRow = useCallback(
@@ -371,7 +399,6 @@ function PivotTable(props: Props) {
             props.result.pivotRows,
             props.result.pivotColumns,
             tree,
-            0,
             maxDepth,
             props.sort,
             onSortByRow,

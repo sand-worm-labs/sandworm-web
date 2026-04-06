@@ -23,6 +23,10 @@ interface Props {
   isHidden: boolean;
   isEditable: boolean;
 }
+
+// =====================================
+// ⬢ Pivot Table Controls
+// =====================================
 function PivotTableControls(props: Props) {
   const onAddRow = useCallback(() => {
     props.onChangeRows([...props.rows, { column: null }]);

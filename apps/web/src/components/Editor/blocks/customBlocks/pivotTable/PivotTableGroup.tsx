@@ -20,6 +20,10 @@ interface Props<T> {
   onRemove: (index: number) => void;
   isEditable: boolean;
 }
+
+// =====================================
+// ⬢ PivotTableGroup
+// =====================================
 function PivotTableGroup<
   T extends
     | { column: DataFrameColumn | null }
