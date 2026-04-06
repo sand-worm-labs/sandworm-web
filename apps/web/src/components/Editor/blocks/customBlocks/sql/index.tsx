@@ -43,7 +43,7 @@ import {
 import { Transition } from "@headlessui/react";
 import { useTheme } from "next-themes";
 
-import type { ApiDocument, ApiWorkspace, DataSourceType } from "@/types";
+import type { ApiDocument, ApiWorkspace } from "@/types";
 
 import { TooltipV2 } from "../../ToolTips";
 import type { DashboardMode } from "../../Dashboard";
@@ -73,6 +73,9 @@ import EditWithAIForm from "../../EditWithAIForm";
 import DataframeNameInput from "./DataframeNameInput";
 import SQLResult from "./SQLResult";
 
+// =====================================
+// ⬢ Types
+// =====================================
 interface Props {
   block: Y.XmlElement<SQLBlock>;
   layout: Y.Array<YBlockGroup>;
@@ -94,6 +97,9 @@ interface Props {
   isFullScreen: boolean;
 }
 
+// =====================================
+// ⬢ ToolTip Content
+// =====================================
 function AIEditTooltipContent({
   tooltipRef,
   hasOaiKey,
@@ -128,7 +134,7 @@ function AIEditTooltipContent({
 }
 
 // =====================================
-// ⬢ Tooltip Content Components
+// ⬢  Run Query Tooltip Content
 // =====================================
 function RunQueryTooltipContent({
   tooltipRef,
@@ -154,6 +160,15 @@ const renderRunQueryTooltip = (ref: RefObject<HTMLDivElement>) => (
   <RunQueryTooltipContent tooltipRef={ref} />
 );
 
+const CopyToClipboardFixed = CopyToClipboard as unknown as React.ComponentType<{
+  text: string;
+  onCopy: () => void;
+  children: React.ReactNode;
+}>;
+
+// =====================================
+// ⬢ Main Component
+// =====================================
 function SQLBlock(props: Props) {
   const [workspaces] = useWorkspaces();
   const currentWorkspace: ApiWorkspace | undefined = useMemo(() => {
@@ -202,10 +217,13 @@ function SQLBlock(props: Props) {
   }, [props.block, props.isEditable]);
 
   const [selectedCode, setSelectedCode] = useState<string | null>(null);
-  const onSQLSelectionChanged = useCallback((selectedCode: string | null) => {
-    setSelectedCode(selectedCode);
+
+  const onSQLSelectionChanged = useCallback((code: string | null) => {
+    setSelectedCode(code);
   }, []);
 
+  // ⬢  block attributes
+  // =====================================
   const {
     dataframeName,
     id: blockId,
@@ -244,6 +262,8 @@ function SQLBlock(props: Props) {
     props.document.workspaceId
   );
 
+  // ⬢  Run handler
+  // =====================================
   const onRun = useCallback(() => {
     props.executionQueue.enqueueBlock(
       blockId,
@@ -328,15 +348,20 @@ function SQLBlock(props: Props) {
     [props.dataSources, dataSourceId]
   );
 
+  // ⬢  Reusable components
+  // =====================================
   const [
     { data: components },
     { create: createReusableComponent, update: updateReusableComponent },
   ] = useReusableComponents(props.document.workspaceId);
+
   const component = useMemo(
     () => components.find(c => c.id === componentId),
     [components, componentId]
   );
 
+  // ⬢  AI Task
+  // =====================================
   const editAITasks = useAITasks(props.aiTasks, props.block, "edit-sql");
   const fixAITasks = useAITasks(props.aiTasks, props.block, "fix-sql");
   const aiTask = useMemo(
@@ -365,12 +390,12 @@ function SQLBlock(props: Props) {
   }, [props.block, editorAPI.insert, blockId, aiTask]);
 
   const onChangeDataSource = useCallback(
-    (df: { value: string; type: DataSourceType | "duckdb" }) => {
-      if (df.type === "duckdb") {
+    (value: string) => {
+      if (value === "duckdb") {
         props.block.setAttribute("dataSourceId", null);
         props.block.setAttribute("isFileDataSource", true);
       } else {
-        props.block.setAttribute("dataSourceId", df.value);
+        props.block.setAttribute("dataSourceId", value);
         props.block.setAttribute("isFileDataSource", false);
       }
     },
@@ -468,7 +493,7 @@ function SQLBlock(props: Props) {
 
   const onFixWithAI = useCallback(() => {
     if (!hasOaiKey) {
-      return () => {};
+      return;
     }
 
     if (aiTask?.getMetadata()._tag === "fix-sql") {
@@ -479,13 +504,13 @@ function SQLBlock(props: Props) {
   }, [props.aiTasks, blockId, props.userId, hasOaiKey, aiTask]);
 
   const [copied, setCopied] = useState(false);
+
   useEffect(() => {
-    if (copied) {
-      const timeout = setTimeout(() => {
-        setCopied(false);
-      }, 2000);
-      return () => clearTimeout(timeout);
-    }
+    if (!copied) return () => {};
+    const timeout = setTimeout(() => {
+      setCopied(false);
+    }, 2000);
+    return () => clearTimeout(timeout);
   }, [copied, setCopied]);
 
   const diffButtonsVisible =
@@ -506,7 +531,6 @@ function SQLBlock(props: Props) {
       return;
     }
 
-    // Reuse the `EditWithAIForm` component to show the formatted SQL code
     props.block.setAttribute("aiSuggestions", sqlCodeFormatted);
   }, [source, props.block]);
 
@@ -529,7 +553,6 @@ function SQLBlock(props: Props) {
           value: d.data.id,
           label: d.data.name,
           type: d.type,
-          isDemo: d.data.isDemo,
         }))
         .toArray(),
     [props.dataSources]
@@ -539,16 +562,16 @@ function SQLBlock(props: Props) {
     component !== undefined && component.blockId !== blockId;
 
   const onSaveReusableComponent = useCallback(() => {
-    const component = components.find(c => c.id === componentId);
-    if (!component) {
-      const { id: componentId, state } = createComponentState(
+    const existingComponent = components.find(c => c.id === componentId);
+    if (!existingComponent) {
+      const { id: newComponentId, state } = createComponentState(
         props.block,
         props.blocks
       );
       createReusableComponent(
         props.document.workspaceId,
         {
-          id: componentId,
+          id: newComponentId,
           blockId,
           documentId: props.document.id,
           state,
@@ -559,11 +582,14 @@ function SQLBlock(props: Props) {
         props.document.icon || ""
       );
     } else if (!isComponentInstance) {
-      // can only update component if it is not an instance
-      updateReusableComponent(props.document.workspaceId, component.id, {
-        state: createComponentState(props.block, props.blocks).state,
-        title,
-      });
+      updateReusableComponent(
+        props.document.workspaceId,
+        existingComponent.id,
+        {
+          state: createComponentState(props.block, props.blocks).state,
+          title,
+        }
+      );
     }
   }, [
     createReusableComponent,
@@ -578,9 +604,9 @@ function SQLBlock(props: Props) {
   ]);
 
   const onChangeSort = useCallback(
-    (sort: TableSort | null) => {
+    (newSort: TableSort | null) => {
       const run = () => {
-        props.block.setAttribute("sort", sort);
+        props.block.setAttribute("sort", newSort);
         props.executionQueue.enqueueBlock(
           props.block,
           props.userId,
@@ -601,15 +627,15 @@ function SQLBlock(props: Props) {
   );
 
   const onChangePage = useCallback(
-    (page: number) => {
+    (newPage: number) => {
       const run = () => {
         if (
           props.dashboardMode &&
           !dashboardModeHasControls(props.dashboardMode)
         ) {
-          props.block.setAttribute("dashboardPage", page);
+          props.block.setAttribute("dashboardPage", newPage);
         } else {
-          props.block.setAttribute("page", page);
+          props.block.setAttribute("page", newPage);
         }
         props.executionQueue.enqueueBlock(
           props.block,
@@ -634,20 +660,21 @@ function SQLBlock(props: Props) {
 
   const isVisualizationButtonDisabled =
     props.block.getAttribute("result")?.type !== "success" || !props.isEditable;
-  const onAddVisualization = useCallback(() => {
-    const blockId = props.block.getAttribute("id");
 
-    const blockGroup = props.layout.toArray().find(blockGroup => {
-      return blockGroup
+  const onAddVisualization = useCallback(() => {
+    const currentBlockId = props.block.getAttribute("id");
+
+    const blockGroup = props.layout.toArray().find(bg => {
+      return bg
         .getAttribute("tabs")
         ?.toArray()
         .some(tab => {
-          return tab.getAttribute("id") === blockId;
+          return tab.getAttribute("id") === currentBlockId;
         });
     });
     const blockGroupId = blockGroup?.getAttribute("id");
 
-    if (!blockId || !blockGroupId) {
+    if (!currentBlockId || !blockGroupId) {
       return;
     }
 
@@ -662,7 +689,7 @@ function SQLBlock(props: Props) {
       props.layout,
       props.blocks,
       blockGroupId,
-      blockId,
+      currentBlockId,
       block,
       "after"
     );
@@ -702,6 +729,8 @@ function SQLBlock(props: Props) {
                 "When running entire documents, you cannot stop individual blocks.",
             };
           }
+
+          return null;
         }
         case "unknown":
         case "aborting":
@@ -764,6 +793,15 @@ function SQLBlock(props: Props) {
     [props.block, props.userId, environmentStartedAt]
   );
 
+  const aiEditTooltipContent = useCallback(
+    (ref: RefObject<HTMLDivElement>) => (
+      <AIEditTooltipContent tooltipRef={ref} hasOaiKey={hasOaiKey} />
+    ),
+    [hasOaiKey]
+  );
+
+  // ⬢  Dashnboard Mode
+  // =====================================
   if (props.dashboardMode && !dashboardModeHasControls(props.dashboardMode)) {
     if (!result) {
       return (
@@ -776,13 +814,6 @@ function SQLBlock(props: Props) {
         </div>
       );
     }
-
-    const aiEditTooltipContent = useCallback(
-      (ref: RefObject<HTMLDivElement>) => (
-        <AIEditTooltipContent tooltipRef={ref} hasOaiKey={hasOaiKey} />
-      ),
-      [hasOaiKey]
-    );
 
     return (
       <SQLResult
@@ -813,6 +844,8 @@ function SQLBlock(props: Props) {
     );
   }
 
+  // ⬢  Main Component Mode
+  // =====================================
   return (
     <div
       className="relative group/block"
@@ -913,8 +946,8 @@ function SQLBlock(props: Props) {
                   executionQueue={props.executionQueue}
                 />
                 <HeaderSelect
-                  hidden={props.isPublicMode}
-                  value={headerSelectValue ?? ""}
+                  /*                   hidden={props.isPublicMode}
+                   */ value={headerSelectValue ?? ""}
                   options={dataSourcesOptions}
                   onChange={onChangeDataSource}
                   disabled={!props.isEditable || statusIsDisabled}
@@ -936,7 +969,7 @@ function SQLBlock(props: Props) {
                 leaveFrom="opacity-100"
                 leaveTo="opacity-0"
               >
-                <CopyToClipboard
+                <CopyToClipboardFixed
                   text={dataframeName?.value ?? ""}
                   onCopy={() => setCopied(true)}
                 >
@@ -951,7 +984,7 @@ function SQLBlock(props: Props) {
                       </span>
                     </div>
                   </code>
-                </CopyToClipboard>
+                </CopyToClipboardFixed>
               </Transition>
             </div>
           </div>
@@ -1210,16 +1243,6 @@ function SQLBlock(props: Props) {
               disabled={!props.isEditable}
             />
           )}
-
-        {/*   {((result && !isResultHidden) || !isCodeHidden) &&
-          dataSource?.type === "athena" && (
-            <SQLQueryConfigurationButton
-              dataSource={dataSource}
-              value={configuration}
-              onChange={onChangeConfiguration}
-              disabled={!props.isEditable}
-            />
-          )} */}
       </div>
     </div>
   );

@@ -15,14 +15,11 @@ import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import LargeSpinner from "../../LargeSpinner";
 import PageButtons from "../../PageButtons";
 import type { DashboardMode } from "../../Dashboard";
-import { dashboardModeHasControls } from "../../Dashboard";
+import { dashboardModeHasControls } from "../../Dashboard/dashboard-types";
 
 import PivotTable from "./PivotTable";
 
 interface Props {
-  pivotRows: PivotTableBlock["rows"];
-  pivotColumns: PivotTableBlock["columns"];
-  pivotMetrics: PivotTableBlock["metrics"];
   result: PivotTableResult | null;
   page: number;
   onPrevPage: () => void;
@@ -40,6 +37,10 @@ interface Props {
   sort: PivotTableSort | null;
   onSort: (sort: PivotTableSort | null) => void;
 }
+
+// =====================================
+// ⬢ Pivot Table View
+// =====================================
 function PivotTableView(props: Props) {
   return (
     <div
