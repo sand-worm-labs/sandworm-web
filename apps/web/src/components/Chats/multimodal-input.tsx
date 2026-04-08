@@ -1,6 +1,6 @@
 "use client";
 
-import type { Attachment, ChatRequestOptions, CreateUIMessage } from "ai";
+import type { ChatRequestOptions, CreateUIMessage } from "ai";
 import type { Dispatch, SetStateAction, ChangeEvent } from "react";
 import React, { useRef, useEffect, useCallback } from "react";
 import { toast } from "sonner";
@@ -11,6 +11,12 @@ import { useWorkspace } from "../Editor/hooks/useWorkspaces";
 import useWindowSize from "./use-window-size";
 import { MultimodalInputView } from "./MultimodalInputView";
 
+export interface Attachment {
+  url: string;
+  name?: string;
+  contentType?: string;
+}
+
 export function MultimodalInput({
   workspaceId,
   input,
@@ -19,7 +25,8 @@ export function MultimodalInput({
   stop,
   attachments,
   setAttachments,
-
+  messages,
+  appendAction,
   handleSubmit,
 }: {
   workspaceId: string;
@@ -30,8 +37,8 @@ export function MultimodalInput({
   attachments: Array<Attachment>;
   setAttachments: Dispatch<SetStateAction<Array<Attachment>>>;
   messages: Array<any>;
-  append?: (
-    message: any | CreateUIMessage,
+  appendAction?: (
+    message: any | CreateUIMessage<any>,
     chatRequestOptions?: ChatRequestOptions
   ) => Promise<string | null | undefined>;
   handleSubmit: (
@@ -48,7 +55,7 @@ export function MultimodalInput({
   const { workspace } = useWorkspace(workspaceId);
   const currentModel = workspace?.assistantModel;
 
-  console.log(currentModel, workspace);
+  console.log(currentModel, workspace, messages, appendAction);
 
   const adjustHeight = () => {
     if (textareaRef.current) {
@@ -130,7 +137,9 @@ export function MultimodalInput({
   const submitForm = useCallback(() => {
     if (!input.trim() && attachments.length === 0) return;
 
-    handleSubmit(undefined, { experimental_attachments: attachments });
+    handleSubmit(undefined, {
+      experimental_attachments: attachments,
+    } as ChatRequestOptions & { experimental_attachments: Attachment[] });
     setAttachments([]);
     setInput("");
 

@@ -94,7 +94,6 @@ function NewBlockMenuItem(props: NewBlockMenuItemProps) {
 }
 
 interface Props {
-  workspaceId: string;
   yDoc: Y.Doc;
   blockGroupId: string;
   lastBlockId: string;

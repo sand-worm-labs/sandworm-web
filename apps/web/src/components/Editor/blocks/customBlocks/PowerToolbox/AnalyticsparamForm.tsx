@@ -47,12 +47,11 @@ function buildInitialValues(
   params: ParamDefinition[],
   existingInputs: ResolvedParams
 ): Record<string, FieldValue> {
-  const values: Record<string, FieldValue> = {};
-  for (const param of params) {
-    values[param.key] =
+  return params.reduce<Record<string, FieldValue>>((acc, param) => {
+    acc[param.key] =
       (existingInputs[param.key] as FieldValue) ?? getDefaultValue(param);
-  }
-  return values;
+    return acc;
+  }, {});
 }
 
 // ─── Param pill ───────────────────────────────────────────────────────────────
@@ -177,7 +176,7 @@ export function AnalyticsParamForm({
             <ParamField
               key={param.key}
               param={param}
-              value={values[param.key]}
+              value={values[param.key] ?? getDefaultValue(param)}
               onChange={val => handleChange(param.key, val)}
               error={submitAttempted ? errors[param.key] : undefined}
             />
@@ -208,7 +207,11 @@ export function AnalyticsParamForm({
             })
             .slice(0, 3)
             .map(p => (
-              <ParamPill key={p.key} label={p.label} value={values[p.key]} />
+              <ParamPill
+                key={p.key}
+                label={p.label}
+                value={values[p.key] ?? getDefaultValue(p)}
+              />
             ))}
         </div>
       </div>

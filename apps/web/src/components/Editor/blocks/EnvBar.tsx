@@ -207,7 +207,7 @@ function EnvBar(props: Props) {
             </div>
             <div className={clsx(props.isViewer ? "hidden" : "")}>
               <Link
-                href={`/workspaces/${workspaceId}/environments/current/variables`}
+                href={`/workspace/${workspaceId}/environments/current/variables`}
                 className="border border-border-secondary dark:border-border-tertiary  rounded-sm text-sm px-3 py-1 hover:bg-gray-50 cursor-pointer flex items-center gap-x-2"
               >
                 <CodeBracketIcon className="h-4 w-4 text-ink-400" />

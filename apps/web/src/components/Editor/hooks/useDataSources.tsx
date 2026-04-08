@@ -169,8 +169,7 @@ export function DataSourcesProvider(props: Props) {
       setState(prev => {
         const datasources =
           prev.get(workspaceId)?.datasources ?? List<APIDataSource>();
-        // FIXED: was ds.config.data.id — APIDataSource is DataSource & { structure }
-        // so the shape is ds.data.id directly
+
         const index = datasources.findIndex(
           ds => ds.data.id === dataSource.data.id
         );

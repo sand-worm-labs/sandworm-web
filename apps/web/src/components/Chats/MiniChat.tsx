@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { Transition } from "@headlessui/react";
 import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
@@ -12,8 +12,9 @@ import type { APIDataSources } from "../Editor/hooks/useDataSources";
 
 import { MiniChatInput } from "./MiniChatInput";
 
-// ── Types ───────────────────────────────────────────────────────────────────
-
+// =====================================
+// ⬢  Types
+// =====================================
 interface Message {
   id: string;
   text: string;
@@ -21,8 +22,9 @@ interface Message {
   isLoading?: boolean;
 }
 
-// ── Header ──────────────────────────────────────────────────────────────────
-
+// =====================================
+// ⬢  Header
+// =====================================
 interface MiniChatHeaderProps {
   onCancel?: () => void;
 }
@@ -50,8 +52,9 @@ export const MiniChatHeader: React.FC<MiniChatHeaderProps> = ({ onCancel }) => {
   );
 };
 
-// ── Example prompts ─────────────────────────────────────────────────────────
-
+// =====================================
+// ⬢  Example Prompts
+// =====================================
 const EXAMPLE_PROMPTS = [
   {
     label: "Token analytics",
@@ -133,7 +136,6 @@ const LoadingBubble: React.FC = () => (
 interface MiniChatProps {
   visible: boolean;
   onClose?: () => void;
-  // Passed down from the notebook page
   yDoc: Y.Doc;
   dataSources?: APIDataSources;
   dataframes?: string[];
@@ -151,12 +153,11 @@ export const MiniChat: React.FC<MiniChatProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  // Normalise dataSources into the shape the API expects
   const normalizedSources = dataSources
     ? Object.values(dataSources).map(ds => ({
-        id: ds.config.data.id,
-        name: ds.config.data.name,
-        type: ds.config.data.type,
+        id: ds.data.id,
+        name: ds.data.name,
+        type: ds.data.type,
       }))
     : [];
 
@@ -166,55 +167,74 @@ export const MiniChat: React.FC<MiniChatProps> = ({
     dataframes,
   });
 
-  // Scroll to bottom on new messages
+  const addMessage = useCallback((msg: Omit<Message, "id">) => {
+    const id = crypto.randomUUID();
+    setMessages(prev => [...prev, { ...msg, id }]);
+    return id;
+  }, []);
+
+  const replaceMessage = useCallback(
+    (id: string, updatedFields: Partial<Message>) => {
+      setMessages(prev =>
+        prev.map(m => (m.id === id ? { ...m, ...updatedFields } : m))
+      );
+    },
+    []
+  );
+
+  const handleSend = useCallback(
+    async (text: string) => {
+      if (!text.trim() || isLoading) return;
+
+      addMessage({ text, isUser: true });
+      setIsLoading(true);
+
+      const loadingId = addMessage({
+        text: "",
+        isUser: false,
+        isLoading: true,
+      });
+
+      try {
+        const { reply } = await generate(text);
+        replaceMessage(loadingId, { text: reply, isLoading: false });
+      } catch (err) {
+        replaceMessage(loadingId, {
+          text: "Something went wrong. Please try again.",
+          isLoading: false,
+        });
+        console.error("[MiniChat] AI error:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [isLoading, addMessage, replaceMessage, generate]
+  );
+
+  const handleSendSafe = useCallback(
+    (text: string) => {
+      handleSend(text).catch(console.error);
+    },
+    [handleSend]
+  );
+
+  const handleInputSend = useCallback(
+    (data: { message: string; files: File[] }) => {
+      handleSendSafe(data.message);
+    },
+    [handleSendSafe]
+  );
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Handle prompt from URL search param
   useEffect(() => {
     const prompt = searchParams.get("prompt");
     if (prompt && messages.length === 0) {
-      void handleSend(prompt);
+      handleSendSafe(prompt);
     }
   }, [searchParams]);
-
-  const addMessage = (msg: Omit<Message, "id">) => {
-    const id = crypto.randomUUID();
-    setMessages(prev => [...prev, { ...msg, id }]);
-    return id;
-  };
-
-  const replaceMessage = (id: string, update: Partial<Message>) => {
-    setMessages(prev => prev.map(m => (m.id === id ? { ...m, ...update } : m)));
-  };
-
-  const handleSend = async (text: string) => {
-    if (!text.trim() || isLoading) return;
-
-    addMessage({ text, isUser: true });
-    setIsLoading(true);
-
-    // Placeholder loading bubble
-    const loadingId = addMessage({ text: "", isUser: false, isLoading: true });
-
-    try {
-      const { reply } = await generate(text);
-      replaceMessage(loadingId, { text: reply, isLoading: false });
-    } catch (err) {
-      replaceMessage(loadingId, {
-        text: "Something went wrong. Please try again.",
-        isLoading: false,
-      });
-      console.error("[MiniChat] AI error:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleInputSend = (data: { message: string; files: File[] }) => {
-    void handleSend(data.message);
-  };
 
   return (
     <Transition
@@ -233,9 +253,7 @@ export const MiniChat: React.FC<MiniChatProps> = ({
 
         <div className="flex-1 overflow-y-auto py-6 px-4">
           {messages.length === 0 ? (
-            <MiniChatEmptyState
-              onSelectPrompt={text => void handleSend(text)}
-            />
+            <MiniChatEmptyState onSelectPrompt={handleSendSafe} />
           ) : (
             <div className="flex flex-col w-full gap-4">
               {messages.map(msg =>

@@ -518,7 +518,7 @@ function SQLBlock(props: Props) {
 
   const router = useRouter();
   const onAddDataSource = useCallback(() => {
-    router.push(`/workspaces/${props.document.workspaceId}/data-sources`);
+    router.push(`/workspace/${props.document.workspaceId}/data-sources`);
   }, [router, props.document.workspaceId]);
 
   const onToggleFormatSQLCode = useCallback(() => {

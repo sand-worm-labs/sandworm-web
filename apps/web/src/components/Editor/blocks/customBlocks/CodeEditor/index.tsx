@@ -33,6 +33,8 @@ function getSelectedCodeFromState(e: EditorState): string | null {
   return selection;
 }
 
+const IsLocalAnnotation = Annotation.define<boolean>();
+
 function createTextSync(source: Y.Text) {
   const plugin = ViewPlugin.fromClass(
     class YTextSync {
@@ -40,6 +42,7 @@ function createTextSync(source: Y.Text) {
         this.observe();
       }
 
+      // eslint-disable-next-line class-methods-use-this
       public update(update: ViewUpdate) {
         if (!update.docChanged) {
           return;
@@ -89,6 +92,7 @@ function createTextSync(source: Y.Text) {
 
         const changeSpecs: ChangeSpec[] = [];
         let pos = 0;
+        // eslint-disable-next-line no-restricted-syntax
         for (const change of e.delta) {
           if (change.insert) {
             const text =
@@ -127,8 +131,6 @@ function createTextSync(source: Y.Text) {
 
   return plugin;
 }
-
-const IsLocalAnnotation = Annotation.define<boolean>();
 
 function sandwormKeyMaps(cbs: {
   onBlur: () => void;
@@ -720,7 +722,7 @@ const CodeEditor = forwardRef<CodeEditorRef, Props>(
       [viewRef, mergeRef]
     );
 
-    return <div onClick={onClick} ref={editorRef} />;
+    return <div onClick={onClick} ref={editorRef} role="presentation" />;
   }
 );
 

@@ -30,7 +30,7 @@ import { useEnvironmentStatus } from "../../../hooks/useEnvironmentStatus";
 import useEditorAwareness from "../../../hooks/useEditorAwareness";
 import { TooltipV2 } from "../../ToolTips";
 import type { DashboardMode } from "../../Dashboard";
-import { dashboardModeHasControls } from "../../Dashboard";
+import { dashboardModeHasControls } from "../../Dashboard/dashboard-types";
 import HiddenInPublishedButton from "../../HiddenInPublishedButton";
 import ScrollBar from "../../ScrollBar";
 import { PythonOutputs } from "../python/PythonOutput";
@@ -65,7 +65,7 @@ function ExecutionStatusText({
 
   if (resultStatus === "error") {
     return (
-      <span className="text-xs text-red-500/80 flex items-center gap-x-1">
+      <span className="text-xs text-error flex items-center gap-x-1">
         <ExclamationCircleIcon className="w-3.5 h-3.5" />
         Execution failed
       </span>
@@ -158,6 +158,28 @@ function formatRelativeTime(isoString: string): string {
 
 type BlockView = "form" | "result";
 
+interface RunTooltipContentProps {
+  ref: React.Ref<HTMLButtonElement>;
+  isDirty: boolean;
+  view: string;
+}
+
+const RunTooltipContent = ({ ref, isDirty, view }: RunTooltipContentProps) => (
+  <div
+    className="font-body pointer-events-none w-max bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1"
+    ref={ref}
+  >
+    <span>
+      {isDirty && view === "result" ? "Params changed — re-run" : "Run block"}
+    </span>
+    <span className="inline-flex gap-x-1 items-center text-ink-400">
+      <span>⌘</span>
+      <span>+</span>
+      <span>Enter</span>
+    </span>
+  </div>
+);
+
 interface Props {
   document: ApiDocument;
   block: Y.XmlElement<PowerToolboxBlock>;
@@ -189,7 +211,7 @@ function AnalyticsBlock(props: Props) {
   const executions = useBlockExecutions(
     props.executionQueue,
     props.block,
-    "analytics"
+    "powertoolbox" // need to add execution for useblock execution
   );
   const execution = head(executions) ?? null;
   const status = execution?.item.getStatus()._tag ?? "idle";
@@ -254,6 +276,8 @@ function AnalyticsBlock(props: Props) {
         break;
       case "aborting":
         break;
+      default:
+        break;
     }
   }, [status, execution, blockId, isDirty, view, props.block, onRun]);
 
@@ -293,10 +317,19 @@ function AnalyticsBlock(props: Props) {
     );
   }
 
-  // ── Full render ────────────────────────────────────────────────────────────
+  const tooltipContent = useMemo(
+    () =>
+      status === "idle"
+        ? (ref: React.Ref<HTMLButtonElement>) => (
+            <RunTooltipContent ref={ref} isDirty={isDirty} view={view} />
+          )
+        : undefined,
+    [status, isDirty, view]
+  );
 
   return (
     <div
+      role="presentation"
       className="bg-base-100 relative group/block"
       onClick={onClickWithin}
       data-block-id={blockId}
@@ -496,27 +529,7 @@ function AnalyticsBlock(props: Props) {
         )}
       >
         <TooltipV2<HTMLButtonElement>
-          content={
-            status === "idle"
-              ? ref => (
-                  <div
-                    className="font-body pointer-events-none w-max bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1"
-                    ref={ref}
-                  >
-                    <span>
-                      {isDirty && view === "result"
-                        ? "Params changed — re-run"
-                        : "Run block"}
-                    </span>
-                    <span className="inline-flex gap-x-1 items-center text-ink-400">
-                      <span>⌘</span>
-                      <span>+</span>
-                      <span>Enter</span>
-                    </span>
-                  </div>
-                )
-              : undefined
-          }
+          content={tooltipContent}
           active={status === "idle"}
         >
           {ref => (

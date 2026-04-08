@@ -18,7 +18,6 @@ type ShareVisibility = "private" | "team" | "community";
 
 type ShareModalProps = {
   link?: string;
-  documentId?: string;
   initialVisibility?: ShareVisibility;
   onVisibilityChange?: (visibility: ShareVisibility) => Promise<void> | void;
 };
