@@ -239,7 +239,6 @@ function ExpandedBlockView(props: ExpandedBlockViewProps) {
     ),
     onFileUpload: () => null,
     onDashboardHeader: () => null,
-    onWriteback: () => null,
     onPivotTable: block => (
       <PivotTableBlock
         workspaceId={props.document.workspaceId}

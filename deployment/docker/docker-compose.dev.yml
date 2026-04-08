@@ -1,13 +1,13 @@
-version: "3.9"
+networks:
+  sandworm-net:
+    driver: bridge
 
 volumes:
   sandworm-postgres-data:
   sandworm-pgadmin-data:
   sandworm-jupyter-notebooks:
+  sandworm-qdrant-data:
 
-    ###########################
-    # Services
-    ###########################
 services:
 
   ###########################
@@ -18,7 +18,7 @@ services:
     image: postgres:17
     restart: always
     ports:
-      - "25432:5432" # host:container
+      - "25432:5432"
     environment:
       POSTGRES_DB: sandworm
       POSTGRES_USER: postgres
@@ -26,6 +26,29 @@ services:
       TZ: "UTC"
     volumes:
       - sandworm-postgres-data:/var/lib/postgresql/data
+    networks:
+      - sandworm-net
+
+  ###########################
+  # Vector & Cache Layer
+  ###########################
+  qdrant:
+    container_name: sandworm-qdrant
+    image: qdrant/qdrant:v1.11.0
+    pull_policy: always
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - sandworm-qdrant-data:/qdrant/storage:z
+    networks:
+      - sandworm-net
+
+  redis:
+    container_name: sandworm-redis
+    image: redis:alpine
+    networks:
+      - sandworm-net
 
   ###########################
   # PGAdmin Web UI
@@ -43,6 +66,8 @@ services:
       PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: "False"
     volumes:
       - sandworm-pgadmin-data:/root/.pgadmin
+    networks:
+      - sandworm-net
     depends_on:
       - db
 
@@ -55,8 +80,14 @@ services:
       context: .
       dockerfile: maildev.Dockerfile
     ports:
-      - "1025:1025" # SMTP
-      - "1080:1080" # Web UI
+      - "1025:1025"
+      - "1080:1080"
+    networks:
+      - sandworm-net
+
+  ###########################
+  # Jupyter Service (Unchanged)
+  ###########################
   jupyter:
     container_name: sandworm-jupyter
     build:
@@ -72,6 +103,8 @@ services:
     volumes:
       - sandworm-jupyter-notebooks:/home/sandwormuser/work
       - ./jupyterfiles:/home/sandwormuser/files
+    networks:
+      - sandworm-net
     command: >
       jupyter server --ip=0.0.0.0 --ZMQChannelsWebsocketConnection.iopub_data_rate_limit=1.0e10 --ZMQChannelsWebsocketConnection.iopub_msg_rate_limit=1.0e6 --ServerApp.max_body_size=107374182400 --no-browser
     healthcheck:
@@ -79,9 +112,16 @@ services:
       interval: 5s
       timeout: 10s
       retries: 5 
+
+  ###########################
+  # HAProxy Gateway
+  ###########################
   haproxy:
+    container_name: sandworm-proxy
     image: haproxy:3.0
     volumes:
       - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
     ports:
       - '8080:8080'
+    networks:
+      - sandworm-net
