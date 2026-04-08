@@ -38,7 +38,7 @@ function AcceptInvitationContent() {
     ? {
         inviter: {
           name: `${invitationState.data.inviter.firstName} ${invitationState.data.inviter.lastName}`.trim(),
-          avatar: `/img/avatar/avatar${(parseInt(invitationState.data.inviter.id) % 3) + 1}.svg`,
+          avatar: `/img/avatar/avatar${(parseInt(invitationState.data.inviter.id, 10) % 3) + 1}.svg`,
         },
         workspace: {
           name: invitationState.data.workspace.name,

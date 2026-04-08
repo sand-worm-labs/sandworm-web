@@ -27,6 +27,8 @@ function DatePicker(props: Props) {
           props.value.minutes,
           props.value.seconds
         );
+      default:
+        return new Date();
     }
   }, [props.value, props.dateType]);
 
@@ -58,8 +60,8 @@ function DatePicker(props: Props) {
 
   const onChangeTime = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const time = e.target.value;
-      const parts = time.split(":").map(str => parseInt(str, 10));
+      const timeValue = e.target.value;
+      const parts = timeValue.split(":").map(str => parseInt(str, 10));
 
       let hours = parts[0] ?? 0;
       if (Number.isNaN(hours)) {

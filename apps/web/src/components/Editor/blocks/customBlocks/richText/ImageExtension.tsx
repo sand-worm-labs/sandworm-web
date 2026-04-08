@@ -14,6 +14,9 @@ import {
 import TipTapImage from "@tiptap/extension-image";
 import { Plugin } from "@tiptap/pm/state";
 
+// =====================================
+// ⬢  Utils
+// =====================================
 const useEvent = <T extends (...args: any[]) => any>(handler: T): T => {
   const handlerRef = useRef<T | null>(null);
 
@@ -29,9 +32,24 @@ const useEvent = <T extends (...args: any[]) => any>(handler: T): T => {
   }, []) as T;
 };
 
+// =====================================
+// ⬢ Constants
+// =====================================
 const MIN_WIDTH = 60;
 const BORDER_COLOR = "rgb(93, 138, 66)";
 
+const NS_POSITION_MAP: Record<string, Pick<CSSProperties, "top" | "bottom">> = {
+  n: { top: 0 },
+  s: { bottom: 0 },
+};
+const EW_POSITION_MAP: Record<string, Pick<CSSProperties, "left" | "right">> = {
+  w: { left: 0 },
+  e: { right: 0 },
+};
+
+// =====================================
+// ⬢  Resizable Image Template
+// =====================================
 const ResizableImageTemplate = ({ node, updateAttributes }: NodeViewProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
@@ -40,17 +58,15 @@ const ResizableImageTemplate = ({ node, updateAttributes }: NodeViewProps) => {
     Pick<CSSProperties, "width"> | undefined
   >();
 
-  // Lots of work to handle "not" div click events.
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (clickEvent: MouseEvent) => {
       if (
         containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
+        !containerRef.current.contains(clickEvent.target as Node)
       ) {
         setEditing(false);
       }
     };
-    // Add click event listener and remove on cleanup
     document.addEventListener("click", handleClickOutside);
     return () => {
       document.removeEventListener("click", handleClickOutside);
@@ -58,30 +74,31 @@ const ResizableImageTemplate = ({ node, updateAttributes }: NodeViewProps) => {
   }, [editing]);
 
   const handleMouseDown = useEvent(
-    (event: React.MouseEvent<HTMLDivElement>) => {
+    (mouseDownEvent: React.MouseEvent<HTMLDivElement>) => {
       if (!imgRef.current) return;
-      event.preventDefault();
-      const direction = event.currentTarget.dataset.direction || "--";
-      const initialXPosition = event.clientX;
+      mouseDownEvent.preventDefault();
+
+      const direction = mouseDownEvent.currentTarget.dataset.direction ?? "--";
+      const initialXPosition = mouseDownEvent.clientX;
       const currentWidth = imgRef.current.width;
       let newWidth = currentWidth;
       const transform = direction[1] === "w" ? -1 : 1;
+
+      const mouseMoveHandler = (moveEvent: MouseEvent) => {
+        newWidth = Math.max(
+          currentWidth + transform * (moveEvent.clientX - initialXPosition),
+          MIN_WIDTH
+        );
+        setResizingStyle({ width: newWidth });
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define
+        if (!moveEvent.buttons) removeListeners();
+      };
 
       const removeListeners = () => {
         window.removeEventListener("mousemove", mouseMoveHandler);
         window.removeEventListener("mouseup", removeListeners);
         updateAttributes({ width: newWidth });
         setResizingStyle(undefined);
-      };
-
-      const mouseMoveHandler = (event: MouseEvent) => {
-        newWidth = Math.max(
-          currentWidth + transform * (event.clientX - initialXPosition),
-          MIN_WIDTH
-        );
-        setResizingStyle({ width: newWidth });
-        // If mouse is up, remove event listeners
-        if (!event.buttons) removeListeners();
       };
 
       window.addEventListener("mousemove", mouseMoveHandler);
@@ -100,8 +117,8 @@ const ResizableImageTemplate = ({ node, updateAttributes }: NodeViewProps) => {
         height: "10px",
         width: "10px",
         backgroundColor: BORDER_COLOR,
-        ...{ n: { top: 0 }, s: { bottom: 0 } }[direction[0]],
-        ...{ w: { left: 0 }, e: { right: 0 } }[direction[1]],
+        ...NS_POSITION_MAP[direction.charAt(0)],
+        ...EW_POSITION_MAP[direction.charAt(1)],
         cursor: `${direction}-resize`,
       }}
     />
@@ -121,12 +138,12 @@ const ResizableImageTemplate = ({ node, updateAttributes }: NodeViewProps) => {
           overflow: "hidden",
           position: "relative",
           display: "inline-block",
-          // Weird! Basically tiptap/prose wraps this in a span and the line height causes an annoying buffer.
           lineHeight: "0px",
         }}
       >
         <img
           {...node.attrs}
+          alt={(node.attrs.alt as string | undefined) ?? ""}
           ref={imgRef}
           style={{
             ...resizingStyle,
@@ -136,15 +153,28 @@ const ResizableImageTemplate = ({ node, updateAttributes }: NodeViewProps) => {
         />
         {editing && (
           <>
-            {/* Don't use a simple border as it pushes other content around. */}
-            {[
-              { left: 0, top: 0, height: "100%", width: "1px" },
-              { right: 0, top: 0, height: "100%", width: "1px" },
-              { top: 0, left: 0, width: "100%", height: "1px" },
-              { bottom: 0, left: 0, width: "100%", height: "1px" },
-            ].map((style, i) => (
+            {(
+              [
+                {
+                  key: "border-left",
+                  style: { left: 0, top: 0, height: "100%", width: "1px" },
+                },
+                {
+                  key: "border-right",
+                  style: { right: 0, top: 0, height: "100%", width: "1px" },
+                },
+                {
+                  key: "border-top",
+                  style: { top: 0, left: 0, width: "100%", height: "1px" },
+                },
+                {
+                  key: "border-bottom",
+                  style: { bottom: 0, left: 0, width: "100%", height: "1px" },
+                },
+              ] as const
+            ).map(({ key, style }) => (
               <div
-                key={i}
+                key={key}
                 style={{
                   position: "absolute",
                   backgroundColor: BORDER_COLOR,
@@ -163,18 +193,29 @@ const ResizableImageTemplate = ({ node, updateAttributes }: NodeViewProps) => {
   );
 };
 
+// =====================================
+// ⬢  Extention
+// =====================================
 export default TipTapImage.extend({
   priority: 1000,
+
   addAttributes() {
     return {
-      ...this.parent?.(),
-      width: { renderHTML: ({ width }) => ({ width }) },
-      height: { renderHTML: ({ height }) => ({ height }) },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ...(this as any).parent?.(),
+      width: {
+        renderHTML: ({ width }: { width: number }) => ({ width }),
+      },
+      height: {
+        renderHTML: ({ height }: { height: number }) => ({ height }),
+      },
     };
   },
+
   addNodeView() {
     return ReactNodeViewRenderer(ResizableImageTemplate);
   },
+
   addProseMirrorPlugins() {
     return [
       new Plugin({
@@ -183,43 +224,41 @@ export default TipTapImage.extend({
             const pastedImages = Array.from(
               event.clipboardData?.items ?? []
             ).filter(item => item.type.startsWith("image/"));
-            if (pastedImages.length === 0) {
-              return false;
-            }
 
-            // Handle image paste
+            if (pastedImages.length === 0) return false;
+
             Promise.all(
               pastedImages.map(async item => {
                 const file = item.getAsFile();
-                if (!file) {
-                  return;
-                }
+                if (!file) return undefined;
 
                 const asBase64 = await new Promise<string>(
                   (resolve, reject) => {
                     const reader = new FileReader();
+
                     reader.addEventListener("loadend", () => {
                       if (reader.readyState === FileReader.DONE) {
                         resolve(reader.result as string);
                         return;
                       }
+
                       const timeout = Date.now() + 5000;
                       const interval = setInterval(() => {
-                        console.log("interval");
                         if (reader.readyState === FileReader.DONE) {
-                          console.log("ready");
                           clearInterval(interval);
                           resolve(reader.result as string);
+                          return;
                         }
-
                         if (Date.now() > timeout) {
-                          console.log("timeout");
                           clearInterval(interval);
-                          reject("Timeout");
+                          reject(new Error("Timeout reading image file"));
                         }
                       }, 200);
                     });
-                    reader.addEventListener("error", reject);
+
+                    reader.addEventListener("error", () =>
+                      reject(new Error("FileReader error"))
+                    );
                     reader.readAsDataURL(file);
                   }
                 );
@@ -227,21 +266,25 @@ export default TipTapImage.extend({
                 return { file, base64: asBase64 };
               })
             ).then(results => {
-              for (const result of results) {
-                if (!result) {
-                  continue;
-                }
+              results
+                .filter((result): result is { file: File; base64: string } =>
+                  Boolean(result)
+                )
+                .forEach(result => {
+                  const { schema } = view.state;
+                  const imageNode = schema.nodes.image;
+                  if (!imageNode) return;
 
-                const { schema } = view.state;
-                const currentPos = view.state.selection.$from.pos;
-                const node = schema.nodes.image.create({
-                  src: result.base64,
-                  alt: result.file.name,
+                  const currentPos = view.state.selection.$from.pos;
+                  const node = imageNode.create({
+                    src: result.base64,
+                    alt: result.file.name,
+                  });
+                  const transaction = view.state.tr.insert(currentPos, node);
+                  view.dispatch(transaction);
                 });
-                const transaction = view.state.tr.insert(currentPos, node);
-                view.dispatch(transaction);
-              }
             });
+
             return true;
           },
         },

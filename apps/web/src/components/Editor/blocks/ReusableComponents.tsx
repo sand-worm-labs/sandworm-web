@@ -9,8 +9,11 @@ import { SaveIcon } from "lucide-react";
 import { addComponentToDocument, decodeComponentState } from "@sandworm/editor";
 import Link from "next/link";
 import * as allOutlineIcons from "@heroicons/react/24/outline";
+import type {
+  APIReusableComponent,
+  ReusableComponentType,
+} from "@sandworm/types";
 
-import type { APIReusableComponent, ReusableComponentType } from "@/types";
 import { ScheduleIcon } from "@/components/Assets/ScheduleIcon";
 import { Trash } from "@/components/Assets/Trash";
 import allLucideIcons from "@/utils/lucideIcons";
@@ -138,7 +141,7 @@ function ReusableComponentItem(props: ReusableComponentItemProps) {
   }, [props.onRemove, props.component]);
 
   const Icon =
-    icons[props.component.document.icon ?? "DocumentIcon"] || (() => null);
+    icons[props.component.document?.icon ?? "DocumentIcon"] || (() => null);
 
   return (
     <div className="px-4 py-3 font-body  block w-full">
@@ -168,7 +171,7 @@ function ReusableComponentItem(props: ReusableComponentItemProps) {
               <circle cx={1} cy={1} r={1} />
             </svg>
             <Link
-              href={`/workspaces/${props.workspaceId}/documents/${props.component.document.id}`}
+              href={`/workspace/${props.workspaceId}/documents/${props.component.document.id}`}
               className="flex items-center gap-x-1 text-ink-400 hover:text-ink-400 "
             >
               <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />

@@ -51,7 +51,7 @@ function invalidVariableErrorMessage(
         </>
       );
     default:
-      break;
+      throw new Error(`Unhandled status: ${status satisfies never}`);
   }
 }
 

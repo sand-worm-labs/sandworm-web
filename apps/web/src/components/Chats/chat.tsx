@@ -14,8 +14,8 @@ import { ExamplePrompts } from "./example-prompts";
 // =====================================
 type Attachment = {
   url: string;
-  name: string;
-  contentType: string;
+  name?: string;
+  contentType?: string;
 };
 
 type Message = {
@@ -106,7 +106,7 @@ export function Chat({
             attachments={attachments}
             setAttachments={setAttachments}
             messages={messages}
-            append={append}
+            appendAction={append}
             workspaceId={workspaceId}
           />
         </form>

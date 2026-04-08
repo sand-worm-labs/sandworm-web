@@ -13,8 +13,9 @@ function isValidEntry(value: string, isUid: boolean): boolean {
   return /^0x[0-9a-fA-F]{40}$/.test(value);
 }
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
+// =====================================
+// ⬢ Types
+// =====================================
 interface AddressListFieldProps {
   param: ParamDefinition;
   value: string[];
@@ -22,8 +23,9 @@ interface AddressListFieldProps {
   error?: string;
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
-
+// =====================================
+// ⬢ AddressListField Component
+// =====================================
 export function AddressListField({
   param,
   value,
@@ -115,6 +117,7 @@ export function AddressListField({
             ? "border-error/40"
             : "border-border-tertiary focus-within:border-[#A308F0]/40"
         )}
+        role="presentation"
         onClick={() => inputRef.current?.focus()}
       >
         {/* Existing entries as pills */}
@@ -179,8 +182,6 @@ export function AddressListField({
     </div>
   );
 }
-
-// ─── Entry pill ───────────────────────────────────────────────────────────────
 
 function EntryPill({
   value,

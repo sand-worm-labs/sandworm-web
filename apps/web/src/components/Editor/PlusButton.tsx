@@ -54,7 +54,6 @@ function BlockSuggestion(props: BlockSuggestionProps) {
 interface MultiBlockSuggestionProps {
   icon: JSX.Element;
   text: string;
-  onAdd: () => void;
   options: { icon: JSX.Element; text: string; onClick: () => void }[];
 }
 
@@ -113,6 +112,7 @@ interface BlockListProps {
 
 function BlockList(props: BlockListProps) {
   const ff = { visualizationsV2: true };
+  console.log(props.workspaceId);
 
   const onAddText = useCallback(() => {
     props.onAddBlock(BlockType.RichText);
@@ -194,7 +194,6 @@ function BlockList(props: BlockListProps) {
         <MultiBlockSuggestion
           icon={<KeyboardIcon className="w-[20px] h-[20px]" />}
           text="Input"
-          onAdd={onAddInput}
           options={[
             {
               icon: <PencilSquareIcon className="w-4 h-4" />,

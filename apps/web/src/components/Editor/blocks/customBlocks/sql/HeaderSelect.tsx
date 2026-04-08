@@ -9,7 +9,7 @@ import clsx from "clsx";
 
 import type { DataSourceType } from "@/types";
 
-import { databaseImages } from "../../DataSourcesList";
+import { databaseImages } from "@/types";
 
 // =====================================
 // ⬢ Types

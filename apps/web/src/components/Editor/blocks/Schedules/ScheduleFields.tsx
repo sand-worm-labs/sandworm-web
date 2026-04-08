@@ -1,4 +1,4 @@
-import cronParser from "cron-parser";
+import { CronExpressionParser } from "cron-parser";
 import type {
   DeepMap,
   Control,
@@ -197,11 +197,10 @@ export const WeeklyScheduleFields = ({
           <WeekdaySelector
             control={control}
             {...register("weekdays", {
-              validate: value => {
-                if (!value || (value && value.length === 0)) {
-                  return "Select at least one weekday";
-                }
-              },
+              validate: value =>
+                value && value.length > 0
+                  ? true
+                  : "Select at least one weekday",
             })}
           />
           <FormError msg={formErrors.weekdays?.message} />
@@ -285,11 +284,8 @@ export const MonthlyScheduleFields = ({
           <MonthDaySelector
             control={control}
             {...register("days", {
-              validate: value => {
-                if (!value || value.length === 0) {
-                  return "Select at least one day";
-                }
-              },
+              validate: value =>
+                value && value.length > 0 ? true : "Select at least one day",
             })}
           />
           <FormError msg={formErrors.days?.message} />
@@ -315,14 +311,12 @@ export const CronScheduleFields = ({
         <input
           type="text"
           {...register("cron", {
-            required: {
-              value: true,
-              message: "Cron schedule is required",
-            },
+            required: { value: true, message: "Cron schedule is required" },
             validate: value => {
               try {
-                cronParser.parseExpression(value);
-              } catch (err) {
+                CronExpressionParser.parse(value);
+                return true;
+              } catch {
                 return "Invalid cron schedule";
               }
             },

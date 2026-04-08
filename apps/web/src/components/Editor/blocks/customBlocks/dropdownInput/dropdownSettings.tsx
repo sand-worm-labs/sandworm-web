@@ -17,95 +17,6 @@ import type { DataFrame } from "@sandworm/types";
 import Dropdown from "../../Dropdown";
 import { useYMemo } from "../../../hooks/useYMemo";
 
-type Props = {
-  block: Y.XmlElement<DropdownInputBlock>;
-  blocks: Y.Map<YBlock>;
-  onRun: (block: Y.XmlElement<DropdownInputBlock>) => void;
-  dataframes: Y.Map<DataFrame>;
-};
-export default function DropdownSettings(props: Props) {
-  const attrs = getDropdownInputAttributes(props.block, props.blocks);
-
-  const onChangeDropdownType = useCallback(
-    (type: "static" | "dynamic") => {
-      setDropdownType(props.block, type);
-    },
-    [props.block]
-  );
-
-  return (
-    <div className="bg-gray-50 px-3 py-3 border border-border-secondary flex flex-col gap-y-2 rounded-md shadow-sm">
-      <span className="text-xs font-semibold py-1 flex gap-x-1 text-ink-400">
-        <Cog6ToothIcon className="w-4 h-4" />
-        Dropdown settings
-      </span>
-
-      <span className="isolate inline-flex rounded-md shadow-sm w-full">
-        <button
-          type="button"
-          onClick={() => onChangeDropdownType("static")}
-          className={clsx(
-            "relative inline-flex items-center justify-between rounded-l-md px-3 py-2 text-xs ring-1 ring-inset ring-gray-300 hover:bg-ceramic-50 focus:z-10 w-full",
-            attrs.dropdownType === "static"
-              ? "bg-ceramic-50 text-ink-100 font-medium"
-              : "bg-white text-ink-400 "
-          )}
-          disabled={attrs.dropdownType === "static"}
-        >
-          <span className="flex gap-x-2 items-center">
-            <KeyboardIcon
-              strokeWidth={attrs.dropdownType === "static" ? 2 : 1}
-              className="w-4 h-4"
-            />
-            Static
-          </span>
-          {attrs.dropdownType === "static" && (
-            <CheckIcon strokeWidth={3} className="w-4 h-4 text-ceramic-400" />
-          )}
-        </button>
-        <button
-          type="button"
-          onClick={() => onChangeDropdownType("dynamic")}
-          className={clsx(
-            "relative -ml-px inline-flex items-center justify-between rounded-r-md px-3 py-2 text-xs ring-1 ring-inset ring-gray-300 hover:bg-ceramic-50 focus:z-10 w-full",
-            attrs.dropdownType === "dynamic"
-              ? "bg-ceramic-50 text-ink-100 font-medium"
-              : "bg-white text-ink-400 "
-          )}
-          disabled={attrs.dropdownType === "dynamic"}
-        >
-          <span className="flex gap-x-2 items-center">
-            <DatabaseZapIcon
-              strokeWidth={attrs.dropdownType === "dynamic" ? 2 : 1}
-              className="w-4 h-4"
-            />
-            Dynamic
-          </span>
-          {attrs.dropdownType === "dynamic" && (
-            <CheckIcon strokeWidth={3} className="w-4 h-4 text-ceramic-400" />
-          )}
-        </button>
-      </span>
-
-      {attrs.dropdownType === "static" ? (
-        <StaticInput
-          options={attrs.options}
-          block={props.block}
-          blocks={props.blocks}
-          onRun={props.onRun}
-        />
-      ) : (
-        <DynamicInput
-          block={props.block}
-          blocks={props.blocks}
-          onRun={props.onRun}
-          dataframes={props.dataframes}
-        />
-      )}
-    </div>
-  );
-}
-
 type StaticInputProps = {
   options: string[];
   block: Y.XmlElement<DropdownInputBlock>;
@@ -308,3 +219,92 @@ const DynamicInput = (props: DynamicInputProps) => {
     </div>
   );
 };
+
+type Props = {
+  block: Y.XmlElement<DropdownInputBlock>;
+  blocks: Y.Map<YBlock>;
+  onRun: (block: Y.XmlElement<DropdownInputBlock>) => void;
+  dataframes: Y.Map<DataFrame>;
+};
+export default function DropdownSettings(props: Props) {
+  const attrs = getDropdownInputAttributes(props.block, props.blocks);
+
+  const onChangeDropdownType = useCallback(
+    (type: "static" | "dynamic") => {
+      setDropdownType(props.block, type);
+    },
+    [props.block]
+  );
+
+  return (
+    <div className="bg-gray-50 px-3 py-3 border border-border-secondary flex flex-col gap-y-2 rounded-md shadow-sm">
+      <span className="text-xs font-semibold py-1 flex gap-x-1 text-ink-400">
+        <Cog6ToothIcon className="w-4 h-4" />
+        Dropdown settings
+      </span>
+
+      <span className="isolate inline-flex rounded-md shadow-sm w-full">
+        <button
+          type="button"
+          onClick={() => onChangeDropdownType("static")}
+          className={clsx(
+            "relative inline-flex items-center justify-between rounded-l-md px-3 py-2 text-xs ring-1 ring-inset ring-gray-300 hover:bg-ceramic-50 focus:z-10 w-full",
+            attrs.dropdownType === "static"
+              ? "bg-ceramic-50 text-ink-100 font-medium"
+              : "bg-white text-ink-400 "
+          )}
+          disabled={attrs.dropdownType === "static"}
+        >
+          <span className="flex gap-x-2 items-center">
+            <KeyboardIcon
+              strokeWidth={attrs.dropdownType === "static" ? 2 : 1}
+              className="w-4 h-4"
+            />
+            Static
+          </span>
+          {attrs.dropdownType === "static" && (
+            <CheckIcon strokeWidth={3} className="w-4 h-4 text-ceramic-400" />
+          )}
+        </button>
+        <button
+          type="button"
+          onClick={() => onChangeDropdownType("dynamic")}
+          className={clsx(
+            "relative -ml-px inline-flex items-center justify-between rounded-r-md px-3 py-2 text-xs ring-1 ring-inset ring-gray-300 hover:bg-ceramic-50 focus:z-10 w-full",
+            attrs.dropdownType === "dynamic"
+              ? "bg-ceramic-50 text-ink-100 font-medium"
+              : "bg-white text-ink-400 "
+          )}
+          disabled={attrs.dropdownType === "dynamic"}
+        >
+          <span className="flex gap-x-2 items-center">
+            <DatabaseZapIcon
+              strokeWidth={attrs.dropdownType === "dynamic" ? 2 : 1}
+              className="w-4 h-4"
+            />
+            Dynamic
+          </span>
+          {attrs.dropdownType === "dynamic" && (
+            <CheckIcon strokeWidth={3} className="w-4 h-4 text-ceramic-400" />
+          )}
+        </button>
+      </span>
+
+      {attrs.dropdownType === "static" ? (
+        <StaticInput
+          options={attrs.options}
+          block={props.block}
+          blocks={props.blocks}
+          onRun={props.onRun}
+        />
+      ) : (
+        <DynamicInput
+          block={props.block}
+          blocks={props.blocks}
+          onRun={props.onRun}
+          dataframes={props.dataframes}
+        />
+      )}
+    </div>
+  );
+}

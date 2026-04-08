@@ -10,6 +10,9 @@ import { AIChatIcon } from "@/components/Assets/AIChatIcon";
 
 import type { NormalizedModel } from "../hooks/useOpenRouterModel";
 
+// =====================================
+// ⬢ Constants
+// =====================================
 const PROVIDER_DOMAINS: Record<string, string> = {
   anthropic: "anthropic.com",
   openai: "openai.com",
@@ -45,6 +48,9 @@ const PROVIDER_DOMAINS: Record<string, string> = {
   tencent: "tencent.com",
 };
 
+// =====================================
+// ⬢ Provider Colors
+// =====================================
 const PROVIDER_COLORS: Record<string, string> = {
   anthropic: "#d97706",
   openai: "#10b981",
@@ -71,6 +77,9 @@ const PROVIDER_COLORS: Record<string, string> = {
   "z-ai": "#1e40af",
 };
 
+// =====================================
+// ⬢ Provider Icon
+// =====================================
 function ProviderIcon({
   provider,
   size = 28,
@@ -168,6 +177,9 @@ const CAP_META: Record<Cap, { label: string; cls: string }> = {
   },
 };
 
+// =====================================
+// ⬢ Get Caps
+// =====================================
 function getCaps(model: NormalizedModel): Cap[] {
   const caps: Cap[] = [];
   const id = model.id.toLowerCase();
@@ -190,8 +202,9 @@ function getCaps(model: NormalizedModel): Cap[] {
   return caps;
 }
 
-// ─── Price hint ───────────────────────────────────────────────────────────────
-
+// =====================================
+// ⬢ Price Hint
+// =====================================
 function PriceHint({ model }: { model: NormalizedModel }) {
   if (
     model.isFree ||
@@ -231,6 +244,9 @@ const fmtCtx = (n: number | null) => {
   return String(n);
 };
 
+// =====================================
+// ⬢ Recommended Models
+// =====================================
 const RECOMMENDED: { id: string; reason: string }[] = [
   { id: "anthropic/claude-sonnet-4.5", reason: "Best for complex notebooks" },
   { id: "anthropic/claude-haiku-4.5", reason: "Fast & cost-efficient" },
@@ -247,6 +263,9 @@ const RECOMMENDED: { id: string; reason: string }[] = [
 ];
 const REC_MAP = new Map(RECOMMENDED.map(r => [r.id, r.reason]));
 
+// =====================================
+// ⬢ Model Row
+// =====================================
 function ModelRow({
   model,
   isSelected,
@@ -288,7 +307,6 @@ function ModelRow({
           </div>
 
           <div className="flex flex-col min-w-0 flex-1 gap-1">
-            {/* Name row */}
             <div className="flex items-center justify-between gap-2">
               <span
                 className={clsx(
@@ -344,7 +362,6 @@ function ModelRow({
         </div>
       </button>
 
-      {/* Description — HeadlessUI Transition for smooth expand/collapse */}
       <Transition
         show={descOpen}
         enter="transition-all duration-200 ease-out"
@@ -364,8 +381,9 @@ function ModelRow({
   );
 }
 
-// ─── Divider ──────────────────────────────────────────────────────────────────
-
+// =====================================
+// ⬢ Divider
+// =====================================
 function Divider({ label }: { label: string }) {
   return (
     <div className="flex items-center gap-2 px-3 py-2 mt-1 shrink-0">
@@ -377,8 +395,9 @@ function Divider({ label }: { label: string }) {
   );
 }
 
-// ─── Props ────────────────────────────────────────────────────────────────────
-
+// =====================================
+// ⬢ Types
+// =====================================
 export interface ModelPickerModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -390,8 +409,9 @@ export interface ModelPickerModalProps {
   title?: string;
 }
 
-// ─── Modal ────────────────────────────────────────────────────────────────────
-
+// =====================================
+// ⬢ Model Picker Modal
+// =====================================
 const ALL = "all";
 const fmtProv = (p: string) => p.charAt(0).toUpperCase() + p.slice(1);
 
@@ -495,7 +515,7 @@ export const ModelPickerModal = ({
           const all = [ALL, ...providers];
           const idx = all.indexOf(activeProvider);
           setProvider(
-            all[(idx + (e.shiftKey ? -1 : 1) + all.length) % all.length]
+            all[(idx + (e.shiftKey ? -1 : 1) + all.length) % all.length]!
           );
           setFocusedIdx(0);
           break;
@@ -530,281 +550,289 @@ export const ModelPickerModal = ({
   if (!isOpen) return null;
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40  animate-in fade-in duration-150"
-      onClick={e => e.target === e.currentTarget && onClose()}
-      role="dialog"
-      aria-modal="true"
-    >
-      <div
-        className="relative w-full max-w-[620px] max-h-[80vh] flex flex-col bg-base-100 border border-border-secondary rounded-2xl shadow-2xl animate-in slide-in-from-bottom-2 duration-200 outline-none"
-        onKeyDown={handleKeyDown}
-        tabIndex={0}
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-border-secondary shrink-0">
-          <div className="flex items-center gap-3">
-            <AIChatIcon />
-            <span className="font-body text-[15px] font-semibold text-ink-100">
-              {title}
-            </span>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="font-body text-[10px] text-ink-400 hidden sm:block select-none">
-              ↑↓ navigate · Enter select · Tab filter · Esc close
-            </span>
-            <button
-              type="button"
-              onClick={onClose}
-              className="text-ink-400 hover:text-ink-100 hover:bg-white/[0.06] text-xs px-2 py-1 rounded transition-colors"
-            >
-              ✕
-            </button>
-          </div>
-        </div>
-
-        {/* Search */}
-        <div className="px-4 pt-3 pb-0 shrink-0">
-          <div
-            className={clsx(
-              "flex items-center gap-2.5 px-3 py-2 rounded-lg bg-white/[0.04] border border-border-secondary",
-              "focus-within:border-[#A308F0]/50 transition-colors"
-            )}
-          >
-            <svg
-              viewBox="0 0 20 20"
-              fill="none"
-              className="w-4 h-4 shrink-0 text-ink-400"
-            >
-              <circle
-                cx="8.5"
-                cy="8.5"
-                r="5"
-                strokeWidth="1.5"
-                className="stroke-current"
-              />
-              <path
-                d="M15 15l-2.5-2.5"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                className="stroke-current"
-              />
-            </svg>
-            <input
-              ref={searchRef}
-              type="text"
-              placeholder="Search models…"
-              value={search}
-              onChange={e => {
-                setSearch(e.target.value);
-                setFocusedIdx(0);
-              }}
-              onKeyDown={e => {
-                if (
-                  ["ArrowDown", "ArrowUp", "Enter", "Escape"].includes(e.key)
-                ) {
-                  handleKeyDown(e as unknown as KeyboardEvent<HTMLElement>);
-                }
-              }}
-              className="flex-1 bg-transparent font-body text-sm text-ink-100 placeholder:text-ink-400 outline-none caret-[#A308F0]"
-              autoComplete="off"
-              spellCheck={false}
-            />
-            {search && (
+    <>
+      <button
+        type="button"
+        aria-label="Close dialog"
+        className="fixed inset-0 z-50 bg-black/40 animate-in fade-in duration-150 cursor-default"
+        onClick={onClose}
+        tabIndex={-1}
+      />
+      <div className="fixed inset-0 z-[51] flex items-center justify-center p-4 pointer-events-none">
+        {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={title}
+          tabIndex={-1}
+          onKeyDown={handleKeyDown}
+          className="relative w-full max-w-[620px] max-h-[80vh] flex flex-col bg-base-100 border border-border-secondary rounded-2xl shadow-2xl animate-in slide-in-from-bottom-2 duration-200 outline-none pointer-events-auto"
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between px-5 py-4 border-b border-border-secondary shrink-0">
+            <div className="flex items-center gap-3">
+              <AIChatIcon />
+              <span className="font-body text-[15px] font-semibold text-ink-100">
+                {title}
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="font-body text-[10px] text-ink-400 hidden sm:block select-none">
+                ↑↓ navigate · Enter select · Tab filter · Esc close
+              </span>
               <button
                 type="button"
-                onClick={() => {
-                  setSearch("");
-                  setFocusedIdx(0);
-                }}
-                className="text-ink-400 hover:text-ink-200 text-xs"
+                onClick={onClose}
+                className="text-ink-400 hover:text-ink-100 hover:bg-white/[0.06] text-xs px-2 py-1 rounded transition-colors"
               >
                 ✕
               </button>
-            )}
+            </div>
           </div>
-        </div>
 
-        {/* Provider pills */}
-        <div className="flex gap-1.5 px-4 py-3 overflow-x-auto shrink-0 [scrollbar-width:none]">
-          {[ALL, ...providers].map(p => (
-            <button
-              type="button"
-              key={p}
-              onClick={() => {
-                setProvider(p);
-                setFocusedIdx(0);
-              }}
+          {/* Search */}
+          <div className="px-4 pt-3 pb-0 shrink-0">
+            <div
               className={clsx(
-                "shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-full font-body text-[11px] font-medium border transition-all whitespace-nowrap",
-                activeProvider === p
-                  ? "bg-[#A308F0]/15 border-[#A308F0]/60 text-purple-400"
-                  : "bg-transparent border-border-tertiary text-ink-400 hover:border-ink-400"
+                "flex items-center gap-2.5 px-3 py-2 rounded-lg bg-white/[0.04] border border-border-secondary",
+                "focus-within:border-[#A308F0]/50 transition-colors"
               )}
             >
-              {p !== ALL && <ProviderIcon provider={p} size={13} />}
-              {p === ALL ? "All" : fmtProv(p)}
-            </button>
-          ))}
-        </div>
-
-        {/* Column headers */}
-        <div className="flex items-center justify-between px-4 pb-1 shrink-0">
-          <span className="font-body text-[10px] text-ink-400 uppercase tracking-widest">
-            Model
-          </span>
-          <span className="font-body text-[10px] text-ink-400 uppercase tracking-widest">
-            Context
-          </span>
-        </div>
-
-        {/* List */}
-        <div className="flex-1 overflow-y-auto px-2 pb-2 [scrollbar-width:thin] [scrollbar-color:rgb(255_255_255/0.08)_transparent]">
-          {loading && (
-            <div className="flex items-center justify-center py-12">
-              <span className="font-body text-xs text-ink-400">
-                Loading models…
-              </span>
-            </div>
-          )}
-          {error && (
-            <div className="flex items-center justify-center py-12">
-              <span className="font-body text-xs text-rose-400">
-                Failed to load models
-              </span>
-            </div>
-          )}
-
-          {!loading && !error && (
-            <>
-              {isSearching && (
-                <>
-                  {filtered.length === 0 && (
-                    <div className="flex items-center justify-center py-12">
-                      <span className="font-body text-xs text-ink-400">
-                        No models match
-                      </span>
-                    </div>
-                  )}
-                  {filtered.map((m, i) => (
-                    <ModelRow
-                      key={m.id}
-                      model={m}
-                      isSelected={m.id === pendingId}
-                      isFocused={i === focusedIdx}
-                      onClick={() => {
-                        setPendingId(m.id);
-                        setFocusedIdx(i);
-                      }}
-                      rowRef={el => {
-                        if (el) rowRefs.current.set(i, el);
-                        else rowRefs.current.delete(i);
-                      }}
-                    />
-                  ))}
-                </>
+              <svg
+                viewBox="0 0 20 20"
+                fill="none"
+                className="w-4 h-4 shrink-0 text-ink-400"
+              >
+                <circle
+                  cx="8.5"
+                  cy="8.5"
+                  r="5"
+                  strokeWidth="1.5"
+                  className="stroke-current"
+                />
+                <path
+                  d="M15 15l-2.5-2.5"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  className="stroke-current"
+                />
+              </svg>
+              <input
+                ref={searchRef}
+                type="text"
+                placeholder="Search models…"
+                value={search}
+                onChange={e => {
+                  setSearch(e.target.value);
+                  setFocusedIdx(0);
+                }}
+                onKeyDown={e => {
+                  if (
+                    ["ArrowDown", "ArrowUp", "Enter", "Escape"].includes(e.key)
+                  ) {
+                    handleKeyDown(e as unknown as KeyboardEvent<HTMLElement>);
+                  }
+                }}
+                className="flex-1 bg-transparent font-body text-sm text-ink-100 placeholder:text-ink-400 outline-none caret-[#A308F0]"
+                autoComplete="off"
+                spellCheck={false}
+              />
+              {search && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearch("");
+                    setFocusedIdx(0);
+                  }}
+                  className="text-ink-400 hover:text-ink-200 text-xs"
+                >
+                  ✕
+                </button>
               )}
+            </div>
+          </div>
 
-              {!isSearching && (
-                <>
-                  {recommended.length > 0 && (
-                    <>
-                      <Divider label="Recommended for Sandworm" />
-                      {recommended.map((m, i) => (
-                        <ModelRow
-                          key={m.id}
-                          model={m}
-                          isSelected={m.id === pendingId}
-                          isFocused={i === focusedIdx}
-                          onClick={() => {
-                            setPendingId(m.id);
-                            setFocusedIdx(i);
-                          }}
-                          rowRef={el => {
-                            if (el) rowRefs.current.set(i, el);
-                            else rowRefs.current.delete(i);
-                          }}
-                        />
-                      ))}
-                    </>
-                  )}
+          {/* Provider pills */}
+          <div className="flex gap-1.5 px-4 py-3 overflow-x-auto shrink-0 [scrollbar-width:none]">
+            {[ALL, ...providers].map(p => (
+              <button
+                type="button"
+                key={p}
+                onClick={() => {
+                  setProvider(p);
+                  setFocusedIdx(0);
+                }}
+                className={clsx(
+                  "shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-full font-body text-[11px] font-medium border transition-all whitespace-nowrap",
+                  activeProvider === p
+                    ? "bg-[#A308F0]/15 border-[#A308F0]/60 text-purple-400"
+                    : "bg-transparent border-border-tertiary text-ink-400 hover:border-ink-400"
+                )}
+              >
+                {p !== ALL && <ProviderIcon provider={p} size={13} />}
+                {p === ALL ? "All" : fmtProv(p)}
+              </button>
+            ))}
+          </div>
 
-                  {!showAll && rest.length > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => setShowAll(true)}
-                      className="w-full mt-2 py-2.5 font-body text-[12px] text-ink-400 hover:text-ink-200 border border-dashed border-border-tertiary rounded-xl hover:border-ink-400 transition-colors"
-                    >
-                      + Show {rest.length} more models
-                    </button>
-                  )}
+          {/* Column headers */}
+          <div className="flex items-center justify-between px-4 pb-1 shrink-0">
+            <span className="font-body text-[10px] text-ink-400 uppercase tracking-widest">
+              Model
+            </span>
+            <span className="font-body text-[10px] text-ink-400 uppercase tracking-widest">
+              Context
+            </span>
+          </div>
 
-                  {showAll && rest.length > 0 && (
-                    <>
-                      <Divider label="All Models" />
-                      {rest.map((m, i) => {
-                        const idx = recommended.length + i;
-                        return (
+          {/* List */}
+          <div className="flex-1 overflow-y-auto px-2 pb-2 [scrollbar-width:thin] [scrollbar-color:rgb(255_255_255/0.08)_transparent]">
+            {loading && (
+              <div className="flex items-center justify-center py-12">
+                <span className="font-body text-xs text-ink-400">
+                  Loading models…
+                </span>
+              </div>
+            )}
+            {error && (
+              <div className="flex items-center justify-center py-12">
+                <span className="font-body text-xs text-rose-400">
+                  Failed to load models
+                </span>
+              </div>
+            )}
+
+            {!loading && !error && (
+              <>
+                {isSearching && (
+                  <>
+                    {filtered.length === 0 && (
+                      <div className="flex items-center justify-center py-12">
+                        <span className="font-body text-xs text-ink-400">
+                          No models match
+                        </span>
+                      </div>
+                    )}
+                    {filtered.map((m, i) => (
+                      <ModelRow
+                        key={m.id}
+                        model={m}
+                        isSelected={m.id === pendingId}
+                        isFocused={i === focusedIdx}
+                        onClick={() => {
+                          setPendingId(m.id);
+                          setFocusedIdx(i);
+                        }}
+                        rowRef={el => {
+                          if (el) rowRefs.current.set(i, el);
+                          else rowRefs.current.delete(i);
+                        }}
+                      />
+                    ))}
+                  </>
+                )}
+
+                {!isSearching && (
+                  <>
+                    {recommended.length > 0 && (
+                      <>
+                        <Divider label="Recommended for Sandworm" />
+                        {recommended.map((m, i) => (
                           <ModelRow
                             key={m.id}
                             model={m}
                             isSelected={m.id === pendingId}
-                            isFocused={idx === focusedIdx}
+                            isFocused={i === focusedIdx}
                             onClick={() => {
                               setPendingId(m.id);
-                              setFocusedIdx(idx);
+                              setFocusedIdx(i);
                             }}
                             rowRef={el => {
-                              if (el) rowRefs.current.set(idx, el);
-                              else rowRefs.current.delete(idx);
+                              if (el) rowRefs.current.set(i, el);
+                              else rowRefs.current.delete(i);
                             }}
                           />
-                        );
-                      })}
-                    </>
-                  )}
-                </>
-              )}
-            </>
-          )}
-        </div>
+                        ))}
+                      </>
+                    )}
 
-        <div className="flex items-center justify-between px-4 py-3 border-t border-border-tertiary shrink-0 gap-3">
-          <div className="flex items-center gap-2.5 min-w-0">
-            {pendingModel && (
-              <ProviderIcon provider={pendingModel.provider} size={22} />
+                    {!showAll && rest.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setShowAll(true)}
+                        className="w-full mt-2 py-2.5 font-body text-[12px] text-ink-400 hover:text-ink-200 border border-dashed border-border-tertiary rounded-xl hover:border-ink-400 transition-colors"
+                      >
+                        + Show {rest.length} more models
+                      </button>
+                    )}
+
+                    {showAll && rest.length > 0 && (
+                      <>
+                        <Divider label="All Models" />
+                        {rest.map((m, i) => {
+                          const idx = recommended.length + i;
+                          return (
+                            <ModelRow
+                              key={m.id}
+                              model={m}
+                              isSelected={m.id === pendingId}
+                              isFocused={idx === focusedIdx}
+                              onClick={() => {
+                                setPendingId(m.id);
+                                setFocusedIdx(idx);
+                              }}
+                              rowRef={el => {
+                                if (el) rowRefs.current.set(idx, el);
+                                else rowRefs.current.delete(idx);
+                              }}
+                            />
+                          );
+                        })}
+                      </>
+                    )}
+                  </>
+                )}
+              </>
             )}
-            <div className="flex flex-col min-w-0">
-              <span className="font-body text-[11px] text-ink-400">
-                {pendingModel ? "Selected" : "None selected"}
-              </span>
-              {pendingModel && (
-                <span className="font-body text-[12px] font-medium text-[#A308F0] truncate max-w-[200px]">
-                  {pendingModel.name}
-                </span>
-              )}
-            </div>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 rounded-lg font-body text-[13px] font-medium text-ink-400 hover:text-ink-200 hover:bg-white/[0.06] transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              onClick={handleConfirm}
-              disabled={!pendingId || pendingId === selectedModelId}
-              className="px-5 py-2 rounded-lg font-body text-[13px] font-medium bg-[#A308F0] text-white hover:bg-[#8e07d4] disabled:bg-[#868E96] disabled:cursor-not-allowed transition-colors"
-            >
-              Confirm
-            </button>
+          <div className="flex items-center justify-between px-4 py-3 border-t border-border-tertiary shrink-0 gap-3">
+            <div className="flex items-center gap-2.5 min-w-0">
+              {pendingModel && (
+                <ProviderIcon provider={pendingModel.provider} size={22} />
+              )}
+              <div className="flex flex-col min-w-0">
+                <span className="font-body text-[11px] text-ink-400">
+                  {pendingModel ? "Selected" : "None selected"}
+                </span>
+                {pendingModel && (
+                  <span className="font-body text-[12px] font-medium text-[#A308F0] truncate max-w-[200px]">
+                    {pendingModel.name}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 rounded-lg font-body text-[13px] font-medium text-ink-400 hover:text-ink-200 hover:bg-white/[0.06] transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirm}
+                disabled={!pendingId || pendingId === selectedModelId}
+                className="px-5 py-2 rounded-lg font-body text-[13px] font-medium bg-[#A308F0] text-white hover:bg-[#8e07d4] disabled:bg-[#868E96] disabled:cursor-not-allowed transition-colors"
+              >
+                Confirm
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };

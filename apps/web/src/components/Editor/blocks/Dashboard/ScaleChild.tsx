@@ -6,6 +6,9 @@ interface Props {
   disableScale?: boolean;
 }
 
+// =====================================
+// ⬢  Scale Child
+// =====================================
 function ScaleChild(props: Props) {
   const measureWidth = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(null as number | null);
@@ -20,17 +23,15 @@ function ScaleChild(props: Props) {
   useEffect(() => {
     if (measureHeight.current) {
       // wait until height is not changed
-      let height = -1;
+      let measuredHeight = -1;
       const checkHeight = () => {
-        if (!measureHeight.current) {
-          return;
-        }
+        if (!measureHeight.current) return;
 
         const newHeight = measureHeight.current.getBoundingClientRect().height;
-        if (height === newHeight) {
-          setHeight(height);
+        if (measuredHeight === newHeight) {
+          setHeight(measuredHeight);
         } else {
-          height = newHeight;
+          measuredHeight = newHeight;
           requestAnimationFrame(checkHeight);
         }
       };

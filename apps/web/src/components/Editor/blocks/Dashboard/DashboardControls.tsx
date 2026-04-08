@@ -255,6 +255,7 @@ function BlockListItem(props: BlockListItemProps) {
         break;
       case BlockType.FileUpload:
       case BlockType.DashboardHeader:
+      case BlockType.PowerToolbox:
         return;
       default:
         exhaustiveCheck(type);

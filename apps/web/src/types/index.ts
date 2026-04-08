@@ -224,6 +224,7 @@ export type ApiUser = Omit<User, "passwordDigest" | "confirmedAt">;
 
 export type WorkspaceUser = ApiUser & {
   workspaceId: string;
+  workspaceName?: string;
   role: UserWorkspaceRole;
 };
 
@@ -344,4 +345,17 @@ export const DataSourceType = z.enum(["psql", "trino"] as const);
 
 export type APIDataSource = DataSource & {
   structure: DataSourceStructureStateV3;
+};
+
+export const databaseImages = (t: DataSourceType): string => {
+  switch (t) {
+    case "psql":
+      return "/icons/postgres.png";
+
+    case "trino":
+      return "/icons/trino.png";
+
+    default:
+      return "";
+  }
 };

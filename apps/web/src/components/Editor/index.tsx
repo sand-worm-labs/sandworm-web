@@ -1,5 +1,4 @@
 /* eslint-disable react/no-unstable-nested-components */
-import type { Awareness } from "y-protocols/awareness";
 import clsx from "clsx";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -147,7 +146,7 @@ const Dropzone = ({
   onAddBlock: (type: BlockType, index: number) => void;
   writebackEnabled: boolean;
   workspaceId: string;
-  onAddAnalyticsBlock: () => void;
+  onAddAnalyticsBlock: (toolId: string) => void;
 }) => {
   const [{ isOver, canDrop }, drop] = useDrop(
     () => ({
@@ -252,18 +251,16 @@ function Tab(props: TabProps) {
   const [draggingSide, setDraggingSide] = useState<"left" | "right">("left");
 
   const getDraggingSide = useCallback(
-    (monitor: DropTargetMonitor) => {
+    (monitor: DropTargetMonitor): "left" | "right" | null => {
       const offset = monitor.getClientOffset();
       const buttonPos = buttonRef.current?.getBoundingClientRect();
 
-      // check if dragging to the left or right of the button
       if (offset && buttonPos) {
         const buttonCenter = buttonPos.x + buttonPos.width / 2;
-        if (offset.x < buttonCenter) {
-          return "left";
-        }
-        return "right";
+        return offset.x < buttonCenter ? "left" : "right";
       }
+
+      return null;
     },
     [buttonRef]
   );
@@ -874,33 +871,23 @@ file`;
 
   const runBelowBlock = useCallback(() => {
     const blockGroup = getBlockGroup(layout.value, props.id);
-    if (!blockGroup) {
-      return;
-    }
+    if (!blockGroup) return;
 
     const current = blockGroup.getAttribute("current");
-    if (!current) {
-      return;
-    }
+    if (!current) return;
 
-    const currentBlockId = current.getAttribute("id");
-    if (!currentBlockId) {
-      return;
-    }
+    const runFromBlockId = current.getAttribute("id");
+    if (!runFromBlockId) return;
 
-    const block = blocks.value.get(currentBlockId);
-    if (!block) {
-      return;
-    }
+    const block = blocks.value.get(runFromBlockId);
+    if (!block) return;
 
     const metadata =
       props.executionQueue.getExecutionQueueMetadataForBlock(block);
-    if (!metadata) {
-      return;
-    }
+    if (!metadata) return;
 
     props.executionQueue.enqueueBlockOnwards(
-      currentBlockId,
+      runFromBlockId, // ← and here
       props.userId,
       environmentStartedAt,
       metadata
@@ -980,6 +967,8 @@ file`;
     state: { isOpen: isSideBarOpen },
   } = useSideBar();
 
+  const lastTabRef = tabRefs[tabRefs.length - 1];
+
   return (
     <div className="flex group/wrapper gap-x-1 relative">
       <div
@@ -1050,12 +1039,12 @@ file`;
                 </button>
               )}
             </div>
-            {!props.isApp && (
+
+            {!props.isApp && lastTabRef && (
               <NewTabButton
-                workspaceId={props.document.workspaceId}
                 yDoc={props.yDoc}
                 blockGroupId={props.id}
-                lastBlockId={tabRefs[tabRefs.length - 1].blockId}
+                lastBlockId={lastTabRef.blockId}
                 dataSources={props.dataSources}
               />
             )}
@@ -1121,7 +1110,6 @@ const V2EditorRow = (props: {
     blockId: string,
     position: "before" | "after"
   ) => void;
-  awareness: Awareness;
   dataSources: APIDataSources;
   dataframes: Y.Map<DataFrame>;
   isPublicViewer: boolean;
@@ -1135,7 +1123,7 @@ const V2EditorRow = (props: {
   executionQueue: ExecutionQueue;
   aiTasks: AITasks;
   isFullScreen: boolean;
-  onAddAnalyticsBlock: () => void;
+  onAddAnalyticsBlock: (toolId: string) => void;
 }) => {
   const isLast = props.index === props.totalBlocks - 1;
   return (
@@ -1218,11 +1206,16 @@ interface Props {
   isSyncing: boolean;
   onOpenFiles: () => void;
   onSchemaExplorer: (dataSourceId: string | null) => void;
-  scrollViewRef: React.RefObject<HTMLDivElement>;
+  scrollViewRef: React.MutableRefObject<HTMLDivElement | null>;
   executionQueue: ExecutionQueue;
   aiTasks: AITasks;
 }
+
 const Editor = (props: Props) => {
+  const { scrollViewRef } = props;
+
+  console.log(props.provider.awareness);
+
   const { state: layout } = useYDocState<Y.Array<YBlockGroup>>(
     props.yDoc,
     layoutGetter
@@ -1251,9 +1244,7 @@ const Editor = (props: Props) => {
         sortWith(
           [
             // put default data source first
-            descend(d => (d.data.isDefault ? 1 : 0)),
-            // put demo data source last
-            descend(d => (d.data.isDemo ? 0 : 1)),
+            descend(d => ("isDefault" in d.data && d.data.isDefault ? 1 : 0)),
             // put newer data sources first
             descend(d => d.data.createdAt),
           ],
@@ -1262,7 +1253,7 @@ const Editor = (props: Props) => {
       )?.data ?? null;
 
     if (dataSource) {
-      return [dataSource.id, dataSource.isDemo];
+      return [dataSource.id];
     }
 
     return [null, false];
@@ -1466,9 +1457,7 @@ const Editor = (props: Props) => {
           const liveBlocks = getBlocks(props.yDoc);
           const block = liveBlocks.get(newBlockId);
           if (block) {
-            block.setAttribute("toolId", toolId);
-            console.log("toolId set", block.getAttribute("toolId"));
-            console.log("layout length", layout.value.length);
+            (block as any).setAttribute("toolId", toolId);
           }
         }
       });
@@ -1607,14 +1596,6 @@ const Editor = (props: Props) => {
     [layout, blocks]
   );
 
-  const hasWriteback = useMemo(
-    () =>
-      props.dataSources.some(
-        ds => ds.type === "psql" || ds.type === "bigquery"
-      ),
-    [props.dataSources]
-  );
-
   const domBlocks = useMemo(() => {
     return layout.value.toArray().map((blockGroup, i) => {
       const blockId = blockGroup.getAttribute("id");
@@ -1633,7 +1614,7 @@ const Editor = (props: Props) => {
         <V2EditorRow
           yDoc={props.yDoc}
           document={props.document}
-          key={i}
+          key={blockId}
           blockId={blockId}
           index={i}
           totalBlocks={layout.value.length}
@@ -1646,7 +1627,6 @@ const Editor = (props: Props) => {
           onRemoveBlockGroup={onRemoveBlockGroup}
           onRemoveBlock={onRemoveBlock}
           onGroup={onGroup}
-          awareness={props.provider.awareness}
           dataSources={props.dataSources}
           dataframes={dataframes.value}
           isPublicViewer={props.isPublicViewer}
@@ -1731,8 +1711,8 @@ const Editor = (props: Props) => {
         options={{ scrollbars: { autoHide: "scroll" } }}
         events={{
           initialized: instance => {
-            if (props.scrollViewRef) {
-              props.scrollViewRef.current = instance.elements()
+            if (scrollViewRef) {
+              scrollViewRef.current = instance.elements()
                 .scrollEventElement as HTMLDivElement;
             }
           },
@@ -1780,7 +1760,7 @@ const Editor = (props: Props) => {
                         alwaysOpen
                         onAddBlock={addBlockToBottom}
                         isEditable={props.isEditable}
-                        writebackEnabled={hasWriteback}
+                        writebackEnabled={false}
                         onAddAnalyticsBlock={onAddAnalyticsBlock}
                       />
                     </div>
@@ -1935,10 +1915,10 @@ function TabRef(props: TabRefProps) {
         document={props.document}
         onAddGroupedBlock={props.addGroupedBlock}
         block={block}
+        dashboardMode={null}
         blocks={props.blocks}
         dataframes={props.dataframes}
         dragPreview={props.hasMultipleTabs ? null : props.dragPreview}
-        isDashboard={false}
         hasMultipleTabs={props.hasMultipleTabs}
         isBlockHiddenInPublished={props.tab.isHiddenInPublished}
         onToggleIsBlockHiddenInPublished={
@@ -2046,7 +2026,7 @@ function TabRef(props: TabRefProps) {
         isCursorInserting={isCursorInserting}
       />
     ),
-    onDashboardHeader: () => null,
+    onDashboardHeader: (): JSX.Element | null => null,
     onPivotTable: block => (
       <PivotTableBlock
         workspaceId={props.document.workspaceId}
@@ -2069,6 +2049,7 @@ function TabRef(props: TabRefProps) {
         isFullScreen={props.isFullScreen}
       />
     ),
+    onWriteback: () => null,
     onPowerToolbox: block => (
       <AnalyticsBlock
         block={block}

@@ -187,7 +187,7 @@ function DropdownInputBlock(props: Props) {
     environmentStartedAt,
   ]);
 
-  const selectRef = useRef<HTMLUListElement>(null);
+  const selectRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (props.isCursorWithin && props.isCursorInserting) {
@@ -201,7 +201,7 @@ function DropdownInputBlock(props: Props) {
   }, [blockId, editorAPI.insert]);
 
   const unfocusOnEscape = useCallback(
-    (e: React.KeyboardEvent<HTMLUListElement>) => {
+    (e: React.KeyboardEvent<HTMLDivElement>) => {
       if (e.key === "Escape") {
         selectRef.current?.blur();
       }
@@ -351,7 +351,7 @@ function DropdownInputBlock(props: Props) {
           <div className="relative">
             <Combobox
               value={selected}
-              onChange={onSelectValue}
+              onChange={value => value !== null && onSelectValue(value)}
               disabled={
                 isExecutionStatusLoading(valueStatus) ||
                 (!props.isEditable && !props.isApp)
@@ -413,17 +413,17 @@ function DropdownInputBlock(props: Props) {
                         )
                       }
                     >
-                      {({ selected, active }) => (
+                      {({ selected: isSelected, active }) => (
                         <>
                           <span
                             className={clsx(
                               "block truncate",
-                              selected ? "font-medium" : "font-normal"
+                              isSelected ? "font-medium" : "font-normal"
                             )}
                           >
                             {option}
                           </span>
-                          {selected ? (
+                          {isSelected ? (
                             <span
                               className={clsx(
                                 "absolute inset-y-0 left-0 flex items-center pl-3",

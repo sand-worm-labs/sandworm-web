@@ -1,3 +1,5 @@
+/* eslint-disable import/no-cycle */
+
 import { useMemo } from "react";
 import type { UploadedFile } from "@sandworm/editor";
 
@@ -11,67 +13,10 @@ interface Props {
   headers: FilesTableHeader[];
   onAbort: (filename: string) => void;
 }
-function StateFiles(props: Props) {
-  const current: CellFile | null = useMemo(
-    () =>
-      props.state._tag === "uploading"
-        ? {
-            name: props.state.current.file.name,
-            type: props.state.current.file.type,
-            uploaded: props.state.current.uploaded,
-            total: props.state.current.total,
-          }
-        : null,
-    [props.state]
-  );
-
-  const rest = useMemo(
-    () => (props.state._tag === "uploading" ? props.state.rest : []),
-    [props.state]
-  );
-
-  return (
-    <>
-      {props.state.errors.map(error => (
-        <ErrorRow
-          key={error.file.name}
-          error={error}
-          headers={props.headers}
-          onDownload={() => {}}
-          onAbort={props.onAbort}
-        />
-      ))}
-      {current && (
-        <Row
-          file={current}
-          headers={props.headers}
-          downloadLink=""
-          isDeleting={false}
-          onDelete={props.onAbort}
-          uploading
-          error={null}
-          onPythonUsage={() => {}}
-          onQueryUsage={() => {}}
-        />
-      )}
-      {rest.map(file => (
-        <RestRow
-          key={file.name}
-          file={file}
-          headers={props.headers}
-          onDownload={() => {}}
-          onAbort={props.onAbort}
-        />
-      ))}
-    </>
-  );
-}
 
 interface ErrorRowProps {
   error: UploadError;
   headers: FilesTableHeader[];
-  onDownload: (filename: string) => void;
-  onAbort: (filename: string) => void;
 }
 function ErrorRow(props: ErrorRowProps) {
   const rowFile = useMemo(
@@ -105,7 +50,6 @@ function ErrorRow(props: ErrorRowProps) {
 interface RestRowProps {
   file: File;
   headers: FilesTableHeader[];
-  onDownload: (filename: string) => void;
   onAbort: (filename: string) => void;
 }
 function RestRow(props: RestRowProps) {
@@ -131,6 +75,54 @@ function RestRow(props: RestRowProps) {
       onPythonUsage={() => {}}
       onQueryUsage={() => {}}
     />
+  );
+}
+function StateFiles(props: Props) {
+  const current: CellFile | null = useMemo(
+    () =>
+      props.state._tag === "uploading"
+        ? {
+            name: props.state.current.file.name,
+            type: props.state.current.file.type,
+            uploaded: props.state.current.uploaded,
+            total: props.state.current.total,
+          }
+        : null,
+    [props.state]
+  );
+
+  const rest = useMemo(
+    () => (props.state._tag === "uploading" ? props.state.rest : []),
+    [props.state]
+  );
+
+  return (
+    <>
+      {props.state.errors.map(error => (
+        <ErrorRow key={error.file.name} error={error} headers={props.headers} />
+      ))}
+      {current && (
+        <Row
+          file={current}
+          headers={props.headers}
+          downloadLink=""
+          isDeleting={false}
+          onDelete={props.onAbort}
+          uploading
+          error={null}
+          onPythonUsage={() => {}}
+          onQueryUsage={() => {}}
+        />
+      )}
+      {rest.map(file => (
+        <RestRow
+          key={file.name}
+          file={file}
+          headers={props.headers}
+          onAbort={props.onAbort}
+        />
+      ))}
+    </>
   );
 }
 
