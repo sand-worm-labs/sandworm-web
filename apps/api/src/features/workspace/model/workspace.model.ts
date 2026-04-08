@@ -66,6 +66,7 @@ export class Workspace {
     workspace.plan = entity.plan;
     workspace.ownerId = entity.ownerId;
     workspace.assistantModel = entity.assistantModel;
+    workspace.icon = entity.icon;
     return workspace;
   }
 

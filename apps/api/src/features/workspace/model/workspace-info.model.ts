@@ -25,6 +25,7 @@ export class WorkspaceMember {
 
   @UUIDField({ nullable: true })
   workspaceId?: string;
+
 }
 
 @ObjectType()
@@ -34,6 +35,9 @@ export class WorkspaceInfo {
 
   @StringField()
   name!: string;
+
+  @StringField()
+  icon!: string;
 
   @UUIDField()
   ownerId!: string;
@@ -55,6 +59,7 @@ export class WorkspaceInfo {
     createdAt: Date;
     updatedAt: Date;
     role: string;
+    icon: string;
     owner?: User;
   }): WorkspaceInfo {
     const workspaceInfo = new WorkspaceInfo();
@@ -64,6 +69,7 @@ export class WorkspaceInfo {
     workspaceInfo.createdAt = data.createdAt;
     workspaceInfo.updatedAt = data.updatedAt;
     workspaceInfo.role = data.role;
+    workspaceInfo.icon = data.icon;
     return workspaceInfo;
   }
 }
