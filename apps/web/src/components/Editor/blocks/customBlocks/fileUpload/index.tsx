@@ -185,7 +185,8 @@ function FileUploadBlock(props: Props) {
     });
 
     const replace = state.current.replace || state.replaceAll;
-    const url = `${process.env.NEXT_PUBLIC_API_URL()}/v1/workspaces/${
+    const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8083";
+    const url = `${apiBase}/v1/workspaces/${
       props.workspaceId
     }/documents/${props.documentId}/files?replace=${replace}`;
     axios({
@@ -276,7 +277,7 @@ function FileUploadBlock(props: Props) {
                 file: next,
                 abortController: new AbortController(),
                 uploaded: 0,
-                total: next.size,
+                total: next?.size,
                 status: "enqueued",
                 replace: false,
               },
@@ -401,12 +402,11 @@ function FileUploadBlock(props: Props) {
   }, [state]);
 
   const onDrop = useCallback(
-    (files: File[]) => {
-      files = uniqBy(f => f.name, files);
-      const [first, ...rest] = files;
-      if (!first) {
-        return;
-      }
+    (incomingFiles: File[]) => {
+      const uniqueFiles = uniqBy(f => f.name, incomingFiles);
+      const [first, ...rest] = uniqueFiles;
+
+      if (!first) return;
 
       setState(s => {
         switch (s._tag) {
@@ -428,14 +428,16 @@ function FileUploadBlock(props: Props) {
           case "uploading":
             return {
               ...s,
-              rest: [...s.rest, first, ...files],
+              rest: [...s.rest, ...uniqueFiles],
             };
+          default:
+            return s;
         }
       });
 
       props.block.setAttribute("areFilesHidden", false);
     },
-    [props.block]
+    [props.block, setState]
   );
 
   const fileEntries = useYElementMemo(getUploadedFiles, props.block, []);
@@ -445,10 +447,6 @@ function FileUploadBlock(props: Props) {
     noDrag: state._tag === "uploading",
     noClick: state._tag === "uploading" || fileEntries.length > 0,
   });
-
-  const onDownload = useCallback((filename: string) => {
-    console.log("download", filename);
-  }, []);
 
   const onDelete = useCallback(
     (filename: string) => {
@@ -499,8 +497,8 @@ function FileUploadBlock(props: Props) {
 
   const { title } = getBaseAttributes(props.block);
   const onChangeTitle = useCallback(
-    (title: string) => {
-      setTitle(props.block, title);
+    (newTitle: string) => {
+      setTitle(props.block, newTitle);
     },
     [props.block]
   );
@@ -541,7 +539,6 @@ function FileUploadBlock(props: Props) {
           onReplaceYes={onReplaceYes}
           onReplaceAll={onReplaceAll}
           onReplaceNo={onReplaceNo}
-          onDownload={onDownload}
           onDelete={onDelete}
           onAbort={onAbort}
           onUpload={open}

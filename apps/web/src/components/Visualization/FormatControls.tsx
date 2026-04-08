@@ -11,7 +11,9 @@ import AxisModifierSelector from "@/components/Editor/blocks/AxisModifierSelecto
 
 import VisualizationToggleV2 from "./VisualizationToggle";
 
-// Generic interface for number formatting props
+// =====================================
+// ⬢ Types
+// =====================================
 export interface NumberFormatControlProps {
   initialDecimalPlaces: string;
   initialMultiplier: string;
@@ -23,7 +25,7 @@ export interface NumberFormatControlProps {
   } | null;
   dataframe: any | null;
   isEditable: boolean;
-  seriesId?: string; // Optional for XAxis
+  seriesId?: string;
   onChangeNumberStyle: (id: string | undefined, style: string | null) => void;
   onChangeSeparatorStyle: (
     id: string | undefined,
@@ -37,6 +39,23 @@ export interface NumberFormatControlProps {
   onChangeSuffix: (id: string | undefined, value: string) => void;
 }
 
+export interface DateFormatControlProps {
+  currentFormat: {
+    dateStyle?: string | null;
+    showTime?: boolean;
+    timeFormat?: string | null;
+  } | null;
+  dataframe: any | null;
+  isEditable: boolean;
+  seriesId?: string;
+  onChangeDateStyle: (id: string | undefined, style: string | null) => void;
+  onToggleShowTime: (id: string | undefined) => void;
+  onChangeTimeFormat: (id: string | undefined, format: string | null) => void;
+}
+
+// =====================================
+// ⬢ Number Format Control
+// =====================================
 export const NumberFormatControl = ({
   initialDecimalPlaces,
   initialMultiplier,
@@ -53,7 +72,7 @@ export const NumberFormatControl = ({
   onChangePrefix,
   onChangeSuffix,
 }: NumberFormatControlProps) => {
-  // Local state for the input fields
+  // ✦ Local state for the input fields
   const [decimalPlacesInput, setDecimalPlacesInput] = useState(
     initialDecimalPlaces || "2"
   );
@@ -61,7 +80,7 @@ export const NumberFormatControl = ({
     initialMultiplier || "1"
   );
 
-  // Update local state when props change
+  // ✦ Update local state when props change
   useEffect(() => {
     if (initialDecimalPlaces) {
       setDecimalPlacesInput(initialDecimalPlaces);
@@ -74,7 +93,7 @@ export const NumberFormatControl = ({
     }
   }, [initialMultiplier]);
 
-  // Handler for decimal places changes
+  // ✦ Handler for decimal places changes
   const handleDecimalPlacesChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       const inputValue = e.target.value;
@@ -84,7 +103,7 @@ export const NumberFormatControl = ({
     [seriesId, onChangeDecimalPlaces]
   );
 
-  // Handler for decimal places blur
+  // ✦ Handler for decimal places blur
   const handleDecimalPlacesBlur = useCallback(
     (e: FocusEvent<HTMLInputElement>) => {
       const inputValue = e.target.value;
@@ -93,7 +112,7 @@ export const NumberFormatControl = ({
     [seriesId, onDecimalPlacesBlur]
   );
 
-  // Handler for multiplier changes
+  // ✦ Handler for multiplier changes
   const handleMultiplierChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       const inputValue = e.target.value;
@@ -103,7 +122,7 @@ export const NumberFormatControl = ({
     [seriesId, onChangeMultiplier]
   );
 
-  // Handler for multiplier blur
+  // ✦ Handler for multiplier blur
   const handleMultiplierBlur = useCallback(
     (e: FocusEvent<HTMLInputElement>) => {
       const inputValue = e.target.value;
@@ -112,7 +131,7 @@ export const NumberFormatControl = ({
     [seriesId, onMultiplierBlur]
   );
 
-  // Handler for prefix/suffix changes
+  // ✦ Handler for prefix/suffix changes
   const handlePrefixChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       onChangePrefix(seriesId, e.target.value);
@@ -223,21 +242,9 @@ export const NumberFormatControl = ({
   );
 };
 
-// Generic interface for date formatting props
-export interface DateFormatControlProps {
-  currentFormat: {
-    dateStyle?: string | null;
-    showTime?: boolean;
-    timeFormat?: string | null;
-  } | null;
-  dataframe: any | null;
-  isEditable: boolean;
-  seriesId?: string; // Optional for XAxis
-  onChangeDateStyle: (id: string | undefined, style: string | null) => void;
-  onToggleShowTime: (id: string | undefined) => void;
-  onChangeTimeFormat: (id: string | undefined, format: string | null) => void;
-}
-
+// =====================================
+// ⬢ Date Format Control
+// =====================================
 export const DateFormatControl = ({
   currentFormat,
   dataframe,

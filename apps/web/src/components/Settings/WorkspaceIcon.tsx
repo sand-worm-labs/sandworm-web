@@ -6,6 +6,9 @@ interface WorkspaceIconProps {
   className?: string;
 }
 
+// =====================================
+// ⬢ Workspace Icon
+// =====================================
 export function WorkspaceIcon({
   icon,
   size = 32,

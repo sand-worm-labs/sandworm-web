@@ -30,8 +30,6 @@ interface UserItemProps {
   isSelected: boolean;
   onToggleSelect: (id: string) => void;
   onRemoveUser: (id: string) => void;
-  onChangeRole: (id: string, role: UserWorkspaceRole) => void;
-  onResetPassword: (id: string) => void;
   role: UserWorkspaceRole;
 }
 
@@ -113,8 +111,6 @@ type Props = {
   currentUserEmail: string;
   users: WorkspaceUser[];
   onRemoveUser: (id: string) => void;
-  onChangeRole: (id: string, role: UserWorkspaceRole) => void;
-  onResetPassword: (id: string) => void;
   userRole: UserWorkspaceRole;
 };
 
@@ -154,7 +150,8 @@ function UsersList(props: Props) {
   const handleToggleSelect = useCallback((id: string) => {
     setSelectedIds(prev => {
       const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   }, []);
@@ -242,8 +239,6 @@ function UsersList(props: Props) {
                     isSelected={selectedIds.has(user.id)}
                     onToggleSelect={handleToggleSelect}
                     onRemoveUser={props.onRemoveUser}
-                    onChangeRole={props.onChangeRole}
-                    onResetPassword={props.onResetPassword}
                     role={props.userRole}
                   />
                 );

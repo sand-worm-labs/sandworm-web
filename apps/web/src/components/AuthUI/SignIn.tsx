@@ -9,6 +9,9 @@ import { PartnersSection } from "../Partners";
 import { SocialLogin } from "./SocialLogin";
 import { SignInForm } from "./SignInForm";
 
+// =====================================
+// ⬢ Sign In Main Component
+// =====================================
 export const SignIn = () => {
   const params = useSearchParams();
   const error = params?.get("error");

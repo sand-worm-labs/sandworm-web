@@ -154,6 +154,9 @@ function PrivateDocumentPageInner(
     entry => props.workspaceId in entry
   );
   const isViewer = roleEntry?.[props.workspaceId] === "viewer";
+  const role =
+    props?.user?.role?.find(r => r[props.workspaceId])?.[props.workspaceId] ??
+    "viewer";
 
   const isDeleted = !isNil(props.document.deletedAt);
 
@@ -359,7 +362,7 @@ function PrivateDocumentPageInner(
         documentId={props.documentId}
         current="notebook"
         isEditing={!props.isApp}
-        userRole={props?.user?.role?.[props.workspaceId]}
+        userRole={role}
         isPublished={props.document.publishedAt !== null}
       />
 
@@ -413,7 +416,6 @@ function PrivateDocumentPageInner(
     <Layout
       topBarClassname={props.isApp ? "bg-base-100 " : undefined}
       topBarContent={topBarContent}
-      user={props.user}
       sidebarContent={sidebarContent}
       onToggleChat={onToggleChat}
     >
@@ -429,7 +431,7 @@ function PrivateDocumentPageInner(
           isPDF={false}
           isApp={props.isApp}
           userId={props.user.id}
-          role={props?.user?.role?.[props.workspaceId]}
+          role={role}
           isFullScreen={isFullScreen}
           yDoc={yDoc}
           executionQueue={executionQueue}
@@ -464,11 +466,8 @@ function PrivateDocumentPageInner(
               publishing={props.publishing}
             />
             <Snapshots
-              workspaceId={props.workspaceId}
-              documentId={props.documentId}
               visible={selectedSidebar?._tag === "snapshots"}
               onHide={onHideSidebar}
-              isPublished={props.document.publishedAt !== null}
             />
             <Files
               workspaceId={props.workspaceId}

@@ -29,7 +29,7 @@ import {
 import { Transition } from "@headlessui/react";
 import { InformationCircleIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
-import { equals, identity } from "ramda";
+import { equals } from "ramda";
 import ReactDOM from "react-dom";
 
 import { Tooltip } from "../Editor/blocks/ToolTips";
@@ -282,12 +282,12 @@ function getOperatorOptions(columnType: DataFrameColumn["type"]) {
     return dateFilterOperators;
   }
 
-  // TODO: add filtering capabilities for boolean types
+  // ✦ TODO: add filtering capabilities for boolean types
   if (NumpyBoolTypes.safeParse(columnType).success) {
     return [];
   }
 
-  // TODO: this should never happen, we should be alerted
+  // ✦ TODO: this should never happen, we should be alerted
   return [];
 }
 
@@ -351,7 +351,7 @@ function FilterSelectorV2({
 
   const [value, setValue] = useState<string | string[]>(initialValue);
 
-  // TODO: TEMPORARY FIX - Runtime validation removed
+  // ✦ TODO: TEMPORARY FIX - Runtime validation removed
   // Previous implementation used Zod .safeParse() for runtime type validation
   // but was causing "keyValidator._parse is not a function" error due to
   // PythonErrorOutput schema issues (likely version mismatch or incorrect import)
@@ -407,7 +407,7 @@ function FilterSelectorV2({
 
   useEffect(() => {
     if (!column || !operator) {
-      return;
+      return () => {};
     }
 
     const didChange =
@@ -415,7 +415,7 @@ function FilterSelectorV2({
       filter.operator !== operator ||
       !equals(filter.value, value);
     if (!didChange) {
-      return;
+      return () => {};
     }
 
     const timeout = setTimeout(() => {
@@ -569,12 +569,11 @@ function FilterSelectorV2({
   const menuRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!open) {
-      return;
+      return () => {};
     }
 
     const onClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        // only close if no one else handles this event
         requestAnimationFrame(() => {
           if (event.defaultPrevented) return;
           setOpen(false);
@@ -639,7 +638,7 @@ function FilterSelectorV2({
             );
           }
 
-          // complex type
+          //* ✦ complex type✦ */
           return (
             <div className="w-64 font-body  pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1">
               <p>We received the following error:</p>
@@ -699,25 +698,23 @@ function FilterSelectorV2({
               : ""}
           </span>
           {operator !== "isNull" && operator !== "isNotNull" ? (
-            <>
-              {renderedValue ? (
-                <span className="px-1.5 py-0.5 bg-ceramic-100 text-ceramic-500 rounded-md">
-                  {Array.isArray(renderedValue)
-                    ? renderedValue.length > 1
-                      ? `[${renderedValue.join(", ")}]`
-                      : renderedValue[0]
-                    : renderedValue}
-                </span>
-              ) : (
-                <span>
-                  {Array.isArray(value)
-                    ? value.length > 1
-                      ? `[${value.join(", ")}]`
-                      : value[0]
-                    : value}
-                </span>
-              )}
-            </>
+            renderedValue ? (
+              <span className="px-1.5 py-0.5 bg-ceramic-100 text-ceramic-500 rounded-md">
+                {Array.isArray(renderedValue)
+                  ? renderedValue.length > 1
+                    ? `[${renderedValue.join(", ")}]`
+                    : renderedValue[0]
+                  : renderedValue}
+              </span>
+            ) : (
+              <span>
+                {Array.isArray(value)
+                  ? value.length > 1
+                    ? `[${value.join(", ")}]`
+                    : value[0]
+                  : value}
+              </span>
+            )
           ) : null}
         </div>
         <span className="p-0.5 rounded-full hover:bg-red-100  hover:text-red-700">
@@ -784,24 +781,24 @@ function FilterSelectorV2({
                       {VisualizationStringFilterMultiValuesOperator.safeParse(
                         operator
                       ).success ? (
-                        <MultiComboboxV2
+                        <MultiComboboxV2<string>
                           label={<FilterValueLabel />}
-                          value={Array.from(value)}
+                          value={Array.from(value) as string[]}
                           options={
                             "categories" in column
                               ? (column.categories?.map(c => c.toString()) ??
                                 [])
                               : []
                           }
-                          onChange={setValue}
+                          onChange={(selected: string[]) => setValue(selected)}
                           search={(options, query) =>
                             options.filter(c => c.includes(query))
                           }
-                          getLabel={value => value}
+                          getLabel={opt => opt}
                           icon={() => null}
                           placeholder="Value"
                           disabled={disabled}
-                          valueFromQuery={identity}
+                          valueFromQuery={(query: string) => query}
                         />
                       ) : (
                         <div>
@@ -810,7 +807,9 @@ function FilterSelectorV2({
                             className="w-full truncate border-0 text-xs  rounded-md ring-1 ring-inset ring-gray-200 focus-within:ring-1 focus-within:ring-inset focus-within:ring-gray-300 bg-white text-gray-800"
                             type="text"
                             value={
-                              Array.isArray(value) ? (value[0] ?? null) : value
+                              Array.isArray(value)
+                                ? (value[0] ?? "")
+                                : (value ?? "")
                             }
                             onChange={onChangeValue}
                             placeholder="Value"

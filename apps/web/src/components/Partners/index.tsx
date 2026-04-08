@@ -3,6 +3,9 @@
 import React from "react";
 import Image from "next/image";
 
+// =====================================
+// ⬢ Partners Section
+// =====================================
 export const PartnersSection = () => {
   return (
     <div className="w-full max-w-5xl mx-auto text-left ">

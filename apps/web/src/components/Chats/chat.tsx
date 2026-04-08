@@ -9,10 +9,13 @@ import { useDocuments } from "../Editor/hooks/useDocuments";
 import { MultimodalInput } from "./multimodal-input";
 import { ExamplePrompts } from "./example-prompts";
 
+// =====================================
+// ⬢ Types
+// =====================================
 type Attachment = {
   url: string;
-  name: string;
-  contentType: string;
+  name?: string;
+  contentType?: string;
 };
 
 type Message = {
@@ -21,6 +24,9 @@ type Message = {
   content: string;
 };
 
+// =====================================
+// ⬢ Chat Main
+// =====================================
 export function Chat({
   initialMessages,
 }: {
@@ -100,7 +106,7 @@ export function Chat({
             attachments={attachments}
             setAttachments={setAttachments}
             messages={messages}
-            append={append}
+            appendAction={append}
             workspaceId={workspaceId}
           />
         </form>

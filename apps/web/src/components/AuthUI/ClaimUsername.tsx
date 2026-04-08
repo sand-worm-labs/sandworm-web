@@ -47,7 +47,9 @@ export const ClaimUsernameStep = ({
     setStatus("checking");
     setError(null);
 
-    await new Promise<void>(resolve => setTimeout(resolve, 500));
+    await new Promise<void>(resolve => {
+      setTimeout(resolve, 500);
+    });
 
     if (name.toLowerCase() === "si") {
       setStatus("taken");
@@ -138,7 +140,7 @@ export const ClaimUsernameStep = ({
 };
 
 // ⚛️ =====================================
-// CLAIM USERNAME — standalone page wrapper (unchanged behaviour)
+// CLAIM USERNAME — standalone page wrapper
 // =====================================
 export const ClaimUsername = () => {
   const router = useRouter();

@@ -43,11 +43,10 @@ import clsx from "clsx";
 import SimpleBar from "simplebar-react";
 
 import type { ApiDocument } from "@/types";
+import VisualizationV2Block from "@/components/Visualization/index";
 
 import { useYDocState } from "../../hooks/useYDocs";
 import type { APIDataSources } from "../../hooks/useDataSources";
-import VisualizationBlock from "../..";
-import VisualizationV2Block from "../..";
 import MultiSelect from "../MultiSelect";
 
 import ScaleChild from "./ScaleChild";
@@ -133,7 +132,7 @@ function BlockPreview(props: BlockPreviewProps) {
     onPython: () => <div className="w-full h-96" />,
     onVisualization: block => (
       <div className="w-full h-96">
-        <VisualizationBlock
+        <VisualizationV2Block
           document={props.document}
           dataframes={props.dataframes}
           block={block}
@@ -249,6 +248,7 @@ function BlockListItem(props: BlockListItemProps) {
       case BlockType.RichText:
       case BlockType.FileUpload:
       case BlockType.DashboardHeader:
+      case BlockType.PowerToolbox:
         return;
       default:
         exhaustiveCheck(type);
@@ -492,6 +492,7 @@ function DashboardControls(props: Props) {
                 case BlockType.RichText:
                 case BlockType.FileUpload:
                 case BlockType.DashboardHeader:
+                case BlockType.PowerToolbox:
                   // these do not show up in the list in the first place
                   break;
                 default:

@@ -23,7 +23,7 @@ function DashboardSkeleton() {
                   <div className="w-full h-full bg-gray-100  animate-pulse-dark" />
                 </div>
               );
-              c++;
+              c += 1;
             }
 
             return children;

@@ -20,6 +20,10 @@ interface Props<T> {
   onRemove: (index: number) => void;
   isEditable: boolean;
 }
+
+// =====================================
+// ⬢ PivotTableGroup
+// =====================================
 function PivotTableGroup<
   T extends
     | { column: DataFrameColumn | null }
@@ -52,6 +56,7 @@ function PivotTableGroup<
           {props.label}
         </div>
         <button
+          type="button"
           className="text-[10px] text-ink-400 underline pb-0.5 hover:text-ink-400 "
           onClick={props.onAdd}
         >
@@ -100,6 +105,7 @@ function PivotTableGroup<
 
               {props.values.length > 1 && (
                 <button
+                  type="button"
                   className="flex items-center jutify-center cursor-pointer text-ink-400 hover:text-red-600 text-[10px] absolute top-1 right-1 underline"
                   onClick={() => props.onRemove(i)}
                 >

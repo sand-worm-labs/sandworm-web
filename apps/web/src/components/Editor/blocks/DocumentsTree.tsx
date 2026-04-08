@@ -113,7 +113,7 @@ interface Props {
   documents: List<ApiDocument>;
   role: UserWorkspaceRole;
   onDuplicate: (id: string) => void;
-  onSetIcon: (id: string, icon: string) => void;
+  onSetIcon?: (id: string, icon: string) => void;
   onFavorite: (id: string) => void;
   onUnfavorite: (id: string) => void;
   onDelete: (id: string) => void;

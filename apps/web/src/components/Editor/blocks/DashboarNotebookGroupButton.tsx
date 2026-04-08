@@ -15,6 +15,9 @@ interface Props {
   userRole: string;
 }
 
+// =====================================
+// ⬢ Dashboard Notebook Group Button
+// =====================================
 function DashboardNotebookGroupButton(props: Props) {
   const router = useRouter();
 

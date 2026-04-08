@@ -14,6 +14,7 @@ type SessionState = {
   signOut: () => void;
   claimUsername: (name: string) => void;
   reset: () => void;
+  setSession: (data: Partial<SessionState>) => void;
 };
 
 export const useSessionStore = create<SessionState>()(
@@ -23,8 +24,13 @@ export const useSessionStore = create<SessionState>()(
       isOnboarded: false,
       username: null,
       intent: null,
-
       setIntent: intent => set({ intent }),
+      setSession: data =>
+        set(state => ({
+          ...state,
+          ...data,
+          isAuthenticated: data.isAuthenticated ?? state.isAuthenticated,
+        })),
       signIn: () => set({ isAuthenticated: true }),
       signUp: () => set({ isAuthenticated: true, isOnboarded: false }),
       signOut: () =>

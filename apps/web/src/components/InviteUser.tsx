@@ -4,6 +4,11 @@ import React, { useState, useCallback, Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
+import type { UserWorkspaceRole } from "@/types";
+
+// =====================================
+// ⬢ Types
+// =====================================
 interface InviteUserModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -12,11 +17,14 @@ interface InviteUserModalProps {
   workspaces?: { id: string; name: string }[];
   onInvite: (
     email: string,
-    role?: string,
-    workspaceId?: string
+    role: UserWorkspaceRole,
+    workspaceId: string
   ) => Promise<void>;
 }
 
+// =====================================
+// ⬢ Invite User Modal
+// =====================================
 export default function InviteUserModal({
   isOpen,
   onClose,
@@ -26,7 +34,7 @@ export default function InviteUserModal({
   onInvite,
 }: InviteUserModalProps) {
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState<string>("editor");
+  const [role, setRole] = useState<UserWorkspaceRole>("editor");
   const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<string>(
     workspaceId ?? workspaces?.[0]?.id ?? ""
   );
@@ -69,11 +77,12 @@ export default function InviteUserModal({
       setError("");
 
       try {
-        await onInvite(
-          email,
-          role,
-          isMultiWorkspace ? selectedWorkspaceId : workspaceId
-        );
+        const targetWorkspaceId = isMultiWorkspace
+          ? selectedWorkspaceId
+          : workspaceId;
+        if (!targetWorkspaceId) return;
+
+        await onInvite(email, role, targetWorkspaceId);
         setEmail("");
         setRole("editor");
         setSelectedWorkspaceId(workspaceId ?? workspaces?.[0]?.id ?? "");
@@ -201,7 +210,9 @@ export default function InviteUserModal({
                     <select
                       id="role"
                       value={role}
-                      onChange={e => setRole(e.target.value)}
+                      onChange={e =>
+                        setRole(e.target.value as UserWorkspaceRole)
+                      }
                       disabled={isSubmitting}
                       className="w-auto px-3 py-1 rounded-lg dark:bg-[#1A1A1A] border dark:border-border-tertiary border-[#DEE2E6] dark:text-white focus:outline-none focus:ring focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F8F9FA]"
                     >

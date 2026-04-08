@@ -4,6 +4,9 @@ import React, { useState } from "react";
 import { Monitor, Sun, Moon } from "lucide-react";
 import { useTheme } from "next-themes";
 
+// =====================================
+// ⬢ Types
+// =====================================
 type Theme = "system" | "light" | "dark";
 type EditorTheme =
   | "monokai"
@@ -29,6 +32,9 @@ interface EditorThemeOption {
   accent: string;
 }
 
+// =====================================
+// ⬢ Theme Card
+// =====================================
 const ThemeCard: React.FC<{
   option: ThemeOption;
   selected: boolean;
@@ -115,6 +121,9 @@ const ThemeCard: React.FC<{
   );
 };
 
+// =====================================
+// ⬢ Editor Theme Card
+// =====================================
 const EditorThemeCard: React.FC<{
   theme: EditorThemeOption;
   selected: boolean;
@@ -152,11 +161,16 @@ const EditorThemeCard: React.FC<{
   );
 };
 
+// =====================================
+// ⬢ Preference Main Component
+// =====================================
 const Preferences: React.FC = () => {
   const { theme, setTheme } = useTheme();
   const [editorTheme, setEditorTheme] = useState<EditorTheme>("monokai");
   const [dateFormat, setDateFormat] = useState<DateFormat>("us");
 
+  // ⬢ Theme Options
+  // =====================================
   const themeOptions: ThemeOption[] = [
     {
       id: "system",
@@ -178,6 +192,8 @@ const Preferences: React.FC = () => {
     },
   ];
 
+  // ⬢ Editor Theme Options
+  // =====================================
   const editorThemes: EditorThemeOption[] = [
     {
       id: "monokai",
@@ -239,7 +255,7 @@ const Preferences: React.FC = () => {
           </p>
         </div>
 
-        {/* Data & Performance */}
+        {/* ✦ Data & Performance  ✦ */}
         <div className=" py-8 mb-6">
           <div className="flex items-center gap-3 mb-6">
             <div>
@@ -287,7 +303,7 @@ const Preferences: React.FC = () => {
           </div>
         </div>
 
-        {/* Appearance Section */}
+        {/* ✦ Appearance Section  ✦ */}
         <div className=" py-8 mb-6">
           <div className="flex items-center gap-3 mb-6">
             <div>
@@ -311,7 +327,7 @@ const Preferences: React.FC = () => {
           </div>
         </div>
 
-        {/* Editor Theme Section */}
+        {/* ✦ Editor Theme Section ✦ */}
         <div className=" py-8 mb-6">
           <div className="flex items-center gap-3 mb-6">
             <div>

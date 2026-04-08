@@ -1,6 +1,6 @@
 import ReactDOM from "react-dom";
 import type * as Y from "yjs";
-import { type IMaskInput } from "react-imask";
+import { IMaskInput } from "react-imask";
 import { useCallback, useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import type { DateInputValue } from "@sandworm/editor";
@@ -19,7 +19,7 @@ import DatePicker from "./DatePicker";
 
 function invalidValueErrorMessage(
   status: "invalid-value" | "invalid-variable-and-value" | "unexpected-error"
-): JSX.Element {
+): JSX.Element | null {
   switch (status) {
     case "invalid-value":
     case "invalid-variable-and-value":
@@ -31,6 +31,8 @@ function invalidValueErrorMessage(
           retry.
         </>
       );
+    default:
+      return null;
   }
 }
 
@@ -60,7 +62,7 @@ function DateInputBlockInput(props: Props) {
   );
   const newValue = dateInputValueFromString(newTextValue, props.value);
 
-  const inputRef = useRef<IMaskInput>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const [isPickerOpen, setIsPickerOpen] = useState(false);
   const onClick = useCallback(() => {

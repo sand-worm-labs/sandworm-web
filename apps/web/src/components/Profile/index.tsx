@@ -25,45 +25,17 @@ import { useWallets } from "../Editor/hooks/useWallets";
 import { ProfileSettingsModal } from "./ProfileSettingModal";
 import { ManageWalletsModal, AddWalletModal } from "./ManageWalletModal";
 
-interface SocialLinks {
-  twitter?: string;
-  github?: string;
-  website?: string;
-  telegram?: string;
-  discord?: string;
-}
-
-interface WalletInfo {
-  address: string;
-  chain?: string;
-  label?: string;
-}
-
-interface UserProfile {
-  id: string;
-  username: string;
-  fullName?: string;
-  avatar?: string;
-  followersCount: number;
-  followingCount: number;
-  statusText?: string;
-  statusUpdatedAt?: string;
-  socialLinks?: SocialLinks;
-  wallets?: WalletInfo[];
-  memberSince?: string;
-  location?: string;
-  stats?: {
-    queriesRun: number;
-    datasetsAnalyzed: number;
-    chainsTracked: number;
-    totalViews: number;
-  };
-}
+// =====================================
+// ⬢ Types
+// =====================================
 
 interface ProfileComponentProps {
   isOwnProfile?: boolean;
 }
 
+// =====================================
+// ⬢ Profile Components
+// =====================================
 const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
   const [isFollowing, setIsFollowing] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -71,32 +43,6 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
   const { currentUser, loading, updateProfile, error } = useCurrentUser();
 
   const { wallets, addWallets, loading: updateLoading } = useWallets();
-
-  const mockProfile: UserProfile = {
-    id: "1",
-    username: "sandworm",
-    fullName: "Sandworm Labs",
-    avatar: "/img/avatar/avatar2.svg",
-    followersCount: 0,
-    followingCount: 0,
-    statusText: "Building the future of collaborative blockchain analytics",
-    statusUpdatedAt: "2024-01-15T10:30:00Z",
-    memberSince: "2023-06-15",
-    location: "Global",
-    socialLinks: {
-      twitter: "https://twitter.com/sandwormlabs",
-      github: "https://github.com/sandworm",
-      website: "https://sandwormlabs.com",
-      telegram: "https://t.me/sandwormlabs",
-    },
-    wallets: [],
-    stats: {
-      queriesRun: 3421,
-      datasetsAnalyzed: 127,
-      chainsTracked: 8,
-      totalViews: 45231,
-    },
-  };
 
   const [isWalletsModalOpen, setIsWalletsModalOpen] = useState(false);
   const [isAddWalletOpen, setIsAddWalletOpen] = useState(false);
@@ -162,12 +108,12 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                   <div className="flex flex-col gap-6">
                     <div className="flex gap-x-5 ">
                       <div className="flex-shrink-0">
-                        {mockProfile.avatar ? (
+                        {currentUser.avatar ? (
                           <Image
                             width={96}
                             height={96}
-                            src={mockProfile.avatar}
-                            alt={mockProfile.username}
+                            src={currentUser.avatar}
+                            alt={currentUser.username}
                             className="w-[6rem] h-[6rem]  rounded-full"
                           />
                         ) : (
@@ -233,7 +179,7 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                       <div className="flex gap-4 gap-y-0 text-[0.95rem]">
                         <div>
                           <span className="font-bold text-ink-100 dark:text-white">
-                            {mockProfile.followersCount}
+                            {currentUser.followersCount}
                           </span>{" "}
                           <span className="text-ink-400  ml-0.5 font-medium text-sm">
                             Followers
@@ -241,7 +187,7 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                         </div>
                         <div>
                           <span className="font-bold text-ink-100 dark:text-white">
-                            {mockProfile.followingCount}
+                            {currentUser.followingCount}
                           </span>{" "}
                           <span className="text-ink-400  ml-0.5 font-medium text-sm">
                             Following

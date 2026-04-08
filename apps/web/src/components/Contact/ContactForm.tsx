@@ -4,6 +4,9 @@ import React, { useState } from "react";
 import { Send } from "lucide-react";
 import { toast } from "sonner";
 
+// =====================================
+// ⬢ Contact Form
+// =====================================
 export const ContactForm = () => {
   const [formData, setFormData] = useState({
     name: "",

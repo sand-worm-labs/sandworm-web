@@ -9,6 +9,9 @@ interface BannerAlertProps {
   alwaysShow?: boolean;
 }
 
+// =====================================
+// ⬢ Banner Alert
+// =====================================
 export const BannerAlert: React.FC<BannerAlertProps> = ({
   id,
   message,

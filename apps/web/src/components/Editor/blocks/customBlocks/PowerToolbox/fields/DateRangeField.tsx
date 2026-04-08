@@ -6,10 +6,11 @@ import type { ParamDefinition } from "@sandworm/editor";
 
 import { FieldLabel, FieldError } from "./AddressField";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
+// =====================================
+// ⬢ Types
+// =====================================
 export interface DateRange {
-  from: string; // ISO date string YYYY-MM-DD
+  from: string;
   to: string;
 }
 
@@ -20,8 +21,9 @@ interface DateRangeFieldProps {
   error?: string;
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
-
+// =====================================
+// ⬢ Date Range Field
+// =====================================
 export function DateRangeField({
   param,
   value,
@@ -66,8 +68,9 @@ export function DateRangeField({
   );
 }
 
-// ─── Single date input ────────────────────────────────────────────────────────
-
+// =====================================
+// ⬢  Single date input
+// =====================================
 function DateInput({
   label,
   value,
@@ -100,7 +103,6 @@ function DateInput({
           "bg-white/[0.04] border border-border-tertiary transition-colors outline-none",
           "text-ink-100 ",
           "focus:border-[#A308F0]/50 focus:bg-white/[0.05]",
-          // Date picker calendar icon color
           "[color-scheme:dark]"
         )}
       />

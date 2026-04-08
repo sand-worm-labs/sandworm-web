@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 export class AuthenticationError extends Error {
   constructor(public readonly url: string) {
     super("Authentication required");

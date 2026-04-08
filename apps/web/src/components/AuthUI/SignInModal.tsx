@@ -14,6 +14,9 @@ import { PartnersSection } from "../Partners";
 
 import { SocialLogin } from "./SocialLogin";
 
+// =====================================
+// ⬢ SignIn Modal
+// =====================================
 export const SignInModal = () => {
   const { signInOpen, closeSignIn } = useModalStore();
 

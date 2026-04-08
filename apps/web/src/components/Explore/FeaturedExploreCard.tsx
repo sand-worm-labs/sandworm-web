@@ -1,5 +1,9 @@
 import { Star, GitFork, Bookmark } from "lucide-react";
+import Image from "next/image";
 
+// =====================================
+// ⬢ Types
+// =====================================
 type CardTag = "featured" | "popular" | "trending" | "new";
 
 interface FeaturedExploreCardProps {
@@ -25,6 +29,9 @@ const tagLabels: Record<CardTag, string> = {
   new: "New",
 };
 
+// =====================================
+// ⬢ Feature Explore Card
+// =====================================
 export function FeaturedExploreCard({
   id,
   tag,
@@ -55,10 +62,9 @@ export function FeaturedExploreCard({
         }
       }}
     >
-      {/* Top row: tag + date + save icon */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-medium text-gray-600 bg-[#CDCDE2] px-2 py-1 rounded-md">
+          <span className="text-xs font-medium text-menu-ink bg-[#CDCDE2] px-2 py-1 rounded-md">
             {tagLabels[tag]}
           </span>
           <span className="text-xs text-ink-400">Created {formattedDate}</span>
@@ -69,29 +75,28 @@ export function FeaturedExploreCard({
             e.stopPropagation();
             onSave?.(id);
           }}
-          className="text-ink-400 hover:text-gray-600 transition-colors"
+          className="text-ink-400 hover:text-menu-ink transition-colors"
         >
           <Bookmark
             size={18}
-            className={isSaved ? "fill-current text-gray-600" : ""}
+            className={isSaved ? "fill-current text-menu-ink" : ""}
           />
         </button>
       </div>
 
-      {/* Title */}
       <h3 className="font-medium text-lg text-ink-100 mb-3">{title}</h3>
 
-      {/* Creator row */}
       <div className="flex items-center gap-2 mb-3">
-        <img
+        <Image
           src={creator.image}
           alt={creator.username}
-          className="w-6 h-6 rounded-full"
+          width={24}
+          height={24}
+          className=" rounded-full"
         />
         <span className="text-sm text-ink-400">@{creator.username}</span>
       </div>
 
-      {/* Stats row */}
       <div className="flex items-center gap-4 text-sm text-ink-400">
         <div className="flex items-center gap-1">
           <Star size={14} />

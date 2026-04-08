@@ -8,6 +8,9 @@ interface Props {
   disabled?: boolean;
 }
 
+// =====================================
+// ⬢ Visualization Toggle
+// =====================================
 function VisualizationToggleV2({ label, enabled, onToggle, disabled }: Props) {
   return (
     <Switch.Group

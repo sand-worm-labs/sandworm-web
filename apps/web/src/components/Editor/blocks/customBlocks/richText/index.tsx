@@ -94,8 +94,10 @@ const useBlockEditor = ({
         }),
       ],
       onUpdate({ editor: currentEditor }) {
-        const content = currentEditor.getJSON()?.content;
-        const firstLineContent = content?.[0]?.content?.[0]?.text ?? "";
+        const editorJson = currentEditor.getJSON()?.content;
+        const firstNode = editorJson?.[0]?.content?.[0];
+        const firstLineContent =
+          firstNode && "text" in firstNode ? (firstNode.text as string) : "";
         setTitle(firstLineContent);
       },
 

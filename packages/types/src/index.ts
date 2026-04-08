@@ -1189,6 +1189,7 @@ export type APIReusableComponent = Omit<
   document: {
     id: string;
     title: string;
+    icon?:string;
   };
 };
 
@@ -1214,3 +1215,86 @@ export type UpdateReusableComponent = z.infer<typeof UpdateReusableComponent>
 
 export type NewReusableComponent = z.infer<typeof NewReusableComponent>;
 
+// ═══════════════════════════════════════════════
+// Data Source
+// ═══════════════════════════════════════════════
+export const DataSourceColumn = z.object({
+  name: z.string(),
+  type: z.string(),
+})
+export type DataSourceColumn = z.infer<typeof DataSourceColumn>
+
+export const DataSourceTable = z.object({
+  columns: z.array(DataSourceColumn),
+})
+export type DataSourceTable = z.infer<typeof DataSourceTable>
+
+export const DataSourceSchema = z.object({
+  tables: z.record(z.string(), DataSourceTable),
+})
+export type DataSourceSchema = z.infer<typeof DataSourceSchema>
+
+
+
+export const DataSourceStructureError = z.union([
+  PythonErrorOutput,
+  z.object({ type: z.literal('unknown'), message: z.string() }),
+])
+
+export type DataSourceStructureError = z.infer<typeof DataSourceStructureError>
+
+const SuccessDataSourceStructureStateV3 = z.object({
+  id: uuidSchema,
+  status: z.literal('success'),
+  updatedAt: z.number(),
+  refreshPing: z.number().nullable(),
+  defaultSchema: z.string(),
+  additionalContext: z.string().nullable(),
+  version: z.literal(3),
+})
+
+const FailedDataSourceStructureStateV3 = z.object({
+  id: uuidSchema,
+  status: z.literal('failed'),
+  failedAt: z.number(),
+  previousSuccessAt: z.number().nullable(),
+  error: DataSourceStructureError,
+  defaultSchema: z.string().nullable(),
+  additionalContext: z.string().nullable(),
+  version: z.literal(3),
+})
+
+const LoadingDataSourceStructureStateV3 = z.object({
+  id: uuidSchema,
+  status: z.literal('loading'),
+  startedAt: z.number(),
+  loadingPing: z.number(),
+  additionalContext: z.string().nullable(),
+  version: z.literal(3),
+})
+export const DataSourceStructureStateV3 = z.union([
+  SuccessDataSourceStructureStateV3,
+  FailedDataSourceStructureStateV3,
+  LoadingDataSourceStructureStateV3,
+])
+
+export type DataSourceStructureStateV3 = z.infer<
+  typeof DataSourceStructureStateV3
+>
+
+export const DataSourceStructureState = DataSourceStructureStateV3
+
+export type DataSourceStructureState = z.infer<typeof DataSourceStructureState>
+
+export function isDataSourceStructureLoading(
+  state: DataSourceStructureStateV3
+): boolean {
+  switch (state.status) {
+    case 'loading':
+      return true
+    case 'success':
+      return state.refreshPing !== null
+    case 'failed':
+      return false
+  }
+}

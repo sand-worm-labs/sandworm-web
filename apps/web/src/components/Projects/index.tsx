@@ -36,6 +36,9 @@ interface Project {
 
 type MenuAction = "duplicate" | "newTab" | "trash";
 
+// =====================================
+// ⬢ Projects
+// =====================================
 export const Projects: React.FC = () => {
   const workspaceId = useStringQuery("workspace");
   const router = useRouter();
@@ -53,6 +56,8 @@ export const Projects: React.FC = () => {
   const [hoveredUser, setHoveredUser] = useState<string | null>(null);
   const [hoveredSave, setHoveredSave] = useState<string | null>(null);
 
+  // ⬢ Create Document
+  // =====================================
   const onCreateDocument = useCallback(
     async (parentId: string | null) => {
       if (documentsState.loading) return;
@@ -67,7 +72,7 @@ export const Projects: React.FC = () => {
     [documentsState, createDocument, router, workspaceId]
   );
 
-  const onCreateDocumentHandler: MouseEventHandler<HTMLButtonElement> =
+  const onCreateDocumentHandler: React.MouseEventHandler<HTMLButtonElement> =
     useCallback(
       e => {
         e.preventDefault();
@@ -80,6 +85,8 @@ export const Projects: React.FC = () => {
     doc => doc.deletedAt === null && doc.version >= 1 && doc.parentId === null
   );
 
+  // ⬢ Format Date
+  // =====================================
   const formatDate = (dateString: string | Date): string => {
     if (!dateString) return "Unknown";
 
@@ -103,6 +110,8 @@ export const Projects: React.FC = () => {
     });
   };
 
+  // ⬢ Normalise Project
+  // =====================================
   const projects: Project[] = useMemo(() => {
     return documents.toArray().map(doc => ({
       id: doc.id,
@@ -144,6 +153,8 @@ export const Projects: React.FC = () => {
     );
   }
 
+  // ⬢ Empty Project State
+  // =====================================
   if (projects.length === 0) {
     return (
       <div className="h-full  flex items-center justify-center p-8">

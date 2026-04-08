@@ -11,6 +11,9 @@ import { head } from "ramda";
 import { useBlockExecutions } from "../../../hooks/useBlockExecution";
 import { TooltipV2 } from "../../ToolTips";
 
+// =====================================
+// ⬢ Query Name Error Message
+// =====================================
 function queryNameErrorMessage(
   err: SQLBlock["dataframeName"]["error"]
 ): React.ReactNode {
@@ -31,9 +34,14 @@ function queryNameErrorMessage(
           icon to retry.
         </>
       );
+    default:
+      return null;
   }
 }
 
+// =====================================
+// ⬢ Types
+// =====================================
 interface Props {
   block: Y.XmlElement<SQLBlock>;
   disabled?: boolean;
@@ -41,6 +49,10 @@ interface Props {
   environmentStartedAt: string | null;
   executionQueue: ExecutionQueue;
 }
+
+// =====================================
+// ⬢ DataframeName Input Component
+// =====================================
 function DataframeNameInput(props: Props) {
   const executions = useBlockExecutions(
     props.executionQueue,
@@ -69,9 +81,8 @@ function DataframeNameInput(props: Props) {
       return;
     }
 
-    for (const { item } of executions) {
-      item.setAborting();
-    }
+    executions.forEach(({ item }) => item.setAborting());
+
     props.executionQueue.enqueueBlock(
       props.block,
       props.userId,
@@ -97,9 +108,8 @@ function DataframeNameInput(props: Props) {
       ...dataframeName,
       error: undefined,
     });
-    for (const { item } of executions) {
-      item.setAborting();
-    }
+    executions.forEach(({ item }) => item.setAborting());
+
     props.executionQueue.enqueueBlock(
       props.block,
       props.userId,
@@ -130,7 +140,7 @@ function DataframeNameInput(props: Props) {
           dataframeName.error
             ? "bg-red-50 group-hover:bg-red-100"
             : "bg-transparent group-hover:bg-gray-100/50",
-          "pl-2.5 pr-8 block w-full border-0 text-ink-400 ring-0 focus:ring-0 placeholder:text-ink-400 text-xs disabled:cursor-not-allowed disabled:cursor-not-allowed h-full focus:!bg-white  dark:focus:bg-base-100 font-mono font-medium"
+          "pl-2.5 pr-8 block w-full border-0 text-ink-400 ring-0 focus:ring-0 placeholder:text-ink-400 text-xs disabled:cursor-not-allowed h-full focus:!bg-white  dark:focus:bg-base-100 font-mono font-medium"
         )}
         placeholder="DataFrame name"
         value={dataframeName.newValue}
@@ -142,6 +152,7 @@ function DataframeNameInput(props: Props) {
         {dataframeName.error ? (
           <>
             <button
+              type="button"
               disabled={dataframeName.error !== "unexpected"}
               onClick={onRetry}
             >

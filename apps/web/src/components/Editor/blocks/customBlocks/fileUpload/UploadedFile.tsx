@@ -1,3 +1,5 @@
+/* eslint-disable import/no-cycle */
+
 import { type UploadedFile } from "@sandworm/editor";
 import { useCallback, useMemo } from "react";
 
@@ -13,6 +15,9 @@ interface Props {
   onQueryUsage: (filename: string, type: string) => void;
 }
 
+// =====================================
+// ⬢ Uploaded Files
+// =====================================
 function UploadedFile(props: Props) {
   const { status } = props.file;
 

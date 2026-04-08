@@ -13,6 +13,9 @@ interface TextFieldProps {
   error?: string;
 }
 
+// =====================================
+// ⬢ Text Field
+// =====================================
 export function TextField({ param, value, onChange, error }: TextFieldProps) {
   const [touched, setTouched] = useState(false);
   const inlineError = touched ? error : undefined;
@@ -42,8 +45,9 @@ export function TextField({ param, value, onChange, error }: TextFieldProps) {
   );
 }
 
-// ─── Number field ─────────────────────────────────────────────────────────────
-
+// =====================================
+// ⬢ Number Field
+// =====================================
 interface NumberFieldProps {
   param: ParamDefinition;
   value: number | string;
@@ -66,7 +70,7 @@ export function NumberField({
     const str = e.target.value;
     setRaw(str);
     const parsed = parseFloat(str);
-    if (!isNaN(parsed)) {
+    if (!Number.isNaN(parsed)) {
       onChange(parsed);
     }
   };
@@ -95,7 +99,6 @@ export function NumberField({
           )}
         />
 
-        {/* Stepper buttons */}
         <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-0.5">
           <button
             type="button"
@@ -136,8 +139,6 @@ export function NumberField({
     </div>
   );
 }
-
-// ─── Icons ────────────────────────────────────────────────────────────────────
 
 function ChevronUp() {
   return (

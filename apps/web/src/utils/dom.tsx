@@ -8,6 +8,9 @@ export function isInside(
   return x >= box.left && x <= box.right && y >= box.top && y <= box.bottom;
 }
 
+// =====================================
+// ⬢ Compute Menu Position
+// =====================================
 export function computeMenuPosition(
   referenceObject: RefObject<HTMLElement>,
   containerObject: RefObject<HTMLElement>,
@@ -15,7 +18,6 @@ export function computeMenuPosition(
   padding: number
 ): CSSProperties {
   if (!referenceObject.current || !containerObject.current) {
-    // render menu offscreen
     return {
       top: -9999,
       left: -9999,
@@ -41,9 +43,14 @@ export function computeMenuPosition(
         top: referenceRect.top + referenceRect.height + padding,
         left: referenceRect.left,
       };
+    default:
+      return {};
   }
 }
 
+// =====================================
+// ⬢ Compute ToolTip Position
+// =====================================
 export function computeTooltipPosition(
   commonParent: RefObject<Element>,
   reference: RefObject<Element>,
@@ -53,7 +60,6 @@ export function computeTooltipPosition(
   isPortal: boolean
 ): CSSProperties {
   if (!reference.current || !tooltip.current || !commonParent.current) {
-    // render tooltip offscreen
     return {
       top: -9999,
       left: -9999,
@@ -65,7 +71,6 @@ export function computeTooltipPosition(
   const origReferenceRect = reference.current.getBoundingClientRect();
   const origTooltipRect = tooltip.current.getBoundingClientRect();
 
-  // make rects relative to commonRect
   const referenceRect = {
     top: origReferenceRect.top - (isPortal ? 0 : commonRect.top),
     right: origReferenceRect.right - (isPortal ? 0 : commonRect.left),
@@ -86,12 +91,9 @@ export function computeTooltipPosition(
   const referenceMiddleX = referenceRect.left + referenceRect.width / 2;
 
   switch (tooltipPosition) {
-    case "top":
+    case "top": {
       let left = referenceMiddleX - tooltipRect.width / 2;
       const top = referenceRect.top - tooltipRect.height - padding;
-
-      // if tooltip is out of screen, move it to the left so that its right
-      // edge is aligned with the right edge of referenceRect
       const safeMargin = 36;
       const rightEdgeInScreen =
         (isPortal ? 0 : commonRect.left) + left + tooltipRect.width;
@@ -100,9 +102,9 @@ export function computeTooltipPosition(
         left = referenceRect.right - tooltipRect.width;
       }
 
-      return {
-        top,
-        left,
-      };
+      return { top, left };
+    }
+    default:
+      return {};
   }
 }

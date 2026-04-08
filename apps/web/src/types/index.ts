@@ -3,6 +3,7 @@ import type { AppProps } from "next/app";
 import type { ReactNode } from "react";
 import type { Typesaurus } from "typesaurus";
 import type { UIMessage } from "ai";
+import type { DataSourceStructureStateV3 } from "@sandworm/types";
 
 import { type UserSetting } from "@/generated/graphql";
 
@@ -169,6 +170,7 @@ export interface IconProps {
 export type Document = {
   id: string;
   title: string;
+  icon?: string;
   orderIndex: number;
   createdAt: Date;
   updatedAt: Date;
@@ -208,6 +210,7 @@ type Workspace = {
   createdAt?: Date;
   updatedAt?: Date;
   secretsId?: string | null;
+  icon?: string;
 };
 
 export type EnvironmentStatus =
@@ -221,6 +224,7 @@ export type ApiUser = Omit<User, "passwordDigest" | "confirmedAt">;
 
 export type WorkspaceUser = ApiUser & {
   workspaceId: string;
+  workspaceName?: string;
   role: UserWorkspaceRole;
 };
 
@@ -303,4 +307,55 @@ export type SessionUser = {
 
 export type CreateSchedulePayload = {
   scheduleParams: ScheduleParams;
+};
+
+export type TrinoDataSource = {
+  id: string;
+  name: string;
+  host: string;
+  port: number;
+  user: string;
+  catalog: string;
+  schema: string;
+  createdAt: string;
+  updatedAt: string;
+  lastConnection: string | null;
+};
+
+export type PostgreSQLDataSource = {
+  id: string;
+  name: string;
+  host: string;
+  port: number;
+  user: string;
+  database: string;
+  ssl: boolean;
+  createdAt: string;
+  updatedAt: string;
+  lastConnection: string | null;
+};
+
+export type DataSource =
+  | { type: "psql"; data: PostgreSQLDataSource }
+  | { type: "trino"; data: TrinoDataSource };
+
+export type DataSourceType = DataSource["type"];
+
+export const DataSourceType = z.enum(["psql", "trino"] as const);
+
+export type APIDataSource = DataSource & {
+  structure: DataSourceStructureStateV3;
+};
+
+export const databaseImages = (t: DataSourceType): string => {
+  switch (t) {
+    case "psql":
+      return "/icons/postgres.png";
+
+    case "trino":
+      return "/icons/trino.png";
+
+    default:
+      return "";
+  }
 };

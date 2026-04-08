@@ -39,7 +39,7 @@ import { useBlockExecutions } from "../../../hooks/useBlockExecution";
 import { useAITasks } from "../../../hooks/useAITasks";
 import { TooltipV2 } from "../../ToolTips";
 import type { DashboardMode } from "../../Dashboard";
-import { dashboardModeHasControls } from "../../Dashboard";
+import { dashboardModeHasControls } from "../../Dashboard/dashboard-types";
 import { useReusableComponents } from "../../../hooks/useReusableComponents";
 import { SaveReusableComponentButton } from "../../ReusableComponents";
 import { useWorkspaces } from "../../../hooks/useWorkspaces";
@@ -58,6 +58,9 @@ import ApproveDiffButons from "../../ApproveDiffButtons";
 
 import { PythonOutputs } from "./PythonOutput";
 
+// =====================================
+// ⬢ Types
+// =====================================
 interface Props {
   document: ApiDocument;
   block: Y.XmlElement<PythonBlock>;
@@ -76,6 +79,70 @@ interface Props {
   userId: string | null;
   isFullScreen: boolean;
 }
+
+// =====================================
+// ⬢ Tooltip Content Components
+// =====================================
+function RunCodeTooltipContent({
+  tooltipRef,
+}: {
+  tooltipRef: RefObject<HTMLDivElement>;
+}) {
+  return (
+    <div
+      className="font-body pointer-events-none w-max bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1"
+      ref={tooltipRef}
+    >
+      <span>Run code</span>
+      <span className="inline-flex gap-x-1 items-center text-ink-400">
+        <span>⌘</span>
+        <span>+</span>
+        <span>Enter</span>
+      </span>
+    </div>
+  );
+}
+
+const renderRunCodeTooltip = (ref: RefObject<HTMLDivElement>) => (
+  <RunCodeTooltipContent tooltipRef={ref} />
+);
+
+function AIEditTooltipContent({
+  tooltipRef,
+  hasOaiKey,
+}: {
+  tooltipRef: RefObject<HTMLDivElement>;
+  hasOaiKey: boolean;
+}) {
+  return (
+    <div
+      ref={tooltipRef}
+      className={clsx(
+        "font-body pointer-events-none absolute opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1 z-30",
+        hasOaiKey ? "w-32" : "w-40"
+      )}
+    >
+      <span className="text-center">
+        {hasOaiKey ? "Open AI edit form" : "Missing OpenAI API key"}
+      </span>
+      <span className="inline-flex gap-x-1 items-center text-ink-400">
+        {hasOaiKey ? (
+          <>
+            <span>⌘</span>
+            <span>+</span>
+            <span>e</span>
+          </>
+        ) : (
+          <span>Admins can add an OpenAI key in settings.</span>
+        )}
+      </span>
+    </div>
+  );
+}
+
+// =====================================
+// ⬢ PythonBlock
+// =====================================
 function PythonBlock(props: Props) {
   const [workspaces] = useWorkspaces();
   const currentWorkspace: ApiWorkspace | undefined = useMemo(
@@ -84,9 +151,10 @@ function PythonBlock(props: Props) {
   );
   const { resolvedTheme } = useTheme();
 
-  const hasOaiKey = useMemo(() => {
-    return currentWorkspace?.secrets?.hasAiModelApiKey ?? false;
-  }, [currentWorkspace]);
+  const hasOaiKey = useMemo(
+    () => currentWorkspace?.secrets?.hasAiModelApiKey ?? false,
+    [currentWorkspace]
+  );
 
   const {
     status: envStatus,
@@ -144,28 +212,35 @@ function PythonBlock(props: Props) {
     [editAITasks, fixAITasks]
   );
 
+  // ⬢  block attributes
+  // =====================================
   const { id: blockId, componentId } = getPythonAttributes(props.block);
+  const { source } = getPythonAttributes(props.block);
+  const lastQuery = props.block.getAttribute("lastQuery");
+  const startQueryTime = props.block.getAttribute("startQueryTime");
+  const lastQueryTime = props.block.getAttribute("lastQueryTime");
+  const results = props.block.getAttribute("result") ?? [];
+  const aiSuggestions = getPythonAISuggestions(props.block);
+  const editWithAIPrompt = getPythonBlockEditWithAIPrompt(props.block);
+  const { title } = getBaseAttributes(props.block);
+
+  // ⬢  Run handler
+  // =====================================
   const onRun = useCallback(() => {
     props.executionQueue.enqueueBlock(
       blockId,
       props.userId,
       environmentStartedAt,
-      {
-        _tag: "python",
-        isSuggestion: false,
-      }
+      { _tag: "python", isSuggestion: false }
     );
-  }, [props.executionQueue, blockId, props.userId]);
+  }, [props.executionQueue, blockId, props.userId, environmentStartedAt]);
 
   const onTry = useCallback(() => {
     props.executionQueue.enqueueBlock(
       blockId,
       props.userId,
       environmentStartedAt,
-      {
-        _tag: "python",
-        isSuggestion: true,
-      }
+      { _tag: "python", isSuggestion: true }
     );
   }, [props.executionQueue, blockId, props.userId, environmentStartedAt]);
 
@@ -192,26 +267,102 @@ function PythonBlock(props: Props) {
   const statusIsDisabled = isExecutionStatusLoading(status);
 
   const onToggleEditWithAIPromptOpen = useCallback(() => {
-    if (!hasOaiKey) {
-      return;
-    }
-
+    if (!hasOaiKey) return;
     togglePythonEditWithAIPromptOpen(props.block);
   }, [props.block, hasOaiKey]);
+
+  const [editorState, editorAPI] = useEditorAwareness();
+
+  const onCloseEditWithAIPrompt = useCallback(() => {
+    if (aiTask?.getMetadata()._tag === "edit-sql") {
+      aiTask.setAborting();
+    }
+    closePythonEditWithAIPrompt(props.block, false);
+    editorAPI.insert(blockId, { scrollIntoView: false });
+  }, [props.block, editorAPI, blockId, aiTask]);
+
+  const onSubmitEditWithAI = useCallback(() => {
+    props.aiTasks.enqueue(blockId, props.userId, { _tag: "edit-python" });
+  }, [props.aiTasks, blockId, props.userId]);
+
+  const onAcceptAISuggestion = useCallback(() => {
+    if (aiSuggestions) {
+      updateYText(source, aiSuggestions.toString());
+    }
+    props.block.setAttribute("aiSuggestions", null);
+  }, [props.block, aiSuggestions, source]);
+
+  const onRejectAISuggestion = useCallback(() => {
+    props.block.setAttribute("aiSuggestions", null);
+  }, [props.block]);
+
+  const onFixWithAI = useCallback(() => {
+    if (!hasOaiKey) return;
+    if (aiTask?.getMetadata()._tag === "fix-python") {
+      aiTask.setAborting();
+    } else {
+      props.aiTasks.enqueue(blockId, props.userId, { _tag: "fix-python" });
+    }
+  }, [props.aiTasks, blockId, props.userId, hasOaiKey, aiTask]);
 
   const [
     { data: components },
     { create: createReusableComponent, update: updateReusableComponent },
   ] = useReusableComponents(props.document.workspaceId);
+
   const component = useMemo(
     () => components.find(c => c.id === componentId),
     [components, componentId]
   );
 
-  const { source } = getPythonAttributes(props.block);
-  const lastQuery = props.block.getAttribute("lastQuery");
-  const startQueryTime = props.block.getAttribute("startQueryTime");
-  const lastQueryTime = props.block.getAttribute("lastQueryTime");
+  const isComponentInstance =
+    component !== undefined && component.blockId !== blockId;
+
+  const onSaveReusableComponent = useCallback(() => {
+    const existingComponent = components.find(c => c.id === componentId);
+    if (!existingComponent) {
+      const { id: newComponentId, state } = createComponentState(
+        props.block,
+        props.blocks
+      );
+      createReusableComponent(
+        props.document.workspaceId,
+        {
+          id: newComponentId,
+          blockId,
+          documentId: props.document.id,
+          state,
+          title,
+          type: "python",
+        },
+        props.document.title,
+        props.document.icon || ""
+      );
+    } else if (!isComponentInstance) {
+      updateReusableComponent(
+        props.document.workspaceId,
+        existingComponent.id,
+        {
+          state: createComponentState(props.block, props.blocks).state,
+          title,
+        }
+      );
+    }
+  }, [
+    createReusableComponent,
+    props.document.workspaceId,
+    blockId,
+    props.document.id,
+    title,
+    props.block,
+    props.blocks,
+    components,
+    componentId,
+    isComponentInstance,
+    props.document.title,
+    props.document.icon,
+    updateReusableComponent,
+  ]);
 
   const isCodeHidden =
     (!props.dashboardMode || !dashboardModeHasControls(props.dashboardMode)) &&
@@ -229,6 +380,39 @@ function PythonBlock(props: Props) {
         ? (props.block.getAttribute("isResultHidden") ?? false)
         : localResultHidden);
 
+  const isAIEditing =
+    aiTask?.getMetadata()._tag === "edit-python"
+      ? isExecutionStatusLoading(aiTask.getStatus()._tag)
+      : false;
+
+  const isAIFixing =
+    aiTask?.getMetadata()._tag === "fix-python"
+      ? isExecutionStatusLoading(aiTask.getStatus()._tag)
+      : false;
+
+  const isEditorFocused = editorState.cursorBlockId === blockId;
+  const isRunButtonDisabled =
+    status === "aborting" || execution?.batch.isRunAll();
+  const diffButtonsVisible =
+    !props.isPublicMode && aiSuggestions !== null && status === "idle";
+
+  const onChangeTitle = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setTitle(props.block, e.target.value);
+    },
+    [props.block]
+  );
+
+  const onToggleIsBlockHiddenInPublished = useCallback(() => {
+    props.onToggleIsBlockHiddenInPublished(blockId);
+  }, [props.onToggleIsBlockHiddenInPublished, blockId]);
+
+  const onClickWithin = useCallback(() => {
+    editorAPI.focus(blockId, { scrollIntoView: false });
+  }, [blockId, editorAPI]);
+
+  // ⬢  Query Status Text:
+  // =====================================
   const queryStatusText: JSX.Element | null = useMemo(() => {
     switch (status) {
       case "idle":
@@ -249,11 +433,12 @@ function PythonBlock(props: Props) {
         if (envStatus === "Starting") {
           return <LoadingEnvText />;
         }
-
         return (
           <ExecutingPythonText startExecutionTime={startQueryTime ?? null} />
         );
       case "unknown":
+        return null;
+      default:
         return null;
     }
   }, [
@@ -261,180 +446,62 @@ function PythonBlock(props: Props) {
     startQueryTime,
     lastQuery,
     lastQueryTime,
-    source.toJSON(),
+    source,
     envStatus,
     isResultHidden,
     toggleResultHidden,
   ]);
 
-  const { title } = getBaseAttributes(props.block);
-  const onChangeTitle = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setTitle(props.block, e.target.value);
-    },
-    [props.block]
-  );
-
-  const results = props.block.getAttribute("result") ?? [];
-  const aiSuggestions = getPythonAISuggestions(props.block);
-  const editWithAIPrompt = getPythonBlockEditWithAIPrompt(props.block);
-
-  const isAIEditing =
-    aiTask?.getMetadata()._tag === "edit-python"
-      ? isExecutionStatusLoading(aiTask.getStatus()._tag)
-      : false;
-  const isAIFixing =
-    aiTask?.getMetadata()._tag === "fix-python"
-      ? isExecutionStatusLoading(aiTask.getStatus()._tag)
-      : false;
-
-  const [editorState, editorAPI] = useEditorAwareness();
-
-  const onCloseEditWithAIPrompt = useCallback(() => {
-    if (aiTask?.getMetadata()._tag === "edit-sql") {
-      aiTask.setAborting();
-    }
-
-    closePythonEditWithAIPrompt(props.block, false);
-    editorAPI.insert(blockId, { scrollIntoView: false });
-  }, [props.block, editorAPI.insert, blockId, aiTask]);
-
-  const onSubmitEditWithAI = useCallback(() => {
-    props.aiTasks.enqueue(blockId, props.userId, { _tag: "edit-python" });
-  }, [props.aiTasks, blockId, props.userId]);
-
-  const onAcceptAISuggestion = useCallback(() => {
-    if (aiSuggestions) {
-      updateYText(source, aiSuggestions.toString());
-    }
-
-    props.block.setAttribute("aiSuggestions", null);
-  }, [props.block, aiSuggestions, source]);
-
-  const onRejectAISuggestion = useCallback(() => {
-    props.block.setAttribute("aiSuggestions", null);
-  }, [props.block]);
-
-  const onFixWithAI = useCallback(() => {
-    if (!hasOaiKey) {
-      return;
-    }
-
-    if (aiTask?.getMetadata()._tag === "fix-python") {
-      aiTask.setAborting();
-    } else {
-      props.aiTasks.enqueue(blockId, props.userId, { _tag: "fix-python" });
-    }
-  }, [props.aiTasks, blockId, props.userId, hasOaiKey, aiTask]);
-
-  const diffButtonsVisible =
-    !props.isPublicMode && aiSuggestions !== null && status === "idle";
-
-  const onToggleIsBlockHiddenInPublished = useCallback(() => {
-    props.onToggleIsBlockHiddenInPublished(blockId);
-  }, [props.onToggleIsBlockHiddenInPublished, blockId]);
-
-  const onClickWithin = useCallback(() => {
-    editorAPI.focus(blockId, { scrollIntoView: false });
-  }, [blockId, editorAPI.focus]);
-
-  const isComponentInstance =
-    component !== undefined && component.blockId !== blockId;
-
-  const onSaveReusableComponent = useCallback(() => {
-    const component = components.find(c => c.id === componentId);
-    if (!component) {
-      const { id: componentId, state } = createComponentState(
-        props.block,
-        props.blocks
-      );
-      createReusableComponent(
-        props.document.workspaceId,
-        {
-          id: componentId,
-          blockId,
-          documentId: props.document.id,
-          state,
-          title,
-          type: "python",
-        },
-        props.document.title,
-        props.document.icon
-      );
-    } else if (!isComponentInstance) {
-      // can only update component if it is not an instance
-      updateReusableComponent(props.document.workspaceId, component.id, {
-        state: createComponentState(props.block, props.blocks).state,
-        title,
-      });
-    }
-  }, [
-    createReusableComponent,
-    props.document.workspaceId,
-    blockId,
-    props.document.id,
-    title,
-    props.block,
-    components,
-    isComponentInstance,
-    props.document.title,
-  ]);
-
-  const isEditorFocused = editorState.cursorBlockId === blockId;
-  const isRunButtonDisabled =
-    status === "aborting" || execution?.batch.isRunAll();
-
   const runTooltipContent = useMemo(() => {
-    if (status !== "idle") {
-      switch (status) {
-        case "enqueued":
-          return {
-            title: "This block is enqueud",
-            message: isRunButtonDisabled
-              ? "When running entire documents, you cannot remove individual blocks from the queue."
-              : "It will run once the previous blocks finish executing. Click to remove it from the queue.",
-          };
-        case "running": {
-          if (envStatus !== "Running" && !envLoading) {
-            return {
-              title: "Your environment is starting",
-              message:
-                "Please hang tight. We need to start your environment before executing python code.",
-            };
-          }
-
-          if (execution?.batch.isRunAll() ?? false) {
-            return {
-              title: "This block is running.",
-              message:
-                "When running entire documents, you cannot stop individual blocks.",
-            };
-          }
-        }
-        case "unknown":
-        case "aborting":
-        case "completed":
-          return null;
+    if (status === "idle") {
+      if (status === "idle") {
+        return { content: renderRunCodeTooltip };
       }
-    } else {
-      return {
-        content: (ref: RefObject<HTMLDivElement>) => (
-          <div
-            className="font-body  pointer-events-none w-max bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1"
-            ref={ref}
-          >
-            <span>Run code</span>
-            <span className="inline-flex gap-x-1 items-center text-ink-400">
-              <span>⌘</span>
-              <span>+</span>
-              <span>Enter</span>
-            </span>
-          </div>
-        ),
-      };
+    }
+
+    switch (status) {
+      case "enqueued":
+        return {
+          title: "This block is enqueued",
+          message: isRunButtonDisabled
+            ? "When running entire documents, you cannot remove individual blocks from the queue."
+            : "It will run once the previous blocks finish executing. Click to remove it from the queue.",
+        };
+      case "running": {
+        if (envStatus !== "Running" && !envLoading) {
+          return {
+            title: "Your environment is starting",
+            message:
+              "Please hang tight. We need to start your environment before executing python code.",
+          };
+        }
+        if (execution?.batch.isRunAll() ?? false) {
+          return {
+            title: "This block is running.",
+            message:
+              "When running entire documents, you cannot stop individual blocks.",
+          };
+        }
+        return null;
+      }
+      case "unknown":
+      case "aborting":
+      case "completed":
+        return null;
+      default:
+        return null;
     }
   }, [status, envStatus, envLoading, execution, isRunButtonDisabled]);
 
+  const aiEditTooltipContent = useCallback(
+    (ref: RefObject<HTMLDivElement>) => (
+      <AIEditTooltipContent tooltipRef={ref} hasOaiKey={hasOaiKey} />
+    ),
+    [hasOaiKey]
+  );
+
+  // ⬢  Dashnboard Mode
+  // =====================================
   if (props.dashboardMode && !dashboardModeHasControls(props.dashboardMode)) {
     return (
       <PythonOutputs
@@ -457,10 +524,16 @@ function PythonBlock(props: Props) {
     );
   }
 
+  // ⬢  Main Component Mode
+  // =====================================
   return (
     <div
-      className="bg-white dark:bg-base-100  relative group/block"
+      className="bg-white dark:bg-base-100 relative group/block"
+      role="presentation"
       onClick={onClickWithin}
+      onKeyDown={e => {
+        if (e.key === "Enter") onClickWithin();
+      }}
       data-block-id={blockId}
     >
       <div
@@ -474,13 +547,13 @@ function PythonBlock(props: Props) {
         <div
           className={clsx(
             "rounded-2xl",
-            statusIsDisabled ? "" : "bg-white dark:bg-base-100 ",
+            statusIsDisabled ? "" : "bg-white dark:bg-base-100",
             props.hasMultipleTabs ? "rounded-tl-none" : ""
           )}
         >
           <div
             className={clsx(
-              " rounded-t-2xl",
+              "rounded-t-2xl",
               isCodeHidden && isResultHidden
                 ? "rounded-b-2xl"
                 : "border-b border-border-secondary dark:border-border-tertiary"
@@ -489,7 +562,7 @@ function PythonBlock(props: Props) {
               props.dragPreview?.(d);
             }}
           >
-            <div className="flex items-center justify-between px-3 pr-4 gap-x-4 font-body  h-12">
+            <div className="flex items-center justify-between px-3 pr-4 gap-x-4 font-body h-12">
               <div className="select-none text-gray-300 text-xs flex items-center w-full h-full gap-x-1.5">
                 <div className="relative group w-4 h-4">
                   <CodeIcon className="absolute inset-0 h-4 w-4 text-ink-400 group-hover:opacity-0 transition-opacity" />
@@ -508,7 +581,7 @@ function PythonBlock(props: Props) {
                 <input
                   type="text"
                   className={clsx(
-                    "text-base font-body  font-medium pl-1 ring-border-secondary focus:ring-primary/40 block w-full rounded-md border-0 text-ink-100 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-ink-400 py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white focus-visible:ring-none focus-visible:outline-none"
+                    "text-base font-body font-medium pl-1 ring-border-secondary focus:ring-primary/40 block w-full rounded-md border-0 text-ink-100 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-ink-400 py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white focus-visible:ring-none focus-visible:outline-none"
                   )}
                   placeholder={
                     props.isEditable
@@ -530,6 +603,7 @@ function PythonBlock(props: Props) {
               )}
             </div>
           </div>
+
           <Transition
             as="div"
             show={!isCodeHidden}
@@ -599,34 +673,7 @@ function PythonBlock(props: Props) {
                     props.isEditable &&
                     !isAIFixing && (
                       <TooltipV2<HTMLButtonElement>
-                        content={ref => (
-                          <div
-                            ref={ref}
-                            className={clsx(
-                              "font-body  pointer-events-none absolute opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1 z-30",
-                              hasOaiKey ? "w-32" : "w-40"
-                            )}
-                          >
-                            <span className="text-center">
-                              {hasOaiKey
-                                ? "Open AI edit form"
-                                : "Missing OpenAI API key"}
-                            </span>
-                            <span className="inline-flex gap-x-1 items-center text-ink-400">
-                              {hasOaiKey ? (
-                                <>
-                                  <span>⌘</span>
-                                  <span>+</span>
-                                  <span>e</span>
-                                </>
-                              ) : (
-                                <span>
-                                  Admins can add an OpenAI key in settings.
-                                </span>
-                              )}
-                            </span>
-                          </div>
-                        )}
+                        content={aiEditTooltipContent}
                         active
                       >
                         {ref => (
@@ -638,8 +685,8 @@ function PythonBlock(props: Props) {
                             className={clsx(
                               !props.isEditable || !hasOaiKey
                                 ? "cursor-not-allowed bg-gray-200"
-                                : "cusor-pointer hover:bg-gray-50 hover:text-gray-700",
-                              "flex items-center border rounded-sm border-border-secondary px-2 py-1 gap-x-1 text-ink-400  group relative font-body "
+                                : "cursor-pointer hover:bg-gray-50 hover:text-gray-700",
+                              "flex items-center border rounded-sm border-border-secondary px-2 py-1 gap-x-1 text-ink-400 group relative font-body"
                             )}
                           >
                             <SparklesIcon className="w-3 h-3" />
@@ -656,7 +703,6 @@ function PythonBlock(props: Props) {
 
         <Transition
           show={!(isResultHidden || results.length === 0)}
-          className="text-xs border-t border-border-secondary"
           enter="transition-all ease-in duration-300"
           enterFrom="max-h-0 overflow-hidden"
           enterTo="max-h-[300px] overflow-hidden"
@@ -664,23 +710,25 @@ function PythonBlock(props: Props) {
           leaveFrom="max-h-[300px] overflow-hidden"
           leaveTo="max-h-0 overflow-hidden"
         >
-          <div className="p-3">
-            <ScrollBar
-              className={clsx("overflow-auto ph-no-capture", {
-                "px-0.5 pt-3.5 pb-2": !props.isPDF,
-              })}
-            >
-              <PythonOutputs
-                outputs={results}
-                isFixWithAILoading={isAIFixing}
-                onFixWithAI={onFixWithAI}
-                canFixWithAI={hasOaiKey}
-                isPDF={props.isPDF}
-                isDashboardView={false}
-                lazyRender={!props.isPDF}
-                blockId={blockId}
-              />
-            </ScrollBar>
+          <div className="text-xs border-t border-border-secondary">
+            <div className="p-3">
+              <ScrollBar
+                className={clsx("overflow-auto ph-no-capture", {
+                  "px-0.5 pt-3.5 pb-2": !props.isPDF,
+                })}
+              >
+                <PythonOutputs
+                  outputs={results}
+                  isFixWithAILoading={isAIFixing}
+                  onFixWithAI={onFixWithAI}
+                  canFixWithAI={hasOaiKey}
+                  isPDF={props.isPDF}
+                  isDashboardView={false}
+                  lazyRender={!props.isPDF}
+                  blockId={blockId}
+                />
+              </ScrollBar>
+            </div>
           </div>
         </Transition>
       </div>

@@ -10,6 +10,9 @@ import { ClaimUsernameStep } from "./ClaimUsername";
 
 type Step = 1 | 2 | 3;
 
+// =====================================
+// ⬢ SignUp Form
+// =====================================
 export default function SignUpForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -57,6 +60,8 @@ export default function SignUpForm() {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  // ⬢ Handle Next
+  // =====================================
   const handleNext = () => {
     const { firstName, lastName } = formData;
     if (!firstName.trim() || !lastName.trim()) {
@@ -67,6 +72,8 @@ export default function SignUpForm() {
     goToStep(2);
   };
 
+  // ⬢ Handle to Username
+  // =====================================
   const handleToUsername = () => {
     const { email, password } = formData;
     if (!email.trim() || !password.trim()) {

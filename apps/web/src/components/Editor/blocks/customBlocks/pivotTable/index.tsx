@@ -1,3 +1,4 @@
+/* eslint-disable import/no-cycle */
 import type { ConnectDragPreview } from "react-dnd";
 import type * as Y from "yjs";
 import type { DataFrame, PivotTableSort } from "@sandworm/types";
@@ -22,18 +23,23 @@ import { equals, head } from "ramda";
 import { ClockIcon, PlayIcon, StopIcon } from "@heroicons/react/20/solid";
 import { TableCellsIcon } from "@heroicons/react/24/solid";
 
-import { useEnvironmentStatus } from "../../../hooks/useEnvironmentStatus";
-import LargeSpinner from "../../LargeSpinner";
+// FIX import/no-named-as-default: LargeSpinner is a named export, not default
+import { LargeSpinner } from "../../LargeSpinner";
 import useEditorAwareness from "../../../hooks/useEditorAwareness";
 import { useBlockExecutions } from "../../../hooks/useBlockExecution";
 import HeaderSelect from "../../HeaderSelect";
 import { TooltipV2 } from "../../ToolTips";
 import type { DashboardMode } from "../../Dashboard";
-import { dashboardModeHasControls } from "../../Dashboard";
+import { dashboardModeHasControls } from "../../Dashboard/dashboard-types";
 import HiddenInPublishedButton from "../../HiddenInPublishedButton";
+import { useEnvironmentStatus } from "../../../hooks/useEnvironmentStatus";
 
 import PivotTableView from "./PivotTableView";
 import PivotTableControls from "./PivotTableControls";
+
+// =====================================
+// ⬢ Types
+// =====================================
 
 interface Props {
   workspaceId: string;
@@ -57,37 +63,65 @@ interface Props {
   executionQueue: ExecutionQueue;
   isFullScreen: boolean;
 }
+
+// =====================================
+// ⬢ Tooltip Renderers
+// =====================================
+
+// FIX react/no-unstable-nested-components: extracted from inside useMemo to module level
+const renderRefreshTooltip = (ref: RefObject<HTMLDivElement>) => (
+  <div
+    className="font-body pointer-events-none w-max bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1"
+    ref={ref}
+  >
+    <span>Refresh</span>
+  </div>
+);
+
+// =====================================
+// ⬢ Component
+// =====================================
+
 function PivotTableBlock(props: Props) {
   const attrs = getPivotTableAttributes(props.block, props.blocks);
 
   const dataframe = getDataframe(props.block, props.dataframes);
 
+  // ─── Dirty state observer ─────────────────────────────────────────────────
+
   const [isDirty, setIsDirty] = useState(false);
+
+  // FIX consistent-return: both paths now return a function so the arrow
+  // function always has a consistent return type
   useEffect(() => {
     if (!dataframe) {
-      return;
+      return () => {};
     }
 
     let timeout: NodeJS.Timeout | null = null;
+
     function observe(event: Y.YXmlEvent) {
-      const attrs = getPivotTableAttributes(props.block, props.blocks);
+      // FIX no-shadow: renamed inner `attrs` → `blockAttrs` to avoid shadowing
+      // the outer `attrs` declared at component scope
+      const blockAttrs = getPivotTableAttributes(props.block, props.blocks);
       let shouldBeDirty = false;
+
       if (event.attributesChanged.has("dataframeName")) {
         shouldBeDirty = true;
       } else if (event.attributesChanged.has("rows")) {
-        const rows = attrs.rows
+        const rows = blockAttrs.rows
           .map(row => row.column?.name?.toString())
           .filter((col): col is string => col !== undefined);
-        const resultRows = attrs.result?.pivotRows ?? [];
+        const resultRows = blockAttrs.result?.pivotRows ?? [];
 
         if (!equals(rows, resultRows)) {
           shouldBeDirty = true;
         }
       } else if (event.attributesChanged.has("columns")) {
-        const columns = attrs.columns
+        const columns = blockAttrs.columns
           .map(col => col.column?.name?.toString())
           .filter((col): col is string => col !== undefined);
-        const resultColumns = attrs.result?.pivotColumns ?? [];
+        const resultColumns = blockAttrs.result?.pivotColumns ?? [];
 
         if (!equals(columns, resultColumns)) {
           shouldBeDirty = true;
@@ -95,7 +129,7 @@ function PivotTableBlock(props: Props) {
       } else if (event.attributesChanged.has("metrics")) {
         const keyChange = event.keys.get("metrics");
         const oldValue = keyChange?.oldValue as PivotTableMetric[];
-        const newValue = attrs.metrics;
+        const newValue = blockAttrs.metrics;
 
         const oldNonNull = oldValue.reduce((acc, metric) => {
           if (metric.column) {
@@ -126,6 +160,7 @@ function PivotTableBlock(props: Props) {
         }, 1000);
       }
     }
+
     props.block.observe(observe);
 
     return () => {
@@ -137,11 +172,15 @@ function PivotTableBlock(props: Props) {
     };
   }, [props.block, dataframe]);
 
+  // ─── Environment status ───────────────────────────────────────────────────
+
   const {
     status: envStatus,
     loading: envLoading,
     startedAt: environmentStartedAt,
   } = useEnvironmentStatus(props.workspaceId);
+
+  // ─── Execution trigger on dirty ───────────────────────────────────────────
 
   useEffect(() => {
     if (isDirty) {
@@ -162,6 +201,8 @@ function PivotTableBlock(props: Props) {
     props.userId,
     environmentStartedAt,
   ]);
+
+  // ─── Handlers ────────────────────────────────────────────────────────────
 
   const onChangeTitle = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -281,6 +322,8 @@ function PivotTableBlock(props: Props) {
     [props.block, props.executionQueue, props.userId]
   );
 
+  // ─── Execution state ──────────────────────────────────────────────────────
+
   const executions = useBlockExecutions(
     props.executionQueue,
     props.block,
@@ -305,7 +348,6 @@ function PivotTableBlock(props: Props) {
     execution?.batch.isRunAll() !== true &&
     pageExecution?.batch.isRunAll() !== true;
 
-  // TODO: should introduce a useBlockExecutionStatus hook
   const execStatus = getPivotTableBlockExecStatus(
     props.block,
     props.executionQueue
@@ -363,13 +405,15 @@ function PivotTableBlock(props: Props) {
         }
       );
     },
-    [props.block, props.executionQueue, props.userId, props.executionQueue]
+    [props.block, props.executionQueue, props.userId, environmentStartedAt]
   );
 
   const [, editorAPI] = useEditorAwareness();
   const onClickWithin = useCallback(() => {
     editorAPI.insert(attrs.id, { scrollIntoView: false });
   }, [attrs.id, editorAPI.insert]);
+
+  // ─── Tooltip content ──────────────────────────────────────────────────────
 
   const isRunButtonDisabled =
     status === "aborting" || execution?.batch.isRunAll();
@@ -384,6 +428,7 @@ function PivotTableBlock(props: Props) {
               ? "When running entire documents, you cannot remove individual blocks from the queue."
               : "It will run once the previous blocks finish executing. Click to remove it from the queue.",
           };
+        // FIX no-fallthrough: added `return null` at end of running block
         case "running": {
           if (envStatus !== "Running" && !envLoading) {
             return {
@@ -400,6 +445,8 @@ function PivotTableBlock(props: Props) {
                 "When running entire documents, you cannot stop individual blocks.",
             };
           }
+
+          return null;
         }
         case "unknown":
         case "aborting":
@@ -409,18 +456,14 @@ function PivotTableBlock(props: Props) {
           return null;
       }
     } else {
+      // FIX react/no-unstable-nested-components: using module-level renderRefreshTooltip
       return {
-        content: (ref: RefObject<HTMLDivElement>) => (
-          <div
-            className="font-body  pointer-events-none w-max bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1"
-            ref={ref}
-          >
-            <span>Refresh</span>
-          </div>
-        ),
+        content: renderRefreshTooltip,
       };
     }
   }, [status, envStatus, envLoading, execution, isRunButtonDisabled]);
+
+  // ─── Dashboard-only render ────────────────────────────────────────────────
 
   if (props.dashboardMode && !dashboardModeHasControls(props.dashboardMode)) {
     if (!attrs.result) {
@@ -437,9 +480,6 @@ function PivotTableBlock(props: Props) {
 
     return (
       <PivotTableView
-        pivotRows={attrs.rows}
-        pivotColumns={attrs.columns}
-        pivotMetrics={attrs.metrics}
         result={attrs.result}
         page={attrs.page}
         onPrevPage={onPrevPage}
@@ -460,6 +500,8 @@ function PivotTableBlock(props: Props) {
     );
   }
 
+  // ─── Full render ──────────────────────────────────────────────────────────
+
   return (
     <button
       type="button"
@@ -472,7 +514,6 @@ function PivotTableBlock(props: Props) {
           "rounded-md border",
           props.isBlockHiddenInPublished && "border-dashed",
           props.hasMultipleTabs ? "rounded-tl-none" : "rounded-tl-md",
-
           props.isCursorWithin
             ? "border-border-tertiaryshadow-sm"
             : "border-border-secondary dark:border-border-tertiary"
@@ -535,9 +576,6 @@ function PivotTableBlock(props: Props) {
             isEditable={isEditable}
           />
           <PivotTableView
-            pivotRows={attrs.rows}
-            pivotColumns={attrs.columns}
-            pivotMetrics={attrs.metrics}
             result={attrs.result}
             page={attrs.page}
             onPrevPage={onPrevPage}

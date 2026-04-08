@@ -6,8 +6,6 @@ import type { ParamDefinition } from "@sandworm/editor";
 
 import { FieldLabel, FieldError } from "./AddressField";
 
-// ─── Icon ─────────────────────────────────────────────────────────────────────
-
 function ChevronDown() {
   return (
     <svg viewBox="0 0 14 14" fill="none" className="w-3.5 h-3.5">
@@ -22,8 +20,9 @@ function ChevronDown() {
   );
 }
 
-// ─── Single select ────────────────────────────────────────────────────────────
-
+// =====================================
+// ⬢ Single Select Field
+// =====================================
 interface SelectFieldProps {
   param: ParamDefinition;
   value: string;
@@ -73,7 +72,6 @@ export function SelectField({
           ))}
         </select>
 
-        {/* Chevron */}
         <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-ink-400 ">
           <ChevronDown />
         </span>
@@ -84,8 +82,9 @@ export function SelectField({
   );
 }
 
-// ─── Multi-chain select ───────────────────────────────────────────────────────
-
+// =====================================
+// ⬢ Multi Select Field
+// =====================================
 interface ChainMultiSelectProps {
   param: ParamDefinition;
   value: string[];

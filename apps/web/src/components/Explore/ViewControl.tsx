@@ -12,6 +12,9 @@ interface ViewControlProps {
   onViewModeChange: (mode: ViewMode) => void;
 }
 
+// =====================================
+// ⬢ View Control
+// =====================================
 export function ViewControl({ viewMode, onViewModeChange }: ViewControlProps) {
   return (
     <div className="flex items-center gap-1.5">

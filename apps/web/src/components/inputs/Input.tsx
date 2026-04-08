@@ -18,6 +18,9 @@ interface InputProps {
   errors: FieldErrors;
 }
 
+// =====================================
+// ⬢ Input
+// =====================================
 export const Input: React.FC<InputProps> = ({
   id,
   label,

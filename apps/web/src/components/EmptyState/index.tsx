@@ -6,6 +6,9 @@ import Link from "next/link";
 
 import { Heading } from "@/components/EmptyState/Heading";
 
+// =====================================
+// ⬢ Types
+// =====================================
 interface ActionButton {
   label: string;
   onClick: () => void;
@@ -38,6 +41,9 @@ interface EmptyStateProps {
   twitterUrl?: string;
 }
 
+// =====================================
+// ⬢ Empty State Component
+// =====================================
 export const EmptyState: React.FC<EmptyStateProps> = ({
   heading = "?",
   title = "No exact matches",
@@ -146,10 +152,10 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
           </button>
         )}
 
-        {customActions.map((action, index) => (
+        {customActions.map(action => (
           <button
             type="button"
-            key={`action-${index}`}
+            key={action.label}
             onClick={action.onClick}
             className={linkClassName}
           >
@@ -157,18 +163,13 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
           </button>
         ))}
 
-        {quickLinks.map((link, index) => (
-          <Link
-            key={`link-${index}`}
-            href={link.href}
-            className={linkClassName}
-          >
+        {quickLinks.map(link => (
+          <Link key={link.href} href={link.href} className={linkClassName}>
             {link.label}
           </Link>
         ))}
       </div>
 
-      {/* Bottom Image */}
       <div className="absolute bottom-0 w-full flex items-center justify-center">
         <Image
           src={imageSrc}
