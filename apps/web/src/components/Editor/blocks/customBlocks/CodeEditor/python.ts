@@ -47,7 +47,7 @@ function getType(s: PythonSuggestion): string {
 function getRightNotIntersection(str1: string, str2: string): string {
   let i = 0;
   while (i < str1.length) {
-    i++;
+    i += 1;
     const slice = str1.slice(str1.length - i);
     if (str2.startsWith(slice)) {
       break;

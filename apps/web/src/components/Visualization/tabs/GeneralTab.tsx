@@ -24,6 +24,9 @@ import { PortalTooltip } from "../../Editor/blocks/ToolTips";
 import useResettableState from "../../Editor/hooks/useResettableState";
 import YAxisPickerV2 from "../YAxisPicker";
 
+// =====================================
+// ⬢ Types
+// =====================================
 interface GeneralTabProps {
   dataframe: DataFrame | null;
   chartType: ChartType;
@@ -46,6 +49,9 @@ interface GeneralTabProps {
   isEditable: boolean;
 }
 
+// =====================================
+// ⬢ GeneralTab
+// =====================================
 const GeneralTab = ({
   dataframe,
   chartType,
@@ -122,6 +128,28 @@ const GeneralTab = ({
     [onChangeHistogramBin]
   );
 
+  const onChangeChartTypeHandler = useCallback(
+    (newChartType: ChartType) => {
+      if (yAxes.length === 1) {
+        const firstAxis = yAxes[0];
+        if (firstAxis) {
+          onChangeYAxes([
+            {
+              ...firstAxis,
+              series: firstAxis.series.map(s => ({
+                ...s,
+                chartType: null,
+              })),
+            },
+          ]);
+        }
+      }
+
+      onChangeChartType(newChartType);
+    },
+    [onChangeChartType, yAxes, onChangeYAxes]
+  );
+
   const [binText, setBinText] = useResettableState<string>(
     () => (histogramBin.type === "maxBins" ? "10" : "1"),
     [histogramBin.type]
@@ -145,7 +173,6 @@ const GeneralTab = ({
       if (Number.isNaN(value) || value <= 0) {
         return;
       }
-
       onChangeHistogramBin({ type: "stepSize", value });
       return;
     }
@@ -155,22 +182,20 @@ const GeneralTab = ({
       if (Number.isNaN(value) || !Number.isInteger(value) || value < 2) {
         return;
       }
-
       onChangeHistogramBin({ type: "maxBins", value });
     }
   }, [histogramBin.type, binText, onChangeHistogramBin]);
 
-  const binError = useMemo(() => {
+  const binError = useMemo((): string | null => {
     if (histogramBin.type === "auto") {
       return null;
     }
 
     if (histogramBin.type === "stepSize") {
       const value = parseFloat(binText);
-      if (isNaN(value) || value <= 0) {
+      if (Number.isNaN(value) || value <= 0) {
         return "Must be a positive number.";
       }
-
       return null;
     }
 
@@ -179,34 +204,14 @@ const GeneralTab = ({
       if (Number.isNaN(value) || !Number.isInteger(value)) {
         return "Must be an integer.";
       }
-
       if (value < 2) {
         return "Must be at least 2.";
       }
-
       return null;
     }
+
+    return null;
   }, [histogramBin.type, binText]);
-
-  const onChangeChartTypeHandler = useCallback(
-    (chartType: ChartType) => {
-      // if only one y-axis is present, reset the chart type of the series
-      if (yAxes.length === 1) {
-        onChangeYAxes([
-          {
-            ...yAxes[0],
-            series: yAxes[0].series.map(s => ({
-              ...s,
-              chartType: null,
-            })),
-          },
-        ]);
-      }
-
-      onChangeChartType(chartType);
-    },
-    [onChangeChartType, yAxes, onChangeYAxes]
-  );
 
   const defaultXAxisColumn: DataFrameColumn | null = useMemo(() => {
     switch (chartType) {
@@ -251,7 +256,6 @@ const GeneralTab = ({
                   : NumpyNumberTypes.safeParse(a.type).success
                     ? -1
                     : 1,
-              // Put columns with 'id' in the name at the end to avoid them being selected by default
               (a, b) =>
                 a.name.toString().toLowerCase().includes("id")
                   ? 1
@@ -262,6 +266,8 @@ const GeneralTab = ({
             dataframe?.columns ?? []
           )[0] ?? null
         );
+      default:
+        return null;
     }
   }, [chartType, dataframe?.columns]);
 
@@ -289,10 +295,9 @@ const GeneralTab = ({
                     (optional)
                   </span>
                 </span>
-
                 <PortalTooltip
                   content={
-                    <div className="font-body  bg-hunter-950 text-ink-400 text-center text-xs p-2 rounded-md w-64 -translate-x-1/2">
+                    <div className="font-body bg-hunter-950 text-ink-400 text-center text-xs p-2 rounded-md w-64 -translate-x-1/2">
                       If provided, this column will be used to sort the data
                       before picking the number.
                     </div>
@@ -418,6 +423,7 @@ const GeneralTab = ({
           )}
         </div>
       </div>
+
       {chartType !== "histogram" && (
         <div className="flex flex-col space-y-6">
           {yAxes
@@ -429,7 +435,7 @@ const GeneralTab = ({
               <YAxisPickerV2
                 yAxis={yAxis}
                 index={i}
-                key={i}
+                key={yAxis.id}
                 onChange={onChangeYAxis}
                 isEditable={isEditable}
                 dataframe={dataframe}

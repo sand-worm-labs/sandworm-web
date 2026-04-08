@@ -22,6 +22,11 @@ import { createPortal } from "react-dom";
 
 import type { UserWorkspaceRole, WorkspaceUser } from "@/types";
 
+import type { WorkspaceMember } from "../hooks/useWorkspaces";
+
+// =====================================
+// ⬢  Constants
+// =====================================
 const ROLES: {
   value: UserWorkspaceRole;
   label: string;
@@ -160,6 +165,10 @@ function RoleDropdown({ role, onChange, disabled }: RoleDropdownProps) {
     </div>
   );
 }
+
+// =====================================
+// ⬢  Mini User Item
+// =====================================
 interface MiniUserItemProps {
   user: WorkspaceUser;
   isCurrentUser: boolean;
@@ -217,7 +226,7 @@ function MiniUserItem({
 
 type MiniUsersListProps = {
   currentUserEmail: string;
-  users: WorkspaceUser[];
+  users: WorkspaceMember[];
   onChangeRole: (id: string, role: UserWorkspaceRole) => void;
   onRemoveUser: (id: string) => void;
   onInvite?: () => void;
@@ -251,7 +260,11 @@ export function MiniUsersList({
   const handleToggleSelect = useCallback((id: string) => {
     setSelectedIds(prev => {
       const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
       return next;
     });
   }, []);

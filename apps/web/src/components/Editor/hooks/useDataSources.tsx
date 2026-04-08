@@ -8,6 +8,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { toast } from "sonner";
 import type { DataSourceSchema, DataSourceTable } from "@sandworm/types";
 import { omit } from "ramda";
 
@@ -17,6 +18,9 @@ import { NEXT_PUBLIC_API_URL } from "../../../utils/env";
 
 import { useWebsocket } from "./useWebSocket";
 
+// =====================================
+// ⬢ Types
+// =====================================
 export type APIDataSources = List<APIDataSource>;
 
 type API = {
@@ -58,6 +62,9 @@ type State = Map<
   }
 >;
 
+// =====================================
+// ⬢ Context
+// =====================================
 const Context = createContext<[State, API]>([
   Map(),
   {
@@ -94,6 +101,9 @@ const Context = createContext<[State, API]>([
   },
 ]);
 
+// =====================================
+// ⬢ useDataSources
+// =====================================
 type UseDataSources = [
   {
     datasources: APIDataSources;
@@ -102,6 +112,7 @@ type UseDataSources = [
   },
   API,
 ];
+
 export const useDataSources = (workspaceId: string): UseDataSources => {
   const [state, api] = useContext(Context);
 
@@ -118,27 +129,31 @@ export const useDataSources = (workspaceId: string): UseDataSources => {
   }, [state, workspaceId, api]);
 };
 
+// =====================================
+// ⬢ DataSourcesProvider
+// =====================================
 interface Props {
   children: React.ReactNode;
 }
+
 export function DataSourcesProvider(props: Props) {
   const socket = useWebsocket();
   const [state, setState] = useState<State>(Map());
   const fetchedWorkspaces = useRef<Set<string>>(new Set());
 
   useEffect(() => {
-    if (!socket) {
-      return;
-    }
+    if (!socket) return () => {};
 
     const onDataSources = (data: {
       workspaceId: string;
       dataSources: APIDataSource[];
     }) => {
-      setState(state =>
-        state.set(data.workspaceId, {
+      // NOTE: remove this log before production
+      console.log(data, "datasource");
+      setState(prev =>
+        prev.set(data.workspaceId, {
           datasources: List(data.dataSources),
-          schemas: state.get(data.workspaceId)?.schemas ?? Map(),
+          schemas: prev.get(data.workspaceId)?.schemas ?? Map(),
         })
       );
     };
@@ -151,19 +166,20 @@ export function DataSourcesProvider(props: Props) {
       workspaceId: string;
       dataSource: APIDataSource;
     }) => {
-      setState(state => {
+      setState(prev => {
         const datasources =
-          state.get(workspaceId)?.datasources ?? List<APIDataSource>();
+          prev.get(workspaceId)?.datasources ?? List<APIDataSource>();
+
         const index = datasources.findIndex(
-          ds => ds.config.data.id === dataSource.config.data.id
+          ds => ds.data.id === dataSource.data.id
         );
 
-        return state.set(workspaceId, {
+        return prev.set(workspaceId, {
           datasources:
             index === -1
               ? datasources.push(dataSource)
               : datasources.set(index, dataSource),
-          schemas: state.get(workspaceId)?.schemas ?? Map(),
+          schemas: prev.get(workspaceId)?.schemas ?? Map(),
         });
       });
     };
@@ -182,18 +198,20 @@ export function DataSourcesProvider(props: Props) {
       tableName: string;
       table: DataSourceTable;
     }) => {
-      setState(state => {
-        const datasources = state.get(workspaceId)?.datasources ?? List();
-        const allSchemas = state.get(workspaceId)?.schemas ?? Map();
+      setState(prev => {
+        const datasources = prev.get(workspaceId)?.datasources ?? List();
+        const allSchemas = prev.get(workspaceId)?.schemas ?? Map();
         const dataSourceSchemas = allSchemas.get(dataSourceId) ?? Map();
         const schema = dataSourceSchemas.get(schemaName);
-        const tables = {
+        const updatedTables = {
           ...(schema?.tables ?? {}),
           [tableName]: table,
         };
-        return state.set(workspaceId, {
+        return prev.set(workspaceId, {
           datasources,
-          schemas: allSchemas.setIn([dataSourceId, schemaName], { tables }),
+          schemas: allSchemas.setIn([dataSourceId, schemaName], {
+            tables: updatedTables,
+          }),
         });
       });
     };
@@ -214,22 +232,26 @@ export function DataSourcesProvider(props: Props) {
         table: DataSourceTable;
       })[];
     }) => {
-      setState(state => {
-        tables.forEach(({ dataSourceId, schemaName, tableName, table }) => {
-          const datasources = state.get(workspaceId)?.datasources ?? List();
-          const allSchemas = state.get(workspaceId)?.schemas ?? Map();
-          const dataSourceSchemas = allSchemas.get(dataSourceId) ?? Map();
-          const schema = dataSourceSchemas.get(schemaName);
-          const tables = {
-            ...(schema?.tables ?? {}),
-            [tableName]: table,
-          };
-          state = state.set(workspaceId, {
-            datasources,
-            schemas: allSchemas.setIn([dataSourceId, schemaName], { tables }),
-          });
-        });
-        return state;
+      setState(prev => {
+        return tables.reduce(
+          (acc, { dataSourceId, schemaName, tableName, table }) => {
+            const datasources = acc.get(workspaceId)?.datasources ?? List();
+            const allSchemas = acc.get(workspaceId)?.schemas ?? Map();
+            const dataSourceSchemas = allSchemas.get(dataSourceId) ?? Map();
+            const schema = dataSourceSchemas.get(schemaName);
+            const updatedTables = {
+              ...(schema?.tables ?? {}),
+              [tableName]: table,
+            };
+            return acc.set(workspaceId, {
+              datasources,
+              schemas: allSchemas.setIn([dataSourceId, schemaName], {
+                tables: updatedTables,
+              }),
+            });
+          },
+          prev
+        );
       });
     };
     socket.on("workspace-datasource-schema-tables", onDataSourceSchemaTables);
@@ -245,15 +267,17 @@ export function DataSourcesProvider(props: Props) {
       schemaName: string;
       tableName: string;
     }) => {
-      setState(state => {
-        const datasources = state.get(workspaceId)?.datasources ?? List();
-        const allSchemas = state.get(workspaceId)?.schemas ?? Map();
+      setState(prev => {
+        const datasources = prev.get(workspaceId)?.datasources ?? List();
+        const allSchemas = prev.get(workspaceId)?.schemas ?? Map();
         const dataSourceSchemas = allSchemas.get(dataSourceId) ?? Map();
         const schema = dataSourceSchemas.get(schemaName);
-        const tables = omit([tableName], schema?.tables ?? {});
-        return state.set(workspaceId, {
+        const updatedTables = omit([tableName], schema?.tables ?? {});
+        return prev.set(workspaceId, {
           datasources,
-          schemas: allSchemas.setIn([dataSourceId, schemaName], { tables }),
+          schemas: allSchemas.setIn([dataSourceId, schemaName], {
+            tables: updatedTables,
+          }),
         });
       });
     };
@@ -261,6 +285,7 @@ export function DataSourcesProvider(props: Props) {
       "workspace-datasource-schema-table-removed",
       onDataSourceSchemaTableRemoved
     );
+
     return () => {
       socket.off("workspace-datasources", onDataSources);
       socket.off("workspace-datasource-update", onDataSourceUpdate);
@@ -279,27 +304,27 @@ export function DataSourcesProvider(props: Props) {
     };
   }, [socket]);
 
+  // =====================================
+  // ⬢ API Methods
+  // =====================================
+
   const fetchDataSources = useCallback(async (workspaceId: string) => {
-    if (fetchedWorkspaces.current.has(workspaceId)) {
-      return;
-    }
+    if (fetchedWorkspaces.current.has(workspaceId)) return;
     fetchedWorkspaces.current.add(workspaceId);
 
     const res = await fetch(
       `${NEXT_PUBLIC_API_URL()}/v1/workspaces/${workspaceId}/data-sources`,
-      {
-        credentials: "include",
-      }
+      { credentials: "include" }
     );
 
     if (!res.ok) return;
 
     const data = await res.json();
 
-    setState(state =>
-      state.set(workspaceId, {
+    setState(prev =>
+      prev.set(workspaceId, {
         datasources: List(data),
-        schemas: state.get(workspaceId)?.schemas ?? Map(),
+        schemas: prev.get(workspaceId)?.schemas ?? Map(),
       })
     );
   }, []);
@@ -311,13 +336,10 @@ export function DataSourcesProvider(props: Props) {
         {
           credentials: "include",
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ type }),
         }
       );
-
       return res.json();
     },
     []
@@ -333,8 +355,7 @@ export function DataSourcesProvider(props: Props) {
     );
 
     if (!res.ok) {
-      // TODO proper error handling
-      alert("Failed to remove data source");
+      toast.error("Failed to remove data source");
     }
   }, []);
 
@@ -345,20 +366,16 @@ export function DataSourcesProvider(props: Props) {
         {
           credentials: "include",
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            isDefault: true,
-          }),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ isDefault: true }),
         }
       );
 
       if (!res.ok) {
-        alert("Failed to make data source default");
+        toast.error("Failed to make data source default");
       }
-    } catch (e) {
-      alert("Failed to make data source default");
+    } catch {
+      toast.error("Failed to make data source default");
     }
   }, []);
 
@@ -384,6 +401,9 @@ export function DataSourcesProvider(props: Props) {
     [socket]
   );
 
+  // =====================================
+  // ⬢ Provider Value
+  // =====================================
   const value: [State, API] = useMemo(
     () => [
       state,

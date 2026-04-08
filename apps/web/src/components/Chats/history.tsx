@@ -43,6 +43,9 @@ type HistoryResponse = {
   data: Chat[];
 };
 
+// =====================================
+// ⬢ Chat History
+// =====================================
 export const History = ({ user }: { user: User | undefined }) => {
   const { id } = useParams();
   const pathname = usePathname();

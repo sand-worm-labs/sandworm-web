@@ -32,7 +32,7 @@ const parseNumberList = (
     return value
       .split(",")
       .map(s => parseInt(s.trim(), 10))
-      .filter(n => !isNaN(n));
+      .filter(n => !Number.isNaN(n));
   }
   return [];
 };
@@ -134,7 +134,7 @@ const MonthlySchedule = ({ schedule }: { schedule: MonthlyScheduleType }) => {
     const d = dIndex + 1;
     const s = ["th", "st", "nd", "rd"];
     const v = d % 100;
-    return d + (s[(v - 20) % 10] || s[v] || s[0]);
+    return d + (s[(v - 20) % 10] ?? s[v] ?? s[0] ?? "th");
   });
 
   return (
@@ -340,7 +340,7 @@ function ScheduleList(props: ScheduleListProps) {
       ) : (
         <div className="flex-1 flex flex-col items-center justify-center px-4 xl:px-6 py-12">
           <div className="flex flex-col gap-y-3 bg-ceramic-50/60 p-6 rounded-xl border-2 border-[#E9ECEF] dark:border-border-tertiary border-dashed items-center max-w-[260px]">
-            <ScheduleIcon className="w-10 h-10" />
+            <ScheduleIcon />
             <div className="text-ink-300 dark:text-ink-400 text-center text-sm">
               <p>{`You haven't saved this page yet.`}</p>
               <p>Save it to be able to create a schedule.</p>

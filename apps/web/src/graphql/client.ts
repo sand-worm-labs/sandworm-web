@@ -33,6 +33,7 @@ export const createApolloClient = ({
 }: CreateClientOpts): ApolloClient<NormalizedCacheObject> => {
   // 1) Error handling link
   const errorLink = onError(
+    // eslint-disable-next-line consistent-return
     ({ graphQLErrors, networkError, operation, forward }) => {
       if (graphQLErrors) {
         graphQLErrors.forEach(err => {

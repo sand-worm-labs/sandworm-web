@@ -283,6 +283,7 @@ function InputBlock(props: Props) {
                 ) : attrs.variable.error ? (
                   <>
                     <button
+                      type="button"
                       disabled={attrs.variable.error === null}
                       onClick={onRunValue}
                     >
@@ -336,6 +337,7 @@ function InputBlock(props: Props) {
               ) : attrs.value.error ? (
                 <>
                   <button
+                    type="button"
                     disabled={attrs.value.error === null}
                     onClick={onSaveValue}
                   >

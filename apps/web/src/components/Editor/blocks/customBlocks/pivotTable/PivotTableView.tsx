@@ -15,14 +15,11 @@ import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import LargeSpinner from "../../LargeSpinner";
 import PageButtons from "../../PageButtons";
 import type { DashboardMode } from "../../Dashboard";
-import { dashboardModeHasControls } from "../../Dashboard";
+import { dashboardModeHasControls } from "../../Dashboard/dashboard-types";
 
 import PivotTable from "./PivotTable";
 
 interface Props {
-  pivotRows: PivotTableBlock["rows"];
-  pivotColumns: PivotTableBlock["columns"];
-  pivotMetrics: PivotTableBlock["metrics"];
   result: PivotTableResult | null;
   page: number;
   onPrevPage: () => void;
@@ -40,6 +37,10 @@ interface Props {
   sort: PivotTableSort | null;
   onSort: (sort: PivotTableSort | null) => void;
 }
+
+// =====================================
+// ⬢ Pivot Table View
+// =====================================
 function PivotTableView(props: Props) {
   return (
     <div
@@ -114,6 +115,7 @@ function PivotTableView(props: Props) {
               <span className="text-lg text-gray-300">No data</span>
               {!props.dataframe && (
                 <button
+                  type="button"
                   className="text-xs text-gray-300 hover:underline"
                   onClick={props.onNewSQL}
                 >
@@ -129,6 +131,7 @@ function PivotTableView(props: Props) {
         dashboardModeHasControls(props.dashboardMode)) &&
         props.isEditable && (
           <button
+            type="button"
             className={clsx(
               "absolute bottom-0 bg-white rounded-tr-md border-t border-r border-border-secondary p-2 hover:bg-gray-50 z-10",
               props.controlsHidden ? "left-0 rounded-bl-md" : "-left-[1px]"

@@ -261,6 +261,8 @@ function GridBlockRenderer(props: GridBlockRendererProps) {
       />
     ),
     onFileUpload: () => null,
+    onWriteback: () => null,
+    onPowerToolbox: () => null,
   });
 }
 

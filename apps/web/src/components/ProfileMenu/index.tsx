@@ -17,6 +17,9 @@ import type { CurrentUserProps } from "@/types";
 
 import { ThemeTogggle } from "../Theme/ThemeToggle";
 
+// =====================================
+// ⬢ ProfileMenu
+// =====================================
 export const ProfileMenu: FC<CurrentUserProps> = ({ currentUser }) => {
   const [open, setOpen] = useState(false);
 

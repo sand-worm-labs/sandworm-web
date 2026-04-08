@@ -86,6 +86,7 @@ function Item({ index, move, children, kind }: ItemProps) {
       // Generally it's better to avoid mutations,
       // but it's good here for the sake of performance
       // to avoid expensive index searches.
+      // eslint-disable-next-line no-param-reassign
       item.index = hoverIndex;
     },
   });
@@ -140,11 +141,13 @@ export default function DragList<T>({
 }: Props<T>) {
   const move = useCallback(
     (dragIndex: number, hoverIndex: number) => {
+      const dragItem = items[dragIndex];
+      if (!dragItem) return;
       onChange(
         update(items, {
           $splice: [
             [dragIndex, 1],
-            [hoverIndex, 0, items[dragIndex]],
+            [hoverIndex, 0, dragItem],
           ],
         })
       );

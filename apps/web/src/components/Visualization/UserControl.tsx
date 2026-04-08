@@ -6,6 +6,9 @@ import {
 } from "@heroicons/react/24/outline";
 import { IoFilterOutline } from "react-icons/io5";
 
+// =====================================
+// ⬢ Types
+// =====================================
 export interface RoleFilter {
   role: "editor" | "admin" | "viewer";
   label: string;
@@ -21,6 +24,9 @@ interface UserControlProps {
   onResetFilters: () => void;
 }
 
+// =====================================
+// ⬢ User Control
+// =====================================
 export function UserControl({
   searchValue,
   onSearchChange,
@@ -32,9 +38,9 @@ export function UserControl({
 
   return (
     <div className="space-y-4 max-w-[28rem]">
-      {/* Controls */}
+      {/* ✦ Controls ✦ */}
       <div className="flex items-center gap-3">
-        {/* Search Input */}
+        {/* ✦ Search Input ✦ */}
         <div className="relative flex-1">
           <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400 dark:text-ink-400 " />
           <input
@@ -46,7 +52,7 @@ export function UserControl({
           />
         </div>
 
-        {/* Filter Popover */}
+        {/* ✦ Filter Popover ✦ */}
         <Popover className="relative">
           {({ open }) => (
             <>
@@ -73,7 +79,7 @@ export function UserControl({
               >
                 <Popover.Panel className="absolute right-0  mt-2 w-[12rem] origin-top-right rounded-xl border border-[#CED4DA]  bg-white z-40  shadow-lg focus:outline-none dark:border-border-tertiary dark:bg-base-400">
                   <div className="p-4 px-2.5">
-                    {/* Header */}
+                    {/* ✦ Header ✦ */}
                     <div className="mb-3 flex items-center justify-between">
                       <span className="text-[0.65rem] font-medium uppercase tracking-wider text-ink-400">
                         Roles
@@ -87,7 +93,7 @@ export function UserControl({
                       </button>
                     </div>
 
-                    {/* Filter Options */}
+                    {/* ✦ Filter Options ✦ */}
                     <div className="space-y-0">
                       {roleFilters.map(filter => (
                         <label

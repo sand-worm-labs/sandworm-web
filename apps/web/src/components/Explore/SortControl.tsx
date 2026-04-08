@@ -20,6 +20,9 @@ interface SortControlProps {
   onSortChange: (sort: SortOption) => void;
 }
 
+// =====================================
+// ⬢ Sort Control
+// =====================================
 export function SortControl({ sortBy, onSortChange }: SortControlProps) {
   return (
     <div className="flex flex-col gap-1 items-end">

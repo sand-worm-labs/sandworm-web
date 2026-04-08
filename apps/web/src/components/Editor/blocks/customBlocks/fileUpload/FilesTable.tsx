@@ -1,3 +1,4 @@
+/* eslint-disable import/no-cycle */
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
 import { ArrowDownTrayIcon } from "@heroicons/react/24/solid";
 import { InformationCircleIcon, TrashIcon } from "@heroicons/react/24/outline";
@@ -15,6 +16,10 @@ import UploadedFileC from "./UploadedFile";
 
 import type { FileUploadState, UploadError } from ".";
 
+// =====================================
+// ⬢ Types
+// =====================================
+
 export type FilesTableHeader =
   | "Name"
   | "Type"
@@ -22,6 +27,18 @@ export type FilesTableHeader =
   | "Usage"
   | "DL"
   | "Del";
+
+export interface CellFile {
+  name: string;
+  type: string;
+  uploaded: number;
+  total: number;
+}
+
+// =====================================
+// ⬢ Constants
+// =====================================
+
 const editorHeaders: FilesTableHeader[] = [
   "Name",
   "Type",
@@ -32,6 +49,55 @@ const editorHeaders: FilesTableHeader[] = [
 ];
 const viewerHeaders: FilesTableHeader[] = ["Name", "Type", "Size"];
 const publicHeaders: FilesTableHeader[] = ["Name", "Type", "Size"];
+
+// =====================================
+// ⬢ Utils
+// =====================================
+
+function formatBytes(bytes: number, decimals = 2) {
+  if (bytes === 0) return "0 Bytes";
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return `${parseFloat((bytes / k ** i).toFixed(dm))} ${sizes[i]}`;
+}
+
+function cellClasses(header: FilesTableHeader): string {
+  switch (header) {
+    case "Name":
+      return "w-[43%] font-medium text-gray-600 text-xs overflow-hidden";
+    case "Type":
+      return "w-[18%] text-ink-400 text-xs overflow-hidden";
+    case "Size":
+      return "w-[12%] md:w-[12%] xl:w-[16%] text-ink-400 text-xs overflow-hidden";
+    case "Usage":
+      return "w-[20%] md:w-[18%] xl:w-[16%] font-medium text-gray-600 text-xs overflow-visible";
+    case "DL":
+      return "w-[4%] font-medium text-gray-600 text-xs overflow-visible";
+    case "Del":
+      return "w-[4%] font-medium text-gray-600 text-xs overflow-hidden";
+    default:
+      return "";
+  }
+}
+
+function getErrorMessage(error: UploadError["reason"]) {
+  switch (error) {
+    case "file-exists":
+      return "file already exists";
+    case "aborted":
+      return "upload aborted";
+    case "unexpected":
+      return "unexpected error, please try again";
+    default:
+      return "unknown error";
+  }
+}
+
+// =====================================
+// ⬢ FilesTable Component
+// =====================================
 
 interface Props {
   title: string;
@@ -47,7 +113,6 @@ interface Props {
   onReplaceYes: () => void;
   onReplaceAll: () => void;
   onReplaceNo: () => void;
-  onDownload: (filename: string) => void;
   onDelete: (filename: string) => void;
   onAbort: (filename: string) => void;
   onUpload: () => void;
@@ -55,6 +120,7 @@ interface Props {
   onQueryUsage: (filename: string, type: string) => void;
   isBlockHiddenInPublished: boolean;
 }
+
 function FilesTable(props: Props) {
   const isAskingReplace =
     props.state._tag === "uploading" &&
@@ -99,7 +165,7 @@ function FilesTable(props: Props) {
           <input
             type="text"
             className={clsx(
-              "w-1/2 font-body  bg-transparent pl-1 ring-gray-200 focus:ring-gray-400 block rounded-md border-0 text-ink-400  hover:ring-1 focus:ring-1 ring-inset placeholder:text-ink-400 focus:ring-inset h-full py-0 text-xs disabled:ring-0 h-full"
+              "w-1/2 font-body  bg-transparent pl-1 ring-gray-200 focus:ring-gray-400 block rounded-md border-0 text-ink-400  hover:ring-1 focus:ring-1 ring-inset placeholder:text-ink-400 focus:ring-inset py-0 text-xs disabled:ring-0 h-full"
             )}
             placeholder="Files"
             value={props.title}
@@ -128,9 +194,10 @@ function FilesTable(props: Props) {
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100 max-h-96">
-          {props.files.map((file, i) => (
+          {/* FIX react/no-array-index-key: use file.name as stable key */}
+          {props.files.map(file => (
             <UploadedFileC
-              key={i}
+              key={file.name}
               file={file}
               downloadLink={`${NEXT_PUBLIC_API_URL()}/v1/workspaces/${
                 props.workspaceId
@@ -160,18 +227,21 @@ function FilesTable(props: Props) {
             </p>
             <div className="flex justify-center gap-x-4">
               <button
+                type="button"
                 className="px-4 py-2 text-sm text-ink-400  hover:text-gray-800"
                 onClick={props.onReplaceYes}
               >
                 Yes
               </button>
               <button
+                type="button"
                 className="px-4 py-2 text-sm text-ink-400  hover:text-gray-800"
                 onClick={props.onReplaceAll}
               >
                 Yes to all
               </button>
               <button
+                type="button"
                 className="px-4 py-2 text-sm text-ink-400  hover:text-gray-800"
                 onClick={props.onReplaceNo}
               >
@@ -221,6 +291,10 @@ function FilesTable(props: Props) {
   );
 }
 
+// =====================================
+// ⬢ Row Component
+// =====================================
+
 interface RowProps {
   file: CellFile;
   headers: FilesTableHeader[];
@@ -232,6 +306,7 @@ interface RowProps {
   onPythonUsage: (filename: string) => void;
   onQueryUsage: (filename: string) => void;
 }
+
 export function Row(props: RowProps) {
   return (
     <tr className="divide-x divide-gray-100">
@@ -253,29 +328,9 @@ export function Row(props: RowProps) {
   );
 }
 
-function cellClasses(header: FilesTableHeader): string {
-  switch (header) {
-    case "Name":
-      return "w-[43%] font-medium text-gray-600 text-xs overflow-hidden";
-    case "Type":
-      return "w-[18%] text-ink-400 text-xs overflow-hidden";
-    case "Size":
-      return "w-[12%] md:w-[12%] xl:w-[16%] text-ink-400 text-xs overflow-hidden";
-    case "Usage":
-      return "w-[20%] md:w-[18%] xl:w-[16%] font-medium text-gray-600 text-xs overflow-visible";
-    case "DL":
-      return "w-[4%] font-medium text-gray-600 text-xs overflow-visible";
-    case "Del":
-      return "w-[4%] font-medium text-gray-600 text-xs overflow-hidden";
-  }
-}
-
-export interface CellFile {
-  name: string;
-  type: string;
-  uploaded: number;
-  total: number;
-}
+// =====================================
+// ⬢ Cell Component
+// =====================================
 
 interface CellProps {
   header: FilesTableHeader;
@@ -288,6 +343,7 @@ interface CellProps {
   onPythonUsage: (filename: string) => void;
   onQueryUsage: (filename: string) => void;
 }
+
 export function Cell(props: CellProps) {
   const onPythonUsage = useCallback(() => {
     props.onPythonUsage(props.file.name);
@@ -351,6 +407,7 @@ export function Cell(props: CellProps) {
             )}
           >
             <button
+              type="button"
               className={clsx(
                 "cursor-pointer disabled:cursor-not-allowed hover:text-primary-700",
                 !disabled && "hover:text-ink-400 "
@@ -362,6 +419,7 @@ export function Cell(props: CellProps) {
             </button>
             <span>/</span>
             <button
+              type="button"
               className={clsx(
                 "cursor-pointer disabled:cursor-not-allowed hover:text-primary-700",
                 !disabled && "hover:text-ink-400 "
@@ -389,6 +447,7 @@ export function Cell(props: CellProps) {
       case "Del":
         return (
           <button
+            type="button"
             className="flex items-center jutify-center cursor-pointer text-ink-400  hover:text-red-600 h-4 w-4 text-xs"
             onClick={onDelete}
             disabled={props.isDeleting}
@@ -396,6 +455,8 @@ export function Cell(props: CellProps) {
             {props.isDeleting ? <Spin /> : <TrashIcon />}
           </button>
         );
+      default:
+        return null;
     }
   }, [
     props.header,
@@ -418,26 +479,6 @@ export function Cell(props: CellProps) {
       {inner}
     </td>
   );
-}
-
-function formatBytes(bytes: number, decimals = 2) {
-  if (bytes === 0) return "0 Bytes";
-  const k = 1024;
-  const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return `${parseFloat((bytes / k ** i).toFixed(dm))} ${sizes[i]}`;
-}
-
-function getErrorMessage(error: UploadError["reason"]) {
-  switch (error) {
-    case "file-exists":
-      return "file already exists";
-    case "aborted":
-      return "upload aborted";
-    case "unexpected":
-      return "unexpected error, please try again";
-  }
 }
 
 export default FilesTable;

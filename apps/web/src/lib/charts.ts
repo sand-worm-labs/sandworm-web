@@ -99,8 +99,7 @@ export function sanitizeChartData(
       const yRaw = row[yKey];
 
       const isClearlyNumber =
-        typeof xRaw === "number" ||
-        (!xIsAddress && !Number.isNaN(Number(xRaw)));
+        typeof xRaw === "number" || !Number.isNaN(Number(xRaw));
 
       const x = isClearlyNumber ? Number(xRaw) : xRaw;
       const y = Number(yRaw);

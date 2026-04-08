@@ -58,7 +58,7 @@ export default function ComboboxV2<T>({
   }, [disabled, onOpen]);
   useEffect(() => {
     if (!open) {
-      return;
+      return () => {};
     }
 
     const onClickOutside = (e: MouseEvent) => {
@@ -153,10 +153,10 @@ export default function ComboboxV2<T>({
               className="mt-1 max-h-56 overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
               ref={menuRef}
             >
-              {filteredColumns.map((c, i) => (
+              {filteredColumns.map(c => (
                 <button
                   type="button"
-                  key={i}
+                  key={String(c)}
                   className="hover:text-white hover:bg-gray-50 text-ink-100 relative select-none flex items-center gap-x-2 w-full cursor-pointer"
                   onClick={e => {
                     e.preventDefault();

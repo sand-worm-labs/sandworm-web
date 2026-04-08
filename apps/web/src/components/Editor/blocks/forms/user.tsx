@@ -132,7 +132,7 @@ export default function UserForm({ workspaceId, onSubmit }: UserFormProps) {
 
       <div className="mt-6 flex items-center justify-end gap-x-4">
         <Link
-          href={`/workspaces/${workspaceId}/users`}
+          href={`/workspace/${workspaceId}/users`}
           className="text-sm font-semibold leading-6 text-gray-600 border border-border-secondary px-6 py-1.5 rounded-sm shadow-sm hover:bg-gray-50"
           onClick={e => {
             if (formState.isSubmitting) {

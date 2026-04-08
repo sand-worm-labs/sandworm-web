@@ -29,6 +29,9 @@ import GridElement from "./GridElement";
 
 import type { DraggingBlock } from ".";
 
+// =====================================
+// ⬢  Constants
+// =====================================
 export const MARGIN = 6;
 export const COLS_COUNT = 24;
 

@@ -19,7 +19,8 @@ import useResizeMemo from "@/hooks/useResizeMemo";
 
 import DragList from "../DragList";
 
-//  Constants
+// =====================================
+// ⬢ Constants
 // =====================================
 const presetColors = [
   "#A308F0",
@@ -40,7 +41,10 @@ const presetColors = [
   "#000000",
 ];
 
-//  Interface / Props Definition
+const FALLBACK_COLOR = "#A308F0";
+
+// =====================================
+// ⬢ Types
 // =====================================
 interface Props {
   yAxes: YAxis[];
@@ -57,6 +61,51 @@ interface ColorPickerProps {
   onChangeColor: (color: string) => void;
 }
 
+interface GroupBySeriesDisplayProps {
+  drag: ConnectDragSource;
+  drop: ConnectDropTarget;
+  dragPreview: ConnectDragPreview;
+  isDragging: boolean;
+  group: string;
+  name: string;
+  onChangeName: (group: string, name: string) => void;
+  color: string;
+  onChangeColor: (group: string, color: string) => void;
+  dataframe: DataFrame | null;
+  isEditable: boolean;
+}
+
+interface DisplayYAxisSeriesProps {
+  drag: ConnectDragSource;
+  drop: ConnectDropTarget;
+  dragPreview: ConnectDragPreview;
+  isDragging: boolean;
+  series: Series;
+  dataframe: DataFrame | null;
+  isEditable: boolean;
+  result: VisualizationV2BlockOutputResult | null;
+  onChangeSeries: (id: Series["id"], series: Series) => void;
+}
+
+// =====================================
+// ⬢ Utils
+// =====================================
+function getColorFromSerie(s: Serie): string | null {
+  switch (s.type) {
+    case "bar":
+      return s.color ?? null;
+    case "line":
+      return s.lineStyle?.color ?? null;
+    case "scatter":
+      return s.itemStyle?.color ?? null;
+    default:
+      return null;
+  }
+}
+
+// =====================================
+// ⬢ ColorPicker
+// =====================================
 function ColorPicker(props: ColorPickerProps) {
   const onChangeColor = useCallback(
     (color: { hex: string }) => {
@@ -91,6 +140,7 @@ function ColorPicker(props: ColorPickerProps) {
     buttonRef,
     pickerOpen
   );
+
   return (
     <div className={props.className}>
       <button
@@ -126,96 +176,16 @@ function ColorPicker(props: ColorPickerProps) {
   );
 }
 
-function getColorFromSerie(s: Serie): string | null {
-  switch (s.type) {
-    case "bar":
-      return s.color ?? null;
-    case "line":
-      return s.lineStyle?.color ?? null;
-    case "scatter":
-      return s.itemStyle?.color ?? null;
-    default:
-      return null;
-  }
-}
-
-function DisplayControls(props: Props) {
-  return (
-    <div className="text-xs text-ink-400 flex flex-col space-y-8">
-      {props.yAxes.map((yAxis, yI) => {
-        let prefix = "";
-        if (props.yAxes.length > 1) {
-          prefix = yI === 0 ? "Left " : "Right ";
-        }
-
-        const items = yAxis.series.map(s => {
-          const output = props.result?.series.find(rs => rs.id === s.id);
-          return {
-            ...s,
-            color:
-              s.color ?? (output ? getColorFromSerie(output) : null) ?? null,
-          };
-        });
-
-        return (
-          <div key={yI}>
-            <div className="text-sm font-medium leading-6 text-ink-100 pb-2">
-              {prefix} Y-Axis
-            </div>
-            <div className="flex flex-col space-y-4">
-              <DragList
-                items={items}
-                onChange={items => props.onChangeAllSeries(yI, items)}
-                getKey={s => s.id}
-                kind={`y-axis-${yI}-series`}
-              >
-                {({ item, drag, dragPreview, drop, isDragging, ref }) => {
-                  return (
-                    <DisplayYAxisSeries
-                      ref={ref}
-                      drag={drag}
-                      dragPreview={dragPreview}
-                      drop={drop}
-                      isDragging={isDragging}
-                      series={item}
-                      dataframe={props.dataframe}
-                      isEditable={props.isEditable}
-                      yIndex={yI}
-                      result={props.result}
-                      onChangeSeries={props.onChangeSeries}
-                    />
-                  );
-                }}
-              </DragList>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-interface GroupBySeriesDisplayProps {
-  drag: ConnectDragSource;
-  drop: ConnectDropTarget;
-  dragPreview: ConnectDragPreview;
-  isDragging: boolean;
-  group: string;
-  name: string;
-  onChangeName: (group: string, name: string) => void;
-  color: string;
-  onChangeColor: (group: string, color: string) => void;
-  dataframe: DataFrame | null;
-  isEditable: boolean;
-}
-
+// =====================================
+// ⬢ GroupBySeriesDisplay
+// =====================================
 const GroupBySeriesDisplay = forwardRef<
   HTMLDivElement,
   GroupBySeriesDisplayProps
 >(function GroupBySeriesDisplay(props, ref) {
   const onChangeColor = useCallback(
-    (color: string) => {
-      props.onChangeColor(props.group, color);
+    (newColor: string) => {
+      props.onChangeColor(props.group, newColor);
     },
     [props.onChangeColor, props.group]
   );
@@ -273,18 +243,9 @@ const GroupBySeriesDisplay = forwardRef<
   );
 });
 
-interface DisplayYAxisSeriesProps {
-  drag: ConnectDragSource;
-  drop: ConnectDropTarget;
-  dragPreview: ConnectDragPreview;
-  isDragging: boolean;
-  series: Series;
-  dataframe: DataFrame | null;
-  isEditable: boolean;
-  yIndex: number;
-  result: VisualizationV2BlockOutputResult | null;
-  onChangeSeries: (id: Series["id"], series: Series) => void;
-}
+// =====================================
+// ⬢ DisplayYAxisSeries
+// =====================================
 const DisplayYAxisSeries = forwardRef<HTMLDivElement, DisplayYAxisSeriesProps>(
   function DisplayYAxisSeries(props, ref) {
     const groups = useMemo(
@@ -301,7 +262,7 @@ const DisplayYAxisSeries = forwardRef<HTMLDivElement, DisplayYAxisSeriesProps>(
                 return {
                   group,
                   name: s.name?.toString() ?? group,
-                  color: getColorFromSerie(s) ?? presetColors[0],
+                  color: getColorFromSerie(s) ?? FALLBACK_COLOR,
                 };
               }) ?? []
           )
@@ -310,8 +271,11 @@ const DisplayYAxisSeries = forwardRef<HTMLDivElement, DisplayYAxisSeriesProps>(
     );
 
     const onChangeGroups = useCallback(
-      (groups: Series["groups"]) => {
-        props.onChangeSeries(props.series.id, { ...props.series, groups });
+      (newGroups: Series["groups"]) => {
+        props.onChangeSeries(props.series.id, {
+          ...props.series,
+          groups: newGroups,
+        });
       },
       [props.series.id, props.onChangeSeries]
     );
@@ -319,13 +283,18 @@ const DisplayYAxisSeries = forwardRef<HTMLDivElement, DisplayYAxisSeriesProps>(
     const columnsSeries = props.result?.series.find(
       s => s.id === props.series.id
     );
-    const color =
+
+    const color: string =
       props.series.color ??
       (columnsSeries ? getColorFromSerie(columnsSeries) : null) ??
-      presetColors[0];
+      FALLBACK_COLOR;
+
     const onChangeColor = useCallback(
-      (color: string) => {
-        props.onChangeSeries(props.series.id, { ...props.series, color });
+      (newColor: string) => {
+        props.onChangeSeries(props.series.id, {
+          ...props.series,
+          color: newColor,
+        });
       },
       [props.series.id, props.onChangeSeries]
     );
@@ -360,9 +329,9 @@ const DisplayYAxisSeries = forwardRef<HTMLDivElement, DisplayYAxisSeriesProps>(
     );
 
     const onChangeGroupColor = useCallback(
-      (group: string, color: string) => {
+      (group: string, newColor: string) => {
         const newItems = groups.map(item =>
-          item.group === group ? { ...item, color } : item
+          item.group === group ? { ...item, color: newColor } : item
         );
         onChangeGroups(newItems);
       },
@@ -419,7 +388,7 @@ const DisplayYAxisSeries = forwardRef<HTMLDivElement, DisplayYAxisSeriesProps>(
           {props.series.groupBy && !props.isDragging && (
             <>
               <div className="text-xs text-ink-100 pl-2 pt-4 pb-2 flex items-center justify-between">
-                <span className="font-medium">Group by</span>{" "}
+                <span className="font-medium">Group by</span>
               </div>
               <div className="flex flex-col space-y-1.5">
                 <DragList
@@ -428,9 +397,16 @@ const DisplayYAxisSeries = forwardRef<HTMLDivElement, DisplayYAxisSeriesProps>(
                   getKey={g => g.group}
                   kind={`series-${props.series.id}-groups`}
                 >
-                  {({ item, drag, dragPreview, drop, isDragging, ref }) => (
+                  {({
+                    item,
+                    drag,
+                    dragPreview,
+                    drop,
+                    isDragging,
+                    ref: itemRef,
+                  }) => (
                     <GroupBySeriesDisplay
-                      ref={ref}
+                      ref={itemRef}
                       drag={drag}
                       dragPreview={dragPreview}
                       drop={drop}
@@ -453,5 +429,68 @@ const DisplayYAxisSeries = forwardRef<HTMLDivElement, DisplayYAxisSeriesProps>(
     );
   }
 );
+
+// =====================================
+// ⬢ DisplayControls
+// =====================================
+function DisplayControls(props: Props) {
+  return (
+    <div className="text-xs text-ink-400 flex flex-col space-y-8">
+      {props.yAxes.map((yAxis, yI) => {
+        let prefix = "";
+        if (props.yAxes.length > 1) {
+          prefix = yI === 0 ? "Left " : "Right ";
+        }
+
+        const items = yAxis.series.map(s => {
+          const output = props.result?.series.find(rs => rs.id === s.id);
+          return {
+            ...s,
+            color:
+              s.color ?? (output ? getColorFromSerie(output) : null) ?? null,
+          };
+        });
+
+        return (
+          <div key={yAxis.id}>
+            <div className="text-sm font-medium leading-6 text-ink-100 pb-2">
+              {prefix} Y-Axis
+            </div>
+            <div className="flex flex-col space-y-4">
+              <DragList
+                items={items}
+                onChange={newSeries => props.onChangeAllSeries(yI, newSeries)}
+                getKey={s => s.id}
+                kind={`y-axis-${yI}-series`}
+              >
+                {({
+                  item,
+                  drag,
+                  dragPreview,
+                  drop,
+                  isDragging,
+                  ref: itemRef,
+                }) => (
+                  <DisplayYAxisSeries
+                    ref={itemRef}
+                    drag={drag}
+                    dragPreview={dragPreview}
+                    drop={drop}
+                    isDragging={isDragging}
+                    series={item}
+                    dataframe={props.dataframe}
+                    isEditable={props.isEditable}
+                    result={props.result}
+                    onChangeSeries={props.onChangeSeries}
+                  />
+                )}
+              </DragList>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 export default DisplayControls;

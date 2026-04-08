@@ -20,15 +20,17 @@ import { Transition } from "@headlessui/react";
 import { createPortal } from "react-dom";
 import clsx from "clsx";
 import { useHotkeys } from "react-hotkeys-hook";
-import type { DataFrame, UserWorkspaceRole } from "@sandworm/types";
+import type { DataFrame } from "@sandworm/types";
 
 import { ChatIcon } from "@/components/Assets/ChatIcon";
 import { ClockCountdown } from "@/components/Assets/ClockCountdown";
 import { DataExplorer } from "@/components/ExplorerPanels/DataExplorer";
-import type { ApiDocument } from "@/types";
+import type { ApiDocument, UserWorkspaceRole } from "@/types";
 import { NEXT_PUBLIC_PUBLIC_URL } from "@/utils/env";
 import Layout from "@/components/Visualization/Layout";
+import VisualizationBlock from "@/components/Visualization/index";
 
+import type { APIDataSources } from "../../hooks/useDataSources";
 import ShareModal from "../ShareModal";
 import { useDataSources } from "../../hooks/useDataSources";
 import { useLastUpdatedAt, useYDoc, useYDocState } from "../../hooks/useYDocs";
@@ -44,7 +46,6 @@ import { PublishBlinkingSignal } from "../BlinkingSignal";
 import { Tooltip } from "../ToolTips";
 import { SQLExtensionProvider } from "../customBlocks/CodeEditor/sql";
 import ScrollBar from "../ScrollBar";
-import VisualizationBlock from "../../index";
 import RichTextBlock from "../customBlocks/richText";
 import SQLBlock from "../customBlocks/sql";
 import PythonBlock from "../customBlocks/python";
@@ -58,6 +59,9 @@ import DashboardSkeleton from "./DashboardSkeleton";
 import DashboardControls from "./DashboardControls";
 import DashboardView from "./DashboardView";
 
+// =====================================
+// ⬢ Types
+// =====================================
 export type DashboardMode =
   | {
       _tag: "live";
@@ -93,6 +97,9 @@ export type DraggingBlock = {
   height: number;
 };
 
+// =====================================
+// ⬢ EXPANDED BLOCK VIEW
+// =====================================
 interface ExpandedBlockViewProps {
   expanded: YBlock;
   document: ApiDocument;
@@ -256,6 +263,10 @@ function ExpandedBlockView(props: ExpandedBlockViewProps) {
     onPowerToolbox: () => null,
   });
 }
+
+// =====================================
+// ⬢ DASHBOARD CONTENT
+// =====================================
 function DashboardContent(
   props: Props & {
     yDoc: Y.Doc;
@@ -276,8 +287,8 @@ function DashboardContent(
   const { state: layout } = useYDocState(props.yDoc, getLayout);
   const { state: dataframes } = useYDocState(props.yDoc, getDataframes);
 
-  const onDragStart = useCallback((draggingBlock: DraggingBlock) => {
-    setDraggingBlock(draggingBlock);
+  const onDragStart = useCallback((newDraggingBlock: DraggingBlock) => {
+    setDraggingBlock(newDraggingBlock);
   }, []);
 
   const onAddBlock = useCallback(
@@ -366,7 +377,7 @@ function DashboardContent(
             <button
               type="button"
               className="fixed inset-0 bg-black bg-opacity-50"
-              onClick={() => setExpanded(null)} // Close when clicking on backdrop
+              onClick={() => setExpanded(null)}
             />
           ) : null}
 
@@ -398,9 +409,15 @@ interface Props {
   user: SessionUser;
   role: UserWorkspaceRole;
   isEditing: boolean;
+  // eslint-disable-next-line react/no-unused-prop-types
   publishing: boolean;
+  // eslint-disable-next-line react/no-unused-prop-types
   publish: () => Promise<void>;
 }
+
+// =====================================
+// ⬢ Main Dashboard Component
+// =====================================
 export default function Dashboard(props: Props) {
   const clock = useMemo(() => {
     if (props.isEditing) {
@@ -529,7 +546,8 @@ export default function Dashboard(props: Props) {
     );
   }, [router]);
 
-  // ⬢ Sidebar content for NotebookPanel
+  // =====================================
+  // ⬢ Sidebar Content
   // =====================================
   const sidebarContent = useMemo(
     () => (
@@ -544,7 +562,6 @@ export default function Dashboard(props: Props) {
             <ChatIcon size={22} />
           </button>
 
-          {/* Schedules Button - Only show if not viewer and not deleted */}
           {!isViewer && !isDeleted && (
             <button
               type="button"
@@ -558,7 +575,7 @@ export default function Dashboard(props: Props) {
         </div>
 
         <ShareModal
-          link={`${NEXT_PUBLIC_PUBLIC_URL()}/workspace/${props.workspaceId}/documents/${props.documentId}/notebook`}
+          link={`${NEXT_PUBLIC_PUBLIC_URL()}/workspace/${props.document.workspaceId}/documents/${props.document.id}/notebook`}
           initialVisibility="private"
           onVisibilityChange={handleVisibilityChange}
         />
@@ -660,7 +677,7 @@ export default function Dashboard(props: Props) {
 
   const lastUpdatedAt = useLastUpdatedAt(yDoc);
 
-  if (publishing) {
+  if (props.publishing) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
         <div className="flex flex-col items-center gap-4">
@@ -721,6 +738,7 @@ export default function Dashboard(props: Props) {
               visible={selectedSidebar?._tag === "schedules"}
               onHide={onHideSidebar}
               onPublish={onPublish}
+              publishing={props.publishing}
             />
             <Snapshots
               visible={selectedSidebar?._tag === "snapshots"}

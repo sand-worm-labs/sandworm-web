@@ -3,8 +3,9 @@ import type { Extension } from "@codemirror/state";
 import { HighlightStyle, syntaxHighlighting } from "@codemirror/language";
 import { tags as t } from "@lezer/highlight";
 
-// ─── Light Theme ────────────────────────────────────────────────────────────
-
+// =====================================
+// ⬢ Light Theme
+// =====================================
 function materialLightTheme(disabled: boolean) {
   return EditorView.theme(
     {
@@ -54,8 +55,9 @@ export function materialLight(disabled: boolean): Extension {
   ];
 }
 
-// ─── Dark Theme ─────────────────────────────────────────────────────────────
-
+// =====================================
+// ⬢ Dark Theme
+// =====================================
 function materialDarkTheme(disabled: boolean) {
   return EditorView.theme(
     {

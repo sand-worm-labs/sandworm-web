@@ -9,6 +9,9 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
   className?: string;
 }
 
+// =====================================
+// ⬢ Scroll bar
+// =====================================
 const ScrollBar = forwardRef<HTMLDivElement, Props>(
   function ScrollBar(props, ref) {
     return (
@@ -20,8 +23,9 @@ const ScrollBar = forwardRef<HTMLDivElement, Props>(
         events={{
           initialized: instance => {
             if (ref && typeof ref !== "function") {
-              (ref as React.MutableRefObject<HTMLDivElement>).current =
-                instance.elements().scrollEventElement as HTMLDivElement;
+              const mutableRef = ref as React.MutableRefObject<HTMLDivElement>;
+              mutableRef.current = instance.elements()
+                .scrollEventElement as HTMLDivElement;
             }
           },
         }}

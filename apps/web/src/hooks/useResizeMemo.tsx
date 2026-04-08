@@ -1,6 +1,9 @@
 import { equals } from "ramda";
 import { useEffect, useState } from "react";
 
+// =====================================
+// ⬢ Use Resize Memo
+// =====================================
 export default function useResizeMemo<T>(
   handler: (rect: DOMRect | null) => T,
   domEl: HTMLElement | null
@@ -10,7 +13,7 @@ export default function useResizeMemo<T>(
   useEffect(() => {
     if (!domEl) {
       setRect(null);
-      return;
+      return () => {};
     }
 
     const cb = () => {

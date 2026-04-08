@@ -2,6 +2,9 @@ import { useState } from "react";
 
 import { FeaturedExploreCard } from "./FeaturedExploreCard";
 
+// =====================================
+// ⬢ Types
+// =====================================
 type CardTag = "featured" | "popular" | "trending" | "new";
 
 interface FeaturedQuery {
@@ -17,6 +20,9 @@ interface FeaturedQuery {
   forks: number;
 }
 
+// =====================================
+// ⬢ Constants
+// =====================================
 const mockFeaturedQueries: FeaturedQuery[] = [
   {
     id: "popular_001",
@@ -56,6 +62,9 @@ const mockFeaturedQueries: FeaturedQuery[] = [
   },
 ];
 
+// =====================================
+// ⬢ Featured Explore Section
+// =====================================
 export function FeaturedExploreSection() {
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
 

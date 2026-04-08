@@ -18,6 +18,9 @@ type ResetPasswordFormProps = {
   onSuccess?: () => void;
 };
 
+// =====================================
+// ⬢ ResetPasswordForm
+// =====================================
 export const ResetPasswordForm = ({
   token,
   onSuccess,

@@ -21,16 +21,18 @@ import {
 
 import ScrollBar from "@/components/Editor/blocks/ScrollBar";
 
+import { parseDecimalPlaces, parseMultiplier } from "./utils";
 import type { Tab } from "./VisualizationSettingTabs";
 import VisualizationSettingsTabsV2 from "./VisualizationSettingTabs";
-
-// Import the tab components
 import GeneralTab from "./tabs/GeneralTab";
 import XAxisTab from "./tabs/XAxisTab";
 import YAxisTab from "./tabs/YAxisTab";
 import LabelsTab from "./tabs/LabelsTab";
 import DisplayControls from "./display/DisplayControls";
 
+// =====================================
+// ⬢ Types
+// =====================================
 interface Props {
   isHidden: boolean;
   dataframe: DataFrame | null;
@@ -68,10 +70,13 @@ interface Props {
   result: VisualizationV2BlockOutputResult | null;
 }
 
+// =====================================
+// ⬢ Visualization Controls
+// =====================================
 function VisualizationControlsV2(props: Props) {
   const [tab, setTab] = useState<Tab>("general");
 
-  // State variables for series number formatting
+  // ✦  State variables for series number formatting
   const [seriesDecimalPlaces, setSeriesDecimalPlaces] = useState<
     Record<string, string>
   >({});
@@ -79,7 +84,7 @@ function VisualizationControlsV2(props: Props) {
     Record<string, string>
   >({});
 
-  // Initialize state values from props on first render
+  // ✦ Initialize state values from props on first render
   useEffect(() => {
     const decimalPlacesMap: Record<string, string> = {};
     const multiplierMap: Record<string, string> = {};
@@ -98,7 +103,7 @@ function VisualizationControlsV2(props: Props) {
     setSeriesMultiplier(multiplierMap);
   }, []);
 
-  // Update input states when series change
+  // ✦  Update input states when series change
   useEffect(() => {
     const decimalPlacesMap = { ...seriesDecimalPlaces };
     const multiplierMap = { ...seriesMultiplier };
@@ -119,14 +124,15 @@ function VisualizationControlsV2(props: Props) {
       });
     });
 
-    // Only update state if something actually changed
+    // ✦  Only update state if something actually changed
     if (hasUpdates) {
       setSeriesDecimalPlaces(decimalPlacesMap);
       setSeriesMultiplier(multiplierMap);
     }
-  }, [props.yAxes]); // Only depend on props.yAxes, not the state variables
+  }, [props.yAxes]);
 
-  // GeneralTab callbacks
+  // ⬢ GeneralTab callbacks
+  // =====================================
   const onChangeYAxis = useCallback(
     (yAxis: YAxis, index: number) => {
       props.onChangeYAxes(props.yAxes.map((y, i) => (i === index ? yAxis : y)));
@@ -167,7 +173,8 @@ function VisualizationControlsV2(props: Props) {
     ]);
   }, [props.yAxes, props.onChangeYAxes]);
 
-  // YAxisTab callbacks
+  // ⬢ YAxisTab callbacks
+  // =====================================
   const onChangeYAxisName = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>, axisIndex: number) => {
       if (props.yAxes.length === 0) {
@@ -183,7 +190,8 @@ function VisualizationControlsV2(props: Props) {
     [props.yAxes, props.onChangeYAxes]
   );
 
-  // Series formatting helper function
+  // ⬢ Series formatting helper function
+  // =====================================
   const updateSeriesNumberFormat = useCallback(
     (seriesId: string, updates: Partial<NumberFormat>) => {
       const series = props.yAxes
@@ -204,7 +212,8 @@ function VisualizationControlsV2(props: Props) {
     [props.yAxes, props.onChangeSeries]
   );
 
-  // Series date formatting callbacks
+  // ⬢ Series date formatting callbacks
+  // =====================================
   const onChangeSeriesDateStyle = useCallback(
     (seriesId: string, dateStyle: string | null) => {
       if (!dateStyle) return;
@@ -270,7 +279,8 @@ function VisualizationControlsV2(props: Props) {
     [props.yAxes, props.onChangeSeries]
   );
 
-  // Series number formatting callbacks
+  // ⬢ Series number formatting callbacks
+  // =====================================
   const onChangeSeriesNumberStyle = useCallback(
     (seriesId: string, style: string | null) => {
       if (!style) return;
@@ -323,7 +333,8 @@ function VisualizationControlsV2(props: Props) {
       setSeriesDecimalPlaces(prev => ({ ...prev, [seriesId]: inputValue }));
 
       const cleanedValue = inputValue.replace(/[^\d]/g, "");
-      const isValid = cleanedValue !== "" && !isNaN(parseInt(cleanedValue, 10));
+      const isValid =
+        cleanedValue !== "" && !Number.isNaN(parseInt(cleanedValue, 10));
 
       if (isValid) {
         const numValue = parseInt(cleanedValue, 10);
@@ -484,33 +495,5 @@ function VisualizationControlsV2(props: Props) {
     </ScrollBar>
   );
 }
-
-/**
- * Parse decimal places input and return validity + value
- * @param input The string input to parse
- * @returns Object containing validation results and parsed value
- */
-export const parseDecimalPlaces = (input: string) => {
-  const cleanedValue = input.replace(/[^\d]/g, "");
-  let numValue = parseInt(cleanedValue, 10);
-  if (Number.isNaN(numValue)) {
-    numValue = 2;
-  }
-  return { numValue, cleanedValue };
-};
-
-/**
- * Parse multiplier input and return validity + value
- * @param input The string input to parse
- * @returns Object containing validation results and parsed value
- */
-export const parseMultiplier = (input: string) => {
-  const cleanedValue = input.replace(/[^\d.]/g, "");
-  let numValue = parseFloat(cleanedValue);
-  if (Number.isNaN(numValue)) {
-    numValue = 1;
-  }
-  return { numValue, cleanedValue };
-};
 
 export default VisualizationControlsV2;

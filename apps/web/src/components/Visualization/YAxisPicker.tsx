@@ -33,6 +33,9 @@ interface Props {
   onAddYAxis?: () => void;
 }
 
+// =====================================
+// ⬢ Utils
+// =====================================
 export function getAggFunction(
   series: Series,
   column: DataFrameColumn | null
@@ -48,6 +51,9 @@ export function getAggFunction(
   return "count";
 }
 
+// =====================================
+// ⬢ YAxisPicker
+// =====================================
 function YAxisPickerV2(props: Props) {
   const onChangeColumn = useCallback(
     (column: DataFrameColumn | null, index: number) => {
@@ -177,7 +183,7 @@ function YAxisPickerV2(props: Props) {
           },
           (a, b) => {
             const aIsBoolean = DataFrameBooleanColumn.safeParse(a).success;
-            const bIsBoolean = DataFrameNumberColumn.safeParse(b).success; // Note: this looks like a bug?
+            const bIsBoolean = DataFrameNumberColumn.safeParse(b).success; // ⬢ Note: this looks like a bug?
             if (aIsBoolean === bIsBoolean) return 0;
             return aIsBoolean ? -1 : 1;
           },
@@ -230,7 +236,7 @@ function YAxisPickerV2(props: Props) {
               : undefined
           )
           .map((s, i) => (
-            <div key={i}>
+            <div key={s.column ? `${s.column.name}-${i}` : `series-${i}`}>
               <div className="flex space-x-1 items-end relative group">
                 <div className="w-full">
                   <AxisSelector

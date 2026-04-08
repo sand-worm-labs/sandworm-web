@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 import {
   Bars3BottomLeftIcon,
   CalendarIcon,
@@ -15,6 +16,9 @@ import {
 
 import ScrollBar from "../../ScrollBar";
 
+// =====================================
+// ⬢ Types
+// =====================================
 interface Props {
   rows: Record<string, Json>[];
   columns: DataFrameColumn[];
@@ -23,6 +27,10 @@ interface Props {
   onChangeSort: (sort: TableSort | null) => void;
   topBorder: "rounded" | "square" | null;
 }
+
+// =====================================
+// ⬢ Table
+// =====================================
 function Table(props: Props) {
   const onChangeSort = (column: string) => () => {
     const currentOrder =
@@ -73,13 +81,11 @@ function Table(props: Props) {
                       <span>{column.name}</span>
                     </div>
                     {props.sort && props.sort.column === column.name ? (
-                      <>
-                        {props.sort.order === "asc" ? (
-                          <ArrowUpIcon className="h-3 w-3" />
-                        ) : (
-                          <ArrowDownIcon className="h-3 w-3" />
-                        )}
-                      </>
+                      props.sort.order === "asc" ? (
+                        <ArrowUpIcon className="h-3 w-3" />
+                      ) : (
+                        <ArrowDownIcon className="h-3 w-3" />
+                      )
                     ) : (
                       <ArrowsUpDownIcon className="w-3 h-3 text-gray-300" />
                     )}
@@ -123,6 +129,9 @@ function Table(props: Props) {
   );
 }
 
+// =====================================
+// ⬢ Utils
+// =====================================
 export function getColumnTypeIcon(
   type: DataFrameColumn["type"]
 ): typeof FlagIcon {
@@ -172,13 +181,11 @@ export function getColumnTypeIcon(
     case "ULong":
     case "ulonglong":
     case "ULongLong":
-
     case "timedelta64":
     case "timedelta64[ns]":
     case "timedelta64[ns, UTC]":
     case "timedelta64[us]":
     case "timedelta64[us, UTC]":
-
     case "f2":
     case "f4":
     case "f8":
@@ -203,8 +210,6 @@ export function getColumnTypeIcon(
     case "bytes":
     case "bytes0":
     case "str0":
-    case "str":
-    case "bytes":
     case "category":
     case "object":
     case "object0":
@@ -239,6 +244,9 @@ export function getColumnTypeIcon(
     case "bool8":
     case "b1":
     case "boolean":
+      return FlagIcon;
+
+    default:
       return FlagIcon;
   }
 }

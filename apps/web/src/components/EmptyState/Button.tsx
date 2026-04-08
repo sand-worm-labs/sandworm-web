@@ -13,6 +13,9 @@ interface ButtonProps {
   isLoading?: boolean;
 }
 
+// =====================================
+// ⬢ Button
+// =====================================
 export const Button: React.FC<ButtonProps> = ({
   label,
   onClick,

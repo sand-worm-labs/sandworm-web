@@ -50,6 +50,8 @@ function invalidVariableErrorMessage(
           retry.
         </>
       );
+    default:
+      throw new Error(`Unhandled status: ${status satisfies never}`);
   }
 }
 
@@ -175,7 +177,7 @@ function DateInput(props: Props) {
 
             {!props.isApp && props.isEditable && (
               <div className="flex items-center space-x-1">
-                <button onClick={toggleConfigOpen}>
+                <button type="button" onClick={toggleConfigOpen}>
                   <Cog6ToothIcon className="h-4 w-4 text-ink-400 hover:text-gray-600" />
                 </button>
                 <div

@@ -5,6 +5,7 @@ import { FaGithub } from "react-icons/fa";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useGoogleLogin } from "@react-oauth/google";
+import { toast } from "sonner";
 
 import { useSessionStore } from "@/store/session";
 import {
@@ -17,11 +18,16 @@ type SocialLoginProps = {
   variant?: "signup" | "signin";
 };
 
+// =====================================
+// ⬢ Social Login
+// =====================================
 export const SocialLogin = ({ variant = "signup" }: SocialLoginProps) => {
   const [isLoading, setIsLoading] = useState<"google" | "github" | null>(null);
   const router = useRouter();
   const { setIntent, setSession } = useSessionStore();
 
+  // ⬢ handle Backend Login
+  // =====================================
   const handleBackendLogin = async (
     provider: "google" | "github",
     code: string
@@ -45,7 +51,7 @@ export const SocialLogin = ({ variant = "signup" }: SocialLoginProps) => {
       router.push(variant === "signup" ? "/claim" : "/workspace");
     } catch (err: any) {
       console.error(err);
-      alert(err.message || "Authentication failed");
+      toast.error(err.message || "Authentication failed");
     } finally {
       setIsLoading(null);
     }
@@ -60,7 +66,8 @@ export const SocialLogin = ({ variant = "signup" }: SocialLoginProps) => {
     },
   });
 
-  // GitHub popup
+  // ⬢ Github Popup
+  // =====================================
   const openGitHubPopup = () => {
     setIsLoading("github");
     setIntent(variant);
@@ -102,13 +109,12 @@ export const SocialLogin = ({ variant = "signup" }: SocialLoginProps) => {
         window.removeEventListener("message", handleMessage);
         setIsLoading(null);
         popup.close();
-        alert(event.data.error || "Authentication failed");
+        toast.error(event.data.error || "Authentication failed");
       }
     };
 
     window.addEventListener("message", handleMessage);
 
-    // Detect if user manually closes the popup
     const checkClosed = setInterval(() => {
       if (popup.closed) {
         clearInterval(checkClosed);
@@ -118,6 +124,8 @@ export const SocialLogin = ({ variant = "signup" }: SocialLoginProps) => {
     }, 500);
   };
 
+  // ⬢ handleOAuthLogin
+  // =====================================
   const handleOAuthLogin = (provider: "google" | "github") => {
     if (provider === "google") {
       setIntent(variant);
@@ -137,7 +145,6 @@ export const SocialLogin = ({ variant = "signup" }: SocialLoginProps) => {
 
   return (
     <div className="w-full mt-4">
-      {/* Google Login Button */}
       <button
         type="button"
         onClick={() => handleOAuthLogin("google")}
@@ -148,7 +155,6 @@ export const SocialLogin = ({ variant = "signup" }: SocialLoginProps) => {
         <span>{getButtonText("google")}</span>
       </button>
 
-      {/* GitHub Login Button */}
       <button
         type="button"
         onClick={() => handleOAuthLogin("github")}

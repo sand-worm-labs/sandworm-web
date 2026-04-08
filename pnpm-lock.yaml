@@ -1068,12 +1068,18 @@ importers:
       '@types/react-color':
         specifier: ^3.0.13
         version: 3.0.13(@types/react@18.3.26)
+      '@types/react-copy-to-clipboard':
+        specifier: ^5.0.7
+        version: 5.0.7
       '@types/react-dom':
         specifier: catalog:react
         version: 18.3.7(@types/react@18.3.26)
       '@types/react-grid-layout':
         specifier: ^1.3.5
         version: 1.3.5
+      '@types/react-plotly.js':
+        specifier: ^2.6.4
+        version: 2.6.4
       '@types/react-syntax-highlighter':
         specifier: ^15.5.13
         version: 15.5.13
@@ -6641,6 +6647,9 @@ packages:
   '@types/pg@8.15.5':
     resolution: {integrity: sha512-LF7lF6zWEKxuT3/OR8wAZGzkg4ENGXFNyiV/JeOt9z5B+0ZVwbql9McqX5c/WStFq1GaGso7H1AzP/qSzmlCKQ==}
 
+  '@types/plotly.js@3.0.10':
+    resolution: {integrity: sha512-q+MgO4aajC2HrO7FllTYWzrpdfbTjboSMfjkz/aXKjg1v7HNo1zMEFfAW7quKfk6SL+bH74A5ThBEps/7hZxOA==}
+
   '@types/prop-types@15.7.15':
     resolution: {integrity: sha512-F6bEyamV9jKGAFBEmlQnesRPGOQqS2+Uwi0Em15xenOxHaf2hv6L8YCVn3rPdPJOiJfPiCnLIRyvwVaqMY3MIw==}
 
@@ -6658,6 +6667,9 @@ packages:
     peerDependencies:
       '@types/react': '*'
 
+  '@types/react-copy-to-clipboard@5.0.7':
+    resolution: {integrity: sha512-Gft19D+as4M+9Whq1oglhmK49vqPhcLzk8WfvfLvaYMIPYanyfLy0+CwFucMJfdKoSFyySPmkkWn8/E6voQXjQ==}
+
   '@types/react-dom@18.3.7':
     resolution: {integrity: sha512-MEe3UeoENYVFXzoXEWsvcpg6ZvlrFNlOQ7EOsvhI3CfAXwzPfO8Qwuxd40nepsYKqyyVQnTdEfv68q91yLcKrQ==}
     peerDependencies:
@@ -6668,6 +6680,9 @@ packages:
 
   '@types/react-paginate@7.1.4':
     resolution: {integrity: sha512-6fqZvDzRJHubOGl6c7cGFC9ysgQSWYy0Gpus9HjORpydlcXgPnT8x+aKgqwCdtpZrRTwcBz2Q7JWAOYaRrsXGg==}
+
+  '@types/react-plotly.js@2.6.4':
+    resolution: {integrity: sha512-AU6w1u3qEGM0NmBA69PaOgNc0KPFA/+qkH6Uu9EBTJ45/WYOUoXi9AF5O15PRM2klpHSiHAAs4WnlI+OZAFmUA==}
 
   '@types/react-syntax-highlighter@15.5.13':
     resolution: {integrity: sha512-uLGJ87j6Sz8UaBAooU0T6lWJ0dBmjZgN1PZTrj05TNql2/XpC6+4HhMT5syIdFUUt+FASfCeLLv4kBygNU+8qA==}
@@ -21729,6 +21744,8 @@ snapshots:
       pg-protocol: 1.10.3
       pg-types: 2.2.0
 
+  '@types/plotly.js@3.0.10': {}
+
   '@types/prop-types@15.7.15': {}
 
   '@types/qs@6.14.0': {}
@@ -21744,6 +21761,10 @@ snapshots:
       '@types/react': 18.3.26
       '@types/reactcss': 1.2.13(@types/react@18.3.26)
 
+  '@types/react-copy-to-clipboard@5.0.7':
+    dependencies:
+      '@types/react': 19.2.2
+
   '@types/react-dom@18.3.7(@types/react@18.3.26)':
     dependencies:
       '@types/react': 18.3.26
@@ -21754,6 +21775,11 @@ snapshots:
 
   '@types/react-paginate@7.1.4':
     dependencies:
+      '@types/react': 19.2.2
+
+  '@types/react-plotly.js@2.6.4':
+    dependencies:
+      '@types/plotly.js': 3.0.10
       '@types/react': 19.2.2
 
   '@types/react-syntax-highlighter@15.5.13':
