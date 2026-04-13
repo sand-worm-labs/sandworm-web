@@ -50,6 +50,7 @@ function getWSProvider(
       clock: clock.toString(),
       isApp: isDataApp ? "true" : "false",
       userId: userId ?? "",
+      publishedAt: publishedAt ?? "",
       access_token: accessToken ?? "",
     },
     resyncInterval: 30000,

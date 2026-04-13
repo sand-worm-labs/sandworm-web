@@ -33,7 +33,6 @@ export default function HeaderSelect(props: Props) {
   const onChange = useCallback(
     (newValue: string) => {
       if (!isDisabled) {
-        console.log("onChange", newValue);
         props.onChange(newValue);
       }
     },

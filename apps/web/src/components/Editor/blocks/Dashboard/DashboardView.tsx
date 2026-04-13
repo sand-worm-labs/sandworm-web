@@ -352,7 +352,7 @@ export default function DashboardView(props: Props) {
       <div className="pb-8 px-1">
         <Title
           // eslint-disable-next-line react/style-prop-object
-          style="font-weight: bold; font-size: 2.5rem;"
+          style="font-weight: medium; font-size: 2.5rem;"
           content={props.yDoc.getXmlFragment("title")}
           isLoading={false}
           isEditable={props.isEditing && props.userRole !== "viewer"}

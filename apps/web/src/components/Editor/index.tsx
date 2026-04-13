@@ -554,10 +554,20 @@ const DraggableTabbedBlock = (props: {
       previewOptions: {
         captureDraggingState: true,
       },
-      item: () => ({ blockGroupId: props.id }),
-      collect: monitor => ({
-        isDragging: !!monitor.isDragging(),
-      }),
+      item: () => {
+        console.log(
+          "[drag] item fired, blockGroupId:",
+          props.id,
+          "canDrag:",
+          props.isEditable && !props.isApp
+        );
+        return { blockGroupId: props.id };
+      },
+      collect: monitor => {
+        const dragging = !!monitor.isDragging();
+        if (dragging) console.log("[drag] isDragging TRUE for", props.id);
+        return { isDragging: dragging };
+      },
     }),
     [props.id]
   );
@@ -589,7 +599,18 @@ const DraggableTabbedBlock = (props: {
           droppedType
         );
       },
-      canDrop: ({ blockGroupId }) => blockGroupId !== props.id,
+      canDrop: ({ blockGroupId }) => {
+        const result = blockGroupId !== props.id;
+        console.log(
+          "[drop] canDrop check — dragged:",
+          blockGroupId,
+          "target:",
+          props.id,
+          "result:",
+          result
+        );
+        return result;
+      },
       collect: monitor => ({
         isOver: monitor.isOver() ?? false,
         canDrop: monitor.canDrop() ?? false,
@@ -978,11 +999,9 @@ file`;
             hidden: !props.isEditable || props.isApp,
           }
         )}
-        ref={d => {
-          drag(d);
-        }}
       >
         <DragHandle
+          dragRef={drag}
           hasRunnableBlocks={hasRunnableBlocks}
           hasMultipleTabs={hasMultipleTabs}
           isDragging={isDragging}
@@ -1554,6 +1573,13 @@ const Editor = (props: Props) => {
       targetId: string,
       type: Identifier | null
     ) => {
+      console.log("[onGroup] called —", {
+        blockGroupId,
+        blockId,
+        targetId,
+        type,
+      });
+
       props.yDoc.transact(() => {
         if (type === ElementType.Block) {
           groupBlocks(layout.value, blockGroupId, blockId, targetId);
