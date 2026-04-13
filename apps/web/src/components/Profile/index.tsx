@@ -4,7 +4,6 @@
 
 import { useState } from "react";
 import {
-  User,
   Calendar,
   Link as LinkIcon,
   Github,
@@ -16,6 +15,7 @@ import {
   Check,
 } from "lucide-react";
 import Image from "next/image";
+import { Avatar, AvatarFallback } from "@sandworm/ui/components/avatar";
 
 import { useCurrentUser } from "../Editor/hooks/useCurrentUser";
 import { Loader } from "../Loader";
@@ -117,9 +117,21 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                             className="w-[6rem] h-[6rem]  rounded-full"
                           />
                         ) : (
-                          <div className="w-[7rem] h-[7rem] rounded-full bg-[#A308F0] flex items-center justify-center">
-                            <User className="w-16 h-16 text-white" />
-                          </div>
+                          <Avatar>
+                            <AvatarFallback className="relative overflow-hidden">
+                              <Image
+                                src="/img/avatar/avatar6.svg"
+                                alt=""
+                                width={96}
+                                height={96}
+                                className="object-cover"
+                              />
+                              <span className="relative z-10 font-bold font-body text-white text-xl">
+                                {currentUser.firstName?.split(" ")[0]?.[0] ??
+                                  "U"}
+                              </span>
+                            </AvatarFallback>
+                          </Avatar>
                         )}
                       </div>
                       <div className="flex items-center gap-3">
