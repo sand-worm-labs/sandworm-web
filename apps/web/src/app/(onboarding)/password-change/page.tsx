@@ -60,7 +60,7 @@ export default function ResetPasswordPage() {
       <h2 className="text-2xl font-medium text-center text-black mb-2 mt-4 dark:text-white">
         Reset your Password
       </h2>
-      <p className="mb-6 text-ink-200 text-sm text-center">
+      <p className="mb-6 text-ink-200  text-sm text-center">
         Please create a new password, please note your new password cannot be
         the same as your old password.
       </p>
