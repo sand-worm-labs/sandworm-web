@@ -19,16 +19,18 @@ interface WorkspaceLayoutProps {
 }
 
 export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
-  const { loading: sessionLoading } = useSession({ redirectToLogin: true });
-  const { workspaceInfo } = useCurrentWorkspaceInfo();
+  const { loading: sessionLoading, isAuthenticated } = useSession({
+    redirectToLogin: true,
+  });
+
+  const { workspaceInfo, isLoading: workspaceLoading } =
+    useCurrentWorkspaceInfo(sessionLoading || !isAuthenticated);
 
   const pathname = usePathname();
   const workspaceId = workspaceInfo?.id ?? "";
 
   const { requestRoleUpgrade } = useRequestRoleUpgrade(workspaceId);
 
-  // TODO: Replace with polling or WebSocket event to detect approval.
-  // Currently status resets to "viewing" on refresh — no persistence yet.
   const [accessStatus, setAccessStatus] = useState<
     "viewing" | "sent" | "pending" | "approved"
   >("viewing");
@@ -37,17 +39,15 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
     pathname.includes("/documents/") &&
     (pathname.endsWith("/edit") || pathname.includes("/notebook"));
 
-  console.log(workspaceInfo, "workspace");
   const isViewer = workspaceInfo?.role === "viewer";
 
   const handleRequestAccess = async () => {
     await requestRoleUpgrade("editor");
     setAccessStatus("sent");
-    // TODO: Poll getUserWorkspaceInfo or listen to WebSocket to transition
-    // from "sent" -> "pending" -> "approved" when admin acts on the request.
   };
 
-  if (sessionLoading) {
+  // Gate everything — don't render children until both session AND workspace resolve
+  if (sessionLoading || workspaceLoading) {
     return (
       <div className="w-full h-full flex items-center justify-center">
         <Loader />
@@ -58,13 +58,10 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
   return (
     <div className="flex h-screen w-full bg-base-100">
       <WorkspaceSidebar />
-
       <div className="flex flex-col flex-1 overflow-hidden">
         {!shouldHideHeader && <AppHeader />}
-
         <main className="flex-1 overflow-y-auto bg-base-100">{children}</main>
       </div>
-
       {isViewer && (
         <ViewerAccessBar
           status={accessStatus}
