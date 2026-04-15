@@ -45,7 +45,7 @@ export default function ForgotPasswordPage() {
       <ForgotPasswordForm onSuccess={handleSuccess} />
       <div className="text-center flex justify-between items-center">
         <Link
-          href="/reset"
+          href="/signin"
           className="text-ink-100   hover:underline mt-4 text-sm font-body"
         >
           Back to Login

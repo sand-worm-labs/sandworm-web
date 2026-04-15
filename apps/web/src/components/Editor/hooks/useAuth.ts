@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
+import { useApolloClient } from "@apollo/client";
 
 import type { ApiUser, UserWorkspaceRole } from "@/types";
 import { useCurrentUserQuery } from "@/generated/graphql";
@@ -324,21 +325,24 @@ export const useSession = ({
 // ⬢ Use Signout Hook
 // =====================================
 export const useSignout = () => {
-  const router = useRouter();
+  const apolloClient = useApolloClient();
 
   return useCallback(async () => {
     try {
-      await fetch(`${NEXT_PUBLIC_API_URL()}/auth/logout`, {
+      const response = await fetch(`${NEXT_PUBLIC_API_URL()}/auth/logout`, {
         method: "POST",
         credentials: "include",
-        headers: { "Content-Type": "application/json" },
       });
+
+      const body = await response.text();
+      console.log("[signout] response body:", body);
     } catch (error) {
-      console.error("Logout API call failed:", error);
+      console.error("[signout] fetch failed:", error);
     }
 
-    router.push("/signin");
-  }, [router]);
+    await apolloClient.clearStore();
+    window.location.href = "/signin";
+  }, [apolloClient]);
 };
 
 // ⬢ Use ForgotPassword Hook
