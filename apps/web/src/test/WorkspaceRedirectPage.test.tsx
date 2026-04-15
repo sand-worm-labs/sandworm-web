@@ -7,7 +7,6 @@ import WorkspaceRedirectPage from "@/app/workspace/page";
 import { useSession, useSignout } from "@/components/Editor/hooks/useAuth";
 import { useCurrentWorkspaceInfo } from "@/components/Editor/hooks/useWorkspaces";
 
-// Mock the hooks — we test the page logic, not the hooks themselves
 vi.mock("@/components/Editor/hooks/useAuth", () => ({
   useSession: vi.fn(),
   useSignout: vi.fn(),
@@ -17,8 +16,9 @@ vi.mock("@/components/Editor/hooks/useWorkspaces", () => ({
   useCurrentWorkspaceInfo: vi.fn(),
 }));
 
-// ─── HELPERS ───────────────────────────────────────────────────────────────
-
+// =====================================
+// ⬢ Helpers
+// =====================================
 const mockRouter = { replace: vi.fn(), push: vi.fn() };
 const mockSignout = vi.fn();
 
@@ -39,16 +39,15 @@ const mockWorkspace = (overrides = {}) => ({
   ...overrides,
 });
 
-// ─── SETUP ─────────────────────────────────────────────────────────────────
-
 beforeEach(() => {
   vi.clearAllMocks();
   vi.mocked(useRouter).mockReturnValue(mockRouter as any);
   vi.mocked(useSignout).mockReturnValue(mockSignout);
 });
 
-// ─── TESTS ─────────────────────────────────────────────────────────────────
-
+// =====================================
+// ⬢ Tests
+// =====================================
 describe("WorkspaceRedirectPage", () => {
   describe("happy path", () => {
     it("redirects to workspace when authenticated and workspace resolves", async () => {
