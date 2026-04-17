@@ -13,6 +13,7 @@ import {
 } from "@/components/Editor/hooks/useWorkspaces";
 import { ViewerAccessBar } from "@/components/ViewerAccessBar";
 import { Loader } from "@/components/Loader";
+import MobileWarning from "@/components/Editor/blocks/MobileWarning";
 
 interface WorkspaceLayoutProps {
   children: ReactNode;
@@ -46,7 +47,6 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
     setAccessStatus("sent");
   };
 
-  // Gate everything — don't render children until both session AND workspace resolve
   if (sessionLoading || workspaceLoading) {
     return (
       <div className="w-full h-full flex items-center justify-center">
@@ -57,6 +57,7 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
 
   return (
     <div className="flex h-screen w-full bg-base-100">
+      <MobileWarning />
       <WorkspaceSidebar />
       <div className="flex flex-col flex-1 overflow-hidden">
         {!shouldHideHeader && <AppHeader />}

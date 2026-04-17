@@ -88,15 +88,15 @@ export function Chat({
   };
 
   return (
-    <div className="flex flex-row justify-center pb-4 md:pb-8 h-full bg-base-100">
+    <div className="flex flex-row justify-center pb-4 md:pb-8 h-full bg-base-100 min-h-[90vh] items-center ">
       <div className="flex flex-col mt-[8%] items-center gap-2">
-        <h1 className="text-3xl lg:text-3xl font-medium text-center tracking-tighter font-body ">
+        <h1 className="text-2xl lg:text-3xl font-medium text-center tracking-tighter font-body ">
           What do you want to explore onchain today?
         </h1>
 
         <p className="text-ink-400">Search the blockchain for information</p>
 
-        <form className="flex flex-row gap-2 relative items-end w-full md:max-w-[800px] max-w-[calc(100dvw-32px)] px-4 md:px-0 min-w-[760px]">
+        <form className="flex flex-row gap-2 relative items-end w-full md:max-w-[800px] max-w-[calc(100dvw-32px)] md:px-4 px-0 md:min-w-[760px]">
           <MultimodalInput
             input={input}
             setInput={setInput}
@@ -111,7 +111,7 @@ export function Chat({
           />
         </form>
 
-        <div className="mt-6">
+        <div className="mt-6 hidden lg:block">
           <h3 className="mb-4 px-6 text-sm font-body font-medium text-ink-100">
             Test Queries
           </h3>

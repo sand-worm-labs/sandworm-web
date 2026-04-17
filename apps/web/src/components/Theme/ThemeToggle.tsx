@@ -17,7 +17,7 @@ export function ThemeTogggle() {
         <DropdownMenuTrigger asChild>
           <Button
             variant="outline"
-            className="border-none bg-base-100 hover:bg-base-600 p-2 rounded-md"
+            className="border-none bg-transparent hover:bg-base-600 p-2 rounded-md"
             size="icon"
           >
             <Sun
