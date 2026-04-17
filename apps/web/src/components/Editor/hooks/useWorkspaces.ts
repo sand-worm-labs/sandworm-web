@@ -115,16 +115,20 @@ export const useWorkspace = (workspaceId: string) => {
 // =====================================
 // ⬢ useCurrentWorkspaceInfo
 // =====================================
-export const useCurrentWorkspaceInfo = () => {
-  const { data, loading, error, refetch } = useGetUserWorkspaceInfoQuery({
-    fetchPolicy: "cache-and-network",
-  });
+export const useCurrentWorkspaceInfo = (skip = false) => {
+  const { data, loading, error, refetch, networkStatus } =
+    useGetUserWorkspaceInfoQuery({
+      fetchPolicy: "cache-and-network",
+      notifyOnNetworkStatusChange: true,
+      skip,
+    });
 
   return {
     workspaceInfo: data?.getUserWorkspaceInfo,
-    isLoading: loading,
+    isLoading: loading && !skip,
     error,
     refetch,
+    networkStatus,
   };
 };
 

@@ -49,7 +49,7 @@ export const AppHeader: FC = () => {
         <span className="text-lg font-medium">{title}</span>
       </div>
 
-      <div className="flex items-center">
+      <div className="flex items-center lg:justify-normal justify-between w-full md:w-auto">
         <button
           type="button"
           onClick={() => setMenuOpen(!menuOpen)}

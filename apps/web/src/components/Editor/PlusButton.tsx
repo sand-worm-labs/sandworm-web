@@ -274,7 +274,6 @@ function PlusButton(props: Props) {
   const handleSelectTool = useCallback(
     (toolId: string) => {
       props.onAddAnalyticsBlock(toolId);
-      console.log("handleSelectTool", toolId);
       setIsToolboxOpen(false);
     },
     [props.onAddAnalyticsBlock]

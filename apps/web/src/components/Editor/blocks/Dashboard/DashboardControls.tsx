@@ -40,7 +40,7 @@ import {
 import { Heading1Icon } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import clsx from "clsx";
-import SimpleBar from "simplebar-react";
+import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 
 import type { ApiDocument } from "@/types";
 import VisualizationV2Block from "@/components/Visualization/index";
@@ -185,6 +185,7 @@ function BlockPreview(props: BlockPreviewProps) {
         <div className="w-full h-96" />
       </div>
     ),
+    onWriteback: () => null,
     onDashboardHeader: () => null,
     onPowerToolbox: () => null,
   });
@@ -248,6 +249,7 @@ function BlockListItem(props: BlockListItemProps) {
       case BlockType.RichText:
       case BlockType.FileUpload:
       case BlockType.DashboardHeader:
+      case BlockType.Writeback:
       case BlockType.PowerToolbox:
         return;
       default:
@@ -449,6 +451,7 @@ function DashboardControls(props: Props) {
                 onPivotTable: () => block,
                 onFileUpload: () => null,
                 onDashboardHeader: () => null,
+                onWriteback: () => null,
                 onPowerToolbox: () => null,
               });
             }) ?? [];
@@ -493,6 +496,7 @@ function DashboardControls(props: Props) {
                 case BlockType.FileUpload:
                 case BlockType.DashboardHeader:
                 case BlockType.PowerToolbox:
+                case BlockType.Writeback:
                   // these do not show up in the list in the first place
                   break;
                 default:
@@ -566,7 +570,7 @@ function DashboardControls(props: Props) {
             />
           </div>
         </div>
-        <SimpleBar className="px-3 h-full overflow-y-auto no-scroll">
+        <OverlayScrollbarsComponent className="px-3 h-full overflow-y-auto no-scroll">
           <BlocksList
             document={props.document}
             list={blocksList}
@@ -580,7 +584,7 @@ function DashboardControls(props: Props) {
             aiTasks={props.aiTasks}
             onExpand={props.onExpand}
           />
-        </SimpleBar>
+        </OverlayScrollbarsComponent>
         <div className="bg-gray-50 dark:bg-base-100  dark:border-border-tertiary p-4 border-t border-border-secondary">
           <button
             type="button"

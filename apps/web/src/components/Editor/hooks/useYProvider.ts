@@ -10,16 +10,11 @@ import { useSession } from "./useAuth";
 // =====================================
 // ⬢ Utils
 // =====================================
-export function getDocId(
-  id: string,
-  isDataApp: boolean,
-  clock: number,
-  publishedAt: string | null
-) {
+export function getDocId(id: string, isDataApp: boolean, clock: number) {
   const parts = [id, isDataApp, clock];
-  if (publishedAt) {
+  /*  if (publishedAt) {
     parts.push(publishedAt);
-  }
+  } */
 
   return parts.join("-");
 }
@@ -40,8 +35,14 @@ function getWSProvider(
   publishedAt: string | null,
   accessToken: string | null
 ): WebsocketProvider {
-  const id = getDocId(documentId, isDataApp, clock, publishedAt);
+  const id = getDocId(documentId, isDataApp, clock /* publishedAt */);
   const wsUrl = getYjsUrl();
+
+  console.log("[Room Name]", {
+    mode: isDataApp ? "VIEW" : "EDIT",
+    roomId: id,
+    parts: [documentId, isDataApp, clock],
+  });
 
   return new WebsocketProvider(wsUrl, id, yDoc, {
     connect: false,
@@ -50,6 +51,7 @@ function getWSProvider(
       clock: clock.toString(),
       isApp: isDataApp ? "true" : "false",
       userId: userId ?? "",
+      publishedAt: publishedAt ?? "",
       access_token: accessToken ?? "",
     },
     resyncInterval: 30000,

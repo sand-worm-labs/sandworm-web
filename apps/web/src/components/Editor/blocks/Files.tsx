@@ -475,9 +475,6 @@ export default function Files(props: Props) {
   const [cwd, setCwd] = useState("/home/sandwormuser");
   const relPath = cwd.replace("/home/sandwormuser", ".") || "./";
 
-  console.log("[Files] cwd:", cwd);
-  console.log("[Files] relPath:", relPath);
-
   const [showHidden, setShowHidden] = useState(false);
 
   const onUseInPython = useCallback(
@@ -679,7 +676,6 @@ file`;
     [actualFiles]
   );
 
-  console.log(actualFiles, files, "file");
 
   const results = useMemo(
     () => upload.results.filter(f => f.outcome !== "success"),
