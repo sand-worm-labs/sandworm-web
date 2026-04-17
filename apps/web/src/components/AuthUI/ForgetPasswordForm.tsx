@@ -65,7 +65,7 @@ export const ForgotPasswordForm = ({ onSuccess }: ForgotPasswordFormProps) => {
 
       <button
         type="submit"
-        disabled={state.loading}
+        disabled={state.loading || !email.trim()}
         className="w-full rounded-3xl bg-[#0F0F0F] px-4 py-3.5 text-white font-medium disabled:bg-[#868E96] text-sm dark:bg-white dark:text-black"
       >
         {state.loading ? "Sending..." : "Send Reset Email"}

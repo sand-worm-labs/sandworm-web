@@ -90,11 +90,11 @@ function RunCodeTooltipContent({
 }) {
   return (
     <div
-      className="font-body pointer-events-none w-max bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1"
+      className="font-body pointer-events-none w-max bg-black text-white text-xs p-2 rounded-md flex flex-col gap-y-1"
       ref={tooltipRef}
     >
       <span>Run code</span>
-      <span className="inline-flex gap-x-1 items-center text-ink-400">
+      <span className="inline-flex gap-x-1 items-center text-ink-300">
         <span>⌘</span>
         <span>+</span>
         <span>Enter</span>

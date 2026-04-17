@@ -16,10 +16,10 @@ export const SignIn = () => {
   const params = useSearchParams();
   const error = params?.get("error");
   return (
-    <div className="w-full max-w-md rounded-lg  p-6 content flex flex-col justify-center items-center h-full mx-auto relative">
+    <div className="w-full max-w-md rounded-lg p-6 flex flex-col items-center min-h-[100dvh] mx-auto lg:justify-center lg:h-full relative">
       <SandwormLogo width="40" height="40" />
 
-      <h2 className="text-3xl font-medium text-center text-black mb-1 mt-3 font-body  dark:text-white">
+      <h2 className="lg:text-3xl text-2xl font-medium text-center text-black mb-1 mt-3 font-body  dark:text-white">
         Welcome back
       </h2>
 
@@ -28,19 +28,19 @@ export const SignIn = () => {
       </p>
 
       {error === "NoAccount" && (
-        <div className="w-full text-sm font-body  bg-red-50 text-red-700 border border-red-200 rounded-md p-3 mb-3">
+        <div className="w-full text-sm font-body  bg-red-50 text-error border border-red-200 rounded-md p-3 mb-3">
           No account found. Please sign up first.
         </div>
       )}
 
       <SocialLogin variant="signin" />
 
-      <div className="flex items-center gap-3 w-full my-2.5">
-        <div className="h-px bg-[#E9ECEF] dark:bg-[#FFFFFF30] flex-1" />
-        <span className="text-xs text-muted-foreground text-ink-400 font-body ">
+      <div className="flex items-center justify-center lg:justify-normal gap-3 w-full lg:my-2.5 my-0.5">
+        <div className="h-px bg-[#E9ECEF] dark:bg-[#FFFFFF30] flex-1 lg:block hidden" />
+        <span className="text-sm text-ink-100 font-medium font-body text-center ">
           or
         </span>
-        <div className="h-px bg-[#E9ECEF] dark:bg-[#FFFFFF30] flex-1" />
+        <div className="h-px bg-[#E9ECEF] dark:bg-[#FFFFFF30] flex-1 lg:block hidden" />
       </div>
 
       <SignInForm />
@@ -58,8 +58,8 @@ export const SignIn = () => {
         </Link>
       </div>
 
-      <div className="flex-col  gap-2 absolute bottom-[2rem] w-full flex items-center justify-center">
-        <p className="text-base text-ink-200 dark:text-ink-400 font-body font-medium mb-4">
+      <div className="flex-col gap-2 w-full flex items-center justify-center mt-auto pt-6 lg:absolute bottom-[2rem]">
+        <p className="lg:text-base text-sm text-ink-400 dark:text-ink-400 font-body font-medium lg:mb-4 mb-1">
           Trusted by teams at
         </p>
         <PartnersSection />

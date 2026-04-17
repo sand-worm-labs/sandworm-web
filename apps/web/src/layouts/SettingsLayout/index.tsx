@@ -59,9 +59,9 @@ export default function SettingsLayout({
       <div className="flex flex-1 min-h-0 md:flex-row flex-col ">
         <div
           className="p-6 px-3 border-r dark:border-borderLight my-12 border-[#E9ECEF] dark:border-border-tertiary bg-[#FEFFFF] dark:bg-base-500 flex-col justify-between flex self-stretch"
-          style={{ width: 250 }}
+          style={{ minWidth: 250 }}
         >
-          <ul className="mt-4  flex flex-col w-full">
+          <ul className="mt-4 flex  flex-col w-full">
             {tabs.map(tab => (
               <li key={tab.href}>
                 <Link
@@ -72,20 +72,24 @@ export default function SettingsLayout({
                       : "text-text-gray hover:bg-dark-translucent"
                   }`}
                 >
-                  {tab.icon}
+                  <span className="flex-shrink-0 hidden md:block">
+                    {tab.icon}
+                  </span>
                   <span> {tab.name}</span>
                 </Link>
               </li>
             ))}
           </ul>
 
-          <Button
-            variant="destructive"
-            onClick={signout}
-            className="w-full text-[0.8rem] py-2 bg-[#FF0000] dark:bg-[#FF4444] font-body"
-          >
-            <span>Sign Out</span>
-          </Button>
+          <div className="lg:block hidden">
+            <Button
+              variant="destructive"
+              onClick={signout}
+              className="w-full text-[0.8rem] py-2 bg-[#FF0000] dark:bg-[#FF4444] font-body "
+            >
+              <span>Sign Out</span>
+            </Button>
+          </div>
         </div>
 
         <hr className="md:hidden" />

@@ -201,7 +201,7 @@ export function MultimodalInput({
     fileState.upload._tag === "uploading" ? fileState.upload.current : null;
 
   return (
-    <div className="w-full max-w-3xl mx-auto px-4 mt-4">
+    <div className="w-full max-w-3xl mx-auto lg:marker:px-4 mt-4">
       <input
         type="file"
         className="fixed -top-4 -left-4 size-0.5 opacity-0 pointer-events-none"
