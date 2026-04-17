@@ -2049,7 +2049,6 @@ function TabRef(props: TabRefProps) {
         isFullScreen={props.isFullScreen}
       />
     ),
-    onWriteback: () => null,
     onPowerToolbox: block => (
       <AnalyticsBlock
         block={block}

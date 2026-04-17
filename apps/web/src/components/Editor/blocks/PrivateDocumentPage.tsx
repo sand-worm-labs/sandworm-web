@@ -1,5 +1,5 @@
 import dynamic from "next/dynamic";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { isNil } from "ramda";
 import Link from "next/link";
@@ -512,6 +512,12 @@ export default function PrivateDocumentPage(props: Props) {
     props.workspaceId,
     props.documentId
   );
+
+  useEffect(() => {
+    console.log(document, "doc")
+
+  }, [document])
+
 
   if (!document) {
     return (

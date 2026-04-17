@@ -102,8 +102,15 @@ export class SharedDoc implements WSSharedDoc {
     }
 
     public getTitleFromDoc(): string {
-        return this.ydoc.getXmlFragment('title').toJSON().slice(7, -8);
-    }
+        const fragment = this.ydoc.getXmlFragment('title')
+        const el = fragment.firstChild as Y.XmlElement | null
+        if (!el) return ""
+        let text = ""
+        el.forEach((child) => {
+          if (child instanceof Y.XmlText) text += child.toString()
+        })
+        return text.trim()
+      }
 
     public async replaceState(state: Buffer): Promise<void> {
         const result = await this.persistor.replaceState(this.clock, state);
