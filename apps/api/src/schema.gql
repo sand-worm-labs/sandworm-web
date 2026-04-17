@@ -159,6 +159,7 @@ type WorkspaceMember {
 type WorkspaceInfo {
   id: String!
   name: String!
+  icon: String!
   ownerId: String!
   createdAt: DateTime!
   updatedAt: DateTime!
