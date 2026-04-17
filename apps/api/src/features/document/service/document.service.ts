@@ -72,12 +72,7 @@ export class DocumentService {
     );
 
     const document = Document.fromEntity(documentEntity);
-
-    // Emit events
     await this.documentTreeService.emitDocumentUpdate(workspaceId, document);
-
-    
-
     return document;
   }
 
@@ -94,7 +89,6 @@ export class DocumentService {
       throw new ValidationException(ErrorCode.E003);
     }
 
-    // Handle tree position changes
     if (input.parentId !== undefined || input.orderIndex !== undefined) {
       const newParentId = input.parentId ?? document.parentId;
       const newOrderIndex = input.orderIndex ?? document.orderIndex;
@@ -117,8 +111,6 @@ export class DocumentService {
         input.title,
       );
     }
-
-    // Reload to get tree service changes
     const updatedDocument = await this.documentRepository.findOne({
       where: { id: documentId, workspaceId },
     });
@@ -127,7 +119,6 @@ export class DocumentService {
       throw new ValidationException(ErrorCode.E003);
     }
 
-    // Update non-tree fields directly
     if (input.runUnexecutedBlocks !== undefined) {
       updatedDocument.runUnexecutedBlocks = input.runUnexecutedBlocks;
     }
@@ -137,16 +128,11 @@ export class DocumentService {
     if (input.shareLinksWithoutSidebar !== undefined) {
       updatedDocument.shareLinksWithoutSidebar = input.shareLinksWithoutSidebar;
     }
-
     await this.documentRepository.save(updatedDocument);
-
     const result = Document.fromEntity(updatedDocument);
 
     // Emit events
     await this.documentTreeService.emitDocumentUpdate(workspaceId, result);
-
-    
-
     return result;
   }
 
@@ -359,7 +345,7 @@ export class DocumentService {
     return result;
   }
 
-  async getExploreDocuments(limit = 20, offset = 0): Promise<Document[]> {
+  async getExploreDocuments(limit = 20, offset = 0, ): Promise<Document[]> {
     const documents = await this.documentRepository.find({
       where: {
         visibility: DocumentVisibility.PUBLIC,
@@ -410,9 +396,17 @@ export class DocumentService {
 
     return documents.map(Document.fromEntity);
   }
-  
 
-  async getPublishedDocument(slug: string): Promise<Document> {
+  async getForkedDocuments( userId: string, limit = 20, offset = 0): Promise<Document[]> {
+    // const documents = await this.documentRepository.find({
+    //   where: {
+    //   }
+    // });
+    // return documents.map(Document.fromEntity);
+    return [];
+  }
+
+  async getPublishedDocumentBySlug(slug: string): Promise<Document> {
     const document = await this.documentRepository.findOne({
       where: { publishedSlug: slug },
     });
