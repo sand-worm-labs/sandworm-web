@@ -8,12 +8,12 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  rewrites: async () => [
-    {
-      source: "/api/:path*",
-      destination: "http://192.168.1.76:8003/:path*",
-    },
-  ],
+  /*   rewrites: async () => [
+      {
+        source: "/api/:path*",
+        destination: "http://192.168.1.76:8003/:path*",
+      },
+    ], */
   images: {
     domains: [
       "cryptologos.cc",

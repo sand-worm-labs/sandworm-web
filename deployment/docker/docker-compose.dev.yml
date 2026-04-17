@@ -90,11 +90,12 @@ services:
   ###########################
   jupyter:
     container_name: sandworm-jupyter
+    platform: linux/arm64
     build:
       context: ../../apps/jupyter
       dockerfile: Dockerfile
       args:
-        TARGETARCH: amd64
+        TARGETARCH: arm64
     restart: always
     ports:
       - "8888:8888"
