@@ -359,6 +359,59 @@ export class DocumentService {
     return result;
   }
 
+  async getExploreDocuments(limit = 20, offset = 0): Promise<Document[]> {
+    const documents = await this.documentRepository.find({
+      where: {
+        visibility: DocumentVisibility.PUBLIC,
+        deletedAt: null,
+      },
+      order: { publishedAt: 'DESC' },
+      take: limit,
+      skip: offset,
+    });
+
+    return documents.map(Document.fromEntity);
+  }
+
+  async getFavoriteExploreDocuments(userId: string, limit = 20, offset = 0): Promise<Document[]> {
+    const favorites = await this.favoriteRepository.find({
+      where: { userId },
+    });
+
+    const documentIds = favorites.map((fav) => fav.documentId);
+    if (documentIds.length === 0) {
+      return [];
+    }
+
+    const documents = await this.documentRepository.find({
+      where: {
+        id: In(documentIds),
+        visibility: DocumentVisibility.PUBLIC,
+        deletedAt: null,
+      },
+      order: { publishedAt: 'DESC' },
+      take: limit,
+      skip: offset,
+    });
+
+    return Document.fromEntities(documents);
+  }
+
+   async getFeaturedDocuments(limit = 4): Promise<Document[]> {
+    const documents = await this.documentRepository.find({
+      where: {
+        visibility: DocumentVisibility.PUBLIC,
+        deletedAt: null,
+        featuredDocument: true,
+      },
+      order: { publishedAt: 'DESC' },
+      take: limit,
+    });
+
+    return documents.map(Document.fromEntity);
+  }
+  
+
   async getPublishedDocument(slug: string): Promise<Document> {
     const document = await this.documentRepository.findOne({
       where: { publishedSlug: slug },
