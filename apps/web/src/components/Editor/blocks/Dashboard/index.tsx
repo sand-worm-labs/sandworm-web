@@ -2,7 +2,6 @@
 import type * as Y from "yjs";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { SquaresPlusIcon } from "@heroicons/react/24/solid";
-import { BookUpIcon } from "lucide-react";
 import { EyeIcon } from "@heroicons/react/24/outline";
 import type { BlockType, YBlock, YBlockGroup } from "@sandworm/editor";
 import {
@@ -24,7 +23,6 @@ import type { DataFrame } from "@sandworm/types";
 
 import { ChatIcon } from "@/components/Assets/ChatIcon";
 import { ClockCountdown } from "@/components/Assets/ClockCountdown";
-import { DataExplorer } from "@/components/ExplorerPanels/DataExplorer";
 import type { ApiDocument, UserWorkspaceRole } from "@/types";
 import { NEXT_PUBLIC_PUBLIC_URL } from "@/utils/env";
 import Layout from "@/components/Visualization/Layout";
@@ -239,6 +237,7 @@ function ExpandedBlockView(props: ExpandedBlockViewProps) {
     ),
     onFileUpload: () => null,
     onDashboardHeader: () => null,
+    onWriteback: () => null,
     onPivotTable: block => (
       <PivotTableBlock
         workspaceId={props.document.workspaceId}
@@ -647,14 +646,10 @@ export default function Dashboard(props: Props) {
             <button
               type="button"
               id="dashboard-publish-button"
-              className="flex items-center rounded-sm px-3 py-1 text-sm bg-[#A308F0] text-white hover:bg-primary-300 border border-transparent disabled:border-border-secondary disabled:bg-gray-100 disabled:cursor-not-allowed gap-x-1.5 group relative disabled:text-ink-400 "
+              className="flex items-center rounded-lg px-5 py-1 text-sm bg-[#A308F0] text-white hover:bg-primary-300 border border-transparent disabled:border-border-secondary disabled:bg-gray-100 disabled:cursor-not-allowed gap-x-1.5 group relative disabled:text-ink-400 "
               onClick={onPublish}
               disabled={props.publishing}
             >
-              <BookUpIcon
-                className="w-4 h-4 rotate-12 group-hover:rotate-0 transition transition-transform duration-400"
-                strokeWidth={1}
-              />
               {isDirty && props.document.publishedAt && (
                 <PublishBlinkingSignal />
               )}
@@ -752,7 +747,6 @@ export default function Dashboard(props: Props) {
               yDoc={yDoc}
               executionQueue={executionQueue}
             />
-            <DataExplorer />
           </>
         )}
       </div>

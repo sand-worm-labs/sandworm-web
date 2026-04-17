@@ -2,31 +2,90 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { NetworkStatus } from "@apollo/client";
 
-import { useSession } from "@/components/Editor/hooks/useAuth";
+import { useSession, useSignout } from "@/components/Editor/hooks/useAuth";
 import { useCurrentWorkspaceInfo } from "@/components/Editor/hooks/useWorkspaces";
 
 export default function WorkspaceRedirectPage() {
   const router = useRouter();
-  const { user, loading: sessionLoading } = useSession({
+  const signout = useSignout();
+
+  const {
+    user,
+    loading: sessionLoading,
+    isAuthenticated,
+  } = useSession({
     redirectToLogin: true,
   });
-  const { workspaceInfo, isLoading: workspaceLoading } =
-    useCurrentWorkspaceInfo();
-  // which of the user workspace does this return?
-  //  how does this handle a workspace user has no access to?
+
+  const {
+    workspaceInfo,
+    isLoading: workspaceLoading,
+    error,
+    networkStatus,
+  } = useCurrentWorkspaceInfo(sessionLoading || !isAuthenticated || !user);
+
+  console.log(
+    "[workspace] sessionLoading:",
+    sessionLoading,
+    "| isAuthenticated:",
+    isAuthenticated,
+    "| user:",
+    user?.id ?? null
+  );
+  console.log(
+    "[workspace] skip:",
+    sessionLoading || !isAuthenticated || !user,
+    "| workspaceLoading:",
+    workspaceLoading,
+    "| workspaceInfo:",
+    workspaceInfo ?? null,
+    "| networkStatus:",
+    networkStatus,
+    "| error:",
+    error?.message ?? null
+  );
 
   useEffect(() => {
+    // @hack this is too much code that shouldn't exist and too much condition, this is claude fault need to test this
     if (sessionLoading || workspaceLoading) return;
-    if (!user) return;
+    if (!isAuthenticated) return;
+    const queryDone =
+      networkStatus === NetworkStatus.ready ||
+      networkStatus === NetworkStatus.error;
 
-    if (workspaceInfo) {
+    if (!queryDone) return;
+
+    if (workspaceInfo?.id) {
       router.replace(`/workspace/${workspaceInfo.id}`);
-    } else {
-      // we need to handle edge case where user has no workspace. also need to handle workspace permissions later
-      router.replace("/workspace/new");
+      return;
     }
-  }, [workspaceInfo, sessionLoading, workspaceLoading, user, router]);
+
+    if (error) {
+      console.error(
+        "[workspace] session invalid, forcing signout:",
+        error.message
+      );
+      signout();
+      return;
+    }
+
+    // Authenticated, query completed successfully, no error, but no workspace
+    console.warn(
+      "[workspace] no workspace found, no error — redirecting to signin"
+    );
+    window.location.href = "/signin?error=no-workspace";
+  }, [
+    workspaceInfo,
+    sessionLoading,
+    workspaceLoading,
+    isAuthenticated,
+    networkStatus,
+    error,
+    router,
+    signout,
+  ]);
 
   return (
     <div className="loader-container h-screen">

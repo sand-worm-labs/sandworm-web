@@ -108,10 +108,10 @@ export const ResetPasswordForm = ({
         />
       </div>
 
-      {localError && <p className="text-sm text-red-500">{localError}</p>}
+      {localError && <p className="text-sm text-error">{localError}</p>}
 
       {apiErrorMessage && (
-        <p className="text-sm text-red-500">{apiErrorMessage}</p>
+        <p className="text-sm text-error">{apiErrorMessage}</p>
       )}
 
       <button

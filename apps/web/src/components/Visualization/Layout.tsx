@@ -8,7 +8,6 @@ import NotebookPanel from "../Layout/NotebookPanel";
 import { useStringQuery } from "../Editor/hooks/useQueryArgs";
 import useSideBar from "../Editor/hooks/useSideBar";
 import type { Page } from "../Editor/blocks/PagePath";
-import MobileWarning from "../Editor/blocks/MobileWarning";
 import CommandPalette from "../Editor/blocks/commandPalette";
 import PagePath from "../Editor/blocks/PagePath";
 import DragLayer from "../Editor/blocks/DragLayer";
@@ -20,6 +19,7 @@ interface Props {
   topBarContent?: React.ReactNode;
   sidebarContent?: React.ReactNode;
   onToggleChat?: () => void;
+  isViewer?: boolean;
 }
 
 // =====================================
@@ -32,6 +32,7 @@ export default function Layout({
   topBarContent,
   sidebarContent,
   onToggleChat,
+  isViewer,
 }: Props) {
   const [isSearchOpen, setSearchOpen] = useState(false);
   const pathname = usePathname();
@@ -76,9 +77,10 @@ export default function Layout({
     }
   }, [workspaceId]);
 
+  console.log("isvie", isViewer);
+
   return (
     <div className="flex w-full h-full overflow-hidden relative">
-      <MobileWarning />
       <DragLayer />
 
       <CommandPalette
@@ -122,10 +124,12 @@ export default function Layout({
         <div className="flex-grow flex overflow-hidden">
           {children}
 
-          <NotebookPanel
-            sidebarContent={sidebarContent}
-            onToggleChat={onToggleChat}
-          />
+          {!isViewer && (
+            <NotebookPanel
+              sidebarContent={sidebarContent}
+              onToggleChat={onToggleChat}
+            />
+          )}
         </div>
       </main>
     </div>

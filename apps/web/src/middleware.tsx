@@ -1,15 +1,50 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-export default async function middleware(req: NextRequest) {
-  const authUser = true;
+// Routes that authenticated users should NOT be able to visit
+const AUTH_ROUTES = ["/signin", "/signup", "/password-change", "/reset"];
 
-  if (!authUser)
-    return NextResponse.redirect(new URL("/unauthorized", req.url), req);
+// Routes that require authentication
+const PROTECTED_ROUTES = ["/workspace"];
+
+export function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
+
+  // Optimistic auth check — cookie presence only
+  // Real validation happens in useSession → currentUser query
+  const accessToken = req.cookies.get("access_token");
+  const isAuthenticated = !!accessToken;
+
+  const isAuthRoute = AUTH_ROUTES.some(route => pathname.startsWith(route));
+  const isProtectedRoute = PROTECTED_ROUTES.some(route =>
+    pathname.startsWith(route)
+  );
+
+  // Authenticated user hitting /signin, /signup etc → send to workspace
+  if (isAuthenticated && isAuthRoute) {
+    return NextResponse.redirect(new URL("/workspace", req.nextUrl));
+  }
+
+  // Unauthenticated user hitting protected route → send to signin
+  if (!isAuthenticated && isProtectedRoute) {
+    const callback = encodeURIComponent(pathname);
+    return NextResponse.redirect(
+      new URL(`/signin?callback=${callback}`, req.nextUrl)
+    );
+  }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/dashboard", "/dashboard/:path*"],
+  matcher: [
+    /*
+     * Match all paths EXCEPT:
+     * - _next/static (static files)
+     * - _next/image (image optimization)
+     * - favicon.ico
+     * - api routes
+     */
+    "/((?!_next/static|_next/image|favicon.ico|api/).*)",
+  ],
 };

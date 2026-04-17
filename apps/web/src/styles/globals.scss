@@ -53,6 +53,10 @@
   font-weight: 700;
 }
 
+.font-output code{
+  font-family: "Matrix Sans", sans-serif;
+}
+
 .font-body.font-medium {
   font-family: "Moderat", sans-serif;
   font-weight: 500;
@@ -94,49 +98,37 @@
 @layer base {
   :root {
     /* Core */
-    --background: 0 0% 100%;
-    --foreground: 0 0% 9%;
+    --background: 0 0% 100%; /* #FFFFFF */
+    --foreground: 0 0% 9%; /* #171717 */
 
     /* Brand */
-    --primary: 276 90% 49%;
-    /* #A308F0 */
-    --primary-foreground: 0 0% 98%;
+    --primary: 276 90% 49%; /* #A308F0 */
+    --primary-foreground: 0 0% 98%; /* #FAFAFA */
 
-    --accent: 258 98% 66%;
-    /* #8053FE */
-    --accent-foreground: 0 0% 100%;
+    --accent: 258 98% 66%; /* #8053FE */
+    --accent-foreground: 0 0% 100%; /* #FFFFFF */
 
     /* Status */
-    --error: 0 100% 50%;
-    /* #FF0000 */
+    --error: 0 100% 50%; /* #FF0000 */
 
     /* Base surfaces */
-    --base-100: 0 0% 100%;
-    /* #ffffff */
-    --base-200: 240 100% 99%;
-    /* #FEFEFF */
-    --base-300: 210 17% 96%;
-    /* #F1F3F4 */
-    --base-400: 0 0% 6%;
-    /* #0F0F0F*/
+    --base-100: 0 0% 100%; /* #FFFFFF */
+    --base-200: 240 100% 99%; /* #FEFEFF */
+    --base-300: 210 17% 96%; /* #F1F3F4 */
+    --base-400: 0 0% 6%; /* #0F0F0F */
     --base-500: #fbfbfb;
     --base-600: 180 43% 95%; /* #EBF7F7 */
 
     /* Inputs */
-    --bg-input: 210 17% 98%;
-    /* #F8F9FA */
-    --input: 210 14% 89%;
-    /* #DEE2E6 */
-    --border: 210 14% 89%;
+    --bg-input: 210 17% 98%; /* #F8F9FA */
+    --input: 210 14% 89%; /* #DEE2E6 */
+    --border: 210 14% 89%; /* #DEE2E6 */
     --border-secondary: 210 3% 93%; /* #E9ECEF */
-    --border-tertiary: 210 14% 83%; /*#CED4DA */
-    --border-focus:   210 14% 83%; 
-
-
+    --border-tertiary: 210 14% 83%; /* #CED4DA */
+    --border-focus: 210 14% 83%; /* #CED4DA */
 
     /* Disabled */
-    --btn-disabled: 210 7% 56%;
-    /* #868E96 */
+    --btn-disabled: 210 7% 56%; /* #868E96 */
 
     /* Text */
     --ink-100: #1a1a1a;
@@ -153,64 +145,46 @@
 
   .dark {
     /* Core */
-    --background: 0 0% 100%;
-    --foreground: 0 0% 9%;
+    --background: 0 0% 100%; /* #FFFFFF */
+    --foreground: 0 0% 9%; /* #171717 */
 
     /* Brand */
-    --primary: 263 90% 76%;
-    /* #A308F0 */
-    --primary-foreground: 0 0% 98%;
+    --primary: 263 90% 76%; /* #B58BF9 */
+    --primary-foreground: 0 0% 98%; /* #FAFAFA */
 
-    --accent: 258 98% 66%;
-    /* #8053FE */
-    --accent-foreground: 0 0% 100%;
+    --accent: 258 98% 66%; /* #8053FE */
+    --accent-foreground: 0 0% 100%; /* #FFFFFF */
 
     /* Status */
-    --error: 0 100% 50%;
-    /* #FF0000 */
+    --error: 0 100% 50%; /* #FF0000 */
 
     /* Base surfaces */
-    --base-100: 60 2% 15%;
-    /* #ffffff */
-    --base-200: 60 4% 15%;
-
-    /* #FEFEFF */
-    --base-300: 210 17% 96%;
-    /* #F1F3F4 */
-
-    --base-400:60 3% 18%;
-
+    --base-100: 60 2% 15%; /* #272726 */
+    --base-200: 60 4% 15%; /* #282825 */
+    --base-300: 210 17% 96%; /* #F1F3F4 */
+    --base-400: 60 3% 18%; /* #2F2F2C */
     --base-500: #232322;
-
-    --base-600: 60  5% 7%;
+    --base-600: 60 5% 7%; /* #131311 */
 
     --gray-100: #363c46;
+
     /* Inputs */
-    --bg-input: 210 17% 98%;
-    /* #F8F9FA */
-    --input: 210 14% 89%;
-    /* #DEE2E6 */
-    --border: 210 14% 89%;
-
-    --border-secondary: 60 2% 28%;
-    --border-tertiary: 60 2% 28%; /*#494946 */
-    --border-focus:    60 2% 42%; /* #6C6C69 */
-
-
-  
+    --bg-input: 210 17% 98%; /* #F8F9FA */
+    --input: 210 14% 89%; /* #DEE2E6 */
+    --border: 210 14% 89%; /* #DEE2E6 */
+    --border-secondary: 60 2% 28%; /* #494946 */
+    --border-tertiary: 60 2% 28%; /* #494946 */
+    --border-focus: 60 2% 42%; /* #6C6C69 */
 
     /* Disabled */
-    --btn-disabled: 210 7% 56%;
-    /* #868E96 */
+    --btn-disabled: 210 7% 56%; /* #868E96 */
 
     /* Text */
-      --ink-100: #ffffff;
+    --ink-100: #ffffff;
     --ink-200: #9C9A92;
     --ink-400: #9C9A92;
     --ink-600: #fff;
     --ink-icon: #fff;
-
-
 
     --radius: 0.5rem;
   }
@@ -324,8 +298,6 @@
      overflow-x: hidden;
      scroll-behavior: smooth;
      color: var(--ink-100);
-     scrollbar-gutter: stable;
-
    }
    
    body {
