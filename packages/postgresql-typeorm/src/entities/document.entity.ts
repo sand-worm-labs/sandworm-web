@@ -19,6 +19,8 @@ import { ExecutionScheduleEntity } from "./execution-schedule.entity";
 import { ReusableComponentEntity } from "./reusable_component.entity";
 import { ReusableComponentInstanceEntity } from "./reusable_component_instance.entity";
 import { UserEntity } from "./user.entity";
+import { DocumentVisibility } from "./enums";
+
 
 @Entity("document")
 export class DocumentEntity extends AbstractEntity {
@@ -30,6 +32,13 @@ export class DocumentEntity extends AbstractEntity {
   @PrimaryGeneratedColumn("uuid", { primaryKeyConstraintName: "PK_document_id" })
   id!: string;
 
+  @Column({
+    type: "enum",
+    enum: DocumentVisibility,
+    default: DocumentVisibility.WORKSPACE,
+  })
+  visibility!: DocumentVisibility;
+  
   @Column()
   title!: string;
 
