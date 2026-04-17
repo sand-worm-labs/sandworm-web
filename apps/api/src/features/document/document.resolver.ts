@@ -58,6 +58,27 @@ export class DocumentResolver {
     return this.documentTreeService.getWorkspaceDocuments(workspaceId);
   }
 
+  @Query(() => [Document], {
+    name: "getExplorerDocuments",
+    description: "Get documents in a workspace organized as a tree for explorer view",
+  })
+  async getExplorerDocuments(
+    @Args('limit', { nullable: true, defaultValue: 20 }) limit: number,
+    @Args('offset', { nullable: true, defaultValue: 0 }) offset: number,
+  ): Promise<Document[]> {
+    return this.documentService.getExploreDocuments(limit, offset);
+  }
+
+  @Query(() => [Document], {
+    name: 'favoritePublicDocuments',
+    description: 'Get User favorite public documents',
+  })
+  async favoritePublicDocuments(
+    @CurrentUser('id') userId: string,
+  ): Promise<Document[]> {
+    return this.documentService.getFavoriteExploreDocuments(userId);
+  }
+
   @Mutation(() => Document, {
     name: 'createDocument',
     description: 'Create a new document in a workspace',

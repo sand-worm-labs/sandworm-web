@@ -300,6 +300,12 @@ type Query {
   """Get all documents in a workspace"""
   getWorkspaceDocuments(workspaceId: String!): [Document!]!
 
+  """Get documents in a workspace organized as a tree for explorer view"""
+  getExplorerDocuments(limit: Float = 20, offset: Float = 0): [Document!]!
+
+  """Get User favorite public documents"""
+  favoritePublicDocuments: [Document!]!
+
   """Get a reusable component by ID"""
   getComponent(componentId: String!, workspaceId: String!): ReusableComponent!
 
