@@ -6,6 +6,7 @@ import {
   DocumentEntity,
   FavoriteEntity,
   YjsDocumentEntity,
+  DocumentVisibility
 } from '@sandworm/postgresql-typeorm';
 import { Repository, In } from 'typeorm';
 import {
@@ -170,9 +171,6 @@ export class DocumentService {
 
     // Emit events
     await this.documentTreeService.emitWorkspaceDocuments(workspaceId);
-
-    
-
     return true;
   }
 
@@ -194,12 +192,7 @@ export class DocumentService {
     );
 
     const result = Document.fromEntity(restoredDocument);
-
-    // Emit events
     await this.documentTreeService.emitWorkspaceDocuments(workspaceId);
-
-    
-
     return result;
   }
 
@@ -226,9 +219,6 @@ export class DocumentService {
 
     // Emit events
     await this.documentTreeService.emitWorkspaceDocuments(workspaceId);
-
-    
-
     return result;
   }
 
@@ -252,9 +242,6 @@ export class DocumentService {
     });
 
     await this.favoriteRepository.save(favorite);
-
-    
-
     return Document.fromEntity(document);
   }
 
@@ -300,36 +287,54 @@ export class DocumentService {
     if (!favorite) {
       throw new ValidationException(ErrorCode.E004);
     }
-
     await this.favoriteRepository.delete({ userId, documentId });
-
-    
-
     return Document.fromEntity(document);
+  }
+
+  private async generateUniqueSlug(title: string, documentId: string): Promise<string> {
+    const base = title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '')
+      .slice(0, 50) || 'notebook';
+
+    const suffix = documentId.slice(0, 8);
+    const candidate = `${base}-${suffix}`;
+
+    const existing = await this.documentRepository.findOne({
+      where: { publishedSlug: candidate },
+    });
+
+    return existing ? `${candidate}-${Date.now()}` : candidate;
   }
 
   async publishDocument(
     documentId: string,
     workspaceId: string,
+    visibility: DocumentVisibility,
   ): Promise<Document> {
     const document = await this.documentRepository.findOne({
       where: { id: documentId, workspaceId },
     });
 
-    if (!document) {
-      throw new ValidationException(ErrorCode.E003);
+    if (!document) throw new ValidationException(ErrorCode.E003);
+    const yjsDoc = await this.yjsDocumentRepository.findOne({
+      where: { documentId },
+    });
+
+    if (!yjsDoc) throw new ValidationException(ErrorCode.E003);
+
+    if (!document.publishedSlug) {
+      document.publishedSlug = await this.generateUniqueSlug(document.title, documentId);
     }
 
     document.publishedAt = new Date();
+    document.visibility = visibility;
+
     await this.documentRepository.save(document);
 
     const result = Document.fromEntity(document);
-
-    // Emit events
     await this.documentTreeService.emitDocumentUpdate(workspaceId, result);
-
-    
-
     return result;
   }
 
@@ -349,12 +354,9 @@ export class DocumentService {
     await this.documentRepository.save(document);
 
     const result = Document.fromEntity(document);
-
-    // Emit events
     await this.documentTreeService.emitDocumentUpdate(workspaceId, result);
-
-    
-
     return result;
   }
+
+  
 }

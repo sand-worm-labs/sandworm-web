@@ -57,3 +57,9 @@ export enum OnboardingTutorialStep {
 export enum TutorialType {
     ONBOARDING = 'onboarding',
 }
+
+export enum DocumentVisibility {
+  WORKSPACE = "WORKSPACE", 
+  LINK = "LINK",          
+  PUBLIC = "PUBLIC", 
+}
