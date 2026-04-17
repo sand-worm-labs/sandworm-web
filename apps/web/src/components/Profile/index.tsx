@@ -100,7 +100,7 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
             </p>
           </div>
         ) : (
-          <div className=" mx-auto px-4 py-8 lg:w-[85%]">
+          <div className=" mx-auto px-4 md:py-8 py-2 lg:w-[85%]">
             <h2 className="text-base font-bold mb-4">Profile</h2>
             <div className="space-y-6">
               <div className="flex md:flex-row flex-col gap-x-4">

@@ -200,7 +200,6 @@ function PrivateDocumentPageInner(
     isApp: props.isApp,
   });
 
-
   const { yDoc, provider, syncing, isDirty, undo, redo } = useYDoc(
     props.document.workspaceId,
     props.document.id,
@@ -211,9 +210,6 @@ function PrivateDocumentPageInner(
     true,
     null
   );
-
-    console.log(yDoc)
-
 
   useEffect(() => {
     console.log("[YDoc Sync]", {
@@ -264,7 +260,7 @@ function PrivateDocumentPageInner(
 
   const handleVisibilityChange = useCallback(
     async (visibility: "private" | "team" | "community") => {
-      console.log(visibility)
+      console.log(visibility);
     },
     []
   );
@@ -445,6 +441,7 @@ function PrivateDocumentPageInner(
       topBarContent={topBarContent}
       sidebarContent={sidebarContent}
       onToggleChat={onToggleChat}
+      isViewer={props.isApp || isViewer}
     >
       <div className="flex-1 min-w-0 flex overflow-hidden">
         <V2Editor
