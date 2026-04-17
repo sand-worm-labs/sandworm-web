@@ -22,6 +22,7 @@ import { Terminal } from "@/components/Assets/Menu/Terminal";
 import { Trash } from "@/components/Assets/Trash";
 import WorkspaceSwitcher from "@/components/WorkspaceSwitcher";
 import { Binoculars } from "@/components/Assets/Menu/Binoculars";
+import { useIsMobile } from "@/hooks/useMobile";
 
 interface NavItem {
   name: string;
@@ -44,6 +45,8 @@ export const WorkspaceSidebar = () => {
   const user = session?.user;
   const [isSectionOpen, setIsSectionOpen] = useState(true);
   const [isToolsOpen, setIsToolsOpen] = useState(false);
+  const isMobile = useIsMobile();
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   // ⬢ Constants
   // =====================================
@@ -200,10 +203,22 @@ export const WorkspaceSidebar = () => {
 
   return (
     <aside
-      className={`h-full flex flex-col justify-between bg-[#FEFFFF] dark:bg-base-500 border-r  border-[#E9ECEF] dark:border-border-tertiary font-body
+      className={`
+      bg-[#FEFFFF] dark:bg-base-500 border-r border-[#E9ECEF] dark:border-border-tertiary font-body justify-between flex flex-col
       transition-all duration-300 ease-in-out
-      ${collapsed ? "w-16" : "w-[17.5rem]"}
-      `}
+  
+      ${isMobile ? "fixed top-0 left-0 h-full z-50 w-[17.5rem]" : "h-full"}
+  
+      ${
+        isMobile
+          ? isMobileOpen
+            ? "translate-x-0"
+            : "-translate-x-full"
+          : collapsed
+            ? "w-16"
+            : "w-[17.5rem]"
+      }
+    `}
     >
       <div>
         <div className="flex justify-between py-[0.69rem] px-3   bg-[#F9F9F9] dark:bg-base-500 items-center">
@@ -219,7 +234,13 @@ export const WorkspaceSidebar = () => {
 
           <button
             type="button"
-            onClick={() => setCollapsed(!collapsed)}
+            onClick={() => {
+              if (isMobile) {
+                setIsMobileOpen(false);
+              } else {
+                setCollapsed(!collapsed);
+              }
+            }}
             className="p-1 rounded hover:bg-gray-200 dark:hover:bg-[#181C21] flex items-center justify-center text-[#868E96] dark:text-ink-400"
           >
             <SidebarIcon />

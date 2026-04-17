@@ -1,6 +1,7 @@
 import { Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { DevicePhoneMobileIcon } from "@heroicons/react/24/outline";
+
+import { ScheduleIcon } from "@/components/Assets/ScheduleIcon";
 
 export default function MobileWarning() {
   const [open, setOpen] = useState(window.innerWidth < 768);
@@ -17,7 +18,7 @@ export default function MobileWarning() {
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+          <div className="fixed inset-0 bg-[#161633] transition-opacity bg-opacity-20" />
         </Transition.Child>
 
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
@@ -31,20 +32,17 @@ export default function MobileWarning() {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all my-auto">
+              <Dialog.Panel className="relative transform overflow-hidden rounded-2xl bg-white dark:bg-base-100 px-4 pb-4 pt-5 text-left border transition-all my-auto font-body border-border-tertiary ">
                 <div>
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100 -rotate-6">
-                    <DevicePhoneMobileIcon
-                      className="h-6 w-6 text-yellow-700"
-                      aria-hidden="true"
-                    />
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#A308F020]">
+                    <ScheduleIcon />
                   </div>
                   <div className="mt-4 text-center sm:mt-5">
                     <Dialog.Title
                       as="h3"
                       className="text-base font-semibold leading-6 text-ink-100"
                     >
-                      sandworm works best on desktop
+                      Sandworm works best on desktop
                     </Dialog.Title>
                     <div className="mt-4 text-sm text-ink-400  flex flex-col gap-y-4">
                       <p>
@@ -61,7 +59,7 @@ export default function MobileWarning() {
                 <div className="mt-6">
                   <button
                     type="button"
-                    className="border border-primary-400 text-white inline-flex w-full justify-center rounded-lg bg-[#A308F0] px-3 py-2 text-sm font-semibold shadow-sm hover:bg-primary-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-400 "
+                    className="rounded-xl  border border-primary-400 text-white inline-flex w-full justify-center dark:bg-white dark:text-black px-3 py-2.5 text-sm font-semibold shadow-sm hover:bg-primary-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-400 bg-[#0F0F0F] "
                     onClick={() => setOpen(false)}
                   >
                     I want to stay on mobile

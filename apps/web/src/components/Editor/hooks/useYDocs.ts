@@ -163,6 +163,8 @@ export function useYDoc(
   initialState: Buffer | null
 ) {
   const isFirst = useRef(true);
+
+  console.log("get doc", isDataApp, clock, userId, publishedAt, connect);
   const [{ id, cached, yDoc, restore }, setYDoc] = useState(() =>
     getYDoc(documentId, isDataApp, clock, publishedAt)
   );
@@ -355,7 +357,7 @@ export function useYDoc(
   return {
     yDoc,
     provider,
-    syncing: (syncing || restoring) && !cached,
+    syncing: (syncing || restoring) && (!cached || isDataApp),
     isDirty: metadata.state.value.getAttribute("isDirty") ?? false,
     undo,
     redo,

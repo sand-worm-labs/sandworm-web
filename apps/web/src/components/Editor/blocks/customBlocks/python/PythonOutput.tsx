@@ -148,7 +148,7 @@ export function PythonOutput(props: ItemProps) {
         <pre
           className={clsx(
             props.output.name === "stderr" ? "text-red-500" : "",
-            "text-sm"
+            "text-sm font-output"
           )}
         >
           <Ansi>{props.output.text}</Ansi>
