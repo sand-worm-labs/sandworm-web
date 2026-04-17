@@ -311,7 +311,6 @@ export class DocumentService {
   async publishDocument(
     documentId: string,
     workspaceId: string,
-    visibility: DocumentVisibility,
   ): Promise<Document> {
     const document = await this.documentRepository.findOne({
       where: { id: documentId, workspaceId },
@@ -329,7 +328,7 @@ export class DocumentService {
     }
 
     document.publishedAt = new Date();
-    document.visibility = visibility;
+    document.visibility = DocumentVisibility.PUBLIC;
 
     await this.documentRepository.save(document);
 
@@ -351,6 +350,8 @@ export class DocumentService {
     }
 
     document.publishedAt = null;
+    document.visibility = DocumentVisibility.WORKSPACE;
+
     await this.documentRepository.save(document);
 
     const result = Document.fromEntity(document);
@@ -358,5 +359,19 @@ export class DocumentService {
     return result;
   }
 
-  
+  async getPublishedDocument(slug: string): Promise<Document> {
+    const document = await this.documentRepository.findOne({
+      where: { publishedSlug: slug },
+    });
+
+    if (!document || !document.publishedAt) {
+      throw new ValidationException(ErrorCode.E003);
+    }
+
+    if (document.visibility === DocumentVisibility.WORKSPACE) {
+      throw new ValidationException("Document is not published", ErrorCode.E003);
+    }
+
+    return Document.fromEntity(document);
+  }
 }
