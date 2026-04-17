@@ -72,6 +72,9 @@ export class DocumentEntity extends AbstractEntity {
   parentId?: string | null;
 
   @Column({ default: false })
+  featuredDocument!: boolean;
+
+  @Column({ default: false })
   runUnexecutedBlocks!: boolean;
 
   @Column({ default: true })
