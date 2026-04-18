@@ -36,9 +36,12 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
     "fastify": "^5.4.0",
-    "typeorm": "^0.3.27",
+    "nestjs-pino": "^4.5.0",
     "pino": "^10.0.0",
-    "rxjs": "^7.8.2"
+    "pino-http": "^11.0.0",
+    "pino-socket": "^8.0.0",
+    "rxjs": "^7.8.2",
+    "typeorm": "^0.3.27"
   },
   "devDependencies": {
     "@sandworm/eslint-config": "workspace:*",
