@@ -378,6 +378,25 @@ export class YjsDocumentService implements OnModuleDestroy {
         }
     }
 
+    private getYDocForUpdateAsync(
+        id: string,
+        documentId: string,
+        server: Server,
+        workspaceId: string,
+        persistor: Persistor,
+    ): Promise<SharedDoc> {
+        return new Promise((resolve) =>
+            this.getYDocForUpdate(
+                id,
+                documentId,
+                server,
+                workspaceId,
+                resolve,
+                persistor,
+            )
+        );
+    }
+
     getDocId(
         documentId: string,
         app: { id: string; userId: string | null } | null,
@@ -403,34 +422,15 @@ export class YjsDocumentService implements OnModuleDestroy {
         const prevPersistor = this.persistorFactory.createDocumentPersistor(prevDocumentId);
         const newPersistor = this.persistorFactory.createDocumentPersistor(newDocumentId);
 
-        await this.getYDocForUpdate(
-            prevId,
-            prevDocumentId,
-            server,
-            prevWorkspaceId,
-            async (prevSharedDoc) => {
-                await this.getYDocForUpdate(
-                    newId,
-                    newDocumentId,
-                    server,
-                    newWorkspaceId,
-                    async (newSharedDoc) => {
-                        this.duplicateYDoc(
-                            prevSharedDoc,
-                            newSharedDoc.ydoc,
-                            getDuplicatedTitle,
-                            { keepIds: false, datasourceMap },
-                        );
-
-                        // Force flush so the copied state is persisted before the
-                        // frontend can open the new doc and race the persistor.
-                        await this.saveEditYDoc(newDocumentId, newSharedDoc.ydoc);
-                    },
-                    newPersistor,
-                );
-            },
-            prevPersistor,
+        const prevSharedDoc = await this.getYDocForUpdateAsync(prevId, prevDocumentId, server, prevWorkspaceId, prevPersistor);
+        const newSharedDoc = await this.getYDocForUpdateAsync(newId, newDocumentId, server, newWorkspaceId, newPersistor,);
+        this.duplicateYDoc(
+            prevSharedDoc,
+            newSharedDoc.ydoc,
+            getDuplicatedTitle,
+            { keepIds: false, datasourceMap },
         );
+        await this.saveEditYDoc(newDocumentId, newSharedDoc.ydoc);
     }
 
     duplicateYDoc(

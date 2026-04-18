@@ -1,4 +1,3 @@
-// src/pubsub/pubsub.module.ts
 import { Global, Module } from '@nestjs/common';
 import { PubSubService } from './service/pubsub.service';
 import { PubSubProviderFactory } from './pubsub-provider.factory';
