@@ -1,5 +1,5 @@
 import { AuthModule } from '@/features/auth/core/auth.module'
-import { Module } from '@nestjs/common'
+import { forwardRef, Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { YjsDocumentService } from './yjs-document.service'
 import {
@@ -34,10 +34,10 @@ import { YjsDocumentController } from './yjs.controller'
         PubSubPayloadEntity,
         UserWorkspaceEntity
       ]),
+    forwardRef(() => DocumentModule),
     AuthModule,
     LockModule,
     PubSubModule,
-    DocumentModule,
     BlockExecutorModule
   ],
   controllers: [YjsDocumentController],

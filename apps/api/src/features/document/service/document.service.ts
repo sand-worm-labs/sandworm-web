@@ -1,6 +1,5 @@
 import { ErrorCode } from '@/constants/error-code.constant';
-import { Injectable, Logger } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { ValidationException } from '@sandworm/graphql';
 import {
   DocumentEntity,
@@ -8,7 +7,9 @@ import {
   YjsDocumentEntity,
   DocumentVisibility
 } from '@sandworm/postgresql-typeorm';
-import { Repository, In } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, In, Repository } from 'typeorm';
+import { YjsDocumentService } from "@/features/collaboration/yjs/yjs-document.service"
 import {
   CreateDocumentInput,
   DeleteDocumentInput,
@@ -19,11 +20,15 @@ import {
 } from '../dto/document.dto';
 import { Document } from '../model/document.model';
 import { DocumentTreeService } from './document-tree.service';
+
+
 @Injectable()
 export class DocumentService {
   private readonly logger = new Logger(DocumentService.name);
 
   constructor(
+    @InjectDataSource()
+    private readonly dataSource: DataSource,
     @InjectRepository(DocumentEntity)
     private readonly documentRepository: Repository<DocumentEntity>,
     @InjectRepository(FavoriteEntity)
@@ -31,6 +36,7 @@ export class DocumentService {
     @InjectRepository(YjsDocumentEntity)
     private readonly yjsDocumentRepository: Repository<YjsDocumentEntity>,
     private readonly documentTreeService: DocumentTreeService,
+    private readonly yjsDocumentService: YjsDocumentService
   ) { }
 
   async getDocument(
@@ -188,22 +194,18 @@ export class DocumentService {
   ): Promise<Document> {
     const { documentId, workspaceId } = input;
 
-    const original = await this.documentRepository.findOne({
-      where: { id: documentId, workspaceId, deletedAt: null },
+    const duplicated = await this.dataSource.transaction(async (m) => {
+      const repo = m.getRepository(DocumentEntity);
+
+      const original = await repo.findOne({
+        where: { id: documentId, workspaceId, deletedAt: null },
+      });
+      if (!original) throw new ValidationException(ErrorCode.E003);
+
+      return this.documentTreeService.duplicateDocument(documentId, workspaceId, userId, m);
     });
 
-    if (!original) {
-      throw new ValidationException(ErrorCode.E003);
-    }
-
-    const duplicatedDocument = await this.documentTreeService.duplicateDocument(
-      documentId,
-      workspaceId,
-    );
-
-    const result = Document.fromEntity(duplicatedDocument);
-
-    // Emit events
+    const result = Document.fromEntity(duplicated);
     await this.documentTreeService.emitWorkspaceDocuments(workspaceId);
     return result;
   }
@@ -345,7 +347,7 @@ export class DocumentService {
     return result;
   }
 
-  async getExploreDocuments(limit = 20, offset = 0, ): Promise<Document[]> {
+  async getExploreDocuments(limit = 20, offset = 0,): Promise<Document[]> {
     const documents = await this.documentRepository.find({
       where: {
         visibility: DocumentVisibility.PUBLIC,
@@ -383,7 +385,7 @@ export class DocumentService {
     return Document.fromEntities(documents);
   }
 
-   async getFeaturedDocuments(limit = 4): Promise<Document[]> {
+  async getFeaturedDocuments(limit = 4): Promise<Document[]> {
     const documents = await this.documentRepository.find({
       where: {
         visibility: DocumentVisibility.PUBLIC,
@@ -397,7 +399,7 @@ export class DocumentService {
     return documents.map(Document.fromEntity);
   }
 
-  async getForkedDocuments( userId: string, limit = 20, offset = 0): Promise<Document[]> {
+  async getForkedDocuments(userId: string, limit = 20, offset = 0): Promise<Document[]> {
     // const documents = await this.documentRepository.find({
     //   where: {
     //   }
