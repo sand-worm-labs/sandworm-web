@@ -224,6 +224,26 @@ export function useYDoc(
   }, [provider, setSyncing]);
 
   useEffect(() => {
+    if (syncing) return;
+
+    const blocks = getBlocks(yDoc);
+    const layout = getLayout(yDoc);
+    const dashboard = getDashboard(yDoc);
+
+    console.log("[YDoc Content]", {
+      mode: isDataApp ? "VIEW" : "EDIT",
+      documentId,
+      blockCount: blocks.size,
+      blocks: Array.from(blocks.entries()).map(([id, block]) => ({
+        id,
+        type: block.get("type") as string,
+      })),
+      layoutSize: layout.length,
+      dashboardSize: dashboard.size,
+    });
+  }, [syncing, yDoc, documentId, isDataApp]);
+
+  useEffect(() => {
     if (initialState) {
       Y.applyUpdate(yDoc, initialState);
     }
@@ -246,7 +266,7 @@ export function useYDoc(
   useEffect(() => {
     if (syncing) {
       console.time(`${documentId} sync`);
-      return () => {};
+      return () => { };
     }
 
     console.timeEnd(`${documentId} sync`);
@@ -357,7 +377,7 @@ export function useYDoc(
   return {
     yDoc,
     provider,
-    syncing: (syncing || restoring) && (!cached || isDataApp),
+    syncing: (syncing || restoring) && !cached,
     isDirty: metadata.state.value.getAttribute("isDirty") ?? false,
     undo,
     redo,

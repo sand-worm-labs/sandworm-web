@@ -107,10 +107,10 @@ export class SharedDoc implements WSSharedDoc {
         if (!el) return ""
         let text = ""
         el.forEach((child) => {
-          if (child instanceof Y.XmlText) text += child.toString()
+            if (child instanceof Y.XmlText) text += child.toString()
         })
         return text.trim()
-      }
+    }
 
     public async replaceState(state: Buffer): Promise<void> {
         const result = await this.persistor.replaceState(this.clock, state);
@@ -178,7 +178,7 @@ export class SharedDoc implements WSSharedDoc {
 
         this.logger.debug(`SharedDoc destroyed for ${this.id}`);
     }
-    
+
     private async reset(newYDoc: Y.Doc, newClock: number, newByteLength: number): Promise<void> {
         this.logger.debug(`Resetting SharedDoc ${this.id}`);
 
@@ -199,7 +199,7 @@ export class SharedDoc implements WSSharedDoc {
         this.ydoc.on('update', this.updateHandler);
 
         await this.pubSubProvider?.reset(newYDoc, newClock);
-        
+
         this.executor = this.executorFactory.createExecutor(this.id,
             this.workspaceId,
             this.documentId,
@@ -358,7 +358,7 @@ export class SharedDoc implements WSSharedDoc {
         loadStateResult: LoadStateResult,
         persistor: Persistor,
         pubSubProviderFactory: PubSubProviderFactory,
-        executorFactory: DocumentExecutorService,  
+        executorFactory: DocumentExecutorService,
         onTitleChange?: (title: string) => Promise<void>
     ): Promise<SharedDoc> {
         const doc = new SharedDoc(

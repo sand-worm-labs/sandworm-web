@@ -51,7 +51,7 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
     private readonly userWorkspaceRepository: Repository<UserWorkspaceEntity>,
     @InjectRepository(YjsAppDocumentEntity)
     private readonly yjsAppDocumentRepository: Repository<YjsAppDocumentEntity>,
-  ) {}
+  ) { }
 
   onModuleInit() {
     this.logger.log('YJS Gateway initialized');
@@ -68,13 +68,26 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
   private async handleConnection(client: WebSocket, req: http.IncomingMessage) {
     try {
       const url = new URL(req.url!, `http://${req.headers.host}`);
+
+      // ⬢ LOG — log every incoming connection attempt
+      const rawQuery = qs.parse(req.url?.split('?')[1] ?? '');
+      this.logger.log(`[YJS Connection] ${JSON.stringify({
+        path: url.pathname,
+        documentId: rawQuery['documentId'],
+        clock: rawQuery['clock'],
+        isApp: rawQuery['isApp'],
+        userId: rawQuery['userId'],
+      })}`);
+
       if (!url.pathname.startsWith('/yjs')) {
+        this.logger.warn('[YJS Rejected] reason=invalid_path');
         client.close(1008, 'Invalid path');
         return;
       }
 
       const data = await this.getRequestData(req);
       if (!data) {
+        this.logger.warn('[YJS Rejected] reason=invalid_request — see getRequestData logs above');
         client.close(1008, 'Invalid request');
         return;
       }
@@ -84,13 +97,14 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
       const doc = await this.getDoc(document, isApp, userId, yjsAppDocumentId);
 
       if (!doc) {
+        this.logger.warn(`[YJS Rejected] reason=doc_load_failed isApp=${isApp} yjsAppDocumentId=${yjsAppDocumentId}`);
         client.close(1011, 'Failed to load document');
         return;
       }
 
       // Clock validation
       if (doc.clock !== clock) {
-        this.logger.warn(`Clock mismatch: client=${clock} doc=${doc.clock} for ${doc.id}`);
+        this.logger.warn(`[YJS Rejected] reason=clock_mismatch client=${clock} server=${doc.clock} docId=${doc.id}`);
         client.close(1008, 'Clock mismatch');
         return;
       }
@@ -103,22 +117,17 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
 
       client.on('message', async (message: ArrayBuffer) => {
         try {
-          // Revalidate role every 1 minute
           const now = Date.now();
           if (now - lastRoleUpdate > 60000) {
             lastRoleUpdate = now;
-
             const updatedRole = await this.getUserRole(authUser.id, document.workspaceId);
-
             if (!updatedRole || updatedRole === UserWorkspaceRole.VIEWER) {
               this.closeConn(doc, client);
               return;
             }
-
             origin.role = updatedRole;
           }
-
-          this.messageHandler.handleMessage(doc, new Uint8Array(message), origin, (msg) => this.send(doc, client, msg),);
+          this.messageHandler.handleMessage(doc, new Uint8Array(message), origin, (msg) => this.send(doc, client, msg));
         } catch (err) {
           this.logger.error(`Message error: ${err}`);
         }
@@ -135,13 +144,12 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
       this.setupPing(doc, client, authUser.id);
       this.syncHandler.sendInitialState(doc, (message) => this.send(doc, client, message));
 
-      this.logger.log(`Connected: ${authUser.email} → ${doc.id}`);
+      this.logger.log(`[YJS Connected] user=${authUser.email} docId=${doc.id} isApp=${isApp} clock=${clock}`);
     } catch (err) {
-      this.logger.error(`Connection failed: ${err}`);
+      this.logger.error(`[YJS Connection failed] ${err}`);
       client.close(1011, 'Internal server error');
     }
   }
-
 
   private send(doc: SharedDoc, conn: WebSocket, message: Uint8Array) {
     if (conn.readyState !== WebSocket.OPEN) {
@@ -168,7 +176,7 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
       doc.conns.delete(conn);
       awarenessProtocol.removeAwarenessStates(doc.awareness, Array.from(controlledIds), null);
     }
-    try { conn.close(); } catch {}
+    try { conn.close(); } catch { }
   }
 
   private setupPing(doc: SharedDoc, conn: WebSocket, userId: string) {
@@ -244,21 +252,33 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
       }).safeParse({ docId, clock, isApp, userId });
 
       if (!args.success) {
-        this.logger.warn('Invalid query params', args.error);
+        this.logger.warn(`[YJS Rejected] reason=invalid_query_params errors=${JSON.stringify(args.error.flatten())}`);
         return null;
       }
 
       const document = await this.documentRepository.findOne({ where: { id: args.data.docId } });
-      if (!document) return null;
+      if (!document) {
+        this.logger.warn(`[YJS Rejected] reason=no_document docId=${args.data.docId}`);
+        return null;
+      }
 
       const session = await this.authService.validateTokenAndGetUser(authToken);
-      if (!session) return null;
+      if (!session) {
+        this.logger.warn(`[YJS Rejected] reason=no_session docId=${args.data.docId}`);
+        return null;
+      }
 
       const entry = session.roles?.find(r => r[document.workspaceId]);
       const role = entry?.[document.workspaceId];
-      if (!role) return null;
+      if (!role) {
+        this.logger.warn(`[YJS Rejected] reason=no_role userId=${session.user.id} workspaceId=${document.workspaceId}`);
+        return null;
+      }
 
-      if (args.data.userId && args.data.userId !== session.user.id) return null;
+      if (args.data.userId && args.data.userId !== session.user.id) {
+        this.logger.warn(`[YJS Rejected] reason=userId_mismatch param=${args.data.userId} session=${session.user.id}`);
+        return null;
+      }
 
       let yjsAppDocumentId: string | null = null;
       if (args.data.isApp) {
@@ -266,7 +286,11 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
           where: { documentId: args.data.docId },
           order: { createdAt: 'DESC' },
         });
-        if (!appDoc) return null;
+        this.logger.log(`[YJS AppDoc] documentId=${args.data.docId} found=${!!appDoc} appDocId=${appDoc?.id} clock=${appDoc?.clock}`);
+        if (!appDoc) {
+          this.logger.warn(`[YJS Rejected] reason=no_app_doc documentId=${args.data.docId}`);
+          return null;
+        }
         yjsAppDocumentId = appDoc.id;
       }
 
@@ -280,7 +304,7 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
         yjsAppDocumentId,
       };
     } catch (err) {
-      this.logger.error(`getRequestData failed: ${err}`);
+      this.logger.error(`[YJS] getRequestData failed: ${err}`);
       return null;
     }
   }

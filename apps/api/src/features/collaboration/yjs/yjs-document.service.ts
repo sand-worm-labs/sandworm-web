@@ -16,6 +16,9 @@ import { Persistor } from './interfaces';
 import { Server, Socket } from 'socket.io';
 import { DocumentTreeService } from "@/features/document/service/document-tree.service";
 import { DocumentExecutorService } from "./executor/document-executor.service";
+import { addDashboardItemToYDashboard, cloneBlockGroup, duplicateBlock, getDashboard, getDashboardItem, getDataframes, getLayout, YBlock, YBlockGroup } from "@sandworm/editor";
+import { v4 as uuidv4 } from 'uuid';
+import { clone } from 'ramda';
 
 export interface LoadYDocResult {
     yDoc: Y.Doc;
@@ -334,8 +337,8 @@ export class YjsDocumentService implements OnModuleDestroy {
             loadStateResult,
             persistor,
             this.pubSubProviderFactory,
-            this.documentExecutorService, 
-            (title: string) =>  this.updateTitleWithWorkspace(documentId, workspaceId, title)
+            this.documentExecutorService,
+            (title: string) => this.updateTitleWithWorkspace(documentId, workspaceId, title)
         );
 
         this.docs.set(id, newYDoc);
@@ -383,6 +386,158 @@ export class YjsDocumentService implements OnModuleDestroy {
             return [documentId, app.id, String(app.userId)].join('-');
         }
         return [documentId, 'null'].join('-');
+    }
+
+    async duplicateYDocContent(
+        prevDocumentId: string,
+        prevWorkspaceId: string,
+        newDocumentId: string,
+        newWorkspaceId: string,
+        server: Server,
+        getDuplicatedTitle: (title: string) => string = (t) => `${t} copy`,
+        datasourceMap?: Map<string, string>,
+    ): Promise<void> {
+        const prevId = this.getDocId(prevDocumentId, null);
+        const newId = this.getDocId(newDocumentId, null);
+
+        const prevPersistor = this.persistorFactory.createDocumentPersistor(prevDocumentId);
+        const newPersistor = this.persistorFactory.createDocumentPersistor(newDocumentId);
+
+        await this.getYDocForUpdate(
+            prevId,
+            prevDocumentId,
+            server,
+            prevWorkspaceId,
+            async (prevSharedDoc) => {
+                await this.getYDocForUpdate(
+                    newId,
+                    newDocumentId,
+                    server,
+                    newWorkspaceId,
+                    async (newSharedDoc) => {
+                        this.duplicateYDoc(
+                            prevSharedDoc,
+                            newSharedDoc.ydoc,
+                            getDuplicatedTitle,
+                            { keepIds: false, datasourceMap },
+                        );
+
+                        // Force flush so the copied state is persisted before the
+                        // frontend can open the new doc and race the persistor.
+                        await this.saveEditYDoc(newDocumentId, newSharedDoc.ydoc);
+                    },
+                    newPersistor,
+                );
+            },
+            prevPersistor,
+        );
+    }
+
+    duplicateYDoc(
+        prevYDoc: SharedDoc,
+        newYDoc: Y.Doc,
+        getDuplicatedTitle: (title: string) => string,
+        config: { keepIds: boolean; datasourceMap?: Map<string, string> }
+    ) {
+        newYDoc.transact(
+            () => {
+                // map of old id to new id
+                const idMap = new Map<string, string>()
+
+                // duplicate title
+                const newTitle = getDuplicatedTitle(prevYDoc.getTitleFromDoc())
+
+                const titleFrag = newYDoc.getXmlFragment('title')
+                titleFrag.delete(0, titleFrag.length)
+                const titleEl = new Y.XmlElement('title')
+                const titleText = new Y.XmlText(newTitle)
+                titleEl.insert(0, [titleText])
+                titleFrag.insert(0, [titleEl])
+
+                // duplicate blocks
+                const oldBlocksMap = prevYDoc.blocks
+                const newBlocksMap = newYDoc.getMap<YBlock>('blocks')
+                newBlocksMap.clear()
+
+                for (const [blockId, block] of oldBlocksMap.entries()) {
+                    const newBlockId = config.keepIds ? blockId : uuidv4()
+                    idMap.set(blockId, newBlockId)
+                    const blockType = block.getAttribute('type')
+                    if (blockType) {
+                        const clonedBlock = duplicateBlock(
+                            newBlockId,
+                            block,
+                            prevYDoc.blocks,
+                            true,
+                            { datasourceMap: config.datasourceMap }
+                        )
+                        newBlocksMap.set(newBlockId, clonedBlock)
+                    }
+                }
+
+                // duplicate layout
+                const prevLayout = prevYDoc.layout
+                const newLayout = getLayout(newYDoc)
+                newLayout.delete(0, newLayout.length)
+                const newLayoutArr: YBlockGroup[] = prevLayout.map(cloneBlockGroup)
+                newLayout.insert(0, newLayoutArr)
+
+                // translate layout ids
+                if (!config.keepIds) {
+                    newLayout.forEach((newBlockGroup) => {
+                        newBlockGroup.getAttribute('tabs')?.forEach((tab) => {
+                            const oldId = tab.getAttribute('id')
+                            if (oldId) {
+                                const translatedId = idMap.get(oldId)
+                                tab.setAttribute('id', translatedId ?? uuidv4())
+                            }
+                        })
+                        const currentRef = newBlockGroup.getAttribute('current')
+                        if (currentRef) {
+                            const oldId = currentRef.getAttribute('id')
+                            if (!oldId) {
+                                throw new Error('Tab id not found')
+                            }
+                            const translatedId = idMap.get(oldId)
+                            currentRef.setAttribute('id', translatedId ?? uuidv4())
+                        }
+
+                        newLayoutArr.push(newBlockGroup)
+                    })
+                }
+
+                const prevDashboard = prevYDoc.dashboard
+
+                const newDashboard = getDashboard(newYDoc)
+                newDashboard.clear()
+
+                for (const dashId of prevDashboard.keys()) {
+                    const dashItem = getDashboardItem(prevDashboard, dashId)
+                    if (!dashItem) {
+                        continue
+                    }
+
+                    const oldId = dashItem.blockId
+                    const newId = idMap.get(oldId)
+                    if (!newId) {
+                        continue
+                    }
+
+                    dashItem.blockId = newId
+                    addDashboardItemToYDashboard(newDashboard, dashItem)
+                }
+
+                // duplicate dataframes
+                const prevDataframes = prevYDoc.dataframes
+                const newDataframes = getDataframes(newYDoc)
+                newDataframes.clear()
+
+                for (const [dataframeId, dataframe] of prevDataframes.entries()) {
+                    newDataframes.set(dataframeId, clone(dataframe))
+                }
+            },
+            { isDuplicating: true }
+        )
     }
 
     private startDocumentCleanup(): void {
