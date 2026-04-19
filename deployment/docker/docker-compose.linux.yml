@@ -1,0 +1,6 @@
+services:
+  jupyter:
+    platform: linux/amd64
+    build:
+      args:
+        TARGETARCH: amd64
