@@ -145,18 +145,18 @@ export const AccountDropdown = () => {
   }
 
   return (
-    <div className="w-full mx-auto mb-5 font-body">
+    <div className="w-full mx-auto mb-1 font-body">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
-            className="px-2 flex items-center gap-3 bg-base-100 rounded-xl h-12 border border-[#E9ECEF]  w-full justify-between dark:border-border-tertiary hover:bg-base-100 "
+            className="px-2 flex items-center gap-3  h-12   w-full justify-between hover:bg-base-100 "
           >
             <div className="flex items-center gap-3">
-              <Avatar className="h-8 w-8">
+              <Avatar className="h-10 w-10">
                 <AvatarImage
                   src={user.avater ?? undefined}
-                  alt={user.firstName ?? "User"}
+                  alt={user.firstName ?? user.username ?? "Sandworm User"}
                 />
                 <AvatarFallback className="relative overflow-hidden">
                   <Image
@@ -170,9 +170,16 @@ export const AccountDropdown = () => {
                   </span>
                 </AvatarFallback>
               </Avatar>
+              
+              <div className="flex-col flex items-left text-left mt-0.5" >
               <span className="text-[0.9rem] ">
-                @{user.firstName ?? "User"}
+                {user.firstName ?? "Sandworm User"}
               </span>
+              <span className="text-[0.75rem] font-medium inline-block text-ink-300 ">
+                Free Plan
+              </span>
+              </div>
+            
             </div>
             <MoreVertical className="ml-2 h-4 w-4" />
           </Button>

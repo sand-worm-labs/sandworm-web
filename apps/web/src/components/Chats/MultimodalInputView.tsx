@@ -91,7 +91,7 @@ export const MultimodalInputView = forwardRef<
           >
             <TextareaAutosize
               ref={ref}
-              placeholder="Start a query..."
+              placeholder="How can I help you today?"
               value={input}
               onChange={onInputChange}
               onKeyDown={e => {

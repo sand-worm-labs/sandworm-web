@@ -117,6 +117,7 @@ export default function SignUpForm() {
           <input
             ref={firstNameRef}
             name="firstName"
+            autoComplete="given-name"
             placeholder="First name"
             value={formData.firstName}
             onChange={handleChange}
@@ -124,6 +125,7 @@ export default function SignUpForm() {
           />
           <input
             name="lastName"
+            autoComplete="family-name"
             placeholder="Last name"
             value={formData.lastName}
             onChange={handleChange}
@@ -146,6 +148,8 @@ export default function SignUpForm() {
             type="email"
             name="email"
             placeholder="Email"
+            autoComplete="email"
+
             value={formData.email}
             onChange={handleChange}
             className="mt-1 w-full rounded-3xl  dark:bg-base-400 bg-white p-2.5 px-5 text-ink-100 dark:text-white border border-[#DEE2E6] dark:placeholder:text-ink-400 dark:border-border-tertiary focus:border-primary focus:ring-1 focus:ring-[#A308F0] outline-none text-[0.9rem]"

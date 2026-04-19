@@ -2,7 +2,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 // Routes that authenticated users should NOT be able to visit
-const AUTH_ROUTES = ["/signin", "/signup", "/password-change", "/reset"];
+const AUTH_ROUTES = ["/signin", "/signup", "/password-change", "/reset", "/check-mail"];
 
 // Routes that require authentication
 const PROTECTED_ROUTES = ["/workspace"];

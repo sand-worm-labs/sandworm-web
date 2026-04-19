@@ -19,11 +19,11 @@ export const SignIn = () => {
     <div className="w-full max-w-md rounded-lg p-6 flex flex-col items-center min-h-[100dvh] mx-auto lg:justify-center lg:h-full relative">
       <SandwormLogo width="40" height="40" />
 
-      <h2 className="lg:text-3xl text-2xl font-medium text-center text-black mb-1 mt-3 font-body  dark:text-white">
+      <h2 className="xl:text-3xl text-2xl  font-medium text-center text-black mb-1 mt-3 font-body  dark:text-white">
         Welcome back
       </h2>
 
-      <p className="text-ink-200  font-body font-medium text-sm mt-1 mb-6">
+      <p className="text-ink-200  font-body font-medium text-sm mt-1 xl:mb-6 mb-2.5">
         Sign into Sandworm
       </p>
 
@@ -58,12 +58,17 @@ export const SignIn = () => {
         </Link>
       </div>
 
-      <div className="flex-col gap-2 w-full flex items-center justify-center mt-auto pt-6 lg:absolute bottom-[2rem]">
-        <p className="lg:text-base text-sm text-ink-400 dark:text-ink-400 font-body font-medium lg:mb-4 mb-1">
+     {/*  <div className="flex-col gap-2 w-full flex items-center justify-center mt-auto pt-6 lg:absolute xl:bottom-[3rem] bottom-[1rem]">
+        <p className="xl:text-base text-sm text-ink-400 dark:text-ink-400 font-body font-medium lg:mb-4 mb-1">
           Trusted by teams at
         </p>
         <PartnersSection />
-      </div>
+      </div> */}
+       <p className="font-body font-medium text-center text-xs text-ink-400 mt-6 absolute bottom-4 max-w-[19rem]">
+          By continuing, you agree to the{" "}
+          <span className="underline">Terms</span> and confirm that you have
+          read the <span className="underline">Privacy Policy</span>.
+        </p>
     </div>
   );
 };
