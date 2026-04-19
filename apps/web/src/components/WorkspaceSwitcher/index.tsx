@@ -172,7 +172,7 @@ function ExpandedSwitcher({
   if (!workspaceInfo) return null;
 
   return (
-    <div ref={ref} className="relative px-2 mt-6 mb-2">
+    <div ref={ref} className="relative px-2 mt-2 mb-2">
       {/* ✦ Tree toggle ✦ */}
       <button
         type="button"

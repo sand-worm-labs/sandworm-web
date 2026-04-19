@@ -7,8 +7,9 @@ export default function CheckMailPage() {
       <Stepper
         currentStep={1}
         steps={[
-          { name: "Sign Up", href: "/signup" },
-          { name: "Setup Username", href: "/claim" },
+          { name: "Personal Info", href: "/signup?step=1" },
+          { name: "Credentials", href: "/signup?step=2" },
+          { name: "Claim Handle", href: "/signup?step=3" },
         ]}
       />
       <div className="flex-1 min-h-0 flex items-center">

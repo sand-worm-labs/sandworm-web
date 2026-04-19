@@ -158,7 +158,7 @@ function BlockList(props: BlockListProps) {
           id="add-block-power"
           icon={<LightningIcon className="w-[20px] h-[20px]" />}
           onAdd={props.onOpenToolbox}
-          text="Power Toolbox"
+          text="Toolbox"
         />
         <BlockSuggestion
           id="add-block-text"
