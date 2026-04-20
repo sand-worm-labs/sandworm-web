@@ -273,8 +273,8 @@ type Query {
   """Get current user (from token)"""
   currentUser: AuthPayload!
 
-  """Get all users"""
-  getAllUsers(input: GetAllUsersInput!): Int!
+  """Get user by id"""
+  getUser(userId: String!): User!
 
   """Users who follow a given user"""
   getUserFollowers(userId: String!): [User!]!
@@ -305,6 +305,12 @@ type Query {
 
   """Get User favorite public documents"""
   favoritePublicDocuments: [Document!]!
+
+  """Get User forked documents"""
+  getForkedDocuments: [Document!]!
+
+  """Get trending published documents across all workspaces"""
+  getTrendingPublishedDocuments(limit: Float = 20, offset: Float = 0): [Document!]!
 
   """Get a reusable component by ID"""
   getComponent(componentId: String!, workspaceId: String!): ReusableComponent!
@@ -378,13 +384,6 @@ type Query {
 
   """Get all schedules for a document"""
   schedules(input: ListSchedulesInput!): [Schedule!]!
-}
-
-input GetAllUsersInput {
-  limit: Float
-  offset: Float
-  sortBy: String! = "followersCount"
-  sortOrder: String! = "DESC"
 }
 
 input ListFilesInput {
