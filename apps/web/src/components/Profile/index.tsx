@@ -4,16 +4,18 @@
 
 import { useState } from "react";
 import {
-  Calendar,
   Link as LinkIcon,
   Github,
   Twitter,
   Globe,
   UserPlus,
   UserMinus,
-  Copy,
   Check,
 } from "lucide-react";
+import { PiCalendarDots } from "react-icons/pi";
+
+import { Copy } from "../Assets/Copy";
+
 import Image from "next/image";
 import { Avatar, AvatarFallback } from "@sandworm/ui/components/avatar";
 
@@ -60,30 +62,30 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
   const getSocialIcon = (platform: string) => {
     switch (platform) {
       case "twitter":
-        return <Twitter className="w-4 h-4" />;
+        return <Twitter className="w-4 h-4 text-[#1C3B5A]" />;
       case "github":
-        return <Github className="w-4 h-4" />;
+        return <Github className="w-4 h-4 text-[#1C3B5A]" />;
       case "website":
-        return <Globe className="w-4 h-4" />;
+        return <Globe className="w-4 h-4 text-[#1C3B5A]" />;
       case "telegram":
-        return <LinkIcon className="w-4 h-4" />;
+        return <LinkIcon className="w-4 h-4 text-[#1C3B5A]" />;
       case "discord":
-        return <LinkIcon className="w-4 h-4" />;
+        return <LinkIcon className="w-4 h-4 text-[#1C3B5A]" />;
       default:
-        return <LinkIcon className="w-4 h-4" />;
+        return <LinkIcon className="w-4 h-4 text-[#1C3B5A]" />;
     }
   };
 
   const userForModal = currentUser
     ? {
-        firstName: currentUser.firstName,
-        lastName: currentUser.lastName,
-        username: currentUser.username,
-        email: currentUser.email,
-        avater: currentUser.avatar,
-        fullName: currentUser.fullName,
-        settings: currentUser.settings,
-      }
+      firstName: currentUser.firstName,
+      lastName: currentUser.lastName,
+      username: currentUser.username,
+      email: currentUser.email,
+      avater: currentUser.avatar,
+      fullName: currentUser.fullName,
+      settings: currentUser.settings,
+    }
     : null;
 
   return (
@@ -114,7 +116,7 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                             height={96}
                             src={currentUser.avatar}
                             alt={currentUser.username}
-                            className="w-[6rem] h-[6rem]  rounded-full"
+                            className="w-[6rem] h-[6rem]  rounded-full border-[#E9ECEF] border-[2.5px]"
                           />
                         ) : (
                           <Avatar>
@@ -124,7 +126,7 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                                 alt=""
                                 width={96}
                                 height={96}
-                                className="object-cover"
+                                className="object-cover border-[#E9ECEF] border-[2.5px] rounded-full"
                               />
                               <span className="relative z-10 font-bold font-body text-white text-xl">
                                 {currentUser.firstName?.split(" ")[0]?.[0] ??
@@ -139,7 +141,7 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                           <button
                             type="button"
                             onClick={() => setIsModalOpen(true)}
-                            className="flex items-center gap-2 px-4 py-1 rounded-lg font-medium transition-colors text-sm border border-[#DEE2E6] dark:border-border-tertiary text-[#6C757D] dark:text-black hover:bg-[#F8F9FA]  bg-[#F8F9FA]"
+                            className="flex items-center gap-2 px-4 py-0.5 rounded-lg transition-colors text-sm border border-[#DEE2E6] dark:border-border-tertiary text-[#6C757D] dark:text-black hover:bg-[#F8F9FA]  bg-[#F8F9FA]"
                           >
                             Edit
                           </button>
@@ -147,11 +149,10 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                           <button
                             type="button"
                             onClick={() => setIsFollowing(!isFollowing)}
-                            className={`flex items-center gap-2 px-6 py-2 rounded-xl font-medium transition-colors text-sm ${
-                              isFollowing
+                            className={`flex items-center gap-2 px-6 py-2 rounded-xl font-medium transition-colors text-sm ${isFollowing
                                 ? "bg-[#E9ECEF] dark:bg-[#262A30] text-ink-100 dark:text-white hover:bg-opacity-80"
                                 : "bg-black text-white hover:bg-opacity-90"
-                            }`}
+                              }`}
                           >
                             {isFollowing ? (
                               <>
@@ -209,7 +210,7 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                         <div className="flex flex-wrap gap-4 text-sm text-ink-400 font-medium ">
                           {currentUser.createdAt && (
                             <div className="flex items-center gap-1">
-                              <Calendar className="w-4 h-4" />
+                              <PiCalendarDots className="w-4 h-4" />
                               Joined{" "}
                               {new Date(
                                 currentUser.createdAt
@@ -224,7 +225,7 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
 
                       {currentUser?.settings?.socialLinks &&
                         Object.keys(currentUser?.settings?.socialLinks).length >
-                          0 && (
+                        0 && (
                           <div className="flex gap-3">
                             {Object.entries(currentUser?.settings?.socialLinks)
                               .filter(([, url]) => url)
@@ -234,7 +235,7 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                                   href={url as string}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="p-2.5 rounded-xl border border-[#DEE2E6] dark:border-border-tertiary hover:bg-[#A308F0] hover:border-[#A308F0] hover:text-white transition-colors text-[#868E96] dark:text-ink-400 bg-[#F8F9FA] dark:bg-transparent"
+                                  className="p-2.5 rounded-xl border border-[#DEE2E6] dark:border-border-tertiary hover:bg-primary/20  hover:border-primary/20 hover:text-white transition-colors text-[#868E96] dark:text-ink-400 bg-[#F8F9FA] dark:bg-transparent"
                                 >
                                   {getSocialIcon(platform)}
                                 </a>
@@ -252,7 +253,7 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                         Main Wallets
                       </h2>
                       <div className="space-y-3">
-                        {wallets.map(wallet => (
+                        {wallets.slice(0, 2).map(wallet => (
                           <div
                             key={wallet.address}
                             className="flex items-center justify-between p-4 py-2 rounded-xl dark:border-border-tertiary   transition-colors bg-[#F8F9FA] dark:bg-base-200 border border-[#DEE2E6]"
@@ -272,12 +273,12 @@ const ProfileComponent = ({ isOwnProfile = true }: ProfileComponentProps) => {
                             <button
                               type="button"
                               onClick={() => copyToClipboard(wallet.address)}
-                              className="p-2 rounded-lg hover:bg-[#E9ECEF] dark:hover:bg-[#262A30] transition-colors"
+                              className="p-2 rounded-full hover:bg-[#E9ECEF] dark:hover:bg-[#262A30] transition-colors"
                             >
                               {copiedWallet === wallet.address ? (
-                                <Check className="w-4 h-4 text-primary" />
+                                <Check className="w-4 h-4 text-[#A308F0]" />
                               ) : (
-                                <Copy className="w-4 h-4 text-ink-200 dark:text-ink-400" />
+                                <Copy className="w-4 h-4 text-[#1C3B5A]  dark:text-ink-400" />
                               )}
                             </button>
                           </div>
