@@ -18,6 +18,7 @@ import {
   FavoriteDocumentInput,
 } from './dto/document.dto';
 import { DocumentTreeService } from './service/document-tree.service';
+import { Public } from '@sandworm/nest-common';
 
 @Resolver(() => Document)
 export class DocumentResolver {
@@ -67,6 +68,17 @@ export class DocumentResolver {
     @Args('offset', { nullable: true, defaultValue: 0 }) offset: number,
   ): Promise<Document[]> {
     return this.documentService.getExploreDocuments(limit, offset);
+  }
+  
+  @Public()
+  @Query(() => [Document], {
+    name:"getFeaturedDocuments",
+    description: "Get featured documents for explore page",
+  })
+  async getFeaturedDocuments(
+    @Args('limit', { nullable: true, defaultValue: 4 }) limit: number,
+  ): Promise<Document[]> {
+    return this.documentService.getFeaturedDocuments(limit);
   }
 
   @Query(() => [Document], {
