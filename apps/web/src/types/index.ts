@@ -192,6 +192,7 @@ export type ApiDocument = Document & {
   appId: string;
   userAppClock: Record<string, number>;
   hasDashboard: boolean;
+  authorId: string;
 };
 
 export type UserWorkspaceRole = "editor" | "viewer" | "admin";

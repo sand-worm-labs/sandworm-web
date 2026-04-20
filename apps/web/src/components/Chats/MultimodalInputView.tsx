@@ -8,6 +8,8 @@ import TextareaAutosize from "react-textarea-autosize";
 import { ModelQuickSelect } from "../Editor/blocks/ModelQuickSelect";
 import { useOpenRouterModels } from "../Editor/hooks/useOpenRouterModel";
 import { ModelPickerModal } from "../Editor/blocks/ModelPicker";
+import { TooltipV2 } from "@/components/Editor/blocks/ToolTips";
+
 
 import { StopIcon } from "./icons";
 import { PreviewAttachment } from "./preview-attachment";
@@ -121,13 +123,21 @@ export const MultimodalInputView = forwardRef<
 
             <div className="flex flex-row items-center justify-between px-4 pb-3">
               <div className="flex items-center">
-                <Button
-                  type="button"
-                  className="rounded-full p-2.5 h-fit bg-transparent dark:bg-transparent text-black dark:text-ink-400 border-[#B5C8DB] border hover:bg-[rgba(207,211,222,0.15)] dark:hover:bg-[rgba(255,255,255,0.05)] dark:border-border-tertiary"
-                  onClick={onFileClick}
-                >
-                  <PiPlus size={18} />
-                </Button>
+
+
+                <TooltipV2<HTMLButtonElement> title="Attach Files" active position="bottom">
+                  {(ref) => (
+                    <button
+                      ref={ref}
+                      type="button"
+                      onClick={onFileClick}
+                      className="rounded-full p-2.5 h-fit bg-transparent dark:bg-transparent text-black dark:text-ink-400 border-[#B5C8DB] border hover:bg-[rgba(207,211,222,0.15)] dark:hover:bg-[rgba(255,255,255,0.05)] dark:border-border-tertiary"
+                      title="Attach files"
+                    >
+                      <PiPlus size={18} />
+                    </button>
+                  )}
+                </TooltipV2>
               </div>
 
               <div className="flex flex-row gap-2 items-center">
@@ -150,11 +160,10 @@ export const MultimodalInputView = forwardRef<
                 ) : (
                   <Button
                     type="button"
-                    className={`rounded-full p-2.5 h-fit font-light transition-colors ${
-                      input.trim()
+                    className={`rounded-full p-2.5 h-fit font-light transition-colors ${input.trim()
                         ? "text-white bg-primary"
                         : "text-white bg-primary/30 cursor-not-allowed"
-                    }`}
+                      }`}
                     onClick={() => input.trim() && onSubmit?.()}
                   >
                     <PiPaperPlaneTilt size={18} strokeWidth={0.5} />

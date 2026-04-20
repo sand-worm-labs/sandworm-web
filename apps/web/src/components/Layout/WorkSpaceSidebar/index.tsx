@@ -23,6 +23,7 @@ import { Trash } from "@/components/Assets/Trash";
 import WorkspaceSwitcher from "@/components/WorkspaceSwitcher";
 import { Binoculars } from "@/components/Assets/Menu/Binoculars";
 import { useIsMobile } from "@/hooks/useMobile";
+import { TooltipV2 } from "@/components/Editor/blocks/ToolTips";
 
 interface NavItem {
   name: string;
@@ -90,11 +91,10 @@ export const WorkspaceSidebar = () => {
 
   const linkClasses = (href: string) =>
     `flex items-center gap-3 rounded-xl px-2 py-1.5 text-sm font-medium transition-colors
-     ${
-       pathname === href
-         ? "dark:bg-base-600 bg-base-600  text-primary dark:text-ink-100"
-         : "text-menu-ink dark:text-white hover:bg-base-600 dark:hover:bg-base-600 hover:text-primary   hover:text-black dark:hover:text-white"
-     }`;
+     ${pathname === href
+      ? "dark:bg-base-600 bg-base-600  text-primary dark:text-ink-100"
+      : "text-menu-ink dark:text-white hover:bg-base-600 dark:hover:bg-base-600 hover:text-primary   hover:text-black dark:hover:text-white"
+    }`;
 
   const [
     documentsState,
@@ -209,15 +209,14 @@ export const WorkspaceSidebar = () => {
   
       ${isMobile ? "fixed top-0 left-0 h-full z-50 w-[17.5rem]" : "h-full"}
   
-      ${
-        isMobile
+      ${isMobile
           ? isMobileOpen
             ? "translate-x-0"
             : "-translate-x-full"
           : collapsed
             ? "w-16"
             : "w-[17.5rem]"
-      }
+        }
     `}
     >
       <div>
@@ -255,13 +254,29 @@ export const WorkspaceSidebar = () => {
           <ul className="space-y-1.5">
             {mainNav.map(item => (
               <li key={item.name}>
-                <Link href={item.href} className={linkClasses(item.href)}>
-                  <item.icon
-                    size={18}
-                    className={`hover:text-[#A308F0] ${pathname === item.href ? "text-[#A308F0] dark:text-ink-100" : "text-ink-icon"}`}
-                  />
-                  {!collapsed && item.name}
-                </Link>
+                <TooltipV2<HTMLAnchorElement>
+                  title={item.name.trim()}
+                  active={collapsed}
+                  position="right"
+                >
+                  {(ref) => (
+                    <Link
+                      ref={ref}
+                      href={item.href}
+                      aria-label={item.name.trim()}
+                      className={linkClasses(item.href)}
+                    >
+                      <item.icon
+                        size={18}
+                        className={`hover:text-[#A308F0] ${pathname === item.href
+                          ? "text-[#A308F0] dark:text-ink-100"
+                          : "text-ink-icon"
+                          }`}
+                      />
+                      {!collapsed && item.name}
+                    </Link>
+                  )}
+                </TooltipV2>
               </li>
             ))}
           </ul>
