@@ -1,11 +1,12 @@
 import { ErrorCode } from '@/constants/error-code.constant';
-import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import {  Injectable, Logger } from '@nestjs/common';
 import { ValidationException } from '@sandworm/graphql';
 import {
   DocumentEntity,
   FavoriteEntity,
   YjsDocumentEntity,
-  DocumentVisibility
+  DocumentVisibility,
+  DocumentForkEntity,
 } from '@sandworm/postgresql-typeorm';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, In, Repository } from 'typeorm';
@@ -33,6 +34,8 @@ export class DocumentService {
     private readonly documentRepository: Repository<DocumentEntity>,
     @InjectRepository(FavoriteEntity)
     private readonly favoriteRepository: Repository<FavoriteEntity>,
+    @InjectRepository(DocumentForkEntity)
+    private readonly forkRepository: Repository<DocumentForkEntity>,
     @InjectRepository(YjsDocumentEntity)
     private readonly yjsDocumentRepository: Repository<YjsDocumentEntity>,
     private readonly documentTreeService: DocumentTreeService,
@@ -400,23 +403,38 @@ export class DocumentService {
   }
 
   async getForkedDocuments(userId: string, limit = 20, offset = 0): Promise<Document[]> {
-    // const documents = await this.documentRepository.find({
-    //   where: {
-    //   }
-    // });
-    // return documents.map(Document.fromEntity);
-    return [];
+      const forks = await this.forkRepository.find({
+          where: { userId },
+          relations: ['forkedDocument'],
+          order: { createdAt: 'DESC' },
+          take: limit,
+          skip: offset,
+      });
+
+      return forks
+          .map(f => f.forkedDocument)
+          .filter(d => d && !d.deletedAt)
+          .map(Document.fromEntity);
   }
 
   async getTrendingPublishedDocuments(limit = 20, offset = 0): Promise<Document[]> {
-    // const documents = await this.documentRepository.find({
-    //   where: {
-    //   }
-    // });
-    // return documents.map(Document.fromEntity);
-    return [];
-  }
+      const documents = await this.documentRepository
+          .createQueryBuilder('doc')
+          .leftJoin('doc.favorites', 'fav')
+          .leftJoin(DocumentForkEntity, 'fork', 'fork.source_document_id = doc.id')
+          .where('doc.visibility = :visibility', { visibility: DocumentVisibility.PUBLIC })
+          .andWhere('doc.deletedAt IS NULL')
+          .andWhere('doc.publishedAt IS NOT NULL')
+          .addSelect('COUNT(DISTINCT fav.userId) + COUNT(DISTINCT fork.id) * 2', 'score')
+          .groupBy('doc.id')
+          .orderBy('score', 'DESC')
+          .addOrderBy('doc.publishedAt', 'DESC')
+          .limit(limit)
+          .offset(offset)
+          .getMany();
 
+      return documents.map(Document.fromEntity);
+  }
 
   async getPublishedDocumentBySlug(slug: string): Promise<Document> {
     const document = await this.documentRepository.findOne({
