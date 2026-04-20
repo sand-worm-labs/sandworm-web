@@ -1,4 +1,5 @@
 export * from './document.entity';
+export * from './document_fork.entity';
 export * from './message.entity';
 export * from './favorite.entity';
 export * from './comment.entity';
