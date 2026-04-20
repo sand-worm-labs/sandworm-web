@@ -1,8 +1,11 @@
 "use client";
 
 import { useState, useRef, Fragment } from "react";
-import { X, Copy, Check, Trash2 } from "lucide-react";
+import { X,  Check,  } from "lucide-react";
 import { Dialog, Transition } from "@headlessui/react";
+import { Copy } from "../Assets/Copy";
+import { Trash } from "../Assets/Trash";
+import ScrollBar from "../Editor/blocks/ScrollBar";
 
 interface WalletInfo {
   address: string;
@@ -236,7 +239,7 @@ export const ManageWalletsModal = ({
             leaveFrom="opacity-100 scale-100 translate-y-0"
             leaveTo="opacity-0 scale-95 translate-y-1"
           >
-            <Dialog.Panel className="relative bg-white dark:bg-base-400 dark:border dark:border-border-tertiary rounded-2xl shadow-xl w-full max-w-md mx-4 p-6 font-body">
+            <Dialog.Panel className="relative bg-white dark:bg-base-400 dark:border dark:border-border-tertiary rounded-3xl shadow-xl w-full max-w-md mx-4 px-8 py-8 font-body">
               <div className="flex items-center justify-between mb-5">
                 <Dialog.Title className="text-base font-medium text-ink-100 dark:text-white">
                   Manage Wallets
@@ -251,7 +254,8 @@ export const ManageWalletsModal = ({
               </div>
 
               {/* ✦ Wallet List ✦ */}
-              <div className="space-y-2 max-h-72 overflow-y-auto pr-0.5">
+              <ScrollBar>
+              <div className="space-y-2 max-h-80  pr-0.5">
                 {wallets.length === 0 ? (
                   <p className="text-center text-sm text-ink-200 dark:text-ink-400 py-8">
                     No wallets added yet
@@ -262,9 +266,9 @@ export const ManageWalletsModal = ({
                       key={wallet.address}
                       onMouseEnter={() => setHoveredIndex(index)}
                       onMouseLeave={() => setHoveredIndex(null)}
-                      className={`flex items-center justify-between px-4 py-3 rounded-xl border transition-colors ${
+                      className={`flex items-center justify-between px-4 py-2 rounded-xl border transition-colors ${
                         hoveredIndex === index
-                          ? "border-[#A308F0] bg-[#F8F9FA] dark:bg-base-100"
+                          ? " bg-[#EBF9FA] dark:bg-base-100"
                           : "border-[#DEE2E6] dark:border-border-tertiary bg-[#F8F9FA] dark:bg-transparent"
                       }`}
                     >
@@ -279,30 +283,32 @@ export const ManageWalletsModal = ({
                         )}
                       </div>
 
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-[1px]">
                         <button
                           type="button"
                           onClick={() => copyToClipboard(wallet.address)}
-                          className="p-1.5 rounded-lg hover:bg-[#E9ECEF] dark:hover:bg-[#262A30] transition-colors"
+                          className="p-1 rounded-lg transition-colors"
                         >
                           {copiedAddress === wallet.address ? (
                             <Check className="w-4 h-4 text-[#A308F0]" />
                           ) : (
-                            <Copy className="w-4 h-4 text-ink-200 dark:text-ink-400" />
+                            <Copy className="w-4 h-4 text-[#1C3B5A]  dark:text-ink-400" />
                           )}
                         </button>
                         <button
                           type="button"
                           onClick={() => deleteWallet(index)}
-                          className="p-1.5 rounded-lg hover:bg-[#FFE8E8] dark:hover:bg-[#3A1A1A] transition-colors group"
+                          className="p-1 rounded-lg  transition-colors group"
                         >
-                          <Trash2 className="w-4 h-4 text-ink-200 dark:text-ink-400 group-hover:text-red-500 transition-colors" />
+                          <Trash className="w-4 h-4 text-[#1C3B5A] dark:text-ink-400 hover:text-error transition-colors" />
                         </button>
                       </div>
                     </div>
                   ))
                 )}
               </div>
+              </ScrollBar>
+           
 
               {/* ✦ Footer Actions ✦ */}
               <div className="flex gap-3 mt-10">
@@ -317,7 +323,7 @@ export const ManageWalletsModal = ({
                   <button
                     type="button"
                     onClick={deleteAll}
-                    className="w-[40%] py-2.5 rounded-xl border border-[#DEE2E6] dark:border-border-tertiary text-[#6C757D] dark:text-ink-400 text-sm font-medium hover:bg-[#F8F9FA] dark:hover:bg-base-500 transition-colors"
+                    className=" bg-[#0F0F0F] text-[#E9ECEF] w-[40%] py-2.5 rounded-xl border border-[#DEE2E6] dark:border-border-tertiary text-[#6C757D] dark:text-ink-400 text-sm font-medium hover:bg-[#F8F9FA] dark:hover:bg-base-500 transition-colors"
                   >
                     Delete all
                   </button>

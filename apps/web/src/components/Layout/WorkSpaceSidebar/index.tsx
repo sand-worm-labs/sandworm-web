@@ -23,6 +23,7 @@ import { Trash } from "@/components/Assets/Trash";
 import WorkspaceSwitcher from "@/components/WorkspaceSwitcher";
 import { Binoculars } from "@/components/Assets/Menu/Binoculars";
 import { useIsMobile } from "@/hooks/useMobile";
+import { TooltipV2 } from "@/components/Editor/blocks/ToolTips";
 
 interface NavItem {
   name: string;
@@ -230,33 +231,72 @@ export const WorkspaceSidebar = () => {
             </Link>
           )}
 
-          <button
-            type="button"
-            onClick={() => {
-              if (isMobile) {
-                setIsMobileOpen(false);
-              } else {
-                setCollapsed(!collapsed);
-              }
-            }}
-            className="p-1 rounded hover:bg-gray-200 dark:hover:bg-[#181C21] flex items-center justify-center text-[#868E96] dark:text-ink-400"
+          <TooltipV2<HTMLButtonElement>
+            title={
+              isMobile
+                ? "Close sidebar"
+                : collapsed
+                  ? "Open sidebar"
+                  : "Close sidebar"
+            }
+            active
+            position="right"
           >
-            <SidebarIcon />
-          </button>
+            {(ref) => (
+              <button
+                ref={ref}
+                type="button"
+                aria-label={
+                  isMobile
+                    ? "Close sidebar"
+                    : collapsed
+                      ? "Open sidebar"
+                      : "Close sidebar"
+                }
+                aria-expanded={isMobile ? isMobileOpen : !collapsed}
+                onClick={() => {
+                  if (isMobile) {
+                    setIsMobileOpen(false);
+                  } else {
+                    setCollapsed(!collapsed);
+                  }
+                }}
+                className="p-1 rounded hover:bg-gray-200 dark:hover:bg-[#181C21] flex items-center justify-center text-[#868E96] dark:text-ink-400"
+              >
+                <SidebarIcon />
+              </button>
+            )}
+          </TooltipV2>
         </div>
 
         <WorkspaceSwitcher collapsed={collapsed} />
         <nav className="flex-1 px-3">
           <ul className="space-y-1.5">
-            {mainNav.map(item => (
+            {mainNav.map((item) => (
               <li key={item.name}>
-                <Link href={item.href} className={linkClasses(item.href)}>
-                  <item.icon
-                    size={18}
-                    className={`hover:text-[#A308F0] ${pathname === item.href ? "text-[#A308F0] dark:text-ink-100" : "text-ink-icon"}`}
-                  />
-                  {!collapsed && item.name}
-                </Link>
+                <TooltipV2<HTMLAnchorElement>
+                  title={item.name.trim()}
+                  active={collapsed}
+                  position="right"
+                >
+                  {(ref) => (
+                    <Link
+                      ref={ref}
+                      href={item.href}
+                      aria-label={item.name.trim()}
+                      className={linkClasses(item.href)}
+                    >
+                      <item.icon
+                        size={18}
+                        className={`hover:text-[#A308F0] ${pathname === item.href
+                            ? "text-[#A308F0] dark:text-ink-100"
+                            : "text-ink-icon"
+                          }`}
+                      />
+                      {!collapsed && item.name}
+                    </Link>
+                  )}
+                </TooltipV2>
               </li>
             ))}
           </ul>

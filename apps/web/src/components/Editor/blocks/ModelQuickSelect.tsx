@@ -312,7 +312,7 @@ export function ModelQuickSelect({
         leaveFrom="opacity-100 translate-y-0 scale-100"
         leaveTo="opacity-0 translate-y-1 scale-95"
       >
-        <div className="absolute top-[3rem] left-0 mb-2 w-[260px] z-50 bg-base-100 border border-border-tertiary rounded-2xl shadow-2xl py-1.5 overflow-hidden">
+        <div className="absolute top-[3rem] left-0 mb-2 w-[260px] z-50 bg-base-100 border border-border-tertiary rounded-2xl shadow-[0_0.5px_4px_#2516660A] py-1.5 overflow-hidden">
           {quickList.map(m => (
             <button
               key={m.id}
