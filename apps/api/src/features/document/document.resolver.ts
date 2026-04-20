@@ -79,6 +79,27 @@ export class DocumentResolver {
     return this.documentService.getFavoriteExploreDocuments(userId);
   }
 
+  @Query(() => [Document], {
+    name: 'getForkedDocuments',
+    description: 'Get User forked documents',
+  })
+  async getForkedDocuments(
+    @CurrentUser('id') userId: string,
+  ): Promise<Document[]> {
+    return this.documentService.getForkedDocuments(userId);
+  }
+
+  @Query(() => [Document], {
+    name: 'getTrendingPublishedDocuments',
+    description: 'Get trending published documents across all workspaces',
+  })
+  async getTrendingPublishedDocuments(
+    @Args('limit', { nullable: true, defaultValue: 20 }) limit: number,
+    @Args('offset', { nullable: true, defaultValue: 0 }) offset: number,
+  ): Promise<Document[]> {
+    return this.documentService.getTrendingPublishedDocuments(limit, offset);
+  }
+
   @Mutation(() => Document, {
     name: 'createDocument',
     description: 'Create a new document in a workspace',

@@ -408,6 +408,16 @@ export class DocumentService {
     return [];
   }
 
+  async getTrendingPublishedDocuments(limit = 20, offset = 0): Promise<Document[]> {
+    // const documents = await this.documentRepository.find({
+    //   where: {
+    //   }
+    // });
+    // return documents.map(Document.fromEntity);
+    return [];
+  }
+
+
   async getPublishedDocumentBySlug(slug: string): Promise<Document> {
     const document = await this.documentRepository.findOne({
       where: { publishedSlug: slug },
