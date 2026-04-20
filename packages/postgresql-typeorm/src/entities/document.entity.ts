@@ -20,6 +20,7 @@ import { ReusableComponentEntity } from "./reusable_component.entity";
 import { ReusableComponentInstanceEntity } from "./reusable_component_instance.entity";
 import { UserEntity } from "./user.entity";
 import { DocumentVisibility } from "./enums";
+import { DocumentForkEntity } from "./document_fork.entity";
 
 
 @Entity("document")
@@ -143,4 +144,7 @@ export class DocumentEntity extends AbstractEntity {
     (rci) => rci.document,
   )
   reusableComponentInstances!: Relation<ReusableComponentInstanceEntity[]>;
+
+  @OneToMany(() => DocumentForkEntity, (fork) => fork.sourceDocument)
+  forks!: Relation<DocumentForkEntity[]>;
 }
