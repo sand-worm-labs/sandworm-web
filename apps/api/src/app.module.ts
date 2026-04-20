@@ -148,13 +148,11 @@ const loggerModule = LoggerModule.forRootAsync({
         transport: shouldPushToLogdy
           ? {
             targets: [
-              // stdout — Docker/terminal
               {
                 target: 'pino/file',
                 level: 'debug',
                 options: { destination: 1 },
               },
-              // Logdy socket
               {
                 target: 'pino-socket',
                 level: 'debug',

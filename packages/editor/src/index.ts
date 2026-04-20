@@ -391,6 +391,12 @@ export function compareText(
   return a.toJSON().localeCompare(b.toJSON());
 }
 
+export function createDocState(setup: (doc: Y.Doc) => void): Uint8Array {
+    const doc = new Y.Doc();
+    setup(doc);
+    return Y.encodeStateAsUpdate(doc);
+}
+
 export function getDataframe(
   block: Y.XmlElement<any | PivotTableBlock>,
   dataframes: Y.Map<DataFrame>
