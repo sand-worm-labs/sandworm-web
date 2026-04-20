@@ -159,6 +159,7 @@ type WorkspaceMember {
 type WorkspaceInfo {
   id: String!
   name: String!
+  icon: String!
   ownerId: String!
   createdAt: DateTime!
   updatedAt: DateTime!
@@ -298,6 +299,21 @@ type Query {
 
   """Get all documents in a workspace"""
   getWorkspaceDocuments(workspaceId: String!): [Document!]!
+
+  """Get documents in a workspace organized as a tree for explorer view"""
+  getExplorerDocuments(limit: Float = 20, offset: Float = 0): [Document!]!
+
+  """Get featured documents for explore page"""
+  getFeaturedDocuments(limit: Float = 4): [Document!]!
+
+  """Get User favorite public documents"""
+  favoritePublicDocuments: [Document!]!
+
+  """Get User forked documents"""
+  getForkedDocuments: [Document!]!
+
+  """Get trending published documents across all workspaces"""
+  getTrendingPublishedDocuments(limit: Float = 20, offset: Float = 0): [Document!]!
 
   """Get a reusable component by ID"""
   getComponent(componentId: String!, workspaceId: String!): ReusableComponent!
