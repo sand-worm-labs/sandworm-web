@@ -240,6 +240,12 @@ query GetExplorerDocuments($limit: Float = 20, $offset: Float = 0) {
       title
       icon
     }
+      author{
+      username
+      firstName
+      lastName
+      avater
+    }
   }
 }
 
@@ -276,6 +282,12 @@ query GetFeaturedDocuments($limit: Float = 4) {
       orderIndex
       createdAt
       updatedAt
+    }
+    author{
+      username
+      firstName
+      lastName
+      avater
     }
     parent {
       id

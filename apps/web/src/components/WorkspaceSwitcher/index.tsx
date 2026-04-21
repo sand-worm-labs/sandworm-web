@@ -13,10 +13,9 @@ import {
 } from "../Editor/hooks/useWorkspaces";
 import CreateTeamModal from "../Settings/CreateTeam";
 import { WorkspaceIcon } from "../Settings/WorkspaceIcon";
-
+import { CaretUpDown } from "../Assets/CaretUpDown";
 
 import { WorkspaceDropdownMenu } from "./WorkspaceDropdownMenu";
-import { CaretUpDown } from "../Assets/CaretUpDown";
 
 // =====================================
 // ⬢ Types
@@ -217,9 +216,9 @@ function ExpandedSwitcher({
           <span className="flex-1 text-left xl:text-sm text-[13px] font-medium text-ink-100 truncate capitalize">
             {workspaceInfo.name}
           </span>
-          
+
           {/* ✦ Chevron Up Down ✦ */}
-          <CaretUpDown/>
+          <CaretUpDown />
         </button>
       </Transition>
 

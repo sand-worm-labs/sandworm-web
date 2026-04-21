@@ -1,6 +1,7 @@
 import { Star, GitFork, Bookmark } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+
 import { useStringQuery } from "../Editor/hooks/useQueryArgs";
 
 // =====================================
@@ -16,6 +17,7 @@ interface FeaturedExploreCardProps {
   creator: {
     username: string;
     image: string;
+    userId: string;
   };
   stars: number;
   forks: number;
@@ -97,7 +99,12 @@ export function FeaturedExploreCard({
           height={24}
           className=" rounded-full"
         />
-        <Link href={`/workspace/${workspaceId }/profile/${creator.username}`} className="text-sm text-ink-400 hover:text-underline">@{creator.username}</Link >
+        <Link
+          href={`/workspace/${workspaceId}/profile/${creator.userId}`}
+          className="text-sm text-ink-400 hover:underline"
+        >
+          @{creator.username}
+        </Link>
       </div>
 
       <div className="flex items-center gap-4 text-sm text-ink-400">

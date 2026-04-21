@@ -23,7 +23,6 @@ function parsePlacement(placement: TooltipPlacement): {
   return { side, align: align ?? "center" };
 }
 
-
 // =====================================
 // ⬢ Utils
 // =====================================
@@ -79,14 +78,12 @@ export function computeTooltipPosition(
     } else {
       left = ref.left + ref.width / 2 - origTip.width / 2;
     }
+  } else if (align === "start") {
+    top = ref.top;
+  } else if (align === "end") {
+    top = ref.bottom - origTip.height;
   } else {
-    if (align === "start") {
-      top = ref.top;
-    } else if (align === "end") {
-      top = ref.bottom - origTip.height;
-    } else {
-      top = ref.top + ref.height / 2 - origTip.height / 2;
-    }
+    top = ref.top + ref.height / 2 - origTip.height / 2;
   }
 
   const safeMargin = 36;
@@ -205,7 +202,6 @@ export function PortalTooltip(props: PortalTooltipProps) {
   );
 }
 
-
 // =====================================
 // ⬢ Tooltip v2
 // =====================================
@@ -229,7 +225,14 @@ export function TooltipV2<T extends Element>(props: TooltipV2Props<T>) {
   const referenceRef = props.referenceRef ?? _referenceRef;
 
   const [pos, setPos] = useState<CSSProperties>(
-    computeTooltipPosition(parentRef, referenceRef, tooltipRef, placement, 6, true)
+    computeTooltipPosition(
+      parentRef,
+      referenceRef,
+      tooltipRef,
+      placement,
+      6,
+      true
+    )
   );
   const [hovering, setHovering] = useState(false);
 
@@ -238,7 +241,7 @@ export function TooltipV2<T extends Element>(props: TooltipV2Props<T>) {
 
   useEffect(() => {
     if (!parentRef.current || !props.active || !hovering) {
-      return () => { };
+      return () => {};
     }
 
     const cb = () => {

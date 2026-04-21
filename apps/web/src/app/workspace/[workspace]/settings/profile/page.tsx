@@ -1,4 +1,5 @@
-"use client"
+"use client";
+
 import React from "react";
 
 import ProfileComponent from "@/components/Profile";
@@ -9,11 +10,7 @@ export default function ProfilePage() {
 
   return (
     <div>
-      <ProfileComponent
-        user={currentUser}
-        isLoading={loading}
-        isOwnProfile={true}
-      />
+      <ProfileComponent user={currentUser} isLoading={loading} isOwnProfile />
     </div>
   );
 }

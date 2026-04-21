@@ -676,7 +676,6 @@ file`;
     [actualFiles]
   );
 
-
   const results = useMemo(
     () => upload.results.filter(f => f.outcome !== "success"),
     [upload.results]

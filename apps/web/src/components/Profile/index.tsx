@@ -1,4 +1,5 @@
 /* eslint-disable no-nested-ternary */
+
 "use client";
 
 import { useState } from "react";
@@ -13,27 +14,26 @@ import {
 } from "lucide-react";
 import { PiCalendarDots } from "react-icons/pi";
 import Image from "next/image";
-
 import { Avatar, AvatarFallback } from "@sandworm/ui/components/avatar";
+
 import { Copy } from "../Assets/Copy";
 import { Loader } from "../Loader";
 import { ProjectIcon } from "../Assets/ProjectIcon";
-
-// Hooks
 import { useCurrentUser } from "../Editor/hooks/useCurrentUser";
 import { useWallets } from "../Editor/hooks/useWallets";
+import { useUser } from "../Editor/hooks/useUser";
 
-// Modals
 import { ProfileSettingsModal } from "./ProfileSettingModal";
 import { ManageWalletsModal, AddWalletModal } from "./ManageWalletModal";
-import { useUser } from "../Editor/hooks/useUser";
+import { UserConnectionsModal } from "./UserConnectionModal";
+import { useStringQuery } from "../Editor/hooks/useQueryArgs";
+
 
 // =====================================
 // ⬢ Types
 // =====================================
-
 interface ProfileComponentProps {
-  user: any | null; // Accepts either currentUser or public user data
+  user: any | null;
   isLoading: boolean;
   isOwnProfile?: boolean;
 }
@@ -46,27 +46,35 @@ const ProfileComponent = ({
   isLoading,
   isOwnProfile = false,
 }: ProfileComponentProps) => {
-  // ─── STATE ───
   const [isFollowing, setIsFollowing] = useState(false);
   const { follow, unfollow, mutationLoading } = useUser({
     userId: user?.id,
-    skip: isOwnProfile || !user?.id
+    skip: isOwnProfile || !user?.id,
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [copiedWallet, setCopiedWallet] = useState<string | null>(null);
   const [isWalletsModalOpen, setIsWalletsModalOpen] = useState(false);
   const [isAddWalletOpen, setIsAddWalletOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [tab, setTab] = useState<"followers" | "following">("followers");
+  const workspaceId = useStringQuery("workspace");
+
 
   // ─── MUTATION HOOKS ───
-  // We extract only the mutations/states we need for editing. 
+  // We extract only the mutations/states we need for editing.
   // Hooks must always be called, even if not used (Rules of Hooks).
   const { updateProfile, error } = useCurrentUser();
-  const { wallets: ownWallets, addWallets, loading: updateLoading } = useWallets();
+  const {
+    wallets: ownWallets,
+    addWallets,
+    loading: updateLoading,
+  } = useWallets();
 
   // Determine which wallets to display based on profile ownership
-  const displayWallets = isOwnProfile ? ownWallets : (user?.settings?.wallets || []);
+  const displayWallets = isOwnProfile
+    ? ownWallets
+    : user?.settings?.wallets || [];
 
-  // ─── HELPERS ───
   const truncateAddress = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
@@ -79,26 +87,33 @@ const ProfileComponent = ({
 
   const getSocialIcon = (platform: string) => {
     switch (platform) {
-      case "twitter": return <Twitter className="w-4 h-4 text-[#1C3B5A]" />;
-      case "github": return <Github className="w-4 h-4 text-[#1C3B5A]" />;
-      case "website": return <Globe className="w-4 h-4 text-[#1C3B5A]" />;
-      case "telegram": return <LinkIcon className="w-4 h-4 text-[#1C3B5A]" />;
-      case "discord": return <LinkIcon className="w-4 h-4 text-[#1C3B5A]" />;
-      default: return <LinkIcon className="w-4 h-4 text-[#1C3B5A]" />;
+      case "twitter":
+        return <Twitter className="w-4 h-4 text-[#1C3B5A]" />;
+      case "github":
+        return <Github className="w-4 h-4 text-[#1C3B5A]" />;
+      case "website":
+        return <Globe className="w-4 h-4 text-[#1C3B5A]" />;
+      case "telegram":
+        return <LinkIcon className="w-4 h-4 text-[#1C3B5A]" />;
+      case "discord":
+        return <LinkIcon className="w-4 h-4 text-[#1C3B5A]" />;
+      default:
+        return <LinkIcon className="w-4 h-4 text-[#1C3B5A]" />;
     }
   };
 
-  const userForModal = user && isOwnProfile
-    ? {
-      firstName: user.firstName,
-      lastName: user.lastName,
-      username: user.username,
-      email: user.email,
-      avater: user.avatar,
-      fullName: user.fullName,
-      settings: user.settings,
-    }
-    : null;
+  const userForModal =
+    user && isOwnProfile
+      ? {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          username: user.username,
+          email: user.email,
+          avater: user.avatar,
+          fullName: user.fullName,
+          settings: user.settings,
+        }
+      : null;
 
   return (
     <>
@@ -169,15 +184,22 @@ const ProfileComponent = ({
                                 await follow();
                               }
                               setIsFollowing(!isFollowing);
-                            }} disabled={mutationLoading} className={`flex items-center gap-2 px-6 py-2 rounded-xl font-medium transition-colors text-sm ${isFollowing
-                              ? "bg-[#E9ECEF] dark:bg-[#262A30] text-ink-100 dark:text-white hover:bg-opacity-80"
-                              : "bg-black text-white hover:bg-opacity-90"
-                              }`}
+                            }}
+                            disabled={mutationLoading}
+                            className={`flex items-center gap-2 px-6 py-2 rounded-xl font-medium transition-colors text-sm ${
+                              isFollowing
+                                ? "bg-[#E9ECEF] dark:bg-[#262A30] text-ink-100 dark:text-white hover:bg-opacity-80"
+                                : "bg-black text-white hover:bg-opacity-90"
+                            }`}
                           >
                             {isFollowing ? (
-                              <><UserMinus className="w-4 h-4" /> Unfollow</>
+                              <>
+                                <UserMinus className="w-4 h-4" /> Unfollow
+                              </>
                             ) : (
-                              <><UserPlus className="w-4 h-4" /> Follow</>
+                              <>
+                                <UserPlus className="w-4 h-4" /> Follow
+                              </>
                             )}
                           </button>
                         )}
@@ -204,17 +226,29 @@ const ProfileComponent = ({
 
                       <div className="flex gap-4 gap-y-0 text-[0.95rem]">
                         <div>
-                          <span className="font-bold text-ink-100 dark:text-white">
+                          <button
+                            className="font-bold text-ink-100 dark:text-white"
+                            onClick={() => {
+                              setTab("followers");
+                              setOpen(true);
+                            }}
+                          >
                             {user.followersCount ?? 0}
-                          </span>{" "}
+                          </button>{" "}
                           <span className="text-ink-400 ml-0.5 font-medium text-sm">
                             Followers
                           </span>
                         </div>
                         <div>
-                          <span className="font-bold text-ink-100 dark:text-white">
+                          <button
+                            className="font-bold text-ink-100 dark:text-white"
+                            onClick={() => {
+                              setTab("following");
+                              setOpen(true);
+                            }}
+                          >
                             {user.followingCount ?? 0}
-                          </span>{" "}
+                          </button>{" "}
                           <span className="text-ink-400 ml-0.5 font-medium text-sm">
                             Following
                           </span>
@@ -225,10 +259,13 @@ const ProfileComponent = ({
                             <div className="flex items-center gap-1">
                               <PiCalendarDots className="w-4 h-4" />
                               Joined{" "}
-                              {new Date(user.createdAt).toLocaleDateString("en-US", {
-                                month: "short",
-                                year: "numeric",
-                              })}
+                              {new Date(user.createdAt).toLocaleDateString(
+                                "en-US",
+                                {
+                                  month: "short",
+                                  year: "numeric",
+                                }
+                              )}
                             </div>
                           )}
                         </div>
@@ -256,68 +293,66 @@ const ProfileComponent = ({
                   </div>
                 </div>
 
-                {/* ─── RIGHT: WALLETS ─── */}
                 <div className="w-full flex-1 py-12 md:py-0">
-                  {displayWallets && displayWallets.length > 0 ? (
-                    <div className="bg-white dark:bg-base-200 rounded-2xl md:p-6">
-                      <h2 className="px-2 py-0.5 font-medium text-ink-100 mb-4 bg-[#E9ECEF] dark:bg-base-100 inline-block text-sm rounded-lg">
-                        Main Wallets
-                      </h2>
-                      <div className="space-y-3">
-                        {displayWallets.slice(0, 2).map((wallet: any) => (
-                          <div
-                            key={wallet.address}
-                            className="flex items-center justify-between p-4 py-2 rounded-xl dark:border-border-tertiary transition-colors bg-[#F8F9FA] dark:bg-base-200 border border-[#DEE2E6]"
-                          >
-                            <div className="flex-1">
-                              <div className="flex flex-col">
-                                <code className="text-sm text-[#6C757D] dark:text-ink-400 font-body font-medium">
-                                  {truncateAddress(wallet.address)}
-                                </code>
-                                {wallet.chain && (
-                                  <span className="text-xs text-[#6C757D] dark:text-ink-400 mt-0.5">
-                                    {wallet.chain}
-                                  </span>
-                                )}
+                  {
+                    displayWallets && displayWallets.length > 0 ? (
+                      <div className="bg-white dark:bg-base-200 rounded-2xl md:p-6">
+                        <h2 className="px-2 py-0.5 font-medium text-ink-100 mb-4 bg-[#E9ECEF] dark:bg-base-100 inline-block text-sm rounded-lg">
+                          Main Wallets
+                        </h2>
+                        <div className="space-y-3">
+                          {displayWallets.slice(0, 2).map((wallet: any) => (
+                            <div
+                              key={wallet.address}
+                              className="flex items-center justify-between p-4 py-2 rounded-xl dark:border-border-tertiary transition-colors bg-[#F8F9FA] dark:bg-base-200 border border-[#DEE2E6]"
+                            >
+                              <div className="flex-1">
+                                <div className="flex flex-col">
+                                  <code className="text-sm text-[#6C757D] dark:text-ink-400 font-body font-medium">
+                                    {truncateAddress(wallet.address)}
+                                  </code>
+                                  {wallet.chain && (
+                                    <span className="text-xs text-[#6C757D] dark:text-ink-400 mt-0.5">
+                                      {wallet.chain}
+                                    </span>
+                                  )}
+                                </div>
                               </div>
+                              <button
+                                type="button"
+                                onClick={() => copyToClipboard(wallet.address)}
+                                className="p-2 rounded-full hover:bg-[#E9ECEF] dark:hover:bg-[#262A30] transition-colors"
+                              >
+                                {copiedWallet === wallet.address ? (
+                                  <Check className="w-4 h-4 text-[#A308F0]" />
+                                ) : (
+                                  <Copy className="w-4 h-4 text-[#1C3B5A] dark:text-ink-400" />
+                                )}
+                              </button>
                             </div>
+                          ))}
+                        </div>
+
+                        {isOwnProfile && (
+                          <>
                             <button
                               type="button"
-                              onClick={() => copyToClipboard(wallet.address)}
-                              className="p-2 rounded-full hover:bg-[#E9ECEF] dark:hover:bg-[#262A30] transition-colors"
+                              onClick={() => setIsAddWalletOpen(true)}
+                              className="bg-[#A308F0] py-3 px-5 rounded-xl mt-6 text-[#E9ECEF] xl:text-sm w-full text-start text-[13px] font-medium"
                             >
-                              {copiedWallet === wallet.address ? (
-                                <Check className="w-4 h-4 text-[#A308F0]" />
-                              ) : (
-                                <Copy className="w-4 h-4 text-[#1C3B5A] dark:text-ink-400" />
-                              )}
+                              Add Wallet
                             </button>
-                          </div>
-                        ))}
+                            <button
+                              type="button"
+                              className="text-[#A308F0] mt-3 text-[13px] font-medium"
+                              onClick={() => setIsWalletsModalOpen(true)}
+                            >
+                              All Wallets
+                            </button>
+                          </>
+                        )}
                       </div>
-
-                      {/* Only show edit actions if it's their own profile */}
-                      {isOwnProfile && (
-                        <>
-                          <button
-                            type="button"
-                            onClick={() => setIsAddWalletOpen(true)}
-                            className="bg-[#A308F0] py-3 px-5 rounded-xl mt-6 text-[#E9ECEF] xl:text-sm w-full text-start text-[13px] font-medium"
-                          >
-                            Add Wallet
-                          </button>
-                          <button
-                            type="button"
-                            className="text-[#A308F0] mt-3 text-[13px] font-medium"
-                            onClick={() => setIsWalletsModalOpen(true)}
-                          >
-                            All Wallets
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  ) : (
-                    // Empty Wallet State
+                    ) : 
                     isOwnProfile ? (
                       <div className="relative max-w-[380px] mx-auto mt-12">
                         <div className="absolute z-1 inset-0 top-[1rem] left-[1rem] right-[1rem] rounded-xl bg-[#D97EF9] opacity-40 h-full" />
@@ -330,8 +365,8 @@ const ProfileComponent = ({
                           Add Wallet
                         </button>
                       </div>
-                    ) : null // Hide entirely for public users if no wallets
-                  )}
+                    ) : null 
+                  }
                 </div>
               </div>
 
@@ -352,7 +387,6 @@ const ProfileComponent = ({
         )}
       </div>
 
-      {/* ─── MODALS (Only active for Own Profile) ─── */}
       {isOwnProfile && (
         <>
           <ProfileSettingsModal
@@ -394,6 +428,14 @@ const ProfileComponent = ({
           />
         </>
       )}
+
+      <UserConnectionsModal
+        open={open}
+        onClose={() => setOpen(false)}
+        userId={user?.id}
+        type={tab}
+        workspaceId={workspaceId}
+      />
     </>
   );
 };

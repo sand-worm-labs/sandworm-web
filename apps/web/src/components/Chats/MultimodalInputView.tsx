@@ -5,11 +5,11 @@ import { PiPaperPlaneTilt, PiPlus, PiX } from "react-icons/pi";
 import { Button } from "@sandworm/ui/components/button";
 import TextareaAutosize from "react-textarea-autosize";
 
+import { TooltipV2 } from "@/components/Editor/blocks/ToolTips";
+
 import { ModelQuickSelect } from "../Editor/blocks/ModelQuickSelect";
 import { useOpenRouterModels } from "../Editor/hooks/useOpenRouterModel";
 import { ModelPickerModal } from "../Editor/blocks/ModelPicker";
-import { TooltipV2 } from "@/components/Editor/blocks/ToolTips";
-
 
 import { StopIcon } from "./icons";
 import { PreviewAttachment } from "./preview-attachment";
@@ -123,10 +123,12 @@ export const MultimodalInputView = forwardRef<
 
             <div className="flex flex-row items-center justify-between px-4 pb-3">
               <div className="flex items-center">
-
-
-                <TooltipV2<HTMLButtonElement> title="Attach Files" active position="bottom">
-                  {(ref) => (
+                <TooltipV2<HTMLButtonElement>
+                  title="Attach Files"
+                  active
+                  position="bottom"
+                >
+                  {ref => (
                     <button
                       ref={ref}
                       type="button"
@@ -160,10 +162,11 @@ export const MultimodalInputView = forwardRef<
                 ) : (
                   <Button
                     type="button"
-                    className={`rounded-full p-2.5 h-fit font-light transition-colors ${input.trim()
+                    className={`rounded-full p-2.5 h-fit font-light transition-colors ${
+                      input.trim()
                         ? "text-white bg-primary"
                         : "text-white bg-primary/30 cursor-not-allowed"
-                      }`}
+                    }`}
                     onClick={() => input.trim() && onSubmit?.()}
                   >
                     <PiPaperPlaneTilt size={18} strokeWidth={0.5} />
