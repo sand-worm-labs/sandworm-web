@@ -3,7 +3,7 @@ import { PythonExecutorService } from '@/features/code-execution/python-executor
 import { Output } from '@sandworm/types';
 
 
-const CACHE_TTL_MS = 1000 * 60 * 5; 
+const CACHE_TTL_MS = 1000 * 60 * 10; 
 
 const SYSINFO_CODE = `
 import platform, psutil, socket, subprocess, sys, time, importlib.metadata, json
