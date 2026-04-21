@@ -164,15 +164,15 @@ export class YjsDocumentService implements OnModuleDestroy {
             {
                 documentId,
                 state,
+                clock: () => 'clock + 1',  // ← increment on every save
+                clockUpdatedAt: new Date(),
             },
             {
                 conflictPaths: ["documentId"],
                 skipUpdateIfNoValuesChanged: true,
             },
         );
-
-        this.logger.debug(`Saved edit YDoc for document: ${documentId}`);
-    }
+    } 
 
     async saveAppYDoc(
         yjsAppDocumentId: string,
