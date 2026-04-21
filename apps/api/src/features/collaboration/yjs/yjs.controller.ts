@@ -13,9 +13,9 @@ import { YjsDocumentService } from './yjs-document.service';
 import { PersistorFactory } from './persistors/persistor.factory';
 // import { serializeDocForAI } from '@sandworm/editor';
 
-@ApiTags('Documents')
+@ApiTags('YjsDocuments')
 @Controller({
-  path: 'documents',
+  path: 'yjs_documents',
   version: '1',
 })
 

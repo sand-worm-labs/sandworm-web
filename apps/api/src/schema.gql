@@ -120,6 +120,7 @@ type Document {
   userAppClock: JSON!
   children: [Document!]!
   parent: Document
+  author: User
 }
 
 type Environment {
@@ -291,6 +292,9 @@ type Query {
   """Get all environment variables (values are masked)"""
   environmentVariables(workspaceId: String!): [EnvironmentVariable!]!
 
+  """Get current system info"""
+  currentSysInfo(workspaceId: String!, sessionId: String!): JSON!
+
   """Get a single document by ID"""
   getDocument(documentId: String!, workspaceId: String!): Document!
 
@@ -302,6 +306,9 @@ type Query {
 
   """Get documents in a workspace organized as a tree for explorer view"""
   getExplorerDocuments(limit: Float = 20, offset: Float = 0): [Document!]!
+
+  """Get featured documents for explore page"""
+  getFeaturedDocuments(limit: Float = 4): [Document!]!
 
   """Get User favorite public documents"""
   favoritePublicDocuments: [Document!]!

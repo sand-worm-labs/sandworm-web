@@ -19,10 +19,14 @@ import {
 } from './dto/document.dto';
 import { DocumentTreeService } from './service/document-tree.service';
 import { Public } from '@sandworm/nest-common';
+import { User } from '../user/model/graphql/user.model';
+import { UserService } from '../user/user.service';
 
 @Resolver(() => Document)
 export class DocumentResolver {
+
   constructor(
+    private readonly userService: UserService,
     private readonly documentService: DocumentService, 
     private readonly documentTreeService: DocumentTreeService
   ) { }
@@ -225,5 +229,14 @@ export class DocumentResolver {
   async parent(@Parent() doc: Document): Promise<Document | null> {
     if (!doc.parentId) return null;
     return this.documentService.getDocument(doc.parentId, doc.workspaceId);
+  }
+
+  @ResolveField(() => User, {
+    name: 'author',
+    nullable: true,
+  })
+  async author(@Parent() doc: Document): Promise<User | null> {
+    if (!doc.authorId) return null;
+    return this.userService.findById(doc.authorId);
   }
 }
