@@ -91,13 +91,13 @@ export class UserResolver {
   }
 
   @Public()
-  @Query(() => Int, {
-    name: 'getAllUsers',
-    description: 'Get all users',
+  @Query(() => User, {
+    name: 'getUser',
+    description: 'Get user by id',
   })
-  async getAllUsers(@Args('input') input: GetAllUsersInput): Promise<number> {
-    const users = await this.userService.getAllUsers(input);
-    return users.length;
+  async getUser(@Args('userId', { type: () => String }) userId: string): Promise<User> {
+    const user = await this.userService.findById(userId);
+    return User.fromEntity(user);
   }
 
   @Public()

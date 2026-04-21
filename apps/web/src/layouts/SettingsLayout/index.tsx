@@ -44,8 +44,8 @@ export default function SettingsLayout({
   ];
 
   return (
-    <div className=" w-full">
-      <div className="flex items-center gap-2 py-3 border-b border-[#F1F3F4] dark:border-border-tertiary px-10 text-[1.1rem] dark:bg-base-500">
+    <div className=" w-full min-h-screen  bg-[#FEFFFF] ">
+      <div className="flex items-center gap-2 py-3 border-b border-[#F1F3F4] dark:border-border-tertiary px-10 text-[1.1rem] dark:bg-base-500 bg-[#FBFBFB]">
         <Link
           href="/workspace"
           className="text-ink-400  hover:text-ink-100 dark:text-ink-400 dark:hover:text-white transition "
@@ -56,9 +56,9 @@ export default function SettingsLayout({
         <span>Settings</span>
       </div>
 
-      <div className="flex flex-1 min-h-0 md:flex-row flex-col ">
+      <div className="flex flex-1 min-h-0 md:flex-row flex-col h-full">
         <div
-          className="p-6 px-3 border-r dark:border-borderLight my-12 border-[#E9ECEF] dark:border-border-tertiary bg-[#FEFFFF] dark:bg-base-500 flex-col justify-between flex self-stretch"
+          className="p-6 px-3 border-r dark:border-borderLight my-12 border-[#E9ECEF] dark:border-border-tertiary bg-[#FEFFFF] dark:bg-base-500 flex-col justify-between flex self-stretch h-screen"
           style={{ minWidth: 250 }}
         >
           <ul className="mt-4 flex  flex-col w-full">

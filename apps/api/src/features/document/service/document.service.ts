@@ -1,13 +1,16 @@
 import { ErrorCode } from '@/constants/error-code.constant';
-import { Injectable, Logger } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import {  Injectable, Logger } from '@nestjs/common';
 import { ValidationException } from '@sandworm/graphql';
 import {
   DocumentEntity,
   FavoriteEntity,
   YjsDocumentEntity,
+  DocumentVisibility,
+  DocumentForkEntity,
 } from '@sandworm/postgresql-typeorm';
-import { Repository, In } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, In, Repository } from 'typeorm';
+import { YjsDocumentService } from "@/features/collaboration/yjs/yjs-document.service"
 import {
   CreateDocumentInput,
   DeleteDocumentInput,
@@ -18,18 +21,25 @@ import {
 } from '../dto/document.dto';
 import { Document } from '../model/document.model';
 import { DocumentTreeService } from './document-tree.service';
+
+
 @Injectable()
 export class DocumentService {
   private readonly logger = new Logger(DocumentService.name);
 
   constructor(
+    @InjectDataSource()
+    private readonly dataSource: DataSource,
     @InjectRepository(DocumentEntity)
     private readonly documentRepository: Repository<DocumentEntity>,
     @InjectRepository(FavoriteEntity)
     private readonly favoriteRepository: Repository<FavoriteEntity>,
+    @InjectRepository(DocumentForkEntity)
+    private readonly forkRepository: Repository<DocumentForkEntity>,
     @InjectRepository(YjsDocumentEntity)
     private readonly yjsDocumentRepository: Repository<YjsDocumentEntity>,
     private readonly documentTreeService: DocumentTreeService,
+    private readonly yjsDocumentService: YjsDocumentService
   ) { }
 
   async getDocument(
@@ -71,12 +81,7 @@ export class DocumentService {
     );
 
     const document = Document.fromEntity(documentEntity);
-
-    // Emit events
     await this.documentTreeService.emitDocumentUpdate(workspaceId, document);
-
-    
-
     return document;
   }
 
@@ -93,7 +98,6 @@ export class DocumentService {
       throw new ValidationException(ErrorCode.E003);
     }
 
-    // Handle tree position changes
     if (input.parentId !== undefined || input.orderIndex !== undefined) {
       const newParentId = input.parentId ?? document.parentId;
       const newOrderIndex = input.orderIndex ?? document.orderIndex;
@@ -116,8 +120,6 @@ export class DocumentService {
         input.title,
       );
     }
-
-    // Reload to get tree service changes
     const updatedDocument = await this.documentRepository.findOne({
       where: { id: documentId, workspaceId },
     });
@@ -126,7 +128,6 @@ export class DocumentService {
       throw new ValidationException(ErrorCode.E003);
     }
 
-    // Update non-tree fields directly
     if (input.runUnexecutedBlocks !== undefined) {
       updatedDocument.runUnexecutedBlocks = input.runUnexecutedBlocks;
     }
@@ -136,16 +137,11 @@ export class DocumentService {
     if (input.shareLinksWithoutSidebar !== undefined) {
       updatedDocument.shareLinksWithoutSidebar = input.shareLinksWithoutSidebar;
     }
-
     await this.documentRepository.save(updatedDocument);
-
     const result = Document.fromEntity(updatedDocument);
 
     // Emit events
     await this.documentTreeService.emitDocumentUpdate(workspaceId, result);
-
-    
-
     return result;
   }
 
@@ -170,9 +166,6 @@ export class DocumentService {
 
     // Emit events
     await this.documentTreeService.emitWorkspaceDocuments(workspaceId);
-
-    
-
     return true;
   }
 
@@ -194,12 +187,7 @@ export class DocumentService {
     );
 
     const result = Document.fromEntity(restoredDocument);
-
-    // Emit events
     await this.documentTreeService.emitWorkspaceDocuments(workspaceId);
-
-    
-
     return result;
   }
 
@@ -209,26 +197,19 @@ export class DocumentService {
   ): Promise<Document> {
     const { documentId, workspaceId } = input;
 
-    const original = await this.documentRepository.findOne({
-      where: { id: documentId, workspaceId, deletedAt: null },
+    const duplicated = await this.dataSource.transaction(async (m) => {
+      const repo = m.getRepository(DocumentEntity);
+
+      const original = await repo.findOne({
+        where: { id: documentId, workspaceId, deletedAt: null },
+      });
+      if (!original) throw new ValidationException(ErrorCode.E003);
+
+      return this.documentTreeService.duplicateDocument(documentId, workspaceId, userId, m);
     });
 
-    if (!original) {
-      throw new ValidationException(ErrorCode.E003);
-    }
-
-    const duplicatedDocument = await this.documentTreeService.duplicateDocument(
-      documentId,
-      workspaceId,
-    );
-
-    const result = Document.fromEntity(duplicatedDocument);
-
-    // Emit events
+    const result = Document.fromEntity(duplicated);
     await this.documentTreeService.emitWorkspaceDocuments(workspaceId);
-
-    
-
     return result;
   }
 
@@ -252,9 +233,6 @@ export class DocumentService {
     });
 
     await this.favoriteRepository.save(favorite);
-
-    
-
     return Document.fromEntity(document);
   }
 
@@ -300,12 +278,25 @@ export class DocumentService {
     if (!favorite) {
       throw new ValidationException(ErrorCode.E004);
     }
-
     await this.favoriteRepository.delete({ userId, documentId });
-
-    
-
     return Document.fromEntity(document);
+  }
+
+  private async generateUniqueSlug(title: string, documentId: string): Promise<string> {
+    const base = title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '')
+      .slice(0, 50) || 'notebook';
+
+    const suffix = documentId.slice(0, 8);
+    const candidate = `${base}-${suffix}`;
+
+    const existing = await this.documentRepository.findOne({
+      where: { publishedSlug: candidate },
+    });
+
+    return existing ? `${candidate}-${Date.now()}` : candidate;
   }
 
   async publishDocument(
@@ -316,20 +307,24 @@ export class DocumentService {
       where: { id: documentId, workspaceId },
     });
 
-    if (!document) {
-      throw new ValidationException(ErrorCode.E003);
+    if (!document) throw new ValidationException(ErrorCode.E003);
+    const yjsDoc = await this.yjsDocumentRepository.findOne({
+      where: { documentId },
+    });
+
+    if (!yjsDoc) throw new ValidationException(ErrorCode.E003);
+
+    if (!document.publishedSlug) {
+      document.publishedSlug = await this.generateUniqueSlug(document.title, documentId);
     }
 
     document.publishedAt = new Date();
+    document.visibility = DocumentVisibility.PUBLIC;
+
     await this.documentRepository.save(document);
 
     const result = Document.fromEntity(document);
-
-    // Emit events
     await this.documentTreeService.emitDocumentUpdate(workspaceId, result);
-
-    
-
     return result;
   }
 
@@ -346,15 +341,114 @@ export class DocumentService {
     }
 
     document.publishedAt = null;
+    document.visibility = DocumentVisibility.WORKSPACE;
+
     await this.documentRepository.save(document);
 
     const result = Document.fromEntity(document);
-
-    // Emit events
     await this.documentTreeService.emitDocumentUpdate(workspaceId, result);
-
-    
-
     return result;
+  }
+
+  async getExploreDocuments(limit = 20, offset = 0,): Promise<Document[]> {
+    const documents = await this.documentRepository.find({
+      where: {
+        visibility: DocumentVisibility.PUBLIC,
+        deletedAt: null,
+      },
+      order: { publishedAt: 'DESC' },
+      take: limit,
+      skip: offset,
+    });
+
+    return documents.map(Document.fromEntity);
+  }
+
+  async getFavoriteExploreDocuments(userId: string, limit = 20, offset = 0): Promise<Document[]> {
+    const favorites = await this.favoriteRepository.find({
+      where: { userId },
+    });
+
+    const documentIds = favorites.map((fav) => fav.documentId);
+    if (documentIds.length === 0) {
+      return [];
+    }
+
+    const documents = await this.documentRepository.find({
+      where: {
+        id: In(documentIds),
+        visibility: DocumentVisibility.PUBLIC,
+        deletedAt: null,
+      },
+      order: { publishedAt: 'DESC' },
+      take: limit,
+      skip: offset,
+    });
+
+    return Document.fromEntities(documents);
+  }
+
+  async getFeaturedDocuments(limit = 4): Promise<Document[]> {
+    const documents = await this.documentRepository.find({
+      where: {
+        visibility: DocumentVisibility.PUBLIC,
+        deletedAt: null,
+        featuredDocument: true,
+      },
+      order: { publishedAt: 'DESC' },
+      take: limit,
+    });
+
+    return documents.map(Document.fromEntity);
+  }
+
+  async getForkedDocuments(userId: string, limit = 20, offset = 0): Promise<Document[]> {
+      const forks = await this.forkRepository.find({
+          where: { userId },
+          relations: ['forkedDocument'],
+          order: { createdAt: 'DESC' },
+          take: limit,
+          skip: offset,
+      });
+
+      return forks
+          .map(f => f.forkedDocument)
+          .filter(d => d && !d.deletedAt)
+          .map(Document.fromEntity);
+  }
+
+  async getTrendingPublishedDocuments(limit = 20, offset = 0): Promise<Document[]> {
+      const documents = await this.documentRepository
+          .createQueryBuilder('doc')
+          .leftJoin('doc.favorites', 'fav')
+          .leftJoin(DocumentForkEntity, 'fork', 'fork.source_document_id = doc.id')
+          .where('doc.visibility = :visibility', { visibility: DocumentVisibility.PUBLIC })
+          .andWhere('doc.deletedAt IS NULL')
+          .andWhere('doc.publishedAt IS NOT NULL')
+          .addSelect('COUNT(DISTINCT fav.userId) + COUNT(DISTINCT fork.id) * 2', 'score')
+          .groupBy('doc.id')
+          .orderBy('score', 'DESC')
+          .addOrderBy('doc.publishedAt', 'DESC')
+          .limit(limit)
+          .offset(offset)
+          .getMany();
+
+      return documents.map(Document.fromEntity);
+  }
+
+  async getPublishedDocumentBySlug(slug: string): Promise<Document> {
+    const document = await this.documentRepository.findOne({
+      where: { publishedSlug: slug },
+    });
+
+    if (!document || !document.publishedAt) {
+      throw new ValidationException(ErrorCode.E003);
+    }
+
+    if (document.visibility === DocumentVisibility.WORKSPACE) {
+      throw new ValidationException("Document is not published", ErrorCode.E003);
+    }
+
+    return Document.fromEntity(document);
   }
 }

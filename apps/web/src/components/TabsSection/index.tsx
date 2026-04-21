@@ -46,37 +46,7 @@ const TabsHeader: React.FC<{
   onSortChange: (sort: SortOption) => void;
 }> = ({ tab, sortBy, onSortChange }) => (
   <div className="flex justify-between items-center">
-    <TabsList className="flex ">
-      <TabsTrigger
-        value="all"
-        className={`px-3 py-1 flex items-center space-x-1.5 rounded-lg ${
-          tab === "all" ? "text-primary bg-[#E7F3F6]" : "text-ink-300 "
-        }`}
-      >
-        <HiOutlineCommandLine size={18} className="flex-shrink-0" />
-        <span className="text-sm">All Notebooks</span>
-      </TabsTrigger>
 
-      <TabsTrigger
-        value="forked"
-        className={`px-3 py-1 flex items-center space-x-1.5 rounded-lg ${
-          tab === "forked" ? "text-primary bg-[#E7F3F6]" : "text-ink-300 "
-        }`}
-      >
-        <VscRepoForked size={16} className="flex-shrink-0" />
-        <span className="text-sm">Forked </span>
-      </TabsTrigger>
-
-      <TabsTrigger
-        value="starred"
-        className={`px-3 py-1 flex items-center space-x-1.5 rounded-lg ${
-          tab === "starred" ? "text-primary bg-[#E7F3F6]" : "text-ink-300 "
-        }`}
-      >
-        <FaRegStar size={16} className="flex-shrink-0" />
-        <span className="text-sm">Starred</span>
-      </TabsTrigger>
-    </TabsList>
 
     <SortControl sortBy={sortBy} onSortChange={onSortChange} />
   </div>

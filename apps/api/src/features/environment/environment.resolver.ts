@@ -7,10 +7,12 @@ import {
   RestartEnvironmentInput,
 } from './dto/environment.dto';
 import { EnvironmentStatus } from '@sandworm/postgresql-typeorm';
+import GraphQLJSON from 'graphql-type-json';
+import { SysinfoService } from './sys.service';
 
 @Resolver(() => Environment)
 export class EnvironmentResolver {
-  constructor(private readonly environmentService: EnvironmentService) {}
+  constructor(private readonly environmentService: EnvironmentService, private readonly sysinfoService: SysinfoService) {}
 
   @Query(() => Environment, {
     name: 'environment',
@@ -40,6 +42,17 @@ export class EnvironmentResolver {
     @Args('workspaceId') workspaceId: string,
   ): Promise<EnvironmentVariable[]> {
     return this.environmentService.getEnvironmentVariables(workspaceId);
+  }
+
+  @Query(() => GraphQLJSON, {
+    name: 'currentSysInfo',
+    description: 'Get current system info',
+  })
+  async currentSysInfo(
+      @Args('workspaceId') workspaceId: string,
+      @Args('sessionId') sessionId: string,
+  ): Promise<Record<string, any>> {
+      return this.sysinfoService.collect({ workspaceId, sessionId });
   }
 
   @Mutation(() => Environment, {

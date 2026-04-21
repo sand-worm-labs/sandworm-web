@@ -112,9 +112,7 @@ export function Chat({
         </form>
 
         <div className="mt-6 hidden lg:block">
-          <h3 className="mb-4 px-6 text-sm font-body font-medium text-ink-100">
-            Test Queries
-          </h3>
+      
           <ExamplePrompts onPromptSelect={handlePromptSelect} />
         </div>
       </div>

@@ -45,35 +45,46 @@ export default function OnboardingLayout({
       <div className="grid md:grid-cols-2 h-full">
         {children}
 
-        <div className="relative h-full w-full hidden md:block">
-          <div className="relative h-full w-full rounded-none overflow-hidden shadow-lg">
-            <div className="relative h-full w-full min-h-[100dvh]">
-              <Image
-                alt="banner image"
-                src="/img/abstract.png"
-                fill
-                priority
-                sizes="50vw"
-                className="object-cover"
-              />
-            </div>
+        <div className="relative hidden h-full w-full md:block">
+  <div className="relative h-full w-full min-h-[100dvh] overflow-hidden shadow-lg">
+    <Image
+      alt=""
+      src="/img/abstract.png"
+      fill
+      priority
+      sizes="50vw"
+      className="object-cover"
+      aria-hidden="true"
+    />
 
-            <div className="absolute inset-0 flex items-center justify-center flex-col bottom-[-76%]">
-              <SandwormLogo width="50" height="50" />
-              <h2 className="text-3xl font-medium text-center text-white mb-1 mt-3 font-body">
-                {content.title}
-              </h2>
-              <div className="text-center text-[#B4CACE]  font-body mt-2">
-                <p className="text-lg md:text-base font-medium">
-                  {content.subtitle}
-                </p>
-                <p className="text-lg md:text-base font-medium mt-0.5">
-                  teams and enterprise
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+    <video
+      className="absolute inset-0 h-full w-full object-cover motion-reduce:hidden"
+      autoPlay
+      loop
+      muted
+      playsInline
+      preload="auto"
+      poster="/img/abstract.png"
+      aria-hidden="true"
+    >
+      <source src="/videos/aurora.webm" type="video/webm" />
+      <source src="/videos/aurora.mp4" type="video/mp4" />
+    </video>
+
+    <div className="absolute inset-x-0 bottom-[2rem] z-10 flex flex-col items-center">
+      <SandwormLogo width="50" height="50" />
+      <h2 className="mt-3 mb-1 text-center font-body text-3xl font-medium text-white">
+        {content.title}
+      </h2>
+      <div className="mt-2 text-center font-body text-[#B4CACE]">
+        <p className="text-lg font-medium md:text-base">{content.subtitle}</p>
+        <p className="mt-0.5 text-lg font-medium md:text-base">
+          teams and enterprise
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
       </div>
     </div>
   );

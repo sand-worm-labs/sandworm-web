@@ -278,6 +278,13 @@
   height: 0;
 }
 
+.ProseMirror:focus,
+.ProseMirror:focus-visible {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
 /* ╔════════════════════════════════════════════╗
    ║                Common + Layouts            ║
    ╚════════════════════════════════════════════╝ */
