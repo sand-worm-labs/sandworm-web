@@ -90,11 +90,12 @@ services:
   ###########################
   jupyter:
     container_name: sandworm-jupyter
+    platform: linux/arm64
     build:
       context: ../../apps/jupyter
       dockerfile: Dockerfile
       args:
-        TARGETARCH: amd64
+        TARGETARCH: arm64
     restart: always
     ports:
       - "8888:8888"
@@ -123,5 +124,20 @@ services:
       - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
     ports:
       - '8080:8080'
+    networks:
+      - sandworm-net
+  ###########################
+  # Logdy Log Viewer
+  ###########################
+  logdy:
+    container_name: sandworm-logdy
+    image: rickraven/logdy:0.14.0
+    restart: unless-stopped
+    ports:
+      - "8475:8080"
+      - "10800:10800"
+    environment:
+      LOGDY_MODE: "socket"
+      LOGDY_SOCKET_PORTS: "10800"
     networks:
       - sandworm-net

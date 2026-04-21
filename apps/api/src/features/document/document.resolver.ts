@@ -18,10 +18,15 @@ import {
   FavoriteDocumentInput,
 } from './dto/document.dto';
 import { DocumentTreeService } from './service/document-tree.service';
+import { Public } from '@sandworm/nest-common';
+import { User } from '../user/model/graphql/user.model';
+import { UserService } from '../user/user.service';
 
 @Resolver(() => Document)
 export class DocumentResolver {
+
   constructor(
+    private readonly userService: UserService,
     private readonly documentService: DocumentService, 
     private readonly documentTreeService: DocumentTreeService
   ) { }
@@ -56,6 +61,59 @@ export class DocumentResolver {
     @Args('workspaceId') workspaceId: string,
   ): Promise<Document[]> {
     return this.documentTreeService.getWorkspaceDocuments(workspaceId);
+  }
+
+  @Query(() => [Document], {
+    name: "getExplorerDocuments",
+    description: "Get documents in a workspace organized as a tree for explorer view",
+  })
+  async getExplorerDocuments(
+    @Args('limit', { nullable: true, defaultValue: 20 }) limit: number,
+    @Args('offset', { nullable: true, defaultValue: 0 }) offset: number,
+  ): Promise<Document[]> {
+    return this.documentService.getExploreDocuments(limit, offset);
+  }
+  
+  @Public()
+  @Query(() => [Document], {
+    name:"getFeaturedDocuments",
+    description: "Get featured documents for explore page",
+  })
+  async getFeaturedDocuments(
+    @Args('limit', { nullable: true, defaultValue: 4 }) limit: number,
+  ): Promise<Document[]> {
+    return this.documentService.getFeaturedDocuments(limit);
+  }
+
+  @Query(() => [Document], {
+    name: 'favoritePublicDocuments',
+    description: 'Get User favorite public documents',
+  })
+  async favoritePublicDocuments(
+    @CurrentUser('id') userId: string,
+  ): Promise<Document[]> {
+    return this.documentService.getFavoriteExploreDocuments(userId);
+  }
+
+  @Query(() => [Document], {
+    name: 'getForkedDocuments',
+    description: 'Get User forked documents',
+  })
+  async getForkedDocuments(
+    @CurrentUser('id') userId: string,
+  ): Promise<Document[]> {
+    return this.documentService.getForkedDocuments(userId);
+  }
+
+  @Query(() => [Document], {
+    name: 'getTrendingPublishedDocuments',
+    description: 'Get trending published documents across all workspaces',
+  })
+  async getTrendingPublishedDocuments(
+    @Args('limit', { nullable: true, defaultValue: 20 }) limit: number,
+    @Args('offset', { nullable: true, defaultValue: 0 }) offset: number,
+  ): Promise<Document[]> {
+    return this.documentService.getTrendingPublishedDocuments(limit, offset);
   }
 
   @Mutation(() => Document, {
@@ -171,5 +229,14 @@ export class DocumentResolver {
   async parent(@Parent() doc: Document): Promise<Document | null> {
     if (!doc.parentId) return null;
     return this.documentService.getDocument(doc.parentId, doc.workspaceId);
+  }
+
+  @ResolveField(() => User, {
+    name: 'author',
+    nullable: true,
+  })
+  async author(@Parent() doc: Document): Promise<User | null> {
+    if (!doc.authorId) return null;
+    return this.userService.findById(doc.authorId);
   }
 }

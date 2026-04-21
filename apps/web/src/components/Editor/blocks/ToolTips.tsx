@@ -6,70 +6,98 @@ import { createPortal } from "react-dom";
 
 import useDropdownPosition from "../hooks/dropdownposition";
 
+// =====================================
+// ⬢ Types
+// =====================================
+export type TooltipSide = "top" | "bottom" | "left" | "right";
+export type TooltipAlign = "start" | "center" | "end";
+export type TooltipPlacement =
+  | TooltipSide
+  | `${TooltipSide}-${Exclude<TooltipAlign, "center">}`;
+
+function parsePlacement(placement: TooltipPlacement): {
+  side: TooltipSide;
+  align: TooltipAlign;
+} {
+  const [side, align] = placement.split("-") as [TooltipSide, TooltipAlign?];
+  return { side, align: align ?? "center" };
+}
+
+
+// =====================================
+// ⬢ Utils
+// =====================================
 export function computeTooltipPosition(
   commonParent: RefObject<Element>,
   reference: RefObject<Element>,
   tooltip: RefObject<Element>,
-  tooltipPosition: "top",
+  placement: TooltipPlacement,
   padding: number,
   isPortal: boolean
 ): CSSProperties {
   if (!reference.current || !tooltip.current || !commonParent.current) {
-    return {
-      top: -9999,
-      left: -9999,
-    };
+    return { top: -9999, left: -9999 };
   }
 
   const commonRect = commonParent.current.getBoundingClientRect();
+  const origRef = reference.current.getBoundingClientRect();
+  const origTip = tooltip.current.getBoundingClientRect();
 
-  const origReferenceRect = reference.current.getBoundingClientRect();
-  const origTooltipRect = tooltip.current.getBoundingClientRect();
+  const offsetTop = isPortal ? 0 : commonRect.top;
+  const offsetLeft = isPortal ? 0 : commonRect.left;
 
-  // make rects relative to commonRect
-  const referenceRect = {
-    top: origReferenceRect.top - (isPortal ? 0 : commonRect.top),
-    right: origReferenceRect.right - (isPortal ? 0 : commonRect.left),
-    bottom: origReferenceRect.bottom - (isPortal ? 0 : commonRect.top),
-    left: origReferenceRect.left - (isPortal ? 0 : commonRect.left),
-    width: origReferenceRect.width,
-    height: origReferenceRect.height,
-  };
-  const tooltipRect = {
-    top: origTooltipRect.top - (isPortal ? 0 : commonRect.top),
-    right: origTooltipRect.right - (isPortal ? 0 : commonRect.left),
-    bottom: origTooltipRect.bottom - (isPortal ? 0 : commonRect.top),
-    left: origTooltipRect.left - (isPortal ? 0 : commonRect.left),
-    width: origTooltipRect.width,
-    height: origTooltipRect.height,
+  const ref = {
+    top: origRef.top - offsetTop,
+    left: origRef.left - offsetLeft,
+    right: origRef.right - offsetLeft,
+    bottom: origRef.bottom - offsetTop,
+    width: origRef.width,
+    height: origRef.height,
   };
 
-  const referenceMiddleX = referenceRect.left + referenceRect.width / 2;
+  const { side, align } = parsePlacement(placement);
+  const isVerticalSide = side === "top" || side === "bottom";
 
-  if (tooltipPosition === "top") {
-    let left = referenceMiddleX - tooltipRect.width / 2;
-    const top = referenceRect.top - tooltipRect.height - padding;
+  let top = 0;
+  let left = 0;
 
-    // if tooltip is out of screen, move it to the left so that its right
-    // edge is aligned with the right edge of referenceRect
-    const safeMargin = 36;
-    const rightEdgeInScreen =
-      (isPortal ? 0 : commonRect.left) + left + tooltipRect.width;
-
-    if (rightEdgeInScreen + safeMargin > window.innerWidth) {
-      left = referenceRect.right - tooltipRect.width;
-    }
-
-    return {
-      top,
-      left,
-    };
+  if (side === "top") {
+    top = ref.top - origTip.height - padding;
+  } else if (side === "bottom") {
+    top = ref.bottom + padding;
+  } else if (side === "left") {
+    left = ref.left - origTip.width - padding;
+  } else if (side === "right") {
+    left = ref.right + padding;
   }
 
-  return {
-    top: referenceRect.top,
-    left: referenceRect.left,
-  };
+  if (isVerticalSide) {
+    if (align === "start") {
+      left = ref.left;
+    } else if (align === "end") {
+      left = ref.right - origTip.width;
+    } else {
+      left = ref.left + ref.width / 2 - origTip.width / 2;
+    }
+  } else {
+    if (align === "start") {
+      top = ref.top;
+    } else if (align === "end") {
+      top = ref.bottom - origTip.height;
+    } else {
+      top = ref.top + ref.height / 2 - origTip.height / 2;
+    }
+  }
+
+  const safeMargin = 36;
+  if (isVerticalSide) {
+    const rightEdgeInScreen = offsetLeft + left + origTip.width;
+    if (rightEdgeInScreen + safeMargin > window.innerWidth) {
+      left = ref.right - origTip.width;
+    }
+  }
+
+  return { top, left };
 }
 
 function getPosClass(
@@ -115,14 +143,14 @@ export const Tooltip = ({
       {active && (
         <div
           className={clsx(
-            "font-body  pointer-events-none absolute opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1 z-[4000]",
+            "font-body  bg-black pointer-events-none absolute opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1 z-[4000]",
             getPosClass(position),
             tooltipClassname
           )}
         >
           {title && <span>{title}</span>}
           {message && (
-            <span className="inline-flex items-center justify-center text-ink-400 text-center">
+            <span className="inline-flex items-center justify-center text-ink-300 text-center">
               {message}
             </span>
           )}
@@ -177,6 +205,10 @@ export function PortalTooltip(props: PortalTooltipProps) {
   );
 }
 
+
+// =====================================
+// ⬢ Tooltip v2
+// =====================================
 interface TooltipV2Props<T extends Element> {
   title?: string;
   message?: string;
@@ -185,25 +217,28 @@ interface TooltipV2Props<T extends Element> {
   children: (ref: React.RefObject<T>) => React.ReactNode;
   active: boolean;
   className?: string;
+  position?: TooltipPlacement;
 }
+
 export function TooltipV2<T extends Element>(props: TooltipV2Props<T>) {
+  const placement = props.position ?? "top";
+
   const parentRef = useRef<HTMLDivElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const _referenceRef = useRef<T>(null);
   const referenceRef = props.referenceRef ?? _referenceRef;
+
   const [pos, setPos] = useState<CSSProperties>(
-    computeTooltipPosition(parentRef, referenceRef, tooltipRef, "top", 6, true)
+    computeTooltipPosition(parentRef, referenceRef, tooltipRef, placement, 6, true)
   );
   const [hovering, setHovering] = useState(false);
-  const onEnter = useCallback(() => {
-    setHovering(true);
-  }, []);
-  const onLeave = useCallback(() => {
-    setHovering(false);
-  }, []);
+
+  const onEnter = useCallback(() => setHovering(true), []);
+  const onLeave = useCallback(() => setHovering(false), []);
+
   useEffect(() => {
     if (!parentRef.current || !props.active || !hovering) {
-      return () => {};
+      return () => { };
     }
 
     const cb = () => {
@@ -212,7 +247,7 @@ export function TooltipV2<T extends Element>(props: TooltipV2Props<T>) {
           parentRef,
           referenceRef,
           tooltipRef,
-          "top",
+          placement,
           6,
           true
         )
@@ -230,7 +265,7 @@ export function TooltipV2<T extends Element>(props: TooltipV2Props<T>) {
     return () => {
       mut.disconnect();
     };
-  }, [parentRef, referenceRef, tooltipRef, props.active, hovering]);
+  }, [parentRef, referenceRef, tooltipRef, props.active, hovering, placement]);
 
   return (
     <div ref={parentRef} onMouseEnter={onEnter} onMouseLeave={onLeave}>
@@ -260,7 +295,7 @@ export function TooltipV2<T extends Element>(props: TooltipV2Props<T>) {
                   <div
                     ref={tooltipRef}
                     className={clsx(
-                      "font-body  pointer-events-none bg-black text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1 w-36",
+                      "font-body  pointer-events-none bg-black text-white text-xs px-2.5 py-1 rounded-md flex flex-col items-center justify-center gap-y-1 max-w-36",
                       props.className
                     )}
                   >

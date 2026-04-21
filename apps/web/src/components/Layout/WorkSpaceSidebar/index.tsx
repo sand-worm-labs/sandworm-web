@@ -205,7 +205,7 @@ export const WorkspaceSidebar = () => {
     <aside
       className={`
       bg-[#FEFFFF] dark:bg-base-500 border-r border-[#E9ECEF] dark:border-border-tertiary font-body justify-between flex flex-col
-      transition-all duration-300 ease-in-out
+      transition-all duration-300 ease-in-out relative
   
       ${isMobile ? "fixed top-0 left-0 h-full z-50 w-[17.5rem]" : "h-full"}
   
@@ -231,28 +231,48 @@ export const WorkspaceSidebar = () => {
             </Link>
           )}
 
-          <button
-            type="button"
-            onClick={() => {
-              if (isMobile) {
-                setIsMobileOpen(false);
-              } else {
-                setCollapsed(!collapsed);
-              }
-            }}
-            className="p-1 rounded hover:bg-gray-200 dark:hover:bg-[#181C21] flex items-center justify-center text-[#868E96] dark:text-ink-400"
+          <TooltipV2<HTMLButtonElement>
+            title={
+              isMobile
+                ? "Close sidebar"
+                : collapsed
+                  ? "Open sidebar"
+                  : "Close sidebar"
+            }
+            active
+            position="right"
           >
-            <SidebarIcon />
-          </button>
+            {(ref) => (
+              <button
+                ref={ref}
+                type="button"
+                aria-label={
+                  isMobile
+                    ? "Close sidebar"
+                    : collapsed
+                      ? "Open sidebar"
+                      : "Close sidebar"
+                }
+                aria-expanded={isMobile ? isMobileOpen : !collapsed}
+                onClick={() => {
+                  if (isMobile) {
+                    setIsMobileOpen(false);
+                  } else {
+                    setCollapsed(!collapsed);
+                  }
+                }}
+                className="p-1 rounded hover:bg-gray-200 dark:hover:bg-[#181C21] flex items-center justify-center text-[#868E96] dark:text-ink-400"
+              >
+                <SidebarIcon />
+              </button>
+            )}
+          </TooltipV2>
         </div>
 
         <WorkspaceSwitcher collapsed={collapsed} />
-
-        <div className="px-4 py-1.5" />
-
         <nav className="flex-1 px-3">
           <ul className="space-y-1.5">
-            {mainNav.map(item => (
+            {mainNav.map((item) => (
               <li key={item.name}>
                 <TooltipV2<HTMLAnchorElement>
                   title={item.name.trim()}
@@ -325,7 +345,7 @@ export const WorkspaceSidebar = () => {
                   type="button"
                   id="create-workspace-doc"
                   onClick={onCreateDocumentHandler}
-                  className="p-2 bg-[#F7E8FF] dark:bg-base-500  rounded-xl hover:cursor-pointer text-sm border mt-6 flex px-5 items-center justify-center w-full border-[#D000FF]  text-primary mb-3 font-body font-medium  dark:border-[#A78BFA] dark:text-[#A78BFA] "
+                  className="p-2  dark:bg-base-500  rounded-xl hover:cursor-pointer text-sm border mt-3 flex px-5 items-center justify-center w-full border-[#D000FF]  text-primary mb-3 font-body font-medium  dark:border-[#A78BFA] dark:text-[#A78BFA] "
                 >
                   {" "}
                   <PlusSmallIcon className="h-4 w-4 mr-1 " aria-hidden="true" />
@@ -367,7 +387,7 @@ export const WorkspaceSidebar = () => {
       </div>
 
       {!collapsed && (
-        <div className="px-4 py-4">
+        <div className="absolute bottom-0 left-0 right-0 border-t border-[#E9ECEF]  dark:border-border-tertiary py-1.5 px-1.5 bg-base-100">
           <AccountDropdown />
         </div>
       )}

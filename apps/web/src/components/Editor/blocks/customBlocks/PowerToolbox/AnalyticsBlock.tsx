@@ -18,10 +18,11 @@ import {
   setTitle,
 } from "@sandworm/editor";
 import clsx from "clsx";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import type { ConnectDragPreview } from "react-dnd";
 import { head } from "ramda";
 import { Transition } from "@headlessui/react";
+
 
 import type { ApiDocument } from "@/types";
 

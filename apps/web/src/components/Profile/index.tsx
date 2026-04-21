@@ -3,7 +3,6 @@
 
 import { useState } from "react";
 import {
-  Calendar,
   Link as LinkIcon,
   Github,
   Twitter,
@@ -140,7 +139,7 @@ const ProfileComponent = ({
                                 alt=""
                                 width={96}
                                 height={96}
-                                className="object-cover"
+                                className="object-cover border-[#E9ECEF] border-[2.5px] rounded-full"
                               />
                               <span className="relative z-10 font-bold font-body text-white text-xl">
                                 {user.firstName?.split(" ")[0]?.[0] ?? "U"}
@@ -224,7 +223,7 @@ const ProfileComponent = ({
                         <div className="flex flex-wrap gap-4 text-sm text-ink-400 font-medium">
                           {user.createdAt && (
                             <div className="flex items-center gap-1">
-                              <Calendar className="w-4 h-4" />
+                              <PiCalendarDots className="w-4 h-4" />
                               Joined{" "}
                               {new Date(user.createdAt).toLocaleDateString("en-US", {
                                 month: "short",
@@ -285,10 +284,10 @@ const ProfileComponent = ({
                             <button
                               type="button"
                               onClick={() => copyToClipboard(wallet.address)}
-                              className="p-2 rounded-lg hover:bg-[#E9ECEF] dark:hover:bg-[#262A30] transition-colors"
+                              className="p-2 rounded-full hover:bg-[#E9ECEF] dark:hover:bg-[#262A30] transition-colors"
                             >
                               {copiedWallet === wallet.address ? (
-                                <Check className="w-4 h-4 text-primary" />
+                                <Check className="w-4 h-4 text-[#A308F0]" />
                               ) : (
                                 <Copy className="w-4 h-4 text-[#1C3B5A] dark:text-ink-400" />
                               )}

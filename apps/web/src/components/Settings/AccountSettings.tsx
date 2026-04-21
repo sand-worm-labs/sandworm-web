@@ -268,7 +268,7 @@ export default function WorkspaceSettings() {
             <h3 className="text-xl font-bold text-ink-100 mb-2">
               Account Settings
             </h3>
-            <p className="text-[#6C757D] dark:text-ink-400 md:text-base text-sm">
+            <p className="text-[#6C757D] dark:text-ink-400 text-sm xl:text-base">
               Manage your workspaces, settings, permissions and billings.
             </p>
           </div>
@@ -282,21 +282,30 @@ export default function WorkspaceSettings() {
         </div>
 
         {/* ✦ Your team ✦ */}
-        <div className="grid md:grid-cols-2 gap-x-5 mb-20">
+        <div className="grid md:grid-cols-2 gap-x-5 mb-28">
           <div>
             <h4 className="text-lg font-bold mb-3 dark:text-white">
               Your Teams
             </h4>
-            <p className="text-[#6C757D] dark:text-ink-400 mb-5 max-w-[32rem] pr-6 text-sm md:text-base">
+            <p className="text-[#6C757D] dark:text-ink-400 mb-5 max-w-[32rem] pr-6 text-sm xl:text-base">
               Your workspaces can be deleted, renamed, team members added etc
               depending on your permission level within the organization.
             </p>
           </div>
-          <WorkspaceTable
-            workspaces={ownedWorkspaces}
-            allowSettings
-            {...sharedTableProps}
-          />
+          {ownedWorkspaces.length > 0 ? (
+            <WorkspaceTable
+              workspaces={ownedWorkspaces}
+              allowSettings
+              {...sharedTableProps}
+            />
+          ) : (
+            <div className="flex flex-col items-center justify-center h-[8rem] text-center">
+              <WorkspaceIcon />
+              <p className="text-sm font-medium text-[#868E96] mt-3">
+                No workspace Found
+              </p>
+            </div>
+          )}
         </div>
 
         {/* ✦ Invited team ✦ */}
@@ -305,7 +314,7 @@ export default function WorkspaceSettings() {
             <h4 className="text-lg font-bold mb-3 dark:text-white">
               Invited Teams
             </h4>
-            <p className="text-[#6C757D] dark:text-ink-400 mb-5 max-w-[32rem] pr-6 text-sm md:text-base">
+            <p className="text-[#6C757D] dark:text-ink-400 mb-5 max-w-[32rem] pr-6 text-sm xl:text-base">
               These are workspaces you've been invited to. Settings are managed
               by the workspace owner.
             </p>

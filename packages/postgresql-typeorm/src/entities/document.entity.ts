@@ -19,6 +19,9 @@ import { ExecutionScheduleEntity } from "./execution-schedule.entity";
 import { ReusableComponentEntity } from "./reusable_component.entity";
 import { ReusableComponentInstanceEntity } from "./reusable_component_instance.entity";
 import { UserEntity } from "./user.entity";
+import { DocumentVisibility } from "./enums";
+import { DocumentForkEntity } from "./document_fork.entity";
+
 
 @Entity("document")
 export class DocumentEntity extends AbstractEntity {
@@ -30,8 +33,19 @@ export class DocumentEntity extends AbstractEntity {
   @PrimaryGeneratedColumn("uuid", { primaryKeyConstraintName: "PK_document_id" })
   id!: string;
 
+  @Column({
+    type: "enum",
+    enum: DocumentVisibility,
+    default: DocumentVisibility.WORKSPACE,
+  })
+  visibility!: DocumentVisibility;
+  
   @Column()
   title!: string;
+
+  @Index("IDX_document_published_slug", { unique: true, where: '"published_slug" IS NOT NULL' })
+  @Column({ name: "published_slug", nullable: true, unique: false })
+  publishedSlug!: string | null;
 
   @Column({ default: "DocumentIcon" })
   slug!: string;
@@ -57,6 +71,9 @@ export class DocumentEntity extends AbstractEntity {
 
   @Column({ name: "parent_id", nullable: true })
   parentId?: string | null;
+
+  @Column({ default: false })
+  featuredDocument!: boolean;
 
   @Column({ default: false })
   runUnexecutedBlocks!: boolean;
@@ -127,4 +144,7 @@ export class DocumentEntity extends AbstractEntity {
     (rci) => rci.document,
   )
   reusableComponentInstances!: Relation<ReusableComponentInstanceEntity[]>;
+
+  @OneToMany(() => DocumentForkEntity, (fork) => fork.sourceDocument)
+  forks!: Relation<DocumentForkEntity[]>;
 }

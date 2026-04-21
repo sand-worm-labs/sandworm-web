@@ -18,7 +18,7 @@ export interface ITitleOptions {
 }
 
 export const TitleExtension = Node.create<ITitleOptions>({
-  name: "title",
+  name: "doc-title",
   addOptions() {
     return {
       level: 1,
@@ -85,11 +85,11 @@ function Title(props: Props) {
           autocapitalize: "off",
           spellcheck: "false",
           class:
-            "min-h-full prose sm:prose-base prose-sm max-w-full rounded-sm focus:outline-0 px-2",
+            "min-h-full prose sm:prose-base prose-sm max-w-full rounded-sm focus:outline-0 px-2 outline-none border-none ring-0",
         },
       },
     },
-    [props.content, props.isEditable, props.style]
+    [ props.isEditable, props.style]
   );
 
   useEffect(
