@@ -31,7 +31,7 @@ export const useCSV = (workspaceId: string, documentId: string): UseCSV => {
 
       try {
         const res = await fetch(
-          `${NEXT_PUBLIC_API_URL()}/v1/workspaces/${workspaceId}/documents/${documentId}/queries/${queryId}/csv?name=${name}`,
+          `${NEXT_PUBLIC_API_URL()}/documents/${workspaceId}/${documentId}/queries/${queryId}/csv?name=${name}`,
           { credentials: "include" }
         );
 

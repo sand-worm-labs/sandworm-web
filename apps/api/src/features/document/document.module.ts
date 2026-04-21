@@ -7,16 +7,19 @@ import { DocumentTreeService } from './service/document-tree.service';
 import { AuthGraphqlModule } from '../auth/graphql/auth-graphql.module';
 import { YjsModule } from '../collaboration/yjs/yjs.module';
 import { UserModule } from '../user/user.module';
-import { DocumentController } from './document.controller';
+import { DocumentQueryController } from './document.controller';
+import { JupyterModule } from '@/infrastructure/jupyter/jupyter.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([DocumentEntity, DocumentForkEntity, WorkspaceEntity, FavoriteEntity, YjsDocumentEntity]),
     AuthGraphqlModule,
     forwardRef(() => YjsModule),
-    UserModule
+    UserModule,
+    JupyterModule
   ],
-  providers: [DocumentResolver, DocumentController, DocumentService, DocumentTreeService],
+  providers: [DocumentResolver, DocumentService, DocumentTreeService],
+  controllers: [DocumentQueryController],
   exports: [DocumentService, DocumentTreeService]
 })
 export class DocumentModule { }
