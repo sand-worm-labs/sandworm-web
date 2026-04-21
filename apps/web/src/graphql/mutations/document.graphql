@@ -202,3 +202,91 @@ mutation RemoveFavoriteDocument($input: FavoriteDocumentInput!) {
     shareLinksWithoutSidebar
   }
 }
+
+query GetExplorerDocuments($limit: Float = 20, $offset: Float = 0) {
+  getExplorerDocuments(limit: $limit, offset: $offset) {
+    id
+    slug
+    title
+    authorId
+    workspaceId
+    parentId
+    runUnexecutedBlocks
+    runSQLSelection
+    shareLinksWithoutSidebar
+    orderIndex
+    deletedAt
+    createdAt
+    updatedAt
+    version
+    publishedAt
+    isDataApp
+    isSyncedWithYjs
+    hasDashboard
+    appId
+    clock
+    appClock
+    userAppClock
+    children {
+      id
+      slug
+      title
+      icon
+      orderIndex
+    }
+    parent {
+      id
+      slug
+      title
+      icon
+    }
+  }
+}
+
+# Get Featured Documents
+query GetFeaturedDocuments($limit: Float = 4) {
+  getFeaturedDocuments(limit: $limit) {
+    id
+    slug
+    title
+    authorId
+    workspaceId
+    parentId
+    runUnexecutedBlocks
+    runSQLSelection
+    shareLinksWithoutSidebar
+    orderIndex
+    deletedAt
+    createdAt
+    updatedAt
+    version
+    publishedAt
+    isDataApp
+    isSyncedWithYjs
+    hasDashboard
+    appId
+    clock
+    appClock
+    userAppClock
+    children {
+      id
+      slug
+      title
+      icon
+      orderIndex
+      createdAt
+      updatedAt
+    }
+    parent {
+      id
+      slug
+      title
+      icon
+    }
+  }
+}
+
+# Variables:
+# {
+#   "limit": 4
+# }

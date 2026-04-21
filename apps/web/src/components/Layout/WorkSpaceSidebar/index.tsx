@@ -289,8 +289,8 @@ export const WorkspaceSidebar = () => {
                       <item.icon
                         size={18}
                         className={`hover:text-[#A308F0] ${pathname === item.href
-                            ? "text-[#A308F0] dark:text-ink-100"
-                            : "text-ink-icon"
+                          ? "text-[#A308F0] dark:text-ink-100"
+                          : "text-ink-icon"
                           }`}
                       />
                       {!collapsed && item.name}

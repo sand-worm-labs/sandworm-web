@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config({ path: ".env.local" });
 
 const graphqlCodegenConfig: CodegenConfig = {
-  schema: "http://192.168.1.76:8003/graphql",
+  schema: "http://localhost:8003/graphql",
   documents: "src/graphql/**/*.graphql",
   generates: {
     "src/generated/graphql.ts": {
