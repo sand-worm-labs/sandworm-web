@@ -7,6 +7,7 @@ import { DocumentTreeService } from './service/document-tree.service';
 import { AuthGraphqlModule } from '../auth/graphql/auth-graphql.module';
 import { YjsModule } from '../collaboration/yjs/yjs.module';
 import { UserModule } from '../user/user.module';
+import { DocumentController } from './document.controller';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { UserModule } from '../user/user.module';
     forwardRef(() => YjsModule),
     UserModule
   ],
-  providers: [DocumentResolver, DocumentService, DocumentTreeService],
+  providers: [DocumentResolver, DocumentController, DocumentService, DocumentTreeService],
   exports: [DocumentService, DocumentTreeService]
 })
 export class DocumentModule { }
