@@ -29,6 +29,7 @@ export class EnvironmentService {
     private readonly eventEmitter: EventEmitter2,
     private readonly eventEmitterReadinessWatcher: EventEmitterReadinessWatcher,
   ) { }
+  
 
   async getEnvironment(workspaceId: string): Promise<Environment> {
     let entity = await this.environmentRepository.findOne({
