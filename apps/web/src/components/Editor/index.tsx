@@ -1697,8 +1697,9 @@ const Editor = (props: Props) => {
 
   const lastUpdatedAt = useLastUpdatedAt(props.yDoc);
 
-  { console.log("hi", !props.isSyncing, domBlocks, domBlocks.length === 0) }
-
+  {
+    console.log("hi", !props.isSyncing, domBlocks, domBlocks.length === 0);
+  }
 
   return (
     <div className="editor-v2 flex flex-col flex-grow justify-center font-body  subpixel-antialiased h-full w-full relative flex-1 min-w-0">
@@ -1775,7 +1776,6 @@ const Editor = (props: Props) => {
             </div>
 
             <ContentSkeleton visible={props.isSyncing} />
-
 
             <HotkeysProvider initiallyActiveScopes={["editor"]}>
               {!props.isSyncing && (

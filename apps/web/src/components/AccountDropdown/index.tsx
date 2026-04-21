@@ -170,16 +170,15 @@ export const AccountDropdown = () => {
                   </span>
                 </AvatarFallback>
               </Avatar>
-              
-              <div className="flex-col flex items-left text-left mt-0.5" >
-              <span className="text-[0.9rem] ">
-                {user.firstName ?? "Sandworm User"}
-              </span>
-              <span className="text-[0.75rem] font-medium inline-block text-ink-300 ">
-                Free Plan
-              </span>
+
+              <div className="flex-col flex items-left text-left mt-0.5">
+                <span className="text-[0.9rem] ">
+                  {user.firstName ?? "Sandworm User"}
+                </span>
+                <span className="text-[0.75rem] font-medium inline-block text-ink-300 ">
+                  Free Plan
+                </span>
               </div>
-            
             </div>
             <MoreVertical className="ml-2 h-4 w-4" />
           </Button>

@@ -1,115 +1,188 @@
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
+
+import type {
+  GetUserQuery,
+  GetUserFavoritePublicDocumentsQuery,
+  GetUserFollowersQuery,
+} from "@/generated/graphql";
 import {
   useGetUserQuery,
   useGetUserFavoritePublicDocumentsQuery,
+  useGetUserFollowersQuery,
+  useGetUserFollowingQuery,
   useFollowUserMutation,
   useUnfollowUserMutation,
 } from "@/generated/graphql";
 
-// =====================================
-// ⬢ Types
-// =====================================
-export interface UseUserOptions {
+export type User = NonNullable<GetUserQuery["getUser"]>;
+export type Favorite =
+  GetUserFavoritePublicDocumentsQuery["favoritePublicDocuments"][number];
+export type FollowUser = GetUserFollowersQuery["getUserFollowers"][number];
+
+export interface QueryOptions {
   userId: string;
   skip?: boolean;
 }
 
-export interface UseUserReturn {
-  user: any | null;
-  favorites: any[];
-  loading: boolean;
-  mutationLoading: boolean;
-  error: Error | null;
-  follow: () => Promise<void>;
-  unfollow: () => Promise<void>;
-  refetch: () => Promise<any>;
-}
+export type ActionResult = { ok: true } | { ok: false; error: Error };
 
-// =====================================
-// ⬢ Use User Hook
-// =====================================
-export const useUser = ({ userId, skip = false }: UseUserOptions): UseUserReturn => {
-  // ─── QUERIES ───
-  const {
-    data: userData,
-    loading: userLoading,
-    error: userError,
-    refetch: refetchUser,
-  } = useGetUserQuery({
+export const useUserProfile = ({ userId, skip = false }: QueryOptions) => {
+  const { data, loading, error, refetch } = useGetUserQuery({
     variables: { userId },
     skip: !userId || skip,
     fetchPolicy: "cache-and-network",
   });
 
-  const {
-    data: favData,
-    loading: favLoading,
-    error: favError,
-    refetch: refetchFavs,
-  } = useGetUserFavoritePublicDocumentsQuery({
+  return {
+    user: data?.getUser ?? null,
+    loading,
+    error: (error as Error | undefined) ?? null,
+    refetch,
+  };
+};
+
+// ─── FAVORITES ───
+export const useUserFavorites = ({ userId, skip = false }: QueryOptions) => {
+  const { data, loading, error, refetch } =
+    useGetUserFavoritePublicDocumentsQuery({
+      variables: { userId },
+      skip: !userId || skip,
+      fetchPolicy: "cache-first",
+    });
+
+  return {
+    favorites: data?.favoritePublicDocuments ?? [],
+    loading,
+    error: (error as Error | undefined) ?? null,
+    refetch,
+  };
+};
+
+// ─── FOLLOWERS ───
+export const useUserFollowers = ({ userId, skip = false }: QueryOptions) => {
+  const { data, loading, error, refetch } = useGetUserFollowersQuery({
     variables: { userId },
     skip: !userId || skip,
-    fetchPolicy: "cache-first",
+    fetchPolicy: "cache-and-network",
   });
 
-  // ─── MUTATIONS ───
-  const [followMutation, { loading: followLoading, error: followError }] = useFollowUserMutation();
-  const [unfollowMutation, { loading: unfollowLoading, error: unfollowError }] = useUnfollowUserMutation();
+  return {
+    followers: data?.getUserFollowers ?? [],
+    loading,
+    error: (error as Error | undefined) ?? null,
+    refetch,
+  };
+};
 
-  const refetch = useCallback(async () => {
-    return Promise.all([refetchUser(), refetchFavs()]);
-  }, [refetchUser, refetchFavs]);
+// ─── FOLLOWING ───
+export const useUserFollowing = ({ userId, skip = false }: QueryOptions) => {
+  const { data, loading, error, refetch } = useGetUserFollowingQuery({
+    variables: { userId },
+    skip: !userId || skip,
+    fetchPolicy: "cache-and-network",
+  });
 
-  // ─── ACTIONS ───
-  const follow = useCallback(async () => {
-    const username = userData?.getUser?.username;
-    if (!username) return;
+  return {
+    following: data?.getUserFollowing ?? [],
+    loading,
+    error: (error as Error | undefined) ?? null,
+    refetch,
+  };
+};
 
+// ─── FOLLOW ACTIONS ───
+export interface UseFollowActionsOptions {
+  username: string | null | undefined;
+  onSuccess?: () => void | Promise<void>;
+}
+
+export const useFollowActions = ({
+  username,
+  onSuccess,
+}: UseFollowActionsOptions) => {
+  const [followMutation, { loading: followLoading }] = useFollowUserMutation();
+  const [unfollowMutation, { loading: unfollowLoading }] =
+    useUnfollowUserMutation();
+
+  const follow = useCallback(async (): Promise<ActionResult> => {
+    if (!username) return { ok: false, error: new Error("No username") };
     try {
       await followMutation({ variables: { username } });
-      await refetchUser(); // Refresh user data to update follower counts
+      await onSuccess?.();
+      return { ok: true };
     } catch (err) {
-      console.error("Follow error:", err);
+      return { ok: false, error: err as Error };
     }
-  }, [userData, followMutation, refetchUser]);
+  }, [username, followMutation, onSuccess]);
 
-  const unfollow = useCallback(async () => {
-    const username = userData?.getUser?.username;
-    if (!username) return;
-
+  const unfollow = useCallback(async (): Promise<ActionResult> => {
+    if (!username) return { ok: false, error: new Error("No username") };
     try {
       await unfollowMutation({ variables: { username } });
-      await refetchUser(); // Refresh user data to update follower counts
+      await onSuccess?.();
+      return { ok: true };
     } catch (err) {
-      console.error("Unfollow error:", err);
+      return { ok: false, error: err as Error };
     }
-  }, [userData, unfollowMutation, refetchUser]);
+  }, [username, unfollowMutation, onSuccess]);
 
-  return useMemo(
-    () => ({
-      user: userData?.getUser ?? null,
-      favorites: favData?.favoritePublicDocuments ?? [],
-      loading: userLoading || favLoading,
-      mutationLoading: followLoading || unfollowLoading,
-      error: (userError || favError || followError || unfollowError) as Error | null,
-      follow,
-      unfollow,
-      refetch,
-    }),
-    [
-      userData,
-      favData,
-      userLoading,
-      favLoading,
-      followLoading,
-      unfollowLoading,
-      userError,
-      favError,
-      followError,
-      unfollowError,
-      follow,
-      unfollow,
-      refetch,
-    ]
-  );
+  return {
+    follow,
+    unfollow,
+    loading: followLoading || unfollowLoading,
+  };
+};
+
+export interface UseUserOptions {
+  userId: string;
+  skip?: boolean;
+  includeFollowers?: boolean;
+  includeFollowing?: boolean;
+}
+
+export const useUser = ({
+  userId,
+  skip = false,
+  includeFollowers = false,
+  includeFollowing = false,
+}: UseUserOptions) => {
+  const profile = useUserProfile({ userId, skip });
+  const favorites = useUserFavorites({ userId, skip });
+  const followers = useUserFollowers({
+    userId,
+    skip: skip || !includeFollowers,
+  });
+  const following = useUserFollowing({
+    userId,
+    skip: skip || !includeFollowing,
+  });
+
+  const refetchAll = useCallback(async () => {
+    await Promise.all([
+      profile.refetch(),
+      followers.refetch(),
+      following.refetch(),
+    ]);
+  }, [profile.refetch, followers.refetch, following.refetch]);
+
+  const actions = useFollowActions({
+    username: profile.user?.username,
+    onSuccess: refetchAll,
+  });
+
+  return {
+    user: profile.user,
+    favorites: favorites.favorites,
+    followers: followers.followers,
+    following: following.following,
+    loading: profile.loading || favorites.loading,
+    followersLoading: followers.loading,
+    followingLoading: following.loading,
+    mutationLoading: actions.loading,
+    error:
+      profile.error ?? favorites.error ?? followers.error ?? following.error,
+    follow: actions.follow,
+    unfollow: actions.unfollow,
+    refetch: refetchAll,
+  };
 };

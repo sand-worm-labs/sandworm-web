@@ -538,10 +538,8 @@ export default function PrivateDocumentPage(props: Props) {
   );
 
   useEffect(() => {
-    console.log(document, "doc")
-
-  }, [document])
-
+    console.log(document, "doc");
+  }, [document]);
 
   if (!document) {
     return (

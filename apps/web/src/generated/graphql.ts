@@ -124,6 +124,7 @@ export type Document = {
   __typename?: 'Document';
   appClock: Scalars['Float']['output'];
   appId: Scalars['String']['output'];
+  author?: Maybe<User>;
   authorId: Scalars['String']['output'];
   children: Array<Document>;
   clock: Scalars['Float']['output'];
@@ -630,6 +631,8 @@ export type Query = {
   comment: Comment;
   /** Get all comments for a document */
   comments: Array<Comment>;
+  /** Get current system info */
+  currentSysInfo: Scalars['JSON']['output'];
   /** Get current user (from token) */
   currentUser: AuthPayload;
   /** Get environment details for a workspace */
@@ -717,6 +720,12 @@ export type QueryCommentArgs = {
 
 export type QueryCommentsArgs = {
   documentId: Scalars['String']['input'];
+};
+
+
+export type QueryCurrentSysInfoArgs = {
+  sessionId: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
 };
 
 
@@ -1251,14 +1260,14 @@ export type GetExplorerDocumentsQueryVariables = Exact<{
 }>;
 
 
-export type GetExplorerDocumentsQuery = { __typename?: 'Query', getExplorerDocuments: Array<{ __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, children: Array<{ __typename?: 'Document', id: string, slug: string, title: string, icon: string, orderIndex: number }>, parent?: { __typename?: 'Document', id: string, slug: string, title: string, icon: string } | null }> };
+export type GetExplorerDocumentsQuery = { __typename?: 'Query', getExplorerDocuments: Array<{ __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, children: Array<{ __typename?: 'Document', id: string, slug: string, title: string, icon: string, orderIndex: number }>, parent?: { __typename?: 'Document', id: string, slug: string, title: string, icon: string } | null, author?: { __typename?: 'User', username?: string | null, firstName?: string | null, lastName?: string | null, avater?: string | null } | null }> };
 
 export type GetFeaturedDocumentsQueryVariables = Exact<{
   limit?: InputMaybe<Scalars['Float']['input']>;
 }>;
 
 
-export type GetFeaturedDocumentsQuery = { __typename?: 'Query', getFeaturedDocuments: Array<{ __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, children: Array<{ __typename?: 'Document', id: string, slug: string, title: string, icon: string, orderIndex: number, createdAt: any, updatedAt: any }>, parent?: { __typename?: 'Document', id: string, slug: string, title: string, icon: string } | null }> };
+export type GetFeaturedDocumentsQuery = { __typename?: 'Query', getFeaturedDocuments: Array<{ __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, children: Array<{ __typename?: 'Document', id: string, slug: string, title: string, icon: string, orderIndex: number, createdAt: any, updatedAt: any }>, author?: { __typename?: 'User', username?: string | null, firstName?: string | null, lastName?: string | null, avater?: string | null } | null, parent?: { __typename?: 'Document', id: string, slug: string, title: string, icon: string } | null }> };
 
 export type RestartEnvironmentMutationVariables = Exact<{
   input: RestartEnvironmentInput;
@@ -2618,6 +2627,12 @@ export const GetExplorerDocumentsDocument = gql`
       title
       icon
     }
+    author {
+      username
+      firstName
+      lastName
+      avater
+    }
   }
 }
     `;
@@ -2688,6 +2703,12 @@ export const GetFeaturedDocumentsDocument = gql`
       orderIndex
       createdAt
       updatedAt
+    }
+    author {
+      username
+      firstName
+      lastName
+      avater
     }
     parent {
       id

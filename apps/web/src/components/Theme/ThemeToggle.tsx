@@ -7,12 +7,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@sandworm/ui/components/dropdown-menu";
+import clsx from "clsx";
+
+import { TooltipV2 } from "@/components/Editor/blocks/ToolTips";
+
 import { Sun } from "../Assets/Sun";
 import { Moon } from "../Assets/Moon";
 import { Desktop } from "../Assets/Desktop";
-import { TooltipV2 } from "@/components/Editor/blocks/ToolTips";
-import clsx from "clsx";
-
 
 export function ThemeTogggle() {
   const { setTheme } = useTheme();
@@ -21,9 +22,12 @@ export function ThemeTogggle() {
   return (
     <div className="font-secondary">
       <DropdownMenu open={open} onOpenChange={setOpen}>
-        <TooltipV2<HTMLButtonElement> title="Toggle theme" active={!open}   position="bottom"
+        <TooltipV2<HTMLButtonElement>
+          title="Toggle theme"
+          active={!open}
+          position="bottom"
         >
-          {(ref) => (
+          {ref => (
             <DropdownMenuTrigger asChild>
               <Button
                 ref={ref}
@@ -53,8 +57,8 @@ export function ThemeTogggle() {
             "duration-150"
           )}
         >
-          <TooltipV2<HTMLDivElement> title="Light" active  position="bottom">
-            {(ref) => (
+          <TooltipV2<HTMLDivElement> title="Light" active position="bottom">
+            {ref => (
               <DropdownMenuItem
                 ref={ref}
                 aria-label="Light theme"
@@ -67,8 +71,8 @@ export function ThemeTogggle() {
             )}
           </TooltipV2>
 
-          <TooltipV2<HTMLDivElement> title="Dark" active  position="bottom">
-            {(ref) => (
+          <TooltipV2<HTMLDivElement> title="Dark" active position="bottom">
+            {ref => (
               <DropdownMenuItem
                 ref={ref}
                 aria-label="Dark theme"
@@ -81,15 +85,18 @@ export function ThemeTogggle() {
             )}
           </TooltipV2>
 
-          <TooltipV2<HTMLDivElement> title="System" active  position="bottom">
-            {(ref) => (
+          <TooltipV2<HTMLDivElement> title="System" active position="bottom">
+            {ref => (
               <DropdownMenuItem
                 ref={ref}
                 aria-label="System theme"
                 onClick={() => setTheme("system")}
                 className="p-2 rounded-md text-ink-400 focus:bg-base-600 cursor-pointer"
               >
-                <Desktop className="h-5 w-5 text-[#343A40]" aria-hidden="true" />
+                <Desktop
+                  className="h-5 w-5 text-[#343A40]"
+                  aria-hidden="true"
+                />
                 <span className="sr-only">System</span>
               </DropdownMenuItem>
             )}

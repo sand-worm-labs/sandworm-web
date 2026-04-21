@@ -112,7 +112,6 @@ export function Chat({
         </form>
 
         <div className="mt-6 hidden lg:block">
-      
           <ExamplePrompts onPromptSelect={handlePromptSelect} />
         </div>
       </div>

@@ -12,7 +12,9 @@ import { ViewControl } from "@/components/Explore/ViewControl";
 import { FeaturedExploreSection } from "@/components/Explore/FeaturedExploreSection";
 import type { ApiDocument } from "@/types";
 
-// ─── TYPES ───
+// =====================================
+// ⬢ Types
+// =====================================
 export type SortOption =
   | "trending"
   | "most-popular"
@@ -28,7 +30,26 @@ interface ExploreClientProps {
   pageSize: number;
 }
 
-// ─── MAIN ───
+
+const Spinner = () => (
+  <div className="h-6 w-6 border-2 border-ink-300 border-t-transparent rounded-full animate-spin" />
+);
+
+const ListSkeleton = () => (
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    {Array.from({ length: 6 }).map((_, i) => (
+      <div
+        key={i}
+        className="h-40 rounded-lg bg-neutral-100 dark:bg-neutral-800 animate-pulse"
+      />
+    ))}
+  </div>
+);
+
+
+// =====================================
+// ⬢ Main
+// =====================================
 export function ExploreClient({
   initialDocuments,
   initialFeatured,
@@ -46,7 +67,6 @@ export function ExploreClient({
     featuredLoading,
   } = usePublicDocuments({ initialDocuments, initialFeatured, pageSize });
 
-  console.log("initialDocuments", initialDocuments, "documents", documents)
 
   // UI-only until backend ships sort/view server-side. Kept for layout.
   const [sortBy, setSortBy] = useState<SortOption>("trending");
@@ -66,7 +86,9 @@ export function ExploreClient({
     return (
       <div className="flex items-center justify-center flex-col dark:text-white font-medium text-lg mt-16 px-3">
         <Image src="/img/nodata.svg" width={400} height={400} alt="no data" />
-        <p className="mt-4 text-sm text-ink-400">Something went wrong fetching queries. Try again.</p>
+        <p className="mt-4 text-sm text-ink-400">
+          Something went wrong fetching queries. Try again.
+        </p>
       </div>
     );
   }
@@ -121,18 +143,3 @@ export function ExploreClient({
   );
 }
 
-// ─── MINI COMPONENTS ───
-const Spinner = () => (
-  <div className="h-6 w-6 border-2 border-ink-300 border-t-transparent rounded-full animate-spin" />
-);
-
-const ListSkeleton = () => (
-  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-    {Array.from({ length: 6 }).map((_, i) => (
-      <div
-        key={i}
-        className="h-40 rounded-lg bg-neutral-100 dark:bg-neutral-800 animate-pulse"
-      />
-    ))}
-  </div>
-);

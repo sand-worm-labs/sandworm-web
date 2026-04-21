@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useRef, Fragment } from "react";
-import { X,  Check,  } from "lucide-react";
+import { X, Check } from "lucide-react";
 import { Dialog, Transition } from "@headlessui/react";
+
 import { Copy } from "../Assets/Copy";
 import { Trash } from "../Assets/Trash";
 import ScrollBar from "../Editor/blocks/ScrollBar";
@@ -255,60 +256,59 @@ export const ManageWalletsModal = ({
 
               {/* ✦ Wallet List ✦ */}
               <ScrollBar>
-              <div className="space-y-2 max-h-80  pr-0.5">
-                {wallets.length === 0 ? (
-                  <p className="text-center text-sm text-ink-200 dark:text-ink-400 py-8">
-                    No wallets added yet
-                  </p>
-                ) : (
-                  wallets.map((wallet, index) => (
-                    <div
-                      key={wallet.address}
-                      onMouseEnter={() => setHoveredIndex(index)}
-                      onMouseLeave={() => setHoveredIndex(null)}
-                      className={`flex items-center justify-between px-4 py-2 rounded-xl border transition-colors ${
-                        hoveredIndex === index
-                          ? " bg-[#EBF9FA] dark:bg-base-100"
-                          : "border-[#DEE2E6] dark:border-border-tertiary bg-[#F8F9FA] dark:bg-transparent"
-                      }`}
-                    >
-                      <div className="flex flex-col">
-                        <code className="text-sm font-medium text-[#6C757D] dark:text-white font-body">
-                          {truncateAddress(wallet.address)}
-                        </code>
-                        {wallet.chain && (
-                          <span className="text-xs text-[#6C757D] dark:text-ink-400 mt-0.5">
-                            {wallet.chain}
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="flex items-center gap-[1px]">
-                        <button
-                          type="button"
-                          onClick={() => copyToClipboard(wallet.address)}
-                          className="p-1 rounded-lg transition-colors"
-                        >
-                          {copiedAddress === wallet.address ? (
-                            <Check className="w-4 h-4 text-[#A308F0]" />
-                          ) : (
-                            <Copy className="w-4 h-4 text-[#1C3B5A]  dark:text-ink-400" />
+                <div className="space-y-2 max-h-80  pr-0.5">
+                  {wallets.length === 0 ? (
+                    <p className="text-center text-sm text-ink-200 dark:text-ink-400 py-8">
+                      No wallets added yet
+                    </p>
+                  ) : (
+                    wallets.map((wallet, index) => (
+                      <div
+                        key={wallet.address}
+                        onMouseEnter={() => setHoveredIndex(index)}
+                        onMouseLeave={() => setHoveredIndex(null)}
+                        className={`flex items-center justify-between px-4 py-2 rounded-xl border transition-colors ${
+                          hoveredIndex === index
+                            ? " bg-[#EBF9FA] dark:bg-base-100"
+                            : "border-[#DEE2E6] dark:border-border-tertiary bg-[#F8F9FA] dark:bg-transparent"
+                        }`}
+                      >
+                        <div className="flex flex-col">
+                          <code className="text-sm font-medium text-[#6C757D] dark:text-white font-body">
+                            {truncateAddress(wallet.address)}
+                          </code>
+                          {wallet.chain && (
+                            <span className="text-xs text-[#6C757D] dark:text-ink-400 mt-0.5">
+                              {wallet.chain}
+                            </span>
                           )}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => deleteWallet(index)}
-                          className="p-1 rounded-lg  transition-colors group"
-                        >
-                          <Trash className="w-4 h-4 text-[#1C3B5A] dark:text-ink-400 hover:text-error transition-colors" />
-                        </button>
+                        </div>
+
+                        <div className="flex items-center gap-[1px]">
+                          <button
+                            type="button"
+                            onClick={() => copyToClipboard(wallet.address)}
+                            className="p-1 rounded-lg transition-colors"
+                          >
+                            {copiedAddress === wallet.address ? (
+                              <Check className="w-4 h-4 text-[#A308F0]" />
+                            ) : (
+                              <Copy className="w-4 h-4 text-[#1C3B5A]  dark:text-ink-400" />
+                            )}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => deleteWallet(index)}
+                            className="p-1 rounded-lg  transition-colors group"
+                          >
+                            <Trash className="w-4 h-4 text-[#1C3B5A] dark:text-ink-400 hover:text-error transition-colors" />
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ))
-                )}
-              </div>
+                    ))
+                  )}
+                </div>
               </ScrollBar>
-           
 
               {/* ✦ Footer Actions ✦ */}
               <div className="flex gap-3 mt-10">

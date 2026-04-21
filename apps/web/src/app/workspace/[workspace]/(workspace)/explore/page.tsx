@@ -37,8 +37,10 @@ async function fetchInitialData() {
     ]);
 
     return {
-      initialDocuments: (explorer.data?.getExplorerDocuments ?? []) as ApiDocument[],
-      initialFeatured: (featured.data?.getFeaturedDocuments ?? []) as ApiDocument[],
+      initialDocuments: (explorer.data?.getExplorerDocuments ??
+        []) as ApiDocument[],
+      initialFeatured: (featured.data?.getFeaturedDocuments ??
+        []) as ApiDocument[],
       serverError: null as string | null,
     };
   } catch (err) {
@@ -53,7 +55,8 @@ async function fetchInitialData() {
 
 // ─── MAIN ───
 export default async function ExplorePage() {
-  const { initialDocuments, initialFeatured, serverError } = await fetchInitialData();
+  const { initialDocuments, initialFeatured, serverError } =
+    await fetchInitialData();
 
   return (
     <div className="dark:text-white bg-[#FEFEFF] min-h-[88vh] dark:bg-base-200">

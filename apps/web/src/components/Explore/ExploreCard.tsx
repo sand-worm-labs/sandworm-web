@@ -4,12 +4,12 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@sandworm/ui/components/avatar";
-import { Badge } from "@sandworm/ui/components/badge";
 import Image from "next/image";
+import Link from "next/link";
+import { useStringQuery } from "../Editor/hooks/useQueryArgs";
+
 
 import type { ApiDocument } from "@/types";
-
-import { UserProfileHover } from "./UserProfileHover";
 
 type ViewMode = "compact" | "detailed";
 
@@ -22,12 +22,15 @@ interface ExploreCardProps {
 // ⬢ Explore Card
 // =====================================
 export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
+  const workspaceId = useStringQuery("workspace");
+
   return (
     <div
-      className={`${viewMode === "detailed"
-        ? " "
-        : "border-b border-[#E9ECEF] pb-3  transition-shadow mb-1 dark:border-border-tertiary "
-        }`}
+      className={`${
+        viewMode === "detailed"
+          ? " "
+          : "border-b border-[#E9ECEF] pb-3  transition-shadow mb-1 dark:border-border-tertiary "
+      }`}
     >
       <div className="p-2 px-5">
         <div className="flex items-end justify-between gap-4">
@@ -50,16 +53,21 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
                 )}
               </Avatar>
               <div className="flex-1 min-w-0">
-                <p className="text-[0.8rem] mb-1 text-ink-400">
-                  @{query.authorId}
-                </p>
-                <UserProfileHover>
-                  <h3 className="text-[0.95rem] font-medium truncate cursor-pointer hover:underline">
-                    {query.title}
-                  </h3>
-                </UserProfileHover>
+                <Link
+                   href={`/workspace/${workspaceId}/profile/${query.authorId}`}
+                  className="text-[0.8rem] mb-1 text-ink-400 hover:underline"
+                >
+                  @{query.author.username}
+                </Link>
+                <h3 className="text-[0.95rem] font-medium truncate cursor-pointer hover:underline">
+                  {query.title}
+                </h3>
+
                 <p className="text-xs  text-ink-400 ">
-                  Created {query.createdAt ? new Date(query.createdAt).toLocaleDateString() : 'N/A'}
+                  Created{" "}
+                  {query.createdAt
+                    ? new Date(query.createdAt).toLocaleDateString()
+                    : "N/A"}
                 </p>
               </div>
             </div>

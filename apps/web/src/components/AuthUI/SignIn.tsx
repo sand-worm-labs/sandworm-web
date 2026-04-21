@@ -58,17 +58,17 @@ export const SignIn = () => {
         </Link>
       </div>
 
-     {/*  <div className="flex-col gap-2 w-full flex items-center justify-center mt-auto pt-6 lg:absolute xl:bottom-[3rem] bottom-[1rem]">
+      {/*  <div className="flex-col gap-2 w-full flex items-center justify-center mt-auto pt-6 lg:absolute xl:bottom-[3rem] bottom-[1rem]">
         <p className="xl:text-base text-sm text-ink-400 dark:text-ink-400 font-body font-medium lg:mb-4 mb-1">
           Trusted by teams at
         </p>
         <PartnersSection />
       </div> */}
-       <p className="font-body font-medium text-center text-xs text-ink-400 mt-6 absolute bottom-4 max-w-[19rem]">
-          By continuing, you agree to the{" "}
-          <span className="underline">Terms</span> and confirm that you have
-          read the <span className="underline">Privacy Policy</span>.
-        </p>
+      <p className="font-body font-medium text-center text-xs text-ink-400 mt-6 absolute bottom-4 max-w-[19rem]">
+        By continuing, you agree to the <span className="underline">Terms</span>{" "}
+        and confirm that you have read the{" "}
+        <span className="underline">Privacy Policy</span>.
+      </p>
     </div>
   );
 };
