@@ -7,7 +7,7 @@ import {
   UserEntity,
   UserSettingEntity,
   UserWorkspaceEntity,
-  UserFollowsEntity,
+  UserFollowsEntity
 } from '@sandworm/postgresql-typeorm';
 import { Repository } from 'typeorm';
 import {
@@ -23,7 +23,6 @@ import { AuthPayload } from '../auth/graphql/models/auth-payload';
 @Injectable()
 export class UserService {
   private readonly logger = new Logger(UserService.name);
-
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
@@ -33,7 +32,8 @@ export class UserService {
     private readonly userFollowsRepository: Repository<UserFollowsEntity>,
     @InjectRepository(UserWorkspaceEntity)
     private readonly userWorkspaceRepository: Repository<UserWorkspaceEntity>,
-  ) { }
+  ) { } 
+
 
   async getCurrentUser(currentUser: {
     id: string;
@@ -310,4 +310,5 @@ export class UserService {
       [wu.workspaceId]: wu.role
     }));
   }
+
 }
