@@ -1,5 +1,5 @@
 // user/user.module.ts
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import {
   UserEntity,
@@ -9,6 +9,7 @@ import {
 } from '@sandworm/postgresql-typeorm';
 import { UserService } from './user.service';
 import { UserResolver } from './user.resolver';
+import { DocumentModule } from '../document/document.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { UserResolver } from './user.resolver';
       UserFollowsEntity,
       UserWorkspaceEntity,
     ]),
+    forwardRef(()=> DocumentModule),
   ],
   providers: [UserService, UserResolver],
   exports: [UserService],
