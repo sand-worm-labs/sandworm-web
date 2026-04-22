@@ -7,6 +7,7 @@ import {
   useGetFeaturedDocumentsQuery,
   useGetUserFavoritePublicDocumentsQuery,
   useGetUserForkedPublicDocumentsQuery,
+  useGetUserPublicDocumentsQuery
 } from "@/generated/graphql";
 import type { ApiDocument } from "@/types";
 
@@ -173,7 +174,7 @@ function useTrendingFeed(active: boolean, pageSize: number) {
 }
 
 function useFlatUserFeed(kind: "favorites" | "forked", userId: string | null) {
-  
+
   const favoritesQ = useGetUserFavoritePublicDocumentsQuery({
     skip: !userId || kind !== "favorites",
     fetchPolicy: "cache-and-network",
@@ -184,7 +185,7 @@ function useFlatUserFeed(kind: "favorites" | "forked", userId: string | null) {
     fetchPolicy: "cache-and-network",
   });
 
-  console.log("fav", forkedQ, favoritesQ , userId)
+  console.log("fav", forkedQ, favoritesQ, userId)
 
   const { data, loading, error, refetch } =
     kind === "favorites" ? favoritesQ : forkedQ;
@@ -222,5 +223,51 @@ function useFeaturedInternal(initialFeatured: PublicDocument[]) {
       : ((data?.getFeaturedDocuments ?? []) as PublicDocument[]),
     featuredLoading: hasSSR ? false : loading,
     featuredError: hasSSR ? null : ((error as Error) ?? null),
+  };
+}
+
+export function useUserPublicDocuments(userId: string | null, pageSize = 20,
+  initialDocuments: ApiDocument[] = []) {
+    const hasSSR = initialDocuments.length > 0;
+
+  
+    const { data, loading, error, fetchMore, refetch, networkStatus } =
+    useGetUserPublicDocumentsQuery({
+      variables: { userId: userId!, limit: pageSize, offset: 0 },
+      skip: !userId || hasSSR,
+      fetchPolicy: hasSSR ? "cache-only" : "cache-and-network",
+      notifyOnNetworkStatusChange: true,
+    });
+
+    const fetched = (data?.getUserPublicDocuments ?? []) as ApiDocument[];
+    const documents = hasSSR && fetched.length === 0 ? initialDocuments : fetched;
+    const loadingMore = networkStatus === 3;
+  const hasMore = documents.length > 0 && documents.length % pageSize === 0;
+
+  const loadMore = useCallback(async () => {
+    if (!userId || loading || loadingMore || !hasMore) return;
+    await fetchMore({
+      variables: { userId: userId!, limit: pageSize, offset: documents.length },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult) return prev;
+        return {
+          ...prev,
+          getUserPublicDocuments: [
+            ...(prev.getUserPublicDocuments ?? []),
+            ...(fetchMoreResult.getUserPublicDocuments ?? []),
+          ],
+        };
+      },
+    });
+  }, [userId, fetchMore, documents.length, pageSize, loading, loadingMore, hasMore]);
+
+  return {
+    documents,
+    loading: userId ? loading : false,
+    loadingMore,
+    error: (error as Error) ?? null,
+    hasMore,
+    loadMore,
+    refetch: async () => { await refetch(); },
   };
 }

@@ -1,58 +1,63 @@
-import { useCallback, useMemo } from "react";
-import type { SWRResponse } from "swr";
-import useSWR from "swr";
+import { useCallback } from "react";
+import {
+  useGetEnvironmentVariablesQuery,
+  useSetEnvironmentVariablesMutation,
+  useDeleteEnvironmentVariableMutation,
+} from "@/generated/graphql";
 
-import { NEXT_PUBLIC_API_URL } from "@/utils/env";
-import fetcher from "@/utils/fetcher";
-
+// ─── TYPES ───
 export type EnvVar = {
   id: string;
   name: string;
   value: string;
 };
 
-type API = {
-  save: (added: EnvVar[], remove: string[]) => Promise<void>;
-};
+// ─── HOOK ───
+export const useEnvironmentVariables = (workspaceId: string) => {
+  const { data, loading, error, refetch } = useGetEnvironmentVariablesQuery({
+    variables: { workspaceId },
+    fetchPolicy: "cache-and-network",
+  });
 
-type UseEnvironmentVariables = [SWRResponse<EnvVar[]>, API];
-export const useEnvironmentVariables = (
-  workspaceId: string
-): UseEnvironmentVariables => {
-  const swr = useSWR<EnvVar[]>(
-    `${NEXT_PUBLIC_API_URL()}/v1/workspaces/${workspaceId}/environment-variables`,
-    fetcher
-  );
+  const [setVars, { loading: saving }] = useSetEnvironmentVariablesMutation();
+  const [deleteVar, { loading: deleting }] = useDeleteEnvironmentVariableMutation();
+
+  const variables = (data?.environmentVariables ?? []) as EnvVar[];
 
   const save = useCallback(
     async (add: EnvVar[], remove: string[]) => {
-      await swr.mutate(
-        async () => {
-          const res = await fetch(
-            `${NEXT_PUBLIC_API_URL()}/v1/workspaces/${workspaceId}/environment-variables`,
-            {
-              credentials: "include",
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ add, remove }),
-            }
-          );
-
-          return res.json();
+      await setVars({
+        variables: {
+          workspaceId,
+          input: {
+            add: add.map(({ name, value }) => ({ name, value })),
+            remove,
+          },
         },
-        { revalidate: true }
-      );
+        refetchQueries: ["GetEnvironmentVariables"],
+      });
     },
-    [workspaceId, swr]
+    [workspaceId, setVars]
   );
 
-  return useMemo(
-    () => [
-      swr,
-      {
-        save,
-      },
-    ],
-    [swr, save]
+  const remove = useCallback(
+    async (variableId: string) => {
+      await deleteVar({
+        variables: { workspaceId, variableId },
+        refetchQueries: ["GetEnvironmentVariables"],
+      });
+    },
+    [workspaceId, deleteVar]
   );
+
+  return {
+    variables,
+    loading,
+    saving,
+    deleting,
+    error: error ?? null,
+    save,
+    remove,
+    refetch,
+  };
 };

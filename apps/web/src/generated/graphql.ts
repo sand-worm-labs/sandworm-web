@@ -1115,6 +1115,10 @@ export type WorkspaceSecrets = {
 
 export type DocumentFieldsFragment = { __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, forkCount: number, favoriteCount: number };
 
+export type EnvironmentVariableFieldsFragment = { __typename?: 'EnvironmentVariable', id: string, name: string, value: string, workspaceId: string, updatedAt: any };
+
+export type EnvironmentFieldsFragment = { __typename?: 'Environment', id: string, workspaceId: string, status: EnvironmentStatus, resourceVersion: number, lastActivityAt: any };
+
 export type CreateUserMutationVariables = Exact<{
   input: CreateUserInput;
 }>;
@@ -1560,7 +1564,7 @@ export type GetEnvironmentVariablesQueryVariables = Exact<{
 }>;
 
 
-export type GetEnvironmentVariablesQuery = { __typename?: 'Query', environmentVariables: Array<{ __typename?: 'EnvironmentVariable', id: string, name: string, value: string, updatedAt: any, workspaceId: string }> };
+export type GetEnvironmentVariablesQuery = { __typename?: 'Query', environmentVariables: Array<{ __typename?: 'EnvironmentVariable', id: string, name: string, value: string, workspaceId: string, updatedAt: any }> };
 
 export type ListFilesQueryVariables = Exact<{
   input: ListFilesInput;
@@ -1629,7 +1633,7 @@ export type GetUserPublicDocumentsQueryVariables = Exact<{
 }>;
 
 
-export type GetUserPublicDocumentsQuery = { __typename?: 'Query', getUserPublicDocuments: Array<{ __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, forkCount: number, favoriteCount: number }> };
+export type GetUserPublicDocumentsQuery = { __typename?: 'Query', getUserPublicDocuments: Array<{ __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, forkCount: number, favoriteCount: number, author?: { __typename?: 'User', username?: string | null, firstName?: string | null, lastName?: string | null, avater?: string | null } | null }> };
 
 export type GetUserWorkspaceInfoQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1714,6 +1718,24 @@ export const DocumentFieldsFragmentDoc = gql`
   userAppClock
   forkCount
   favoriteCount
+}
+    `;
+export const EnvironmentVariableFieldsFragmentDoc = gql`
+    fragment EnvironmentVariableFields on EnvironmentVariable {
+  id
+  name
+  value
+  workspaceId
+  updatedAt
+}
+    `;
+export const EnvironmentFieldsFragmentDoc = gql`
+    fragment EnvironmentFields on Environment {
+  id
+  workspaceId
+  status
+  resourceVersion
+  lastActivityAt
 }
     `;
 export const CreateUserDocument = gql`
@@ -4153,14 +4175,10 @@ export type GetEnvironmentStatusQueryResult = Apollo.QueryResult<GetEnvironmentS
 export const GetEnvironmentVariablesDocument = gql`
     query GetEnvironmentVariables($workspaceId: String!) {
   environmentVariables(workspaceId: $workspaceId) {
-    id
-    name
-    value
-    updatedAt
-    workspaceId
+    ...EnvironmentVariableFields
   }
 }
-    `;
+    ${EnvironmentVariableFieldsFragmentDoc}`;
 
 /**
  * __useGetEnvironmentVariablesQuery__
@@ -4663,6 +4681,12 @@ export const GetUserPublicDocumentsDocument = gql`
     query GetUserPublicDocuments($userId: String!, $limit: Float = 20, $offset: Float = 0) {
   getUserPublicDocuments(userId: $userId, limit: $limit, offset: $offset) {
     ...DocumentFields
+    author {
+      username
+      firstName
+      lastName
+      avater
+    }
   }
 }
     ${DocumentFieldsFragmentDoc}`;
