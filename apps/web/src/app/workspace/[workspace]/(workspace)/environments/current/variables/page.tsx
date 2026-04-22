@@ -123,15 +123,14 @@ export default function EnvirontVariablesPage() {
   const session = useSession({ redirectToLogin: true });
   const router = useRouter();
   const workspaceId = useStringQuery("workspace");
-  const [saving, setSaving] = useState(false);
-  const [swr, { save }] = useEnvironmentVariables(workspaceId);
+  const { variables: fetchedVariables, loading, saving, save } = useEnvironmentVariables(workspaceId);
   const environment = useEnvironmentStatus(workspaceId);
 
   const [errors, setErrors] = useState<Record<string, ErrorType>>({});
   const [added, setAdded] = useState<EnvVar[]>([]);
   const [removed, setRemoved] = useState<string[]>([]);
 
-  const variables = (swr.data ?? []).filter(v => !removed.includes(v.id));
+  const variables = fetchedVariables.filter(v => !removed.includes(v.id));
   const isViewer =
     session?.user?.role?.find(r => r[workspaceId])?.[workspaceId] === "viewer";
 
@@ -174,7 +173,6 @@ export default function EnvirontVariablesPage() {
         return;
       }
 
-      setSaving(true);
       save(added, removed)
         .then(() => {
           setAdded([]);
@@ -184,7 +182,6 @@ export default function EnvirontVariablesPage() {
           toast.error("Something went wrong");
         })
         .finally(() => {
-          setSaving(false);
         });
     },
     [save, added, removed, variables, environment.status]
@@ -288,9 +285,7 @@ export default function EnvirontVariablesPage() {
               <button
                 type="submit"
                 className="flex items-center gap-x-2 rounded-sm shadow-sm bg-primary-200 px-6 py-2.5 text-sm font-semibold hover:bg-primary-300 border-stone-950 disabled:bg-gray-300 disabled:cursor-not-allowed"
-                disabled={
-                  (added.length === 0 && removed.length === 0) || swr.isLoading
-                }
+                disabled={(added.length === 0 && removed.length === 0) || loading}
               >
                 {saving && <Spin />}
                 Save

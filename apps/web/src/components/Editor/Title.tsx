@@ -89,7 +89,7 @@ function Title(props: Props) {
         },
       },
     },
-    [ props.isEditable, props.style]
+    [props.isEditable, props.style]
   );
 
   useEffect(

@@ -46,8 +46,6 @@ const TabsHeader: React.FC<{
   onSortChange: (sort: SortOption) => void;
 }> = ({ tab, sortBy, onSortChange }) => (
   <div className="flex justify-between items-center">
-
-
     <SortControl sortBy={sortBy} onSortChange={onSortChange} />
   </div>
 );

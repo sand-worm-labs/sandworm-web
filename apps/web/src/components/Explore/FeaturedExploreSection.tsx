@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+
+import { usePublicDocuments } from "@/components/Editor/hooks/usePublicDocuments";
+import type { ApiDocument } from "@/types";
 
 import { FeaturedExploreCard } from "./FeaturedExploreCard";
 
 // =====================================
-// ⬢ Types
+// ⬢ Constants
 // =====================================
 type CardTag = "featured" | "popular" | "trending" | "new";
 
@@ -15,6 +18,7 @@ interface FeaturedQuery {
   creator: {
     username: string;
     image: string;
+    userId: string;
   };
   stars: number;
   forks: number;
@@ -23,68 +27,80 @@ interface FeaturedQuery {
 // =====================================
 // ⬢ Constants
 // =====================================
-const mockFeaturedQueries: FeaturedQuery[] = [
-  {
-    id: "popular_001",
-    tag: "popular",
-    title: "L2 Gas Consumption",
-    createdAt: new Date("2025-05-30T09:00:00Z"),
-    creator: {
-      username: "base_gas_tracker",
-      image: "/img/avatar/avatar1.svg",
-    },
-    stars: 59,
-    forks: 143,
-  },
-  {
-    id: "featured_001",
+const PLACEHOLDER_AVATAR = "/img/avatar/avatar1.svg";
+
+// Map ApiDocument → card props.
+// TODO(creator): resolve authorId → { username, avater } via GetUser.
+//                Do NOT do this per-card — batch it, or embed author on Document.
+// TODO(stars|forks): wire once backend ships them. 0 is a lie.
+// TODO(tag): everything from getFeaturedDocuments is "featured" by definition.
+//            Other tags need backend support (separate query or Document.tag field).
+function toFeaturedQuery(doc: ApiDocument): FeaturedQuery {
+  return {
+    id: doc.id,
     tag: "featured",
-    title: "Uniswap V3 LP Performance Tracker",
-    createdAt: new Date("2025-01-02T08:00:00Z"),
+    title: doc.title || "Untitled",
+    createdAt: new Date(doc.createdAt),
     creator: {
-      username: "defi_sage",
-      image: "/img/avatar/avatar2.svg",
+      username: doc.author.username,
+      image: PLACEHOLDER_AVATAR,
+      userId: doc.authorId,
     },
-    stars: 89,
-    forks: 12,
-  },
-  {
-    id: "featured_002",
-    tag: "featured",
-    title: "Cross-Chain Bridge Volume Analysis",
-    createdAt: new Date("2025-01-10T11:30:00Z"),
-    creator: {
-      username: "bridge_watcher",
-      image: "/img/avatar/avatar3.svg",
-    },
-    stars: 64,
-    forks: 8,
-  },
-];
+    stars: doc.favoriteCount,
+    forks: doc.forkCount,
+  };
+}
 
 // =====================================
-// ⬢ Featured Explore Section
+// ⬢ Main
 // =====================================
 export function FeaturedExploreSection() {
+  const { featured, featuredLoading, featuredError } = usePublicDocuments();
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
+
+  const queries = useMemo(() => featured.map(toFeaturedQuery), [featured]);
 
   const handleSave = (id: string) => {
     setSavedIds(prev => {
       const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   };
 
-  const handleClick = (_id: string) => {};
+  const handleClick = (_id: string) => { };
+
+  console.log(queries);
+
+  if (featuredLoading && queries.length === 0) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
+        {Array.from({ length: 2 }).map((_, i) => (
+          <div
+            key={i}
+            className="h-40 rounded-lg bg-neutral-100 dark:bg-neutral-800 animate-pulse"
+          />
+        ))}
+      </div>
+    );
+  }
+
+  if (featuredError && queries.length === 0) {
+    return (
+      <div className="mb-12 text-sm text-red-600 dark:text-red-400">
+        Couldn’t load featured notebooks.
+      </div>
+    );
+  }
+
+  if (queries.length === 0) {
+    return null;
+  }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
-      {mockFeaturedQueries.map(query => (
+      {queries.map(query => (
         <FeaturedExploreCard
           key={query.id}
           id={query.id}

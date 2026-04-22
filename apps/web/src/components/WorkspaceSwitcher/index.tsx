@@ -13,6 +13,7 @@ import {
 } from "../Editor/hooks/useWorkspaces";
 import CreateTeamModal from "../Settings/CreateTeam";
 import { WorkspaceIcon } from "../Settings/WorkspaceIcon";
+import { CaretUpDown } from "../Assets/CaretUpDown";
 
 import { WorkspaceDropdownMenu } from "./WorkspaceDropdownMenu";
 
@@ -212,38 +213,12 @@ function ExpandedSwitcher({
               className="rounded-lg"
             />
           </div>
-          <span className="flex-1 text-left xl:text-sm text-[13px] font-medium text-ink-100 truncate">
+          <span className="flex-1 text-left xl:text-sm text-[13px] font-medium text-ink-100 truncate capitalize">
             {workspaceInfo.name}
           </span>
+
           {/* ✦ Chevron Up Down ✦ */}
-          <div className="flex flex-col text-[#1C3B5A] dark:text-ink-400">
-            <svg
-              className="w-3 h-3"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2.5}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M5 15l7-7 7 7"
-              />
-            </svg>
-            <svg
-              className="w-3 h-3"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2.5}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-          </div>
+          <CaretUpDown />
         </button>
       </Transition>
 

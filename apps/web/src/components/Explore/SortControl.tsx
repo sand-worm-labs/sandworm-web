@@ -10,53 +10,58 @@ import {
 } from "@sandworm/ui/components/select";
 
 export type SortOption =
+  | "all"
   | "trending"
   | "most-popular"
-  | "recently-viewed"
+  | "your-forks"
   | "your-favourites";
 
 interface SortControlProps {
   sortBy: SortOption;
   onSortChange: (sort: SortOption) => void;
+  disabledOptions?: SortOption[];
 }
 
-// =====================================
-// ⬢ Sort Control
-// =====================================
-export function SortControl({ sortBy, onSortChange }: SortControlProps) {
+export function SortControl({
+  sortBy,
+  onSortChange,
+  disabledOptions = [],
+}: SortControlProps) {
+  const isDisabled = (opt: SortOption) => disabledOptions.includes(opt);
+
   return (
     <div className="flex flex-col gap-1 items-end">
-      <Select
-        value={sortBy}
-        onValueChange={value => onSortChange(value as SortOption)}
-      >
-        <SelectTrigger className="w-[180px] border-[#CED4DA]  dark:border-border-tertiary bg-white dark:bg-base-100  text-ink-200 dark:text-white h-8 rounded-lg cursor-pointer text-[0.8rem]">
+      <Select value={sortBy} onValueChange={v => onSortChange(v as SortOption)}>
+        <SelectTrigger className="w-[180px] border-[#CED4DA] dark:border-border-tertiary bg-white dark:bg-base-100 text-ink-200 dark:text-white h-8 rounded-lg cursor-pointer text-[0.8rem]">
           <TrendingUp className="h-3 w-4 mr-2" />
           <SelectValue />
         </SelectTrigger>
 
-        <SelectContent className="bg-white dark:bg-base-100  border-[#CED4DA] font-body  mt-2 text-ink-200 dark:text-ink-300  dark:border-border-tertiary rounded-xl">
-          <SelectItem
-            className="hover:border-none hover:outline-none hover:bg-primary/20 dark:hover:text-white"
-            value="trending"
-          >
+        <SelectContent className="bg-white dark:bg-base-100 border-[#CED4DA] font-body mt-2 text-ink-200 dark:text-ink-300 dark:border-border-tertiary rounded-xl">
+          <SelectItem value="all" className="hover:bg-primary/20 dark:hover:text-white">
+            All
+          </SelectItem>
+          <SelectItem value="trending" className="hover:bg-primary/20 dark:hover:text-white">
             Trending
           </SelectItem>
           <SelectItem
-            className="hover:border-none hover:outline-none  hover:bg-primary/20 dark:hover:text-white"
             value="most-popular"
+            disabled={isDisabled("most-popular")}
+            className="hover:bg-primary/20 dark:hover:text-white"
           >
             Most Popular
           </SelectItem>
           <SelectItem
-            className="hover:border-none hover:outline-none  hover:bg-primary/20 dark:hover:text-white"
-            value="recently-viewed"
+            value="your-forks"
+            disabled={isDisabled("your-forks")}
+            className="hover:bg-primary/20 dark:hover:text-white"
           >
-            Recently Viewed
+            Your Forks
           </SelectItem>
           <SelectItem
-            className="hover:border-none hover:outline-none  hover:bg-primary/20 dark:hover:text-white"
             value="your-favourites"
+            disabled={isDisabled("your-favourites")}
+            className="hover:bg-primary/20 dark:hover:text-white"
           >
             Your Favourites
           </SelectItem>

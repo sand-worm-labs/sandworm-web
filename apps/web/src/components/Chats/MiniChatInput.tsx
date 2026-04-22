@@ -2,6 +2,8 @@ import type { ChangeEvent, KeyboardEvent } from "react";
 import React, { useState, useRef } from "react";
 import { Plus, Send, X, FileText, FileSpreadsheet } from "lucide-react";
 
+import { TooltipV2 } from "@/components/Editor/blocks/ToolTips";
+
 interface MiniChatInputProps {
   onSend?: (data: { message: string; files: File[] }) => void;
   placeholder?: string;
@@ -109,15 +111,24 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
 
         {/* Action Buttons */}
         <div className="flex items-center justify-between px-3 pb-3">
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="flex items-center justify-center w-8 h-8  hover:bg-gray-100 text-gray-600 transition-colors border border-[#B5C8DB] dark:bg-[#30302E] bg-white rounded-full dark:text-ink-400 dark:border-transparent"
-            title="Attach files"
-            aria-label="Attach files"
+          <TooltipV2<HTMLButtonElement>
+            title="Attach Files"
+            active
+            position="bottom"
           >
-            <Plus className="w-5 h-5" strokeWidth={1.2} />
-          </button>
+            {ref => (
+              <button
+                ref={ref}
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="flex items-center justify-center w-8 h-8  hover:bg-gray-100 text-gray-600 transition-colors border border-[#B5C8DB] dark:bg-[#30302E] bg-white rounded-full dark:text-ink-400 dark:border-transparent"
+                title="Attach files"
+                aria-label="Attach files"
+              >
+                <Plus className="w-5 h-5" strokeWidth={1.2} />
+              </button>
+            )}
+          </TooltipV2>
 
           <button
             type="button"

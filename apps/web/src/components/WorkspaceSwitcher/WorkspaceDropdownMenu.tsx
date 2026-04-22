@@ -122,7 +122,7 @@ export function WorkspaceDropdownMenu({
       <button
         type="button"
         onClick={onCreateTeam}
-        className="w-full flex items-center gap-3 px-3 py-2 text-sm text-primary hover:bg-[#A308F0]/5 transition-colors font-semibold"
+        className="w-full flex items-center gap-3 px-3 py-2 text-sm text-ink-100 hover:bg-[#A308F0]/5 transition-colors font-medium"
       >
         <svg
           className="w-4 h-4"
