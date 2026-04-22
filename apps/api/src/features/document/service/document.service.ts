@@ -10,7 +10,7 @@ import {
   UserEntity,
 } from '@sandworm/postgresql-typeorm';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { DataSource, In, Repository } from 'typeorm';
+import { DataSource, FindOptionsWhere, In, Repository } from 'typeorm';
 import { YjsDocumentService } from "@/features/collaboration/yjs/yjs-document.service"
 import {
   CreateDocumentInput,
@@ -219,33 +219,68 @@ export class DocumentService {
 
   async addFavoriteDocument(
     userId: string,
-    input: FavoriteDocumentInput,
-    public_document = false,
+    documentId: string,
+    workspaceId?: string,
   ): Promise<Document> {
-    const { documentId, workspaceId } = input;
-    let document: DocumentEntity | null = null;
 
-    if(public_document === true && input.workspaceId  === null) {
-      document = await this.documentRepository.findOne({
-        where: { id: documentId, visibility: DocumentVisibility.PUBLIC, deletedAt: null },
-      });
+    let where: FindOptionsWhere<DocumentEntity> = {
+      id: documentId,
+      deletedAt: null,
+    };
+
+    if (workspaceId) {
+      where.workspaceId = workspaceId;
+    } else {
+      where.visibility = DocumentVisibility.PUBLIC;
     }
-    else {
-      document = await this.documentRepository.findOne({
-        where: { id: documentId, workspaceId, deletedAt: null },
-      });
-    }
+
+    const document = await this.documentRepository.findOne({ where });
 
     if (!document) {
       throw new ValidationException(ErrorCode.E003);
     }
 
-    const favorite = this.favoriteRepository.create({
+    await this.favoriteRepository
+      .createQueryBuilder()
+      .insert()
+      .values({ userId, documentId: document.id })
+      .orIgnore()
+      .execute();
+
+    return Document.fromEntity(document);
+  }
+
+  async removeFavoriteDocument(
+    userId: string,
+    documentId: string,
+    workspaceId?: string,
+  ): Promise<Document> {
+    let where: FindOptionsWhere<DocumentEntity> = {
+      id: documentId,
+      deletedAt: null,
+    };
+
+    if (workspaceId) {
+      where.workspaceId = workspaceId;
+    } else {
+      where.visibility = DocumentVisibility.PUBLIC;
+    }
+
+    const document = await this.documentRepository.findOne({ where });
+
+    if (!document) {
+      throw new ValidationException(ErrorCode.E003);
+    }
+
+    const result = await this.favoriteRepository.delete({
       userId,
-      documentId,
+      documentId: document.id,
     });
 
-    await this.favoriteRepository.save(favorite);
+    if (result.affected === 0) {
+      throw new ValidationException(ErrorCode.E004);
+    }
+
     return Document.fromEntity(document);
   }
 
@@ -311,39 +346,6 @@ export class DocumentService {
     });
 
     return Document.fromEntities(documents);
-  }
-
-  async removeFavoriteDocument(
-    userId: string,
-    input: FavoriteDocumentInput,
-    public_document = false,
-  ): Promise<Document> {
-    const { documentId, workspaceId } = input;
-    let document: DocumentEntity | null = null;
-    if(public_document === true && input.workspaceId  === null) {
-      document = await this.documentRepository.findOne({
-        where: { id: documentId, visibility: DocumentVisibility.PUBLIC, deletedAt: null },
-      });
-    }
-    else {
-      document = await this.documentRepository.findOne({
-        where: { id: documentId, workspaceId, deletedAt: null },
-      });
-    }
-
-    if (!document) {
-      throw new ValidationException(ErrorCode.E003);
-    }
-
-    const favorite = await this.favoriteRepository.findOne({
-      where: { userId, documentId },
-    });
-
-    if (!favorite) {
-      throw new ValidationException(ErrorCode.E004);
-    }
-    await this.favoriteRepository.delete({ userId, documentId });
-    return Document.fromEntity(document);
   }
 
   private async generateUniqueSlug(title: string, documentId: string): Promise<string> {

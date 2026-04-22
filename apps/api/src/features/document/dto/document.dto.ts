@@ -83,6 +83,13 @@ export class FavoriteDocumentInput {
 }
 
 @InputType()
+export class FavoritePublicDocumentInput {
+  @UUIDField()
+  documentId: string;
+}
+
+
+@InputType()
 export class ForkDocumentInput {
   @UUIDField()
   documentId!: string;
