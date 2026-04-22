@@ -81,3 +81,12 @@ export class FavoriteDocumentInput {
   @UUIDField()
   documentId: string;
 }
+
+@InputType()
+export class ForkDocumentInput {
+  @UUIDField()
+  documentId!: string;
+
+  @UUIDField()
+  targetWorkspaceId!: string;
+}
