@@ -455,7 +455,7 @@ type Mutation {
   addFavoriteDocument(input: FavoriteDocumentInput!, publicDocument: Boolean = false): Document!
 
   """Unmark a document as a favorite"""
-  removeFavoriteDocument(input: FavoriteDocumentInput!): Document!
+  removeFavoriteDocument(input: FavoriteDocumentInput!, publicDocument: Boolean = false): Document!
 
   """Publish a document"""
   publishDocument(workspaceId: String!, documentId: String!): Document!

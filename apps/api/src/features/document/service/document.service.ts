@@ -315,12 +315,20 @@ export class DocumentService {
   async removeFavoriteDocument(
     userId: string,
     input: FavoriteDocumentInput,
+     public_document = false,
   ): Promise<Document> {
     const { documentId, workspaceId } = input;
-
-    const document = await this.documentRepository.findOne({
-      where: { id: documentId, workspaceId, deletedAt: null },
-    });
+    let document: DocumentEntity | null = null;
+    if(public_document) {
+      document = await this.documentRepository.findOne({
+        where: { id: documentId, visibility: DocumentVisibility.PUBLIC, deletedAt: null },
+      });
+    }
+    else {
+      document = await this.documentRepository.findOne({
+        where: { id: documentId, workspaceId, deletedAt: null },
+      });
+    }
 
     if (!document) {
       throw new ValidationException(ErrorCode.E003);

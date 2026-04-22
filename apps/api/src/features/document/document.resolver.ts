@@ -202,8 +202,9 @@ export class DocumentResolver {
   async removeFavoriteDocument(
     @Args('input') input: FavoriteDocumentInput,
     @CurrentUser('id') userId: string,
+      @Args('publicDocument', { nullable: true, defaultValue: false }) publicDocument: boolean,
   ): Promise<Document> {
-    return this.documentService.removeFavoriteDocument(userId, input);
+    return this.documentService.removeFavoriteDocument(userId, input, publicDocument);
   }
 
   @Mutation(() => Document, {
