@@ -44,7 +44,7 @@ import { findMaxFontSize, measureText } from "./measureText";
 // =====================================
 // ⬢ Constants
 // =====================================
-const FONT_FAMILY = ["Inter", ...twFontFamiliy.sans].join(", ");
+const FONT_FAMILY = ["Moderat", ...twFontFamiliy.sans].join(", ");
 
 // =====================================
 // ⬢ Types
@@ -526,7 +526,7 @@ function SandwormResult(props: {
                 }
 
                 counter += 1;
-                return `<div style="display: flex; align-items: center; justify-content: space-between; gap: 20px;">
+                return `<div class="font-body" style="display: flex; align-items: center; justify-content: space-between; gap: 20px;  ">
                   <div>${param.marker ?? ""}${param.seriesName ?? key}</div>
                   <div>${formattedValue}</div>
                 </div>`;

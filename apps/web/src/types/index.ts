@@ -1,7 +1,6 @@
 import type { NextPage } from "next";
 import type { AppProps } from "next/app";
 import type { ReactNode } from "react";
-import type { Typesaurus } from "typesaurus";
 import type { UIMessage } from "ai";
 import type { DataSourceStructureStateV3 } from "@sandworm/types";
 
@@ -58,8 +57,6 @@ export interface Query {
   forked_from: string;
   forked_by: string[];
   forked: boolean;
-  createdAt: Typesaurus.ServerDate;
-  updatedAt: Typesaurus.ServerDate;
   username?: string;
   image?: string;
 }
