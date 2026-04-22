@@ -16,6 +16,7 @@ import {
   RestoreDocumentInput,
   DuplicateDocumentInput,
   FavoriteDocumentInput,
+  ForkDocumentInput,
 } from './dto/document.dto';
 import { DocumentTreeService } from './service/document-tree.service';
 import { Public } from '@sandworm/nest-common';
@@ -161,8 +162,19 @@ export class DocumentResolver {
   }
 
   @Mutation(() => Document, {
+    name:"forkDocument",
+    description:"Fork a documents"
+  })
+  async forkDocument(
+    @Args("input") input : ForkDocumentInput,
+    @CurrentUser("id") userId:string
+  ){
+    return this.documentService.forkDocument(userId, input)
+  }
+
+  @Mutation(() => Document, {
     name: 'duplicateDocument',
-    description: 'Create a fork/duplicate of a document',
+    description: 'Create a duplicate of a document in the same workspace',
   })
   async duplicateDocument(
     @Args('input') input: DuplicateDocumentInput,
@@ -178,8 +190,9 @@ export class DocumentResolver {
   async addFavoriteDocument(
     @Args('input') input: FavoriteDocumentInput,
     @CurrentUser('id') userId: string,
+    @Args('publicDocument', { nullable: true, defaultValue: false }) publicDocument: boolean,
   ): Promise<Document> {
-    return this.documentService.addFavoriteDocument(userId, input);
+    return this.documentService.addFavoriteDocument(userId, input, publicDocument);
   }
 
   @Mutation(() => Document, {
