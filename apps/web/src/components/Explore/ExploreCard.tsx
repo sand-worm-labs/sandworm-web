@@ -57,7 +57,7 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
                    href={`/workspace/${workspaceId}/profile/${query.authorId}`}
                   className="text-[0.8rem] mb-1 text-ink-400 hover:underline"
                 >
-                  @{query.author.username}
+                  @{query.author?.username}
                 </Link>
                 <h3 className="text-[0.95rem] font-medium truncate cursor-pointer hover:underline">
                   {query.title}

@@ -48,50 +48,6 @@ query GetUser($userId: String!) {
 
 
 # 2. Get User's Favorite Public Documents
-query GetUserFavoritePublicDocuments($userId: String!) {
-    favoritePublicDocuments {
-      id
-      slug
-      title
-      authorId
-      workspaceId
-      parentId
-      runUnexecutedBlocks
-      runSQLSelection
-      shareLinksWithoutSidebar
-      icon
-      orderIndex
-      deletedAt
-      createdAt
-      updatedAt
-      version
-      publishedAt
-      isDataApp
-      isSyncedWithYjs
-      hasDashboard
-      appId
-      clock
-      appClock
-      userAppClock
-      children {
-        id
-        slug
-        title
-        authorId
-        icon
-        orderIndex
-        createdAt
-        updatedAt
-      }
-      parent {
-        id
-        slug
-        title
-        authorId
-        icon
-      }
-  }
-}
 
 # Variables:
 # {
@@ -144,47 +100,7 @@ query GetForkedDocuments {
 }
 
 
-# 4. Get Trending Published Documents
-query GetTrendingPublishedDocuments($limit: Float = 20, $offset: Float = 0) {
-  getTrendingPublishedDocuments(limit: $limit, offset: $offset) {
-    id
-    slug
-    title
-    authorId
-    workspaceId
-    parentId
-    runUnexecutedBlocks
-    runSQLSelection
-    shareLinksWithoutSidebar
-    icon
-    orderIndex
-    deletedAt
-    createdAt
-    updatedAt
-    version
-    publishedAt
-    isDataApp
-    isSyncedWithYjs
-    hasDashboard
-    appId
-    clock
-    appClock
-    userAppClock
-    children {
-      id
-      slug
-      title
-      icon
-      orderIndex
-    }
-    parent {
-      id
-      slug
-      title
-      icon
-    }
-  }
-}
+
 
 # Variables:
 # {
