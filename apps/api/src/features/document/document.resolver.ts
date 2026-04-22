@@ -18,6 +18,7 @@ import {
   DuplicateDocumentInput,
   FavoriteDocumentInput,
   ForkDocumentInput,
+  FavoritePublicDocumentInput,
 } from './dto/document.dto';
 import { DocumentTreeService } from './service/document-tree.service';
 import { Public } from '@sandworm/nest-common';
@@ -197,28 +198,50 @@ export class DocumentResolver {
   }
 
   @Mutation(() => Document, {
-    name: 'addFavoriteDocument',
-    description: 'Mark a document as a favorite',
+    name: 'addWorkspaceFavoriteDocument',
+    description: 'Mark a document as a favorite in workspace',
   })
-  async addFavoriteDocument(
+  async addWorkspaceFavoriteDocument(
     @Args('input') input: FavoriteDocumentInput,
     @CurrentUser('id') userId: string,
-    @Args('publicDocument', { nullable: true, defaultValue: false }) publicDocument: boolean,
   ): Promise<Document> {
-    return this.documentService.addFavoriteDocument(userId, input, publicDocument);
+    return this.documentService.addFavoriteDocument(userId, input.documentId, input.workspaceId);
   }
 
   @Mutation(() => Document, {
-    name: 'removeFavoriteDocument',
+    name: 'addPublicFavoriteDocument',
+    description: 'Mark a public document as a favorite',
+  })
+  async addPublicFavoriteDocument(
+    @Args('input') input: FavoritePublicDocumentInput,
+    @CurrentUser('id') userId: string,
+  ): Promise<Document> {
+    return this.documentService.addFavoriteDocument(userId, input.documentId);
+  }
+
+  @Mutation(() => Document, {
+    name: 'removeWorkspaceFavoriteDocument',
     description: 'Unmark a document as a favorite',
   })
-  async removeFavoriteDocument(
+  async removeWorkspaceFavoriteDocument(
     @Args('input') input: FavoriteDocumentInput,
     @CurrentUser('id') userId: string,
     @Args('publicDocument', { nullable: true, defaultValue: false }) publicDocument: boolean,
   ): Promise<Document> {
-    return this.documentService.removeFavoriteDocument(userId, input, publicDocument);
+    return this.documentService.removeFavoriteDocument(userId, input.documentId,input.workspaceId);
   }
+
+  @Mutation(() => Document, {
+    name: 'removePublicFavoriteDocument',
+    description: 'Unmark a document as a favorite',
+  })
+  async removePublicFavoriteDocument(
+    @Args('input') input: FavoritePublicDocumentInput,
+    @CurrentUser('id') userId: string,
+  ): Promise<Document> {
+    return this.documentService.removeFavoriteDocument(userId, input.documentId);
+  }
+
 
   @Mutation(() => Document, {
     name: 'publishDocument',
@@ -275,5 +298,10 @@ export class DocumentResolver {
   @ResolveField(() => Int)
   async favoriteCount(@Parent() document: Document): Promise<number> {
     return this.documentService.getDocumentFavoriteCount(document.id);
+  }
+
+  @ResolveField(() => Boolean)
+  async isFavorite(@Parent() document: Document, @CurrentUser('id') userId: string): Promise<boolean> {
+    return this.documentService.isFavoriteDocument(userId, document.id);
   }
 }
