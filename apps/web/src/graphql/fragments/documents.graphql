@@ -1,0 +1,26 @@
+fragment DocumentFields on Document {
+  id
+  slug
+  title
+  authorId
+  workspaceId
+  parentId
+  runUnexecutedBlocks
+  runSQLSelection
+  shareLinksWithoutSidebar
+  orderIndex
+  deletedAt
+  createdAt
+  updatedAt
+  version
+  publishedAt
+  isDataApp
+  isSyncedWithYjs
+  hasDashboard
+  appId
+  clock
+  appClock
+  userAppClock
+  forkCount
+  favoriteCount
+}

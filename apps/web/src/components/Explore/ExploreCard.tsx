@@ -77,14 +77,14 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
           <div className="flex flex-col items-end gap-4 flex-shrink-0">
             <div className="flex items-center gap-3 text-sm">
               <span className="flex items-center gap-1">
-                {0}
+                {query.favoriteCount}
                 <Star
                   className="h-4 w-4 font-light text-ink-300 dark:text-ink-300 "
                   strokeWidth={1.2}
                 />
               </span>
               <span className="flex items-center gap-1">
-                {0}
+                {query.forkCount}
                 <GitFork
                   className="h-4 w-4 font-light text-ink-300 dark:text-ink-300 "
                   strokeWidth={1.2}

@@ -1,27 +1,4 @@
-fragment DocumentFields on Document {
-  id
-  slug
-  title
-  authorId
-  workspaceId
-  parentId
-  runUnexecutedBlocks
-  runSQLSelection
-  shareLinksWithoutSidebar
-  orderIndex
-  deletedAt
-  createdAt
-  updatedAt
-  version
-  publishedAt
-  isDataApp
-  isSyncedWithYjs
-  hasDashboard
-  appId
-  clock
-  appClock
-  userAppClock
-}
+
 
 mutation ForkDocument($input: ForkDocumentInput!) {
   forkDocument(input: $input) {
@@ -59,47 +36,13 @@ query GetDocument($workspaceId: String!, $documentId: String!) {
 
 query GetExplorerDocuments($limit: Float = 20, $offset: Float = 0) {
   getExplorerDocuments(limit: $limit, offset: $offset) {
-    id
-    slug
-    title
-    authorId
-    workspaceId
-    parentId
-    runUnexecutedBlocks
-    runSQLSelection
-    shareLinksWithoutSidebar
-    orderIndex
-    deletedAt
-    createdAt
-    updatedAt
-    version
-    publishedAt
-    isDataApp
-    isSyncedWithYjs
-    hasDashboard
-    appId
-    clock
-    appClock
-    userAppClock
-    children {
-      id
-      slug
-      title
-      icon
-      orderIndex
-    }
-    parent {
-      id
-      slug
-      title
-      icon
-    }
+      ...DocumentFields
       author{
       username
       firstName
       lastName
       avater
-    }
+      }
   }
 }
 
@@ -135,48 +78,12 @@ query GetFavoriteDocuments($workspaceId: String!) {
 # Get Featured Documents
 query GetFeaturedDocuments($limit: Float = 4) {
   getFeaturedDocuments(limit: $limit) {
-    id
-    slug
-    title
-    authorId
-    workspaceId
-    parentId
-    runUnexecutedBlocks
-    runSQLSelection
-    shareLinksWithoutSidebar
-    orderIndex
-    deletedAt
-    createdAt
-    updatedAt
-    version
-    publishedAt
-    isDataApp
-    isSyncedWithYjs
-    hasDashboard
-    appId
-    clock
-    appClock
-    userAppClock
-    children {
-      id
-      slug
-      title
-      icon
-      orderIndex
-      createdAt
-      updatedAt
-    }
-    author{
+      ...DocumentFields
+      author{
       username
       firstName
       lastName
       avater
-    }
-    parent {
-      id
-      slug
-      title
-      icon
     }
   }
 }
@@ -185,41 +92,7 @@ query GetFeaturedDocuments($limit: Float = 4) {
 # 4. Get Trending Published Documents
 query GetTrendingPublishedDocuments($limit: Float = 20, $offset: Float = 0) {
   getTrendingPublishedDocuments(limit: $limit, offset: $offset) {
-    id
-    slug
-    title
-    authorId
-    workspaceId
-    parentId
-    runUnexecutedBlocks
-    runSQLSelection
-    shareLinksWithoutSidebar
-    orderIndex
-    deletedAt
-    createdAt
-    updatedAt
-    version
-    publishedAt
-    isDataApp
-    isSyncedWithYjs
-    hasDashboard
-    appId
-    clock
-    appClock
-    userAppClock
-    children {
-      id
-      slug
-      title
-      icon
-      orderIndex
-    }
-    parent {
-      id
-      slug
-      title
-      icon
-    }
+       ...DocumentFields
       author{
       username
       firstName
@@ -231,46 +104,8 @@ query GetTrendingPublishedDocuments($limit: Float = 20, $offset: Float = 0) {
 
 query GetUserFavoritePublicDocuments{
     favoritePublicDocuments {
-      id
-      slug
-      title
-      authorId
-      workspaceId
-      parentId
-      runUnexecutedBlocks
-      runSQLSelection
-      shareLinksWithoutSidebar
-      orderIndex
-      deletedAt
-      createdAt
-      updatedAt
-      version
-      publishedAt
-      isDataApp
-      isSyncedWithYjs
-      hasDashboard
-      appId
-      clock
-      appClock
-      userAppClock
-      children {
-        id
-        slug
-        title
-        authorId
-        icon
-        orderIndex
-        createdAt
-        updatedAt
-      }
-      parent {
-        id
-        slug
-        title
-        authorId
-        icon
-      }
-        author{
+      ...DocumentFields
+      author{
       username
       firstName
       lastName
@@ -281,47 +116,8 @@ query GetUserFavoritePublicDocuments{
 
 query GetUserForkedPublicDocuments {
     getForkedDocuments  {
-      id
-      slug
-      title
-      authorId
-      workspaceId
-      parentId
-      runUnexecutedBlocks
-      runSQLSelection
-      shareLinksWithoutSidebar
-      
-      orderIndex
-      deletedAt
-      createdAt
-      updatedAt
-      version
-      publishedAt
-      isDataApp
-      isSyncedWithYjs
-      hasDashboard
-      appId
-      clock
-      appClock
-      userAppClock
-      children {
-        id
-        slug
-        title
-        authorId
-        icon
-        orderIndex
-        createdAt
-        updatedAt
-      }
-      parent {
-        id
-        slug
-        title
-        authorId
-        icon
-      }
-        author{
+     ...DocumentFields
+      author{
       username
       firstName
       lastName

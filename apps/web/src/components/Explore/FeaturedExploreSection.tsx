@@ -46,8 +46,8 @@ function toFeaturedQuery(doc: ApiDocument): FeaturedQuery {
       image: PLACEHOLDER_AVATAR,
       userId: doc.authorId,
     },
-    stars: 0,
-    forks: 0,
+    stars: doc.favoriteCount,
+    forks: doc.forkCount,
   };
 }
 
@@ -69,7 +69,7 @@ export function FeaturedExploreSection() {
     });
   };
 
-  const handleClick = (_id: string) => {};
+  const handleClick = (_id: string) => { };
 
   console.log(queries);
 
