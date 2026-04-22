@@ -1,3 +1,34 @@
+fragment DocumentFields on Document {
+  id
+  slug
+  title
+  authorId
+  workspaceId
+  parentId
+  runUnexecutedBlocks
+  runSQLSelection
+  shareLinksWithoutSidebar
+  orderIndex
+  deletedAt
+  createdAt
+  updatedAt
+  version
+  publishedAt
+  isDataApp
+  isSyncedWithYjs
+  hasDashboard
+  appId
+  clock
+  appClock
+  userAppClock
+}
+
+mutation ForkDocument($input: ForkDocumentInput!) {
+  forkDocument(input: $input) {
+    ...DocumentFields
+  }
+}
+
 query GetDocument($workspaceId: String!, $documentId: String!) {
   getDocument(workspaceId: $workspaceId, documentId: $documentId) {
     id
