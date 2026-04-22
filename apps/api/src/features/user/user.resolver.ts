@@ -12,7 +12,6 @@ import { Public } from '@sandworm/nest-common';
 import {
   CreateUserInput,
   UpdateUserInput,
-  GetAllUsersInput,
   WalletInput,
   SocialLinksInput,
 } from './dto/user.dto';
@@ -161,5 +160,5 @@ export class UserResolver {
   @ResolveField(() => Int, { name: 'followingCount' })
   async followingCount(@Parent() user: User): Promise<number> {
     return await this.userService.getUserFollowingCount(user.id);
-  }
+  } 
 }

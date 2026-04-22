@@ -1,6 +1,6 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DocumentEntity, WorkspaceEntity, FavoriteEntity, YjsDocumentEntity, DocumentForkEntity } from '@sandworm/postgresql-typeorm';
+import { DocumentEntity, WorkspaceEntity, FavoriteEntity, YjsDocumentEntity, DocumentForkEntity, UserEntity } from '@sandworm/postgresql-typeorm';
 import { DocumentResolver } from './document.resolver';
 import { DocumentService } from './service/document.service';
 import { DocumentTreeService } from './service/document-tree.service';
@@ -12,10 +12,10 @@ import { JupyterModule } from '@/infrastructure/jupyter/jupyter.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([DocumentEntity, DocumentForkEntity, WorkspaceEntity, FavoriteEntity, YjsDocumentEntity]),
+    TypeOrmModule.forFeature([DocumentEntity, DocumentForkEntity, WorkspaceEntity, FavoriteEntity,UserEntity, YjsDocumentEntity]),
     AuthGraphqlModule,
     forwardRef(() => YjsModule),
-    UserModule,
+    forwardRef(() => UserModule), 
     JupyterModule
   ],
   providers: [DocumentResolver, DocumentService, DocumentTreeService],

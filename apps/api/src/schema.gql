@@ -121,6 +121,8 @@ type Document {
   children: [Document!]!
   parent: Document
   author: User
+  forkCount: Int!
+  favoriteCount: Int!
 }
 
 type Environment {
@@ -321,6 +323,9 @@ type Query {
 
   """Get trending published documents across all workspaces"""
   getTrendingPublishedDocuments(limit: Float = 20, offset: Float = 0): [Document!]!
+
+  """Get public documents by a specific user"""
+  getUserPublicDocuments(userId: String!, limit: Float = 20, offset: Float = 0): [Document!]!
 
   """Get a reusable component by ID"""
   getComponent(componentId: String!, workspaceId: String!): ReusableComponent!
@@ -648,7 +653,7 @@ input DuplicateDocumentInput {
 }
 
 input FavoriteDocumentInput {
-  workspaceId: String!
+  workspaceId: String
   documentId: String!
 }
 

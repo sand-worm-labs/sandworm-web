@@ -7,6 +7,7 @@ import {
   YjsDocumentEntity,
   DocumentVisibility,
   DocumentForkEntity,
+  UserEntity,
 } from '@sandworm/postgresql-typeorm';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, In, Repository } from 'typeorm';
@@ -39,6 +40,8 @@ export class DocumentService {
     private readonly forkRepository: Repository<DocumentForkEntity>,
     @InjectRepository(YjsDocumentEntity)
     private readonly yjsDocumentRepository: Repository<YjsDocumentEntity>,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
     private readonly documentTreeService: DocumentTreeService,
     private readonly yjsDocumentService: YjsDocumentService
   ) { }
@@ -222,7 +225,7 @@ export class DocumentService {
     const { documentId, workspaceId } = input;
     let document: DocumentEntity | null = null;
 
-    if(public_document) {
+    if(public_document === true && input.workspaceId  === null) {
       document = await this.documentRepository.findOne({
         where: { id: documentId, visibility: DocumentVisibility.PUBLIC, deletedAt: null },
       });
@@ -245,8 +248,6 @@ export class DocumentService {
     await this.favoriteRepository.save(favorite);
     return Document.fromEntity(document);
   }
-
-  
 
   async forkDocument(
     userId: string,
@@ -315,11 +316,11 @@ export class DocumentService {
   async removeFavoriteDocument(
     userId: string,
     input: FavoriteDocumentInput,
-     public_document = false,
+    public_document = false,
   ): Promise<Document> {
     const { documentId, workspaceId } = input;
     let document: DocumentEntity | null = null;
-    if(public_document) {
+    if(public_document === true && input.workspaceId  === null) {
       document = await this.documentRepository.findOne({
         where: { id: documentId, visibility: DocumentVisibility.PUBLIC, deletedAt: null },
       });
@@ -513,5 +514,27 @@ export class DocumentService {
     }
 
     return Document.fromEntity(document);
+  }
+
+  async getDocumentForkCount(documentId: string): Promise<number> {
+    return this.forkRepository.count({ where: { sourceDocumentId: documentId } });
+  }
+
+  async getDocumentFavoriteCount(documentId: string): Promise<number> {
+    return this.favoriteRepository.count({ where: { documentId } });
+  }
+
+  async getUserPublicDocuments(userId: string, limit: number, offset: number) {
+    const user = await this.userRepository.findOneBy({ id: userId });
+    if (!user) throw new ValidationException(ErrorCode.E002);
+
+    const documents = await this.documentRepository.find({
+      where: { authorId: userId, visibility: DocumentVisibility.PUBLIC, deletedAt: null },
+      take: limit,
+      skip: offset,
+      order: { createdAt: 'DESC' },
+    });
+
+    return Document.fromEntities(documents);
   }
 }
