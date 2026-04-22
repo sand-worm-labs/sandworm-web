@@ -7,7 +7,8 @@ import {
   useGetFeaturedDocumentsQuery,
   useGetUserFavoritePublicDocumentsQuery,
   useGetUserForkedPublicDocumentsQuery,
-  useGetUserPublicDocumentsQuery
+  useGetUserPublicDocumentsQuery,
+  useForkDocumentMutation
 } from "@/generated/graphql";
 import type { ApiDocument } from "@/types";
 
@@ -269,5 +270,28 @@ export function useUserPublicDocuments(userId: string | null, pageSize = 20,
     hasMore,
     loadMore,
     refetch: async () => { await refetch(); },
+  };
+}
+
+export function useForkDocument() {
+  const [forkDocumentMutation, { loading, error }] = useForkDocumentMutation();
+
+  const forkDocument = useCallback(
+    async (documentId: string, targetWorkspaceId: string) => {
+      const { data } = await forkDocumentMutation({
+        variables: {
+          input: { documentId, targetWorkspaceId },
+        },
+      });
+
+      return data?.forkDocument ?? null;
+    },
+    [forkDocumentMutation]
+  );
+
+  return {
+    forkDocument,
+    loading,
+    error: (error as Error) ?? null,
   };
 }
