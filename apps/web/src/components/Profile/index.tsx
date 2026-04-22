@@ -27,7 +27,11 @@ import { ProfileSettingsModal } from "./ProfileSettingModal";
 import { ManageWalletsModal, AddWalletModal } from "./ManageWalletModal";
 import { UserConnectionsModal } from "./UserConnectionModal";
 import { useStringQuery } from "../Editor/hooks/useQueryArgs";
-
+import { useUserPublicDocuments } from "../Editor/hooks/usePublicDocuments";
+import { useInfiniteScroll } from "../Editor/hooks/useInfiniteScroll";
+import { EmptyQueryState } from "../EmptyState/EmptyQueryState";
+import { QueryList } from "../Queries";
+import type { ApiDocument } from "@/types";
 
 // =====================================
 // ⬢ Types
@@ -36,6 +40,8 @@ interface ProfileComponentProps {
   user: any | null;
   isLoading: boolean;
   isOwnProfile?: boolean;
+  initialDocuments?: ApiDocument[];
+  pageSize?: number;
 }
 
 // =====================================
@@ -45,9 +51,11 @@ const ProfileComponent = ({
   user,
   isLoading,
   isOwnProfile = false,
+  initialDocuments = [],
+  pageSize = 20,
 }: ProfileComponentProps) => {
   const [optimisticFollowing, setOptimisticFollowing] = useState<boolean | null>(null);
-const isFollowing = optimisticFollowing ?? user?.isFollowing ?? false;
+  const isFollowing = optimisticFollowing ?? user?.isFollowing ?? false;
   const { follow, unfollow, mutationLoading } = useUser({
     userId: user?.id,
     skip: isOwnProfile || !user?.id,
@@ -59,6 +67,15 @@ const isFollowing = optimisticFollowing ?? user?.isFollowing ?? false;
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<"followers" | "following">("followers");
   const workspaceId = useStringQuery("workspace");
+
+  const { documents, loading: docsLoading, loadingMore, hasMore, loadMore } =
+    useUserPublicDocuments(user?.id ?? null, pageSize, initialDocuments);
+
+  const sentinelRef = useInfiniteScroll({
+    hasMore,
+    loading: docsLoading || loadingMore,
+    onLoadMore: loadMore,
+  });
 
 
   // ─── MUTATION HOOKS ───
@@ -106,17 +123,17 @@ const isFollowing = optimisticFollowing ?? user?.isFollowing ?? false;
   const userForModal =
     user && isOwnProfile
       ? {
-          firstName: user.firstName,
-          lastName: user.lastName,
-          username: user.username,
-          email: user.email,
-          avater: user.avatar,
-          fullName: user.fullName,
-          settings: user.settings,
-        }
+        firstName: user.firstName,
+        lastName: user.lastName,
+        username: user.username,
+        email: user.email,
+        avater: user.avatar,
+        fullName: user.fullName,
+        settings: user.settings,
+      }
       : null;
 
-      console.log(user, user?.isFollowing, "isfo")
+  console.log(user, user?.isFollowing, "isfo")
 
   return (
     <>
@@ -194,11 +211,10 @@ const isFollowing = optimisticFollowing ?? user?.isFollowing ?? false;
                               }
                             }}
                             disabled={mutationLoading}
-                            className={`flex items-center gap-2 px-6 py-2 rounded-xl font-medium transition-colors text-sm ${
-                              isFollowing
+                            className={`flex items-center gap-2 px-6 py-2 rounded-xl font-medium transition-colors text-sm ${isFollowing
                                 ? "bg-[#E9ECEF] dark:bg-[#262A30] text-ink-100 dark:text-white hover:bg-opacity-80"
                                 : "bg-black text-white hover:bg-opacity-90"
-                            }`}
+                              }`}
                           >
                             {isFollowing ? (
                               <>
@@ -360,35 +376,58 @@ const isFollowing = optimisticFollowing ?? user?.isFollowing ?? false;
                           </>
                         )}
                       </div>
-                    ) : 
-                    isOwnProfile ? (
-                      <div className="relative max-w-[380px] mx-auto mt-12">
-                        <div className="absolute z-1 inset-0 top-[1rem] left-[1rem] right-[1rem] rounded-xl bg-[#D97EF9] opacity-40 h-full" />
-                        <div className="absolute z-1 inset-0 top-[0.5rem] left-[0.5rem] right-[0.5rem] rounded-xl bg-[#C44DF5] opacity-60 h-full" />
-                        <button
-                          type="button"
-                          onClick={() => setIsAddWalletOpen(true)}
-                          className="relative z-[10] bg-[#A308F0] py-3 px-6 rounded-xl text-[#E9ECEF] xl:text-sm w-full text-start text-[13px] font-medium"
-                        >
-                          Add Wallet
-                        </button>
-                      </div>
-                    ) : null 
+                    ) :
+                      isOwnProfile ? (
+                        <div className="relative max-w-[380px] mx-auto mt-12">
+                          <div className="absolute z-1 inset-0 top-[1rem] left-[1rem] right-[1rem] rounded-xl bg-[#D97EF9] opacity-40 h-full" />
+                          <div className="absolute z-1 inset-0 top-[0.5rem] left-[0.5rem] right-[0.5rem] rounded-xl bg-[#C44DF5] opacity-60 h-full" />
+                          <button
+                            type="button"
+                            onClick={() => setIsAddWalletOpen(true)}
+                            className="relative z-[10] bg-[#A308F0] py-3 px-6 rounded-xl text-[#E9ECEF] xl:text-sm w-full text-start text-[13px] font-medium"
+                          >
+                            Add Wallet
+                          </button>
+                        </div>
+                      ) : null
                   }
                 </div>
               </div>
 
               {/* ─── PROJECTS ─── */}
-              <div className="rounded-2xl ">
+              {/* ─── DOCUMENTS ─── */}
+              <div className="rounded-2xl">
                 <h2 className="text-base font-bold text-ink-100 dark:text-white mb-4">
-                  Projects
+                  Notebooks
                 </h2>
-                <div className="text-center py-12 min-h-[20rem] flex flex-col items-center justify-center gap-2">
-                  <ProjectIcon />
-                  <p className="text-ink-200 dark:text-ink-400">
-                    No projects yet
-                  </p>
-                </div>
+
+                {docsLoading && documents.length === 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                      <div
+                        key={i}
+                        className="h-40 rounded-lg bg-neutral-100 dark:bg-neutral-800 animate-pulse"
+                      />
+                    ))}
+                  </div>
+                ) : documents.length === 0 ? (
+                  <EmptyQueryState message="No public queries yet." />
+                ) : (
+                  <>
+                    <QueryList documents={documents} />
+                    <div ref={sentinelRef} aria-hidden="true" className="h-1" />
+                    {loadingMore && (
+                      <div className="flex justify-center py-6">
+                        <div className="h-6 w-6 border-2 border-ink-300 border-t-transparent rounded-full animate-spin" />
+                      </div>
+                    )}
+                    {!hasMore && documents.length > 0 && (
+                      <p className="text-center text-ink-300 text-sm py-6">
+                        You&apos;ve reached the end.
+                      </p>
+                    )}
+                  </>
+                )}
               </div>
             </div>
           </div>

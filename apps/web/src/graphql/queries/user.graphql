@@ -103,23 +103,11 @@ query GetForkedDocuments {
 query GetUserPublicDocuments($userId: String!, $limit: Float = 20, $offset: Float = 0) {
   getUserPublicDocuments(userId: $userId, limit: $limit, offset: $offset) {
     ...DocumentFields
+     author{
+      username
+      firstName
+      lastName
+      avater
+    }
   }
 }
-
-
-
-
-# Variables:
-# {
-#   "limit": 20,
-#   "offset": 0
-# }
-
-
-# 5. Get Explorer Documents
-
-# Variables:
-# {
-#   "limit": 20,
-#   "offset": 0
-# }
