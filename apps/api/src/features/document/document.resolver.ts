@@ -5,6 +5,7 @@ import {
   Query,
   ResolveField,
   Resolver,
+  Int
 } from '@nestjs/graphql';
 import { CurrentUser } from '@sandworm/graphql';
 import { DocumentService } from './service/document.service';
@@ -202,7 +203,7 @@ export class DocumentResolver {
   async removeFavoriteDocument(
     @Args('input') input: FavoriteDocumentInput,
     @CurrentUser('id') userId: string,
-      @Args('publicDocument', { nullable: true, defaultValue: false }) publicDocument: boolean,
+    @Args('publicDocument', { nullable: true, defaultValue: false }) publicDocument: boolean,
   ): Promise<Document> {
     return this.documentService.removeFavoriteDocument(userId, input, publicDocument);
   }
@@ -252,5 +253,15 @@ export class DocumentResolver {
   async author(@Parent() doc: Document): Promise<User | null> {
     if (!doc.authorId) return null;
     return this.userService.findById(doc.authorId);
+  }
+
+  @ResolveField(() => Int)
+  async forkCount(@Parent() document: Document): Promise<number> {
+    return this.documentService.getDocumentForkCount(document.id);
+  }
+
+  @ResolveField(() => Int)
+  async favoriteCount(@Parent() document: Document): Promise<number> {
+    return this.documentService.getDocumentFavoriteCount(document.id);
   }
 }

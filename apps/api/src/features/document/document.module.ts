@@ -15,7 +15,7 @@ import { JupyterModule } from '@/infrastructure/jupyter/jupyter.module';
     TypeOrmModule.forFeature([DocumentEntity, DocumentForkEntity, WorkspaceEntity, FavoriteEntity, YjsDocumentEntity]),
     AuthGraphqlModule,
     forwardRef(() => YjsModule),
-    UserModule,
+    forwardRef(() => UserModule), 
     JupyterModule
   ],
   providers: [DocumentResolver, DocumentService, DocumentTreeService],
