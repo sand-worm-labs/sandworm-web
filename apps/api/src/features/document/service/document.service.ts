@@ -18,6 +18,7 @@ import {
   FavoriteDocumentInput,
   RestoreDocumentInput,
   UpdateDocumentInput,
+  ForkDocumentInput
 } from '../dto/document.dto';
 import { Document } from '../model/document.model';
 import { DocumentTreeService } from './document-tree.service';
@@ -216,12 +217,21 @@ export class DocumentService {
   async addFavoriteDocument(
     userId: string,
     input: FavoriteDocumentInput,
+    public_document = false,
   ): Promise<Document> {
     const { documentId, workspaceId } = input;
+    let document: DocumentEntity | null = null;
 
-    const document = await this.documentRepository.findOne({
-      where: { id: documentId, workspaceId, deletedAt: null },
-    });
+    if(public_document) {
+      document = await this.documentRepository.findOne({
+        where: { id: documentId, visibility: DocumentVisibility.PUBLIC, deletedAt: null },
+      });
+    }
+    else {
+      document = await this.documentRepository.findOne({
+        where: { id: documentId, workspaceId, deletedAt: null },
+      });
+    }
 
     if (!document) {
       throw new ValidationException(ErrorCode.E003);
@@ -234,6 +244,51 @@ export class DocumentService {
 
     await this.favoriteRepository.save(favorite);
     return Document.fromEntity(document);
+  }
+
+  
+
+  async forkDocument(
+    userId: string,
+    input: ForkDocumentInput,
+  ): Promise<Document> {
+    const { documentId, targetWorkspaceId } = input;
+
+    const forked = await this.dataSource.transaction(async (m) => {
+      const docRepo = m.getRepository(DocumentEntity);
+      const forkRepo = m.getRepository(DocumentForkEntity);
+
+      const original = await docRepo.findOne({
+        where: { id: documentId, deletedAt: null },
+      });
+      if (!original) throw new ValidationException(ErrorCode.E003);
+
+      // source must be published — you don't want a document that is not public
+      if (original.visibility  !== DocumentVisibility.PUBLIC) {
+        throw new ValidationException(ErrorCode.E003);
+      }
+
+      const duplicated = await this.documentTreeService.duplicateDocument(
+        documentId,
+        targetWorkspaceId,
+        userId,
+        m,
+      );
+
+      await forkRepo.save(
+        forkRepo.create({
+          sourceDocumentId: documentId,
+          forkedDocumentId: duplicated.id,
+          userId,
+        }),
+      );
+
+      return duplicated;
+    });
+
+    const result = Document.fromEntity(forked);
+    await this.documentTreeService.emitWorkspaceDocuments(targetWorkspaceId);
+    return result;
   }
 
   async getFavoriteDocuments(userId: string, workspaceId: string): Promise<Document[]> {
@@ -260,12 +315,20 @@ export class DocumentService {
   async removeFavoriteDocument(
     userId: string,
     input: FavoriteDocumentInput,
+     public_document = false,
   ): Promise<Document> {
     const { documentId, workspaceId } = input;
-
-    const document = await this.documentRepository.findOne({
-      where: { id: documentId, workspaceId, deletedAt: null },
-    });
+    let document: DocumentEntity | null = null;
+    if(public_document) {
+      document = await this.documentRepository.findOne({
+        where: { id: documentId, visibility: DocumentVisibility.PUBLIC, deletedAt: null },
+      });
+    }
+    else {
+      document = await this.documentRepository.findOne({
+        where: { id: documentId, workspaceId, deletedAt: null },
+      });
+    }
 
     if (!document) {
       throw new ValidationException(ErrorCode.E003);

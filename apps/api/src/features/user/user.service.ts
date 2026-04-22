@@ -215,6 +215,14 @@ export class UserService {
     return relations.filter((r) => r.followee).map((r) => r.followee);
   }
 
+  async isFollowing(followerId: string, followeeId: string): Promise<boolean> {
+    const relation = await this.userFollowsRepository.findOne({
+      where: { followerId, followeeId },
+    });
+
+    return !!relation;
+  }
+  
   async updateSocialLinks(
     userId: string,
     socialLinks: SocialLinksInput,
