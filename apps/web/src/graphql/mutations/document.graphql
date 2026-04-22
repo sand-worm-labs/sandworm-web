@@ -1,27 +1,3 @@
-export fragment DocumentFields on Document {
-  id
-  slug
-  title
-  authorId
-  workspaceId
-  parentId
-  runUnexecutedBlocks
-  runSQLSelection
-  shareLinksWithoutSidebar
-  orderIndex
-  deletedAt
-  createdAt
-  updatedAt
-  version
-  publishedAt
-  isDataApp
-  isSyncedWithYjs
-  hasDashboard
-  appId
-  clock
-  appClock
-  userAppClock
-}
 
 mutation CreateDocument($workspaceId: String!, $input: CreateDocumentInput!) {
   createDocument(workspaceId: $workspaceId, input: $input) {
@@ -181,6 +157,7 @@ mutation AddFavoriteDocument($input: FavoriteDocumentInput!, $publicDocument: Bo
 mutation RemoveFavoriteDocument($input: FavoriteDocumentInput!, $publicDocument: Boolean = false) {
   removeFavoriteDocument(input: $input, publicDocument: $publicDocument) {
     ...DocumentFields
+    
   }
 }
 

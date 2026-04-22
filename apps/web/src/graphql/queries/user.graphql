@@ -10,6 +10,7 @@ query GetUser($userId: String!) {
     isOnboarded
     avater
     createdAt
+    isFollowing
     settings {
       id
       userId
@@ -96,6 +97,12 @@ query GetForkedDocuments {
       title
       icon
     }
+  }
+}
+
+query GetUserPublicDocuments($userId: String!, $limit: Float = 20, $offset: Float = 0) {
+  getUserPublicDocuments(userId: $userId, limit: $limit, offset: $offset) {
+    ...DocumentFields
   }
 }
 

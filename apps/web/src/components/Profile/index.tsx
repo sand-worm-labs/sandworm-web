@@ -46,7 +46,8 @@ const ProfileComponent = ({
   isLoading,
   isOwnProfile = false,
 }: ProfileComponentProps) => {
-  const [isFollowing, setIsFollowing] = useState(false);
+  const [optimisticFollowing, setOptimisticFollowing] = useState<boolean | null>(null);
+const isFollowing = optimisticFollowing ?? user?.isFollowing ?? false;
   const { follow, unfollow, mutationLoading } = useUser({
     userId: user?.id,
     skip: isOwnProfile || !user?.id,
@@ -115,6 +116,8 @@ const ProfileComponent = ({
         }
       : null;
 
+      console.log(user, user?.isFollowing, "isfo")
+
   return (
     <>
       <div className="min-h-screen transition-colors font-body">
@@ -178,12 +181,17 @@ const ProfileComponent = ({
                           <button
                             type="button"
                             onClick={async () => {
-                              if (isFollowing) {
-                                await unfollow();
-                              } else {
-                                await follow();
+                              const next = !isFollowing;
+                              setOptimisticFollowing(next);
+                              try {
+                                if (isFollowing) {
+                                  await unfollow();
+                                } else {
+                                  await follow();
+                                }
+                              } catch {
+                                setOptimisticFollowing(null);
                               }
-                              setIsFollowing(!isFollowing);
                             }}
                             disabled={mutationLoading}
                             className={`flex items-center gap-2 px-6 py-2 rounded-xl font-medium transition-colors text-sm ${
