@@ -276,4 +276,9 @@ export class DocumentResolver {
   async favoriteCount(@Parent() document: Document): Promise<number> {
     return this.documentService.getDocumentFavoriteCount(document.id);
   }
+
+  @ResolveField(() => Boolean)
+  async isFavorite(@Parent() document: Document, @CurrentUser('id') userId: string): Promise<boolean> {
+    return this.documentService.isFavoriteDocument(userId, document.id);
+  }
 }
