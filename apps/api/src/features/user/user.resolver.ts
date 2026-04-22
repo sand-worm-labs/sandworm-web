@@ -162,4 +162,13 @@ export class UserResolver {
   async followingCount(@Parent() user: User): Promise<number> {
     return await this.userService.getUserFollowingCount(user.id);
   }
+
+  @ResolveField(() => [Document])
+  async documents(
+    @Parent() user: User,
+    @Args('limit', { type: () => Int, defaultValue: 20 }) limit: number,
+    @Args('offset', { type: () => Int, defaultValue: 0 }) offset: number,
+  ) {
+    return this.userService.getUserPublicDocuments(user.id, limit, offset);
+  }
 }

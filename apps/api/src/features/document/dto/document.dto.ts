@@ -75,8 +75,8 @@ export class DuplicateDocumentInput {
 
 @InputType()
 export class FavoriteDocumentInput {
-  @UUIDField()
-  workspaceId: string;
+  @UUIDField({nullable: true})
+  workspaceId?: string;
 
   @UUIDField()
   documentId: string;
