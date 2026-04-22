@@ -117,6 +117,18 @@ export class DocumentResolver {
   ): Promise<Document[]> {
     return this.documentService.getTrendingPublishedDocuments(limit, offset);
   }
+  
+  @Query(() => [Document], {
+    name: 'getUserPublicDocuments',
+    description: 'Get public documents by a specific user',
+  })
+  async getUserPublicDocuments(
+    @Args('userId') userId: string,
+    @Args('limit', { nullable: true, defaultValue: 20 }) limit: number,
+    @Args('offset', { nullable: true, defaultValue: 0 }) offset: number,
+  ): Promise<Document[]> {
+    return this.documentService.getUserPublicDocuments(userId, limit, offset);
+  }
 
   @Mutation(() => Document, {
     name: 'createDocument',

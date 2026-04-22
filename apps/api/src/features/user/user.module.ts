@@ -9,7 +9,6 @@ import {
 } from '@sandworm/postgresql-typeorm';
 import { UserService } from './user.service';
 import { UserResolver } from './user.resolver';
-import { DocumentModule } from '../document/document.module';
 
 @Module({
   imports: [
@@ -19,7 +18,6 @@ import { DocumentModule } from '../document/document.module';
       UserFollowsEntity,
       UserWorkspaceEntity,
     ]),
-    forwardRef(()=> DocumentModule),
   ],
   providers: [UserService, UserResolver],
   exports: [UserService],

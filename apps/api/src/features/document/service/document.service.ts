@@ -7,6 +7,7 @@ import {
   YjsDocumentEntity,
   DocumentVisibility,
   DocumentForkEntity,
+  UserEntity,
 } from '@sandworm/postgresql-typeorm';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, In, Repository } from 'typeorm';
@@ -39,6 +40,8 @@ export class DocumentService {
     private readonly forkRepository: Repository<DocumentForkEntity>,
     @InjectRepository(YjsDocumentEntity)
     private readonly yjsDocumentRepository: Repository<YjsDocumentEntity>,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
     private readonly documentTreeService: DocumentTreeService,
     private readonly yjsDocumentService: YjsDocumentService
   ) { }
@@ -521,4 +524,17 @@ export class DocumentService {
     return this.favoriteRepository.count({ where: { documentId } });
   }
 
+  async getUserPublicDocuments(userId: string, limit: number, offset: number) {
+    const user = await this.userRepository.findOneBy({ id: userId });
+    if (!user) throw new ValidationException(ErrorCode.E002);
+
+    const documents = await this.documentRepository.find({
+      where: { authorId: userId, visibility: DocumentVisibility.PUBLIC, deletedAt: null },
+      take: limit,
+      skip: offset,
+      order: { createdAt: 'DESC' },
+    });
+
+    return Document.fromEntities(documents);
+  }
 }
