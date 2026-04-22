@@ -481,6 +481,14 @@ export class DocumentService {
           .map(Document.fromEntity);
   }
 
+  async isFavoriteDocument(userId: string, documentId: string): Promise<boolean> {
+    const favorite = await this.favoriteRepository.findOne({
+      where: { userId, documentId },
+    });
+
+    return !!favorite;
+  }
+
   async getTrendingPublishedDocuments(limit = 20, offset = 0): Promise<Document[]> {
       const documents = await this.documentRepository
           .createQueryBuilder('doc')
