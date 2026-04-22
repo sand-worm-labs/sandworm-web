@@ -7,9 +7,7 @@ import {
   UserEntity,
   UserSettingEntity,
   UserWorkspaceEntity,
-  UserFollowsEntity,
-  DocumentVisibility,
-  DocumentEntity,
+  UserFollowsEntity
 } from '@sandworm/postgresql-typeorm';
 import { Repository } from 'typeorm';
 import {
@@ -21,7 +19,6 @@ import {
 import { UserSetting } from './model/graphql/user-setting.model';
 import { User } from './model/graphql/user.model';
 import { AuthPayload } from '../auth/graphql/models/auth-payload';
-import { Document } from '../document/model/document.model';
 
 @Injectable()
 export class UserService {
@@ -35,9 +32,8 @@ export class UserService {
     private readonly userFollowsRepository: Repository<UserFollowsEntity>,
     @InjectRepository(UserWorkspaceEntity)
     private readonly userWorkspaceRepository: Repository<UserWorkspaceEntity>,
-    @InjectRepository(DocumentEntity)
-    private readonly documentRepository: Repository<DocumentEntity>
-  ) { }
+  ) { } 
+
 
   async getCurrentUser(currentUser: {
     id: string;
@@ -315,17 +311,4 @@ export class UserService {
     }));
   }
 
-  async getUserPublicDocuments(userId: string, limit: number, offset: number) {
-    const user = await this.userRepository.findOneBy({ id: userId });
-    if (!user) throw new ValidationException(ErrorCode.E002);
-
-    const documents = await this.documentRepository.find({
-      where: { authorId: userId, visibility: DocumentVisibility.PUBLIC, deletedAt: null },
-      take: limit,
-      skip: offset,
-      order: { createdAt: 'DESC' },
-    });
-
-    return Document.fromEntities(documents);
-  }
 }
