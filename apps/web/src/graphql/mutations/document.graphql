@@ -1,3 +1,28 @@
+export fragment DocumentFields on Document {
+  id
+  slug
+  title
+  authorId
+  workspaceId
+  parentId
+  runUnexecutedBlocks
+  runSQLSelection
+  shareLinksWithoutSidebar
+  orderIndex
+  deletedAt
+  createdAt
+  updatedAt
+  version
+  publishedAt
+  isDataApp
+  isSyncedWithYjs
+  hasDashboard
+  appId
+  clock
+  appClock
+  userAppClock
+}
+
 mutation CreateDocument($workspaceId: String!, $input: CreateDocumentInput!) {
   createDocument(workspaceId: $workspaceId, input: $input) {
     id
@@ -147,62 +172,17 @@ mutation PublishDocument($workspaceId: String!, $documentId: String!) {
   }
 }
 
-mutation AddFavoriteDocument($input: FavoriteDocumentInput!) {
-  addFavoriteDocument(input: $input) {
-    id
-    title
-    slug
-
-    parentId
-    orderIndex
-    authorId
-    workspaceId
-    createdAt
-    updatedAt
-    deletedAt
-    version
-    publishedAt
-    isDataApp
-    isSyncedWithYjs
-    hasDashboard
-    appId
-    clock
-    appClock
-    userAppClock
-    runSQLSelection
-    runUnexecutedBlocks
-    shareLinksWithoutSidebar
+mutation AddFavoriteDocument($input: FavoriteDocumentInput!, $publicDocument: Boolean = false) {
+  addFavoriteDocument(input: $input, publicDocument: $publicDocument) {
+    ...DocumentFields
   }
 }
 
-mutation RemoveFavoriteDocument($input: FavoriteDocumentInput!) {
-  removeFavoriteDocument(input: $input) {
-    id
-    title
-    slug
-
-    parentId
-    orderIndex
-    authorId
-    workspaceId
-    createdAt
-    updatedAt
-    deletedAt
-    version
-    publishedAt
-    isDataApp
-    isSyncedWithYjs
-    hasDashboard
-    appId
-    clock
-    appClock
-    userAppClock
-    runSQLSelection
-    runUnexecutedBlocks
-    shareLinksWithoutSidebar
+mutation RemoveFavoriteDocument($input: FavoriteDocumentInput!, $publicDocument: Boolean = false) {
+  removeFavoriteDocument(input: $input, publicDocument: $publicDocument) {
+    ...DocumentFields
   }
 }
-
 
 
 
