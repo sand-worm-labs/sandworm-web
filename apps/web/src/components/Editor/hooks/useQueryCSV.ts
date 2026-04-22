@@ -36,6 +36,9 @@ export const useCSV = (workspaceId: string, documentId: string): UseCSV => {
         );
 
         if (res.status !== 200) {
+          const errorText = await res.text();
+          console.error("❌ Server Error Response:", errorText);
+
           throw new Error(`Request returned ${res.status}`);
         }
 

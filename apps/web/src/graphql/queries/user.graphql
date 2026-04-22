@@ -1,0 +1,113 @@
+# 1. Get User by ID (with full UserSetting fields)
+query GetUser($userId: String!) {
+  getUser(userId: $userId) {
+    id
+    username
+    email
+    firstName
+    lastName
+    fullName
+    isOnboarded
+    avater
+    createdAt
+    isFollowing
+    settings {
+      id
+      userId
+      socialLinks
+      statusText
+      statusUpdatedAt
+      wallets
+    }
+    followers {
+      id
+      username
+      email
+      firstName
+      lastName
+      fullName
+      avater
+    }
+    following {
+      id
+      username
+      email
+      firstName
+      lastName
+      fullName
+      avater
+    }
+    followersCount
+    followingCount
+  }
+}
+
+# Variables:
+# {
+#   "userId": "user_123"
+# }
+
+
+# 2. Get User's Favorite Public Documents
+
+# Variables:
+# {
+#   "userId": "user_123"
+# }
+
+
+# 3. Get Forked Documents (Standalone Query)
+query GetForkedDocuments {
+  getForkedDocuments {
+    id
+    slug
+    title
+    authorId
+    workspaceId
+    parentId
+    runUnexecutedBlocks
+    runSQLSelection
+    shareLinksWithoutSidebar
+    icon
+    orderIndex
+    deletedAt
+    createdAt
+    updatedAt
+    version
+    publishedAt
+    isDataApp
+    isSyncedWithYjs
+    hasDashboard
+    appId
+    clock
+    appClock
+    userAppClock
+    children {
+      id
+      slug
+      title
+      icon
+      orderIndex
+      createdAt
+      updatedAt
+    }
+    parent {
+      id
+      slug
+      title
+      icon
+    }
+  }
+}
+
+query GetUserPublicDocuments($userId: String!, $limit: Float = 20, $offset: Float = 0) {
+  getUserPublicDocuments(userId: $userId, limit: $limit, offset: $offset) {
+    ...DocumentFields
+     author{
+      username
+      firstName
+      lastName
+      avater
+    }
+  }
+}

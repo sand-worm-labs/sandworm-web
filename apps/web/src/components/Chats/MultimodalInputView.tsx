@@ -5,6 +5,8 @@ import { PiPaperPlaneTilt, PiPlus, PiX } from "react-icons/pi";
 import { Button } from "@sandworm/ui/components/button";
 import TextareaAutosize from "react-textarea-autosize";
 
+import { TooltipV2 } from "@/components/Editor/blocks/ToolTips";
+
 import { ModelQuickSelect } from "../Editor/blocks/ModelQuickSelect";
 import { useOpenRouterModels } from "../Editor/hooks/useOpenRouterModel";
 import { ModelPickerModal } from "../Editor/blocks/ModelPicker";
@@ -121,13 +123,23 @@ export const MultimodalInputView = forwardRef<
 
             <div className="flex flex-row items-center justify-between px-4 pb-3">
               <div className="flex items-center">
-                <Button
-                  type="button"
-                  className="rounded-full p-2.5 h-fit bg-transparent dark:bg-transparent text-black dark:text-ink-400 border-[#B5C8DB] border hover:bg-[rgba(207,211,222,0.15)] dark:hover:bg-[rgba(255,255,255,0.05)] dark:border-border-tertiary"
-                  onClick={onFileClick}
+                <TooltipV2<HTMLButtonElement>
+                  title="Attach Files"
+                  active
+                  position="bottom"
                 >
-                  <PiPlus size={18} />
-                </Button>
+                  {ref => (
+                    <button
+                      ref={ref}
+                      type="button"
+                      onClick={onFileClick}
+                      className="rounded-full p-2.5 h-fit bg-transparent dark:bg-transparent text-black dark:text-ink-400 border-[#B5C8DB] border hover:bg-[rgba(207,211,222,0.15)] dark:hover:bg-[rgba(255,255,255,0.05)] dark:border-border-tertiary"
+                      title="Attach files"
+                    >
+                      <PiPlus size={18} />
+                    </button>
+                  )}
+                </TooltipV2>
               </div>
 
               <div className="flex flex-row gap-2 items-center">
