@@ -146,7 +146,7 @@ def _sandworm_convert_to_utc_safe(datetime_series, comparison_value):
 
 def _sandworm_create_visualization(df, options):
     colors = [
-        "#5470c6",
+        "#A308F0",
         "#91cc75",
         "#fac858",
         "#ee6666",

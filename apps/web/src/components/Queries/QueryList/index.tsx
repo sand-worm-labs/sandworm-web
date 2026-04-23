@@ -2,10 +2,9 @@
 
 import Image from "next/image";
 
-import type { Query, QueryPagination } from "@/types";
+import type { QueryPagination, ApiDocument } from "@/types";
 import { ExploreCard } from "@/components/Explore/ExploreCard";
 import { useSession } from "@/components/Editor/hooks/useAuth";
-import type { ApiDocument } from "@/types";
 
 interface IQueryListProps {
   documents: ApiDocument[] | null;

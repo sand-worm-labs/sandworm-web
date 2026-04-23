@@ -18,6 +18,7 @@ interface FeaturedQuery {
   creator: {
     username: string;
     image: string;
+    userId: string;
   };
   stars: number;
   forks: number;
@@ -27,8 +28,6 @@ interface FeaturedQuery {
 // ⬢ Constants
 // =====================================
 const PLACEHOLDER_AVATAR = "/img/avatar/avatar1.svg";
-
-
 
 // Map ApiDocument → card props.
 // TODO(creator): resolve authorId → { username, avater } via GetUser.
@@ -43,16 +42,17 @@ function toFeaturedQuery(doc: ApiDocument): FeaturedQuery {
     title: doc.title || "Untitled",
     createdAt: new Date(doc.createdAt),
     creator: {
-      username: doc.authorId,
+      username: doc.author.username,
       image: PLACEHOLDER_AVATAR,
+      userId: doc.authorId,
     },
-    stars: 0,
-    forks: 0,
+    stars: doc.favoriteCount,
+    forks: doc.forkCount,
   };
 }
 
 // =====================================
-// ⬢ Main 
+// ⬢ Main
 // =====================================
 export function FeaturedExploreSection() {
   const { featured, featuredLoading, featuredError } = usePublicDocuments();
@@ -71,7 +71,7 @@ export function FeaturedExploreSection() {
 
   const handleClick = (_id: string) => { };
 
-  console.log(queries)
+  console.log(queries);
 
   if (featuredLoading && queries.length === 0) {
     return (

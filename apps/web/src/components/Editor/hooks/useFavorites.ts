@@ -24,10 +24,11 @@ type UseFavorites = [
 // =====================================
 // ⬢ Use Favorites
 // =====================================
-export const useFavorites = (workspaceId: string): UseFavorites => {
+export const useFavorites = (workspaceId: string | null,
+  publicDocument = false): UseFavorites => {
   const { data, loading, error } = useGetFavoriteDocumentsQuery({
-    variables: { workspaceId },
-    skip: !workspaceId,
+    variables: { workspaceId: workspaceId! },
+    skip: !workspaceId || publicDocument,
     fetchPolicy: "cache-and-network",
   });
 
@@ -47,23 +48,21 @@ export const useFavorites = (workspaceId: string): UseFavorites => {
         await addFavoriteMutation({
           variables: {
             input: {
-              workspaceId,
+              ...(publicDocument ? {} : { workspaceId: workspaceId ?? undefined }),
               documentId: docId,
             },
+            publicDocument,
           },
-          refetchQueries: [
-            {
-              query: GetFavoriteDocumentsDocument,
-              variables: { workspaceId },
-            },
-          ],
+          refetchQueries: !publicDocument && workspaceId
+            ? [{ query: GetFavoriteDocumentsDocument, variables: { workspaceId } }]
+            : [],
         });
       } catch (err) {
         console.error("Failed to favorite document:", err);
-        throw error;
+        throw err;
       }
     },
-    [workspaceId, addFavoriteMutation]
+    [workspaceId, publicDocument, addFavoriteMutation]
   );
 
   // ⬢ Remove from favorite
@@ -74,17 +73,13 @@ export const useFavorites = (workspaceId: string): UseFavorites => {
         await removeFavoriteMutation({
           variables: {
             input: {
-              workspaceId,
+              workspaceId: workspaceId ?? undefined,
               documentId: docId,
             },
+            publicDocument,
           },
-          refetchQueries: shouldRefetch
-            ? [
-                {
-                  query: GetFavoriteDocumentsDocument,
-                  variables: { workspaceId },
-                },
-              ]
+          refetchQueries: shouldRefetch && !publicDocument && workspaceId
+            ? [{ query: GetFavoriteDocumentsDocument, variables: { workspaceId } }]
             : [],
         });
       } catch (err) {
@@ -92,7 +87,7 @@ export const useFavorites = (workspaceId: string): UseFavorites => {
         throw error;
       }
     },
-    [workspaceId, removeFavoriteMutation]
+    [workspaceId, publicDocument, removeFavoriteMutation]
   );
 
   return useMemo(

@@ -1,33 +1,40 @@
-"use client"; // Required because you are using hooks
+import { Suspense } from "react";
+import { GetUserPublicDocumentsDocument, type GetUserPublicDocumentsQuery } from "@/generated/graphql";
+import { getServerClient } from "@/graphql/server";
+import { ProfilePageClient } from "@/components/Profile/ProfileClient";
+import type { ApiDocument } from "@/types";
 
-import { use } from "react"; // Import the use hook from React
-import ProfileComponent from "@/components/Profile";
-import { useUser } from "@/components/Editor/hooks/useUser";
-// import { useCurrentUser } from "@/components/Editor/hooks/useCurrentUser";
+const PAGE_SIZE = 20;
 
-// Type the params as a Promise
 interface PublicProfilePageProps {
   params: Promise<{ profile: string }>;
 }
 
-export default function PublicProfilePage({ params }: PublicProfilePageProps) {
-  // 1. Unwrap the params Promise using React's `use` hook
-  const resolvedParams = use(params);
+async function fetchInitialDocuments(userId: string) {
+  const client = await getServerClient();
+  try {
+    const { data } = await client.query<GetUserPublicDocumentsQuery>({
+      query: GetUserPublicDocumentsDocument,
+      variables: { userId, limit: PAGE_SIZE, offset: 0 },
+    });
+    return (data?.getUserPublicDocuments ?? []) as ApiDocument[];
+  } catch (err) {
+    console.error("[profile] SSR document fetch failed:", err);
+    return [] as ApiDocument[];
+  }
+}
 
-  console.log(resolvedParams, "res")
-
-  // 2. Pass the unwrapped ID to your custom hook
-  const { user, loading } = useUser({ userId: resolvedParams.profile });
-
-  // Optional: Check if the logged-in user is viewing their own public link
-  // const { currentUser } = useCurrentUser();
-  // const isMe = currentUser?.id === user?.id;
+export default async function PublicProfilePage({ params }: PublicProfilePageProps) {
+  const { profile } = await params;
+  const initialDocuments = await fetchInitialDocuments(profile);
 
   return (
-    <ProfileComponent
-      user={user}
-      isLoading={loading}
-      isOwnProfile={false} // Switch to `isMe` if using the optional check
-    />
+    <Suspense fallback={null}>
+      <ProfilePageClient
+        profileId={profile}
+        initialDocuments={initialDocuments}
+        pageSize={PAGE_SIZE}
+      />
+    </Suspense>
   );
 }

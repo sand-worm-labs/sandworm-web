@@ -1,8 +1,8 @@
 import type { ChangeEvent, KeyboardEvent } from "react";
 import React, { useState, useRef } from "react";
 import { Plus, Send, X, FileText, FileSpreadsheet } from "lucide-react";
-import { TooltipV2 } from "@/components/Editor/blocks/ToolTips";
 
+import { TooltipV2 } from "@/components/Editor/blocks/ToolTips";
 
 interface MiniChatInputProps {
   onSend?: (data: { message: string; files: File[] }) => void;
@@ -111,10 +111,12 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
 
         {/* Action Buttons */}
         <div className="flex items-center justify-between px-3 pb-3">
-      
-
-          <TooltipV2<HTMLButtonElement> title="Attach Files" active position="bottom">
-            {(ref) => (
+          <TooltipV2<HTMLButtonElement>
+            title="Attach Files"
+            active
+            position="bottom"
+          >
+            {ref => (
               <button
                 ref={ref}
                 type="button"
@@ -128,16 +130,15 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
             )}
           </TooltipV2>
 
-
-
           <button
             type="button"
             onClick={handleSend}
             disabled={(!message.trim() && files.length === 0) || disabled}
-            className={`flex items-center justify-center w-8 h-8 rounded-xl transition-colors ${message.trim() || files.length > 0
+            className={`flex items-center justify-center w-8 h-8 rounded-xl transition-colors ${
+              message.trim() || files.length > 0
                 ? "bg-[#A308F0]  hover:bg-[#A308F0]  text-white"
                 : "bg-white dark:bg-[#30302E] text-ink-400 cursor-not-allowed border border-[#DEE2E6] dark:border-border-tertiary"
-              }`}
+            }`}
             title="Send message"
             aria-label="Send message"
           >

@@ -23,7 +23,6 @@ import type { ConnectDragPreview } from "react-dnd";
 import { head } from "ramda";
 import { Transition } from "@headlessui/react";
 
-
 import type { ApiDocument } from "@/types";
 
 import { useBlockExecutions } from "../../../hooks/useBlockExecution";
