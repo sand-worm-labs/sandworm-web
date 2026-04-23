@@ -24,6 +24,7 @@ import WorkspaceSwitcher from "@/components/WorkspaceSwitcher";
 import { Binoculars } from "@/components/Assets/Menu/Binoculars";
 import { useIsMobile } from "@/hooks/useMobile";
 import { TooltipV2 } from "@/components/Editor/blocks/ToolTips";
+import { FeedbackModal } from "@/components/FeedbackModal";
 
 interface NavItem {
   name: string;
@@ -48,6 +49,7 @@ export const WorkspaceSidebar = () => {
   const [isToolsOpen, setIsToolsOpen] = useState(false);
   const isMobile = useIsMobile();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
 
   // ⬢ Constants
   // =====================================
@@ -91,11 +93,10 @@ export const WorkspaceSidebar = () => {
 
   const linkClasses = (href: string) =>
     `flex items-center gap-3 rounded-xl px-2 py-1.5 text-sm font-medium transition-colors
-     ${
-       pathname === href
-         ? "dark:bg-base-600 bg-base-600  text-primary dark:text-ink-100"
-         : "text-menu-ink dark:text-white hover:bg-base-600 dark:hover:bg-base-600 hover:text-primary   hover:text-black dark:hover:text-white"
-     }`;
+     ${pathname === href
+      ? "dark:bg-base-600 bg-base-600  text-primary dark:text-ink-100"
+      : "text-menu-ink dark:text-white hover:bg-base-600 dark:hover:bg-base-600 hover:text-primary   hover:text-black dark:hover:text-white"
+    }`;
 
   const [
     documentsState,
@@ -203,197 +204,201 @@ export const WorkspaceSidebar = () => {
   );
 
   return (
-    <aside
-      className={`
+    <>
+      <aside
+        className={`
       bg-[#FEFFFF] dark:bg-base-500 border-r border-[#E9ECEF] dark:border-border-tertiary font-body justify-between flex flex-col
       transition-all duration-300 ease-in-out relative
   
       ${isMobile ? "fixed top-0 left-0 h-full z-50 w-[17.5rem]" : "h-full"}
   
-      ${
-        isMobile
-          ? isMobileOpen
-            ? "translate-x-0"
-            : "-translate-x-full"
-          : collapsed
-            ? "w-16"
-            : "w-[17.5rem]"
-      }
+      ${isMobile
+            ? isMobileOpen
+              ? "translate-x-0"
+              : "-translate-x-full"
+            : collapsed
+              ? "w-16"
+              : "w-[17.5rem]"
+          }
     `}
-    >
-      <div>
-        <div className="flex justify-between py-[0.69rem] px-3   bg-[#F9F9F9] dark:bg-base-500 items-center">
-          {!collapsed && (
-            <Link href="/" className="flex items-center gap-2">
-              <SandwormLogo width="30" height="30" />
+      >
+        <div>
+          <div className="flex justify-between py-[0.69rem] px-3   bg-[#F9F9F9] dark:bg-base-500 items-center">
+            {!collapsed && (
+              <Link href="/" className="flex items-center gap-2">
+                <SandwormLogo width="30" height="30" />
 
-              <span className=" font-bold text-[1.05rem] uppercase font-tertiary">
-                SandWorm
-              </span>
-            </Link>
-          )}
-
-          <TooltipV2<HTMLButtonElement>
-            title={
-              isMobile
-                ? "Close sidebar"
-                : collapsed
-                  ? "Open sidebar"
-                  : "Close sidebar"
-            }
-            active
-            position="right"
-          >
-            {ref => (
-              <button
-                ref={ref}
-                type="button"
-                aria-label={
-                  isMobile
-                    ? "Close sidebar"
-                    : collapsed
-                      ? "Open sidebar"
-                      : "Close sidebar"
-                }
-                aria-expanded={isMobile ? isMobileOpen : !collapsed}
-                onClick={() => {
-                  if (isMobile) {
-                    setIsMobileOpen(false);
-                  } else {
-                    setCollapsed(!collapsed);
-                  }
-                }}
-                className="p-1 rounded hover:bg-gray-200 dark:hover:bg-[#181C21] flex items-center justify-center text-[#868E96] dark:text-ink-400"
-              >
-                <SidebarIcon />
-              </button>
+                <span className=" font-bold text-[1.05rem] uppercase font-tertiary">
+                  SandWorm
+                </span>
+              </Link>
             )}
-          </TooltipV2>
-        </div>
 
-        <WorkspaceSwitcher collapsed={collapsed} />
-        <nav className="flex-1 px-3">
-          <ul className="space-y-1.5">
-            {mainNav.map(item => (
-              <li key={item.name}>
-                <TooltipV2<HTMLAnchorElement>
-                  title={item.name.trim()}
-                  active={collapsed}
-                  position="right"
-                >
-                  {ref => (
-                    <Link
-                      ref={ref}
-                      href={item.href}
-                      aria-label={item.name.trim()}
-                      className={linkClasses(item.href)}
-                    >
-                      <item.icon
-                        size={18}
-                        className={`hover:text-[#A308F0] ${
-                          pathname === item.href
-                            ? "text-[#A308F0] dark:text-ink-100"
-                            : "text-ink-icon"
-                        }`}
-                      />
-                      {!collapsed && item.name}
-                    </Link>
-                  )}
-                </TooltipV2>
-              </li>
-            ))}
-          </ul>
-
-          <hr className="border-t-[1px] border-transparent dark:border-transparent mt-5" />
-
-          <div>
-            <button
-              type="button"
-              onClick={() => setIsToolsOpen(v => !v)}
-              className="w-full flex items-center gap-x-1 px-1 py-1 mb-1 text-[12px] font-medium  dark:text-ink-400 text-[#8C98A3] font-body"
+            <TooltipV2<HTMLButtonElement>
+              title={
+                isMobile
+                  ? "Close sidebar"
+                  : collapsed
+                    ? "Open sidebar"
+                    : "Close sidebar"
+              }
+              active
+              position="right"
             >
-              {!collapsed && (
-                <>
-                  {isToolsOpen ? (
-                    <ChevronDownIcon className="h-4 w-4" />
-                  ) : (
-                    <ChevronRightIcon className="h-4 w-4" />
-                  )}
-                  <span>More</span>
-                </>
+              {ref => (
+                <button
+                  ref={ref}
+                  type="button"
+                  aria-label={
+                    isMobile
+                      ? "Close sidebar"
+                      : collapsed
+                        ? "Open sidebar"
+                        : "Close sidebar"
+                  }
+                  aria-expanded={isMobile ? isMobileOpen : !collapsed}
+                  onClick={() => {
+                    if (isMobile) {
+                      setIsMobileOpen(false);
+                    } else {
+                      setCollapsed(!collapsed);
+                    }
+                  }}
+                  className="p-1 rounded hover:bg-gray-200 dark:hover:bg-[#181C21] flex items-center justify-center text-[#868E96] dark:text-ink-400"
+                >
+                  <SidebarIcon />
+                </button>
               )}
-            </button>
-
-            {isToolsOpen && (
-              <ul className="space-y-1.5 mt-1">
-                {toolsNav.map(item => (
-                  <li key={item.name}>
-                    <Link href={item.href} className={linkClasses(item.href)}>
-                      <item.icon
-                        size={18}
-                        color={pathname === item.href ? "#A308F0" : "#39414E"}
-                      />
-                      {!collapsed && item.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
+            </TooltipV2>
           </div>
 
-          {!collapsed && (
-            <ul>
-              {user?.role?.[0]?.[workspaceId] !== "viewer" && (
-                <button
-                  type="button"
-                  id="create-workspace-doc"
-                  onClick={onCreateDocumentHandler}
-                  className="p-2  dark:bg-base-500  rounded-xl hover:cursor-pointer text-sm border mt-3 flex px-5 items-center justify-center w-full border-[#D000FF]  text-primary mb-3 font-body font-medium  dark:border-[#A78BFA] dark:text-[#A78BFA] "
-                >
-                  {" "}
-                  <PlusSmallIcon className="h-4 w-4 mr-1 " aria-hidden="true" />
-                  <span>New Project</span>
-                </button>
-              )}
-              <div>
-                <button
-                  type="button"
-                  onClick={() => setIsSectionOpen(v => !v)}
-                  className="w-full flex items-center gap-x-1 px-1 py-1 mb-1 text-[12px] font-medium  dark:text-ink-400 text-[#8C98A3] font-body"
-                >
-                  {isSectionOpen ? (
-                    <ChevronDownIcon className="h-4 w-4" />
-                  ) : (
-                    <ChevronRightIcon className="h-4 w-4" />
-                  )}
-                  <span>Recent Projects</span>
-                </button>
-
-                {isSectionOpen && (
-                  <DocumentTree
-                    workspaceId={workspaceId}
-                    current={documentId}
-                    documents={documents}
-                    onDuplicate={onDuplicateDocument}
-                    onDelete={onDeleteDocument}
-                    onFavorite={onFavoriteDocument}
-                    onUnfavorite={onUnfavoriteDocument}
-                    role={user?.role?.[0]?.[workspaceId] ?? "viewer"}
-                    onCreate={onCreateDocument}
-                    onUpdateParent={onUpdateDocumentParent}
-                  />
-                )}
-              </div>
+          <WorkspaceSwitcher collapsed={collapsed} />
+          <nav className="flex-1 px-3">
+            <ul className="space-y-1.5">
+              {mainNav.map(item => (
+                <li key={item.name}>
+                  <TooltipV2<HTMLAnchorElement>
+                    title={item.name.trim()}
+                    active={collapsed}
+                    position="right"
+                  >
+                    {ref => (
+                      <Link
+                        ref={ref}
+                        href={item.href}
+                        aria-label={item.name.trim()}
+                        className={linkClasses(item.href)}
+                      >
+                        <item.icon
+                          size={18}
+                          className={`hover:text-[#A308F0] ${pathname === item.href
+                              ? "text-[#A308F0] dark:text-ink-100"
+                              : "text-ink-icon"
+                            }`}
+                        />
+                        {!collapsed && item.name}
+                      </Link>
+                    )}
+                  </TooltipV2>
+                </li>
+              ))}
             </ul>
-          )}
-        </nav>
-      </div>
 
-      {!collapsed && (
-        <div className="absolute bottom-0 left-0 right-0 border-t border-[#E9ECEF]  dark:border-border-tertiary py-1.5 px-1.5 bg-base-100">
-          <AccountDropdown />
+            <hr className="border-t-[1px] border-transparent dark:border-transparent mt-5" />
+
+            <div>
+              <button
+                type="button"
+                onClick={() => setIsToolsOpen(v => !v)}
+                className="w-full flex items-center gap-x-1 px-1 py-1 mb-1 text-[12px] font-medium  dark:text-ink-400 text-[#8C98A3] font-body"
+              >
+                {!collapsed && (
+                  <>
+                    {isToolsOpen ? (
+                      <ChevronDownIcon className="h-4 w-4" />
+                    ) : (
+                      <ChevronRightIcon className="h-4 w-4" />
+                    )}
+                    <span>More</span>
+                  </>
+                )}
+              </button>
+
+              {isToolsOpen && (
+                <ul className="space-y-1.5 mt-1">
+                  {toolsNav.map(item => (
+                    <li key={item.name}>
+                      <Link href={item.href} className={linkClasses(item.href)}>
+                        <item.icon
+                          size={18}
+                          color={pathname === item.href ? "#A308F0" : "#39414E"}
+                        />
+                        {!collapsed && item.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            {!collapsed && (
+              <ul>
+                {user?.role?.[0]?.[workspaceId] !== "viewer" && (
+                  <button
+                    type="button"
+                    id="create-workspace-doc"
+                    onClick={onCreateDocumentHandler}
+                    className="p-2  dark:bg-base-500  rounded-xl hover:cursor-pointer text-sm border mt-3 flex px-5 items-center justify-center w-full border-[#D000FF]  text-primary mb-3 font-body font-medium  dark:border-[#A78BFA] dark:text-[#A78BFA] "
+                  >
+                    {" "}
+                    <PlusSmallIcon className="h-4 w-4 mr-1 " aria-hidden="true" />
+                    <span>New Project</span>
+                  </button>
+                )}
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => setIsSectionOpen(v => !v)}
+                    className="w-full flex items-center gap-x-1 px-1 py-1 mb-1 text-[12px] font-medium  dark:text-ink-400 text-[#8C98A3] font-body"
+                  >
+                    {isSectionOpen ? (
+                      <ChevronDownIcon className="h-4 w-4" />
+                    ) : (
+                      <ChevronRightIcon className="h-4 w-4" />
+                    )}
+                    <span>Recent Projects</span>
+                  </button>
+
+                  {isSectionOpen && (
+                    <DocumentTree
+                      workspaceId={workspaceId}
+                      current={documentId}
+                      documents={documents}
+                      onDuplicate={onDuplicateDocument}
+                      onDelete={onDeleteDocument}
+                      onFavorite={onFavoriteDocument}
+                      onUnfavorite={onUnfavoriteDocument}
+                      role={user?.role?.[0]?.[workspaceId] ?? "viewer"}
+                      onCreate={onCreateDocument}
+                      onUpdateParent={onUpdateDocumentParent}
+                    />
+                  )}
+                </div>
+              </ul>
+            )}
+          </nav>
         </div>
-      )}
-    </aside>
+
+        {!collapsed && (
+          <div className="absolute bottom-0 left-0 right-0 border-t border-[#E9ECEF]  dark:border-border-tertiary py-1.5 px-1.5 bg-base-100">
+            <AccountDropdown onToggleFeedback={() => setIsFeedbackOpen(true)} />
+          </div>
+        )}
+
+
+      </aside>
+      <FeedbackModal isOpen={isFeedbackOpen}
+        onClose={() => setIsFeedbackOpen(false)} />
+    </>
   );
 };

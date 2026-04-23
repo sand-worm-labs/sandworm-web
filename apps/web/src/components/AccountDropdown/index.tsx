@@ -76,6 +76,7 @@ interface NavItemProps {
   onClick?: () => void;
   external?: boolean;
   suffix?: React.ReactNode;
+
 }
 
 const NavItem = ({
@@ -87,7 +88,7 @@ const NavItem = ({
   suffix,
 }: NavItemProps) => {
   const cls =
-    "flex items-center gap-3 w-full px-3 py-1.5 rounded-lg text-sm text-ink-500 dark:text-white hover:bg-[#F8F9FA] dark:hover:bg-[#ffffff08] transition-colors cursor-pointer font-body font-medium";
+    "flex items-center gap-3 w-full px-3 py-1.5 rounded-lg text-sm text-ink-500 dark:text-white hover:bg-[#F8F9FA] dark:hover:bg-[#ffffff08] transition-colors cursor-pointer font-body font-medium text-start";
 
   const inner = (
     <>
@@ -122,7 +123,11 @@ const NavItem = ({
 // =====================================
 // ⬢ Account Dropdown Main Component
 // =====================================
-export const AccountDropdown = () => {
+interface AccountDropdownProps {
+  onToggleFeedback: () => void;
+}
+
+export const AccountDropdown = ({ onToggleFeedback }: AccountDropdownProps)=> {
   const session = useSession({ redirectToLogin: true });
   const openSignIn = useModalStore(state => state.openSignIn);
   const signout = useSignout();
@@ -235,7 +240,7 @@ export const AccountDropdown = () => {
           <NavItem
             icon={<ThumbsUpIcon size={18} />}
             label="Give Feedback"
-            href="#"
+            onClick={onToggleFeedback}
           />
           <NavItem
             icon={<GearIcon size={18} />}
