@@ -136,6 +136,7 @@ export type Document = {
   icon: Scalars['String']['output'];
   id: Scalars['String']['output'];
   isDataApp: Scalars['Boolean']['output'];
+  isFavorite: Scalars['Boolean']['output'];
   isSyncedWithYjs: Scalars['Boolean']['output'];
   orderIndex: Scalars['Float']['output'];
   parent?: Maybe<Document>;
@@ -203,6 +204,10 @@ export type FavoriteDocumentInput = {
   workspaceId?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type FavoritePublicDocumentInput = {
+  documentId: Scalars['String']['input'];
+};
+
 export type ForkDocumentInput = {
   documentId: Scalars['String']['input'];
   targetWorkspaceId: Scalars['String']['input'];
@@ -240,8 +245,10 @@ export type Mutation = {
   __typename?: 'Mutation';
   /** Accept workspace invitation with hash from email */
   acceptWorkspaceInvitation: Scalars['Boolean']['output'];
-  /** Mark a document as a favorite */
-  addFavoriteDocument: Document;
+  /** Mark a public document as a favorite */
+  addPublicFavoriteDocument: Document;
+  /** Mark a document as a favorite in workspace */
+  addWorkspaceFavoriteDocument: Document;
   /** Approve a pending role request */
   approveRoleRequest: Scalars['Boolean']['output'];
   /** Remove multiple users from workspaces */
@@ -295,9 +302,11 @@ export type Mutation = {
   /** Reject a pending role request */
   rejectRoleRequest: Scalars['Boolean']['output'];
   /** Unmark a document as a favorite */
-  removeFavoriteDocument: Document;
+  removePublicFavoriteDocument: Document;
   /** Remove a user from workspace */
   removeUserFromWorkspace: Scalars['Boolean']['output'];
+  /** Unmark a document as a favorite */
+  removeWorkspaceFavoriteDocument: Document;
   /** Request a role upgrade in a workspace */
   requestRoleUpgrade: Scalars['Boolean']['output'];
   /** Restart the Jupyter environment */
@@ -343,9 +352,13 @@ export type MutationAcceptWorkspaceInvitationArgs = {
 };
 
 
-export type MutationAddFavoriteDocumentArgs = {
+export type MutationAddPublicFavoriteDocumentArgs = {
+  input: FavoritePublicDocumentInput;
+};
+
+
+export type MutationAddWorkspaceFavoriteDocumentArgs = {
   input: FavoriteDocumentInput;
-  publicDocument?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -494,15 +507,19 @@ export type MutationRejectRoleRequestArgs = {
 };
 
 
-export type MutationRemoveFavoriteDocumentArgs = {
-  input: FavoriteDocumentInput;
-  publicDocument?: InputMaybe<Scalars['Boolean']['input']>;
+export type MutationRemovePublicFavoriteDocumentArgs = {
+  input: FavoritePublicDocumentInput;
 };
 
 
 export type MutationRemoveUserFromWorkspaceArgs = {
   userId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
+};
+
+
+export type MutationRemoveWorkspaceFavoriteDocumentArgs = {
+  input: FavoriteDocumentInput;
 };
 
 
@@ -1274,19 +1291,31 @@ export type PublishDocumentMutation = { __typename?: 'Mutation', publishDocument
 
 export type AddFavoriteDocumentMutationVariables = Exact<{
   input: FavoriteDocumentInput;
-  publicDocument?: InputMaybe<Scalars['Boolean']['input']>;
 }>;
 
 
-export type AddFavoriteDocumentMutation = { __typename?: 'Mutation', addFavoriteDocument: { __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, forkCount: number, favoriteCount: number } };
+export type AddFavoriteDocumentMutation = { __typename?: 'Mutation', addWorkspaceFavoriteDocument: { __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, forkCount: number, favoriteCount: number } };
 
 export type RemoveFavoriteDocumentMutationVariables = Exact<{
   input: FavoriteDocumentInput;
-  publicDocument?: InputMaybe<Scalars['Boolean']['input']>;
 }>;
 
 
-export type RemoveFavoriteDocumentMutation = { __typename?: 'Mutation', removeFavoriteDocument: { __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, forkCount: number, favoriteCount: number } };
+export type RemoveFavoriteDocumentMutation = { __typename?: 'Mutation', removeWorkspaceFavoriteDocument: { __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, forkCount: number, favoriteCount: number } };
+
+export type AddPublicFavoriteDocumentMutationVariables = Exact<{
+  input: FavoritePublicDocumentInput;
+}>;
+
+
+export type AddPublicFavoriteDocumentMutation = { __typename?: 'Mutation', addPublicFavoriteDocument: { __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, forkCount: number, favoriteCount: number } };
+
+export type RemovePublicFavoriteDocumentMutationVariables = Exact<{
+  input: FavoritePublicDocumentInput;
+}>;
+
+
+export type RemovePublicFavoriteDocumentMutation = { __typename?: 'Mutation', removePublicFavoriteDocument: { __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, forkCount: number, favoriteCount: number } };
 
 export type RestartEnvironmentMutationVariables = Exact<{
   input: RestartEnvironmentInput;
@@ -2580,8 +2609,8 @@ export type PublishDocumentMutationHookResult = ReturnType<typeof usePublishDocu
 export type PublishDocumentMutationResult = Apollo.MutationResult<PublishDocumentMutation>;
 export type PublishDocumentMutationOptions = Apollo.BaseMutationOptions<PublishDocumentMutation, PublishDocumentMutationVariables>;
 export const AddFavoriteDocumentDocument = gql`
-    mutation AddFavoriteDocument($input: FavoriteDocumentInput!, $publicDocument: Boolean = false) {
-  addFavoriteDocument(input: $input, publicDocument: $publicDocument) {
+    mutation AddFavoriteDocument($input: FavoriteDocumentInput!) {
+  addWorkspaceFavoriteDocument(input: $input) {
     ...DocumentFields
   }
 }
@@ -2602,7 +2631,6 @@ export type AddFavoriteDocumentMutationFn = Apollo.MutationFunction<AddFavoriteD
  * const [addFavoriteDocumentMutation, { data, loading, error }] = useAddFavoriteDocumentMutation({
  *   variables: {
  *      input: // value for 'input'
- *      publicDocument: // value for 'publicDocument'
  *   },
  * });
  */
@@ -2614,8 +2642,8 @@ export type AddFavoriteDocumentMutationHookResult = ReturnType<typeof useAddFavo
 export type AddFavoriteDocumentMutationResult = Apollo.MutationResult<AddFavoriteDocumentMutation>;
 export type AddFavoriteDocumentMutationOptions = Apollo.BaseMutationOptions<AddFavoriteDocumentMutation, AddFavoriteDocumentMutationVariables>;
 export const RemoveFavoriteDocumentDocument = gql`
-    mutation RemoveFavoriteDocument($input: FavoriteDocumentInput!, $publicDocument: Boolean = false) {
-  removeFavoriteDocument(input: $input, publicDocument: $publicDocument) {
+    mutation RemoveFavoriteDocument($input: FavoriteDocumentInput!) {
+  removeWorkspaceFavoriteDocument(input: $input) {
     ...DocumentFields
   }
 }
@@ -2636,7 +2664,6 @@ export type RemoveFavoriteDocumentMutationFn = Apollo.MutationFunction<RemoveFav
  * const [removeFavoriteDocumentMutation, { data, loading, error }] = useRemoveFavoriteDocumentMutation({
  *   variables: {
  *      input: // value for 'input'
- *      publicDocument: // value for 'publicDocument'
  *   },
  * });
  */
@@ -2647,6 +2674,72 @@ export function useRemoveFavoriteDocumentMutation(baseOptions?: Apollo.MutationH
 export type RemoveFavoriteDocumentMutationHookResult = ReturnType<typeof useRemoveFavoriteDocumentMutation>;
 export type RemoveFavoriteDocumentMutationResult = Apollo.MutationResult<RemoveFavoriteDocumentMutation>;
 export type RemoveFavoriteDocumentMutationOptions = Apollo.BaseMutationOptions<RemoveFavoriteDocumentMutation, RemoveFavoriteDocumentMutationVariables>;
+export const AddPublicFavoriteDocumentDocument = gql`
+    mutation AddPublicFavoriteDocument($input: FavoritePublicDocumentInput!) {
+  addPublicFavoriteDocument(input: $input) {
+    ...DocumentFields
+  }
+}
+    ${DocumentFieldsFragmentDoc}`;
+export type AddPublicFavoriteDocumentMutationFn = Apollo.MutationFunction<AddPublicFavoriteDocumentMutation, AddPublicFavoriteDocumentMutationVariables>;
+
+/**
+ * __useAddPublicFavoriteDocumentMutation__
+ *
+ * To run a mutation, you first call `useAddPublicFavoriteDocumentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddPublicFavoriteDocumentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addPublicFavoriteDocumentMutation, { data, loading, error }] = useAddPublicFavoriteDocumentMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useAddPublicFavoriteDocumentMutation(baseOptions?: Apollo.MutationHookOptions<AddPublicFavoriteDocumentMutation, AddPublicFavoriteDocumentMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AddPublicFavoriteDocumentMutation, AddPublicFavoriteDocumentMutationVariables>(AddPublicFavoriteDocumentDocument, options);
+      }
+export type AddPublicFavoriteDocumentMutationHookResult = ReturnType<typeof useAddPublicFavoriteDocumentMutation>;
+export type AddPublicFavoriteDocumentMutationResult = Apollo.MutationResult<AddPublicFavoriteDocumentMutation>;
+export type AddPublicFavoriteDocumentMutationOptions = Apollo.BaseMutationOptions<AddPublicFavoriteDocumentMutation, AddPublicFavoriteDocumentMutationVariables>;
+export const RemovePublicFavoriteDocumentDocument = gql`
+    mutation RemovePublicFavoriteDocument($input: FavoritePublicDocumentInput!) {
+  removePublicFavoriteDocument(input: $input) {
+    ...DocumentFields
+  }
+}
+    ${DocumentFieldsFragmentDoc}`;
+export type RemovePublicFavoriteDocumentMutationFn = Apollo.MutationFunction<RemovePublicFavoriteDocumentMutation, RemovePublicFavoriteDocumentMutationVariables>;
+
+/**
+ * __useRemovePublicFavoriteDocumentMutation__
+ *
+ * To run a mutation, you first call `useRemovePublicFavoriteDocumentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRemovePublicFavoriteDocumentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [removePublicFavoriteDocumentMutation, { data, loading, error }] = useRemovePublicFavoriteDocumentMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useRemovePublicFavoriteDocumentMutation(baseOptions?: Apollo.MutationHookOptions<RemovePublicFavoriteDocumentMutation, RemovePublicFavoriteDocumentMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RemovePublicFavoriteDocumentMutation, RemovePublicFavoriteDocumentMutationVariables>(RemovePublicFavoriteDocumentDocument, options);
+      }
+export type RemovePublicFavoriteDocumentMutationHookResult = ReturnType<typeof useRemovePublicFavoriteDocumentMutation>;
+export type RemovePublicFavoriteDocumentMutationResult = Apollo.MutationResult<RemovePublicFavoriteDocumentMutation>;
+export type RemovePublicFavoriteDocumentMutationOptions = Apollo.BaseMutationOptions<RemovePublicFavoriteDocumentMutation, RemovePublicFavoriteDocumentMutationVariables>;
 export const RestartEnvironmentDocument = gql`
     mutation RestartEnvironment($input: RestartEnvironmentInput!) {
   restartEnvironment(input: $input) {
