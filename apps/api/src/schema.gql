@@ -12,7 +12,6 @@ type User {
   isOnboarded: Boolean!
   avater: String
   createdAt: DateTime
-  isFollowing(followerId: String!): Boolean!
   settings: UserSetting
   followers: [User!]!
   following: [User!]!
@@ -286,6 +285,9 @@ type Query {
 
   """Users that a given user is following"""
   getUserFollowing(userId: String!): [User!]!
+
+  """Auth user is following a userid """
+  isFollowing(followerId: String!): Boolean!
 
   """Get environment details for a workspace"""
   environment(workspaceId: String!): Environment!
