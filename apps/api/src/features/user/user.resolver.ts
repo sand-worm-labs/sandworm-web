@@ -125,13 +125,16 @@ export class UserResolver {
     return User.fromEntities(following);
   }
 
-  @ResolveField(() => Boolean)
+  @Query(() => Boolean, {
+    name: 'isFollowing',
+    description: 'Auth user is following a userid ',
+  })
   async isFollowing(
-    @Parent() user: User,
+    @CurrentUser('id') userId: string,
     @Args('followerId', { type: () => String }) followerId: string,
   ): Promise<boolean> {
     if (!followerId) return false;
-    return this.userService.isFollowing(user.id, followerId);
+    return this.userService.isFollowing(userId, followerId);
   }
 
   @ResolveField(() => UserSetting, { nullable: true })

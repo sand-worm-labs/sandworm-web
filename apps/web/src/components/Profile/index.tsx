@@ -42,6 +42,7 @@ interface ProfileComponentProps {
   isOwnProfile?: boolean;
   initialDocuments?: ApiDocument[];
   pageSize?: number;
+  isFollowing: boolean;
 }
 
 // =====================================
@@ -53,9 +54,11 @@ const ProfileComponent = ({
   isOwnProfile = false,
   initialDocuments = [],
   pageSize = 20,
+  isFollowing
 }: ProfileComponentProps) => {
   const [optimisticFollowing, setOptimisticFollowing] = useState<boolean | null>(null);
-  const isFollowing = optimisticFollowing ?? user?.isFollowing ?? false;
+  const currentFollowing =
+    optimisticFollowing ?? isFollowing ?? false;
   const { follow, unfollow, mutationLoading } = useUser({
     userId: user?.id,
     skip: isOwnProfile || !user?.id,
@@ -133,7 +136,7 @@ const ProfileComponent = ({
       }
       : null;
 
-  console.log(user, user?.isFollowing, "isfo")
+  console.log(user, "isfo")
 
   return (
     <>
@@ -198,10 +201,11 @@ const ProfileComponent = ({
                           <button
                             type="button"
                             onClick={async () => {
-                              const next = !isFollowing;
+                              const next = !currentFollowing;
                               setOptimisticFollowing(next);
+
                               try {
-                                if (isFollowing) {
+                                if (currentFollowing) {
                                   await unfollow();
                                 } else {
                                   await follow();
@@ -211,12 +215,12 @@ const ProfileComponent = ({
                               }
                             }}
                             disabled={mutationLoading}
-                            className={`flex items-center gap-2 px-6 py-2 rounded-xl font-medium transition-colors text-sm ${isFollowing
-                                ? "bg-[#E9ECEF] dark:bg-[#262A30] text-ink-100 dark:text-white hover:bg-opacity-80"
-                                : "bg-black text-white hover:bg-opacity-90"
+                            className={`flex items-center gap-2 px-6 py-2 rounded-xl font-medium transition-colors text-sm ${currentFollowing
+                              ? "bg-[#E9ECEF] dark:bg-[#262A30] text-ink-100 dark:text-white hover:bg-opacity-80"
+                              : "bg-black text-white hover:bg-opacity-90"
                               }`}
                           >
-                            {isFollowing ? (
+                            {currentFollowing ? (
                               <>
                                 <UserMinus className="w-4 h-4" /> Unfollow
                               </>

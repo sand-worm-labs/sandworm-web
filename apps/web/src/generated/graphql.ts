@@ -720,6 +720,8 @@ export type Query = {
   getWorkspaceDocuments: Array<Document>;
   /** Get workspace members */
   getWorkspaceMembers: Array<WorkspaceMember>;
+  /** Auth user is following a userid  */
+  isFollowing: Scalars['Boolean']['output'];
   /** List all files in a workspace */
   listFiles: Array<SandwormFile>;
   /** Get OpenRouter account credit usage */
@@ -873,6 +875,11 @@ export type QueryGetWorkspaceDocumentsArgs = {
 
 export type QueryGetWorkspaceMembersArgs = {
   workspaceId: Scalars['String']['input'];
+};
+
+
+export type QueryIsFollowingArgs = {
+  followerId: Scalars['String']['input'];
 };
 
 
@@ -1045,16 +1052,10 @@ export type User = {
   followingCount: Scalars['Int']['output'];
   fullName?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
-  isFollowing: Scalars['Boolean']['output'];
   isOnboarded: Scalars['Boolean']['output'];
   lastName?: Maybe<Scalars['String']['output']>;
   settings?: Maybe<UserSetting>;
   username?: Maybe<Scalars['String']['output']>;
-};
-
-
-export type UserIsFollowingArgs = {
-  followerId: Scalars['String']['input'];
 };
 
 export type UserSetting = {
@@ -1655,6 +1656,13 @@ export type GetUserQueryVariables = Exact<{
 
 export type GetUserQuery = { __typename?: 'Query', getUser: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, fullName?: string | null, isOnboarded: boolean, avater?: string | null, createdAt?: any | null, followersCount: number, followingCount: number, settings?: { __typename?: 'UserSetting', id: string, userId: string, socialLinks?: any | null, statusText?: string | null, statusUpdatedAt?: any | null, wallets: Array<any> } | null, followers: Array<{ __typename?: 'User', id: string, username?: string | null, fullName?: string | null, avater?: string | null }>, following: Array<{ __typename?: 'User', id: string, username?: string | null, fullName?: string | null, avater?: string | null }> } };
 
+export type GetUserProfileQueryVariables = Exact<{
+  userId: Scalars['String']['input'];
+}>;
+
+
+export type GetUserProfileQuery = { __typename?: 'Query', isFollowing: boolean, getUser: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, fullName?: string | null, isOnboarded: boolean, avater?: string | null, createdAt?: any | null, followersCount: number, followingCount: number, settings?: { __typename?: 'UserSetting', id: string, userId: string, socialLinks?: any | null, statusText?: string | null, statusUpdatedAt?: any | null, wallets: Array<any> } | null, followers: Array<{ __typename?: 'User', id: string, username?: string | null, fullName?: string | null, avater?: string | null }>, following: Array<{ __typename?: 'User', id: string, username?: string | null, fullName?: string | null, avater?: string | null }> } };
+
 export type GetForkedDocumentsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -1668,6 +1676,13 @@ export type GetUserPublicDocumentsQueryVariables = Exact<{
 
 
 export type GetUserPublicDocumentsQuery = { __typename?: 'Query', getUserPublicDocuments: Array<{ __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, forkCount: number, favoriteCount: number, isFavorite: boolean, author?: { __typename?: 'User', username?: string | null, firstName?: string | null, lastName?: string | null, avater?: string | null } | null }> };
+
+export type IsFollowingQueryVariables = Exact<{
+  userId: Scalars['String']['input'];
+}>;
+
+
+export type IsFollowingQuery = { __typename?: 'Query', isFollowing: boolean };
 
 export type GetUserWorkspaceInfoQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -4693,6 +4708,77 @@ export type GetUserQueryHookResult = ReturnType<typeof useGetUserQuery>;
 export type GetUserLazyQueryHookResult = ReturnType<typeof useGetUserLazyQuery>;
 export type GetUserSuspenseQueryHookResult = ReturnType<typeof useGetUserSuspenseQuery>;
 export type GetUserQueryResult = Apollo.QueryResult<GetUserQuery, GetUserQueryVariables>;
+export const GetUserProfileDocument = gql`
+    query GetUserProfile($userId: String!) {
+  getUser(userId: $userId) {
+    id
+    username
+    email
+    firstName
+    lastName
+    fullName
+    isOnboarded
+    avater
+    createdAt
+    settings {
+      id
+      userId
+      socialLinks
+      statusText
+      statusUpdatedAt
+      wallets
+    }
+    followers {
+      id
+      username
+      fullName
+      avater
+    }
+    following {
+      id
+      username
+      fullName
+      avater
+    }
+    followersCount
+    followingCount
+  }
+  isFollowing(followerId: $userId)
+}
+    `;
+
+/**
+ * __useGetUserProfileQuery__
+ *
+ * To run a query within a React component, call `useGetUserProfileQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUserProfileQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUserProfileQuery({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useGetUserProfileQuery(baseOptions: Apollo.QueryHookOptions<GetUserProfileQuery, GetUserProfileQueryVariables> & ({ variables: GetUserProfileQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetUserProfileQuery, GetUserProfileQueryVariables>(GetUserProfileDocument, options);
+      }
+export function useGetUserProfileLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserProfileQuery, GetUserProfileQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetUserProfileQuery, GetUserProfileQueryVariables>(GetUserProfileDocument, options);
+        }
+export function useGetUserProfileSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetUserProfileQuery, GetUserProfileQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetUserProfileQuery, GetUserProfileQueryVariables>(GetUserProfileDocument, options);
+        }
+export type GetUserProfileQueryHookResult = ReturnType<typeof useGetUserProfileQuery>;
+export type GetUserProfileLazyQueryHookResult = ReturnType<typeof useGetUserProfileLazyQuery>;
+export type GetUserProfileSuspenseQueryHookResult = ReturnType<typeof useGetUserProfileSuspenseQuery>;
+export type GetUserProfileQueryResult = Apollo.QueryResult<GetUserProfileQuery, GetUserProfileQueryVariables>;
 export const GetForkedDocumentsDocument = gql`
     query GetForkedDocuments {
   getForkedDocuments {
@@ -4817,6 +4903,44 @@ export type GetUserPublicDocumentsQueryHookResult = ReturnType<typeof useGetUser
 export type GetUserPublicDocumentsLazyQueryHookResult = ReturnType<typeof useGetUserPublicDocumentsLazyQuery>;
 export type GetUserPublicDocumentsSuspenseQueryHookResult = ReturnType<typeof useGetUserPublicDocumentsSuspenseQuery>;
 export type GetUserPublicDocumentsQueryResult = Apollo.QueryResult<GetUserPublicDocumentsQuery, GetUserPublicDocumentsQueryVariables>;
+export const IsFollowingDocument = gql`
+    query IsFollowing($userId: String!) {
+  isFollowing(followerId: $userId)
+}
+    `;
+
+/**
+ * __useIsFollowingQuery__
+ *
+ * To run a query within a React component, call `useIsFollowingQuery` and pass it any options that fit your needs.
+ * When your component renders, `useIsFollowingQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useIsFollowingQuery({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useIsFollowingQuery(baseOptions: Apollo.QueryHookOptions<IsFollowingQuery, IsFollowingQueryVariables> & ({ variables: IsFollowingQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<IsFollowingQuery, IsFollowingQueryVariables>(IsFollowingDocument, options);
+      }
+export function useIsFollowingLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<IsFollowingQuery, IsFollowingQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<IsFollowingQuery, IsFollowingQueryVariables>(IsFollowingDocument, options);
+        }
+export function useIsFollowingSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<IsFollowingQuery, IsFollowingQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<IsFollowingQuery, IsFollowingQueryVariables>(IsFollowingDocument, options);
+        }
+export type IsFollowingQueryHookResult = ReturnType<typeof useIsFollowingQuery>;
+export type IsFollowingLazyQueryHookResult = ReturnType<typeof useIsFollowingLazyQuery>;
+export type IsFollowingSuspenseQueryHookResult = ReturnType<typeof useIsFollowingSuspenseQuery>;
+export type IsFollowingQueryResult = Apollo.QueryResult<IsFollowingQuery, IsFollowingQueryVariables>;
 export const GetUserWorkspaceInfoDocument = gql`
     query GetUserWorkspaceInfo {
   getUserWorkspaceInfo {
