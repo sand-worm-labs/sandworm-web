@@ -385,7 +385,8 @@ export class DocumentService {
     }
 
     document.publishedAt = new Date();
-    document.visibility = DocumentVisibility.PUBLIC;
+    this.yjsDocumentService.publishDocument(documentId);
+    //document.visibility = DocumentVisibility.PUBLIC;
 
     await this.documentRepository.save(document);
 
@@ -407,7 +408,8 @@ export class DocumentService {
     }
 
     document.publishedAt = null;
-    document.visibility = DocumentVisibility.WORKSPACE;
+    //this.yjsDocumentService.unpublishDocument(documentId);
+    //document.visibility = DocumentVisibility.WORKSPACE;
 
     await this.documentRepository.save(document);
 
