@@ -266,7 +266,7 @@ export function useYDoc(
   useEffect(() => {
     if (syncing) {
       console.time(`${documentId} sync`);
-      return () => { };
+      return () => {};
     }
 
     console.timeEnd(`${documentId} sync`);

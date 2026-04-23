@@ -1,3 +1,11 @@
+
+
+mutation ForkDocument($input: ForkDocumentInput!) {
+  forkDocument(input: $input) {
+    ...DocumentFields
+  }
+}
+
 query GetDocument($workspaceId: String!, $documentId: String!) {
   getDocument(workspaceId: $workspaceId, documentId: $documentId) {
     id
@@ -26,6 +34,19 @@ query GetDocument($workspaceId: String!, $documentId: String!) {
   }
 }
 
+query GetExplorerDocuments($limit: Float = 20, $offset: Float = 0) {
+  getExplorerDocuments(limit: $limit, offset: $offset) {
+      ...DocumentFields
+      author{
+      username
+      firstName
+      lastName
+      avater
+      }
+  }
+}
+
+
 query GetFavoriteDocuments($workspaceId: String!) {
   getFavoriteDocuments(workspaceId: $workspaceId) {
     id
@@ -51,5 +72,56 @@ query GetFavoriteDocuments($workspaceId: String!) {
     runSQLSelection
     runUnexecutedBlocks
     shareLinksWithoutSidebar
+  }
+}
+
+# Get Featured Documents
+query GetFeaturedDocuments($limit: Float = 4) {
+  getFeaturedDocuments(limit: $limit) {
+      ...DocumentFields
+      author{
+      username
+      firstName
+      lastName
+      avater
+    }
+  }
+}
+
+
+# 4. Get Trending Published Documents
+query GetTrendingPublishedDocuments($limit: Float = 20, $offset: Float = 0) {
+  getTrendingPublishedDocuments(limit: $limit, offset: $offset) {
+       ...DocumentFields
+      author{
+      username
+      firstName
+      lastName
+      avater
+    }
+  }
+}
+
+query GetUserFavoritePublicDocuments{
+    favoritePublicDocuments {
+      ...DocumentFields
+      author{
+      username
+      firstName
+      lastName
+      avater
+    }
+  }
+}
+
+query GetUserForkedPublicDocuments {
+    getForkedDocuments  {
+     ...DocumentFields
+      author{
+      username
+      firstName
+      lastName
+      avater
+    }
   }
 }

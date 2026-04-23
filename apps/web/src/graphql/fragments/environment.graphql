@@ -1,0 +1,15 @@
+fragment EnvironmentVariableFields on EnvironmentVariable {
+  id
+  name
+  value
+  workspaceId
+  updatedAt
+}
+
+fragment EnvironmentFields on Environment {
+  id
+  workspaceId
+  status
+  resourceVersion
+  lastActivityAt
+}
