@@ -148,16 +148,15 @@ mutation PublishDocument($workspaceId: String!, $documentId: String!) {
   }
 }
 
-mutation AddFavoriteDocument($input: FavoriteDocumentInput!, $publicDocument: Boolean = false) {
-  addFavoriteDocument(input: $input, publicDocument: $publicDocument) {
+mutation AddFavoriteDocument($input: FavoriteDocumentInput) {
+  addFavoriteDocument(input: $input) {
     ...DocumentFields
   }
 }
 
-mutation RemoveFavoriteDocument($input: FavoriteDocumentInput!, $publicDocument: Boolean = false) {
-  removeFavoriteDocument(input: $input, publicDocument: $publicDocument) {
+mutation RemoveFavoriteDocument($input: FavoriteDocumentInput!) {
+  removeFavoriteDocument(input: $input) {
     ...DocumentFields
-    
   }
 }
 

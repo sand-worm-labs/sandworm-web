@@ -124,6 +124,7 @@ type Document {
   author: User
   forkCount: Int!
   favoriteCount: Int!
+  isFavorite: Boolean!
 }
 
 type Environment {
@@ -454,11 +455,17 @@ type Mutation {
   """Create a duplicate of a document in the same workspace"""
   duplicateDocument(input: DuplicateDocumentInput!): Document!
 
-  """Mark a document as a favorite"""
-  addFavoriteDocument(input: FavoriteDocumentInput!, publicDocument: Boolean = false): Document!
+  """Mark a document as a favorite in workspace"""
+  addWorkspaceFavoriteDocument(input: FavoriteDocumentInput!): Document!
+
+  """Mark a public document as a favorite"""
+  addPublicFavoriteDocument(input: FavoritePublicDocumentInput!): Document!
 
   """Unmark a document as a favorite"""
-  removeFavoriteDocument(input: FavoriteDocumentInput!, publicDocument: Boolean = false): Document!
+  removeWorkspaceFavoriteDocument(input: FavoriteDocumentInput!, publicDocument: Boolean = false): Document!
+
+  """Unmark a document as a favorite"""
+  removePublicFavoriteDocument(input: FavoritePublicDocumentInput!): Document!
 
   """Publish a document"""
   publishDocument(workspaceId: String!, documentId: String!): Document!
@@ -652,6 +659,10 @@ input DuplicateDocumentInput {
 
 input FavoriteDocumentInput {
   workspaceId: String
+  documentId: String!
+}
+
+input FavoritePublicDocumentInput {
   documentId: String!
 }
 
