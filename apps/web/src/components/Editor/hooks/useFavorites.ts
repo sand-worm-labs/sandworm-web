@@ -48,12 +48,11 @@ export const useFavorites = (workspaceId: string | null,
         await addFavoriteMutation({
           variables: {
             input: {
-              ...(publicDocument ? {} : { workspaceId: workspaceId ?? undefined }),
+              workspaceId: workspaceId,
               documentId: docId,
             },
-            publicDocument,
           },
-          refetchQueries: !publicDocument && workspaceId
+          refetchQueries: workspaceId
             ? [{ query: GetFavoriteDocumentsDocument, variables: { workspaceId } }]
             : [],
         });
@@ -76,9 +75,8 @@ export const useFavorites = (workspaceId: string | null,
               workspaceId: workspaceId ?? undefined,
               documentId: docId,
             },
-            publicDocument,
           },
-          refetchQueries: shouldRefetch && !publicDocument && workspaceId
+          refetchQueries: shouldRefetch && workspaceId
             ? [{ query: GetFavoriteDocumentsDocument, variables: { workspaceId } }]
             : [],
         });

@@ -19,9 +19,11 @@ import { User } from './model/graphql/user.model';
 import { UserService } from './user.service';
 import { UserSetting } from './model/graphql/user-setting.model';
 import { AuthPayload } from '../auth/graphql/models/auth-payload';
+import { Logger } from '@nestjs/common';
 
 @Resolver(() => User)
 export class UserResolver {
+  private readonly logger = new Logger(UserResolver.name);
   constructor(private readonly userService: UserService) { }
 
   @Query(() => AuthPayload, {
@@ -126,10 +128,10 @@ export class UserResolver {
   @ResolveField(() => Boolean)
   async isFollowing(
     @Parent() user: User,
-    @CurrentUser('id') followerId: string,
+    @Args('followerId', { type: () => String }) followerId: string,
   ): Promise<boolean> {
     if (!followerId) return false;
-    return this.userService.isFollowing(followerId, user.id);
+    return this.userService.isFollowing(user.id, followerId);
   }
 
   @ResolveField(() => UserSetting, { nullable: true })
@@ -158,5 +160,5 @@ export class UserResolver {
   @ResolveField(() => Int, { name: 'followingCount' })
   async followingCount(@Parent() user: User): Promise<number> {
     return await this.userService.getUserFollowingCount(user.id);
-  } 
+  }
 }

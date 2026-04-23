@@ -12,7 +12,7 @@ type User {
   isOnboarded: Boolean!
   avater: String
   createdAt: DateTime
-  isFollowing: Boolean!
+  isFollowing(followerId: String!): Boolean!
   settings: UserSetting
   followers: [User!]!
   following: [User!]!
@@ -462,7 +462,7 @@ type Mutation {
   addPublicFavoriteDocument(input: FavoritePublicDocumentInput!): Document!
 
   """Unmark a document as a favorite"""
-  removeWorkspaceFavoriteDocument(input: FavoriteDocumentInput!, publicDocument: Boolean = false): Document!
+  removeWorkspaceFavoriteDocument(input: FavoriteDocumentInput!): Document!
 
   """Unmark a document as a favorite"""
   removePublicFavoriteDocument(input: FavoritePublicDocumentInput!): Document!
