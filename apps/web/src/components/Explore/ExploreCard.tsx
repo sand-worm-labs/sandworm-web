@@ -10,6 +10,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useState } from "react";
 import { useStringQuery } from "../Editor/hooks/useQueryArgs";
 import { useForkDocument } from "../Editor/hooks/usePublicDocuments";
 import { useFavorites } from "../Editor/hooks/useFavorites";
@@ -33,12 +34,16 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
 
   const { forkDocument, loading: forking } = useForkDocument();
 
-  const [favoritedIds, { favoriteDocument, unfavoriteDocument }] = useFavorites(
+  const [, { favoriteDocument, unfavoriteDocument }] = useFavorites(
     workspaceId,
     true
   );
 
-  const isFavorited = favoritedIds.has(query.id);
+  console.log(query, "dd")
+
+  // ⬢ Derive state from document props
+  const [isFavorited, setIsFavorited] = useState(query.isFavorite ?? false);
+  const [favoriteCount, setFavoriteCount] = useState(query.favoriteCount ?? 0);
 
   // ⬢ Fork
   // =====================================
@@ -52,10 +57,6 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
 
     try {
       const forked = await forkDocument(query.id, workspaceId);
-
-      console.log(query.id, workspaceId)
-
-      console.log(forked, "forked")
 
       if (!forked?.id) throw new Error("Fork returned no document.");
 
@@ -75,8 +76,13 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
       return;
     }
 
+    // Optimistic update
+    const wasFavorited = isFavorited;
+    setIsFavorited(!wasFavorited);
+    setFavoriteCount((c) => (wasFavorited ? c - 1 : c + 1));
+
     try {
-      if (isFavorited) {
+      if (wasFavorited) {
         await unfavoriteDocument(query.id);
         toast.success("Removed from favorites.");
       } else {
@@ -84,6 +90,9 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
         toast.success("Added to favorites.");
       }
     } catch {
+      // Revert on failure
+      setIsFavorited(wasFavorited);
+      setFavoriteCount((c) => (wasFavorited ? c + 1 : c - 1));
       toast.error("Failed to update favorites. Please try again.");
     }
   };
@@ -143,12 +152,12 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
                 className="flex items-center gap-1 group"
                 aria-label={isFavorited ? "Unfavorite" : "Favorite"}
               >
-                <span>{query.favoriteCount}</span>
+                <span>{favoriteCount}</span>
                 <Star
                   className={cn(
                     "h-4 w-4 transition-colors",
                     isFavorited
-                      ? "fill-yellow-400 text-yellow-400"
+                      ? "fill-primary text-primary"
                       : "text-ink-300 dark:text-ink-300 group-hover:text-yellow-400"
                   )}
                   strokeWidth={1.2}
@@ -180,4 +189,4 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
       {viewMode === "detailed" && <div className="px-5 pb-4 text-sm" />}
     </div>
   );
-}
+};

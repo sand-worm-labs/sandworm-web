@@ -23,4 +23,5 @@ fragment DocumentFields on Document {
   userAppClock
   forkCount
   favoriteCount
+  isFavorite
 }

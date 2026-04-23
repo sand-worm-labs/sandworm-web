@@ -3,6 +3,8 @@ import { useCallback, useMemo } from "react";
 import {
   useAddFavoriteDocumentMutation,
   useRemoveFavoriteDocumentMutation,
+  useAddPublicFavoriteDocumentMutation,
+  useRemovePublicFavoriteDocumentMutation,
   useGetFavoriteDocumentsQuery,
   GetFavoriteDocumentsDocument,
 } from "@/generated/graphql";
@@ -24,19 +26,26 @@ type UseFavorites = [
 // =====================================
 // ⬢ Use Favorites
 // =====================================
-export const useFavorites = (workspaceId: string | null,
-  publicDocument = false): UseFavorites => {
+export const useFavorites = (
+  workspaceId: string | null,
+  publicDocument = false
+): UseFavorites => {
   const { data, loading, error } = useGetFavoriteDocumentsQuery({
     variables: { workspaceId: workspaceId! },
     skip: !workspaceId || publicDocument,
     fetchPolicy: "cache-and-network",
   });
 
+  // Workspace mutations
   const [addFavoriteMutation] = useAddFavoriteDocumentMutation();
   const [removeFavoriteMutation] = useRemoveFavoriteDocumentMutation();
 
+  // Public mutations
+  const [addPublicFavoriteMutation] = useAddPublicFavoriteDocumentMutation();
+  const [removePublicFavoriteMutation] = useRemovePublicFavoriteDocumentMutation();
+
   const favorites = useMemo(
-    () => data?.getFavoriteDocuments?.map(doc => doc.id) ?? [],
+    () => data?.getFavoriteDocuments?.map((doc) => doc.id) ?? [],
     [data]
   );
 
@@ -45,23 +54,31 @@ export const useFavorites = (workspaceId: string | null,
   const favoriteDocument = useCallback(
     async (docId: string) => {
       try {
-        await addFavoriteMutation({
-          variables: {
-            input: {
-              workspaceId: workspaceId,
-              documentId: docId,
+        if (publicDocument) {
+          await addPublicFavoriteMutation({
+            variables: {
+              input: { documentId: docId },
             },
-          },
-          refetchQueries: workspaceId
-            ? [{ query: GetFavoriteDocumentsDocument, variables: { workspaceId } }]
-            : [],
-        });
+          });
+        } else {
+          await addFavoriteMutation({
+            variables: {
+              input: {
+                workspaceId: workspaceId!,
+                documentId: docId,
+              },
+            },
+            refetchQueries: workspaceId
+              ? [{ query: GetFavoriteDocumentsDocument, variables: { workspaceId } }]
+              : [],
+          });
+        }
       } catch (err) {
         console.error("Failed to favorite document:", err);
         throw err;
       }
     },
-    [workspaceId, publicDocument, addFavoriteMutation]
+    [workspaceId, publicDocument, addFavoriteMutation, addPublicFavoriteMutation]
   );
 
   // ⬢ Remove from favorite
@@ -69,37 +86,38 @@ export const useFavorites = (workspaceId: string | null,
   const unfavoriteDocument = useCallback(
     async (docId: string, shouldRefetch = true) => {
       try {
-        await removeFavoriteMutation({
-          variables: {
-            input: {
-              workspaceId: workspaceId ?? undefined,
-              documentId: docId,
+        if (publicDocument) {
+          await removePublicFavoriteMutation({
+            variables: {
+              input: { documentId: docId },
             },
-          },
-          refetchQueries: shouldRefetch && workspaceId
-            ? [{ query: GetFavoriteDocumentsDocument, variables: { workspaceId } }]
-            : [],
-        });
+          });
+        } else {
+          await removeFavoriteMutation({
+            variables: {
+              input: {
+                workspaceId: workspaceId!,
+                documentId: docId,
+              },
+            },
+            refetchQueries: shouldRefetch && workspaceId
+              ? [{ query: GetFavoriteDocumentsDocument, variables: { workspaceId } }]
+              : [],
+          });
+        }
       } catch (err) {
-        console.error("Failed to unfavorite document:", error);
-        throw error;
+        console.error("Failed to unfavorite document:", err);
+        throw err;
       }
     },
-    [workspaceId, publicDocument, removeFavoriteMutation]
+    [workspaceId, publicDocument, removeFavoriteMutation, removePublicFavoriteMutation]
   );
 
   return useMemo(
     () => [
       new Set(favorites),
-      {
-        favoriteDocument,
-        unfavoriteDocument,
-      },
-      {
-        data,
-        loading,
-        error,
-      },
+      { favoriteDocument, unfavoriteDocument },
+      { data, loading, error },
     ],
     [favorites, favoriteDocument, unfavoriteDocument, data, loading, error]
   );
