@@ -27,11 +27,15 @@ export interface QueryOptions {
 export type ActionResult = { ok: true } | { ok: false; error: Error };
 
 export const useUserProfile = ({ userId, skip = false }: QueryOptions) => {
+
+  console.log("is userId passed", userId)
   const { data, loading, error, refetch } = useGetUserQuery({
     variables: { userId },
     skip: !userId || skip,
     fetchPolicy: "cache-and-network",
   });
+
+  console.log("user return", data)
 
   return {
     user: data?.getUser ?? null,

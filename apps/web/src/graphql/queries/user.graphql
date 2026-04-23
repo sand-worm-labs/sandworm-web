@@ -10,7 +10,6 @@ query GetUser($userId: String!) {
     isOnboarded
     avater
     createdAt
-    isFollowing
     settings {
       id
       userId
@@ -22,18 +21,12 @@ query GetUser($userId: String!) {
     followers {
       id
       username
-      email
-      firstName
-      lastName
       fullName
       avater
     }
     following {
       id
       username
-      email
-      firstName
-      lastName
       fullName
       avater
     }
@@ -41,7 +34,6 @@ query GetUser($userId: String!) {
     followingCount
   }
 }
-
 # Variables:
 # {
 #   "userId": "user_123"
