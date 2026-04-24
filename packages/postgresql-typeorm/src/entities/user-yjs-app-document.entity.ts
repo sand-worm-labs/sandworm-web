@@ -12,6 +12,7 @@ import { UserEntity } from "./user.entity";
 import { YjsAppDocumentEntity } from "./yjs-app-document.entity";
 import { YjsUpdateEntity } from "./yjs-update.entity";
 
+
 @Entity("user_yjs_app_document")
 export class UserYjsAppDocumentEntity extends AbstractEntity {
     @PrimaryColumn("uuid", { name: "yjs_app_document_id" })
@@ -31,6 +32,9 @@ export class UserYjsAppDocumentEntity extends AbstractEntity {
 
     @Column({ name: "user_changed_state", type: "boolean", default: false })
     userChangedState!: boolean;
+
+    @Column({ name: "state_hash", type: "varchar", length: 40 })
+    stateHash!: string;
 
     @ManyToOne(() => YjsAppDocumentEntity, (appDoc) => appDoc.userYjsAppDocuments, { onDelete: "CASCADE" })
     @JoinColumn({

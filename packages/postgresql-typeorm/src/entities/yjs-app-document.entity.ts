@@ -26,6 +26,9 @@ export class YjsAppDocumentEntity extends AbstractEntity {
     @Column({ name: "state", type: "bytea" })
     state!: Buffer;
 
+    @Column({ name: "state_hash", type: "varchar", length: 40 })
+    stateHash!: string;
+
     @Column({ name: "has_dashboard", type: "boolean", default: false })
     hasDashboard!: boolean;
 
