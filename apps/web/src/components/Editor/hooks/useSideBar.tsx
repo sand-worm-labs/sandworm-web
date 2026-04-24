@@ -1,3 +1,5 @@
+"use client";
+
 import { createContext, useContext, useState, useEffect, useMemo } from "react";
 
 // =====================================
@@ -9,6 +11,7 @@ export const DEFAULT_SIDEBAR_WIDTH = 320;
 export const DEFAULT_SMALL_SCREEN_WIDTH = 300;
 
 const SMALL_SCREEN_BREAKPOINT = 768;
+const WIDE_SCREEN_BREAKPOINT = 1280; // below this, right panel opening collapses left sidebar
 const STORAGE_KEY = "sidebar-width";
 
 // =====================================
@@ -19,6 +22,7 @@ type SideBarWidth = number;
 type SideBarState = {
   isOpen: boolean;
   width: SideBarWidth;
+  rightPanelId: string | null;
 };
 
 type SideBarAPI = {
@@ -26,6 +30,8 @@ type SideBarAPI = {
   resize: (width: SideBarWidth) => void;
   open: (value?: boolean) => void;
   close: () => void;
+  openRightPanel: (id: string) => void;
+  closeRightPanel: () => void;
 };
 
 type SideBarContext = {
@@ -40,12 +46,15 @@ const initialContext: SideBarContext = {
   state: {
     isOpen: true,
     width: DEFAULT_SIDEBAR_WIDTH,
+    rightPanelId: null,
   },
   api: {
     toggle: () => {},
     resize: () => {},
     open: () => {},
     close: () => {},
+    openRightPanel: () => {},
+    closeRightPanel: () => {},
   },
 };
 
@@ -63,9 +72,7 @@ export default function useSideBar(): SideBarContext {
 // =====================================
 function getInitialWidth(): SideBarWidth {
   const isSmallScreen = window.innerWidth < SMALL_SCREEN_BREAKPOINT;
-  if (isSmallScreen) {
-    return DEFAULT_SMALL_SCREEN_WIDTH;
-  }
+  if (isSmallScreen) return DEFAULT_SMALL_SCREEN_WIDTH;
 
   const stored = localStorage.getItem(STORAGE_KEY);
   if (stored) {
@@ -83,9 +90,10 @@ function getInitialWidth(): SideBarWidth {
 }
 
 function getInitialOpen(): boolean {
+  if (window.location.pathname.includes("/documents/")) return false;
+
   return (
-    new URLSearchParams(window.location.search).get("sidebarCollapsed") !==
-    "true"
+    new URLSearchParams(window.location.search).get("sidebarCollapsed") !== "true"
   );
 }
 
@@ -95,12 +103,13 @@ function getInitialOpen(): boolean {
 export function SideBarProvider({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState<boolean>(getInitialOpen);
   const [width, setWidth] = useState<SideBarWidth>(getInitialWidth);
+  const [rightPanelId, setRightPanelId] = useState<string | null>(null);
 
-  // 🔁 Effects
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, width.toString());
   }, [width]);
 
+  // 🔁 Clamp width on viewport resize
   useEffect(() => {
     const handleResize = () => {
       const isSmallScreen = window.innerWidth < SMALL_SCREEN_BREAKPOINT;
@@ -115,10 +124,10 @@ export function SideBarProvider({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener("resize", handleResize);
   }, [width]);
 
-  // ⬢ derived
+  // ⬢ Derived state
   const sidebarState: SideBarState = useMemo(
-    () => ({ isOpen, width }),
-    [isOpen, width]
+    () => ({ isOpen, width, rightPanelId }),
+    [isOpen, width, rightPanelId]
   );
 
   const api: SideBarAPI = useMemo(
@@ -127,9 +136,7 @@ export function SideBarProvider({ children }: { children: React.ReactNode }) {
         setIsOpen(open !== undefined ? open : prev => !prev);
       },
       resize: (newWidth: SideBarWidth) => {
-        setWidth(
-          Math.max(MIN_SIDEBAR_WIDTH, Math.min(MAX_SIDEBAR_WIDTH, newWidth))
-        );
+        setWidth(Math.max(MIN_SIDEBAR_WIDTH, Math.min(MAX_SIDEBAR_WIDTH, newWidth)));
       },
       open: (value?: boolean) => {
         setIsOpen(value !== undefined ? value : true);
@@ -137,14 +144,20 @@ export function SideBarProvider({ children }: { children: React.ReactNode }) {
       close: () => {
         setIsOpen(false);
       },
+      openRightPanel: (id: string) => {
+        if (window.innerWidth < WIDE_SCREEN_BREAKPOINT) {
+          setIsOpen(false);
+        }
+        setRightPanelId(id);
+      },
+      closeRightPanel: () => {
+        setRightPanelId(null);
+      },
     }),
     []
   );
 
-  const value = useMemo(
-    () => ({ state: sidebarState, api }),
-    [sidebarState, api]
-  );
+  const value = useMemo(() => ({ state: sidebarState, api }), [sidebarState, api]);
 
   return <Context.Provider value={value}>{children}</Context.Provider>;
 }

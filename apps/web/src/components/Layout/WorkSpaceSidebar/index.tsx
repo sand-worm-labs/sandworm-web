@@ -25,7 +25,11 @@ import { Binoculars } from "@/components/Assets/Menu/Binoculars";
 import { useIsMobile } from "@/hooks/useMobile";
 import { TooltipV2 } from "@/components/Editor/blocks/ToolTips";
 import { FeedbackModal } from "@/components/FeedbackModal";
+import useSideBar from "@/components/Editor/hooks/useSideBar";
 
+// =====================================
+// ⬢ Types
+// =====================================
 interface NavItem {
   name: string;
   href: string;
@@ -38,64 +42,48 @@ interface NavItem {
 export const WorkspaceSidebar = () => {
   const pathname = usePathname();
   const workspaceId = useStringQuery("workspace");
-  const [collapsed, setCollapsed] = useState(false);
   const router = useRouter();
   const documentId = useStringQuery("document");
-  const favoriteDocument: any = [];
-  const unfavoriteDocument: any = [];
   const session = useSession({ redirectToLogin: true });
   const user = session?.user;
+  const isMobile = useIsMobile();
+  const favoriteDocument: any = [];
+  const unfavoriteDocument: any = [];
+
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isSectionOpen, setIsSectionOpen] = useState(true);
   const [isToolsOpen, setIsToolsOpen] = useState(false);
-  const isMobile = useIsMobile();
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
 
-  // ⬢ Constants
+  // ⬢ Shared sidebar state — single source of truth
+  // collapsed === !isOpen; no local collapsed state needed
+  // =====================================
+  const {
+    state: { isOpen },
+    api: sideBarApi,
+  } = useSideBar();
+  const collapsed = !isOpen;
+
+  // ⬢ Nav config
   // =====================================
   const mainNav: NavItem[] = [
     { name: " Home", href: `/workspace/${workspaceId}`, icon: House },
-    {
-      name: "Projects",
-      href: `/workspace/${workspaceId}/session`,
-      icon: ProjectIcon,
-    },
-    {
-      name: "Explore",
-      href: `/workspace/${workspaceId}/explore`,
-      icon: Binoculars,
-    },
+    { name: "Projects", href: `/workspace/${workspaceId}/session`, icon: ProjectIcon },
+    { name: "Explore", href: `/workspace/${workspaceId}/explore`, icon: Binoculars },
   ];
 
   const toolsNav: NavItem[] = [
-    {
-      name: "Favorites",
-      href: `/workspace/${workspaceId}/favorites`,
-      icon: Star,
-    },
-    {
-      name: "Console",
-      href: `/workspace/${workspaceId}/console`,
-      icon: Terminal,
-    },
-
-    {
-      name: "All tools",
-      href: `/workspace/${workspaceId}/tools`,
-      icon: SquaresFour,
-    },
-    {
-      name: "Trash",
-      href: `/workspace/${workspaceId}/trash`,
-      icon: Trash,
-    },
+    { name: "Favorites", href: `/workspace/${workspaceId}/favorites`, icon: Star },
+    { name: "Console", href: `/workspace/${workspaceId}/console`, icon: Terminal },
+    { name: "All tools", href: `/workspace/${workspaceId}/tools`, icon: SquaresFour },
+    { name: "Trash", href: `/workspace/${workspaceId}/trash`, icon: Trash },
   ];
 
   const linkClasses = (href: string) =>
     `flex items-center gap-3 rounded-xl px-2 py-1.5 text-sm font-medium transition-colors
      ${pathname === href
-      ? "dark:bg-base-600 bg-base-600  text-primary dark:text-ink-100"
-      : "text-menu-ink dark:text-white hover:bg-base-600 dark:hover:bg-base-600 hover:text-primary   hover:text-black dark:hover:text-white"
+      ? "dark:bg-base-600 bg-base-600 text-primary dark:text-ink-100"
+      : "text-menu-ink dark:text-white hover:bg-base-600 dark:hover:bg-base-600 hover:text-primary hover:text-black dark:hover:text-white"
     }`;
 
   const [
@@ -112,7 +100,19 @@ export const WorkspaceSidebar = () => {
     doc => doc.deletedAt === null && doc.version >= 1
   );
 
-  // ⬢ CreateDocument
+  // ⬢ Toggle
+  // =====================================
+  const handleToggle = useCallback(() => {
+    if (isMobile) {
+      setIsMobileOpen(false);
+    } else {
+      sideBarApi.toggle();
+    }
+  }, [isMobile, sideBarApi]);
+
+  // ⬢ Create Document
+  // Collapse *before* push so the sidebar is already icons-only on first paint
+  // of the notebook page 
   // =====================================
   const onCreateDocument = useCallback(
     async (parentId: string | null) => {
@@ -120,31 +120,28 @@ export const WorkspaceSidebar = () => {
 
       try {
         const doc = await createDocument({ parentId, version: 2 });
+        sideBarApi.close();
         router.push(`/workspace/${workspaceId}/documents/${doc.id}`);
       } catch (err) {
         console.error(err);
       }
     },
-    [documentsState, createDocument, router, workspaceId]
+    [documentsState, createDocument, router, workspaceId, sideBarApi]
   );
 
-  const onCreateDocumentHandler: MouseEventHandler<HTMLButtonElement> =
-    useCallback(
-      e => {
-        e.preventDefault();
-        onCreateDocument(null);
-      },
-      [onCreateDocument]
-    );
+  const onCreateDocumentHandler: MouseEventHandler<HTMLButtonElement> = useCallback(
+    e => {
+      e.preventDefault();
+      onCreateDocument(null);
+    },
+    [onCreateDocument]
+  );
 
   // ⬢ Delete Document
   // =====================================
   const onDeleteDocument = useCallback(
     (id: string) => {
-      if (documentsState.loading) {
-        return;
-      }
-
+      if (documentsState.loading) return;
       deleteDocument(id);
     },
     [documentsState, deleteDocument]
@@ -154,37 +151,28 @@ export const WorkspaceSidebar = () => {
   // =====================================
   const onDuplicateDocument = useCallback(
     async (id: string) => {
-      if (documentsState.loading) {
-        return;
-      }
+      if (documentsState.loading) return;
 
       const doc = await duplicateDocument(id);
+      sideBarApi.close();
       router.push(`/workspace/${workspaceId}/documents/${doc.id}`);
     },
-    [documentsState, duplicateDocument, router, workspaceId]
+    [documentsState, duplicateDocument, router, workspaceId, sideBarApi]
   );
 
-  // ⬢ Favorite Document
+  // ⬢ Favorite / Unfavorite
   // =====================================
   const onFavoriteDocument = useCallback(
     (docId: string) => {
-      if (documentsState.loading) {
-        return;
-      }
-
+      if (documentsState.loading) return;
       favoriteDocument(docId);
     },
     [documentsState, workspaceId, favoriteDocument]
   );
 
-  // ⬢ Unfavorite Document
-  // =====================================
   const onUnfavoriteDocument = useCallback(
     (docId: string) => {
-      if (documentsState.loading) {
-        return;
-      }
-
+      if (documentsState.loading) return;
       unfavoriteDocument(docId);
     },
     [workspaceId, unfavoriteDocument]
@@ -194,25 +182,27 @@ export const WorkspaceSidebar = () => {
   // =====================================
   const onUpdateDocumentParent = useCallback(
     async (id: string, parentId: string | null, orderIndex: number) => {
-      if (documentsState.loading) {
-        return;
-      }
-
+      if (documentsState.loading) return;
       await updateDocumentParent(id, parentId, orderIndex);
     },
     [documentsState, updateDocumentParent]
   );
 
+  const onBeforeNavigate = useCallback(() => {
+    if (!pathname.includes("/documents/")) {
+      sideBarApi.close();
+    }
+  }, [pathname, sideBarApi]);
+
   return (
     <>
       <aside
         className={`
-      bg-[#FEFFFF] dark:bg-base-500 border-r border-border-secondary  dark:border-border-tertiary font-body justify-between flex flex-col
-      transition-all duration-300 ease-in-out relative
-  
-      ${isMobile ? "fixed top-0 left-0 h-full z-50 w-[17.5rem]" : "h-full"}
-  
-      ${isMobile
+          bg-[#FEFFFF] dark:bg-base-500 border-r border-border-secondary dark:border-border-tertiary
+          font-body justify-between flex flex-col
+          transition-all duration-300 ease-in-out relative
+          ${isMobile ? "fixed top-0 left-0 h-full z-50 w-[17.5rem]" : "h-full"}
+          ${isMobile
             ? isMobileOpen
               ? "translate-x-0"
               : "-translate-x-full"
@@ -220,15 +210,15 @@ export const WorkspaceSidebar = () => {
               ? "w-16"
               : "w-[17.5rem]"
           }
-    `}
+        `}
       >
         <div>
-          <div className="flex justify-between py-[0.69rem] px-3   bg-[#F9F9F9] dark:bg-base-500 items-center">
+          {/* ✦ Header ✦ */}
+          <div className="flex justify-between py-[0.69rem] px-3 bg-[#F9F9F9] dark:bg-base-500 items-center">
             {!collapsed && (
               <Link href="/" className="flex items-center gap-2">
                 <SandwormLogo width="30" height="30" />
-
-                <span className=" font-bold text-[1.05rem] uppercase font-tertiary">
+                <span className="font-bold text-[1.05rem] uppercase font-tertiary">
                   SandWorm
                 </span>
               </Link>
@@ -236,11 +226,7 @@ export const WorkspaceSidebar = () => {
 
             <TooltipV2<HTMLButtonElement>
               title={
-                isMobile
-                  ? "Close sidebar"
-                  : collapsed
-                    ? "Open sidebar"
-                    : "Close sidebar"
+                isMobile ? "Close sidebar" : collapsed ? "Open sidebar" : "Close sidebar"
               }
               active
               position="right"
@@ -257,13 +243,7 @@ export const WorkspaceSidebar = () => {
                         : "Close sidebar"
                   }
                   aria-expanded={isMobile ? isMobileOpen : !collapsed}
-                  onClick={() => {
-                    if (isMobile) {
-                      setIsMobileOpen(false);
-                    } else {
-                      setCollapsed(!collapsed);
-                    }
-                  }}
+                  onClick={handleToggle}
                   className="p-1 rounded hover:bg-gray-200 dark:hover:bg-[#181C21] flex items-center justify-center text-[#868E96] dark:text-ink-400"
                 >
                   <SidebarIcon />
@@ -273,6 +253,8 @@ export const WorkspaceSidebar = () => {
           </div>
 
           <WorkspaceSwitcher collapsed={collapsed} />
+
+          {/* ✦ Nav ✦ */}
           <nav className="flex-1 px-3">
             <ul className="space-y-1.5">
               {mainNav.map(item => (
@@ -292,8 +274,8 @@ export const WorkspaceSidebar = () => {
                         <item.icon
                           size={18}
                           className={`hover:text-[#A308F0] ${pathname === item.href
-                            ? "text-[#A308F0] dark:text-ink-100"
-                            : "text-ink-icon"
+                              ? "text-[#A308F0] dark:text-ink-100"
+                              : "text-ink-icon"
                             }`}
                         />
                         {!collapsed && item.name}
@@ -306,11 +288,12 @@ export const WorkspaceSidebar = () => {
 
             <hr className="border-t-[1px] border-transparent dark:border-transparent mt-5" />
 
+            {/* ✦ Tools section ✦ */}
             <div>
               <button
                 type="button"
                 onClick={() => setIsToolsOpen(v => !v)}
-                className="w-full flex items-center gap-x-1 px-1 py-1 mb-1 text-[12px] font-medium  dark:text-ink-400 text-[#8C98A3] font-body"
+                className="w-full flex items-center gap-x-1 px-1 py-1 mb-1 text-[12px] font-medium dark:text-ink-400 text-[#8C98A3] font-body"
               >
                 {!collapsed && (
                   <>
@@ -341,6 +324,7 @@ export const WorkspaceSidebar = () => {
               )}
             </div>
 
+            {/* ✦ Document tree — hidden when icon-only ✦ */}
             {!collapsed && (
               <ul>
                 {user?.role?.[0]?.[workspaceId] !== "viewer" && (
@@ -348,18 +332,18 @@ export const WorkspaceSidebar = () => {
                     type="button"
                     id="create-workspace-doc"
                     onClick={onCreateDocumentHandler}
-                    className="p-2  dark:bg-base-500  rounded-xl hover:cursor-pointer text-sm border mt-3 flex px-5 items-center justify-center w-full border-[#D000FF]  text-primary mb-3 font-body font-medium  dark:border-[#A78BFA] dark:text-[#A78BFA] "
+                    className="p-2 dark:bg-base-500 rounded-xl hover:cursor-pointer text-sm border mt-3 flex px-5 items-center justify-center w-full border-[#D000FF] text-primary mb-3 font-body font-medium dark:border-[#A78BFA] dark:text-[#A78BFA]"
                   >
-                    {" "}
-                    <PlusSmallIcon className="h-4 w-4 mr-1 " aria-hidden="true" />
+                    <PlusSmallIcon className="h-4 w-4 mr-1" aria-hidden="true" />
                     <span>New Project</span>
                   </button>
                 )}
+
                 <div>
                   <button
                     type="button"
                     onClick={() => setIsSectionOpen(v => !v)}
-                    className="w-full flex items-center gap-x-1 px-1 py-1 mb-1 text-[12px] font-medium  dark:text-ink-400 text-[#8C98A3] font-body"
+                    className="w-full flex items-center gap-x-1 px-1 py-1 mb-1 text-[12px] font-medium dark:text-ink-400 text-[#8C98A3] font-body"
                   >
                     {isSectionOpen ? (
                       <ChevronDownIcon className="h-4 w-4" />
@@ -381,6 +365,9 @@ export const WorkspaceSidebar = () => {
                       role={user?.role?.[0]?.[workspaceId] ?? "viewer"}
                       onCreate={onCreateDocument}
                       onUpdateParent={onUpdateDocumentParent}
+
+                      onBeforeNavigate={onBeforeNavigate}
+
                     />
                   )}
                 </div>
@@ -389,16 +376,15 @@ export const WorkspaceSidebar = () => {
           </nav>
         </div>
 
+        {/* ✦ Account footer ✦ */}
         {!collapsed && (
-          <div className="absolute bottom-0 left-0 right-0 border-t border-border-secondary   dark:border-border-tertiary py-1.5 px-1.5 bg-base-100">
+          <div className="absolute bottom-0 left-0 right-0 border-t border-border-secondary dark:border-border-tertiary py-1.5 px-1.5 bg-base-100">
             <AccountDropdown onToggleFeedback={() => setIsFeedbackOpen(true)} />
           </div>
         )}
-
-
       </aside>
-      <FeedbackModal isOpen={isFeedbackOpen}
-        onClose={() => setIsFeedbackOpen(false)} />
+
+      <FeedbackModal isOpen={isFeedbackOpen} onClose={() => setIsFeedbackOpen(false)} />
     </>
   );
 };

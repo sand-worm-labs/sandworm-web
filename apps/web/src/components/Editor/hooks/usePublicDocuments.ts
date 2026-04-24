@@ -20,7 +20,6 @@ const FEATURED_LIMIT = 4;
 export type PublicDocument = ApiDocument;
 
 export type DocumentFilter =
-  | { kind: "explorer" }
   | { kind: "trending" }
   | { kind: "favorites"; userId: string }
   | { kind: "forked"; userId: string };
@@ -47,13 +46,13 @@ export interface UsePublicDocumentsResult {
 }
 
 export function usePublicDocuments({
-  filter = { kind: "explorer" },
+  filter = { kind: "trending" },
   initialDocuments = [],
   initialFeatured = [],
   pageSize = DEFAULT_PAGE_SIZE,
 }: UsePublicDocumentsOptions = {}): UsePublicDocumentsResult {
   const explorer = useExplorerFeed(
-    filter.kind === "explorer",
+    filter.kind === "trending",
     initialDocuments,
     pageSize
   );
@@ -68,9 +67,7 @@ export function usePublicDocuments({
   );
 
   const feed =
-    filter.kind === "explorer"
-      ? explorer
-      : filter.kind === "trending"
+   filter.kind === "trending"
         ? trending
         : filter.kind === "favorites"
           ? favorites
