@@ -197,6 +197,7 @@ export type ApiDocument = Document & {
   }
   forkCount: number;
   favoriteCount: number;
+  isFavorite: boolean
 };
 
 export type UserWorkspaceRole = "editor" | "viewer" | "admin";

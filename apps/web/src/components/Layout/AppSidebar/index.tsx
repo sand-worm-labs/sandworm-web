@@ -71,18 +71,17 @@ export const AppSidebar = ({
   return (
     <>
       <TooltipProvider>
-        <div className="h-full w-16  border-r flex flex-col items-center py-4 space-y-4  pt-12 border-[#E9ECEF] bg-[#F1F3F4]">
+        <div className="h-full w-16  border-r flex flex-col items-center py-4 space-y-4  pt-12 border-border-secondary  bg-[#F1F3F4]">
           <ScrollArea className="flex-grow ">
             {viewOptions.map(item => (
               <Tooltip key={item.id}>
                 <TooltipTrigger asChild>
                   <button
                     type="button"
-                    className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors w-full mb-5 flex-shrink-0 ${
-                      currentView === item.id
+                    className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors w-full mb-5 flex-shrink-0 ${currentView === item.id
                         ? "  rounded-none"
                         : "hover:bg-white/15"
-                    }`}
+                      }`}
                     onClick={() => setCurrentView(item.id)}
                   >
                     <item.icon

@@ -33,7 +33,7 @@ export const QueryList: React.FC<IQueryListProps> = ({ documents }) => {
 
   return (
     <div className="mb-16 h-full justify-between flex flex-col">
-      <div className="grid grid-cols-1 gap-2 mb-8 border border-[#E9ECEF] dark:border-border-tertiary rounded-xl px-3.5 py-5 my-6">
+      <div className="grid grid-cols-1 gap-2 mb-8 border border-border-secondary  dark:border-border-tertiary rounded-xl px-3.5 py-5 my-6">
         {documents.map(query => (
           <ExploreCard key={query.id} query={query} viewMode="compact" />
         ))}

@@ -123,7 +123,7 @@ export function DataExplorerContent({
           )}
 
           {mode === "sidebar" ? (
-            <div className="px-4 xl:px-6 pt-6 pb-5 border-b border-[#E9ECEF] dark:border-border-tertiary">
+            <div className="px-4 xl:px-6 pt-6 pb-5 border-b border-border-secondary  dark:border-border-tertiary">
               <div className="flex justify-between">
                 <div>
                   <h3 className="text-lg font-medium leading-6 text-ink-100 dark:text-white">
@@ -137,7 +137,7 @@ export function DataExplorerContent({
               </div>
             </div>
           ) : (
-            <div className="p-4 border-b border-[#E9ECEF] dark:border-border-tertiary">
+            <div className="p-4 border-b border-border-secondary  dark:border-border-tertiary">
               <div className="flex items-center gap-2">
                 <Database />
                 <h3 className="font-medium text-ink-100 dark:text-white">
@@ -176,7 +176,7 @@ export function DataExplorerContent({
   if (!visible) return null;
 
   return (
-    <Card className="h-full overflow-hidden relative border-[#E9ECEF] dark:border-border-tertiary border-2 gap-y-0 min-w-[310px]">
+    <Card className="h-full overflow-hidden relative border-border-secondary  dark:border-border-tertiary border-2 gap-y-0 min-w-[310px]">
       {showDragHandle && (
         <div
           aria-label="Drag panel"
@@ -192,7 +192,7 @@ export function DataExplorerContent({
         </div>
       )}
 
-      <CardHeader className="p-4 pt-0 border-b drag-handle cursor-grab active:cursor-grabbing select-none border-[#E9ECEF] dark:border-border-tertiary mb-0">
+      <CardHeader className="p-4 pt-0 border-b drag-handle cursor-grab active:cursor-grabbing select-none border-border-secondary  dark:border-border-tertiary mb-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center w-full justify-between gap-2">
             <div className="flex items-center gap-2">

@@ -99,7 +99,7 @@ function EnvVarInput(props: EnvVarInputProps) {
           </label>
           <input
             rows={1}
-            type="password"
+            type="text"
             id={`val-${props.variable.id}`}
             value={props.variable.value}
             className="w-full px-3 py-1.5 rounded-md dark:bg-[#1A1A1A] border dark:border-border-tertiary border-[#DEE2E6] dark:text-white placeholder:dark:text-ink-300  placeholder-[#455768] focus:outline-none focus:ring-[1p] focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4] font-body "

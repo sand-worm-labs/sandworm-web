@@ -339,7 +339,7 @@ function ScheduleList(props: ScheduleListProps) {
         </div>
       ) : (
         <div className="flex-1 flex flex-col items-center justify-center px-4 xl:px-6 py-12">
-          <div className="flex flex-col gap-y-3 bg-ceramic-50/60 p-6 rounded-xl border-2 border-[#E9ECEF] dark:border-border-tertiary border-dashed items-center max-w-[260px]">
+          <div className="flex flex-col gap-y-3 bg-ceramic-50/60 p-6 rounded-xl border-2 border-border-secondary  dark:border-border-tertiary border-dashed items-center max-w-[260px]">
             <ScheduleIcon />
             <div className="text-ink-300 dark:text-ink-400 text-center text-sm">
               <p>{`You haven't saved this page yet.`}</p>

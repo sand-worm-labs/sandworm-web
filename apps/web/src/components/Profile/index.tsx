@@ -136,7 +136,6 @@ const ProfileComponent = ({
       }
       : null;
 
-  console.log(user, "isfo")
 
   return (
     <>
@@ -167,7 +166,7 @@ const ProfileComponent = ({
                             height={96}
                             src={user.avatar}
                             alt={user.username}
-                            className="w-[6rem] h-[6rem] rounded-full border-[#E9ECEF] border-[2.5px]"
+                            className="w-[6rem] h-[6rem] rounded-full border-border-secondary  border-[2.5px]"
                           />
                         ) : (
                           <Avatar>
@@ -177,7 +176,7 @@ const ProfileComponent = ({
                                 alt=""
                                 width={96}
                                 height={96}
-                                className="object-cover border-[#E9ECEF] border-[2.5px] rounded-full"
+                                className="object-cover border-border-secondary  border-[2.5px] rounded-full"
                               />
                               <span className="relative z-10 font-bold font-body text-white text-xl">
                                 {user.firstName?.split(" ")[0]?.[0] ?? "U"}
@@ -262,10 +261,12 @@ const ProfileComponent = ({
                             }}
                           >
                             {user.followersCount ?? 0}
+
+                            <span className="text-ink-400 ml-0.5 font-medium text-sm">
+                              Followers
+                            </span>
                           </button>{" "}
-                          <span className="text-ink-400 ml-0.5 font-medium text-sm">
-                            Followers
-                          </span>
+
                         </div>
                         <div>
                           <button
@@ -276,10 +277,11 @@ const ProfileComponent = ({
                             }}
                           >
                             {user.followingCount ?? 0}
+                            <span className="text-ink-400 ml-0.5 font-medium text-sm">
+                              Following
+                            </span>
                           </button>{" "}
-                          <span className="text-ink-400 ml-0.5 font-medium text-sm">
-                            Following
-                          </span>
+
                         </div>
 
                         <div className="flex flex-wrap gap-4 text-sm text-ink-400 font-medium">

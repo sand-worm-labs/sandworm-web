@@ -400,7 +400,7 @@ function PrivateDocumentPageInner(
 
         {isViewer ? null : props.isApp ? (
           <Link
-            className="flex items-center rounded-md px-3 py-1 text-sm bg-white dark:bg-base-100  dark:text-ink-100  hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 group relative border border-[#E9ECEF] dark:border-border-tertiary"
+            className="flex items-center rounded-md px-3 py-1 text-sm bg-white dark:bg-base-100  dark:text-ink-100  hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 group relative border border-border-secondary  dark:border-border-tertiary"
             href={`/workspace/${props.document.workspaceId}/documents/${props.document.id}/notebook/edit`}
           >
             <PencilIcon className="w-5 h-5" />
@@ -416,7 +416,7 @@ function PrivateDocumentPageInner(
           >
             <button
               type="button"
-              className="flex items-center rounded-md px-3 py-1 text-sm bg-white dark:bg-base-100  dark:text-ink-100  hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 group relative border border-[#E9ECEF] dark:border-border-tertiary"
+              className="flex items-center rounded-md px-3 py-1 text-sm bg-white dark:bg-base-100  dark:text-ink-100  hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 group relative border border-border-secondary  dark:border-border-tertiary"
               onClick={onPublish}
               disabled={props.publishing}
             >
