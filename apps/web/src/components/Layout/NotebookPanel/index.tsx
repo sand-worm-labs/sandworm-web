@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { cn } from "@sandworm/ui/lib/utils";
 
 import { SparkleAI } from "@/components/Assets/SparkleAI";
+import useSideBar from "@/components/Editor/hooks/useSideBar";
+import { TooltipV2 } from "@/components/Editor/blocks/ToolTips";
+
 
 // =====================================
 // ⬢ Types
@@ -30,21 +32,24 @@ const PanelItem = ({
   const Icon = action.icon;
 
   return (
-    <button
-      type="button"
-      onClick={onClick ?? action.onClick}
-      className={cn(
-        "p-2 rounded-lg transition-colors flex items-center justify-center",
-        "text-ink-400 hover:text-ink-100  dark:text-ink-300  dark:hover:text-white",
-        "hover:bg-[#F1F3F4] dark:hover:bg-[#21262d]",
-        isActive &&
-          "bg-[#F1F3F4] dark:bg-base-500 text-ink-100  dark:text-white"
-      )}
-      aria-label={action.label}
-      title={action.label}
-    >
-      <Icon size={22} />
-    </button>
+    <TooltipV2 active title={action.label} position="left">
+    {(ref) => (
+      <button
+        ref={ref as React.RefObject<HTMLButtonElement>}
+        type="button"
+        onClick={onClick ?? action.onClick}
+        className={cn(
+          "p-2 rounded-lg transition-colors flex items-center justify-center",
+          "text-ink-400 hover:text-ink-100 dark:text-ink-300 dark:hover:text-white",
+          "hover:bg-[#F1F3F4] dark:hover:bg-[#21262d]",
+          isActive && "bg-[#F1F3F4] dark:bg-base-500 text-ink-100 dark:text-white"
+        )}
+        aria-label={action.label}
+      >
+        <Icon size={22} />
+      </button>
+    )}
+  </TooltipV2>
   );
 };
 
@@ -52,15 +57,19 @@ const PanelItem = ({
 // ⬢ AI Assistant Button
 // =====================================
 const AIAssistantButton = ({ onClick }: { onClick?: () => void }) => (
-  <button
-    type="button"
-    onClick={onClick}
-    className="border-t border-b  border-[#E9ECEF] dark:border-border-tertiary py-3.5 w-full flex items-center justify-center "
-    aria-label="AI Assistant"
-    title="AI Assistant"
-  >
-    <SparkleAI size={36} />
-  </button>
+  <TooltipV2 active title="AI Assistant" position="left">
+  {(ref) => (
+    <button
+      ref={ref as React.RefObject<HTMLButtonElement>}
+      type="button"
+      onClick={onClick}
+      className="border-t border-b border-border-secondary dark:border-border-tertiary py-3.5 w-full flex items-center justify-center"
+      aria-label="AI Assistant"
+    >
+      <SparkleAI size={36} />
+    </button>
+  )}
+</TooltipV2>
 );
 
 // =====================================
@@ -74,32 +83,36 @@ interface NotebookPanelProps {
 // =====================================
 // ⬢ Notebook Panel Component
 // =====================================
-export const NotebookPanel = ({
-  sidebarContent,
-  onToggleChat,
-}: NotebookPanelProps) => {
-  const [activeItem, setActiveItem] = useState<string | null>(null);
+export const NotebookPanel = ({ sidebarContent, onToggleChat }: NotebookPanelProps) => {
+
+  const {
+    state: { rightPanelId },
+    api,
+  } = useSideBar();
 
   const bottomActions: PanelAction[] = [];
 
   const handleItemClick = (itemId: string) => {
-    setActiveItem(prev => (prev === itemId ? null : itemId));
+    if (rightPanelId === itemId) {
+      api.closeRightPanel();
+    } else {
+      api.openRightPanel(itemId);
+    }
   };
 
   return (
     <aside
       className={cn(
-        "flex flex-col items-center py-4 pb-0 px-0  h-[95%]",
+        "flex flex-col items-center py-4 pb-0 px-0 h-[95%]",
         "bg-white dark:bg-base-500",
         "border-l border-[#E3E5E8] dark:border-border-tertiary",
         "w-14 z-[99]"
       )}
     >
-      <div className="flex flex-col items-center  gap-x-0 w-full">
+      <div className="flex flex-col items-center gap-x-0 w-full">
         {sidebarContent && (
           <>
             <div className="py-2 pt-0 w-full" />
-
             {sidebarContent}
           </>
         )}
@@ -112,7 +125,7 @@ export const NotebookPanel = ({
           <PanelItem
             key={action.id}
             action={action}
-            isActive={activeItem === action.id}
+            isActive={rightPanelId === action.id}
             onClick={() => handleItemClick(action.id)}
           />
         ))}

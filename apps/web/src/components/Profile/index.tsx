@@ -42,6 +42,7 @@ interface ProfileComponentProps {
   isOwnProfile?: boolean;
   initialDocuments?: ApiDocument[];
   pageSize?: number;
+  isFollowing: boolean;
 }
 
 // =====================================
@@ -53,9 +54,11 @@ const ProfileComponent = ({
   isOwnProfile = false,
   initialDocuments = [],
   pageSize = 20,
+  isFollowing
 }: ProfileComponentProps) => {
   const [optimisticFollowing, setOptimisticFollowing] = useState<boolean | null>(null);
-  const isFollowing = optimisticFollowing ?? user?.isFollowing ?? false;
+  const currentFollowing =
+    optimisticFollowing ?? isFollowing ?? false;
   const { follow, unfollow, mutationLoading } = useUser({
     userId: user?.id,
     skip: isOwnProfile || !user?.id,
@@ -133,7 +136,6 @@ const ProfileComponent = ({
       }
       : null;
 
-  console.log(user, user?.isFollowing, "isfo")
 
   return (
     <>
@@ -164,7 +166,7 @@ const ProfileComponent = ({
                             height={96}
                             src={user.avatar}
                             alt={user.username}
-                            className="w-[6rem] h-[6rem] rounded-full border-[#E9ECEF] border-[2.5px]"
+                            className="w-[6rem] h-[6rem] rounded-full border-border-secondary  border-[2.5px]"
                           />
                         ) : (
                           <Avatar>
@@ -174,7 +176,7 @@ const ProfileComponent = ({
                                 alt=""
                                 width={96}
                                 height={96}
-                                className="object-cover border-[#E9ECEF] border-[2.5px] rounded-full"
+                                className="object-cover border-border-secondary  border-[2.5px] rounded-full"
                               />
                               <span className="relative z-10 font-bold font-body text-white text-xl">
                                 {user.firstName?.split(" ")[0]?.[0] ?? "U"}
@@ -198,10 +200,11 @@ const ProfileComponent = ({
                           <button
                             type="button"
                             onClick={async () => {
-                              const next = !isFollowing;
+                              const next = !currentFollowing;
                               setOptimisticFollowing(next);
+
                               try {
-                                if (isFollowing) {
+                                if (currentFollowing) {
                                   await unfollow();
                                 } else {
                                   await follow();
@@ -211,12 +214,12 @@ const ProfileComponent = ({
                               }
                             }}
                             disabled={mutationLoading}
-                            className={`flex items-center gap-2 px-6 py-2 rounded-xl font-medium transition-colors text-sm ${isFollowing
-                                ? "bg-[#E9ECEF] dark:bg-[#262A30] text-ink-100 dark:text-white hover:bg-opacity-80"
-                                : "bg-black text-white hover:bg-opacity-90"
+                            className={`flex items-center gap-2 px-6 py-2 rounded-xl font-medium transition-colors text-sm ${currentFollowing
+                              ? "bg-[#E9ECEF] dark:bg-[#262A30] text-ink-100 dark:text-white hover:bg-opacity-80"
+                              : "bg-black text-white hover:bg-opacity-90"
                               }`}
                           >
-                            {isFollowing ? (
+                            {currentFollowing ? (
                               <>
                                 <UserMinus className="w-4 h-4" /> Unfollow
                               </>
@@ -258,10 +261,12 @@ const ProfileComponent = ({
                             }}
                           >
                             {user.followersCount ?? 0}
+
+                            <span className="text-ink-400 ml-0.5 font-medium text-sm">
+                              Followers
+                            </span>
                           </button>{" "}
-                          <span className="text-ink-400 ml-0.5 font-medium text-sm">
-                            Followers
-                          </span>
+
                         </div>
                         <div>
                           <button
@@ -272,10 +277,11 @@ const ProfileComponent = ({
                             }}
                           >
                             {user.followingCount ?? 0}
+                            <span className="text-ink-400 ml-0.5 font-medium text-sm">
+                              Following
+                            </span>
                           </button>{" "}
-                          <span className="text-ink-400 ml-0.5 font-medium text-sm">
-                            Following
-                          </span>
+
                         </div>
 
                         <div className="flex flex-wrap gap-4 text-sm text-ink-400 font-medium">

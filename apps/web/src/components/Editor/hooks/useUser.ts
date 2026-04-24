@@ -1,12 +1,12 @@
 import { useCallback } from "react";
 
 import type {
-  GetUserQuery,
+  GetUserProfileQuery,
   GetUserFavoritePublicDocumentsQuery,
   GetUserFollowersQuery,
 } from "@/generated/graphql";
 import {
-  useGetUserQuery,
+  useGetUserProfileQuery,
   useGetUserFavoritePublicDocumentsQuery,
   useGetUserFollowersQuery,
   useGetUserFollowingQuery,
@@ -14,7 +14,7 @@ import {
   useUnfollowUserMutation,
 } from "@/generated/graphql";
 
-export type User = NonNullable<GetUserQuery["getUser"]>;
+export type User = NonNullable<GetUserProfileQuery["getUser"]>;
 export type Favorite =
   GetUserFavoritePublicDocumentsQuery["favoritePublicDocuments"][number];
 export type FollowUser = GetUserFollowersQuery["getUserFollowers"][number];
@@ -27,14 +27,19 @@ export interface QueryOptions {
 export type ActionResult = { ok: true } | { ok: false; error: Error };
 
 export const useUserProfile = ({ userId, skip = false }: QueryOptions) => {
-  const { data, loading, error, refetch } = useGetUserQuery({
+
+  console.log("is userId passed", userId)
+  const { data, loading, error, refetch } = useGetUserProfileQuery({
     variables: { userId },
     skip: !userId || skip,
     fetchPolicy: "cache-and-network",
   });
 
+  console.log("user return", data, )
+
   return {
     user: data?.getUser ?? null,
+    isFollowing: data?.isFollowing ?? false,
     loading,
     error: (error as Error | undefined) ?? null,
     refetch,
@@ -172,6 +177,7 @@ export const useUser = ({
 
   return {
     user: profile.user,
+    isFollowing: profile.isFollowing,
     favorites: favorites.favorites,
     followers: followers.followers,
     following: following.following,

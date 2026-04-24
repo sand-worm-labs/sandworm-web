@@ -70,7 +70,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
 
   return (
     <div className="w-full">
-      <div className="bg-[#F1F3F4] dark:bg-[#30302E] border border-[#E9ECEF] rounded-2xl shadow-sm dark:border-border-tertiary">
+      <div className="bg-[#F1F3F4] dark:bg-[#30302E] border border-border-secondary  rounded-2xl shadow-sm dark:border-border-tertiary">
         {/* File Preview Section */}
         {files.length > 0 && (
           <div className="px-4 pt-3 pb-2 border-b border-gray-100">
@@ -134,11 +134,10 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
             type="button"
             onClick={handleSend}
             disabled={(!message.trim() && files.length === 0) || disabled}
-            className={`flex items-center justify-center w-8 h-8 rounded-xl transition-colors ${
-              message.trim() || files.length > 0
+            className={`flex items-center justify-center w-8 h-8 rounded-xl transition-colors ${message.trim() || files.length > 0
                 ? "bg-[#A308F0]  hover:bg-[#A308F0]  text-white"
                 : "bg-white dark:bg-[#30302E] text-ink-400 cursor-not-allowed border border-[#DEE2E6] dark:border-border-tertiary"
-            }`}
+              }`}
             title="Send message"
             aria-label="Send message"
           >

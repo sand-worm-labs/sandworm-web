@@ -32,18 +32,18 @@ const ROLES: {
   label: string;
   description: string;
 }[] = [
-  { value: "admin", label: "Owner", description: "Full access and billing" },
-  {
-    value: "editor",
-    label: "Editor",
-    description: "Edit access to files in the workspace",
-  },
-  {
-    value: "viewer",
-    label: "Viewer",
-    description: "Read-only access to the files in the workspace",
-  },
-];
+    { value: "admin", label: "Owner", description: "Full access and billing" },
+    {
+      value: "editor",
+      label: "Editor",
+      description: "Edit access to files in the workspace",
+    },
+    {
+      value: "viewer",
+      label: "Viewer",
+      description: "Read-only access to the files in the workspace",
+    },
+  ];
 
 const PREVIEW_CAP = 2;
 
@@ -62,7 +62,7 @@ function RoleDropdown({ role, onChange, disabled }: RoleDropdownProps) {
   const portalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!open) return () => {};
+    if (!open) return () => { };
     const handler = (e: MouseEvent) => {
       const target = e.target as Node;
       const outsideButton = ref.current && !ref.current.contains(target);
@@ -401,7 +401,7 @@ export function MiniUsersList({
         className={clsx(
           "fixed bottom-6 left-1/2 -translate-x-1/2 z-50",
           "flex items-center gap-4 px-3 py-3",
-          "bg-[#0F0F0F] dark:bg-base-600 border border-[#E9ECEF] dark:border-border-tertiary",
+          "bg-[#0F0F0F] dark:bg-base-600 border border-border-secondary  dark:border-border-tertiary",
           "rounded-[14px] transition-all duration-200 ease-out",
           selectionCount > 0
             ? "opacity-100 translate-y-0 pointer-events-auto"

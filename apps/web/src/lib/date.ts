@@ -39,3 +39,18 @@ dayjs.extend(relativeTime);
 export const timeAgo = (date: string | Date): string => {
   return dayjs(date).fromNow();
 };
+
+
+const RELATIVE_THRESHOLD_DAYS = 30;
+
+
+export const formatDate = (date: string | Date): string => {
+  const d = dayjs(date);
+  const diffDays = dayjs().diff(d, "day");
+
+  if (diffDays < RELATIVE_THRESHOLD_DAYS) {
+    return d.fromNow();
+  }
+
+  return d.format("MMM D, YYYY");
+};

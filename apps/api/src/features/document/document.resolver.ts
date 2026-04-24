@@ -30,7 +30,7 @@ export class DocumentResolver {
 
   constructor(
     private readonly userService: UserService,
-    private readonly documentService: DocumentService, 
+    private readonly documentService: DocumentService,
     private readonly documentTreeService: DocumentTreeService
   ) { }
 
@@ -76,10 +76,10 @@ export class DocumentResolver {
   ): Promise<Document[]> {
     return this.documentService.getExploreDocuments(limit, offset);
   }
-  
+
   @Public()
   @Query(() => [Document], {
-    name:"getFeaturedDocuments",
+    name: "getFeaturedDocuments",
     description: "Get featured documents for explore page",
   })
   async getFeaturedDocuments(
@@ -118,7 +118,7 @@ export class DocumentResolver {
   ): Promise<Document[]> {
     return this.documentService.getTrendingPublishedDocuments(limit, offset);
   }
-  
+
   @Query(() => [Document], {
     name: 'getUserPublicDocuments',
     description: 'Get public documents by a specific user',
@@ -176,13 +176,13 @@ export class DocumentResolver {
   }
 
   @Mutation(() => Document, {
-    name:"forkDocument",
-    description:"Fork a documents"
+    name: "forkDocument",
+    description: "Fork a documents"
   })
   async forkDocument(
-    @Args("input") input : ForkDocumentInput,
-    @CurrentUser("id") userId:string
-  ){
+    @Args("input") input: ForkDocumentInput,
+    @CurrentUser("id") userId: string
+  ) {
     return this.documentService.forkDocument(userId, input)
   }
 
@@ -225,10 +225,9 @@ export class DocumentResolver {
   })
   async removeWorkspaceFavoriteDocument(
     @Args('input') input: FavoriteDocumentInput,
-    @CurrentUser('id') userId: string,
-    @Args('publicDocument', { nullable: true, defaultValue: false }) publicDocument: boolean,
+    @CurrentUser('id') userId: string
   ): Promise<Document> {
-    return this.documentService.removeFavoriteDocument(userId, input.documentId,input.workspaceId);
+    return this.documentService.removeFavoriteDocument(userId, input.documentId, input.workspaceId);
   }
 
   @Mutation(() => Document, {

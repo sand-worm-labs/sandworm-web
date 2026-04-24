@@ -10,7 +10,6 @@ import {
 } from "@sandworm/ui/components/select";
 
 export type SortOption =
-  | "all"
   | "trending"
   | "most-popular"
   | "your-forks"
@@ -38,9 +37,7 @@ export function SortControl({
         </SelectTrigger>
 
         <SelectContent className="bg-white dark:bg-base-100 border-[#CED4DA] font-body mt-2 text-ink-200 dark:text-ink-300 dark:border-border-tertiary rounded-xl">
-          <SelectItem value="all" className="hover:bg-primary/20 dark:hover:text-white">
-            All
-          </SelectItem>
+         
           <SelectItem value="trending" className="hover:bg-primary/20 dark:hover:text-white">
             Trending
           </SelectItem>

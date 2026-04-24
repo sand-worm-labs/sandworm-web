@@ -1,12 +1,14 @@
 "use client";
 
 import { v4 as uuidv4 } from "uuid";
-import { XCircleIcon } from "@heroicons/react/20/solid";
 import { useCallback, useState } from "react";
 import { uniq } from "ramda";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { Trash } from "@/components/Assets/Trash";
+import { BsPlusCircle } from "react-icons/bs";
+
 
 import {
   useEnvironmentVariables,
@@ -70,7 +72,7 @@ function EnvVarInput(props: EnvVarInputProps) {
         <div className="flex-1 w-full">
           <label
             htmlFor={`name-${props.variable.id}`}
-            className="block text-sm font-medium leading-6 text-gray-900"
+            className="block text-xs font-medium leading-6 text-ink-400 uppercase mb-1"
           >
             Name
           </label>
@@ -80,7 +82,7 @@ function EnvVarInput(props: EnvVarInputProps) {
             value={props.variable.name}
             placeholder="MY_VARIABLE_NAME"
             className={clsx(
-              "h-9 block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 disabled:bg-gray-100 disabled:text-gray-300",
+              "w-full px-3 py-1.5 rounded-md dark:bg-[#1A1A1A] border dark:border-border-tertiary border-[#DEE2E6] dark:text-white placeholder:dark:text-ink-300  placeholder-[#455768] focus:outline-none focus:ring-[1p] focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4] font-body ",
               props.error && "ring-1 ring-error-600"
             )}
             onChange={onChangeName}
@@ -91,15 +93,16 @@ function EnvVarInput(props: EnvVarInputProps) {
         <div className="flex-1 w-full">
           <label
             htmlFor={`val-${props.variable.id}`}
-            className="block text-sm font-medium leading-6 text-gray-900"
+            className="mb-1 block text-xs font-medium leading-6 text-ink-400 uppercase"
           >
             Value
           </label>
-          <textarea
+          <input
             rows={1}
+            type="text"
             id={`val-${props.variable.id}`}
             value={props.variable.value}
-            className="h-9 block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ceramic-200/70 6 disabled:bg-gray-100 disabled:text-gray-300"
+            className="w-full px-3 py-1.5 rounded-md dark:bg-[#1A1A1A] border dark:border-border-tertiary border-[#DEE2E6] dark:text-white placeholder:dark:text-ink-300  placeholder-[#455768] focus:outline-none focus:ring-[1p] focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4] font-body "
             onChange={onChangeValue}
             disabled={!props.onChange || props.disabled}
           />
@@ -111,7 +114,7 @@ function EnvVarInput(props: EnvVarInputProps) {
             onClick={onRemove}
             disabled={props.disabled}
           >
-            <XCircleIcon className="h-5 w-5" />
+            <Trash className="h-5 w-5" />
           </button>
         </div>
       </div>
@@ -231,19 +234,19 @@ export default function EnvirontVariablesPage() {
       <ScrollBar className="w-full bg-white h-full overflow-auto">
         <div className="px-4 sm:p-6 lg:p-8">
           <div className="border-b border-gray-200 pb-4">
-            <h2 className="text-lg font-semibold leading-7 text-gray-900">
+            <h2 className="text-lg font-medium leading-7 text-ink-100">
               Environment variables
             </h2>
-            <p className="pt-1 text-sm leading-6 text-gray-500">
-              These environment variables are available in Python blocks through{" "}
-              <span className="font-mono px-1 py-0.5 bg-gray-100 rounded-sm">
+            <p className="pt-1 text-sm leading-6 text-ink-400">
+            Available in Python blocks via
+              <span className="font-mono px-1 py-0.5 text-ink-100 rounded-sm">
                 os.getenv("VAR_NAME")
               </span>
               .
             </p>
           </div>
           <form onSubmit={onSave}>
-            <div className="flex flex-col border-b border-gray-200 py-4 space-y-4">
+            <div className="flex flex-col py-4 space-y-4">
               <div className="flex flex-col space-y-2">
                 {variables.map(v => (
                   <EnvVarInput
@@ -267,8 +270,9 @@ export default function EnvirontVariablesPage() {
                 <button
                   type="button"
                   onClick={onAdd}
-                  className="flex items-center gap-x-2 text-sm font-semibold leading-6 text-gray-600 border border-gray-400 px-6 py-1.5 rounded-sm shadow-sm hover:bg-gray-50"
+                  className="flex items-center gap-x-2 text-sm font-medium leading-6 text-ink-400 border border-border-secondary px-6 py-1.5  hover:bg-gray-50 rounded-lg"
                 >
+                  <BsPlusCircle />
                   New variable
                 </button>
               </div>
@@ -277,18 +281,18 @@ export default function EnvirontVariablesPage() {
               <button
                 onClick={onCancel}
                 type="button"
-                className="text-sm font-semibold leading-6 text-gray-600 border border-gray-400 px-6 py-1.5 rounded-sm shadow-sm hover:bg-gray-50"
+                className="text-sm font-medium leading-6 text-gray-600 border border-border-secondary px-6 py-2 rounded-lg "
                 disabled={saving}
               >
                 {added.length === 0 && removed.length === 0 ? "Back" : "Cancel"}
               </button>
               <button
                 type="submit"
-                className="flex items-center gap-x-2 rounded-sm shadow-sm bg-primary-200 px-6 py-2.5 text-sm font-semibold hover:bg-primary-300 border-stone-950 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                className="flex items-center gap-x-2 rounded-lg bg-[#0F0F0F] text-white  px-6 py-2 text-sm font-medium  disabled:bg-[#868E96] disabled:cursor-not-allowed "
                 disabled={(added.length === 0 && removed.length === 0) || loading}
               >
                 {saving && <Spin />}
-                Save
+                Save Changes
               </button>
             </div>
           </form>

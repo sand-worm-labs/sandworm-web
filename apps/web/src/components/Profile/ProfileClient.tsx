@@ -12,7 +12,7 @@ interface ProfilePageClientProps {
 }
 
 export function ProfilePageClient({ profileId, initialDocuments, pageSize }: ProfilePageClientProps) {
-  const { user, loading } = useUser({ userId: profileId });
+  const { user, isFollowing, loading } = useUser({ userId: profileId });
   const { user: sessionUser, loading: sessionLoading } = useSession({});
 
   const isOwnProfile = !!sessionUser && !!user && sessionUser.id === user.id;
@@ -24,6 +24,7 @@ export function ProfilePageClient({ profileId, initialDocuments, pageSize }: Pro
       isOwnProfile={isOwnProfile}
       initialDocuments={initialDocuments}
       pageSize={pageSize}
+      isFollowing={isFollowing}
     />
   );
 }

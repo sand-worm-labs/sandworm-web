@@ -1,8 +1,8 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
 
 import { WorkspaceSidebar } from "@/components/Layout/WorkSpaceSidebar";
 import { AppHeader } from "@/components/Layout/AppHeader";
@@ -14,15 +14,46 @@ import {
 import { ViewerAccessBar } from "@/components/ViewerAccessBar";
 import { Loader } from "@/components/Loader";
 import MobileWarning from "@/components/Editor/blocks/MobileWarning";
+import { SideBarProvider } from "@/components/Editor/hooks/useSideBar";
+import useSideBar from "@/components/Editor/hooks/useSideBar";
+import { useIsMobile } from "@/hooks/useMobile";
 
+
+// =====================================
+// ⬢ Types
+// =====================================
 interface WorkspaceLayoutProps {
   children: ReactNode;
 }
 
-export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
+// ⬢ Auto-Collapse Guard
+// =====================================
+function AutoCollapseOnNotebook() {
+  const pathname = usePathname();
+  const { api } = useSideBar();
+  const prevPathRef = useRef(pathname);
+
+  useEffect(() => {
+    const prev = prevPathRef.current;
+    const wasDocument = prev.includes("/documents/");
+    const isDocument = pathname.includes("/documents/");
+
+    if (!wasDocument && isDocument) {
+      api.close();
+    }
+
+    prevPathRef.current = pathname;
+  }, [pathname, api]);
+
+  return null;
+}
+
+function WorkspaceLayoutInner({ children }: WorkspaceLayoutProps) {
   const { loading: sessionLoading, isAuthenticated } = useSession({
     redirectToLogin: true,
   });
+  const isMobile = useIsMobile();
+
 
   const { workspaceInfo, isLoading: workspaceLoading } =
     useCurrentWorkspaceInfo(sessionLoading || !isAuthenticated);
@@ -56,9 +87,18 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
   }
 
   return (
+
     <div className="flex h-screen w-full bg-base-100">
+      <AutoCollapseOnNotebook />
       <MobileWarning />
-      <WorkspaceSidebar />
+      {isMobile ? (
+       
+        <div className="w-0 overflow-visible flex-none">
+          <WorkspaceSidebar />
+        </div>
+      ) : (
+        <WorkspaceSidebar />
+      )}
       <div className="flex flex-col flex-1 overflow-hidden">
         {!shouldHideHeader && <AppHeader />}
         <main className="flex-1 overflow-y-auto bg-base-100">{children}</main>
@@ -70,5 +110,16 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
         />
       )}
     </div>
+  );
+}
+
+// =====================================
+// ⬢ Workspace Layout
+// =====================================
+export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
+  return (
+    <SideBarProvider>
+      <WorkspaceLayoutInner>{children}</WorkspaceLayoutInner>
+    </SideBarProvider>
   );
 }

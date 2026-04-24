@@ -1,13 +1,14 @@
 import { Transition } from "@headlessui/react";
 import type { ChangeEventHandler, FormEvent } from "react";
 import { useCallback, useState, useRef, useEffect } from "react";
-import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 
 import { timeAgo } from "@/lib";
 import { Trash } from "@/components/Assets/Trash";
 import { CommentIcon } from "@/components/Assets/CommentIcon";
 import { PaperPlaneTilt } from "@/components/Assets/PaperPlaneTilt";
+import { X  } from "lucide-react";
+
 
 import { useComments } from "../hooks/useComments";
 import { useSession } from "../hooks/useAuth";
@@ -96,10 +97,10 @@ export default function Comments({
         </p>
         <button
           type="button"
-          className="absolute z-10 top-7 transform rounded-full border border-gray-300  text-ink-400 bg-base-100 hover:bg-gray-100 w-6 h-6 flex justify-center items-center right-3 -translate-x-1/2 dark:border-border-tertiary "
+          className="absolute z-10 top-7 transform rounded-full  text-ink-400 bg-base-100 hover:bg-gray-100 w-6 h-6 flex justify-center items-center right-3 -translate-x-1/2 dark:border-border-tertiary "
           onClick={onHide}
         >
-          <ChevronDoubleRightIcon className="w-3 h-3" />
+          <X className="w-5 h-5" />
         </button>
         <div className="border-t border-dashed border-border-secondary dark:border-border-tertiary" />
 

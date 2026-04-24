@@ -42,7 +42,7 @@ export const ExplorerBreadCrumbs: React.FC<IExplorerBreadCrumbsProps> = ({
   };
 
   return (
-    <nav className="py-2 pb-4 px-4   border-b border-[#E9ECEF] dark:border-border-tertiary text-sm capitalize font-medium">
+    <nav className="py-2 pb-4 px-4   border-b border-border-secondary  dark:border-border-tertiary text-sm capitalize font-medium">
       <button
         type="button"
         className="cursor-pointer"

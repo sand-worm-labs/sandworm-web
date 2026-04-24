@@ -77,7 +77,7 @@ export const WorkSpace = ({ initialQuery, currentUserId }: WorkSpaceProps) => {
           className="shadow-none border-none fixed bottom-20 right-3 z-50 pointer-events-auto flex items-start flex-col gap-2 px-3 py-2 text-sm bg-transparent cursor-pointer hover:bg-transparent"
         >
           <span>Data Explorers</span>
-          <div className="bg-[#ECF6FF] border-[3px] border-[#E9ECEF] dark:border-border-tertiary rounded-xl p-2.5">
+          <div className="bg-[#ECF6FF] border-[3px] border-border-secondary  dark:border-border-tertiary rounded-xl p-2.5">
             <DatabaseIcon className="h-5 w-5 text-accent shrink-0" />
           </div>
         </Button>
