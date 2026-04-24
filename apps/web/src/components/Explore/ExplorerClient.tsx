@@ -30,8 +30,6 @@ interface ExploreClientProps {
 // =====================================
 function sortToFilter(sort: SortOption, viewerId: string | null): DocumentFilter {
   switch (sort) {
-    case "all":
-      return { kind: "explorer" };
     case "trending":
       return { kind: "trending" };
     case "your-forks":
@@ -39,6 +37,8 @@ function sortToFilter(sort: SortOption, viewerId: string | null): DocumentFilter
     case "your-favourites":
       return viewerId ? { kind: "favorites", userId: viewerId } : { kind: "explorer" };
     case "most-popular":
+      return { kind: "trending" };
+    default:
       return { kind: "trending" };
   }
 }
@@ -75,7 +75,7 @@ export function ExploreClient({
     () => sortToFilter(sortBy, userId ?? null),
     [sortBy, userId]
   );
-  const isDefault = filter.kind === "explorer";
+  const isDefault = filter.kind === "trending";
 
   const handleSortChange = useCallback(
     (next: SortOption) => {

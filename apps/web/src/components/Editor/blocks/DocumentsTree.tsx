@@ -125,6 +125,8 @@ interface Props {
     orderIndex: number
   ) => void;
   flat?: boolean;
+  onBeforeNavigate?: () => void
+
 }
 
 function computeIsExpanded(current: string, isExpanded: boolean, node: Node) {
@@ -345,6 +347,8 @@ interface NodeComponentProps {
   flat?: boolean;
   isLast: boolean;
   firstNonLastParentId: string | null;
+  onBeforeNavigate?: () => void;
+
 }
 
 function NodeComponent(props: NodeComponentProps) {
@@ -557,6 +561,7 @@ function NodeComponent(props: NodeComponentProps) {
                 />
               </div>
               <Link
+               onClick={props.onBeforeNavigate}
                 className="flex items-center flex-1 overflow-auto"
                 href={`/workspace/${props.workspaceId}/documents/${props.document.id}`}
               >
@@ -567,7 +572,7 @@ function NodeComponent(props: NodeComponentProps) {
               <DropDown
                 documentId={props.document.id}
                 isFavoriteDropdown={Boolean(props.flat)}
-                isFavorited={props.document.isFavorited || props.flat}
+                isFavorited={props.document.isFavorite || props.flat}
                 onDelete={props.onDelete}
                 onDuplicate={props.onDuplicate}
                 onFavorite={props.onFavorite}
@@ -666,6 +671,7 @@ function DocumentTree(props: Props) {
               flat={props.flat}
               documents={props.documents}
               isLast={isLast}
+              onBeforeNavigate={props.onBeforeNavigate}
               firstNonLastParentId={isLast ? null : node.document.id}
             />
           );
