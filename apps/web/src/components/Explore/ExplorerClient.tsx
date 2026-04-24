@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo,} from "react";
 import Image from "next/image";
 
 import { usePublicDocuments, type DocumentFilter } from "@/components/Editor/hooks/usePublicDocuments";
@@ -33,9 +33,9 @@ function sortToFilter(sort: SortOption, viewerId: string | null): DocumentFilter
     case "trending":
       return { kind: "trending" };
     case "your-forks":
-      return viewerId ? { kind: "forked", userId: viewerId } : { kind: "explorer" };
+      return viewerId ? { kind: "forked", userId: viewerId } : { kind: "trending" };
     case "your-favourites":
-      return viewerId ? { kind: "favorites", userId: viewerId } : { kind: "explorer" };
+      return viewerId ? { kind: "favorites", userId: viewerId } : { kind: "trending" };
     case "most-popular":
       return { kind: "trending" };
     default:

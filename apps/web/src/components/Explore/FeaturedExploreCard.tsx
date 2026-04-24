@@ -149,7 +149,7 @@ export function FeaturedExploreCard({
             <span
               className={cn(
                 "text-xs",
-                isPurple ? "text-white/70" : "text-ink-400"
+                isPurple ? "text-[#F8F9FA]" : "text-ink-400"
               )}
             >
               Created {formattedDate}
@@ -201,7 +201,7 @@ export function FeaturedExploreCard({
             onClick={(e) => e.stopPropagation()}
             className={cn(
               "text-sm font-medium hover:underline",
-              isPurple ? "text-white/80" : "text-ink-400"
+              isPurple ? "text-[#F8F9FA]" : "text-ink-400"
             )}
           >
             @{creator?.username}
