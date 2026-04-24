@@ -13,6 +13,8 @@ import {
 import { cn } from "@sandworm/ui/lib/utils";
 
 import { Share } from "@/components/Assets/Share";
+import { TooltipV2 } from "./ToolTips";
+
 
 type ShareVisibility = "private" | "team" | "community";
 
@@ -85,19 +87,23 @@ export default function ShareModal({
   return (
     <>
       {/* Trigger Button */}
-      <button
-        type="button"
-        onClick={openModal}
-        className={cn(
-          "p-2 mb-2 rounded-lg transition-colors flex items-center justify-center",
-          "text-ink-400 hover:text-ink-100 dark:text-ink-100 dark:hover:text-white",
-          "hover:bg-[#F1F3F4] dark:hover:bg-base-400 "
+      <TooltipV2 active title="Share" position="left">
+        {(ref) => (
+          <button
+            ref={ref as React.RefObject<HTMLButtonElement>}
+            type="button"
+            onClick={openModal}
+            className={cn(
+              "p-2 mb-2 rounded-lg transition-colors flex items-center justify-center",
+              "text-ink-400 hover:text-ink-100 dark:text-ink-100 dark:hover:text-white",
+              "hover:bg-[#F1F3F4] dark:hover:bg-base-400"
+            )}
+            aria-label="Share"
+          >
+            <Share size={22} />
+          </button>
         )}
-        aria-label="Share"
-        title="Share"
-      >
-        <Share size={22} />
-      </button>
+      </TooltipV2>
 
       {/* Modal */}
       <Transition show={isOpen} as={React.Fragment}>
