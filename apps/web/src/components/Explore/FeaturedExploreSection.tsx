@@ -42,7 +42,7 @@ function toFeaturedQuery(doc: ApiDocument): FeaturedQuery {
     title: doc.title || "Untitled",
     createdAt: new Date(doc.createdAt),
     creator: {
-      username: doc.author.username,
+      username: doc?.author?.username,
       image: PLACEHOLDER_AVATAR,
       userId: doc.authorId,
     },
@@ -100,7 +100,7 @@ export function FeaturedExploreSection() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
-      {queries.map(query => (
+      {queries.map((query, index) => (
         <FeaturedExploreCard
           key={query.id}
           id={query.id}
@@ -113,6 +113,7 @@ export function FeaturedExploreSection() {
           isSaved={savedIds.has(query.id)}
           onSave={handleSave}
           onClick={handleClick}
+          variant={index === 0 ? "purple" : "default"} 
         />
       ))}
     </div>

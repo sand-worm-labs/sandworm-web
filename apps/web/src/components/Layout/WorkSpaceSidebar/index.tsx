@@ -197,15 +197,16 @@ export const WorkspaceSidebar = () => {
   return (
     <>
       <aside
-        className={`
+         className={`
           bg-[#FEFFFF] dark:bg-base-500 border-r border-border-secondary dark:border-border-tertiary
           font-body justify-between flex flex-col
           transition-all duration-300 ease-in-out relative
+      
           ${isMobile ? "fixed top-0 left-0 h-full z-50 w-[17.5rem]" : "h-full"}
           ${isMobile
             ? isMobileOpen
               ? "translate-x-0"
-              : "-translate-x-full"
+              : "-translate-x-full border-none"
             : collapsed
               ? "w-16"
               : "w-[17.5rem]"
