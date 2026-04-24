@@ -17,7 +17,9 @@ import { useFavorites } from "../Editor/hooks/useFavorites";
 import { ForkToWorkspaceModal } from "@/components/Explore/ForkToWorkspaceModal";
 import { cn } from "@/lib/utils";
 
+
 import type { ApiDocument } from "@/types";
+import { formatDate } from "@/lib/date";
 
 // =====================================
 // ⬢ Types
@@ -42,9 +44,12 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
   const [isForkModalOpen, setIsForkModalOpen] = useState(false);
   const [isFavorited, setIsFavorited] = useState(query.isFavorite ?? false);
   const [favoriteCount, setFavoriteCount] = useState(query.favoriteCount ?? 0);
+  const formattedDate = formatDate(query.createdAt)
+
 
 
   const handleForkClick = () => setIsForkModalOpen(true);
+  
 
 
   const handleFork = async ({
@@ -127,10 +132,9 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
                     {query.title}
                   </h3>
                   <p className="text-xs text-ink-400">
+                    
                     Created{" "}
-                    {query.createdAt
-                      ? new Date(query.createdAt).toLocaleDateString()
-                      : "N/A"}
+                    {formattedDate}
                   </p>
                 </div>
               </div>
