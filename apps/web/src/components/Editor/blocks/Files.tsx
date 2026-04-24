@@ -89,7 +89,7 @@ function UploadPlaceholder({
     >
       <div
         className={clsx(
-          "bg-[#FBFBFB] rounded-2xl border-2 border-dashed border-[#E9ECEF] dark:text-ink-400 text-ink-300 dark:bg-base-100  dark:border-border-tertiary",
+          "bg-[#FBFBFB] rounded-2xl border-2 border-dashed border-border-secondary  dark:text-ink-400 text-ink-300 dark:bg-base-100  dark:border-border-tertiary",
           compact
             ? "flex items-center justify-between px-2 py-2 text-sm  "
             : "flex flex-col items-center justify-center h-full p-8 text-center"
@@ -270,7 +270,7 @@ function ReplaceDialog(props: ReplaceDialogProps) {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden rounded-xl bg-white dark:bg-base-100 px-4 pb-4 pt-5 text-left  transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg sm:p-6 data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95 border-[#E9ECEF] font-body font-medium">
+              <Dialog.Panel className="relative transform overflow-hidden rounded-xl bg-white dark:bg-base-100 px-4 pb-4 pt-5 text-left  transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg sm:p-6 data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95 border-border-secondary  font-body font-medium">
                 <div>
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full ">
                     <Cautious />
@@ -341,7 +341,7 @@ function FileItem(props: FileItemProps) {
   }, [props.onDelete, props.file]);
 
   return (
-    <div className="px-4 py-3 font-body  border border-[#E9ECEF] rounded-xl my-2  dark:bg-base-100 dark:border-border-tertiary">
+    <div className="px-4 py-3 font-body  border border-border-secondary  rounded-xl my-2  dark:bg-base-100 dark:border-border-tertiary">
       <div>
         <div className="flex justify-between pb-0.5">
           <div
@@ -412,9 +412,8 @@ function FileItem(props: FileItemProps) {
             "Download"
           ) : (
             <Link
-              href={`${NEXT_PUBLIC_API_URL()}/workspaces/${
-                props.workspaceId
-              }/files/file?path=${encodeURIComponent(props.file.relCwdPath)}`}
+              href={`${NEXT_PUBLIC_API_URL()}/workspaces/${props.workspaceId
+                }/files/file?path=${encodeURIComponent(props.file.relCwdPath)}`}
               target="_blank"
             >
               Download
@@ -440,7 +439,7 @@ function FolderItem({ file, onNavigate }: FolderItemProps) {
     <button
       type="button"
       onClick={onClick}
-      className="w-full text-left px-4 py-3 font-body border border-[#E9ECEF] rounded-xl my-2 dark:bg-base-100 dark:border-border-tertiary  transition-colors group"
+      className="w-full text-left px-4 py-3 font-body border border-border-secondary  rounded-xl my-2 dark:bg-base-100 dark:border-border-tertiary  transition-colors group"
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-x-2 min-w-0">
@@ -705,7 +704,7 @@ file`;
           className="relative w-[354px] flex flex-col border-l dark:border-border-tertiary border-border-secondary h-full bg-white  dark:bg-base-100 "
           {...getRootProps()}
         >
-          <div className="flex justify-between border-b p-6 space-x-3 border-[#E9ECEF]  dark:border-border-tertiary ">
+          <div className="flex justify-between border-b p-6 space-x-3 border-border-secondary   dark:border-border-tertiary ">
             <div>
               <h3 className="text-lg font-medium leading-6 text-ink-100 pr-1.5">
                 Files
@@ -756,7 +755,7 @@ file`;
           )}
           {(actualFiles.length > 0 || upload._tag === "idle") && (
             <>
-              {/*    <div className="relative flex px-4 py-2 text-xs font-medium border-b border-[#E9ECEF] dark:bg-base-100  dark:border-border-tertiary  text-ink-400 justify-between">
+              {/*    <div className="relative flex px-4 py-2 text-xs font-medium border-b border-border-secondary  dark:bg-base-100  dark:border-border-tertiary  text-ink-400 justify-between">
                 <div className="flex gap-x-1">
                   <span className="font-mono">/home/sandwormuser</span>
                 </div>
@@ -771,7 +770,7 @@ file`;
                 </Tooltip>
               </div> */}
 
-              <div className="relative flex items-center px-4 py-2 text-xs font-medium border-b border-[#E9ECEF] dark:bg-base-100 dark:border-border-tertiary text-ink-400 justify-between gap-x-2">
+              <div className="relative flex items-center px-4 py-2 text-xs font-medium border-b border-border-secondary  dark:bg-base-100 dark:border-border-tertiary text-ink-400 justify-between gap-x-2">
                 <div className="flex items-center gap-x-1 overflow-hidden flex-1 font-mono min-w-0">
                   {breadcrumbs.map((crumb, i) => (
                     <React.Fragment key={crumb.path}>
@@ -848,7 +847,7 @@ file`;
               ) : (
                 !isDragActive && (
                   <div className="flex-1 p-4">
-                    <div className="flex items-center flex-col justify-center h-full text-ink-400  bg-[#FBFBFB] rounded-lg border-2 border-dashed border-[#E9ECEF] p-8 text-center dark:bg-base-100 dark:border-border-tertiary">
+                    <div className="flex items-center flex-col justify-center h-full text-ink-400  bg-[#FBFBFB] rounded-lg border-2 border-dashed border-border-secondary  p-8 text-center dark:bg-base-100 dark:border-border-tertiary">
                       <UploadIcon />
                       <span className="mt-2 text-sm">
                         Click or drag and drop files here to upload them

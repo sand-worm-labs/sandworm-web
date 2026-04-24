@@ -38,7 +38,7 @@ const PanelItem = ({
         "text-ink-400 hover:text-ink-100  dark:text-ink-300  dark:hover:text-white",
         "hover:bg-[#F1F3F4] dark:hover:bg-[#21262d]",
         isActive &&
-          "bg-[#F1F3F4] dark:bg-base-500 text-ink-100  dark:text-white"
+        "bg-[#F1F3F4] dark:bg-base-500 text-ink-100  dark:text-white"
       )}
       aria-label={action.label}
       title={action.label}
@@ -55,7 +55,7 @@ const AIAssistantButton = ({ onClick }: { onClick?: () => void }) => (
   <button
     type="button"
     onClick={onClick}
-    className="border-t border-b  border-[#E9ECEF] dark:border-border-tertiary py-3.5 w-full flex items-center justify-center "
+    className="border-t border-b  border-border-secondary  dark:border-border-tertiary py-3.5 w-full flex items-center justify-center "
     aria-label="AI Assistant"
     title="AI Assistant"
   >

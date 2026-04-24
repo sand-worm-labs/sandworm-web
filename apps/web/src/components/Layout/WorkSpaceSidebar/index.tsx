@@ -207,7 +207,7 @@ export const WorkspaceSidebar = () => {
     <>
       <aside
         className={`
-      bg-[#FEFFFF] dark:bg-base-500 border-r border-[#E9ECEF] dark:border-border-tertiary font-body justify-between flex flex-col
+      bg-[#FEFFFF] dark:bg-base-500 border-r border-border-secondary  dark:border-border-tertiary font-body justify-between flex flex-col
       transition-all duration-300 ease-in-out relative
   
       ${isMobile ? "fixed top-0 left-0 h-full z-50 w-[17.5rem]" : "h-full"}
@@ -292,8 +292,8 @@ export const WorkspaceSidebar = () => {
                         <item.icon
                           size={18}
                           className={`hover:text-[#A308F0] ${pathname === item.href
-                              ? "text-[#A308F0] dark:text-ink-100"
-                              : "text-ink-icon"
+                            ? "text-[#A308F0] dark:text-ink-100"
+                            : "text-ink-icon"
                             }`}
                         />
                         {!collapsed && item.name}
@@ -390,7 +390,7 @@ export const WorkspaceSidebar = () => {
         </div>
 
         {!collapsed && (
-          <div className="absolute bottom-0 left-0 right-0 border-t border-[#E9ECEF]  dark:border-border-tertiary py-1.5 px-1.5 bg-base-100">
+          <div className="absolute bottom-0 left-0 right-0 border-t border-border-secondary   dark:border-border-tertiary py-1.5 px-1.5 bg-base-100">
             <AccountDropdown onToggleFeedback={() => setIsFeedbackOpen(true)} />
           </div>
         )}

@@ -1,5 +1,5 @@
 import { ErrorCode } from '@/constants/error-code.constant';
-import {  Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ValidationException } from '@sandworm/graphql';
 import {
   DocumentEntity,
@@ -300,7 +300,7 @@ export class DocumentService {
       if (!original) throw new ValidationException(ErrorCode.E003);
 
       // source must be published — you don't want a document that is not public
-      if (original.visibility  !== DocumentVisibility.PUBLIC) {
+      if (original.visibility !== DocumentVisibility.PUBLIC) {
         throw new ValidationException(ErrorCode.E003);
       }
 
@@ -385,7 +385,9 @@ export class DocumentService {
     }
 
     document.publishedAt = new Date();
-    this.yjsDocumentService.publishDocument(documentId);
+    this.logger.log("dhhdhd")
+    let data = await this.yjsDocumentService.publishDocument(documentId);
+    this.logger.log(data)
     //document.visibility = DocumentVisibility.PUBLIC;
 
     await this.documentRepository.save(document);
@@ -471,18 +473,18 @@ export class DocumentService {
   }
 
   async getForkedDocuments(userId: string, limit = 20, offset = 0): Promise<Document[]> {
-      const forks = await this.forkRepository.find({
-          where: { userId },
-          relations: ['forkedDocument'],
-          order: { createdAt: 'DESC' },
-          take: limit,
-          skip: offset,
-      });
+    const forks = await this.forkRepository.find({
+      where: { userId },
+      relations: ['forkedDocument'],
+      order: { createdAt: 'DESC' },
+      take: limit,
+      skip: offset,
+    });
 
-      return forks
-          .map(f => f.forkedDocument)
-          .filter(d => d && !d.deletedAt)
-          .map(Document.fromEntity);
+    return forks
+      .map(f => f.forkedDocument)
+      .filter(d => d && !d.deletedAt)
+      .map(Document.fromEntity);
   }
 
   async isFavoriteDocument(userId: string, documentId: string): Promise<boolean> {
@@ -494,22 +496,22 @@ export class DocumentService {
   }
 
   async getTrendingPublishedDocuments(limit = 20, offset = 0): Promise<Document[]> {
-      const documents = await this.documentRepository
-          .createQueryBuilder('doc')
-          .leftJoin('doc.favorites', 'fav')
-          .leftJoin(DocumentForkEntity, 'fork', 'fork.source_document_id = doc.id')
-          .where('doc.visibility = :visibility', { visibility: DocumentVisibility.PUBLIC })
-          .andWhere('doc.deletedAt IS NULL')
-          .andWhere('doc.publishedAt IS NOT NULL')
-          .addSelect('COUNT(DISTINCT fav.userId) + COUNT(DISTINCT fork.id) * 2', 'score')
-          .groupBy('doc.id')
-          .orderBy('score', 'DESC')
-          .addOrderBy('doc.publishedAt', 'DESC')
-          .limit(limit)
-          .offset(offset)
-          .getMany();
+    const documents = await this.documentRepository
+      .createQueryBuilder('doc')
+      .leftJoin('doc.favorites', 'fav')
+      .leftJoin(DocumentForkEntity, 'fork', 'fork.source_document_id = doc.id')
+      .where('doc.visibility = :visibility', { visibility: DocumentVisibility.PUBLIC })
+      .andWhere('doc.deletedAt IS NULL')
+      .andWhere('doc.publishedAt IS NOT NULL')
+      .addSelect('COUNT(DISTINCT fav.userId) + COUNT(DISTINCT fork.id) * 2', 'score')
+      .groupBy('doc.id')
+      .orderBy('score', 'DESC')
+      .addOrderBy('doc.publishedAt', 'DESC')
+      .limit(limit)
+      .offset(offset)
+      .getMany();
 
-      return documents.map(Document.fromEntity);
+    return documents.map(Document.fromEntity);
   }
 
   async getPublishedDocumentBySlug(slug: string): Promise<Document> {

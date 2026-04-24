@@ -17,8 +17,6 @@ export function ProfilePageClient({ profileId, initialDocuments, pageSize }: Pro
 
   const isOwnProfile = !!sessionUser && !!user && sessionUser.id === user.id;
 
-  console.log("isfoll", isFollowing)
-
   return (
     <ProfileComponent
       user={user}

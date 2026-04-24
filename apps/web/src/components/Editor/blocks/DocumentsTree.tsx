@@ -31,7 +31,7 @@ import ScrollBar from "./ScrollBar";
 function useIsDocExpanded(doc: ApiDocument, startsOpen: boolean) {
   const [isExpanded, _setIsExpanded] = useState(
     localStorage.getItem(`sandworm:document:${doc.id}:expanded`) === "1" ||
-      startsOpen
+    startsOpen
   );
 
   const setIsExpanded = useCallback(
@@ -210,7 +210,7 @@ function DropDown(props: DropDownProps) {
         type="button"
         className={clsx(
           (props.isFavoriteDropdown || isViewer || props.level >= 1) &&
-            "hidden",
+          "hidden",
           "pr-0.5"
         )}
         onClick={onCreateHandler}
@@ -239,7 +239,7 @@ function DropDown(props: DropDownProps) {
             leaveFrom="transform opacity-100 scale-100"
             leaveTo="transform opacity-0 scale-95"
           >
-            <Menu.Items className="absolute left-2 -top-2 z-20 w-40 origin-top-right  bg-white dark:bg-base-100  ring-opacity-5 focus:outline-none border-[#E9ECEF] border dark:border-border-tertiary rounded-2xl shadow-[0_1.5px_13px_3px_rgba(82,106,159,0.12)] dark:shadow-none">
+            <Menu.Items className="absolute left-2 -top-2 z-20 w-40 origin-top-right  bg-white dark:bg-base-100  ring-opacity-5 focus:outline-none border-border-secondary  border dark:border-border-tertiary rounded-2xl shadow-[0_1.5px_13px_3px_rgba(82,106,159,0.12)] dark:shadow-none">
               <div className="py-2 px-1.5">
                 <Menu.Item>
                   {({ active }) => (
@@ -522,8 +522,8 @@ function NodeComponent(props: NodeComponentProps) {
                 ? "text-ink-100 bg-ceramic-100/50"
                 : "text-ink-400 hover:bg-ceramic-100/80",
               isDropping &&
-                dropHoverState === "center" &&
-                "bg-ceramic-200 border-ceramic-200",
+              dropHoverState === "center" &&
+              "bg-ceramic-200 border-ceramic-200",
               "group text-sm font-medium leading-6 w-full flex py-1 rounded-sm hover:text-ceramic-600"
             )}
             style={{
@@ -582,8 +582,8 @@ function NodeComponent(props: NodeComponentProps) {
             <ul
               className={clsx(
                 isDropping &&
-                  dropHoverState === "center" &&
-                  "bg-ceramic-200 border-ceramic-200",
+                dropHoverState === "center" &&
+                "bg-ceramic-200 border-ceramic-200",
                 "space-y-1"
               )}
             >
@@ -635,9 +635,9 @@ function DocumentTree(props: Props) {
     () =>
       props.flat
         ? props.documents.map(d => ({
-            document: d,
-            children: List<Node>(),
-          }))
+          document: d,
+          children: List<Node>(),
+        }))
         : buildTrees(null, props.documents),
     [props.flat, props.documents]
   );

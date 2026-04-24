@@ -54,7 +54,7 @@ c30,0,30,26.9,60,26.9"
     // Show empty state if no query has been run
     if (!currentTab.result) {
       return (
-        <div className="h-full flex items-center justify-center relative border-t border-[#E9ECEF] dark:border-border-tertiary">
+        <div className="h-full flex items-center justify-center relative border-t border-border-secondary  dark:border-border-tertiary">
           <div
             className="absolute inset-0"
             style={{
@@ -88,7 +88,7 @@ c30,0,30,26.9,60,26.9"
     // Show error if query failed
     if (currentTab.result.error) {
       return (
-        <div className="h-full flex items-center justify-center relative border-t border-[#E9ECEF]">
+        <div className="h-full flex items-center justify-center relative border-t border-border-secondary ">
           <div
             className="absolute inset-0"
             style={{

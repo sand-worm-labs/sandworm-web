@@ -50,7 +50,7 @@ export default function CookieBanner() {
       className={[
         "fixed bottom-6 right-[1.5rem] z-50 font-body",
         "w-[400px] max-w-[720px]",
-        "bg-white border dark:border-border-secondary border-[#E9ECEF] rounded-2xl shadow-[0_4px_4px_0_#73768726] ",
+        "bg-white border dark:border-border-secondary border-border-secondary  rounded-2xl shadow-[0_4px_4px_0_#73768726] ",
         "flex flex-col  gap-4 px-5 py-2.5",
         leaving
           ? "animate-[cookieDown_0.28s_cubic-bezier(0.4,0,1,1)_forwards]"
@@ -59,7 +59,7 @@ export default function CookieBanner() {
     >
       <h2 className="font-medium mt-2">Cookie Settings</h2>
       <p className="flex-1 text-[13px] leading-relaxed dark:text-ink-400 text-[#343A40] m-0 pr-2">
-      We use essential functionality cookies to make the site work. If you accept, we may also use cookies to enhance your experience, measure ad performance and analyze. 
+        We use essential functionality cookies to make the site work. If you accept, we may also use cookies to enhance your experience, measure ad performance and analyze.
         <a
           href="/privacy"
           target="_blank"

@@ -51,7 +51,7 @@ export default function Snapshots(props: Props) {
 
         <ScrollBar className="overflow-auto">
           <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">
-            <div className="flex flex-col gap-y-3 bg-ceramic-50/60 p-6 rounded-xl border-2 border-[#E9ECEF] dark:border-border-tertiary border-dashed items-center max-w-[260px] text-center">
+            <div className="flex flex-col gap-y-3 bg-ceramic-50/60 p-6 rounded-xl border-2 border-border-secondary  dark:border-border-tertiary border-dashed items-center max-w-[260px] text-center">
               <ScheduleIcon />
               <div className="text-ink-300 dark:text-ink-400 text-sm space-y-1">
                 <p className="text-ink-100">No snapshots yet.</p>

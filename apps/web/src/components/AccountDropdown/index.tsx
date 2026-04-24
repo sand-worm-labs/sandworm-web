@@ -127,7 +127,7 @@ interface AccountDropdownProps {
   onToggleFeedback: () => void;
 }
 
-export const AccountDropdown = ({ onToggleFeedback }: AccountDropdownProps)=> {
+export const AccountDropdown = ({ onToggleFeedback }: AccountDropdownProps) => {
   const session = useSession({ redirectToLogin: true });
   const openSignIn = useModalStore(state => state.openSignIn);
   const signout = useSignout();
@@ -141,7 +141,7 @@ export const AccountDropdown = ({ onToggleFeedback }: AccountDropdownProps)=> {
       <div className="w-[95%] mx-auto mb-5 flex justify-center">
         <Button
           onClick={() => openSignIn()}
-          className="px-5 h-11 border-[#E9ECEF] bg-base-100 text-ink-100 font-semibold inline-block w-full dark:border-border-tertiary border"
+          className="px-5 h-11 border-border-secondary  bg-base-100 text-ink-100 font-semibold inline-block w-full dark:border-border-tertiary border"
         >
           Sign up Today!
         </Button>
@@ -190,10 +190,10 @@ export const AccountDropdown = ({ onToggleFeedback }: AccountDropdownProps)=> {
         </DropdownMenuTrigger>
 
         <DropdownMenuContent
-          className="w-64 rounded-2xl border-[#E9ECEF] dark:border-border-tertiary dark:bg-base-400 shadow-md border p-2 ml-6"
+          className="w-64 rounded-2xl border-border-secondary  dark:border-border-tertiary dark:bg-base-400 shadow-md border p-2 ml-6"
           align="start"
         >
-          <div className="flex items-center justify-between px-2 py-2 mb-1 border-b border-[#E9ECEF] dark:border-border-tertiary ">
+          <div className="flex items-center justify-between px-2 py-2 mb-1 border-b border-border-secondary  dark:border-border-tertiary ">
             <div className="flex items-center gap-3">
               <Avatar className="h-8 w-8">
                 <AvatarImage
