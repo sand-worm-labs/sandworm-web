@@ -261,7 +261,7 @@ export default function ReusableComponents(props: Props) {
       leaveTo="w-0"
     >
       <div className="relative w-[354px] flex flex-col border-l  border-border-secondary h-full bg-white dark:bg-base-100  font-body  dark:border-border-tertiary">
-        <div className="flex justify-between border-b p-6 space-x-3 border-[#E9ECEF] dark:border-border-tertiary">
+        <div className="flex justify-between border-b p-6 space-x-3 border-border-secondary  dark:border-border-tertiary">
           <div>
             <h3 className="text-lg font-medium leading-6 text-ink-100 dark:text-white pr-1.5">
               Reusable Components
@@ -308,7 +308,7 @@ export default function ReusableComponents(props: Props) {
           </>
         ) : (
           <div className="flex-1 p-4">
-            <div className="flex items-center justify-center h-full text-ink-300 dark:text-ink-400 rounded-lg border border-dashed  border-[#E9ECEF] dark:border-border-tertiary p-8 text-center font-body font-medium flex-col bg-[#FBFBFB] dark:bg-base-100 ">
+            <div className="flex items-center justify-center h-full text-ink-300 dark:text-ink-400 rounded-lg border border-dashed  border-border-secondary  dark:border-border-tertiary p-8 text-center font-body font-medium flex-col bg-[#FBFBFB] dark:bg-base-100 ">
               <ScheduleIcon />
               <p className="mt-2 text-[0.9rem] ">
                 You have no reusable components. Save a block to create one.

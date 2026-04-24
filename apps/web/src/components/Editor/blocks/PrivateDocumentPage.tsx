@@ -38,9 +38,10 @@ import { PublishBlinkingSignal } from "./BlinkingSignal";
 import ShortcutsModal from "./ShortcutsModal";
 import ReusableComponents from "./ReusableComponents";
 import PageSettingsPanel from "./PageSettingsPanel";
-import { Tooltip } from "./ToolTips";
+import { Tooltip, TooltipV2 } from "./ToolTips";
 import { ContentSkeleton, TitleSkeleton } from "./ContentSkeleton";
 import ShareModal from "./ShareModal";
+
 
 // this is needed because this component only works with the browser
 const V2Editor = dynamic(() => import("@/components/Editor"), {
@@ -270,57 +271,69 @@ function PrivateDocumentPageInner(
   const sidebarContent = useMemo(
     () => (
       <>
-        {/* Icon-only buttons for Comments, Schedules, and Horizontal Toggle */}
         <div className="flex flex-col">
-          {/* Comments Button */}
-          <button
-            type="button"
-            onClick={onToggleComments}
-            className="flex items-center justify-center rounded-xl px-0.5 py-1.5 text-sm  hover:bg-[#F1F2F4] dark:bg-base-500 dark:hover:bg-base-200 dark:text-ink-100  h-full bg-white mb-1.5"
-            title="Comments"
-          >
-            <ChatIcon size={22} />
-          </button>
-
+          <TooltipV2 active title="Comments" position="left">
+            {(ref) => (
+              <button
+                ref={ref as React.RefObject<HTMLButtonElement>}
+                type="button"
+                onClick={onToggleComments}
+                className="w-full flex items-center justify-center rounded-xl px-0.5 py-1.5 text-sm hover:bg-[#F1F2F4] dark:bg-base-500 dark:hover:bg-base-200 dark:text-ink-100 h-full bg-white mb-1.5"
+              >
+                <ChatIcon size={22} />
+              </button>
+            )}
+          </TooltipV2>
+  
           {/* Schedules Button - Only show if not viewer and not deleted */}
           {!isViewer && !isDeleted && (
-            <button
-              type="button"
-              onClick={onToggleSchedules}
-              className="flex items-center justify-center rounded-xl px-0.5 py-1.5 text-sm  hover:bg-[#F1F2F4] dark:bg-base-500  h-full bg-white mb-1.5 dark:text-ink-100"
-              title="Schedules"
-            >
-              <ClockCountdown size={22} />
-            </button>
+            <TooltipV2 active title="Schedules" position="left">
+              {(ref) => (
+                <button
+                  ref={ref as React.RefObject<HTMLButtonElement>}
+                  type="button"
+                  onClick={onToggleSchedules}
+                  className="w-full flex items-center justify-center rounded-xl px-0.5 py-1.5 text-sm hover:bg-[#F1F2F4] dark:bg-base-500 h-full bg-white mb-1.5 dark:text-ink-100"
+                >
+                  <ClockCountdown size={22} />
+                </button>
+              )}
+            </TooltipV2>
           )}
-
+  
           {/* Horizontal Toggle Button */}
           {onToggleFullScreen && (
-            <button
-              type="button"
-              onClick={onToggleFullScreen}
-              className="flex items-center justify-center rounded-none px-3 py-3 text-sm text-ink-400  dark:text-ink-100 hover:bg-gray-100 dark:bg-base-500 h-full bg-white  w-full"
-              title={
-                isFullScreen ? "Shrink horizontally" : "Stretch horizontally"
-              }
+            <TooltipV2
+              active
+              title={isFullScreen ? "Shrink horizontally" : "Stretch horizontally"}
+              position="left"
             >
-              <div className="flex items-center">
-                {isFullScreen ? (
-                  <>
-                    <ArrowRightIcon className="h-3 w-3" />
-                    <ArrowLeftIcon className="h-3 w-3" />
-                  </>
-                ) : (
-                  <>
-                    <ArrowLeftIcon className="h-3 w-3" />
-                    <ArrowRightIcon className="h-3 w-3" />
-                  </>
-                )}
-              </div>
-            </button>
+              {(ref) => (
+                <button
+                  ref={ref as React.RefObject<HTMLButtonElement>}
+                  type="button"
+                  onClick={onToggleFullScreen}
+                  className="flex items-center justify-center rounded-none px-3 py-3 text-sm text-ink-400 dark:text-ink-100 hover:bg-gray-100 dark:bg-base-500 h-full bg-white w-full items-center"
+                >
+                  <div className="flex items-center">
+                    {isFullScreen ? (
+                      <>
+                        <ArrowRightIcon className="h-3 w-3" />
+                        <ArrowLeftIcon className="h-3 w-3" />
+                      </>
+                    ) : (
+                      <>
+                        <ArrowLeftIcon className="h-3 w-3" />
+                        <ArrowRightIcon className="h-3 w-3" />
+                      </>
+                    )}
+                  </div>
+                </button>
+              )}
+            </TooltipV2>
           )}
         </div>
-
+  
         <ShareModal
           link={`${NEXT_PUBLIC_PUBLIC_URL()}/workspace/${props.workspaceId}/documents/${props.documentId}/notebook`}
           initialVisibility="private"
@@ -400,7 +413,7 @@ function PrivateDocumentPageInner(
 
         {isViewer ? null : props.isApp ? (
           <Link
-            className="flex items-center rounded-md px-3 py-1 text-sm bg-white dark:bg-base-100  dark:text-ink-100  hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 group relative border border-[#E9ECEF] dark:border-border-tertiary"
+            className="flex items-center rounded-md px-3 py-1 text-sm bg-white dark:bg-base-100  dark:text-ink-100  hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 group relative border border-border-secondary  dark:border-border-tertiary"
             href={`/workspace/${props.document.workspaceId}/documents/${props.document.id}/notebook/edit`}
           >
             <PencilIcon className="w-5 h-5" />
@@ -416,7 +429,7 @@ function PrivateDocumentPageInner(
           >
             <button
               type="button"
-              className="flex items-center rounded-md px-3 py-1 text-sm bg-white dark:bg-base-100  dark:text-ink-100  hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 group relative border border-[#E9ECEF] dark:border-border-tertiary"
+              className="flex items-center rounded-md px-3 py-1 text-sm bg-white dark:bg-base-100  dark:text-ink-100  hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 group relative border border-border-secondary  dark:border-border-tertiary"
               onClick={onPublish}
               disabled={props.publishing}
             >

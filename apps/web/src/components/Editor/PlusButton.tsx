@@ -41,7 +41,7 @@ function BlockSuggestion(props: BlockSuggestionProps) {
     <div id={props.id} className="w-full text-sm px-1 relative z-30">
       <button
         type="button"
-        className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 py-2.5 rounded-full text-[#6C757D] dark:text-ink-400 bg-white dark:bg-base-100 hover:border-[#A308F0] border border-[#E9ECEF] dark:border-border-tertiary font-body font-normal text-sm"
+        className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 py-2.5 rounded-full text-[#6C757D] dark:text-ink-400 bg-white dark:bg-base-100 hover:border-[#A308F0] border border-border-secondary  dark:border-border-tertiary font-body font-normal text-sm"
         onClick={onClick}
       >
         {props.icon}
@@ -60,7 +60,7 @@ interface MultiBlockSuggestionProps {
 function MultiBlockSuggestion(props: MultiBlockSuggestionProps) {
   return (
     <Menu as="div" className="w-full text-sm px-1 relative z-[50]">
-      <Menu.Button className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 rounded-full text-[#6C757D] dark:text-ink-400 bg-white dark:bg-base-100 hover:text-gray-700 relative border border-[#E9ECEF]  dark:border-border-tertiary py-2.5 hover:border-[#A308F0]">
+      <Menu.Button className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 rounded-full text-[#6C757D] dark:text-ink-400 bg-white dark:bg-base-100 hover:text-gray-700 relative border border-border-secondary   dark:border-border-tertiary py-2.5 hover:border-[#A308F0]">
         {props.icon}
         <span>{props.text}</span>
         <ChevronDownIcon className="w-4 h-4" />

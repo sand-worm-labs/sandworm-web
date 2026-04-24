@@ -32,7 +32,7 @@ export class UserService {
     private readonly userFollowsRepository: Repository<UserFollowsEntity>,
     @InjectRepository(UserWorkspaceEntity)
     private readonly userWorkspaceRepository: Repository<UserWorkspaceEntity>,
-  ) { } 
+  ) { }
 
 
   async getCurrentUser(currentUser: {
@@ -50,7 +50,7 @@ export class UserService {
     const foundUser = User.fromEntity(user);
     const roles = await this.getUserWorkspaceRoles(user.id);
 
-    return { id: user.id, user: foundUser, roles, token: process.env.NODE_ENV === 'development' ? currentUser.token : null};
+    return { id: user.id, user: foundUser, roles, token: process.env.NODE_ENV === 'development' ? currentUser.token : null };
   }
 
   async create(
@@ -219,10 +219,10 @@ export class UserService {
     const relation = await this.userFollowsRepository.findOne({
       where: { followerId, followeeId },
     });
-
+    this.logger.log(relation)
     return !!relation;
   }
-  
+
   async updateSocialLinks(
     userId: string,
     socialLinks: SocialLinksInput,

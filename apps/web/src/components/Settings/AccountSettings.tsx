@@ -50,7 +50,7 @@ type WorkspaceRowProps = {
 // =====================================
 function WorkspaceTableHeader() {
   return (
-    <div className="flex items-center px-5 py-3 text-xs font-medium text-[#6C757D] dark:text-ink-400 uppercase tracking-wider border-[#E9ECEF] dark:border-border-tertiary border-b">
+    <div className="flex items-center px-5 py-3 text-xs font-medium text-[#6C757D] dark:text-ink-400 uppercase tracking-wider border-border-secondary  dark:border-border-tertiary border-b">
       <div className="flex-1">Workspace</div>
       <div className="hidden sm:block w-32 text-center">Members</div>
       <div className="hidden sm:block w-24 text-center">Plan</div>
@@ -77,7 +77,7 @@ function WorkspaceRow({
   return (
     <div
       className={clsx(
-        "flex items-center px-5 py-4 border-b border-[#E9ECEF] dark:border-border-tertiary transition-colors",
+        "flex items-center px-5 py-4 border-b border-border-secondary  dark:border-border-tertiary transition-colors",
         !isCurrentWorkspace && "hover:bg-gray-50 dark:hover:bg-[#181C21]"
       )}
     >

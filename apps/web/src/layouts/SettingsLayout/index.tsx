@@ -58,7 +58,7 @@ export default function SettingsLayout({
 
       <div className="flex flex-1 min-h-0 md:flex-row flex-col h-full">
         <div
-          className="p-6 px-3 border-r dark:border-borderLight my-12 border-[#E9ECEF] dark:border-border-tertiary bg-[#FEFFFF] dark:bg-base-500 flex-col justify-between flex self-stretch h-screen"
+          className="p-6 px-3 border-r dark:border-borderLight my-12 border-border-secondary  dark:border-border-tertiary bg-[#FEFFFF] dark:bg-base-500 flex-col justify-between flex self-stretch h-screen"
           style={{ minWidth: 250 }}
         >
           <ul className="mt-4 flex  flex-col w-full">
@@ -66,11 +66,10 @@ export default function SettingsLayout({
               <li key={tab.href}>
                 <Link
                   href={tab.href}
-                  className={`border-l-4  px-4 py-1.5 text-sm font-medium mb-1.5 flex space-x-2  items-center rounded-xl  ${
-                    pathname === tab.href
+                  className={`border-l-4  px-4 py-1.5 text-sm font-medium mb-1.5 flex space-x-2  items-center rounded-xl  ${pathname === tab.href
                       ? " bg-[#EBF7F7] dark:bg-[#181C21]  text-primary"
                       : "text-text-gray hover:bg-dark-translucent"
-                  }`}
+                    }`}
                 >
                   <span className="flex-shrink-0 hidden md:block">
                     {tab.icon}

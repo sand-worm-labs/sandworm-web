@@ -41,7 +41,7 @@ export const AppHeader: FC = () => {
   const title = getRouteTitle(pathname);
 
   return (
-    <header className="bg-[#FBFBFB] dark:bg-base-200 px-8 py-2 flex justify-between items-center border-[#E9ECEF] dark:border-border-tertiary">
+    <header className="bg-[#FBFBFB] dark:bg-base-200 px-8 py-2 flex justify-between items-center border-border-secondary  dark:border-border-tertiary">
       <div className="hidden md:flex items-center gap-4">
         <span className="text-base font-medium text-ink-400">{title}</span>
       </div>

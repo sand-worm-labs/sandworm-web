@@ -1,17 +1,21 @@
 import React from "react";
+import type { IconProps } from "./Menu/types";
 
-export const BookmarkSimple = () => {
+
+
+export const BookmarkSimple: React.FC<IconProps> = ({ size = 18, className }) => {
   return (
     <svg
-      width="16"
-      height="16"
+    width={size}
+    height={size}
       viewBox="0 0 16 16"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      className={className}
     >
       <path
         d="M12 14L8 11.5L4 14V3C4 2.86739 4.05268 2.74021 4.14645 2.64645C4.24021 2.55268 4.36739 2.5 4.5 2.5H11.5C11.6326 2.5 11.7598 2.55268 11.8536 2.64645C11.9473 2.74021 12 2.86739 12 3V14Z"
-        stroke="#616A79"
+        stroke="currentColor"
         strokeLinecap="round"
         strokeLinejoin="round"
       />

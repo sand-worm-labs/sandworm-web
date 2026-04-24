@@ -232,7 +232,7 @@ export const HomeTab = () => {
 
       <Tabs
         defaultValue="recent"
-        className=" pt-5 border-t border-[#E9ECEF]  dark:border-border-tertiary"
+        className=" pt-5 border-t border-border-secondary   dark:border-border-tertiary"
       >
         <TabsList className="w-full justify-start px-0 pb-8">
           <TabsTrigger

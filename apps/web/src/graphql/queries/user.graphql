@@ -10,7 +10,6 @@ query GetUser($userId: String!) {
     isOnboarded
     avater
     createdAt
-    isFollowing
     settings {
       id
       userId
@@ -22,18 +21,12 @@ query GetUser($userId: String!) {
     followers {
       id
       username
-      email
-      firstName
-      lastName
       fullName
       avater
     }
     following {
       id
       username
-      email
-      firstName
-      lastName
       fullName
       avater
     }
@@ -42,6 +35,42 @@ query GetUser($userId: String!) {
   }
 }
 
+query GetUserProfile($userId: String!) {
+  getUser(userId: $userId) {
+    id
+    username
+    email
+    firstName
+    lastName
+    fullName
+    isOnboarded
+    avater
+    createdAt
+    settings {
+      id
+      userId
+      socialLinks
+      statusText
+      statusUpdatedAt
+      wallets
+    }
+    followers {
+      id
+      username
+      fullName
+      avater
+    }
+    following {
+      id
+      username
+      fullName
+      avater
+    }
+    followersCount
+    followingCount
+  }
+    isFollowing(followerId: $userId)
+}
 # Variables:
 # {
 #   "userId": "user_123"
@@ -110,4 +139,8 @@ query GetUserPublicDocuments($userId: String!, $limit: Float = 20, $offset: Floa
       avater
     }
   }
+}
+
+query IsFollowing($userId: String!) {
+  isFollowing(followerId: $userId)
 }

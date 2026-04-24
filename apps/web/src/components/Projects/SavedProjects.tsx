@@ -197,8 +197,8 @@ export const SavedProjects: React.FC = () => {
                     >
                       <Star
                         className={`w-4 h-4 ${project.isFavorite
-                            ? "fill-[#A308F0] text-primary"
-                            : "text-ink-400 hover:text-primary"
+                          ? "fill-[#A308F0] text-primary"
+                          : "text-ink-400 hover:text-primary"
                           }`}
                       />
                     </button>
@@ -271,7 +271,7 @@ export const SavedProjects: React.FC = () => {
                     </button>
 
                     {hoveredUser === project.id && (
-                      <div className="absolute bottom-full left-0 mb-2 px-3 py-1 dark:bg-base-100  bg-white text-ink-400 border-[#E9ECEF] dark:border-border-tertiary border dark:text-white text-xs rounded shadow-[0_0.5px_4px_#2516660A] whitespace-nowrap z-20">
+                      <div className="absolute bottom-full left-0 mb-2 px-3 py-1 dark:bg-base-100  bg-white text-ink-400 border-border-secondary  dark:border-border-tertiary border dark:text-white text-xs rounded shadow-[0_0.5px_4px_#2516660A] whitespace-nowrap z-20">
                         Creator: {project.creator}
                       </div>
                     )}
@@ -288,7 +288,7 @@ export const SavedProjects: React.FC = () => {
                     </button>
 
                     {hoveredSave === project.id && (
-                      <div className="absolute bottom-full right-0 mb-2 px-4 py-1.5 dark:bg-base-100  bg-white text-ink-500 border-[#E9ECEF] dark:border-border-tertiary border dark:text-white text-xs rounded shadow-[0_0.5px_4px_#2516660A] whitespace-nowrap z-20">
+                      <div className="absolute bottom-full right-0 mb-2 px-4 py-1.5 dark:bg-base-100  bg-white text-ink-500 border-border-secondary  dark:border-border-tertiary border dark:text-white text-xs rounded shadow-[0_0.5px_4px_#2516660A] whitespace-nowrap z-20">
                         <div className="space-y-1">
                           <div>
                             <span className="font-medium text-ink-400 dark:text-white">

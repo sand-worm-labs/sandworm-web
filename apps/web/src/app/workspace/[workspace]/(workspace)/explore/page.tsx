@@ -1,7 +1,7 @@
 import {
-  GetExplorerDocumentsDocument,
+  GetTrendingPublishedDocumentsDocument,
   GetFeaturedDocumentsDocument,
-  type GetExplorerDocumentsQuery,
+  type GetTrendingPublishedDocumentsQuery,
   type GetFeaturedDocumentsQuery,
 } from "@/generated/graphql";
 import { getServerClient } from "@/graphql/server";
@@ -24,8 +24,8 @@ async function fetchInitialData() {
 
   try {
     const [explorer, featured] = await Promise.all([
-      client.query<GetExplorerDocumentsQuery>({
-        query: GetExplorerDocumentsDocument,
+      client.query<GetTrendingPublishedDocumentsQuery>({
+        query:  GetTrendingPublishedDocumentsDocument,
         variables: { limit: PAGE_SIZE, offset: 0 },
       }),
       client.query<GetFeaturedDocumentsQuery>({
@@ -35,7 +35,7 @@ async function fetchInitialData() {
     ]);
 
     return {
-      initialDocuments: (explorer.data?.getExplorerDocuments ??
+      initialDocuments: (explorer.data?.getTrendingPublishedDocuments ??
         []) as ApiDocument[],
       initialFeatured: (featured.data?.getFeaturedDocuments ??
         []) as ApiDocument[],

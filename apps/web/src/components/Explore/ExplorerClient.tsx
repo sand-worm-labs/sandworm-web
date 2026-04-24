@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo,} from "react";
 import Image from "next/image";
 
 import { usePublicDocuments, type DocumentFilter } from "@/components/Editor/hooks/usePublicDocuments";
@@ -10,11 +10,12 @@ import { useSession } from "@/components/Editor/hooks/useAuth";
 import { QueryList } from "@/components/Queries/QueryList";
 import { EmptyQueryState } from "@/components/EmptyState/EmptyQueryState";
 import { SortControl, type SortOption } from "@/components/Explore/SortControl";
-import { ViewControl } from "@/components/Explore/ViewControl";
 import { FeaturedExploreSection } from "@/components/Explore/FeaturedExploreSection";
 import type { ApiDocument } from "@/types";
 
-// ─── TYPES ───
+// =====================================
+// ⬢ Types
+// =====================================
 export type ViewMode = "grid" | "list";
 
 interface ExploreClientProps {
@@ -24,24 +25,24 @@ interface ExploreClientProps {
   pageSize: number;
 }
 
-// ─── HELPERS ───
+// =====================================
+// ⬢ Utils
+// =====================================
 function sortToFilter(sort: SortOption, viewerId: string | null): DocumentFilter {
   switch (sort) {
-    case "all":
-      return { kind: "explorer" };
     case "trending":
       return { kind: "trending" };
     case "your-forks":
-      return viewerId ? { kind: "forked", userId: viewerId } : { kind: "explorer" };
+      return viewerId ? { kind: "forked", userId: viewerId } : { kind: "trending" };
     case "your-favourites":
-      return viewerId ? { kind: "favorites", userId: viewerId } : { kind: "explorer" };
+      return viewerId ? { kind: "favorites", userId: viewerId } : { kind: "trending" };
     case "most-popular":
-      // Not on backend yet — fall through to trending for now.
+      return { kind: "trending" };
+    default:
       return { kind: "trending" };
   }
 }
 
-// ─── UI BITS ───
 const Spinner = () => (
   <div className="h-6 w-6 border-2 border-ink-300 border-t-transparent rounded-full animate-spin" />
 );
@@ -57,7 +58,9 @@ const ListSkeleton = () => (
   </div>
 );
 
-// ─── MAIN ───
+// =====================================
+// ⬢ Main Explorer Client
+// =====================================
 export function ExploreClient({
   initialDocuments,
   initialFeatured,
@@ -67,18 +70,17 @@ export function ExploreClient({
   const { user } = useSession({ redirectToLogin: true });
   const userId = user?.id
   const { sortBy, setSortBy } = useDocumentSortParam();
-  const [viewMode, setViewMode] = useState<ViewMode>("grid");
 
   const filter = useMemo(
     () => sortToFilter(sortBy, userId ?? null),
     [sortBy, userId]
   );
-  const isDefault = filter.kind === "explorer";
+  const isDefault = filter.kind === "trending";
 
   const handleSortChange = useCallback(
     (next: SortOption) => {
       setSortBy(next);
-      // Reset scroll so switching filters doesn't leave users deep-scrolled
+      //⬢ Reset scroll so switching filters doesn't leave users deep-scrolled
       // into a shorter list.
       if (typeof window !== "undefined") {
         window.scrollTo({ top: 0, behavior: "auto" });
@@ -134,7 +136,6 @@ export function ExploreClient({
         <p className="text-ink-200 dark:text-ink-300 text-sm mb-6 mt-4">
           Discover the latest trends in the crypto ecosystem.
         </p>
-        <ViewControl viewMode={viewMode} onViewModeChange={setViewMode} />
       </div>
 
       <div className="w-full container mx-auto">

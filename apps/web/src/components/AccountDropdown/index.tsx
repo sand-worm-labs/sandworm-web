@@ -76,6 +76,7 @@ interface NavItemProps {
   onClick?: () => void;
   external?: boolean;
   suffix?: React.ReactNode;
+
 }
 
 const NavItem = ({
@@ -87,7 +88,7 @@ const NavItem = ({
   suffix,
 }: NavItemProps) => {
   const cls =
-    "flex items-center gap-3 w-full px-3 py-1.5 rounded-lg text-sm text-ink-500 dark:text-white hover:bg-[#F8F9FA] dark:hover:bg-[#ffffff08] transition-colors cursor-pointer font-body font-medium";
+    "flex items-center gap-3 w-full px-3 py-1.5 rounded-lg text-sm text-ink-500 dark:text-white hover:bg-[#F8F9FA] dark:hover:bg-[#ffffff08] transition-colors cursor-pointer font-body font-medium text-start";
 
   const inner = (
     <>
@@ -122,7 +123,11 @@ const NavItem = ({
 // =====================================
 // ⬢ Account Dropdown Main Component
 // =====================================
-export const AccountDropdown = () => {
+interface AccountDropdownProps {
+  onToggleFeedback: () => void;
+}
+
+export const AccountDropdown = ({ onToggleFeedback }: AccountDropdownProps) => {
   const session = useSession({ redirectToLogin: true });
   const openSignIn = useModalStore(state => state.openSignIn);
   const signout = useSignout();
@@ -136,7 +141,7 @@ export const AccountDropdown = () => {
       <div className="w-[95%] mx-auto mb-5 flex justify-center">
         <Button
           onClick={() => openSignIn()}
-          className="px-5 h-11 border-[#E9ECEF] bg-base-100 text-ink-100 font-semibold inline-block w-full dark:border-border-tertiary border"
+          className="px-5 h-11 border-border-secondary  bg-base-100 text-ink-100 font-semibold inline-block w-full dark:border-border-tertiary border"
         >
           Sign up Today!
         </Button>
@@ -185,10 +190,10 @@ export const AccountDropdown = () => {
         </DropdownMenuTrigger>
 
         <DropdownMenuContent
-          className="w-64 rounded-2xl border-[#E9ECEF] dark:border-border-tertiary dark:bg-base-400 shadow-md border p-2 ml-6"
+          className="w-64 rounded-2xl border-border-secondary  dark:border-border-tertiary dark:bg-base-400 shadow-md border p-2 ml-6"
           align="start"
         >
-          <div className="flex items-center justify-between px-2 py-2 mb-1 border-b border-[#E9ECEF] dark:border-border-tertiary ">
+          <div className="flex items-center justify-between px-2 py-2 mb-1 border-b border-border-secondary  dark:border-border-tertiary ">
             <div className="flex items-center gap-3">
               <Avatar className="h-8 w-8">
                 <AvatarImage
@@ -235,7 +240,7 @@ export const AccountDropdown = () => {
           <NavItem
             icon={<ThumbsUpIcon size={18} />}
             label="Give Feedback"
-            href="#"
+            onClick={onToggleFeedback}
           />
           <NavItem
             icon={<GearIcon size={18} />}

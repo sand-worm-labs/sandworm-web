@@ -314,11 +314,10 @@ const PendingTabsContent: React.FC<PendingTabsContentProps> = ({
         <button
           type="button"
           onClick={() => setActiveTab("requests")}
-          className={`pb-2 text-sm font-medium transition-colors relative ${
-            activeTab === "requests"
+          className={`pb-2 text-sm font-medium transition-colors relative ${activeTab === "requests"
               ? "text-ink-100 border-b-2 border-border-tertiary"
               : "text-[#6C757D] dark:text-ink-400 hover:text-gray-700"
-          }`}
+            }`}
         >
           Pending requests
           {requests.length > 0 && (
@@ -330,11 +329,10 @@ const PendingTabsContent: React.FC<PendingTabsContentProps> = ({
         <button
           type="button"
           onClick={() => setActiveTab("invites")}
-          className={`pb-2 text-sm font-medium transition-colors ${
-            activeTab === "invites"
+          className={`pb-2 text-sm font-medium transition-colors ${activeTab === "invites"
               ? "text-ink-100 border-b-2 border-border-tertiary"
               : "text-[#6C757D] dark:text-ink-400 hover:text-gray-700"
-          }`}
+            }`}
         >
           Pending invites
           {invites.length > 0 && (
@@ -456,9 +454,9 @@ const ManageInviteModal: React.FC<ManageInviteModalProps> = ({
   pendingInvites,
   pendingRequests = [],
   onCancelInvite,
-  refetchInvite = async () => {},
-  onApproveRequest = async () => {},
-  onDenyRequest = async () => {},
+  refetchInvite = async () => { },
+  onApproveRequest = async () => { },
+  onDenyRequest = async () => { },
 }) => {
   if (!isOpen) return null;
   const { inviteUser } = useInviteUserToWorkspace(workspaceId);
@@ -526,7 +524,7 @@ const ManageInviteModal: React.FC<ManageInviteModalProps> = ({
                     />
                   </div>
 
-                  <div className="w-[410px] p-4 border-l border-[#E9ECEF] dark:border-border-tertiary">
+                  <div className="w-[410px] p-4 border-l border-border-secondary  dark:border-border-tertiary">
                     <WorkspaceDescription />
                   </div>
                 </div>

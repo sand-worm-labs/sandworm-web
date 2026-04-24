@@ -136,6 +136,7 @@ export type Document = {
   icon: Scalars['String']['output'];
   id: Scalars['String']['output'];
   isDataApp: Scalars['Boolean']['output'];
+  isFavorite: Scalars['Boolean']['output'];
   isSyncedWithYjs: Scalars['Boolean']['output'];
   orderIndex: Scalars['Float']['output'];
   parent?: Maybe<Document>;
@@ -203,6 +204,10 @@ export type FavoriteDocumentInput = {
   workspaceId?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type FavoritePublicDocumentInput = {
+  documentId: Scalars['String']['input'];
+};
+
 export type ForkDocumentInput = {
   documentId: Scalars['String']['input'];
   targetWorkspaceId: Scalars['String']['input'];
@@ -240,8 +245,10 @@ export type Mutation = {
   __typename?: 'Mutation';
   /** Accept workspace invitation with hash from email */
   acceptWorkspaceInvitation: Scalars['Boolean']['output'];
-  /** Mark a document as a favorite */
-  addFavoriteDocument: Document;
+  /** Mark a public document as a favorite */
+  addPublicFavoriteDocument: Document;
+  /** Mark a document as a favorite in workspace */
+  addWorkspaceFavoriteDocument: Document;
   /** Approve a pending role request */
   approveRoleRequest: Scalars['Boolean']['output'];
   /** Remove multiple users from workspaces */
@@ -295,9 +302,11 @@ export type Mutation = {
   /** Reject a pending role request */
   rejectRoleRequest: Scalars['Boolean']['output'];
   /** Unmark a document as a favorite */
-  removeFavoriteDocument: Document;
+  removePublicFavoriteDocument: Document;
   /** Remove a user from workspace */
   removeUserFromWorkspace: Scalars['Boolean']['output'];
+  /** Unmark a document as a favorite */
+  removeWorkspaceFavoriteDocument: Document;
   /** Request a role upgrade in a workspace */
   requestRoleUpgrade: Scalars['Boolean']['output'];
   /** Restart the Jupyter environment */
@@ -343,9 +352,13 @@ export type MutationAcceptWorkspaceInvitationArgs = {
 };
 
 
-export type MutationAddFavoriteDocumentArgs = {
+export type MutationAddPublicFavoriteDocumentArgs = {
+  input: FavoritePublicDocumentInput;
+};
+
+
+export type MutationAddWorkspaceFavoriteDocumentArgs = {
   input: FavoriteDocumentInput;
-  publicDocument?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -494,15 +507,19 @@ export type MutationRejectRoleRequestArgs = {
 };
 
 
-export type MutationRemoveFavoriteDocumentArgs = {
-  input: FavoriteDocumentInput;
-  publicDocument?: InputMaybe<Scalars['Boolean']['input']>;
+export type MutationRemovePublicFavoriteDocumentArgs = {
+  input: FavoritePublicDocumentInput;
 };
 
 
 export type MutationRemoveUserFromWorkspaceArgs = {
   userId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
+};
+
+
+export type MutationRemoveWorkspaceFavoriteDocumentArgs = {
+  input: FavoriteDocumentInput;
 };
 
 
@@ -703,6 +720,8 @@ export type Query = {
   getWorkspaceDocuments: Array<Document>;
   /** Get workspace members */
   getWorkspaceMembers: Array<WorkspaceMember>;
+  /** Auth user is following a userid  */
+  isFollowing: Scalars['Boolean']['output'];
   /** List all files in a workspace */
   listFiles: Array<SandwormFile>;
   /** Get OpenRouter account credit usage */
@@ -856,6 +875,11 @@ export type QueryGetWorkspaceDocumentsArgs = {
 
 export type QueryGetWorkspaceMembersArgs = {
   workspaceId: Scalars['String']['input'];
+};
+
+
+export type QueryIsFollowingArgs = {
+  followerId: Scalars['String']['input'];
 };
 
 
@@ -1028,7 +1052,6 @@ export type User = {
   followingCount: Scalars['Int']['output'];
   fullName?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
-  isFollowing: Scalars['Boolean']['output'];
   isOnboarded: Scalars['Boolean']['output'];
   lastName?: Maybe<Scalars['String']['output']>;
   settings?: Maybe<UserSetting>;
@@ -1113,7 +1136,7 @@ export type WorkspaceSecrets = {
   hasAiModelApiKey: Scalars['Boolean']['output'];
 };
 
-export type DocumentFieldsFragment = { __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, forkCount: number, favoriteCount: number };
+export type DocumentFieldsFragment = { __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, forkCount: number, favoriteCount: number, isFavorite: boolean };
 
 export type EnvironmentVariableFieldsFragment = { __typename?: 'EnvironmentVariable', id: string, name: string, value: string, workspaceId: string, updatedAt: any };
 
@@ -1274,19 +1297,31 @@ export type PublishDocumentMutation = { __typename?: 'Mutation', publishDocument
 
 export type AddFavoriteDocumentMutationVariables = Exact<{
   input: FavoriteDocumentInput;
-  publicDocument?: InputMaybe<Scalars['Boolean']['input']>;
 }>;
 
 
-export type AddFavoriteDocumentMutation = { __typename?: 'Mutation', addFavoriteDocument: { __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, forkCount: number, favoriteCount: number } };
+export type AddFavoriteDocumentMutation = { __typename?: 'Mutation', addWorkspaceFavoriteDocument: { __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, forkCount: number, favoriteCount: number, isFavorite: boolean } };
 
 export type RemoveFavoriteDocumentMutationVariables = Exact<{
   input: FavoriteDocumentInput;
-  publicDocument?: InputMaybe<Scalars['Boolean']['input']>;
 }>;
 
 
-export type RemoveFavoriteDocumentMutation = { __typename?: 'Mutation', removeFavoriteDocument: { __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, forkCount: number, favoriteCount: number } };
+export type RemoveFavoriteDocumentMutation = { __typename?: 'Mutation', removeWorkspaceFavoriteDocument: { __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, forkCount: number, favoriteCount: number, isFavorite: boolean } };
+
+export type AddPublicFavoriteDocumentMutationVariables = Exact<{
+  input: FavoritePublicDocumentInput;
+}>;
+
+
+export type AddPublicFavoriteDocumentMutation = { __typename?: 'Mutation', addPublicFavoriteDocument: { __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, forkCount: number, favoriteCount: number, isFavorite: boolean } };
+
+export type RemovePublicFavoriteDocumentMutationVariables = Exact<{
+  input: FavoritePublicDocumentInput;
+}>;
+
+
+export type RemovePublicFavoriteDocumentMutation = { __typename?: 'Mutation', removePublicFavoriteDocument: { __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, forkCount: number, favoriteCount: number, isFavorite: boolean } };
 
 export type RestartEnvironmentMutationVariables = Exact<{
   input: RestartEnvironmentInput;
@@ -1495,7 +1530,7 @@ export type ForkDocumentMutationVariables = Exact<{
 }>;
 
 
-export type ForkDocumentMutation = { __typename?: 'Mutation', forkDocument: { __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, forkCount: number, favoriteCount: number } };
+export type ForkDocumentMutation = { __typename?: 'Mutation', forkDocument: { __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, forkCount: number, favoriteCount: number, isFavorite: boolean } };
 
 export type GetDocumentQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
@@ -1511,7 +1546,7 @@ export type GetExplorerDocumentsQueryVariables = Exact<{
 }>;
 
 
-export type GetExplorerDocumentsQuery = { __typename?: 'Query', getExplorerDocuments: Array<{ __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, forkCount: number, favoriteCount: number, author?: { __typename?: 'User', username?: string | null, firstName?: string | null, lastName?: string | null, avater?: string | null } | null }> };
+export type GetExplorerDocumentsQuery = { __typename?: 'Query', getExplorerDocuments: Array<{ __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, forkCount: number, favoriteCount: number, isFavorite: boolean, author?: { __typename?: 'User', username?: string | null, firstName?: string | null, lastName?: string | null, avater?: string | null } | null }> };
 
 export type GetFavoriteDocumentsQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
@@ -1525,7 +1560,7 @@ export type GetFeaturedDocumentsQueryVariables = Exact<{
 }>;
 
 
-export type GetFeaturedDocumentsQuery = { __typename?: 'Query', getFeaturedDocuments: Array<{ __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, forkCount: number, favoriteCount: number, author?: { __typename?: 'User', username?: string | null, firstName?: string | null, lastName?: string | null, avater?: string | null } | null }> };
+export type GetFeaturedDocumentsQuery = { __typename?: 'Query', getFeaturedDocuments: Array<{ __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, forkCount: number, favoriteCount: number, isFavorite: boolean, author?: { __typename?: 'User', username?: string | null, firstName?: string | null, lastName?: string | null, avater?: string | null } | null }> };
 
 export type GetTrendingPublishedDocumentsQueryVariables = Exact<{
   limit?: InputMaybe<Scalars['Float']['input']>;
@@ -1533,17 +1568,17 @@ export type GetTrendingPublishedDocumentsQueryVariables = Exact<{
 }>;
 
 
-export type GetTrendingPublishedDocumentsQuery = { __typename?: 'Query', getTrendingPublishedDocuments: Array<{ __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, forkCount: number, favoriteCount: number, author?: { __typename?: 'User', username?: string | null, firstName?: string | null, lastName?: string | null, avater?: string | null } | null }> };
+export type GetTrendingPublishedDocumentsQuery = { __typename?: 'Query', getTrendingPublishedDocuments: Array<{ __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, forkCount: number, favoriteCount: number, isFavorite: boolean, author?: { __typename?: 'User', username?: string | null, firstName?: string | null, lastName?: string | null, avater?: string | null } | null }> };
 
 export type GetUserFavoritePublicDocumentsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetUserFavoritePublicDocumentsQuery = { __typename?: 'Query', favoritePublicDocuments: Array<{ __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, forkCount: number, favoriteCount: number, author?: { __typename?: 'User', username?: string | null, firstName?: string | null, lastName?: string | null, avater?: string | null } | null }> };
+export type GetUserFavoritePublicDocumentsQuery = { __typename?: 'Query', favoritePublicDocuments: Array<{ __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, forkCount: number, favoriteCount: number, isFavorite: boolean, author?: { __typename?: 'User', username?: string | null, firstName?: string | null, lastName?: string | null, avater?: string | null } | null }> };
 
 export type GetUserForkedPublicDocumentsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetUserForkedPublicDocumentsQuery = { __typename?: 'Query', getForkedDocuments: Array<{ __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, forkCount: number, favoriteCount: number, author?: { __typename?: 'User', username?: string | null, firstName?: string | null, lastName?: string | null, avater?: string | null } | null }> };
+export type GetUserForkedPublicDocumentsQuery = { __typename?: 'Query', getForkedDocuments: Array<{ __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, forkCount: number, favoriteCount: number, isFavorite: boolean, author?: { __typename?: 'User', username?: string | null, firstName?: string | null, lastName?: string | null, avater?: string | null } | null }> };
 
 export type GetEnvironmentQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
@@ -1619,7 +1654,14 @@ export type GetUserQueryVariables = Exact<{
 }>;
 
 
-export type GetUserQuery = { __typename?: 'Query', getUser: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, fullName?: string | null, isOnboarded: boolean, avater?: string | null, createdAt?: any | null, isFollowing: boolean, followersCount: number, followingCount: number, settings?: { __typename?: 'UserSetting', id: string, userId: string, socialLinks?: any | null, statusText?: string | null, statusUpdatedAt?: any | null, wallets: Array<any> } | null, followers: Array<{ __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, fullName?: string | null, avater?: string | null }>, following: Array<{ __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, fullName?: string | null, avater?: string | null }> } };
+export type GetUserQuery = { __typename?: 'Query', getUser: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, fullName?: string | null, isOnboarded: boolean, avater?: string | null, createdAt?: any | null, followersCount: number, followingCount: number, settings?: { __typename?: 'UserSetting', id: string, userId: string, socialLinks?: any | null, statusText?: string | null, statusUpdatedAt?: any | null, wallets: Array<any> } | null, followers: Array<{ __typename?: 'User', id: string, username?: string | null, fullName?: string | null, avater?: string | null }>, following: Array<{ __typename?: 'User', id: string, username?: string | null, fullName?: string | null, avater?: string | null }> } };
+
+export type GetUserProfileQueryVariables = Exact<{
+  userId: Scalars['String']['input'];
+}>;
+
+
+export type GetUserProfileQuery = { __typename?: 'Query', isFollowing: boolean, getUser: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, fullName?: string | null, isOnboarded: boolean, avater?: string | null, createdAt?: any | null, followersCount: number, followingCount: number, settings?: { __typename?: 'UserSetting', id: string, userId: string, socialLinks?: any | null, statusText?: string | null, statusUpdatedAt?: any | null, wallets: Array<any> } | null, followers: Array<{ __typename?: 'User', id: string, username?: string | null, fullName?: string | null, avater?: string | null }>, following: Array<{ __typename?: 'User', id: string, username?: string | null, fullName?: string | null, avater?: string | null }> } };
 
 export type GetForkedDocumentsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1633,7 +1675,14 @@ export type GetUserPublicDocumentsQueryVariables = Exact<{
 }>;
 
 
-export type GetUserPublicDocumentsQuery = { __typename?: 'Query', getUserPublicDocuments: Array<{ __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, forkCount: number, favoriteCount: number, author?: { __typename?: 'User', username?: string | null, firstName?: string | null, lastName?: string | null, avater?: string | null } | null }> };
+export type GetUserPublicDocumentsQuery = { __typename?: 'Query', getUserPublicDocuments: Array<{ __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, forkCount: number, favoriteCount: number, isFavorite: boolean, author?: { __typename?: 'User', username?: string | null, firstName?: string | null, lastName?: string | null, avater?: string | null } | null }> };
+
+export type IsFollowingQueryVariables = Exact<{
+  userId: Scalars['String']['input'];
+}>;
+
+
+export type IsFollowingQuery = { __typename?: 'Query', isFollowing: boolean };
 
 export type GetUserWorkspaceInfoQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1718,6 +1767,7 @@ export const DocumentFieldsFragmentDoc = gql`
   userAppClock
   forkCount
   favoriteCount
+  isFavorite
 }
     `;
 export const EnvironmentVariableFieldsFragmentDoc = gql`
@@ -2580,8 +2630,8 @@ export type PublishDocumentMutationHookResult = ReturnType<typeof usePublishDocu
 export type PublishDocumentMutationResult = Apollo.MutationResult<PublishDocumentMutation>;
 export type PublishDocumentMutationOptions = Apollo.BaseMutationOptions<PublishDocumentMutation, PublishDocumentMutationVariables>;
 export const AddFavoriteDocumentDocument = gql`
-    mutation AddFavoriteDocument($input: FavoriteDocumentInput!, $publicDocument: Boolean = false) {
-  addFavoriteDocument(input: $input, publicDocument: $publicDocument) {
+    mutation AddFavoriteDocument($input: FavoriteDocumentInput!) {
+  addWorkspaceFavoriteDocument(input: $input) {
     ...DocumentFields
   }
 }
@@ -2602,7 +2652,6 @@ export type AddFavoriteDocumentMutationFn = Apollo.MutationFunction<AddFavoriteD
  * const [addFavoriteDocumentMutation, { data, loading, error }] = useAddFavoriteDocumentMutation({
  *   variables: {
  *      input: // value for 'input'
- *      publicDocument: // value for 'publicDocument'
  *   },
  * });
  */
@@ -2614,8 +2663,8 @@ export type AddFavoriteDocumentMutationHookResult = ReturnType<typeof useAddFavo
 export type AddFavoriteDocumentMutationResult = Apollo.MutationResult<AddFavoriteDocumentMutation>;
 export type AddFavoriteDocumentMutationOptions = Apollo.BaseMutationOptions<AddFavoriteDocumentMutation, AddFavoriteDocumentMutationVariables>;
 export const RemoveFavoriteDocumentDocument = gql`
-    mutation RemoveFavoriteDocument($input: FavoriteDocumentInput!, $publicDocument: Boolean = false) {
-  removeFavoriteDocument(input: $input, publicDocument: $publicDocument) {
+    mutation RemoveFavoriteDocument($input: FavoriteDocumentInput!) {
+  removeWorkspaceFavoriteDocument(input: $input) {
     ...DocumentFields
   }
 }
@@ -2636,7 +2685,6 @@ export type RemoveFavoriteDocumentMutationFn = Apollo.MutationFunction<RemoveFav
  * const [removeFavoriteDocumentMutation, { data, loading, error }] = useRemoveFavoriteDocumentMutation({
  *   variables: {
  *      input: // value for 'input'
- *      publicDocument: // value for 'publicDocument'
  *   },
  * });
  */
@@ -2647,6 +2695,72 @@ export function useRemoveFavoriteDocumentMutation(baseOptions?: Apollo.MutationH
 export type RemoveFavoriteDocumentMutationHookResult = ReturnType<typeof useRemoveFavoriteDocumentMutation>;
 export type RemoveFavoriteDocumentMutationResult = Apollo.MutationResult<RemoveFavoriteDocumentMutation>;
 export type RemoveFavoriteDocumentMutationOptions = Apollo.BaseMutationOptions<RemoveFavoriteDocumentMutation, RemoveFavoriteDocumentMutationVariables>;
+export const AddPublicFavoriteDocumentDocument = gql`
+    mutation AddPublicFavoriteDocument($input: FavoritePublicDocumentInput!) {
+  addPublicFavoriteDocument(input: $input) {
+    ...DocumentFields
+  }
+}
+    ${DocumentFieldsFragmentDoc}`;
+export type AddPublicFavoriteDocumentMutationFn = Apollo.MutationFunction<AddPublicFavoriteDocumentMutation, AddPublicFavoriteDocumentMutationVariables>;
+
+/**
+ * __useAddPublicFavoriteDocumentMutation__
+ *
+ * To run a mutation, you first call `useAddPublicFavoriteDocumentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddPublicFavoriteDocumentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addPublicFavoriteDocumentMutation, { data, loading, error }] = useAddPublicFavoriteDocumentMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useAddPublicFavoriteDocumentMutation(baseOptions?: Apollo.MutationHookOptions<AddPublicFavoriteDocumentMutation, AddPublicFavoriteDocumentMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AddPublicFavoriteDocumentMutation, AddPublicFavoriteDocumentMutationVariables>(AddPublicFavoriteDocumentDocument, options);
+      }
+export type AddPublicFavoriteDocumentMutationHookResult = ReturnType<typeof useAddPublicFavoriteDocumentMutation>;
+export type AddPublicFavoriteDocumentMutationResult = Apollo.MutationResult<AddPublicFavoriteDocumentMutation>;
+export type AddPublicFavoriteDocumentMutationOptions = Apollo.BaseMutationOptions<AddPublicFavoriteDocumentMutation, AddPublicFavoriteDocumentMutationVariables>;
+export const RemovePublicFavoriteDocumentDocument = gql`
+    mutation RemovePublicFavoriteDocument($input: FavoritePublicDocumentInput!) {
+  removePublicFavoriteDocument(input: $input) {
+    ...DocumentFields
+  }
+}
+    ${DocumentFieldsFragmentDoc}`;
+export type RemovePublicFavoriteDocumentMutationFn = Apollo.MutationFunction<RemovePublicFavoriteDocumentMutation, RemovePublicFavoriteDocumentMutationVariables>;
+
+/**
+ * __useRemovePublicFavoriteDocumentMutation__
+ *
+ * To run a mutation, you first call `useRemovePublicFavoriteDocumentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRemovePublicFavoriteDocumentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [removePublicFavoriteDocumentMutation, { data, loading, error }] = useRemovePublicFavoriteDocumentMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useRemovePublicFavoriteDocumentMutation(baseOptions?: Apollo.MutationHookOptions<RemovePublicFavoriteDocumentMutation, RemovePublicFavoriteDocumentMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RemovePublicFavoriteDocumentMutation, RemovePublicFavoriteDocumentMutationVariables>(RemovePublicFavoriteDocumentDocument, options);
+      }
+export type RemovePublicFavoriteDocumentMutationHookResult = ReturnType<typeof useRemovePublicFavoriteDocumentMutation>;
+export type RemovePublicFavoriteDocumentMutationResult = Apollo.MutationResult<RemovePublicFavoriteDocumentMutation>;
+export type RemovePublicFavoriteDocumentMutationOptions = Apollo.BaseMutationOptions<RemovePublicFavoriteDocumentMutation, RemovePublicFavoriteDocumentMutationVariables>;
 export const RestartEnvironmentDocument = gql`
     mutation RestartEnvironment($input: RestartEnvironmentInput!) {
   restartEnvironment(input: $input) {
@@ -4536,7 +4650,6 @@ export const GetUserDocument = gql`
     isOnboarded
     avater
     createdAt
-    isFollowing
     settings {
       id
       userId
@@ -4548,18 +4661,12 @@ export const GetUserDocument = gql`
     followers {
       id
       username
-      email
-      firstName
-      lastName
       fullName
       avater
     }
     following {
       id
       username
-      email
-      firstName
-      lastName
       fullName
       avater
     }
@@ -4601,6 +4708,77 @@ export type GetUserQueryHookResult = ReturnType<typeof useGetUserQuery>;
 export type GetUserLazyQueryHookResult = ReturnType<typeof useGetUserLazyQuery>;
 export type GetUserSuspenseQueryHookResult = ReturnType<typeof useGetUserSuspenseQuery>;
 export type GetUserQueryResult = Apollo.QueryResult<GetUserQuery, GetUserQueryVariables>;
+export const GetUserProfileDocument = gql`
+    query GetUserProfile($userId: String!) {
+  getUser(userId: $userId) {
+    id
+    username
+    email
+    firstName
+    lastName
+    fullName
+    isOnboarded
+    avater
+    createdAt
+    settings {
+      id
+      userId
+      socialLinks
+      statusText
+      statusUpdatedAt
+      wallets
+    }
+    followers {
+      id
+      username
+      fullName
+      avater
+    }
+    following {
+      id
+      username
+      fullName
+      avater
+    }
+    followersCount
+    followingCount
+  }
+  isFollowing(followerId: $userId)
+}
+    `;
+
+/**
+ * __useGetUserProfileQuery__
+ *
+ * To run a query within a React component, call `useGetUserProfileQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUserProfileQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUserProfileQuery({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useGetUserProfileQuery(baseOptions: Apollo.QueryHookOptions<GetUserProfileQuery, GetUserProfileQueryVariables> & ({ variables: GetUserProfileQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetUserProfileQuery, GetUserProfileQueryVariables>(GetUserProfileDocument, options);
+      }
+export function useGetUserProfileLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserProfileQuery, GetUserProfileQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetUserProfileQuery, GetUserProfileQueryVariables>(GetUserProfileDocument, options);
+        }
+export function useGetUserProfileSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetUserProfileQuery, GetUserProfileQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetUserProfileQuery, GetUserProfileQueryVariables>(GetUserProfileDocument, options);
+        }
+export type GetUserProfileQueryHookResult = ReturnType<typeof useGetUserProfileQuery>;
+export type GetUserProfileLazyQueryHookResult = ReturnType<typeof useGetUserProfileLazyQuery>;
+export type GetUserProfileSuspenseQueryHookResult = ReturnType<typeof useGetUserProfileSuspenseQuery>;
+export type GetUserProfileQueryResult = Apollo.QueryResult<GetUserProfileQuery, GetUserProfileQueryVariables>;
 export const GetForkedDocumentsDocument = gql`
     query GetForkedDocuments {
   getForkedDocuments {
@@ -4725,6 +4903,44 @@ export type GetUserPublicDocumentsQueryHookResult = ReturnType<typeof useGetUser
 export type GetUserPublicDocumentsLazyQueryHookResult = ReturnType<typeof useGetUserPublicDocumentsLazyQuery>;
 export type GetUserPublicDocumentsSuspenseQueryHookResult = ReturnType<typeof useGetUserPublicDocumentsSuspenseQuery>;
 export type GetUserPublicDocumentsQueryResult = Apollo.QueryResult<GetUserPublicDocumentsQuery, GetUserPublicDocumentsQueryVariables>;
+export const IsFollowingDocument = gql`
+    query IsFollowing($userId: String!) {
+  isFollowing(followerId: $userId)
+}
+    `;
+
+/**
+ * __useIsFollowingQuery__
+ *
+ * To run a query within a React component, call `useIsFollowingQuery` and pass it any options that fit your needs.
+ * When your component renders, `useIsFollowingQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useIsFollowingQuery({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useIsFollowingQuery(baseOptions: Apollo.QueryHookOptions<IsFollowingQuery, IsFollowingQueryVariables> & ({ variables: IsFollowingQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<IsFollowingQuery, IsFollowingQueryVariables>(IsFollowingDocument, options);
+      }
+export function useIsFollowingLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<IsFollowingQuery, IsFollowingQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<IsFollowingQuery, IsFollowingQueryVariables>(IsFollowingDocument, options);
+        }
+export function useIsFollowingSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<IsFollowingQuery, IsFollowingQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<IsFollowingQuery, IsFollowingQueryVariables>(IsFollowingDocument, options);
+        }
+export type IsFollowingQueryHookResult = ReturnType<typeof useIsFollowingQuery>;
+export type IsFollowingLazyQueryHookResult = ReturnType<typeof useIsFollowingLazyQuery>;
+export type IsFollowingSuspenseQueryHookResult = ReturnType<typeof useIsFollowingSuspenseQuery>;
+export type IsFollowingQueryResult = Apollo.QueryResult<IsFollowingQuery, IsFollowingQueryVariables>;
 export const GetUserWorkspaceInfoDocument = gql`
     query GetUserWorkspaceInfo {
   getUserWorkspaceInfo {
