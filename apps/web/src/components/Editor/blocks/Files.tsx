@@ -23,7 +23,7 @@ import {
   EyeIcon,
 } from "@heroicons/react/20/solid";
 import { PiFolders } from "react-icons/pi";
-
+import { X } from "lucide-react";
 import { Cautious } from "@/components/Assets/Cautious";
 import { UploadIcon } from "@/components/Assets/UploadIcon";
 import { Trash } from "@/components/Assets/Trash";
@@ -716,10 +716,10 @@ file`;
 
             <button
               type="button"
-              className="absolute z-10 top-7 transform rounded-full border border-gray-300  text-ink-400 bg-base-100 hover:bg-gray-100 w-6 h-6 flex justify-center items-center right-3 -translate-x-1/2 dark:border-border-tertiary"
+              className="absolute z-10 top-7 transform rounded-full   text-ink-400 bg-base-100 hover:bg-gray-100 w-6 h-6 flex justify-center items-center right-3 -translate-x-1/2 dark:border-border-tertiary"
               onClick={props.onHide}
             >
-              <ChevronDoubleRightIcon className="w-3 h-3" />
+              <X className="w-5 h-5" />
             </button>
           </div>
           {(upload._tag === "uploading" || results.length > 0) && (
