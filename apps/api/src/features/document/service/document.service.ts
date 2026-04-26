@@ -309,6 +309,7 @@ export class DocumentService {
         targetWorkspaceId,
         userId,
         m,
+        false
       );
 
       await forkRepo.save(
@@ -374,6 +375,7 @@ export class DocumentService {
     });
 
     if (!document) throw new ValidationException(ErrorCode.E003);
+
     const yjsDoc = await this.yjsDocumentRepository.findOne({
       where: { documentId },
     });
@@ -387,7 +389,7 @@ export class DocumentService {
     document.publishedAt = new Date();
     this.logger.log("dhhdhd")
     let data = await this.yjsDocumentService.publishDocument(documentId);
-    this.logger.log(data)
+    //this.logger.log(data)
     //document.visibility = DocumentVisibility.PUBLIC;
 
     await this.documentRepository.save(document);
