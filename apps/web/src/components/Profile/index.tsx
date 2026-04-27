@@ -262,10 +262,10 @@ const ProfileComponent = ({
                           >
                             {user.followersCount ?? 0}
 
-                            <span className="text-ink-400 ml-0.5 font-medium text-sm">
+                            <span className="text-ink-400 ml-1 font-medium text-sm">
                               Followers
                             </span>
-                          </button>{" "}
+                          </button>
 
                         </div>
                         <div>
@@ -277,7 +277,7 @@ const ProfileComponent = ({
                             }}
                           >
                             {user.followingCount ?? 0}
-                            <span className="text-ink-400 ml-0.5 font-medium text-sm">
+                            <span className="text-ink-400 ml-1 font-medium text-sm">
                               Following
                             </span>
                           </button>{" "}

@@ -416,29 +416,37 @@ export class DocumentTreeService {
         workspaceId: string,
         userId: string,
         manager?: EntityManager,
+        sameWorkspace: boolean = true
     ): Promise<DocumentEntity> {
         return this.wrapInQueue(workspaceId, async () => {
             const run = async (m: EntityManager) => {
                 const docRepo = m.getRepository(DocumentEntity);
 
-                const original = await docRepo.findOne({ where: { id, workspaceId } });
+                // ── fetch original ─────────────────────────────────────────
+                const original = await docRepo.findOne({
+                    where: sameWorkspace
+                        ? { id, workspaceId }
+                        : { id },
+                });
                 if (!original) throw new NotFoundException('Document not found');
+                let orderIndex: number = 0;
 
-                const orderIndex = original.orderIndex + 1;
-                await this.shiftDocumentsDown(workspaceId, original.parentId, orderIndex, m);
+                if (sameWorkspace) {
+                    orderIndex = original.orderIndex + 1;
+                    await this.shiftDocumentsDown(workspaceId, original.parentId, orderIndex, m);
+                }
 
+                // ── create duplicate ───────────────────────────────────────
                 const duplicate = await docRepo.save(docRepo.create({
                     title: original.title === '' ? '' : `${original.title} copy`,
                     workspaceId,
-                    parentId: original.parentId,
+                    parentId: sameWorkspace ? original.parentId : null,
                     version: original.version,
                     orderIndex,
                     authorId: userId,
                 }));
-
-                await this.duplicateChildren(original.id, duplicate.id, workspaceId, userId, m);
+                if (sameWorkspace) await this.duplicateChildren(original.id, duplicate.id, workspaceId, userId, m);
                 await this.duplicateYjsContent(original.id, duplicate.id, m);
-
                 return duplicate;
             };
 
