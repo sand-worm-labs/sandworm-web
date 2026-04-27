@@ -106,7 +106,7 @@ export class YjsDocumentService implements OnModuleDestroy {
         };
     }
 
-    async loadAppYDoc(documentId: string, userId: string): Promise<LoadYDocResult> {
+    async loadAppYDoc(documentId: string, userId: string, is_public: boolean = false): Promise<LoadYDocResult> {
         const yDoc = new Y.Doc();
 
         const yjsAppDoc = await this.yjsAppDocumentRepo.findOne({
@@ -122,6 +122,11 @@ export class YjsDocumentService implements OnModuleDestroy {
                 clock: 0,
                 clockUpdatedAt: new Date(),
             };
+        }
+
+        if (!userId && is_public) {
+            Y.applyUpdate(yDoc, yjsAppDoc.state);
+            return { yDoc, state: yjsAppDoc.state, clock: yjsAppDoc.clock }
         }
 
         const userYjsAppDoc = await this.userYjsAppDocumentRepo.findOne({
@@ -208,8 +213,8 @@ export class YjsDocumentService implements OnModuleDestroy {
 
     async publishDocument(documentId: string): Promise<YjsAppDocumentEntity> {
         this.logger.log(`Publishing document: ${documentId}`);
-
         const editYDoc = await this.loadEditYDoc(documentId);
+        // const cleanDoc = this.getYDocWithoutHistory(editYDoc.yDoc);
         const state = Buffer.from(Y.encodeStateAsUpdate(editYDoc.yDoc));
 
         let yjsAppDoc = await this.yjsAppDocumentRepo.findOne({
@@ -545,6 +550,12 @@ export class YjsDocumentService implements OnModuleDestroy {
             },
             { isDuplicating: true }
         )
+    }
+
+    getYDocWithoutHistory(ydoc: SharedDoc): Y.Doc {
+        const newDoc = new Y.Doc()
+        this.duplicateYDoc(ydoc, newDoc, (title) => title, { keepIds: true })
+        return newDoc
     }
 
     private startDocumentCleanup(): void {

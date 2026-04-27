@@ -28,7 +28,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <DndBackendProvider>
                 <EnvironmentStatusProvider>
                   <DataSourcesProvider>
-                    <ReusableComponentsProvider>
+                    <ReusableComponentsProvider workspaceId="">
                       <main> {children}</main>
                     </ReusableComponentsProvider>
                   </DataSourcesProvider>

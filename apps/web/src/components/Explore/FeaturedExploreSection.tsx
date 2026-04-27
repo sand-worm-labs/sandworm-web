@@ -20,6 +20,7 @@ interface FeaturedQuery {
     image: string;
     userId: string;
   };
+  isFavorite?: boolean;
   stars: number;
   forks: number;
 }
@@ -48,6 +49,7 @@ function toFeaturedQuery(doc: ApiDocument): FeaturedQuery {
     },
     stars: doc.favoriteCount,
     forks: doc.forkCount,
+    isFavorite: doc.isFavorite
   };
 }
 
@@ -113,6 +115,7 @@ export function FeaturedExploreSection() {
           isSaved={savedIds.has(query.id)}
           onSave={handleSave}
           onClick={handleClick}
+          isFavorite={query.isFavorite}
           variant={index === 0 ? "purple" : "default"} 
         />
       ))}
