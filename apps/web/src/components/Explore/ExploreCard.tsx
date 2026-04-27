@@ -49,7 +49,7 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
 
 
   const handleForkClick = () => setIsForkModalOpen(true);
-  
+
 
 
   const handleFork = async ({
@@ -63,7 +63,7 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
     if (!forked?.id) throw new Error("Fork returned no document.");
   };
 
-  const handleForkSuccess = (targetWorkspaceId: string, ) => {
+  const handleForkSuccess = (targetWorkspaceId: string,) => {
 
     toast.success("Notebook forked!");
     router.push(`/workspace/${targetWorkspaceId}`);
@@ -95,97 +95,97 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
   // =====================================
   return (
     <>
-    <div
-      className={
-        viewMode === "detailed"
-          ? " "
-          : "border-b border-border-secondary pb-3 transition-shadow mb-1 dark:border-border-tertiary"
-      }
-    >
-      <div className="p-2 px-5">
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
-  
-          <div className="flex flex-col items-start gap-2 flex-1 min-w-0">
-            <div className="flex space-x-3 items-center w-full">
-              <Avatar className="h-8 w-8 flex-shrink-0">
-                {query.authorId ? (
-                  <AvatarImage src="/img/avatar.svg" />
-                ) : (
-                  <AvatarFallback>
-                    <Image
-                      src="/img/avatar.svg"
-                      alt="fallback avatar"
-                      width={32}
-                      height={32}
-                    />
-                  </AvatarFallback>
-                )}
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <Link
-                  href={`/workspace/${workspaceId}/profile/${query.authorId}`}
-                  className="text-[0.8rem] mb-1 text-ink-400 hover:underline"
-                >
-                  @{query.author?.username}
-                </Link>
-                <h3 className="text-[0.95rem] font-medium break-words cursor-pointer hover:underline">
-                  {query.title}
-                </h3>
-                <p className="text-xs text-ink-400">
-                  Created {formattedDate}
-                </p>
+      <div
+        className={
+          viewMode === "detailed"
+            ? " "
+            : "border-b border-border-secondary pb-3 transition-shadow mb-1 dark:border-border-tertiary"
+        }
+      >
+        <div className="p-2 px-5">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+
+            <div className="flex flex-col items-start gap-2 flex-1 min-w-0">
+              <div className="flex space-x-3 items-center w-full">
+                <Avatar className="h-8 w-8 flex-shrink-0">
+                  {query.authorId ? (
+                    <AvatarImage src="/img/avatar.svg" />
+                  ) : (
+                    <AvatarFallback>
+                      <Image
+                        src="/img/avatar.svg"
+                        alt="fallback avatar"
+                        width={32}
+                        height={32}
+                      />
+                    </AvatarFallback>
+                  )}
+                </Avatar>
+                <div className="flex-1 min-w-0">
+                  <Link
+                    href={`/workspace/${workspaceId}/profile/${query.authorId}`}
+                    className="text-[0.8rem] mb-1 text-ink-400 hover:underline"
+                  >
+                    @{query.author?.username}
+                  </Link>
+                  <h3 className="text-[0.95rem] font-medium break-words cursor-pointer hover:underline">
+                    {query.title}
+                  </h3>
+                  <p className="text-xs text-ink-400">
+                    Created {formattedDate}
+                  </p>
+                </div>
               </div>
             </div>
+
+            <div className="flex items-center gap-3 text-sm pl-11 sm:pl-0 flex-shrink-0">
+              <button
+                onClick={handleFavorite}
+                className="flex items-center gap-1 group"
+                aria-label={isFavorited ? "Unfavorite" : "Favorite"}
+              >
+                <span>{favoriteCount}</span>
+                <Star
+                  className={cn(
+                    "h-4 w-4 transition-colors",
+                    isFavorited
+                      ? "fill-primary text-primary"
+                      : "text-ink-300 dark:text-ink-300 group-hover:text-yellow-400"
+                  )}
+                  strokeWidth={1.2}
+                />
+              </button>
+
+              <button
+                onClick={handleForkClick}
+                disabled={forking}
+                className="flex items-center gap-1 group disabled:opacity-50"
+                aria-label="Fork document"
+              >
+                <span>{query.forkCount}</span>
+                <GitFork
+                  className={cn(
+                    "h-4 w-4 transition-colors text-ink-300 dark:text-ink-300",
+                    !forking && "group-hover:text-blue-400"
+                  )}
+                  strokeWidth={1.2}
+                />
+              </button>
+            </div>
+
           </div>
-  
-          <div className="flex items-center gap-3 text-sm pl-11 sm:pl-0 flex-shrink-0">
-            <button
-              onClick={handleFavorite}
-              className="flex items-center gap-1 group"
-              aria-label={isFavorited ? "Unfavorite" : "Favorite"}
-            >
-              <span>{favoriteCount}</span>
-              <Star
-                className={cn(
-                  "h-4 w-4 transition-colors",
-                  isFavorited
-                    ? "fill-primary text-primary"
-                    : "text-ink-300 dark:text-ink-300 group-hover:text-yellow-400"
-                )}
-                strokeWidth={1.2}
-              />
-            </button>
-  
-            <button
-              onClick={handleForkClick}
-              disabled={forking}
-              className="flex items-center gap-1 group disabled:opacity-50"
-              aria-label="Fork document"
-            >
-              <span>{query.forkCount}</span>
-              <GitFork
-                className={cn(
-                  "h-4 w-4 transition-colors text-ink-300 dark:text-ink-300",
-                  !forking && "group-hover:text-blue-400"
-                )}
-                strokeWidth={1.2}
-              />
-            </button>
-          </div>
-  
         </div>
+
+        {viewMode === "detailed" && <div className="px-5 pb-4 text-sm" />}
       </div>
-  
-      {viewMode === "detailed" && <div className="px-5 pb-4 text-sm" />}
-    </div>
-  
-    <ForkToWorkspaceModal
-      isOpen={isForkModalOpen}
-      onClose={() => setIsForkModalOpen(false)}
-      document={{ id: query.id, title: query.title }}
-      onFork={handleFork}
-      onForkSuccess={handleForkSuccess}
-    />
-  </>
+
+      <ForkToWorkspaceModal
+        isOpen={isForkModalOpen}
+        onClose={() => setIsForkModalOpen(false)}
+        document={{ id: query.id, title: query.title }}
+        onFork={handleFork}
+        onForkSuccess={handleForkSuccess}
+      />
+    </>
   );
 };
