@@ -4,7 +4,6 @@ networks:
 
 volumes:
   sandworm-postgres-data:
-  sandworm-pgadmin-data:
   sandworm-jupyter-notebooks:
   sandworm-qdrant-data:
 
@@ -51,21 +50,22 @@ services:
       - sandworm-net
 
   ###########################
-  # PGAdmin Web UI
+  # DbGate Web UI
   ###########################
-  pgadmin:
-    container_name: sandworm-pgadmin
-    image: dpage/pgadmin4
+  dbgate:
+    container_name: sandworm-dbgate
+    image: dbgate/dbgate:alpine
     restart: always
     ports:
-      - "18080:80"
+      - 3100:3000
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@example.com
-      PGADMIN_DEFAULT_PASSWORD: 12345678
-      PGADMIN_CONFIG_WTF_CSRF_ENABLED: "False"
-      PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: "False"
-    volumes:
-      - sandworm-pgadmin-data:/root/.pgadmin
+      CONNECTIONS: db
+      LABEL_db: Sandworm
+      SERVER_db: sandworm-postgres
+      USER_db: postgres
+      PASSWORD_db: postgres
+      PORT_db: 5432
+      ENGINE_db: postgres@dbgate-plugin-postgres
     networks:
       - sandworm-net
     depends_on:
@@ -86,7 +86,7 @@ services:
       - sandworm-net
 
   ###########################
-  # Jupyter Service (Unchanged)
+  # Jupyter Service
   ###########################
   jupyter:
     container_name: sandworm-jupyter
@@ -112,7 +112,7 @@ services:
       test: [ "CMD-SHELL", "curl -f http://localhost:8888/api || exit 1" ]
       interval: 5s
       timeout: 10s
-      retries: 5 
+      retries: 5
 
   ###########################
   # HAProxy Gateway
@@ -126,6 +126,7 @@ services:
       - '8080:8080'
     networks:
       - sandworm-net
+
   ###########################
   # Logdy Log Viewer
   ###########################

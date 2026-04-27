@@ -7,14 +7,12 @@ import {
   LinkIcon,
   CheckIcon,
   LockClosedIcon,
-  UserGroupIcon,
   GlobeAltIcon,
 } from "@heroicons/react/24/outline";
 import { cn } from "@sandworm/ui/lib/utils";
 import { Share } from "@/components/Assets/Share";
 import { TooltipV2 } from "./ToolTips";
 
-// ─── TYPES ───────────────────────────────────────────────────────────────────
 
 type ShareVisibility = "WORKSPACE" | "LINK" | "PUBLIC";
 
@@ -26,8 +24,6 @@ type ShareModalProps = {
     meta?: { description?: string; tags?: string[] }
   ) => Promise<void> | void;
 };
-
-// ─── CONSTANTS ───────────────────────────────────────────────────────────────
 
 const visibilityOptions = [
   {
@@ -49,8 +45,6 @@ const visibilityOptions = [
     icon: GlobeAltIcon,
   },
 ];
-
-// ─── TAGS INPUT ──────────────────────────────────────────────────────────────
 
 function TagsInput({
   tags,
@@ -116,8 +110,6 @@ function TagsInput({
     </div>
   );
 }
-
-// ─── MAIN ────────────────────────────────────────────────────────────────────
 
 export default function ShareModal({
   link = "https://app.sandworm.dev/notebooks/demo",
