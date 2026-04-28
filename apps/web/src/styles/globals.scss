@@ -285,6 +285,14 @@
   box-shadow: none !important;
 }
 
+.tiptap h1.is-empty::before {
+  content: attr(data-placeholder);
+  color: #adb5bd;
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
 /* ╔════════════════════════════════════════════╗
    ║                Common + Layouts            ║
    ╚════════════════════════════════════════════╝ */
