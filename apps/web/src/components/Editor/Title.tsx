@@ -23,23 +23,23 @@ export const TitleExtension = Node.create<ITitleOptions>({
   addOptions() {
     return {
       level: 1,
-      onUpdate: () => {},
+      onUpdate: () => { },
       HTMLAttributes: {},
     };
   },
   content: "text*",
   marks: "",
   group: "block",
- 
+
 
   defining: true,
-  
+
   addKeyboardShortcuts(this) {
     return {
       Enter: () => true,
     };
   },
-  
+
   renderHTML({ HTMLAttributes }) {
     const { level } = this.options;
 
@@ -70,7 +70,7 @@ function Title(props: Props) {
         TitleExtension.configure({
           level: 1,
           HTMLAttributes: {
-            style: `font-weight: semi-bold; font-size: 2.4rem;${props.style ?? ""}`,
+            style: `font-weight: bold; font-size: 3rem;${props.style ?? ""}`,
             class: "font-body ",
           },
         }),
