@@ -54,7 +54,7 @@ function getWSProvider(
       publishedAt: publishedAt ?? "",
       access_token: accessToken ?? "",
     },
-    resyncInterval: 30000,
+    resyncInterval: 300,
   });
 }
 
