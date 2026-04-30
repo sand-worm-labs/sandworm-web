@@ -66,45 +66,32 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
   }
 
   private async handleConnection(client: WebSocket, req: http.IncomingMessage) {
+    const t0 = Date.now();
     try {
       const url = new URL(req.url!, `http://${req.headers.host}`);
-
-      // ⬢ LOG — log every incoming connection attempt
       const rawQuery = qs.parse(req.url?.split('?')[1] ?? '');
-      this.logger.log(`[YJS Connection] ${JSON.stringify({
-        path: url.pathname,
+      this.logger.log(`[1] connection start ${JSON.stringify({
         documentId: rawQuery['documentId'],
         clock: rawQuery['clock'],
-        isApp: rawQuery['isApp'],
-        userId: rawQuery['userId'],
       })}`);
 
       if (!url.pathname.startsWith('/yjs')) {
-        this.logger.warn('[YJS Rejected] reason=invalid_path');
         client.close(1008, 'Invalid path');
         return;
       }
 
       const data = await this.getRequestData(req);
-      if (!data) {
-        this.logger.warn('[YJS Rejected] reason=invalid_request — see getRequestData logs above');
-        client.close(1008, 'Invalid request');
-        return;
-      }
+      this.logger.log(`[2] request validated +${Date.now() - t0}ms`);
+      if (!data) { client.close(1008, 'Invalid request'); return; }
 
       const { document, userId, authUser, role, isApp, clock, yjsAppDocumentId } = data;
 
       const doc = await this.getDoc(document, isApp, userId, yjsAppDocumentId);
+      this.logger.log(`[3] doc loaded +${Date.now() - t0}ms`);
+      if (!doc) { client.close(1011, 'Failed to load document'); return; }
 
-      if (!doc) {
-        this.logger.warn(`[YJS Rejected] reason=doc_load_failed isApp=${isApp} yjsAppDocumentId=${yjsAppDocumentId}`);
-        client.close(1011, 'Failed to load document');
-        return;
-      }
-
-      // Clock validation
       if (doc.clock !== clock) {
-        this.logger.warn(`[YJS Rejected] reason=clock_mismatch client=${clock} server=${doc.clock} docId=${doc.id}`);
+        this.logger.warn(`[YJS Rejected] clock_mismatch client=${clock} server=${doc.clock}`);
         client.close(1008, 'Clock mismatch');
         return;
       }
@@ -133,20 +120,15 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
         }
       });
 
-      client.on('close', () => {
-        this.closeConn(doc, client);
-      });
-
-      client.on('error', (err) => {
-        this.logger.error(`WebSocket error: ${err.message}`);
-      });
+      client.on('close', () => { this.closeConn(doc, client); });
+      client.on('error', (err) => { this.logger.error(`WebSocket error: ${err.message}`); });
 
       this.setupPing(doc, client, authUser.id);
       this.syncHandler.sendInitialState(doc, (message) => this.send(doc, client, message));
+      this.logger.log(`[4] initial state sent +${Date.now() - t0}ms`);
 
-      this.logger.log(`[YJS Connected] user=${authUser.email} docId=${doc.id} isApp=${isApp} clock=${clock}`);
     } catch (err) {
-      this.logger.error(`[YJS Connection failed] ${err}`);
+      this.logger.error(`[YJS Connection failed] +${Date.now() - t0}ms ${err}`);
       client.close(1011, 'Internal server error');
     }
   }
