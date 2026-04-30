@@ -44,7 +44,6 @@ async function bootstrap() {
     { bufferLogs: true },
   );
 
-  // Single logger: pino for everything (Nest internals + Fastify HTTP + your code)
   app.useLogger(app.get(PinoLogger));
 
   const configService = app.get(ConfigService<AllConfigType>);
@@ -57,6 +56,7 @@ async function bootstrap() {
   const isProduction = env === Environment.PRODUCTION;
   const debug = env === Environment.LOCAL || env === Environment.DEVELOPMENT;
 
+  // ⬢ Async context
   fastifyAdapter.getInstance().addHook('onRequest', (request, _reply, done) => {
     asyncContext.run(() => {
       asyncContext.set('log', request.log);
@@ -64,23 +64,22 @@ async function bootstrap() {
     }, new Map());
   });
 
+  // ⬢ Binary content type
   fastifyAdapter.getInstance().addContentTypeParser(
     ['application/octet-stream'],
     { parseAs: 'buffer' },
     (_req, body, done) => done(null, body),
   );
 
+  // ⬢ Security
   app.register(helmet, {
     contentSecurityPolicy: isProduction ? undefined : false,
   });
-
   app.register(compression);
   await app.register(cookie);
 
-  const corsOrigin = configService.getOrThrow('app.corsOrigin', {
-    infer: true,
-  });
-
+  // ⬢ CORS
+  const corsOrigin = configService.getOrThrow('app.corsOrigin', { infer: true });
   const origins =
     typeof corsOrigin === 'string'
       ? corsOrigin.split(',').map((o) => o.trim())
@@ -100,7 +99,11 @@ async function bootstrap() {
       'Cookie',
     ],
   });
+  app.setGlobalPrefix('api', {
+    exclude: ['graphiql', 'graphiql/(.*)'],
+  });
 
+  // ⬢ Guards, filters, pipes
   app.useGlobalGuards(new AuthGuard(reflector, app.get(AuthService)));
   app.useGlobalFilters(new GlobalExceptionFilter(httpAdapterHost, debug));
   app.useGlobalPipes(
@@ -117,6 +120,7 @@ async function bootstrap() {
     }),
   );
 
+  // ⬢ Swagger
   const swaggerConfig = configService.get('app.swagger', { infer: true });
   if (swaggerConfig?.enabled && !isProduction) {
     setupSwagger(app, configService);
@@ -124,8 +128,8 @@ async function bootstrap() {
 
   const port = configService.getOrThrow('app.port', { infer: true }) as number;
 
+  // ⬢ WebSocket adapters
   app.useWebSocketAdapter(new IoAdapter(app));
-
   await app.init();
   const yjsGateway = app.get(YjsGateway);
   yjsGateway.init(port);
@@ -133,7 +137,7 @@ async function bootstrap() {
   await app.listen(port, '0.0.0.0');
 
   logger.log(`🚀 Server running at http://0.0.0.0:${port}`);
-  logger.log(`📊 GraphQL Playground http://0.0.0.0:${port}/graphql`);
+  logger.log(`📊 GraphQL Playground http://0.0.0.0:${port}/api/graphiql`);
   logger.log(`🔌 WebSocket endpoint ws://0.0.0.0:${port}/socket.io/`);
   logger.log(`📝 Environment: ${env}`);
 }

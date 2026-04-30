@@ -2,13 +2,12 @@
 
 import { useCallback } from "react";
 import {
-  useGetExplorerDocumentsQuery,
   useGetTrendingPublishedDocumentsQuery,
   useGetFeaturedDocumentsQuery,
   useGetUserFavoritePublicDocumentsQuery,
   useGetUserForkedPublicDocumentsQuery,
   useGetUserPublicDocumentsQuery,
-  useForkDocumentMutation
+  useForkDocumentMutation,
 } from "@/generated/graphql";
 import type { ApiDocument } from "@/types";
 
@@ -23,7 +22,6 @@ export type DocumentFilter =
   | { kind: "trending" }
   | { kind: "favorites"; userId: string }
   | { kind: "forked"; userId: string };
-// "most-popular" pending backend
 
 export interface UsePublicDocumentsOptions {
   filter?: DocumentFilter;
@@ -45,40 +43,45 @@ export interface UsePublicDocumentsResult {
   featuredError: Error | null;
 }
 
+// ─── MAIN HOOK ───
 export function usePublicDocuments({
   filter = { kind: "trending" },
   initialDocuments = [],
   initialFeatured = [],
   pageSize = DEFAULT_PAGE_SIZE,
 }: UsePublicDocumentsOptions = {}): UsePublicDocumentsResult {
-  const explorer = useExplorerFeed(
+
+  // ⬢ Only one feed runs at a time based on filter
+  const trending = useTrendingFeed(
     filter.kind === "trending",
     initialDocuments,
     pageSize
   );
-  const trending = useTrendingFeed(filter.kind === "trending", pageSize);
+
   const favorites = useFlatUserFeed(
     "favorites",
     filter.kind === "favorites" ? filter.userId : null
   );
+
   const forked = useFlatUserFeed(
     "forked",
     filter.kind === "forked" ? filter.userId : null
   );
 
   const feed =
-   filter.kind === "trending"
-        ? trending
-        : filter.kind === "favorites"
-          ? favorites
-          : forked;
+    filter.kind === "trending"
+      ? trending
+      : filter.kind === "favorites"
+        ? favorites
+        : forked;
 
   const featured = useFeaturedInternal(initialFeatured);
 
   return { ...feed, ...featured };
 }
 
-function useExplorerFeed(
+// ─── TRENDING FEED ───
+function useTrendingFeed(
   active: boolean,
   initialDocuments: PublicDocument[],
   pageSize: number
@@ -86,58 +89,15 @@ function useExplorerFeed(
   const hasSSR = initialDocuments.length > 0;
 
   const { data, loading, error, fetchMore, refetch, networkStatus } =
-    useGetExplorerDocumentsQuery({
-      variables: { limit: pageSize, offset: 0 },
-      notifyOnNetworkStatusChange: true,
-      skip: !active || hasSSR,
-      fetchPolicy: hasSSR ? "cache-only" : "cache-and-network",
-    });
-
-  const fetched = (data?.getExplorerDocuments ?? []) as PublicDocument[];
-  const documents = hasSSR && fetched.length === 0 ? initialDocuments : fetched;
-  const loadingMore = networkStatus === 3;
-  const hasMore = documents.length > 0 && documents.length % pageSize === 0;
-
-  const loadMore = useCallback(async () => {
-    if (!active || loading || loadingMore || !hasMore) return;
-    await fetchMore({
-      variables: { limit: pageSize, offset: documents.length },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult) return prev;
-        return {
-          ...prev,
-          getExplorerDocuments: [
-            ...(prev.getExplorerDocuments ?? []),
-            ...(fetchMoreResult.getExplorerDocuments ?? []),
-          ],
-        };
-      },
-    });
-  }, [active, fetchMore, documents.length, pageSize, loading, loadingMore, hasMore]);
-
-  return {
-    documents,
-    loading: active && !hasSSR ? loading : false,
-    loadingMore,
-    error: (error as Error) ?? null,
-    hasMore,
-    loadMore,
-    refetch: async () => {
-      await refetch({ limit: pageSize, offset: 0 });
-    },
-  };
-}
-
-function useTrendingFeed(active: boolean, pageSize: number) {
-  const { data, loading, error, fetchMore, refetch, networkStatus } =
     useGetTrendingPublishedDocumentsQuery({
       variables: { limit: pageSize, offset: 0 },
       notifyOnNetworkStatusChange: true,
-      skip: !active,
-      fetchPolicy: "cache-and-network",
+      skip: !active || hasSSR,  // ⬢ skip if SSR data already exists
+      fetchPolicy: "cache-first",
     });
 
-  const documents = (data?.getTrendingPublishedDocuments ?? []) as PublicDocument[];
+  const fetched = (data?.getTrendingPublishedDocuments ?? []) as PublicDocument[];
+  const documents = hasSSR && fetched.length === 0 ? initialDocuments : fetched;
   const loadingMore = networkStatus === 3;
   const hasMore = documents.length > 0 && documents.length % pageSize === 0;
 
@@ -160,19 +120,17 @@ function useTrendingFeed(active: boolean, pageSize: number) {
 
   return {
     documents,
-    loading: active ? loading : false,
+    loading: active && !hasSSR ? loading : false,
     loadingMore,
     error: (error as Error) ?? null,
     hasMore,
     loadMore,
-    refetch: async () => {
-      await refetch({ limit: pageSize, offset: 0 });
-    },
+    refetch: async () => { await refetch({ limit: pageSize, offset: 0 }); },
   };
 }
 
+// ─── USER FEEDS ───
 function useFlatUserFeed(kind: "favorites" | "forked", userId: string | null) {
-
   const favoritesQ = useGetUserFavoritePublicDocumentsQuery({
     skip: !userId || kind !== "favorites",
     fetchPolicy: "cache-and-network",
@@ -183,10 +141,7 @@ function useFlatUserFeed(kind: "favorites" | "forked", userId: string | null) {
     fetchPolicy: "cache-and-network",
   });
 
-  console.log("fav", forkedQ, favoritesQ, userId)
-
-  const { data, loading, error, refetch } =
-    kind === "favorites" ? favoritesQ : forkedQ;
+  const { loading, error, refetch } = kind === "favorites" ? favoritesQ : forkedQ;
 
   const documents =
     kind === "favorites"
@@ -199,10 +154,8 @@ function useFlatUserFeed(kind: "favorites" | "forked", userId: string | null) {
     loadingMore: false,
     error: (error as Error) ?? null,
     hasMore: false,
-    loadMore: async () => { },
-    refetch: async () => {
-      await refetch();
-    },
+    loadMore: async () => {},
+    refetch: async () => { await refetch(); },
   };
 }
 
@@ -224,12 +177,15 @@ function useFeaturedInternal(initialFeatured: PublicDocument[]) {
   };
 }
 
-export function useUserPublicDocuments(userId: string | null, pageSize = 20,
-  initialDocuments: ApiDocument[] = []) {
-    const hasSSR = initialDocuments.length > 0;
+// ─── USER PUBLIC DOCS ───
+export function useUserPublicDocuments(
+  userId: string | null,
+  pageSize = 20,
+  initialDocuments: ApiDocument[] = []
+) {
+  const hasSSR = initialDocuments.length > 0;
 
-  
-    const { data, loading, error, fetchMore, refetch, networkStatus } =
+  const { data, loading, error, fetchMore, refetch, networkStatus } =
     useGetUserPublicDocumentsQuery({
       variables: { userId: userId!, limit: pageSize, offset: 0 },
       skip: !userId || hasSSR,
@@ -237,9 +193,9 @@ export function useUserPublicDocuments(userId: string | null, pageSize = 20,
       notifyOnNetworkStatusChange: true,
     });
 
-    const fetched = (data?.getUserPublicDocuments ?? []) as ApiDocument[];
-    const documents = hasSSR && fetched.length === 0 ? initialDocuments : fetched;
-    const loadingMore = networkStatus === 3;
+  const fetched = (data?.getUserPublicDocuments ?? []) as ApiDocument[];
+  const documents = hasSSR && fetched.length === 0 ? initialDocuments : fetched;
+  const loadingMore = networkStatus === 3;
   const hasMore = documents.length > 0 && documents.length % pageSize === 0;
 
   const loadMore = useCallback(async () => {
@@ -270,17 +226,15 @@ export function useUserPublicDocuments(userId: string | null, pageSize = 20,
   };
 }
 
+// ─── FORK ───
 export function useForkDocument() {
   const [forkDocumentMutation, { loading, error }] = useForkDocumentMutation();
 
   const forkDocument = useCallback(
     async (documentId: string, targetWorkspaceId: string) => {
       const { data } = await forkDocumentMutation({
-        variables: {
-          input: { documentId, targetWorkspaceId },
-        },
+        variables: { input: { documentId, targetWorkspaceId } },
       });
-
       return data?.forkDocument ?? null;
     },
     [forkDocumentMutation]
