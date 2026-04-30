@@ -33,9 +33,6 @@ export class UserYjsAppDocumentEntity extends AbstractEntity {
     @Column({ name: "user_changed_state", type: "boolean", default: false })
     userChangedState!: boolean;
 
-    @Column({ name: "state_hash", type: "varchar", length: 40 })
-    stateHash!: string;
-
     @ManyToOne(() => YjsAppDocumentEntity, (appDoc) => appDoc.userYjsAppDocuments, { onDelete: "CASCADE" })
     @JoinColumn({
         name: "yjs_app_document_id",

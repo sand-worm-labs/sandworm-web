@@ -43,37 +43,29 @@ export class PubSubProvider {
     }
 
     public async connect() {
-        if (this.cleanup) {
-            this.logger.warn(`Called connect but already connected for ${this.id}`);
-            return;
-        }
+        if (this.cleanup) return;
 
-        // Subscribe to the channel
         this.cleanup = await this.pubSubService.subscribe(
             this.getChannel(),
-            async (messageStr) => {
-                await this.onSubMessage(messageStr);
-            }
+            async (messageStr) => { await this.onSubMessage(messageStr); }
         );
 
-        // Send initial sync
-        await this.sendSync1('broadcast');
-
-        // Setup update handler
+        // handlers first, before any async fire-and-forget
         this.ydoc.on('update', this.updateHandler);
 
-        // Setup periodic resync
         this.resyncInterval = setInterval(() => {
             this.sendSync1('broadcast');
         }, RESYNC_INTERVAL);
 
-        // Setup ping interval
         this.pingInterval = setTimeout(this.onPingInterval, PING_TIMEOUT);
 
-        this.logger.debug(`PubSubProvider connected for ${this.id}`);
+        // fire and forget — this is peer-to-peer sync for other server instances
+        // the connecting client gets state via the WebSocket sync handshake, not this
+        this.sendSync1('broadcast').catch((err) =>
+            this.logger.error(`Failed initial sync broadcast: ${err}`)
+        );
     }
-
-    public async disconnect() {
+     public async disconnect() {
         if (!this.cleanup) {
             this.logger.warn(`Called disconnect but already disconnected for ${this.id}`);
             return;
