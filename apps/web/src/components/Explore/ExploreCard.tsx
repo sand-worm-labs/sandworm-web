@@ -128,9 +128,11 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
                   >
                     @{query.author?.username}
                   </Link>
-                  <h3 className="text-[0.95rem] font-medium break-words cursor-pointer hover:underline">
-                    {query.title}
-                  </h3>
+                  <Link href={`/p/${query.id}`} className="text-[0.95rem] font-medium break-words cursor-pointer hover:underline block">
+                  {query.title}
+
+                  </Link>
+               
                   <p className="text-xs text-ink-400">
                     Created {formattedDate}
                   </p>
