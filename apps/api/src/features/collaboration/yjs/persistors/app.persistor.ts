@@ -4,10 +4,8 @@ import * as Y from 'yjs';
 import { decoding } from 'lib0';
 import { equals, omit } from 'ramda';
 import {
-  YjsDocumentEntity,
   YjsAppDocumentEntity,
   UserYjsAppDocumentEntity,
-  YjsUpdateEntity,
 } from '@sandworm/postgresql-typeorm';
 import {
   YBlock,
@@ -39,7 +37,6 @@ export class AppPersistor implements Persistor {
     private readonly userId: string | null,
     private readonly yjsAppDocumentRepository: Repository<YjsAppDocumentEntity>,
     private readonly userYjsAppDocumentRepository: Repository<UserYjsAppDocumentEntity>,
-    // private readonly yjsUpdateRepository: Repository<YjsUpdateEntity>,b
     private readonly lockService: LockService
   ) { }
 

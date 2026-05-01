@@ -124,6 +124,7 @@ services:
       - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
     ports:
       - '8080:8080'
+      - '8081:8081'
     networks:
       - sandworm-net
 

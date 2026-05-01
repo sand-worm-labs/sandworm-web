@@ -22,7 +22,7 @@ export function getDocId(id: string, isDataApp: boolean, clock: number) {
 function getYjsUrl() {
   const baseUrl = NEXT_PUBLIC_API_WS_URL();
   const url = new URL(baseUrl);
-  url.port = (parseInt(url.port, 10) + 2).toString();
+
   return `${url.toString()}yjs`;
 }
 
@@ -35,6 +35,8 @@ function getWSProvider(
   publishedAt: string | null,
   accessToken: string | null
 ): WebsocketProvider {
+
+
   const id = getDocId(documentId, isDataApp, clock /* publishedAt */);
   const wsUrl = getYjsUrl();
 
@@ -80,12 +82,14 @@ class Provider implements IProvider {
 
   constructor(private wsProvider: WebsocketProvider) {
     this._synced = this.wsProvider.synced;
-    // ⬢ NOTE — y-websocket emits "sync" (not "synced") when the document
-    // has been synchronised with the server. Using "synced" was a bug —
-    // the callback would never fire and the doc would appear stuck syncing.
     this.wsProvider.on("sync", this.onWSSynced);
+    this.wsProvider.on("status", (event: any) => {
+      console.log("[WS] status:", event.status);
+    });
+    this.wsProvider.on("connection-error", (event: any) => {
+      console.log("[WS] connection-error:", event);
+    });
   }
-
   private onWSSynced = () => {
     if (!this.wsProvider.wsconnected) {
       return;
@@ -101,6 +105,7 @@ class Provider implements IProvider {
 
   public connect() {
     this.wsProvider.connect();
+    console.log("[Provider] connect() called");
   }
 
   public destroy() {

@@ -208,7 +208,6 @@ export class SharedDoc implements WSSharedDoc {
             this.dataframes
         );
         this.executor.start();
-        this.executor.start();
 
         this.logger.debug(`SharedDoc reset complete for ${this.id}`);
     }

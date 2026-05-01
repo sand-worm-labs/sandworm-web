@@ -7,6 +7,8 @@ const navLinks = [
   { name: "Blog", href: "https://docs.sandwormlabs.xyz/blog", isExternal: true },
   { name: "About", href: "https://docs.sandwormlabs.xyz/blog", isExternal: true },
 ];
+
+const appUrl = import.meta.env.PUBLIC_APP_URL ?? 'http://localhost:8081'
 ---
 
 <header class="fixed w-full lg:top-5 top-2 mx-auto left-0 right-0 z-99">
@@ -48,7 +50,7 @@ const navLinks = [
       <!-- Launch App Button -->
       <a 
         class="hidden md:flex py-2.5 bg-primary text-white rounded-2xl px-5.5 text-[0.9rem] font-medium hover:scale-105 transition-transform font-primary"
-        href="/workspace"
+        href={`${appUrl}`}
       >
         Launch App
       </a>
@@ -85,7 +87,7 @@ const navLinks = [
       >
       <div class="flex gap-x-2 mb-12 mt-8 lg:mt-0 mx-4 w-auto ">
       
-        <a href="/waitlist" aria-label="get started on sandworm"
+        <a  href={`${appUrl}/workspace`} aria-label="get started on sandworm"
         class="rounded-2xl p-2.5 py-3 h-fit m-0.5 inline-block flex-1  text-black outline-white bg-white px-5 transition-colors duration-200 hover:bg-white/80 border border-white font-medium font-primary lg:text-sm text-sm text-center"
       >
         Launch App

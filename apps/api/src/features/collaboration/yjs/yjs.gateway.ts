@@ -153,6 +153,7 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
   }
 
   private closeConn(doc: SharedDoc, conn: WebSocket) {
+    this.logger.log("Closing connections")
     const controlledIds = doc.conns.get(conn);
     if (controlledIds !== undefined) {
       doc.conns.delete(conn);
