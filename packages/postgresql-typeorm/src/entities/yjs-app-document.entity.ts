@@ -24,10 +24,7 @@ export class YjsAppDocumentEntity extends AbstractEntity {
     clockUpdatedAt?: Date;
 
     @Column({ name: "state", type: "bytea" })
-    state!: Buffer;
-
-    @Column({ name: "state_hash", type: "varchar", length: 40 })
-    stateHash!: string;
+    state!: Buffer; 
 
     @Column({ name: "has_dashboard", type: "boolean", default: false })
     hasDashboard!: boolean;

@@ -71,6 +71,8 @@ export default function useSideBar(): SideBarContext {
 // ⬢ Utils
 // =====================================
 function getInitialWidth(): SideBarWidth {
+  if (typeof window === 'undefined') return DEFAULT_SIDEBAR_WIDTH;
+  
   const isSmallScreen = window.innerWidth < SMALL_SCREEN_BREAKPOINT;
   if (isSmallScreen) return DEFAULT_SMALL_SCREEN_WIDTH;
 
@@ -90,6 +92,7 @@ function getInitialWidth(): SideBarWidth {
 }
 
 function getInitialOpen(): boolean {
+  if (typeof window === 'undefined') return true;
   if (window.location.pathname.includes("/documents/")) return false;
 
   return (

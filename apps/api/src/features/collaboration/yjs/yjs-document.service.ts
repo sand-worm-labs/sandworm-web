@@ -62,16 +62,11 @@ export class YjsDocumentService implements OnModuleDestroy {
         this.docsCache = new LRUCache<string, SharedDoc>({
             maxSize: cacheConfig.maxSize,
             sizeCalculation: (doc) => doc.getByteLength(),
-            dispose: async (doc, id) => {
+            dispose: (doc, id) => {
                 if (!this.docs.has(id)) {
-                    try {
-                        await doc.destroy();
-                        this.logger.debug(`Disposed cached YDoc: ${id}`);
-                    } catch (err) {
-                        this.logger.error(
-                            `Failed to dispose YDoc ${id}: ${err}`
-                        );
-                    }
+                    doc.destroy().catch((err) =>
+                        this.logger.error(`Failed to dispose cached YDoc ${id}: ${err}`)
+                    );
                 }
             },
         });
@@ -167,18 +162,21 @@ export class YjsDocumentService implements OnModuleDestroy {
     async saveEditYDoc(documentId: string, yDoc: Y.Doc): Promise<void> {
         const state = Buffer.from(Y.encodeStateAsUpdate(yDoc));
 
-        await this.yjsDocumentRepo.upsert(
-            {
+        const existing = await this.yjsDocumentRepo.findOne({ where: { documentId } });
+
+        if (existing) {
+            await this.yjsDocumentRepo.update(
+                { documentId },
+                { state, clock: existing.clock + 1, clockUpdatedAt: new Date() }
+            );
+        } else {
+            await this.yjsDocumentRepo.insert({
                 documentId,
                 state,
-                clock: () => 'clock + 1',  // ← increment on every save
+                clock: 0,
                 clockUpdatedAt: new Date(),
-            },
-            {
-                conflictPaths: ["documentId"],
-                skipUpdateIfNoValuesChanged: true,
-            },
-        );
+            });
+        }
     }
 
     async saveAppYDoc(
@@ -187,13 +185,11 @@ export class YjsDocumentService implements OnModuleDestroy {
         yDoc: Y.Doc,
     ): Promise<void> {
         const state = Buffer.from(Y.encodeStateAsUpdate(yDoc));
-        const hash_state = hashState(state)
 
         if (userId) {
             await this.userYjsAppDocumentRepo.upsert(
                 {
                     yjsAppDocumentId,
-                    stateHash: hash_state,
                     userId,
                     state,
                 },
@@ -206,7 +202,7 @@ export class YjsDocumentService implements OnModuleDestroy {
                 `Saved app YDoc for user ${userId}, app: ${yjsAppDocumentId}`
             );
         } else {
-            await this.yjsAppDocumentRepo.update(yjsAppDocumentId, { state, stateHash: hash_state });
+            await this.yjsAppDocumentRepo.update(yjsAppDocumentId, { state });
             this.logger.debug(`Saved app YDoc: ${yjsAppDocumentId}`);
         }
     }
@@ -225,7 +221,6 @@ export class YjsDocumentService implements OnModuleDestroy {
         if (yjsAppDoc) {
             yjsAppDoc.state = state;
             yjsAppDoc.clock += 1;
-            yjsAppDoc.stateHash = hashState(state);
             yjsAppDoc.clockUpdatedAt = new Date();
             await this.yjsAppDocumentRepo.save(yjsAppDoc);
 
@@ -233,7 +228,6 @@ export class YjsDocumentService implements OnModuleDestroy {
                 { yjsAppDocumentId: yjsAppDoc.id },
                 {
                     state,
-                    stateHash: hashState(state),
                     clock: yjsAppDoc.clock,
                     clockUpdatedAt: new Date(),
                 },
@@ -628,22 +622,20 @@ export class YjsDocumentService implements OnModuleDestroy {
             clearInterval(this.cleanupInterval);
         }
 
-        const destroyPromises = Array.from(this.docs.values()).map((doc) =>
-            doc.destroy().catch((err) => {
-                this.logger.error(
-                    `Failed to destroy document ${doc.id}: ${err.message}`,
-                );
-            }),
+        // destroy active docs first
+        await Promise.all(
+            Array.from(this.docs.values()).map((doc) =>
+                doc.destroy().catch((err) =>
+                    this.logger.error(`Failed to destroy document ${doc.id}: ${err}`)
+                )
+            )
         );
 
-        await Promise.all(destroyPromises);
-
-        for (const doc of this.docsCache.values()) {
-            try {
-                await doc.destroy();
-            } catch (err) {
-                this.logger.error(
-                    `Failed to destroy cached doc: ${err}`
+        // destroy cached docs that weren't active (not already destroyed above)
+        for (const [id, doc] of this.docsCache.entries()) {
+            if (!this.docs.has(id)) {
+                await doc.destroy().catch((err) =>
+                    this.logger.error(`Failed to destroy cached doc ${id}: ${err}`)
                 );
             }
         }

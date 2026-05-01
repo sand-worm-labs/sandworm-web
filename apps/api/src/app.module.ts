@@ -94,6 +94,7 @@ const graphqlModule = GraphQLModule.forRootAsync<MercuriusDriverConfig>({
     return {
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       introspection: true,
+      path: '/api/graphql',
       graphiql: isLocal || isDevelopment,
       context: (request, reply) => ({ req: request, reply }),
     };

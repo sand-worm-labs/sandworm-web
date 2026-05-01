@@ -27,7 +27,6 @@ export class PersistorFactory {
     ) { }
 
     createDocumentPersistor(documentId: string): Persistor {
-        const docId = this.getDocId(documentId, null);
         return DocumentPersistor.create(
             documentId,
             this.yjsDocumentRepository,

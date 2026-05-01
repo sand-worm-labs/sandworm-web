@@ -1,7 +1,3 @@
-// yjs.types.ts
-import * as Y from 'yjs';
-import * as awarenessProtocol from 'y-protocols/awareness';
-import { WebSocket } from 'ws';
 import { DocumentEntity, UserWorkspaceRole } from '@sandworm/postgresql-typeorm';
 import { WSSharedDoc } from '../interfaces';
 
