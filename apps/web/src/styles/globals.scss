@@ -4,7 +4,7 @@
    ║ AUTHOR: Sandworm Team                             
    ╚════════════════════════════════════════════╝ */
 
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&display=swap');
 @import "./fonts.scss";
 
 @tailwind base;
@@ -123,7 +123,7 @@
     --bg-input: 210 17% 98%; /* #F8F9FA */
     --input: 210 14% 89%; /* #DEE2E6 */
     --border: 210 14% 89%; /* #DEE2E6 */
-    --border-secondary:0, 0%, 82%; /* #F1F3F4 */
+    --border-secondary:210 3% 93%; /* #E9ECEF */
     --border-tertiary: 210 14% 83%; /* #CED4DA */
     --border-focus: 210 14% 83%; /* #CED4DA */
 

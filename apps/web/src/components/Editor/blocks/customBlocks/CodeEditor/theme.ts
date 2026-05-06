@@ -12,12 +12,16 @@ function materialLightTheme(disabled: boolean) {
       "&": {
         color: "#1a1a1a",
         backgroundColor: disabled ? "#f5f5f5" : "#ffffff",
-        fontSize: "12px",
+        fontSize: "13px",
+        fontFamily: "'Geist Mono', monospace",
       },
       "&.cm-focused": { outline: "none" },
       ".cm-content": {
         caretColor: "#1a1a1a",
         paddingLeft: "8px",
+      },
+      ".cm-scroller": {
+        fontFamily: "'Geist Mono', monospace !important",
       },
       ".cm-cursor, .cm-dropCursor": {
         borderLeftColor: "#1a1a1a",
@@ -25,7 +29,7 @@ function materialLightTheme(disabled: boolean) {
       "&.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection":
         { backgroundColor: "#dce4f5" },
       ".cm-selectionMatch": { backgroundColor: "#e8edf8" },
-      ".cm-activeLine":     { backgroundColor: "transparent" },
+      ".cm-activeLine": { backgroundColor: "transparent" },
       ".cm-gutters": {
         backgroundColor: disabled ? "#f5f5f5" : "#ffffff",
         color: "#aaaaaa",
@@ -42,36 +46,35 @@ function materialLightTheme(disabled: boolean) {
   );
 }
 
-
 const cursorLightHighlightStyle = HighlightStyle.define([
-  { tag: t.keyword,           color: "#7B2FBE" },
-  { tag: t.moduleKeyword,     color: "#7B2FBE" },    
-  { tag: t.definitionKeyword, color: "#7B2FBE" },    
-  { tag: t.controlKeyword,    color: "#7B2FBE" },   
+  { tag: t.keyword, color: "#7B2FBE" },
+  { tag: t.moduleKeyword, color: "#7B2FBE" },
+  { tag: t.definitionKeyword, color: "#7B2FBE" },
+  { tag: t.controlKeyword, color: "#7B2FBE" },
 
-  { tag: t.variableName,      color: "#C96A10" },
-  { tag: t.name,              color: "#C96A10" },
-  { tag: t.namespace,         color: "#C96A10" },   
-  { tag: t.propertyName,      color: "#C96A10" },
+  { tag: t.variableName, color: "#C96A10" },
+  { tag: t.name, color: "#C96A10" },
+  { tag: t.namespace, color: "#C96A10" },
+  { tag: t.propertyName, color: "#C96A10" },
 
   { tag: t.function(t.variableName), color: "#C96A10" },
   { tag: t.definition(t.variableName), color: "#C96A10" },
 
-  { tag: t.string,            color: "#2E9E5B" },
-  { tag: t.special(t.string), color: "#2E9E5B" },   
+  { tag: t.string, color: "#2E9E5B" },
+  { tag: t.special(t.string), color: "#2E9E5B" },
 
-  { tag: t.number,            color: "#C96A10" },
-  { tag: t.bool,              color: "#7B2FBE" },
-  { tag: t.null,              color: "#7B2FBE" },
+  { tag: t.number, color: "#C96A10" },
+  { tag: t.bool, color: "#7B2FBE" },
+  { tag: t.null, color: "#7B2FBE" },
 
-  { tag: t.comment,           color: "#8B8FA8", fontStyle: "italic" },
+  { tag: t.comment, color: "#8B8FA8", fontStyle: "italic" },
 
-  { tag: t.operator,          color: "#555555" },
-  { tag: t.punctuation,       color: "#555555" },
-  { tag: t.bracket,           color: "#555555" },
+  { tag: t.operator, color: "#555555" },
+  { tag: t.punctuation, color: "#555555" },
+  { tag: t.bracket, color: "#555555" },
 
-  { tag: t.typeName,          color: "#7B2FBE" },
-  { tag: t.className,         color: "#C96A10" },
+  { tag: t.typeName, color: "#7B2FBE" },
+  { tag: t.className, color: "#C96A10" },
 ]);
 
 export function materialLight(disabled: boolean): Extension {
@@ -91,6 +94,7 @@ function materialDarkTheme(disabled: boolean) {
         color: "#d4d4d4",
         backgroundColor: disabled ? "#2E2E2C" : "#272726",
         fontSize: "12px",
+        fontFamily: "'Geist Mono', monospace",
       },
       "&.cm-focused": { outline: "none" },
       ".cm-content": {
