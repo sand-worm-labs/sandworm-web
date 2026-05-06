@@ -6,6 +6,7 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&display=swap');
 @import "./fonts.scss";
+@import "./date-picker.scss";
 
 @tailwind base;
 @tailwind components;
@@ -587,6 +588,27 @@ select {
   body {
     @apply bg-base-200 text-foreground;
   }
+}
+
+/* ════════════ Onbpoarding screens ════════════ */
+.python-html-output {
+  font-size: 0.7rem;
+  overflow: auto;
+}
+
+.python-html-output thead {
+  background-color: var(--gray-100);
+  position: sticky;
+  top: 0;
+}
+
+.python-html-output th,
+.python-html-output td {
+  max-width: 250px;
+  overflow: auto;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid var(--gray-100);
+  white-space: nowrap;
 }
 
 /* ════════════ Onbpoarding screens ════════════ */
