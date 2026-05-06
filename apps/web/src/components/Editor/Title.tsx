@@ -8,7 +8,6 @@ import { mergeAttributes, Node } from "@tiptap/core";
 import clsx from "clsx";
 import { useEffect } from "react";
 
-
 import { TitleSkeleton } from "./blocks/ContentSkeleton";
 
 export type Level = 1 | 2 | 3 | 4 | 5 | 6;
@@ -23,14 +22,13 @@ export const TitleExtension = Node.create<ITitleOptions>({
   addOptions() {
     return {
       level: 1,
-      onUpdate: () => { },
+      onUpdate: () => {},
       HTMLAttributes: {},
     };
   },
   content: "text*",
   marks: "",
   group: "block",
-
 
   defining: true,
 
@@ -70,7 +68,7 @@ function Title(props: Props) {
         TitleExtension.configure({
           level: 1,
           HTMLAttributes: {
-            style: `font-weight: bold; font-size: 3rem;${props.style ?? ""}`,
+            style: `font-weight: 500; font-size: 3rem;${props.style ?? ""}`,
             class: "font-body ",
           },
         }),
