@@ -16,7 +16,7 @@ import { Persistor } from './interfaces';
 import { Server, Socket } from 'socket.io';
 import { DocumentTreeService } from "@/features/document/service/document-tree.service";
 import { DocumentExecutorService } from "./executor/document-executor.service";
-import { addDashboardItemToYDashboard, cloneBlockGroup, duplicateBlock, getDashboard, getDashboardItem, getDataframes, getLayout, setTitle, YBlock, YBlockGroup } from "@sandworm/editor";
+import { addDashboardItemToYDashboard, addGroupedBlock, BlockType, cloneBlockGroup, duplicateBlock, getDashboard, getDashboardItem, getDataframes, getLayout, makePythonBlock, makeSQLBlock, setTitle, YBlock, YBlockGroup } from "@sandworm/editor";
 import { v4 as uuidv4 } from 'uuid';
 import { clone } from 'ramda';
 import { hashState } from "@sandworm/nest-common";
@@ -426,7 +426,7 @@ export class YjsDocumentService implements OnModuleDestroy {
         const newPersistor = this.persistorFactory.createDocumentPersistor(newDocumentId);
 
         const prevSharedDoc = await this.getYDocForUpdateAsync(prevId, prevDocumentId, server, prevWorkspaceId, prevPersistor);
-        const newSharedDoc = await this.getYDocForUpdateAsync(newId, newDocumentId, server, newWorkspaceId, newPersistor,);
+        const newSharedDoc = await this.getYDocForUpdateAsync(newId, newDocumentId, server, newWorkspaceId, newPersistor);
         this.duplicateYDoc(
             prevSharedDoc,
             newSharedDoc.ydoc,
@@ -543,56 +543,58 @@ export class YjsDocumentService implements OnModuleDestroy {
         )
     }
 
-      
+    private generateBlockId(): string {
+        // Replace with your actual ID generation (UUID v4, nanoid, etc.)
+        return uuidv4();
+    }
+
     async appendBlockToNotebook(
         documentId: string,
         workspaceId: string,
         server: Server
     ): Promise<string> {
-        const docId = this.getDocId(documentId, null);
-        const persistor = this.persistorFactory.createDocumentPersistor(documentId);
-
-        let newBlockId: string | null = null;
-
         try {
-            await this.getYDocForUpdate(
+            const docId = this.getDocId(documentId, null);
+            const persistor = this.persistorFactory.createDocumentPersistor(documentId);
+            const currentSharedDoc = await this.getYDocForUpdateAsync(
                 docId,
                 documentId,
                 server,
                 workspaceId,
-                (sharedDoc) => {
-                   sharedDoc.ydoc.transact(() => {
-                        // sharedDoc.ydoc.getXmlElement("title");
-                        // newBlockId = newBlock.toJSON().toString();
-                        // newBlock.setAttribute('id', newBlockId);
-                        // newBlock.setAttribute('title', 'New Block');
-                        // blocksArray.push([newBlock]);
-                        const idMap = new Map<string, string>()
-                        const titleFrag = sharedDoc.ydoc.getXmlFragment('title')
-                        titleFrag.delete(0, titleFrag.length)
-                        const titleText = new Y.XmlText("New Notebook") 
-                        titleFrag.insert(0, [titleText])
-                        // this.updateTitleWithWorkspace(documentId, workspaceId, "New Notebook");
-                        // const blocksMap = sharedDoc.ydoc.getMap<YBlock>('blocks');
-                        // this.logger.debug({ documentId, blocksCount: blocksMap.size }, 'Appending block to notebook');
-                    });
-                },
                 persistor
             );
+        
+            let newBlockId: string | null = null;
+            // this.logger.log("hhhhdhhh")
+            
+            currentSharedDoc.ydoc.transact(() => {
+            // let blocks =  currentSharedDoc.ydoc.getMap<YBlock>('blocks');
+                // makeVisualizationBlock(this.generateBlockId(), blocks);
+                // makeInputBlock(this.generateBlockId(), blocks);
+                // makeDropdownInputBlock(this.generateBlockId(), blocks);
+                // makeDateInputBlock(this.generateBlockId(), blocks);
+                // makeFileUploadBlock(this.generateBlockId(), blocks);
 
-           // const sharedDoc = await this.getYDoc(docId, documentId, workspaceId, persistor);
-           // await this.saveEditYDoc(documentId, sharedDoc.ydoc, false);
+                const fragment = currentSharedDoc.ydoc.getXmlFragment('title');
+                fragment.delete(0, fragment.length);
+                const titleEl = new Y.XmlElement('doc-title');
+                titleEl.insert(0, [new Y.XmlText("New Notebook")]);
+                fragment.insert(0, [titleEl]);
 
-            return newBlockId!;
-        } catch (error: any) {
-            this.logger.error({
-                documentId,
-                workspaceId,
-                newBlockId,
-                message: error.message,
-                stack: error.stack,
-            }, 'appendBlockToNotebook failed');
-            throw new Error(`Error appending block: ${error.message}`);
+                this.logger.log(fragment.toJSON().concat("edededede"))
+               // return "d"
+                // fragment.delete(0, fragment.length);
+        
+            });
+        
+            // if (!newBlockId) {
+            //     throw new Error('Failed to generate block ID during transaction');
+            // }
+        
+            return "hhh";
+        }
+        catch {
+            this.logger.log("error")
         }
     }
 
