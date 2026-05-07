@@ -1,48 +1,71 @@
 #!/usr/bin/env bash
 set -e
-
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+
+# ═════════════════════════════════════════════════════════════════════════════
+# ⬢ ARG PARSING
+# ═════════════════════════════════════════════════════════════════════════════
+CLEAN_VOLUMES=false
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --clean-volumes|--nuke)
+      CLEAN_VOLUMES=true
+      shift
+      ;;
+    *)
+      echo "Unknown flag: $1"
+      echo "Usage: $0 [--clean-volumes]"
+      exit 1
+      ;;
+  esac
+done
 
 echo "▶ Running env setup..."
 chmod +x "$ROOT_DIR/scripts/setup-envs.sh"
 "$ROOT_DIR/scripts/setup-envs.sh"
 
 # ─── ARCH DETECTION ──────────────────────────────────────────────────────────
-
 ARCH=$(uname -m)
 if [ "$ARCH" = "arm64" ] || [ "$ARCH" = "aarch64" ]; then
-    TARGETARCH="arm64"
-    COMPOSE_OVERRIDE="docker-compose.mac.yml"
-    echo "▶ Detected ARM64 (Apple Silicon / ARM)"
+TARGETARCH="arm64"
+COMPOSE_OVERRIDE="docker-compose.mac.yml"
+echo "▶ Detected ARM64 (Apple Silicon / ARM)"
 else
-    TARGETARCH="amd64"
-    COMPOSE_OVERRIDE="docker-compose.linux.yml"
-    echo "▶ Detected AMD64 (Linux / ThinkPad)"
+TARGETARCH="amd64"
+COMPOSE_OVERRIDE="docker-compose.linux.yml"
+echo "▶ Detected AMD64 (Linux / ThinkPad)"
 fi
-
 export TARGETARCH
 
 # ─── JUPYTER TOKEN ───────────────────────────────────────────────────────────
-
 export JUPYTER_TOKEN=$(grep JUPYTER_TOKEN "$ROOT_DIR/apps/api/.env" | cut -d '=' -f2 | tr -d "'" | tr -d '"')
 echo "Using JUPYTER_TOKEN=$JUPYTER_TOKEN"
-
 echo
-echo "▶ Cleaning Docker volumes if they exist..."
-VOLUMES=("docker_sandworm-postgres-data" "docker_sandworm-pgadmin-data" "docker_sandworm-jupyter-notebooks")
-for VOLUME in "${VOLUMES[@]}"; do
+
+# ═════════════════════════════════════════════════════════════════════════════
+# ⬢ VOLUME CLEANUP (CONDITIONAL)
+# ═════════════════════════════════════════════════════════════════════════════
+if [ "$CLEAN_VOLUMES" = true ]; then
+  echo "▶ Cleaning Docker volumes (--clean-volumes flag detected)..."
+  VOLUMES=("docker_sandworm-postgres-data" "docker_sandworm-pgadmin-data" "docker_sandworm-jupyter-notebooks")
+  for VOLUME in "${VOLUMES[@]}"; do
     CONTAINERS=$(docker ps -a --filter "volume=$VOLUME" --format "{{.ID}}")
     if [ -n "$CONTAINERS" ]; then
-        echo "Stopping containers using volume $VOLUME..."
-        docker rm -f $CONTAINERS
+      echo "Stopping containers using volume $VOLUME..."
+      docker rm -f $CONTAINERS
     fi
     if docker volume inspect "$VOLUME" > /dev/null 2>&1; then
-        echo "Removing volume: $VOLUME"
-        docker volume rm "$VOLUME"
+      echo "Removing volume: $VOLUME"
+      docker volume rm "$VOLUME"
     fi
-done
-
+  done
+else
+  echo "▶ Skipping volume cleanup (use --clean-volumes to force)"
+fi
 echo
+
+# ─── REST OF SCRIPT CONTINUES UNCHANGED ───────────────────────────────────────
 echo "▶ Starting Docker services..."
 
 if command -v docker compose > /dev/null 2>&1; then
@@ -77,14 +100,16 @@ until docker exec sandworm-postgres pg_isready -U postgres > /dev/null 2>&1; do
 done
 echo "Postgres is ready ✅"
 
-echo
-echo "▶ Running database migrations..."
-cd "$ROOT_DIR/packages/postgresql-typeorm"
-pnpm run migration:up
+if [ "$CLEAN_VOLUMES" = true ]; then
+    echo
+    echo "▶ Running database migrations..."
+    cd "$ROOT_DIR/packages/postgresql-typeorm"
+    pnpm run migration:up
 
-echo
-echo "▶ Seeding database..."
-pnpm run seed:run
+    echo
+    echo "▶ Seeding database..."
+    pnpm run seed:run
+fi
 
 echo
 echo "▶ Starting dev server..."
