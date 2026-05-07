@@ -4,15 +4,10 @@ import axios from 'axios';
 import { z } from 'zod';
 import { BaseAiExecutorService, StreamResult } from './base-ai-executor.service';
 
-
-export type TextEditAction = 'improve' | 'summarize' | 'expand' | 'fix' | 'custom'
-
 export interface TextEditOptions {
   content: string
   instructions: string
-  action: TextEditAction
   modelId: string | null
-  openaiApiKey: string | null
 }
 
 export interface TextEditResponse {
@@ -22,10 +17,6 @@ export interface TextEditResponse {
 export interface TextEditStreamedOptions extends TextEditOptions {
   onContent: (content: string) => void
 }
-
-// =====================================================
-// ⬢ SERVICE
-// =====================================================
 
 @Injectable()
 export class TextAiExecutorService extends BaseAiExecutorService {
@@ -38,12 +29,12 @@ export class TextAiExecutorService extends BaseAiExecutorService {
   // ─── Non-Streaming ───────────────────────────────
 
   async textEdit(opts: TextEditOptions): Promise<TextEditResponse> {
-    const { content, instructions, action, modelId, openaiApiKey } = opts
+    const { content, instructions, modelId} = opts
 
     const res = await fetch(`${this.baseUrl}/v1/text/edit`, {
       method: 'POST',
       headers: this.defaultHeaders,
-      body: JSON.stringify({ content, instructions, action, modelId, openaiApiKey }),
+      body: JSON.stringify({ content, instructions, modelId}),
     })
 
     return res.json() as Promise<TextEditResponse>
@@ -52,11 +43,11 @@ export class TextAiExecutorService extends BaseAiExecutorService {
   // ─── Streaming ───────────────────────────────────
 
   async textEditStreamed(opts: TextEditStreamedOptions): Promise<StreamResult> {
-    const { content, instructions, action, modelId, openaiApiKey, onContent } = opts
+    const { content, instructions, modelId, onContent } = opts
 
     const responseP = axios.post(
       `${this.baseUrl}/v1/stream/text/edit`,
-      { content, instructions, action, modelId, openaiApiKey },
+      { content, instructions, modelId },
       { headers: this.defaultHeaders, responseType: 'stream' },
     )
 

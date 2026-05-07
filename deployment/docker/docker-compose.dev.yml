@@ -127,6 +127,8 @@ services:
       - '8081:8081'
     networks:
       - sandworm-net
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   ###########################
   # Logdy Log Viewer
