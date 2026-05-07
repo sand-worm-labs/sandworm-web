@@ -16,7 +16,7 @@ import { Persistor } from './interfaces';
 import { Server, Socket } from 'socket.io';
 import { DocumentTreeService } from "@/features/document/service/document-tree.service";
 import { DocumentExecutorService } from "./executor/document-executor.service";
-import { addDashboardItemToYDashboard, cloneBlockGroup, duplicateBlock, getDashboard, getDashboardItem, getDataframes, getLayout, YBlock, YBlockGroup } from "@sandworm/editor";
+import { addDashboardItemToYDashboard, cloneBlockGroup, duplicateBlock, getDashboard, getDashboardItem, getDataframes, getLayout, setTitle, YBlock, YBlockGroup } from "@sandworm/editor";
 import { v4 as uuidv4 } from 'uuid';
 import { clone } from 'ramda';
 import { hashState } from "@sandworm/nest-common";
@@ -154,15 +154,17 @@ export class YjsDocumentService implements OnModuleDestroy {
         };
     }
 
-    async saveEditYDoc(documentId: string, yDoc: Y.Doc): Promise<void> {
+    async saveEditYDoc(documentId: string, yDoc: Y.Doc, updateClock: boolean = true): Promise<void> {
         const state = Buffer.from(Y.encodeStateAsUpdate(yDoc));
-
         const existing = await this.yjsDocumentRepo.findOne({ where: { documentId } });
 
         if (existing) {
             await this.yjsDocumentRepo.update(
                 { documentId },
-                { state, clock: existing.clock + 1, clockUpdatedAt: new Date() }
+                { 
+                    state, 
+                    ...(updateClock && { clock: existing.clock + 1, clockUpdatedAt: new Date() })
+                }
             );
         } else {
             await this.yjsDocumentRepo.insert({
@@ -539,6 +541,59 @@ export class YjsDocumentService implements OnModuleDestroy {
             },
             { isDuplicating: true }
         )
+    }
+
+      
+    async appendBlockToNotebook(
+        documentId: string,
+        workspaceId: string,
+        server: Server
+    ): Promise<string> {
+        const docId = this.getDocId(documentId, null);
+        const persistor = this.persistorFactory.createDocumentPersistor(documentId);
+
+        let newBlockId: string | null = null;
+
+        try {
+            await this.getYDocForUpdate(
+                docId,
+                documentId,
+                server,
+                workspaceId,
+                (sharedDoc) => {
+                   sharedDoc.ydoc.transact(() => {
+                        // sharedDoc.ydoc.getXmlElement("title");
+                        // newBlockId = newBlock.toJSON().toString();
+                        // newBlock.setAttribute('id', newBlockId);
+                        // newBlock.setAttribute('title', 'New Block');
+                        // blocksArray.push([newBlock]);
+                        const idMap = new Map<string, string>()
+                        const titleFrag = sharedDoc.ydoc.getXmlFragment('title')
+                        titleFrag.delete(0, titleFrag.length)
+                        const titleText = new Y.XmlText("New Notebook") 
+                        titleFrag.insert(0, [titleText])
+                        // this.updateTitleWithWorkspace(documentId, workspaceId, "New Notebook");
+                        // const blocksMap = sharedDoc.ydoc.getMap<YBlock>('blocks');
+                        // this.logger.debug({ documentId, blocksCount: blocksMap.size }, 'Appending block to notebook');
+                    });
+                },
+                persistor
+            );
+
+           // const sharedDoc = await this.getYDoc(docId, documentId, workspaceId, persistor);
+           // await this.saveEditYDoc(documentId, sharedDoc.ydoc, false);
+
+            return newBlockId!;
+        } catch (error: any) {
+            this.logger.error({
+                documentId,
+                workspaceId,
+                newBlockId,
+                message: error.message,
+                stack: error.stack,
+            }, 'appendBlockToNotebook failed');
+            throw new Error(`Error appending block: ${error.message}`);
+        }
     }
 
     private startDocumentCleanup(): void {
