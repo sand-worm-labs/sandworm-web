@@ -4,14 +4,12 @@ import {
   Param, 
   Query, 
   NotFoundException,
-  UseInterceptors,
-  ClassSerializerInterceptor
+  Post,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiQuery } from '@nestjs/swagger';
+import { ApiTags, ApiQuery } from '@nestjs/swagger';
 import { ApiAuth, ApiPublic } from '@sandworm/api/decorators/http.decorators';
 import { YjsDocumentService } from './yjs-document.service';
 import { PersistorFactory } from './persistors/persistor.factory';
-// import { serializeDocForAI } from '@sandworm/editor';
 
 @ApiTags('YjsDocuments')
 @Controller({
@@ -76,4 +74,19 @@ export class YjsDocumentController {
         : new NotFoundException(`Error retrieving AI context: ${error.message}`);
     }
   }
+
+
+  @Post(':documentId/blocks')
+  @ApiAuth({
+    summary: 'Append a new Python block to the notebook',
+  })
+  @ApiQuery({ name: 'workspaceId', required: true, description: 'The workspace ownership context' })
+  async appendBlock(
+    @Param('documentId') documentId: string,
+    @Query('workspaceId') workspaceId: string,
+  ) {
+      const blockId = await this.yjsService.appendBlockToNotebook(documentId, workspaceId, null);
+      return { blockId };
+  }
+
 }

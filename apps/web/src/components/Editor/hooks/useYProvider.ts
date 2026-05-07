@@ -35,8 +35,6 @@ function getWSProvider(
   publishedAt: string | null,
   accessToken: string | null
 ): WebsocketProvider {
-
-
   const id = getDocId(documentId, isDataApp, clock /* publishedAt */);
   const wsUrl = getYjsUrl();
 
@@ -90,6 +88,7 @@ class Provider implements IProvider {
       console.log("[WS] connection-error:", event);
     });
   }
+
   private onWSSynced = () => {
     if (!this.wsProvider.wsconnected) {
       return;
