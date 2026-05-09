@@ -47,29 +47,28 @@ export * from "./execution/index.js";
 export * from "./ai-tasks/index.js";
 export * from "./blocks/powertool/index.js";
 export * as PowerTool from "./blocks/powertool/index.js";
+export * from "./md.js";
 
 export function getBlocks(doc: Y.Doc) {
-  const map = doc.getMap<YBlock>("blocks");
-  const clean = () => {
-    const cleanup: string[] = [];
-    map.forEach((block, key) => {
-      if (!block || !(block instanceof Y.XmlElement)) {
-        cleanup.push(key);
-      }
-    });
+  return doc.getMap<YBlock>("blocks");
+  // const clean = () => {
+  //   const cleanup: string[] = [];
+  //   map.forEach((block, key) => {
+  //     if (!block || !(block instanceof Y.XmlElement)) {
+  //       cleanup.push(key);
+  //     }
+  //   });
 
-    for (const key of cleanup) {
-      map.delete(key);
-    }
-  };
+  //   for (const key of cleanup) {
+  //     map.delete(key);
+  //   }
+  // };
 
-  if (map.doc) {
-    map.doc.transact(clean);
-  } else {
-    clean();
-  }
-
-  return map;
+  // if (map.doc) {
+  //   map.doc.transact(clean);
+  // } else {
+  //   clean();
+  // }
 }
 
 export function getLayout(doc: Y.Doc) {
