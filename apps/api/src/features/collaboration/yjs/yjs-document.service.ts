@@ -581,7 +581,7 @@ export class YjsDocumentService implements OnModuleDestroy {
                 titleEl.insert(0, [new Y.XmlText("New Notebook")]);
                 fragment.insert(0, [titleEl]);
 
-                this.logger.log(fragment.toJSON().concat("edededede"))
+                //currentSharedDoc.ydoc.getMap<YBlock>('blocks').set(this.generateBlockId(), makePythonBlock(this.generateBlockId(), currentSharedDoc.ydoc.getMap<YBlock>('blocks'), "print('Hello World')"));
                // return "d"
                 // fragment.delete(0, fragment.length);
         
@@ -591,7 +591,7 @@ export class YjsDocumentService implements OnModuleDestroy {
             //     throw new Error('Failed to generate block ID during transaction');
             // }
         
-            return "hhh";
+            return newBlockId;
         }
         catch {
             this.logger.log("error")
