@@ -73,8 +73,9 @@ const MonthDaySelector = (props: WeekdaySelectorProps) => {
                     {({ active }) => (
                       <button
                         type="button"
-                        className={`${active ? "bg-primary/10" : ""
-                          } group flex items-center px-2 py-2 text-sm cursor-pointer w-full rounded-lg`}
+                        className={`${
+                          active ? "bg-primary/10" : ""
+                        } group flex items-center px-2 py-2 text-sm cursor-pointer w-full rounded-lg`}
                         onClick={() => toggleDay(dayIndex)}
                       >
                         <div className="flex items-center gap-x-2">

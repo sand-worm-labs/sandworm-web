@@ -68,23 +68,44 @@ export const WorkspaceSidebar = () => {
   // =====================================
   const mainNav: NavItem[] = [
     { name: " Home", href: `/workspace/${workspaceId}`, icon: House },
-    { name: "Projects", href: `/workspace/${workspaceId}/session`, icon: ProjectIcon },
-    { name: "Explore", href: `/workspace/${workspaceId}/explore`, icon: Binoculars },
+    {
+      name: "Projects",
+      href: `/workspace/${workspaceId}/session`,
+      icon: ProjectIcon,
+    },
+    {
+      name: "Explore",
+      href: `/workspace/${workspaceId}/explore`,
+      icon: Binoculars,
+    },
   ];
 
   const toolsNav: NavItem[] = [
-    { name: "Favorites", href: `/workspace/${workspaceId}/favorites`, icon: Star },
-    { name: "Console", href: `/workspace/${workspaceId}/console`, icon: Terminal },
-    { name: "All tools", href: `/workspace/${workspaceId}/tools`, icon: SquaresFour },
+    {
+      name: "Favorites",
+      href: `/workspace/${workspaceId}/favorites`,
+      icon: Star,
+    },
+    {
+      name: "Console",
+      href: `/workspace/${workspaceId}/console`,
+      icon: Terminal,
+    },
+    {
+      name: "All tools",
+      href: `/workspace/${workspaceId}/tools`,
+      icon: SquaresFour,
+    },
     { name: "Trash", href: `/workspace/${workspaceId}/trash`, icon: Trash },
   ];
 
   const linkClasses = (href: string) =>
     `flex items-center gap-3 rounded-xl px-2 py-1.5 text-sm font-medium transition-colors
-     ${pathname === href
-      ? "dark:bg-base-600 bg-base-600 text-primary dark:text-ink-100"
-      : "text-menu-ink dark:text-white hover:bg-base-600 dark:hover:bg-base-600 hover:text-primary hover:text-black dark:hover:text-white"
-    }`;
+     ${
+       pathname === href
+         ? "dark:bg-base-600 bg-base-600 text-primary dark:text-ink-100"
+         : "text-menu-ink dark:text-white hover:bg-base-600 dark:hover:bg-base-600 hover:text-primary hover:text-black dark:hover:text-white"
+     }`;
 
   const [
     documentsState,
@@ -112,7 +133,7 @@ export const WorkspaceSidebar = () => {
 
   // ⬢ Create Document
   // Collapse *before* push so the sidebar is already icons-only on first paint
-  // of the notebook page 
+  // of the notebook page
   // =====================================
   const onCreateDocument = useCallback(
     async (parentId: string | null) => {
@@ -129,13 +150,14 @@ export const WorkspaceSidebar = () => {
     [documentsState, createDocument, router, workspaceId, sideBarApi]
   );
 
-  const onCreateDocumentHandler: MouseEventHandler<HTMLButtonElement> = useCallback(
-    e => {
-      e.preventDefault();
-      onCreateDocument(null);
-    },
-    [onCreateDocument]
-  );
+  const onCreateDocumentHandler: MouseEventHandler<HTMLButtonElement> =
+    useCallback(
+      e => {
+        e.preventDefault();
+        onCreateDocument(null);
+      },
+      [onCreateDocument]
+    );
 
   // ⬢ Delete Document
   // =====================================
@@ -197,19 +219,20 @@ export const WorkspaceSidebar = () => {
   return (
     <>
       <aside
-         className={`
+        className={`
           bg-[#FEFFFF] dark:bg-base-500 border-r border-border-secondary dark:border-border-tertiary
           font-body justify-between flex flex-col
           transition-all duration-300 ease-in-out relative
       
           ${isMobile ? "fixed top-0 left-0 h-full z-50 w-[17.5rem]" : "h-full"}
-          ${isMobile
-            ? isMobileOpen
-              ? "translate-x-0"
-              : "-translate-x-full border-none"
-            : collapsed
-              ? "w-16"
-              : "w-[17.5rem]"
+          ${
+            isMobile
+              ? isMobileOpen
+                ? "translate-x-0"
+                : "-translate-x-full border-none"
+              : collapsed
+                ? "w-16"
+                : "w-[17.5rem]"
           }
         `}
       >
@@ -227,7 +250,11 @@ export const WorkspaceSidebar = () => {
 
             <TooltipV2<HTMLButtonElement>
               title={
-                isMobile ? "Close sidebar" : collapsed ? "Open sidebar" : "Close sidebar"
+                isMobile
+                  ? "Close sidebar"
+                  : collapsed
+                    ? "Open sidebar"
+                    : "Close sidebar"
               }
               active
               position="right"
@@ -274,10 +301,11 @@ export const WorkspaceSidebar = () => {
                       >
                         <item.icon
                           size={18}
-                          className={`hover:text-[#A308F0] ${pathname === item.href
+                          className={`hover:text-[#A308F0] ${
+                            pathname === item.href
                               ? "text-[#A308F0] dark:text-ink-100"
                               : "text-ink-icon"
-                            }`}
+                          }`}
                         />
                         {!collapsed && item.name}
                       </Link>
@@ -335,7 +363,10 @@ export const WorkspaceSidebar = () => {
                     onClick={onCreateDocumentHandler}
                     className="p-2 dark:bg-base-500 rounded-xl hover:cursor-pointer text-sm border mt-3 flex px-5 items-center justify-center w-full border-[#D000FF] text-primary mb-3 font-body font-medium dark:border-[#A78BFA] dark:text-[#A78BFA]"
                   >
-                    <PlusSmallIcon className="h-4 w-4 mr-1" aria-hidden="true" />
+                    <PlusSmallIcon
+                      className="h-4 w-4 mr-1"
+                      aria-hidden="true"
+                    />
                     <span>New Project</span>
                   </button>
                 )}
@@ -366,9 +397,7 @@ export const WorkspaceSidebar = () => {
                       role={user?.role?.[0]?.[workspaceId] ?? "viewer"}
                       onCreate={onCreateDocument}
                       onUpdateParent={onUpdateDocumentParent}
-
                       onBeforeNavigate={onBeforeNavigate}
-
                     />
                   )}
                 </div>
@@ -385,7 +414,10 @@ export const WorkspaceSidebar = () => {
         )}
       </aside>
 
-      <FeedbackModal isOpen={isFeedbackOpen} onClose={() => setIsFeedbackOpen(false)} />
+      <FeedbackModal
+        isOpen={isFeedbackOpen}
+        onClose={() => setIsFeedbackOpen(false)}
+      />
     </>
   );
 };

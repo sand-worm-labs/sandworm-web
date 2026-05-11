@@ -5,7 +5,6 @@ import {
 } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 
-
 interface AiDiffToolbarProps {
   visible: boolean;
   pendingCount: number;

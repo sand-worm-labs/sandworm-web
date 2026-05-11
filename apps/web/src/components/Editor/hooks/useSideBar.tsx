@@ -71,8 +71,8 @@ export default function useSideBar(): SideBarContext {
 // ⬢ Utils
 // =====================================
 function getInitialWidth(): SideBarWidth {
-  if (typeof window === 'undefined') return DEFAULT_SIDEBAR_WIDTH;
-  
+  if (typeof window === "undefined") return DEFAULT_SIDEBAR_WIDTH;
+
   const isSmallScreen = window.innerWidth < SMALL_SCREEN_BREAKPOINT;
   if (isSmallScreen) return DEFAULT_SMALL_SCREEN_WIDTH;
 
@@ -92,11 +92,12 @@ function getInitialWidth(): SideBarWidth {
 }
 
 function getInitialOpen(): boolean {
-  if (typeof window === 'undefined') return true;
+  if (typeof window === "undefined") return true;
   if (window.location.pathname.includes("/documents/")) return false;
 
   return (
-    new URLSearchParams(window.location.search).get("sidebarCollapsed") !== "true"
+    new URLSearchParams(window.location.search).get("sidebarCollapsed") !==
+    "true"
   );
 }
 
@@ -139,7 +140,9 @@ export function SideBarProvider({ children }: { children: React.ReactNode }) {
         setIsOpen(open !== undefined ? open : prev => !prev);
       },
       resize: (newWidth: SideBarWidth) => {
-        setWidth(Math.max(MIN_SIDEBAR_WIDTH, Math.min(MAX_SIDEBAR_WIDTH, newWidth)));
+        setWidth(
+          Math.max(MIN_SIDEBAR_WIDTH, Math.min(MAX_SIDEBAR_WIDTH, newWidth))
+        );
       },
       open: (value?: boolean) => {
         setIsOpen(value !== undefined ? value : true);
@@ -160,7 +163,10 @@ export function SideBarProvider({ children }: { children: React.ReactNode }) {
     []
   );
 
-  const value = useMemo(() => ({ state: sidebarState, api }), [sidebarState, api]);
+  const value = useMemo(
+    () => ({ state: sidebarState, api }),
+    [sidebarState, api]
+  );
 
   return <Context.Provider value={value}>{children}</Context.Provider>;
 }

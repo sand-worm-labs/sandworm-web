@@ -11,7 +11,11 @@ interface ProfilePageClientProps {
   pageSize: number;
 }
 
-export function ProfilePageClient({ profileId, initialDocuments, pageSize }: ProfilePageClientProps) {
+export function ProfilePageClient({
+  profileId,
+  initialDocuments,
+  pageSize,
+}: ProfilePageClientProps) {
   const { user, isFollowing, loading } = useUser({ userId: profileId });
   const { user: sessionUser, loading: sessionLoading } = useSession({});
 
