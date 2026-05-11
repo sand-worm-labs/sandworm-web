@@ -42,7 +42,6 @@ import { Tooltip, TooltipV2 } from "./ToolTips";
 import { ContentSkeleton, TitleSkeleton } from "./ContentSkeleton";
 import ShareModal from "./ShareModal";
 
-
 // this is needed because this component only works with the browser
 const V2Editor = dynamic(() => import("@/components/Editor"), {
   ssr: false,
@@ -273,7 +272,7 @@ function PrivateDocumentPageInner(
       <>
         <div className="flex flex-col">
           <TooltipV2 active title="Comments" position="left">
-            {(ref) => (
+            {ref => (
               <button
                 ref={ref as React.RefObject<HTMLButtonElement>}
                 type="button"
@@ -284,11 +283,11 @@ function PrivateDocumentPageInner(
               </button>
             )}
           </TooltipV2>
-  
+
           {/* Schedules Button - Only show if not viewer and not deleted */}
           {!isViewer && !isDeleted && (
             <TooltipV2 active title="Schedules" position="left">
-              {(ref) => (
+              {ref => (
                 <button
                   ref={ref as React.RefObject<HTMLButtonElement>}
                   type="button"
@@ -300,15 +299,17 @@ function PrivateDocumentPageInner(
               )}
             </TooltipV2>
           )}
-  
+
           {/* Horizontal Toggle Button */}
           {onToggleFullScreen && (
             <TooltipV2
               active
-              title={isFullScreen ? "Shrink horizontally" : "Stretch horizontally"}
+              title={
+                isFullScreen ? "Shrink horizontally" : "Stretch horizontally"
+              }
               position="left"
             >
-              {(ref) => (
+              {ref => (
                 <button
                   ref={ref as React.RefObject<HTMLButtonElement>}
                   type="button"
@@ -333,7 +334,7 @@ function PrivateDocumentPageInner(
             </TooltipV2>
           )}
         </div>
-  
+
         <ShareModal
           link={`${NEXT_PUBLIC_PUBLIC_URL()}/workspace/${props.workspaceId}/documents/${props.documentId}/notebook`}
           initialVisibility="private"

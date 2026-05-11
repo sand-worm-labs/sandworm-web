@@ -2,13 +2,12 @@ import { Transition } from "@headlessui/react";
 import type { ChangeEventHandler, FormEvent } from "react";
 import { useCallback, useState, useRef, useEffect } from "react";
 import Image from "next/image";
+import { X } from "lucide-react";
 
 import { timeAgo } from "@/lib";
 import { Trash } from "@/components/Assets/Trash";
 import { CommentIcon } from "@/components/Assets/CommentIcon";
 import { PaperPlaneTilt } from "@/components/Assets/PaperPlaneTilt";
-import { X  } from "lucide-react";
-
 
 import { useComments } from "../hooks/useComments";
 import { useSession } from "../hooks/useAuth";

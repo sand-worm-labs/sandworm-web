@@ -14,10 +14,10 @@ import {
 import { ViewerAccessBar } from "@/components/ViewerAccessBar";
 import { Loader } from "@/components/Loader";
 import MobileWarning from "@/components/Editor/blocks/MobileWarning";
-import { SideBarProvider } from "@/components/Editor/hooks/useSideBar";
-import useSideBar from "@/components/Editor/hooks/useSideBar";
+import useSideBar, {
+  SideBarProvider,
+} from "@/components/Editor/hooks/useSideBar";
 import { useIsMobile } from "@/hooks/useMobile";
-
 
 // =====================================
 // ⬢ Types
@@ -54,7 +54,6 @@ function WorkspaceLayoutInner({ children }: WorkspaceLayoutProps) {
   });
   const isMobile = useIsMobile();
 
-
   const { workspaceInfo, isLoading: workspaceLoading } =
     useCurrentWorkspaceInfo(sessionLoading || !isAuthenticated);
 
@@ -87,12 +86,10 @@ function WorkspaceLayoutInner({ children }: WorkspaceLayoutProps) {
   }
 
   return (
-
     <div className="flex h-screen w-full bg-base-100">
       <AutoCollapseOnNotebook />
       <MobileWarning />
       {isMobile ? (
-       
         <div className="w-0 overflow-visible flex-none">
           <WorkspaceSidebar />
         </div>

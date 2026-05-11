@@ -50,15 +50,17 @@ const ThemeCard: React.FC<{
     <button
       type="button"
       onClick={onClick}
-      className={`relative w-full p-6  border border-border-secondary  dark:border-border-tertiary transition-all text-left  rounded-3xl ${selected ? "" : "border-border-secondary    dark:border-border-tertiary"
-        }`}
+      className={`relative w-full p-6  border border-border-secondary  dark:border-border-tertiary transition-all text-left  rounded-3xl ${
+        selected ? "" : "border-border-secondary    dark:border-border-tertiary"
+      }`}
     >
       <div className="flex items-start gap-4">
         <div
-          className={`p-3 rounded-full ${selected
+          className={`p-3 rounded-full ${
+            selected
               ? "bg-[#EFF1F2] dark:bg-base-500  border dark:border-border-tertiary border-border-secondary "
               : "bg-[#EFF1F2] dark:bg-base-500 text-gray-600 dark:text-ink-400 border border-border-secondary  dark:border-border-tertiary"
-            }`}
+          }`}
         >
           {option.icon}
         </div>
@@ -77,33 +79,40 @@ const ThemeCard: React.FC<{
         <div className={`h-32 p-3 ${bgMap[option.id] ?? bgMap.default}`}>
           <div className="flex gap-2 mb-2">
             <div
-              className={`w-2 h-2 rounded-full ${option.id === "light" ? "bg-[#E7F3F6]" : "bg-gray-600"
-                }`}
+              className={`w-2 h-2 rounded-full ${
+                option.id === "light" ? "bg-[#E7F3F6]" : "bg-gray-600"
+              }`}
             />
             <div
-              className={`w-2 h-2 rounded-full ${option.id === "light" ? "bg-[#E7F3F6]" : "bg-gray-600"
-                }`}
+              className={`w-2 h-2 rounded-full ${
+                option.id === "light" ? "bg-[#E7F3F6]" : "bg-gray-600"
+              }`}
             />
             <div
-              className={`w-2 h-2 rounded-full ${option.id === "light" ? "bg-[#E7F3F6]" : "bg-gray-600"
-                }`}
+              className={`w-2 h-2 rounded-full ${
+                option.id === "light" ? "bg-[#E7F3F6]" : "bg-gray-600"
+              }`}
             />
           </div>
           <div
-            className={`space-y-2 ${option.id === "light" ? "opacity-20" : "opacity-30"
-              }`}
+            className={`space-y-2 ${
+              option.id === "light" ? "opacity-20" : "opacity-30"
+            }`}
           >
             <div
-              className={`h-10 rounded-xl ${option.id === "light" ? "bg-[#E7F3F6]" : "bg-[#E7F3F6]"
-                }`}
+              className={`h-10 rounded-xl ${
+                option.id === "light" ? "bg-[#E7F3F6]" : "bg-[#E7F3F6]"
+              }`}
             />
             <div
-              className={`h-2 w-3/4 rounded ${option.id === "light" ? "bg-[#E7F3F6]" : "bg-[#E7F3F6]"
-                }`}
+              className={`h-2 w-3/4 rounded ${
+                option.id === "light" ? "bg-[#E7F3F6]" : "bg-[#E7F3F6]"
+              }`}
             />
             <div
-              className={`h-2 w-1/2 rounded ${option.id === "light" ? "bg-[#E7F3F6]" : "bg-[#E7F3F6]"
-                }`}
+              className={`h-2 w-1/2 rounded ${
+                option.id === "light" ? "bg-[#E7F3F6]" : "bg-[#E7F3F6]"
+              }`}
             />
           </div>
         </div>
@@ -124,10 +133,11 @@ const EditorThemeCard: React.FC<{
     <button
       type="button"
       onClick={onClick}
-      className={`relative p-4 rounded-3xl border transition-all text-left ${selected
+      className={`relative p-4 rounded-3xl border transition-all text-left ${
+        selected
           ? "border-[#A308F0]    dark:border-primary"
           : "border-border-secondary  dark:border-border-tertiary hover:border-gray-300 dark:hover:border-border-tertiary"
-        }`}
+      }`}
     >
       <div className="flex items-center gap-3 mb-3">
         <h4 className="font-medium text-ink-100  capitalize">{theme.name}</h4>

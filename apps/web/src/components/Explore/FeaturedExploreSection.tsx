@@ -69,7 +69,7 @@ export function FeaturedExploreSection() {
     });
   };
 
-  const handleClick = (_id: string) => { };
+  const handleClick = (_id: string) => {};
 
   console.log(queries);
 
@@ -113,7 +113,7 @@ export function FeaturedExploreSection() {
           isSaved={savedIds.has(query.id)}
           onSave={handleSave}
           onClick={handleClick}
-          variant={index === 0 ? "purple" : "default"} 
+          variant={index === 0 ? "purple" : "default"}
         />
       ))}
     </div>

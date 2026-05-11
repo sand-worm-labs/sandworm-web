@@ -121,9 +121,9 @@ function useWorkspaceSettings(
         id: req.userId,
         name: req.user
           ? `${req.user.firstName ?? ""} ${req.user.lastName ?? ""}`.trim() ||
-          req.user.username ||
-          req.user.email ||
-          ""
+            req.user.username ||
+            req.user.email ||
+            ""
           : req.userId,
         email: req.user?.email ?? "",
         requestedRole:
@@ -140,9 +140,9 @@ function useWorkspaceSettings(
         id: invite.userId,
         name: invite.user
           ? `${invite.user.firstName ?? ""} ${invite.user.lastName ?? ""}`.trim() ||
-          invite.user.username ||
-          invite.user.email ||
-          ""
+            invite.user.username ||
+            invite.user.email ||
+            ""
           : invite.userId,
         email: invite.user?.email ?? "",
         role: invite.role as UserWorkspaceRole,

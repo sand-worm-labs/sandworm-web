@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+
 import {
   useGetEnvironmentVariablesQuery,
   useSetEnvironmentVariablesMutation,
@@ -20,7 +21,8 @@ export const useEnvironmentVariables = (workspaceId: string) => {
   });
 
   const [setVars, { loading: saving }] = useSetEnvironmentVariablesMutation();
-  const [deleteVar, { loading: deleting }] = useDeleteEnvironmentVariableMutation();
+  const [deleteVar, { loading: deleting }] =
+    useDeleteEnvironmentVariableMutation();
 
   const variables = (data?.environmentVariables ?? []) as EnvVar[];
 

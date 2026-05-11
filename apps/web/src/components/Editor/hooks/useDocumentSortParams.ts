@@ -2,6 +2,7 @@
 
 import { useCallback } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
+
 import type { SortOption } from "@/components/Explore/SortControl";
 
 // ─── CONSTANTS ───

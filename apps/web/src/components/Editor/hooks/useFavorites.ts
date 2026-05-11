@@ -42,10 +42,11 @@ export const useFavorites = (
 
   // Public mutations
   const [addPublicFavoriteMutation] = useAddPublicFavoriteDocumentMutation();
-  const [removePublicFavoriteMutation] = useRemovePublicFavoriteDocumentMutation();
+  const [removePublicFavoriteMutation] =
+    useRemovePublicFavoriteDocumentMutation();
 
   const favorites = useMemo(
-    () => data?.getFavoriteDocuments?.map((doc) => doc.id) ?? [],
+    () => data?.getFavoriteDocuments?.map(doc => doc.id) ?? [],
     [data]
   );
 
@@ -69,7 +70,12 @@ export const useFavorites = (
               },
             },
             refetchQueries: workspaceId
-              ? [{ query: GetFavoriteDocumentsDocument, variables: { workspaceId } }]
+              ? [
+                  {
+                    query: GetFavoriteDocumentsDocument,
+                    variables: { workspaceId },
+                  },
+                ]
               : [],
           });
         }
@@ -78,7 +84,12 @@ export const useFavorites = (
         throw err;
       }
     },
-    [workspaceId, publicDocument, addFavoriteMutation, addPublicFavoriteMutation]
+    [
+      workspaceId,
+      publicDocument,
+      addFavoriteMutation,
+      addPublicFavoriteMutation,
+    ]
   );
 
   // ⬢ Remove from favorite
@@ -100,9 +111,15 @@ export const useFavorites = (
                 documentId: docId,
               },
             },
-            refetchQueries: shouldRefetch && workspaceId
-              ? [{ query: GetFavoriteDocumentsDocument, variables: { workspaceId } }]
-              : [],
+            refetchQueries:
+              shouldRefetch && workspaceId
+                ? [
+                    {
+                      query: GetFavoriteDocumentsDocument,
+                      variables: { workspaceId },
+                    },
+                  ]
+                : [],
           });
         }
       } catch (err) {
@@ -110,7 +127,12 @@ export const useFavorites = (
         throw err;
       }
     },
-    [workspaceId, publicDocument, removeFavoriteMutation, removePublicFavoriteMutation]
+    [
+      workspaceId,
+      publicDocument,
+      removeFavoriteMutation,
+      removePublicFavoriteMutation,
+    ]
   );
 
   return useMemo(

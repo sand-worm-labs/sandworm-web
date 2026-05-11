@@ -74,16 +74,18 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                   <button
                     type="button"
                     onClick={() => onToggleFavorite(project.id)}
-                    className={`transition-opacity ${hoveredRowId === project.id || project.isFavorite
+                    className={`transition-opacity ${
+                      hoveredRowId === project.id || project.isFavorite
                         ? "opacity-100"
                         : "opacity-0"
-                      }`}
+                    }`}
                   >
                     <Star
-                      className={`w-4 h-4 ${project.isFavorite
+                      className={`w-4 h-4 ${
+                        project.isFavorite
                           ? "fill-[#A308F0] text-primary"
                           : "text-ink-400 hover:text-primary"
-                        }`}
+                      }`}
                     />
                   </button>
                   <Link
