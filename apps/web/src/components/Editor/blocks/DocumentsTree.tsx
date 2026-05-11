@@ -31,7 +31,7 @@ import ScrollBar from "./ScrollBar";
 function useIsDocExpanded(doc: ApiDocument, startsOpen: boolean) {
   const [isExpanded, _setIsExpanded] = useState(
     localStorage.getItem(`sandworm:document:${doc.id}:expanded`) === "1" ||
-    startsOpen
+      startsOpen
   );
 
   const setIsExpanded = useCallback(
@@ -125,8 +125,7 @@ interface Props {
     orderIndex: number
   ) => void;
   flat?: boolean;
-  onBeforeNavigate?: () => void
-
+  onBeforeNavigate?: () => void;
 }
 
 function computeIsExpanded(current: string, isExpanded: boolean, node: Node) {
@@ -212,7 +211,7 @@ function DropDown(props: DropDownProps) {
         type="button"
         className={clsx(
           (props.isFavoriteDropdown || isViewer || props.level >= 1) &&
-          "hidden",
+            "hidden",
           "pr-0.5"
         )}
         onClick={onCreateHandler}
@@ -348,7 +347,6 @@ interface NodeComponentProps {
   isLast: boolean;
   firstNonLastParentId: string | null;
   onBeforeNavigate?: () => void;
-
 }
 
 function NodeComponent(props: NodeComponentProps) {
@@ -526,8 +524,8 @@ function NodeComponent(props: NodeComponentProps) {
                 ? "text-ink-100 bg-ceramic-100/50"
                 : "text-ink-400 hover:bg-ceramic-100/80",
               isDropping &&
-              dropHoverState === "center" &&
-              "bg-ceramic-200 border-ceramic-200",
+                dropHoverState === "center" &&
+                "bg-ceramic-200 border-ceramic-200",
               "group text-sm font-medium leading-6 w-full flex py-1 rounded-sm hover:text-ceramic-600"
             )}
             style={{
@@ -561,7 +559,7 @@ function NodeComponent(props: NodeComponentProps) {
                 />
               </div>
               <Link
-               onClick={props.onBeforeNavigate}
+                onClick={props.onBeforeNavigate}
                 className="flex items-center flex-1 overflow-auto"
                 href={`/workspace/${props.workspaceId}/documents/${props.document.id}`}
               >
@@ -587,8 +585,8 @@ function NodeComponent(props: NodeComponentProps) {
             <ul
               className={clsx(
                 isDropping &&
-                dropHoverState === "center" &&
-                "bg-ceramic-200 border-ceramic-200",
+                  dropHoverState === "center" &&
+                  "bg-ceramic-200 border-ceramic-200",
                 "space-y-1"
               )}
             >
@@ -640,9 +638,9 @@ function DocumentTree(props: Props) {
     () =>
       props.flat
         ? props.documents.map(d => ({
-          document: d,
-          children: List<Node>(),
-        }))
+            document: d,
+            children: List<Node>(),
+          }))
         : buildTrees(null, props.documents),
     [props.flat, props.documents]
   );

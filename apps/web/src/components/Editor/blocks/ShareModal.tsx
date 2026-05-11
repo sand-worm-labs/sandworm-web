@@ -10,9 +10,10 @@ import {
   GlobeAltIcon,
 } from "@heroicons/react/24/outline";
 import { cn } from "@sandworm/ui/lib/utils";
-import { Share } from "@/components/Assets/Share";
-import { TooltipV2 } from "./ToolTips";
 
+import { Share } from "@/components/Assets/Share";
+
+import { TooltipV2 } from "./ToolTips";
 
 type ShareVisibility = "WORKSPACE" | "LINK" | "PUBLIC";
 
@@ -67,13 +68,13 @@ function TagsInput({
   );
 
   const removeTag = useCallback(
-    (tag: string) => onChange(tags.filter((t) => t !== tag)),
+    (tag: string) => onChange(tags.filter(t => t !== tag)),
     [tags, onChange]
   );
 
   return (
     <div className="flex flex-wrap gap-1.5 rounded-lg border border-border-secondary bg-gray-50 dark:bg-base-100 px-3 py-2 min-h-[40px]">
-      {tags.map((tag) => (
+      {tags.map(tag => (
         <span
           key={tag}
           className="inline-flex items-center gap-1 rounded-md bg-primary-50 dark:bg-primary-500/10 px-2 py-0.5 text-xs font-medium text-primary-700 dark:text-primary-400"
@@ -92,8 +93,8 @@ function TagsInput({
         <input
           type="text"
           value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => {
+          onChange={e => setInput(e.target.value)}
+          onKeyDown={e => {
             if (e.key === "Enter" || e.key === ",") {
               e.preventDefault();
               addTag(input);
@@ -119,7 +120,8 @@ export default function ShareModal({
   // state
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [visibility, setVisibility] = useState<ShareVisibility>(initialVisibility);
+  const [visibility, setVisibility] =
+    useState<ShareVisibility>(initialVisibility);
   const [isUpdating, setIsUpdating] = useState(false);
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState<string[]>([]);
@@ -135,9 +137,12 @@ export default function ShareModal({
     setTimeout(() => setCopied(false), 2000);
   }, [link]);
 
-  const handleVisibilityChange = useCallback((newVisibility: ShareVisibility) => {
-    setVisibility(newVisibility);
-  }, []);
+  const handleVisibilityChange = useCallback(
+    (newVisibility: ShareVisibility) => {
+      setVisibility(newVisibility);
+    },
+    []
+  );
 
   const handleSave = useCallback(async () => {
     if (!onVisibilityChange) return;
@@ -162,7 +167,7 @@ export default function ShareModal({
     <>
       {/* ─── TRIGGER ─────────────────────────────────────────────────────── */}
       <TooltipV2 active title="Share" position="left">
-        {(ref) => (
+        {ref => (
           <button
             ref={ref as React.RefObject<HTMLButtonElement>}
             type="button"
@@ -182,7 +187,6 @@ export default function ShareModal({
       {/* ─── MODAL ───────────────────────────────────────────────────────── */}
       <Transition show={isOpen} as={React.Fragment}>
         <Dialog as="div" className="relative z-[99]" onClose={closeModal}>
-
           {/* backdrop */}
           <Transition.Child
             as={React.Fragment}
@@ -208,7 +212,6 @@ export default function ShareModal({
                 leaveTo="opacity-0 scale-95"
               >
                 <Dialog.Panel className="w-full max-w-md transform rounded-2xl bg-white dark:bg-base-400 shadow-xl transition-all px-3 py-4">
-
                   {/* header */}
                   <div className="flex items-center justify-between px-5 pt-5 pb-1">
                     <div>
@@ -235,7 +238,7 @@ export default function ShareModal({
                       onChange={handleVisibilityChange}
                       className="space-y-2"
                     >
-                      {visibilityOptions.map((option) => (
+                      {visibilityOptions.map(option => (
                         <RadioGroup.Option
                           key={option.id}
                           value={option.id}
@@ -318,11 +321,12 @@ export default function ShareModal({
                       <div className="h-px bg-border-secondary" />
                       <div>
                         <label className="block text-xs font-medium text-ink-300 dark:text-ink-400 mb-1.5">
-                          Description <span className="text-ink-400">(optional)</span>
+                          Description{" "}
+                          <span className="text-ink-400">(optional)</span>
                         </label>
                         <textarea
                           value={description}
-                          onChange={(e) => setDescription(e.target.value)}
+                          onChange={e => setDescription(e.target.value)}
                           placeholder="What does this notebook analyse?"
                           rows={2}
                           maxLength={280}
@@ -331,7 +335,10 @@ export default function ShareModal({
                       </div>
                       <div>
                         <label className="block text-xs font-medium text-ink-300 dark:text-ink-400 mb-1.5">
-                          Tags <span className="text-ink-400">(up to 5 — press Enter or comma)</span>
+                          Tags{" "}
+                          <span className="text-ink-400">
+                            (up to 5 — press Enter or comma)
+                          </span>
                         </label>
                         <TagsInput tags={tags} onChange={setTags} />
                       </div>
@@ -404,7 +411,6 @@ export default function ShareModal({
                       {isUpdating ? "Saving..." : "Save"}
                     </button>
                   </div>
-
                 </Dialog.Panel>
               </Transition.Child>
             </div>

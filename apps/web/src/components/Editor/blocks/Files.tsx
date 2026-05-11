@@ -24,6 +24,7 @@ import {
 } from "@heroicons/react/20/solid";
 import { PiFolders } from "react-icons/pi";
 import { X } from "lucide-react";
+
 import { Cautious } from "@/components/Assets/Cautious";
 import { UploadIcon } from "@/components/Assets/UploadIcon";
 import { Trash } from "@/components/Assets/Trash";
@@ -412,8 +413,9 @@ function FileItem(props: FileItemProps) {
             "Download"
           ) : (
             <Link
-              href={`${NEXT_PUBLIC_API_URL()}/workspaces/${props.workspaceId
-                }/files/file?path=${encodeURIComponent(props.file.relCwdPath)}`}
+              href={`${NEXT_PUBLIC_API_URL()}/workspaces/${
+                props.workspaceId
+              }/files/file?path=${encodeURIComponent(props.file.relCwdPath)}`}
               target="_blank"
             >
               Download

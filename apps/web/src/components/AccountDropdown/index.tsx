@@ -76,7 +76,6 @@ interface NavItemProps {
   onClick?: () => void;
   external?: boolean;
   suffix?: React.ReactNode;
-
 }
 
 const NavItem = ({

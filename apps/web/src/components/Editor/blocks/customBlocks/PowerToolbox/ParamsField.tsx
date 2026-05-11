@@ -31,33 +31,37 @@ type FieldRenderer = (props: {
   param: ParamDefinition;
   value: FieldValue;
   onChange: (value: FieldValue) => void;
+  onBlur: (value: FieldValue) => void;
   error?: string;
 }) => React.ReactElement | null;
 
 const FIELD_REGISTRY: Record<ParamType, FieldRenderer> = {
-  address: ({ param, value, onChange, error }) => (
+  address: ({ param, value, onChange, error, onBlur }) => (
     <AddressField
       param={param}
       value={value as string}
       onChange={onChange as (v: string) => void}
+      onBlur={onBlur as (v: string) => void}
       error={error}
     />
   ),
 
-  token_address: ({ param, value, onChange, error }) => (
+  token_address: ({ param, value, onChange, error, onBlur }) => (
     <AddressField
       param={param}
       value={value as string}
       onChange={onChange as (v: string) => void}
+      onBlur={onBlur as (v: string) => void}
       error={error}
     />
   ),
 
-  schema_uid: ({ param, value, onChange, error }) => (
+  schema_uid: ({ param, value, onChange, error, onBlur }) => (
     <AddressField
       param={param}
       value={value as string}
       onChange={onChange as (v: string) => void}
+      onBlur={onBlur as (v: string) => void}
       error={error}
     />
   ),
@@ -71,38 +75,48 @@ const FIELD_REGISTRY: Record<ParamType, FieldRenderer> = {
     />
   ),
 
-  chain: ({ param, value, onChange, error }) => (
+  chain: ({ param, value, onChange, error, onBlur }) => (
     <SelectField
       param={param}
       value={value as string}
-      onChange={onChange as (v: string) => void}
+      onChange={val => {
+        onChange(val);
+        onBlur(val);
+      }}
       error={error}
     />
   ),
 
-  select: ({ param, value, onChange, error }) => (
+  select: ({ param, value, onChange, error, onBlur }) => (
     <SelectField
       param={param}
       value={value as string}
-      onChange={onChange as (v: string) => void}
+      onChange={val => {
+        onChange(val);
+        onBlur(val);
+      }}
       error={error}
     />
   ),
 
-  "chain[]": ({ param, value, onChange, error }) => (
+  "chain[]": ({ param, value, onChange, error, onBlur }) => (
     <ChainMultiSelect
       param={param}
       value={value as string[]}
-      onChange={onChange as (v: string[]) => void}
+      onChange={val => {
+        onChange(val);
+        onBlur(val);
+      }}
       error={error}
     />
   ),
 
-  text: ({ param, value, onChange, error }) => (
+  text: ({ param, value, onChange, error, onBlur }) => (
     <TextField
       param={param}
       value={value as string}
       onChange={onChange as (v: string) => void}
+      onBlur={onBlur as (v: string) => void}
       error={error}
     />
   ),
@@ -132,6 +146,7 @@ interface ParamFieldProps {
   param: ParamDefinition;
   value: FieldValue;
   onChange: (value: FieldValue) => void;
+  onBlur: (value: FieldValue) => void;
   error?: string;
 }
 
@@ -140,7 +155,13 @@ interface ParamFieldProps {
  * Falls back to a plain text field for any unregistered types so the form
  * never breaks on unknown future types.
  */
-export function ParamField({ param, value, onChange, error }: ParamFieldProps) {
+export function ParamField({
+  param,
+  value,
+  onChange,
+  onBlur,
+  error,
+}: ParamFieldProps) {
   const renderer = FIELD_REGISTRY[param.type];
 
   if (!renderer) {
@@ -152,10 +173,11 @@ export function ParamField({ param, value, onChange, error }: ParamFieldProps) {
         param={param}
         value={value as string}
         onChange={onChange as (v: string) => void}
+        onBlur={onBlur as (v: string) => void}
         error={error}
       />
     );
   }
 
-  return renderer({ param, value, onChange, error });
+  return renderer({ param, value, onChange, onBlur, error });
 }

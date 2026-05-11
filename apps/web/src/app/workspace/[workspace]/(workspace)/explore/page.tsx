@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+
 import {
   GetTrendingPublishedDocumentsDocument,
   GetFeaturedDocumentsDocument,
@@ -7,8 +9,6 @@ import {
 import { getServerClient } from "@/graphql/server";
 import { ExploreClient } from "@/components/Explore/ExplorerClient";
 import type { ApiDocument } from "@/types";
-import { Suspense } from "react";
-
 
 const PAGE_SIZE = 20;
 const FEATURED_LIMIT = 4;
@@ -23,10 +23,10 @@ async function fetchInitialData() {
   const client = await getServerClient();
 
   try {
-    console.log("trying")
+    console.log("trying");
     const [explorer, featured] = await Promise.all([
       client.query<GetTrendingPublishedDocumentsQuery>({
-        query:  GetTrendingPublishedDocumentsDocument,
+        query: GetTrendingPublishedDocumentsDocument,
         variables: { limit: PAGE_SIZE, offset: 0 },
       }),
       client.query<GetFeaturedDocumentsQuery>({
@@ -35,8 +35,14 @@ async function fetchInitialData() {
       }),
     ]);
 
-    console.log("[SSR] trending count:", explorer.data?.getTrendingPublishedDocuments?.length);
-    console.log("[SSR] featured count:", featured.data?.getFeaturedDocuments?.length);
+    console.log(
+      "[SSR] trending count:",
+      explorer.data?.getTrendingPublishedDocuments?.length
+    );
+    console.log(
+      "[SSR] featured count:",
+      featured.data?.getFeaturedDocuments?.length
+    );
 
     return {
       initialDocuments: (explorer.data?.getTrendingPublishedDocuments ??

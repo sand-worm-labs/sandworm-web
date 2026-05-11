@@ -16,22 +16,23 @@ import { PiCalendarDots } from "react-icons/pi";
 import Image from "next/image";
 import { Avatar, AvatarFallback } from "@sandworm/ui/components/avatar";
 
+import type { ApiDocument } from "@/types";
+
 import { Copy } from "../Assets/Copy";
 import { Loader } from "../Loader";
 import { ProjectIcon } from "../Assets/ProjectIcon";
 import { useCurrentUser } from "../Editor/hooks/useCurrentUser";
 import { useWallets } from "../Editor/hooks/useWallets";
 import { useUser } from "../Editor/hooks/useUser";
-
-import { ProfileSettingsModal } from "./ProfileSettingModal";
-import { ManageWalletsModal, AddWalletModal } from "./ManageWalletModal";
-import { UserConnectionsModal } from "./UserConnectionModal";
 import { useStringQuery } from "../Editor/hooks/useQueryArgs";
 import { useUserPublicDocuments } from "../Editor/hooks/usePublicDocuments";
 import { useInfiniteScroll } from "../Editor/hooks/useInfiniteScroll";
 import { EmptyQueryState } from "../EmptyState/EmptyQueryState";
 import { QueryList } from "../Queries";
-import type { ApiDocument } from "@/types";
+
+import { UserConnectionsModal } from "./UserConnectionModal";
+import { ManageWalletsModal, AddWalletModal } from "./ManageWalletModal";
+import { ProfileSettingsModal } from "./ProfileSettingModal";
 
 // =====================================
 // ⬢ Types
@@ -54,11 +55,12 @@ const ProfileComponent = ({
   isOwnProfile = false,
   initialDocuments = [],
   pageSize = 20,
-  isFollowing
+  isFollowing,
 }: ProfileComponentProps) => {
-  const [optimisticFollowing, setOptimisticFollowing] = useState<boolean | null>(null);
-  const currentFollowing =
-    optimisticFollowing ?? isFollowing ?? false;
+  const [optimisticFollowing, setOptimisticFollowing] = useState<
+    boolean | null
+  >(null);
+  const currentFollowing = optimisticFollowing ?? isFollowing ?? false;
   const { follow, unfollow, mutationLoading } = useUser({
     userId: user?.id,
     skip: isOwnProfile || !user?.id,
@@ -71,15 +73,19 @@ const ProfileComponent = ({
   const [tab, setTab] = useState<"followers" | "following">("followers");
   const workspaceId = useStringQuery("workspace");
 
-  const { documents, loading: docsLoading, loadingMore, hasMore, loadMore } =
-    useUserPublicDocuments(user?.id ?? null, pageSize, initialDocuments);
+  const {
+    documents,
+    loading: docsLoading,
+    loadingMore,
+    hasMore,
+    loadMore,
+  } = useUserPublicDocuments(user?.id ?? null, pageSize, initialDocuments);
 
   const sentinelRef = useInfiniteScroll({
     hasMore,
     loading: docsLoading || loadingMore,
     onLoadMore: loadMore,
   });
-
 
   // ─── MUTATION HOOKS ───
   // We extract only the mutations/states we need for editing.
@@ -126,16 +132,15 @@ const ProfileComponent = ({
   const userForModal =
     user && isOwnProfile
       ? {
-        firstName: user.firstName,
-        lastName: user.lastName,
-        username: user.username,
-        email: user.email,
-        avater: user.avatar,
-        fullName: user.fullName,
-        settings: user.settings,
-      }
+          firstName: user.firstName,
+          lastName: user.lastName,
+          username: user.username,
+          email: user.email,
+          avater: user.avatar,
+          fullName: user.fullName,
+          settings: user.settings,
+        }
       : null;
-
 
   return (
     <>
@@ -214,10 +219,11 @@ const ProfileComponent = ({
                               }
                             }}
                             disabled={mutationLoading}
-                            className={`flex items-center gap-2 px-6 py-2 rounded-xl font-medium transition-colors text-sm ${currentFollowing
-                              ? "bg-[#E9ECEF] dark:bg-[#262A30] text-ink-100 dark:text-white hover:bg-opacity-80"
-                              : "bg-black text-white hover:bg-opacity-90"
-                              }`}
+                            className={`flex items-center gap-2 px-6 py-2 rounded-xl font-medium transition-colors text-sm ${
+                              currentFollowing
+                                ? "bg-[#E9ECEF] dark:bg-[#262A30] text-ink-100 dark:text-white hover:bg-opacity-80"
+                                : "bg-black text-white hover:bg-opacity-90"
+                            }`}
                           >
                             {currentFollowing ? (
                               <>
@@ -266,7 +272,6 @@ const ProfileComponent = ({
                               Followers
                             </span>
                           </button>
-
                         </div>
                         <div>
                           <button
@@ -281,7 +286,6 @@ const ProfileComponent = ({
                               Following
                             </span>
                           </button>{" "}
-
                         </div>
 
                         <div className="flex flex-wrap gap-4 text-sm text-ink-400 font-medium">
@@ -324,79 +328,76 @@ const ProfileComponent = ({
                 </div>
 
                 <div className="w-full flex-1 py-12 md:py-0">
-                  {
-                    displayWallets && displayWallets.length > 0 ? (
-                      <div className="bg-white dark:bg-base-200 rounded-2xl md:p-6">
-                        <h2 className="px-2 py-0.5 font-medium text-ink-100 mb-4 bg-[#E9ECEF] dark:bg-base-100 inline-block text-sm rounded-lg">
-                          Main Wallets
-                        </h2>
-                        <div className="space-y-3">
-                          {displayWallets.slice(0, 2).map((wallet: any) => (
-                            <div
-                              key={wallet.address}
-                              className="flex items-center justify-between p-4 py-2 rounded-xl dark:border-border-tertiary transition-colors bg-[#F8F9FA] dark:bg-base-200 border border-[#DEE2E6]"
-                            >
-                              <div className="flex-1">
-                                <div className="flex flex-col">
-                                  <code className="text-sm text-[#6C757D] dark:text-ink-400 font-body font-medium">
-                                    {truncateAddress(wallet.address)}
-                                  </code>
-                                  {wallet.chain && (
-                                    <span className="text-xs text-[#6C757D] dark:text-ink-400 mt-0.5">
-                                      {wallet.chain}
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
-                              <button
-                                type="button"
-                                onClick={() => copyToClipboard(wallet.address)}
-                                className="p-2 rounded-full hover:bg-[#E9ECEF] dark:hover:bg-[#262A30] transition-colors"
-                              >
-                                {copiedWallet === wallet.address ? (
-                                  <Check className="w-4 h-4 text-[#A308F0]" />
-                                ) : (
-                                  <Copy className="w-4 h-4 text-[#1C3B5A] dark:text-ink-400" />
+                  {displayWallets && displayWallets.length > 0 ? (
+                    <div className="bg-white dark:bg-base-200 rounded-2xl md:p-6">
+                      <h2 className="px-2 py-0.5 font-medium text-ink-100 mb-4 bg-[#E9ECEF] dark:bg-base-100 inline-block text-sm rounded-lg">
+                        Main Wallets
+                      </h2>
+                      <div className="space-y-3">
+                        {displayWallets.slice(0, 2).map((wallet: any) => (
+                          <div
+                            key={wallet.address}
+                            className="flex items-center justify-between p-4 py-2 rounded-xl dark:border-border-tertiary transition-colors bg-[#F8F9FA] dark:bg-base-200 border border-[#DEE2E6]"
+                          >
+                            <div className="flex-1">
+                              <div className="flex flex-col">
+                                <code className="text-sm text-[#6C757D] dark:text-ink-400 font-body font-medium">
+                                  {truncateAddress(wallet.address)}
+                                </code>
+                                {wallet.chain && (
+                                  <span className="text-xs text-[#6C757D] dark:text-ink-400 mt-0.5">
+                                    {wallet.chain}
+                                  </span>
                                 )}
-                              </button>
+                              </div>
                             </div>
-                          ))}
-                        </div>
-
-                        {isOwnProfile && (
-                          <>
                             <button
                               type="button"
-                              onClick={() => setIsAddWalletOpen(true)}
-                              className="bg-[#A308F0] py-3 px-5 rounded-xl mt-6 text-[#E9ECEF] xl:text-sm w-full text-start text-[13px] font-medium"
+                              onClick={() => copyToClipboard(wallet.address)}
+                              className="p-2 rounded-full hover:bg-[#E9ECEF] dark:hover:bg-[#262A30] transition-colors"
                             >
-                              Add Wallet
+                              {copiedWallet === wallet.address ? (
+                                <Check className="w-4 h-4 text-[#A308F0]" />
+                              ) : (
+                                <Copy className="w-4 h-4 text-[#1C3B5A] dark:text-ink-400" />
+                              )}
                             </button>
-                            <button
-                              type="button"
-                              className="text-[#A308F0] mt-3 text-[13px] font-medium"
-                              onClick={() => setIsWalletsModalOpen(true)}
-                            >
-                              All Wallets
-                            </button>
-                          </>
-                        )}
+                          </div>
+                        ))}
                       </div>
-                    ) :
-                      isOwnProfile ? (
-                        <div className="relative max-w-[380px] mx-auto mt-12">
-                          <div className="absolute z-1 inset-0 top-[1rem] left-[1rem] right-[1rem] rounded-xl bg-[#D97EF9] opacity-40 h-full" />
-                          <div className="absolute z-1 inset-0 top-[0.5rem] left-[0.5rem] right-[0.5rem] rounded-xl bg-[#C44DF5] opacity-60 h-full" />
+
+                      {isOwnProfile && (
+                        <>
                           <button
                             type="button"
                             onClick={() => setIsAddWalletOpen(true)}
-                            className="relative z-[10] bg-[#A308F0] py-3 px-6 rounded-xl text-[#E9ECEF] xl:text-sm w-full text-start text-[13px] font-medium"
+                            className="bg-[#A308F0] py-3 px-5 rounded-xl mt-6 text-[#E9ECEF] xl:text-sm w-full text-start text-[13px] font-medium"
                           >
                             Add Wallet
                           </button>
-                        </div>
-                      ) : null
-                  }
+                          <button
+                            type="button"
+                            className="text-[#A308F0] mt-3 text-[13px] font-medium"
+                            onClick={() => setIsWalletsModalOpen(true)}
+                          >
+                            All Wallets
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  ) : isOwnProfile ? (
+                    <div className="relative max-w-[380px] mx-auto mt-12">
+                      <div className="absolute z-1 inset-0 top-[1rem] left-[1rem] right-[1rem] rounded-xl bg-[#D97EF9] opacity-40 h-full" />
+                      <div className="absolute z-1 inset-0 top-[0.5rem] left-[0.5rem] right-[0.5rem] rounded-xl bg-[#C44DF5] opacity-60 h-full" />
+                      <button
+                        type="button"
+                        onClick={() => setIsAddWalletOpen(true)}
+                        className="relative z-[10] bg-[#A308F0] py-3 px-6 rounded-xl text-[#E9ECEF] xl:text-sm w-full text-start text-[13px] font-medium"
+                      >
+                        Add Wallet
+                      </button>
+                    </div>
+                  ) : null}
                 </div>
               </div>
 

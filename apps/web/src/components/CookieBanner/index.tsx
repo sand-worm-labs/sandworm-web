@@ -59,7 +59,9 @@ export default function CookieBanner() {
     >
       <h2 className="font-medium mt-2">Cookie Settings</h2>
       <p className="flex-1 text-[13px] leading-relaxed dark:text-ink-400 text-[#343A40] m-0 pr-2">
-        We use essential functionality cookies to make the site work. If you accept, we may also use cookies to enhance your experience, measure ad performance and analyze.
+        We use essential functionality cookies to make the site work. If you
+        accept, we may also use cookies to enhance your experience, measure ad
+        performance and analyze.
         <a
           href="/privacy"
           target="_blank"

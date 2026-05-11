@@ -1,5 +1,9 @@
 import { Suspense } from "react";
-import { GetUserPublicDocumentsDocument, type GetUserPublicDocumentsQuery } from "@/generated/graphql";
+
+import {
+  GetUserPublicDocumentsDocument,
+  type GetUserPublicDocumentsQuery,
+} from "@/generated/graphql";
 import { getServerClient } from "@/graphql/server";
 import { ProfilePageClient } from "@/components/Profile/ProfileClient";
 import type { ApiDocument } from "@/types";
@@ -24,7 +28,9 @@ async function fetchInitialDocuments(userId: string) {
   }
 }
 
-export default async function PublicProfilePage({ params }: PublicProfilePageProps) {
+export default async function PublicProfilePage({
+  params,
+}: PublicProfilePageProps) {
   const { profile } = await params;
   const initialDocuments = await fetchInitialDocuments(profile);
 

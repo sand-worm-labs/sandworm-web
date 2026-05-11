@@ -222,14 +222,16 @@ export const Projects: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => toggleFavorite(project.id)}
-                      className={`opacity-0 group-hover:opacity-100 transition-opacity ${project.isFavorite ? "opacity-100" : ""
-                        }`}
+                      className={`opacity-0 group-hover:opacity-100 transition-opacity ${
+                        project.isFavorite ? "opacity-100" : ""
+                      }`}
                     >
                       <Star
-                        className={`w-4 h-4 ${project.isFavorite
+                        className={`w-4 h-4 ${
+                          project.isFavorite
                             ? "fill-[#A308F0] text-primary"
                             : "text-ink-400 hover:text-primary"
-                          }`}
+                        }`}
                       />
                     </button>
 
