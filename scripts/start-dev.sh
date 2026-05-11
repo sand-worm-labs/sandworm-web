@@ -112,9 +112,31 @@ if [ "$CLEAN_VOLUMES" = true ]; then
 fi
 
 echo
+echo "▶ Starting AI service in background..."
+(
+  cd "$ROOT_DIR/apps/ai"
+  poetry env use python3.12
+  poetry install --quiet
+  just dev
+) &
+AI_PID=$!
+
+echo
+echo "▶ Waiting for AI service..."
+until curl -s http://localhost:8000/health > /dev/null 2>&1; do
+    echo "AI service not ready yet..."
+    sleep 1
+done
+echo "AI service is ready ✅"
+
+echo
 echo "▶ Starting dev server..."
 cd "$ROOT_DIR"
 pnpm run dev
+
+wait $AI_PID
+
+
 
 echo
 echo "▶ Development environment is ready!"
