@@ -6,12 +6,14 @@ import {
   NotFoundException,
   Post,
   Logger,
+  Res,
 } from '@nestjs/common';
 import { ApiTags, ApiQuery } from '@nestjs/swagger';
 import { ApiAuth, ApiPublic } from '@sandworm/api/decorators/http.decorators';
 import { YjsDocumentService } from './yjs-document.service';
 import { PersistorFactory } from './persistors/persistor.factory';
 import { addBlockGroupAfterBlock, docToMarkdown } from '@sandworm/editor';
+import type { FastifyReply } from 'fastify/types/reply';
 
 @ApiTags('YjsDocuments')
 @Controller({
@@ -41,54 +43,29 @@ export class YjsDocumentController {
   async getDocContext(
     @Param('documentId') documentId: string,
     @Query('workspaceId') workspaceId: string,
+    @Res() res: FastifyReply,
     @Query('focusedBlockId') focusedBlockId?: string,
   ) {
     try {
-      // 1. Resolve internal Doc ID (handles the 'edit' vs 'app' logic internally)
       const id = this.yjsService.getDocId(documentId, null);
-
-      // 2. Initialize the persistence layer for this specific document
       const persistor = this.persistorFactory.createDocumentPersistor(documentId);
-
-      // 3. Get the SharedDoc. 
-      // getYDoc handles the LRU cache lookup and mutex creation automatically.
-      const sharedDoc = await this.yjsService.getYDoc(
-        id,
-        documentId,
-        workspaceId,
-        persistor,
-      );
+      const sharedDoc = await this.yjsService.getYDoc(id, documentId, workspaceId, persistor);
 
       if (!sharedDoc) {
         throw new NotFoundException(`Document ${documentId} not found or failed to load.`);
       }
 
-       //const context = serializeDocForAI(sharedDoc.ydoc, focusedBlockId);
-    //  try {
-    //     const editor = require('@sandworm/editor')
-    //     this.logger.log('✅ CJS works:', Object.keys(editor).slice(0, 5))
-    //     let data =  docToJson(sharedDoc.ydoc)
-    //     this.logger.log('✅ docToJson works')
-    //     this.logger.log({data}, 'Serialized ✅ document content for AI context')
-    //   } catch (e: any) {
-    //     this.logger.log('❌ Failed:', e.message)
-    //   }
-      let x = docToMarkdown(sharedDoc.ydoc)
-      // addBlockGroupAfterBlock(sharedDoc.ydoc., 'markdown', {
-      //   content: 'test'
-      // }, focusedBlockId || null)
+      const markdown = docToMarkdown(sharedDoc.ydoc, {
+        focusedBlockId: focusedBlockId ?? null,
+      });
 
-      return {
-        documentId,
-        workspaceId,
-        focusedBlockId: focusedBlockId || null,
-        timestamp: new Date().toISOString(),
-        blocks:  x
-      };
+      return res
+        .header('Content-Type', 'text/plain; charset=utf-8')
+        .send(markdown);
+
     } catch (error: any) {
-      // Logic for handling database or Yjs sync errors
-      throw error instanceof NotFoundException 
-        ? error 
+      throw error instanceof NotFoundException
+        ? error
         : new NotFoundException(`Error retrieving AI context: ${error.message}`);
     }
   }
