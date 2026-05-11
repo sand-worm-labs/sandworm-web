@@ -132,6 +132,7 @@ interface ParamFieldProps {
   param: ParamDefinition;
   value: FieldValue;
   onChange: (value: FieldValue) => void;
+  onBlur: (value: FieldValue) => void;
   error?: string;
 }
 
