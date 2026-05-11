@@ -646,10 +646,12 @@ function PythonBlock(props: Props) {
             </div>
             <ApproveDiffButons
               visible={diffButtonsVisible}
+              status="pending"
               canTry={status === "idle"}
               onTry={onTry}
               onAccept={onAcceptAISuggestion}
               onReject={onRejectAISuggestion}
+              onUndo={onRejectAISuggestion}
             />
             {isPythonBlockEditWithAIPromptOpen(props.block) ? (
               <EditWithAIForm
