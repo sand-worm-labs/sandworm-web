@@ -5,11 +5,13 @@ import {
   Query, 
   NotFoundException,
   Post,
+  Logger,
 } from '@nestjs/common';
 import { ApiTags, ApiQuery } from '@nestjs/swagger';
 import { ApiAuth, ApiPublic } from '@sandworm/api/decorators/http.decorators';
 import { YjsDocumentService } from './yjs-document.service';
 import { PersistorFactory } from './persistors/persistor.factory';
+import { addBlockGroupAfterBlock, docToMarkdown } from '@sandworm/editor';
 
 @ApiTags('YjsDocuments')
 @Controller({
@@ -18,6 +20,9 @@ import { PersistorFactory } from './persistors/persistor.factory';
 })
 
 export class YjsDocumentController {
+
+   private readonly logger = new Logger(YjsDocumentController.name);
+
   constructor(
     private readonly yjsService: YjsDocumentService,
     private readonly persistorFactory: PersistorFactory,
@@ -59,13 +64,26 @@ export class YjsDocumentController {
       }
 
        //const context = serializeDocForAI(sharedDoc.ydoc, focusedBlockId);
+    //  try {
+    //     const editor = require('@sandworm/editor')
+    //     this.logger.log('✅ CJS works:', Object.keys(editor).slice(0, 5))
+    //     let data =  docToJson(sharedDoc.ydoc)
+    //     this.logger.log('✅ docToJson works')
+    //     this.logger.log({data}, 'Serialized ✅ document content for AI context')
+    //   } catch (e: any) {
+    //     this.logger.log('❌ Failed:', e.message)
+    //   }
+      let x = docToMarkdown(sharedDoc.ydoc)
+      // addBlockGroupAfterBlock(sharedDoc.ydoc., 'markdown', {
+      //   content: 'test'
+      // }, focusedBlockId || null)
 
       return {
         documentId,
         workspaceId,
         focusedBlockId: focusedBlockId || null,
         timestamp: new Date().toISOString(),
-        blocks: sharedDoc.ydoc.toJSON()
+        blocks:  x
       };
     } catch (error: any) {
       // Logic for handling database or Yjs sync errors
