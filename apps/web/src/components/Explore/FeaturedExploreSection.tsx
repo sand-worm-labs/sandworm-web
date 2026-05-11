@@ -71,7 +71,7 @@ export function FeaturedExploreSection() {
     });
   };
 
-  const handleClick = (_id: string) => { };
+  const handleClick = (_id: string) => {};
 
   console.log(queries);
 

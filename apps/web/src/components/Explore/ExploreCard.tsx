@@ -11,15 +11,15 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useState } from "react";
-import { useStringQuery } from "../Editor/hooks/useQueryArgs";
-import { useForkDocument } from "../Editor/hooks/usePublicDocuments";
-import { useFavorites } from "../Editor/hooks/useFavorites";
+
 import { ForkToWorkspaceModal } from "@/components/Explore/ForkToWorkspaceModal";
 import { cn } from "@/lib/utils";
-
-
 import type { ApiDocument } from "@/types";
 import { formatDate } from "@/lib/date";
+
+import { useFavorites } from "../Editor/hooks/useFavorites";
+import { useForkDocument } from "../Editor/hooks/usePublicDocuments";
+import { useStringQuery } from "../Editor/hooks/useQueryArgs";
 
 // =====================================
 // ⬢ Types
@@ -39,14 +39,15 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
   const workspaceId = useStringQuery("workspace");
 
   const { forkDocument, loading: forking } = useForkDocument();
-  const [, { favoriteDocument, unfavoriteDocument }] = useFavorites(workspaceId, true);
+  const [, { favoriteDocument, unfavoriteDocument }] = useFavorites(
+    workspaceId,
+    true
+  );
 
   const [isForkModalOpen, setIsForkModalOpen] = useState(false);
   const [isFavorited, setIsFavorited] = useState(query.isFavorite ?? false);
   const [favoriteCount, setFavoriteCount] = useState(query.favoriteCount ?? 0);
-  const formattedDate = formatDate(query.createdAt)
-
-
+  const formattedDate = formatDate(query.createdAt);
 
   const handleForkClick = () => setIsForkModalOpen(true);
 
@@ -70,10 +71,9 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
   };
 
   const handleFavorite = async () => {
-
     const wasFavorited = isFavorited;
     setIsFavorited(!wasFavorited);
-    setFavoriteCount((c) => (wasFavorited ? c - 1 : c + 1));
+    setFavoriteCount(c => (wasFavorited ? c - 1 : c + 1));
 
     try {
       if (wasFavorited) {
@@ -85,7 +85,7 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
       }
     } catch {
       setIsFavorited(wasFavorited);
-      setFavoriteCount((c) => (wasFavorited ? c + 1 : c - 1));
+      setFavoriteCount(c => (wasFavorited ? c + 1 : c - 1));
       toast.error("Failed to update favorites. Please try again.");
     }
   };

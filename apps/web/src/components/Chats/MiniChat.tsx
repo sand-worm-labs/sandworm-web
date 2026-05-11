@@ -11,6 +11,7 @@ import { useNotebookAI } from "../Editor/hooks/useNotebookAI";
 import type { APIDataSources } from "../Editor/hooks/useDataSources";
 
 import { MiniChatInput } from "./MiniChatInput";
+import ChangesPanel from "./ChangesPanel";
 
 // =====================================
 // ⬢  Types
@@ -282,6 +283,7 @@ export const MiniChat: React.FC<MiniChatProps> = ({
         </div>
 
         <div className="pb-4 md:px-4">
+          <ChangesPanel />
           <MiniChatInput onSend={handleInputSend} disabled={isLoading} />
         </div>
       </div>

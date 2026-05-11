@@ -55,6 +55,7 @@ interface AddressFieldProps {
   param: ParamDefinition;
   value: string;
   onChange: (value: string) => void;
+  onBlur?: (value: string) => void;
   error?: string;
 }
 
@@ -66,6 +67,7 @@ export function AddressField({
   value,
   onChange,
   error,
+  onBlur,
 }: AddressFieldProps) {
   const [touched, setTouched] = useState(false);
 
@@ -97,7 +99,10 @@ export function AddressField({
           type="text"
           value={value}
           onChange={e => onChange(e.target.value)}
-          onBlur={() => setTouched(true)}
+          onBlur={() => {
+            setTouched(true);
+            onBlur?.(value);
+          }}
           placeholder={param.placeholder ?? (isUid ? "0x..." : "0x...")}
           spellCheck={false}
           autoComplete="off"

@@ -194,10 +194,10 @@ export type ApiDocument = Document & {
     username: string;
     image: string;
     userId: string;
-  }
+  };
   forkCount: number;
   favoriteCount: number;
-  isFavorite: boolean
+  isFavorite: boolean;
 };
 
 export type UserWorkspaceRole = "editor" | "viewer" | "admin";

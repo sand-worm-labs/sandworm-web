@@ -90,7 +90,10 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
       this.logger.log(`[3] doc loaded +${Date.now() - t0}ms`);
       if (!doc) { client.close(1011, 'Failed to load document'); return; }
 
+      //Clock validation
       if (doc.clock !== clock) {
+        this.logger.warn(`[YJS Rejected] reason=clock_mismatch client=${clock} server=${doc.clock} docId=${doc.id}`);
+        this.logger.log(`${doc} ${clock} ${doc.clock}`);
         this.logger.warn(`[YJS Rejected] clock_mismatch client=${clock} server=${doc.clock}`);
         client.close(1008, 'Clock mismatch');
         return;

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback } from "react";
+
 import {
   useGetTrendingPublishedDocumentsQuery,
   useGetFeaturedDocumentsQuery,
@@ -50,7 +51,6 @@ export function usePublicDocuments({
   initialFeatured = [],
   pageSize = DEFAULT_PAGE_SIZE,
 }: UsePublicDocumentsOptions = {}): UsePublicDocumentsResult {
-
   // ⬢ Only one feed runs at a time based on filter
   const trending = useTrendingFeed(
     filter.kind === "trending",
@@ -92,11 +92,12 @@ function useTrendingFeed(
     useGetTrendingPublishedDocumentsQuery({
       variables: { limit: pageSize, offset: 0 },
       notifyOnNetworkStatusChange: true,
-      skip: !active || hasSSR,  // ⬢ skip if SSR data already exists
+      skip: !active || hasSSR, // ⬢ skip if SSR data already exists
       fetchPolicy: "cache-first",
     });
 
-  const fetched = (data?.getTrendingPublishedDocuments ?? []) as PublicDocument[];
+  const fetched = (data?.getTrendingPublishedDocuments ??
+    []) as PublicDocument[];
   const documents = hasSSR && fetched.length === 0 ? initialDocuments : fetched;
   const loadingMore = networkStatus === 3;
   const hasMore = documents.length > 0 && documents.length % pageSize === 0;
@@ -116,7 +117,15 @@ function useTrendingFeed(
         };
       },
     });
-  }, [active, fetchMore, documents.length, pageSize, loading, loadingMore, hasMore]);
+  }, [
+    active,
+    fetchMore,
+    documents.length,
+    pageSize,
+    loading,
+    loadingMore,
+    hasMore,
+  ]);
 
   return {
     documents,
@@ -125,7 +134,9 @@ function useTrendingFeed(
     error: (error as Error) ?? null,
     hasMore,
     loadMore,
-    refetch: async () => { await refetch({ limit: pageSize, offset: 0 }); },
+    refetch: async () => {
+      await refetch({ limit: pageSize, offset: 0 });
+    },
   };
 }
 
@@ -141,12 +152,14 @@ function useFlatUserFeed(kind: "favorites" | "forked", userId: string | null) {
     fetchPolicy: "cache-and-network",
   });
 
-  const { loading, error, refetch } = kind === "favorites" ? favoritesQ : forkedQ;
+  const { loading, error, refetch } =
+    kind === "favorites" ? favoritesQ : forkedQ;
 
   const documents =
     kind === "favorites"
       ? ((favoritesQ.data?.favoritePublicDocuments ?? []) as PublicDocument[])
-      : ((forkedQ.data?.getUserForkedPublicDocuments ?? []) as PublicDocument[]);
+      : ((forkedQ.data?.getUserForkedPublicDocuments ??
+          []) as PublicDocument[]);
 
   return {
     documents,
@@ -155,7 +168,9 @@ function useFlatUserFeed(kind: "favorites" | "forked", userId: string | null) {
     error: (error as Error) ?? null,
     hasMore: false,
     loadMore: async () => {},
-    refetch: async () => { await refetch(); },
+    refetch: async () => {
+      await refetch();
+    },
   };
 }
 
@@ -213,7 +228,15 @@ export function useUserPublicDocuments(
         };
       },
     });
-  }, [userId, fetchMore, documents.length, pageSize, loading, loadingMore, hasMore]);
+  }, [
+    userId,
+    fetchMore,
+    documents.length,
+    pageSize,
+    loading,
+    loadingMore,
+    hasMore,
+  ]);
 
   return {
     documents,
@@ -222,7 +245,9 @@ export function useUserPublicDocuments(
     error: (error as Error) ?? null,
     hasMore,
     loadMore,
-    refetch: async () => { await refetch(); },
+    refetch: async () => {
+      await refetch();
+    },
   };
 }
 

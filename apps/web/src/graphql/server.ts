@@ -1,7 +1,8 @@
 import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
 import { headers } from "next/headers";
 
-const INTERNAL_API_URL = process.env.INTERNAL_API_URL ?? "http://localhost:8003";
+const INTERNAL_API_URL =
+  process.env.INTERNAL_API_URL ?? "http://localhost:8003";
 
 const _serverClient = new ApolloClient({
   ssrMode: true,

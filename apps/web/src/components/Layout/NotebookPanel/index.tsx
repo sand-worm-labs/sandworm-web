@@ -6,7 +6,6 @@ import { SparkleAI } from "@/components/Assets/SparkleAI";
 import useSideBar from "@/components/Editor/hooks/useSideBar";
 import { TooltipV2 } from "@/components/Editor/blocks/ToolTips";
 
-
 // =====================================
 // ⬢ Types
 // =====================================
@@ -33,23 +32,24 @@ const PanelItem = ({
 
   return (
     <TooltipV2 active title={action.label} position="left">
-    {(ref) => (
-      <button
-        ref={ref as React.RefObject<HTMLButtonElement>}
-        type="button"
-        onClick={onClick ?? action.onClick}
-        className={cn(
-          "p-2 rounded-lg transition-colors flex items-center justify-center",
-          "text-ink-400 hover:text-ink-100 dark:text-ink-300 dark:hover:text-white",
-          "hover:bg-[#F1F3F4] dark:hover:bg-[#21262d]",
-          isActive && "bg-[#F1F3F4] dark:bg-base-500 text-ink-100 dark:text-white"
-        )}
-        aria-label={action.label}
-      >
-        <Icon size={22} />
-      </button>
-    )}
-  </TooltipV2>
+      {ref => (
+        <button
+          ref={ref as React.RefObject<HTMLButtonElement>}
+          type="button"
+          onClick={onClick ?? action.onClick}
+          className={cn(
+            "p-2 rounded-lg transition-colors flex items-center justify-center",
+            "text-ink-400 hover:text-ink-100 dark:text-ink-300 dark:hover:text-white",
+            "hover:bg-[#F1F3F4] dark:hover:bg-[#21262d]",
+            isActive &&
+              "bg-[#F1F3F4] dark:bg-base-500 text-ink-100 dark:text-white"
+          )}
+          aria-label={action.label}
+        >
+          <Icon size={22} />
+        </button>
+      )}
+    </TooltipV2>
   );
 };
 
@@ -58,18 +58,18 @@ const PanelItem = ({
 // =====================================
 const AIAssistantButton = ({ onClick }: { onClick?: () => void }) => (
   <TooltipV2 active title="AI Assistant" position="left">
-  {(ref) => (
-    <button
-      ref={ref as React.RefObject<HTMLButtonElement>}
-      type="button"
-      onClick={onClick}
-      className="border-t border-b border-border-secondary dark:border-border-tertiary py-3.5 w-full flex items-center justify-center"
-      aria-label="AI Assistant"
-    >
-      <SparkleAI size={36} />
-    </button>
-  )}
-</TooltipV2>
+    {ref => (
+      <button
+        ref={ref as React.RefObject<HTMLButtonElement>}
+        type="button"
+        onClick={onClick}
+        className="border-t border-b border-border-secondary dark:border-border-tertiary py-3.5 w-full flex items-center justify-center"
+        aria-label="AI Assistant"
+      >
+        <SparkleAI size={36} />
+      </button>
+    )}
+  </TooltipV2>
 );
 
 // =====================================
@@ -83,8 +83,10 @@ interface NotebookPanelProps {
 // =====================================
 // ⬢ Notebook Panel Component
 // =====================================
-export const NotebookPanel = ({ sidebarContent, onToggleChat }: NotebookPanelProps) => {
-
+export const NotebookPanel = ({
+  sidebarContent,
+  onToggleChat,
+}: NotebookPanelProps) => {
   const {
     state: { rightPanelId },
     api,

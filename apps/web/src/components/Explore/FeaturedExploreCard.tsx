@@ -6,16 +6,16 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-import { useStringQuery } from "../Editor/hooks/useQueryArgs";
-import { useForkDocument } from "../Editor/hooks/usePublicDocuments";
-import { useFavorites } from "../Editor/hooks/useFavorites";
 import { ForkToWorkspaceModal } from "@/components/Explore/ForkToWorkspaceModal";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/date";
+
+import { useStringQuery } from "../Editor/hooks/useQueryArgs";
+import { useForkDocument } from "../Editor/hooks/usePublicDocuments";
+import { useFavorites } from "../Editor/hooks/useFavorites";
 import { BookmarkSimple } from "../Assets/BookmarkSimple";
 import { GitFork } from "../Assets/GitFork";
 import { Star } from "../Assets/Menu/Star";
-
 
 // =====================================
 // ⬢ Types
@@ -62,28 +62,30 @@ export function FeaturedExploreCard({
   forks,
   isFavorite,
   onClick,
-  variant = "default",  
+  variant = "default",
 }: FeaturedExploreCardProps) {
   const router = useRouter();
   const workspaceId = useStringQuery("workspace");
   const isPurple = variant === "purple";
 
   const { forkDocument, loading: forking } = useForkDocument();
-  const [, { favoriteDocument, unfavoriteDocument }] = useFavorites(workspaceId, true);
+  const [, { favoriteDocument, unfavoriteDocument }] = useFavorites(
+    workspaceId,
+    true
+  );
 
   const [isForkModalOpen, setIsForkModalOpen] = useState(false);
   const [isFavorited, setIsFavorited] = useState(isFavorite ?? false);
   const [favoriteCount, setFavoriteCount] = useState(stars);
 
-
-  const formattedDate = formatDate(createdAt)
+  const formattedDate = formatDate(createdAt);
 
   const handleFavoriteClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
     const wasFavorited = isFavorited;
 
     setIsFavorited(!wasFavorited);
-    setFavoriteCount((prev) => (wasFavorited ? prev - 1 : prev + 1));
+    setFavoriteCount(prev => (wasFavorited ? prev - 1 : prev + 1));
 
     try {
       if (wasFavorited) {
@@ -95,7 +97,7 @@ export function FeaturedExploreCard({
       }
     } catch (err) {
       setIsFavorited(wasFavorited);
-      setFavoriteCount((prev) => (wasFavorited ? prev + 1 : prev - 1));
+      setFavoriteCount(prev => (wasFavorited ? prev + 1 : prev - 1));
       toast.error("Failed to update favorites.");
     }
   };
@@ -133,7 +135,7 @@ export function FeaturedExploreCard({
         )}
         role="button"
         tabIndex={0}
-        onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onClick?.(id)}
+        onKeyDown={e => (e.key === "Enter" || e.key === " ") && onClick?.(id)}
       >
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
@@ -199,7 +201,7 @@ export function FeaturedExploreCard({
           />
           <Link
             href={`/workspace/${workspaceId}/profile/${creator.userId}`}
-            onClick={(e) => e.stopPropagation()}
+            onClick={e => e.stopPropagation()}
             className={cn(
               "text-sm font-medium hover:underline",
               isPurple ? "text-[#F8F9FA]" : "text-ink-400"
@@ -252,7 +254,5 @@ export function FeaturedExploreCard({
         onForkSuccess={handleForkSuccess}
       />
     </>
-
-
   );
 }

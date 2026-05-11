@@ -127,6 +127,23 @@ export function AnalyticsParamForm({
     [submitAttempted]
   );
 
+  const handleBlur = useCallback(
+    (key: string, value: FieldValue) => {
+      if (!block.doc) return;
+
+      const current = (block.getAttribute("inputs") as ResolvedParams) ?? {};
+      const updated: ResolvedParams = {
+        ...current,
+        [key]: value as string | number | boolean | string[],
+      };
+
+      block.doc.transact(() => {
+        block.setAttribute("inputs", updated);
+      });
+    },
+    [block]
+  );
+
   if (!tool) {
     return (
       <div className="px-4 py-6 text-sm text-ink-300 text-center">
@@ -178,6 +195,7 @@ export function AnalyticsParamForm({
               param={param}
               value={values[param.key] ?? getDefaultValue(param)}
               onChange={val => handleChange(param.key, val)}
+              onBlur={val => handleBlur(param.key, val)}
               error={submitAttempted ? errors[param.key] : undefined}
             />
           ))

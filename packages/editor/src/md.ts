@@ -1,479 +1,673 @@
-// // ─── TYPES ───────────────────────────────────────────────────────────────────
+import * as Y from 'yjs'
+import {
+  switchBlockType,
+  getBlocks,
+  getLayout,
+  getTabsFromBlockGroup,
+  getPythonAttributes,
+  getSQLAttributes,
+  getRichTextAttributes,
+  getPowerToolboxAttributes,
+  getVisualizationV2Attributes,
+  getInputAttributes,
+  getDropdownInputAttributes,
+  getDateInputAttributes,
+  getPivotTableAttributes,
+  getFileUploadAttributes,
+  type YBlock,
+  type YBlockGroup,
+  RichTextBlock,
+} from './index.js'
 
-// import * as Y from 'yjs'
-// import {
-//   switchBlockType,
-//   getBlocks,
-//   getLayout,
-//   getTabsFromBlockGroup,
-//   getPythonAttributes,
-//   getSQLAttributes,
-//   getRichTextAttributes,
-//   getPowerToolboxAttributes,
-//   getVisualizationV2Attributes,
-//   getInputAttributes,
-//   getDropdownInputAttributes,
-//   getDateInputAttributes,
-//   getPivotTableAttributes,
-//   getFileUploadAttributes,
-//   type YBlock,
-//   type YBlockGroup,
-// } from '@sandworm/editor'
+interface SerializeOptions {
+  focusedBlockId?: string | null
+  executingBlockIds?: string[]
+}
 
-// // ─── UTILS ───────────────────────────────────────────────────────────────────
+interface BlockMeta {
+  id: string
+  type: string
+  title: string
+  blockGroupId: string
+}
 
-// function xmlFragmentToText(fragment: Y.XmlFragment): string {
-//   let text = ''
-//   fragment.toArray().forEach((node) => {
-//     if (node instanceof Y.XmlText) {
-//       text += node.toString()
-//     } else if (node instanceof Y.XmlElement) {
-//       const inner = node
-//         .toArray()
-//         .map((child) => (child instanceof Y.XmlText ? child.toString() : ''))
-//         .join('')
-//       text += inner + '\n'
-//     }
-//   })
-//   return text.trim()
-// }
+interface ResolvedBlock {
+  meta: BlockMeta
+  block: YBlock
+  fingerprint: string
+}
 
-// function resultStatus(status: string | undefined): string {
-//   if (!status) return 'idle'
-//   return status
-// }
+function extractTitle(doc: Y.Doc): string {
+  const frag = doc.getXmlFragment('doc-title')
+  let title = ''
+  frag.toArray().forEach((node) => {
+    if (node instanceof Y.XmlElement) {
+      node.toArray().forEach((child) => {
+        if (child instanceof Y.XmlText) title += child.toString()
+      })
+    }
+  })
+  return title.trim()
+}
 
-// function blockToMd(block: YBlock, blocks: Y.Map<YBlock>): string {
-//   return switchBlockType(block, {
-//     // ── Rich Text ──────────────────────────────────────────────────────────
-//     onRichText: (b:YBlock) => {
-//       const { id, title, content, isAiInput } = getRichTextAttributes(b)
-//       const lines: string[] = []
-//       lines.push(`## ${title || '(untitled text block)'}`)
-//       lines.push(`> id: \`${id}\` | type: RICH_TEXT | isAiInput: ${isAiInput}`)
-//       const text = xmlFragmentToText(content)
-//       if (text) lines.push('\n' + text)
-//       return lines.join('\n')
-//     },
-//     onPython: (b:YBlock) => {
-//       const {
-//         id,
-//         title,
-//         source,
-//         result,
-//         isResultHidden,
-//         isCodeHidden,
-//         lastQuery,
-//         lastQueryTime,
-//         startQueryTime,
-//         isEditWithAIPromptOpen,
-//         editWithAIPrompt,
-//         aiSuggestions,
-//         componentId,
-//         isAiInput,
-//       } = getPythonAttributes(b)
-//       const lines: string[] = []
-//       lines.push(`## ${title || '(untitled python block)'}`)
-//       lines.push(
-//         `> id: \`${id}\` | type: PYTHON | isAiInput: ${isAiInput} | isCodeHidden: ${isCodeHidden} | isResultHidden: ${isResultHidden}`
-//       )
-//       if (componentId) lines.push(`> componentId: \`${componentId}\``)
-//       if (lastQueryTime) lines.push(`> lastRun: ${lastQueryTime} | startedAt: ${startQueryTime}`)
+function extractRichText(b: Y.XmlElement<RichTextBlock>): string {
+  const attrs = getRichTextAttributes(b)
+  let text = ''
+  attrs.content.toArray().forEach((node) => {
+    if (node instanceof Y.XmlText) {
+      text += node.toString()
+    } else if (node instanceof Y.XmlElement) {
+      node.toArray().forEach((child) => {
+        if (child instanceof Y.XmlText) text += child.toString()
+      })
+      text += '\n'
+    }
+  })
+  return text.trim()
+}
 
-//       const src = source.toString()
-//       if (src) lines.push(`\n\`\`\`python\n${src}\n\`\`\``)
+function formatRows(columns: any[], rows: any[], maxRows: number): string {
+  if (!rows || rows.length === 0) return ''
+  const sliced = rows.slice(0, maxRows)
+  const header = `| ${columns.map((c: any) => c.name).join(' | ')} |`
+  const sep = `| ${columns.map(() => '---').join(' | ')} |`
+  const rowLines = sliced.map((row: any) => {
+    const cells = columns.map((c: any) => String(row[c.name] ?? ''))
+    return `| ${cells.join(' | ')} |`
+  })
+  return [header, sep, ...rowLines].join('\n')
+}
 
-//       if (lastQuery && lastQuery !== src) {
-//         lines.push(`\n**Last executed source:**\n\`\`\`python\n${lastQuery}\n\`\`\``)
-//       }
+function parsePandasHtml(html: string, maxRows: number): string {
+  const theadMatch = html.match(/<thead>([\s\S]*?)<\/thead>/)
+  const tbodyMatch = html.match(/<tbody>([\s\S]*?)<\/tbody>/)
+  const countMatch = html.match(/(\d[\d,]+)\s+rows\s+×\s+(\d+)\s+col/)
 
-//       if (isEditWithAIPromptOpen) {
-//         const prompt = editWithAIPrompt.toString()
-//         if (prompt) lines.push(`\n**AI Prompt:** ${prompt}`)
-//       }
+  if (!theadMatch || !tbodyMatch) return '*(html output — unparsable)*'
 
-//       if (aiSuggestions) {
-//         const suggestions = aiSuggestions.toString()
-//         if (suggestions) lines.push(`\n**AI Suggestions:**\n\`\`\`python\n${suggestions}\n\`\`\``)
-//       }
+  const headerThs = theadMatch[1]?.match(/<th[^>]*>([\s\S]*?)<\/th>/g) ?? []
+  const cols = headerThs
+    .map((h) => h.replace(/<[^>]+>/g, '').trim())
+    .filter((h) => h !== '')
 
-//       if (result.length) {
-//         const errors = result.filter((o) => o.type === 'error')
-//         const stdouts = result.filter((o) => o.type === 'stream')
-//         const displays = result.filter((o) => o.type === 'display_data' || o.type === 'execute_result')
+  if (cols.length === 0) return '*(html output — no columns found)*'
 
-//         if (errors.length) {
-//           const msg = errors
-//             .map((e) => (e.type === 'error' ? `${e.ename}: ${e.evalue}\n${e.traceback?.join('\n') ?? ''}` : ''))
-//             .join('\n')
-//           lines.push(`\n**Error:**\n\`\`\`\n${msg}\n\`\`\``)
-//         }
-//         if (stdouts.length) {
-//           const out = stdouts.map((o) => (o.type === 'stream' ? o.text : '')).join('')
-//           if (out) lines.push(`\n**Output:**\n\`\`\`\n${out}\n\`\`\``)
-//         }
-//         if (displays.length) {
-//           lines.push(`\n**Display outputs:** ${displays.length} item(s)`)
-//         }
-//       }
+  const trs = tbodyMatch[1]?.match(/<tr[^>]*>([\s\S]*?)<\/tr>/g) ?? []
+  const rows = trs.slice(0, maxRows).map((tr) => {
+    const tds = tr.match(/<td[^>]*>([\s\S]*?)<\/td>/g) ?? []
+    return tds.map((td) => td.replace(/<[^>]+>/g, '').trim())
+  })
 
-//       return lines.join('\n')
-//     },
+  const summary = countMatch
+    ? `DataFrame ${countMatch[1]} rows × ${countMatch[2]} cols`
+    : 'DataFrame output'
 
-//     onSQL: (b:YBlock) => {
-//       const {
-//         id,
-//         title,
-//         source,
-//         dataframeName,
-//         dataSourceId,
-//         isFileDataSource,
-//         result,
-//         lastQuery,
-//         lastQueryTime,
-//         startQueryTime,
-//         isCodeHidden,
-//         isResultHidden,
-//         isEditWithAIPromptOpen,
-//         editWithAIPrompt,
-//         aiSuggestions,
-//         componentId,
-//         configuration,
-//         sort,
-//         isAiInput,
-//       } = getSQLAttributes(b, blocks)
-//       const lines: string[] = []
-//       lines.push(`## ${title || '(untitled sql block)'}`)
-//       lines.push(
-//         `> id: \`${id}\` | type: SQL | isAiInput: ${isAiInput} | isCodeHidden: ${isCodeHidden} | isResultHidden: ${isResultHidden}`
-//       )
-//       lines.push(
-//         `> dataframe: \`${dataframeName.value}\` | dataSourceId: ${dataSourceId ?? 'none'} | isFileDataSource: ${isFileDataSource}`
-//       )
-//       if (componentId) lines.push(`> componentId: \`${componentId}\``)
-//       if (lastQueryTime) lines.push(`> lastRun: ${lastQueryTime} | startedAt: ${startQueryTime}`)
-//       if (configuration) {
-//         lines.push(`> configuration: \`${JSON.stringify(configuration)}\``)
-//       }
-//       if (sort) {
-//         lines.push(`> sort: column=\`${sort.column?.name}\` direction=\`${sort.direction}\``)
-//       }
+  const header = `| ${cols.join(' | ')} |`
+  const sep = `| ${cols.map(() => '---').join(' | ')} |`
+  const rowLines = rows.map((cells) => {
+    const aligned = cols.map((_, i) => cells[i + 1] ?? '')
+    return `| ${aligned.join(' | ')} |`
+  })
 
-//       const src = source.toString()
-//       if (src) lines.push(`\n\`\`\`sql\n${src}\n\`\`\``)
+  return [summary, header, sep, ...rowLines].join('\n')
+}
 
-//       if (lastQuery && lastQuery !== src) {
-//         lines.push(`\n**Last executed source:**\n\`\`\`sql\n${lastQuery}\n\`\`\``)
-//       }
+function returnSignature(block: YBlock, meta: BlockMeta, allBlocks: ReturnType<typeof getBlocks>): string {
+  let sig = ''
+  switchBlockType(block, {
+    onPython: (b) => {
+      const attrs = getPythonAttributes(b)
+      if (!attrs.result || attrs.result.length === 0) { sig = '→ *(no output)*'; return }
+      for (const r of attrs.result as any[]) {
+        if (r.type === 'error') { sig = `→ **ERROR:** \`${r.ename}: ${r.evalue}\``; return }
+        if (r.type === 'image') { sig = '→ *[image output]*'; return }
+        if (r.type === 'html') {
+          const countMatch = r.html.match(/(\d[\d,]+)\s+rows\s+×\s+(\d+)\s+col/)
+          const theadMatch = r.html.match(/<thead>([\s\S]*?)<\/thead>/)
+          const headerThs = theadMatch?.[1]?.match(/<th[^>]*>([\s\S]*?)<\/th>/g) ?? []
+          const cols = headerThs.map((h: string) => h.replace(/<[^>]+>/g, '').trim()).filter(Boolean)
+          sig = countMatch
+            ? `→ DataFrame ${countMatch[1]} rows × ${countMatch[2]} cols [${cols.join(', ')}]`
+            : '→ DataFrame output'
+          return
+        }
+        if (r.type === 'stream') { sig = `→ ${(r.text ?? '').slice(0, 200)}`; return }
+      }
+      sig = '→ *(output)*'
+    },
+    onSQL: (b) => {
+      const attrs = getSQLAttributes(b, allBlocks)
+      const r = attrs.result as any
+      if (!r) { sig = '→ *(no result)*'; return }
+      if (r.type === 'error') { sig = `→ **ERROR:** ${r.error}`; return }
+      if (r.type === 'success') {
+        const cols = (r.columns ?? []).map((c: any) => `${c.name}(${c.type})`).join(', ')
+        sig = `→ ${(r.count ?? 0).toLocaleString()} rows × ${(r.columns ?? []).length} cols | ${cols}`
+      }
+    },
+    onRichText: (b) => {
+      const text = extractRichText(b)
+      sig = text ? `→ ${text.slice(0, 100)}` : '→ *(empty)*'
+    },
+    onPowerToolbox: (b) => {
+      const attrs = getPowerToolboxAttributes(b)
+      sig = (!attrs.result || (attrs.result as any[]).length === 0)
+        ? '→ *(not yet executed)*'
+        : '→ executed'
+    },
+    onVisualizationV2: (b) => {
+      const attrs = getVisualizationV2Attributes(b)
+      sig = attrs.error ? `→ **ERROR:** ${attrs.error}` : '→ *(chart)*'
+    },
+    onInput: (b) => {
+      const attrs = getInputAttributes(b, allBlocks)
+      sig = `→ \`${attrs.variable.value}\` = \`"${attrs.value.value}"\``
+    },
+    onDropdownInput: (b) => {
+      const attrs = getDropdownInputAttributes(b, allBlocks)
+      sig = `→ \`${attrs.variable.value}\` = \`"${attrs.value.value}"\``
+    },
+    onDateInput: (b) => {
+      const attrs = getDateInputAttributes(b, allBlocks)
+      sig = `→ \`${attrs.variable}\` = \`"${attrs.value}"\``
+    },
+    onPivotTable: (b) => {
+      const attrs = getPivotTableAttributes(b, allBlocks)
+      sig = attrs.error ? `→ **ERROR:** ${attrs.error}` : `→ pivot on \`${attrs.dataframeName}\``
+    },
+    onDashboardHeader: (b) => {
+      sig = `→ "${String(b.getAttribute('content') ?? '').slice(0, 80)}"`
+    },
+    onVisualization: () => { sig = '→ *(legacy visualization)*' },
+    onFileUpload: () => { sig = '→ *(file upload)*' },
+  })
+  return sig
+}
 
-//       if (isEditWithAIPromptOpen) {
-//         const prompt = editWithAIPrompt.toString()
-//         if (prompt) lines.push(`\n**AI Prompt:** ${prompt}`)
-//       }
+function blockSource(block: YBlock, meta: BlockMeta, allBlocks: ReturnType<typeof getBlocks>, cap: number | null): string {
+  let source = ''
+  switchBlockType(block, {
+    onPython: (b) => {
+      const raw = getPythonAttributes(b).source.toString().trim()
+      const capped = cap && raw.length > cap ? raw.slice(0, cap) + '\n...(truncated)' : raw
+      source = `\`\`\`python\n${capped}\n\`\`\``
+    },
+    onSQL: (b) => {
+      const raw = getSQLAttributes(b, allBlocks).source.toString().trim()
+      const capped = cap && raw.length > cap ? raw.slice(0, cap) + '\n...(truncated)' : raw
+      source = `\`\`\`sql\n${capped}\n\`\`\``
+    },
+    onRichText: (b) => { source = extractRichText(b) },
+    onPowerToolbox: (b) => {
+      const attrs = getPowerToolboxAttributes(b)
+      const parts = [`**tool:** \`${attrs.toolId ?? '(none)'}\``]
+      if (attrs.toolLabel) parts.push(`**label:** ${attrs.toolLabel}`)
+      if (attrs.toolCategory) parts.push(`**category:** ${attrs.toolCategory}`)
+      if (attrs.inputs && Object.keys(attrs.inputs).length > 0)
+        parts.push(`**inputs:** \`${JSON.stringify(attrs.inputs)}\``)
+      if (attrs.generatedSource)
+        parts.push(`**generated:**\n\`\`\`python\n${String(attrs.generatedSource)}\n\`\`\``)
+      source = parts.join('\n')
+    },
+    onVisualizationV2: (b) => {
+      const attrs = getVisualizationV2Attributes(b)
+      source = `**input:** \`${JSON.stringify(attrs.input ?? {})}\``
+    },
+    onInput: (b) => {
+      const attrs = getInputAttributes(b, allBlocks)
+      source = `**label:** ${attrs.label}\n**variable:** \`${attrs.variable.value}\`\n**value:** \`${attrs.value.value}\``
+    },
+    onDropdownInput: (b) => {
+      const attrs = getDropdownInputAttributes(b, allBlocks)
+      source = `**label:** ${attrs.label}\n**variable:** \`${attrs.variable.value}\`\n**value:** \`${attrs.value.value}\`\n**options:** \`${JSON.stringify(attrs.options)}\``
+    },
+    onDateInput: (b) => {
+      const attrs = getDateInputAttributes(b, allBlocks)
+      source = `**label:** ${attrs.label}\n**variable:** \`${attrs.variable}\`\n**value:** \`${attrs.value}\`\n**type:** ${attrs.dateType}`
+    },
+    onPivotTable: (b) => {
+      const attrs = getPivotTableAttributes(b, allBlocks)
+      source = `**dataframe:** \`${attrs.dataframeName}\`\n**rows:** \`${JSON.stringify(attrs.rows)}\`\n**columns:** \`${JSON.stringify(attrs.columns)}\`\n**metrics:** \`${JSON.stringify(attrs.metrics)}\``
+    },
+    onDashboardHeader: (b) => {
+      source = String(b.getAttribute('content') ?? '')
+    },
+    onVisualization: () => { source = '' },
+    onFileUpload: () => { source = '' },
+  })
+  return source
+}
 
-//       if (aiSuggestions) {
-//         const suggestions = aiSuggestions.toString()
-//         if (suggestions) lines.push(`\n**AI Suggestions:**\n\`\`\`sql\n${suggestions}\n\`\`\``)
-//       }
+function focusedBlockDetail(
+  block: YBlock,
+  meta: BlockMeta,
+  allBlocks: ReturnType<typeof getBlocks>
+): string {
+  const lines: string[] = [
+    `### [FOCUSED] \`${meta.id}\` ${meta.type}${meta.title ? ` — "${meta.title}"` : ''}`,
+  ]
 
-//       if (result) {
-//         switch (result.type) {
-//           case 'success':
-//             lines.push(`\n**Result:** ${result.rows.length} rows | columns: ${result.columns.map((c) => c.name).join(', ')}`)
-//             break
-//           case 'syntax-error':
-//           case 'abort-error':
-//             lines.push(`\n**Error:** ${result.message}`)
-//             break
-//           case 'python-error':
-//             lines.push(`\n**Error:** ${result.ename}: ${result.evalue}`)
-//             break
-//         }
-//       }
+  switchBlockType(block, {
+    onPython: (b) => {
+      const attrs = getPythonAttributes(b)
+      if (attrs.lastQueryTime) lines.push(`*last run: ${attrs.lastQueryTime}*`)
+      lines.push(`\`\`\`python\n${attrs.source.toString().trim()}\n\`\`\``)
+      if (attrs.lastQuery && attrs.lastQuery !== attrs.source.toString().trim()) {
+        lines.push(`*last executed query:*\n\`\`\`python\n${attrs.lastQuery}\n\`\`\``)
+      }
+      if (attrs.result && (attrs.result as any[]).length > 0) {
+        lines.push(`**result:**`)
+        for (const r of attrs.result) {
+          if (r.type === 'error') { lines.push(`> **ERROR:** \`${r.ename}: ${r.evalue}\`\n\`\`\`\n${r.traceback ?? ''}\n\`\`\``); continue }
+          if (r.type === 'image') { lines.push('*[image output]*'); continue }
+          //if (r.type === 'stream') { lines.push(`\`\`\`\n${r.text ?? ''}\n\`\`\``); continue }
+          if (r.type === 'html') { lines.push(parsePandasHtml(r.html, 10)); continue }
+        }
+      }
+    },
 
-//       return lines.join('\n')
-//     },
+    onSQL: (b) => {
+      const attrs = getSQLAttributes(b, allBlocks)
+      if (attrs.lastQueryTime) lines.push(`*last run: ${attrs.lastQueryTime}*`)
+      lines.push(`\`\`\`sql\n${attrs.source.toString().trim()}\n\`\`\``)
+      lines.push(`**dataframe:** \`${attrs.dataframeName.value}\``)
+      if (attrs.dataSourceId) lines.push(`**dataSource:** \`${attrs.dataSourceId}\``)
+      if (attrs.lastQuery && attrs.lastQuery !== attrs.source.toString().trim()) {
+        lines.push(`*last executed query:*\n\`\`\`sql\n${attrs.lastQuery}\n\`\`\``)
+      }
+      const r = attrs.result as any
+      if (r) {
+        if (r.type === 'error') { lines.push(`> **ERROR:** ${r.error}`); return }
+        if (r.type === 'success') {
+          lines.push(`**result:** ${(r.count ?? 0).toLocaleString()} rows × ${(r.columns ?? []).length} cols`)
+          lines.push(`**columns:** ${(r.columns ?? []).map((c: any) => `\`${c.name}(${c.type})\``).join(', ')}`)
+          if ((r.rows ?? []).length > 0) lines.push(formatRows(r.columns, r.rows, 10))
+        }
+      }
+    },
 
-//     // ── Visualization (legacy) ─────────────────────────────────────────────
-//     onVisualization: () => '',
+    onRichText: (b) => {
+      lines.push(extractRichText(b) || '*(empty)*')
+    },
 
-//     // ── Visualization V2 ──────────────────────────────────────────────────
-//     onVisualizationV2: (b:YBlock) => {
-//       const {
-//         id,
-//         title,
-//         input,
-//         output,
-//         controlsHidden,
-//         error,
-//         isAiInput,
-//       } = getVisualizationV2Attributes(b)
-//       const lines: string[] = []
-//       lines.push(`## ${title || '(untitled visualization)'}`)
-//       lines.push(
-//         `> id: \`${id}\` | type: VISUALIZATION_V2 | isAiInput: ${isAiInput} | controlsHidden: ${controlsHidden}`
-//       )
-//       if (error) lines.push(`> error: ${error}`)
-//       lines.push(`> chartType: ${input.chartType} | dataframe: \`${input.dataframeName ?? 'none'}\``)
-//       if (input.xAxis) {
-//         lines.push(`> xAxis: \`${input.xAxis.name}\` | sort: ${input.xAxisSort} | groupFunction: ${input.xAxisGroupFunction ?? 'none'}`)
-//       }
-//       if (input.yAxes.length) {
-//         const seriesSummary = input.yAxes
-//           .flatMap((y) => y.series)
-//           .map((s) => `${s.column?.name ?? '?'} (${s.aggregateFunction})`)
-//           .join(', ')
-//         lines.push(`> yAxes series: ${seriesSummary}`)
-//       }
-//       if (input.filters.length) {
-//         lines.push(`> filters: ${input.filters.map((f) => `${f.column.name} ${f.operator} ${f.value}`).join(', ')}`)
-//       }
-//       if (output) {
-//         lines.push(`> lastExecuted: ${output.executedAt} | tooManyDataPoints: ${output.tooManyDataPoints}`)
-//       }
-//       return lines.join('\n')
-//     },
+    onPowerToolbox: (b) => {
+      const attrs = getPowerToolboxAttributes(b)
+      lines.push(`**tool_id:** \`${attrs.toolId ?? '(none)'}\``)
+      if (attrs.toolLabel) lines.push(`**label:** ${attrs.toolLabel}`)
+      if (attrs.toolCategory) lines.push(`**category:** ${attrs.toolCategory}`)
+      lines.push(`**inputs:** \`${JSON.stringify(attrs.inputs ?? {})}\``)
+      lines.push(`**last executed inputs:** \`${JSON.stringify(attrs.lastExecutedInputs ?? {})}\``)
+      if (attrs.generatedSource)
+        lines.push(`**generated source:**\n\`\`\`python\n${String(attrs.generatedSource)}\n\`\`\``)
+      else
+        lines.push(`**generated source:** *(empty)*`)
+      if (attrs.executedAt) lines.push(`*executed at: ${attrs.executedAt}*`)
+      if (attrs.result && (attrs.result as any[]).length > 0)
+        lines.push(`**result:**\n\`\`\`json\n${JSON.stringify(attrs.result, null, 2)}\n\`\`\``)
+    },
 
-//     // ── Text Input ────────────────────────────────────────────────────────
-//     onInput: (b:YBlock) => {
-//       const {
-//         id,
-//         title,
-//         label,
-//         variable,
-//         value,
-//         inputType,
-//         executedAt,
-//         isAiInput,
-//       } = getInputAttributes(b, blocks)
-//       const lines: string[] = []
-//       lines.push(`## ${title || label || '(untitled input)'}`)
-//       lines.push(
-//         `> id: \`${id}\` | type: INPUT | isAiInput: ${isAiInput} | inputType: ${inputType}`
-//       )
-//       lines.push(`> label: ${label} | variable: \`${variable.value}\` (pending: \`${variable.newValue}\`)`)
-//       if (variable.error) lines.push(`> variableError: ${variable.error}`)
-//       lines.push(`> value: \`${value.value || '(empty)'}\` (pending: \`${value.newValue || '(empty)'}\`)`)
-//       if (value.error) lines.push(`> valueError: ${value.error}`)
-//       if (executedAt) lines.push(`> executedAt: ${executedAt}`)
-//       return lines.join('\n')
-//     },
+    onVisualizationV2: (b) => {
+      const attrs = getVisualizationV2Attributes(b)
+      lines.push(`**input:** \`${JSON.stringify(attrs.input ?? {})}\``)
+      if (attrs.error) lines.push(`> **ERROR:** ${attrs.error}`)
+      else lines.push(`**output:** \`${JSON.stringify(attrs.output ?? {})}\``)
+    },
 
-//     // ── Dropdown Input ────────────────────────────────────────────────────
-//     onDropdownInput: (b:YBlock) => {
-//       const {
-//         id,
-//         title,
-//         label,
-//         variable,
-//         value,
-//         options,
-//         dropdownType,
-//         dataframeName,
-//         columnName,
-//         configOpen,
-//         executedAt,
-//         isAiInput,
-//       } = getDropdownInputAttributes(b, blocks)
-//       const lines: string[] = []
-//       lines.push(`## ${title || label || '(untitled dropdown)'}`)
-//       lines.push(
-//         `> id: \`${id}\` | type: DROPDOWN_INPUT | isAiInput: ${isAiInput} | dropdownType: ${dropdownType} | configOpen: ${configOpen}`
-//       )
-//       lines.push(`> label: ${label} | variable: \`${variable.value}\` (pending: \`${variable.newValue}\`)`)
-//       if (variable.error) lines.push(`> variableError: ${variable.error}`)
-//       lines.push(`> value: \`${value.value ?? '(none)'}\` (pending: \`${value.newValue ?? '(none)'}\`)`)
-//       if (value.error) lines.push(`> valueError: ${value.error}`)
-//       if (dropdownType === 'static' && options.length) {
-//         lines.push(`> options: ${options.map((o) => `\`${o}\``).join(', ')}`)
-//       }
-//       if (dropdownType === 'dynamic') {
-//         lines.push(`> dataframe: \`${dataframeName ?? 'none'}\` | column: \`${columnName ?? 'none'}\``)
-//       }
-//       if (executedAt) lines.push(`> executedAt: ${executedAt}`)
-//       return lines.join('\n')
-//     },
+    onInput: (b) => {
+      const attrs = getInputAttributes(b, allBlocks)
+      lines.push(`**label:** ${attrs.label}`)
+      lines.push(`**variable:** \`${attrs.variable.value}\``)
+      lines.push(`**value:** \`${attrs.value.value}\``)
+      if (attrs.executedAt) lines.push(`*executed at: ${attrs.executedAt}*`)
+    },
 
-//     // ── Date Input ────────────────────────────────────────────────────────
-//     onDateInput: (b:YBlock) => {
-//       const {
-//         id,
-//         title,
-//         label,
-//         variable,
-//         value,
-//         dateType,
-//         newValue,
-//         newVariable,
-//         configOpen,
-//         executedAt,
-//         error,
-//         isAiInput,
-//       } = getDateInputAttributes(b, blocks)
-//       const lines: string[] = []
-//       lines.push(`## ${title || label.toString() || '(untitled date input)'}`)
-//       lines.push(
-//         `> id: \`${id}\` | type: DATE_INPUT | isAiInput: ${isAiInput} | dateType: ${dateType} | configOpen: ${configOpen}`
-//       )
-//       lines.push(`> label: ${label.toString()} | variable: \`${variable}\` (pending: \`${newVariable.toString()}\`)`)
-//       lines.push(
-//         `> value: ${value.year}/${String(value.month).padStart(2, '0')}/${String(value.day).padStart(2, '0')} ${String(value.hours).padStart(2, '0')}:${String(value.minutes).padStart(2, '0')}:${String(value.seconds).padStart(2, '0')} ${value.timezone}`
-//       )
-//       lines.push(`> pendingValue: ${newValue.toString()}`)
-//       if (error) lines.push(`> error: ${error}`)
-//       if (executedAt) lines.push(`> executedAt: ${executedAt}`)
-//       return lines.join('\n')
-//     },
+    onDropdownInput: (b) => {
+      const attrs = getDropdownInputAttributes(b, allBlocks)
+      lines.push(`**label:** ${attrs.label}`)
+      lines.push(`**variable:** \`${attrs.variable.value}\``)
+      lines.push(`**value:** \`${attrs.value.value}\``)
+      lines.push(`**options:** \`${JSON.stringify(attrs.options)}\``)
+      lines.push(`**type:** ${attrs.dropdownType}`)
+      if (attrs.executedAt) lines.push(`*executed at: ${attrs.executedAt}*`)
+    },
 
-//     // ── File Upload ───────────────────────────────────────────────────────
-//     onFileUpload: (b:YBlock) => {
-//       const { id, title, uploadedFiles, areFilesHidden, isAiInput } = getFileUploadAttributes(b)
-//       const lines: string[] = []
-//       lines.push(`## ${title || '(untitled file upload)'}`)
-//       lines.push(
-//         `> id: \`${id}\` | type: FILE_UPLOAD | isAiInput: ${isAiInput} | areFilesHidden: ${areFilesHidden}`
-//       )
-//       if (uploadedFiles.length) {
-//         lines.push('\n**Uploaded files:**')
-//         for (const f of uploadedFiles) {
-//           lines.push(`- \`${f.name}\` | size: ${f.size} bytes | type: ${f.type} | status: ${f.status}${f.error ? ` | error: ${f.error}` : ''}`)
-//         }
-//       } else {
-//         lines.push('> (no files uploaded)')
-//       }
-//       return lines.join('\n')
-//     },
+    onDateInput: (b) => {
+      const attrs = getDateInputAttributes(b, allBlocks)
+      lines.push(`**label:** ${attrs.label}`)
+      lines.push(`**variable:** \`${attrs.variable}\``)
+      lines.push(`**value:** \`${attrs.value}\``)
+      lines.push(`**type:** ${attrs.dateType}`)
+      if (attrs.executedAt) lines.push(`*executed at: ${attrs.executedAt}*`)
+    },
 
-//     // ── Dashboard Header ──────────────────────────────────────────────────
-//     onDashboardHeader: (b) => {
-//       const id = b.getAttribute('id') ?? ''
-//       const title = b.getAttribute('title') ?? ''
-//       const content = b.getAttribute('content') ?? ''
-//       const isAiInput = b.getAttribute('isAiInput') ?? false
-//       const lines: string[] = []
-//       lines.push(`## ${title || '(untitled dashboard header)'}`)
-//       lines.push(`> id: \`${id}\` | type: DASHBOARD_HEADER | isAiInput: ${isAiInput}`)
-//       if (content) lines.push('\n' + content)
-//       return lines.join('\n')
-//     },
+    onPivotTable: (b) => {
+      const attrs = getPivotTableAttributes(b, allBlocks)
+      lines.push(`**dataframe:** \`${attrs.dataframeName}\``)
+      lines.push(`**rows:** \`${JSON.stringify(attrs.rows)}\``)
+      lines.push(`**columns:** \`${JSON.stringify(attrs.columns)}\``)
+      lines.push(`**metrics:** \`${JSON.stringify(attrs.metrics)}\``)
+      if (attrs.error) lines.push(`> **ERROR:** ${attrs.error}`)
+      if (attrs.updatedAt) lines.push(`*updated at: ${attrs.updatedAt}*`)
+    },
 
-//     // ── Pivot Table ───────────────────────────────────────────────────────
-//     onPivotTable: (b:YBlock) => {
-//       const {
-//         id,
-//         title,
-//         dataframeName,
-//         variable,
-//         rows,
-//         columns,
-//         metrics,
-//         sort,
-//         controlsHidden,
-//         error,
-//         updatedAt,
-//         page,
-//         isAiInput,
-//       } = getPivotTableAttributes(b, blocks)
-//       const lines: string[] = []
-//       lines.push(`## ${title || '(untitled pivot table)'}`)
-//       lines.push(
-//         `> id: \`${id}\` | type: PIVOT_TABLE | isAiInput: ${isAiInput} | controlsHidden: ${controlsHidden} | page: ${page}`
-//       )
-//       lines.push(`> dataframe: \`${dataframeName ?? 'none'}\` | variable: \`${variable.value}\``)
-//       if (variable.error) lines.push(`> variableError: ${variable.error}`)
-//       if (error) lines.push(`> error: ${error}`)
-//       if (updatedAt) lines.push(`> updatedAt: ${updatedAt}`)
-//       if (rows.length) lines.push(`> rows: ${rows.map((r) => r.column?.name ?? '?').join(', ')}`)
-//       if (columns.length) lines.push(`> columns: ${columns.map((c) => c.column?.name ?? '?').join(', ')}`)
-//       if (metrics.length) lines.push(`> metrics: ${metrics.map((m) => `${m.column?.name ?? '?'} (${m.aggregateFunction})`).join(', ')}`)
-//       if (sort) lines.push(`> sort: column=\`${sort.column}\` direction=\`${sort.direction}\``)
-//       return lines.join('\n')
-//     },
+    onDashboardHeader: (b) => {
+      lines.push(String(b.getAttribute('content') ?? ''))
+    },
 
-//     // ── Power Toolbox ─────────────────────────────────────────────────────
-//     onPowerToolbox: (b:YBlock) => {
-//       const {
-//         id,
-//         title,
-//         toolId,
-//         toolLabel,
-//         toolCategory,
-//         inputs,
-//         lastExecutedInputs,
-//         generatedSource,
-//         result,
-//         startedAt,
-//         executedAt,
-//         isAiInput,
-//       } = getPowerToolboxAttributes(b)
-//       const lines: string[] = []
-//       lines.push(`## ${title || toolLabel || '(untitled power toolbox)'}`)
-//       lines.push(
-//         `> id: \`${id}\` | type: POWER_TOOLBOX | isAiInput: ${isAiInput}`
-//       )
-//       if (toolId) lines.push(`> tool: \`${toolId}\` | category: ${toolCategory ?? 'none'} | label: ${toolLabel ?? 'none'}`)
-//       if (startedAt) lines.push(`> startedAt: ${startedAt} | executedAt: ${executedAt}`)
+    onVisualization: () => { lines.push('*(legacy visualization)*') },
+    onFileUpload: () => { lines.push('*(file upload)*') },
+  })
 
-//       const isDirty = JSON.stringify(inputs) !== JSON.stringify(lastExecutedInputs)
-//       lines.push(`> dirty: ${isDirty}`)
+  return lines.join('\n\n')
+}
 
-//       if (Object.keys(inputs).length) {
-//         lines.push('\n**Inputs:**')
-//         for (const [k, v] of Object.entries(inputs)) {
-//           lines.push(`- \`${k}\`: ${JSON.stringify(v)}`)
-//         }
-//       }
+function fingerprintBlock(
+  block: YBlock,
+  meta: BlockMeta,
+  allBlocks: ReturnType<typeof getBlocks>
+): string {
+  try {
+    const parts: any[] = [meta.type]
+    switchBlockType(block, {
+      onPython: (b) => {
+        const a = getPythonAttributes(b)
+        parts.push(a.source.toString(), JSON.stringify(a.result), a.lastQueryTime)
+      },
+      onSQL: (b) => {
+        const a = getSQLAttributes(b, allBlocks)
+        parts.push(a.source.toString(), JSON.stringify(a.result), a.lastQueryTime)
+      },
+      onRichText: (b) => { parts.push(extractRichText(b)) },
+      onPowerToolbox: (b) => {
+        const a = getPowerToolboxAttributes(b)
+        parts.push(a.toolId, JSON.stringify(a.inputs), a.generatedSource, JSON.stringify(a.result))
+      },
+      onVisualizationV2: (b) => {
+        const a = getVisualizationV2Attributes(b)
+        parts.push(JSON.stringify(a.input), JSON.stringify(a.output))
+      },
+      onInput: (b) => {
+        const a = getInputAttributes(b, allBlocks)
+        parts.push(a.variable.value, a.value.value)
+      },
+      onDropdownInput: (b) => {
+        const a = getDropdownInputAttributes(b, allBlocks)
+        parts.push(a.variable.value, a.value.value, JSON.stringify(a.options))
+      },
+      onDateInput: (b) => {
+        const a = getDateInputAttributes(b, allBlocks)
+        parts.push(a.variable, a.value)
+      },
+      onPivotTable: (b) => {
+        const a = getPivotTableAttributes(b, allBlocks)
+        parts.push(a.dataframeName, JSON.stringify(a.rows), JSON.stringify(a.columns))
+      },
+      onDashboardHeader: (b) => { parts.push(b.getAttribute('content')) },
+      onVisualization: () => {},
+      onFileUpload: () => {},
+    })
+    return parts.join('||')
+  } catch {
+    return meta.id
+  }
+}
 
-//       if (lastExecutedInputs && Object.keys(lastExecutedInputs).length) {
-//         lines.push('\n**Last executed inputs:**')
-//         for (const [k, v] of Object.entries(lastExecutedInputs)) {
-//           lines.push(`- \`${k}\`: ${JSON.stringify(v)}`)
-//         }
-//       }
+function getLastRunTime(block: YBlock, allBlocks: ReturnType<typeof getBlocks>): string | null {
+  let t: string | null = null
+  switchBlockType(block, {
+    onPython: (b) => { t = getPythonAttributes(b).lastQueryTime ?? null },
+    onSQL: (b) => { t = getSQLAttributes(b, allBlocks).lastQueryTime ?? null },
+    onPowerToolbox: (b) => { t = getPowerToolboxAttributes(b).executedAt ?? null },
+    onInput: (b) => { t = getInputAttributes(b, allBlocks).executedAt ?? null },
+    onDropdownInput: (b) => { t = getDropdownInputAttributes(b, allBlocks).executedAt ?? null },
+    onDateInput: (b) => { t = getDateInputAttributes(b, allBlocks).executedAt ?? null },
+    onPivotTable: (b) => { t = getPivotTableAttributes(b, allBlocks).updatedAt ?? null },
+    onRichText: () => {},
+    onVisualizationV2: () => {},
+    onVisualization: () => {},
+    onDashboardHeader: () => {},
+    onFileUpload: () => {},
+  })
+  return t
+}
 
-//       if (generatedSource) {
-//         lines.push(`\n\`\`\`python\n${generatedSource}\n\`\`\``)
-//       }
+function getBlockError(block: YBlock, allBlocks: ReturnType<typeof getBlocks>): string | null {
+  let err: string | null = null
+  switchBlockType(block, {
+    onPython: (b) => {
+      const result = getPythonAttributes(b).result as any[]
+      if (!result) return
+      for (const r of result) {
+        if (r.type === 'error') { err = `${r.ename}: ${r.evalue}`; return }
+      }
+    },
+    onSQL: (b) => {
+      const r = getSQLAttributes(b, allBlocks).result as any
+      if (r?.type === 'error') err = r.error
+    },
+    onPowerToolbox: (b) => {
+      const result = getPowerToolboxAttributes(b).result as any[]
+      if (!result) return
+      for (const r of result) {
+        if (r.type === 'error') { err = `${r.ename}: ${r.evalue}`; return }
+      }
+    },
+    onVisualizationV2: (b) => {
+      err = getVisualizationV2Attributes(b).error ?? null
+    },
+    onPivotTable: (b) => {
+      err = getPivotTableAttributes(b, allBlocks).error ?? null
+    },
+    onRichText: () => {},
+    onInput: () => {},
+    onDropdownInput: () => {},
+    onDateInput: () => {},
+    onDashboardHeader: () => {},
+    onVisualization: () => {},
+    onFileUpload: () => {},
+  })
+  return err
+}
 
-//       if (result.length) {
-//         const errors = result.filter((o) => o.type === 'error')
-//         const stdouts = result.filter((o) => o.type === 'stream')
-//         if (errors.length) {
-//           const msg = errors
-//             .map((e) => (e.type === 'error' ? `${e.ename}: ${e.evalue}` : ''))
-//             .join('\n')
-//           lines.push(`\n**Error:**\n\`\`\`\n${msg}\n\`\`\``)
-//         }
-//         if (stdouts.length) {
-//           const out = stdouts.map((o) => (o.type === 'stream' ? o.text : '')).join('')
-//           if (out) lines.push(`\n**Output:**\n\`\`\`\n${out}\n\`\`\``)
-//         }
-//       }
+function buildResultPreview(block: YBlock, allBlocks: ReturnType<typeof getBlocks>, maxRows: number): string {
+  let preview = ''
+  switchBlockType(block, {
+    onSQL: (b) => {
+      const attrs = getSQLAttributes(b, allBlocks)
+      const res = attrs.result as any
+      if (res?.type === 'success' && (res.rows ?? []).length > 0) {
+        preview = '\n\n' + formatRows(res.columns, res.rows, maxRows)
+      }
+    },
+    onPython: (b) => {
+      const attrs = getPythonAttributes(b)
+      for (const out of (attrs.result ?? [])) {
+        if (out.type === 'html') {
+          preview = '\n\n' + parsePandasHtml(out.html, maxRows)
+          break
+        }
+      }
+    },
+    onRichText: () => {},
+    onPowerToolbox: () => {},
+    onVisualizationV2: () => {},
+    onInput: () => {},
+    onDropdownInput: () => {},
+    onDateInput: () => {},
+    onPivotTable: () => {},
+    onDashboardHeader: () => {},
+    onVisualization: () => {},
+    onFileUpload: () => {},
+  })
+  return preview
+}
 
-//       return lines.join('\n')
-//     },
-//   })
-// }
+export function docToMarkdown(
+  doc: Y.Doc,
+  options: SerializeOptions = {}
+): string {
+  const { focusedBlockId = null, executingBlockIds = [] } = options
 
-// // ─── MAIN ─────────────────────────────────────────────────────────────────────
+  const blocks = getBlocks(doc)
+  const layout = getLayout(doc)
+  const title = extractTitle(doc)
 
-// export function docToMd(doc: Y.Doc): string {
-//   const blocks = getBlocks(doc)
-//   const layout = getLayout(doc)
-//   const sections: string[] = []
-//   const titleEl = doc.getXmlElement('metadata')
-//   const title = (titleEl?.getAttribute as any)?.('title') ?? ''
-//   if (title) sections.push(`# ${title}\n`)
+  const resolved: ResolvedBlock[] = []
 
-//   for (const blockGroup of layout) {
-//     const tabs = getTabsFromBlockGroup(blockGroup as YBlockGroup, blocks)
-//     for (const tab of tabs) {
-//       const block = blocks.get(tab.blockId)
-//       if (!block) continue
-//       const md = blockToMd(block, blocks).trim()
-//       if (md) sections.push(md)
-//     }
-//   }
+  for (const blockGroup of layout) {
+    const tabs = getTabsFromBlockGroup(blockGroup as YBlockGroup, blocks)
+    for (const tab of tabs) {
+      const block = blocks.get(tab.blockId)
+      if (!block) continue
+      const meta: BlockMeta = {
+        id: tab.blockId,
+        type: tab.type,
+        title: tab.title ?? '',
+        blockGroupId: tab.blockGroupId,
+      }
+      resolved.push({ meta, block, fingerprint: fingerprintBlock(block, meta, blocks) })
+    }
+  }
 
-//   return sections.join('\n\n---\n\n')
-// }
+  const seenFingerprints = new Map<string, string>()
+  const dupOf = new Map<string, string>()
+
+  for (const r of resolved) {
+    if (seenFingerprints.has(r.fingerprint)) {
+      dupOf.set(r.meta.id, seenFingerprints.get(r.fingerprint)!)
+    } else {
+      seenFingerprints.set(r.fingerprint, r.meta.id)
+    }
+  }
+
+  const focusedIdx = focusedBlockId
+    ? resolved.findIndex((r) => r.meta.id === focusedBlockId)
+    : -1
+
+  const sections: string[] = []
+
+  sections.push(`# NOTEBOOK SPINE`)
+  sections.push(`**title:** ${title || '*(untitled)*'} | **doc:** \`${doc.guid ?? ''}\` | *${new Date().toISOString()}*`)
+
+  const inputLines: string[] = []
+  for (const { block } of resolved) {
+    switchBlockType(block, {
+      onInput: (b) => {
+        const a = getInputAttributes(b, blocks)
+        inputLines.push(`- \`${a.variable.value}\` = \`"${a.value.value}"\``)
+      },
+      onDropdownInput: (b) => {
+        const a = getDropdownInputAttributes(b, blocks)
+        inputLines.push(`- \`${a.variable.value}\` = \`"${a.value.value}"\``)
+      },
+      onDateInput: (b) => {
+        const a = getDateInputAttributes(b, blocks)
+        inputLines.push(`- \`${a.variable}\` = \`"${a.value}"\` *(${a.dateType})*`)
+      },
+      onPython: () => {},
+      onSQL: () => {},
+      onRichText: () => {},
+      onPowerToolbox: () => {},
+      onVisualizationV2: () => {},
+      onVisualization: () => {},
+      onPivotTable: () => {},
+      onDashboardHeader: () => {},
+      onFileUpload: () => {},
+    })
+  }
+  if (inputLines.length > 0) sections.push(`## INPUTS\n\n${inputLines.join('\n')}`)
+
+  const dfLines: string[] = []
+  for (const { block } of resolved) {
+    switchBlockType(block, {
+      onSQL: (b) => {
+        const attrs = getSQLAttributes(b, blocks)
+        const r = attrs.result as any
+        if (!r || r.type !== 'success') return
+        const cols = (r.columns ?? []).map((c: any) => c.name).join(', ')
+        const lines = [`**${attrs.dataframeName.value}** — ${(r.count ?? 0).toLocaleString()} rows × ${(r.columns ?? []).length} cols [${cols}]`]
+        if ((r.rows ?? []).length > 0) lines.push(formatRows(r.columns, r.rows, 3))
+        dfLines.push(lines.join('\n'))
+      },
+      onPython: () => {},
+      onRichText: () => {},
+      onPowerToolbox: () => {},
+      onVisualizationV2: () => {},
+      onInput: () => {},
+      onDropdownInput: () => {},
+      onDateInput: () => {},
+      onPivotTable: () => {},
+      onDashboardHeader: () => {},
+      onVisualization: () => {},
+      onFileUpload: () => {},
+    })
+  }
+  if (dfLines.length > 0) sections.push(`## DATAFRAMES\n\n${dfLines.join('\n\n')}`)
+
+  if (executingBlockIds.length > 0) {
+    const execLines = executingBlockIds.map((id) => {
+      const r = resolved.find((x) => x.meta.id === id)
+      return r
+        ? `- \`${id}\` ${r.meta.type}${r.meta.title ? ` "${r.meta.title}"` : ''} — *currently running*`
+        : `- \`${id}\` — *currently running*`
+    })
+    sections.push(`## EXECUTING\n\n${execLines.join('\n')}`)
+  }
+
+  const blockMapLines: string[] = ['## BLOCK MAP']
+
+  for (let i = 0; i < resolved.length; i++) {
+    const entry = resolved[i]
+    if (!entry) continue
+    const { meta, block } = entry
+    if (!meta || !block) continue
+
+    const isFocused = meta.id === focusedBlockId
+    const isDup = dupOf.has(meta.id)
+    const origId = dupOf.get(meta.id)
+    const lastRun = getLastRunTime(block, blocks)
+    const error = getBlockError(block, blocks)
+    const executing = executingBlockIds.includes(meta.id)
+
+    const statusParts: string[] = []
+    if (executing) statusParts.push('🔄 EXECUTING')
+    if (error) statusParts.push(`❌ ERROR: ${error}`)
+
+    const lastRunLine = lastRun ? `\n*last run: ${lastRun}*` : ''
+    const statusLine = statusParts.length > 0 ? `\n${statusParts.join(' · ')}` : ''
+    const header = `### [${i}] \`${meta.id}\` ${meta.type}${meta.title ? ` — "${meta.title}"` : ''}${lastRunLine}${statusLine}`
+
+    if (isDup) {
+      blockMapLines.push(`${header}\n\n*(duplicate of \`${origId}\`)*\n\n---`)
+      continue
+    }
+
+    if (isFocused) {
+      blockMapLines.push(focusedBlockDetail(block, meta, blocks))
+      blockMapLines.push('---')
+      continue
+    }
+
+    const isNPlus1 = focusedIdx >= 0 && i === focusedIdx + 1
+    const source = blockSource(block, meta, blocks, 500)
+    const sig = returnSignature(block, meta, blocks)
+
+    if (focusedBlockId === null) {
+      const preview = buildResultPreview(block, blocks, 2)
+      blockMapLines.push(`${header}\n\n${source}\n\n${sig}${preview}\n\n---`)
+      continue
+    }
+
+    if (isNPlus1) {
+      const preview = buildResultPreview(block, blocks, 2)
+      blockMapLines.push(`${header}\n\n${source}\n\n${sig}${preview}\n\n---`)
+      continue
+    }
+
+    blockMapLines.push(`${header}\n\n${source}\n\n${sig}\n\n---`)
+  }
+
+  sections.push(blockMapLines.join('\n\n'))
+
+  return sections.join('\n\n')
+}

@@ -10,13 +10,20 @@ interface TextFieldProps {
   param: ParamDefinition;
   value: string;
   onChange: (value: string) => void;
+  onBlur?: (value: string) => void;
   error?: string;
 }
 
 // =====================================
 // ⬢ Text Field
 // =====================================
-export function TextField({ param, value, onChange, error }: TextFieldProps) {
+export function TextField({
+  param,
+  value,
+  onChange,
+  onBlur,
+  error,
+}: TextFieldProps) {
   const [touched, setTouched] = useState(false);
   const inlineError = touched ? error : undefined;
 
@@ -27,7 +34,10 @@ export function TextField({ param, value, onChange, error }: TextFieldProps) {
         type="text"
         value={value}
         onChange={e => onChange(e.target.value)}
-        onBlur={() => setTouched(true)}
+        onBlur={() => {
+          setTouched(true);
+          onBlur?.(value);
+        }}
         placeholder={param.placeholder}
         autoComplete="off"
         className={clsx(
@@ -52,6 +62,7 @@ interface NumberFieldProps {
   param: ParamDefinition;
   value: number | string;
   onChange: (value: number) => void;
+  onBlur?: (value: number) => void;
   error?: string;
 }
 
@@ -59,6 +70,7 @@ export function NumberField({
   param,
   value,
   onChange,
+  onBlur,
   error,
 }: NumberFieldProps) {
   const [touched, setTouched] = useState(false);
@@ -83,7 +95,13 @@ export function NumberField({
           type="number"
           value={raw}
           onChange={handleChange}
-          onBlur={() => setTouched(true)}
+          onBlur={() => {
+            setTouched(true);
+            const parsed = parseFloat(raw);
+            if (!Number.isNaN(parsed)) {
+              onBlur?.(parsed);
+            }
+          }}
           placeholder={param.placeholder}
           min={param.min}
           max={param.max}

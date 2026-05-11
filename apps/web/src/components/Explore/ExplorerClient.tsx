@@ -1,9 +1,12 @@
 "use client";
 
-import { useCallback, useMemo,} from "react";
+import { useCallback, useMemo } from "react";
 import Image from "next/image";
 
-import { usePublicDocuments, type DocumentFilter } from "@/components/Editor/hooks/usePublicDocuments";
+import {
+  usePublicDocuments,
+  type DocumentFilter,
+} from "@/components/Editor/hooks/usePublicDocuments";
 import { useInfiniteScroll } from "@/components/Editor/hooks/useInfiniteScroll";
 import { useDocumentSortParam } from "@/components/Editor/hooks/useDocumentSortParams";
 import { useSession } from "@/components/Editor/hooks/useAuth";
@@ -28,14 +31,21 @@ interface ExploreClientProps {
 // =====================================
 // ⬢ Utils
 // =====================================
-function sortToFilter(sort: SortOption, viewerId: string | null): DocumentFilter {
+function sortToFilter(
+  sort: SortOption,
+  viewerId: string | null
+): DocumentFilter {
   switch (sort) {
     case "trending":
       return { kind: "trending" };
     case "your-forks":
-      return viewerId ? { kind: "forked", userId: viewerId } : { kind: "trending" };
+      return viewerId
+        ? { kind: "forked", userId: viewerId }
+        : { kind: "trending" };
     case "your-favourites":
-      return viewerId ? { kind: "favorites", userId: viewerId } : { kind: "trending" };
+      return viewerId
+        ? { kind: "favorites", userId: viewerId }
+        : { kind: "trending" };
     case "most-popular":
       return { kind: "trending" };
     default:
@@ -68,7 +78,7 @@ export function ExploreClient({
   pageSize,
 }: ExploreClientProps) {
   const { user } = useSession({ redirectToLogin: true });
-  const userId = user?.id
+  const userId = user?.id;
   const { sortBy, setSortBy } = useDocumentSortParam();
 
   const filter = useMemo(
@@ -80,7 +90,7 @@ export function ExploreClient({
   const handleSortChange = useCallback(
     (next: SortOption) => {
       setSortBy(next);
-      //⬢ Reset scroll so switching filters doesn't leave users deep-scrolled
+      // ⬢ Reset scroll so switching filters doesn't leave users deep-scrolled
       // into a shorter list.
       if (typeof window !== "undefined") {
         window.scrollTo({ top: 0, behavior: "auto" });

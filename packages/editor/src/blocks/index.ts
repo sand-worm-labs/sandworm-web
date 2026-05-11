@@ -69,6 +69,7 @@ import {
   getPowerToolboxBlockResultStatus,
   getPowerToolboxBlockErrorMessage,
 } from "./powertool/index.js";
+import { MarkdownBlock, duplicateMarkdownBlock } from "./markdown.js";
 
 export enum BlockType {
   RichText = "RICH_TEXT",
@@ -82,7 +83,8 @@ export enum BlockType {
   FileUpload = "FILE_UPLOAD",
   DashboardHeader = "DASHBOARD_HEADER",
   PivotTable = "PIVOT_TABLE",
-  PowerToolbox = "POWER_TOOLBOX"
+  PowerToolbox = "POWER_TOOLBOX",
+  Markdown = "MARKDOWN",
 }
 
 export type ResultStatus = "idle" | "error" | "success";
@@ -106,7 +108,8 @@ export type Block =
   | DashboardHeaderBlock
   | PivotTableBlock
   | VisualizationV2Block
-  | PowerToolboxBlock;
+  | PowerToolboxBlock
+  | MarkdownBlock;
 
 export type YBlock = Y.XmlElement<Block>;
 
@@ -140,6 +143,7 @@ export const getResultStatus = (
     onDropdownInput: block => getDropdownInputBlockResultStatus(block, blocks),
     onDateInput: block => getDateInputBlockResultStatus(block, blocks),
     onRichText: () => "idle",
+    onMarkdown: () => "idle",
     onFileUpload: () => "idle",
     onDashboardHeader: () => "idle",
     onPivotTable: getPivotTableBlockResultStatus,
@@ -169,8 +173,10 @@ export const getPrettyTitle = (type: BlockType): string => {
       return "Dashboard Header";
     case BlockType.PivotTable:
       return "Pivot Table";
-      case BlockType.PowerToolbox:
-        return "Power Toolbox"; 
+    case BlockType.PowerToolbox:
+      return "Power Toolbox";
+    case BlockType.Markdown:
+      return "Markdown";
   }
 };
 
@@ -239,12 +245,13 @@ export function isExecutableBlock(block: YBlock): boolean {
   return switchBlockType(block, {
     onPython: () => true,
     onSQL: () => true,
-    onVisualization: () => true, // VisualizationBlock type removed
+    onVisualization: () => true, 
     onVisualizationV2: () => true,
     onInput: () => true,
     onDropdownInput: () => true,
     onDateInput: () => true,
     onRichText: () => false,
+    onMarkdown: () => false,
     onFileUpload: () => false,
     onDashboardHeader: () => false,
     onPivotTable: () => true,
@@ -262,6 +269,7 @@ export function isInputBlock(block: YBlock): boolean {
     onDropdownInput: () => true,
     onDateInput: () => true,
     onRichText: () => false,
+    onMarkdown: () => false,
     onFileUpload: () => false,
     onDashboardHeader: () => false,
     onPivotTable: () => false,
@@ -303,6 +311,7 @@ export function duplicateBlock(
       duplicateDropdownInputBlock(newBlockId, block, blocks),
     onDateInput: block => duplicateDateInputBlock(newBlockId, block, blocks),
     onRichText: block => duplicateRichTextBlock(newBlockId, block),
+    onMarkdown: block => duplicateMarkdownBlock(newBlockId, block),
     onFileUpload: block => duplicateFileUploadBlock(newBlockId, block),
     onDashboardHeader: block =>
       duplicateDashboardHeaderBlock(newBlockId, block),
@@ -322,6 +331,7 @@ function getExecutedAt(block: YBlock, blocks: Y.Map<YBlock>): Date | null {
     onDropdownInput: block => getDropdownInputBlockExecutedAt(block, blocks),
     onDateInput: block => getDateInputBlockExecutedAt(block, blocks),
     onRichText: () => null,
+    onMarkdown: ()=> null,
     onFileUpload: () => null,
     onDashboardHeader: () => null,
     onPivotTable: block => getPivotTableBlockExecutedAt(block, blocks),
@@ -407,6 +417,7 @@ export function getErrorMessage(block: YBlock): string | null {
     onDropdownInput: () => null,
     onDateInput: () => null,
     onRichText: () => null,
+    onMarkdown: () => null,
     onFileUpload: () => null,
     onDashboardHeader: () => null,
     onPivotTable: getPivotTableBlockErrorMessage,
@@ -424,6 +435,7 @@ export const isRunnableBlock = <B extends YBlock>(block: B): boolean => {
     onDropdownInput: () => true,
     onDateInput: () => true,
     onRichText: () => false,
+    onMarkdown: () => false,
     onFileUpload: () => false,
     onDashboardHeader: () => false,
     onPivotTable: () => true,
@@ -455,3 +467,4 @@ export * from "./dateInput.js";
 export * from "./fileUpload.js";
 export * from "./pivotTable.js";
 export * from "./powertool/index.js";
+export * from "./markdown.js";

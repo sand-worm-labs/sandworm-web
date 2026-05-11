@@ -78,10 +78,11 @@ export const AppSidebar = ({
                 <TooltipTrigger asChild>
                   <button
                     type="button"
-                    className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors w-full mb-5 flex-shrink-0 ${currentView === item.id
+                    className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors w-full mb-5 flex-shrink-0 ${
+                      currentView === item.id
                         ? "  rounded-none"
                         : "hover:bg-white/15"
-                      }`}
+                    }`}
                     onClick={() => setCurrentView(item.id)}
                   >
                     <item.icon

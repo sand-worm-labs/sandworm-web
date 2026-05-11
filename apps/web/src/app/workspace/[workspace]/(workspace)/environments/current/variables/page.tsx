@@ -6,10 +6,9 @@ import { uniq } from "ramda";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Trash } from "@/components/Assets/Trash";
 import { BsPlusCircle } from "react-icons/bs";
 
-
+import { Trash } from "@/components/Assets/Trash";
 import {
   useEnvironmentVariables,
   type EnvVar,
@@ -126,7 +125,12 @@ export default function EnvirontVariablesPage() {
   const session = useSession({ redirectToLogin: true });
   const router = useRouter();
   const workspaceId = useStringQuery("workspace");
-  const { variables: fetchedVariables, loading, saving, save } = useEnvironmentVariables(workspaceId);
+  const {
+    variables: fetchedVariables,
+    loading,
+    saving,
+    save,
+  } = useEnvironmentVariables(workspaceId);
   const environment = useEnvironmentStatus(workspaceId);
 
   const [errors, setErrors] = useState<Record<string, ErrorType>>({});
@@ -184,8 +188,7 @@ export default function EnvirontVariablesPage() {
         .catch(() => {
           toast.error("Something went wrong");
         })
-        .finally(() => {
-        });
+        .finally(() => {});
     },
     [save, added, removed, variables, environment.status]
   );
@@ -238,7 +241,7 @@ export default function EnvirontVariablesPage() {
               Environment variables
             </h2>
             <p className="pt-1 text-sm leading-6 text-ink-400">
-            Available in Python blocks via
+              Available in Python blocks via
               <span className="font-mono px-1 py-0.5 text-ink-100 rounded-sm">
                 os.getenv("VAR_NAME")
               </span>
@@ -289,7 +292,9 @@ export default function EnvirontVariablesPage() {
               <button
                 type="submit"
                 className="flex items-center gap-x-2 rounded-lg bg-[#0F0F0F] text-white  px-6 py-2 text-sm font-medium  disabled:bg-[#868E96] disabled:cursor-not-allowed "
-                disabled={(added.length === 0 && removed.length === 0) || loading}
+                disabled={
+                  (added.length === 0 && removed.length === 0) || loading
+                }
               >
                 {saving && <Spin />}
                 Save Changes

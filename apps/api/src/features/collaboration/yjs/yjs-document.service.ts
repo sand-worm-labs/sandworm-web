@@ -16,7 +16,7 @@ import { Persistor } from './interfaces';
 import { Server, Socket } from 'socket.io';
 import { DocumentTreeService } from "@/features/document/service/document-tree.service";
 import { DocumentExecutorService } from "./executor/document-executor.service";
-import { addDashboardItemToYDashboard, cloneBlockGroup, duplicateBlock, getDashboard, getDashboardItem, getDataframes, getLayout, YBlock, YBlockGroup } from "@sandworm/editor";
+import { addBlockGroup, addDashboardItemToYDashboard, addGroupedBlock, BlockType, cloneBlockGroup, duplicateBlock, getDashboard, getDashboardItem, getDataframes, getLayout, makePythonBlock, makeSQLBlock, setTitle, YBlock, YBlockGroup } from "@sandworm/editor";
 import { v4 as uuidv4 } from 'uuid';
 import { clone } from 'ramda';
 import { hashState } from "@sandworm/nest-common";
@@ -159,15 +159,17 @@ export class YjsDocumentService implements OnModuleDestroy {
         };
     }
 
-    async saveEditYDoc(documentId: string, yDoc: Y.Doc): Promise<void> {
+    async saveEditYDoc(documentId: string, yDoc: Y.Doc, updateClock: boolean = true): Promise<void> {
         const state = Buffer.from(Y.encodeStateAsUpdate(yDoc));
-
         const existing = await this.yjsDocumentRepo.findOne({ where: { documentId } });
 
         if (existing) {
             await this.yjsDocumentRepo.update(
                 { documentId },
-                { state, clock: existing.clock + 1, clockUpdatedAt: new Date() }
+                { 
+                    state, 
+                    ...(updateClock && { clock: existing.clock + 1, clockUpdatedAt: new Date() })
+                }
             );
         } else {
             await this.yjsDocumentRepo.insert({
@@ -429,7 +431,7 @@ export class YjsDocumentService implements OnModuleDestroy {
         const newPersistor = this.persistorFactory.createDocumentPersistor(newDocumentId);
 
         const prevSharedDoc = await this.getYDocForUpdateAsync(prevId, prevDocumentId, server, prevWorkspaceId, prevPersistor);
-        const newSharedDoc = await this.getYDocForUpdateAsync(newId, newDocumentId, server, newWorkspaceId, newPersistor,);
+        const newSharedDoc = await this.getYDocForUpdateAsync(newId, newDocumentId, server, newWorkspaceId, newPersistor);
         this.duplicateYDoc(
             prevSharedDoc,
             newSharedDoc.ydoc,
@@ -546,10 +548,112 @@ export class YjsDocumentService implements OnModuleDestroy {
         )
     }
 
-    getYDocWithoutHistory(ydoc: SharedDoc): Y.Doc {
-        const newDoc = new Y.Doc()
-        this.duplicateYDoc(ydoc, newDoc, (title) => title, { keepIds: true })
-        return newDoc
+    private generateBlockId(): string {
+        // Replace with your actual ID generation (UUID v4, nanoid, etc.)
+        return uuidv4();
+    }
+
+    async appendBlockToNotebook(
+        documentId: string,
+        workspaceId: string,
+        server: Server
+    ): Promise<string> {
+        try {
+            const docId = this.getDocId(documentId, null);
+            const persistor = this.persistorFactory.createDocumentPersistor(documentId);
+            const currentSharedDoc = await this.getYDocForUpdateAsync(
+                docId,
+                documentId,
+                server,
+                workspaceId,
+                persistor
+            );
+        
+            let newBlockId: string | null = null;
+            // this.logger.log("hhhhdhhh")
+            
+            currentSharedDoc.ydoc.transact(() => {
+            // let blocks =  currentSharedDoc.ydoc.getMap<YBlock>('blocks');
+                // makeVisualizationBlock(this.generateBlockId(), blocks);
+                // makeInputBlock(this.generateBlockId(), blocks);
+                // makeDropdownInputBlock(this.generateBlockId(), blocks);
+                // makeDateInputBlock(this.generateBlockId(), blocks);
+                // makeFileUploadBlock(this.generateBlockId(), blocks);
+
+                const fragment = currentSharedDoc.ydoc.getXmlFragment('title');
+                fragment.delete(0, fragment.length);
+                const titleEl = new Y.XmlElement('doc-title');
+                titleEl.insert(0, [new Y.XmlText("New Notebook")]);
+                fragment.insert(0, [titleEl]);
+
+                //currentSharedDoc.ydoc.getMap<YBlock>('blocks').set(this.generateBlockId(), makePythonBlock(this.generateBlockId(), currentSharedDoc.ydoc.getMap<YBlock>('blocks'), "print('Hello World')"));
+               // return "d"
+                // fragment.delete(0, fragment.length);
+                const blockId = uuidv4();
+                const block = new Y.XmlElement('block');
+                const attrs = {
+                    id: blockId,
+                    index: null,
+                    title: '',
+                    type: BlockType.Python,  // ← use the enum, not hardcoded string
+                    source: new Y.Text('print(1000u0)'),
+                    result: [],
+                    isResultHidden: false,
+                    isCodeHidden: false,
+                    lastQuery: '',
+                    lastQueryTime: '',
+                    startQueryTime: '',
+                    editWithAIPrompt: new Y.Text('test'),
+                    isEditWithAIPromptOpen: false,
+                    aiSuggestions: null,
+                    componentId: null,
+                    isAiInput: true,
+                };
+                
+                for (const [key, value] of Object.entries(attrs)) {
+                    // @ts-ignore
+                    block.setAttribute(key, value);
+                }
+                
+                currentSharedDoc.blocks.set(blockId, block as any);
+                
+                // ===================================
+                // ⬢ Layout — two separate refs, no clone
+                // ===================================
+                const groupId = uuidv4();
+                const blockGroup = new Y.XmlElement('block-group');
+                // @ts-ignore
+                blockGroup.setAttribute('id', groupId);
+                
+                const currentRef = new Y.XmlElement('block-ref');
+                // @ts-ignore
+                currentRef.setAttribute('id', blockId);
+                
+                const tabRef = new Y.XmlElement('block-ref');
+                // @ts-ignore
+                tabRef.setAttribute('id', blockId);
+                
+                const tabs = new Y.Array();
+                tabs.push([tabRef]);
+                
+                // @ts-ignore
+                blockGroup.setAttribute('current', currentRef);
+                // @ts-ignore
+                blockGroup.setAttribute('tabs', tabs);
+                
+                currentSharedDoc.layout.push([blockGroup as any]);
+                newBlockId = blockId;
+            });
+        
+            // if (!newBlockId) {
+            //     throw new Error('Failed to generate block ID during transaction');
+            // }
+        
+            return newBlockId;
+        }
+        catch {
+            this.logger.log("error")
+        }
     }
 
     private startDocumentCleanup(): void {
