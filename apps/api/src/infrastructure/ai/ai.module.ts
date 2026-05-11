@@ -8,4 +8,4 @@ import aiServiceConfig from './config/ai-service.config';
     ConfigModule.forFeature(aiServiceConfig), 
   ]
 })
-export class BlockExecutorModule { }
+export class AiModule { }
