@@ -1,11 +1,12 @@
 import type * as Y from "yjs";
 import { useEffect, useRef, useState, useCallback } from "react";
-import { EditorView, keymap, lineNumbers } from "@codemirror/view";
+import { EditorView, keymap } from "@codemirror/view";
 import { EditorState } from "@codemirror/state";
 import { markdown as markdownLang } from "@codemirror/lang-markdown";
 import { defaultKeymap, historyKeymap } from "@codemirror/commands";
 import { yCollab } from "y-codemirror.next";
-import { marked } from "marked";
+import { marked, type Renderer } from "marked";
+import hljs from "highlight.js";
 import clsx from "clsx";
 import type { ConnectDragPreview } from "react-dnd";
 import type { MarkdownBlock } from "@sandworm/editor";
@@ -15,11 +16,28 @@ import type { DashboardMode } from "../../Dashboard";
 
 // =====================================
 // ⬢ Marked Config
-//   Set once at module level — not per-render.
-//   gfm: GitHub Flavored Markdown (tables, task lists, strikethrough)
-//   breaks: false — double newline for paragraph, single for <br>
+//   Custom renderer wires highlight.js into code blocks and injects
+//   a data-code attribute so the preview copy buttons can read the raw text.
 // =====================================
-marked.setOptions({ gfm: true, breaks: false });
+const renderer: Partial<Renderer> = {
+  code({ text, lang }) {
+    const language = lang && hljs.getLanguage(lang) ? lang : "plaintext";
+    const highlighted = hljs.highlight(text, { language }).value;
+    // data-code carries the raw text for the copy button (base64 to survive HTML escaping)
+    const encoded = btoa(unescape(encodeURIComponent(text)));
+    return `
+      <div class="sw-code-block" data-code="${encoded}">
+        <div class="sw-code-block__header">
+          <span class="sw-code-block__lang">${language}</span>
+          <button class="sw-code-block__copy" type="button" data-copy="${encoded}" aria-label="Copy code">
+            Copy
+          </button>
+        </div>
+        <pre><code class="hljs language-${language}">${highlighted}</code></pre>
+      </div>`;
+  },
+};
+marked.use({ renderer, gfm: true, breaks: false });
 
 // =====================================
 // ⬢ Types
@@ -38,39 +56,33 @@ interface Props {
 
 // =====================================
 // ⬢ CodeMirror Theme
-//   Minimal — inherits font from parent.
-//   Matches the sandworm dark/light surface tokens.
+//   Geist Mono font, no line numbers (removed from extensions),
+//   transparent background to inherit block surface.
 // =====================================
 const sandwormTheme = EditorView.theme({
   "&": {
     fontSize: "0.875rem",
-    fontFamily: "inherit",
+    fontFamily: "'Geist Mono', 'GeistMono', ui-monospace, monospace",
     backgroundColor: "transparent",
     height: "100%",
   },
   ".cm-content": {
-    padding: "0.5rem 0",
+    padding: "0.75rem 0",
     caretColor: "var(--color-primary)",
+    fontFamily: "'Geist Mono', 'GeistMono', ui-monospace, monospace",
   },
-  ".cm-line": { padding: "0 0.25rem" },
+  ".cm-line": { padding: "0 0.75rem" },
   ".cm-focused": { outline: "none" },
-  ".cm-gutters": {
-    backgroundColor: "transparent",
-    border: "none",
-    color: "var(--color-ink-200)",
-    fontSize: "0.75rem",
-  },
-  ".cm-activeLineGutter": { backgroundColor: "transparent" },
-  ".cm-activeLine": { backgroundColor: "rgba(99,60,180,0.06)" },
+  ".cm-activeLine": { backgroundColor: "rgba(99,60,180,0.05)" },
   ".cm-selectionBackground, ::selection": {
     backgroundColor: "rgba(99,60,180,0.15) !important",
   },
+  // hide the cursor line highlight on blur
+  "&:not(.cm-focused) .cm-activeLine": { backgroundColor: "transparent" },
 });
 
 // =====================================
 // ⬢ useCodeMirror
-//   Mounts a CodeMirror 6 instance bound to a Y.Text via yCollab.
-//   Destroyed and recreated if source identity changes (new block).
 // =====================================
 function useCodeMirror({
   containerRef,
@@ -85,34 +97,19 @@ function useCodeMirror({
   onFocus: () => void;
   onBlur: () => void;
 }) {
-  const viewRef = useRef<EditorView | null>(null);
-
   useEffect(() => {
     if (!containerRef.current) return;
 
     const state = EditorState.create({
       doc: source.toString(),
       extensions: [
-        // ── Yjs binding ──────────────────────────────────────────────────
-        // yCollab keeps CodeMirror and Y.Text in sync bidirectionally.
-        // undoManager: false — let Yjs handle undo natively via y-undo.
         yCollab(source, null, { undoManager: false }),
-
-        // ── Language ─────────────────────────────────────────────────────
         markdownLang(),
-
-        // ── Keymaps ──────────────────────────────────────────────────────
         keymap.of([...defaultKeymap, ...historyKeymap]),
-
-        // ── Read-only ────────────────────────────────────────────────────
         EditorState.readOnly.of(!isEditable),
-
-        // ── Visual ───────────────────────────────────────────────────────
-        lineNumbers(),
+        // ── No lineNumbers() — removed intentionally ──────────────────────
         sandwormTheme,
         EditorView.lineWrapping,
-
-        // ── Focus/blur events → editor awareness ─────────────────────────
         EditorView.domEventHandlers({
           focus: () => {
             onFocus();
@@ -127,36 +124,58 @@ function useCodeMirror({
     });
 
     const view = new EditorView({ state, parent: containerRef.current });
-    viewRef.current = view;
-
     return () => {
       view.destroy();
-      viewRef.current = null;
     };
-    // source identity change = new block = remount
   }, [source, isEditable]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  return viewRef;
 }
 
 // =====================================
-// ⬢ Preview
-//   Renders marked HTML. dangerouslySetInnerHTML is unavoidable for
-//   markdown preview — sanitize if you ever accept untrusted input.
+// ⬢ MarkdownPreview
+//   Renders marked HTML with hljs-highlighted code blocks.
+//   Copy buttons are wired via event delegation on the container —
+//   no per-block React state needed.
 // =====================================
 const MarkdownPreview = ({ source }: { source: Y.Text }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const [html, setHtml] = useState(
     () => marked.parse(source.toString()) as string
   );
 
+  // ── Sync HTML when Y.Text changes ────────────────────────────────────────
   useEffect(() => {
-    const update = () => {
-      setHtml(marked.parse(source.toString()) as string);
-    };
-
+    const update = () => setHtml(marked.parse(source.toString()) as string);
     source.observe(update);
     return () => source.unobserve(update);
   }, [source]);
+
+  // ── Copy button delegation ────────────────────────────────────────────────
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleClick = (e: MouseEvent) => {
+      const btn = (e.target as HTMLElement).closest<HTMLButtonElement>(
+        "[data-copy]"
+      );
+      if (!btn) return;
+
+      const encoded = btn.getAttribute("data-copy") ?? "";
+      try {
+        const text = decodeURIComponent(escape(atob(encoded)));
+        navigator.clipboard.writeText(text).then(() => {
+          const original = btn.textContent;
+          btn.textContent = "Copied!";
+          setTimeout(() => {
+            btn.textContent = original;
+          }, 1500);
+        });
+      } catch {}
+    };
+
+    container.addEventListener("click", handleClick);
+    return () => container.removeEventListener("click", handleClick);
+  }, [html]);
 
   if (!html.trim()) {
     return (
@@ -167,12 +186,24 @@ const MarkdownPreview = ({ source }: { source: Y.Text }) => {
   }
 
   return (
-    <div
-      className="prose prose-sm sm:prose-base max-w-full font-body sandworm-prose"
-      // marked returns sanitized HTML for trusted input (your own users)
-      // Add DOMPurify here if this ever renders untrusted third-party content
-      dangerouslySetInnerHTML={{ __html: html }}
-    />
+    <>
+      {/* hljs theme — github-dark works well with both light/dark surfaces */}
+      <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css"
+        media="(prefers-color-scheme: light)"
+      />
+      <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css"
+        media="(prefers-color-scheme: dark)"
+      />
+      <div
+        ref={containerRef}
+        className="sw-markdown-preview prose prose-sm sm:prose-base max-w-full font-body sandworm-prose"
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
+    </>
   );
 };
 
@@ -186,7 +217,7 @@ const ModeToggle = ({
   mode: Mode;
   onChange: (m: Mode) => void;
 }) => (
-  <div className="flex items-center gap-x-1 text-xs text-ink-300 select-none">
+  <div className="flex items-center gap-x-1 text-xs select-none">
     {(["edit", "preview"] as Mode[]).map(m => (
       <button
         key={m}
@@ -215,10 +246,8 @@ const MarkdownBlock = (props: Props) => {
   const [mode, setMode] = useState<Mode>("edit");
   const [isFocused, setFocused] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-
   const [, editorAPI] = useEditorAwareness();
 
-  // ── Editor awareness callbacks ────────────────────────────────────────────
   const onFocus = useCallback(() => {
     setFocused(true);
     editorAPI.insert(id, { scrollIntoView: false });
@@ -229,7 +258,6 @@ const MarkdownBlock = (props: Props) => {
     editorAPI.blur();
   }, [editorAPI]);
 
-  // ── CodeMirror instance ───────────────────────────────────────────────────
   useCodeMirror({
     containerRef,
     source,
@@ -238,16 +266,13 @@ const MarkdownBlock = (props: Props) => {
     onBlur,
   });
 
-  // ── Cursor insert focus ───────────────────────────────────────────────────
   useEffect(() => {
     if (
       props.isCursorInserting &&
       props.isCursorWithin &&
       containerRef.current
     ) {
-      const cmContent =
-        containerRef.current.querySelector<HTMLElement>(".cm-content");
-      cmContent?.focus();
+      containerRef.current.querySelector<HTMLElement>(".cm-content")?.focus();
     }
   }, [props.isCursorInserting, props.isCursorWithin]);
 
@@ -271,7 +296,6 @@ const MarkdownBlock = (props: Props) => {
     return "";
   })();
 
-  // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div
       data-testid={`MarkdownBlock-${id}`}
@@ -297,27 +321,24 @@ const MarkdownBlock = (props: Props) => {
           }
         )}
       >
-        {/* Header bar */}
+        {/* Header */}
         <div className="flex items-center justify-between px-3 py-1.5 border-b border-border-secondary dark:border-border-tertiary">
-          <span className="text-xs text-ink-300 font-medium">Markdown</span>
+          <span className="text-xs text-ink-300 font-medium font-mono">
+            Markdown
+          </span>
           {props.isEditable && <ModeToggle mode={mode} onChange={setMode} />}
         </div>
 
         {/* Body */}
         <div
           className={clsx(
-            props.dashboardMode
-              ? "px-4 py-4 h-full overflow-y-auto"
-              : "p-2 px-3"
+            props.dashboardMode ? "px-4 py-4 h-full overflow-y-auto" : "p-3"
           )}
         >
-          {/* CodeMirror mount point — always in DOM so the instance stays alive.
-              Hidden in preview mode rather than unmounted to avoid destroy/remount. */}
           <div
             ref={containerRef}
-            className={clsx("min-h-[3rem]", mode === "preview" && "hidden")}
+            className={clsx(mode === "preview" && "hidden")}
           />
-
           {mode === "preview" && <MarkdownPreview source={source} />}
         </div>
       </div>
