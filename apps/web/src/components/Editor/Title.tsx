@@ -66,7 +66,7 @@ function Title(props: Props) {
         TitleExtension.configure({
           level: 1,
           HTMLAttributes: {
-            style: `font-weight: semi-bold; font-size: 2.4rem;${props.style ?? ""}`,
+            style: `font-weight: bold; font-size: 2.6rem;${props.style ?? ""}`,
             class: "font-body ",
           },
         }),

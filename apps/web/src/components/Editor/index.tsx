@@ -110,6 +110,7 @@ import { ContentSkeleton } from "./ContentSkeleton";
 import PlusButton from "./PlusButton";
 import DragHandle from "./DragHandle";
 import Title from "./Title";
+import AiDiffToolbar from "./blocks/AiDiffToolbar";
 
 // The react-dnd package does not export this...
 type Identifier = string | symbol;
@@ -1697,9 +1698,30 @@ const Editor = (props: Props) => {
 
   const lastUpdatedAt = useLastUpdatedAt(props.yDoc);
 
-  {
-    console.log("hi", !props.isSyncing, domBlocks, domBlocks.length === 0);
-  }
+  console.log("hi", !props.isSyncing, domBlocks, domBlocks.length === 0);
+
+  console.log(
+    "🔴 raw layout",
+    layout.value.toArray().map(bg => ({
+      id: bg.getAttribute("id"),
+      tabs: bg
+        .getAttribute("tabs")
+        ?.toArray()
+        .map(t => ({
+          id: t.getAttribute("id"),
+        })),
+      current: bg.getAttribute("current")?.getAttribute("id"),
+    }))
+  );
+
+  console.log(
+    "🔴 raw blocks",
+    Array.from(blocks.value.entries()).map(([id, b]) => ({
+      id,
+      type: b.getAttribute("type"),
+      title: b.getAttribute("title"),
+    }))
+  );
 
   return (
     <div className="editor-v2 flex flex-col flex-grow justify-center font-body  subpixel-antialiased h-full w-full relative flex-1 min-w-0">
@@ -1803,6 +1825,17 @@ const Editor = (props: Props) => {
           </div>
         </div>
       </OverlayScrollbarsComponent>
+
+      <AiDiffToolbar
+        visible
+        totalAi={3}
+        pendingCount={3}
+        accepted={2}
+        rejected={0}
+        onAcceptAll={() => {}}
+        onRejectAll={() => {}}
+        onUndoAll={() => {}}
+      />
 
       <RemoveBlockDashboardConflictDialog
         yDoc={props.yDoc}

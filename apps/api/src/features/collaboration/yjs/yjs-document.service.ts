@@ -16,7 +16,7 @@ import { Persistor } from './interfaces';
 import { Server, Socket } from 'socket.io';
 import { DocumentTreeService } from "@/features/document/service/document-tree.service";
 import { DocumentExecutorService } from "./executor/document-executor.service";
-import { addDashboardItemToYDashboard, addGroupedBlock, BlockType, cloneBlockGroup, duplicateBlock, getDashboard, getDashboardItem, getDataframes, getLayout, makePythonBlock, makeSQLBlock, setTitle, YBlock, YBlockGroup } from "@sandworm/editor";
+import { addBlockGroup, addDashboardItemToYDashboard, addGroupedBlock, BlockType, cloneBlockGroup, duplicateBlock, getDashboard, getDashboardItem, getDataframes, getLayout, makePythonBlock, makeSQLBlock, setTitle, YBlock, YBlockGroup } from "@sandworm/editor";
 import { v4 as uuidv4 } from 'uuid';
 import { clone } from 'ramda';
 import { hashState } from "@sandworm/nest-common";
@@ -584,7 +584,60 @@ export class YjsDocumentService implements OnModuleDestroy {
                 this.logger.log(fragment.toJSON().concat("edededede"))
                // return "d"
                 // fragment.delete(0, fragment.length);
-        
+                const blockId = uuidv4();
+                const block = new Y.XmlElement('block');
+                const attrs = {
+                    id: blockId,
+                    index: null,
+                    title: '',
+                    type: BlockType.Python,  // ← use the enum, not hardcoded string
+                    source: new Y.Text('print(1000u0)'),
+                    result: [],
+                    isResultHidden: false,
+                    isCodeHidden: false,
+                    lastQuery: '',
+                    lastQueryTime: '',
+                    startQueryTime: '',
+                    editWithAIPrompt: new Y.Text('test'),
+                    isEditWithAIPromptOpen: false,
+                    aiSuggestions: null,
+                    componentId: null,
+                    isAiInput: true,
+                };
+                
+                for (const [key, value] of Object.entries(attrs)) {
+                    // @ts-ignore
+                    block.setAttribute(key, value);
+                }
+                
+                currentSharedDoc.blocks.set(blockId, block as any);
+                
+                // ===================================
+                // ⬢ Layout — two separate refs, no clone
+                // ===================================
+                const groupId = uuidv4();
+                const blockGroup = new Y.XmlElement('block-group');
+                // @ts-ignore
+                blockGroup.setAttribute('id', groupId);
+                
+                const currentRef = new Y.XmlElement('block-ref');
+                // @ts-ignore
+                currentRef.setAttribute('id', blockId);
+                
+                const tabRef = new Y.XmlElement('block-ref');
+                // @ts-ignore
+                tabRef.setAttribute('id', blockId);
+                
+                const tabs = new Y.Array();
+                tabs.push([tabRef]);
+                
+                // @ts-ignore
+                blockGroup.setAttribute('current', currentRef);
+                // @ts-ignore
+                blockGroup.setAttribute('tabs', tabs);
+                
+                currentSharedDoc.layout.push([blockGroup as any]);
+                newBlockId = blockId;
             });
         
             // if (!newBlockId) {
