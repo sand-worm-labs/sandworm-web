@@ -4,6 +4,7 @@ import {
   DashboardHeaderBlock,
   FileUploadBlock,
   InputBlock,
+  MarkdownBlock,
   PythonBlock,
   RichTextBlock,
   SQLBlock,
@@ -213,6 +214,7 @@ from datetime import datetime
 ${attrs.variable} = pytz.timezone('${attrs.value.timezone}').localize(datetime.datetime(${attrs.value.year}, ${attrs.value.month}, ${attrs.value.day}, ${attrs.value.hours}, ${attrs.value.minutes}, ${attrs.value.seconds}))`;
         },
         onRichText: () => {},
+        onMarkdown: () => {},
         onVisualization: () => {},
         onVisualizationV2: () => {},
         onFileUpload: () => {},
@@ -231,6 +233,7 @@ export function getLastUpdatedAt(doc: Y.Doc): string | null {
   let lastUpdatedAt: string | null = null;
 
   blocks.forEach(block => {
+    if (!(block instanceof Y.XmlElement)) return;
     switchBlockType(block, {
       onPython: block => {
         const queryTime = block.getAttribute("lastQueryTime");
@@ -274,6 +277,7 @@ export function getLastUpdatedAt(doc: Y.Doc): string | null {
           lastUpdatedAt = output.executedAt;
         }
       },
+      onMarkdown: () => {},
       onRichText: () => {},
       onFileUpload: () => {},
       onDashboardHeader: () => {},
@@ -305,6 +309,7 @@ export function switchBlockType<T>(
     onDashboardHeader: (block: Y.XmlElement<DashboardHeaderBlock>) => T;
     onPivotTable: (block: Y.XmlElement<PivotTableBlock>) => T;
     onPowerToolbox: (block: Y.XmlElement<PowerToolboxBlock>) => T;
+    onMarkdown?: (block: Y.XmlElement<MarkdownBlock>) => T;
   }
 ): T {
   const type = block.getAttribute("type") as BlockType;
@@ -335,10 +340,12 @@ export function switchBlockType<T>(
       );
     case BlockType.PivotTable:
       return handles.onPivotTable(block as Y.XmlElement<PivotTableBlock>);
-      case BlockType.PowerToolbox:
-  return handles.onPowerToolbox(
-    block as Y.XmlElement<PowerToolboxBlock>
-  );
+    case BlockType.PowerToolbox:
+      return handles.onPowerToolbox(block as Y.XmlElement<PowerToolboxBlock>);
+    case BlockType.Markdown:
+      return handles.onMarkdown
+        ? handles.onMarkdown(block as Y.XmlElement<MarkdownBlock>)
+        : handles.onRichText(block as unknown as Y.XmlElement<RichTextBlock>);
   }
 }
 

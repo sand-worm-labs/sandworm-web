@@ -20,6 +20,7 @@ import {
   makeSQLBlock,
 } from "../blocks/index.js";
 import { makeRichTextBlock } from "../blocks/richText.js";
+import { makeMarkdownBlock } from "../blocks/markdown.js";
 import { makeDateInputBlock } from "../blocks/dateInput.js";
 import {
   YDashboardItem,
@@ -38,6 +39,7 @@ export type AddBlockGroupBlock =
   | {
       type:
         | BlockType.RichText
+        | BlockType.Markdown
         | BlockType.Input
         | BlockType.DropdownInput
         | BlockType.DateInput
@@ -70,6 +72,9 @@ const createBlock = (block: AddBlockGroupBlock, yBlockDefs: Y.Map<YBlock>) => {
   switch (block.type) {
     case BlockType.RichText:
       yBlock = makeRichTextBlock(blockId);
+      break;
+    case BlockType.Markdown:
+      yBlock = makeMarkdownBlock(blockId);
       break;
     case BlockType.Python:
       yBlock = makePythonBlock(blockId, {
@@ -452,6 +457,7 @@ export const removeDashboardBlock = (
 
   switchBlockType(block, {
     onRichText: () => {},
+    onMarkdown: () =>{},
     onInput: () => {},
     onDropdownInput: () => {},
     onDateInput: () => {},

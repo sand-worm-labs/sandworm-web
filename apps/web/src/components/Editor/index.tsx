@@ -111,6 +111,7 @@ import PlusButton from "./PlusButton";
 import DragHandle from "./DragHandle";
 import Title from "./Title";
 import AiDiffToolbar from "./blocks/AiDiffToolbar";
+import MarkdownBlock from "./blocks/customBlocks/markdown";
 
 // The react-dnd package does not export this...
 type Identifier = string | symbol;
@@ -1921,6 +1922,17 @@ function TabRef(props: TabRefProps) {
         belongsToMultiTabGroup={props.hasMultipleTabs}
         dragPreview={props.hasMultipleTabs ? null : props.dragPreview}
         dashboardMode={null}
+        isCursorWithin={isCursorWithin}
+        isCursorInserting={isCursorInserting}
+      />
+    ),
+    onMarkdown: block => (
+      <MarkdownBlock
+        block={block}
+        isEditable={props.isEditable}
+        dashboardMode={null}
+        belongsToMultiTabGroup={props.hasMultipleTabs}
+        dragPreview={props.hasMultipleTabs ? null : props.dragPreview}
         isCursorWithin={isCursorWithin}
         isCursorInserting={isCursorInserting}
       />
