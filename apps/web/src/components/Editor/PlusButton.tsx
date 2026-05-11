@@ -8,6 +8,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { BlockType } from "@sandworm/editor";
 import { CalendarIcon, QueueListIcon } from "@heroicons/react/24/solid";
 import { Menu, Transition } from "@headlessui/react";
+import { PiMarkdownLogoLight } from "react-icons/pi";
 
 import { TextIcon } from "../Assets/Blocks/TextIcon";
 import { DatabaseIcon } from "../Assets/Blocks/DatabaseIcon";
@@ -19,12 +20,16 @@ import { LightningIcon } from "../Assets/Blocks/LightningIcon";
 
 import { PowerToolboxModal } from "./blocks/customBlocks/PowerToolbox";
 
-const TriangleUp = () => {
-  return (
-    <div className="h-3 w-3 bg-white dark:bg-base-100 border-t border-l border-border-secondary rotate-45 translate-y-1/2" />
-  );
-};
+// =====================================
+// ⬢ Utils
+// =====================================
+const TriangleUp = () => (
+  <div className="h-3 w-3 bg-white dark:bg-base-100 border-t border-l border-border-secondary rotate-45 translate-y-1/2" />
+);
 
+// =====================================
+// ⬢ BlockSuggestion
+// =====================================
 type BlockSuggestionProps = {
   id: string;
   icon: JSX.Element;
@@ -41,7 +46,7 @@ function BlockSuggestion(props: BlockSuggestionProps) {
     <div id={props.id} className="w-full text-sm px-1 relative z-30">
       <button
         type="button"
-        className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 py-2.5 rounded-full text-[#6C757D] dark:text-ink-400 bg-white dark:bg-base-100 hover:border-[#A308F0] border border-border-secondary  dark:border-border-tertiary font-body font-normal text-sm"
+        className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 py-2.5 rounded-full text-[#6C757D] dark:text-ink-400 bg-white dark:bg-base-100 hover:border-[#A308F0] border border-border-secondary dark:border-border-tertiary font-body font-normal text-sm"
         onClick={onClick}
       >
         {props.icon}
@@ -51,6 +56,9 @@ function BlockSuggestion(props: BlockSuggestionProps) {
   );
 }
 
+// =====================================
+// ⬢ MultiBlockSuggestion
+// =====================================
 interface MultiBlockSuggestionProps {
   icon: JSX.Element;
   text: string;
@@ -59,15 +67,15 @@ interface MultiBlockSuggestionProps {
 
 function MultiBlockSuggestion(props: MultiBlockSuggestionProps) {
   return (
-    <Menu as="div" className="w-full text-sm px-1 relative z-30 ">
-      <Menu.Button className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 rounded-full text-[#6C757D] dark:text-ink-400 bg-white dark:bg-base-100 hover:text-gray-700 relative border border-border-secondary   dark:border-border-tertiary py-2.5 hover:border-[#A308F0]">
+    <Menu as="div" className="w-full text-sm px-1 relative z-30">
+      <Menu.Button className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 rounded-full text-[#6C757D] dark:text-ink-400 bg-white dark:bg-base-100 hover:text-gray-700 relative border border-border-secondary dark:border-border-tertiary py-2.5 hover:border-[#A308F0]">
         {props.icon}
         <span>{props.text}</span>
         <ChevronDownIcon className="w-4 h-4" />
       </Menu.Button>
       <Transition
         as="div"
-        className="absolute right-0 z-40 "
+        className="absolute right-0 z-40"
         enter="transition-opacity duration-300"
         enterFrom="opacity-0"
         enterTo="opacity-100"
@@ -77,7 +85,7 @@ function MultiBlockSuggestion(props: MultiBlockSuggestionProps) {
       >
         <Menu.Items
           as="div"
-          className="w-44 mt-2 rounded-lg bg-white dark:bg-base-100 shadow-lg ring-1 ring-black dark:ring-border-tertiary ring-opacity-5 focus:outline-none font-body divide-y divide-border-secondary "
+          className="w-44 mt-2 rounded-lg bg-white dark:bg-base-100 shadow-lg ring-1 ring-black dark:ring-border-tertiary ring-opacity-5 focus:outline-none font-body divide-y divide-border-secondary"
         >
           {props.options.map((option, index) => (
             <Menu.Item key={option.text}>
@@ -104,6 +112,9 @@ function MultiBlockSuggestion(props: MultiBlockSuggestionProps) {
   );
 }
 
+// =====================================
+// ⬢ BlockList
+// =====================================
 interface BlockListProps {
   workspaceId: string;
   onAddBlock: (type: BlockType) => void;
@@ -114,58 +125,80 @@ function BlockList(props: BlockListProps) {
   const ff = { visualizationsV2: true };
   console.log(props.workspaceId);
 
-  const onAddText = useCallback(() => {
-    props.onAddBlock(BlockType.RichText);
-  }, [props.onAddBlock]);
-
-  const onAddSQL = useCallback(() => {
-    props.onAddBlock(BlockType.SQL);
-  }, [props.onAddBlock]);
-
-  const onAddPython = useCallback(() => {
-    props.onAddBlock(BlockType.Python);
-  }, [props.onAddBlock]);
-
-  const onAddVisualization = useCallback(() => {
-    props.onAddBlock(
-      ff.visualizationsV2 ? BlockType.VisualizationV2 : BlockType.Visualization
-    );
-  }, [props.onAddBlock]);
-
-  const onAddPivotTable = useCallback(() => {
-    props.onAddBlock(BlockType.PivotTable);
-  }, [props.onAddBlock]);
-
-  const onAddInput = useCallback(() => {
-    props.onAddBlock(BlockType.Input);
-  }, [props.onAddBlock]);
-
-  const onAddDropdownInput = useCallback(() => {
-    props.onAddBlock(BlockType.DropdownInput);
-  }, [props.onAddBlock]);
-
-  const onAddDateInput = useCallback(() => {
-    props.onAddBlock(BlockType.DateInput);
-  }, [props.onAddBlock]);
+  const onAddSQL = useCallback(
+    () => props.onAddBlock(BlockType.SQL),
+    [props.onAddBlock]
+  );
+  const onAddPython = useCallback(
+    () => props.onAddBlock(BlockType.Python),
+    [props.onAddBlock]
+  );
+  const onAddRichText = useCallback(
+    () => props.onAddBlock(BlockType.RichText),
+    [props.onAddBlock]
+  );
+  const onAddMarkdown = useCallback(
+    () => props.onAddBlock(BlockType.Markdown),
+    [props.onAddBlock]
+  );
+  const onAddVisualization = useCallback(
+    () =>
+      props.onAddBlock(
+        ff.visualizationsV2
+          ? BlockType.VisualizationV2
+          : BlockType.Visualization
+      ),
+    [props.onAddBlock]
+  );
+  const onAddPivotTable = useCallback(
+    () => props.onAddBlock(BlockType.PivotTable),
+    [props.onAddBlock]
+  );
+  const onAddInput = useCallback(
+    () => props.onAddBlock(BlockType.Input),
+    [props.onAddBlock]
+  );
+  const onAddDropdownInput = useCallback(
+    () => props.onAddBlock(BlockType.DropdownInput),
+    [props.onAddBlock]
+  );
+  const onAddDateInput = useCallback(
+    () => props.onAddBlock(BlockType.DateInput),
+    [props.onAddBlock]
+  );
 
   return (
     <div className="w-full absolute z-30 -translate-y-2 font-body">
       <div className="w-full flex justify-center relative z-30">
         <TriangleUp />
       </div>
-      <div className="w-full py-1 flex items-center justify-center  bg-base-100 ">
+
+      <div className="w-full py-1 flex items-center justify-center bg-base-100">
         <BlockSuggestion
           id="add-block-power"
           icon={<LightningIcon className="w-[20px] h-[20px]" />}
           onAdd={props.onOpenToolbox}
           text="Toolbox"
         />
-        <BlockSuggestion
-          id="add-block-text"
+
+        {/* Text → choose between Rich Text and Markdown */}
+        <MultiBlockSuggestion
           icon={<TextIcon className="w-[20px] h-[20px]" />}
-          onAdd={onAddText}
           text="Text"
+          options={[
+            {
+              icon: <PencilSquareIcon className="w-4 h-4" />,
+              text: "Rich Text",
+              onClick: onAddRichText,
+            },
+            {
+              icon: <PiMarkdownLogoLight className="w-4 h-4" />,
+              text: "Markdown",
+              onClick: onAddMarkdown,
+            },
+          ]}
         />
+
         <BlockSuggestion
           id="add-block-query"
           icon={<DatabaseIcon className="w-[20px] h-[20px]" />}
@@ -217,6 +250,9 @@ function BlockList(props: BlockListProps) {
   );
 }
 
+// =====================================
+// ⬢ useClickOutside
+// =====================================
 const useClickOutside = (
   ref: React.RefObject<HTMLDivElement>,
   callback: () => void
@@ -232,21 +268,17 @@ const useClickOutside = (
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [handleClickOutside]);
 };
 
+// =====================================
+// ⬢ PlusButton
+// =====================================
 interface Props {
   workspaceId: string;
   alwaysOpen: boolean;
   onAddBlock: (type: BlockType) => void;
-  /**
-   * Called when the user selects a tool from the PowerToolbox modal.
-   * The parent is responsible for inserting the AnalyticsBlock with
-   * the given toolId set as an initial attribute.
-   */
   onAddAnalyticsBlock: (toolId: string) => void;
   isEditable: boolean;
   writebackEnabled: boolean;
@@ -258,19 +290,12 @@ function PlusButton(props: Props) {
   const [showOptions, setShowOptions] = useState(false);
   const [isToolboxOpen, setIsToolboxOpen] = useState(false);
 
-  const toggleOptions = useCallback(() => {
-    setShowOptions(prev => !prev);
-  }, []);
-
+  const toggleOptions = useCallback(() => setShowOptions(prev => !prev), []);
   const handleOpenToolbox = useCallback(() => {
     setShowOptions(false);
     setIsToolboxOpen(true);
   }, []);
-
-  const handleToolboxClose = useCallback(() => {
-    setIsToolboxOpen(false);
-  }, []);
-
+  const handleToolboxClose = useCallback(() => setIsToolboxOpen(false), []);
   const handleSelectTool = useCallback(
     (toolId: string) => {
       props.onAddAnalyticsBlock(toolId);
@@ -281,9 +306,7 @@ function PlusButton(props: Props) {
 
   useClickOutside(wrapperRef, () => {
     setShowOptions(false);
-    // Note: do NOT close isToolboxOpen here — the HeadlessUI Dialog has its
-    // own backdrop and handles its own close. Closing it here would cause a
-    // double-close on backdrop click.
+    // Do NOT close isToolboxOpen here — HeadlessUI Dialog manages its own backdrop
   });
 
   const addBlockHandler = useCallback(
