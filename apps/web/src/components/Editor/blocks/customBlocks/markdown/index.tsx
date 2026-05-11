@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { EditorView, keymap } from "@codemirror/view";
 import { EditorState } from "@codemirror/state";
 import { markdown as markdownLang } from "@codemirror/lang-markdown";
+import { syntaxHighlighting, HighlightStyle } from "@codemirror/language";
 import { defaultKeymap, historyKeymap } from "@codemirror/commands";
 import { yCollab } from "y-codemirror.next";
 import { marked, type Renderer } from "marked";
@@ -10,6 +11,7 @@ import hljs from "highlight.js";
 import clsx from "clsx";
 import type { ConnectDragPreview } from "react-dnd";
 import type { MarkdownBlock } from "@sandworm/editor";
+import { tags as t } from "@lezer/highlight";
 
 import useEditorAwareness from "../../../hooks/useEditorAwareness";
 import type { DashboardMode } from "../../Dashboard";
@@ -56,30 +58,78 @@ interface Props {
 
 // =====================================
 // ⬢ CodeMirror Theme
-//   Geist Mono font, no line numbers (removed from extensions),
-//   transparent background to inherit block surface.
 // =====================================
-const sandwormTheme = EditorView.theme({
-  "&": {
-    fontSize: "0.875rem",
-    fontFamily: "'Geist Mono', 'GeistMono', ui-monospace, monospace",
-    backgroundColor: "transparent",
-    height: "100%",
+const sandwormTheme = EditorView.theme(
+  {
+    "&": {
+      color: "#1a1a1a",
+      backgroundColor: "transparent",
+      fontSize: "13px",
+      fontFamily: "'Geist Mono', monospace",
+    },
+    "&.cm-focused": { outline: "none" },
+    ".cm-content": {
+      caretColor: "#1a1a1a",
+      paddingLeft: "8px",
+      fontFamily: "'Geist Mono', monospace",
+    },
+    ".cm-scroller": {
+      fontFamily: "'Geist Mono', monospace !important",
+    },
+    ".cm-cursor, .cm-dropCursor": { borderLeftColor: "#1a1a1a" },
+    "&.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection":
+      { backgroundColor: "#dce4f5" },
+    ".cm-selectionMatch": { backgroundColor: "#e8edf8" },
+    ".cm-activeLine": { backgroundColor: "transparent" },
   },
-  ".cm-content": {
-    padding: "0.75rem 0",
-    caretColor: "var(--color-primary)",
-    fontFamily: "'Geist Mono', 'GeistMono', ui-monospace, monospace",
-  },
-  ".cm-line": { padding: "0 0.75rem" },
-  ".cm-focused": { outline: "none" },
-  ".cm-activeLine": { backgroundColor: "rgba(99,60,180,0.05)" },
-  ".cm-selectionBackground, ::selection": {
-    backgroundColor: "rgba(99,60,180,0.15) !important",
-  },
-  // hide the cursor line highlight on blur
-  "&:not(.cm-focused) .cm-activeLine": { backgroundColor: "transparent" },
-});
+  { dark: false }
+);
+
+// =====================================
+// ⬢ Markdown Highlight Style
+//   Headings get the purple keyword color.
+//   Code spans/fences get the green string color.
+//   HTML tags get the orange name color.
+//   Emphasis/strong get visual weight.
+//   URLs and link text get distinct treatment.
+// =====================================
+const markdownHighlight = HighlightStyle.define([
+  // ## Headings — each level same purple, bold
+  { tag: t.heading1, color: "#7B2FBE", fontWeight: "bold", fontSize: "1.1em" },
+  { tag: t.heading2, color: "#7B2FBE", fontWeight: "bold" },
+  { tag: t.heading3, color: "#7B2FBE", fontWeight: "bold" },
+  { tag: t.heading, color: "#7B2FBE", fontWeight: "bold" },
+
+  // **bold** and *italic*
+  { tag: t.strong, fontWeight: "bold" },
+  { tag: t.emphasis, fontStyle: "italic", color: "#555555" },
+
+  // `inline code` and ```fenced blocks```
+  { tag: t.monospace, color: "#2E9E5B", fontFamily: "'Geist Mono', monospace" },
+
+  // code block language tag (```bash, ```ts etc)
+  { tag: t.special(t.string), color: "#2E9E5B" },
+
+  // <html> tags
+  { tag: t.tagName, color: "#C96A10" },
+  { tag: t.angleBracket, color: "#555555" },
+  { tag: t.attributeName, color: "#7B2FBE" },
+  { tag: t.attributeValue, color: "#2E9E5B" },
+
+  // [link text](url) — url in muted, text normal
+  { tag: t.url, color: "#0b6e99" },
+  { tag: t.link, color: "#0b6e99" },
+
+  // > blockquote marker
+  { tag: t.quote, color: "#8B8FA8", fontStyle: "italic" },
+
+  // --- horizontal rule / list markers
+  { tag: t.processingInstruction, color: "#7B2FBE" },
+  { tag: t.punctuation, color: "#555555" },
+
+  // comments (HTML <!-- -->)
+  { tag: t.comment, color: "#8B8FA8", fontStyle: "italic" },
+]);
 
 // =====================================
 // ⬢ useCodeMirror
@@ -104,10 +154,10 @@ function useCodeMirror({
       doc: source.toString(),
       extensions: [
         yCollab(source, null, { undoManager: false }),
-        markdownLang(),
+        markdownLang({ htmlTagLanguage: undefined }),
+        syntaxHighlighting(markdownHighlight, { fallback: true }),
         keymap.of([...defaultKeymap, ...historyKeymap]),
         EditorState.readOnly.of(!isEditable),
-        // ── No lineNumbers() — removed intentionally ──────────────────────
         sandwormTheme,
         EditorView.lineWrapping,
         EditorView.domEventHandlers({
