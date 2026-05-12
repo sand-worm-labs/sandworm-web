@@ -38,6 +38,89 @@ const EXPENSIVE_TYPES = new Set<PythonBlock["result"][0]["type"]>([
   "html",
 ]);
 
+// =====================================
+// ⬢ Pandas Table Style Injection
+// =====================================
+
+const SANDWORM_TABLE_CSS = `
+  @import url('https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-mono/style.css');
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 12px;
+    font-family: "Geist Mono", ui-monospace, monospace;
+    font-size: 12px;
+    background: transparent;
+    color: #111827;
+  }
+
+  .dataframe-wrap {
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    border: none !important;
+  }
+
+  thead tr {
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  thead th {
+    padding: 9px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 11px;
+    text-transform: capitalize;
+    letter-spacing: 0.06em;
+    color: #9ca3af;
+    white-space: nowrap;
+    border: none !important;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: #fafafa; }
+
+  tbody td {
+    padding: 9px 16px;
+    color: #374151;
+    border: none !important;
+    vertical-align: middle;
+  }
+
+  thead th:first-child,
+  tbody td:first-child {
+    font-weight: 600;
+    color: #6b7280;
+    min-width: 40px;
+  }
+`;
+
+function injectTableStyles(html: string): string {
+  const styleTag = `<style>${SANDWORM_TABLE_CSS}</style>`;
+
+  // Wrap table in a clipping div for border-radius to work
+  const wrapped = html
+    .replace(/<table/g, '<div class="dataframe-wrap"><table')
+    .replace(/<\/table>/g, "</table></div>");
+
+  if (wrapped.includes("</head>")) {
+    return wrapped.replace("</head>", `${styleTag}</head>`);
+  }
+  return styleTag + wrapped;
+}
+
 export function PythonOutputs(props: Props) {
   const [rendered, setRendered] = useResettableState(
     () => Math.min(props.lazyRender ? 1 : props.outputs.length),
@@ -51,7 +134,6 @@ export function PythonOutputs(props: Props) {
 
     const cb = () => {
       setRendered(prev => {
-        // render outputs until the next expensive type
         const nextExpensiveTypeIndex = props.outputs.findIndex(
           (output, i) => i > prev && EXPENSIVE_TYPES.has(output.type)
         );
@@ -210,20 +292,23 @@ function HTMLOutput(props: { output: PythonHTMLOutput }) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [height, setHeight] = React.useState(500);
 
+  const styledHtml = useMemo(
+    () => injectTableStyles(props.output.html),
+    [props.output.html]
+  );
+
   return (
     <iframe
       ref={iframeRef}
-      srcDoc={props.output.html}
-      title={`HTML block `}
+      srcDoc={styledHtml}
+      title="HTML block"
       sandbox="allow-scripts"
       style={{ width: "100%", height, border: "none" }}
       onLoad={() => {
         try {
           const h = iframeRef.current?.contentDocument?.body?.scrollHeight;
-          if (h && h > 0) setHeight(h);
-        } catch {
-          // auto-size is best-effort; cross-origin or sandboxed frames may block access
-        }
+          if (h && h > 0) setHeight(h + 24);
+        } catch {}
       }}
     />
   );
