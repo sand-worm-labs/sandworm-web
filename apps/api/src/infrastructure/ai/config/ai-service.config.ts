@@ -12,7 +12,7 @@ class EnvironmentVariablesValidator {
   AI_HANDSHAKE_TOKEN: string;
 }
 
-export default registerAs<AiServiceConfig>('aiService', () => {
+export default registerAs<AiServiceConfig>('ai', () => {
   validateConfig(process.env, EnvironmentVariablesValidator);
 
   return {

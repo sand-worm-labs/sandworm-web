@@ -113,6 +113,7 @@ fi
 
 echo
 echo "▶ Starting AI service in background..."
+fuser -k 8000/tcp 2>/dev/null || true
 (
   cd "$ROOT_DIR/apps/ai"
   poetry env use python3.12
