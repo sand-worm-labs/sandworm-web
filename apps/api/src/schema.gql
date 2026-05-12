@@ -375,8 +375,8 @@ type Query {
   """Get invitation details from hash without accepting it"""
   getInvitationInfo(hash: String!): WorkspaceInvitationInfo!
 
-  """List all chats for the current user"""
-  chats: [Chat!]!
+  """List chats for workspace/document"""
+  chats(workspaceId: String!, documentId: String!): [Chat!]!
 
   """Get a chat with its messages"""
   chat(chatId: String!): Chat!
@@ -550,8 +550,11 @@ type Mutation {
   """Delete a chat and its messages"""
   deleteChat(chatId: String!): Boolean!
 
-  """Add a user message to a chat"""
-  sendMessage(input: SendMessageInput!): Message!
+  """Send message (chat or block edit)"""
+  sendMessage(chatId: String!, input: SendMessageInput!): Message!
+
+  """Edit an existing message"""
+  editMessage(input: EditMessageInput!): Message!
 
   """Create a new comment on a document"""
   createComment(documentId: String!, input: CreateCommentInput!): Comment!
@@ -712,6 +715,12 @@ input SendMessageInput {
   content: String!
   blockId: String
   model: String!
+}
+
+input EditMessageInput {
+  messageId: String!
+  chatId: String!
+  content: String!
 }
 
 input CreateCommentInput {
