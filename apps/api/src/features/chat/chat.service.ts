@@ -1,10 +1,12 @@
-import { Injectable, Logger, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { ConfigService } from '@nestjs/config';
 import { ChatEntity, MessageEntity } from '@sandworm/postgresql-typeorm';
 import { Chat } from './model/chat.model';
 import { Message } from './model/message.model';
 import { CreateChatInput, SendMessageInput, UpdateChatInput } from './dto/chat.dto';
+import { AiServiceConfig } from '@/infrastructure/ai/config/ai-service-config.type';
 
 @Injectable()
 export class ChatService {
@@ -15,6 +17,7 @@ export class ChatService {
     private readonly chatRepository: Repository<ChatEntity>,
     @InjectRepository(MessageEntity)
     private readonly messageRepository: Repository<MessageEntity>,
+    private readonly configService: ConfigService,
   ) {}
 
   async createChat(userId: string, input: CreateChatInput): Promise<Chat> {
