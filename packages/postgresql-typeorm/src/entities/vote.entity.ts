@@ -44,14 +44,4 @@ export class VoteEntity extends AbstractEntity {
     })
     user!: Relation<UserEntity>;
 
-    @ManyToOne(() => ChatEntity, (chat) => chat.votes, {
-        onDelete: "CASCADE",
-    })
-    @JoinColumn({
-        name: "chat_id",
-        referencedColumnName: "id",
-        foreignKeyConstraintName: "FK_votes_chat",
-    })
-    chat!: Relation<ChatEntity>;
-
 }

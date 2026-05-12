@@ -2,7 +2,6 @@ import type * as Y from "yjs";
 import { useDropzone } from "react-dropzone";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  ChevronDoubleRightIcon,
   DocumentPlusIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
@@ -684,29 +683,21 @@ file`;
 
   return (
     <>
-      <Transition
-        as="div"
-        show={props.visible}
-        className="h-full overflow-hidden flex-shrink-0 font-body "
-        enter="transition-[width] duration-300 ease-in-out"
-        enterFrom="w-0"
-        enterTo="w-[354px]"
-        leave="transition-[width] duration-300 ease-in-out"
-        leaveFrom="w-[354px]"
-        leaveTo="w-0"
-      >
+      {props.visible && (
         <input
           id="file-upload"
           className="sr-only"
           type="file"
           {...getInputProps()}
         />
+      )}
 
+      {props.visible && (
         <div
-          className="relative w-[354px] flex flex-col border-l dark:border-border-tertiary border-border-secondary h-full bg-white  dark:bg-base-100 "
+          className="relative w-full flex flex-col  h-full bg-white dark:bg-base-100"
           {...getRootProps()}
         >
-          <div className="flex justify-between border-b p-6 space-x-3 border-border-secondary   dark:border-border-tertiary ">
+          <div className="flex justify-between border-b p-6 space-x-3 border-border-secondary dark:border-border-tertiary">
             <div>
               <h3 className="text-lg font-medium leading-6 text-ink-100 pr-1.5">
                 Files
@@ -715,18 +706,18 @@ file`;
                 Upload files to your notebook for analysis
               </p>
             </div>
-
             <button
               type="button"
-              className="absolute z-10 top-7 transform rounded-full   text-ink-400 bg-base-100 hover:bg-gray-100 w-6 h-6 flex justify-center items-center right-3 -translate-x-1/2 dark:border-border-tertiary"
+              className="absolute z-10 top-7 transform rounded-full text-ink-400 bg-base-100 hover:bg-gray-100 w-6 h-6 flex justify-center items-center right-3 -translate-x-1/2 dark:border-border-tertiary"
               onClick={props.onHide}
             >
               <X className="w-5 h-5" />
             </button>
           </div>
+
           {(upload._tag === "uploading" || results.length > 0) && (
             <>
-              <div className="relative flex px-4 py-2 text-xs font-medium border-b dark:border-border-tertiary border-[#FEFEFF] bg-gray-50  dark:bg-base-100  text-gray-600 justify-between">
+              <div className="relative flex px-4 py-2 text-xs font-medium border-b dark:border-border-tertiary border-[#FEFEFF] bg-gray-50 dark:bg-base-100 text-gray-600 justify-between">
                 <div className="flex gap-x-1">
                   <CloudArrowUpIconSolid className="w-4 h-4 text-ink-400" />
                   Uploading
@@ -755,24 +746,10 @@ file`;
               </ul>
             </>
           )}
+
           {(actualFiles.length > 0 || upload._tag === "idle") && (
             <>
-              {/*    <div className="relative flex px-4 py-2 text-xs font-medium border-b border-border-secondary  dark:bg-base-100  dark:border-border-tertiary  text-ink-400 justify-between">
-                <div className="flex gap-x-1">
-                  <span className="font-mono">/home/sandwormuser</span>
-                </div>
-                <Tooltip
-                  title=""
-                  message="Files will be uploaded to this location. You can read them from disk."
-                  position="left"
-                  active
-                  tooltipClassname="w-44"
-                >
-                  <Info />
-                </Tooltip>
-              </div> */}
-
-              <div className="relative flex items-center px-4 py-2 text-xs font-medium border-b border-border-secondary  dark:bg-base-100 dark:border-border-tertiary text-ink-400 justify-between gap-x-2">
+              <div className="relative flex items-center px-4 py-2 text-xs font-medium border-b border-border-secondary dark:bg-base-100 dark:border-border-tertiary text-ink-400 justify-between gap-x-2">
                 <div className="flex items-center gap-x-1 overflow-hidden flex-1 font-mono min-w-0">
                   {breadcrumbs.map((crumb, i) => (
                     <React.Fragment key={crumb.path}>
@@ -795,8 +772,6 @@ file`;
                     </React.Fragment>
                   ))}
                 </div>
-
-                {/* Dotfile toggle */}
                 <button
                   type="button"
                   onClick={() => setShowHidden(v => !v)}
@@ -812,8 +787,9 @@ file`;
                   {showHidden ? "Hidden" : ".files"}
                 </button>
               </div>
+
               <div className="px-4 py-0 flex items-center border-b dark:border-border-tertiary border-border-secondary group focus-within:border-[#7104A8]">
-                <MagnifyingGlassIcon className="h-4 w-4 text-ink-300  group-focus-within:text-[#7104A8]" />
+                <MagnifyingGlassIcon className="h-4 w-4 text-ink-300 group-focus-within:text-[#7104A8]" />
                 <input
                   type="text"
                   placeholder="Search..."
@@ -822,9 +798,11 @@ file`;
                   value={search}
                 />
               </div>
+
               {!isDragActive && (
                 <UploadPlaceholder compact onClick={openUpload} />
               )}
+
               {actualFiles.length > 0 ? (
                 <ul className="flex-1 overflow-y-auto px-3">
                   {dirs.map(file => (
@@ -844,12 +822,12 @@ file`;
                         canUse={props.yDoc !== undefined}
                       />
                     </li>
-                  ))}{" "}
+                  ))}
                 </ul>
               ) : (
                 !isDragActive && (
                   <div className="flex-1 p-4">
-                    <div className="flex items-center flex-col justify-center h-full text-ink-400  bg-[#FBFBFB] rounded-lg border-2 border-dashed border-border-secondary  p-8 text-center dark:bg-base-100 dark:border-border-tertiary">
+                    <div className="flex items-center flex-col justify-center h-full text-ink-400 bg-[#FBFBFB] rounded-lg border-2 border-dashed border-border-secondary p-8 text-center dark:bg-base-100 dark:border-border-tertiary">
                       <UploadIcon />
                       <span className="mt-2 text-sm">
                         Click or drag and drop files here to upload them
@@ -862,7 +840,8 @@ file`;
             </>
           )}
         </div>
-      </Transition>
+      )}
+
       <ReplaceDialog
         fileName={upload._tag === "uploading" ? upload.current.file.name : ""}
         open={isAskingReplace}

@@ -26,6 +26,7 @@ import type { SessionUser } from "../hooks/useAuth";
 import Layout from "../../Visualization/Layout";
 import { useYDoc } from "../hooks/useYDocs";
 import useDocument from "../hooks/useDocument";
+import { RightSidebarPanel } from "../RightSidebarPanel";
 
 import Comments from "./Comments";
 import Schedules from "./Schedules";
@@ -259,7 +260,7 @@ function PrivateDocumentPageInner(
   }, [router]);
 
   const handleVisibilityChange = useCallback(
-    async (visibility: "private" | "team" | "community") => {
+    async (visibility: "WORKSPACE" | "LINK" | "PUBLIC") => {
       console.log(visibility);
     },
     []
@@ -337,7 +338,7 @@ function PrivateDocumentPageInner(
 
         <ShareModal
           link={`${NEXT_PUBLIC_PUBLIC_URL()}/workspace/${props.workspaceId}/documents/${props.documentId}/notebook`}
-          initialVisibility="private"
+          initialVisibility="WORKSPACE"
           onVisibilityChange={handleVisibilityChange}
         />
         <EllipsisDropdown
@@ -480,66 +481,68 @@ function PrivateDocumentPageInner(
           onSchemaExplorer={onToggleSchemaExplorerSQLBlock}
         />
 
-        <Comments
-          workspaceId={props.workspaceId}
-          documentId={props.documentId}
-          visible={selectedSidebar?._tag === "comments"}
-          onHide={onHideSidebar}
-        />
+        <RightSidebarPanel visible={selectedSidebar !== null}>
+          <Comments
+            workspaceId={props.workspaceId}
+            documentId={props.documentId}
+            visible={selectedSidebar?._tag === "comments"}
+            onHide={onHideSidebar}
+          />
 
-        <ShortcutsModal
-          visible={selectedSidebar?._tag === "shortcuts"}
-          onHide={onHideSidebar}
-        />
+          <ShortcutsModal
+            visible={selectedSidebar?._tag === "shortcuts"}
+            onHide={onHideSidebar}
+          />
 
-        {!isViewer && !isDeleted && (
-          <>
-            <Schedules
-              workspaceId={props.workspaceId}
-              documentId={props.documentId}
-              isPublished={props.document.publishedAt !== null}
-              visible={selectedSidebar?._tag === "schedules"}
-              onHide={onHideSidebar}
-              onPublish={onPublish}
-              publishing={props.publishing}
-            />
-            <Snapshots
-              visible={selectedSidebar?._tag === "snapshots"}
-              onHide={onHideSidebar}
-            />
-            <Files
-              workspaceId={props.workspaceId}
-              visible={selectedSidebar?._tag === "files"}
-              onHide={onHideSidebar}
-              userId={props.user.id}
-              yDoc={yDoc}
-              executionQueue={executionQueue}
-            />
-            <ReusableComponents
-              workspaceId={props.workspaceId}
-              documentId={props.documentId}
-              visible={selectedSidebar?._tag === "reusableComponents"}
-              onHide={onHideSidebar}
-              yDoc={yDoc}
-            />
-            <PageSettingsPanel
-              workspaceId={props.workspaceId}
-              documentId={props.documentId}
-              visible={selectedSidebar?._tag === "pageSettings"}
-              onHide={onHideSidebar}
-            />
-            <DataExplorerContent
-              visible={selectedSidebar?._tag === "schemaExplorer"}
-              mode="sidebar"
-              showDragHandle={false}
-            />
-            <MiniChat
-              visible={selectedSidebar?._tag === "chat"}
-              onClose={onHideSidebar}
-              yDoc={yDoc}
-            />
-          </>
-        )}
+          {!isViewer && !isDeleted && (
+            <>
+              <Schedules
+                workspaceId={props.workspaceId}
+                documentId={props.documentId}
+                isPublished={props.document.publishedAt !== null}
+                visible={selectedSidebar?._tag === "schedules"}
+                onHide={onHideSidebar}
+                onPublish={onPublish}
+                publishing={props.publishing}
+              />
+              <Snapshots
+                visible={selectedSidebar?._tag === "snapshots"}
+                onHide={onHideSidebar}
+              />
+              <Files
+                workspaceId={props.workspaceId}
+                visible={selectedSidebar?._tag === "files"}
+                onHide={onHideSidebar}
+                userId={props.user.id}
+                yDoc={yDoc}
+                executionQueue={executionQueue}
+              />
+              <ReusableComponents
+                workspaceId={props.workspaceId}
+                documentId={props.documentId}
+                visible={selectedSidebar?._tag === "reusableComponents"}
+                onHide={onHideSidebar}
+                yDoc={yDoc}
+              />
+              <PageSettingsPanel
+                workspaceId={props.workspaceId}
+                documentId={props.documentId}
+                visible={selectedSidebar?._tag === "pageSettings"}
+                onHide={onHideSidebar}
+              />
+              <DataExplorerContent
+                visible={selectedSidebar?._tag === "schemaExplorer"}
+                mode="sidebar"
+                showDragHandle={false}
+              />
+              <MiniChat
+                visible={selectedSidebar?._tag === "chat"}
+                onClose={onHideSidebar}
+                yDoc={yDoc}
+              />
+            </>
+          )}
+        </RightSidebarPanel>
       </div>
     </Layout>
   );
