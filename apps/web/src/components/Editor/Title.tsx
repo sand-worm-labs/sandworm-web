@@ -179,17 +179,14 @@ function Title(props: Props) {
     <div className="font-body">
       <TitleSkeleton visible={props.isLoading} />
 
-      <div
-        className={clsx(
-          "group flex items-center gap-2",
-          props.isLoading && "hidden"
-        )}
-      >
-        <EditorContent editor={editor} className="flex-1" />
-
+      <div className={clsx("group relative", props.isLoading && "hidden")}>
         {props.onGenerateWithAI && (
-          <TitleAIButton onClick={props.onGenerateWithAI} />
+          <div className="absolute left-0 top-1/2 -translate-x-full -translate-y-1/2 pr-2">
+            <TitleAIButton onClick={props.onGenerateWithAI} />
+          </div>
         )}
+
+        <EditorContent editor={editor} />
       </div>
     </div>
   );
