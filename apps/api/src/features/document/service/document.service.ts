@@ -16,7 +16,6 @@ import {
   CreateDocumentInput,
   DeleteDocumentInput,
   DuplicateDocumentInput,
-  FavoriteDocumentInput,
   RestoreDocumentInput,
   UpdateDocumentInput,
   ForkDocumentInput

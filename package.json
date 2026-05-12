@@ -10,6 +10,7 @@
     "clean": "turbo clean",
     "build": "turbo build",
     "dev": "turbo dev",
+    "dev:ai": "cd apps/ai && just dev",
     "test": "turbo test",
     "test:e2e": "turbo test:e2e",
     "lint": "turbo lint",
