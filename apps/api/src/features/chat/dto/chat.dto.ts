@@ -39,3 +39,15 @@ export class SendMessageInput {
   @StringField()
   model: string;
 }
+
+@InputType()
+export class EditMessageInput {
+  @UUIDField()
+  messageId: string;
+
+  @UUIDField()
+  chatId: string;
+
+  @StringField({ minLength: 1, maxLength: 4000 })
+  content: string;
+}
