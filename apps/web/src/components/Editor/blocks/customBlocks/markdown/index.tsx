@@ -6,7 +6,15 @@ import { markdown as markdownLang } from "@codemirror/lang-markdown";
 import { syntaxHighlighting, HighlightStyle } from "@codemirror/language";
 import { defaultKeymap, historyKeymap } from "@codemirror/commands";
 import { yCollab } from "y-codemirror.next";
-import { marked, type Renderer } from "marked";
+import MarkdownIt from "markdown-it";
+import { full as markdownItEmoji } from "markdown-it-emoji";
+import markdownItFootnote from "markdown-it-footnote";
+import markdownItDeflist from "markdown-it-deflist";
+import markdownItAbbr from "markdown-it-abbr";
+import markdownItSup from "markdown-it-sup";
+import markdownItSub from "markdown-it-sub";
+import markdownItMark from "markdown-it-mark";
+import markdownItIns from "markdown-it-ins";
 import hljs from "highlight.js";
 import clsx from "clsx";
 import type { ConnectDragPreview } from "react-dnd";
@@ -21,7 +29,7 @@ import type { DashboardMode } from "../../Dashboard";
 //   Custom renderer wires highlight.js into code blocks and injects
 //   a data-code attribute so the preview copy buttons can read the raw text.
 // =====================================
-const renderer: Partial<Renderer> = {
+/* const renderer: Partial<Renderer> = {
   code({ text, lang }) {
     const language = lang && hljs.getLanguage(lang) ? lang : "plaintext";
     const highlighted = hljs.highlight(text, { language }).value;
@@ -39,7 +47,37 @@ const renderer: Partial<Renderer> = {
       </div>`;
   },
 };
-marked.use({ renderer, gfm: true, breaks: false });
+marked.use({ renderer, gfm: true, breaks: false }); */
+
+// =====================================
+// ⬢ markdown-it Config
+// =====================================
+const md = new MarkdownIt({
+  html: true,
+  linkify: true,
+  typographer: true, // (c) → © , "quotes" → "quotes", --- → —
+  highlight(code, lang) {
+    const language = lang && hljs.getLanguage(lang) ? lang : "plaintext";
+    const highlighted = hljs.highlight(code, { language }).value;
+    const encoded = btoa(unescape(encodeURIComponent(code)));
+    return `
+      <div class="sw-code-block" data-code="${encoded}">
+        <div class="sw-code-block__header">
+          <span class="sw-code-block__lang">${language}</span>
+          <button class="sw-code-block__copy" type="button" data-copy="${encoded}" aria-label="Copy code">Copy</button>
+        </div>
+        <pre><code class="hljs language-${language}">${highlighted}</code></pre>
+      </div>`;
+  },
+})
+  .use(markdownItEmoji)
+  .use(markdownItFootnote)
+  .use(markdownItDeflist)
+  .use(markdownItAbbr)
+  .use(markdownItSup)
+  .use(markdownItSub)
+  .use(markdownItMark)
+  .use(markdownItIns);
 
 // =====================================
 // ⬢ Types
@@ -189,12 +227,12 @@ function useCodeMirror({
 const MarkdownPreview = ({ source }: { source: Y.Text }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [html, setHtml] = useState(
-    () => marked.parse(source.toString()) as string
+    () => md.render(source.toString()) as string
   );
 
   // ── Sync HTML when Y.Text changes ────────────────────────────────────────
   useEffect(() => {
-    const update = () => setHtml(marked.parse(source.toString()) as string);
+    const update = () => setHtml(md.render(source.toString()) as string);
     source.observe(update);
     return () => source.unobserve(update);
   }, [source]);
