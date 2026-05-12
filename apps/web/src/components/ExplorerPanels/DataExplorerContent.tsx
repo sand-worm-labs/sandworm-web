@@ -1,9 +1,10 @@
+/* eslint-disable react/jsx-no-useless-fragment */
+
 "use client";
 
 import React, { useState, useEffect } from "react";
 import { GripHorizontal, X, ChevronRightIcon } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Transition } from "@headlessui/react";
 import {
   Card,
   CardContent,
@@ -95,81 +96,65 @@ export function DataExplorerContent({
   // Sidebar mode with transition
   if (mode === "sidebar") {
     return (
-      <Transition
-        show={visible}
-        as="div"
-        className="top-0 right-0 h-full absolute z-30"
-        enter="transition ease-in-out duration-300 transform"
-        enterFrom="translate-x-full"
-        enterTo="translate-x-0"
-        leave="transition ease-in-out duration-300 transform"
-        leaveFrom="translate-x-0"
-        leaveTo="translate-x-full"
-      >
-        {onHide && (
-          <button
-            type="button"
-            className="absolute z-10 top-7 transform rounded-full border border-gray-300 dark:border-border-tertiary text-ink-400 bg-white dark:bg-base-100  hover:bg-gray-100 dark:hover:bg-gray-900 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
-            onClick={onHide}
-            aria-label="Close data explorer"
-          >
-            <ChevronDoubleRightIcon className="w-3 h-3" />
-          </button>
-        )}
+      <>
+        {visible && (
+          <div className="relative h-full">
+            {onHide && (
+              <button
+                type="button"
+                className="absolute z-10 top-7 transform rounded-full border border-gray-300 dark:border-border-tertiary text-ink-400 bg-white dark:bg-base-100 hover:bg-gray-100 dark:hover:bg-gray-900 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
+                onClick={onHide}
+                aria-label="Close data explorer"
+              >
+                <ChevronDoubleRightIcon className="w-3 h-3" />
+              </button>
+            )}
 
-        <Card className="h-full overflow-hidden border-l dark:border-border-tertiary border-border-secondary rounded-none w-[354px] bg-white dark:bg-base-100  gap-y-0 pt-0">
-          {loading && (
-            <div className="flex items-center justify-center h-full"> </div>
-          )}
+            <Card className="h-full overflow-hidden rounded-none w-full bg-white dark:bg-base-100 gap-y-0 pt-0">
+              {loading && (
+                <div className="flex items-center justify-center h-full" />
+              )}
 
-          {mode === "sidebar" ? (
-            <div className="px-4 xl:px-6 pt-6 pb-5 border-b border-border-secondary  dark:border-border-tertiary">
-              <div className="flex justify-between">
-                <div>
-                  <h3 className="text-lg font-medium leading-6 text-ink-100 dark:text-white">
-                    Data Explorer
-                  </h3>
-                  <p className="text-ink-300 text-sm pt-1">
-                    Browse and explore your blockchain data
-                  </p>
+              <div className="px-4 xl:px-6 pt-6 pb-5 border-b border-border-secondary dark:border-border-tertiary">
+                <div className="flex justify-between">
+                  <div>
+                    <h3 className="text-lg font-medium leading-6 text-ink-100 dark:text-white">
+                      Data Explorer
+                    </h3>
+                    <p className="text-ink-300 text-sm pt-1">
+                      Browse and explore your blockchain data
+                    </p>
+                  </div>
+                  <ChevronRightIcon className="h-5 w-5 text-ink-400" />
                 </div>
-                <ChevronRightIcon className="h-5 w-5 text-ink-400" />
               </div>
-            </div>
-          ) : (
-            <div className="p-4 border-b border-border-secondary  dark:border-border-tertiary">
-              <div className="flex items-center gap-2">
-                <Database />
-                <h3 className="font-medium text-ink-100 dark:text-white">
-                  Data Explorer
-                </h3>
-              </div>
-            </div>
-          )}
 
-          <CardContent className="p-2 px-0 h-[calc(100%-60px)] overflow-y-auto">
-            {chains && chains.length > 0 ? (
-              <div className="space-y-2">
-                <ExplorerBreadCrumbs
-                  basePath={basePath}
-                  entities={entityData || { raw: [], project: [], decoded: [] }}
-                />
-                <Input
-                  type="text"
-                  placeholder="Search..."
-                  value={searchTerm}
-                  onChange={handleSearch}
-                  className="m-auto w-[calc(100%-2rem)] focus:ring-0 hidden"
-                />
-
-                <ul className="pt-0 mt-0" style={{ marginTop: 0 }}>
-                  {renderExplorer()}
-                </ul>
-              </div>
-            ) : null}
-          </CardContent>
-        </Card>
-      </Transition>
+              <CardContent className="p-2 px-0 h-[calc(100%-60px)] overflow-y-auto">
+                {chains && chains.length > 0 ? (
+                  <div className="space-y-2">
+                    <ExplorerBreadCrumbs
+                      basePath={basePath}
+                      entities={
+                        entityData || { raw: [], project: [], decoded: [] }
+                      }
+                    />
+                    <Input
+                      type="text"
+                      placeholder="Search..."
+                      value={searchTerm}
+                      onChange={handleSearch}
+                      className="m-auto w-[calc(100%-2rem)] focus:ring-0 hidden"
+                    />
+                    <ul className="pt-0 mt-0" style={{ marginTop: 0 }}>
+                      {renderExplorer()}
+                    </ul>
+                  </div>
+                ) : null}
+              </CardContent>
+            </Card>
+          </div>
+        )}
+      </>
     );
   }
 

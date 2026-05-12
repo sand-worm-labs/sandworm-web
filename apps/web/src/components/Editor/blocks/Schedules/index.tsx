@@ -1,4 +1,4 @@
-import { Transition } from "@headlessui/react";
+/* eslint-disable react/jsx-no-useless-fragment */
 import { useCallback, useState } from "react";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
 import clsx from "clsx";
@@ -212,7 +212,7 @@ interface ScheduleListProps {
 }
 function ScheduleList(props: ScheduleListProps) {
   return (
-    <div className="relative w-[354px] h-full flex flex-col overflow-y-auto border-l border-border-secondary dark:border-border-tertiary font-body dark:bg-base-100 ">
+    <div className="relative w-full h-full flex flex-col overflow-y-auto font-body dark:bg-base-100 ">
       <div className="px-4 xl:px-6 pt-6 pb-5">
         <div className="flex justify-between">
           <div>
@@ -383,35 +383,26 @@ export default function Schedules(props: Props) {
   );
 
   return (
-    <Transition
-      as="div"
-      show={props.visible}
-      className="h-full overflow-hidden flex-shrink-0 font-body "
-      enter="transition-[width] duration-300 ease-in-out"
-      enterFrom="w-0"
-      enterTo="w-[354px]"
-      leave="transition-[width] duration-300 ease-in-out"
-      leaveFrom="w-[354px]"
-      leaveTo="w-0"
-    >
-      {showAddForm ? (
-        <AddScheduleForm
-          documentId={props.documentId}
-          onClose={onCloseAddForm}
-          onSubmit={createSchedule}
-        />
-      ) : (
-        <ScheduleList
-          schedules={schedules}
-          isLimited={false}
-          isPublished={props.isPublished}
-          onAddSchedule={onAddSchedule}
-          onDeleteSchedule={onDeleteSchedule}
-          onPublish={props.onPublish}
-          publishing={props.publishing}
-          onHide={props.onHide}
-        />
-      )}
-    </Transition>
+    <>
+      {props.visible &&
+        (showAddForm ? (
+          <AddScheduleForm
+            documentId={props.documentId}
+            onClose={onCloseAddForm}
+            onSubmit={createSchedule}
+          />
+        ) : (
+          <ScheduleList
+            schedules={schedules}
+            isLimited={false}
+            isPublished={props.isPublished}
+            onAddSchedule={onAddSchedule}
+            onDeleteSchedule={onDeleteSchedule}
+            onPublish={props.onPublish}
+            publishing={props.publishing}
+            onHide={props.onHide}
+          />
+        ))}
+    </>
   );
 }

@@ -1,8 +1,8 @@
+/* eslint-disable react/jsx-no-useless-fragment */
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
-import { Transition } from "@headlessui/react";
 import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 import type * as Y from "yjs";
 
@@ -11,8 +11,8 @@ import { useNotebookAI } from "../Editor/hooks/useNotebookAI";
 import type { APIDataSources } from "../Editor/hooks/useDataSources";
 
 import { MiniChatInput } from "./MiniChatInput";
-import ChangesPanel from "./ChangesPanel";
-
+/* import ChangesPanel from "./ChangesPanel";
+ */
 // =====================================
 // ⬢  Types
 // =====================================
@@ -120,7 +120,6 @@ export const MiniChatEmptyState: React.FC<MiniChatEmptyStateProps> = ({
   </div>
 );
 
-// ── Loading bubble ──────────────────────────────────────────────────────────
 
 const LoadingBubble: React.FC = () => (
   <div className="flex justify-start">
@@ -132,7 +131,6 @@ const LoadingBubble: React.FC = () => (
   </div>
 );
 
-// ── Main MiniChat ───────────────────────────────────────────────────────────
 
 interface MiniChatProps {
   visible: boolean;
@@ -238,55 +236,47 @@ export const MiniChat: React.FC<MiniChatProps> = ({
   }, [searchParams]);
 
   return (
-    <Transition
-      as="div"
-      show={visible}
-      className="h-full overflow-hidden flex-shrink-0 font-body"
-      enter="transition-[width] duration-300 ease-in-out"
-      enterFrom="w-0"
-      enterTo="w-[354px]"
-      leave="transition-[width] duration-300 ease-in-out"
-      leaveFrom="w-[354px]"
-      leaveTo="w-0"
-    >
-      <div className="relative w-[354px] flex flex-col overflow-y-auto border-l dark:border-border-tertiary border-border-secondary h-full bg-white dark:bg-base-100">
-        <MiniChatHeader onCancel={onClose} />
+    <>
+      {visible && (
+        <div className="relative w-full flex flex-col overflow-y-auto  h-full bg-white dark:bg-base-100">
+          <MiniChatHeader onCancel={onClose} />
 
-        <div className="flex-1 overflow-y-auto py-6 px-4">
-          {messages.length === 0 ? (
-            <MiniChatEmptyState onSelectPrompt={handleSendSafe} />
-          ) : (
-            <div className="flex flex-col w-full gap-4">
-              {messages.map(msg =>
-                msg.isLoading ? (
-                  <LoadingBubble key={msg.id} />
-                ) : (
-                  <div
-                    key={msg.id}
-                    className={`flex ${msg.isUser ? "justify-end" : "justify-start"}`}
-                  >
+          <div className="flex-1 overflow-y-auto py-6 px-4">
+            {messages.length === 0 ? (
+              <MiniChatEmptyState onSelectPrompt={handleSendSafe} />
+            ) : (
+              <div className="flex flex-col w-full gap-4">
+                {messages.map(msg =>
+                  msg.isLoading ? (
+                    <LoadingBubble key={msg.id} />
+                  ) : (
                     <div
-                      className={`${
-                        msg.isUser
-                          ? "bg-[#DEFCFE] dark:bg-[#121417]"
-                          : "bg-[#F1F3F4] dark:bg-[#121417]"
-                      } text-ink-500 dark:text-ink-400 px-4 py-2 rounded-2xl max-w-[75%] text-sm`}
+                      key={msg.id}
+                      className={`flex ${msg.isUser ? "justify-end" : "justify-start"}`}
                     >
-                      {msg.text}
+                      <div
+                        className={`${
+                          msg.isUser
+                            ? "bg-[#DEFCFE] dark:bg-[#121417]"
+                            : "bg-[#F1F3F4] dark:bg-[#121417]"
+                        } text-ink-500 dark:text-ink-400 px-4 py-2 rounded-2xl max-w-[75%] text-sm`}
+                      >
+                        {msg.text}
+                      </div>
                     </div>
-                  </div>
-                )
-              )}
-              <div ref={bottomRef} />
-            </div>
-          )}
-        </div>
+                  )
+                )}
+                <div ref={bottomRef} />
+              </div>
+            )}
+          </div>
 
-        <div className="pb-4 md:px-4">
-          <ChangesPanel />
-          <MiniChatInput onSend={handleInputSend} disabled={isLoading} />
+          <div className="pb-4 md:px-4">
+            {/*  <ChangesPanel /> */}
+            <MiniChatInput onSend={handleInputSend} disabled={isLoading} />
+          </div>
         </div>
-      </div>
-    </Transition>
+      )}
+    </>
   );
 };

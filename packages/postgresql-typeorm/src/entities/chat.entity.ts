@@ -67,7 +67,4 @@ export class ChatEntity extends AbstractEntity {
 
   @OneToMany(() => MessageEntity, (message) => message.chat)
   messages!: Relation<MessageEntity[]>;
-
-  @OneToMany(() => VoteEntity, (vote) => vote.chat)
-  votes!: Relation<VoteEntity[]>;
 }

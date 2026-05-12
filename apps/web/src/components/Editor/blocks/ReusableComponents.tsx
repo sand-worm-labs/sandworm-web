@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-useless-fragment */
 import { v4 as uuidv4 } from "uuid";
 import type * as Y from "yjs";
 import React, { useCallback, useState } from "react";
@@ -249,75 +250,67 @@ export default function ReusableComponents(props: Props) {
   );
 
   return (
-    <Transition
-      as="div"
-      show={props.visible}
-      className="h-full overflow-hidden flex-shrink-0 font-body "
-      enter="transition-[width] duration-300 ease-in-out"
-      enterFrom="w-0"
-      enterTo="w-[354px]"
-      leave="transition-[width] duration-300 ease-in-out"
-      leaveFrom="w-[354px]"
-      leaveTo="w-0"
-    >
-      <div className="relative w-[354px] flex flex-col border-l  border-border-secondary h-full bg-white dark:bg-base-100  font-body  dark:border-border-tertiary">
-        <div className="flex justify-between border-b p-6 space-x-3 border-border-secondary  dark:border-border-tertiary">
-          <div>
-            <h3 className="text-lg font-medium leading-6 text-ink-100 dark:text-white pr-1.5">
-              Reusable Components
-            </h3>
-            <p className="text-ink-400 text-sm pt-1">
-              Click a component to add it to the current page.
-            </p>
-          </div>
-          <button
-            type="button"
-            className="absolute z-10 top-7 transform rounded-full border border-gray-300  text-ink-400 bg-base-100 hover:bg-gray-100 w-6 h-6 flex justify-center items-center right-3 -translate-x-1/2 dark:border-border-tertiary "
-            onClick={props.onHide}
-          >
-            <ChevronDoubleRightIcon className="w-3 h-3" />
-          </button>
-        </div>
-        {data.size > 0 || isLoading ? (
-          <>
-            {isLoading && (
-              <div className="flex items-center justify-center h-full">
-                <Spin />
-              </div>
-            )}
-            <ScrollBar className="overflow-y-auto">
-              <ul className="flex-1">
-                {data.map(component => (
-                  <li
-                    key={component.id}
-                    className={clsx(
-                      "border-border-secondary dark:border-border-tertiary border-b"
-                    )}
-                  >
-                    <ReusableComponentItem
-                      workspaceId={props.workspaceId}
-                      component={component}
-                      onUse={onUse}
-                      onRemove={onRemove}
-                      canUse={props.yDoc !== undefined}
-                    />
-                  </li>
-                ))}
-              </ul>
-            </ScrollBar>
-          </>
-        ) : (
-          <div className="flex-1 p-4">
-            <div className="flex items-center justify-center h-full text-ink-300 dark:text-ink-400 rounded-lg border border-dashed  border-border-secondary  dark:border-border-tertiary p-8 text-center font-body font-medium flex-col bg-[#FBFBFB] dark:bg-base-100 ">
-              <ScheduleIcon />
-              <p className="mt-2 text-[0.9rem] ">
-                You have no reusable components. Save a block to create one.
+    <>
+      {props.visible && (
+        <div className="relative w-full flex flex-col  h-full bg-white dark:bg-base-100 font-body dark:border-border-tertiary">
+          <div className="flex justify-between border-b p-6 space-x-3 border-border-secondary dark:border-border-tertiary">
+            <div>
+              <h3 className="text-lg font-medium leading-6 text-ink-100 dark:text-white pr-1.5">
+                Reusable Components
+              </h3>
+              <p className="text-ink-400 text-sm pt-1">
+                Click a component to add it to the current page.
               </p>
             </div>
+            <button
+              type="button"
+              className="absolute z-10 top-7 transform rounded-full border border-gray-300 text-ink-400 bg-base-100 hover:bg-gray-100 w-6 h-6 flex justify-center items-center right-3 -translate-x-1/2 dark:border-border-tertiary"
+              onClick={props.onHide}
+            >
+              <ChevronDoubleRightIcon className="w-3 h-3" />
+            </button>
           </div>
-        )}
-      </div>
-    </Transition>
+          {data.size > 0 || isLoading ? (
+            <>
+              {isLoading && (
+                <div className="flex items-center justify-center h-full">
+                  <Spin />
+                </div>
+              )}
+              <ScrollBar className="overflow-y-auto">
+                <ul className="flex-1">
+                  {data.map(component => (
+                    <li
+                      key={component.id}
+                      className={clsx(
+                        "border-border-secondary dark:border-border-tertiary border-b"
+                      )}
+                    >
+                      <ReusableComponentItem
+                        workspaceId={props.workspaceId}
+                        component={component}
+                        onUse={onUse}
+                        onRemove={onRemove}
+                        canUse={props.yDoc !== undefined}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              </ScrollBar>
+            </>
+          ) : (
+            <div className="flex-1 p-4">
+              <div className="flex items-center justify-center h-full text-ink-300 dark:text-ink-400 rounded-lg border border-dashed border-border-secondary dark:border-border-tertiary p-8 text-center font-body font-medium flex-col bg-[#FBFBFB] dark:bg-base-100">
+                <ScheduleIcon />
+                <p className="mt-2 text-[0.9rem]">
+                  You have no reusable components. Save a block to create one.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </>
   );
 }
 
