@@ -8,7 +8,6 @@ volumes:
   sandworm-qdrant-data:
 
 services:
-
   ###########################
   # PostgreSQL Database
   ###########################
@@ -40,12 +39,6 @@ services:
       - "6334:6334"
     volumes:
       - sandworm-qdrant-data:/qdrant/storage:z
-    networks:
-      - sandworm-net
-
-  redis:
-    container_name: sandworm-redis
-    image: redis:alpine
     networks:
       - sandworm-net
 
@@ -109,7 +102,7 @@ services:
     command: >
       jupyter server --ip=0.0.0.0 --ZMQChannelsWebsocketConnection.iopub_data_rate_limit=1.0e10 --ZMQChannelsWebsocketConnection.iopub_msg_rate_limit=1.0e6 --ServerApp.max_body_size=107374182400 --no-browser
     healthcheck:
-      test: [ "CMD-SHELL", "curl -f http://localhost:8888/api || exit 1" ]
+      test: ["CMD-SHELL", "curl -f http://localhost:8888/api || exit 1"]
       interval: 5s
       timeout: 10s
       retries: 5
@@ -123,8 +116,8 @@ services:
     volumes:
       - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
     ports:
-      - '8080:8080'
-      - '8081:8081'
+      - "8080:8080"
+      - "8081:8081"
     networks:
       - sandworm-net
     extra_hosts:

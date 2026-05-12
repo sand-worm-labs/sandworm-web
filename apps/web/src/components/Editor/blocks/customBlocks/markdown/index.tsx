@@ -1,25 +1,58 @@
 import type * as Y from "yjs";
 import { useEffect, useRef, useState, useCallback } from "react";
-import { EditorView, keymap, lineNumbers } from "@codemirror/view";
+import { EditorView, keymap } from "@codemirror/view";
 import { EditorState } from "@codemirror/state";
 import { markdown as markdownLang } from "@codemirror/lang-markdown";
+import { syntaxHighlighting, HighlightStyle } from "@codemirror/language";
 import { defaultKeymap, historyKeymap } from "@codemirror/commands";
 import { yCollab } from "y-codemirror.next";
-import { marked } from "marked";
+import MarkdownIt from "markdown-it";
+import { full as markdownItEmoji } from "markdown-it-emoji";
+import markdownItFootnote from "markdown-it-footnote";
+import markdownItDeflist from "markdown-it-deflist";
+import markdownItAbbr from "markdown-it-abbr";
+import markdownItSup from "markdown-it-sup";
+import markdownItSub from "markdown-it-sub";
+import markdownItMark from "markdown-it-mark";
+import markdownItIns from "markdown-it-ins";
+import hljs from "highlight.js";
 import clsx from "clsx";
 import type { ConnectDragPreview } from "react-dnd";
 import type { MarkdownBlock } from "@sandworm/editor";
+import { tags as t } from "@lezer/highlight";
 
 import useEditorAwareness from "../../../hooks/useEditorAwareness";
 import type { DashboardMode } from "../../Dashboard";
 
 // =====================================
-// ⬢ Marked Config
-//   Set once at module level — not per-render.
-//   gfm: GitHub Flavored Markdown (tables, task lists, strikethrough)
-//   breaks: false — double newline for paragraph, single for <br>
+// ⬢ markdown-it Config
 // =====================================
-marked.setOptions({ gfm: true, breaks: false });
+const md = new MarkdownIt({
+  html: true,
+  linkify: true,
+  typographer: true, // (c) → © , "quotes" → "quotes", --- → —
+  highlight(code, lang) {
+    const language = lang && hljs.getLanguage(lang) ? lang : "plaintext";
+    const highlighted = hljs.highlight(code, { language }).value;
+    const encoded = btoa(unescape(encodeURIComponent(code)));
+    return `
+      <div class="sw-code-block" data-code="${encoded}">
+        <div class="sw-code-block__header">
+          <span class="sw-code-block__lang">${language}</span>
+          <button class="sw-code-block__copy" type="button" data-copy="${encoded}" aria-label="Copy code">Copy</button>
+        </div>
+        <pre><code class="hljs language-${language}">${highlighted}</code></pre>
+      </div>`;
+  },
+})
+  .use(markdownItEmoji)
+  .use(markdownItFootnote)
+  .use(markdownItDeflist)
+  .use(markdownItAbbr)
+  .use(markdownItSup)
+  .use(markdownItSub)
+  .use(markdownItMark)
+  .use(markdownItIns);
 
 // =====================================
 // ⬢ Types
@@ -38,39 +71,67 @@ interface Props {
 
 // =====================================
 // ⬢ CodeMirror Theme
-//   Minimal — inherits font from parent.
-//   Matches the sandworm dark/light surface tokens.
 // =====================================
-const sandwormTheme = EditorView.theme({
-  "&": {
-    fontSize: "0.875rem",
-    fontFamily: "inherit",
-    backgroundColor: "transparent",
-    height: "100%",
+const sandwormTheme = EditorView.theme(
+  {
+    "&": {
+      color: "#1a1a1a",
+      backgroundColor: "transparent",
+      fontSize: "13px",
+      fontFamily: "'Geist Mono', monospace",
+    },
+    "&.cm-focused": { outline: "none" },
+    ".cm-content": {
+      caretColor: "#1a1a1a",
+      paddingLeft: "8px",
+      fontFamily: "'Geist Mono', monospace",
+    },
+    ".cm-scroller": {
+      fontFamily: "'Geist Mono', monospace !important",
+    },
+    ".cm-cursor, .cm-dropCursor": { borderLeftColor: "#1a1a1a" },
+    "&.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection":
+      { backgroundColor: "#dce4f5" },
+    ".cm-selectionMatch": { backgroundColor: "#e8edf8" },
+    ".cm-activeLine": { backgroundColor: "transparent" },
   },
-  ".cm-content": {
-    padding: "0.5rem 0",
-    caretColor: "var(--color-primary)",
-  },
-  ".cm-line": { padding: "0 0.25rem" },
-  ".cm-focused": { outline: "none" },
-  ".cm-gutters": {
-    backgroundColor: "transparent",
-    border: "none",
-    color: "var(--color-ink-200)",
-    fontSize: "0.75rem",
-  },
-  ".cm-activeLineGutter": { backgroundColor: "transparent" },
-  ".cm-activeLine": { backgroundColor: "rgba(99,60,180,0.06)" },
-  ".cm-selectionBackground, ::selection": {
-    backgroundColor: "rgba(99,60,180,0.15) !important",
-  },
-});
+  { dark: false }
+);
+
+// =====================================
+// ⬢ Markdown Highlight Style
+// =====================================
+const markdownHighlight = HighlightStyle.define([
+  { tag: t.heading1, color: "#7B2FBE", fontWeight: "bold", fontSize: "1.1em" },
+  { tag: t.heading2, color: "#7B2FBE", fontWeight: "bold" },
+  { tag: t.heading3, color: "#7B2FBE", fontWeight: "bold" },
+  { tag: t.heading, color: "#7B2FBE", fontWeight: "bold" },
+
+  { tag: t.strong, fontWeight: "bold" },
+  { tag: t.emphasis, fontStyle: "italic", color: "#555555" },
+
+  { tag: t.monospace, color: "#2E9E5B", fontFamily: "'Geist Mono', monospace" },
+
+  { tag: t.special(t.string), color: "#2E9E5B" },
+
+  { tag: t.tagName, color: "#C96A10" },
+  { tag: t.angleBracket, color: "#555555" },
+  { tag: t.attributeName, color: "#7B2FBE" },
+  { tag: t.attributeValue, color: "#2E9E5B" },
+
+  { tag: t.url, color: "#0b6e99" },
+  { tag: t.link, color: "#0b6e99" },
+
+  { tag: t.quote, color: "#8B8FA8", fontStyle: "italic" },
+
+  { tag: t.processingInstruction, color: "#7B2FBE" },
+  { tag: t.punctuation, color: "#555555" },
+
+  { tag: t.comment, color: "#8B8FA8", fontStyle: "italic" },
+]);
 
 // =====================================
 // ⬢ useCodeMirror
-//   Mounts a CodeMirror 6 instance bound to a Y.Text via yCollab.
-//   Destroyed and recreated if source identity changes (new block).
 // =====================================
 function useCodeMirror({
   containerRef,
@@ -85,34 +146,19 @@ function useCodeMirror({
   onFocus: () => void;
   onBlur: () => void;
 }) {
-  const viewRef = useRef<EditorView | null>(null);
-
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current) return () => {};
 
     const state = EditorState.create({
       doc: source.toString(),
       extensions: [
-        // ── Yjs binding ──────────────────────────────────────────────────
-        // yCollab keeps CodeMirror and Y.Text in sync bidirectionally.
-        // undoManager: false — let Yjs handle undo natively via y-undo.
         yCollab(source, null, { undoManager: false }),
-
-        // ── Language ─────────────────────────────────────────────────────
-        markdownLang(),
-
-        // ── Keymaps ──────────────────────────────────────────────────────
+        markdownLang({ htmlTagLanguage: undefined }),
+        syntaxHighlighting(markdownHighlight, { fallback: true }),
         keymap.of([...defaultKeymap, ...historyKeymap]),
-
-        // ── Read-only ────────────────────────────────────────────────────
         EditorState.readOnly.of(!isEditable),
-
-        // ── Visual ───────────────────────────────────────────────────────
-        lineNumbers(),
         sandwormTheme,
         EditorView.lineWrapping,
-
-        // ── Focus/blur events → editor awareness ─────────────────────────
         EditorView.domEventHandlers({
           focus: () => {
             onFocus();
@@ -127,36 +173,55 @@ function useCodeMirror({
     });
 
     const view = new EditorView({ state, parent: containerRef.current });
-    viewRef.current = view;
-
     return () => {
       view.destroy();
-      viewRef.current = null;
     };
-    // source identity change = new block = remount
-  }, [source, isEditable]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  return viewRef;
+  }, [source, isEditable]);
 }
 
 // =====================================
-// ⬢ Preview
-//   Renders marked HTML. dangerouslySetInnerHTML is unavoidable for
-//   markdown preview — sanitize if you ever accept untrusted input.
+// ⬢ MarkdownPreview
 // =====================================
 const MarkdownPreview = ({ source }: { source: Y.Text }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const [html, setHtml] = useState(
-    () => marked.parse(source.toString()) as string
+    () => md.render(source.toString()) as string
   );
 
   useEffect(() => {
-    const update = () => {
-      setHtml(marked.parse(source.toString()) as string);
-    };
-
+    const update = () => setHtml(md.render(source.toString()) as string);
     source.observe(update);
     return () => source.unobserve(update);
   }, [source]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return () => {};
+
+    const handleClick = (e: MouseEvent) => {
+      const btn = (e.target as HTMLElement).closest<HTMLButtonElement>(
+        "[data-copy]"
+      );
+      if (!btn) return;
+
+      const encoded = btn.getAttribute("data-copy") ?? "";
+      try {
+        const text = decodeURIComponent(escape(atob(encoded)));
+        navigator.clipboard.writeText(text).then(() => {
+          const original = btn.textContent;
+          btn.textContent = "Copied!";
+          setTimeout(() => {
+            btn.textContent = original;
+          }, 1500);
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    container.addEventListener("click", handleClick);
+    return () => container.removeEventListener("click", handleClick);
+  }, [html]);
 
   if (!html.trim()) {
     return (
@@ -167,12 +232,23 @@ const MarkdownPreview = ({ source }: { source: Y.Text }) => {
   }
 
   return (
-    <div
-      className="prose prose-sm sm:prose-base max-w-full font-body sandworm-prose"
-      // marked returns sanitized HTML for trusted input (your own users)
-      // Add DOMPurify here if this ever renders untrusted third-party content
-      dangerouslySetInnerHTML={{ __html: html }}
-    />
+    <>
+      <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css"
+        media="(prefers-color-scheme: light)"
+      />
+      <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css"
+        media="(prefers-color-scheme: dark)"
+      />
+      <div
+        ref={containerRef}
+        className="sw-markdown-preview prose prose-sm sm:prose-base max-w-full font-body sandworm-prose"
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
+    </>
   );
 };
 
@@ -186,7 +262,7 @@ const ModeToggle = ({
   mode: Mode;
   onChange: (m: Mode) => void;
 }) => (
-  <div className="flex items-center gap-x-1 text-xs text-ink-300 select-none">
+  <div className="flex items-center gap-x-1 text-xs select-none">
     {(["edit", "preview"] as Mode[]).map(m => (
       <button
         key={m}
@@ -215,10 +291,8 @@ const MarkdownBlock = (props: Props) => {
   const [mode, setMode] = useState<Mode>("edit");
   const [isFocused, setFocused] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-
   const [, editorAPI] = useEditorAwareness();
 
-  // ── Editor awareness callbacks ────────────────────────────────────────────
   const onFocus = useCallback(() => {
     setFocused(true);
     editorAPI.insert(id, { scrollIntoView: false });
@@ -229,7 +303,6 @@ const MarkdownBlock = (props: Props) => {
     editorAPI.blur();
   }, [editorAPI]);
 
-  // ── CodeMirror instance ───────────────────────────────────────────────────
   useCodeMirror({
     containerRef,
     source,
@@ -238,20 +311,16 @@ const MarkdownBlock = (props: Props) => {
     onBlur,
   });
 
-  // ── Cursor insert focus ───────────────────────────────────────────────────
   useEffect(() => {
     if (
       props.isCursorInserting &&
       props.isCursorWithin &&
       containerRef.current
     ) {
-      const cmContent =
-        containerRef.current.querySelector<HTMLElement>(".cm-content");
-      cmContent?.focus();
+      containerRef.current.querySelector<HTMLElement>(".cm-content")?.focus();
     }
   }, [props.isCursorInserting, props.isCursorWithin]);
 
-  // ── Border state ──────────────────────────────────────────────────────────
   const ringColor = (() => {
     if (isFocused && !props.belongsToMultiTabGroup && props.isEditable)
       return "border border-border-focus dark:border-border-tertiary";
@@ -271,7 +340,6 @@ const MarkdownBlock = (props: Props) => {
     return "";
   })();
 
-  // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div
       data-testid={`MarkdownBlock-${id}`}
@@ -297,27 +365,22 @@ const MarkdownBlock = (props: Props) => {
           }
         )}
       >
-        {/* Header bar */}
         <div className="flex items-center justify-between px-3 py-1.5 border-b border-border-secondary dark:border-border-tertiary">
-          <span className="text-xs text-ink-300 font-medium">Markdown</span>
+          <span className="text-xs text-ink-300 font-medium font-mono">
+            Markdown
+          </span>
           {props.isEditable && <ModeToggle mode={mode} onChange={setMode} />}
         </div>
 
-        {/* Body */}
         <div
           className={clsx(
-            props.dashboardMode
-              ? "px-4 py-4 h-full overflow-y-auto"
-              : "p-2 px-3"
+            props.dashboardMode ? "px-4 py-4 h-full overflow-y-auto" : "p-3"
           )}
         >
-          {/* CodeMirror mount point — always in DOM so the instance stays alive.
-              Hidden in preview mode rather than unmounted to avoid destroy/remount. */}
           <div
             ref={containerRef}
-            className={clsx("min-h-[3rem]", mode === "preview" && "hidden")}
+            className={clsx(mode === "preview" && "hidden")}
           />
-
           {mode === "preview" && <MarkdownPreview source={source} />}
         </div>
       </div>

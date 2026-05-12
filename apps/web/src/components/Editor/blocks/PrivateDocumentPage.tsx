@@ -431,12 +431,12 @@ function PrivateDocumentPageInner(
           >
             <button
               type="button"
-              className="flex items-center rounded-md px-3 py-1 text-sm bg-white dark:bg-base-100  dark:text-ink-100  hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 group relative border border-border-secondary  dark:border-border-tertiary"
+              className="flex items-center rounded-lg px-3 py-1 text-sm    text-white hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 group relative border-none  bg-primary"
               onClick={onPublish}
               disabled={props.publishing}
             >
               <BookUpIcon
-                className="w-5 h-5 rotate-12 group-hover:rotate-0 transition transition-transform duration-400"
+                className="xl:w-5 xl:h-5 h-4 w-4 rotate-12 group-hover:rotate-0 transition transition-transform duration-400"
                 strokeWidth={1}
               />
               <span>Save</span>

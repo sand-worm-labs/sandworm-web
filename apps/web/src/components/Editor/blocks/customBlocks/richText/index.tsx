@@ -23,17 +23,35 @@ import type { DashboardMode } from "../../Dashboard";
 
 import ImageExtension from "./ImageExtension";
 import FormattingToolbar from "./FormattingToolbar";
+import { MarkdownExtension } from "./MarkdownExtention";
 
-const useBlockEditor = ({
-  content,
-  isEditable,
-  setTitle,
-}: {
+
+// =====================================
+// ⬢ Types
+// =====================================
+interface UseBlockEditorArgs {
   content: Y.XmlFragment;
   isEditable: boolean;
   setTitle: (title: string) => void;
-}) => {
+}
+
+interface Props {
+  block: Y.XmlElement<RichTextBlock>;
+  belongsToMultiTabGroup: boolean;
+  isEditable: boolean;
+  dragPreview: ConnectDragPreview | null;
+  dashboardMode: DashboardMode | null;
+  isCursorWithin: boolean;
+  isCursorInserting: boolean;
+}
+
+
+// =====================================
+// ⬢ useBlockEditor
+// =====================================
+const useBlockEditor = ({ content, isEditable, setTitle }: UseBlockEditorArgs) => {
   const [isSpellcheckEnabled] = useState(false);
+
   const editor = useEditor(
     {
       immediatelyRender: false,
@@ -42,43 +60,41 @@ const useBlockEditor = ({
       editable: isEditable,
       extensions: [
         TaskList,
-        TaskItem.configure({
-          nested: true,
-        }),
+        TaskItem.configure({ nested: true }),
+
         StarterKit.configure({
-          history: false,
+          undoRedo: false, 
           dropcursor: false,
         }),
+
+        Collaboration.configure({ fragment: content }),
+
         Underline.configure({
-          HTMLAttributes: {
-            class: "my-custom-class",
-          },
+          HTMLAttributes: { class: "my-custom-class" },
         }),
-        Collaboration.configure({
-          fragment: content,
-        }),
-        Placeholder.configure({
-          placeholder: "Click here to start adding content.",
-        }),
+        TextStyleKit,
+        Color.configure({ types: ["textStyle"] }),
+        Highlight.configure({ multicolor: true }),
+
         Link.extend({ inclusive: false }).configure({
           HTMLAttributes: {
-            class: "cursor-pointer text-ink-400  hover:text-gray-700",
+            class: "cursor-pointer text-ink-400 hover:text-gray-700",
             target: "_blank",
           },
         }),
-        TextStyleKit,
-        Color.configure({
-          types: ["textStyle"],
-        }),
-        Highlight.configure({
-          multicolor: true,
-        }),
-        ImageExtension.configure({
-          inline: true,
-          allowBase64: true,
-        }),
-        MathExtension.configure({
-          evaluation: false,
+        ImageExtension.configure({ inline: true, allowBase64: true }),
+        Youtube.configure({ inline: true }),
+
+     
+        MathExtension.configure({ evaluation: false }),
+
+        // ── Markdown paste/copy ────────────────────────────────────────────
+        //   Must come AFTER all content extensions so the serializer/parser
+        //   can see every registered node type. Order matters here.
+        MarkdownExtension,
+
+        Placeholder.configure({
+          placeholder: "Click here to start adding content.",
         }),
         Extension.create({
           name: "sandwormKeyboardShortcuts",
@@ -89,10 +105,8 @@ const useBlockEditor = ({
             },
           }),
         }),
-        Youtube.configure({
-          inline: true,
-        }),
       ],
+
       onUpdate({ editor: currentEditor }) {
         const editorJson = currentEditor.getJSON()?.content;
         const firstNode = editorJson?.[0]?.content?.[0];
@@ -108,7 +122,7 @@ const useBlockEditor = ({
           autocapitalize: "off",
           spellcheck: isSpellcheckEnabled ? "true" : "false",
           class:
-            " min-h-full prose sm:prose-base prose-sm max-w-full rounded-sm focus:outline-0 whitespace-pre-wrap ph-no-capture font-body sandworm-prose",
+            "min-h-full prose sm:prose-base prose-sm max-w-full rounded-sm focus:outline-0 whitespace-pre-wrap ph-no-capture font-body sandworm-prose",
         },
       },
     },
@@ -118,10 +132,8 @@ const useBlockEditor = ({
   useEffect(
     () => () => {
       editor?.destroy();
-
-      // manually destroy collaboration undo manager
       try {
-        // @ts-ignore
+        // @ts-ignore — internal y-undo undo manager must be destroyed manually
         const undoManager = editor?.state["y-undo$"]?.undoManager;
         if (undoManager) {
           undoManager.destroy();
@@ -137,33 +149,22 @@ const useBlockEditor = ({
   return { editor };
 };
 
-interface Props {
-  block: Y.XmlElement<RichTextBlock>;
-  belongsToMultiTabGroup: boolean;
-  isEditable: boolean;
-  dragPreview: ConnectDragPreview | null;
-  dashboardMode: DashboardMode | null;
-  isCursorWithin: boolean;
-  isCursorInserting: boolean;
-}
+
+// =====================================
+// ⬢ Main RichText Block
+// =====================================
 const RichTextBlock = (props: Props) => {
-  const id = props.block.getAttribute("id")!;
+  const id      = props.block.getAttribute("id")!;
   const content = props.block.getAttribute("content")!;
+
   const setTitle = useCallback(
-    (title: string) => {
-      props.block.setAttribute("title", title);
-    },
+    (title: string) => { props.block.setAttribute("title", title); },
     [props.block]
   );
 
   const [, editorAPI] = useEditorAwareness();
 
-  const { editor } = useBlockEditor({
-    content,
-    setTitle,
-
-    isEditable: props.isEditable,
-  });
+  const { editor } = useBlockEditor({ content, setTitle, isEditable: props.isEditable });
 
   useEffect(() => {
     if (editor && props.isCursorInserting && props.isCursorWithin) {
@@ -172,46 +173,38 @@ const RichTextBlock = (props: Props) => {
   }, [editor, props.isCursorInserting, props.isCursorWithin]);
 
   useEffect(() => {
-    if (!editor) {
-      return () => {};
-    }
+    if (!editor) return () => {};
 
-    const onFocus = () => {
-      editorAPI.insert(id, { scrollIntoView: false });
-    };
+    const onFocus = () => editorAPI.insert(id, { scrollIntoView: false });
+    const onBlur  = () => editorAPI.blur();
+
     editor.on("focus", onFocus);
-
-    const onBlur = () => {
-      editorAPI.blur();
-    };
-    editor.on("blur", onBlur);
+    editor.on("blur",  onBlur);
 
     return () => {
       editor.off("focus", onFocus);
-      editor.off("blur", onBlur);
+      editor.off("blur",  onBlur);
     };
   }, [editor, id, editorAPI.insert, editorAPI.blur]);
 
-  const ringColor =
-    editor?.isFocused && !props.belongsToMultiTabGroup && props.isEditable
-      ? " border border-border-focus dark:border-border-tertiary"
-      : !editor?.isFocused &&
-          !props.belongsToMultiTabGroup &&
-          props.isEditable &&
-          props.isCursorWithin &&
-          !props.isCursorInserting
-        ? " border border-border-tertiary "
-        : props.dashboardMode?._tag === "editing" &&
-            props.dashboardMode.position === "expanded"
-          ? "border border-border-focus"
-          : "";
+  const ringColor = (() => {
+    if (editor?.isFocused && !props.belongsToMultiTabGroup && props.isEditable)
+      return "border border-border-focus dark:border-border-tertiary";
+
+    if (!editor?.isFocused && !props.belongsToMultiTabGroup && props.isEditable
+        && props.isCursorWithin && !props.isCursorInserting)
+      return "border border-border-tertiary";
+
+    if (props.dashboardMode?._tag === "editing" && props.dashboardMode.position === "expanded")
+      return "border border-border-focus";
+
+    return "";
+  })();
 
   return (
     <div
       data-testid={`RichTextBlock-${id}`}
-      ref={d => {
-        props.dragPreview?.(d);
-      }}
+      ref={d => { props.dragPreview?.(d); }}
       data-block-id={id}
       className="flex flex-col"
     >
@@ -224,9 +217,7 @@ const RichTextBlock = (props: Props) => {
             "rounded-tl-none rounded-lg border border-border-tertiary":
               props.belongsToMultiTabGroup,
             "rounded-tl-none rounded-lg border border-border-secondary":
-              props.belongsToMultiTabGroup &&
-              props.isCursorWithin &&
-              !props.isCursorInserting,
+              props.belongsToMultiTabGroup && props.isCursorWithin && !props.isCursorInserting,
             "rounded-lg": !props.belongsToMultiTabGroup,
           }
         )}
@@ -234,9 +225,7 @@ const RichTextBlock = (props: Props) => {
         <div
           role="toolbar"
           aria-label="Text formatting tools"
-          onMouseDown={e =>
-            console.log("toolbar mousedown — target:", e.target)
-          }
+          onMouseDown={e => console.log("toolbar mousedown — target:", e.target)}
           className={clsx(
             "overflow-visible transition-all duration-150 ease-out",
             editor?.isFocused ? "max-h-12 opacity-100" : "max-h-0 opacity-0"
@@ -249,13 +238,7 @@ const RichTextBlock = (props: Props) => {
           )}
         </div>
 
-        <div
-          className={clsx(
-            props.dashboardMode
-              ? "px-4 py-4 h-full overflow-y-auto"
-              : "p-2 px-5"
-          )}
-        >
+        <div className={clsx(props.dashboardMode ? "px-4 py-4 h-full overflow-y-auto" : "p-2 px-5")}>
           <EditorContent editor={editor} />
         </div>
       </div>

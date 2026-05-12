@@ -87,11 +87,11 @@ body{
     font-weight: 700;
   }
 
-  .font-body {
+  .font-primary {
     font-family: "AzeretMono", sans-serif;
   }
 
-  .font-body .font-medium{
+  .font-primary .font-medium{
     font-family: "AzeretMono", sans-serif;
     font-weight: 500;
   }
