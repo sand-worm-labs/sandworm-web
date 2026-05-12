@@ -1795,6 +1795,9 @@ const Editor = (props: Props) => {
                 isEditable={
                   props.isEditable && !props.isApp && props.role !== "viewer"
                 }
+                onGenerateWithAI={() => {
+                  "console.log(work";
+                }}
               />
             </div>
 
