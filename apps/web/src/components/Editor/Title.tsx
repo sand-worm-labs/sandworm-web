@@ -1,3 +1,7 @@
+// =====================================
+// ⬢ Imports
+// =====================================
+import { BsStars } from "react-icons/bs";
 import type * as Y from "yjs";
 import { EditorContent, useEditor } from "@tiptap/react";
 import Collaboration from "@tiptap/extension-collaboration";
@@ -8,7 +12,55 @@ import { mergeAttributes, Node } from "@tiptap/core";
 import clsx from "clsx";
 import { useEffect } from "react";
 
+import { TooltipV2 } from "@/components/Editor/blocks/ToolTips";
+
 import { TitleSkeleton } from "./blocks/ContentSkeleton";
+
+// =====================================
+// ⬢ Types
+// =====================================
+interface TitleAIButtonProps {
+  onClick: () => void;
+  className?: string;
+}
+
+// =====================================
+// ⬢ Component
+// =====================================
+export function TitleAIButton({ onClick, className }: TitleAIButtonProps) {
+  return (
+    <TooltipV2<HTMLButtonElement>
+      title="Generate with AI"
+      active
+      position="bottom"
+    >
+      {ref => (
+        <button
+          ref={ref}
+          type="button"
+          onClick={onClick}
+          aria-label="Generate title with AI"
+          className={[
+            "flex items-center justify-center w-7 h-7",
+            "rounded-full border border-[#B5C8DB]",
+            "bg-white dark:bg-[#30302E]",
+            "text-gray-500 dark:text-ink-400",
+            "hover:text-violet-500 hover:border-violet-300",
+            "dark:hover:border-violet-500/40 dark:hover:text-violet-400",
+            "transition-all duration-150 shadow-sm",
+            "opacity-0 group-hover:opacity-100",
+            "translate-y-0.5 group-hover:translate-y-0",
+            className,
+          ]
+            .filter(Boolean)
+            .join(" ")}
+        >
+          <BsStars className="w-3.5 h-3.5" />
+        </button>
+      )}
+    </TooltipV2>
+  );
+}
 
 export type Level = 1 | 2 | 3 | 4 | 5 | 6;
 
@@ -54,6 +106,7 @@ interface Props {
   isEditable: boolean;
   isLoading: boolean;
   style?: string;
+  onGenerateWithAI?: () => void;
 }
 
 function Title(props: Props) {
@@ -123,10 +176,20 @@ function Title(props: Props) {
   }, [props.content]);
 
   return (
-    <div className="font-body ">
+    <div className="font-body">
       <TitleSkeleton visible={props.isLoading} />
-      <div className={clsx(props.isLoading && "hidden")}>
-        <EditorContent editor={editor} />
+
+      <div
+        className={clsx(
+          "group flex items-center gap-2",
+          props.isLoading && "hidden"
+        )}
+      >
+        <EditorContent editor={editor} className="flex-1" />
+
+        {props.onGenerateWithAI && (
+          <TitleAIButton onClick={props.onGenerateWithAI} />
+        )}
       </div>
     </div>
   );
