@@ -3,15 +3,19 @@ import { CurrentUser } from '@sandworm/graphql';
 import { ChatService } from './chat.service';
 import { Chat } from './model/chat.model';
 import { Message } from './model/message.model';
-import { CreateChatInput, SendMessageInput, UpdateChatInput } from './dto/chat.dto';
+import { CreateChatInput, SendMessageInput, UpdateChatInput, EditMessageInput } from './dto/chat.dto';
 
 @Resolver(() => Chat)
 export class ChatResolver {
   constructor(private readonly chatService: ChatService) {}
 
-  @Query(() => [Chat], { name: 'chats', description: 'List all chats for the current user' })
-  async getChats(@CurrentUser('id') userId: string): Promise<Chat[]> {
-    return this.chatService.getChats(userId);
+  @Query(() => [Chat], { name: 'chats', description: 'List chats for workspace/document' })
+  async getChats(
+    @CurrentUser('id') userId: string,
+    @Args('workspaceId') workspaceId: string,
+    @Args('documentId') documentId: string,
+  ): Promise<Chat[]> {
+    return this.chatService.getChats(userId, workspaceId, documentId);
   }
 
   @Query(() => Chat, { name: 'chat', description: 'Get a chat with its messages' })
@@ -54,11 +58,20 @@ export class ChatResolver {
     return this.chatService.deleteChat(chatId, userId);
   }
 
-  @Mutation(() => Message, { name: 'sendMessage', description: 'Add a user message to a chat' })
+  @Mutation(() => Message, { name: 'sendMessage', description: 'Send message (chat or block edit)' })
   async sendMessage(
     @CurrentUser('id') userId: string,
+    @Args('chatId') chatId: string,
     @Args('input') input: SendMessageInput,
   ): Promise<Message> {
-    return this.chatService.addUserMessage(userId, input);
+    return this.chatService.addUserMessage(userId, chatId, input);
+  }
+
+  @Mutation(() => Message, { name: 'editMessage', description: 'Edit an existing message' })
+  async editMessage(
+    @CurrentUser('id') userId: string,
+    @Args('input') input: EditMessageInput,
+  ): Promise<Message> {
+    return this.chatService.editMessage(userId, input);
   }
 }

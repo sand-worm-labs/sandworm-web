@@ -1,5 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { BooleanField, DateField, StringField, UUIDField } from '@sandworm/graphql';
+import { DateField, StringField, UUIDField } from '@sandworm/graphql';
 import { GraphQLJSON } from 'graphql-type-json';
 import { MessageEntity } from '@sandworm/postgresql-typeorm';
 
