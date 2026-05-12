@@ -1,5 +1,6 @@
 import type * as Y from "yjs";
 import { useEffect, useRef, useState, useCallback } from "react";
+import { Transition } from "@headlessui/react";
 import { EditorView, keymap } from "@codemirror/view";
 import { EditorState } from "@codemirror/state";
 import { markdown as markdownLang } from "@codemirror/lang-markdown";
@@ -20,6 +21,7 @@ import clsx from "clsx";
 import type { ConnectDragPreview } from "react-dnd";
 import type { MarkdownBlock } from "@sandworm/editor";
 import { tags as t } from "@lezer/highlight";
+import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
 import useEditorAwareness from "../../../hooks/useEditorAwareness";
 import type { DashboardMode } from "../../Dashboard";
@@ -57,8 +59,6 @@ const md = new MarkdownIt({
 // =====================================
 // ⬢ Types
 // =====================================
-type Mode = "edit" | "preview";
-
 interface Props {
   block: Y.XmlElement<MarkdownBlock>;
   belongsToMultiTabGroup: boolean;
@@ -106,27 +106,19 @@ const markdownHighlight = HighlightStyle.define([
   { tag: t.heading2, color: "#7B2FBE", fontWeight: "500" },
   { tag: t.heading3, color: "#7B2FBE", fontWeight: "500" },
   { tag: t.heading, color: "#7B2FBE", fontWeight: "500" },
-
   { tag: t.strong, fontWeight: "bold" },
   { tag: t.emphasis, fontStyle: "italic", color: "#555555" },
-
   { tag: t.monospace, color: "#2E9E5B", fontFamily: "'Geist Mono', monospace" },
-
   { tag: t.special(t.string), color: "#2E9E5B" },
-
   { tag: t.tagName, color: "#C96A10" },
   { tag: t.angleBracket, color: "#555555" },
   { tag: t.attributeName, color: "#7B2FBE" },
   { tag: t.attributeValue, color: "#2E9E5B" },
-
   { tag: t.url, color: "#0b6e99" },
   { tag: t.link, color: "#0b6e99" },
-
   { tag: t.quote, color: "#8B8FA8", fontStyle: "italic" },
-
   { tag: t.processingInstruction, color: "#7B2FBE" },
   { tag: t.punctuation, color: "#555555" },
-
   { tag: t.comment, color: "#8B8FA8", fontStyle: "italic" },
 ]);
 
@@ -173,9 +165,7 @@ function useCodeMirror({
     });
 
     const view = new EditorView({ state, parent: containerRef.current });
-    return () => {
-      view.destroy();
-    };
+    return () => view.destroy();
   }, [source, isEditable]);
 }
 
@@ -253,32 +243,32 @@ const MarkdownPreview = ({ source }: { source: Y.Text }) => {
 };
 
 // =====================================
-// ⬢ ModeToggle
+// ⬢ SectionToggle
 // =====================================
-const ModeToggle = ({
-  mode,
-  onChange,
+const SectionToggle = ({
+  label,
+  collapsed,
+  onToggle,
 }: {
-  mode: Mode;
-  onChange: (m: Mode) => void;
+  label: string;
+  collapsed: boolean;
+  onToggle: () => void;
 }) => (
-  <div className="flex items-center gap-x-1 text-xs select-none">
-    {(["edit", "preview"] as Mode[]).map(m => (
-      <button
-        key={m}
-        type="button"
-        onClick={() => onChange(m)}
+  <button
+    type="button"
+    onClick={onToggle}
+    className="flex items-center gap-x-1 group"
+  >
+    <div className="relative w-3.5 h-3.5">
+      <ChevronDownIcon
         className={clsx(
-          "px-2 py-0.5 rounded-md capitalize transition-colors",
-          mode === m
-            ? "bg-primary/15 text-primary font-medium"
-            : "hover:bg-primary/10 text-ink-300"
+          "absolute inset-0 w-3.5 h-3.5 text-ink-300 transition-transform duration-200",
+          collapsed && "-rotate-90"
         )}
-      >
-        {m}
-      </button>
-    ))}
-  </div>
+      />
+    </div>
+    <span className="text-xs text-ink-300 font-mono font-medium">{label}</span>
+  </button>
 );
 
 // =====================================
@@ -288,11 +278,15 @@ const MarkdownBlock = (props: Props) => {
   const id = props.block.getAttribute("id")!;
   const source = props.block.getAttribute("source")!;
 
-  const [mode, setMode] = useState<Mode>("edit");
+  // ─── State ───
+  const [isSourceCollapsed, setSourceCollapsed] = useState(false);
+  const [isPreviewCollapsed, setPreviewCollapsed] = useState(false);
   const [isFocused, setFocused] = useState(false);
+
   const containerRef = useRef<HTMLDivElement>(null);
   const [, editorAPI] = useEditorAwareness();
 
+  // ─── Handlers ───
   const onFocus = useCallback(() => {
     setFocused(true);
     editorAPI.insert(id, { scrollIntoView: false });
@@ -321,7 +315,8 @@ const MarkdownBlock = (props: Props) => {
     }
   }, [props.isCursorInserting, props.isCursorWithin]);
 
-  const ringColor = (() => {
+  // ─── Derived: border ring ───
+  const ringClass = (() => {
     if (isFocused && !props.belongsToMultiTabGroup && props.isEditable)
       return "border border-border-focus dark:border-border-tertiary";
     if (
@@ -340,6 +335,10 @@ const MarkdownBlock = (props: Props) => {
     return "";
   })();
 
+  // ─── Derived: source line count for transition height ───
+  const sourceLineCount = source.toString().split("\n").length;
+  const sourceHeight = `${Math.max(sourceLineCount, 3) * 20 + 24}px`;
+
   return (
     <div
       data-testid={`MarkdownBlock-${id}`}
@@ -351,13 +350,12 @@ const MarkdownBlock = (props: Props) => {
     >
       <div
         className={clsx(
-          "ring-border-focus ring-offset-4",
+          ringClass,
           props.dashboardMode ? "h-full overflow-y-auto" : "",
-          ringColor,
           {
-            "rounded-tl-none rounded-lg border border-border-tertiary":
+            "rounded-tl-none rounded-xl border border-border-tertiary":
               props.belongsToMultiTabGroup,
-            "rounded-tl-none rounded-lg border border-border-secondary":
+            "rounded-tl-none rounded-xl border border-border-secondary":
               props.belongsToMultiTabGroup &&
               props.isCursorWithin &&
               !props.isCursorInserting,
@@ -365,24 +363,68 @@ const MarkdownBlock = (props: Props) => {
           }
         )}
       >
+        {/* ── Block header ── */}
         <div className="flex items-center justify-between px-3 py-1.5 border-b border-border-secondary dark:border-border-tertiary">
-          <span className="text-xs text-ink-300 font-medium font-mono">
+          <div className="flex items-center gap-x-3">
+            <SectionToggle
+              label="source"
+              collapsed={isSourceCollapsed}
+              onToggle={() => setSourceCollapsed(v => !v)}
+            />
+            <SectionToggle
+              label="preview"
+              collapsed={isPreviewCollapsed}
+              onToggle={() => setPreviewCollapsed(v => !v)}
+            />
+          </div>
+          <span className="text-[10px] text-ink-400 font-mono tracking-wide uppercase select-none">
             Markdown
           </span>
-          {props.isEditable && <ModeToggle mode={mode} onChange={setMode} />}
         </div>
 
-        <div
-          className={clsx(
-            props.dashboardMode ? "px-4 py-4 h-full overflow-y-auto" : "p-3"
-          )}
+        {/* ── Source (CodeMirror) ── */}
+        <Transition
+          show={!isSourceCollapsed}
+          unmount={false}
+          enter="transition-all ease-in duration-200 overflow-hidden"
+          enterFrom="max-h-0 opacity-0"
+          enterTo="max-h-[var(--source-height)] opacity-100"
+          leave="transition-all ease-out duration-200 overflow-hidden"
+          leaveFrom="max-h-[var(--source-height)] opacity-100"
+          leaveTo="max-h-0 opacity-0"
         >
           <div
             ref={containerRef}
-            className={clsx(mode === "preview" && "hidden")}
+            style={{ "--source-height": sourceHeight } as React.CSSProperties}
+            className={clsx(
+              "p-3",
+              isPreviewCollapsed
+                ? ""
+                : "border-b border-border-secondary dark:border-border-tertiary"
+            )}
           />
-          {mode === "preview" && <MarkdownPreview source={source} />}
-        </div>
+        </Transition>
+
+        {/* ── Preview ── */}
+        <Transition
+          show={!isPreviewCollapsed}
+          enter="transition-all ease-in duration-200 overflow-hidden"
+          enterFrom="max-h-0 opacity-0"
+          enterTo="max-h-[2000px] opacity-100"
+          leave="transition-all ease-out duration-200 overflow-hidden"
+          leaveFrom="max-h-[2000px] opacity-100"
+          leaveTo="max-h-0 opacity-0"
+        >
+          <div
+            className={clsx(
+              props.dashboardMode
+                ? "px-4 py-4 h-full overflow-y-auto"
+                : "px-4 py-3"
+            )}
+          >
+            <MarkdownPreview source={source} />
+          </div>
+        </Transition>
       </div>
     </div>
   );
