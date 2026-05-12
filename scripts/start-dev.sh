@@ -111,6 +111,7 @@ if [ "$CLEAN_VOLUMES" = true ]; then
     pnpm run seed:run
 fi
 
+
 echo
 echo "▶ Starting dev server..."
 cd "$ROOT_DIR"

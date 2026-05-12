@@ -12,10 +12,7 @@ export class FileService {
   private readonly logger = new Logger(FileService.name);
 
   constructor(private readonly jupyterService: JupyterService) { }
-
-  /**
-   * List all files in workspace
-   */
+ 
   async listFiles(input: ListFilesInput): Promise<SandwormFile[]> {
     const { workspaceId, path } = input;
     this.logger.log(`Listing files for workspace ${workspaceId}`);
