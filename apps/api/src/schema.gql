@@ -265,8 +265,10 @@ type Message {
 type Chat {
   id: String!
   userId: String!
+  workspaceId: String!
+  documentId: String!
   title: String!
-  private: Boolean!
+  isPrivate: Boolean!
   lastContext: JSON
   messages: [Message!]
   createdAt: DateTime!
@@ -692,18 +694,24 @@ input RemoveUserFromWorkspaceInput {
 }
 
 input CreateChatInput {
-  title: String!
+  workspaceId: String!
+  documentId: String!
+  message: String!
+
+  """Optional custom title. Auto-generated from message if not provided."""
+  title: String
 }
 
 input UpdateChatInput {
   chatId: String!
   title: String
-  private: Boolean
 }
 
 input SendMessageInput {
   chatId: String!
   content: String!
+  blockId: String
+  model: String!
 }
 
 input CreateCommentInput {

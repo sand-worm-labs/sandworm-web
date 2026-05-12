@@ -16,9 +16,11 @@ import { DocumentEntity } from './document.entity';
 import { EnvironmentEntity } from './environment.entity';
 import { EnvironmentVariableEntity } from './environment_variable.entity';
 import { UserWorkspaceEntity } from './user-workspace.entity';
+import { ChatEntity } from './chat.entity';
 
 @Entity('workspaces')
 export class WorkspaceEntity extends AbstractEntity {
+  
   @PrimaryGeneratedColumn('uuid', {
     primaryKeyConstraintName: 'PK_workspace_id',
   })
@@ -48,7 +50,7 @@ export class WorkspaceEntity extends AbstractEntity {
   @Column({ name: 'assistant_model', default: 'anthropic/claude-sonnet-4.6' })
   assistantModel!: string;
 
-  // Relations
+  // ─── Relations ───
   @ManyToOne(() => UserEntity, (user) => user.ownedWorkspaces, {
     onDelete: 'CASCADE',
   })
@@ -57,6 +59,9 @@ export class WorkspaceEntity extends AbstractEntity {
 
   @OneToMany(() => DocumentEntity, (document) => document.workspace)
   documents!: Relation<DocumentEntity[]>;
+
+  @OneToMany(() => ChatEntity, (chat) => chat.workspace)
+  chats!: Relation<ChatEntity[]>;
 
   @OneToMany(() => TutorialEntity, (tutorial) => tutorial.workspace)
   onboardingTutorials!: Relation<TutorialEntity[]>;
