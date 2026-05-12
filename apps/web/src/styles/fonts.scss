@@ -52,8 +52,15 @@
 
 @font-face {
   font-family: "Moderat";
-  src: url("/fonts/moderat//Moderat-Medium.ttf") format("truetype");
+  src: url("/fonts/moderat/Moderat-Medium.ttf") format("truetype");
   font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Moderat Condensed";
+  src: url("../../public/fonts/moderat/Moderat-Condensed-Black.woff") format("truetype");
+  font-weight: 900;
   font-style: normal;
 }
 

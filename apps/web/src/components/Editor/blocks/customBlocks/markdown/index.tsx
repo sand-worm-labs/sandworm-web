@@ -30,7 +30,7 @@ import type { DashboardMode } from "../../Dashboard";
 const md = new MarkdownIt({
   html: true,
   linkify: true,
-  typographer: true, // (c) → © , "quotes" → "quotes", --- → —
+  typographer: true,
   highlight(code, lang) {
     const language = lang && hljs.getLanguage(lang) ? lang : "plaintext";
     const highlighted = hljs.highlight(code, { language }).value;
@@ -102,10 +102,10 @@ const sandwormTheme = EditorView.theme(
 // ⬢ Markdown Highlight Style
 // =====================================
 const markdownHighlight = HighlightStyle.define([
-  { tag: t.heading1, color: "#7B2FBE", fontWeight: "bold", fontSize: "1.1em" },
-  { tag: t.heading2, color: "#7B2FBE", fontWeight: "bold" },
-  { tag: t.heading3, color: "#7B2FBE", fontWeight: "bold" },
-  { tag: t.heading, color: "#7B2FBE", fontWeight: "bold" },
+  { tag: t.heading1, color: "#7B2FBE", fontWeight: "500", fontSize: "1em" },
+  { tag: t.heading2, color: "#7B2FBE", fontWeight: "500" },
+  { tag: t.heading3, color: "#7B2FBE", fontWeight: "500" },
+  { tag: t.heading, color: "#7B2FBE", fontWeight: "500" },
 
   { tag: t.strong, fontWeight: "bold" },
   { tag: t.emphasis, fontStyle: "italic", color: "#555555" },
