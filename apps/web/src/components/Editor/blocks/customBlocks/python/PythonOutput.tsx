@@ -43,7 +43,7 @@ const EXPENSIVE_TYPES = new Set<PythonBlock["result"][0]["type"]>([
 // =====================================
 
 const SANDWORM_TABLE_CSS = `
-  @import url('https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-mono/style.css');
+  @import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600&display=swap');
 
   * { box-sizing: border-box; }
 
@@ -53,7 +53,7 @@ const SANDWORM_TABLE_CSS = `
     font-family: "Geist Mono", ui-monospace, monospace;
     font-size: 12px;
     background: transparent;
-    color: #111827;
+    color: #455768;
   }
 
   .dataframe-wrap {
@@ -78,7 +78,7 @@ const SANDWORM_TABLE_CSS = `
     text-align: left;
     font-weight: 500;
     font-size: 11px;
-    text-transform: capitalize;
+    text-transform: uppercase;
     letter-spacing: 0.06em;
     color: #9ca3af;
     white-space: nowrap;
@@ -94,14 +94,14 @@ const SANDWORM_TABLE_CSS = `
 
   tbody td {
     padding: 9px 16px;
-    color: #374151;
+    color: #6c757d;
     border: none !important;
     vertical-align: middle;
   }
 
   thead th:first-child,
   tbody td:first-child {
-    font-weight: 600;
+    font-weight: 500;
     color: #6b7280;
     min-width: 40px;
   }
