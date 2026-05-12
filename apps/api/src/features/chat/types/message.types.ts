@@ -1,17 +1,3 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-  JoinColumn,
-  OneToOne,
-  type Relation,
-} from 'typeorm';
-import { AbstractEntity } from './abstract.entity';
-import { ChatEntity } from './chat.entity';
-import { VoteEntity } from './vote.entity';
-
-
 export enum MessageRole {
   USER      = 'user',
   ASSISTANT = 'assistant',
@@ -37,6 +23,7 @@ export enum FinishReason {
   CONTENT_FILTER = 'content_filter',
   ERROR          = 'error',
 }
+
 
 interface BaseContentPart {
   type: MessageContentType;
@@ -109,6 +96,7 @@ export type MessageContentPart =
   | ToolResultPart
   | DocumentPart;
 
+
 export interface MessageUsage {
   promptTokens: number;
   completionTokens: number;
@@ -123,45 +111,4 @@ export interface MessageAttachment {
   mimeType?: string;
   name?: string;
   size?: number;
-}
-
-
-@Entity('messages')
-export class MessageEntity extends AbstractEntity {
-  @PrimaryGeneratedColumn('uuid', { primaryKeyConstraintName: 'PK_message_id' })
-  id!: string;
-
-  @ManyToOne(() => ChatEntity, (chat) => chat.messages, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'chat_id' })
-  chat!: Relation<ChatEntity>;
-
-  @Column({ type: 'enum', enum: MessageRole })
-  role!: MessageRole;
-
-  @Column({ type: 'text', nullable: true })
-  content?: string;
-
-  @Column({ type: 'jsonb', nullable: true })
-  parts?: MessageContentPart[];
-
-  @Column({ nullable: true })
-  model?: string;
-
-  @Column({ type: 'enum', enum: FinishReason, nullable: true })
-  finishReason?: FinishReason;
-
-  @Column({ nullable: true })
-  generationId?: string;
-
-  @Column({ nullable: true })
-  focusedBlockId?: string;
-
-  @Column({ type: 'jsonb', nullable: true })
-  usage?: MessageUsage;
-
-  @Column({ type: 'jsonb', nullable: true })
-  attachments?: MessageAttachment[];
-
-  @OneToOne(() => VoteEntity, (vote) => vote.message)
-  vote?: Relation<VoteEntity>;
 }

@@ -1,10 +1,19 @@
 import { InputType } from '@nestjs/graphql';
-import { BooleanFieldOptional, StringField, StringFieldOptional, UUIDField } from '@sandworm/graphql';
+import { StringField, StringFieldOptional, UUIDField, UUIDFieldOptional } from '@sandworm/graphql';
 
 @InputType()
 export class CreateChatInput {
-  @StringField({ minLength: 1, maxLength: 255 })
-  title!: string;
+  @UUIDField()
+  workspaceId!: string;
+
+  @UUIDField()
+  documentId!: string;
+
+  @StringField({ minLength: 1, maxLength: 2000 })
+  message!: string;
+
+  @StringFieldOptional({ description: 'Optional custom title. Auto-generated from message if not provided.' })
+  title?: string;
 }
 
 @InputType()
@@ -14,9 +23,6 @@ export class UpdateChatInput {
 
   @StringFieldOptional({ minLength: 1, maxLength: 255 })
   title?: string;
-
-  @BooleanFieldOptional()
-  private?: boolean;
 }
 
 @InputType()
@@ -24,6 +30,24 @@ export class SendMessageInput {
   @UUIDField()
   chatId!: string;
 
-  @StringField({ minLength: 1 })
+ @StringField({ minLength: 1, maxLength: 4000 })
   content!: string;
+
+  @UUIDFieldOptional()
+  blockId?: string;
+
+  @StringField()
+  model: string;
+}
+
+@InputType()
+export class EditMessageInput {
+  @UUIDField()
+  messageId: string;
+
+  @UUIDField()
+  chatId: string;
+
+  @StringField({ minLength: 1, maxLength: 4000 })
+  content: string;
 }

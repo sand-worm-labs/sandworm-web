@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class Init1773395873162 implements MigrationInterface {
-    name = 'Init1773395873162'
+export class Init1778590143226 implements MigrationInterface {
+    name = 'Init1778590143226'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
@@ -16,13 +16,31 @@ export class Init1773395873162 implements MigrationInterface {
             )
         `);
         await queryRunner.query(`
+            CREATE TYPE "public"."messages_role_enum" AS ENUM('user', 'assistant', 'system', 'tool')
+        `);
+        await queryRunner.query(`
+            CREATE TYPE "public"."messages_finishreason_enum" AS ENUM(
+                'stop',
+                'tool_calls',
+                'length',
+                'content_filter',
+                'error'
+            )
+        `);
+        await queryRunner.query(`
             CREATE TABLE "messages" (
                 "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
                 "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
-                "role" character varying NOT NULL,
-                "parts" jsonb NOT NULL,
-                "attachments" jsonb NOT NULL,
+                "role" "public"."messages_role_enum" NOT NULL,
+                "content" text,
+                "parts" jsonb,
+                "model" character varying,
+                "finishReason" "public"."messages_finishreason_enum",
+                "generationId" character varying,
+                "focusedBlockId" character varying,
+                "usage" jsonb,
+                "attachments" jsonb,
                 "chat_id" uuid,
                 CONSTRAINT "PK_message_id" PRIMARY KEY ("id")
             )
@@ -32,10 +50,12 @@ export class Init1773395873162 implements MigrationInterface {
                 "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
                 "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+                "user_id" uuid NOT NULL,
+                "workspace_id" uuid NOT NULL,
+                "document_id" uuid NOT NULL,
                 "title" text NOT NULL,
                 "is_visible" boolean NOT NULL DEFAULT false,
                 "last_context" jsonb,
-                "user_id" uuid NOT NULL,
                 CONSTRAINT "PK_chat_id" PRIMARY KEY ("id")
             )
         `);
@@ -225,7 +245,7 @@ export class Init1773395873162 implements MigrationInterface {
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "workspace_id" uuid NOT NULL,
                 "status" "public"."environment_status_enum" NOT NULL DEFAULT 'Stopped',
-                "started_at" TIMESTAMP NOT NULL,
+                "started_at" TIMESTAMP,
                 "last_activity_at" TIMESTAMP,
                 "resource_version" integer NOT NULL DEFAULT '0',
                 "jupyter_token" character varying NOT NULL DEFAULT '',
@@ -319,11 +339,27 @@ export class Init1773395873162 implements MigrationInterface {
             )
         `);
         await queryRunner.query(`
+            CREATE TABLE "document_fork" (
+                "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+                "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+                "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+                "source_document_id" uuid NOT NULL,
+                "forked_document_id" uuid NOT NULL,
+                "user_id" uuid NOT NULL,
+                CONSTRAINT "PK_dbf1454e9ae8d44b47ab2c6c391" PRIMARY KEY ("id")
+            )
+        `);
+        await queryRunner.query(`
+            CREATE TYPE "public"."document_visibility_enum" AS ENUM('WORKSPACE', 'LINK', 'PUBLIC')
+        `);
+        await queryRunner.query(`
             CREATE TABLE "document" (
                 "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
                 "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+                "visibility" "public"."document_visibility_enum" NOT NULL DEFAULT 'WORKSPACE',
                 "title" character varying NOT NULL,
+                "published_slug" character varying,
                 "slug" character varying NOT NULL DEFAULT 'DocumentIcon',
                 "order_index" integer NOT NULL,
                 "deleted_at" TIMESTAMP,
@@ -332,12 +368,17 @@ export class Init1773395873162 implements MigrationInterface {
                 "workspace_id" uuid NOT NULL,
                 "author_id" uuid NOT NULL,
                 "parent_id" uuid,
+                "featuredDocument" boolean NOT NULL DEFAULT false,
                 "runUnexecutedBlocks" boolean NOT NULL DEFAULT false,
                 "runSQLSelection" boolean NOT NULL DEFAULT true,
                 "shareLinksWithoutSidebar" boolean NOT NULL DEFAULT true,
                 "publishedAt" TIMESTAMP,
                 CONSTRAINT "PK_document_id" PRIMARY KEY ("id")
             )
+        `);
+        await queryRunner.query(`
+            CREATE UNIQUE INDEX "IDX_document_published_slug" ON "document" ("published_slug")
+            WHERE "published_slug" IS NOT NULL
         `);
         await queryRunner.query(`
             CREATE TABLE "yjs_document" (
@@ -434,6 +475,14 @@ export class Init1773395873162 implements MigrationInterface {
             ADD CONSTRAINT "FK_chat_user" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
         await queryRunner.query(`
+            ALTER TABLE "chats"
+            ADD CONSTRAINT "FK_chat_workspace" FOREIGN KEY ("workspace_id") REFERENCES "workspaces"("id") ON DELETE CASCADE ON UPDATE NO ACTION
+        `);
+        await queryRunner.query(`
+            ALTER TABLE "chats"
+            ADD CONSTRAINT "FK_chat_document" FOREIGN KEY ("document_id") REFERENCES "document"("id") ON DELETE CASCADE ON UPDATE NO ACTION
+        `);
+        await queryRunner.query(`
             ALTER TABLE "comment"
             ADD CONSTRAINT "FK_comment_document" FOREIGN KEY ("document_id") REFERENCES "document"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
@@ -526,6 +575,18 @@ export class Init1773395873162 implements MigrationInterface {
             ADD CONSTRAINT "FK_aacab3ad4b236b4b2ec57d2b5a6" FOREIGN KEY ("document_id") REFERENCES "document"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
         await queryRunner.query(`
+            ALTER TABLE "document_fork"
+            ADD CONSTRAINT "FK_5aba3ce0267cbfcd192ede7d52b" FOREIGN KEY ("source_document_id") REFERENCES "document"("id") ON DELETE CASCADE ON UPDATE NO ACTION
+        `);
+        await queryRunner.query(`
+            ALTER TABLE "document_fork"
+            ADD CONSTRAINT "FK_3b5a6423f8d46ba69d98c2c136f" FOREIGN KEY ("forked_document_id") REFERENCES "document"("id") ON DELETE CASCADE ON UPDATE NO ACTION
+        `);
+        await queryRunner.query(`
+            ALTER TABLE "document_fork"
+            ADD CONSTRAINT "FK_acf898e8bad50ec52dd732d3544" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE NO ACTION
+        `);
+        await queryRunner.query(`
             ALTER TABLE "document"
             ADD CONSTRAINT "FK_document_workspace" FOREIGN KEY ("workspace_id") REFERENCES "workspaces"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
@@ -579,6 +640,15 @@ export class Init1773395873162 implements MigrationInterface {
         `);
         await queryRunner.query(`
             ALTER TABLE "document" DROP CONSTRAINT "FK_document_workspace"
+        `);
+        await queryRunner.query(`
+            ALTER TABLE "document_fork" DROP CONSTRAINT "FK_acf898e8bad50ec52dd732d3544"
+        `);
+        await queryRunner.query(`
+            ALTER TABLE "document_fork" DROP CONSTRAINT "FK_3b5a6423f8d46ba69d98c2c136f"
+        `);
+        await queryRunner.query(`
+            ALTER TABLE "document_fork" DROP CONSTRAINT "FK_5aba3ce0267cbfcd192ede7d52b"
         `);
         await queryRunner.query(`
             ALTER TABLE "reusable_component" DROP CONSTRAINT "FK_aacab3ad4b236b4b2ec57d2b5a6"
@@ -650,6 +720,12 @@ export class Init1773395873162 implements MigrationInterface {
             ALTER TABLE "comment" DROP CONSTRAINT "FK_comment_document"
         `);
         await queryRunner.query(`
+            ALTER TABLE "chats" DROP CONSTRAINT "FK_chat_document"
+        `);
+        await queryRunner.query(`
+            ALTER TABLE "chats" DROP CONSTRAINT "FK_chat_workspace"
+        `);
+        await queryRunner.query(`
             ALTER TABLE "chats" DROP CONSTRAINT "FK_chat_user"
         `);
         await queryRunner.query(`
@@ -689,7 +765,16 @@ export class Init1773395873162 implements MigrationInterface {
             DROP TABLE "yjs_document"
         `);
         await queryRunner.query(`
+            DROP INDEX "public"."IDX_document_published_slug"
+        `);
+        await queryRunner.query(`
             DROP TABLE "document"
+        `);
+        await queryRunner.query(`
+            DROP TYPE "public"."document_visibility_enum"
+        `);
+        await queryRunner.query(`
+            DROP TABLE "document_fork"
         `);
         await queryRunner.query(`
             DROP TABLE "reusable_component"
@@ -792,6 +877,12 @@ export class Init1773395873162 implements MigrationInterface {
         `);
         await queryRunner.query(`
             DROP TABLE "messages"
+        `);
+        await queryRunner.query(`
+            DROP TYPE "public"."messages_finishreason_enum"
+        `);
+        await queryRunner.query(`
+            DROP TYPE "public"."messages_role_enum"
         `);
         await queryRunner.query(`
             DROP TABLE "votes"
