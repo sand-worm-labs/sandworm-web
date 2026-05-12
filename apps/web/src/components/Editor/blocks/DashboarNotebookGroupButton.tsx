@@ -1,10 +1,11 @@
 import React from "react";
-import { Squares2X2Icon, BookOpenIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
 
 import { Tooltip } from "./ToolTips";
+import { FourSquare } from "@/components/Assets/FourSquare";
+import { Notebook } from "@/components/Assets/Notebook";
 
 interface Props {
   workspaceId: string;
@@ -37,7 +38,7 @@ function DashboardNotebookGroupButton(props: Props) {
           props.documentId
         }/notebook${props.isEditing ? "/edit" : ""}`}
       >
-        <BookOpenIcon className="w-4 h-4" />
+        <Notebook className="w-4 h-4 shrink-0" />
         <span>Notebook</span>
       </Link>
       <Tooltip
@@ -66,7 +67,7 @@ function DashboardNotebookGroupButton(props: Props) {
             );
           }}
         >
-          <Squares2X2Icon className="w-4 h-4" />
+          < FourSquare className="w-4 h-4 shrink-0" />
           <span>Dashboard</span>
         </button>
       </Tooltip>

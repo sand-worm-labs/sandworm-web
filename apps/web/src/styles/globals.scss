@@ -4,7 +4,7 @@
    ║ AUTHOR: Sandworm Team                             
    ╚════════════════════════════════════════════╝ */
 
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&display=swap');
 @import "./fonts.scss";
 @import "./date-picker.scss";
 
@@ -95,6 +95,7 @@
     0 calc(100% - var(--ui-notch-amount))
   );
 }
+
 
 @layer base {
   :root {
@@ -284,6 +285,112 @@
   outline: none !important;
   border: none !important;
   box-shadow: none !important;
+}
+
+.tiptap h1.is-empty::before {
+  content: attr(data-placeholder);
+  color: #adb5bd;
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+/* ── Markdown preview code blocks ─────────────────────────────── */
+.sw-code-block {
+  @apply rounded-lg overflow-hidden border border-border-secondary dark:border-border-tertiary my-4;
+}
+
+.sw-code-block__header {
+  @apply flex items-center justify-between px-4 py-2 bg-gray-50 dark:bg-base-200 border-b border-border-secondary dark:border-border-tertiary;
+}
+
+.sw-code-block__lang {
+  @apply text-xs text-ink-300 font-mono uppercase tracking-wide;
+}
+
+.sw-code-block__copy {
+  @apply text-xs text-ink-300 hover:text-ink-100 transition-colors px-2 py-0.5 rounded hover:bg-primary/10 font-body;
+}
+
+.sw-code-block pre {
+  @apply m-0 p-4 overflow-x-auto;
+  font-family: 'Geist Mono', 'GeistMono', ui-monospace, monospace;
+  font-size: 0.8125rem;
+}
+
+.sw-code-block code {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* Override prose defaults inside markdown preview for code blocks */
+.sw-markdown-preview pre {
+  @apply p-0 bg-transparent;
+}
+
+.sw-markdown-preview code:not(.hljs) {
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.8125em;
+  background-color: #f3f4f6;
+  color: #1a1a1a;
+  padding: 0.15em 0.35em;
+  border-radius: 0.25rem;
+}
+
+/* ── Links ───────────────────────────────────────────────────── */
+.sw-markdown-preview a {
+  color: #0b6e99;
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+.sw-markdown-preview a:hover {
+  color: #0b6e99;
+}
+
+/* ── Lists ───────────────────────────────────────────────────── */
+.sw-markdown-preview ul,
+.sw-markdown-preview ol {
+  padding-left: 1.5rem;
+  margin: 0.75rem 0;
+}
+
+.sw-markdown-preview li {
+  margin: 0.3rem 0;
+}
+
+.sw-markdown-preview li + li {
+  margin-top: 0.25rem;
+}
+
+/* ── Headings ────────────────────────────────────────────────── */
+.sw-markdown-preview h1,
+.sw-markdown-preview h2,
+.sw-markdown-preview h3,
+.sw-markdown-preview h4,
+.sw-markdown-preview h5,
+.sw-markdown-preview h6 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.sw-markdown-preview h1:first-child,
+.sw-markdown-preview h2:first-child,
+.sw-markdown-preview h3:first-child {
+  margin-top: 0;
+}
+
+/* ── Paragraphs ──────────────────────────────────────────────── */
+.sw-markdown-preview p {
+  margin: 0.6rem 0;
+}
+
+/* ── Blockquotes ─────────────────────────────────────────────── */
+.sw-markdown-preview blockquote {
+  border-left: 3px solid #0b6e99;
+  padding-left: 1rem;
+  margin: 0.75rem 0;
+  color: #6b7280;
 }
 
 /* ╔════════════════════════════════════════════╗

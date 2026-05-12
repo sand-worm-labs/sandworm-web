@@ -31,11 +31,13 @@ export const TitleExtension = Node.create<ITitleOptions>({
   group: "block",
 
   defining: true,
+
   addKeyboardShortcuts(this) {
     return {
       Enter: () => true,
     };
   },
+
   renderHTML({ HTMLAttributes }) {
     const { level } = this.options;
 
@@ -71,7 +73,7 @@ function Title(props: Props) {
           },
         }),
         Placeholder.configure({
-          placeholder: "Untitled",
+          placeholder: "Untitled Notebook",
           showOnlyWhenEditable: false,
         }),
         Collaboration.configure({

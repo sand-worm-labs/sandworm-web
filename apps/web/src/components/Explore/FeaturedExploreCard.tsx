@@ -35,10 +35,11 @@ interface FeaturedExploreCardProps {
   stars: number;
   forks: number;
   isSaved?: boolean;
-  isFavorited?: boolean;
+  isFavorite?: boolean;
   onSave?: (id: string) => void;
   onClick?: (id: string) => void;
   variant?: "default" | "purple";
+  
 }
 
 const tagLabels: Record<CardTag, string> = {
@@ -59,7 +60,7 @@ export function FeaturedExploreCard({
   creator,
   stars,
   forks,
-  isFavorited: initialIsFavorited = false,
+  isFavorite,
   onClick,
   variant = "default",
 }: FeaturedExploreCardProps) {
@@ -74,7 +75,7 @@ export function FeaturedExploreCard({
   );
 
   const [isForkModalOpen, setIsForkModalOpen] = useState(false);
-  const [isFavorited, setIsFavorited] = useState(initialIsFavorited);
+  const [isFavorited, setIsFavorited] = useState(isFavorite ?? false);
   const [favoriteCount, setFavoriteCount] = useState(stars);
 
   const formattedDate = formatDate(createdAt);

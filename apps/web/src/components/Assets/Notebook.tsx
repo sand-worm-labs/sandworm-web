@@ -1,10 +1,12 @@
 import React from "react";
+import type { IconProps } from "./Menu/types";
 
-export const Notebook = () => {
+
+export const Notebook: React.FC<IconProps>  = ({ size = 14, className })=> {
   return (
     <svg
-      width="18"
-      height="18"
+    width={size} height={size} 
+    className={className}
       viewBox="0 0 18 18"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

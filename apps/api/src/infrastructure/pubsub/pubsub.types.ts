@@ -26,5 +26,5 @@ export const PING_PROTOCOL_MESSAGE_TYPE = 2;
 export const PONG_PROTOCOL_MESSAGE_TYPE = 3;
 
 // Timing constants
-export const PING_TIMEOUT = 30 * 1000; // 30 seconds
-export const RESYNC_INTERVAL = 30 * 1000; // 30 seconds
+export const PING_TIMEOUT = 1 * 1000;
+export const RESYNC_INTERVAL = 2 * 1000;

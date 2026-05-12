@@ -93,10 +93,10 @@ function MultiBlockSuggestion(props: MultiBlockSuggestionProps) {
                 <button
                   type="button"
                   className={clsx(
-                    active ? "bg-base-100 text-ink-100" : "text-ink-400",
+                    active ? "bg-primary/20 text-ink-100" : "text-ink-400",
                     index === 0 ? "rounded-t-md" : "",
                     index === props.options.length - 1 ? "rounded-b-md" : "",
-                    "flex items-center gap-x-2 w-full text-sm px-4 py-3"
+                    "flex items-center gap-x-2 w-full text-sm px-4 py-3 hover:bg-primary/20"
                   )}
                   onClick={option.onClick}
                 >
