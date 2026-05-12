@@ -25,31 +25,6 @@ import useEditorAwareness from "../../../hooks/useEditorAwareness";
 import type { DashboardMode } from "../../Dashboard";
 
 // =====================================
-// ⬢ Marked Config
-//   Custom renderer wires highlight.js into code blocks and injects
-//   a data-code attribute so the preview copy buttons can read the raw text.
-// =====================================
-/* const renderer: Partial<Renderer> = {
-  code({ text, lang }) {
-    const language = lang && hljs.getLanguage(lang) ? lang : "plaintext";
-    const highlighted = hljs.highlight(text, { language }).value;
-    // data-code carries the raw text for the copy button (base64 to survive HTML escaping)
-    const encoded = btoa(unescape(encodeURIComponent(text)));
-    return `
-      <div class="sw-code-block" data-code="${encoded}">
-        <div class="sw-code-block__header">
-          <span class="sw-code-block__lang">${language}</span>
-          <button class="sw-code-block__copy" type="button" data-copy="${encoded}" aria-label="Copy code">
-            Copy
-          </button>
-        </div>
-        <pre><code class="hljs language-${language}">${highlighted}</code></pre>
-      </div>`;
-  },
-};
-marked.use({ renderer, gfm: true, breaks: false }); */
-
-// =====================================
 // ⬢ markdown-it Config
 // =====================================
 const md = new MarkdownIt({
@@ -125,47 +100,33 @@ const sandwormTheme = EditorView.theme(
 
 // =====================================
 // ⬢ Markdown Highlight Style
-//   Headings get the purple keyword color.
-//   Code spans/fences get the green string color.
-//   HTML tags get the orange name color.
-//   Emphasis/strong get visual weight.
-//   URLs and link text get distinct treatment.
 // =====================================
 const markdownHighlight = HighlightStyle.define([
-  // ## Headings — each level same purple, bold
   { tag: t.heading1, color: "#7B2FBE", fontWeight: "bold", fontSize: "1.1em" },
   { tag: t.heading2, color: "#7B2FBE", fontWeight: "bold" },
   { tag: t.heading3, color: "#7B2FBE", fontWeight: "bold" },
   { tag: t.heading, color: "#7B2FBE", fontWeight: "bold" },
 
-  // **bold** and *italic*
   { tag: t.strong, fontWeight: "bold" },
   { tag: t.emphasis, fontStyle: "italic", color: "#555555" },
 
-  // `inline code` and ```fenced blocks```
   { tag: t.monospace, color: "#2E9E5B", fontFamily: "'Geist Mono', monospace" },
 
-  // code block language tag (```bash, ```ts etc)
   { tag: t.special(t.string), color: "#2E9E5B" },
 
-  // <html> tags
   { tag: t.tagName, color: "#C96A10" },
   { tag: t.angleBracket, color: "#555555" },
   { tag: t.attributeName, color: "#7B2FBE" },
   { tag: t.attributeValue, color: "#2E9E5B" },
 
-  // [link text](url) — url in muted, text normal
   { tag: t.url, color: "#0b6e99" },
   { tag: t.link, color: "#0b6e99" },
 
-  // > blockquote marker
   { tag: t.quote, color: "#8B8FA8", fontStyle: "italic" },
 
-  // --- horizontal rule / list markers
   { tag: t.processingInstruction, color: "#7B2FBE" },
   { tag: t.punctuation, color: "#555555" },
 
-  // comments (HTML <!-- -->)
   { tag: t.comment, color: "#8B8FA8", fontStyle: "italic" },
 ]);
 
@@ -186,7 +147,7 @@ function useCodeMirror({
   onBlur: () => void;
 }) {
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current) return () => {};
 
     const state = EditorState.create({
       doc: source.toString(),
@@ -215,14 +176,11 @@ function useCodeMirror({
     return () => {
       view.destroy();
     };
-  }, [source, isEditable]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [source, isEditable]);
 }
 
 // =====================================
 // ⬢ MarkdownPreview
-//   Renders marked HTML with hljs-highlighted code blocks.
-//   Copy buttons are wired via event delegation on the container —
-//   no per-block React state needed.
 // =====================================
 const MarkdownPreview = ({ source }: { source: Y.Text }) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -230,17 +188,15 @@ const MarkdownPreview = ({ source }: { source: Y.Text }) => {
     () => md.render(source.toString()) as string
   );
 
-  // ── Sync HTML when Y.Text changes ────────────────────────────────────────
   useEffect(() => {
     const update = () => setHtml(md.render(source.toString()) as string);
     source.observe(update);
     return () => source.unobserve(update);
   }, [source]);
 
-  // ── Copy button delegation ────────────────────────────────────────────────
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    if (!container) return () => {};
 
     const handleClick = (e: MouseEvent) => {
       const btn = (e.target as HTMLElement).closest<HTMLButtonElement>(
@@ -258,7 +214,9 @@ const MarkdownPreview = ({ source }: { source: Y.Text }) => {
             btn.textContent = original;
           }, 1500);
         });
-      } catch {}
+      } catch (err) {
+        console.log(err);
+      }
     };
 
     container.addEventListener("click", handleClick);
@@ -275,7 +233,6 @@ const MarkdownPreview = ({ source }: { source: Y.Text }) => {
 
   return (
     <>
-      {/* hljs theme — github-dark works well with both light/dark surfaces */}
       <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css"
@@ -364,7 +321,6 @@ const MarkdownBlock = (props: Props) => {
     }
   }, [props.isCursorInserting, props.isCursorWithin]);
 
-  // ── Border state ──────────────────────────────────────────────────────────
   const ringColor = (() => {
     if (isFocused && !props.belongsToMultiTabGroup && props.isEditable)
       return "border border-border-focus dark:border-border-tertiary";
@@ -409,7 +365,6 @@ const MarkdownBlock = (props: Props) => {
           }
         )}
       >
-        {/* Header */}
         <div className="flex items-center justify-between px-3 py-1.5 border-b border-border-secondary dark:border-border-tertiary">
           <span className="text-xs text-ink-300 font-medium font-mono">
             Markdown
@@ -417,7 +372,6 @@ const MarkdownBlock = (props: Props) => {
           {props.isEditable && <ModeToggle mode={mode} onChange={setMode} />}
         </div>
 
-        {/* Body */}
         <div
           className={clsx(
             props.dashboardMode ? "px-4 py-4 h-full overflow-y-auto" : "p-3"

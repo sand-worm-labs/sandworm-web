@@ -18,6 +18,7 @@ import {
   type YBlockGroup,
   RichTextBlock,
 } from './index.js'
+import { getMarkdownAttributes } from './blocks/markdown.js'
 
 interface SerializeOptions {
   focusedBlockId?: string | null
@@ -149,6 +150,11 @@ function returnSignature(block: YBlock, meta: BlockMeta, allBlocks: ReturnType<t
       const text = extractRichText(b)
       sig = text ? `→ ${text.slice(0, 100)}` : '→ *(empty)*'
     },
+    onMarkdown: (b) => {
+      const text = getMarkdownAttributes(b).source.toString().trim()
+      sig = text ? `→ ${text.slice(0, 100)}` : '→ *(empty)*'
+    },
+  
     onPowerToolbox: (b) => {
       const attrs = getPowerToolboxAttributes(b)
       sig = (!attrs.result || (attrs.result as any[]).length === 0)
@@ -198,6 +204,10 @@ function blockSource(block: YBlock, meta: BlockMeta, allBlocks: ReturnType<typeo
       source = `\`\`\`sql\n${capped}\n\`\`\``
     },
     onRichText: (b) => { source = extractRichText(b) },
+    onMarkdown: (b) => {
+      const raw = getMarkdownAttributes(b).source.toString().trim()
+      source = raw ? `\`\`\`markdown\n${raw}\n\`\`\`` : ''
+    },
     onPowerToolbox: (b) => {
       const attrs = getPowerToolboxAttributes(b)
       const parts = [`**tool:** \`${attrs.toolId ?? '(none)'}\``]
@@ -290,6 +300,11 @@ function focusedBlockDetail(
       lines.push(extractRichText(b) || '*(empty)*')
     },
 
+    onMarkdown: (b) => {
+      const raw = getMarkdownAttributes(b).source.toString().trim()
+      lines.push(raw || '*(empty)*')
+    },
+
     onPowerToolbox: (b) => {
       const attrs = getPowerToolboxAttributes(b)
       lines.push(`**tool_id:** \`${attrs.toolId ?? '(none)'}\``)
@@ -378,6 +393,9 @@ function fingerprintBlock(
         parts.push(a.source.toString(), JSON.stringify(a.result), a.lastQueryTime)
       },
       onRichText: (b) => { parts.push(extractRichText(b)) },
+      onMarkdown: (b) => {
+        parts.push(getMarkdownAttributes(b).source.toString())
+      },
       onPowerToolbox: (b) => {
         const a = getPowerToolboxAttributes(b)
         parts.push(a.toolId, JSON.stringify(a.inputs), a.generatedSource, JSON.stringify(a.result))
@@ -423,6 +441,7 @@ function getLastRunTime(block: YBlock, allBlocks: ReturnType<typeof getBlocks>):
     onDateInput: (b) => { t = getDateInputAttributes(b, allBlocks).executedAt ?? null },
     onPivotTable: (b) => { t = getPivotTableAttributes(b, allBlocks).updatedAt ?? null },
     onRichText: () => {},
+    onMarkdown: () => {},
     onVisualizationV2: () => {},
     onVisualization: () => {},
     onDashboardHeader: () => {},
@@ -459,6 +478,7 @@ function getBlockError(block: YBlock, allBlocks: ReturnType<typeof getBlocks>): 
       err = getPivotTableAttributes(b, allBlocks).error ?? null
     },
     onRichText: () => {},
+    onMarkdown: () => {},
     onInput: () => {},
     onDropdownInput: () => {},
     onDateInput: () => {},
@@ -489,6 +509,7 @@ function buildResultPreview(block: YBlock, allBlocks: ReturnType<typeof getBlock
       }
     },
     onRichText: () => {},
+    onMarkdown: () => {},
     onPowerToolbox: () => {},
     onVisualizationV2: () => {},
     onInput: () => {},
@@ -567,6 +588,7 @@ export function docToMarkdown(
       onPython: () => {},
       onSQL: () => {},
       onRichText: () => {},
+      onMarkdown: () => {},
       onPowerToolbox: () => {},
       onVisualizationV2: () => {},
       onVisualization: () => {},
@@ -591,6 +613,7 @@ export function docToMarkdown(
       },
       onPython: () => {},
       onRichText: () => {},
+      onMarkdown: () => {},
       onPowerToolbox: () => {},
       onVisualizationV2: () => {},
       onInput: () => {},
