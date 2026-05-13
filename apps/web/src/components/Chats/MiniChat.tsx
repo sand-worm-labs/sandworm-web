@@ -2,7 +2,13 @@
 
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+} from "react";
 import { useSearchParams } from "next/navigation";
 import type * as Y from "yjs";
 import { PiX } from "react-icons/pi";
@@ -10,6 +16,7 @@ import { PiX } from "react-icons/pi";
 import { AIChatIcon } from "../Assets/AIChatIcon";
 import { useNotebookAI } from "../Editor/hooks/useNotebookAI";
 import type { APIDataSources } from "../Editor/hooks/useDataSources";
+import { useNotebookBlocks } from "../Editor/hooks/useNotebookBlocks";
 
 import { MiniChatInput } from "./MiniChatInput";
 import { ChatBubble } from "./ChatBubble";
@@ -149,6 +156,15 @@ export const MiniChat: React.FC<MiniChatProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
+  const notebookBlocks = useNotebookBlocks(yDoc);
+
+  const referenceSources = useMemo(
+    () => [{ kind: "block" as const, label: "Blocks", items: notebookBlocks }],
+    [notebookBlocks]
+  );
+
+  console.log(referenceSources, "ref")
+
   const normalizedSources = dataSources
     ? Object.values(dataSources).map(ds => ({
         id: ds.data.id,
@@ -262,7 +278,11 @@ export const MiniChat: React.FC<MiniChatProps> = ({
 
           <div className="pb-4 md:px-4">
             {/*  <ChangesPanel /> */}
-            <MiniChatInput onSend={handleInputSend} disabled={isLoading} />
+            <MiniChatInput
+              onSend={handleInputSend}
+              disabled={isLoading}
+              referenceSources={referenceSources}
+            />
           </div>
         </div>
       )}
