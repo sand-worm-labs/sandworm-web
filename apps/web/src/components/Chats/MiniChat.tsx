@@ -20,6 +20,7 @@ import { useNotebookBlocks } from "../Editor/hooks/useNotebookBlocks";
 
 import { MiniChatInput } from "./MiniChatInput";
 import { ChatBubble } from "./ChatBubble";
+import type { AttachedReference } from "./types";
 
 // =====================================
 // ⬢  Types
@@ -29,6 +30,8 @@ interface Message {
   text: string;
   isUser: boolean;
   isLoading?: boolean;
+  references?: AttachedReference[];
+  files?: File[];
 }
 
 // =====================================
@@ -163,7 +166,7 @@ export const MiniChat: React.FC<MiniChatProps> = ({
     [notebookBlocks]
   );
 
-  console.log(referenceSources, "ref")
+  console.log(referenceSources, "ref");
 
   const normalizedSources = dataSources
     ? Object.values(dataSources).map(ds => ({
@@ -193,12 +196,21 @@ export const MiniChat: React.FC<MiniChatProps> = ({
     },
     []
   );
-
   const handleSend = useCallback(
-    async (text: string) => {
+    async (
+      text: string,
+      references: AttachedReference[] = [],
+      files: File[] = []
+    ) => {
       if (!text.trim() || isLoading) return;
 
-      addMessage({ text, isUser: true });
+      console.log("[MiniChat] sending to backend", {
+        message: text,
+        focusedBlockIds: references.map(r => r.id),
+        fileNames: files.map(f => f.name),
+      });
+
+      addMessage({ text, isUser: true, references, files }); // ← store them
       setIsLoading(true);
 
       const loadingId = addMessage({
@@ -223,16 +235,22 @@ export const MiniChat: React.FC<MiniChatProps> = ({
     [isLoading, addMessage, replaceMessage, generate]
   );
 
+  // Fix handleSendSafe to forward all fields
   const handleSendSafe = useCallback(
-    (text: string) => {
-      handleSend(text).catch(console.error);
+    (text: string, references?: AttachedReference[], files?: File[]) => {
+      handleSend(text, references, files).catch(console.error);
     },
     [handleSend]
   );
 
+  // Fix handleInputSend to stop dropping references and files
   const handleInputSend = useCallback(
-    (data: { message: string; files: File[] }) => {
-      handleSendSafe(data.message);
+    (data: {
+      message: string;
+      files: File[];
+      references: AttachedReference[];
+    }) => {
+      handleSendSafe(data.message, data.references, data.files);
     },
     [handleSendSafe]
   );
@@ -267,6 +285,8 @@ export const MiniChat: React.FC<MiniChatProps> = ({
                       key={msg.id}
                       text={msg.text}
                       isUser={msg.isUser}
+                      references={msg.references}
+                      files={msg.files}
                       onRate={rating => console.log(msg.id, rating)}
                     />
                   )
