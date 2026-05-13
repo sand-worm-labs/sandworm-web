@@ -101,10 +101,11 @@ export const WorkspaceSidebar = () => {
 
   const linkClasses = (href: string) =>
     `flex items-center ${collapsed ? "justify-center" : "justify-start"} gap-3 rounded-xl px-2 py-1.5 text-sm font-medium transition-colors
-     ${pathname === href
-      ? "dark:bg-base-600 bg-base-600 text-primary dark:text-ink-100"
-      : "text-menu-ink dark:text-white hover:bg-base-600 dark:hover:bg-base-600 hover:text-primary hover:text-black dark:hover:text-white"
-    }`;
+     ${
+       pathname === href
+         ? "dark:bg-base-600 bg-base-600 text-primary dark:text-ink-100"
+         : "text-menu-ink dark:text-white hover:bg-base-600 dark:hover:bg-base-600 hover:text-primary hover:text-black dark:hover:text-white"
+     }`;
 
   const [
     documentsState,

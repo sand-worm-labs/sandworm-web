@@ -1830,7 +1830,7 @@ const Editor = (props: Props) => {
         </div>
       </OverlayScrollbarsComponent>
 
-      <AiDiffToolbar
+      {/*    <AiDiffToolbar
         visible
         totalAi={3}
         pendingCount={3}
@@ -1839,7 +1839,7 @@ const Editor = (props: Props) => {
         onAcceptAll={() => {}}
         onRejectAll={() => {}}
         onUndoAll={() => {}}
-      />
+      /> */}
 
       <RemoveBlockDashboardConflictDialog
         yDoc={props.yDoc}

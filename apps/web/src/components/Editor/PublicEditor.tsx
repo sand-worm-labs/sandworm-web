@@ -18,13 +18,13 @@ import {
   getTabsFromBlockGroup,
 } from "@sandworm/editor";
 import type { DataFrame } from "@sandworm/types";
-
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 
 import type { ApiDocument } from "@/types";
 
 import VisualizationV2Block from "../Visualization";
 import VisualizationBlock from "../Visualization";
+
 import DateInputBlock from "./blocks/customBlocks/dateInput";
 import DropdownInputBlock from "./blocks/customBlocks/dropdownInput";
 import FileUploadBlock from "./blocks/customBlocks/fileUpload";
@@ -34,15 +34,16 @@ import RichTextBlock from "./blocks/customBlocks/richText";
 import AnalyticsBlock from "./blocks/customBlocks/PowerToolbox/AnalyticsBlock";
 import SQLBlock from "./blocks/customBlocks/sql";
 import PivotTableBlock from "./blocks/customBlocks/pivotTable";
-
 import { useYDocState } from "./hooks/useYDocs";
-import useEditorAwareness, { EditorAwarenessProvider} from "./hooks/useEditorAwareness";
+import useEditorAwareness, {
+  EditorAwarenessProvider,
+} from "./hooks/useEditorAwareness";
 import type { APIDataSources } from "./hooks/useDataSources";
 import { ContentSkeleton } from "./ContentSkeleton";
 import Title from "./Title";
 import { widthClasses } from "./constants";
-import { getTabIcon } from ".";
 
+import { getTabIcon } from ".";
 
 // ─────────────────────────────────────────────────────────────
 // ⬢ Y.DOC GETTERS
@@ -377,8 +378,8 @@ function PublicTabbedBlock(props: PublicTabbedBlockProps) {
 
   const tabRefs = useMemo(
     () =>
-      getTabsFromBlockGroupId(layout.value, blocks.value, props.id).filter(
-        t => (props.isApp ? !t.isHiddenInPublished : true)
+      getTabsFromBlockGroupId(layout.value, blocks.value, props.id).filter(t =>
+        props.isApp ? !t.isHiddenInPublished : true
       ),
     [props.id, layout, blocks, props.isApp]
   );
@@ -606,10 +607,7 @@ export default function PublicEditor(props: PublicEditorProps) {
     // Cost is negligible — it's just a context with no socket wiring.
     // SQLExtensionProvider intentionally omitted.
     <EditorAwarenessProvider scrollViewRef={scrollViewRef} yDoc={props.yDoc}>
-      <PublicEditorInner
-        {...props}
-        scrollViewRef={scrollViewRef}
-      />
+      <PublicEditorInner {...props} scrollViewRef={scrollViewRef} />
       {props.children}
     </EditorAwarenessProvider>
   );

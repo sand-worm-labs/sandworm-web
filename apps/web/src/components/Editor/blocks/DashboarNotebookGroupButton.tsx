@@ -3,9 +3,10 @@ import Link from "next/link";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
 
-import { Tooltip } from "./ToolTips";
 import { FourSquare } from "@/components/Assets/FourSquare";
 import { Notebook } from "@/components/Assets/Notebook";
+
+import { Tooltip } from "./ToolTips";
 
 interface Props {
   workspaceId: string;
@@ -67,7 +68,7 @@ function DashboardNotebookGroupButton(props: Props) {
             );
           }}
         >
-          < FourSquare className="w-4 h-4 shrink-0" />
+          <FourSquare className="w-4 h-4 shrink-0" />
           <span>Dashboard</span>
         </button>
       </Tooltip>

@@ -51,8 +51,6 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
 
   const handleForkClick = () => setIsForkModalOpen(true);
 
-
-
   const handleFork = async ({
     documentId,
     workspaceId: targetWorkspaceId,
@@ -64,8 +62,7 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
     if (!forked?.id) throw new Error("Fork returned no document.");
   };
 
-  const handleForkSuccess = (targetWorkspaceId: string,) => {
-
+  const handleForkSuccess = (targetWorkspaceId: string) => {
     toast.success("Notebook forked!");
     router.push(`/workspace/${targetWorkspaceId}`);
   };
@@ -104,7 +101,6 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
       >
         <div className="p-2 px-5">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
-
             <div className="flex flex-col items-start gap-2 flex-1 min-w-0">
               <div className="flex space-x-3 items-center w-full">
                 <Avatar className="h-8 w-8 flex-shrink-0">
@@ -128,11 +124,13 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
                   >
                     @{query.author?.username}
                   </Link>
-                  <Link href={`/p/${query.id}`} className="text-[0.95rem] font-medium break-words cursor-pointer hover:underline block">
-                  {query.title}
-
+                  <Link
+                    href={`/p/${query.id}`}
+                    className="text-[0.95rem] font-medium break-words cursor-pointer hover:underline block"
+                  >
+                    {query.title}
                   </Link>
-               
+
                   <p className="text-xs text-ink-400">
                     Created {formattedDate}
                   </p>
@@ -174,7 +172,6 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
                 />
               </button>
             </div>
-
           </div>
         </div>
 

@@ -1,18 +1,19 @@
 /* eslint-disable react/jsx-no-useless-fragment */
+
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
-import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 import type * as Y from "yjs";
+import { PiX } from "react-icons/pi";
 
 import { AIChatIcon } from "../Assets/AIChatIcon";
 import { useNotebookAI } from "../Editor/hooks/useNotebookAI";
 import type { APIDataSources } from "../Editor/hooks/useDataSources";
 
 import { MiniChatInput } from "./MiniChatInput";
-/* import ChangesPanel from "./ChangesPanel";
- */
+import { ChatBubble } from "./ChatBubble";
+
 // =====================================
 // ⬢  Types
 // =====================================
@@ -32,12 +33,12 @@ interface MiniChatHeaderProps {
 
 export const MiniChatHeader: React.FC<MiniChatHeaderProps> = ({ onCancel }) => {
   return (
-    <header className="flex items-center justify-between bg-white dark:bg-base-100 border-b border-border-secondary border-dashed dark:border-border-secondary">
+    <header className="flex items-center justify-between bg-white dark:bg-base-100 border-b border-border-secondary dark:border-border-secondary">
       <div className="flex-col flex">
-        <h3 className="text-lg font-medium leading-6 dark:text-white text-ink-100 px-4 pt-6 xl:px-6">
+        <h3 className="text-base font-medium leading-6 dark:text-white text-ink-100 px-4 pt-3 xl:px-6">
           Sandworm agent
         </h3>
-        <p className="text-sm text-ink-400 px-4 mb-4 xl:px-6">
+        <p className="text-sm text-ink-400 px-4 mb-2 xl:px-6">
           Create deep and insightful analysis
         </p>
       </div>
@@ -45,9 +46,9 @@ export const MiniChatHeader: React.FC<MiniChatHeaderProps> = ({ onCancel }) => {
         type="button"
         aria-label="Cancel chat"
         onClick={() => onCancel?.()}
-        className="absolute z-10 top-7 transform rounded-full border border-gray-300 text-ink-400 bg-base-100 hover:bg-gray-100 w-6 h-6 flex justify-center items-center right-3 -translate-x-1/2 dark:border-border-tertiary"
+        className="absolute z-10 top-7 transform rounded-full  text-ink-400 bg-base-100 hover:bg-gray-100 w-6 h-6 flex justify-center items-center right-3 -translate-x-1/2 dark:border-border-tertiary"
       >
-        <ChevronDoubleRightIcon className="w-3 h-3" />
+        <PiX className="w-4 h-4 text-menu-ink" />
       </button>
     </header>
   );
@@ -100,8 +101,6 @@ const ExamplePrompts: React.FC<ExamplePromptsProps> = ({ onSelect }) => (
   </div>
 );
 
-// ── Empty state ─────────────────────────────────────────────────────────────
-
 interface MiniChatEmptyStateProps {
   onSelectPrompt: (prompt: string) => void;
 }
@@ -120,7 +119,6 @@ export const MiniChatEmptyState: React.FC<MiniChatEmptyStateProps> = ({
   </div>
 );
 
-
 const LoadingBubble: React.FC = () => (
   <div className="flex justify-start">
     <div className="bg-[#F1F3F4] dark:bg-[#121417] text-ink-500 dark:text-ink-400 px-4 py-3 rounded-2xl text-sm flex gap-1 items-center">
@@ -130,7 +128,6 @@ const LoadingBubble: React.FC = () => (
     </div>
   </div>
 );
-
 
 interface MiniChatProps {
   visible: boolean;
@@ -250,20 +247,12 @@ export const MiniChat: React.FC<MiniChatProps> = ({
                   msg.isLoading ? (
                     <LoadingBubble key={msg.id} />
                   ) : (
-                    <div
+                    <ChatBubble
                       key={msg.id}
-                      className={`flex ${msg.isUser ? "justify-end" : "justify-start"}`}
-                    >
-                      <div
-                        className={`${
-                          msg.isUser
-                            ? "bg-[#DEFCFE] dark:bg-[#121417]"
-                            : "bg-[#F1F3F4] dark:bg-[#121417]"
-                        } text-ink-500 dark:text-ink-400 px-4 py-2 rounded-2xl max-w-[75%] text-sm`}
-                      >
-                        {msg.text}
-                      </div>
-                    </div>
+                      text={msg.text}
+                      isUser={msg.isUser}
+                      onRate={rating => console.log(msg.id, rating)}
+                    />
                   )
                 )}
                 <div ref={bottomRef} />

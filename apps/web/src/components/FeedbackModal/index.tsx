@@ -201,6 +201,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                       </p>
                     </div>
                     <button
+                      type="button"
                       onClick={handleClose}
                       className="w-7 h-7 flex items-center justify-center rounded-lg text-ink-400 hover:text-gray-600 hover:bg-gray-100 transition-colors -mt-0.5 -mr-1"
                     >
@@ -221,7 +222,6 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                   </div>
 
                   <div className="overflow-y-auto px-6 pb-6 flex-1 space-y-5">
-                    {/* Report type */}
                     <div>
                       <label className="block text-[12px] font-medium text-ink-100 uppercase tracking-wide mb-2">
                         Feedback type
@@ -420,7 +420,6 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                         </div>
                       )}
 
-                      {/* File list */}
                       {files.length > 0 && (
                         <ul className="mt-2 space-y-1.5">
                           {files.map((file, i) => (
@@ -456,6 +455,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                                 {(file.size / 1024).toFixed(0)}KB
                               </span>
                               <button
+                                type="button"
                                 onClick={() => removeFile(i)}
                                 className="shrink-0 text-gray-300 hover:text-red-400 transition-colors"
                               >
@@ -480,15 +480,16 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                     </div>
                   </div>
 
-                  {/* Footer */}
                   <div className="flex items-center justify-between px-6 py-4 border-t border-border-secondary ">
                     <button
+                      type="button"
                       onClick={handleClose}
                       className="text-[13px] text-ink-100 hover:text-gray-700 transition-colors font-medium"
                     >
                       Cancel
                     </button>
                     <button
+                      type="button"
                       onClick={handleSubmit}
                       disabled={!canSubmit || isSubmitting}
                       className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-medium transition-all ${

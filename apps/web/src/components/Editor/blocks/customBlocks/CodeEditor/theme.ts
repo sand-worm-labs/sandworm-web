@@ -39,7 +39,7 @@ function materialLightTheme(disabled: boolean) {
       },
       ".cm-activeLineGutter": {
         color: "#888888",
-        backgroundColor: disabled ? "#f5f5f5" : "#f9f9f9",
+        backgroundColor: disabled ? "#f5f5f5" : "#ffffff",
       },
     },
     { dark: false }

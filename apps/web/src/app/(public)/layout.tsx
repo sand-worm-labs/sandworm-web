@@ -3,13 +3,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as Y from "yjs";
 import dynamic from "next/dynamic";
+import clsx from "clsx";
 
 import type { ApiDocument } from "@/types";
 import PublicNotebookBanner from "@/components/Editor/PublicNotebookBanner";
 import { widthClasses } from "@/components/Editor/constants";
-import { ContentSkeleton, TitleSkeleton } from "@/components/Editor/ContentSkeleton";
-import clsx from "clsx";
-
+import {
+  ContentSkeleton,
+  TitleSkeleton,
+} from "@/components/Editor/ContentSkeleton";
 
 const PublicEditor = dynamic(() => import("@/components/Editor/PublicEditor"), {
   ssr: false,
@@ -176,10 +178,7 @@ function PublicNotebookPageInner({
 // ⬢ PAGE
 // ─────────────────────────────────────────────────────────────
 
-export default function PublicNotebookPage({
-  workspaceId,
-  documentId,
-}: Props) {
+export default function PublicNotebookPage({ workspaceId, documentId }: Props) {
   const { yDoc, document, error, isSyncing } = usePublicYDoc(documentId);
 
   const content = useMemo(() => {
@@ -209,9 +208,7 @@ export default function PublicNotebookPage({
   return (
     <div className="flex flex-col h-screen bg-base-100 font-body">
       <PublicNotebookBanner />
-      <div className="flex-1 min-w-0 flex overflow-hidden">
-        {content}
-      </div>
+      <div className="flex-1 min-w-0 flex overflow-hidden">{content}</div>
     </div>
   );
 }

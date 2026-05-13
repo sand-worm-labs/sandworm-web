@@ -10,9 +10,10 @@ import { migrateSuccessSQLResult } from "@sandworm/types";
 import clsx from "clsx";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { SparklesIcon } from "@heroicons/react/20/solid";
-import { ArrowDownTrayIcon, ChartPieIcon } from "@heroicons/react/24/solid";
+import { ChartPieIcon } from "@heroicons/react/24/solid";
 import debounce from "lodash.debounce";
 import { Transition } from "@headlessui/react";
+import { PiFileCsvLight } from "react-icons/pi";
 
 import { Tooltip, TooltipV2 } from "../../ToolTips";
 import type { DashboardMode } from "../../Dashboard";
@@ -297,12 +298,12 @@ function SQLSuccess(props: SQLSuccessProps) {
               <button
                 type="button"
                 className={clsx(
-                  " bg-white hover:bg-gray-100 border border-gray-300 py-0.5 px-2 rounded-sm text-ink-400  flex items-center gap-x-1 disabled:bg-gray-200 disabled:border-0 disabled:cursor-not-allowed h-full"
+                  " bg-white hover:bg-gray-100 border border-border-tertiary py-0.5 px-2 rounded-full text-ink-400  flex items-center gap-x-1 disabled:bg-gray-200 disabled:border-0 disabled:cursor-not-allowed h-full"
                 )}
                 disabled={props.isAddVisualizationDisabled}
                 onClick={props.onAddVisualization}
               >
-                <ChartPieIcon className="w-3 h-3" />
+                <ChartPieIcon className="w-3 h-3 shrink-0" />
                 <span>Visualize</span>
               </button>
             </Tooltip>
@@ -324,8 +325,8 @@ function SQLSuccess(props: SQLSuccessProps) {
                 className={clsx(
                   csvRes.loading
                     ? "bg-gray-100"
-                    : "bg-white hover:bg-gray-100 border border-gray-300",
-                  "py-0.5 px-2 rounded-sm text-ink-400  flex items-center gap-x-1 h-full aspect-square"
+                    : "bg-white hover:bg-gray-100 border border-border-tertiary",
+                  "py-0.5 px-2 rounded-full text-ink-400  flex items-center gap-x-1 h-full aspect-square"
                 )}
                 onClick={onDownloadCSV}
               >
@@ -333,7 +334,7 @@ function SQLSuccess(props: SQLSuccessProps) {
                   <Spin />
                 ) : (
                   <>
-                    <ArrowDownTrayIcon className="w-3.5 h-3.5" />
+                    <PiFileCsvLight className="w-3.5 h-3.5 shrink-0" />
                     <span>CSV</span>
                   </>
                 )}

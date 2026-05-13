@@ -39,7 +39,6 @@ interface FeaturedExploreCardProps {
   onSave?: (id: string) => void;
   onClick?: (id: string) => void;
   variant?: "default" | "purple";
-  
 }
 
 const tagLabels: Record<CardTag, string> = {
