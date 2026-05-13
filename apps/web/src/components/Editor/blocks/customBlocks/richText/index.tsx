@@ -25,7 +25,6 @@ import ImageExtension from "./ImageExtension";
 import FormattingToolbar from "./FormattingToolbar";
 import { MarkdownExtension } from "./MarkdownExtention";
 
-
 // =====================================
 // ⬢ Types
 // =====================================
@@ -45,11 +44,14 @@ interface Props {
   isCursorInserting: boolean;
 }
 
-
 // =====================================
 // ⬢ useBlockEditor
 // =====================================
-const useBlockEditor = ({ content, isEditable, setTitle }: UseBlockEditorArgs) => {
+const useBlockEditor = ({
+  content,
+  isEditable,
+  setTitle,
+}: UseBlockEditorArgs) => {
   const [isSpellcheckEnabled] = useState(false);
 
   const editor = useEditor(
@@ -63,7 +65,7 @@ const useBlockEditor = ({ content, isEditable, setTitle }: UseBlockEditorArgs) =
         TaskItem.configure({ nested: true }),
 
         StarterKit.configure({
-          undoRedo: false, 
+          undoRedo: false,
           dropcursor: false,
         }),
 
@@ -85,7 +87,6 @@ const useBlockEditor = ({ content, isEditable, setTitle }: UseBlockEditorArgs) =
         ImageExtension.configure({ inline: true, allowBase64: true }),
         Youtube.configure({ inline: true }),
 
-     
         MathExtension.configure({ evaluation: false }),
 
         // ── Markdown paste/copy ────────────────────────────────────────────
@@ -149,22 +150,27 @@ const useBlockEditor = ({ content, isEditable, setTitle }: UseBlockEditorArgs) =
   return { editor };
 };
 
-
 // =====================================
 // ⬢ Main RichText Block
 // =====================================
 const RichTextBlock = (props: Props) => {
-  const id      = props.block.getAttribute("id")!;
+  const id = props.block.getAttribute("id")!;
   const content = props.block.getAttribute("content")!;
 
   const setTitle = useCallback(
-    (title: string) => { props.block.setAttribute("title", title); },
+    (title: string) => {
+      props.block.setAttribute("title", title);
+    },
     [props.block]
   );
 
   const [, editorAPI] = useEditorAwareness();
 
-  const { editor } = useBlockEditor({ content, setTitle, isEditable: props.isEditable });
+  const { editor } = useBlockEditor({
+    content,
+    setTitle,
+    isEditable: props.isEditable,
+  });
 
   useEffect(() => {
     if (editor && props.isCursorInserting && props.isCursorWithin) {
@@ -176,14 +182,14 @@ const RichTextBlock = (props: Props) => {
     if (!editor) return () => {};
 
     const onFocus = () => editorAPI.insert(id, { scrollIntoView: false });
-    const onBlur  = () => editorAPI.blur();
+    const onBlur = () => editorAPI.blur();
 
     editor.on("focus", onFocus);
-    editor.on("blur",  onBlur);
+    editor.on("blur", onBlur);
 
     return () => {
       editor.off("focus", onFocus);
-      editor.off("blur",  onBlur);
+      editor.off("blur", onBlur);
     };
   }, [editor, id, editorAPI.insert, editorAPI.blur]);
 
@@ -191,11 +197,19 @@ const RichTextBlock = (props: Props) => {
     if (editor?.isFocused && !props.belongsToMultiTabGroup && props.isEditable)
       return "border border-border-focus dark:border-border-tertiary";
 
-    if (!editor?.isFocused && !props.belongsToMultiTabGroup && props.isEditable
-        && props.isCursorWithin && !props.isCursorInserting)
+    if (
+      !editor?.isFocused &&
+      !props.belongsToMultiTabGroup &&
+      props.isEditable &&
+      props.isCursorWithin &&
+      !props.isCursorInserting
+    )
       return "border border-border-tertiary";
 
-    if (props.dashboardMode?._tag === "editing" && props.dashboardMode.position === "expanded")
+    if (
+      props.dashboardMode?._tag === "editing" &&
+      props.dashboardMode.position === "expanded"
+    )
       return "border border-border-focus";
 
     return "";
@@ -204,7 +218,9 @@ const RichTextBlock = (props: Props) => {
   return (
     <div
       data-testid={`RichTextBlock-${id}`}
-      ref={d => { props.dragPreview?.(d); }}
+      ref={d => {
+        props.dragPreview?.(d);
+      }}
       data-block-id={id}
       className="flex flex-col"
     >
@@ -217,7 +233,9 @@ const RichTextBlock = (props: Props) => {
             "rounded-tl-none rounded-lg border border-border-tertiary":
               props.belongsToMultiTabGroup,
             "rounded-tl-none rounded-lg border border-border-secondary":
-              props.belongsToMultiTabGroup && props.isCursorWithin && !props.isCursorInserting,
+              props.belongsToMultiTabGroup &&
+              props.isCursorWithin &&
+              !props.isCursorInserting,
             "rounded-lg": !props.belongsToMultiTabGroup,
           }
         )}
@@ -225,7 +243,9 @@ const RichTextBlock = (props: Props) => {
         <div
           role="toolbar"
           aria-label="Text formatting tools"
-          onMouseDown={e => console.log("toolbar mousedown — target:", e.target)}
+          onMouseDown={e =>
+            console.log("toolbar mousedown — target:", e.target)
+          }
           className={clsx(
             "overflow-visible transition-all duration-150 ease-out",
             editor?.isFocused ? "max-h-12 opacity-100" : "max-h-0 opacity-0"
@@ -238,7 +258,13 @@ const RichTextBlock = (props: Props) => {
           )}
         </div>
 
-        <div className={clsx(props.dashboardMode ? "px-4 py-4 h-full overflow-y-auto" : "p-2 px-5")}>
+        <div
+          className={clsx(
+            props.dashboardMode
+              ? "px-4 py-4 h-full overflow-y-auto"
+              : "p-2 px-5"
+          )}
+        >
           <EditorContent editor={editor} />
         </div>
       </div>

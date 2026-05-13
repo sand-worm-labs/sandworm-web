@@ -1,3 +1,24 @@
+import React from "react";
+import {
+  PiDatabase,
+  PiCode,
+  PiChartBar,
+  PiArticle,
+  PiTextT,
+  PiTable,
+  PiSliders,
+  PiCalendar,
+  PiUploadSimple,
+  PiSquaresFour,
+  PiWrench,
+  PiCaretUpDown,
+  PiRows,
+  PiFiles,
+} from "react-icons/pi";
+import { BlockType } from "@sandworm/editor";
+
+import type { BlockKind, ReferenceSourceKind } from "./types";
+
 export const BotIcon = () => {
   return (
     <svg
@@ -702,3 +723,79 @@ export const CheckCircle = ({ size = 16 }: { size?: number }) => {
     </svg>
   );
 };
+
+// =====================================
+// ⬢ Types
+// =====================================
+
+interface IconProps {
+  size?: number;
+  weight?: "thin" | "light" | "regular" | "bold" | "fill" | "duotone";
+  className?: string;
+}
+
+// =====================================
+// ⬢ Block Kind → Icon
+// =====================================
+function P<TProps extends Record<string, unknown>>(
+  Icon: React.ComponentType<TProps>
+) {
+  return (p: IconProps) => <Icon {...(p as unknown as TProps)} />;
+}
+
+const BLOCK_KIND_ICONS: Record<BlockKind, React.FC<IconProps>> = {
+  [BlockType.SQL]: P(PiDatabase),
+  [BlockType.Python]: P(PiCode),
+  [BlockType.VisualizationV2]: P(PiChartBar),
+  [BlockType.Markdown]: P(PiArticle),
+  [BlockType.RichText]: P(PiTextT),
+  [BlockType.PivotTable]: P(PiTable),
+  [BlockType.Input]: P(PiSliders),
+  [BlockType.DropdownInput]: P(PiCaretUpDown),
+  [BlockType.DateInput]: P(PiCalendar),
+  [BlockType.FileUpload]: P(PiUploadSimple),
+  [BlockType.DashboardHeader]: P(PiSquaresFour),
+  [BlockType.PowerToolbox]: P(PiWrench),
+};
+
+// =====================================
+// ⬢ Reference Source Kind
+// =====================================
+const SOURCE_KIND_ICONS: Record<ReferenceSourceKind, React.FC<IconProps>> = {
+  block: P(PiRows),
+  dataframe: P(PiTable),
+  file: P(PiFiles),
+};
+
+// =====================================
+// ⬢ Exports
+// =====================================
+export function BlockKindIcon({
+  kind,
+  size = 13,
+  weight = "regular",
+  className,
+}: {
+  kind: BlockKind;
+  size?: number;
+  weight?: IconProps["weight"];
+  className?: string;
+}) {
+  const Icon = BLOCK_KIND_ICONS[kind];
+  return <Icon size={size} weight={weight} className={className} />;
+}
+
+export function SourceKindIcon({
+  kind,
+  size = 13,
+  weight = "regular",
+  className,
+}: {
+  kind: ReferenceSourceKind;
+  size?: number;
+  weight?: IconProps["weight"];
+  className?: string;
+}) {
+  const Icon = SOURCE_KIND_ICONS[kind];
+  return <Icon size={size} weight={weight} className={className} />;
+}

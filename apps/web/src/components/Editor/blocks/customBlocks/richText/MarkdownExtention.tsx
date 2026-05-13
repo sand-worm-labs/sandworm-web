@@ -29,10 +29,16 @@ interface MarkdownStorage {
 
 const mathSerializers = {
   nodes: {
-    mathInline: (state: { write: (s: string) => void }, node: { textContent: string }) => {
+    mathInline: (
+      state: { write: (s: string) => void },
+      node: { textContent: string }
+    ) => {
       state.write(`$${node.textContent}$`);
     },
-    mathDisplay: (state: { write: (s: string) => void; ensureNewLine: () => void }, node: { textContent: string }) => {
+    mathDisplay: (
+      state: { write: (s: string) => void; ensureNewLine: () => void },
+      node: { textContent: string }
+    ) => {
       state.ensureNewLine();
       state.write(`$$\n${node.textContent}\n$$`);
       state.ensureNewLine();

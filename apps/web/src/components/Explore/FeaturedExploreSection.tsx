@@ -49,7 +49,7 @@ function toFeaturedQuery(doc: ApiDocument): FeaturedQuery {
     },
     stars: doc.favoriteCount,
     forks: doc.forkCount,
-    isFavorite: doc.isFavorite
+    isFavorite: doc.isFavorite,
   };
 }
 
@@ -116,7 +116,7 @@ export function FeaturedExploreSection() {
           onSave={handleSave}
           onClick={handleClick}
           isFavorite={query.isFavorite}
-          variant={index === 0 ? "purple" : "default"} 
+          variant={index === 0 ? "purple" : "default"}
         />
       ))}
     </div>

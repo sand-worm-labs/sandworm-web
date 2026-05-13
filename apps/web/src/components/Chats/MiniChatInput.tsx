@@ -1,16 +1,108 @@
 import type { ChangeEvent, KeyboardEvent } from "react";
-import React, { useState, useRef } from "react";
-import { Plus, Send, X, FileText, FileSpreadsheet } from "lucide-react";
+import React, { useState, useRef, useCallback } from "react";
+import {
+  PiPlus,
+  PiPaperPlaneTilt,
+  PiX,
+  PiFileCsv,
+  PiFileText,
+  PiAt,
+} from "react-icons/pi";
 
 import { TooltipV2 } from "@/components/Editor/blocks/ToolTips";
 
+import { ReferencePicker } from "./ReferencePicker";
+import { InputReferencePill } from "./ReferencePill";
+import { DUMMY_BLOCKS } from "./types";
+import type { AttachedReference, ReferenceSource } from "./types";
+
+// =====================================
+// ⬢ Types
+// =====================================
 interface MiniChatInputProps {
-  onSend?: (data: { message: string; files: File[] }) => void;
+  onSend?: (data: {
+    message: string;
+    files: File[];
+    references: AttachedReference[];
+  }) => void;
   placeholder?: string;
   maxHeight?: number;
   acceptedFileTypes?: string;
   disabled: boolean;
+  referenceSources?: ReferenceSource[];
 }
+
+// =====================================
+// ⬢ File Icon Helper
+// =====================================
+function FileIcon({ file }: { file: File }) {
+  if (file.type.includes("csv") || file.type.includes("spreadsheet")) {
+    return <PiFileCsv size={15} />;
+  }
+  return <PiFileText size={15} />;
+}
+
+// =====================================
+// ⬢ @ Trigger Button
+// =====================================
+interface AtButtonProps {
+  onClick: () => void;
+  isActive: boolean;
+  disabled: boolean;
+}
+
+function AtButton({ onClick, isActive, disabled }: AtButtonProps) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      aria-label="Reference a block, dataframe, or file"
+      aria-pressed={isActive}
+      className={`flex items-center justify-center w-7 h-7 rounded-lg
+        text-[13px] border transition-all duration-150 select-none
+        disabled:opacity-40 disabled:cursor-not-allowed
+        ${
+          isActive
+            ? "bg-[#F3E6FD] border-[#C97FF5] text-[#7A06B8] dark:bg-[#1F0A2E] dark:border-[#7A06B8] dark:text-[#C97FF5]"
+            : "bg-white dark:bg-[#30302E] border-[#B5C8DB] dark:border-transparent text-ink-400 dark:text-ink-500 hover:border-[#C97FF5] hover:text-[#7A06B8] dark:hover:text-[#C97FF5]"
+        }`}
+    >
+      <PiAt size={15} />
+    </button>
+  );
+}
+
+// =====================================
+// ⬢ Pill Strip
+// =====================================
+interface PillStripProps {
+  references: AttachedReference[];
+  onRemove: (id: string) => void;
+}
+
+function PillStrip({ references, onRemove }: PillStripProps) {
+  if (references.length === 0) return null;
+  return (
+    <div className="flex flex-wrap gap-1 px-3 pt-2.5 pb-0">
+      {references.map(ref => (
+        <InputReferencePill key={ref.id} reference={ref} onRemove={onRemove} />
+      ))}
+    </div>
+  );
+}
+
+// =====================================
+// ⬢ Default Sources
+// =====================================
+
+const DEFAULT_SOURCES: ReferenceSource[] = [
+  { kind: "block", label: "Blocks", items: DUMMY_BLOCKS },
+];
+
+// =====================================
+// ⬢ MiniChatInput
+// =====================================
 
 export const MiniChatInput: React.FC<MiniChatInputProps> = ({
   onSend,
@@ -18,38 +110,59 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
   maxHeight = 200,
   acceptedFileTypes = ".csv,.pdf,.doc,.docx,.txt,.xls,.xlsx",
   disabled,
+  referenceSources = DEFAULT_SOURCES,
 }) => {
-  const [message, setMessage] = useState<string>("");
+  const [message, setMessage] = useState("");
   const [files, setFiles] = useState<File[]>([]);
+  const [references, setReferences] = useState<AttachedReference[]>([]);
+  const [pickerOpen, setPickerOpen] = useState(false);
+
+  // ── Refs ──
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // ── Derived ──
+  const selectedIds = new Set(references.map(r => r.id));
+  const canSend = (message.trim().length > 0 || files.length > 0) && !disabled;
+  const hasReferencableItems = referenceSources.some(s => s.items.length > 0);
+
+  // ── Reference handlers ──
+  const handleReferenceSelect = useCallback((ref: AttachedReference) => {
+    setReferences(prev =>
+      prev.some(r => r.id === ref.id) ? prev : [...prev, ref]
+    );
+    setPickerOpen(false);
+    textareaRef.current?.focus();
+  }, []);
+
+  const handleReferenceRemove = useCallback((id: string) => {
+    setReferences(prev => prev.filter(r => r.id !== id));
+  }, []);
+
   const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = Array.from(e.target.files || []);
-    setFiles(prev => [...prev, ...selectedFiles]);
+    setFiles(prev => [...prev, ...Array.from(e.target.files ?? [])]);
   };
 
   const removeFile = (index: number) => {
     setFiles(prev => prev.filter((_, i) => i !== index));
   };
 
-  const handleSend = () => {
-    if (message.trim() || files.length > 0) {
-      if (onSend) {
-        onSend({ message, files });
-      } else {
-        console.log("Sending:", { message, files });
-      }
-      setMessage("");
-      setFiles([]);
-      if (textareaRef.current) {
-        textareaRef.current.style.height = "auto";
-      }
-    }
-  };
+  const handleSend = useCallback(() => {
+    if (!canSend) return;
+    onSend?.({ message, files, references });
+    setMessage("");
+    setFiles([]);
+    setReferences([]);
+    if (textareaRef.current) textareaRef.current.style.height = "auto";
+  }, [canSend, message, files, references, onSend]);
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+    if (pickerOpen && e.key === "Escape") {
+      e.preventDefault();
+      setPickerOpen(false);
+      return;
+    }
+    if (e.key === "Enter" && !e.shiftKey && !pickerOpen) {
       e.preventDefault();
       handleSend();
     }
@@ -61,33 +174,49 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
     e.target.style.height = `${Math.min(e.target.scrollHeight, maxHeight)}px`;
   };
 
-  const getFileIcon = (file: File): JSX.Element => {
-    if (file.type.includes("csv") || file.type.includes("spreadsheet")) {
-      return <FileSpreadsheet className="w-4 h-4" />;
-    }
-    return <FileText className="w-4 h-4" />;
-  };
-
+  // =====================================
+  // ⬢ Render
+  // =====================================
   return (
-    <div className="w-full">
-      <div className="bg-[#F1F3F4] dark:bg-[#30302E] border border-border-secondary  rounded-2xl shadow-sm dark:border-border-tertiary">
-        {/* File Preview Section */}
+    <div className="w-full relative">
+      {pickerOpen && (
+        <ReferencePicker
+          sources={referenceSources}
+          selectedIds={selectedIds}
+          onSelect={handleReferenceSelect}
+          onClose={() => setPickerOpen(false)}
+        />
+      )}
+
+      <div
+        className="bg-[#F1F3F4] dark:bg-[#30302E]
+        border border-border-secondary dark:border-border-tertiary
+        rounded-2xl shadow-sm"
+      >
         {files.length > 0 && (
-          <div className="px-4 pt-3 pb-2 border-b border-gray-100">
+          <div className="px-4 pt-3 pb-2 border-b border-[#DEE2E6] dark:border-border-tertiary">
             <div className="flex flex-wrap gap-2">
-              {files.map((file, index) => (
-                <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 text-sm">
-                  <div className="text-gray-600">{getFileIcon(file)}</div>
-                  <span className="text-gray-700 max-w-[150px] truncate">
+              {files.map((file, i) => (
+                <div
+                  key={file.name}
+                  className="flex items-center gap-2
+                    bg-white dark:bg-[#252523]
+                    border border-[#DEE2E6] dark:border-[#3A3A38]
+                    rounded-lg px-2.5 py-1.5"
+                >
+                  <span className="text-ink-400 dark:text-ink-500">
+                    <FileIcon file={file} />
+                  </span>
+                  <span className="text-[12px] text-ink-500 dark:text-ink-300 max-w-[140px] truncate">
                     {file.name}
                   </span>
                   <button
                     type="button"
-                    onClick={() => removeFile(index)}
-                    className="text-ink-400 hover:text-gray-600 transition-colors"
+                    onClick={() => removeFile(i)}
                     aria-label="Remove file"
+                    className="text-ink-300 hover:text-ink-500 dark:hover:text-ink-200 transition-colors"
                   >
-                    <X className="w-4 h-4" />
+                    <PiX size={13} />
                   </button>
                 </div>
               ))}
@@ -95,7 +224,8 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
           </div>
         )}
 
-        {/* Text Area */}
+        <PillStrip references={references} onRemove={handleReferenceRemove} />
+
         <div className="px-1.5 pt-1.5 pb-1.5">
           <textarea
             ref={textareaRef}
@@ -103,46 +233,73 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
             onChange={handleTextareaChange}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
-            className="w-full resize-none bg-transparent outline-none text-ink-100 dark:text-white pt-1.5 placeholder-text-ink-300 text-sm max-h-[300px] dark:placeholder:text-ink-400 px-3"
+            disabled={disabled}
             rows={2}
             aria-label="Message input"
+            className="w-full resize-none bg-transparent outline-none
+              text-ink-100 dark:text-white text-sm
+              placeholder:text-ink-300 dark:placeholder:text-ink-400
+              pt-1.5 px-3 max-h-[300px]
+              disabled:opacity-50"
           />
         </div>
 
-        {/* Action Buttons */}
         <div className="flex items-center justify-between px-3 pb-3">
-          <TooltipV2<HTMLButtonElement>
-            title="Attach Files"
-            active
-            position="bottom"
-          >
-            {ref => (
-              <button
-                ref={ref}
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="flex items-center justify-center w-8 h-8  hover:bg-gray-100 text-gray-600 transition-colors border border-[#B5C8DB] dark:bg-[#30302E] bg-white rounded-full dark:text-ink-400 dark:border-transparent"
-                title="Attach files"
-                aria-label="Attach files"
-              >
-                <Plus className="w-5 h-5" strokeWidth={1.2} />
-              </button>
-            )}
-          </TooltipV2>
+          <div className="flex items-center gap-1.5">
+            <TooltipV2<HTMLButtonElement>
+              title="Attach Files"
+              active
+              position="top"
+            >
+              {ref => (
+                <button
+                  ref={ref}
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={disabled}
+                  aria-label="Attach files"
+                  className="flex items-center justify-center w-8 h-8 rounded-full
+                    bg-white dark:bg-[#30302E]
+                    border border-[#B5C8DB] dark:border-transparent
+                    text-ink-400 dark:text-ink-500
+                    hover:bg-gray-50 dark:hover:bg-[#3A3A38]
+                    transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <PiPlus size={18} />
+                </button>
+              )}
+            </TooltipV2>
+
+            <TooltipV2<HTMLDivElement>
+              title="Add Context"
+              active
+              position="top"
+            >
+              {ref => (
+                <div ref={ref}>
+                  <AtButton
+                    onClick={() => setPickerOpen(o => !o)}
+                    isActive={pickerOpen || references.length > 0}
+                    disabled={disabled || !hasReferencableItems}
+                  />
+                </div>
+              )}
+            </TooltipV2>
+          </div>
 
           <button
             type="button"
             onClick={handleSend}
-            disabled={(!message.trim() && files.length === 0) || disabled}
-            className={`flex items-center justify-center w-8 h-8 rounded-xl transition-colors ${
-              message.trim() || files.length > 0
-                ? "bg-[#A308F0]  hover:bg-[#A308F0]  text-white"
-                : "bg-white dark:bg-[#30302E] text-ink-400 cursor-not-allowed border border-[#DEE2E6] dark:border-border-tertiary"
-            }`}
-            title="Send message"
+            disabled={!canSend}
             aria-label="Send message"
+            className={`flex items-center justify-center w-8 h-8 rounded-xl transition-colors
+              ${
+                canSend
+                  ? "bg-[#A308F0] hover:bg-[#8A06CC] text-white"
+                  : "bg-white dark:bg-[#30302E] text-ink-400 cursor-not-allowed border border-[#DEE2E6] dark:border-border-tertiary"
+              }`}
           >
-            <Send className="w-4 h-4" />
+            <PiPaperPlaneTilt size={15} />
           </button>
 
           <input
