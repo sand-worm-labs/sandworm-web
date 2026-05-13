@@ -20,7 +20,6 @@ import type { ApiDocument } from "@/types";
 
 import { Copy } from "../Assets/Copy";
 import { Loader } from "../Loader";
-import { ProjectIcon } from "../Assets/ProjectIcon";
 import { useCurrentUser } from "../Editor/hooks/useCurrentUser";
 import { useWallets } from "../Editor/hooks/useWallets";
 import { useUser } from "../Editor/hooks/useUser";
@@ -87,9 +86,6 @@ const ProfileComponent = ({
     onLoadMore: loadMore,
   });
 
-  // ─── MUTATION HOOKS ───
-  // We extract only the mutations/states we need for editing.
-  // Hooks must always be called, even if not used (Rules of Hooks).
   const { updateProfile, error } = useCurrentUser();
   const {
     wallets: ownWallets,
@@ -97,7 +93,6 @@ const ProfileComponent = ({
     loading: updateLoading,
   } = useWallets();
 
-  // Determine which wallets to display based on profile ownership
   const displayWallets = isOwnProfile
     ? ownWallets
     : user?.settings?.wallets || [];
@@ -260,6 +255,7 @@ const ProfileComponent = ({
                       <div className="flex gap-4 gap-y-0 text-[0.95rem]">
                         <div>
                           <button
+                            type="button"
                             className="font-bold text-ink-100 dark:text-white"
                             onClick={() => {
                               setTab("followers");
@@ -275,6 +271,7 @@ const ProfileComponent = ({
                         </div>
                         <div>
                           <button
+                            type="button"
                             className="font-bold text-ink-100 dark:text-white"
                             onClick={() => {
                               setTab("following");
@@ -401,8 +398,6 @@ const ProfileComponent = ({
                 </div>
               </div>
 
-              {/* ─── PROJECTS ─── */}
-              {/* ─── DOCUMENTS ─── */}
               <div className="rounded-2xl">
                 <h2 className="text-base font-bold text-ink-100 dark:text-white mb-4">
                   Notebooks

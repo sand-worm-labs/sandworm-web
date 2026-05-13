@@ -42,7 +42,7 @@ export function TitleAIButton({ onClick, className }: TitleAIButtonProps) {
           aria-label="Generate title with AI"
           className={[
             "flex items-center justify-center w-7 h-7",
-            "rounded-full border border-[#B5C8DB]",
+            "rounded-full border-none border-[#B5C8DB]",
             "bg-white dark:bg-[#30302E]",
             "text-gray-500 dark:text-ink-400",
             "hover:text-violet-500 hover:border-violet-300",

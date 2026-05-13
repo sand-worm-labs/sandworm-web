@@ -1,14 +1,13 @@
-import {
-  PencilSquareIcon,
-  PlusIcon,
-  ChevronDownIcon,
-} from "@heroicons/react/24/outline";
+import { PlusIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { BlockType } from "@sandworm/editor";
-import { CalendarIcon, QueueListIcon } from "@heroicons/react/24/solid";
 import { Menu, Transition } from "@headlessui/react";
-import { PiMarkdownLogoLight } from "react-icons/pi";
+import {
+  PiMarkdownLogoLight,
+  PiCalendarDots,
+  PiListPlusLight,
+} from "react-icons/pi";
 
 import { TextIcon } from "../Assets/Blocks/TextIcon";
 import { DatabaseIcon } from "../Assets/Blocks/DatabaseIcon";
@@ -85,7 +84,7 @@ function MultiBlockSuggestion(props: MultiBlockSuggestionProps) {
       >
         <Menu.Items
           as="div"
-          className="w-44 mt-2 rounded-lg bg-white dark:bg-base-100 shadow-lg ring-1 ring-black dark:ring-border-tertiary ring-opacity-5 focus:outline-none font-body divide-y divide-border-secondary"
+          className="w-44 mt-2 rounded-2xl bg-white dark:bg-base-100 shadow-sm  ring-1 ring-border-secondary dark:ring-border-tertiary focus:outline-none font-body px-1.5 py-1.5  "
         >
           {props.options.map((option, index) => (
             <Menu.Item key={option.text}>
@@ -94,9 +93,9 @@ function MultiBlockSuggestion(props: MultiBlockSuggestionProps) {
                   type="button"
                   className={clsx(
                     active ? "bg-primary/20 text-ink-100" : "text-ink-400",
-                    index === 0 ? "rounded-t-md" : "",
-                    index === props.options.length - 1 ? "rounded-b-md" : "",
-                    "flex items-center gap-x-2 w-full text-sm px-4 py-3 hover:bg-primary/20"
+                    index === 0 ? "rounded-lg" : "",
+                    index === props.options.length - 1 ? "rounded-lg" : "",
+                    "flex items-center gap-x-2 w-full text-sm px-2 py-1.5 mb-0.5 hover:bg-primary/20 rounded-lg "
                   )}
                   onClick={option.onClick}
                 >
@@ -181,13 +180,12 @@ function BlockList(props: BlockListProps) {
           text="Toolbox"
         />
 
-        {/* Text → choose between Rich Text and Markdown */}
         <MultiBlockSuggestion
           icon={<TextIcon className="w-[20px] h-[20px]" />}
           text="Text"
           options={[
             {
-              icon: <PencilSquareIcon className="w-4 h-4" />,
+              icon: <TextIcon className="w-4 h-4" />,
               text: "Rich Text",
               onClick: onAddRichText,
             },
@@ -229,17 +227,17 @@ function BlockList(props: BlockListProps) {
           text="Input"
           options={[
             {
-              icon: <PencilSquareIcon className="w-4 h-4" />,
-              text: "Text",
+              icon: <TextIcon className="w-4 h-4" />,
+              text: "Text Input",
               onClick: onAddInput,
             },
             {
-              icon: <QueueListIcon className="w-4 h-4" />,
+              icon: <PiListPlusLight className="w-4 h-4" />,
               text: "Dropdown",
               onClick: onAddDropdownInput,
             },
             {
-              icon: <CalendarIcon className="w-4 h-4" />,
+              icon: <PiCalendarDots className="w-4 h-4" />,
               text: "Date",
               onClick: onAddDateInput,
             },
