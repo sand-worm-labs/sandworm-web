@@ -1,5 +1,10 @@
 import React, { useState } from "react";
-import { PiThumbsUp, PiThumbsDown } from "react-icons/pi";
+import {
+  PiThumbsUp,
+  PiThumbsDown,
+  PiFileCsv,
+  PiFileText,
+} from "react-icons/pi";
 
 import { BubbleReferencePill } from "./ReferencePill";
 import type { AttachedReference } from "./types";
@@ -7,18 +12,43 @@ import type { AttachedReference } from "./types";
 // =====================================
 // ⬢ Types
 // =====================================
+
 type Rating = "up" | "down" | null;
 
 interface ChatBubbleProps {
   text: string;
   isUser: boolean;
   references?: AttachedReference[];
+  files?: File[];
   onRate?: (rating: Rating) => void;
+}
+
+// =====================================
+// ⬢ File Chip (read-only, shown in sent bubble)
+// =====================================
+
+function FileBubbleChip({ file }: { file: File }) {
+  const isCsv = file.type.includes("csv") || file.type.includes("spreadsheet");
+  const Icon = isCsv ? PiFileCsv : PiFileText;
+
+  return (
+    <span
+      className="inline-flex items-center gap-1 text-[10.5px] font-medium
+        px-1.5 py-[3px] rounded-md leading-none
+        bg-[#F1F3F4] dark:bg-[#2A2A28]
+        border border-[#DEE2E6] dark:border-[#3A3A38]
+        text-ink-500 dark:text-ink-300"
+    >
+      <Icon size={11} weight="regular" className="flex-shrink-0 opacity-60" />
+      <span className="max-w-[120px] truncate">{file.name}</span>
+    </span>
+  );
 }
 
 // =====================================
 // ⬢ Rating Button
 // =====================================
+
 interface RatingButtonProps {
   type: "up" | "down";
   active: boolean;
@@ -44,7 +74,7 @@ function RatingButton({ type, active, onClick }: RatingButtonProps) {
             : "text-ink-300 dark:text-ink-600 hover:text-ink-400 hover:bg-[#F1F3F4] dark:hover:bg-[#252523]"
         }`}
     >
-      <Icon size={13} />
+      <Icon size={13} weight={active ? "fill" : "regular"} />
     </button>
   );
 }
@@ -52,10 +82,12 @@ function RatingButton({ type, active, onClick }: RatingButtonProps) {
 // =====================================
 // ⬢ Chat Bubble
 // =====================================
+
 export function ChatBubble({
   text,
   isUser,
   references = [],
+  files = [],
   onRate,
 }: ChatBubbleProps) {
   const [rating, setRating] = useState<Rating>(null);
@@ -66,18 +98,25 @@ export function ChatBubble({
     onRate?.(next);
   }
 
+  const hasAttachments = isUser && (references.length > 0 || files.length > 0);
+
   return (
     <div
       className={`flex flex-col gap-1 ${isUser ? "items-end" : "items-start"}`}
     >
-      {isUser && references.length > 0 && (
+      {/* ── Reference pills + file chips — above user bubble ── */}
+      {hasAttachments && (
         <div className="flex flex-wrap gap-1 max-w-[78%] justify-end mb-0.5">
           {references.map(ref => (
             <BubbleReferencePill key={ref.id} reference={ref} />
           ))}
+          {files.map((file, i) => (
+            <FileBubbleChip key={`${file.name}-${i}`} file={file} />
+          ))}
         </div>
       )}
 
+      {/* ── Bubble ── */}
       <div
         className={`
           ${
