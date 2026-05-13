@@ -11,7 +11,7 @@ import React, {
 } from "react";
 import { useSearchParams } from "next/navigation";
 import type * as Y from "yjs";
-import { PiX } from "react-icons/pi";
+import { PiX, PiPlus, PiClockCounterClockwise } from "react-icons/pi";
 
 import { AIChatIcon } from "../Assets/AIChatIcon";
 import { useNotebookAI } from "../Editor/hooks/useNotebookAI";
@@ -21,6 +21,7 @@ import { useNotebookBlocks } from "../Editor/hooks/useNotebookBlocks";
 import { MiniChatInput } from "./MiniChatInput";
 import { ChatBubble } from "./ChatBubble";
 import type { AttachedReference } from "./types";
+import { ThreadList } from "./ThreadList";
 
 // =====================================
 // ⬢  Types
@@ -37,29 +38,85 @@ interface Message {
 // =====================================
 // ⬢  Header
 // =====================================
+// =====================================
+// ⬢ Header
+// =====================================
 interface MiniChatHeaderProps {
   onCancel?: () => void;
+  onOpenThreads: () => void;
+  onNewThread: () => void;
+  activeThreadTitle?: string; // present = active chat, absent = empty state
 }
 
-export const MiniChatHeader: React.FC<MiniChatHeaderProps> = ({ onCancel }) => {
+export const MiniChatHeader: React.FC<MiniChatHeaderProps> = ({
+  onCancel,
+  onOpenThreads,
+  onNewThread,
+  activeThreadTitle,
+}) => {
   return (
-    <header className="flex items-center justify-between bg-white dark:bg-base-100 border-b border-border-secondary dark:border-border-secondary">
-      <div className="flex-col flex">
-        <h3 className="text-base font-medium leading-6 dark:text-white text-ink-100 px-4 pt-3 xl:px-6">
-          Sandworm agent
-        </h3>
-        <p className="text-sm text-ink-400 px-4 mb-2 xl:px-6">
-          Create deep and insightful analysis
-        </p>
-      </div>
-      <button
-        type="button"
-        aria-label="Cancel chat"
-        onClick={() => onCancel?.()}
-        className="absolute z-10 top-7 transform rounded-full  text-ink-400 bg-base-100 hover:bg-gray-100 w-6 h-6 flex justify-center items-center right-3 -translate-x-1/2 dark:border-border-tertiary"
+    <header className="flex items-center gap-2 px-3 pt-3 pb-2.5 bg-white dark:bg-base-100 border-b border-border-secondary dark:border-border-secondary">
+      {/* AI icon */}
+      <div
+        className="flex-shrink-0 flex items-center justify-center w-7 h-7
+        rounded-lg border border-[#DEE2E6] dark:border-[#3A3A38]
+        bg-white dark:bg-[#252523]"
       >
-        <PiX className="w-4 h-4 text-menu-ink" />
-      </button>
+        <AIChatIcon size={14} />{" "}
+        {/* adjust size prop if your AIChatIcon supports it, else wrap in a sized div */}
+      </div>
+
+      {/* Title */}
+      <div className="flex-1 min-w-0">
+        {activeThreadTitle ? (
+          <h3 className="text-[13px] font-medium text-ink-100 dark:text-white truncate leading-tight">
+            {activeThreadTitle}
+          </h3>
+        ) : (
+          <>
+            <h3 className="text-[13px] font-medium text-ink-100 dark:text-white leading-tight">
+              Sandworm agent
+            </h3>
+            <p className="text-[11px] text-ink-400 dark:text-ink-500 leading-tight mt-0.5">
+              Create deep and insightful analysis
+            </p>
+          </>
+        )}
+      </div>
+
+      {/* Actions */}
+      <div className="flex items-center gap-0.5 flex-shrink-0">
+        <button
+          type="button"
+          aria-label="New thread"
+          onClick={onNewThread}
+          className="flex items-center justify-center w-7 h-7 rounded-lg
+            text-ink-400 hover:text-ink-500 hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
+            transition-colors"
+        >
+          <PiPlus size={15} weight="regular" />
+        </button>
+        <button
+          type="button"
+          aria-label="Threads"
+          onClick={onOpenThreads}
+          className="flex items-center justify-center w-7 h-7 rounded-lg
+            text-ink-400 hover:text-ink-500 hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
+            transition-colors"
+        >
+          <PiClockCounterClockwise size={15} weight="regular" />
+        </button>
+        <button
+          type="button"
+          aria-label="Close"
+          onClick={onCancel}
+          className="flex items-center justify-center w-7 h-7 rounded-lg
+            text-ink-400 hover:text-ink-500 hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
+            transition-colors"
+        >
+          <PiX size={15} weight="regular" />
+        </button>
+      </div>
     </header>
   );
 };
@@ -158,6 +215,7 @@ export const MiniChat: React.FC<MiniChatProps> = ({
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const [view, setView] = useState<"chat" | "threads">("chat");
 
   const notebookBlocks = useNotebookBlocks(yDoc);
 
@@ -165,6 +223,16 @@ export const MiniChat: React.FC<MiniChatProps> = ({
     () => [{ kind: "block" as const, label: "Blocks", items: notebookBlocks }],
     [notebookBlocks]
   );
+
+  const [activeThreadTitle, setActiveThreadTitle] = useState<
+    string | undefined
+  >(undefined);
+
+  const handleNewThread = useCallback(() => {
+    setMessages([]);
+    setActiveThreadTitle(undefined);
+    setView("chat");
+  }, []);
 
   console.log(referenceSources, "ref");
 
@@ -203,12 +271,6 @@ export const MiniChat: React.FC<MiniChatProps> = ({
       files: File[] = []
     ) => {
       if (!text.trim() || isLoading) return;
-
-      console.log("[MiniChat] sending to backend", {
-        message: text,
-        focusedBlockIds: references.map(r => r.id),
-        fileNames: files.map(f => f.name),
-      });
 
       addMessage({ text, isUser: true, references, files }); // ← store them
       setIsLoading(true);
@@ -269,41 +331,58 @@ export const MiniChat: React.FC<MiniChatProps> = ({
   return (
     <>
       {visible && (
-        <div className="relative w-full flex flex-col overflow-y-auto  h-full bg-white dark:bg-base-100">
-          <MiniChatHeader onCancel={onClose} />
+        <div className="relative w-full flex flex-col h-full bg-white dark:bg-base-100 overflow-hidden">
+          {view === "threads" ? (
+            <ThreadList
+              onSelectThread={id => {
+                console.log("[MiniChat] open thread:", id);
 
-          <div className="flex-1 overflow-y-auto py-6 px-4">
-            {messages.length === 0 ? (
-              <MiniChatEmptyState onSelectPrompt={handleSendSafe} />
-            ) : (
-              <div className="flex flex-col w-full gap-4">
-                {messages.map(msg =>
-                  msg.isLoading ? (
-                    <LoadingBubble key={msg.id} />
-                  ) : (
-                    <ChatBubble
-                      key={msg.id}
-                      text={msg.text}
-                      isUser={msg.isUser}
-                      references={msg.references}
-                      files={msg.files}
-                      onRate={rating => console.log(msg.id, rating)}
-                    />
-                  )
-                )}
-                <div ref={bottomRef} />
-              </div>
-            )}
-          </div>
-
-          <div className="pb-4 md:px-4">
-            {/*  <ChangesPanel /> */}
-            <MiniChatInput
-              onSend={handleInputSend}
-              disabled={isLoading}
-              referenceSources={referenceSources}
+                setView("chat");
+              }}
+              onBack={() => setView("chat")}
             />
-          </div>
+          ) : (
+            <>
+              <MiniChatHeader
+                onCancel={onClose}
+                onOpenThreads={() => setView("threads")}
+                onNewThread={handleNewThread}
+                activeThreadTitle={activeThreadTitle}
+              />
+
+              <div className="flex-1 overflow-y-auto py-6 px-4">
+                {messages.length === 0 ? (
+                  <MiniChatEmptyState onSelectPrompt={handleSendSafe} />
+                ) : (
+                  <div className="flex flex-col w-full gap-4">
+                    {messages.map(msg =>
+                      msg.isLoading ? (
+                        <LoadingBubble key={msg.id} />
+                      ) : (
+                        <ChatBubble
+                          key={msg.id}
+                          text={msg.text}
+                          isUser={msg.isUser}
+                          references={msg.references}
+                          files={msg.files}
+                          onRate={rating => console.log(msg.id, rating)}
+                        />
+                      )
+                    )}
+                    <div ref={bottomRef} />
+                  </div>
+                )}
+              </div>
+
+              <div className="pb-4 md:px-4">
+                <MiniChatInput
+                  onSend={handleInputSend}
+                  disabled={isLoading}
+                  referenceSources={referenceSources}
+                />
+              </div>
+            </>
+          )}
         </div>
       )}
     </>

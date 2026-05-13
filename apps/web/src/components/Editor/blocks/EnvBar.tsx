@@ -1,18 +1,21 @@
 import {
-  ArrowPathIcon,
-  CodeBracketIcon,
-  CpuChipIcon,
-  FolderIcon,
-} from "@heroicons/react/20/solid";
-import { NewspaperIcon } from "@heroicons/react/24/solid";
+  PiArrowsClockwise,
+  PiCode,
+  PiCpuLight,
+  PiFolder,
+  PiNewspaper,
+} from "react-icons/pi";
 import Link from "next/link";
 import * as dfns from "date-fns";
-import clsx from "clsx";
 
 import type { EnvironmentStatus } from "@/types";
 
 import { useStringQuery } from "../hooks/useQueryArgs";
 import { useEnvironmentStatus } from "../hooks/useEnvironmentStatus";
+
+// =====================================
+// ⬢ Environment Button
+// =====================================
 
 const EnvironmentButton = ({
   name,
@@ -20,100 +23,87 @@ const EnvironmentButton = ({
 }: {
   name: string;
   workspaceId: string;
-}) => {
-  return (
-    <Link
-      href={`/workspace/${workspaceId}/environments/current`}
-      className="border border-border-secondary dark:border-border-tertiary  rounded-sm text-sm px-3 py-1 hover:bg-gray-50 cursor-pointer flex items-center gap-x-2"
-    >
-      <CpuChipIcon className="h-4 w-4 text-ink-400" />
-      <span className="text-ink-400">{name}</span>
-    </Link>
-  );
-};
+}) => (
+  <Link
+    href={`/workspace/${workspaceId}/environments/current`}
+    className="flex items-center gap-2 px-2.5 py-1.5
+      border border-[#DEE2E6] dark:border-[#3A3A38]
+      rounded-lg text-sm text-ink-400 dark:text-ink-500
+      hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
+      hover:text-ink-500 dark:hover:text-ink-300
+      transition-colors duration-100"
+  >
+    <PiCpuLight size={14} />
+    <span>{name}</span>
+  </Link>
+);
 
-type BadgeProps = {
+// =====================================
+// ⬢ Status Badge
+// =====================================
+
+interface DotBadgeProps {
+  color: "blue" | "green" | "red" | "yellow" | "gray";
   children: React.ReactNode;
+  onRestart?: () => void;
+  canRestart?: boolean;
+}
+
+const STATUS_COLORS: Record<
+  DotBadgeProps["color"],
+  { dot: string; text: string; bg: string }
+> = {
+  blue: {
+    dot: "bg-blue-400",
+    text: "text-blue-700 dark:text-blue-400",
+    bg: "bg-blue-50 dark:bg-base-200",
+  },
+  green: { dot: "bg-green-500", text: "text-green-700", bg: "bg-green-50" },
+  red: { dot: "bg-red-500", text: "text-red-700", bg: "bg-red-50" },
+  yellow: { dot: "bg-yellow-500", text: "text-yellow-800", bg: "bg-yellow-50" },
+  gray: {
+    dot: "bg-gray-400",
+    text: "text-gray-600",
+    bg: "bg-gray-100 dark:bg-base-200",
+  },
 };
 
-const LoadingBadge = ({ children }: BadgeProps) => {
+function DotBadge({ color, children, onRestart, canRestart }: DotBadgeProps) {
+  const c = STATUS_COLORS[color];
   return (
-    <span className="inline-flex items-center gap-x-1.5 rounded-full bg-blue-100 dark:bg-base-200 px-3 py-1 text-xs font-medium text-blue-700 dark:text-blue-400">
-      <svg
-        className="h-1.5 w-1.5 fill-blue-500"
-        viewBox="0 0 6 6"
-        aria-hidden="true"
-      >
-        {" "}
-        <circle cx={3} cy={3} r={3} />{" "}
-      </svg>
-      <span className="text-xs">{children}</span>
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1
+        text-xs font-medium ${c.bg} ${c.text}`}
+    >
+      <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${c.dot}`} />
+      {children}
+      {canRestart && onRestart && (
+        <>
+          <span className="w-px h-3 bg-current opacity-30" />
+          <div className="relative group">
+            <button
+              type="button"
+              onClick={onRestart}
+              aria-label="Restart environment"
+              className="flex items-center opacity-70 hover:opacity-100 transition-opacity"
+            >
+              <PiArrowsClockwise size={12} />
+            </button>
+            <div
+              className="pointer-events-none absolute right-0 -top-1 -translate-y-full
+              w-max bg-hunter-950 text-white text-[10px] px-2 py-1 rounded-md
+              opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              Restart environment
+            </div>
+          </div>
+        </>
+      )}
     </span>
   );
-};
+}
 
-const RedBadge = ({ children }: BadgeProps) => {
-  return (
-    <span className="inline-flex items-center gap-x-1.5 rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-700">
-      <svg
-        className="h-1.5 w-1.5 fill-red-500"
-        viewBox="0 0 6 6"
-        aria-hidden="true"
-      >
-        {" "}
-        <circle cx={3} cy={3} r={3} />{" "}
-      </svg>
-      <span className="text-xs">{children}</span>
-    </span>
-  );
-};
-
-const GrayBadge = ({ children }: BadgeProps) => {
-  return (
-    <span className="inline-flex items-center gap-x-1.5 rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
-      <svg
-        className="h-1.5 w-1.5 fill-gray-400"
-        viewBox="0 0 6 6"
-        aria-hidden="true"
-      >
-        <circle cx={3} cy={3} r={3} />
-      </svg>
-      <span className="text-xs">{children}</span>
-    </span>
-  );
-};
-
-const GreenBadge = ({ children }: BadgeProps) => {
-  return (
-    <span className="inline-flex items-center gap-x-1.5 rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
-      <svg
-        className="h-1.5 w-1.5 fill-green-500"
-        viewBox="0 0 6 6"
-        aria-hidden="true"
-      >
-        <circle cx={3} cy={3} r={3} />
-      </svg>
-      <span className="text-xs">{children}</span>
-    </span>
-  );
-};
-
-const YellowBadge = ({ children }: BadgeProps) => {
-  return (
-    <span className="inline-flex items-center gap-x-1.5 rounded-full bg-yellow-100 px-3 py-1 text-xs font-medium text-yellow-800">
-      <svg
-        className="h-1.5 w-1.5 fill-yellow-500"
-        viewBox="0 0 6 6"
-        aria-hidden="true"
-      >
-        <circle cx={3} cy={3} r={3} />
-      </svg>
-      <span className="text-xs">{children}</span>
-    </span>
-  );
-};
-
-const StatusBadge = ({
+function StatusBadge({
   loading,
   status,
   onRestart,
@@ -123,119 +113,106 @@ const StatusBadge = ({
   status: EnvironmentStatus | null;
   onRestart: () => void;
   canRestart: boolean;
-}) => {
-  if (loading) {
-    return <LoadingBadge>Loading</LoadingBadge>;
-  }
+}) {
+  if (loading) return <DotBadge color="blue">Loading</DotBadge>;
 
   switch (status) {
     case "Starting":
-      return <YellowBadge>Starting</YellowBadge>;
+      return <DotBadge color="yellow">Starting</DotBadge>;
     case "Running":
       return (
-        <GreenBadge>
-          <div className="flex items-center gap-x-2">
-            <div>Running</div>
-            {canRestart && (
-              <>
-                <div className="w-[1px] h-4 bg-green-700 opacity-50" />
-                <div className="flex items-center group relative">
-                  <button
-                    type="button"
-                    onClick={onRestart}
-                    className="text-green-700 hover:text-green-900"
-                  >
-                    <ArrowPathIcon className="h-3 w-3" />
-                  </button>
-                  <div className="right-0 font-body  pointer-events-none absolute -top-2 -translate-y-full w-max opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex items-center justify-center gap-y-1">
-                    Restart environment
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-        </GreenBadge>
+        <DotBadge color="green" onRestart={onRestart} canRestart={canRestart}>
+          Running
+        </DotBadge>
       );
     case "Stopped":
-      return <GrayBadge>Stopped</GrayBadge>;
+      return <DotBadge color="gray">Stopped</DotBadge>;
     case "Stopping":
-      return <YellowBadge>Stopping</YellowBadge>;
+      return <DotBadge color="yellow">Stopping</DotBadge>;
     case "Failing":
-      return <RedBadge>Failing</RedBadge>;
+      return <DotBadge color="red">Failing</DotBadge>;
     default:
-      return <GrayBadge>Stopped</GrayBadge>;
+      return <DotBadge color="gray">Stopped</DotBadge>;
   }
-};
+}
 
+// =====================================
+// ⬢ EnvBar
+// =====================================
 interface Props {
   onOpenFiles: () => void;
   publishedAt: string | null;
   lastUpdatedAt: string | null;
   isViewer: boolean;
 }
+
 function EnvBar(props: Props) {
   const workspaceId = useStringQuery("workspace");
   const { status, loading, restart } = useEnvironmentStatus(workspaceId);
+
   const publishedAtDisplay = dfns.formatDistanceToNow(
     props.publishedAt ?? new Date()
   );
-
   const lastUpdatedAt = props.lastUpdatedAt
-    ? `Last updated at ${dfns.format(
-        props.lastUpdatedAt ?? new Date(),
-        `hh:mm a, do 'of' MMMM yyyy`
-      )}.`
+    ? `Last updated ${dfns.format(props.lastUpdatedAt ?? new Date(), `hh:mm a, do 'of' MMMM yyyy`)}.`
     : "Never executed.";
 
   return (
     <div
-      className={clsx(
-        "flex items-center justify-between border-t border-border-secondary dark:border-border-tertiary py-2 px-4 font-body  env-bar ",
-        props.publishedAt && "bg-gray-50 dark:bg-base-100 "
-      )}
+      className="flex items-center justify-between
+      border-t border-border-secondary dark:border-[#2A2A28]
+      py-2 px-3 font-body env-bar"
     >
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center gap-1.5">
         {props.publishedAt ? (
-          <div className="flex items-center gap-x-1.5 text-sm text-ink-400 font-medium">
-            <NewspaperIcon className="h-4 w-4" />
+          <div className="flex items-center gap-1.5 text-sm text-ink-400 dark:text-ink-500">
+            <PiNewspaper size={14} />
             <span>{`Saved ${publishedAtDisplay} ago. ${lastUpdatedAt}`}</span>
           </div>
         ) : (
           <>
-            <div>
-              <EnvironmentButton name="Python 3.9" workspaceId={workspaceId} />
-            </div>
-            <div className={clsx(props.isViewer ? "hidden" : "")}>
+            <EnvironmentButton name="Python 3.9" workspaceId={workspaceId} />
+
+            {!props.isViewer && (
               <Link
                 href={`/workspace/${workspaceId}/environments/current/variables`}
-                className="border border-border-secondary dark:border-border-tertiary  rounded-sm text-sm px-3 py-1 hover:bg-gray-50 cursor-pointer flex items-center gap-x-2"
+                className="flex items-center gap-2 px-2.5 py-1.5
+                  border border-[#DEE2E6] dark:border-[#3A3A38]
+                  rounded-lg text-sm text-ink-400 dark:text-ink-500
+                  hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
+                  hover:text-ink-500 dark:hover:text-ink-300
+                  transition-colors duration-100"
               >
-                <CodeBracketIcon className="h-4 w-4 text-ink-400" />
-                <span className="text-ink-400">Environment variables</span>
+                <PiCode size={14} />
+                <span>Env variables</span>
               </Link>
-            </div>
-            <button
-              type="button"
-              className={clsx(
-                props.isViewer ? "hidden" : "",
-                "border border-border-secondary dark:border-border-tertiary  rounded-sm text-sm px-3 py-1 hover:bg-gray-50 cursor-pointer flex items-center gap-x-2"
-              )}
-              onClick={props.onOpenFiles}
-            >
-              <FolderIcon className="h-4 w-4 text-ink-400" />
-              <span className="text-ink-400">Files</span>
-            </button>
+            )}
+
+            {!props.isViewer && (
+              <button
+                type="button"
+                onClick={props.onOpenFiles}
+                className="flex items-center gap-2 px-2.5 py-1.5
+                  border border-[#DEE2E6] dark:border-[#3A3A38]
+                  rounded-lg text-sm text-ink-400 dark:text-ink-500
+                  hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
+                  hover:text-ink-500 dark:hover:text-ink-300
+                  transition-colors duration-100"
+              >
+                <PiFolder size={14} />
+                <span>Files</span>
+              </button>
+            )}
           </>
         )}
       </div>
-      <div className="flex items-center">
-        <StatusBadge
-          loading={loading}
-          status={status}
-          onRestart={restart}
-          canRestart={!props.isViewer}
-        />
-      </div>
+
+      <StatusBadge
+        loading={loading}
+        status={status}
+        onRestart={restart}
+        canRestart={!props.isViewer}
+      />
     </div>
   );
 }

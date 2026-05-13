@@ -1,6 +1,6 @@
 import type * as Y from "yjs";
 import React, { useCallback } from "react";
-import { PlayIcon, StopIcon } from "@heroicons/react/20/solid";
+import { PiPlay, PiStop, PiCircleNotch } from "react-icons/pi";
 import type { ExecutionQueue } from "@sandworm/editor";
 import { isExecutionStatusLoading } from "@sandworm/editor";
 import clsx from "clsx";
@@ -9,13 +9,20 @@ import useEditorAwareness from "../hooks/useEditorAwareness";
 import useRunAll from "../hooks/useRunAll";
 import usePreviousEffect from "../hooks/usePreviousEffect";
 
+// =====================================
+// ⬢ Types
+// =====================================
+
 interface Props {
   disabled: boolean;
   yDoc: Y.Doc;
   executionQueue: ExecutionQueue;
-  primary: boolean;
   userId: string;
 }
+
+// =====================================
+// ⬢ RunAllV2
+// =====================================
 export default function RunAllV2(props: Props) {
   const [{ total, remaining, status, failedBlockId }, { run, abort }] =
     useRunAll(props.yDoc, props.executionQueue, props.userId);
@@ -29,16 +36,13 @@ export default function RunAllV2(props: Props) {
   }, [status, run, abort]);
 
   const current = total - remaining;
-
   const loading = isExecutionStatusLoading(status);
+  const isAborting = status === "aborting";
 
   const [, editorAPI] = useEditorAwareness();
   usePreviousEffect(
     prevStatus => {
-      if (status !== "idle") {
-        return;
-      }
-
+      if (status !== "idle") return;
       if (prevStatus === "running" && failedBlockId) {
         editorAPI.focus(failedBlockId, { scrollIntoView: true });
       }
@@ -50,30 +54,39 @@ export default function RunAllV2(props: Props) {
   return (
     <button
       type="button"
-      className={clsx(
-        {
-          "bg-gray-200 cursor-not-allowed":
-            props.disabled || status === "aborting",
-          "bg-[#0F0F0F] dark:bg-white dark:text-black hover:bg-primary-300":
-            !props.disabled && !loading && props.primary,
-          "bg-[#0F0F0F]  dark:bg-white dark:text-black ring-gray-200 text-white":
-            !props.disabled && !loading && !props.primary,
-          "bg-red-200 hover:bg-red-300":
-            !props.disabled && loading && status !== "aborting",
-        },
-        "flex items-center rounded-2xl px-5 py-1.5 text-sm gap-x-1.5 absolute top-3 right-8 z-10 font-body  text-white"
-      )}
       onClick={onClick}
-      disabled={props.disabled}
+      disabled={props.disabled || isAborting}
+      className={clsx(
+        "absolute top-3 right-8 z-10",
+        "flex items-center gap-1.5 px-3.5 py-1.5",
+        "rounded-lg text-sm font-medium font-body",
+        "transition-all duration-150",
+        {
+          "bg-[#F1F3F4] dark:bg-[#2A2A28] text-ink-300 dark:text-ink-600 cursor-not-allowed":
+            props.disabled || isAborting,
+
+          "bg-white dark:bg-[#1C1C1A] text-ink-100 dark:text-ink-200 border border-border-tertiary dark:border-[#3A3A38] hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]":
+            !props.disabled && !loading && !isAborting,
+
+          "bg-[#FEE2E2] dark:bg-[#2A0A0A] text-[#DC2626] dark:text-[#F87171] hover:bg-[#FECACA] dark:hover:bg-[#3A0F0F] border border-[#FECACA] dark:border-[#7F1D1D]":
+            !props.disabled && loading && !isAborting,
+        }
+      )}
     >
-      {loading ? (
+      {isAborting ? (
         <>
-          <StopIcon className="h-4 w-4" />
-          {status === "aborting" ? "Stopping" : `Running (${current}/${total})`}
+          <PiCircleNotch size={14} className="animate-spin" />
+          Stopping
+        </>
+      ) : loading ? (
+        <>
+          <PiStop size={14} />
+          {`Stop (${current}/${total})`}
         </>
       ) : (
         <>
-          <PlayIcon className="h-4 w-4" /> Run all
+          <PiPlay size={14} />
+          Run All
         </>
       )}
     </button>
