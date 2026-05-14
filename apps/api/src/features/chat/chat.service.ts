@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
-import { ChatEntity, MessageEntity } from '@sandworm/postgresql-typeorm';
+import { ChatEntity, DocumentEntity, MessageEntity, WorkspaceEntity } from '@sandworm/postgresql-typeorm';
 import { firstValueFrom } from 'rxjs';
 import { Chat } from './model/chat.model';
 import { Message } from './model/message.model';
@@ -15,16 +15,22 @@ import { AllConfigType } from '@/core/config/config.type';
 @Injectable()
 export class ChatService {
   private readonly aiBaseUrl: string;
-  private readonly apiToken: string;
+  private readonly apiHandshakeToken: string
 
   constructor(
-    @InjectRepository(ChatEntity) private chatRepository: Repository<ChatEntity>,
-    @InjectRepository(MessageEntity) private messageRepository: Repository<MessageEntity>, 
+    @InjectRepository(ChatEntity) 
+    private chatRepository: Repository<ChatEntity>,
+    @InjectRepository(MessageEntity) 
+    private messageRepository: Repository<MessageEntity>, 
+    @InjectRepository(WorkspaceEntity)
+    private readonly workspaceRepository: Repository<WorkspaceEntity>,
+    @InjectRepository(DocumentEntity)
+    private readonly documentRepository: Repository<DocumentEntity>,
     private readonly httpService: HttpService,
     private readonly configService: ConfigService<AllConfigType>,
   ) {
     this.aiBaseUrl = this.configService.getOrThrow('ai.url', {infer: true,}) 
-    this.apiToken = this.configService.getOrThrow('ai.handshakeToken', {infer: true,});
+    this.apiHandshakeToken = this.configService.getOrThrow('ai.handshakeToken', {infer: true,});
   }
 
 
@@ -59,7 +65,17 @@ export class ChatService {
   }
 
   async createChat(userId: string, input: CreateChatInput): Promise<Chat> {
-    const title = input.title || input.message.substring(0, 50);
+   let  { workspaceId, documentId, message, title } = input;
+
+    const [workspace, document] = await Promise.all([
+      this.workspaceRepository.findOne({ where: { id: workspaceId } }),
+      this.documentRepository.findOne({ where: { id: documentId, workspaceId } }),
+    ]);
+
+    if (!workspace) throw new NotFoundException('Workspace not found');
+    if (!document) throw new NotFoundException('Document not found or does not belong to workspace')
+    
+    title = input.title || input.message.substring(0, 50);
 
     const chat = this.chatRepository.create({
       userId,
