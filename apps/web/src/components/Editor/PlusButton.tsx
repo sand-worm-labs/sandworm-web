@@ -1,9 +1,11 @@
-import { PlusIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { BlockType } from "@sandworm/editor";
 import { Menu, Transition } from "@headlessui/react";
 import {
+  PiPlus,
+  PiCaretDown,
+  PiDotsThree,
   PiMarkdownLogoLight,
   PiCalendarDots,
   PiListPlusLight,
@@ -20,11 +22,76 @@ import { LightningIcon } from "../Assets/Blocks/LightningIcon";
 import { PowerToolboxModal } from "./blocks/customBlocks/PowerToolbox";
 
 // =====================================
+// ⬢ Types
+// =====================================
+type PillOption = {
+  icon: JSX.Element;
+  text: string;
+  onClick: () => void;
+};
+
+interface SinglePillDef {
+  kind: "single";
+  id: string;
+  icon: JSX.Element;
+  text: string;
+  onAdd: () => void;
+}
+
+interface MultiPillDef {
+  kind: "multi";
+  id: string;
+  icon: JSX.Element;
+  text: string;
+  options: PillOption[];
+}
+
+type PillDef = SinglePillDef | MultiPillDef;
+
+interface OverflowItem {
+  icon: JSX.Element;
+  text: string;
+  onClick: () => void;
+}
+
+// =====================================
 // ⬢ Utils
 // =====================================
 const TriangleUp = () => (
   <div className="h-3 w-3 bg-white dark:bg-base-100 border-t border-l border-border-secondary rotate-45 translate-y-1/2" />
 );
+
+function pillToOverflowItems(pill: PillDef): OverflowItem[] {
+  if (pill.kind === "single") {
+    return [{ icon: pill.icon, text: pill.text, onClick: pill.onAdd }];
+  }
+  return pill.options.map(o => ({
+    icon: o.icon,
+    text: o.text,
+    onClick: o.onClick,
+  }));
+}
+
+// =====================================
+// ⬢ useContainerWidth
+// =====================================
+function useContainerWidth(ref: React.RefObject<HTMLElement>): number {
+  const [width, setWidth] = useState(9999);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return () => {};
+    setWidth(el.offsetWidth);
+    const ro = new ResizeObserver(entries => {
+      const w = entries[0]?.contentRect.width;
+      if (w !== undefined) setWidth(w);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [ref]);
+
+  return width;
+}
 
 // =====================================
 // ⬢ BlockSuggestion
@@ -36,20 +103,18 @@ type BlockSuggestionProps = {
   onAdd: () => void;
 };
 
-function BlockSuggestion(props: BlockSuggestionProps) {
-  const onClick = useCallback(() => {
-    props.onAdd();
-  }, [props.onAdd]);
+function BlockSuggestion({ id, icon, text, onAdd }: BlockSuggestionProps) {
+  const onClick = useCallback(() => onAdd(), [onAdd]);
 
   return (
-    <div id={props.id} className="w-full text-sm px-1 relative z-30">
+    <div id={id} className="w-full text-sm px-1 relative z-30">
       <button
         type="button"
         className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 py-2.5 rounded-full text-[#6C757D] dark:text-ink-400 bg-white dark:bg-base-100 hover:border-[#A308F0] border border-border-secondary dark:border-border-tertiary font-body font-normal text-sm"
         onClick={onClick}
       >
-        {props.icon}
-        <span>{props.text}</span>
+        {icon}
+        <span>{text}</span>
       </button>
     </div>
   );
@@ -59,18 +124,24 @@ function BlockSuggestion(props: BlockSuggestionProps) {
 // ⬢ MultiBlockSuggestion
 // =====================================
 interface MultiBlockSuggestionProps {
+  id?: string;
   icon: JSX.Element;
   text: string;
-  options: { icon: JSX.Element; text: string; onClick: () => void }[];
+  options: PillOption[];
 }
 
-function MultiBlockSuggestion(props: MultiBlockSuggestionProps) {
+function MultiBlockSuggestion({
+  id,
+  icon,
+  text,
+  options,
+}: MultiBlockSuggestionProps) {
   return (
-    <Menu as="div" className="w-full text-sm px-1 relative z-30">
+    <Menu as="div" id={id} className="w-full text-sm px-1 relative z-30">
       <Menu.Button className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 rounded-full text-[#6C757D] dark:text-ink-400 bg-white dark:bg-base-100 hover:text-gray-700 relative border border-border-secondary dark:border-border-tertiary py-2.5 hover:border-[#A308F0]">
-        {props.icon}
-        <span>{props.text}</span>
-        <ChevronDownIcon className="w-4 h-4" />
+        {icon}
+        <span>{text}</span>
+        <PiCaretDown size={14} />
       </Menu.Button>
       <Transition
         as="div"
@@ -84,9 +155,9 @@ function MultiBlockSuggestion(props: MultiBlockSuggestionProps) {
       >
         <Menu.Items
           as="div"
-          className="w-44 mt-2 rounded-2xl bg-white dark:bg-base-100 shadow-sm  ring-1 ring-border-secondary dark:ring-border-tertiary focus:outline-none font-body px-1.5 py-1.5  "
+          className="w-44 mt-2 rounded-2xl bg-white dark:bg-base-100 shadow-sm ring-1 ring-border-secondary dark:ring-border-tertiary focus:outline-none font-body px-1.5 py-1.5"
         >
-          {props.options.map((option, index) => (
+          {options.map((option, index) => (
             <Menu.Item key={option.text}>
               {({ active }) => (
                 <button
@@ -94,8 +165,8 @@ function MultiBlockSuggestion(props: MultiBlockSuggestionProps) {
                   className={clsx(
                     active ? "bg-primary/20 text-ink-100" : "text-ink-400",
                     index === 0 ? "rounded-lg" : "",
-                    index === props.options.length - 1 ? "rounded-lg" : "",
-                    "flex items-center gap-x-2 w-full text-sm px-2 py-1.5 mb-0.5 hover:bg-primary/20 rounded-lg "
+                    index === options.length - 1 ? "rounded-lg" : "",
+                    "flex items-center gap-x-2 w-full text-sm px-2 py-1.5 mb-0.5 hover:bg-primary/20 rounded-lg"
                   )}
                   onClick={option.onClick}
                 >
@@ -112,8 +183,63 @@ function MultiBlockSuggestion(props: MultiBlockSuggestionProps) {
 }
 
 // =====================================
+// ⬢ OverflowMenu
+// =====================================
+
+function OverflowMenu({ items }: { items: OverflowItem[] }) {
+  return (
+    <Menu as="div" className="w-auto min-w-[120px] text-sm px-1 relative z-30">
+      <Menu.Button
+        aria-label="More block types"
+        className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 py-2.5 rounded-full text-[#6C757D] dark:text-ink-400 bg-white dark:bg-base-100 border border-border-secondary dark:border-border-tertiary hover:border-[#A308F0]"
+      >
+        <PiDotsThree size={16} />
+        <span>More</span>
+      </Menu.Button>
+      <Transition
+        as="div"
+        className="absolute right-0 z-40"
+        enter="transition-opacity duration-300"
+        enterFrom="opacity-0"
+        enterTo="opacity-100"
+        leave="transition-opacity duration-300"
+        leaveFrom="opacity-100"
+        leaveTo="opacity-0"
+      >
+        <Menu.Items
+          as="div"
+          className="w-44 mt-2 rounded-2xl bg-white dark:bg-base-100 shadow-sm ring-1 ring-border-secondary dark:ring-border-tertiary focus:outline-none font-body px-1.5 py-1.5"
+        >
+          {items.map((item, index) => (
+            <Menu.Item key={item.text}>
+              {({ active }) => (
+                <button
+                  type="button"
+                  className={clsx(
+                    active ? "bg-primary/20 text-ink-100" : "text-ink-400",
+                    index === 0 || index === items.length - 1
+                      ? "rounded-lg"
+                      : "",
+                    "flex items-center gap-x-2 w-full text-sm px-2 py-1.5 mb-0.5 hover:bg-primary/20 rounded-lg"
+                  )}
+                  onClick={item.onClick}
+                >
+                  {item.icon}
+                  {item.text}
+                </button>
+              )}
+            </Menu.Item>
+          ))}
+        </Menu.Items>
+      </Transition>
+    </Menu>
+  );
+}
+
+// =====================================
 // ⬢ BlockList
 // =====================================
+
 interface BlockListProps {
   workspaceId: string;
   onAddBlock: (type: BlockType) => void;
@@ -123,6 +249,19 @@ interface BlockListProps {
 function BlockList(props: BlockListProps) {
   const ff = { visualizationsV2: true };
   console.log(props.workspaceId);
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const containerWidth = useContainerWidth(
+    containerRef as React.RefObject<HTMLElement>
+  );
+
+  const visibleCount = (() => {
+    if (containerWidth >= 975) return 7;
+    if (containerWidth >= 840) return 6;
+    if (containerWidth >= 710) return 5;
+    if (containerWidth >= 580) return 4;
+    return 3;
+  })();
 
   const onAddSQL = useCallback(
     () => props.onAddBlock(BlockType.SQL),
@@ -166,83 +305,120 @@ function BlockList(props: BlockListProps) {
     [props.onAddBlock]
   );
 
+  const pills: PillDef[] = [
+    {
+      kind: "single",
+      id: "add-block-power",
+      icon: <LightningIcon className="w-[20px] h-[20px]" />,
+      text: "Toolbox",
+      onAdd: props.onOpenToolbox,
+    },
+    {
+      kind: "single",
+      id: "add-block-query",
+      icon: <DatabaseIcon className="w-[20px] h-[20px]" />,
+      text: "Query",
+      onAdd: onAddSQL,
+    },
+    {
+      kind: "single",
+      id: "add-block-python",
+      icon: <CodeIcon className="w-[20px] h-[20px]" />,
+      text: "Python",
+      onAdd: onAddPython,
+    },
+    {
+      kind: "multi",
+      id: "add-block-text",
+      icon: <TextIcon className="w-[20px] h-[20px]" />,
+      text: "Text",
+      options: [
+        {
+          icon: <TextIcon className="w-4 h-4" />,
+          text: "Rich Text",
+          onClick: onAddRichText,
+        },
+        {
+          icon: <PiMarkdownLogoLight className="w-4 h-4" />,
+          text: "Markdown",
+          onClick: onAddMarkdown,
+        },
+      ],
+    },
+    {
+      kind: "single",
+      id: "add-block-visualization",
+      icon: <ChartbarIcon className="w-[20px] h-[20px]" />,
+      text: "Charts",
+      onAdd: onAddVisualization,
+    },
+    {
+      kind: "single",
+      id: "add-block-pivot",
+      icon: <CubeIcon className="w-[20px] h-[20px]" />,
+      text: "Pivot",
+      onAdd: onAddPivotTable,
+    },
+    {
+      kind: "multi",
+      id: "add-block-input",
+      icon: <KeyboardIcon className="w-[20px] h-[20px]" />,
+      text: "Input",
+      options: [
+        {
+          icon: <TextIcon className="w-4 h-4" />,
+          text: "Text Input",
+          onClick: onAddInput,
+        },
+        {
+          icon: <PiListPlusLight className="w-4 h-4" />,
+          text: "Dropdown",
+          onClick: onAddDropdownInput,
+        },
+        {
+          icon: <PiCalendarDots className="w-4 h-4" />,
+          text: "Date",
+          onClick: onAddDateInput,
+        },
+      ],
+    },
+  ];
+
+  const visiblePills = pills.slice(0, visibleCount);
+  const overflowPills = pills.slice(visibleCount);
+  const overflowItems = overflowPills.flatMap(pillToOverflowItems);
+
   return (
     <div className="w-full absolute z-30 -translate-y-2 font-body">
       <div className="w-full flex justify-center relative z-30">
         <TriangleUp />
       </div>
 
-      <div className="w-full py-1 flex items-center justify-center bg-base-100">
-        <BlockSuggestion
-          id="add-block-power"
-          icon={<LightningIcon className="w-[20px] h-[20px]" />}
-          onAdd={props.onOpenToolbox}
-          text="Toolbox"
-        />
+      <div
+        ref={containerRef}
+        className="w-full py-1 flex items-center justify-center bg-base-100"
+      >
+        {visiblePills.map(pill =>
+          pill.kind === "single" ? (
+            <BlockSuggestion
+              key={pill.id}
+              id={pill.id}
+              icon={pill.icon}
+              text={pill.text}
+              onAdd={pill.onAdd}
+            />
+          ) : (
+            <MultiBlockSuggestion
+              key={pill.id}
+              id={pill.id}
+              icon={pill.icon}
+              text={pill.text}
+              options={pill.options}
+            />
+          )
+        )}
 
-        <MultiBlockSuggestion
-          icon={<TextIcon className="w-[20px] h-[20px]" />}
-          text="Text"
-          options={[
-            {
-              icon: <TextIcon className="w-4 h-4" />,
-              text: "Rich Text",
-              onClick: onAddRichText,
-            },
-            {
-              icon: <PiMarkdownLogoLight className="w-4 h-4" />,
-              text: "Markdown",
-              onClick: onAddMarkdown,
-            },
-          ]}
-        />
-
-        <BlockSuggestion
-          id="add-block-query"
-          icon={<DatabaseIcon className="w-[20px] h-[20px]" />}
-          onAdd={onAddSQL}
-          text="Query"
-        />
-        <BlockSuggestion
-          id="add-block-python"
-          icon={<CodeIcon className="w-[20px] h-[20px]" />}
-          onAdd={onAddPython}
-          text="Python"
-        />
-        <BlockSuggestion
-          id="add-block-visualization"
-          icon={<ChartbarIcon className="w-[20px] h-[20px]" />}
-          onAdd={onAddVisualization}
-          text="Visualization"
-        />
-        <BlockSuggestion
-          id="add-block-pivot"
-          icon={<CubeIcon className="w-[20px] h-[20px]" />}
-          onAdd={onAddPivotTable}
-          text="Pivot"
-        />
-
-        <MultiBlockSuggestion
-          icon={<KeyboardIcon className="w-[20px] h-[20px]" />}
-          text="Input"
-          options={[
-            {
-              icon: <TextIcon className="w-4 h-4" />,
-              text: "Text Input",
-              onClick: onAddInput,
-            },
-            {
-              icon: <PiListPlusLight className="w-4 h-4" />,
-              text: "Dropdown",
-              onClick: onAddDropdownInput,
-            },
-            {
-              icon: <PiCalendarDots className="w-4 h-4" />,
-              text: "Date",
-              onClick: onAddDateInput,
-            },
-          ]}
-        />
+        {overflowItems.length > 0 && <OverflowMenu items={overflowItems} />}
       </div>
     </div>
   );
@@ -273,6 +449,7 @@ const useClickOutside = (
 // =====================================
 // ⬢ PlusButton
 // =====================================
+
 interface Props {
   workspaceId: string;
   alwaysOpen: boolean;
@@ -289,11 +466,14 @@ function PlusButton(props: Props) {
   const [isToolboxOpen, setIsToolboxOpen] = useState(false);
 
   const toggleOptions = useCallback(() => setShowOptions(prev => !prev), []);
+
   const handleOpenToolbox = useCallback(() => {
     setShowOptions(false);
     setIsToolboxOpen(true);
   }, []);
+
   const handleToolboxClose = useCallback(() => setIsToolboxOpen(false), []);
+
   const handleSelectTool = useCallback(
     (toolId: string) => {
       props.onAddAnalyticsBlock(toolId);
@@ -304,7 +484,6 @@ function PlusButton(props: Props) {
 
   useClickOutside(wrapperRef, () => {
     setShowOptions(false);
-    // Do NOT close isToolboxOpen here — HeadlessUI Dialog manages its own backdrop
   });
 
   const addBlockHandler = useCallback(
@@ -337,7 +516,7 @@ function PlusButton(props: Props) {
         >
           <div className="w-full h-[1px] bg-[#E9ECEF] dark:bg-border-tertiary font-body" />
           <div className="flex text-[#6C757D] dark:text-ink-400 font-medium justify-center items-center gap-x-1 text-[12px] whitespace-nowrap">
-            <PlusIcon className="h-3 w-3 text-[#6C757D] dark:text-ink-400" />
+            <PiPlus size={12} />
             <span>Add block</span>
           </div>
           <div className="w-full h-[1px] bg-[#E9ECEF] dark:bg-border-tertiary" />
