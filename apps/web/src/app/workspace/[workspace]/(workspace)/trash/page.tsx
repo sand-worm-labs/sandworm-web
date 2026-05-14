@@ -1,7 +1,7 @@
 "use client";
 
-import { HandThumbUpIcon } from "@heroicons/react/24/outline";
 import React, { useCallback, useMemo } from "react";
+import { PiTrash } from "react-icons/pi";
 
 import type { ApiDeletedDocument } from "@/types";
 import { useSession } from "@/components/Editor/hooks/useAuth";
@@ -11,22 +11,35 @@ import { useDocuments } from "@/components/Editor/hooks/useDocuments";
 import { useStringQuery } from "@/components/Editor/hooks/useQueryArgs";
 import { Loader } from "@/components/Loader";
 
+// =====================================
+// ⬢ Empty State
+// =====================================
+
 function EmptyTrash() {
   return (
-    <div className="py-6 ">
-      <div className="text-center py-12 bg-gray-50 dark:bg-base-100  rounded-xl border-2 border-border-secondary dark:border-border-tertiary border-dashed">
-        <HandThumbUpIcon className="h-12 w-12 text-ink-400 mx-auto" />
-        <h3 className="mt-2 text-sm font-semibold text-ink-100">
-          Your trash is empty
-        </h3>
-        <p className="mt-1 text-sm text-ink-400">
-          In the vacuum of bits, your trash bin echoes the mindfulness of
-          deletion.
+    <div className="flex flex-col items-center justify-center py-16 gap-3">
+      <div
+        className="flex items-center justify-center w-12 h-12
+        rounded-xl border border-[#DEE2E6] dark:border-[#3A3A38]
+        bg-white dark:bg-[#252523] text-ink-300 dark:text-ink-500"
+      >
+        <PiTrash size={20} />
+      </div>
+      <div className="flex flex-col items-center gap-1">
+        <p className="text-[15px] font-medium text-ink-500 dark:text-ink-200">
+          Trash is empty
+        </p>
+        <p className="text-sm text-ink-300 dark:text-ink-500 text-center max-w-[240px]">
+          Deleted notebooks sit here for 30 days before they're gone for good.
         </p>
       </div>
     </div>
   );
 }
+
+// =====================================
+// ⬢ TrashPage
+// =====================================
 
 export default function TrashPage() {
   const workspaceId = useStringQuery("workspace");
@@ -43,23 +56,17 @@ export default function TrashPage() {
   );
 
   const onPermanentDelete = useCallback(
-    (id: string) => {
-      return deleteDocument(id, true);
-    },
+    (id: string) => deleteDocument(id, true),
     [deleteDocument]
   );
 
   const onRestore = useCallback(
-    (id: string) => {
-      return restoreDocument(id);
-    },
+    (id: string) => restoreDocument(id),
     [restoreDocument]
   );
 
   const session = useSession({ redirectToLogin: true });
-  if (!session.user) {
-    return null;
-  }
+  if (!session.user) return null;
 
   if (state.loading) {
     return (
@@ -70,12 +77,20 @@ export default function TrashPage() {
   }
 
   return (
-    <ScrollBar className="w-full bg-white dark:bg-base-100  h-full overflow-auto font-body">
-      <div className="px-4 sm:p-6 lg:p-8">
-        <div className=" pb-4 sm:flex sm:items-center sm:justify-between">
-          <h3 className="text-lg font-medium leading-6 text-ink-100">Trash</h3>
+    <ScrollBar className="w-full bg-white dark:bg-base-100 h-full overflow-auto font-body">
+      <div className="px-4 sm:px-6 lg:px-8 py-6">
+        {/* ── Header ── */}
+        <div
+          className="flex items-center gap-2 mb-6
+          pb-4 border-b border-[#F1F3F4] dark:border-[#2A2A28]"
+        >
+          <PiTrash size={16} className="text-ink-400 dark:text-ink-500" />
+          <h3 className="text-sm font-medium text-ink-100 dark:text-white">
+            Trash
+          </h3>
         </div>
 
+        {/* ── Content ── */}
         {documents.size === 0 ? (
           <EmptyTrash />
         ) : (

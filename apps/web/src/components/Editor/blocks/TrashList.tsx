@@ -1,12 +1,15 @@
-import { ArrowUturnUpIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import type { List } from "immutable";
 import { Map } from "immutable";
 import { useMemo } from "react";
+import { PiArrowCounterClockwise, PiTrash, PiNotebook } from "react-icons/pi";
 
 import type { ApiDeletedDocument } from "@/types";
-import { Trash } from "@/components/Assets/Trash";
 import { timeAgo } from "@/lib";
+
+// =====================================
+// ⬢ Types
+// =====================================
 
 type TrashListProps = {
   workspaceId: string;
@@ -14,6 +17,53 @@ type TrashListProps = {
   onRestore: (id: string) => void;
   onPermanentDelete: (id: string) => void;
 };
+
+// =====================================
+// ⬢ Action Button
+// =====================================
+
+interface ActionBtnProps {
+  icon: React.ReactNode;
+  label: string;
+  onClick: () => void;
+  danger?: boolean;
+}
+
+function ActionBtn({ icon, label, onClick, danger }: ActionBtnProps) {
+  return (
+    <div className="relative group">
+      <button
+        type="button"
+        onClick={onClick}
+        aria-label={label}
+        className={`flex items-center justify-center w-8 h-8 rounded-lg
+          transition-colors duration-100
+          ${
+            danger
+              ? "text-ink-300 hover:text-[#D85A30] hover:bg-[#FAECE7] dark:hover:bg-[#1A0D08]"
+              : "text-ink-300 hover:text-ink-500 dark:hover:text-ink-200 hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]"
+          }`}
+      >
+        {icon}
+      </button>
+
+      {/* Tooltip */}
+      <div
+        className="pointer-events-none absolute -top-1 left-1/2
+        -translate-y-full -translate-x-1/2
+        opacity-0 group-hover:opacity-100 transition-opacity duration-150
+        bg-hunter-950 text-white text-[10px] px-2 py-1 rounded-md
+        whitespace-nowrap z-20"
+      >
+        {label}
+      </div>
+    </div>
+  );
+}
+
+// =====================================
+// ⬢ TrashList
+// =====================================
 
 export default function TrashList({
   workspaceId,
@@ -25,14 +75,16 @@ export default function TrashList({
     () => documents.reduce((acc, doc) => acc.set(doc.id, doc), Map()),
     [documents]
   );
+
   const sorted = useMemo(
     () => documents.sortBy(d => d.deletedAt).reverse(),
     [documents]
   );
 
   return (
-    <ul className="divide-y divide-border-tertiary">
+    <ul className="flex flex-col gap-1">
       {sorted.map(doc => {
+        // ── Breadcrumb path ──
         const path: string[] = [doc.title || "Untitled"];
         let parent = doc.parentId ? docById.get(doc.parentId) : undefined;
         while (parent) {
@@ -43,63 +95,62 @@ export default function TrashList({
 
         const displayPath =
           path.length > 2
-            ? `${path[0]} / ... / ${path[path.length - 1]}`
+            ? `${path[0]} / … / ${path[path.length - 1]}`
             : path.join(" / ");
 
         return (
           <li
             key={doc.id}
-            className="flex flex-wrap items-center justify-between gap-x-6 gap-y-4 py-5 sm:flex-nowrap"
+            className="group flex items-center gap-3 px-3 py-3.5
+              rounded-xl transition-colors duration-100
+              hover:bg-[#F9F5FF] dark:hover:bg-[#1A0D26]"
           >
-            <div>
-              <p className="text-sm font-semibold leading-6 text-ink-100">
-                <Link
-                  href={`/workspace/${workspaceId}/documents/${doc.id}`}
-                  className="hover:underline"
-                >
-                  {doc.title || "Untitled"}
-                </Link>
-              </p>
-              <div className="mt-1 flex items-center gap-x-2 text-xs leading-5 text-ink-400">
-                <p>{displayPath}</p>
-                <svg viewBox="0 0 2 2" className="h-0.5 w-0.5 fill-current">
-                  <circle cx={1} cy={1} r={1} />
-                </svg>
-                <p>Deleted {timeAgo(new Date(doc.deletedAt))}</p>
+            {/* ── Icon ── */}
+            <div
+              className="flex-shrink-0 flex items-center justify-center w-8 h-8
+              rounded-lg border border-[#DEE2E6] dark:border-[#3A3A38]
+              bg-white dark:bg-[#252523] text-ink-300 dark:text-ink-500"
+            >
+              <PiNotebook size={15} />
+            </div>
+
+            {/* ── Content ── */}
+            <div className="flex-1 min-w-0">
+              <Link
+                href={`/workspace/${workspaceId}/documents/${doc.id}`}
+                className="text-[15px] font-medium text-ink-500 dark:text-ink-200
+                  hover:text-[#A308F0] dark:hover:text-[#C97FF5]
+                  transition-colors duration-100 truncate block leading-tight"
+              >
+                {doc.title || "Untitled"}
+              </Link>
+              <div className="flex items-center gap-1.5 mt-1">
+                <span className="text-sm text-ink-300 dark:text-ink-600 truncate">
+                  {displayPath}
+                </span>
+                <span className="text-sm text-ink-300 dark:text-ink-600">
+                  ·
+                </span>
+                <span className="text-sm text-ink-300 dark:text-ink-600 flex-shrink-0 tabular-nums">
+                  Deleted {timeAgo(new Date(doc.deletedAt))}
+                </span>
               </div>
             </div>
 
-            <dl className="flex items-center justify-center gap-x-2 sm:w-auto px-2">
-              <div className="group relative">
-                <button
-                  type="button"
-                  className="flex p-2 hover:bg-gray-100 rounded-sm"
-                  onClick={() => onRestore(doc.id)}
-                >
-                  <ArrowUturnUpIcon className="h-5 w-5 text-ink-400" />
-                </button>
-                <div className="pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1">
-                  <span className="inline-flex gap-x-1 items-center text-white text-center">
-                    <span>Restore</span>
-                  </span>
-                </div>
-              </div>
-
-              <div className="group relative">
-                <button
-                  type="button"
-                  className="flex p-2 hover:bg-gray-100 rounded-sm"
-                  onClick={() => onPermanentDelete(doc.id)}
-                >
-                  <Trash className="h-5 w-5 text-ink-400" />
-                </button>
-                <div className="pointer-events-none absolute -top-2 left-1/2 -translate-y-full -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1">
-                  <span className="inline-flex gap-x-1 justify-center items-center text-white text-center">
-                    <span>Delete permanently</span>
-                  </span>
-                </div>
-              </div>
-            </dl>
+            {/* ── Actions — always visible ── */}
+            <div className="flex-shrink-0 flex items-center gap-0.5">
+              <ActionBtn
+                icon={<PiArrowCounterClockwise size={15} />}
+                label="Restore"
+                onClick={() => onRestore(doc.id)}
+              />
+              <ActionBtn
+                icon={<PiTrash size={15} />}
+                label="Delete permanently"
+                onClick={() => onPermanentDelete(doc.id)}
+                danger
+              />
+            </div>
           </li>
         );
       })}

@@ -58,6 +58,20 @@
 }
 
 @font-face {
+  font-family: "Moderat Mono";
+  src: url("/fonts/moderat/Moderat-Mono-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Moderat Mono";
+  src: url("/fonts/moderat/Moderat-Mono-Medium.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
   font-family: "Moderat Condensed";
   src: url("../../public/fonts/moderat/Moderat-Condensed-Black.woff") format("truetype");
   font-weight: 900;
