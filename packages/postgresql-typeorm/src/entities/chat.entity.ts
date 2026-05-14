@@ -34,6 +34,9 @@ export class ChatEntity extends AbstractEntity {
   @Column({ name: "is_visible", type: "boolean", default: false })
   private!: boolean;
 
+  @Column({ name: "is_pin", type: "boolean", default: false })
+  pin!: boolean;
+
   @Column({ name: "last_context", type: "jsonb", nullable: true })
   lastContext?: Record<string, any> | null;
 
