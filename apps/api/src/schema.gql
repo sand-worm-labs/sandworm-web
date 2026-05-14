@@ -260,6 +260,9 @@ type Message {
   parts: JSON
   attachments: JSON
   createdAt: DateTime!
+  model: String
+  finishReason: String
+  usage: JSON
 }
 
 type Chat {
@@ -272,6 +275,14 @@ type Chat {
   pin: Boolean!
   lastContext: JSON
   messages: [Message!]
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Vote {
+  userId: String!
+  messageId: String!
+  isUpvoted: Boolean!
   createdAt: DateTime!
   updatedAt: DateTime!
 }
@@ -384,6 +395,7 @@ type Query {
 
   """Get messages for a chat"""
   chatMessages(chatId: String!): [Message!]!
+  messageVote(messageId: String!): Boolean
 
   """Get all comments for a document"""
   comments(documentId: String!): [Comment!]!
@@ -554,11 +566,14 @@ type Mutation {
   """Pin or unpin a chat"""
   pinChat(chatId: String!): Chat!
 
-  """Send message (chat or block edit)"""
-  sendMessage(chatId: String!, input: SendMessageInput!): Message!
+  """Send a user message"""
+  sendMessage(input: SendMessageInput!): Message!
 
-  """Edit an existing message"""
-  editMessage(input: EditMessageInput!): Message!
+  """Upvote or downvote a message"""
+  voteMessage(input: VoteMessageInput!): Vote!
+
+  """Retract a vote on a message"""
+  removeVote(messageId: String!): Boolean!
 
   """Create a new comment on a document"""
   createComment(documentId: String!, input: CreateCommentInput!): Comment!
@@ -704,9 +719,17 @@ input CreateChatInput {
   workspaceId: String!
   documentId: String!
   message: String!
+  model: String!
 
   """Optional custom title. Auto-generated from message if not provided."""
   title: String
+  focusedBlocks: [FocusedBlockInput!]
+}
+
+input FocusedBlockInput {
+  id: String!
+  title: String!
+  type: String!
 }
 
 input UpdateChatInput {
@@ -717,14 +740,13 @@ input UpdateChatInput {
 input SendMessageInput {
   chatId: String!
   content: String!
-  blockId: String
   model: String!
+  focusedBlocks: [FocusedBlockInput!]
 }
 
-input EditMessageInput {
+input VoteMessageInput {
   messageId: String!
-  chatId: String!
-  content: String!
+  isUpvoted: Boolean!
 }
 
 input CreateCommentInput {
