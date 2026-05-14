@@ -1,0 +1,32 @@
+#import "./fragments/chat.fragments.graphql"
+#import "./fragments/message.fragments.graphql"
+
+# ─────────────────────────────────────────────
+# List
+# ─────────────────────────────────────────────
+
+query GetChats($workspaceId: String!, $documentId: String!) {
+  chats(workspaceId: $workspaceId, documentId: $documentId) {
+    ...ChatFields
+  }
+}
+
+# ─────────────────────────────────────────────
+# Single (with messages)
+# ─────────────────────────────────────────────
+
+query GetChat($chatId: String!) {
+  chat(chatId: $chatId) {
+    ...ChatWithMessages
+  }
+}
+
+# ─────────────────────────────────────────────
+# Messages only
+# ─────────────────────────────────────────────
+
+query GetChatMessages($chatId: String!) {
+  chatMessages(chatId: $chatId) {
+    ...MessageFields
+  }
+}

@@ -1,0 +1,40 @@
+#import "./fragments/chat.fragments.graphql"
+#import "./fragments/message.fragments.graphql"
+
+# ─────────────────────────────────────────────
+# Create
+# ─────────────────────────────────────────────
+
+mutation CreateChat($input: CreateChatInput!) {
+  createChat(input: $input) {
+    ...ChatWithMessages
+  }
+}
+
+# ─────────────────────────────────────────────
+# Update
+# ─────────────────────────────────────────────
+
+mutation UpdateChat($input: UpdateChatInput!) {
+  updateChat(input: $input) {
+    ...ChatFields
+  }
+}
+
+# ─────────────────────────────────────────────
+# Delete
+# ─────────────────────────────────────────────
+
+mutation DeleteChat($chatId: String!) {
+  deleteChat(chatId: $chatId)
+}
+
+# ─────────────────────────────────────────────
+# Pin / Unpin
+# ─────────────────────────────────────────────
+
+mutation PinChat($chatId: String!) {
+  pinChat(chatId: $chatId) {
+    ...ChatFields
+  }
+}
