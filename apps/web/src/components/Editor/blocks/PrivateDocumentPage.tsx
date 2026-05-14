@@ -548,6 +548,8 @@ function PrivateDocumentPageInner(
                 showDragHandle={false}
               />
               <MiniChat
+                workspaceId={props.workspaceId}
+                documentId={props.documentId}
                 visible={selectedSidebar?._tag === "chat"}
                 onClose={onHideSidebar}
                 yDoc={yDoc}
