@@ -9,8 +9,8 @@ echo "▶ Running env setup..."
 
 # === API .env ===
 if [ ! -f "$API_ENV" ]; then
-  echo "Creating API .env..."
-  cat > "$API_ENV" <<EOL
+echo "Creating API .env..."
+cat > "$API_ENV" <<EOL
 ##== Environment
 NODE_ENV=development
 
@@ -84,8 +84,23 @@ GOOGLE_CLIENT_SECRET=
 JUPYTER_HOST=localhost
 JUPYTER_PORT=8888
 JUPYTER_TOKEN=$(openssl rand -hex 24)
-EOL
 
+##== Encryption
+ENVIRONMENT_VARIABLES_ENCRYPTION_KEY=$(openssl rand -hex 32)
+
+##== OpenRouter
+OPENROUTER_PROVISIONING_KEY=
+OPENROUTER_DEFAULT_CAP=10
+OPENROUTER_LIMIT_RESET=monthly
+
+##== Logdy
+LOGDY_HOST=localhost
+LOGDY_PORT=10800
+
+##== AI Service
+AI_SERVICE_URL=http://localhost:8000
+AI_HANDSHAKE_TOKEN=$(openssl rand -hex 24)
+EOL
   echo "✅ Created $API_ENV"
 fi
 
