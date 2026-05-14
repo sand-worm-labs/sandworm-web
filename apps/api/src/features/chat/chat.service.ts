@@ -122,6 +122,15 @@ export class ChatService {
     return true;
   }
 
+  async pinChat(chatId: string, userId: string): Promise<Chat> {
+    const chat = await this.chatRepository.findOne({
+      where: { id: chatId, userId },
+    });
+    if (!chat) throw new Error('Chat not found');
+
+    chat.pin = !chat.pin;
+    return Chat.fromEntity(await this.chatRepository.save(chat));
+  }
   async addUserMessage(userId: string, chatId: string, input: SendMessageInput): Promise<Message> {
     const chat = await this.chatRepository.findOne({
       where: { id: chatId, userId },
