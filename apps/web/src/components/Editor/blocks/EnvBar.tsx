@@ -16,7 +16,6 @@ import { useEnvironmentStatus } from "../hooks/useEnvironmentStatus";
 // =====================================
 // ⬢ Environment Button
 // =====================================
-
 const EnvironmentButton = ({
   name,
   workspaceId,
