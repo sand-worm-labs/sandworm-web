@@ -343,7 +343,6 @@
   border-radius: 0.25rem;
 }
 
-/* ── Links ───────────────────────────────────────────────────── */
 .sw-markdown-preview a {
   color: #0b6e99;
   text-decoration: underline;
@@ -354,7 +353,6 @@
   color: #0b6e99;
 }
 
-/* ── Lists ───────────────────────────────────────────────────── */
 .sw-markdown-preview ul,
 .sw-markdown-preview ol {
   padding-left: 1.5rem;
@@ -369,7 +367,6 @@
   margin-top: 0.25rem;
 }
 
-/* ── Headings ────────────────────────────────────────────────── */
 .sw-markdown-preview h1,
 .sw-markdown-preview h2,
 .sw-markdown-preview h3,
@@ -386,12 +383,10 @@
   margin-top: 0;
 }
 
-/* ── Paragraphs ──────────────────────────────────────────────── */
 .sw-markdown-preview p {
   margin: 0.6rem 0;
 }
 
-/* ── Blockquotes ─────────────────────────────────────────────── */
 .sw-markdown-preview blockquote {
   border-left: 3px solid #0b6e99;
   padding-left: 1rem;
@@ -461,12 +456,7 @@ height: 100%;
     #f00 60.53%,
     #ded757 80.81%,
     #ff00e1 98.74%
-  );
-
-
-
- 
-  
+  );  
   background-size: 200% 100%;
   animation: shift-colors 2s linear infinite;
 }

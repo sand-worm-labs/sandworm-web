@@ -88,12 +88,12 @@ export const MultimodalInputView = forwardRef<
     shadow-[0_3.5px_24px_rgba(120,147,208,0.09)] dark:shadow-none
     focus-within:ring-4 focus-within:ring-[rgba(163,8,240,0.2)]
     dark:focus-within:ring-[rgba(163,8,240,0.3)]
-    transition-all duration-300 ease-in-out
+    transition-all duration-300 ease-in-out font-tertiary text-[13px] 
   "
           >
             <TextareaAutosize
               ref={ref}
-              placeholder="How can I help you today?"
+              placeholder="Start a query..."
               value={input}
               onChange={onInputChange}
               onKeyDown={e => {
@@ -117,7 +117,7 @@ export const MultimodalInputView = forwardRef<
         placeholder:text-ink-300 dark:placeholder:text-ink-400
         scrollbar-thin
         outline-none    
-    focus:outline-none 
+    focus:outline-none  placeholder:font-tertiary placeholder:text-[13px]
       "
             />
 
