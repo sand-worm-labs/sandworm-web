@@ -6,9 +6,8 @@ import { uniq } from "ramda";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { BsPlusCircle } from "react-icons/bs";
+import { PiPlus, PiTrash, PiEye, PiEyeSlash } from "react-icons/pi";
 
-import { Trash } from "@/components/Assets/Trash";
 import {
   useEnvironmentVariables,
   type EnvVar,
@@ -22,6 +21,9 @@ import EnvBar from "@/components/Editor/blocks/EnvBar";
 import { useStringQuery } from "@/components/Editor/hooks/useQueryArgs";
 import Spin from "@/components/Editor/blocks/Spin";
 
+// =====================================
+// ⬢ Constants
+// =====================================
 const envVarRegex = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
 
 type ErrorType = "empty-name" | "invalid-name" | "duplicated-name";
@@ -29,15 +31,33 @@ type ErrorType = "empty-name" | "invalid-name" | "duplicated-name";
 function errorToMessage(error: ErrorType): string {
   switch (error) {
     case "invalid-name":
-      return "Invalid name, must start with a letter or underscore and contain only letters, numbers, and underscores.";
+      return "Must start with a letter or underscore and contain only letters, numbers, and underscores.";
     case "duplicated-name":
-      return "Duplicated name, you can't have two variables with the same name.";
+      return "A variable with this name already exists.";
     case "empty-name":
-      return "Invalid name, can't be empty.";
+      return "Name can't be empty.";
     default:
       return "An unexpected error occurred. Please try again.";
   }
 }
+
+// =====================================
+// ⬢ Input shared classes
+// =====================================
+
+const inputCls =
+  "w-full px-3 py-2 rounded-lg font-body text-sm " +
+  "bg-[#F1F3F4] dark:bg-[#1A1A1A] " +
+  "border border-[#DEE2E6] dark:border-border-tertiary " +
+  "text-ink-500 dark:text-white " +
+  "placeholder-ink-300 dark:placeholder-ink-600 " +
+  "focus:outline-none focus:ring-1 focus:ring-[#A308F0] " +
+  "transition-colors duration-100 " +
+  "disabled:opacity-50 disabled:cursor-not-allowed";
+
+// =====================================
+// ⬢ EnvVarInput
+// =====================================
 
 interface EnvVarInputProps {
   variable: EnvVar;
@@ -46,7 +66,10 @@ interface EnvVarInputProps {
   disabled: boolean;
   error?: ErrorType;
 }
+
 function EnvVarInput(props: EnvVarInputProps) {
+  const [showValue, setShowValue] = useState(false);
+
   const onChangeName = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       props.onChange?.({ ...props.variable, name: e.target.value });
@@ -55,7 +78,7 @@ function EnvVarInput(props: EnvVarInputProps) {
   );
 
   const onChangeValue = useCallback(
-    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    (e: React.ChangeEvent<HTMLInputElement>) => {
       props.onChange?.({ ...props.variable, value: e.target.value });
     },
     [props.variable, props.onChange]
@@ -66,65 +89,89 @@ function EnvVarInput(props: EnvVarInputProps) {
   }, [props.variable, props.onRemove]);
 
   return (
-    <div>
-      <div className="flex space-x-4">
-        <div className="flex-1 w-full">
-          <label
-            htmlFor={`name-${props.variable.id}`}
-            className="block text-xs font-medium leading-6 text-ink-400 uppercase mb-1"
-          >
-            Name
-          </label>
+    <div className="flex gap-4 items-start">
+      {/* ── Name ── */}
+      <div className="flex-1">
+        <label
+          htmlFor={`name-${props.variable.id}`}
+          className="block text-xs font-medium text-ink-300 dark:text-ink-600
+            uppercase tracking-wider mb-1.5"
+        >
+          Name
+        </label>
+        <input
+          id={`name-${props.variable.id}`}
+          type="text"
+          value={props.variable.name}
+          placeholder="MY_VARIABLE_NAME"
+          className={clsx(inputCls, props.error && "ring-1 ring-red-500")}
+          onChange={onChangeName}
+          disabled={!props.onChange || props.disabled}
+        />
+        {props.error && <FormError msg={errorToMessage(props.error)} />}
+      </div>
+
+      {/* ── Value ── */}
+      <div className="flex-1">
+        <label
+          htmlFor={`val-${props.variable.id}`}
+          className="block text-xs font-medium text-ink-300 dark:text-ink-600
+            uppercase tracking-wider mb-1.5"
+        >
+          Value
+        </label>
+        <div className="relative">
           <input
-            id={`name-${props.variable.id}`}
-            type="text"
-            value={props.variable.name}
-            placeholder="MY_VARIABLE_NAME"
-            className={clsx(
-              "w-full px-3 py-1.5 rounded-md dark:bg-[#1A1A1A] border dark:border-border-tertiary border-[#DEE2E6] dark:text-white placeholder:dark:text-ink-300  placeholder-[#455768] focus:outline-none focus:ring-[1p] focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4] font-body ",
-              props.error && "ring-1 ring-error-600"
-            )}
-            onChange={onChangeName}
-            disabled={!props.onChange || props.disabled}
-          />
-          {props.error && <FormError msg={errorToMessage(props.error)} />}
-        </div>
-        <div className="flex-1 w-full">
-          <label
-            htmlFor={`val-${props.variable.id}`}
-            className="mb-1 block text-xs font-medium leading-6 text-ink-400 uppercase"
-          >
-            Value
-          </label>
-          <input
-            rows={1}
-            type="text"
             id={`val-${props.variable.id}`}
+            type={showValue ? "text" : "password"}
             value={props.variable.value}
-            className="w-full px-3 py-1.5 rounded-md dark:bg-[#1A1A1A] border dark:border-border-tertiary border-[#DEE2E6] dark:text-white placeholder:dark:text-ink-300  placeholder-[#455768] focus:outline-none focus:ring-[1p] focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4] font-body "
+            placeholder="••••••••"
+            className={clsx(inputCls, "pr-9")}
             onChange={onChangeValue}
             disabled={!props.onChange || props.disabled}
           />
-        </div>
-        <div className="pt-6">
           <button
             type="button"
-            className="flex items-center justify-center cursor-pointer text-gray-600 disabled:cursor-not-allowed w-9 h-9 rounded-md hover:text-error "
-            onClick={onRemove}
-            disabled={props.disabled}
+            onClick={() => setShowValue(v => !v)}
+            aria-label={showValue ? "Hide value" : "Show value"}
+            className="absolute right-2.5 top-1/2 -translate-y-1/2
+              text-ink-300 hover:text-ink-500 dark:hover:text-ink-300
+              transition-colors"
           >
-            <Trash className="h-5 w-5" />
+            {showValue ? <PiEyeSlash size={15} /> : <PiEye size={15} />}
           </button>
         </div>
+      </div>
+
+      {/* ── Remove ── */}
+      <div className="pt-7">
+        <button
+          type="button"
+          onClick={onRemove}
+          disabled={props.disabled}
+          aria-label="Remove variable"
+          className="flex items-center justify-center w-8 h-8 rounded-lg
+            text-ink-300 hover:text-[#D85A30] hover:bg-[#FAECE7]
+            dark:hover:bg-[#1A0D08]
+            transition-colors duration-100
+            disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          <PiTrash size={16} />
+        </button>
       </div>
     </div>
   );
 }
 
-export default function EnvirontVariablesPage() {
+// =====================================
+// ⬢ EnvironmentVariablesPage
+// =====================================
+
+export default function EnvironmentVariablesPage() {
   const session = useSession({ redirectToLogin: true });
   const router = useRouter();
   const workspaceId = useStringQuery("workspace");
+
   const {
     variables: fetchedVariables,
     loading,
@@ -141,6 +188,9 @@ export default function EnvirontVariablesPage() {
   const isViewer =
     session?.user?.role?.find(r => r[workspaceId])?.[workspaceId] === "viewer";
 
+  const isDirty = added.length > 0 || removed.length > 0;
+
+  // ── Handlers ──
   const onAdd = useCallback(() => {
     setAdded(prev => [...prev, { id: uuidv4(), name: "", value: "" }]);
   }, []);
@@ -155,22 +205,15 @@ export default function EnvirontVariablesPage() {
           newErrors[v.id] = "empty-name";
           return;
         }
-
         if (!envVarRegex.test(v.name)) {
           newErrors[v.id] = "invalid-name";
           return;
         }
-
         if (variables.some(x => x.name === v.name)) {
           newErrors[v.id] = "duplicated-name";
           return;
         }
-
-        const isDuplicateInAdded = added.some(
-          x => x.id !== v.id && x.name === v.name
-        );
-
-        if (isDuplicateInAdded) {
+        if (added.some(x => x.id !== v.id && x.name === v.name)) {
           newErrors[v.id] = "duplicated-name";
         }
       });
@@ -187,122 +230,140 @@ export default function EnvirontVariablesPage() {
         })
         .catch(() => {
           toast.error("Something went wrong");
-        })
-        .finally(() => {});
+        });
     },
     [save, added, removed, variables, environment.status]
   );
 
   const onCancel = useCallback(() => {
-    if (added.length === 0 && removed.length === 0) {
+    if (!isDirty) {
       router.back();
+      return;
     }
-
     setAdded([]);
     setRemoved([]);
-  }, [added, removed, router]);
+  }, [isDirty, router]);
 
   const onChange = useCallback(
-    (v: EnvVar) => {
-      setAdded(prev => prev.map(x => (x.id === v.id ? v : x)));
-    },
-    [setAdded]
+    (v: EnvVar) => setAdded(prev => prev.map(x => (x.id === v.id ? v : x))),
+    []
   );
 
   const onRemove = useCallback(
-    (v: EnvVar) => {
-      setRemoved(prev => uniq([...prev, v.id]));
-    },
-    [setRemoved]
+    (v: EnvVar) => setRemoved(prev => uniq([...prev, v.id])),
+    []
   );
 
   const onRemoveAdded = useCallback(
-    (v: EnvVar) => {
-      setAdded(prev => prev.filter(x => x.id !== v.id));
-    },
-    [setAdded]
+    (v: EnvVar) => setAdded(prev => prev.filter(x => x.id !== v.id)),
+    []
   );
 
   const [filesOpen, setFilesOpen] = useState(false);
-  const onToggleFilesOpen = useCallback(() => {
-    setFilesOpen(prev => !prev);
-  }, []);
 
-  if (!session.user) {
-    return null;
-  }
+  if (!session.user) return null;
 
   return (
     <div className="flex flex-col flex-grow h-full">
-      <ScrollBar className="w-full bg-white h-full overflow-auto">
-        <div className="px-4 sm:p-6 lg:p-8">
-          <div className="border-b border-gray-200 pb-4">
-            <h2 className="text-lg font-medium leading-7 text-ink-100">
+      <ScrollBar className="w-full bg-white dark:bg-base-100 h-full overflow-auto font-body">
+        <div className="px-4 sm:px-6 lg:px-8 py-6">
+          {/* ── Header ── */}
+          <div className="mb-6 pb-5 border-b border-[#F1F3F4] dark:border-[#2A2A28]">
+            <h2 className="text-lg font-semibold text-ink-100 dark:text-white">
               Environment variables
             </h2>
-            <p className="pt-1 text-sm leading-6 text-ink-400">
-              Available in Python blocks via
-              <span className="font-mono px-1 py-0.5 text-ink-100 rounded-sm">
+            <p className="mt-1 text-sm text-ink-400 dark:text-ink-500">
+              Available in Python blocks via{" "}
+              <code
+                className="font-mono text-[0.8125em] px-1.5 py-0.5
+                bg-[#F1F3F4] dark:bg-[#2A2A28]
+                border border-[#DEE2E6] dark:border-[#3A3A38]
+                text-ink-500 dark:text-ink-300 rounded-md"
+              >
                 os.getenv("VAR_NAME")
-              </span>
-              .
+              </code>
             </p>
           </div>
+
           <form onSubmit={onSave}>
-            <div className="flex flex-col py-4 space-y-4">
-              <div className="flex flex-col space-y-2">
-                {variables.map(v => (
-                  <EnvVarInput
-                    key={v.id}
-                    variable={v}
-                    onRemove={onRemove}
-                    disabled={saving}
-                  />
-                ))}
-                {added.map(v => (
-                  <EnvVarInput
-                    variable={v}
-                    onChange={onChange}
-                    onRemove={onRemoveAdded}
-                    disabled={saving}
-                    error={errors[v.id]}
-                  />
-                ))}
-              </div>
-              <div>
-                <button
-                  type="button"
-                  onClick={onAdd}
-                  className="flex items-center gap-x-2 text-sm font-medium leading-6 text-ink-400 border border-border-secondary px-6 py-1.5  hover:bg-gray-50 rounded-lg"
-                >
-                  <BsPlusCircle />
-                  New variable
-                </button>
-              </div>
+            {/* ── Variable rows ── */}
+            <div className="flex flex-col gap-4">
+              {variables.map(v => (
+                <EnvVarInput
+                  key={v.id}
+                  variable={v}
+                  onRemove={onRemove}
+                  disabled={saving}
+                />
+              ))}
+              {added.map(v => (
+                <EnvVarInput
+                  key={v.id}
+                  variable={v}
+                  onChange={onChange}
+                  onRemove={onRemoveAdded}
+                  disabled={saving}
+                  error={errors[v.id]}
+                />
+              ))}
             </div>
-            <div className="mt-6 flex items-center justify-end gap-x-4">
+
+            {/* ── Add variable ── */}
+            <div className="mt-4">
               <button
-                onClick={onCancel}
                 type="button"
-                className="text-sm font-medium leading-6 text-gray-600 border border-border-secondary px-6 py-2 rounded-lg "
-                disabled={saving}
+                onClick={onAdd}
+                className="flex items-center gap-2 text-sm font-medium
+                  text-ink-400 dark:text-ink-500
+                  border border-[#DEE2E6] dark:border-[#3A3A38]
+                  px-4 py-2 rounded-lg
+                  hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
+                  hover:text-ink-500 dark:hover:text-ink-300
+                  transition-colors duration-100"
               >
-                {added.length === 0 && removed.length === 0 ? "Back" : "Cancel"}
+                <PiPlus size={15} />
+                New variable
               </button>
+            </div>
+
+            {/* ── Actions ── */}
+            <div className="mt-8 flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={onCancel}
+                disabled={saving}
+                className="text-sm font-medium
+                  text-ink-400 dark:text-ink-500
+                  border border-[#DEE2E6] dark:border-[#3A3A38]
+                  px-5 py-2 rounded-lg
+                  hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
+                  hover:text-ink-500 dark:hover:text-ink-300
+                  transition-colors duration-100
+                  disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isDirty ? "Cancel" : "Back"}
+              </button>
+
               <button
                 type="submit"
-                className="flex items-center gap-x-2 rounded-lg bg-[#0F0F0F] text-white  px-6 py-2 text-sm font-medium  disabled:bg-[#868E96] disabled:cursor-not-allowed "
-                disabled={
-                  (added.length === 0 && removed.length === 0) || loading
-                }
+                disabled={!isDirty || loading}
+                className="flex items-center gap-2
+                  text-sm font-medium text-white
+                  bg-[#A308F0] hover:bg-[#8A06CC]
+                  px-5 py-2 rounded-lg
+                  transition-colors duration-100
+                  disabled:bg-[#DEE2E6] dark:disabled:bg-[#2A2A28]
+                  disabled:text-ink-300 dark:disabled:text-ink-600
+                  disabled:cursor-not-allowed"
               >
                 {saving && <Spin />}
-                Save Changes
+                Save changes
               </button>
             </div>
           </form>
         </div>
       </ScrollBar>
+
       <Files
         workspaceId={workspaceId}
         visible={filesOpen}
@@ -311,7 +372,7 @@ export default function EnvirontVariablesPage() {
       />
       <EnvBar
         isViewer={isViewer}
-        onOpenFiles={onToggleFilesOpen}
+        onOpenFiles={() => setFilesOpen(prev => !prev)}
         publishedAt={null}
         lastUpdatedAt={null}
       />

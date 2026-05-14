@@ -38,14 +38,12 @@ interface Message {
 // =====================================
 // ⬢  Header
 // =====================================
-// =====================================
-// ⬢ Header
-// =====================================
+
 interface MiniChatHeaderProps {
   onCancel?: () => void;
   onOpenThreads: () => void;
   onNewThread: () => void;
-  activeThreadTitle?: string; // present = active chat, absent = empty state
+  activeThreadTitle?: string;
 }
 
 export const MiniChatHeader: React.FC<MiniChatHeaderProps> = ({
@@ -94,7 +92,7 @@ export const MiniChatHeader: React.FC<MiniChatHeaderProps> = ({
             text-ink-400 hover:text-ink-500 hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
             transition-colors"
         >
-          <PiPlus size={15} weight="regular" />
+          <PiPlus size={15} />
         </button>
         <button
           type="button"
@@ -104,7 +102,7 @@ export const MiniChatHeader: React.FC<MiniChatHeaderProps> = ({
             text-ink-400 hover:text-ink-500 hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
             transition-colors"
         >
-          <PiClockCounterClockwise size={15} weight="regular" />
+          <PiClockCounterClockwise size={15} />
         </button>
         <button
           type="button"
@@ -114,7 +112,7 @@ export const MiniChatHeader: React.FC<MiniChatHeaderProps> = ({
             text-ink-400 hover:text-ink-500 hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
             transition-colors"
         >
-          <PiX size={15} weight="regular" />
+          <PiX size={15} />
         </button>
       </div>
     </header>
