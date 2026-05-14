@@ -269,6 +269,7 @@ type Chat {
   documentId: String!
   title: String!
   isPrivate: Boolean!
+  pin: Boolean!
   lastContext: JSON
   messages: [Message!]
   createdAt: DateTime!
@@ -549,6 +550,9 @@ type Mutation {
 
   """Delete a chat and its messages"""
   deleteChat(chatId: String!): Boolean!
+
+  """Pin or unpin a chat"""
+  pinChat(chatId: String!): Chat!
 
   """Send message (chat or block edit)"""
   sendMessage(chatId: String!, input: SendMessageInput!): Message!

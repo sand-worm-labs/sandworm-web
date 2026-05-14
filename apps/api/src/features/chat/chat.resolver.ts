@@ -58,6 +58,14 @@ export class ChatResolver {
     return this.chatService.deleteChat(chatId, userId);
   }
 
+  @Mutation(() => Chat, { name: 'pinChat', description: 'Pin or unpin a chat' })
+  async pinChat(
+    @CurrentUser('id') userId: string,
+    @Args('chatId') chatId: string
+  ): Promise<Chat> {
+    return this.chatService.pinChat(chatId, userId);
+  }
+
   @Mutation(() => Message, { name: 'sendMessage', description: 'Send message (chat or block edit)' })
   async sendMessage(
     @CurrentUser('id') userId: string,
