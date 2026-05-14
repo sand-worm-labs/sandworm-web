@@ -25,6 +25,9 @@ export class Chat {
   @BooleanField()
   isPrivate!: boolean;
 
+  @BooleanField()
+  pin!: boolean;
+
   @Field(() => GraphQLJSON, { nullable: true })
   lastContext?: Record<string, any> | null;
 
@@ -49,6 +52,8 @@ export class Chat {
     chat.lastContext = entity.lastContext;
     chat.createdAt = entity.createdAt;
     chat.updatedAt = entity.updatedAt;
+    chat.pin = entity.pin;
+    
 
     if (includeMessages && entity.messages) {
       chat.messages = Message.fromEntities(entity.messages);
