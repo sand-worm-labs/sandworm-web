@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { MoreVertical } from "lucide-react";
+import { PiDotsThreeVertical, PiSignOut } from "react-icons/pi";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Avatar,
   AvatarImage,
@@ -15,20 +16,21 @@ import {
   DropdownMenuSeparator,
 } from "@sandworm/ui/components/dropdown-menu";
 import { Button } from "@sandworm/ui/components/button";
-import Image from "next/image";
 
 import { useModalStore } from "@/store/auth";
 
 import { useStringQuery } from "../Editor/hooks/useQueryArgs";
 import { useSession, useSignout } from "../Editor/hooks/useAuth";
+import { TooltipV2 } from "../Editor/blocks/ToolTips";
 import { BookIcon } from "../Assets/BookIcon";
 import { GearIcon } from "../Assets/GearIcon";
 import { QuestionIcon } from "../Assets/QuestionIcon";
 import { ThumbsUpIcon } from "../Assets/ThumbsUpIcon";
 
 // =====================================
-// ⬢ use Share Profile
+// ⬢ useShareProfile
 // =====================================
+
 const useShareProfile = (username: string) => {
   const [copied, setCopied] = useState(false);
 
@@ -67,8 +69,9 @@ const useShareProfile = (username: string) => {
 };
 
 // =====================================
-// ⬢ Nav Items
+// ⬢ NavItem
 // =====================================
+
 interface NavItemProps {
   icon: React.ReactNode;
   label: string;
@@ -87,11 +90,13 @@ const NavItem = ({
   suffix,
 }: NavItemProps) => {
   const cls =
-    "flex items-center gap-3 w-full px-3 py-1.5 rounded-lg text-sm text-ink-500 dark:text-white hover:bg-[#F8F9FA] dark:hover:bg-[#ffffff08] transition-colors cursor-pointer font-body font-medium text-start";
+    "flex items-center gap-3 w-full px-3 py-1.5 rounded-lg text-sm " +
+    "text-ink-500 dark:text-white hover:bg-[#F8F9FA] dark:hover:bg-[#ffffff08] " +
+    "transition-colors cursor-pointer font-body font-medium text-start";
 
   const inner = (
     <>
-      <span className="text-ink-300 dark:text-ink-400 flex items-center justify-center">
+      <span className="text-[#1C3B5A] dark:text-ink-400 flex items-center justify-center">
         {icon}
       </span>
       <span className="flex-1 text-ink-100">{label}</span>
@@ -120,13 +125,121 @@ const NavItem = ({
 };
 
 // =====================================
-// ⬢ Account Dropdown Main Component
+// ⬢ UserAvatar
 // =====================================
+
+const UserAvatar = ({
+  src,
+  name,
+  size = "md",
+}: {
+  src?: string | null;
+  name?: string | null;
+  size?: "sm" | "md";
+}) => {
+  const dim = size === "sm" ? "h-8 w-8" : "h-9 w-9";
+  return (
+    <Avatar className={dim}>
+      <AvatarImage src={src ?? undefined} alt={name ?? "Sandworm User"} />
+      <AvatarFallback className="relative overflow-hidden">
+        <Image
+          src="/img/avatar/avatar6.svg"
+          alt=""
+          fill
+          className="object-cover"
+        />
+        <span className="relative z-10 font-bold font-body text-white text-xl">
+          {name?.split(" ")[0]?.[0] ?? "U"}
+        </span>
+      </AvatarFallback>
+    </Avatar>
+  );
+};
+
+// =====================================
+// ⬢ Dropdown Content
+// =====================================
+
+const DropdownBody = ({
+  user,
+  workspaceId,
+  shareProfile,
+  copied,
+  onToggleFeedback,
+  signout,
+}: {
+  user: any;
+  workspaceId: string;
+  shareProfile: () => void;
+  copied: boolean;
+  onToggleFeedback: () => void;
+  signout: () => void;
+}) => (
+  <>
+    <div
+      className="flex items-center justify-between px-2 py-2 mb-1
+      border-b border-border-secondary dark:border-border-tertiary"
+    >
+      <div className="flex items-center gap-3">
+        <UserAvatar src={user.avater} name={user.firstName} size="sm" />
+        <span className="font-medium text-sm text-ink-100">
+          {user.firstName ?? "Sandworm User"} {user.lastName}
+        </span>
+      </div>
+      <Button
+        size="sm"
+        variant="secondary"
+        onClick={shareProfile}
+        className="bg-[#E2ECFF] dark:bg-[#A308F020] dark:text-primary
+          text-accent hover:bg-[#E2ECFF]/90 text-xs rounded-md
+          font-semibold h-[22px] gap-1 font-tertiary"
+      >
+        {copied ? "Copied!" : "Share"}
+      </Button>
+    </div>
+
+    <NavItem icon={<BookIcon size={18} />} label="Docs" href="#" external />
+    <NavItem icon={<QuestionIcon size={18} />} label="Get Help" href="#" />
+    <NavItem
+      icon={<ThumbsUpIcon size={18} />}
+      label="Give Feedback"
+      onClick={onToggleFeedback}
+    />
+    <NavItem
+      icon={<GearIcon size={18} />}
+      label="Settings"
+      href={`/workspace/${workspaceId}/settings`}
+    />
+
+    <DropdownMenuSeparator className="my-1 dark:bg-[#262A30]" />
+
+    <button
+      type="button"
+      onClick={signout}
+      className="flex items-center gap-3 w-full px-3 py-1.5 rounded-lg
+        text-sm font-medium font-body
+        text-white bg-[#ff0000]
+        transition-colors"
+    >
+      <PiSignOut size={18} />
+      Sign Out
+    </button>
+  </>
+);
+
+// =====================================
+// ⬢ AccountDropdown
+// =====================================
+
 interface AccountDropdownProps {
   onToggleFeedback: () => void;
+  collapsed?: boolean;
 }
 
-export const AccountDropdown = ({ onToggleFeedback }: AccountDropdownProps) => {
+export const AccountDropdown = ({
+  onToggleFeedback,
+  collapsed = false,
+}: AccountDropdownProps) => {
   const session = useSession({ redirectToLogin: true });
   const openSignIn = useModalStore(state => state.openSignIn);
   const signout = useSignout();
@@ -136,15 +249,62 @@ export const AccountDropdown = ({ onToggleFeedback }: AccountDropdownProps) => {
   const { shareProfile, copied } = useShareProfile(user?.firstName ?? "user");
 
   if (!user) {
+    if (collapsed) return null;
     return (
       <div className="w-[95%] mx-auto mb-5 flex justify-center">
         <Button
           onClick={() => openSignIn()}
-          className="px-5 h-11 border-border-secondary  bg-base-100 text-ink-100 font-semibold inline-block w-full dark:border-border-tertiary border"
+          className="px-5 h-11 border border-border-secondary dark:border-border-tertiary
+            bg-base-100 text-ink-100 font-semibold inline-block w-full"
         >
           Sign up Today!
         </Button>
       </div>
+    );
+  }
+
+  const dropdownBody = (
+    <DropdownBody
+      user={user}
+      workspaceId={workspaceId}
+      shareProfile={shareProfile}
+      copied={copied}
+      onToggleFeedback={onToggleFeedback}
+      signout={signout}
+    />
+  );
+
+  if (collapsed) {
+    return (
+      <DropdownMenu>
+        <TooltipV2<HTMLButtonElement>
+          title={user.firstName ?? "Account"}
+          active
+          position="right"
+        >
+          {ref => (
+            <DropdownMenuTrigger asChild>
+              <button
+                ref={ref}
+                type="button"
+                aria-label="Account menu"
+                className="flex items-center justify-center rounded-xl p-1
+                  hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28] transition-colors"
+              >
+                <UserAvatar src={user.avater} name={user.firstName} size="sm" />
+              </button>
+            </DropdownMenuTrigger>
+          )}
+        </TooltipV2>
+        <DropdownMenuContent
+          className="w-64 rounded-2xl border border-border-secondary dark:border-border-tertiary
+            dark:bg-base-400 shadow-md p-2 ml-2"
+          align="start"
+          side="right"
+        >
+          {dropdownBody}
+        </DropdownMenuContent>
+      </DropdownMenu>
     );
   }
 
@@ -154,108 +314,28 @@ export const AccountDropdown = ({ onToggleFeedback }: AccountDropdownProps) => {
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
-            className="px-2 flex items-center gap-3  h-12   w-full justify-between hover:bg-base-100 "
+            className="px-2 flex items-center gap-3 h-12 w-full justify-between hover:bg-base-100"
           >
             <div className="flex items-center gap-3">
-              <Avatar className="h-10 w-10">
-                <AvatarImage
-                  src={user.avater ?? undefined}
-                  alt={user.firstName ?? user.username ?? "Sandworm User"}
-                />
-                <AvatarFallback className="relative overflow-hidden">
-                  <Image
-                    src="/img/avatar/avatar6.svg"
-                    alt=""
-                    fill
-                    className="object-cover"
-                  />
-                  <span className="relative z-10 font-bold font-body text-white text-xl">
-                    {user.firstName?.split(" ")[0]?.[0] ?? "U"}
-                  </span>
-                </AvatarFallback>
-              </Avatar>
-
-              <div className="flex-col flex items-left text-left mt-0.5">
-                <span className="text-[0.9rem] ">
+              <UserAvatar src={user.avater} name={user.firstName} />
+              <div className="flex flex-col items-start text-left">
+                <span className="text-[0.9rem]">
                   {user.firstName ?? "Sandworm User"}
                 </span>
-                <span className="text-[0.75rem] font-medium inline-block text-ink-300 ">
+                <span className="text-[0.75rem] font-medium text-ink-300">
                   Free Plan
                 </span>
               </div>
             </div>
-            <MoreVertical className="ml-2 h-4 w-4" />
+            <PiDotsThreeVertical size={16} className="text-ink-400" />
           </Button>
         </DropdownMenuTrigger>
-
         <DropdownMenuContent
-          className="w-64 rounded-2xl border-border-secondary  dark:border-border-tertiary dark:bg-base-400 shadow-md border p-2 ml-6"
+          className="w-64 rounded-2xl border border-border-tertiary dark:border-border-tertiary
+            dark:bg-base-400 shadow-md border p-2 ml-6"
           align="start"
         >
-          <div className="flex items-center justify-between px-2 py-2 mb-1 border-b border-border-secondary  dark:border-border-tertiary ">
-            <div className="flex items-center gap-3">
-              <Avatar className="h-8 w-8">
-                <AvatarImage
-                  src={user.avater ?? undefined}
-                  alt={user.firstName ?? "User"}
-                />
-                <AvatarFallback className="relative overflow-hidden">
-                  <Image
-                    src="/img/avatar/avatar6.svg"
-                    alt=""
-                    fill
-                    className="object-cover"
-                  />
-                  <span className="relative z-10 font-bold font-body text-white text-xl">
-                    {user.firstName?.split(" ")[0]?.[0] ?? "U"}
-                  </span>
-                </AvatarFallback>
-              </Avatar>
-              <span className="font-medium text-sm text-ink-100 ">
-                {user.firstName ?? "User"} {user.lastName}
-              </span>
-            </div>
-            <Button
-              size="sm"
-              variant="secondary"
-              onClick={shareProfile}
-              className="bg-[#E2ECFF] dark:bg-[#A308F020] dark:text-primary text-accent hover:bg-[#E2ECFF]/90 text-xs rounded-md font-medium h-[22px] gap-1 font-tertiary"
-            >
-              {copied ? <>Copied!</> : <>Share</>}
-            </Button>
-          </div>
-
-          <NavItem
-            icon={<BookIcon size={18} />}
-            label="Docs"
-            href="#"
-            external
-          />
-          <NavItem
-            icon={<QuestionIcon size={18} />}
-            label="Get Help"
-            href="#"
-          />
-          <NavItem
-            icon={<ThumbsUpIcon size={18} />}
-            label="Give Feedback"
-            onClick={onToggleFeedback}
-          />
-          <NavItem
-            icon={<GearIcon size={18} />}
-            label="Settings"
-            href={`/workspace/${workspaceId}/settings`}
-          />
-
-          <DropdownMenuSeparator className="my-1 dark:bg-[#262A30]" />
-
-          <Button
-            variant="destructive"
-            onClick={signout}
-            className="w-full text-[0.8rem] py-2 bg-[#FF0000] dark:bg-[#FF4444] font-body"
-          >
-            <span>Sign Out</span>
-          </Button>
+          {dropdownBody}
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

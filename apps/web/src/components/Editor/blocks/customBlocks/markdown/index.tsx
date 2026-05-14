@@ -21,7 +21,7 @@ import clsx from "clsx";
 import type { ConnectDragPreview } from "react-dnd";
 import type { MarkdownBlock } from "@sandworm/editor";
 import { tags as t } from "@lezer/highlight";
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import { PiCaretDown, PiMarkdownLogo } from "react-icons/pi";
 
 import useEditorAwareness from "../../../hooks/useEditorAwareness";
 import type { DashboardMode } from "../../Dashboard";
@@ -29,6 +29,7 @@ import type { DashboardMode } from "../../Dashboard";
 // =====================================
 // ⬢ markdown-it Config
 // =====================================
+
 const md = new MarkdownIt({
   html: true,
   linkify: true,
@@ -59,6 +60,7 @@ const md = new MarkdownIt({
 // =====================================
 // ⬢ Types
 // =====================================
+
 interface Props {
   block: Y.XmlElement<MarkdownBlock>;
   belongsToMultiTabGroup: boolean;
@@ -72,22 +74,23 @@ interface Props {
 // =====================================
 // ⬢ CodeMirror Theme
 // =====================================
+
 const sandwormTheme = EditorView.theme(
   {
     "&": {
       color: "#1a1a1a",
       backgroundColor: "transparent",
       fontSize: "13px",
-      fontFamily: "'Geist Mono', monospace",
+      fontFamily: "'Moderat Mono', monospace",
     },
     "&.cm-focused": { outline: "none" },
     ".cm-content": {
       caretColor: "#1a1a1a",
       paddingLeft: "8px",
-      fontFamily: "'Geist Mono', monospace",
+      fontFamily: "'Moderat Mono', monospace",
     },
     ".cm-scroller": {
-      fontFamily: "'Geist Mono', monospace !important",
+      fontFamily: "'Moderat Mono', monospace !important",
     },
     ".cm-cursor, .cm-dropCursor": { borderLeftColor: "#1a1a1a" },
     "&.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection":
@@ -101,14 +104,19 @@ const sandwormTheme = EditorView.theme(
 // =====================================
 // ⬢ Markdown Highlight Style
 // =====================================
+
 const markdownHighlight = HighlightStyle.define([
-  { tag: t.heading1, color: "#7B2FBE", fontWeight: "500", fontSize: "1em" },
+  { tag: t.heading1, color: "#7B2FBE", fontWeight: "500" },
   { tag: t.heading2, color: "#7B2FBE", fontWeight: "500" },
   { tag: t.heading3, color: "#7B2FBE", fontWeight: "500" },
   { tag: t.heading, color: "#7B2FBE", fontWeight: "500" },
-  { tag: t.strong, fontWeight: "bold" },
+  { tag: t.strong, fontWeight: "600" },
   { tag: t.emphasis, fontStyle: "italic", color: "#555555" },
-  { tag: t.monospace, color: "#2E9E5B", fontFamily: "'Geist Mono', monospace" },
+  {
+    tag: t.monospace,
+    color: "#2E9E5B",
+    fontFamily: "'Moderat Mono', monospace",
+  },
   { tag: t.special(t.string), color: "#2E9E5B" },
   { tag: t.tagName, color: "#C96A10" },
   { tag: t.angleBracket, color: "#555555" },
@@ -125,6 +133,7 @@ const markdownHighlight = HighlightStyle.define([
 // =====================================
 // ⬢ useCodeMirror
 // =====================================
+
 function useCodeMirror({
   containerRef,
   source,
@@ -172,6 +181,7 @@ function useCodeMirror({
 // =====================================
 // ⬢ MarkdownPreview
 // =====================================
+
 const MarkdownPreview = ({ source }: { source: Y.Text }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [html, setHtml] = useState(
@@ -215,7 +225,7 @@ const MarkdownPreview = ({ source }: { source: Y.Text }) => {
 
   if (!html.trim()) {
     return (
-      <p className="text-ink-200 italic text-sm py-2 px-1">
+      <p className="text-ink-200 italic text-sm py-2 px-1 font-body">
         Nothing to preview yet.
       </p>
     );
@@ -245,6 +255,7 @@ const MarkdownPreview = ({ source }: { source: Y.Text }) => {
 // =====================================
 // ⬢ SectionToggle
 // =====================================
+
 const SectionToggle = ({
   label,
   collapsed,
@@ -257,23 +268,23 @@ const SectionToggle = ({
   <button
     type="button"
     onClick={onToggle}
-    className="flex items-center gap-x-1 group"
+    className="flex items-center gap-1 text-ink-300 hover:text-ink-400 transition-colors duration-100 group"
   >
-    <div className="relative w-3.5 h-3.5">
-      <ChevronDownIcon
-        className={clsx(
-          "absolute inset-0 w-3.5 h-3.5 text-ink-300 transition-transform duration-200",
-          collapsed && "-rotate-90"
-        )}
-      />
-    </div>
-    <span className="text-xs text-ink-300 font-mono font-medium">{label}</span>
+    <PiCaretDown
+      size={11}
+      className={clsx(
+        "transition-transform duration-200 flex-shrink-0",
+        collapsed && "-rotate-90"
+      )}
+    />
+    <span className="text-[11px] font-body font-medium">{label}</span>
   </button>
 );
 
 // =====================================
 // ⬢ MarkdownBlock
 // =====================================
+
 const MarkdownBlock = (props: Props) => {
   const id = props.block.getAttribute("id")!;
   const source = props.block.getAttribute("source")!;
@@ -315,27 +326,29 @@ const MarkdownBlock = (props: Props) => {
     }
   }, [props.isCursorInserting, props.isCursorWithin]);
 
-  // ─── Derived: border ring ───
-  const ringClass = (() => {
-    if (isFocused && !props.belongsToMultiTabGroup && props.isEditable)
+  // ─── Border ───
+  // Always show a border. Focus and cursor state only affect the border color.
+  const borderClass = (() => {
+    // Dashboard published — no border, only content shows
+    if (props.dashboardMode?._tag === "viewing") return "";
+
+    if (isFocused && props.isEditable)
       return "border border-border-focus dark:border-border-tertiary";
-    if (
-      !isFocused &&
-      !props.belongsToMultiTabGroup &&
-      props.isEditable &&
-      props.isCursorWithin &&
-      !props.isCursorInserting
-    )
-      return "border border-border-tertiary";
+
+    if (props.isCursorWithin && !props.isCursorInserting)
+      return "border border-border-tertiary dark:border-border-tertiary";
+
     if (
       props.dashboardMode?._tag === "editing" &&
       props.dashboardMode.position === "expanded"
     )
       return "border border-border-focus";
-    return "";
+
+    // Default — always visible, soft
+    return "border border-border-secondary dark:border-border-tertiary";
   })();
 
-  // ─── Derived: source line count for transition height ───
+  // ─── Source height ───
   const sourceLineCount = source.toString().split("\n").length;
   const sourceHeight = `${Math.max(sourceLineCount, 3) * 20 + 24}px`;
 
@@ -350,22 +363,19 @@ const MarkdownBlock = (props: Props) => {
     >
       <div
         className={clsx(
-          ringClass,
+          borderClass,
           props.dashboardMode ? "h-full overflow-y-auto" : "",
-          {
-            "rounded-tl-none rounded-xl border border-border-tertiary":
-              props.belongsToMultiTabGroup,
-            "rounded-tl-none rounded-xl border border-border-secondary":
-              props.belongsToMultiTabGroup &&
-              props.isCursorWithin &&
-              !props.isCursorInserting,
-            "rounded-lg": !props.belongsToMultiTabGroup,
-          }
+          props.belongsToMultiTabGroup
+            ? "rounded-tl-none rounded-xl"
+            : "rounded-lg"
         )}
       >
         {/* ── Block header ── */}
-        <div className="flex items-center justify-between px-3 py-1.5 border-b border-border-secondary dark:border-border-tertiary">
-          <div className="flex items-center gap-x-3">
+        <div
+          className="flex items-center justify-between px-3 py-2
+          border-b border-border-secondary dark:border-border-tertiary"
+        >
+          <div className="flex items-center gap-3">
             <SectionToggle
               label="source"
               collapsed={isSourceCollapsed}
@@ -377,7 +387,17 @@ const MarkdownBlock = (props: Props) => {
               onToggle={() => setPreviewCollapsed(v => !v)}
             />
           </div>
-          <span className="text-[10px] text-ink-400 font-mono tracking-wide uppercase select-none">
+
+          {/* Badge — softer, pill style matching the rest of the UI */}
+          <span
+            className="inline-flex items-center gap-1
+            text-[10px] font-medium font-body
+            text-ink-300 dark:text-ink-600
+            bg-[#F1F3F4] dark:bg-[#2A2A28]
+            border border-[#DEE2E6] dark:border-[#3A3A38]
+            px-1.5 py-0.5 rounded-md select-none"
+          >
+            <PiMarkdownLogo size={11} />
             Markdown
           </span>
         </div>
@@ -398,9 +418,9 @@ const MarkdownBlock = (props: Props) => {
             style={{ "--source-height": sourceHeight } as React.CSSProperties}
             className={clsx(
               "p-3",
-              isPreviewCollapsed
-                ? ""
-                : "border-b border-border-secondary dark:border-border-tertiary"
+              !isPreviewCollapsed
+                ? "border-b border-border-secondary dark:border-border-tertiary"
+                : ""
             )}
           />
         </Transition>
