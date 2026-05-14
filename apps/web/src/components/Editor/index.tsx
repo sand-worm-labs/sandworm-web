@@ -1432,7 +1432,6 @@ const Editor = (props: Props) => {
       editorState.cursorBlockId
     );
 
-    // If block has one tab, remove whole block group
     if (
       getTabsFromBlockGroupId(layout.value, blocks.value, blockGroupId).length >
       1

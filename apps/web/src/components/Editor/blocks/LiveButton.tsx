@@ -1,12 +1,21 @@
-import { EyeIcon } from "@heroicons/react/24/outline";
+import { PiEye } from "react-icons/pi";
 
 import { Tooltip } from "./ToolTips";
+
+// =====================================
+// ⬢ Types
+// =====================================
 
 interface Props {
   onClick: () => void;
   disabled: boolean;
   tooltipActive: boolean;
 }
+
+// =====================================
+// ⬢ LiveButton
+// =====================================
+
 function LiveButton(props: Props) {
   return (
     <Tooltip
@@ -18,13 +27,24 @@ function LiveButton(props: Props) {
     >
       <button
         type="button"
-        className="flex items-center rounded-md px-3 py-1 text-sm bg-white dark:bg-base-100   hover:bg-gray-100 dark:hover:bg-[#181C21] text-ink-400  dark:text-ink-100 border dark:border-border-tertiary border-border-secondary dark:border-border-tertiary disabled:cursor-not-allowed disabled:bg-gray-100  group overflow-hidden group max-w-[42px] xl:max-w-[136px] hover:max-w-[136px] transition-mw duration-500 font-body"
         onClick={props.onClick}
         disabled={props.disabled}
+        className="flex items-center gap-1.5
+          rounded-lg px-3 py-1 text-sm font-body
+          bg-white dark:bg-base-100
+          border border-border-tertiary dark:border-border-tertiary
+          text-ink-400 dark:text-ink-100
+          hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
+          disabled:cursor-not-allowed disabled:opacity-90
+          group overflow-hidden
+          max-w-[42px] xl:max-w-[136px] hover:max-w-[136px]
+          transition-[max-width] duration-300"
       >
-        <EyeIcon className="min-w-5 min-h-5" />
-
-        <span className="ml-2 opacity-0 group-hover:opacity-100 xl:opacity-100 duration-500 transition-opacity text-clip text-nowrap">
+        <PiEye size={16} className="flex-shrink-0" />
+        <span
+          className="opacity-0 group-hover:opacity-100 xl:opacity-100
+          transition-opacity duration-300 whitespace-nowrap overflow-hidden"
+        >
           Saved version
         </span>
       </button>

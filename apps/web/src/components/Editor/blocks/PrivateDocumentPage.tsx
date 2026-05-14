@@ -9,6 +9,7 @@ import clsx from "clsx";
 import { AITasks, ExecutionQueue } from "@sandworm/editor";
 import { useHotkeys } from "react-hotkeys-hook";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/20/solid";
+import { PiPencilSimple, PiFloppyDisk } from "react-icons/pi";
 
 import type { ApiDocument } from "@/types";
 import { widthClasses } from "@/components/Editor/constants";
@@ -415,10 +416,15 @@ function PrivateDocumentPageInner(
 
         {isViewer ? null : props.isApp ? (
           <Link
-            className="flex items-center rounded-md px-3 py-1 text-sm bg-white dark:bg-base-100  dark:text-ink-100  hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 group relative border border-border-secondary  dark:border-border-tertiary"
+            className="flex items-center gap-1.5
+          rounded-lg px-3 py-1 text-sm font-body
+          bg-white dark:bg-base-100 dark:text-ink-100
+          border border-border-secondary dark:border-border-tertiary
+          hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
+          disabled:cursor-not-allowed disabled:opacity-50"
             href={`/workspace/${props.document.workspaceId}/documents/${props.document.id}/notebook/edit`}
           >
-            <PencilIcon className="w-5 h-5" />
+            <PiPencilSimple size={16} />
             <span>Edit</span>
           </Link>
         ) : (
@@ -431,13 +437,19 @@ function PrivateDocumentPageInner(
           >
             <button
               type="button"
-              className="flex items-center rounded-lg px-3 py-1 text-sm    text-white hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 group relative border-none  bg-primary"
+              className="flex items-center gap-1.5
+    rounded-lg px-3 py-1 text-sm font-body
+    bg-primary text-white
+    hover:bg-primary-300
+    disabled:cursor-not-allowed disabled:opacity-50
+    border-none relative group"
               onClick={onPublish}
               disabled={props.publishing}
             >
-              <BookUpIcon
-                className="xl:w-5 xl:h-5 h-4 w-4 rotate-12 group-hover:rotate-0 transition transition-transform duration-400"
-                strokeWidth={1}
+              <PiFloppyDisk
+                size={16}
+                weight="regular"
+                className="rotate-0 group-hover:-rotate-12 transition-transform duration-300"
               />
               <span>Save</span>
               {isDirty && props.document.publishedAt && (
