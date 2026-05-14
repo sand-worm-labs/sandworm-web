@@ -1,0 +1,19 @@
+fragment ChatFields on Chat {
+  id
+  userId
+  workspaceId
+  documentId
+  title
+  isPrivate
+  pin
+  lastContext
+  createdAt
+  updatedAt
+}
+
+fragment ChatWithMessages on Chat {
+  ...ChatFields
+  messages {
+    ...MessageFields
+  }
+}
