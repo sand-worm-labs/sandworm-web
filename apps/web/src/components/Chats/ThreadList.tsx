@@ -18,13 +18,10 @@ import {
   PiX,
 } from "react-icons/pi";
 
-import type { ThreadItem } from "./types";
-import {
-  DUMMY_THREADS,
-  MAX_PINNED,
-  getThreadGroup,
-  getRelativeTime,
-} from "./types";
+import { useChat } from "@/components/Editor/hooks/useChat";
+import type { Chat } from "@/generated/graphql";
+
+import { MAX_PINNED, getThreadGroup, getRelativeTime } from "./types";
 
 // =====================================
 // ⬢ Inline Rename Input
@@ -63,9 +60,9 @@ function RenameInput({ initialValue, onConfirm, onCancel }: RenameInputProps) {
         onChange={e => setValue(e.target.value)}
         onKeyDown={handleKeyDown}
         className="flex-1 min-w-0 text-[12.5px] font-medium
-            bg-white dark:bg-[#2A2A28]
-            border border-[#A308F0] rounded-md px-2 py-0.5
-            outline-none text-ink-500 dark:text-ink-200"
+          bg-white dark:bg-[#2A2A28]
+          border border-[#A308F0] rounded-md px-2 py-0.5
+          outline-none text-ink-500 dark:text-ink-200"
       />
       <button
         type="button"
@@ -90,6 +87,7 @@ function RenameInput({ initialValue, onConfirm, onCancel }: RenameInputProps) {
 // =====================================
 // ⬢ Row Action Button
 // =====================================
+
 interface ActionBtnProps {
   icon: React.ReactNode;
   label: string;
@@ -105,11 +103,11 @@ function ActionBtn({ icon, label, onClick, danger }: ActionBtnProps) {
       aria-label={label}
       title={label}
       className={`flex items-center justify-center w-6 h-6 rounded-md transition-all duration-100
-          ${
-            danger
-              ? "text-ink-300 hover:text-[#D85A30] hover:bg-[#FAECE7] dark:hover:bg-[#1A0D08]"
-              : "text-ink-300 hover:text-ink-500 dark:hover:text-ink-200 hover:bg-[#E8E8E6] dark:hover:bg-[#2A2A28]"
-          }`}
+        ${
+          danger
+            ? "text-ink-300 hover:text-[#D85A30] hover:bg-[#FAECE7] dark:hover:bg-[#1A0D08]"
+            : "text-ink-300 hover:text-ink-500 dark:hover:text-ink-200 hover:bg-[#E8E8E6] dark:hover:bg-[#2A2A28]"
+        }`}
     >
       {icon}
     </button>
@@ -119,8 +117,9 @@ function ActionBtn({ icon, label, onClick, danger }: ActionBtnProps) {
 // =====================================
 // ⬢ Thread Row
 // =====================================
+
 interface ThreadRowProps {
-  item: ThreadItem;
+  item: Chat;
   isRenamingThis: boolean;
   canPin: boolean;
   onSelect: (id: string) => void;
@@ -149,8 +148,8 @@ function ThreadRow({
       role="button"
       tabIndex={0}
       className={`group relative flex items-center gap-2.5 px-3 py-2.5
-          rounded-xl mx-1.5 transition-colors duration-100 cursor-pointer
-          ${hovered ? "bg-[#F9F5FF] dark:bg-[#1A0D26]" : ""}`}
+        rounded-xl mx-1.5 transition-colors duration-100 cursor-pointer
+        ${hovered ? "bg-[#F9F5FF] dark:bg-[#1A0D26]" : ""}`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onClick={() => !isRenamingThis && onSelect(item.id)}
@@ -181,7 +180,7 @@ function ThreadRow({
             <span className="text-[12.5px] font-medium text-ink-500 dark:text-ink-200 truncate leading-tight flex-1">
               {item.title}
             </span>
-            {item.isPinned && !hovered && (
+            {item.pin && !hovered && (
               <PiPushPin
                 size={10}
                 className="flex-shrink-0 text-[#A308F0] opacity-60"
@@ -205,22 +204,14 @@ function ThreadRow({
         >
           <ActionBtn
             icon={
-              item.isPinned ? (
-                <PiPushPinSlash size={13} />
-              ) : (
-                <PiPushPin size={13} />
-              )
+              item.pin ? <PiPushPinSlash size={13} /> : <PiPushPin size={13} />
             }
             label={
-              item.isPinned
-                ? "Unpin"
-                : canPin
-                  ? "Pin"
-                  : `Max ${MAX_PINNED} pinned`
+              item.pin ? "Unpin" : canPin ? "Pin" : `Max ${MAX_PINNED} pinned`
             }
             onClick={e => {
               e.stopPropagation();
-              if (item.isPinned || canPin) onPin(item.id);
+              if (item.pin || canPin) onPin(item.id);
             }}
           />
           <ActionBtn
@@ -249,6 +240,7 @@ function ThreadRow({
 // =====================================
 // ⬢ Section Label
 // =====================================
+
 function SectionLabel({ label }: { label: string }) {
   return (
     <div className="flex items-center gap-2 px-4 pt-3 pb-1">
@@ -261,8 +253,9 @@ function SectionLabel({ label }: { label: string }) {
 }
 
 // =====================================
-// ⬢ Empty State
+// ⬢ Empty / Loading States
 // =====================================
+
 function EmptyState({ query }: { query: string }) {
   return (
     <div className="flex flex-col items-center justify-center py-12 gap-2">
@@ -274,77 +267,103 @@ function EmptyState({ query }: { query: string }) {
   );
 }
 
+function LoadingState() {
+  return (
+    <div className="flex flex-col gap-2 px-3 py-3">
+      {[1, 2, 3].map(n => (
+        <div
+          key={n}
+          className="h-10 rounded-xl bg-[#F1F3F4] dark:bg-[#2A2A28] animate-pulse"
+        />
+      ))}
+    </div>
+  );
+}
+
 // =====================================
 // ⬢ ThreadList
 // =====================================
+
 export interface ThreadListProps {
+  workspaceId: string;
+  documentId: string;
   onSelectThread: (id: string) => void;
   onBack: () => void;
 }
 
-export function ThreadList({ onSelectThread, onBack }: ThreadListProps) {
-  const [items, setItems] = useState<ThreadItem[]>(DUMMY_THREADS);
+export function ThreadList({
+  workspaceId,
+  documentId,
+  onSelectThread,
+  onBack,
+}: ThreadListProps) {
   const [query, setQuery] = useState("");
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
+
+  const { chats, loading, api } = useChat(workspaceId, documentId);
 
   useEffect(() => {
     searchRef.current?.focus();
   }, []);
 
-  // ── Filtering ──
   const filtered = useMemo(() => {
-    if (!query.trim()) return items;
+    if (!query.trim()) return chats;
     const q = query.toLowerCase();
-    return items.filter(item => item.title.toLowerCase().includes(q));
-  }, [items, query]);
+    return chats.filter(c => c.title.toLowerCase().includes(q));
+  }, [chats, query]);
 
-  // ── Grouped ──
   const grouped = useMemo(() => {
-    const pinned = filtered.filter(i => i.isPinned);
-    const unpinned = filtered.filter(i => !i.isPinned);
-    const today = unpinned.filter(i => getThreadGroup(i.updatedAt) === "today");
-    const yesterday = unpinned.filter(
-      i => getThreadGroup(i.updatedAt) === "yesterday"
-    );
-    const earlier = unpinned.filter(
-      i => getThreadGroup(i.updatedAt) === "earlier"
-    );
-    return { pinned, today, yesterday, earlier };
+    const pinned = filtered.filter(c => c.pin);
+    const unpinned = filtered.filter(c => !c.pin);
+    return {
+      pinned,
+      today: unpinned.filter(c => getThreadGroup(c.updatedAt) === "today"),
+      yesterday: unpinned.filter(
+        c => getThreadGroup(c.updatedAt) === "yesterday"
+      ),
+      earlier: unpinned.filter(c => getThreadGroup(c.updatedAt) === "earlier"),
+    };
   }, [filtered]);
 
-  const pinnedCount = items.filter(i => i.isPinned).length;
+  const pinnedCount = chats.filter(c => c.pin).length;
   const canPin = pinnedCount < MAX_PINNED;
 
   const handlePin = useCallback(
     (id: string) => {
-      setItems(prev => {
-        const item = prev.find(i => i.id === id);
-        if (!item) return prev;
-        if (!item.isPinned && pinnedCount >= MAX_PINNED) return prev;
-        return prev.map(i =>
-          i.id === id ? { ...i, isPinned: !i.isPinned } : i
-        );
-      });
+      const item = chats.find(c => c.id === id);
+      if (!item) return;
+      if (!item.pin && pinnedCount >= MAX_PINNED) return;
+      api.pinChat(id).catch(err => console.error("[ThreadList] pinChat:", err));
     },
-    [pinnedCount]
+    [chats, pinnedCount, api]
   );
 
-  const handleRenameConfirm = useCallback((id: string, value: string) => {
-    setItems(prev => prev.map(i => (i.id === id ? { ...i, title: value } : i)));
-    setRenamingId(null);
-  }, []);
+  const handleRenameConfirm = useCallback(
+    (id: string, title: string) => {
+      api
+        .updateChat({ chatId: id, title })
+        .catch(err => console.error("[ThreadList] updateChat:", err));
+      setRenamingId(null);
+    },
+    [api]
+  );
 
-  const handleDelete = useCallback((id: string) => {
-    setItems(prev => prev.filter(i => i.id !== id));
-  }, []);
+  const handleDelete = useCallback(
+    (id: string) => {
+      api
+        .deleteChat(id)
+        .catch(err => console.error("[ThreadList] deleteChat:", err));
+    },
+    [api]
+  );
 
-  function renderSection(label: string, sectionItems: ThreadItem[]) {
-    if (sectionItems.length === 0) return null;
+  function renderSection(label: string, items: Chat[]) {
+    if (items.length === 0) return null;
     return (
       <div key={label}>
         <SectionLabel label={label} />
-        {sectionItems.map(item => (
+        {items.map(item => (
           <ThreadRow
             key={item.id}
             item={item}
@@ -373,8 +392,8 @@ export function ThreadList({ onSelectThread, onBack }: ThreadListProps) {
           onClick={onBack}
           aria-label="Back to chat"
           className="flex items-center justify-center w-7 h-7 rounded-lg
-              text-ink-400 hover:text-ink-500 hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
-              transition-colors"
+            text-ink-400 hover:text-ink-500 hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
+            transition-colors"
         >
           <PiArrowLeft size={15} />
         </button>
@@ -388,7 +407,6 @@ export function ThreadList({ onSelectThread, onBack }: ThreadListProps) {
         )}
       </header>
 
-      {/* ── Search ── */}
       <div className="px-3 py-2.5 border-b border-[#F1F3F4] dark:border-[#2A2A28]">
         <div
           className="flex items-center gap-2 px-2.5 py-1.5
@@ -408,8 +426,8 @@ export function ThreadList({ onSelectThread, onBack }: ThreadListProps) {
             onChange={e => setQuery(e.target.value)}
             placeholder="Search threads…"
             className="flex-1 bg-transparent outline-none text-[12.5px]
-                text-ink-500 dark:text-ink-200
-                placeholder:text-ink-300 dark:placeholder:text-ink-600"
+              text-ink-500 dark:text-ink-200
+              placeholder:text-ink-300 dark:placeholder:text-ink-600"
           />
           {query && (
             <button
@@ -424,7 +442,9 @@ export function ThreadList({ onSelectThread, onBack }: ThreadListProps) {
       </div>
 
       <div className="flex-1 overflow-y-auto py-1.5">
-        {filtered.length === 0 ? (
+        {loading ? (
+          <LoadingState />
+        ) : filtered.length === 0 ? (
           <EmptyState query={query} />
         ) : (
           <>

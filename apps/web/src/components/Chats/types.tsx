@@ -9,7 +9,6 @@ export type BlockKind = Block["type"];
 
 // =====================================
 // ⬢ Reference Source Kinds
-// Extend this union as new reference sources are added (dataframe, file, etc.)
 // =====================================
 
 export type ReferenceSourceKind = "block" | "dataframe" | "file";
@@ -17,16 +16,12 @@ export type ReferenceSourceKind = "block" | "dataframe" | "file";
 // =====================================
 // ⬢ Reference Items — one per source kind
 // =====================================
-
 export interface BlockReferenceItem {
   sourceKind: "block";
   id: string;
   blockKind: BlockKind;
-  /** Display label — e.g. "SQL Block 3" or user-defined title */
   label: string;
-  /** Short content preview shown in the picker list */
   preview?: string;
-  /** 1-based notebook position */
   index: number;
 }
 
@@ -34,7 +29,6 @@ export interface DataframeReferenceItem {
   sourceKind: "dataframe";
   id: string;
   label: string;
-  /** e.g. "324 rows × 8 cols" */
   preview?: string;
 }
 
@@ -55,7 +49,6 @@ export type ReferenceItem =
 // ⬢ Attached Reference
 // The shape stored on the sent message
 // =====================================
-
 export interface AttachedReference {
   sourceKind: ReferenceSourceKind;
   id: string;
@@ -65,7 +58,6 @@ export interface AttachedReference {
 
 // =====================================
 // ⬢ Reference Source
-// Add new sources (dataframes, files) by appending to the sources array
 // =====================================
 
 export interface ReferenceSource {
@@ -77,7 +69,6 @@ export interface ReferenceSource {
 // =====================================
 // ⬢ Block Kind Display Meta
 // =====================================
-
 export const BLOCK_KIND_META: Record<BlockKind, { label: string }> = {
   [BlockType.RichText]: { label: "Rich Text" },
   [BlockType.SQL]: { label: "SQL" },
@@ -94,9 +85,8 @@ export const BLOCK_KIND_META: Record<BlockKind, { label: string }> = {
 };
 
 // =====================================
-// ⬢ Dummy Data  (replace with Yjs-derived block list)
+// ⬢ Dummy Data
 // =====================================
-
 export const DUMMY_BLOCKS: BlockReferenceItem[] = [
   {
     sourceKind: "block",
@@ -172,14 +162,17 @@ export type ThreadGroup = "pinned" | "today" | "yesterday" | "earlier";
 // ⬢ Constants
 // =====================================
 
-export const MAX_PINNED = 3;
+export const MAX_PINNED = 8;
 
 // =====================================
 // ⬢ Grouping Helpers
 // =====================================
-
-export function getThreadGroup(date: Date): Exclude<ThreadGroup, "pinned"> {
+export function getThreadGroup(
+  dateInput: Date | string
+): Exclude<ThreadGroup, "pinned"> {
+  const date = typeof dateInput === "string" ? new Date(dateInput) : dateInput;
   const now = new Date();
+
   if (
     now.getDate() === date.getDate() &&
     now.getMonth() === date.getMonth() &&
@@ -187,6 +180,7 @@ export function getThreadGroup(date: Date): Exclude<ThreadGroup, "pinned"> {
   ) {
     return "today";
   }
+
   const yesterday = new Date(now);
   yesterday.setDate(now.getDate() - 1);
   if (
@@ -196,10 +190,12 @@ export function getThreadGroup(date: Date): Exclude<ThreadGroup, "pinned"> {
   ) {
     return "yesterday";
   }
+
   return "earlier";
 }
 
-export function getRelativeTime(date: Date): string {
+export function getRelativeTime(dateInput: Date | string): string {
+  const date = typeof dateInput === "string" ? new Date(dateInput) : dateInput;
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
   const diffMins = Math.floor(diffMs / 60000);
@@ -215,10 +211,7 @@ export function getRelativeTime(date: Date): string {
 
 // =====================================
 // ⬢ Dummy Data
-// Notebook context: "Bot Wallet Clustering on Base"
-// These are real things an analyst would chat about in this notebook
 // =====================================
-
 const now = new Date();
 const minsAgo = (m: number) => new Date(now.getTime() - m * 60000);
 const hoursAgo = (h: number) => new Date(now.getTime() - h * 3600000);

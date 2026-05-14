@@ -13,9 +13,8 @@ import { useSearchParams } from "next/navigation";
 import type * as Y from "yjs";
 import { PiX, PiPlus, PiClockCounterClockwise } from "react-icons/pi";
 
+import { useChat } from "../Editor/hooks/useChat";
 import { AIChatIcon } from "../Assets/AIChatIcon";
-import { useNotebookAI } from "../Editor/hooks/useNotebookAI";
-import type { APIDataSources } from "../Editor/hooks/useDataSources";
 import { useNotebookBlocks } from "../Editor/hooks/useNotebookBlocks";
 
 import { MiniChatInput } from "./MiniChatInput";
@@ -26,7 +25,8 @@ import { ThreadList } from "./ThreadList";
 // =====================================
 // ⬢  Types
 // =====================================
-interface Message {
+
+interface LocalMessage {
   id: string;
   text: string;
   isUser: boolean;
@@ -51,77 +51,72 @@ export const MiniChatHeader: React.FC<MiniChatHeaderProps> = ({
   onOpenThreads,
   onNewThread,
   activeThreadTitle,
-}) => {
-  return (
-    <header className="flex items-center gap-2 px-3 pt-3 pb-2.5 bg-white dark:bg-base-100 border-b border-border-secondary dark:border-border-secondary">
-      {/* AI icon */}
-      <div
-        className="flex-shrink-0 flex items-center justify-center w-7 h-7
-        rounded-lg border border-[#DEE2E6] dark:border-[#3A3A38]
-        bg-white dark:bg-[#252523]"
-      >
-        <AIChatIcon size={14} />{" "}
-        {/* adjust size prop if your AIChatIcon supports it, else wrap in a sized div */}
-      </div>
+}) => (
+  <header className="flex items-center gap-2 px-3 pt-3 pb-2.5 bg-white dark:bg-base-100 border-b border-border-secondary dark:border-border-secondary">
+    <div
+      className="flex-shrink-0 flex items-center justify-center w-7 h-7
+      rounded-lg border border-[#DEE2E6] dark:border-[#3A3A38]
+      bg-white dark:bg-[#252523]"
+    >
+      <AIChatIcon size={14} />
+    </div>
 
-      {/* Title */}
-      <div className="flex-1 min-w-0">
-        {activeThreadTitle ? (
-          <h3 className="text-[13px] font-medium text-ink-100 dark:text-white truncate leading-tight">
-            {activeThreadTitle}
+    <div className="flex-1 min-w-0">
+      {activeThreadTitle ? (
+        <h3 className="text-[13px] font-medium text-ink-100 dark:text-white truncate leading-tight">
+          {activeThreadTitle}
+        </h3>
+      ) : (
+        <>
+          <h3 className="text-[13px] font-medium text-ink-100 dark:text-white leading-tight">
+            Sandworm agent
           </h3>
-        ) : (
-          <>
-            <h3 className="text-[13px] font-medium text-ink-100 dark:text-white leading-tight">
-              Sandworm agent
-            </h3>
-            <p className="text-[11px] text-ink-400 dark:text-ink-500 leading-tight mt-0.5">
-              Create deep and insightful analysis
-            </p>
-          </>
-        )}
-      </div>
+          <p className="text-[11px] text-ink-400 dark:text-ink-500 leading-tight mt-0.5">
+            Create deep and insightful analysis
+          </p>
+        </>
+      )}
+    </div>
 
-      {/* Actions */}
-      <div className="flex items-center gap-0.5 flex-shrink-0">
-        <button
-          type="button"
-          aria-label="New thread"
-          onClick={onNewThread}
-          className="flex items-center justify-center w-7 h-7 rounded-lg
-            text-ink-400 hover:text-ink-500 hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
-            transition-colors"
-        >
-          <PiPlus size={15} />
-        </button>
-        <button
-          type="button"
-          aria-label="Threads"
-          onClick={onOpenThreads}
-          className="flex items-center justify-center w-7 h-7 rounded-lg
-            text-ink-400 hover:text-ink-500 hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
-            transition-colors"
-        >
-          <PiClockCounterClockwise size={15} />
-        </button>
-        <button
-          type="button"
-          aria-label="Close"
-          onClick={onCancel}
-          className="flex items-center justify-center w-7 h-7 rounded-lg
-            text-ink-400 hover:text-ink-500 hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
-            transition-colors"
-        >
-          <PiX size={15} />
-        </button>
-      </div>
-    </header>
-  );
-};
+    <div className="flex items-center gap-0.5 flex-shrink-0">
+      <button
+        type="button"
+        aria-label="New thread"
+        onClick={onNewThread}
+        className="flex items-center justify-center w-7 h-7 rounded-lg
+          text-ink-400 hover:text-ink-500 hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
+          transition-colors"
+      >
+        <PiPlus size={15} />
+      </button>
+      <button
+        type="button"
+        aria-label="Threads"
+        onClick={onOpenThreads}
+        className="flex items-center justify-center w-7 h-7 rounded-lg
+          text-ink-400 hover:text-ink-500 hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
+          transition-colors"
+      >
+        <PiClockCounterClockwise size={15} />
+      </button>
+      <button
+        type="button"
+        aria-label="Close"
+        onClick={onCancel}
+        className="flex items-center justify-center w-7 h-7 rounded-lg
+          text-ink-400 hover:text-ink-500 hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
+          transition-colors"
+      >
+        <PiX size={15} />
+      </button>
+    </div>
+  </header>
+);
 
 // =====================================
 // ⬢  Example Prompts
 // =====================================
+
 const EXAMPLE_PROMPTS = [
   {
     label: "Token analytics",
@@ -194,26 +189,36 @@ const LoadingBubble: React.FC = () => (
   </div>
 );
 
+// =====================================
+// ⬢  MiniChat
+// =====================================
+
 interface MiniChatProps {
   visible: boolean;
   onClose?: () => void;
   yDoc: Y.Doc;
-  dataSources?: APIDataSources;
-  dataframes?: string[];
+  workspaceId: string;
+  documentId: string;
 }
 
 export const MiniChat: React.FC<MiniChatProps> = ({
   visible,
   onClose,
   yDoc,
-  dataSources,
-  dataframes,
+  workspaceId,
+  documentId,
 }) => {
   const searchParams = useSearchParams();
-  const [messages, setMessages] = useState<Message[]>([]);
+
+  const [messages, setMessages] = useState<LocalMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const bottomRef = useRef<HTMLDivElement>(null);
   const [view, setView] = useState<"chat" | "threads">("chat");
+  const [activeChatId, setActiveChatId] = useState<string | null>(null);
+  const [activeThreadTitle, setActiveThreadTitle] = useState<
+    string | undefined
+  >(undefined);
+
+  const bottomRef = useRef<HTMLDivElement>(null);
 
   const notebookBlocks = useNotebookBlocks(yDoc);
 
@@ -222,46 +227,23 @@ export const MiniChat: React.FC<MiniChatProps> = ({
     [notebookBlocks]
   );
 
-  const [activeThreadTitle, setActiveThreadTitle] = useState<
-    string | undefined
-  >(undefined);
+  const { api: chatApi } = useChat(workspaceId, documentId);
 
-  const handleNewThread = useCallback(() => {
-    setMessages([]);
-    setActiveThreadTitle(undefined);
-    setView("chat");
-  }, []);
-
-  console.log(referenceSources, "ref");
-
-  const normalizedSources = dataSources
-    ? Object.values(dataSources).map(ds => ({
-        id: ds.data.id,
-        name: ds.data.name,
-        type: ds.data.type,
-      }))
-    : [];
-
-  const { generate } = useNotebookAI({
-    yDoc,
-    dataSources: normalizedSources,
-    dataframes,
-  });
-
-  const addMessage = useCallback((msg: Omit<Message, "id">) => {
+  const addMessage = useCallback((msg: Omit<LocalMessage, "id">) => {
     const id = crypto.randomUUID();
     setMessages(prev => [...prev, { ...msg, id }]);
     return id;
   }, []);
 
   const replaceMessage = useCallback(
-    (id: string, updatedFields: Partial<Message>) => {
+    (id: string, updated: Partial<LocalMessage>) => {
       setMessages(prev =>
-        prev.map(m => (m.id === id ? { ...m, ...updatedFields } : m))
+        prev.map(m => (m.id === id ? { ...m, ...updated } : m))
       );
     },
     []
   );
+
   const handleSend = useCallback(
     async (
       text: string,
@@ -270,7 +252,7 @@ export const MiniChat: React.FC<MiniChatProps> = ({
     ) => {
       if (!text.trim() || isLoading) return;
 
-      addMessage({ text, isUser: true, references, files }); // ← store them
+      addMessage({ text, isUser: true, references, files });
       setIsLoading(true);
 
       const loadingId = addMessage({
@@ -280,22 +262,43 @@ export const MiniChat: React.FC<MiniChatProps> = ({
       });
 
       try {
-        const { reply } = await generate(text);
-        replaceMessage(loadingId, { text: reply, isLoading: false });
+        if (!activeChatId) {
+          const chat = await chatApi.createChat({
+            workspaceId,
+            documentId,
+            message: text,
+          });
+
+          setActiveChatId(chat.id);
+          setActiveThreadTitle(chat.title);
+        }
+
+        // ⬢ NOTE — LLM reply not wired yet; remove loading bubble for now.
+        replaceMessage(loadingId, {
+          text: "Something went wrong. Please try again.",
+          isLoading: false,
+        });
       } catch (err) {
         replaceMessage(loadingId, {
           text: "Something went wrong. Please try again.",
           isLoading: false,
         });
-        console.error("[MiniChat] AI error:", err);
+        console.error("[MiniChat] createChat error:", err);
       } finally {
         setIsLoading(false);
       }
     },
-    [isLoading, addMessage, replaceMessage, generate]
+    [
+      isLoading,
+      activeChatId,
+      workspaceId,
+      documentId,
+      addMessage,
+      replaceMessage,
+      chatApi,
+    ]
   );
 
-  // Fix handleSendSafe to forward all fields
   const handleSendSafe = useCallback(
     (text: string, references?: AttachedReference[], files?: File[]) => {
       handleSend(text, references, files).catch(console.error);
@@ -303,7 +306,6 @@ export const MiniChat: React.FC<MiniChatProps> = ({
     [handleSend]
   );
 
-  // Fix handleInputSend to stop dropping references and files
   const handleInputSend = useCallback(
     (data: {
       message: string;
@@ -314,6 +316,13 @@ export const MiniChat: React.FC<MiniChatProps> = ({
     },
     [handleSendSafe]
   );
+
+  const handleNewThread = useCallback(() => {
+    setMessages([]);
+    setActiveChatId(null);
+    setActiveThreadTitle(undefined);
+    setView("chat");
+  }, []);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -332,9 +341,10 @@ export const MiniChat: React.FC<MiniChatProps> = ({
         <div className="relative w-full flex flex-col h-full bg-white dark:bg-base-100 overflow-hidden">
           {view === "threads" ? (
             <ThreadList
+              workspaceId={workspaceId}
+              documentId={documentId}
               onSelectThread={id => {
                 console.log("[MiniChat] open thread:", id);
-
                 setView("chat");
               }}
               onBack={() => setView("chat")}
