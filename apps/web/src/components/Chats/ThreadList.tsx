@@ -29,7 +29,6 @@ import {
 // =====================================
 // ⬢ Inline Rename Input
 // =====================================
-
 interface RenameInputProps {
   initialValue: string;
   onConfirm: (value: string) => void;
@@ -54,7 +53,9 @@ function RenameInput({ initialValue, onConfirm, onCancel }: RenameInputProps) {
   return (
     <div
       className="flex items-center gap-1 flex-1 min-w-0"
+      role="presentation"
       onClick={e => e.stopPropagation()}
+      onKeyDown={e => e.stopPropagation()}
     >
       <input
         ref={ref}
@@ -72,7 +73,7 @@ function RenameInput({ initialValue, onConfirm, onCancel }: RenameInputProps) {
         aria-label="Confirm"
         className="flex-shrink-0 text-[#A308F0] hover:opacity-80 transition-opacity"
       >
-        <PiCheck size={13} weight="bold" />
+        <PiCheck size={13} />
       </button>
       <button
         type="button"
@@ -80,7 +81,7 @@ function RenameInput({ initialValue, onConfirm, onCancel }: RenameInputProps) {
         aria-label="Cancel"
         className="flex-shrink-0 text-ink-300 hover:text-ink-500 transition-colors"
       >
-        <PiX size={13} weight="bold" />
+        <PiX size={13} />
       </button>
     </div>
   );
@@ -89,7 +90,6 @@ function RenameInput({ initialValue, onConfirm, onCancel }: RenameInputProps) {
 // =====================================
 // ⬢ Row Action Button
 // =====================================
-
 interface ActionBtnProps {
   icon: React.ReactNode;
   label: string;
@@ -119,7 +119,6 @@ function ActionBtn({ icon, label, onClick, danger }: ActionBtnProps) {
 // =====================================
 // ⬢ Thread Row
 // =====================================
-
 interface ThreadRowProps {
   item: ThreadItem;
   isRenamingThis: boolean;
@@ -147,23 +146,29 @@ function ThreadRow({
 
   return (
     <div
+      role="button"
+      tabIndex={0}
       className={`group relative flex items-center gap-2.5 px-3 py-2.5
           rounded-xl mx-1.5 transition-colors duration-100 cursor-pointer
           ${hovered ? "bg-[#F9F5FF] dark:bg-[#1A0D26]" : ""}`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onClick={() => !isRenamingThis && onSelect(item.id)}
+      onKeyDown={e => {
+        if (!isRenamingThis && (e.key === "Enter" || e.key === " ")) {
+          e.preventDefault();
+          onSelect(item.id);
+        }
+      }}
     >
-      {/* ── Icon ── */}
       <div
         className="flex-shrink-0 flex items-center justify-center w-7 h-7
           rounded-lg border border-[#DEE2E6] dark:border-[#3A3A38]
           bg-white dark:bg-[#252523] text-ink-300 dark:text-ink-500"
       >
-        <PiChatCircle size={13} weight="regular" />
+        <PiChatCircle size={13} />
       </div>
 
-      {/* ── Content ── */}
       <div className="flex-1 min-w-0">
         {isRenamingThis ? (
           <RenameInput
@@ -179,7 +184,6 @@ function ThreadRow({
             {item.isPinned && !hovered && (
               <PiPushPin
                 size={10}
-                weight="fill"
                 className="flex-shrink-0 text-[#A308F0] opacity-60"
               />
             )}
@@ -192,19 +196,19 @@ function ThreadRow({
         )}
       </div>
 
-      {/* ── Hover actions ── */}
       {!isRenamingThis && hovered && (
         <div
           className="flex-shrink-0 flex items-center gap-0.5"
+          role="presentation"
           onClick={e => e.stopPropagation()}
+          onKeyDown={e => e.stopPropagation()}
         >
-          {/* Pin — greyed out + tooltip when at max and not already pinned */}
           <ActionBtn
             icon={
               item.isPinned ? (
-                <PiPushPinSlash size={13} weight="regular" />
+                <PiPushPinSlash size={13} />
               ) : (
-                <PiPushPin size={13} weight="regular" />
+                <PiPushPin size={13} />
               )
             }
             label={
@@ -220,7 +224,7 @@ function ThreadRow({
             }}
           />
           <ActionBtn
-            icon={<PiPencilSimple size={13} weight="regular" />}
+            icon={<PiPencilSimple size={13} />}
             label="Rename"
             onClick={e => {
               e.stopPropagation();
@@ -228,7 +232,7 @@ function ThreadRow({
             }}
           />
           <ActionBtn
-            icon={<PiTrash size={13} weight="regular" />}
+            icon={<PiTrash size={13} />}
             label="Delete"
             onClick={e => {
               e.stopPropagation();
@@ -245,7 +249,6 @@ function ThreadRow({
 // =====================================
 // ⬢ Section Label
 // =====================================
-
 function SectionLabel({ label }: { label: string }) {
   return (
     <div className="flex items-center gap-2 px-4 pt-3 pb-1">
@@ -260,7 +263,6 @@ function SectionLabel({ label }: { label: string }) {
 // =====================================
 // ⬢ Empty State
 // =====================================
-
 function EmptyState({ query }: { query: string }) {
   return (
     <div className="flex flex-col items-center justify-center py-12 gap-2">
@@ -275,7 +277,6 @@ function EmptyState({ query }: { query: string }) {
 // =====================================
 // ⬢ ThreadList
 // =====================================
-
 export interface ThreadListProps {
   onSelectThread: (id: string) => void;
   onBack: () => void;
@@ -315,13 +316,11 @@ export function ThreadList({ onSelectThread, onBack }: ThreadListProps) {
   const pinnedCount = items.filter(i => i.isPinned).length;
   const canPin = pinnedCount < MAX_PINNED;
 
-  // ── Actions ──
   const handlePin = useCallback(
     (id: string) => {
       setItems(prev => {
         const item = prev.find(i => i.id === id);
         if (!item) return prev;
-        // Enforce max pinned — only allow pin if under limit
         if (!item.isPinned && pinnedCount >= MAX_PINNED) return prev;
         return prev.map(i =>
           i.id === id ? { ...i, isPinned: !i.isPinned } : i
@@ -340,7 +339,6 @@ export function ThreadList({ onSelectThread, onBack }: ThreadListProps) {
     setItems(prev => prev.filter(i => i.id !== id));
   }, []);
 
-  // ── Section renderer ──
   function renderSection(label: string, sectionItems: ThreadItem[]) {
     if (sectionItems.length === 0) return null;
     return (
@@ -366,7 +364,6 @@ export function ThreadList({ onSelectThread, onBack }: ThreadListProps) {
 
   return (
     <div className="flex flex-col h-full bg-white dark:bg-base-100">
-      {/* ── Header ── */}
       <header
         className="flex items-center gap-2 px-3 pt-3 pb-2.5
           border-b border-border-secondary dark:border-border-secondary"
@@ -379,7 +376,7 @@ export function ThreadList({ onSelectThread, onBack }: ThreadListProps) {
               text-ink-400 hover:text-ink-500 hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
               transition-colors"
         >
-          <PiArrowLeft size={15} weight="regular" />
+          <PiArrowLeft size={15} />
         </button>
         <h3 className="text-[13px] font-medium text-ink-100 dark:text-white">
           Threads
@@ -420,13 +417,12 @@ export function ThreadList({ onSelectThread, onBack }: ThreadListProps) {
               onClick={() => setQuery("")}
               className="text-ink-300 hover:text-ink-500 transition-colors"
             >
-              <PiX size={12} weight="bold" />
+              <PiX size={12} />
             </button>
           )}
         </div>
       </div>
 
-      {/* ── List ── */}
       <div className="flex-1 overflow-y-auto py-1.5">
         {filtered.length === 0 ? (
           <EmptyState query={query} />
