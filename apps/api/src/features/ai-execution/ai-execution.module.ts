@@ -6,16 +6,21 @@ import { VisualizationAiExecutorService } from './service/visualization-ai-execu
 import { TextAiExecutorService } from './service/text-ai-executor.service';
 import { ToolsAiExecutorService } from './service/tools-ai-executor.service';
 import { TitleAiExecutorService } from './service/title-ai-executor.service';
+import { TitleAiExecutorResolver } from './resolver/title-ai-executor.resolver';
 import { YjsModule } from '../collaboration/yjs/yjs.module';
  
  
 const EXECUTORS = [
   TitleAiExecutorService
 ]
+
+const RESOLVERS = [
+  TitleAiExecutorResolver
+]
  
 @Module({
   imports: [ConfigModule,YjsModule],
-  providers: [...EXECUTORS],
+  providers: [...EXECUTORS, ...RESOLVERS],
   exports: [...EXECUTORS],
 })
 export class AiExecutionModule {}
