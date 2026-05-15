@@ -1,5 +1,5 @@
 import { InputType, Field } from '@nestjs/graphql';
-import { StringField, StringFieldOptional, UUIDField, BooleanField } from '@sandworm/graphql';
+import { StringField, StringFieldOptional, UUIDField, BooleanField, BooleanFieldOptional } from '@sandworm/graphql';
 import { IsOptional, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -39,6 +39,10 @@ export class CreateChatInput {
   @ValidateNested({ each: true })
   @Type(() => FocusedBlockInput)
   focusedBlocks?: FocusedBlockInput[];
+
+  @BooleanFieldOptional({ description: 'Whether to update the document title from the chat message. Defaults to false.' })
+  updateDocumentTitle?: boolean;
+
 }
 
 @InputType()

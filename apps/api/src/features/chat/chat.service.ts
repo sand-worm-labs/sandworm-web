@@ -25,6 +25,7 @@ import {
 } from './dto/chat.dto';
 import { MessageRole } from './types/message.types';
 import { AllConfigType } from '@/core/config/config.type';
+import { TitleAiExecutorService } from '../ai-execution/service/title-ai-executor.service';
 
 
 const LOREM_IPSUM = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.`;
@@ -50,6 +51,7 @@ export class ChatService {
     @InjectRepository(VoteEntity)
     private readonly voteRepository: Repository<VoteEntity>,
     private readonly configService: ConfigService<AllConfigType>,
+    private readonly titleAiExecutorService: TitleAiExecutorService,
   ) {
     this.aiBaseUrl = this.configService.getOrThrow('ai.url', { infer: true });
     this.handshakeToken = this.configService.getOrThrow('ai.handshakeToken', { infer: true });
@@ -91,7 +93,8 @@ export class ChatService {
 
 
   async createChat(userId: string, input: CreateChatInput): Promise<Chat> {
-    const { workspaceId, documentId, message, title, model, focusedBlocks } = input;
+    let { workspaceId, documentId, message, title, model, focusedBlocks } = input;
+    title = title ?? message.substring(0, 50);
 
     const [workspace, document] = await Promise.all([
       this.workspaceRepository.findOne({ where: { id: workspaceId } }),
@@ -105,7 +108,7 @@ export class ChatService {
       userId,
       workspace: { id: workspaceId },
       document: { id: documentId },
-      title: title ?? message.substring(0, 50),
+      title,
       private: false,
       lastContext: null,
     });
@@ -121,6 +124,10 @@ export class ChatService {
         focusedBlocks: focusedBlocks ?? null,
       }),
     );
+
+    if(input.updateDocumentTitle) {
+      this.titleAiExecutorService.updateTitle(documentId, workspaceId, null, title);
+    }
 
     return Chat.fromEntity(savedChat);
   }

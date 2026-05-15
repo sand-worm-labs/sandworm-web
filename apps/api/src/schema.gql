@@ -724,6 +724,11 @@ input CreateChatInput {
   """Optional custom title. Auto-generated from message if not provided."""
   title: String
   focusedBlocks: [FocusedBlockInput!]
+
+  """
+  Whether to update the document title from the chat message. Defaults to false.
+  """
+  updateDocumentTitle: Boolean
 }
 
 input FocusedBlockInput {
