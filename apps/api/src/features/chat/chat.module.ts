@@ -10,6 +10,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import aiServiceConfig from '@/infrastructure/ai/config/ai-service.config';
 import { HttpModule } from '@nestjs/axios';
 import { WorkspaceModule } from '../workspace/workspace.module';
+import { AiExecutionModule } from '../ai-execution/ai-execution.module';
 
 @Module({
   imports: [
@@ -18,7 +19,8 @@ import { WorkspaceModule } from '../workspace/workspace.module';
     TypeOrmModule.forFeature([ChatEntity, MessageEntity, WorkspaceEntity, DocumentEntity, VoteEntity]),
     HttpModule,
     AuthGraphqlModule,
-    WorkspaceModule
+    WorkspaceModule,
+    AiExecutionModule
   ],
   providers: [ChatResolver,MessageResolver,ChatService],
   exports: [ChatService],

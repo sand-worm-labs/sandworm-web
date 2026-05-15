@@ -70,18 +70,4 @@ export class YjsDocumentController {
     }
   }
 
-
-  @Post(':documentId/blocks')
-  @ApiAuth({
-    summary: 'Append a new Python block to the notebook',
-  })
-  @ApiQuery({ name: 'workspaceId', required: true, description: 'The workspace ownership context' })
-  async appendBlock(
-    @Param('documentId') documentId: string,
-    @Query('workspaceId') workspaceId: string,
-  ) {
-      const blockId = await this.yjsService.appendBlockToNotebook(documentId, workspaceId, null);
-      return { blockId };
-  }
-
 }
