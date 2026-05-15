@@ -125,6 +125,11 @@ export interface MessageAttachment {
   size?: number;
 }
 
+export interface FocusedBlock {
+  id: string;
+  title: string;
+  type: string;
+}
 
 @Entity('messages')
 export class MessageEntity extends AbstractEntity {
@@ -153,8 +158,8 @@ export class MessageEntity extends AbstractEntity {
   @Column({ nullable: true })
   generationId?: string;
 
-  @Column({ nullable: true })
-  focusedBlockId?: string;
+  @Column({ name: 'focused_blocks', type: 'jsonb', nullable: true })
+  focusedBlocks?: FocusedBlock[];
 
   @Column({ type: 'jsonb', nullable: true })
   usage?: MessageUsage;
