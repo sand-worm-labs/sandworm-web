@@ -1,5 +1,21 @@
-import { InputType } from '@nestjs/graphql';
-import { StringField, StringFieldOptional, UUIDField, UUIDFieldOptional } from '@sandworm/graphql';
+import { InputType, Field } from '@nestjs/graphql';
+import { StringField, StringFieldOptional, UUIDField, BooleanField, BooleanFieldOptional } from '@sandworm/graphql';
+import { IsOptional, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+
+
+@InputType()
+export class FocusedBlockInput {
+  @UUIDField()
+  id!: string;
+
+  @StringField()
+  title!: string;
+
+  @StringField()
+  type!: string;
+}
+
 
 @InputType()
 export class CreateChatInput {
@@ -12,8 +28,21 @@ export class CreateChatInput {
   @StringField({ minLength: 1, maxLength: 2000 })
   message!: string;
 
+  @StringField()
+  model!: string;
+
   @StringFieldOptional({ description: 'Optional custom title. Auto-generated from message if not provided.' })
   title?: string;
+
+  @Field(() => [FocusedBlockInput], { nullable: true })
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => FocusedBlockInput)
+  focusedBlocks?: FocusedBlockInput[];
+
+  @BooleanFieldOptional({ description: 'Whether to update the document title from the chat message. Defaults to false.' })
+  updateDocumentTitle?: boolean;
+
 }
 
 @InputType()
@@ -30,24 +59,36 @@ export class SendMessageInput {
   @UUIDField()
   chatId!: string;
 
- @StringField({ minLength: 1, maxLength: 4000 })
+  @StringField({ minLength: 1, maxLength: 4000 })
   content!: string;
 
-  @UUIDFieldOptional()
-  blockId?: string;
-
   @StringField()
-  model: string;
+  model!: string;
+
+  @Field(() => [FocusedBlockInput], { nullable: true })
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => FocusedBlockInput)
+  focusedBlocks?: FocusedBlockInput[];
 }
 
 @InputType()
 export class EditMessageInput {
   @UUIDField()
-  messageId: string;
+  messageId!: string;
 
   @UUIDField()
-  chatId: string;
+  chatId!: string;
 
   @StringField({ minLength: 1, maxLength: 4000 })
-  content: string;
+  content!: string;
+}
+
+@InputType()
+export class VoteMessageInput {
+  @UUIDField()
+  messageId!: string;
+
+  @BooleanField()
+  isUpvoted!: boolean;
 }

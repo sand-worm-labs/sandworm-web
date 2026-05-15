@@ -1,13 +1,20 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from '@sandworm/graphql';
-import { ChatService } from './chat.service';
-import { Chat } from './model/chat.model';
-import { Message } from './model/message.model';
-import { CreateChatInput, SendMessageInput, UpdateChatInput, EditMessageInput } from './dto/chat.dto';
+import { ChatService } from '../chat.service';
+import { Chat } from '../model/chat.model';
+import { Message } from '../model/message.model';
+import { Vote } from '../model/vote.model';
+import {
+  CreateChatInput,
+  SendMessageInput,
+  UpdateChatInput,
+  VoteMessageInput,
+} from '../dto/chat.dto';
 
 @Resolver(() => Chat)
 export class ChatResolver {
   constructor(private readonly chatService: ChatService) {}
+
 
   @Query(() => [Chat], { name: 'chats', description: 'List chats for workspace/document' })
   async getChats(
@@ -33,6 +40,7 @@ export class ChatResolver {
   ): Promise<Message[]> {
     return this.chatService.getMessages(chatId, userId);
   }
+
 
   @Mutation(() => Chat, { name: 'createChat', description: 'Create a new chat' })
   async createChat(
@@ -61,25 +69,32 @@ export class ChatResolver {
   @Mutation(() => Chat, { name: 'pinChat', description: 'Pin or unpin a chat' })
   async pinChat(
     @CurrentUser('id') userId: string,
-    @Args('chatId') chatId: string
+    @Args('chatId') chatId: string,
   ): Promise<Chat> {
     return this.chatService.pinChat(chatId, userId);
   }
 
-  @Mutation(() => Message, { name: 'sendMessage', description: 'Send message (chat or block edit)' })
+  @Mutation(() => Message, { name: 'sendMessage', description: 'Send a user message' })
   async sendMessage(
     @CurrentUser('id') userId: string,
-    @Args('chatId') chatId: string,
     @Args('input') input: SendMessageInput,
   ): Promise<Message> {
-    return this.chatService.addUserMessage(userId, chatId, input);
+    return this.chatService.sendMessage(userId, input);
   }
 
-  @Mutation(() => Message, { name: 'editMessage', description: 'Edit an existing message' })
-  async editMessage(
+  @Mutation(() => Vote, { name: 'voteMessage', description: 'Upvote or downvote a message' })
+  async voteMessage(
     @CurrentUser('id') userId: string,
-    @Args('input') input: EditMessageInput,
-  ): Promise<Message> {
-    return this.chatService.editMessage(userId, input);
+    @Args('input') input: VoteMessageInput,
+  ): Promise<Vote> {
+    return this.chatService.voteMessage(userId, input);
+  }
+
+  @Mutation(() => Boolean, { name: 'removeVote', description: 'Retract a vote on a message' })
+  async removeVote(
+    @CurrentUser('id') userId: string,
+    @Args('messageId') messageId: string,
+  ): Promise<boolean> {
+    return this.chatService.removeVote(userId, messageId);
   }
 }

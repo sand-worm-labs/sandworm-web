@@ -1,45 +1,69 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
-import { ChatEntity, DocumentEntity, MessageEntity, WorkspaceEntity } from '@sandworm/postgresql-typeorm';
-import { firstValueFrom } from 'rxjs';
+import { Observable, Subscriber } from 'rxjs';
+import {
+  ChatEntity,
+  DocumentEntity,
+  MessageEntity,
+  VoteEntity,
+  WorkspaceEntity,
+} from '@sandworm/postgresql-typeorm';
 import { Chat } from './model/chat.model';
 import { Message } from './model/message.model';
-import { CreateChatInput, EditMessageInput, SendMessageInput, UpdateChatInput } from './dto/chat.dto';
+import { Vote } from './model/vote.model';
+import {
+  CreateChatInput,
+  SendMessageInput,
+  UpdateChatInput,
+  VoteMessageInput,
+} from './dto/chat.dto';
 import { MessageRole } from './types/message.types';
 import { AllConfigType } from '@/core/config/config.type';
+import { TitleAiExecutorService } from '../ai-execution/service/title-ai-executor.service';
+
+
+const LOREM_IPSUM = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.`;
+
+const SIMULATED_TOKEN_DELAY_MS = 60;
 
 
 @Injectable()
 export class ChatService {
+  private readonly logger = new Logger(ChatService.name);
   private readonly aiBaseUrl: string;
-  private readonly apiHandshakeToken: string
+  private readonly handshakeToken: string;
 
   constructor(
-    @InjectRepository(ChatEntity) 
-    private chatRepository: Repository<ChatEntity>,
-    @InjectRepository(MessageEntity) 
-    private messageRepository: Repository<MessageEntity>, 
+    @InjectRepository(ChatEntity)
+    private readonly chatRepository: Repository<ChatEntity>,
+    @InjectRepository(MessageEntity)
+    private readonly messageRepository: Repository<MessageEntity>,
     @InjectRepository(WorkspaceEntity)
     private readonly workspaceRepository: Repository<WorkspaceEntity>,
     @InjectRepository(DocumentEntity)
     private readonly documentRepository: Repository<DocumentEntity>,
-    private readonly httpService: HttpService,
+    @InjectRepository(VoteEntity)
+    private readonly voteRepository: Repository<VoteEntity>,
     private readonly configService: ConfigService<AllConfigType>,
+    private readonly titleAiExecutorService: TitleAiExecutorService,
   ) {
-    this.aiBaseUrl = this.configService.getOrThrow('ai.url', {infer: true,}) 
-    this.apiHandshakeToken = this.configService.getOrThrow('ai.handshakeToken', {infer: true,});
+    this.aiBaseUrl = this.configService.getOrThrow('ai.url', { infer: true });
+    this.handshakeToken = this.configService.getOrThrow('ai.handshakeToken', { infer: true });
   }
 
 
   async getChats(userId: string, workspaceId: string, documentId: string): Promise<Chat[]> {
     const entities = await this.chatRepository.find({
       where: { userId, workspaceId, documentId },
-      relations: ['messages'],
+      order: { createdAt: 'DESC' },
     });
-    return entities.map((e) => Chat.fromEntity(e));
+    return Chat.fromEntities(entities);
   }
 
   async getChat(chatId: string, userId: string): Promise<Chat> {
@@ -47,15 +71,13 @@ export class ChatService {
       where: { id: chatId, userId },
       relations: ['messages'],
     });
-    if (!entity) throw new Error('Chat not found');
+    if (!entity) throw new NotFoundException('Chat not found');
     return Chat.fromEntity(entity, true);
   }
 
   async getMessages(chatId: string, userId: string): Promise<Message[]> {
-    const chat = await this.chatRepository.findOne({
-      where: { id: chatId, userId },
-    });
-    if (!chat) throw new Error('Chat not found');
+    const chat = await this.chatRepository.findOne({ where: { id: chatId, userId } });
+    if (!chat) throw new NotFoundException('Chat not found');
 
     const messages = await this.messageRepository.find({
       where: { chat: { id: chatId } },
@@ -64,8 +86,15 @@ export class ChatService {
     return Message.fromEntities(messages);
   }
 
+  async getMessageVote(userId: string, messageId: string): Promise<boolean | null> {
+    const vote = await this.voteRepository.findOne({ where: { userId, messageId } });
+    return vote?.isUpvoted ?? null;
+  }
+
+
   async createChat(userId: string, input: CreateChatInput): Promise<Chat> {
-   let  { workspaceId, documentId, message, title } = input;
+    let { workspaceId, documentId, message, title, model, focusedBlocks } = input;
+    title = title ?? message.substring(0, 50);
 
     const [workspace, document] = await Promise.all([
       this.workspaceRepository.findOne({ where: { id: workspaceId } }),
@@ -73,141 +102,159 @@ export class ChatService {
     ]);
 
     if (!workspace) throw new NotFoundException('Workspace not found');
-    if (!document) throw new NotFoundException('Document not found or does not belong to workspace')
-    
-    title = input.title || input.message.substring(0, 50);
+    if (!document) throw new NotFoundException('Document not found or does not belong to workspace');
 
     const chat = this.chatRepository.create({
       userId,
-      workspaceId: input.workspaceId,
-      documentId: input.documentId,
+      workspace: { id: workspaceId },
+      document: { id: documentId },
       title,
       private: false,
       lastContext: null,
     });
 
-    const saved = await this.chatRepository.save(chat);
+    const savedChat = await this.chatRepository.save(chat);
 
     await this.messageRepository.save(
       this.messageRepository.create({
-        chat: { id: saved.id },
+        chat: { id: savedChat.id },
         role: MessageRole.USER,
-        content: input.message,
+        content: message,
+        model,
+        focusedBlocks: focusedBlocks ?? null,
       }),
     );
 
-    return Chat.fromEntity(saved);
+    if(input.updateDocumentTitle) {
+      this.titleAiExecutorService.updateTitle(documentId, workspaceId, null, title);
+    }
+
+    return Chat.fromEntity(savedChat);
   }
 
-  async updateChat(userId: string, input: UpdateChatInput): Promise<Chat> {
-    const chat = await this.chatRepository.findOne({
-      where: { id: input.chatId, userId },
+
+
+  async sendMessage(userId: string, input: SendMessageInput): Promise<Message> {
+    const { chatId, content, model, focusedBlocks } = input;
+
+    const chat = await this.chatRepository.findOne({ where: { id: chatId, userId } });
+    if (!chat) throw new NotFoundException('Chat not found');
+
+    const message = await this.messageRepository.save(
+      this.messageRepository.create({
+        chat: { id: chatId },
+        role: MessageRole.USER,
+        content,
+        model,
+        focusedBlocks: focusedBlocks ?? null,
+      }),
+    );
+
+    return Message.fromEntity(message);
+  }
+
+
+  streamResponse(userId: string, chatId: string): Observable<MessageEvent> {
+    return new Observable<MessageEvent>((subscriber) => {
+      this.executeSimulatedStream(userId, chatId, subscriber);
     });
-    if (!chat) throw new Error('Chat not found');
+  }
+
+  private async executeSimulatedStream(
+    userId: string,
+    chatId: string,
+    subscriber: Subscriber<MessageEvent>,
+  ): Promise<void> {
+    const chat = await this.chatRepository.findOne({ where: { id: chatId, userId } });
+
+    if (!chat) {
+      subscriber.error(new NotFoundException('Chat not found'));
+      return;
+    }
+
+    const tokens = LOREM_IPSUM.split(' ');
+    let fullContent = '';
+
+    try {
+      for (const word of tokens) {
+        await new Promise((r) => setTimeout(r, SIMULATED_TOKEN_DELAY_MS));
+        const token = word + ' ';
+        fullContent += token;
+        subscriber.next({ data: token } as MessageEvent);
+      }
+    } catch (err) {
+      subscriber.error(err);
+      return;
+    }
+
+    await this.messageRepository.save(
+      this.messageRepository.create({
+        chat: { id: chatId },
+        role: MessageRole.ASSISTANT,
+        content: fullContent.trim(),
+      }),
+    );
+
+    subscriber.complete();
+  }
+
+
+  async updateChat(userId: string, input: UpdateChatInput): Promise<Chat> {
+    const chat = await this.chatRepository.findOne({ where: { id: input.chatId, userId } });
+    if (!chat) throw new NotFoundException('Chat not found');
 
     if (input.title) chat.title = input.title;
-
     return Chat.fromEntity(await this.chatRepository.save(chat));
   }
 
   async deleteChat(chatId: string, userId: string): Promise<boolean> {
-    const chat = await this.chatRepository.findOne({
-      where: { id: chatId, userId },
-    });
-    if (!chat) throw new Error('Chat not found');
+    const chat = await this.chatRepository.findOne({ where: { id: chatId, userId } });
+    if (!chat) throw new NotFoundException('Chat not found');
 
-    await this.messageRepository.delete({ chat: { id: chatId } });
-    await this.chatRepository.delete({ id: chatId });
-
+    await this.chatRepository.remove(chat);
     return true;
   }
 
   async pinChat(chatId: string, userId: string): Promise<Chat> {
-    const chat = await this.chatRepository.findOne({
-      where: { id: chatId, userId },
-    });
-    if (!chat) throw new Error('Chat not found');
+    const chat = await this.chatRepository.findOne({ where: { id: chatId, userId } });
+    if (!chat) throw new NotFoundException('Chat not found');
 
     chat.pin = !chat.pin;
     return Chat.fromEntity(await this.chatRepository.save(chat));
   }
-  async addUserMessage(userId: string, chatId: string, input: SendMessageInput): Promise<Message> {
-    const chat = await this.chatRepository.findOne({
-      where: { id: chatId, userId },
-    });
-    if (!chat) throw new Error('Chat not found');
 
-    await this.messageRepository.save(
-      this.messageRepository.create({
-        chat: { id: chatId },
-        role: MessageRole.USER,
-        content: input.content,
-        focusedBlockId: input.blockId ?? null,
-      }),
-    );
 
-    const aiResponse = input.blockId
-      ? await this.callEditText(input.content)
-      : await this.callChat(input.content);
-
-    const aiMessage = await this.messageRepository.save(
-      this.messageRepository.create({
-        chat: { id: chatId },
-        role: MessageRole.ASSISTANT,
-        content: aiResponse,
-      }),
-    );
-
-    await this.chatRepository.save({
-      ...chat,
-      lastContext: {
-        lastMessage: input.content,
-        lastResponse: aiResponse,
-        updatedAt: new Date(),
-      },
-    });
-
-    return Message.fromEntity(aiMessage);
-  }
-
-  async editMessage(userId: string, input: EditMessageInput): Promise<Message> {
-    const chat = await this.chatRepository.findOne({
-      where: { id: input.chatId, userId },
-    });
-    if (!chat) throw new Error('Chat not found');
-
+  async voteMessage(userId: string, input: VoteMessageInput): Promise<Vote> {
     const message = await this.messageRepository.findOne({
-      where: { id: input.messageId, chat: { id: input.chatId } },
+      where: { id: input.messageId },
     });
-    if (!message) throw new Error('Message not found');
-    if (message.role !== MessageRole.USER) throw new Error('Only user messages can be edited');
+    if (!message) throw new NotFoundException('Message not found');
 
-    message.content = input.content;
-    return Message.fromEntity(await this.messageRepository.save(message));
-  }
+    const existing = await this.voteRepository.findOne({
+      where: { userId, messageId: input.messageId },
+    });
 
-  private async callChat(content: string): Promise<string> {
-    try {
-      const response = await firstValueFrom(
-        this.httpService.post(`${this.aiBaseUrl}/chat`, { content }),
-      );
-      return response.data.content;
-    } catch (error) {
-      throw new Error('Failed to get AI response');
+    if (existing) {
+      existing.isUpvoted = input.isUpvoted;
+      return Vote.fromEntity(await this.voteRepository.save(existing));
     }
-  }
 
-  private async callEditText(content: string): Promise<string> {
-    try {
-      const response = await firstValueFrom(
-        this.httpService.post(`${this.aiBaseUrl}/edit-text`, {
-          currentText: content,
-          userPrompt: 'Edit this text',
+    return Vote.fromEntity(
+      await this.voteRepository.save(
+        this.voteRepository.create({
+          userId,
+          messageId: input.messageId,
+          isUpvoted: input.isUpvoted,
         }),
-      );
-      return response.data.rewrittenText;
-    } catch (error) {
-      throw new Error('Failed to rewrite text');
-    }
+      ),
+    );
+  }
+
+  async removeVote(userId: string, messageId: string): Promise<boolean> {
+    const vote = await this.voteRepository.findOne({ where: { userId, messageId } });
+    if (!vote) throw new NotFoundException('Vote not found');
+
+    await this.voteRepository.remove(vote);
+    return true;
   }
 }

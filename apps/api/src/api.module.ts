@@ -20,9 +20,12 @@ import { YjsModule } from './features/collaboration/yjs/yjs.module';
 import { DataSourcesModule } from './infrastructure/datasource/datasource.module';
 import { OpenRouterModule } from './infrastructure/openrouter/openrouter.module';
 import { ChatModule } from '@/features/chat/chat.module';
+import { AiExecutionModule } from './features/ai-execution/ai-execution.module';
 
 @Module({
     imports: [
+        AiExecutionModule,
+        
         // User & Profile
         UserModule,
         ProfileModule,
