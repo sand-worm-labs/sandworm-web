@@ -1,9 +1,5 @@
 import { ascend, sortWith } from "ramda";
 import { useDrag, useDrop } from "react-dnd";
-import {
-  EllipsisHorizontalIcon,
-  BookmarkSlashIcon,
-} from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import Link from "next/link";
 import { Menu, Transition } from "@headlessui/react";
@@ -11,10 +7,13 @@ import ReactDOM from "react-dom";
 import type { MouseEventHandler } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-  ChevronDownIcon,
-  ChevronRightIcon,
-  PlusSmallIcon,
-} from "@heroicons/react/20/solid";
+  PiCaretDown,
+  PiCaretRight,
+  PiPlus,
+  PiDotsThree,
+  PiBookmarkSimpleFill,
+  PiShareNetwork,
+} from "react-icons/pi";
 import { List, Stack } from "immutable";
 import { getEmptyImage } from "react-dnd-html5-backend";
 
@@ -176,27 +175,22 @@ function DropDown(props: DropDownProps) {
   const onDeleteHandler: MouseEventHandler<HTMLButtonElement> = useCallback(
     e => {
       e.preventDefault();
-
       props.onDelete(props.documentId);
     },
     [props.onDelete, props.documentId]
   );
-
-  const onDuplicateHandler: MouseEventHandler<HTMLButtonElement> =
-    useCallback(() => {
-      props.onDuplicate(props.documentId);
-    }, [props.onDuplicate, props.documentId]);
-
-  const onFavoriteHandler: MouseEventHandler<HTMLButtonElement> =
-    useCallback(() => {
-      props.onFavorite(props.documentId);
-    }, [props.onFavorite, props.documentId]);
-
-  const onUnfavoriteHandler: MouseEventHandler<HTMLButtonElement> =
-    useCallback(() => {
-      props.onUnfavorite(props.documentId);
-    }, [props.onUnfavorite, props.documentId]);
-
+  const onDuplicateHandler: MouseEventHandler<HTMLButtonElement> = useCallback(
+    () => props.onDuplicate(props.documentId),
+    [props.onDuplicate, props.documentId]
+  );
+  const onFavoriteHandler: MouseEventHandler<HTMLButtonElement> = useCallback(
+    () => props.onFavorite(props.documentId),
+    [props.onFavorite, props.documentId]
+  );
+  const onUnfavoriteHandler: MouseEventHandler<HTMLButtonElement> = useCallback(
+    () => props.onUnfavorite(props.documentId),
+    [props.onUnfavorite, props.documentId]
+  );
   const onCreateHandler: MouseEventHandler<HTMLButtonElement> = useCallback(
     e => {
       e.preventDefault();
@@ -204,6 +198,18 @@ function DropDown(props: DropDownProps) {
     },
     [props.onCreate, props.documentId]
   );
+
+  const itemCls = (active: boolean, danger = false) =>
+    clsx(
+      "w-full flex items-center gap-2.5 px-2 py-1.5 rounded-lg",
+      "text-sm font-medium font-body transition-colors text-left",
+      danger
+        ? "text-ink-400 hover:text-[#D85A30] hover:bg-[#FAECE7] dark:hover:bg-[#1A0D08]"
+        : clsx(
+            "text-menu-ink-200 dark:text-white",
+            active ? "bg-primary/20 text-ink-100" : "hover:bg-primary/20"
+          )
+    );
 
   return (
     <>
@@ -216,11 +222,18 @@ function DropDown(props: DropDownProps) {
         )}
         onClick={onCreateHandler}
       >
-        <PlusSmallIcon className="invisible group-hover:visible hover:bg-ceramic-200/50 h-6 w-6 shrink-0 rounded-md" />
+        <PiPlus
+          size={16}
+          className="invisible group-hover:visible hover:bg-ceramic-200/50 rounded-md shrink-0"
+        />
       </button>
+
       <Menu as="div" className="relative inline-flex text-left font-body">
         <Menu.Button className="pr-0.5" ref={buttonRef} onClick={onOpen}>
-          <EllipsisHorizontalIcon className="invisible group-hover:visible hover:bg-ceramic-200/50 h-6 w-6 shrink-0 rounded-md" />
+          <PiDotsThree
+            size={18}
+            className="invisible group-hover:visible hover:bg-ceramic-200/50 rounded-md shrink-0"
+          />
         </Menu.Button>
 
         {ReactDOM.createPortal(
@@ -240,80 +253,87 @@ function DropDown(props: DropDownProps) {
             leaveFrom="transform opacity-100 scale-100"
             leaveTo="transform opacity-0 scale-95"
           >
-            <Menu.Items className="absolute left-2 -top-2 z-20 w-40 origin-top-right  bg-white dark:bg-base-100  ring-opacity-5 focus:outline-none border-border-secondary  border dark:border-border-tertiary rounded-2xl shadow-[0_1.5px_13px_3px_rgba(82,106,159,0.12)] dark:shadow-none">
-              <div className="py-2 px-1.5">
+            <Menu.Items
+              className="absolute left-2 -top-2 z-20 w-44 origin-top-right
+                bg-white dark:bg-base-100
+                border border-border-tertiary dark:border-border-tertiary
+                rounded-2xl
+                shadow-[0_4px_16px_rgba(0,0,0,0.08)] dark:shadow-none
+                focus:outline-none"
+            >
+              <div className="py-1.5 px-1.5 flex flex-col gap-0.5">
                 <Menu.Item>
                   {({ active }) => (
                     <button
                       type="button"
-                      onClick={onDeleteHandler}
-                      className={clsx(
-                        {
-                          hidden: isViewer || props.isFavoriteDropdown,
-                        },
-                        active ? "bg-gray-100 text-ink-100" : "text-ink-400",
-                        "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 rounded-md font-body font-medium hover:bg-primary/20 text-menu-ink-200 dark:text-white"
-                      )}
+                      onClick={() => {}} // TODO: open share modal
+                      className={itemCls(active)}
                     >
-                      <Trash />
-                      <span>Delete</span>
+                      <PiShareNetwork size={16} />
+                      <span>Share</span>
                     </button>
                   )}
                 </Menu.Item>
-                <Menu.Item>
-                  {({ active }) => (
-                    <button
-                      type="button"
-                      onClick={onDuplicateHandler}
-                      className={clsx(
-                        {
-                          hidden: isViewer,
-                        },
-                        active ? "bg-gray-100 text-ink-100" : "text-ink-400",
-                        "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 font-body font-medium hover:bg-primary/20 rounded-md text-menu-ink-200  dark:text-white"
-                      )}
-                    >
-                      <Copy />
-                      <span>Duplicate</span>
-                    </button>
-                  )}
-                </Menu.Item>
-                <Menu.Item>
-                  {({ active }) => (
-                    <button
-                      type="button"
-                      onClick={onFavoriteHandler}
-                      className={clsx(
-                        {
-                          hidden: props.isFavorited,
-                        },
-                        active ? "bg-gray-100 text-ink-100" : "text-ink-400",
-                        "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 font-body font-medium hover:bg-primary/20 rounded-md text-menu-ink-200  dark:text-white"
-                      )}
-                    >
-                      <BookmarkSimple />
-                      <span>Add to favorites</span>
-                    </button>
-                  )}
-                </Menu.Item>
-                <Menu.Item>
-                  {({ active }) => (
-                    <button
-                      type="button"
-                      onClick={onUnfavoriteHandler}
-                      className={clsx(
-                        {
-                          hidden: !props.isFavorited,
-                        },
-                        active ? "bg-gray-100 text-ink-100" : "text-ink-400",
-                        "w-full px-1 py-1.5 text-left text-sm flex items-center gap-x-2 font-body font-medium hover:bg-primary/20 rounded-md text-menu-ink-200  dark:text-white"
-                      )}
-                    >
-                      <BookmarkSlashIcon className="h-4 w-4" />
-                      <span>Remove from favorites</span>
-                    </button>
-                  )}
-                </Menu.Item>
+
+                {!isViewer && (
+                  <Menu.Item>
+                    {({ active }) => (
+                      <button
+                        type="button"
+                        onClick={onDuplicateHandler}
+                        className={itemCls(active)}
+                      >
+                        <Copy />
+                        <span>Duplicate</span>
+                      </button>
+                    )}
+                  </Menu.Item>
+                )}
+
+                {!props.isFavorited && (
+                  <Menu.Item>
+                    {({ active }) => (
+                      <button
+                        type="button"
+                        onClick={onFavoriteHandler}
+                        className={itemCls(active)}
+                      >
+                        <BookmarkSimple />
+                        <span>Add to favorites</span>
+                      </button>
+                    )}
+                  </Menu.Item>
+                )}
+
+                {props.isFavorited && (
+                  <Menu.Item>
+                    {({ active }) => (
+                      <button
+                        type="button"
+                        onClick={onUnfavoriteHandler}
+                        className={itemCls(active)}
+                      >
+                        <PiBookmarkSimpleFill size={16} />
+                        <span>Remove from favorites</span>
+                      </button>
+                    )}
+                  </Menu.Item>
+                )}
+
+                {!isViewer && !props.isFavoriteDropdown && (
+                  <Menu.Item>
+                    {({ active }) => (
+                      <button
+                        type="button"
+                        onClick={onDeleteHandler}
+                        className={itemCls(active, true)}
+                      >
+                        <Trash />
+                        <span>Delete</span>
+                      </button>
+                    )}
+                  </Menu.Item>
+                )}
               </div>
             </Menu.Items>
           </Transition>,
@@ -545,9 +565,9 @@ function NodeComponent(props: NodeComponentProps) {
                       onClick={toggleIsExpanded}
                     >
                       {isExpanded ? (
-                        <ChevronDownIcon className="h-4 w-4" />
+                        <PiCaretDown size={14} />
                       ) : (
-                        <ChevronRightIcon className="h-4 w-4" />
+                        <PiCaretRight size={14} />
                       )}
                     </button>
                   )}

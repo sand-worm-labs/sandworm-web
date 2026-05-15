@@ -52,7 +52,7 @@ export function Chat({
       try {
         const doc = await createDocument({ parentId: null, version: 2 });
         router.push(
-          `/workspace/${workspaceId}/documents/${doc.id}/notebook/edit?prompt=${encodeURIComponent(text)}`
+          `/workspace/${workspaceId}/documents/${doc.id}/notebook/edit?prompt=${encodeURIComponent(text)}&panel=ai`
         );
       } catch (err) {
         console.error(err);
@@ -70,7 +70,7 @@ export function Chat({
       try {
         const doc = await createDocument({ parentId, version: 2 });
         router.push(
-          `/workspace/${workspaceId}/documents/${doc.id}/notebook/edit?prompt=${encodeURIComponent(prompt)}`
+          `/workspace/${workspaceId}/documents/${doc.id}/notebook/edit?prompt=${encodeURIComponent(prompt)}&panel=ai`
         );
       } catch (err) {
         console.error(err);
