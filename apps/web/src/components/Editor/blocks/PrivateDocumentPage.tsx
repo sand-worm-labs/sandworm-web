@@ -1,10 +1,9 @@
 import dynamic from "next/dynamic";
-import { useCallback, useMemo, useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useCallback, useMemo, useState, useEffect, useRef } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { isNil } from "ramda";
 import Link from "next/link";
-import { EyeIcon, PencilIcon } from "@heroicons/react/24/outline";
-import { BookUpIcon } from "lucide-react";
+import { EyeIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { AITasks, ExecutionQueue } from "@sandworm/editor";
 import { useHotkeys } from "react-hotkeys-hook";
@@ -43,7 +42,6 @@ import PageSettingsPanel from "./PageSettingsPanel";
 import { Tooltip, TooltipV2 } from "./ToolTips";
 import { ContentSkeleton, TitleSkeleton } from "./ContentSkeleton";
 import ShareModal from "./ShareModal";
-
 // this is needed because this component only works with the browser
 const V2Editor = dynamic(() => import("@/components/Editor"), {
   ssr: false,
@@ -80,6 +78,9 @@ function PrivateDocumentPageInner(
     | { _tag: "chat" }
     | null
   >(null);
+
+  const panelOpenedRef = useRef(false);
+  const searchParams = useSearchParams();
 
   const [{ datasources: dataSources }] = useDataSources(props.workspaceId);
 
@@ -189,19 +190,6 @@ function PrivateDocumentPageInner(
     props.user.id,
   ]);
 
-  console.log("[YDoc Debug]", {
-    mode: props.isApp ? "VIEW" : "EDIT",
-    workspaceId: props.document.workspaceId,
-    documentId: props.document.id,
-    userId: props.user.id,
-    clock,
-    rawClock: props.document.clock,
-    appClock: props.document.appClock,
-    userAppClock: props.document?.userAppClock?.[props.user.id],
-    publishedAt: props.document.publishedAt,
-    isApp: props.isApp,
-  });
-
   const { yDoc, provider, syncing, isDirty, undo, redo } = useYDoc(
     props.document.workspaceId,
     props.document.id,
@@ -212,19 +200,17 @@ function PrivateDocumentPageInner(
     true,
     null
   );
-
-  useEffect(() => {
-    console.log("[YDoc Sync]", {
-      mode: props.isApp ? "VIEW" : "EDIT",
-      syncing,
-      isDirty,
-      hasProvider: !!provider,
-      hasYDoc: !!yDoc,
-    });
-  }, [syncing, isDirty, provider, yDoc]);
-
   useHotkeys("mod+z", undo);
   useHotkeys("mod+shift+z", redo);
+
+  useEffect(() => {
+    if (panelOpenedRef.current) return;
+    if (syncing) return;
+    if (searchParams.get("panel") === "ai") {
+      panelOpenedRef.current = true;
+      setSelectedSidebar({ _tag: "chat" });
+    }
+  }, [searchParams, syncing]);
 
   const executionQueue = useMemo(
     () =>

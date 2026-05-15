@@ -58,7 +58,7 @@ export const MiniChatHeader: React.FC<MiniChatHeaderProps> = ({
       rounded-lg border border-[#DEE2E6] dark:border-[#3A3A38]
       bg-white dark:bg-[#252523]"
     >
-      <AIChatIcon size={14} />
+      <AIChatIcon />
     </div>
 
     <div className="flex-1 min-w-0">
@@ -217,6 +217,7 @@ export const MiniChat: React.FC<MiniChatProps> = ({
   const [activeThreadTitle, setActiveThreadTitle] = useState<
     string | undefined
   >(undefined);
+  const promptFiredRef = useRef(false);
 
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -330,7 +331,8 @@ export const MiniChat: React.FC<MiniChatProps> = ({
 
   useEffect(() => {
     const prompt = searchParams.get("prompt");
-    if (prompt && messages.length === 0) {
+    if (prompt && !promptFiredRef.current) {
+      promptFiredRef.current = true;
       handleSendSafe(prompt);
     }
   }, [searchParams]);
