@@ -7,9 +7,12 @@ import type {
 import { getBaseAttributes } from "@sandworm/editor";
 import { useEffect, useState } from "react";
 
+import { useEditTitleWithAiMutation } from "@/generated/graphql";
+
 // =====================================
-// ⬢ UseAITasksHook
+// ⬢ useAITasks
 // =====================================
+
 export function useAITasks(
   aiTasks: AITasks,
   block?: YBlock,
@@ -27,4 +30,23 @@ export function useAITasks(
   }, [aiTasks, blockId, tag]);
 
   return tasks;
+}
+
+// =====================================
+// ⬢ useAITaskActions
+// =====================================
+
+type UseAITaskActions = {
+  editTitleWithAi: (workspaceId: string, documentId: string) => Promise<void>;
+  loading: boolean;
+};
+
+export function useAITaskActions(): UseAITaskActions {
+  const [editTitleWithAiMutation, { loading }] = useEditTitleWithAiMutation();
+
+  async function editTitleWithAi(workspaceId: string, documentId: string) {
+    await editTitleWithAiMutation({ variables: { workspaceId, documentId } });
+  }
+
+  return { editTitleWithAi, loading };
 }

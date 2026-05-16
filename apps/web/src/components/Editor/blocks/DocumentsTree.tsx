@@ -258,7 +258,7 @@ function DropDown(props: DropDownProps) {
                 bg-white dark:bg-base-100
                 border border-border-tertiary dark:border-border-tertiary
                 rounded-2xl
-                shadow-[0_4px_16px_rgba(0,0,0,0.08)] dark:shadow-none
+                shadow-sm dark:shadow-none
                 focus:outline-none"
             >
               <div className="py-1.5 px-1.5 flex flex-col gap-0.5">
