@@ -1,0 +1,3 @@
+mutation EditTitleWithAi($documentId: String!, $workspaceId: String!) {
+  editTitleWithAi(documentId: $documentId, workspaceId: $workspaceId)
+}

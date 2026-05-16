@@ -10,24 +10,31 @@ import Placeholder from "@tiptap/extension-placeholder";
 import Text from "@tiptap/extension-text";
 import { mergeAttributes, Node } from "@tiptap/core";
 import clsx from "clsx";
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 
 import { TooltipV2 } from "@/components/Editor/blocks/ToolTips";
 
 import { TitleSkeleton } from "./blocks/ContentSkeleton";
+import { useAITaskActions } from "./hooks/useAITasks";
 
 // =====================================
 // ⬢ Types
 // =====================================
 interface TitleAIButtonProps {
   onClick: () => void;
+  isLoading?: boolean;
   className?: string;
 }
 
 // =====================================
 // ⬢ Component
 // =====================================
-export function TitleAIButton({ onClick, className }: TitleAIButtonProps) {
+
+export function TitleAIButton({
+  onClick,
+  isLoading,
+  className,
+}: TitleAIButtonProps) {
   return (
     <TooltipV2<HTMLButtonElement>
       title="Generate with AI"
@@ -39,6 +46,7 @@ export function TitleAIButton({ onClick, className }: TitleAIButtonProps) {
           ref={ref}
           type="button"
           onClick={onClick}
+          disabled={isLoading}
           aria-label="Generate title with AI"
           className={[
             "flex items-center justify-center w-7 h-7",
@@ -50,12 +58,17 @@ export function TitleAIButton({ onClick, className }: TitleAIButtonProps) {
             "transition-all duration-150 shadow-sm",
             "opacity-0 group-hover:opacity-100",
             "translate-y-0.5 group-hover:translate-y-0",
+            "disabled:cursor-not-allowed",
             className,
           ]
             .filter(Boolean)
             .join(" ")}
         >
-          <BsStars className="w-3.5 h-3.5" />
+          {isLoading ? (
+            <span className="w-3.5 h-3.5 border-2 border-violet-400 border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <BsStars className="w-3.5 h-3.5" />
+          )}
         </button>
       )}
     </TooltipV2>
@@ -106,10 +119,18 @@ interface Props {
   isEditable: boolean;
   isLoading: boolean;
   style?: string;
-  onGenerateWithAI?: () => void;
+  workspaceId: string;
+  documentId: string;
 }
 
 function Title(props: Props) {
+  const { editTitleWithAi, loading: aiLoading } = useAITaskActions();
+
+  const handleGenerateWithAI = useCallback(async () => {
+    if (aiLoading) return;
+    await editTitleWithAi(props.workspaceId, props.documentId);
+  }, [aiLoading, props.workspaceId, props.documentId, editTitleWithAi]);
+
   const editor = useEditor(
     {
       autofocus: true,
@@ -149,10 +170,8 @@ function Title(props: Props) {
 
   useEffect(
     () => () => {
-      // cleanup after unmount
       editor?.destroy();
 
-      // manually destroy collaboration undo manager
       try {
         // @ts-ignore
         const undoManager = editor?.state["y-undo$"]?.undoManager;
@@ -178,14 +197,15 @@ function Title(props: Props) {
   return (
     <div className="font-body">
       <TitleSkeleton visible={props.isLoading} />
-
       <div className={clsx("group relative", props.isLoading && "hidden")}>
-        {props.onGenerateWithAI && (
+        {props.isEditable && (
           <div className="absolute left-0 top-1/2 -translate-x-full -translate-y-1/2 pr-2">
-            <TitleAIButton onClick={props.onGenerateWithAI} />
+            <TitleAIButton
+              onClick={handleGenerateWithAI}
+              isLoading={aiLoading}
+            />
           </div>
         )}
-
         <EditorContent editor={editor} />
       </div>
     </div>

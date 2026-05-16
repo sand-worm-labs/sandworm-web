@@ -54,9 +54,13 @@ export type Comment = {
 
 export type CreateChatInput = {
   documentId: Scalars['String']['input'];
+  focusedBlocks?: InputMaybe<Array<FocusedBlockInput>>;
   message: Scalars['String']['input'];
+  model: Scalars['String']['input'];
   /** Optional custom title. Auto-generated from message if not provided. */
   title?: InputMaybe<Scalars['String']['input']>;
+  /** Whether to update the document title from the chat message. Defaults to false. */
+  updateDocumentTitle?: InputMaybe<Scalars['Boolean']['input']>;
   workspaceId: Scalars['String']['input'];
 };
 
@@ -165,12 +169,6 @@ export type DuplicateDocumentInput = {
   workspaceId: Scalars['String']['input'];
 };
 
-export type EditMessageInput = {
-  chatId: Scalars['String']['input'];
-  content: Scalars['String']['input'];
-  messageId: Scalars['String']['input'];
-};
-
 export type Environment = {
   __typename?: 'Environment';
   id: Scalars['String']['output'];
@@ -221,6 +219,12 @@ export type FavoritePublicDocumentInput = {
   documentId: Scalars['String']['input'];
 };
 
+export type FocusedBlockInput = {
+  id: Scalars['String']['input'];
+  title: Scalars['String']['input'];
+  type: Scalars['String']['input'];
+};
+
 export type ForkDocumentInput = {
   documentId: Scalars['String']['input'];
   targetWorkspaceId: Scalars['String']['input'];
@@ -249,9 +253,12 @@ export type Message = {
   chatId: Scalars['String']['output'];
   content: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
+  finishReason?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
+  model?: Maybe<Scalars['String']['output']>;
   parts?: Maybe<Scalars['JSON']['output']>;
   role: Scalars['String']['output'];
+  usage?: Maybe<Scalars['JSON']['output']>;
 };
 
 export type Mutation = {
@@ -302,8 +309,7 @@ export type Mutation = {
   deleteWorkspace: Scalars['Boolean']['output'];
   /** Create a duplicate of a document in the same workspace */
   duplicateDocument: Document;
-  /** Edit an existing message */
-  editMessage: Message;
+  editTitleWithAi: Scalars['String']['output'];
   /** Follow User */
   followUser: Profile;
   /** Fork a documents */
@@ -322,6 +328,8 @@ export type Mutation = {
   removePublicFavoriteDocument: Document;
   /** Remove a user from workspace */
   removeUserFromWorkspace: Scalars['Boolean']['output'];
+  /** Retract a vote on a message */
+  removeVote: Scalars['Boolean']['output'];
   /** Unmark a document as a favorite */
   removeWorkspaceFavoriteDocument: Document;
   /** Request a role upgrade in a workspace */
@@ -330,7 +338,7 @@ export type Mutation = {
   restartEnvironment: Environment;
   /** Restore a previously deleted document */
   restoreDocument: Document;
-  /** Send message (chat or block edit) */
+  /** Send a user message */
   sendMessage: Message;
   /** Add or remove environment variables */
   setEnvironmentVariables: Array<EnvironmentVariable>;
@@ -361,6 +369,8 @@ export type Mutation = {
   updateWorkspace: Workspace;
   /** Update a user role in a workspace */
   updateWorkspaceMemberRole: Scalars['Boolean']['output'];
+  /** Upvote or downvote a message */
+  voteMessage: Vote;
 };
 
 
@@ -490,8 +500,9 @@ export type MutationDuplicateDocumentArgs = {
 };
 
 
-export type MutationEditMessageArgs = {
-  input: EditMessageInput;
+export type MutationEditTitleWithAiArgs = {
+  documentId: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
 };
 
 
@@ -545,6 +556,11 @@ export type MutationRemoveUserFromWorkspaceArgs = {
 };
 
 
+export type MutationRemoveVoteArgs = {
+  messageId: Scalars['String']['input'];
+};
+
+
 export type MutationRemoveWorkspaceFavoriteDocumentArgs = {
   input: FavoriteDocumentInput;
 };
@@ -567,7 +583,6 @@ export type MutationRestoreDocumentArgs = {
 
 
 export type MutationSendMessageArgs = {
-  chatId: Scalars['String']['input'];
   input: SendMessageInput;
 };
 
@@ -656,6 +671,11 @@ export type MutationUpdateWorkspaceMemberRoleArgs = {
   role: Scalars['String']['input'];
   userId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
+};
+
+
+export type MutationVoteMessageArgs = {
+  input: VoteMessageInput;
 };
 
 export type OpenRouterAccountCredits = {
@@ -752,6 +772,7 @@ export type Query = {
   isFollowing: Scalars['Boolean']['output'];
   /** List all files in a workspace */
   listFiles: Array<SandwormFile>;
+  messageVote?: Maybe<Scalars['Boolean']['output']>;
   /** Get OpenRouter account credit usage */
   openRouterAccountCredits: OpenRouterAccountCredits;
   /** Get a specific OpenRouter model by ID */
@@ -922,6 +943,11 @@ export type QueryListFilesArgs = {
 };
 
 
+export type QueryMessageVoteArgs = {
+  messageId: Scalars['String']['input'];
+};
+
+
 export type QueryOpenRouterAccountCreditsArgs = {
   workspaceId: Scalars['String']['input'];
 };
@@ -1017,9 +1043,9 @@ export type Schedule = {
 };
 
 export type SendMessageInput = {
-  blockId?: InputMaybe<Scalars['String']['input']>;
   chatId: Scalars['String']['input'];
   content: Scalars['String']['input'];
+  focusedBlocks?: InputMaybe<Array<FocusedBlockInput>>;
   model: Scalars['String']['input'];
 };
 
@@ -1103,6 +1129,20 @@ export type UserSetting = {
   wallets: Array<Scalars['JSON']['output']>;
 };
 
+export type Vote = {
+  __typename?: 'Vote';
+  createdAt: Scalars['DateTime']['output'];
+  isUpvoted: Scalars['Boolean']['output'];
+  messageId: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+  userId: Scalars['String']['output'];
+};
+
+export type VoteMessageInput = {
+  isUpvoted: Scalars['Boolean']['input'];
+  messageId: Scalars['String']['input'];
+};
+
 export type WalletInput = {
   address: Scalars['String']['input'];
   chain: Scalars['String']['input'];
@@ -1182,6 +1222,14 @@ export type EnvironmentVariableFieldsFragment = { __typename?: 'EnvironmentVaria
 export type EnvironmentFieldsFragment = { __typename?: 'Environment', id: string, workspaceId: string, status: EnvironmentStatus, resourceVersion: number, lastActivityAt: any };
 
 export type MessageFieldsFragment = { __typename?: 'Message', id: string, chatId: string, role: string, content: string, createdAt: any };
+
+export type EditTitleWithAiMutationVariables = Exact<{
+  documentId: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
+}>;
+
+
+export type EditTitleWithAiMutation = { __typename?: 'Mutation', editTitleWithAi: string };
 
 export type CreateUserMutationVariables = Exact<{
   input: CreateUserInput;
@@ -1911,6 +1959,38 @@ export const EnvironmentFieldsFragmentDoc = gql`
   lastActivityAt
 }
     `;
+export const EditTitleWithAiDocument = gql`
+    mutation EditTitleWithAi($documentId: String!, $workspaceId: String!) {
+  editTitleWithAi(documentId: $documentId, workspaceId: $workspaceId)
+}
+    `;
+export type EditTitleWithAiMutationFn = Apollo.MutationFunction<EditTitleWithAiMutation, EditTitleWithAiMutationVariables>;
+
+/**
+ * __useEditTitleWithAiMutation__
+ *
+ * To run a mutation, you first call `useEditTitleWithAiMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useEditTitleWithAiMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [editTitleWithAiMutation, { data, loading, error }] = useEditTitleWithAiMutation({
+ *   variables: {
+ *      documentId: // value for 'documentId'
+ *      workspaceId: // value for 'workspaceId'
+ *   },
+ * });
+ */
+export function useEditTitleWithAiMutation(baseOptions?: Apollo.MutationHookOptions<EditTitleWithAiMutation, EditTitleWithAiMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<EditTitleWithAiMutation, EditTitleWithAiMutationVariables>(EditTitleWithAiDocument, options);
+      }
+export type EditTitleWithAiMutationHookResult = ReturnType<typeof useEditTitleWithAiMutation>;
+export type EditTitleWithAiMutationResult = Apollo.MutationResult<EditTitleWithAiMutation>;
+export type EditTitleWithAiMutationOptions = Apollo.BaseMutationOptions<EditTitleWithAiMutation, EditTitleWithAiMutationVariables>;
 export const CreateUserDocument = gql`
     mutation CreateUser($input: CreateUserInput!) {
   createUser(input: $input) {

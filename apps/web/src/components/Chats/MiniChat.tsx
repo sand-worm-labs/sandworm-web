@@ -16,6 +16,7 @@ import { PiX, PiPlus, PiClockCounterClockwise } from "react-icons/pi";
 import { useChat } from "../Editor/hooks/useChat";
 import { AIChatIcon } from "../Assets/AIChatIcon";
 import { useNotebookBlocks } from "../Editor/hooks/useNotebookBlocks";
+import { useWorkspace } from "../Editor/hooks/useWorkspaces";
 
 import { MiniChatInput } from "./MiniChatInput";
 import { ChatBubble } from "./ChatBubble";
@@ -209,6 +210,8 @@ export const MiniChat: React.FC<MiniChatProps> = ({
   documentId,
 }) => {
   const searchParams = useSearchParams();
+  const { workspace } = useWorkspace(workspaceId);
+  const currentModel = workspace?.assistantModel;
 
   const [messages, setMessages] = useState<LocalMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -249,7 +252,8 @@ export const MiniChat: React.FC<MiniChatProps> = ({
     async (
       text: string,
       references: AttachedReference[] = [],
-      files: File[] = []
+      files: File[] = [],
+      updateDocumentTitle = false
     ) => {
       if (!text.trim() || isLoading) return;
 
@@ -268,6 +272,8 @@ export const MiniChat: React.FC<MiniChatProps> = ({
             workspaceId,
             documentId,
             message: text,
+            model: currentModel || "",
+            updateDocumentTitle,
           });
 
           setActiveChatId(chat.id);
@@ -301,8 +307,15 @@ export const MiniChat: React.FC<MiniChatProps> = ({
   );
 
   const handleSendSafe = useCallback(
-    (text: string, references?: AttachedReference[], files?: File[]) => {
-      handleSend(text, references, files).catch(console.error);
+    (
+      text: string,
+      references?: AttachedReference[],
+      files?: File[],
+      updateDocumentTitle = false
+    ) => {
+      handleSend(text, references, files, updateDocumentTitle).catch(
+        console.error
+      );
     },
     [handleSend]
   );
@@ -330,10 +343,12 @@ export const MiniChat: React.FC<MiniChatProps> = ({
   }, [messages]);
 
   useEffect(() => {
+    if (promptFiredRef.current) return;
     const prompt = searchParams.get("prompt");
-    if (prompt && !promptFiredRef.current) {
+    const updateDocumentTitle = searchParams.get("updateTitle") === "true";
+    if (prompt) {
       promptFiredRef.current = true;
-      handleSendSafe(prompt);
+      handleSendSafe(prompt, [], [], updateDocumentTitle);
     }
   }, [searchParams]);
 
