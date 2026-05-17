@@ -37,7 +37,9 @@ export function makeFileUploadBlock(id: string, isAiInput?: boolean): Y.XmlEleme
     type: BlockType.FileUpload,
     uploadedFiles: [],
     areFilesHidden: false,
-    isAiInput: isAiInput ?? false
+    isAiInput: isAiInput ?? false,
+    editWithAIPrompt: new Y.Text(),
+    isEditWithAIPromptOpen: false,
   }
 
   for (const [key, value] of Object.entries(attrs)) {

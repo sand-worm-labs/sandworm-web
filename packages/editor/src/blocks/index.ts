@@ -95,6 +95,8 @@ export type BaseBlock<T extends BlockType> = {
   title: string;
   type: T;
   isAiInput: boolean; 
+  editWithAIPrompt: Y.Text;
+  isEditWithAIPromptOpen: boolean;
 };
 
 export type Block =
@@ -224,8 +226,10 @@ export function getBaseAttributes<T extends BlockType>(
   const title = getAttributeOr(block, "title", "");
   const type = getAttributeOrThrow(block, "type") as T;
   const isAiInput = getAttributeOr(block, "isAiInput", false) as boolean;
+  const editWithAIPrompt = getAttributeOr(block, "editWithAIPrompt", new Y.Text()) as Y.Text;
+  const isEditWithAIPromptOpen = getAttributeOr(block, "isEditWithAIPromptOpen", false) as boolean;
 
-  return { id, index, title, type, isAiInput };
+  return { id, index, title, type, isAiInput, editWithAIPrompt, isEditWithAIPromptOpen };
 }
 
 export function duplicateBaseAttributes<T extends BlockType>(
@@ -238,6 +242,8 @@ export function duplicateBaseAttributes<T extends BlockType>(
     title: prevAttributes.title,
     type: prevAttributes.type,
     isAiInput: prevAttributes.isAiInput,
+    editWithAIPrompt: duplicateYText(prevAttributes.editWithAIPrompt),
+    isEditWithAIPromptOpen: prevAttributes.isEditWithAIPromptOpen,
   };
 }
 

@@ -9,27 +9,21 @@ import {
 } from "./index.js";
 import { ExecutionStatus } from "../execution/item.js";
 
-// =====================================
-// ⬢ Types
-// =====================================
+
 export type MarkdownBlock = BaseBlock<BlockType.Markdown> & {
   // Y.Text — plain markdown source, not a ProseMirror fragment.
   // Simpler than XmlFragment: no schema, no node types, just text + Yjs CRDT.
   source: Y.Text;
 };
 
-// =====================================
-// ⬢ Guards
-// =====================================
+
 export const isMarkdownBlock = (
   block: YBlock
 ): block is Y.XmlElement<MarkdownBlock> => {
   return block.getAttribute("type") === BlockType.Markdown;
 };
 
-// =====================================
-// ⬢ Factory
-// =====================================
+
 export const makeMarkdownBlock = (
   id: string
 ): Y.XmlElement<MarkdownBlock> => {
@@ -42,6 +36,8 @@ export const makeMarkdownBlock = (
     type: BlockType.Markdown,
     isAiInput: false,
     source: new Y.Text(""),
+    editWithAIPrompt: new Y.Text(),
+    isEditWithAIPromptOpen: false,
   };
 
   for (const [key, value] of Object.entries(attrs)) {
@@ -52,9 +48,7 @@ export const makeMarkdownBlock = (
   return yBlock;
 };
 
-// =====================================
-// ⬢ Accessors
-// =====================================
+
 export function getMarkdownAttributes(
   block: Y.XmlElement<MarkdownBlock>
 ): MarkdownBlock {
@@ -64,9 +58,7 @@ export function getMarkdownAttributes(
   };
 }
 
-// =====================================
-// ⬢ Duplicate
-// =====================================
+
 export function duplicateMarkdownBlock(
   newId: string,
   block: Y.XmlElement<MarkdownBlock>
@@ -90,9 +82,7 @@ export function duplicateMarkdownBlock(
   return yBlock;
 }
 
-// =====================================
-// ⬢ Exec Status
-// =====================================
+
 export function getMarkdownBlockExecStatus(
   _block: Y.XmlElement<MarkdownBlock>
 ): ExecutionStatus {

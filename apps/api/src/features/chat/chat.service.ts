@@ -126,15 +126,72 @@ export class ChatService {
     );
 
     if(input.updateDocumentTitle) {
-      this.titleAiExecutorService.updateTitle(documentId, workspaceId, null, title);
+      this.titleAiExecutorService.updateTitle(documentId, workspaceId, title);
     }
 
     return Chat.fromEntity(savedChat);
   }
 
+  async updateChat(userId: string, input: UpdateChatInput): Promise<Chat> {
+    const chat = await this.chatRepository.findOne({ where: { id: input.chatId, userId } });
+    if (!chat) throw new NotFoundException('Chat not found');
+
+    if (input.title) chat.title = input.title;
+    return Chat.fromEntity(await this.chatRepository.save(chat));
+  }
+
+  async deleteChat(chatId: string, userId: string): Promise<boolean> {
+    const chat = await this.chatRepository.findOne({ where: { id: chatId, userId } });
+    if (!chat) throw new NotFoundException('Chat not found');
+
+    await this.chatRepository.remove(chat);
+    return true;
+  }
+
+  async pinChat(chatId: string, userId: string): Promise<Chat> {
+    const chat = await this.chatRepository.findOne({ where: { id: chatId, userId } });
+    if (!chat) throw new NotFoundException('Chat not found');
+
+    chat.pin = !chat.pin;
+    return Chat.fromEntity(await this.chatRepository.save(chat));
+  }
 
 
-  async sendMessage(userId: string, input: SendMessageInput): Promise<Message> {
+  async voteMessage(userId: string, input: VoteMessageInput): Promise<Vote> {
+    const message = await this.messageRepository.findOne({
+      where: { id: input.messageId },
+    });
+    if (!message) throw new NotFoundException('Message not found');
+
+    const existing = await this.voteRepository.findOne({
+      where: { userId, messageId: input.messageId },
+    });
+
+    if (existing) {
+      existing.isUpvoted = input.isUpvoted;
+      return Vote.fromEntity(await this.voteRepository.save(existing));
+    }
+
+    return Vote.fromEntity(
+      await this.voteRepository.save(
+        this.voteRepository.create({
+          userId,
+          messageId: input.messageId,
+          isUpvoted: input.isUpvoted,
+        }),
+      ),
+    );
+  }
+
+  async removeVote(userId: string, messageId: string): Promise<boolean> {
+    const vote = await this.voteRepository.findOne({ where: { userId, messageId } });
+    if (!vote) throw new NotFoundException('Vote not found');
+
+    await this.voteRepository.remove(vote);
+    return true;
+  }
+
+    async sendMessage(userId: string, input: SendMessageInput): Promise<Message> {
     const { chatId, content, model, focusedBlocks } = input;
 
     const chat = await this.chatRepository.findOne({ where: { id: chatId, userId } });
@@ -198,63 +255,4 @@ export class ChatService {
     subscriber.complete();
   }
 
-
-  async updateChat(userId: string, input: UpdateChatInput): Promise<Chat> {
-    const chat = await this.chatRepository.findOne({ where: { id: input.chatId, userId } });
-    if (!chat) throw new NotFoundException('Chat not found');
-
-    if (input.title) chat.title = input.title;
-    return Chat.fromEntity(await this.chatRepository.save(chat));
-  }
-
-  async deleteChat(chatId: string, userId: string): Promise<boolean> {
-    const chat = await this.chatRepository.findOne({ where: { id: chatId, userId } });
-    if (!chat) throw new NotFoundException('Chat not found');
-
-    await this.chatRepository.remove(chat);
-    return true;
-  }
-
-  async pinChat(chatId: string, userId: string): Promise<Chat> {
-    const chat = await this.chatRepository.findOne({ where: { id: chatId, userId } });
-    if (!chat) throw new NotFoundException('Chat not found');
-
-    chat.pin = !chat.pin;
-    return Chat.fromEntity(await this.chatRepository.save(chat));
-  }
-
-
-  async voteMessage(userId: string, input: VoteMessageInput): Promise<Vote> {
-    const message = await this.messageRepository.findOne({
-      where: { id: input.messageId },
-    });
-    if (!message) throw new NotFoundException('Message not found');
-
-    const existing = await this.voteRepository.findOne({
-      where: { userId, messageId: input.messageId },
-    });
-
-    if (existing) {
-      existing.isUpvoted = input.isUpvoted;
-      return Vote.fromEntity(await this.voteRepository.save(existing));
-    }
-
-    return Vote.fromEntity(
-      await this.voteRepository.save(
-        this.voteRepository.create({
-          userId,
-          messageId: input.messageId,
-          isUpvoted: input.isUpvoted,
-        }),
-      ),
-    );
-  }
-
-  async removeVote(userId: string, messageId: string): Promise<boolean> {
-    const vote = await this.voteRepository.findOne({ where: { userId, messageId } });
-    if (!vote) throw new NotFoundException('Vote not found');
-
-    await this.voteRepository.remove(vote);
-    return true;
-  }
 }
