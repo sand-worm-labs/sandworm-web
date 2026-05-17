@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, Fragment } from "react";
+import { useState, useRef, Fragment, useCallback } from "react";
 import { Dialog, Transition, Listbox } from "@headlessui/react";
 import {
   PiCheck,
@@ -169,16 +169,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
     setFiles(f => f.filter((_, i) => i !== index));
   }
 
-  async function handleSubmit() {
-    if (!canSubmit) return;
-    setIsSubmitting(true);
-    await new Promise(r => setTimeout(r, 1200));
-    setIsSubmitting(false);
-    setSubmitted(true);
-    setTimeout(handleClose, 2000);
-  }
-
-  function handleClose() {
+  const handleClose = useCallback(() => {
     onClose();
     setTimeout(() => {
       setSelectedType(null);
@@ -186,6 +177,17 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
       setFiles([]);
       setSubmitted(false);
     }, 300);
+  }, [onClose]);
+
+  async function handleSubmit() {
+    if (!canSubmit) return;
+    setIsSubmitting(true);
+    await new Promise(r => {
+      setTimeout(r, 1200);
+    });
+    setIsSubmitting(false);
+    setSubmitted(true);
+    setTimeout(handleClose, 2000);
   }
 
   return (
@@ -380,8 +382,15 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                       </div>
 
                       {files.length < MAX_FILES && (
-                        <div
+                        <button
+                          type="button"
                           onClick={() => fileInputRef.current?.click()}
+                          onKeyDown={e => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              fileInputRef.current?.click();
+                            }
+                          }}
                           onDragOver={e => {
                             e.preventDefault();
                             setIsDragging(true);
@@ -393,8 +402,9 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                             handleFiles(e.dataTransfer.files);
                           }}
                           className={`flex flex-col items-center justify-center gap-2
-                            border-2 border-dashed rounded-xl py-6 cursor-pointer
+                            border-2 border-dashed rounded-xl py-6
                             transition-colors duration-150
+                            bg-transparent w-full
                             ${
                               isDragging
                                 ? "border-[#A308F0] bg-primary/5 dark:bg-primary/10"
@@ -427,14 +437,14 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                             className="hidden"
                             onChange={e => handleFiles(e.target.files)}
                           />
-                        </div>
+                        </button>
                       )}
 
                       {files.length > 0 && (
                         <ul className="mt-2 flex flex-col gap-1.5">
                           {files.map((file, i) => (
                             <li
-                              key={i}
+                              key={`${file.name}-${file.size}-${file.lastModified}`}
                               className="flex items-center gap-2.5 px-3 py-2
                               bg-[#F9F5FF] dark:bg-[#1A0D26]
                               border border-[#E8D5FC] dark:border-[#2E1A40]

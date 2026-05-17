@@ -24,7 +24,7 @@ interface ChatBubbleProps {
 }
 
 // =====================================
-// ⬢ File Chip (read-only, shown in sent bubble)
+// ⬢ File Chip
 // =====================================
 
 function FileBubbleChip({ file }: { file: File }) {
@@ -39,7 +39,7 @@ function FileBubbleChip({ file }: { file: File }) {
         border border-[#DEE2E6] dark:border-[#3A3A38]
         text-ink-500 dark:text-ink-300"
     >
-      <Icon size={11} weight="regular" className="flex-shrink-0 opacity-60" />
+      <Icon size={11} className="flex-shrink-0 opacity-60" />
       <span className="max-w-[120px] truncate">{file.name}</span>
     </span>
   );
@@ -74,7 +74,7 @@ function RatingButton({ type, active, onClick }: RatingButtonProps) {
             : "text-ink-300 dark:text-ink-600 hover:text-ink-400 hover:bg-[#F1F3F4] dark:hover:bg-[#252523]"
         }`}
     >
-      <Icon size={13} weight={active ? "fill" : "regular"} />
+      <Icon size={13} />
     </button>
   );
 }
