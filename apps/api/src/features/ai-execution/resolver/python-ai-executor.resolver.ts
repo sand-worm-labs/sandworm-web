@@ -17,14 +17,4 @@ export class PythonAiExecutorResolver {
     return this.pythonAiExecutorService.editPython(documentId, workspaceId, blockId, userId, modelId);
   }
 
-  @Mutation(() => String)
-  async fixPythonWithAi(
-    @Args('documentId') documentId: string,
-    @Args('workspaceId') workspaceId: string,
-    @Args('blockId') blockId: string,
-    @Args('modelId') modelId: string,
-    @CurrentUser('id') userId: string,
-  ): Promise<string> {
-    return this.pythonAiExecutorService.fixPython(documentId, workspaceId, blockId, userId, modelId);
-  }
 }

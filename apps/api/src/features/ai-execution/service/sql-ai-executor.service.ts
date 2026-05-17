@@ -2,14 +2,21 @@ import * as Y from 'yjs';
 import { Injectable, Logger } from '@nestjs/common';
 import { YjsDocumentService } from '../../collaboration/yjs/yjs-document.service';
 import { PersistorFactory } from '../../collaboration/yjs/persistors/persistor.factory';
-import { getBlocks, AITasks, AITaskItem,  updateSQLAISuggestions } from '@sandworm/editor';
+import {
+  getBlocks,
+  AITasks,
+  AITaskItem,
+  updateSQLAISuggestions,
+  getSQLAttributes,
+  closeSQLEditWithAIPrompt,
+} from '@sandworm/editor';
 import type { SQLBlock } from '@sandworm/editor';
 import { BaseAiExecutorService } from './base-ai-executor.service';
 
 export interface SqlEditStreamedOptions {
   query: string;
-  instructions: string;
   dialect: string;
+  instructions: string;
   modelId: string;
   onSQL: (sql: string) => void;
 }
@@ -25,82 +32,60 @@ export class SqlAiExecutorService extends BaseAiExecutorService {
     super(yjsDocumentService, persistorFactory);
   }
 
-  async enqueueEditSql(
-    documentId: string,
-    workspaceId: string,
-    blockId: string,
-    userId: string | null,
-  ): Promise<void> {
-    const sharedDoc = await this.getSharedDoc(documentId, workspaceId);
-    const aiTasks = AITasks.fromYjs(sharedDoc.ydoc);
-    aiTasks.enqueue(blockId, userId, { _tag: 'edit-sql' });
-  }
-
   async editSql(
     documentId: string,
     workspaceId: string,
     blockId: string,
     userId: string | null,
-    options: Omit<SqlEditStreamedOptions, 'onSQL'>,
+    modelId: string,
   ): Promise<string> {
     try {
       const sharedDoc = await this.getSharedDoc(documentId, workspaceId);
-      const ydoc = sharedDoc.ydoc;
+      const block = getBlocks(sharedDoc.ydoc).get(blockId) as Y.XmlElement<SQLBlock> | undefined;
+      if (!block) throw new Error(`Block ${blockId} not found in document ${documentId}`);
 
-      const liveBlocks = getBlocks(ydoc);
-      const block = liveBlocks.get(blockId) as Y.XmlElement<SQLBlock> | undefined;
-      if (!block) {
-        throw new Error(`Block ${blockId} not found in document ${documentId}`);
-      }
-
-      const aiTasks = AITasks.fromYjs(ydoc);
+      const aiTasks = AITasks.fromYjs(sharedDoc.ydoc);
       aiTasks.enqueue(blockId, userId, { _tag: 'edit-sql' });
-
       const taskItem = aiTasks.next();
-      if (!taskItem) {
-        throw new Error('Failed to dequeue edit-sql task');
-      }
+      if (!taskItem) throw new Error('Failed to dequeue edit-sql task');
 
-      return await this.runEditSql(taskItem, block, options);
+      return await this.runEdit(taskItem, block, sharedDoc.ydoc, modelId);
     } catch (err) {
       this.logger.error('editSql failed', err);
       throw err;
     }
   }
-  async runEditSql(
+
+  private async runEdit(
     taskItem: AITaskItem,
     block: Y.XmlElement<SQLBlock>,
-    options: Omit<SqlEditStreamedOptions, 'onSQL'>,
+    ydoc: Y.Doc,
+    modelId: string,
   ): Promise<string> {
     let cleanup: () => void = () => {};
     let aborted = false;
-    let generatedSQL = '';
-
+    let result = '';
     try {
-      cleanup = taskItem.observeStatus((status) => {
-        if (status._tag === 'aborting') {
-          aborted = true;
-        }
-      });
+      cleanup = taskItem.observeStatus(s => { if (s._tag === 'aborting') aborted = true; });
 
-      await this.simulateSqlEdit({
-        ...options,
-        onSQL: (sql) => {
-          if (aborted) return;
-          generatedSQL = sql;
-          updateSQLAISuggestions(block, sql);
-        },
-      });
+      const { source, dataSourceId, editWithAIPrompt } = getSQLAttributes(block, getBlocks(ydoc));
+      const instructions = editWithAIPrompt?.toJSON() ?? '';
+      if (!instructions) { taskItem.setCompleted('error'); return result; }
 
-      if (aborted) {
-        taskItem.setCompleted('aborted');
-        return generatedSQL;
-      }
+      const query = source?.toJSON() ?? '';
+      const dialect = dataSourceId ? 'sql' : 'duckdb';
 
+      await this.simulate({ query, dialect, instructions, modelId, onSQL: (sql) => {
+        if (aborted) return;
+        result = sql;
+        updateSQLAISuggestions(block, sql);
+      }});
+
+      if (aborted) { taskItem.setCompleted('aborted'); return result; }
+      closeSQLEditWithAIPrompt(block, true);
       taskItem.setCompleted('success');
-      return generatedSQL;
+      return result;
     } catch (err) {
-      this.logger.error('runEditSql failed', err);
       taskItem.setCompleted('error');
       throw err;
     } finally {
@@ -108,8 +93,7 @@ export class SqlAiExecutorService extends BaseAiExecutorService {
     }
   }
 
-
-  private async simulateSqlEdit(options: SqlEditStreamedOptions): Promise<string> {
+  private async simulate(options: SqlEditStreamedOptions): Promise<string> {
     await new Promise(r => setTimeout(r, 800));
     const generated = `-- AI suggestion (${options.dialect})\n-- Instructions: ${options.instructions}\n${options.query}`;
     options.onSQL(generated);

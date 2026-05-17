@@ -1,6 +1,6 @@
-import { Args,Mutation, Resolver } from '@nestjs/graphql';
-import { SqlAiExecutorService } from '../service/sql-ai-executor.service';
+import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from '@sandworm/graphql';
+import { SqlAiExecutorService } from '../service/sql-ai-executor.service';
 
 @Resolver()
 export class SqlAiExecutorResolver {
@@ -8,27 +8,12 @@ export class SqlAiExecutorResolver {
 
   @Mutation(() => String)
   async editSqlWithAi(
-    @CurrentUser("id") userId: string,
+    @CurrentUser('id') userId: string,
     @Args('documentId') documentId: string,
     @Args('workspaceId') workspaceId: string,
     @Args('blockId') blockId: string,
-    @Args('instructions') instructions: string,
-    @Args('dialect', { defaultValue: 'sql' }) dialect: string,
-    @Args('query') query: string,
     @Args('modelId') modelId: string,
   ): Promise<string> {
-
-    return this.sqlAiExecutorService.editSql(
-      documentId,
-      workspaceId,
-      blockId,
-      userId,
-      {
-        query,
-        instructions,
-        dialect,
-        modelId,
-      },
-    );
+    return this.sqlAiExecutorService.editSql(documentId, workspaceId, blockId, userId, modelId);
   }
 }
