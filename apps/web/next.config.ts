@@ -7,19 +7,13 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 
 const nextConfig = {
   reactStrictMode: true,
-
+  transpilePackages: ["@sandworm/editor", "@sandworm/types"],
   typescript: {
     ignoreBuildErrors: true,
   },
   eslint: {
     ignoreDuringBuilds: true,
   },
-  /*   rewrites: async () => [
-      {
-        source: "/api/:path*",
-        destination: "http://192.168.1.76:8003/:path*",
-      },
-    ], */
   images: {
     domains: [
       "cryptologos.cc",
