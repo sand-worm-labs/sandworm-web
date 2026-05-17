@@ -1,28 +1,23 @@
 import * as Y from 'yjs';
-import { Injectable, Logger } from '@nestjs/common';
-import { Server } from 'socket.io';
-
+import { Injectable } from '@nestjs/common';
 import { YjsDocumentService } from '../../collaboration/yjs/yjs-document.service';
 import { PersistorFactory } from '../../collaboration/yjs/persistors/persistor.factory';
+import { BaseAiExecutorService } from './base-ai-executor.service';
 
 @Injectable()
-export class TitleAiExecutorService {
-    private readonly logger = new Logger(TitleAiExecutorService.name);
-
+export class TitleAiExecutorService extends BaseAiExecutorService {
     constructor(
-        private readonly yjsDocumentService: YjsDocumentService,
-        private readonly persistorFactory: PersistorFactory,
-    ) {}
+        yjsDocumentService: YjsDocumentService,
+        persistorFactory: PersistorFactory,
+    ) {
+        super(yjsDocumentService, persistorFactory);
+    }
 
-    async updateTitle(
-        documentId: string,
-        workspaceId: string,
-        server: Server,
-        title: string,
-    ): Promise<void> {
+    async updateTitle(documentId: string, workspaceId: string, title: string): Promise<void> {
         try {
-            const sharedDoc = await this._getSharedDoc(documentId, workspaceId, server);
-            sharedDoc.ydoc.transact(() => {
+            const sharedDoc = await this.getSharedDoc(documentId, workspaceId);
+        
+            this.transact(sharedDoc.ydoc, () => {
                 this._writeDocTitle(sharedDoc.ydoc, title);
             });
         } catch (err) {
@@ -30,26 +25,9 @@ export class TitleAiExecutorService {
         }
     }
 
-    async getTitle(
-        documentId: string,
-        workspaceId: string,
-        server: Server,
-    ): Promise<string> {
-        const sharedDoc = await this._getSharedDoc(documentId, workspaceId, server);
+    async getTitle(documentId: string, workspaceId: string): Promise<string> {
+        const sharedDoc = await this.getSharedDoc(documentId, workspaceId);
         return this._getDocTitle(sharedDoc.ydoc);
-    }
-
-    private async _getSharedDoc(documentId: string, workspaceId: string, server: Server) {
-        const docId = this.yjsDocumentService.getDocId(documentId, null);
-        const persistor = this.persistorFactory.createDocumentPersistor(documentId);
-
-        return this.yjsDocumentService.getYDocForUpdateAsync(
-            docId,
-            documentId,
-            server,
-            workspaceId,
-            persistor,
-        );
     }
 
     private _getDocTitle(ydoc: Y.Doc): string {

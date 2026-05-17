@@ -24,7 +24,7 @@ export class TitleAiExecutorResolver {
         @Args('workspaceId') workspaceId: string,
     ): Promise<string> {
         const title = RANDOM_TITLES[Math.floor(Math.random() * RANDOM_TITLES.length)];
-        await this.titleAiExecutorService.updateTitle(documentId, workspaceId,null, title);
+        await this.titleAiExecutorService.updateTitle(documentId, workspaceId, title);
         return title;
     }
 }
