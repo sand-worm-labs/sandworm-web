@@ -505,6 +505,8 @@ type Mutation {
   """Delete a component instance"""
   deleteComponentInstance(componentId: String!, blockId: String!, workspaceId: String!): Boolean!
   editTitleWithAi(documentId: String!, workspaceId: String!): String!
+  editSqlWithAi(documentId: String!, workspaceId: String!, blockId: String!, modelId: String!): String!
+  editPythonWithAi(documentId: String!, workspaceId: String!, blockId: String!, modelId: String!): String!
 
   """Follow User"""
   followUser(

@@ -28,7 +28,9 @@ export const makeRichTextBlock = (id: string, isAiInput?: boolean): Y.XmlElement
     title: "",
     type: BlockType.RichText,
     content: new Y.XmlFragment(),
-    isAiInput: isAiInput ?? false
+    isAiInput: isAiInput ?? false,
+    editWithAIPrompt: new Y.Text(),
+    isEditWithAIPromptOpen: false,
   };
 
   for (const [key, value] of Object.entries(attrs)) {

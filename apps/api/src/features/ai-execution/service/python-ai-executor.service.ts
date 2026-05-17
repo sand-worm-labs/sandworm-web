@@ -1,93 +1,95 @@
-import { Injectable, Logger } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
-import axios from 'axios'
-import { z } from 'zod'
-
-import { BaseAiExecutorService, StreamResult } from './base-ai-executor.service'
-
-// =====================================================
-// ⬢ TYPES
-// =====================================================
-
-export interface PythonEditOptions {
-  source: string
-  instructions: string
-}
-
-export interface PythonEditResponse {
-  source: string
-}
+import * as Y from 'yjs';
+import { Injectable, Logger } from '@nestjs/common';
+import { YjsDocumentService } from '../../collaboration/yjs/yjs-document.service';
+import { PersistorFactory } from '../../collaboration/yjs/persistors/persistor.factory';
+import {
+  getBlocks,
+  AITasks,
+  AITaskItem,
+  updatePythonAISuggestions,
+  getPythonBlockEditWithAIPrompt,
+  getPythonSource,
+  closePythonEditWithAIPrompt,
+} from '@sandworm/editor';
+import type { PythonBlock } from '@sandworm/editor';
+import { BaseAiExecutorService } from './base-ai-executor.service';
 
 export interface PythonEditStreamedOptions {
-  source: string
-  instructions: string
-  dataFrames: Array<{ name: string; columns: Array<{ name: string }> }>
-  modelId: string | null
-  openaiApiKey: string | null
-  onSource: (source: string) => void
+  source: string;
+  instructions: string;
+  modelId: string;
+  onSource: (source: string) => void;
 }
-
-// =====================================================
-// ⬢ SERVICE
-// =====================================================
 
 @Injectable()
 export class PythonAiExecutorService extends BaseAiExecutorService {
-  protected readonly logger = new Logger(PythonAiExecutorService.name)
+  protected readonly logger = new Logger(PythonAiExecutorService.name);
 
-  constructor(configService: ConfigService) {
-    super(configService)
+  constructor(yjsDocumentService: YjsDocumentService, persistorFactory: PersistorFactory) {
+    super(yjsDocumentService, persistorFactory);
   }
 
-  // ─── Non-streaming ───────────────────────────────
+  async editPython(
+    documentId: string,
+    workspaceId: string,
+    blockId: string,
+    userId: string | null,
+    modelId: string,
+  ): Promise<string> {
+    try {
+      const sharedDoc = await this.getSharedDoc(documentId, workspaceId);
+      const block = getBlocks(sharedDoc.ydoc).get(blockId) as Y.XmlElement<PythonBlock> | undefined;
+      if (!block) throw new Error(`Block ${blockId} not found in document ${documentId}`);
 
-  async pythonEdit(opts: PythonEditOptions): Promise<PythonEditResponse> {
-    const { source, instructions } = opts
-    const allowedLibraries = this.getAllowedLibraries()
+      const aiTasks = AITasks.fromYjs(sharedDoc.ydoc);
+      aiTasks.enqueue(blockId, userId, { _tag: 'edit-python' });
+      const taskItem = aiTasks.next();
+      if (!taskItem) throw new Error('Failed to dequeue edit-python task');
 
-    const res = await fetch(`${this.baseUrl}/v1/python/edit`, {
-      method: 'POST',
-      headers: this.defaultHeaders,
-      body: JSON.stringify({ source, instructions, allowedLibraries }),
-    })
-
-    return res.json() as Promise<PythonEditResponse>
+      return await this.runEdit(taskItem, block, modelId);
+    } catch (err) {
+      this.logger.error('editPython failed', err);
+      throw err;
+    }
   }
 
-  // ─── Streaming ───────────────────────────────────
+  private async runEdit(
+    taskItem: AITaskItem,
+    block: Y.XmlElement<PythonBlock>,
+    modelId: string,
+  ): Promise<string> {
+    let cleanup: () => void = () => {};
+    let aborted = false;
+    let result = '';
+    try {
+      cleanup = taskItem.observeStatus(s => { if (s._tag === 'aborting') aborted = true; });
 
-  async pythonEditStreamed(opts: PythonEditStreamedOptions): Promise<StreamResult> {
-    const { source, instructions, dataFrames, modelId, openaiApiKey, onSource } = opts
+      const instructions = getPythonBlockEditWithAIPrompt(block).toJSON();
+      if (!instructions) { taskItem.setCompleted('error'); return result; }
 
-    const allowedLibraries = this.getAllowedLibraries()
-    const variables = this.dataframesToPython(dataFrames)
+      const source = getPythonSource(block).toJSON();
+      await this.simulate({ source, instructions, modelId, onSource: (s) => {
+        if (aborted) return;
+        result = s;
+        updatePythonAISuggestions(block, s);
+      }});
 
-    const responseP = axios.post(
-      `${this.baseUrl}/v1/stream/python/edit`,
-      { source, instructions, allowedLibraries, variables, modelId, openaiApiKey },
-      { headers: this.defaultHeaders, responseType: 'stream' },
-    )
-
-    const schema = z.object({ source: z.string() })
-
-    return this.buildStreamPromise(responseP, schema, (data) => onSource(data.source))
+      if (aborted) { taskItem.setCompleted('aborted'); return result; }
+      closePythonEditWithAIPrompt(block, true);
+      taskItem.setCompleted('success');
+      return result;
+    } catch (err) {
+      taskItem.setCompleted('error');
+      throw err;
+    } finally {
+      cleanup();
+    }
   }
 
-  // ─── Utils ───────────────────────────────────────
-
-  private getAllowedLibraries(): string[] {
-    const raw = this.configService.get<string>('ai.pythonAllowedLibraries') ?? ''
-    return raw.split(',').map((s) => s.trim()).filter(Boolean)
-  }
-
-  private dataframesToPython(
-    dataframes: Array<{ name: string; columns: Array<{ name: string }> }>,
-  ): string {
-    return dataframes
-      .map(({ name, columns }) => {
-        const cols = columns.map((c) => `'${c.name}'`).join(', ')
-        return `${name} = pd.DataFrame(columns=[${cols}])`
-      })
-      .join('\n')
+  private async simulate(options: PythonEditStreamedOptions): Promise<string> {
+    await new Promise(r => setTimeout(r, 800));
+    const generated = `# AI suggestion\n# Instructions: ${options.instructions}\n${options.source}`;
+    options.onSource(generated);
+    return generated;
   }
 }
