@@ -36,6 +36,8 @@ export const makeMarkdownBlock = (
     type: BlockType.Markdown,
     isAiInput: false,
     source: new Y.Text(""),
+    editWithAIPrompt: new Y.Text(),
+    isEditWithAIPromptOpen: false,
   };
 
   for (const [key, value] of Object.entries(attrs)) {

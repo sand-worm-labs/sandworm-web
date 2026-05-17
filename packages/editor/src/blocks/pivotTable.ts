@@ -68,7 +68,9 @@ export const makePivotTableBlock = (
     updatedAt: null,
     page: 1,
     result: null,
-    isAiInput: isAiInput ?? false
+    isAiInput: isAiInput ?? false,
+    editWithAIPrompt: new Y.Text(),
+    isEditWithAIPromptOpen: false,
   };
 
   for (const [key, value] of Object.entries(attrs)) {

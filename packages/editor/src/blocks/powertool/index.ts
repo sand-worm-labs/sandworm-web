@@ -69,7 +69,9 @@ export const makePowerToolboxBlock = (
     result: [],
     startedAt: "",
     executedAt: "",
-    isAiInput: isAiInput ?? false
+    isAiInput: isAiInput ?? false,
+    editWithAIPrompt: new Y.Text(),
+    isEditWithAIPromptOpen: false,
   };
 
   for (const [key, value] of Object.entries(attrs)) {

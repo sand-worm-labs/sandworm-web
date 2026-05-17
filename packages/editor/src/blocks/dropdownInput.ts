@@ -60,7 +60,9 @@ export const makeDropdownInputBlock = (
     executedAt: null,
     dataframeName: null,
     columnName: null,
-    isAiInput: isAiInput ?? false
+    isAiInput: isAiInput ?? false,
+    editWithAIPrompt: new Y.Text(),
+    isEditWithAIPromptOpen: false,
   }
 
   for (const [key, value] of Object.entries(attrs)) {
