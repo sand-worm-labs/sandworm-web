@@ -111,6 +111,7 @@ if [ "$CLEAN_VOLUMES" = true ]; then
     pnpm run seed:run
 fi
 
+pnpm --filter @sandworm/editor build
 
 echo
 echo "▶ Starting dev server..."

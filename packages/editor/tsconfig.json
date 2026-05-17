@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
     "target": "es2016",
+    "lib": ["es2019", "dom"],
     "module": "nodenext",
-    "outDir": "./dist",
+    "outDir": "./dist/esm",
     "declaration": true,
     "declarationDir": "./types",
     "declarationMap": true,

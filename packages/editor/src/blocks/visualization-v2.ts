@@ -320,7 +320,9 @@ export function makeVisualizationV2Block(
     output: null,
     controlsHidden: false,
     error: null,
-    isAiInput: isAiInput ?? false
+    isAiInput: isAiInput ?? false,
+    editWithAIPrompt: new Y.Text(""),
+    isEditWithAIPromptOpen: false
   };
 
   for (const [key, value] of Object.entries(attrs)) {
