@@ -9,11 +9,13 @@ import {
 } from "./index.js";
 import { ExecutionStatus } from "../execution/item.js";
 
+export type MarkdownEditIntent = 'fix' | 'shorten' | 'expand' | 'rewrite' | 'custom'
 
 export type MarkdownBlock = BaseBlock<BlockType.Markdown> & {
   // Y.Text — plain markdown source, not a ProseMirror fragment.
   // Simpler than XmlFragment: no schema, no node types, just text + Yjs CRDT.
   source: Y.Text;
+  intent: MarkdownEditIntent;
 };
 
 
@@ -38,6 +40,7 @@ export const makeMarkdownBlock = (
     source: new Y.Text(""),
     editWithAIPrompt: new Y.Text(),
     isEditWithAIPromptOpen: false,
+    intent: 'fix',
   };
 
   for (const [key, value] of Object.entries(attrs)) {
@@ -55,6 +58,7 @@ export function getMarkdownAttributes(
   return {
     ...getBaseAttributes(block),
     source: getAttributeOr(block, "source", new Y.Text("")),
+    intent: getAttributeOr(block, "intent", 'fix'),
   };
 }
 
@@ -71,6 +75,7 @@ export function duplicateMarkdownBlock(
   const newAttrs: MarkdownBlock = {
     ...duplicateBaseAttributes(newId, prevAttrs),
     source: newSource,
+    intent: prevAttrs.intent,
   };
 
   const yBlock = new Y.XmlElement<MarkdownBlock>("block");
