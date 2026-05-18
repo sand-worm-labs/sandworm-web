@@ -17,6 +17,7 @@ import { useChat } from "../Editor/hooks/useChat";
 import { AIChatIcon } from "../Assets/AIChatIcon";
 import { useNotebookBlocks } from "../Editor/hooks/useNotebookBlocks";
 import { useWorkspace } from "../Editor/hooks/useWorkspaces";
+import useSideBar from "../Editor/hooks/useSideBar";
 
 import { MiniChatInput } from "./MiniChatInput";
 import { ChatBubble } from "./ChatBubble";
@@ -212,6 +213,7 @@ export const MiniChat: React.FC<MiniChatProps> = ({
   const searchParams = useSearchParams();
   const { workspace } = useWorkspace(workspaceId);
   const currentModel = workspace?.assistantModel;
+  const { state: sidebarState } = useSideBar();
 
   const [messages, setMessages] = useState<LocalMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -352,12 +354,33 @@ export const MiniChat: React.FC<MiniChatProps> = ({
     }
   }, [searchParams]);
 
+  useEffect(() => {
+    const chatId = sidebarState.rightPanelMeta?.chatId;
+    if (!chatId || !visible) return;
+
+    chatApi
+      .fetchChat(chatId)
+      .then(chat => {
+        setActiveChatId(chat.id);
+        setActiveThreadTitle(chat.title);
+        setMessages(
+          (chat.messages ?? []).map(m => ({
+            id: m.id,
+            text: m.content,
+            isUser: m.role === "user",
+          }))
+        );
+      })
+      .catch(console.error);
+  }, [sidebarState.rightPanelMeta, visible]);
+
   const handleSelectThread = useCallback(
     async (id: string) => {
       try {
         const chat = await chatApi.fetchChat(id);
 
         setActiveChatId(chat.id);
+        console.log(chat, "active", chat.id);
         setActiveThreadTitle(chat.title);
         setMessages(
           (chat.messages ?? []).map(m => ({
@@ -373,8 +396,6 @@ export const MiniChat: React.FC<MiniChatProps> = ({
     },
     [chatApi]
   );
-
-  console.log("nn", messages);
 
   return (
     <>
