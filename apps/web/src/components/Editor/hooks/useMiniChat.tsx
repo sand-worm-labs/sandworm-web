@@ -129,6 +129,13 @@ export function useMiniChat({
 
       try {
         let chatId = activeChatId;
+        const focusedBlocks = references
+          .filter(r => r.sourceKind === "block")
+          .map(r => ({
+            id: r.id,
+            title: r.label,
+            type: r.blockKind ?? r.sourceKind,
+          }));
 
         // ─── First message — create chat ───────────────────
         if (!chatId) {
@@ -138,6 +145,7 @@ export function useMiniChat({
             message: text,
             model: currentModel,
             updateDocumentTitle,
+            focusedBlocks: focusedBlocks.length > 0 ? focusedBlocks : undefined,
           });
 
           chatId = chat.id;
@@ -145,10 +153,12 @@ export function useMiniChat({
           setActiveThreadTitle(chat.title);
         } else {
           // ─── Subsequent messages — send to existing chat ──
+
           const message = await chatApi.sendMessage({
             chatId,
             content: text,
             model: currentModel,
+            focusedBlocks: focusedBlocks.length > 0 ? focusedBlocks : undefined,
           });
 
           replaceMessage(loadingId, {
@@ -191,6 +201,7 @@ export function useMiniChat({
       files?: File[],
       updateDocumentTitle = false
     ) => {
+      console.log("tsx", text, references);
       handleSend(text, references, files, updateDocumentTitle).catch(
         console.error
       );
