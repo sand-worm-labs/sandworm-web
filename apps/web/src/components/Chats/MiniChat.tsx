@@ -42,6 +42,7 @@ export const MiniChat: React.FC<MiniChatProps> = ({
     yDoc,
   });
 
+
   return (
     <>
       {visible && (

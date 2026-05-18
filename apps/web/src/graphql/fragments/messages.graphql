@@ -1,6 +1,12 @@
 fragment MessageFields on Message {
   id
+  chatId
   role
   content
+  parts
+  attachments
   createdAt
+  model
+  finishReason
+  usage
 }
