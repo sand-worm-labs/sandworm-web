@@ -44,6 +44,7 @@ import { Transition } from "@headlessui/react";
 import { useTheme } from "next-themes";
 
 import type { ApiDocument, ApiWorkspace } from "@/types";
+import useSideBar from "@/components/Editor/hooks/useSideBar";
 
 import { TooltipV2 } from "../../ToolTips";
 import type { DashboardMode } from "../../Dashboard";
@@ -170,6 +171,8 @@ const CopyToClipboardFixed = CopyToClipboard as unknown as React.ComponentType<{
 // =====================================
 function SQLBlock(props: Props) {
   const [workspaces] = useWorkspaces();
+  const { api: sidebarApi } = useSideBar();
+
   const currentWorkspace: ApiWorkspace | undefined = useMemo(() => {
     if (!props.document) return undefined;
     return workspaces.data.find(w => w.id === props.document.workspaceId);
@@ -507,8 +510,8 @@ function SQLBlock(props: Props) {
     });
 
     if (fixResult?.chatId) {
-      /*  props.onOpenChat(fixResult.chatId); */
-      // ← open panel + jump to this thread
+      console.log("opening sidebar");
+      sidebarApi.openRightPanel("chat", { chatId: fixResult.chatId });
     }
   }, [
     fixSqlWithAi,

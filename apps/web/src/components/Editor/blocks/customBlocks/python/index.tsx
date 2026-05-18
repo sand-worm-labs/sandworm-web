@@ -34,6 +34,7 @@ import { useTheme } from "next-themes";
 
 import { CodeIcon } from "@/components/Assets/Blocks/CodeIcon";
 import type { ApiDocument, ApiWorkspace } from "@/types";
+import useSideBar from "@/components/Editor/hooks/useSideBar";
 
 import { useBlockExecutions } from "../../../hooks/useBlockExecution";
 import { useAITaskActions, useAITasks } from "../../../hooks/useAITasks";
@@ -147,6 +148,8 @@ function AIEditTooltipContent({
 // =====================================
 function PythonBlock(props: Props) {
   const [workspaces] = useWorkspaces();
+  const { api: sidebarApi } = useSideBar();
+
   const currentWorkspace: ApiWorkspace | undefined = useMemo(
     () => workspaces.data.find(w => w.id === props.document.workspaceId),
     [workspaces.data, props.document.workspaceId]
@@ -322,11 +325,12 @@ function PythonBlock(props: Props) {
     });
 
     if (fixResult?.chatId) {
-      /*       props.onOpenChat(fixResult.chatId);
-       */
+      console.log("opening sidebar");
+      sidebarApi.openRightPanel("chat", { chatId: fixResult.chatId });
     }
   }, [
     fixPythonWithAi,
+    sidebarApi,
     props.workspaceId,
     props.document.id,
     blockId,

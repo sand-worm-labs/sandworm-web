@@ -9,19 +9,28 @@ import {
   useUpdateChatMutation,
   useDeleteChatMutation,
   usePinChatMutation,
+  useSendMessageMutation,
+  useVoteMessageMutation,
+  useRemoveVoteMutation,
 } from "@/generated/graphql";
 import type {
   Chat,
   Message,
+  Vote,
   CreateChatInput,
   UpdateChatInput,
+  SendMessageInput,
+  VoteMessageInput,
 } from "@/generated/graphql";
 
 // =====================================
 // ⬢ Types
 // =====================================
+
 type CreateChatPayload = CreateChatInput;
 type UpdateChatPayload = UpdateChatInput;
+type SendMessagePayload = SendMessageInput;
+type VoteMessagePayload = VoteMessageInput;
 
 type API = {
   createChat: (payload: CreateChatPayload) => Promise<Chat>;
@@ -30,6 +39,9 @@ type API = {
   pinChat: (chatId: string) => Promise<Chat>;
   fetchChat: (chatId: string) => Promise<Chat>;
   fetchChatMessages: (chatId: string) => Promise<Message[]>;
+  sendMessage: (payload: SendMessagePayload) => Promise<Message>;
+  voteMessage: (payload: VoteMessagePayload) => Promise<Vote>;
+  removeVote: (messageId: string) => Promise<boolean>;
 };
 
 type UseChat = {
@@ -72,13 +84,22 @@ export const useChat = (workspaceId: string, documentId: string): UseChat => {
 
   const chats = useMemo(() => (data?.chats ?? []) as Chat[], [data?.chats]);
 
+  // ─── Queries ───────────────────────────────────────────────
+
   const [fetchChatQuery] = useGetChatLazyQuery();
   const [fetchChatMessagesQuery] = useGetChatMessagesLazyQuery();
+
+  // ─── Mutations ─────────────────────────────────────────────
 
   const [createChatMutation] = useCreateChatMutation();
   const [updateChatMutation] = useUpdateChatMutation();
   const [deleteChatMutation] = useDeleteChatMutation();
   const [pinChatMutation] = usePinChatMutation();
+  const [sendMessageMutation] = useSendMessageMutation();
+  const [voteMessageMutation] = useVoteMessageMutation();
+  const [removeVoteMutation] = useRemoveVoteMutation();
+
+  // ─── API ───────────────────────────────────────────────────
 
   const createChat = useCallback(
     async (payload: CreateChatPayload): Promise<Chat> => {
@@ -90,7 +111,6 @@ export const useChat = (workspaceId: string, documentId: string): UseChat => {
         },
         update: (cache, { data: mutationData }) => {
           if (!mutationData?.createChat) return;
-
           cache.modify({
             fields: {
               chats(existing, { toReference }) {
@@ -128,13 +148,9 @@ export const useChat = (workspaceId: string, documentId: string): UseChat => {
     async (chatId: string): Promise<boolean> => {
       const result = await deleteChatMutation({
         variables: { chatId },
-        optimisticResponse: {
-          __typename: "Mutation",
-          deleteChat: true,
-        },
+        optimisticResponse: { __typename: "Mutation", deleteChat: true },
         update: (cache, { data: mutationData }) => {
           if (!mutationData?.deleteChat) return;
-
           cache.modify({
             fields: {
               chats(existing, { readField }) {
@@ -156,10 +172,7 @@ export const useChat = (workspaceId: string, documentId: string): UseChat => {
 
   const pinChat = useCallback(
     async (chatId: string): Promise<Chat> => {
-      const result = await pinChatMutation({
-        variables: { chatId },
-      });
-
+      const result = await pinChatMutation({ variables: { chatId } });
       const chat = result.data?.pinChat;
       if (!chat) throw new Error("Failed to pin/unpin chat");
       return chat as Chat;
@@ -170,7 +183,6 @@ export const useChat = (workspaceId: string, documentId: string): UseChat => {
   const fetchChat = useCallback(
     async (chatId: string): Promise<Chat> => {
       const result = await fetchChatQuery({ variables: { chatId } });
-
       const chat = result.data?.chat;
       if (!chat) throw new Error(`Chat ${chatId} not found`);
       return chat as Chat;
@@ -186,6 +198,58 @@ export const useChat = (workspaceId: string, documentId: string): UseChat => {
     [fetchChatMessagesQuery]
   );
 
+  const sendMessage = useCallback(
+    async (payload: SendMessagePayload): Promise<Message> => {
+      const result = await sendMessageMutation({
+        variables: { input: payload },
+        update: (cache, { data: mutationData }) => {
+          if (!mutationData?.sendMessage) return;
+
+          // ─── Append message to the cached chat ─────────────
+          cache.modify({
+            id: cache.identify({ __typename: "Chat", id: payload.chatId }),
+            fields: {
+              messages(existing, { toReference }) {
+                const current = existing ?? [];
+                const ref = toReference(mutationData.sendMessage);
+                if (!ref) return current;
+                return [...current, ref];
+              },
+            },
+          });
+        },
+      });
+
+      const message = result.data?.sendMessage;
+      if (!message) throw new Error("Failed to send message");
+      return message as Message;
+    },
+    [sendMessageMutation]
+  );
+
+  const voteMessage = useCallback(
+    async (payload: VoteMessagePayload): Promise<Vote> => {
+      const result = await voteMessageMutation({
+        variables: { input: payload },
+      });
+
+      const vote = result.data?.voteMessage;
+      if (!vote) throw new Error("Failed to vote on message");
+      return vote as Vote;
+    },
+    [voteMessageMutation]
+  );
+
+  const removeVote = useCallback(
+    async (messageId: string): Promise<boolean> => {
+      const result = await removeVoteMutation({ variables: { messageId } });
+      if (!result.data?.removeVote) throw new Error("Failed to remove vote");
+      return result.data.removeVote;
+    },
+    [removeVoteMutation]
+  );
+
+
   return useMemo(
     () => ({
       chats,
@@ -198,6 +262,9 @@ export const useChat = (workspaceId: string, documentId: string): UseChat => {
         pinChat,
         fetchChat,
         fetchChatMessages,
+        sendMessage,
+        voteMessage,
+        removeVote,
       },
     }),
     [
@@ -210,6 +277,9 @@ export const useChat = (workspaceId: string, documentId: string): UseChat => {
       pinChat,
       fetchChat,
       fetchChatMessages,
+      sendMessage,
+      voteMessage,
+      removeVote,
     ]
   );
 };
