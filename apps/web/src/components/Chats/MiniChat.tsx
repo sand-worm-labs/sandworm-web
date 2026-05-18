@@ -352,6 +352,30 @@ export const MiniChat: React.FC<MiniChatProps> = ({
     }
   }, [searchParams]);
 
+  const handleSelectThread = useCallback(
+    async (id: string) => {
+      try {
+        const chat = await chatApi.fetchChat(id);
+
+        setActiveChatId(chat.id);
+        setActiveThreadTitle(chat.title);
+        setMessages(
+          (chat.messages ?? []).map(m => ({
+            id: m.id,
+            text: m.content,
+            isUser: m.role === "user",
+          }))
+        );
+        setView("chat");
+      } catch (err) {
+        console.error("[MiniChat] failed to load thread:", err);
+      }
+    },
+    [chatApi]
+  );
+
+  console.log("nn", messages);
+
   return (
     <>
       {visible && (
@@ -360,10 +384,7 @@ export const MiniChat: React.FC<MiniChatProps> = ({
             <ThreadList
               workspaceId={workspaceId}
               documentId={documentId}
-              onSelectThread={id => {
-                console.log("[MiniChat] open thread:", id);
-                setView("chat");
-              }}
+              onSelectThread={handleSelectThread}
               onBack={() => setView("chat")}
             />
           ) : (
