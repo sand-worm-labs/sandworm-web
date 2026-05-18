@@ -7,7 +7,13 @@ import type {
 import { getBaseAttributes } from "@sandworm/editor";
 import { useEffect, useState } from "react";
 
-import { useEditTitleWithAiMutation } from "@/generated/graphql";
+import {
+  useEditTitleWithAiMutation,
+  useEditPythonWithAiMutation,
+  useEditSqlWithAiMutation,
+  useFixSqlWithAiMutation,
+  useFixPythonWithAiMutation,
+} from "@/generated/graphql";
 
 // =====================================
 // ⬢ useAITasks
@@ -31,22 +37,95 @@ export function useAITasks(
 
   return tasks;
 }
+// =====================================
+// ⬢ Types
+// =====================================
+
+type BlockAIParams = {
+  workspaceId: string;
+  documentId: string;
+  blockId: string;
+  modelId: string;
+};
+
+type FixAiResult = {
+  result: string;
+  chatId: string;
+};
+
+type UseAITaskActions = {
+  editTitleWithAi: (workspaceId: string, documentId: string) => Promise<void>;
+  editSqlWithAi: (params: BlockAIParams) => Promise<string | null>;
+  editPythonWithAi: (params: BlockAIParams) => Promise<string | null>;
+  fixSqlWithAi: (params: BlockAIParams) => Promise<FixAiResult | null>;
+  fixPythonWithAi: (params: BlockAIParams) => Promise<FixAiResult | null>;
+  loading: {
+    title: boolean;
+    sql: boolean;
+    python: boolean;
+    fixSql: boolean;
+    fixPython: boolean;
+  };
+};
 
 // =====================================
 // ⬢ useAITaskActions
 // =====================================
 
-type UseAITaskActions = {
-  editTitleWithAi: (workspaceId: string, documentId: string) => Promise<void>;
-  loading: boolean;
-};
-
 export function useAITaskActions(): UseAITaskActions {
-  const [editTitleWithAiMutation, { loading }] = useEditTitleWithAiMutation();
+  const [editTitleWithAiMutation, { loading: titleLoading }] =
+    useEditTitleWithAiMutation();
+  const [editSqlWithAiMutation, { loading: sqlLoading }] =
+    useEditSqlWithAiMutation();
+  const [editPythonWithAiMutation, { loading: pythonLoading }] =
+    useEditPythonWithAiMutation();
+  const [fixSqlWithAiMutation, { loading: fixSqlLoading }] =
+    useFixSqlWithAiMutation();
+  const [fixPythonWithAiMutation, { loading: fixPythonLoading }] =
+    useFixPythonWithAiMutation();
 
   async function editTitleWithAi(workspaceId: string, documentId: string) {
     await editTitleWithAiMutation({ variables: { workspaceId, documentId } });
   }
 
-  return { editTitleWithAi, loading };
+  async function editSqlWithAi(params: BlockAIParams): Promise<string | null> {
+    const result = await editSqlWithAiMutation({ variables: params });
+    return result.data?.editSqlWithAi ?? null;
+  }
+
+  async function editPythonWithAi(
+    params: BlockAIParams
+  ): Promise<string | null> {
+    const result = await editPythonWithAiMutation({ variables: params });
+    return result.data?.editPythonWithAi ?? null;
+  }
+
+  async function fixSqlWithAi(
+    params: BlockAIParams
+  ): Promise<FixAiResult | null> {
+    const result = await fixSqlWithAiMutation({ variables: params });
+    return result.data?.fixSqlWithAi ?? null;
+  }
+
+  async function fixPythonWithAi(
+    params: BlockAIParams
+  ): Promise<FixAiResult | null> {
+    const result = await fixPythonWithAiMutation({ variables: params });
+    return result.data?.fixPythonWithAi ?? null;
+  }
+
+  return {
+    editTitleWithAi,
+    editSqlWithAi,
+    editPythonWithAi,
+    fixSqlWithAi,
+    fixPythonWithAi,
+    loading: {
+      title: titleLoading,
+      sql: sqlLoading,
+      python: pythonLoading,
+      fixSql: fixSqlLoading,
+      fixPython: fixPythonLoading,
+    },
+  };
 }

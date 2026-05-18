@@ -287,6 +287,11 @@ type Vote {
   updatedAt: DateTime!
 }
 
+type FixAiResult {
+  result: String!
+  chatId: String!
+}
+
 type Query {
   """Get current user (from token)"""
   currentUser: AuthPayload!
@@ -348,20 +353,15 @@ type Query {
   """Get all reusable components in a workspace"""
   getWorkspaceComponents(workspaceId: String!): [ReusableComponent!]!
 
-  """Get Profile"""
-  profile(
-    """Username of the profile"""
-    username: String!
-  ): Profile!
+  """List chats for workspace/document"""
+  chats(workspaceId: String!, documentId: String!): [Chat!]!
 
-  """List all available OpenRouter models"""
-  openRouterModels: [OpenRouterModel!]!
+  """Get a chat with its messages"""
+  chat(chatId: String!): Chat!
 
-  """Get a specific OpenRouter model by ID"""
-  openRouterModel(modelId: String!): OpenRouterModel
-
-  """Get OpenRouter account credit usage"""
-  openRouterAccountCredits(workspaceId: String!): OpenRouterAccountCredits!
+  """Get messages for a chat"""
+  chatMessages(chatId: String!): [Message!]!
+  messageVote(messageId: String!): Boolean
 
   """Get workspace by ID"""
   getWorkspace(workspaceId: String!): Workspace!
@@ -387,15 +387,20 @@ type Query {
   """Get invitation details from hash without accepting it"""
   getInvitationInfo(hash: String!): WorkspaceInvitationInfo!
 
-  """List chats for workspace/document"""
-  chats(workspaceId: String!, documentId: String!): [Chat!]!
+  """List all available OpenRouter models"""
+  openRouterModels: [OpenRouterModel!]!
 
-  """Get a chat with its messages"""
-  chat(chatId: String!): Chat!
+  """Get a specific OpenRouter model by ID"""
+  openRouterModel(modelId: String!): OpenRouterModel
 
-  """Get messages for a chat"""
-  chatMessages(chatId: String!): [Message!]!
-  messageVote(messageId: String!): Boolean
+  """Get OpenRouter account credit usage"""
+  openRouterAccountCredits(workspaceId: String!): OpenRouterAccountCredits!
+
+  """Get Profile"""
+  profile(
+    """Username of the profile"""
+    username: String!
+  ): Profile!
 
   """Get all comments for a document"""
   comments(documentId: String!): [Comment!]!
@@ -506,19 +511,30 @@ type Mutation {
   deleteComponentInstance(componentId: String!, blockId: String!, workspaceId: String!): Boolean!
   editTitleWithAi(documentId: String!, workspaceId: String!): String!
   editSqlWithAi(documentId: String!, workspaceId: String!, blockId: String!, modelId: String!): String!
+  fixSqlWithAi(documentId: String!, workspaceId: String!, blockId: String!, modelId: String!): FixAiResult!
   editPythonWithAi(documentId: String!, workspaceId: String!, blockId: String!, modelId: String!): String!
+  fixPythonWithAi(documentId: String!, workspaceId: String!, blockId: String!, modelId: String!): FixAiResult!
 
-  """Follow User"""
-  followUser(
-    """Username of the profile"""
-    username: String!
-  ): Profile!
+  """Create a new chat"""
+  createChat(input: CreateChatInput!): Chat!
 
-  """Unfollow User"""
-  unfollowUser(
-    """Username of the profile"""
-    username: String!
-  ): Profile!
+  """Update chat title or visibility"""
+  updateChat(input: UpdateChatInput!): Chat!
+
+  """Delete a chat and its messages"""
+  deleteChat(chatId: String!): Boolean!
+
+  """Pin or unpin a chat"""
+  pinChat(chatId: String!): Chat!
+
+  """Send a user message"""
+  sendMessage(input: SendMessageInput!): Message!
+
+  """Upvote or downvote a message"""
+  voteMessage(input: VoteMessageInput!): Vote!
+
+  """Retract a vote on a message"""
+  removeVote(messageId: String!): Boolean!
 
   """Create a new workspace"""
   createWorkspace(name: String!): Workspace!
@@ -557,26 +573,17 @@ type Mutation {
   updateWorkspaceMemberRole(workspaceId: String!, userId: String!, role: String!): Boolean!
   setWorkspaceDefaultAiModel(workspaceId: String!, model: String!): Boolean!
 
-  """Create a new chat"""
-  createChat(input: CreateChatInput!): Chat!
+  """Follow User"""
+  followUser(
+    """Username of the profile"""
+    username: String!
+  ): Profile!
 
-  """Update chat title or visibility"""
-  updateChat(input: UpdateChatInput!): Chat!
-
-  """Delete a chat and its messages"""
-  deleteChat(chatId: String!): Boolean!
-
-  """Pin or unpin a chat"""
-  pinChat(chatId: String!): Chat!
-
-  """Send a user message"""
-  sendMessage(input: SendMessageInput!): Message!
-
-  """Upvote or downvote a message"""
-  voteMessage(input: VoteMessageInput!): Vote!
-
-  """Retract a vote on a message"""
-  removeVote(messageId: String!): Boolean!
+  """Unfollow User"""
+  unfollowUser(
+    """Username of the profile"""
+    username: String!
+  ): Profile!
 
   """Create a new comment on a document"""
   createComment(documentId: String!, input: CreateCommentInput!): Comment!
@@ -713,11 +720,6 @@ input CreateComponentInstanceInput {
   blockId: String!
 }
 
-input RemoveUserFromWorkspaceInput {
-  userId: String!
-  workspaceId: String!
-}
-
 input CreateChatInput {
   workspaceId: String!
   documentId: String!
@@ -755,6 +757,11 @@ input SendMessageInput {
 input VoteMessageInput {
   messageId: String!
   isUpvoted: Boolean!
+}
+
+input RemoveUserFromWorkspaceInput {
+  userId: String!
+  workspaceId: String!
 }
 
 input CreateCommentInput {

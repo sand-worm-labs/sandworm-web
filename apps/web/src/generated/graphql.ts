@@ -219,6 +219,12 @@ export type FavoritePublicDocumentInput = {
   documentId: Scalars['String']['input'];
 };
 
+export type FixAiResult = {
+  __typename?: 'FixAiResult';
+  chatId: Scalars['String']['output'];
+  result: Scalars['String']['output'];
+};
+
 export type FocusedBlockInput = {
   id: Scalars['String']['input'];
   title: Scalars['String']['input'];
@@ -309,7 +315,11 @@ export type Mutation = {
   deleteWorkspace: Scalars['Boolean']['output'];
   /** Create a duplicate of a document in the same workspace */
   duplicateDocument: Document;
+  editPythonWithAi: Scalars['String']['output'];
+  editSqlWithAi: Scalars['String']['output'];
   editTitleWithAi: Scalars['String']['output'];
+  fixPythonWithAi: FixAiResult;
+  fixSqlWithAi: FixAiResult;
   /** Follow User */
   followUser: Profile;
   /** Fork a documents */
@@ -500,8 +510,40 @@ export type MutationDuplicateDocumentArgs = {
 };
 
 
+export type MutationEditPythonWithAiArgs = {
+  blockId: Scalars['String']['input'];
+  documentId: Scalars['String']['input'];
+  modelId: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
+};
+
+
+export type MutationEditSqlWithAiArgs = {
+  blockId: Scalars['String']['input'];
+  documentId: Scalars['String']['input'];
+  modelId: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
+};
+
+
 export type MutationEditTitleWithAiArgs = {
   documentId: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
+};
+
+
+export type MutationFixPythonWithAiArgs = {
+  blockId: Scalars['String']['input'];
+  documentId: Scalars['String']['input'];
+  modelId: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
+};
+
+
+export type MutationFixSqlWithAiArgs = {
+  blockId: Scalars['String']['input'];
+  documentId: Scalars['String']['input'];
+  modelId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
 };
 
@@ -1230,6 +1272,46 @@ export type EditTitleWithAiMutationVariables = Exact<{
 
 
 export type EditTitleWithAiMutation = { __typename?: 'Mutation', editTitleWithAi: string };
+
+export type EditSqlWithAiMutationVariables = Exact<{
+  documentId: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
+  blockId: Scalars['String']['input'];
+  modelId: Scalars['String']['input'];
+}>;
+
+
+export type EditSqlWithAiMutation = { __typename?: 'Mutation', editSqlWithAi: string };
+
+export type EditPythonWithAiMutationVariables = Exact<{
+  documentId: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
+  blockId: Scalars['String']['input'];
+  modelId: Scalars['String']['input'];
+}>;
+
+
+export type EditPythonWithAiMutation = { __typename?: 'Mutation', editPythonWithAi: string };
+
+export type FixSqlWithAiMutationVariables = Exact<{
+  documentId: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
+  blockId: Scalars['String']['input'];
+  modelId: Scalars['String']['input'];
+}>;
+
+
+export type FixSqlWithAiMutation = { __typename?: 'Mutation', fixSqlWithAi: { __typename?: 'FixAiResult', chatId: string } };
+
+export type FixPythonWithAiMutationVariables = Exact<{
+  documentId: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
+  blockId: Scalars['String']['input'];
+  modelId: Scalars['String']['input'];
+}>;
+
+
+export type FixPythonWithAiMutation = { __typename?: 'Mutation', fixPythonWithAi: { __typename?: 'FixAiResult', chatId: string } };
 
 export type CreateUserMutationVariables = Exact<{
   input: CreateUserInput;
@@ -1991,6 +2073,166 @@ export function useEditTitleWithAiMutation(baseOptions?: Apollo.MutationHookOpti
 export type EditTitleWithAiMutationHookResult = ReturnType<typeof useEditTitleWithAiMutation>;
 export type EditTitleWithAiMutationResult = Apollo.MutationResult<EditTitleWithAiMutation>;
 export type EditTitleWithAiMutationOptions = Apollo.BaseMutationOptions<EditTitleWithAiMutation, EditTitleWithAiMutationVariables>;
+export const EditSqlWithAiDocument = gql`
+    mutation EditSqlWithAi($documentId: String!, $workspaceId: String!, $blockId: String!, $modelId: String!) {
+  editSqlWithAi(
+    documentId: $documentId
+    workspaceId: $workspaceId
+    blockId: $blockId
+    modelId: $modelId
+  )
+}
+    `;
+export type EditSqlWithAiMutationFn = Apollo.MutationFunction<EditSqlWithAiMutation, EditSqlWithAiMutationVariables>;
+
+/**
+ * __useEditSqlWithAiMutation__
+ *
+ * To run a mutation, you first call `useEditSqlWithAiMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useEditSqlWithAiMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [editSqlWithAiMutation, { data, loading, error }] = useEditSqlWithAiMutation({
+ *   variables: {
+ *      documentId: // value for 'documentId'
+ *      workspaceId: // value for 'workspaceId'
+ *      blockId: // value for 'blockId'
+ *      modelId: // value for 'modelId'
+ *   },
+ * });
+ */
+export function useEditSqlWithAiMutation(baseOptions?: Apollo.MutationHookOptions<EditSqlWithAiMutation, EditSqlWithAiMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<EditSqlWithAiMutation, EditSqlWithAiMutationVariables>(EditSqlWithAiDocument, options);
+      }
+export type EditSqlWithAiMutationHookResult = ReturnType<typeof useEditSqlWithAiMutation>;
+export type EditSqlWithAiMutationResult = Apollo.MutationResult<EditSqlWithAiMutation>;
+export type EditSqlWithAiMutationOptions = Apollo.BaseMutationOptions<EditSqlWithAiMutation, EditSqlWithAiMutationVariables>;
+export const EditPythonWithAiDocument = gql`
+    mutation EditPythonWithAi($documentId: String!, $workspaceId: String!, $blockId: String!, $modelId: String!) {
+  editPythonWithAi(
+    documentId: $documentId
+    workspaceId: $workspaceId
+    blockId: $blockId
+    modelId: $modelId
+  )
+}
+    `;
+export type EditPythonWithAiMutationFn = Apollo.MutationFunction<EditPythonWithAiMutation, EditPythonWithAiMutationVariables>;
+
+/**
+ * __useEditPythonWithAiMutation__
+ *
+ * To run a mutation, you first call `useEditPythonWithAiMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useEditPythonWithAiMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [editPythonWithAiMutation, { data, loading, error }] = useEditPythonWithAiMutation({
+ *   variables: {
+ *      documentId: // value for 'documentId'
+ *      workspaceId: // value for 'workspaceId'
+ *      blockId: // value for 'blockId'
+ *      modelId: // value for 'modelId'
+ *   },
+ * });
+ */
+export function useEditPythonWithAiMutation(baseOptions?: Apollo.MutationHookOptions<EditPythonWithAiMutation, EditPythonWithAiMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<EditPythonWithAiMutation, EditPythonWithAiMutationVariables>(EditPythonWithAiDocument, options);
+      }
+export type EditPythonWithAiMutationHookResult = ReturnType<typeof useEditPythonWithAiMutation>;
+export type EditPythonWithAiMutationResult = Apollo.MutationResult<EditPythonWithAiMutation>;
+export type EditPythonWithAiMutationOptions = Apollo.BaseMutationOptions<EditPythonWithAiMutation, EditPythonWithAiMutationVariables>;
+export const FixSqlWithAiDocument = gql`
+    mutation FixSqlWithAi($documentId: String!, $workspaceId: String!, $blockId: String!, $modelId: String!) {
+  fixSqlWithAi(
+    documentId: $documentId
+    workspaceId: $workspaceId
+    blockId: $blockId
+    modelId: $modelId
+  ) {
+    chatId
+  }
+}
+    `;
+export type FixSqlWithAiMutationFn = Apollo.MutationFunction<FixSqlWithAiMutation, FixSqlWithAiMutationVariables>;
+
+/**
+ * __useFixSqlWithAiMutation__
+ *
+ * To run a mutation, you first call `useFixSqlWithAiMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useFixSqlWithAiMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [fixSqlWithAiMutation, { data, loading, error }] = useFixSqlWithAiMutation({
+ *   variables: {
+ *      documentId: // value for 'documentId'
+ *      workspaceId: // value for 'workspaceId'
+ *      blockId: // value for 'blockId'
+ *      modelId: // value for 'modelId'
+ *   },
+ * });
+ */
+export function useFixSqlWithAiMutation(baseOptions?: Apollo.MutationHookOptions<FixSqlWithAiMutation, FixSqlWithAiMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<FixSqlWithAiMutation, FixSqlWithAiMutationVariables>(FixSqlWithAiDocument, options);
+      }
+export type FixSqlWithAiMutationHookResult = ReturnType<typeof useFixSqlWithAiMutation>;
+export type FixSqlWithAiMutationResult = Apollo.MutationResult<FixSqlWithAiMutation>;
+export type FixSqlWithAiMutationOptions = Apollo.BaseMutationOptions<FixSqlWithAiMutation, FixSqlWithAiMutationVariables>;
+export const FixPythonWithAiDocument = gql`
+    mutation FixPythonWithAi($documentId: String!, $workspaceId: String!, $blockId: String!, $modelId: String!) {
+  fixPythonWithAi(
+    documentId: $documentId
+    workspaceId: $workspaceId
+    blockId: $blockId
+    modelId: $modelId
+  ) {
+    chatId
+  }
+}
+    `;
+export type FixPythonWithAiMutationFn = Apollo.MutationFunction<FixPythonWithAiMutation, FixPythonWithAiMutationVariables>;
+
+/**
+ * __useFixPythonWithAiMutation__
+ *
+ * To run a mutation, you first call `useFixPythonWithAiMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useFixPythonWithAiMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [fixPythonWithAiMutation, { data, loading, error }] = useFixPythonWithAiMutation({
+ *   variables: {
+ *      documentId: // value for 'documentId'
+ *      workspaceId: // value for 'workspaceId'
+ *      blockId: // value for 'blockId'
+ *      modelId: // value for 'modelId'
+ *   },
+ * });
+ */
+export function useFixPythonWithAiMutation(baseOptions?: Apollo.MutationHookOptions<FixPythonWithAiMutation, FixPythonWithAiMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<FixPythonWithAiMutation, FixPythonWithAiMutationVariables>(FixPythonWithAiDocument, options);
+      }
+export type FixPythonWithAiMutationHookResult = ReturnType<typeof useFixPythonWithAiMutation>;
+export type FixPythonWithAiMutationResult = Apollo.MutationResult<FixPythonWithAiMutation>;
+export type FixPythonWithAiMutationOptions = Apollo.BaseMutationOptions<FixPythonWithAiMutation, FixPythonWithAiMutationVariables>;
 export const CreateUserDocument = gql`
     mutation CreateUser($input: CreateUserInput!) {
   createUser(input: $input) {

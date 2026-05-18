@@ -62,7 +62,7 @@ import { useWorkspaces } from "../../../hooks/useWorkspaces";
 import { SaveReusableComponentButton } from "../../ReusableComponents";
 import { useReusableComponents } from "../../../hooks/useReusableComponents";
 import { useBlockExecutions } from "../../../hooks/useBlockExecution";
-import { useAITasks } from "../../../hooks/useAITasks";
+import { useAITaskActions, useAITasks } from "../../../hooks/useAITasks";
 import CodeEditor from "../CodeEditor";
 import type { CodeEditorRef } from "../CodeEditor";
 import HiddenInPublishedButton from "../../HiddenInPublishedButton";
@@ -72,7 +72,6 @@ import EditWithAIForm from "../../EditWithAIForm";
 
 import DataframeNameInput from "./DataframeNameInput";
 import SQLResult from "./SQLResult";
-
 // =====================================
 // ⬢ Types
 // =====================================
@@ -176,6 +175,8 @@ function SQLBlock(props: Props) {
     return workspaces.data.find(w => w.id === props.document.workspaceId);
   }, [workspaces.data, props.document?.workspaceId]);
   const { resolvedTheme } = useTheme();
+  const { editSqlWithAi } = useAITaskActions();
+  const { fixSqlWithAi } = useAITaskActions();
 
   const hasOaiKey = useMemo(() => {
     return currentWorkspace?.secrets?.hasAiModelApiKey ?? false;
@@ -474,10 +475,14 @@ function SQLBlock(props: Props) {
     source.toJSON(),
     envStatus,
   ]);
-
-  const onSubmitEditWithAI = useCallback(() => {
-    props.aiTasks.enqueue(blockId, props.userId, { _tag: "edit-sql" });
-  }, [props.aiTasks, blockId, props.userId]);
+  const onSubmitEditWithAI = useCallback(async () => {
+    await editSqlWithAi({
+      workspaceId: props.document?.workspaceId,
+      documentId: props.document.id,
+      blockId,
+      modelId: "gpt-40",
+    });
+  }, [editSqlWithAi, props.document?.workspaceId, props.document.id, blockId]);
 
   const onAcceptAISuggestion = useCallback(() => {
     if (aiSuggestions) {
@@ -491,17 +496,27 @@ function SQLBlock(props: Props) {
     props.block.setAttribute("aiSuggestions", null);
   }, [props.block]);
 
-  const onFixWithAI = useCallback(() => {
-    if (!hasOaiKey) {
-      return;
-    }
+  const onFixWithAI = useCallback(async () => {
+    if (!hasOaiKey) return;
 
-    if (aiTask?.getMetadata()._tag === "fix-sql") {
-      aiTask.setAborting();
-    } else {
-      props.aiTasks.enqueue(blockId, props.userId, { _tag: "fix-sql" });
+    const fixResult = await fixSqlWithAi({
+      workspaceId: props.document?.workspaceId,
+      documentId: props.document?.id,
+      blockId,
+      modelId: "gpt-4",
+    });
+
+    if (fixResult?.chatId) {
+      /*  props.onOpenChat(fixResult.chatId); */
+      // ← open panel + jump to this thread
     }
-  }, [props.aiTasks, blockId, props.userId, hasOaiKey, aiTask]);
+  }, [
+    fixSqlWithAi,
+    props.document?.workspaceId,
+    props.document.id,
+    blockId,
+    hasOaiKey,
+  ]);
 
   const [copied, setCopied] = useState(false);
 
@@ -1040,6 +1055,7 @@ function SQLBlock(props: Props) {
                 onTry={onTry}
                 onAccept={onAcceptAISuggestion}
                 onReject={onRejectAISuggestion}
+                onUndo={() => {}}
               />
               {isSQLBlockEditWithAIPromptOpen(props.block) &&
               !props.isPublicMode ? (
