@@ -1,13 +1,16 @@
 import React from "react";
 
-export const AIChatIcon = () => {
+import type { IconProps } from "./Menu/types";
+
+export const AIChatIcon: React.FC<IconProps> = ({ size = 41, className }) => {
   return (
     <svg
-      width="41"
-      height="41"
+      width={size}
+      height={size}
       viewBox="0 0 41 41"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      className={className}
     >
       <rect
         x="0.5"

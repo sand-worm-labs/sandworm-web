@@ -102,7 +102,7 @@ function EditWithAIForm(props: Props) {
         )}
       >
         <div className="flex-shrink-0 text-ink-400 dark:text-ink-500">
-          <AIChatIcon size={12} />
+          <AIChatIcon size={36} />
         </div>
 
         <input
