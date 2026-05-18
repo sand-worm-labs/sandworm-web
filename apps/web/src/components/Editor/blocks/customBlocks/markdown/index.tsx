@@ -1,5 +1,5 @@
 import type * as Y from "yjs";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { Transition } from "@headlessui/react";
 import { EditorView, keymap } from "@codemirror/view";
 import { EditorState } from "@codemirror/state";
@@ -20,9 +20,21 @@ import hljs from "highlight.js";
 import clsx from "clsx";
 import type { ConnectDragPreview } from "react-dnd";
 import type { MarkdownBlock } from "@sandworm/editor";
+import {
+  isMarkdownBlockEditWithAIPromptOpen,
+  getMarkdownBlockEditWithAIPrompt,
+  toggleMarkdownEditWithAIPromptOpen,
+  closeMarkdownEditWithAIPrompt,
+} from "@sandworm/editor";
+import { SparklesIcon } from "@heroicons/react/20/solid";
 import { tags as t } from "@lezer/highlight";
 import { PiCaretDown, PiMarkdownLogo } from "react-icons/pi";
 
+import { useWorkspaces } from "@/components/Editor/hooks/useWorkspaces";
+import type { ApiWorkspace, ApiDocument } from "@/types";
+
+import { TooltipV2 } from "../../ToolTips";
+import EditWithAIForm from "../../EditWithAIForm";
 import useEditorAwareness from "../../../hooks/useEditorAwareness";
 import type { DashboardMode } from "../../Dashboard";
 
@@ -62,6 +74,7 @@ const md = new MarkdownIt({
 // =====================================
 
 interface Props {
+  document: ApiDocument;
   block: Y.XmlElement<MarkdownBlock>;
   belongsToMultiTabGroup: boolean;
   isEditable: boolean;
@@ -69,6 +82,9 @@ interface Props {
   dashboardMode: DashboardMode | null;
   isCursorWithin: boolean;
   isCursorInserting: boolean;
+  onSubmitEditWithAI?: () => Promise<void>;
+  isAIEditing?: boolean;
+  workspaceId: string;
 }
 
 // =====================================
@@ -288,6 +304,17 @@ const SectionToggle = ({
 const MarkdownBlock = (props: Props) => {
   const id = props.block.getAttribute("id")!;
   const source = props.block.getAttribute("source")!;
+  const [workspaces] = useWorkspaces();
+
+  const currentWorkspace: ApiWorkspace | undefined = useMemo(
+    () => workspaces.data.find(w => w.id === props.document.workspaceId),
+    [workspaces.data, props.document.workspaceId]
+  );
+
+  const hasOaiKey = useMemo(
+    () => currentWorkspace?.secrets?.hasAiModelApiKey ?? false,
+    [currentWorkspace]
+  );
 
   // ─── State ───
   const [isSourceCollapsed, setSourceCollapsed] = useState(false);
@@ -297,9 +324,37 @@ const MarkdownBlock = (props: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [, editorAPI] = useEditorAwareness();
 
+  const editWithAIPrompt = getMarkdownBlockEditWithAIPrompt(props.block);
+  const isEditWithAIPromptOpen = isMarkdownBlockEditWithAIPromptOpen(
+    props.block
+  );
+
+  const onToggleEditWithAIPromptOpen = useCallback(() => {
+    if (!hasOaiKey) return;
+    toggleMarkdownEditWithAIPromptOpen(props.block);
+  }, [props.block, hasOaiKey]);
+
+  const onCloseEditWithAIPrompt = useCallback(() => {
+    closeMarkdownEditWithAIPrompt(props.block, false);
+    editorAPI.insert(id, { scrollIntoView: false });
+  }, [props.block, editorAPI, id]);
+
+  const tooltipContent = useCallback(
+    (ref: React.RefObject<HTMLDivElement>) => (
+      <div
+        ref={ref}
+        className="font-body pointer-events-none w-max bg-hunter-950 text-white text-xs p-2 rounded-md"
+      >
+        {hasOaiKey ? "Edit with AI" : "Missing OpenAI API key"}
+      </div>
+    ),
+    [hasOaiKey]
+  );
+
   // ─── Handlers ───
   const onFocus = useCallback(() => {
     setFocused(true);
+
     editorAPI.insert(id, { scrollIntoView: false });
   }, [id, editorAPI]);
 
@@ -388,18 +443,33 @@ const MarkdownBlock = (props: Props) => {
             />
           </div>
 
-          {/* Badge — softer, pill style matching the rest of the UI */}
-          <span
-            className="inline-flex items-center gap-1
-            text-[10px] font-medium font-body
-            text-ink-300 dark:text-ink-600
-            bg-[#F1F3F4] dark:bg-[#2A2A28]
-            border border-[#DEE2E6] dark:border-[#3A3A38]
-            px-1.5 py-0.5 rounded-md select-none"
-          >
-            <PiMarkdownLogo size={11} />
-            Markdown
-          </span>
+          <div className="inline-flex items-center gap-1.5">
+            {props.isEditable && !props.dashboardMode && (
+              <TooltipV2<HTMLButtonElement> content={tooltipContent} active>
+                {ref => (
+                  <button
+                    type="button"
+                    ref={ref}
+                    onClick={onToggleEditWithAIPromptOpen}
+                    disabled={!hasOaiKey}
+                    className={clsx(
+                      hasOaiKey
+                        ? "text-ink-300 hover:text-primary cursor-pointer"
+                        : "text-ink-200 cursor-not-allowed",
+                      "flex items-center transition-colors"
+                    )}
+                  >
+                    <SparklesIcon className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </TooltipV2>
+            )}
+
+            <span className="inline-flex items-center gap-1 text-[10px] font-medium font-body text-ink-300 dark:text-ink-600 bg-[#F1F3F4] dark:bg-[#2A2A28] border border-[#DEE2E6] dark:border-[#3A3A38] px-1.5 py-0.5 rounded-md select-none">
+              <PiMarkdownLogo size={11} />
+              Markdown
+            </span>
+          </div>
         </div>
 
         {/* ── Source (CodeMirror) ── */}
@@ -424,6 +494,17 @@ const MarkdownBlock = (props: Props) => {
             )}
           />
         </Transition>
+
+        {isEditWithAIPromptOpen ? (
+          <EditWithAIForm
+            loading={props.isAIEditing ?? false}
+            disabled={props.isAIEditing ?? false}
+            onSubmit={() => props.onSubmitEditWithAI?.()}
+            onClose={onCloseEditWithAIPrompt}
+            value={editWithAIPrompt}
+            hasOutput={false}
+          />
+        ) : null}
 
         {/* ── Preview ── */}
         <Transition

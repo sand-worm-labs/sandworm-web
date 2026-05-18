@@ -11,9 +11,9 @@ import { ExecutionStatus } from "../execution/item.js";
 
 
 export type MarkdownBlock = BaseBlock<BlockType.Markdown> & {
-  // Y.Text — plain markdown source, not a ProseMirror fragment.
-  // Simpler than XmlFragment: no schema, no node types, just text + Yjs CRDT.
   source: Y.Text;
+  editWithAIPrompt: Y.Text;
+  isEditWithAIPromptOpen: boolean;
 };
 
 
@@ -36,7 +36,7 @@ export const makeMarkdownBlock = (
     type: BlockType.Markdown,
     isAiInput: false,
     source: new Y.Text(""),
-    editWithAIPrompt: new Y.Text(),
+    editWithAIPrompt: new Y.Text(""),
     isEditWithAIPromptOpen: false,
   };
 
@@ -55,6 +55,8 @@ export function getMarkdownAttributes(
   return {
     ...getBaseAttributes(block),
     source: getAttributeOr(block, "source", new Y.Text("")),
+    editWithAIPrompt: getMarkdownBlockEditWithAIPrompt(block),
+    isEditWithAIPromptOpen: isMarkdownBlockEditWithAIPromptOpen(block),
   };
 }
 
@@ -65,12 +67,11 @@ export function duplicateMarkdownBlock(
 ): Y.XmlElement<MarkdownBlock> {
   const prevAttrs = getMarkdownAttributes(block);
 
-  // Y.Text must be copied manually — clone the string content into a new instance
-  const newSource = new Y.Text(prevAttrs.source.toString());
-
   const newAttrs: MarkdownBlock = {
     ...duplicateBaseAttributes(newId, prevAttrs),
-    source: newSource,
+    source: new Y.Text(prevAttrs.source.toString()),
+    editWithAIPrompt: new Y.Text(prevAttrs.editWithAIPrompt.toString()),
+    isEditWithAIPromptOpen: false, 
   };
 
   const yBlock = new Y.XmlElement<MarkdownBlock>("block");
@@ -87,4 +88,52 @@ export function getMarkdownBlockExecStatus(
   _block: Y.XmlElement<MarkdownBlock>
 ): ExecutionStatus {
   return "completed";
+}
+
+
+
+export function getMarkdownBlockEditWithAIPrompt(
+  block: Y.XmlElement<MarkdownBlock>
+): Y.Text {
+  return getAttributeOr(block, "editWithAIPrompt", new Y.Text(""));
+}
+
+export function isMarkdownBlockEditWithAIPromptOpen(
+  block: Y.XmlElement<MarkdownBlock>
+): boolean {
+  return getAttributeOr(block, "isEditWithAIPromptOpen", false);
+}
+
+export function toggleMarkdownEditWithAIPromptOpen(
+  block: Y.XmlElement<MarkdownBlock>
+) {
+  const operation = () => {
+    const isOpen = getAttributeOr(block, "isEditWithAIPromptOpen", false);
+    block.setAttribute("isEditWithAIPromptOpen", !isOpen);
+  };
+
+  if (block.doc) {
+    block.doc.transact(operation);
+  } else {
+    operation();
+  }
+}
+
+export function closeMarkdownEditWithAIPrompt(
+  block: Y.XmlElement<MarkdownBlock>,
+  cleanPrompt: boolean
+) {
+  const operation = () => {
+    if (cleanPrompt) {
+      const prompt = getMarkdownBlockEditWithAIPrompt(block);
+      prompt.delete(0, prompt.length);
+    }
+    block.setAttribute("isEditWithAIPromptOpen", false);
+  };
+
+  if (block.doc) {
+    block.doc.transact(operation);
+  } else {
+    operation();
+  }
 }
