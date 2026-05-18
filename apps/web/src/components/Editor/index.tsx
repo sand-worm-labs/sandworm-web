@@ -535,6 +535,7 @@ const DraggableTabbedBlock = (props: {
   executionQueue: ExecutionQueue;
   aiTasks: AITasks;
   isFullScreen: boolean;
+  workspaceId: string;
 }) => {
   const { state: layout } = useYDocState<Y.Array<YBlockGroup>>(
     props.yDoc,
@@ -766,6 +767,7 @@ file`;
         executionQueue={props.executionQueue}
         aiTasks={props.aiTasks}
         isFullScreen={props.isFullScreen}
+        workspaceId={props.workspaceId}
       />
     ));
   }, [
@@ -1145,6 +1147,7 @@ const V2EditorRow = (props: {
   aiTasks: AITasks;
   isFullScreen: boolean;
   onAddAnalyticsBlock: (toolId: string) => void;
+  workspaceId: string;
 }) => {
   const isLast = props.index === props.totalBlocks - 1;
   return (
@@ -1184,6 +1187,7 @@ const V2EditorRow = (props: {
         executionQueue={props.executionQueue}
         aiTasks={props.aiTasks}
         isFullScreen={props.isFullScreen}
+        workspaceId={props.workspaceId}
       />
       <div className={clsx(isLast ? "pt-2" : "")}>
         <Dropzone
@@ -1230,6 +1234,7 @@ interface Props {
   scrollViewRef: React.MutableRefObject<HTMLDivElement | null>;
   executionQueue: ExecutionQueue;
   aiTasks: AITasks;
+  workspaceId: string;
 }
 
 const Editor = (props: Props) => {
@@ -1668,6 +1673,7 @@ const Editor = (props: Props) => {
           aiTasks={props.aiTasks}
           isFullScreen={props.isFullScreen}
           onAddAnalyticsBlock={onAddAnalyticsBlock}
+          workspaceId={props.workspaceId}
         />
       );
     });
@@ -1904,6 +1910,7 @@ interface TabRefProps {
   executionQueue: ExecutionQueue;
   aiTasks: AITasks;
   isFullScreen: boolean;
+  workspaceId: string;
 }
 function TabRef(props: TabRefProps) {
   const [editorState] = useEditorAwareness();
@@ -1982,6 +1989,8 @@ function TabRef(props: TabRefProps) {
         executionQueue={props.executionQueue}
         aiTasks={props.aiTasks}
         isFullScreen={props.isFullScreen}
+        workspaceId={props.workspaceId}
+        modelId="gpt-40"
       />
     ),
     onVisualization: block => (

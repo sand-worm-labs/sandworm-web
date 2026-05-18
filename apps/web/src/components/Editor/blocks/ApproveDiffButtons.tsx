@@ -11,10 +11,10 @@ import type { AiBlockStatus } from "../hooks/useAiDiff";
 // =====================================
 interface Props {
   visible: boolean;
-  status: AiBlockStatus;
+  status?: AiBlockStatus;
   onAccept: () => void;
   onReject: () => void;
-  onUndo: () => void;
+  onUndo?: () => void;
   canTry: boolean;
   onTry: () => void;
 }

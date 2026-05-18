@@ -124,12 +124,17 @@ interface Props {
 }
 
 function Title(props: Props) {
-  const { editTitleWithAi, loading: aiLoading } = useAITaskActions();
+  const { editTitleWithAi, loading: titleLoading } = useAITaskActions();
 
   const handleGenerateWithAI = useCallback(async () => {
-    if (aiLoading) return;
+    if (titleLoading.title) return;
     await editTitleWithAi(props.workspaceId, props.documentId);
-  }, [aiLoading, props.workspaceId, props.documentId, editTitleWithAi]);
+  }, [
+    titleLoading.title,
+    props.workspaceId,
+    props.documentId,
+    editTitleWithAi,
+  ]);
 
   const editor = useEditor(
     {
@@ -202,7 +207,7 @@ function Title(props: Props) {
           <div className="absolute left-0 top-1/2 -translate-x-full -translate-y-1/2 pr-2">
             <TitleAIButton
               onClick={handleGenerateWithAI}
-              isLoading={aiLoading}
+              isLoading={titleLoading.title}
             />
           </div>
         )}

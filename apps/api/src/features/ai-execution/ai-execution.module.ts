@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { SqlAiExecutorService } from './service/sql-ai-executor.service';
 import { TitleAiExecutorService } from './service/title-ai-executor.service';
@@ -7,6 +7,7 @@ import { YjsModule } from '../collaboration/yjs/yjs.module';
 import { SqlAiExecutorResolver } from './resolver/sql-ai-executor.resolver';
 import { PythonAiExecutorService } from './service/python-ai-executor.service';
 import { PythonAiExecutorResolver } from './resolver/python-ai-executor.resolver';
+import { ChatModule } from '../chat/chat.module';
  
  
 const EXECUTORS = [
@@ -22,7 +23,11 @@ const RESOLVERS = [
 ]
  
 @Module({
-  imports: [ConfigModule,YjsModule],
+  imports: [
+    ConfigModule,
+    YjsModule, 
+    forwardRef(() => ChatModule)
+  ],
   providers: [...EXECUTORS, ...RESOLVERS],
   exports: [...EXECUTORS],
 })

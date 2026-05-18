@@ -477,6 +477,7 @@ function PrivateDocumentPageInner(
           isSyncing={syncing}
           onOpenFiles={onToggleFiles}
           onSchemaExplorer={onToggleSchemaExplorerSQLBlock}
+          workspaceId={props.workspaceId}
         />
 
         <RightSidebarPanel visible={selectedSidebar !== null}>

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChatEntity, DocumentEntity, MessageEntity, WorkspaceEntity, VoteEntity } from '@sandworm/postgresql-typeorm';
 import { AuthGraphqlModule } from '@/features/auth/graphql/auth-graphql.module';
@@ -20,7 +20,8 @@ import { AiExecutionModule } from '../ai-execution/ai-execution.module';
     HttpModule,
     AuthGraphqlModule,
     WorkspaceModule,
-    AiExecutionModule
+    forwardRef(() => AiExecutionModule)
+    
   ],
   providers: [ChatResolver,MessageResolver,ChatService],
   exports: [ChatService],

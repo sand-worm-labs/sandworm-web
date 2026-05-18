@@ -36,7 +36,7 @@ import { CodeIcon } from "@/components/Assets/Blocks/CodeIcon";
 import type { ApiDocument, ApiWorkspace } from "@/types";
 
 import { useBlockExecutions } from "../../../hooks/useBlockExecution";
-import { useAITasks } from "../../../hooks/useAITasks";
+import { useAITaskActions, useAITasks } from "../../../hooks/useAITasks";
 import { TooltipV2 } from "../../ToolTips";
 import type { DashboardMode } from "../../Dashboard";
 import { dashboardModeHasControls } from "../../Dashboard/dashboard-types";
@@ -78,6 +78,8 @@ interface Props {
   aiTasks: AITasks;
   userId: string | null;
   isFullScreen: boolean;
+  workspaceId: string;
+  modelId: string;
 }
 
 // =====================================
@@ -223,6 +225,8 @@ function PythonBlock(props: Props) {
   const aiSuggestions = getPythonAISuggestions(props.block);
   const editWithAIPrompt = getPythonBlockEditWithAIPrompt(props.block);
   const { title } = getBaseAttributes(props.block);
+  const { editPythonWithAi } = useAITaskActions();
+  const { fixPythonWithAi } = useAITaskActions();
 
   // ⬢  Run handler
   // =====================================
@@ -281,9 +285,20 @@ function PythonBlock(props: Props) {
     editorAPI.insert(blockId, { scrollIntoView: false });
   }, [props.block, editorAPI, blockId, aiTask]);
 
-  const onSubmitEditWithAI = useCallback(() => {
-    props.aiTasks.enqueue(blockId, props.userId, { _tag: "edit-python" });
-  }, [props.aiTasks, blockId, props.userId]);
+  const onSubmitEditWithAI = useCallback(async () => {
+    await editPythonWithAi({
+      workspaceId: props.workspaceId,
+      documentId: props.document.id,
+      blockId,
+      modelId: props.modelId,
+    });
+  }, [
+    editPythonWithAi,
+    props.workspaceId,
+    props.document.id,
+    blockId,
+    props.modelId,
+  ]);
 
   const onAcceptAISuggestion = useCallback(() => {
     if (aiSuggestions) {
@@ -296,14 +311,28 @@ function PythonBlock(props: Props) {
     props.block.setAttribute("aiSuggestions", null);
   }, [props.block]);
 
-  const onFixWithAI = useCallback(() => {
+  const onFixWithAI = useCallback(async () => {
     if (!hasOaiKey) return;
-    if (aiTask?.getMetadata()._tag === "fix-python") {
-      aiTask.setAborting();
-    } else {
-      props.aiTasks.enqueue(blockId, props.userId, { _tag: "fix-python" });
+
+    const fixResult = await fixPythonWithAi({
+      workspaceId: props.workspaceId,
+      documentId: props.document.id,
+      blockId,
+      modelId: props.modelId,
+    });
+
+    if (fixResult?.chatId) {
+      /*       props.onOpenChat(fixResult.chatId);
+       */
     }
-  }, [props.aiTasks, blockId, props.userId, hasOaiKey, aiTask]);
+  }, [
+    fixPythonWithAi,
+    props.workspaceId,
+    props.document.id,
+    blockId,
+    props.modelId,
+    hasOaiKey,
+  ]);
 
   const [
     { data: components },
