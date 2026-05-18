@@ -249,7 +249,6 @@ export const useChat = (workspaceId: string, documentId: string): UseChat => {
     [removeVoteMutation]
   );
 
-
   return useMemo(
     () => ({
       chats,
