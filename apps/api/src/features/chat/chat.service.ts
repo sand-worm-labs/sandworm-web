@@ -34,15 +34,19 @@ export interface SseEvent {
   data: string;
 }
 
-type PartPayload =
-  | { type: 'thinking'; thinking: string; duration_ms: number }
-  | { type: 'tool_call'; toolName: string; category: string; params: Record<string, string> }
-  | { type: 'block_action'; action: 'created' | 'edited' | 'ran' | 'deleted'; blockType: string; blockTitle: string; blockId: string }
-  | { type: 'tool_result'; summary: string; rowCount?: number }
-  | { type: 'error'; message: string; retryable: boolean };
+type BlockAction='created'|'edited'|'ran'|'deleted';
+type Block={blockId:string;blockType:string;blockTitle:string};
 
-const SIMULATED_TOKEN_DELAY_MS = 60;
-const SIMULATED_PART_DELAY_MS = 400;
+export type PartPayload=
+  |{type:'pending_review';blocks:(Block&{action:Extract<BlockAction,'created'|'edited'>})[]}
+  |{type:'thinking';thinking:string;duration_ms:number}
+  |{type:'tool_call';toolName:string;category:string;params:Record<string,string>}
+  |({type:'block_action';action:BlockAction}&Block)
+  |{type:'tool_result';summary:string;rowCount?:number}
+  |{type:'error';message:string;retryable:boolean};
+
+const SIMULATED_TOKEN_DELAY_MS = 100;
+const SIMULATED_PART_DELAY_MS = 1000;
 
 const LOREM_IPSUM = `Done. I've built the full DAO treasury analysis across 8 DAOs with $1.08B nominal value. Uniswap and Aave are 100% own-token. Compound is 99.8% liquid. The chart and written summary are in the blocks above. Want me to add Arbitrum and ENS once their data clears?`;
 
@@ -281,6 +285,14 @@ export class ChatService {
       await delay(SIMULATED_PART_DELAY_MS);
       emitPart({ type: 'block_action', action: 'edited', blockType: 'Markdown', blockTitle: 'Analysis summary', blockId: 'md-001' });
 
+      emitPart({
+        type: 'pending_review',
+        blocks: [
+          { blockId: 'sql-001', blockType: 'SQL',    blockTitle: 'Flatten token holdings', action: 'created' },
+          { blockId: 'py-001',  blockType: 'Python', blockTitle: 'Cluster by asset type',  action: 'created' },
+          { blockId: 'md-001',  blockType: 'Markdown', blockTitle: 'Analysis summary',     action: 'edited'  },
+        ],
+      });
       let fullContent = '';
       for (const word of LOREM_IPSUM.split(' ')) {
         await delay(SIMULATED_TOKEN_DELAY_MS);
