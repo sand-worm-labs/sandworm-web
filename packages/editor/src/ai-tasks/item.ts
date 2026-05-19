@@ -86,6 +86,11 @@ export const AITaskItemAddTextMetadata = z.object({
 });
 export type AITaskItemAddTextMetadata = z.infer<typeof AITaskItemAddTextMetadata>;
 
+export const AITaskItemEditTextMetadata = z.object({
+  _tag: z.literal("edit-text"),
+});
+export type AITaskItemEditTextMetadata = z.infer<typeof AITaskItemEditTextMetadata>;
+
 export const AITaskItemAddInputMetadata = z.object({
   _tag: z.literal("add-input"),
 });
@@ -109,6 +114,7 @@ export const AITaskItemMetadata = z.union([
   AITaskItemEditSQLMetadata,
   AITaskItemFixSQLMetadata,
   AITaskItemAddTextMetadata,
+  AITaskItemEditTextMetadata,
   AITaskItemAddInputMetadata,
   AITaskItemAddDropdownMetadata,
   AITaskItemNoopMetadata,

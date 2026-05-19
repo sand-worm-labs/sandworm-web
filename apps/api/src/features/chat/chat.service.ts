@@ -30,7 +30,7 @@ import { TitleAiExecutorService } from '../ai-execution/service/title-ai-executo
 
 const LOREM_IPSUM = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.`;
 
-const SIMULATED_TOKEN_DELAY_MS = 60;
+const SIMULATED_TOKEN_DELAY_MS = 600;
 
 
 @Injectable()
@@ -210,22 +210,38 @@ export class ChatService {
     return Message.fromEntity(message);
   }
 
+    streamResponse(
+      userId: string,
+      chatId: string,
+      messageId: string,
+    ): Observable<MessageEvent> {
+      return new Observable<MessageEvent>((subscriber) => {
+        this.executeStreamResponse(userId, chatId, messageId, subscriber);
+      });
+    }
 
-  streamResponse(userId: string, chatId: string): Observable<MessageEvent> {
-    return new Observable<MessageEvent>((subscriber) => {
-      this.executeSimulatedStream(userId, chatId, subscriber);
-    });
-  }
-
-  private async executeSimulatedStream(
+  private async executeStreamResponse(
     userId: string,
     chatId: string,
+    messageId: string,
     subscriber: Subscriber<MessageEvent>,
   ): Promise<void> {
     const chat = await this.chatRepository.findOne({ where: { id: chatId, userId } });
-
     if (!chat) {
       subscriber.error(new NotFoundException('Chat not found'));
+      return;
+    }
+
+    const userMessage = await this.messageRepository.findOne({
+      where: { id: messageId, chat: { id: chatId }, role: MessageRole.USER },
+    });
+    if (!userMessage) {
+      subscriber.error(new NotFoundException('Message not found'));
+      return;
+    }
+
+    if (userMessage.isAnswered) {
+      subscriber.complete();
       return;
     }
 
@@ -244,15 +260,17 @@ export class ChatService {
       return;
     }
 
-    await this.messageRepository.save(
-      this.messageRepository.create({
-        chat: { id: chatId },
-        role: MessageRole.ASSISTANT,
-        content: fullContent.trim(),
-      }),
-    );
+    await Promise.all([
+      this.messageRepository.save(
+        this.messageRepository.create({
+          chat:    { id: chatId },
+          role:    MessageRole.ASSISTANT,
+          content: fullContent.trim(),
+        }),
+      ),
+      this.messageRepository.update(messageId, { isAnswered: true }),
+    ]);
 
     subscriber.complete();
   }
-
 }
