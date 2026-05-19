@@ -26,12 +26,25 @@ import {
 import { MessageRole } from './types/message.types';
 import { AllConfigType } from '@/core/config/config.type';
 import { TitleAiExecutorService } from '../ai-execution/service/title-ai-executor.service';
+import type { FastifyReply } from 'fastify/types/reply';
+import type { FastifyRequest } from 'fastify/types/request';
 
+export interface SseEvent {
+  event?: 'part' | 'token';
+  data: string;
+}
 
-const LOREM_IPSUM = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.`;
+type PartPayload =
+  | { type: 'thinking'; thinking: string; duration_ms: number }
+  | { type: 'tool_call'; toolName: string; category: string; params: Record<string, string> }
+  | { type: 'block_action'; action: 'created' | 'edited' | 'ran' | 'deleted'; blockType: string; blockTitle: string; blockId: string }
+  | { type: 'tool_result'; summary: string; rowCount?: number }
+  | { type: 'error'; message: string; retryable: boolean };
 
 const SIMULATED_TOKEN_DELAY_MS = 60;
+const SIMULATED_PART_DELAY_MS = 400;
 
+const LOREM_IPSUM = `Done. I've built the full DAO treasury analysis across 8 DAOs with $1.08B nominal value. Uniswap and Aave are 100% own-token. Compound is 99.8% liquid. The chart and written summary are in the blocks above. Want me to add Arbitrum and ENS once their data clears?`;
 
 @Injectable()
 export class ChatService {
@@ -56,7 +69,6 @@ export class ChatService {
     this.aiBaseUrl = this.configService.getOrThrow('ai.url', { infer: true });
     this.handshakeToken = this.configService.getOrThrow('ai.handshakeToken', { infer: true });
   }
-
 
   async getChats(userId: string, workspaceId: string, documentId: string): Promise<Chat[]> {
     const entities = await this.chatRepository.find({
@@ -91,7 +103,6 @@ export class ChatService {
     return vote?.isUpvoted ?? null;
   }
 
-
   async createChat(userId: string, input: CreateChatInput): Promise<Chat> {
     let { workspaceId, documentId, message, title, model, focusedBlocks } = input;
     title = title ?? message.substring(0, 50);
@@ -125,7 +136,7 @@ export class ChatService {
       }),
     );
 
-    if(input.updateDocumentTitle) {
+    if (input.updateDocumentTitle) {
       this.titleAiExecutorService.updateTitle(documentId, workspaceId, title);
     }
 
@@ -155,7 +166,6 @@ export class ChatService {
     chat.pin = !chat.pin;
     return Chat.fromEntity(await this.chatRepository.save(chat));
   }
-
 
   async voteMessage(userId: string, input: VoteMessageInput): Promise<Vote> {
     const message = await this.messageRepository.findOne({
@@ -191,7 +201,7 @@ export class ChatService {
     return true;
   }
 
-    async sendMessage(userId: string, input: SendMessageInput): Promise<Message> {
+  async sendMessage(userId: string, input: SendMessageInput): Promise<Message> {
     const { chatId, content, model, focusedBlocks } = input;
 
     const chat = await this.chatRepository.findOne({ where: { id: chatId, userId } });
@@ -210,67 +220,137 @@ export class ChatService {
     return Message.fromEntity(message);
   }
 
-    streamResponse(
-      userId: string,
-      chatId: string,
-      messageId: string,
-    ): Observable<MessageEvent> {
-      return new Observable<MessageEvent>((subscriber) => {
-        this.executeStreamResponse(userId, chatId, messageId, subscriber);
-      });
-    }
+  streamResponse(userId: string, chatId: string, messageId: string): Observable<SseEvent> {
+    return new Observable<SseEvent>((subscriber) => {
+      this.executeStreamResponse(userId, chatId, messageId, subscriber);
+    });
+  }
 
   private async executeStreamResponse(
     userId: string,
     chatId: string,
     messageId: string,
-    subscriber: Subscriber<MessageEvent>,
+    subscriber: Subscriber<SseEvent>,
   ): Promise<void> {
     const chat = await this.chatRepository.findOne({ where: { id: chatId, userId } });
-    if (!chat) {
-      subscriber.error(new NotFoundException('Chat not found'));
-      return;
-    }
+    if (!chat) { subscriber.error(new NotFoundException('Chat not found')); return; }
 
     const userMessage = await this.messageRepository.findOne({
       where: { id: messageId, chat: { id: chatId }, role: MessageRole.USER },
     });
-    if (!userMessage) {
-      subscriber.error(new NotFoundException('Message not found'));
-      return;
-    }
+    if (!userMessage) { subscriber.error(new NotFoundException('Message not found')); return; }
 
-    if (userMessage.isAnswered) {
-      subscriber.complete();
-      return;
-    }
+    if (userMessage.isAnswered) { subscriber.complete(); return; }
 
-    const tokens = LOREM_IPSUM.split(' ');
-    let fullContent = '';
+    const delay = (ms: number) => new Promise(r => setTimeout(r, ms));
+    const emitPart = (payload: PartPayload) => subscriber.next({ event: 'part', data: JSON.stringify(payload) });
+    const emitToken = (token: string) => subscriber.next({ event: 'token', data: token });
 
     try {
-      for (const word of tokens) {
-        await new Promise((r) => setTimeout(r, SIMULATED_TOKEN_DELAY_MS));
+      await delay(SIMULATED_PART_DELAY_MS);
+      emitPart({ type: 'thinking', thinking: 'The user wants a DAO treasury analysis. I need to fetch balances using the DAO Treasury PowerToolbox, then flatten with SQL, cluster with Python, visualise, and write a markdown summary.', duration_ms: 5800 });
+
+      await delay(SIMULATED_PART_DELAY_MS);
+      emitPart({ type: 'tool_call', toolName: 'DAO Treasury Balances', category: 'defi', params: { daos: 'top-8', chain: 'Ethereum' } });
+
+      await delay(SIMULATED_PART_DELAY_MS);
+      emitPart({ type: 'block_action', action: 'created', blockType: 'PowerToolbox', blockTitle: 'DAO treasury balances', blockId: 'ptb-001' });
+      await delay(SIMULATED_PART_DELAY_MS);
+      emitPart({ type: 'block_action', action: 'ran', blockType: 'PowerToolbox', blockTitle: 'DAO treasury balances', blockId: 'ptb-001' });
+
+      await delay(SIMULATED_PART_DELAY_MS);
+      emitPart({ type: 'tool_result', summary: 'Fetched 8 DAOs · $1.08B nominal value', rowCount: 8 });
+
+      await delay(SIMULATED_PART_DELAY_MS);
+      emitPart({ type: 'block_action', action: 'created', blockType: 'SQL', blockTitle: 'Flatten token holdings', blockId: 'sql-001' });
+      await delay(SIMULATED_PART_DELAY_MS);
+      emitPart({ type: 'block_action', action: 'ran', blockType: 'SQL', blockTitle: 'Flatten token holdings', blockId: 'sql-001' });
+
+      await delay(SIMULATED_PART_DELAY_MS);
+      emitPart({ type: 'block_action', action: 'created', blockType: 'Python', blockTitle: 'Cluster by asset type', blockId: 'py-001' });
+      await delay(SIMULATED_PART_DELAY_MS);
+      emitPart({ type: 'block_action', action: 'ran', blockType: 'Python', blockTitle: 'Cluster by asset type', blockId: 'py-001' });
+
+      await delay(SIMULATED_PART_DELAY_MS);
+      emitPart({ type: 'block_action', action: 'created', blockType: 'Visualization', blockTitle: 'Treasury breakdown chart', blockId: 'viz-001' });
+      await delay(SIMULATED_PART_DELAY_MS);
+      emitPart({ type: 'block_action', action: 'ran', blockType: 'Visualization', blockTitle: 'Treasury breakdown chart', blockId: 'viz-001' });
+
+      await delay(SIMULATED_PART_DELAY_MS);
+      emitPart({ type: 'block_action', action: 'created', blockType: 'Markdown', blockTitle: 'Analysis summary', blockId: 'md-001' });
+      await delay(SIMULATED_PART_DELAY_MS);
+      emitPart({ type: 'block_action', action: 'edited', blockType: 'Markdown', blockTitle: 'Analysis summary', blockId: 'md-001' });
+
+      let fullContent = '';
+      for (const word of LOREM_IPSUM.split(' ')) {
+        await delay(SIMULATED_TOKEN_DELAY_MS);
         const token = word + ' ';
         fullContent += token;
-        subscriber.next({ data: token } as MessageEvent);
+        emitToken(token);
       }
+
+      await Promise.all([
+        this.messageRepository.save(
+          this.messageRepository.create({
+            chat: { id: chatId },
+            role: MessageRole.ASSISTANT,
+            content: fullContent.trim(),
+          }),
+        ),
+        this.messageRepository.update(messageId, { isAnswered: true }),
+      ]);
+
+      subscriber.complete();
     } catch (err) {
       subscriber.error(err);
-      return;
     }
-
-    await Promise.all([
-      this.messageRepository.save(
-        this.messageRepository.create({
-          chat:    { id: chatId },
-          role:    MessageRole.ASSISTANT,
-          content: fullContent.trim(),
-        }),
-      ),
-      this.messageRepository.update(messageId, { isAnswered: true }),
-    ]);
-
-    subscriber.complete();
+  }
+  
+  async streamToReply(
+    userId: string,
+    chatId: string,
+    messageId: string,
+    req: FastifyRequest,
+    reply: FastifyReply,
+  ): Promise<void> {
+    reply.raw.writeHead(200, {
+      'Content-Type':      'text/event-stream',
+      'Cache-Control':     'no-cache',
+      'Connection':        'keep-alive',
+      'X-Accel-Buffering': 'no',
+    });
+  
+    const write = (event: SseEvent) => {
+      if (reply.raw.writableEnded) return;
+      const line = event.event
+        ? `event: ${event.event}\ndata: ${event.data}\n\n`
+        : `data: ${event.data}\n\n`;
+      reply.raw.write(line);
+    };
+  
+    const stream$ = this.streamResponse(userId, chatId, messageId);
+  
+    await new Promise<void>((resolve, reject) => {
+      stream$.subscribe({
+        next: write,
+        error: (err) => {
+          this.logger.error('Stream failed', err);
+          if (!reply.raw.writableEnded) {
+            reply.raw.write('data: [ERROR]\n\n');
+            reply.raw.end();
+          }
+          reject(err);
+        },
+        complete: () => {
+          if (!reply.raw.writableEnded) {
+            reply.raw.write('data: [DONE]\n\n');
+            reply.raw.end();
+          }
+          resolve();
+        },
+      });
+  
+      req.raw.on('close', () => resolve());
+    });
   }
 }
