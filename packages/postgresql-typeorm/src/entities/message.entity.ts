@@ -11,7 +11,6 @@ import { AbstractEntity } from './abstract.entity';
 import { ChatEntity } from './chat.entity';
 import { VoteEntity } from './vote.entity';
 
-
 export enum MessageRole {
   USER      = 'user',
   ASSISTANT = 'assistant',
@@ -20,14 +19,10 @@ export enum MessageRole {
 }
 
 export enum MessageContentType {
-  TEXT        = 'text',
-  TOOL_CALL   = 'tool_call',
-  TOOL_RESULT = 'tool_result',
-  IMAGE_URL   = 'image_url',
-  IMAGE_DATA  = 'image_data',
-  REASONING   = 'reasoning',
-  REFUSAL     = 'refusal',
-  DOCUMENT    = 'document',
+  TEXT         = 'text',
+  TOOL_CALL    = 'tool_call',
+  TOOL_RESULT  = 'tool_result',
+  BLOCK_ACTION = 'block_action',
 }
 
 export enum FinishReason {
@@ -47,67 +42,34 @@ export interface TextPart extends BaseContentPart {
   text: string;
 }
 
-export interface ReasoningPart extends BaseContentPart {
-  type: MessageContentType.REASONING;
-  thinking: string;
-}
-
-export interface RefusalPart extends BaseContentPart {
-  type: MessageContentType.REFUSAL;
-  refusal: string;
-}
-
-export interface ImageUrlPart extends BaseContentPart {
-  type: MessageContentType.IMAGE_URL;
-  image_url: {
-    url: string;
-    detail?: 'auto' | 'low' | 'high';
-  };
-}
-
-export interface ImageDataPart extends BaseContentPart {
-  type: MessageContentType.IMAGE_DATA;
-  b64_json: string;
-  mimeType: 'image/png' | 'image/jpeg' | 'image/webp';
-  revisedPrompt?: string;
-  width?: number;
-  height?: number;
-}
-
 export interface ToolCallPart extends BaseContentPart {
   type: MessageContentType.TOOL_CALL;
   id: string;
-  function: {
-    name: string;
-    arguments: string;
-  };
+  toolName: string;
+  category?: string;
+  params?: Record<string, string>;
 }
 
 export interface ToolResultPart extends BaseContentPart {
   type: MessageContentType.TOOL_RESULT;
   tool_call_id: string;
-  content: string | MessageContentPart[];
+  summary?: string;
+  rowCount?: number;
 }
 
-export interface DocumentPart extends BaseContentPart {
-  type: MessageContentType.DOCUMENT;
-  source: {
-    type: 'base64' | 'url';
-    media_type: 'application/pdf';
-    data?: string;
-    url?: string;
-  };
+export interface BlockActionPart extends BaseContentPart {
+  type: MessageContentType.BLOCK_ACTION;
+  action: 'created' | 'edited' | 'ran' | 'deleted';
+  blockType: string;
+  blockTitle: string;
+  blockId: string;
 }
 
 export type MessageContentPart =
   | TextPart
-  | ReasoningPart
-  | RefusalPart
-  | ImageUrlPart
-  | ImageDataPart
   | ToolCallPart
   | ToolResultPart
-  | DocumentPart;
+  | BlockActionPart;
 
 export interface MessageUsage {
   promptTokens: number;
@@ -137,7 +99,7 @@ export class MessageEntity extends AbstractEntity {
   id!: string;
 
   @Column({ default: false })
-  isAnswered: boolean;
+  isAnswered!: boolean;
 
   @ManyToOne(() => ChatEntity, (chat) => chat.messages, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'chat_id' })
