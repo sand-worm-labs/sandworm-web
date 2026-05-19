@@ -6,16 +6,25 @@ import {
   getAttributeOr,
   getBaseAttributes,
   duplicateBaseAttributes,
+  duplicateYText,
 } from "./index.js";
 import { ExecutionStatus } from "../execution/item.js";
+import { updateYText } from "../index.js";
 
+// =====================================
+// ⬢ Type
+// =====================================
 
 export type MarkdownBlock = BaseBlock<BlockType.Markdown> & {
   source: Y.Text;
   editWithAIPrompt: Y.Text;
   isEditWithAIPromptOpen: boolean;
+  aiSuggestions: Y.Text | null;
 };
 
+// =====================================
+// ⬢ Guards
+// =====================================
 
 export const isMarkdownBlock = (
   block: YBlock
@@ -23,6 +32,9 @@ export const isMarkdownBlock = (
   return block.getAttribute("type") === BlockType.Markdown;
 };
 
+// =====================================
+// ⬢ Factory
+// =====================================
 
 export const makeMarkdownBlock = (
   id: string
@@ -38,6 +50,7 @@ export const makeMarkdownBlock = (
     source: new Y.Text(""),
     editWithAIPrompt: new Y.Text(""),
     isEditWithAIPromptOpen: false,
+    aiSuggestions: null,
   };
 
   for (const [key, value] of Object.entries(attrs)) {
@@ -48,6 +61,9 @@ export const makeMarkdownBlock = (
   return yBlock;
 };
 
+// =====================================
+// ⬢ Attributes
+// =====================================
 
 export function getMarkdownAttributes(
   block: Y.XmlElement<MarkdownBlock>
@@ -57,9 +73,13 @@ export function getMarkdownAttributes(
     source: getAttributeOr(block, "source", new Y.Text("")),
     editWithAIPrompt: getMarkdownBlockEditWithAIPrompt(block),
     isEditWithAIPromptOpen: isMarkdownBlockEditWithAIPromptOpen(block),
+    aiSuggestions: getMarkdownAISuggestions(block),
   };
 }
 
+// =====================================
+// ⬢ Duplicate
+// =====================================
 
 export function duplicateMarkdownBlock(
   newId: string,
@@ -71,7 +91,11 @@ export function duplicateMarkdownBlock(
     ...duplicateBaseAttributes(newId, prevAttrs),
     source: new Y.Text(prevAttrs.source.toString()),
     editWithAIPrompt: new Y.Text(prevAttrs.editWithAIPrompt.toString()),
-    isEditWithAIPromptOpen: false, 
+    isEditWithAIPromptOpen: false,
+    aiSuggestions:
+      prevAttrs.aiSuggestions
+        ? duplicateYText(prevAttrs.aiSuggestions)
+        : null,
   };
 
   const yBlock = new Y.XmlElement<MarkdownBlock>("block");
@@ -83,6 +107,9 @@ export function duplicateMarkdownBlock(
   return yBlock;
 }
 
+// =====================================
+// ⬢ Execution status
+// =====================================
 
 export function getMarkdownBlockExecStatus(
   _block: Y.XmlElement<MarkdownBlock>
@@ -90,7 +117,42 @@ export function getMarkdownBlockExecStatus(
   return "completed";
 }
 
+// =====================================
+// ⬢ Source
+// =====================================
 
+export function getMarkdownSource(
+  block: Y.XmlElement<MarkdownBlock>
+): Y.Text {
+  return getAttributeOr(block, "source", new Y.Text(""));
+}
+
+// =====================================
+// ⬢ AI Suggestions
+// =====================================
+
+export function getMarkdownAISuggestions(
+  block: Y.XmlElement<MarkdownBlock>
+): Y.Text | null {
+  return getAttributeOr(block, "aiSuggestions", null);
+}
+
+export function updateMarkdownAISuggestions(
+  block: Y.XmlElement<MarkdownBlock>,
+  suggestions: string
+) {
+  const aiSuggestions = getMarkdownAISuggestions(block);
+  if (!aiSuggestions) {
+    block.setAttribute("aiSuggestions", new Y.Text(suggestions));
+    return;
+  }
+
+  updateYText(aiSuggestions, suggestions);
+}
+
+// =====================================
+// ⬢ Edit with AI prompt
+// =====================================
 
 export function getMarkdownBlockEditWithAIPrompt(
   block: Y.XmlElement<MarkdownBlock>
