@@ -38,3 +38,27 @@ mutation PinChat($chatId: String!) {
     ...ChatFields
   }
 }
+
+# ─────────────────────────────────────────────
+# Send Message
+# ─────────────────────────────────────────────
+mutation SendMessage($input: SendMessageInput!) {
+  sendMessage(input: $input) {
+    ...MessageFields
+  }
+}
+
+# ─────────────────────────────────────────────
+# Vote
+# ─────────────────────────────────────────────
+mutation VoteMessage($input: VoteMessageInput!) {
+  voteMessage(input: $input) {  
+    messageId
+    isUpvoted
+    createdAt
+  }
+}
+
+mutation RemoveVote($messageId: String!) {
+  removeVote(messageId: $messageId)
+}

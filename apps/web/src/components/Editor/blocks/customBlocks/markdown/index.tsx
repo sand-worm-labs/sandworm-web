@@ -1,11 +1,12 @@
 import type * as Y from "yjs";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { Transition } from "@headlessui/react";
 import { EditorView, keymap } from "@codemirror/view";
 import { EditorState } from "@codemirror/state";
 import { markdown as markdownLang } from "@codemirror/lang-markdown";
 import { syntaxHighlighting, HighlightStyle } from "@codemirror/language";
 import { defaultKeymap, historyKeymap } from "@codemirror/commands";
+import { MergeView } from "@codemirror/merge";
 import { yCollab } from "y-codemirror.next";
 import MarkdownIt from "markdown-it";
 import { full as markdownItEmoji } from "markdown-it-emoji";
@@ -20,9 +21,24 @@ import hljs from "highlight.js";
 import clsx from "clsx";
 import type { ConnectDragPreview } from "react-dnd";
 import type { MarkdownBlock } from "@sandworm/editor";
+import {
+  isMarkdownBlockEditWithAIPromptOpen,
+  getMarkdownBlockEditWithAIPrompt,
+  toggleMarkdownEditWithAIPromptOpen,
+  closeMarkdownEditWithAIPrompt,
+  getMarkdownAISuggestions,
+  updateMarkdownAISuggestions,
+} from "@sandworm/editor";
+import { SparklesIcon } from "@heroicons/react/20/solid";
 import { tags as t } from "@lezer/highlight";
 import { PiCaretDown, PiMarkdownLogo } from "react-icons/pi";
 
+import { useWorkspaces } from "@/components/Editor/hooks/useWorkspaces";
+import type { ApiWorkspace, ApiDocument } from "@/types";
+
+import ApproveDiffButtons from "../../ApproveDiffButtons";
+import { TooltipV2 } from "../../ToolTips";
+import EditWithAIForm from "../../EditWithAIForm";
 import useEditorAwareness from "../../../hooks/useEditorAwareness";
 import type { DashboardMode } from "../../Dashboard";
 
@@ -62,6 +78,7 @@ const md = new MarkdownIt({
 // =====================================
 
 interface Props {
+  document: ApiDocument;
   block: Y.XmlElement<MarkdownBlock>;
   belongsToMultiTabGroup: boolean;
   isEditable: boolean;
@@ -69,6 +86,9 @@ interface Props {
   dashboardMode: DashboardMode | null;
   isCursorWithin: boolean;
   isCursorInserting: boolean;
+  onSubmitEditWithAI?: () => Promise<void>;
+  isAIEditing?: boolean;
+  workspaceId: string;
 }
 
 // =====================================
@@ -134,48 +154,91 @@ const markdownHighlight = HighlightStyle.define([
 // ⬢ useCodeMirror
 // =====================================
 
+function getBaseExtensions(
+  source: Y.Text,
+  isEditable: boolean,
+  onFocus: () => void,
+  onBlur: () => void
+) {
+  return [
+    yCollab(source, null, { undoManager: false }),
+    markdownLang({ htmlTagLanguage: undefined }),
+    syntaxHighlighting(markdownHighlight, { fallback: true }),
+    keymap.of([...defaultKeymap, ...historyKeymap]),
+    EditorState.readOnly.of(!isEditable),
+    sandwormTheme,
+    EditorView.lineWrapping,
+    EditorView.domEventHandlers({
+      focus: () => {
+        onFocus();
+        return false;
+      },
+      blur: () => {
+        onBlur();
+        return false;
+      },
+    }),
+  ];
+}
+
 function useCodeMirror({
   containerRef,
   source,
+  diff,
   isEditable,
   onFocus,
   onBlur,
 }: {
   containerRef: React.RefObject<HTMLDivElement | null>;
   source: Y.Text;
+  diff?: Y.Text | null;
   isEditable: boolean;
   onFocus: () => void;
   onBlur: () => void;
 }) {
+  const viewRef = useRef<EditorView | null>(null);
+  const mergeRef = useRef<MergeView | null>(null);
+
   useEffect(() => {
     if (!containerRef.current) return () => {};
 
-    const state = EditorState.create({
-      doc: source.toString(),
-      extensions: [
-        yCollab(source, null, { undoManager: false }),
-        markdownLang({ htmlTagLanguage: undefined }),
-        syntaxHighlighting(markdownHighlight, { fallback: true }),
-        keymap.of([...defaultKeymap, ...historyKeymap]),
-        EditorState.readOnly.of(!isEditable),
-        sandwormTheme,
-        EditorView.lineWrapping,
-        EditorView.domEventHandlers({
-          focus: () => {
-            onFocus();
-            return false;
-          },
-          blur: () => {
-            onBlur();
-            return false;
-          },
-        }),
-      ],
-    });
+    // ─── Destroy whatever is currently mounted ──────────────
+    viewRef.current?.destroy();
+    viewRef.current = null;
+    mergeRef.current?.destroy();
+    mergeRef.current = null;
 
-    const view = new EditorView({ state, parent: containerRef.current });
-    return () => view.destroy();
-  }, [source, isEditable]);
+    if (diff) {
+      mergeRef.current = new MergeView({
+        a: {
+          doc: source.toString(),
+          extensions: [...getBaseExtensions(source, false, onFocus, onBlur)],
+        },
+        b: {
+          doc: diff.toString(),
+          extensions: [...getBaseExtensions(diff, false, onFocus, onBlur)],
+        },
+        parent: containerRef.current,
+      });
+    } else {
+      const state = EditorState.create({
+        doc: source.toString(),
+        extensions: getBaseExtensions(source, isEditable, onFocus, onBlur),
+      });
+
+      viewRef.current = new EditorView({
+        state,
+        parent: containerRef.current,
+      });
+    }
+
+    return () => {
+      viewRef.current?.destroy();
+      viewRef.current = null;
+      mergeRef.current?.destroy();
+      mergeRef.current = null;
+    };
+  }, [source, diff, isEditable]);
 }
 
 // =====================================
@@ -288,8 +351,32 @@ const SectionToggle = ({
 const MarkdownBlock = (props: Props) => {
   const id = props.block.getAttribute("id")!;
   const source = props.block.getAttribute("source")!;
+  const [workspaces] = useWorkspaces();
 
-  // ─── State ───
+  // ─── AI suggestion diff ────────────────────────────────────
+  const [aiSuggestions, setAiSuggestions] = useState<Y.Text | null>(() =>
+    getMarkdownAISuggestions(props.block)
+  );
+
+  useEffect(() => {
+    const update = () => {
+      setAiSuggestions(getMarkdownAISuggestions(props.block));
+    };
+    props.block.observe(update);
+    return () => props.block.unobserve(update);
+  }, [props.block]);
+
+  const currentWorkspace: ApiWorkspace | undefined = useMemo(
+    () => workspaces.data.find(w => w.id === props.document.workspaceId),
+    [workspaces.data, props.document.workspaceId]
+  );
+
+  const hasOaiKey = useMemo(
+    () => currentWorkspace?.secrets?.hasAiModelApiKey ?? false,
+    [currentWorkspace]
+  );
+
+  // ─── State ─────────────────────────────────────────────────
   const [isSourceCollapsed, setSourceCollapsed] = useState(false);
   const [isPreviewCollapsed, setPreviewCollapsed] = useState(false);
   const [isFocused, setFocused] = useState(false);
@@ -297,7 +384,51 @@ const MarkdownBlock = (props: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [, editorAPI] = useEditorAwareness();
 
-  // ─── Handlers ───
+  const editWithAIPrompt = getMarkdownBlockEditWithAIPrompt(props.block);
+  const isEditWithAIPromptOpen = isMarkdownBlockEditWithAIPromptOpen(
+    props.block
+  );
+
+  const onToggleEditWithAIPromptOpen = useCallback(() => {
+    if (!hasOaiKey) return;
+    toggleMarkdownEditWithAIPromptOpen(props.block);
+  }, [props.block, hasOaiKey]);
+
+  const onCloseEditWithAIPrompt = useCallback(() => {
+    closeMarkdownEditWithAIPrompt(props.block, false);
+    editorAPI.insert(id, { scrollIntoView: false });
+  }, [props.block, editorAPI, id]);
+
+  const tooltipContent = useCallback(
+    (ref: React.RefObject<HTMLDivElement>) => (
+      <div
+        ref={ref}
+        className="font-body pointer-events-none w-max bg-hunter-950 text-white text-xs p-2 rounded-md"
+      >
+        {hasOaiKey ? "Edit with AI" : "Missing OpenAI API key"}
+      </div>
+    ),
+    [hasOaiKey]
+  );
+
+  const onAcceptAISuggestion = useCallback(() => {
+    const suggestions = getMarkdownAISuggestions(props.block);
+    if (!suggestions) return;
+
+    const suggestionText = suggestions.toString();
+    source.delete(0, source.length);
+    source.insert(0, suggestionText);
+
+    props.block.setAttribute("aiSuggestions", null);
+    closeMarkdownEditWithAIPrompt(props.block, true);
+  }, [props.block, source]);
+
+  const onRejectAISuggestion = useCallback(() => {
+    props.block.setAttribute("aiSuggestions", null);
+    closeMarkdownEditWithAIPrompt(props.block, false);
+  }, [props.block]);
+
+  // ─── Editor focus handlers ─────────────────────────────────
   const onFocus = useCallback(() => {
     setFocused(true);
     editorAPI.insert(id, { scrollIntoView: false });
@@ -311,6 +442,7 @@ const MarkdownBlock = (props: Props) => {
   useCodeMirror({
     containerRef,
     source,
+    diff: aiSuggestions,
     isEditable: props.isEditable,
     onFocus,
     onBlur,
@@ -326,10 +458,8 @@ const MarkdownBlock = (props: Props) => {
     }
   }, [props.isCursorInserting, props.isCursorWithin]);
 
-  // ─── Border ───
-  // Always show a border. Focus and cursor state only affect the border color.
+  // ─── Border ────────────────────────────────────────────────
   const borderClass = (() => {
-    // Dashboard published — no border, only content shows
     if (props.dashboardMode?._tag === "viewing") return "";
 
     if (isFocused && props.isEditable)
@@ -344,11 +474,10 @@ const MarkdownBlock = (props: Props) => {
     )
       return "border border-border-focus";
 
-    // Default — always visible, soft
     return "border border-border-secondary dark:border-border-tertiary";
   })();
 
-  // ─── Source height ───
+  // ─── Source height ─────────────────────────────────────────
   const sourceLineCount = source.toString().split("\n").length;
   const sourceHeight = `${Math.max(sourceLineCount, 3) * 20 + 24}px`;
 
@@ -388,21 +517,50 @@ const MarkdownBlock = (props: Props) => {
             />
           </div>
 
-          {/* Badge — softer, pill style matching the rest of the UI */}
-          <span
-            className="inline-flex items-center gap-1
-            text-[10px] font-medium font-body
-            text-ink-300 dark:text-ink-600
-            bg-[#F1F3F4] dark:bg-[#2A2A28]
-            border border-[#DEE2E6] dark:border-[#3A3A38]
-            px-1.5 py-0.5 rounded-md select-none"
-          >
-            <PiMarkdownLogo size={11} />
-            Markdown
-          </span>
+          <div className="inline-flex items-center gap-1.5">
+            {props.isEditable && !props.dashboardMode && (
+              <button
+                type="button"
+                onClick={() => {
+                  updateMarkdownAISuggestions(
+                    props.block,
+                    `# AI Suggestion\n\nThis is the **suggested** markdown.\n\n- item one\n- item two`
+                  );
+                }}
+                className="text-[10px] text-ink-300 hover:text-primary border border-dashed border-ink-200 px-1.5 py-0.5 rounded"
+              >
+                test diff
+              </button>
+            )}
+            {props.isEditable && !props.dashboardMode && (
+              <TooltipV2<HTMLButtonElement> content={tooltipContent} active>
+                {ref => (
+                  <button
+                    type="button"
+                    ref={ref}
+                    onClick={onToggleEditWithAIPromptOpen}
+                    disabled={!hasOaiKey}
+                    className={clsx(
+                      hasOaiKey
+                        ? "text-ink-300 hover:text-primary cursor-pointer"
+                        : "text-ink-200 cursor-not-allowed",
+                      "flex items-center transition-colors"
+                    )}
+                  >
+                    <SparklesIcon className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </TooltipV2>
+            )}
+
+            <span className="inline-flex items-center gap-1 text-[10px] font-medium font-body text-ink-300 dark:text-ink-600 bg-[#F1F3F4] dark:bg-[#2A2A28] border border-[#DEE2E6] dark:border-[#3A3A38] px-1.5 py-0.5 rounded-md select-none">
+              <PiMarkdownLogo size={11} />
+              Markdown
+            </span>
+          </div>
         </div>
 
-        {/* ── Source (CodeMirror) ── */}
+        {/* ── Source (CodeMirror / MergeView) ── */}
         <Transition
           show={!isSourceCollapsed}
           unmount={false}
@@ -424,6 +582,28 @@ const MarkdownBlock = (props: Props) => {
             )}
           />
         </Transition>
+        <div className="mt-1.5">
+          <ApproveDiffButtons
+            visible={aiSuggestions !== null}
+            status="pending"
+            canTry={false}
+            onTry={() => {}}
+            onAccept={onAcceptAISuggestion}
+            onReject={onRejectAISuggestion}
+            onUndo={onRejectAISuggestion}
+          />
+        </div>
+
+        {isEditWithAIPromptOpen ? (
+          <EditWithAIForm
+            loading={props.isAIEditing ?? false}
+            disabled={props.isAIEditing ?? false}
+            onSubmit={() => props.onSubmitEditWithAI?.()}
+            onClose={onCloseEditWithAIPrompt}
+            value={editWithAIPrompt}
+            hasOutput={false}
+          />
+        ) : null}
 
         {/* ── Preview ── */}
         <Transition
