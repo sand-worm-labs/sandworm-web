@@ -36,6 +36,7 @@ import { PiCaretDown, PiMarkdownLogo } from "react-icons/pi";
 import { useWorkspaces } from "@/components/Editor/hooks/useWorkspaces";
 import type { ApiWorkspace, ApiDocument } from "@/types";
 
+import ApproveDiffButtons from "../../ApproveDiffButtons";
 import { TooltipV2 } from "../../ToolTips";
 import EditWithAIForm from "../../EditWithAIForm";
 import useEditorAwareness from "../../../hooks/useEditorAwareness";
@@ -208,7 +209,6 @@ function useCodeMirror({
     mergeRef.current = null;
 
     if (diff) {
-      // ─── Merge view: original (a) vs AI suggestion (b) ───
       mergeRef.current = new MergeView({
         a: {
           doc: source.toString(),
@@ -221,7 +221,6 @@ function useCodeMirror({
         parent: containerRef.current,
       });
     } else {
-      // ─── Normal single editor ─────────────────────────────
       const state = EditorState.create({
         doc: source.toString(),
         extensions: getBaseExtensions(source, isEditable, onFocus, onBlur),
@@ -412,6 +411,23 @@ const MarkdownBlock = (props: Props) => {
     [hasOaiKey]
   );
 
+  const onAcceptAISuggestion = useCallback(() => {
+    const suggestions = getMarkdownAISuggestions(props.block);
+    if (!suggestions) return;
+
+    const suggestionText = suggestions.toString();
+    source.delete(0, source.length);
+    source.insert(0, suggestionText);
+
+    props.block.setAttribute("aiSuggestions", null);
+    closeMarkdownEditWithAIPrompt(props.block, true);
+  }, [props.block, source]);
+
+  const onRejectAISuggestion = useCallback(() => {
+    props.block.setAttribute("aiSuggestions", null);
+    closeMarkdownEditWithAIPrompt(props.block, false);
+  }, [props.block]);
+
   // ─── Editor focus handlers ─────────────────────────────────
   const onFocus = useCallback(() => {
     setFocused(true);
@@ -566,6 +582,17 @@ const MarkdownBlock = (props: Props) => {
             )}
           />
         </Transition>
+        <div className="mt-1.5">
+          <ApproveDiffButtons
+            visible={aiSuggestions !== null}
+            status="pending"
+            canTry={false}
+            onTry={() => {}}
+            onAccept={onAcceptAISuggestion}
+            onReject={onRejectAISuggestion}
+            onUndo={onRejectAISuggestion}
+          />
+        </div>
 
         {isEditWithAIPromptOpen ? (
           <EditWithAIForm
