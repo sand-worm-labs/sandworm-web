@@ -8,18 +8,22 @@ import { SqlAiExecutorResolver } from './resolver/sql-ai-executor.resolver';
 import { PythonAiExecutorService } from './service/python-ai-executor.service';
 import { PythonAiExecutorResolver } from './resolver/python-ai-executor.resolver';
 import { ChatModule } from '../chat/chat.module';
+import { TextAiExecutorResolver } from './resolver/text-ai-executor.resolver';
+import { TextAiExecutorService } from './service/text-ai-executor.service';
  
  
 const EXECUTORS = [
   TitleAiExecutorService,
   SqlAiExecutorService,
-  PythonAiExecutorService
+  PythonAiExecutorService,
+  TextAiExecutorService,
 ]
 
 const RESOLVERS = [
   TitleAiExecutorResolver,
   SqlAiExecutorResolver,
   PythonAiExecutorResolver,
+  TextAiExecutorResolver,
 ]
  
 @Module({

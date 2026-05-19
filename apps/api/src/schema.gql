@@ -515,6 +515,7 @@ type Mutation {
   fixSqlWithAi(documentId: String!, workspaceId: String!, blockId: String!, modelId: String!): FixAiResult!
   editPythonWithAi(documentId: String!, workspaceId: String!, blockId: String!, modelId: String!): String!
   fixPythonWithAi(documentId: String!, workspaceId: String!, blockId: String!, modelId: String!): FixAiResult!
+  editTextWithAi(documentId: String!, workspaceId: String!, blockId: String!, modelId: String!): String!
 
   """Create a new chat"""
   createChat(input: CreateChatInput!): Chat!

@@ -21,19 +21,13 @@ export type MarkdownBlock = BaseBlock<BlockType.Markdown> & {
   intent: MarkdownEditIntent;
 };
 
-// =====================================
-// ⬢ Guards
-// =====================================
+
 
 export const isMarkdownBlock = (
   block: YBlock
 ): block is Y.XmlElement<MarkdownBlock> => {
   return block.getAttribute("type") === BlockType.Markdown;
 };
-
-// =====================================
-// ⬢ Factory
-// =====================================
 
 export const makeMarkdownBlock = (
   id: string
@@ -61,9 +55,7 @@ export const makeMarkdownBlock = (
   return yBlock;
 };
 
-// =====================================
-// ⬢ Attributes
-// =====================================
+
 
 export function getMarkdownAttributes(
   block: Y.XmlElement<MarkdownBlock>
@@ -77,10 +69,6 @@ export function getMarkdownAttributes(
     intent: getAttributeOr(block, "intent", 'fix'),
   };
 }
-
-// =====================================
-// ⬢ Duplicate
-// =====================================
 
 export function duplicateMarkdownBlock(
   newId: string,
@@ -109,19 +97,12 @@ export function duplicateMarkdownBlock(
   return yBlock;
 }
 
-// =====================================
-// ⬢ Execution status
-// =====================================
-
 export function getMarkdownBlockExecStatus(
   _block: Y.XmlElement<MarkdownBlock>
 ): ExecutionStatus {
   return "completed";
 }
 
-// =====================================
-// ⬢ Source
-// =====================================
 
 export function getMarkdownSource(
   block: Y.XmlElement<MarkdownBlock>
@@ -129,9 +110,7 @@ export function getMarkdownSource(
   return getAttributeOr(block, "source", new Y.Text(""));
 }
 
-// =====================================
-// ⬢ AI Suggestions
-// =====================================
+
 
 export function getMarkdownAISuggestions(
   block: Y.XmlElement<MarkdownBlock>
@@ -152,9 +131,7 @@ export function updateMarkdownAISuggestions(
   updateYText(aiSuggestions, suggestions);
 }
 
-// =====================================
-// ⬢ Edit with AI prompt
-// =====================================
+
 
 export function getMarkdownBlockEditWithAIPrompt(
   block: Y.XmlElement<MarkdownBlock>
