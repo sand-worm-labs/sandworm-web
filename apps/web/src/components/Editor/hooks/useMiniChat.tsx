@@ -7,6 +7,7 @@ import type * as Y from "yjs";
 import type { AttachedReference } from "../../Chats/types";
 
 import { useChat } from "./useChat";
+import { useChatStream } from "./useChatStream";
 import { useNotebookBlocks } from "./useNotebookBlocks";
 import { useWorkspace } from "./useWorkspaces";
 import useSideBar from "./useSideBar";
@@ -70,6 +71,7 @@ export function useMiniChat({
   );
 
   const { api: chatApi } = useChat(workspaceId, documentId);
+  const { startStream, stopStream } = useChatStream();
 
   // ─── Message helpers ───────────────────────────────────────
 
@@ -87,6 +89,16 @@ export function useMiniChat({
     },
     []
   );
+
+  const appendToMessage = useCallback((id: string, chunk: string) => {
+    setMessages(prev =>
+      prev.map(m =>
+        m.id === id
+          ? { ...m, text: (m.text ?? "") + chunk, isLoading: false }
+          : m
+      )
+    );
+  }, []);
 
   // ─── Load thread ───────────────────────────────────────────
 
@@ -128,7 +140,6 @@ export function useMiniChat({
       });
 
       try {
-        let chatId = activeChatId;
         const focusedBlocks = references
           .filter(r => r.sourceKind === "block")
           .map(r => ({
@@ -136,6 +147,8 @@ export function useMiniChat({
             title: r.label,
             type: r.blockKind ?? r.sourceKind,
           }));
+
+        let chatId = activeChatId;
 
         // ─── First message — create chat ───────────────────
         if (!chatId) {
@@ -147,38 +160,65 @@ export function useMiniChat({
             updateDocumentTitle,
             focusedBlocks: focusedBlocks.length > 0 ? focusedBlocks : undefined,
           });
+          console.log("[createChat] messages:", chat.messages);
 
           chatId = chat.id;
           setActiveChatId(chat.id);
           setActiveThreadTitle(chat.title);
-        } else {
-          // ─── Subsequent messages — send to existing chat ──
+          const [firstMessage] = await chatApi.fetchChatMessages(chat.id);
 
-          const message = await chatApi.sendMessage({
-            chatId,
-            content: text,
-            model: currentModel,
-            focusedBlocks: focusedBlocks.length > 0 ? focusedBlocks : undefined,
-          });
-
-          replaceMessage(loadingId, {
-            text: message.content,
-            isUser: false,
-            isLoading: false,
-            messageId: message.id,
-          });
+          // ─── Stream response for first message ─────────
+          if (firstMessage?.id) {
+            await startStream({
+              chatId: chat.id,
+              messageId: firstMessage.id,
+              onToken: chunk => appendToMessage(loadingId, chunk),
+              onComplete: () => setIsLoading(false),
+              onError: err => {
+                replaceMessage(loadingId, {
+                  text: "Something went wrong. Please try again.",
+                  isLoading: false,
+                });
+                console.error("[MiniChat] stream error:", err);
+                setIsLoading(false);
+              },
+            });
+          } else {
+            replaceMessage(loadingId, { text: "", isLoading: false });
+            setIsLoading(false);
+          }
           return;
         }
 
-        // ⬢ NOTE — LLM reply streamed in future; placeholder for now
-        replaceMessage(loadingId, { text: "", isLoading: false });
+        // ─── Subsequent messages — send to existing chat ───
+        const message = await chatApi.sendMessage({
+          chatId,
+          content: text,
+          model: currentModel,
+          focusedBlocks: focusedBlocks.length > 0 ? focusedBlocks : undefined,
+        });
+
+        // ─── Stream response ───────────────────────────────
+        await startStream({
+          chatId,
+          messageId: message.id,
+          onToken: chunk => appendToMessage(loadingId, chunk),
+          onComplete: () => setIsLoading(false),
+          onError: err => {
+            replaceMessage(loadingId, {
+              text: "Something went wrong. Please try again.",
+              isLoading: false,
+            });
+            console.error("[MiniChat] stream error:", err);
+            setIsLoading(false);
+          },
+        });
       } catch (err) {
         replaceMessage(loadingId, {
           text: "Something went wrong. Please try again.",
           isLoading: false,
         });
         console.error("[MiniChat] handleSend error:", err);
-      } finally {
         setIsLoading(false);
       }
     },
@@ -189,8 +229,10 @@ export function useMiniChat({
       documentId,
       currentModel,
       addMessage,
+      appendToMessage,
       replaceMessage,
       chatApi,
+      startStream,
     ]
   );
 
@@ -201,7 +243,6 @@ export function useMiniChat({
       files?: File[],
       updateDocumentTitle = false
     ) => {
-      console.log("tsx", text, references);
       handleSend(text, references, files, updateDocumentTitle).catch(
         console.error
       );
@@ -239,22 +280,24 @@ export function useMiniChat({
   // ─── Thread management ─────────────────────────────────────
 
   const handleNewThread = useCallback(() => {
+    stopStream();
     setMessages([]);
     setActiveChatId(null);
     setActiveThreadTitle(undefined);
     setView("chat");
-  }, []);
+  }, [stopStream]);
 
   const handleSelectThread = useCallback(
     async (id: string) => {
       try {
+        stopStream();
         await loadThread(id);
         setView("chat");
       } catch (err) {
         console.error("[MiniChat] failed to load thread:", err);
       }
     },
-    [loadThread]
+    [loadThread, stopStream]
   );
 
   // ─── Scroll ─────────────────────────────────────────────────
@@ -280,9 +323,14 @@ export function useMiniChat({
   useEffect(() => {
     const chatId = sidebarState.rightPanelMeta?.chatId;
     if (!chatId || !visible) return;
-
     loadThread(chatId).catch(console.error);
   }, [sidebarState.rightPanelMeta, visible]);
+
+  // ─── Cleanup on unmount ─────────────────────────────────────
+
+  useEffect(() => {
+    return () => stopStream();
+  }, [stopStream]);
 
   // ─── Return ────────────────────────────────────────────────
 
