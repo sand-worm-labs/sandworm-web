@@ -18,6 +18,7 @@ import { ClockCountdown } from "@/components/Assets/ClockCountdown";
 import { ChatIcon } from "@/components/Assets/ChatIcon";
 import { PencilSimple } from "@/components/Assets/PencilSimple";
 import { NEXT_PUBLIC_PUBLIC_URL } from "@/utils/env";
+import useSideBar from "@/components/Editor/hooks/useSideBar";
 
 import { useDataSources } from "../hooks/useDataSources";
 import { useDocuments } from "../hooks/useDocuments";
@@ -42,6 +43,7 @@ import PageSettingsPanel from "./PageSettingsPanel";
 import { Tooltip, TooltipV2 } from "./ToolTips";
 import { ContentSkeleton, TitleSkeleton } from "./ContentSkeleton";
 import ShareModal from "./ShareModal";
+
 // this is needed because this component only works with the browser
 const V2Editor = dynamic(() => import("@/components/Editor"), {
   ssr: false,
@@ -65,6 +67,7 @@ function PrivateDocumentPageInner(
     () => props.document.title || "Untitled",
     [props.document.title]
   );
+  const { state: sidebarState } = useSideBar();
 
   const [selectedSidebar, setSelectedSidebar] = useState<
     | { _tag: "comments" }
@@ -150,6 +153,12 @@ function PrivateDocumentPageInner(
   const onToggleChat = useCallback(() => {
     setSelectedSidebar(v => (v?._tag === "chat" ? null : { _tag: "chat" }));
   }, []);
+
+  useEffect(() => {
+    if (sidebarState.rightPanelId === "chat") {
+      setSelectedSidebar({ _tag: "chat" });
+    }
+  }, [sidebarState.rightPanelId, sidebarState.rightPanelMeta]);
 
   const router = useRouter();
 

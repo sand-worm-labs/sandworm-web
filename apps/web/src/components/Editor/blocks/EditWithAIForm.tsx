@@ -1,8 +1,10 @@
 import type * as Y from "yjs";
-import { SparklesIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 import { useCallback, useEffect, useRef } from "react";
+import { PiX, PiArrowRight } from "react-icons/pi";
 import { updateYText } from "@sandworm/editor";
+
+import { AIChatIcon } from "@/components/Assets/AIChatIcon";
 
 import Spin from "./Spin";
 
@@ -14,8 +16,10 @@ interface Props {
   onClose: () => void;
   hasOutput: boolean;
 }
+
 function EditWithAIForm(props: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     const onChange = (evt: Y.YTextEvent, tr: Y.Transaction) => {
       const currentSelectionStart = inputRef.current?.selectionStart ?? null;
@@ -31,21 +35,16 @@ function EditWithAIForm(props: Props) {
       }
 
       const currentInput = inputRef.current;
-
-      let index = 0; // This keeps track of the current index in the text before any changes.
+      let index = 0;
       let delta = 0;
       evt.changes.delta.forEach(operation => {
         if (operation.retain !== undefined) {
           index += operation.retain;
         } else if (operation.insert !== undefined) {
-          if (index < currentSelectionStart) {
-            delta += operation.insert.length;
-          }
+          if (index < currentSelectionStart) delta += operation.insert.length;
           index += operation.insert.length;
         } else if (operation.delete !== undefined) {
-          if (index < currentSelectionStart) {
-            delta -= operation.delete;
-          }
+          if (index < currentSelectionStart) delta -= operation.delete;
         }
       });
 
@@ -59,9 +58,7 @@ function EditWithAIForm(props: Props) {
     };
 
     props.value.observe(onChange);
-    return () => {
-      props.value.unobserve(onChange);
-    };
+    return () => props.value.unobserve(onChange);
   }, [props.value, inputRef]);
 
   const onChange = useCallback(
@@ -82,13 +79,10 @@ function EditWithAIForm(props: Props) {
   const onKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       const modifier = e.ctrlKey || e.metaKey;
-      const shouldClose = e.key === "Escape" || (modifier && e.key === "e");
-      const shouldRun = e.key === "Enter";
-
-      if (shouldClose) {
+      if (e.key === "Escape" || (modifier && e.key === "e")) {
         e.preventDefault();
         props.onClose();
-      } else if (shouldRun) {
+      } else if (e.key === "Enter") {
         props.onSubmit();
       }
     },
@@ -96,51 +90,69 @@ function EditWithAIForm(props: Props) {
   );
 
   return (
-    <div className="print:hidden h-full w-full">
+    <div className="print:hidden w-full">
       <form
         onSubmit={onSubmit}
         className={clsx(
-          props.loading
-            ? "bg-gray-300 border-gray-400"
-            : "bg-primary-50 border-primary-400 focus-within:bg-primary-100 focus-within:border-primary-500",
-          props.hasOutput ? "" : "rounded-b-md",
-          "w-full h-full mt-[-1px]  flex items-center px-3 py-1 gap-x-2"
+          "print:hidden w-full flex items-center gap-2 px-3 py-2 mt-[-1px]",
+          "border-t border-border dark:border-border-dark",
+          !props.hasOutput && "rounded-b-xl",
+          "bg-surface dark:bg-surface-dark",
+          "transition-colors duration-150"
         )}
       >
+        <div className="flex-shrink-0 text-ink-400 dark:text-ink-500">
+          <AIChatIcon size={36} />
+        </div>
+
+        <input
+          ref={inputRef}
+          disabled={props.disabled}
+          defaultValue={props.value.toString()}
+          className={clsx(
+            "flex-1 min-w-0 rounded-md px-2 py-1",
+            "border border-border dark:border-border-dark",
+            "bg-white dark:bg-ink-950",
+            "outline-none ring-offset-0",
+            "focus:border-[#A308F0] dark:focus:border-[#C97FF5]",
+            "dark:focus:ring-[#C97FF5]/20",
+            "text-[12.5px] font-body",
+            "text-ink-700 dark:text-ink-200",
+            "placeholder:text-ink-400 dark:placeholder:text-ink-500",
+            "disabled:opacity-50 disabled:cursor-not-allowed",
+            "transition-[border-color,box-shadow] duration-150"
+          )}
+          placeholder="Describe what you want to change…"
+          onChange={onChange}
+          onKeyDown={onKeyDown}
+        />
+
         <button
           type="button"
-          className="text-ink-400 hover:text-ink-400 "
           onClick={props.onClose}
+          className={clsx(
+            "flex-shrink-0",
+            "text-ink-400 dark:text-ink-500",
+            "hover:text-[#A308F0] dark:hover:text-[#C97FF5]",
+            "transition-colors duration-150"
+          )}
         >
-          <XMarkIcon className="h-3 w-3" />
+          <PiX size={12} />
         </button>
-        <div className="flex w-full items-center">
-          <input
-            ref={inputRef}
-            disabled={props.disabled}
-            defaultValue={props.value.toString()}
-            className="h-full w-full border-0 text-xs font-syne bg-transparent px-0  placeholder-gray-400 outline-primary border-primary ring-primary"
-            placeholder="My code does X. It must do Y instead."
-            onChange={onChange}
-            onKeyDown={onKeyDown}
-          />
-          <button
-            type="submit"
-            disabled={props.disabled}
-            className={clsx(
-              props.loading || props.disabled
-                ? "bg-gray-200 hover:bg-gray-300 cursor-not-allowed"
-                : "bg-[#A308F0] hover:bg-primary-300 border-primary-300",
-              "p-1.5 rounded-sm text-primary-600 "
-            )}
-          >
-            {props.loading ? (
-              <Spin />
-            ) : (
-              <SparklesIcon className="h-3 w-3 text-white" />
-            )}
-          </button>
-        </div>
+
+        <button
+          type="submit"
+          disabled={props.disabled}
+          className={clsx(
+            "flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-lg",
+            "transition-all duration-150",
+            props.loading || props.disabled
+              ? "bg-ink-100 dark:bg-ink-800 text-ink-400 dark:text-ink-500 cursor-not-allowed"
+              : "bg-[#A308F0] hover:bg-[#8A06CC] text-white"
+          )}
+        >
+          {props.loading ? <Spin /> : <PiArrowRight size={12} />}
+        </button>
       </form>
     </div>
   );

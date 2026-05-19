@@ -110,7 +110,6 @@ import { ContentSkeleton } from "./ContentSkeleton";
 import PlusButton from "./PlusButton";
 import DragHandle from "./DragHandle";
 import Title from "./Title";
-import AiDiffToolbar from "./blocks/AiDiffToolbar";
 import MarkdownBlock from "./blocks/customBlocks/markdown";
 
 // The react-dnd package does not export this...
@@ -1937,6 +1936,7 @@ function TabRef(props: TabRefProps) {
     onMarkdown: block => (
       <MarkdownBlock
         block={block}
+        document={props.document}
         isEditable={props.isEditable}
         dashboardMode={null}
         belongsToMultiTabGroup={props.hasMultipleTabs}

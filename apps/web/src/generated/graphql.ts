@@ -1255,7 +1255,7 @@ export type WorkspaceSecrets = {
 
 export type ChatFieldsFragment = { __typename?: 'Chat', id: string, userId: string, workspaceId: string, documentId: string, title: string, isPrivate: boolean, pin: boolean, lastContext?: any | null, createdAt: any, updatedAt: any };
 
-export type ChatWithMessagesFragment = { __typename?: 'Chat', id: string, userId: string, workspaceId: string, documentId: string, title: string, isPrivate: boolean, pin: boolean, lastContext?: any | null, createdAt: any, updatedAt: any, messages?: Array<{ __typename?: 'Message', id: string, role: string, content: string, createdAt: any }> | null };
+export type ChatWithMessagesFragment = { __typename?: 'Chat', id: string, userId: string, workspaceId: string, documentId: string, title: string, isPrivate: boolean, pin: boolean, lastContext?: any | null, createdAt: any, updatedAt: any, messages?: Array<{ __typename?: 'Message', id: string, role: string, content: string, parts?: any | null, attachments?: any | null, createdAt: any, model?: string | null, finishReason?: string | null, usage?: any | null }> | null };
 
 export type DocumentFieldsFragment = { __typename?: 'Document', id: string, slug: string, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, forkCount: number, favoriteCount: number, isFavorite: boolean };
 
@@ -1263,7 +1263,7 @@ export type EnvironmentVariableFieldsFragment = { __typename?: 'EnvironmentVaria
 
 export type EnvironmentFieldsFragment = { __typename?: 'Environment', id: string, workspaceId: string, status: EnvironmentStatus, resourceVersion: number, lastActivityAt: any };
 
-export type MessageFieldsFragment = { __typename?: 'Message', id: string, role: string, content: string, createdAt: any };
+export type MessageFieldsFragment = { __typename?: 'Message', id: string, role: string, content: string, parts?: any | null, attachments?: any | null, createdAt: any, model?: string | null, finishReason?: string | null, usage?: any | null };
 
 export type EditTitleWithAiMutationVariables = Exact<{
   documentId: Scalars['String']['input'];
@@ -1367,7 +1367,7 @@ export type CreateChatMutationVariables = Exact<{
 }>;
 
 
-export type CreateChatMutation = { __typename?: 'Mutation', createChat: { __typename?: 'Chat', id: string, userId: string, workspaceId: string, documentId: string, title: string, isPrivate: boolean, pin: boolean, lastContext?: any | null, createdAt: any, updatedAt: any, messages?: Array<{ __typename?: 'Message', id: string, role: string, content: string, createdAt: any }> | null } };
+export type CreateChatMutation = { __typename?: 'Mutation', createChat: { __typename?: 'Chat', id: string, userId: string, workspaceId: string, documentId: string, title: string, isPrivate: boolean, pin: boolean, lastContext?: any | null, createdAt: any, updatedAt: any, messages?: Array<{ __typename?: 'Message', id: string, role: string, content: string, parts?: any | null, attachments?: any | null, createdAt: any, model?: string | null, finishReason?: string | null, usage?: any | null }> | null } };
 
 export type UpdateChatMutationVariables = Exact<{
   input: UpdateChatInput;
@@ -1389,6 +1389,27 @@ export type PinChatMutationVariables = Exact<{
 
 
 export type PinChatMutation = { __typename?: 'Mutation', pinChat: { __typename?: 'Chat', id: string, userId: string, workspaceId: string, documentId: string, title: string, isPrivate: boolean, pin: boolean, lastContext?: any | null, createdAt: any, updatedAt: any } };
+
+export type SendMessageMutationVariables = Exact<{
+  input: SendMessageInput;
+}>;
+
+
+export type SendMessageMutation = { __typename?: 'Mutation', sendMessage: { __typename?: 'Message', id: string, role: string, content: string, parts?: any | null, attachments?: any | null, createdAt: any, model?: string | null, finishReason?: string | null, usage?: any | null } };
+
+export type VoteMessageMutationVariables = Exact<{
+  input: VoteMessageInput;
+}>;
+
+
+export type VoteMessageMutation = { __typename?: 'Mutation', voteMessage: { __typename?: 'Vote', messageId: string, isUpvoted: boolean, createdAt: any } };
+
+export type RemoveVoteMutationVariables = Exact<{
+  messageId: Scalars['String']['input'];
+}>;
+
+
+export type RemoveVoteMutation = { __typename?: 'Mutation', removeVote: boolean };
 
 export type CreateCommentMutationVariables = Exact<{
   documentId: Scalars['String']['input'];
@@ -1708,14 +1729,14 @@ export type GetChatQueryVariables = Exact<{
 }>;
 
 
-export type GetChatQuery = { __typename?: 'Query', chat: { __typename?: 'Chat', id: string, userId: string, workspaceId: string, documentId: string, title: string, isPrivate: boolean, pin: boolean, lastContext?: any | null, createdAt: any, updatedAt: any, messages?: Array<{ __typename?: 'Message', id: string, role: string, content: string, createdAt: any }> | null } };
+export type GetChatQuery = { __typename?: 'Query', chat: { __typename?: 'Chat', id: string, userId: string, workspaceId: string, documentId: string, title: string, isPrivate: boolean, pin: boolean, lastContext?: any | null, createdAt: any, updatedAt: any, messages?: Array<{ __typename?: 'Message', id: string, role: string, content: string, parts?: any | null, attachments?: any | null, createdAt: any, model?: string | null, finishReason?: string | null, usage?: any | null }> | null } };
 
 export type GetChatMessagesQueryVariables = Exact<{
   chatId: Scalars['String']['input'];
 }>;
 
 
-export type GetChatMessagesQuery = { __typename?: 'Query', chatMessages: Array<{ __typename?: 'Message', id: string, role: string, content: string, createdAt: any }> };
+export type GetChatMessagesQuery = { __typename?: 'Query', chatMessages: Array<{ __typename?: 'Message', id: string, role: string, content: string, parts?: any | null, attachments?: any | null, createdAt: any, model?: string | null, finishReason?: string | null, usage?: any | null }> };
 
 export type GetCommentQueryVariables = Exact<{
   commentId: Scalars['String']['input'];
@@ -1981,7 +2002,12 @@ export const MessageFieldsFragmentDoc = gql`
   id
   role
   content
+  parts
+  attachments
   createdAt
+  model
+  finishReason
+  usage
 }
     `;
 export const ChatWithMessagesFragmentDoc = gql`
@@ -2606,6 +2632,105 @@ export function usePinChatMutation(baseOptions?: Apollo.MutationHookOptions<PinC
 export type PinChatMutationHookResult = ReturnType<typeof usePinChatMutation>;
 export type PinChatMutationResult = Apollo.MutationResult<PinChatMutation>;
 export type PinChatMutationOptions = Apollo.BaseMutationOptions<PinChatMutation, PinChatMutationVariables>;
+export const SendMessageDocument = gql`
+    mutation SendMessage($input: SendMessageInput!) {
+  sendMessage(input: $input) {
+    ...MessageFields
+  }
+}
+    ${MessageFieldsFragmentDoc}`;
+export type SendMessageMutationFn = Apollo.MutationFunction<SendMessageMutation, SendMessageMutationVariables>;
+
+/**
+ * __useSendMessageMutation__
+ *
+ * To run a mutation, you first call `useSendMessageMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSendMessageMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [sendMessageMutation, { data, loading, error }] = useSendMessageMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useSendMessageMutation(baseOptions?: Apollo.MutationHookOptions<SendMessageMutation, SendMessageMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SendMessageMutation, SendMessageMutationVariables>(SendMessageDocument, options);
+      }
+export type SendMessageMutationHookResult = ReturnType<typeof useSendMessageMutation>;
+export type SendMessageMutationResult = Apollo.MutationResult<SendMessageMutation>;
+export type SendMessageMutationOptions = Apollo.BaseMutationOptions<SendMessageMutation, SendMessageMutationVariables>;
+export const VoteMessageDocument = gql`
+    mutation VoteMessage($input: VoteMessageInput!) {
+  voteMessage(input: $input) {
+    messageId
+    isUpvoted
+    createdAt
+  }
+}
+    `;
+export type VoteMessageMutationFn = Apollo.MutationFunction<VoteMessageMutation, VoteMessageMutationVariables>;
+
+/**
+ * __useVoteMessageMutation__
+ *
+ * To run a mutation, you first call `useVoteMessageMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useVoteMessageMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [voteMessageMutation, { data, loading, error }] = useVoteMessageMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useVoteMessageMutation(baseOptions?: Apollo.MutationHookOptions<VoteMessageMutation, VoteMessageMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<VoteMessageMutation, VoteMessageMutationVariables>(VoteMessageDocument, options);
+      }
+export type VoteMessageMutationHookResult = ReturnType<typeof useVoteMessageMutation>;
+export type VoteMessageMutationResult = Apollo.MutationResult<VoteMessageMutation>;
+export type VoteMessageMutationOptions = Apollo.BaseMutationOptions<VoteMessageMutation, VoteMessageMutationVariables>;
+export const RemoveVoteDocument = gql`
+    mutation RemoveVote($messageId: String!) {
+  removeVote(messageId: $messageId)
+}
+    `;
+export type RemoveVoteMutationFn = Apollo.MutationFunction<RemoveVoteMutation, RemoveVoteMutationVariables>;
+
+/**
+ * __useRemoveVoteMutation__
+ *
+ * To run a mutation, you first call `useRemoveVoteMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRemoveVoteMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [removeVoteMutation, { data, loading, error }] = useRemoveVoteMutation({
+ *   variables: {
+ *      messageId: // value for 'messageId'
+ *   },
+ * });
+ */
+export function useRemoveVoteMutation(baseOptions?: Apollo.MutationHookOptions<RemoveVoteMutation, RemoveVoteMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RemoveVoteMutation, RemoveVoteMutationVariables>(RemoveVoteDocument, options);
+      }
+export type RemoveVoteMutationHookResult = ReturnType<typeof useRemoveVoteMutation>;
+export type RemoveVoteMutationResult = Apollo.MutationResult<RemoveVoteMutation>;
+export type RemoveVoteMutationOptions = Apollo.BaseMutationOptions<RemoveVoteMutation, RemoveVoteMutationVariables>;
 export const CreateCommentDocument = gql`
     mutation CreateComment($documentId: String!, $input: CreateCommentInput!) {
   createComment(documentId: $documentId, input: $input) {
