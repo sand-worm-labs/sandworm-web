@@ -1,7 +1,7 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { DateField, StringField, StringFieldOptional, UUIDField } from '@sandworm/graphql';
 import { GraphQLJSON } from 'graphql-type-json';
-import { MessageEntity } from '@sandworm/postgresql-typeorm';
+import { FocusedBlock, MessageEntity } from '@sandworm/postgresql-typeorm';
 
 @ObjectType()
 export class Message {
@@ -22,6 +22,9 @@ export class Message {
 
   @Field(() => GraphQLJSON, { nullable: true })
   attachments?: any;
+
+  @Field(() => GraphQLJSON, { nullable: true })
+  focusedBlocks?: FocusedBlock[]
 
   @DateField()
   createdAt!: Date;
@@ -44,6 +47,7 @@ export class Message {
     message.id = entity.id;
     message.chatId = entity.chat?.id ?? (entity as any).chatId;
     message.role = entity.role;
+    message.focusedBlocks = entity.focusedBlocks;
     message.content = entity.content;
     message.parts = entity.parts;
     message.attachments = entity.attachments;
