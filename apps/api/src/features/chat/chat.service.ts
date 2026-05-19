@@ -210,22 +210,38 @@ export class ChatService {
     return Message.fromEntity(message);
   }
 
-
-  streamResponse(userId: string, chatId: string): Observable<MessageEvent> {
-    return new Observable<MessageEvent>((subscriber) => {
-      this.executeSimulatedStream(userId, chatId, subscriber);
-    });
-  }
+    streamResponse(
+      userId: string,
+      chatId: string,
+      messageId: string,
+    ): Observable<MessageEvent> {
+      return new Observable<MessageEvent>((subscriber) => {
+        this.executeSimulatedStream(userId, chatId, messageId, subscriber);
+      });
+    }
 
   private async executeSimulatedStream(
     userId: string,
     chatId: string,
+    messageId: string,
     subscriber: Subscriber<MessageEvent>,
   ): Promise<void> {
     const chat = await this.chatRepository.findOne({ where: { id: chatId, userId } });
-
     if (!chat) {
       subscriber.error(new NotFoundException('Chat not found'));
+      return;
+    }
+
+    const userMessage = await this.messageRepository.findOne({
+      where: { id: messageId, chat: { id: chatId }, role: MessageRole.USER },
+    });
+    if (!userMessage) {
+      subscriber.error(new NotFoundException('Message not found'));
+      return;
+    }
+
+    if (userMessage.isAnswered) {
+      subscriber.complete();
       return;
     }
 
@@ -244,15 +260,17 @@ export class ChatService {
       return;
     }
 
-    await this.messageRepository.save(
-      this.messageRepository.create({
-        chat: { id: chatId },
-        role: MessageRole.ASSISTANT,
-        content: fullContent.trim(),
-      }),
-    );
+    await Promise.all([
+      this.messageRepository.save(
+        this.messageRepository.create({
+          chat:    { id: chatId },
+          role:    MessageRole.ASSISTANT,
+          content: fullContent.trim(),
+        }),
+      ),
+      this.messageRepository.update(messageId, { isAnswered: true }),
+    ]);
 
     subscriber.complete();
   }
-
 }
