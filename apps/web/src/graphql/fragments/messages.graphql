@@ -8,4 +8,5 @@ fragment MessageFields on Message {
   model
   finishReason
   usage
+  focusedBlocks                                                                                                                                                                                               
 }

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import type * as Y from "yjs";
 
-import type { AttachedReference } from "../../Chats/types";
+import type { AttachedReference, BlockKind } from "../../Chats/types";
 
 import { useChat } from "./useChat";
 import { useChatStream } from "./useChatStream";
@@ -18,10 +18,17 @@ import useSideBar from "./useSideBar";
 
 export interface LocalMessage {
   id: string;
+  messageId?: string;
   text: string;
   isUser: boolean;
   isLoading?: boolean;
-  messageId?: string;
+  role?: string;
+  model?: string;
+  finishReason?: string | null;
+  parts?: unknown;
+  attachments?: unknown;
+  usage?: unknown;
+  focusedBlocks?: Array<{ id: string; title: string; type: string }>;
   references?: AttachedReference[];
   files?: File[];
 }
@@ -101,18 +108,30 @@ export function useMiniChat({
   }, []);
 
   // ─── Load thread ───────────────────────────────────────────
-
   const loadThread = useCallback(
     async (chatId: string) => {
       const chat = await chatApi.fetchChat(chatId);
       setActiveChatId(chat.id);
       setActiveThreadTitle(chat.title);
+
       setMessages(
         (chat.messages ?? []).map(m => ({
           id: crypto.randomUUID(),
           messageId: m.id,
           text: m.content,
           isUser: m.role === "user",
+          role: m.role,
+          model: m.model ?? undefined,
+          finishReason: m.finishReason ?? null,
+          parts: m.parts ?? null,
+          attachments: m.attachments ?? null,
+          usage: m.usage ?? null,
+          references: (m.focusedBlocks ?? []).map(b => ({
+            id: b.id,
+            label: b.title,
+            sourceKind: "block" as const,
+            blockKind: b.type as BlockKind,
+          })),
         }))
       );
     },
@@ -306,8 +325,6 @@ export function useMiniChat({
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // ─── URL prompt ─────────────────────────────────────────────
-
   useEffect(() => {
     if (promptFiredRef.current) return;
     const prompt = searchParams.get("prompt");
@@ -331,8 +348,6 @@ export function useMiniChat({
   useEffect(() => {
     return () => stopStream();
   }, [stopStream]);
-
-  // ─── Return ────────────────────────────────────────────────
 
   return {
     state: {
