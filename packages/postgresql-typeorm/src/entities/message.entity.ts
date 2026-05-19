@@ -136,6 +136,9 @@ export class MessageEntity extends AbstractEntity {
   @PrimaryGeneratedColumn('uuid', { primaryKeyConstraintName: 'PK_message_id' })
   id!: string;
 
+  @Column({ default: false })
+  isAnswered: boolean;
+
   @ManyToOne(() => ChatEntity, (chat) => chat.messages, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'chat_id' })
   chat!: Relation<ChatEntity>;

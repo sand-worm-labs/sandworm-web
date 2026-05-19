@@ -11,6 +11,7 @@ import aiServiceConfig from '@/infrastructure/ai/config/ai-service.config';
 import { HttpModule } from '@nestjs/axios';
 import { WorkspaceModule } from '../workspace/workspace.module';
 import { AiExecutionModule } from '../ai-execution/ai-execution.module';
+import { ChatController } from './chat.controller';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { AiExecutionModule } from '../ai-execution/ai-execution.module';
     forwardRef(() => AiExecutionModule)
     
   ],
+  controllers: [ChatController],
   providers: [ChatResolver,MessageResolver,ChatService],
   exports: [ChatService],
 })
