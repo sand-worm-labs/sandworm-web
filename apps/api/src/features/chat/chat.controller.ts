@@ -12,8 +12,7 @@ export class ChatController {
 
   constructor(private readonly chatService: ChatService) {}
 
-
-  @Post(':workspaceId/:documentId/stream')
+  @Post(':chatId/:messageId/stream')
   @ApiAuth({ summary: 'Stream chat response as SSE' })
   async streamChat(
     @Param('chatId') chatId: string,
