@@ -6,6 +6,7 @@ import { EditorState } from "@codemirror/state";
 import { markdown as markdownLang } from "@codemirror/lang-markdown";
 import { syntaxHighlighting, HighlightStyle } from "@codemirror/language";
 import { defaultKeymap, historyKeymap } from "@codemirror/commands";
+import { MergeView } from "@codemirror/merge";
 import { yCollab } from "y-codemirror.next";
 import MarkdownIt from "markdown-it";
 import { full as markdownItEmoji } from "markdown-it-emoji";
@@ -25,6 +26,8 @@ import {
   getMarkdownBlockEditWithAIPrompt,
   toggleMarkdownEditWithAIPromptOpen,
   closeMarkdownEditWithAIPrompt,
+  getMarkdownAISuggestions,
+  updateMarkdownAISuggestions,
 } from "@sandworm/editor";
 import { SparklesIcon } from "@heroicons/react/20/solid";
 import { tags as t } from "@lezer/highlight";
@@ -150,48 +153,93 @@ const markdownHighlight = HighlightStyle.define([
 // ⬢ useCodeMirror
 // =====================================
 
+function getBaseExtensions(
+  source: Y.Text,
+  isEditable: boolean,
+  onFocus: () => void,
+  onBlur: () => void
+) {
+  return [
+    yCollab(source, null, { undoManager: false }),
+    markdownLang({ htmlTagLanguage: undefined }),
+    syntaxHighlighting(markdownHighlight, { fallback: true }),
+    keymap.of([...defaultKeymap, ...historyKeymap]),
+    EditorState.readOnly.of(!isEditable),
+    sandwormTheme,
+    EditorView.lineWrapping,
+    EditorView.domEventHandlers({
+      focus: () => {
+        onFocus();
+        return false;
+      },
+      blur: () => {
+        onBlur();
+        return false;
+      },
+    }),
+  ];
+}
+
 function useCodeMirror({
   containerRef,
   source,
+  diff,
   isEditable,
   onFocus,
   onBlur,
 }: {
   containerRef: React.RefObject<HTMLDivElement | null>;
   source: Y.Text;
+  diff?: Y.Text | null;
   isEditable: boolean;
   onFocus: () => void;
   onBlur: () => void;
 }) {
+  const viewRef = useRef<EditorView | null>(null);
+  const mergeRef = useRef<MergeView | null>(null);
+
   useEffect(() => {
     if (!containerRef.current) return () => {};
 
-    const state = EditorState.create({
-      doc: source.toString(),
-      extensions: [
-        yCollab(source, null, { undoManager: false }),
-        markdownLang({ htmlTagLanguage: undefined }),
-        syntaxHighlighting(markdownHighlight, { fallback: true }),
-        keymap.of([...defaultKeymap, ...historyKeymap]),
-        EditorState.readOnly.of(!isEditable),
-        sandwormTheme,
-        EditorView.lineWrapping,
-        EditorView.domEventHandlers({
-          focus: () => {
-            onFocus();
-            return false;
-          },
-          blur: () => {
-            onBlur();
-            return false;
-          },
-        }),
-      ],
-    });
+    // ─── Destroy whatever is currently mounted ──────────────
+    viewRef.current?.destroy();
+    viewRef.current = null;
+    mergeRef.current?.destroy();
+    mergeRef.current = null;
 
-    const view = new EditorView({ state, parent: containerRef.current });
-    return () => view.destroy();
-  }, [source, isEditable]);
+    if (diff) {
+      // ─── Merge view: original (a) vs AI suggestion (b) ───
+      mergeRef.current = new MergeView({
+        a: {
+          doc: source.toString(),
+          extensions: [...getBaseExtensions(source, false, onFocus, onBlur)],
+        },
+        b: {
+          doc: diff.toString(),
+          extensions: [...getBaseExtensions(diff, false, onFocus, onBlur)],
+        },
+        parent: containerRef.current,
+      });
+    } else {
+      // ─── Normal single editor ─────────────────────────────
+      const state = EditorState.create({
+        doc: source.toString(),
+        extensions: getBaseExtensions(source, isEditable, onFocus, onBlur),
+      });
+
+      viewRef.current = new EditorView({
+        state,
+        parent: containerRef.current,
+      });
+    }
+
+    return () => {
+      viewRef.current?.destroy();
+      viewRef.current = null;
+      mergeRef.current?.destroy();
+      mergeRef.current = null;
+    };
+  }, [source, diff, isEditable]);
 }
 
 // =====================================
@@ -306,6 +354,19 @@ const MarkdownBlock = (props: Props) => {
   const source = props.block.getAttribute("source")!;
   const [workspaces] = useWorkspaces();
 
+  // ─── AI suggestion diff ────────────────────────────────────
+  const [aiSuggestions, setAiSuggestions] = useState<Y.Text | null>(() =>
+    getMarkdownAISuggestions(props.block)
+  );
+
+  useEffect(() => {
+    const update = () => {
+      setAiSuggestions(getMarkdownAISuggestions(props.block));
+    };
+    props.block.observe(update);
+    return () => props.block.unobserve(update);
+  }, [props.block]);
+
   const currentWorkspace: ApiWorkspace | undefined = useMemo(
     () => workspaces.data.find(w => w.id === props.document.workspaceId),
     [workspaces.data, props.document.workspaceId]
@@ -316,7 +377,7 @@ const MarkdownBlock = (props: Props) => {
     [currentWorkspace]
   );
 
-  // ─── State ───
+  // ─── State ─────────────────────────────────────────────────
   const [isSourceCollapsed, setSourceCollapsed] = useState(false);
   const [isPreviewCollapsed, setPreviewCollapsed] = useState(false);
   const [isFocused, setFocused] = useState(false);
@@ -351,10 +412,9 @@ const MarkdownBlock = (props: Props) => {
     [hasOaiKey]
   );
 
-  // ─── Handlers ───
+  // ─── Editor focus handlers ─────────────────────────────────
   const onFocus = useCallback(() => {
     setFocused(true);
-
     editorAPI.insert(id, { scrollIntoView: false });
   }, [id, editorAPI]);
 
@@ -366,6 +426,7 @@ const MarkdownBlock = (props: Props) => {
   useCodeMirror({
     containerRef,
     source,
+    diff: aiSuggestions,
     isEditable: props.isEditable,
     onFocus,
     onBlur,
@@ -381,10 +442,8 @@ const MarkdownBlock = (props: Props) => {
     }
   }, [props.isCursorInserting, props.isCursorWithin]);
 
-  // ─── Border ───
-  // Always show a border. Focus and cursor state only affect the border color.
+  // ─── Border ────────────────────────────────────────────────
   const borderClass = (() => {
-    // Dashboard published — no border, only content shows
     if (props.dashboardMode?._tag === "viewing") return "";
 
     if (isFocused && props.isEditable)
@@ -399,11 +458,10 @@ const MarkdownBlock = (props: Props) => {
     )
       return "border border-border-focus";
 
-    // Default — always visible, soft
     return "border border-border-secondary dark:border-border-tertiary";
   })();
 
-  // ─── Source height ───
+  // ─── Source height ─────────────────────────────────────────
   const sourceLineCount = source.toString().split("\n").length;
   const sourceHeight = `${Math.max(sourceLineCount, 3) * 20 + 24}px`;
 
@@ -445,6 +503,20 @@ const MarkdownBlock = (props: Props) => {
 
           <div className="inline-flex items-center gap-1.5">
             {props.isEditable && !props.dashboardMode && (
+              <button
+                type="button"
+                onClick={() => {
+                  updateMarkdownAISuggestions(
+                    props.block,
+                    `# AI Suggestion\n\nThis is the **suggested** markdown.\n\n- item one\n- item two`
+                  );
+                }}
+                className="text-[10px] text-ink-300 hover:text-primary border border-dashed border-ink-200 px-1.5 py-0.5 rounded"
+              >
+                test diff
+              </button>
+            )}
+            {props.isEditable && !props.dashboardMode && (
               <TooltipV2<HTMLButtonElement> content={tooltipContent} active>
                 {ref => (
                   <button
@@ -472,7 +544,7 @@ const MarkdownBlock = (props: Props) => {
           </div>
         </div>
 
-        {/* ── Source (CodeMirror) ── */}
+        {/* ── Source (CodeMirror / MergeView) ── */}
         <Transition
           show={!isSourceCollapsed}
           unmount={false}
