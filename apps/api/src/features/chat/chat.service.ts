@@ -216,11 +216,11 @@ export class ChatService {
       messageId: string,
     ): Observable<MessageEvent> {
       return new Observable<MessageEvent>((subscriber) => {
-        this.executeSimulatedStream(userId, chatId, messageId, subscriber);
+        this.executeStreamResponse(userId, chatId, messageId, subscriber);
       });
     }
 
-  private async executeSimulatedStream(
+  private async executeStreamResponse(
     userId: string,
     chatId: string,
     messageId: string,
