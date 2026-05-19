@@ -259,6 +259,7 @@ type Message {
   content: String!
   parts: JSON
   attachments: JSON
+  focusedBlocks: JSON
   createdAt: DateTime!
   model: String
   finishReason: String

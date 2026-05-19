@@ -97,6 +97,7 @@ export function ChatBubble({
     setRating(next);
     onRate?.(next);
   }
+  
 
   const hasAttachments = isUser && (references.length > 0 || files.length > 0);
 
