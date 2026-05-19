@@ -205,7 +205,6 @@ export const useChat = (workspaceId: string, documentId: string): UseChat => {
         update: (cache, { data: mutationData }) => {
           if (!mutationData?.sendMessage) return;
 
-          // ─── Append message to the cached chat ─────────────
           cache.modify({
             id: cache.identify({ __typename: "Chat", id: payload.chatId }),
             fields: {
@@ -221,6 +220,7 @@ export const useChat = (workspaceId: string, documentId: string): UseChat => {
       });
 
       const message = result.data?.sendMessage;
+      console.log("message res", message);
       if (!message) throw new Error("Failed to send message");
       return message as Message;
     },

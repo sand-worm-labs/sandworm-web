@@ -27,13 +27,39 @@ export class ChatController {
       'Connection':        'keep-alive',
       'X-Accel-Buffering': 'no',
     });
-
+  
     try {
-      this.chatService.streamResponse(userId,chatId,messageId);
+      const stream$ = this.chatService.streamResponse(userId, chatId, messageId);
+  
+      await new Promise<void>((resolve, reject) => {
+        stream$.subscribe({
+          next: (event: MessageEvent) => {
+            reply.raw.write(`data: ${event.data}\n\n`);
+          },
+          error: (err) => {
+            this.logger.error('Stream failed', err);
+            reply.raw.write(`data: [ERROR]\n\n`);
+            reply.raw.end();
+            reject(err);
+          },
+          complete: () => {
+            reply.raw.write(`data: [DONE]\n\n`);
+            reply.raw.end();
+            resolve();
+          },
+        });
+  
+        // ─── Clean up if client disconnects early ──────────
+        req.raw.on('close', () => {
+          resolve();
+        });
+      });
     } catch (err) {
       this.logger.error('Stream failed', err);
-      reply.raw.write(`data: [ERROR]\n\n`);
-      reply.raw.end();
+      if (!reply.raw.writableEnded) {
+        reply.raw.write(`data: [ERROR]\n\n`);
+        reply.raw.end();
+      }
     }
   }
 }
