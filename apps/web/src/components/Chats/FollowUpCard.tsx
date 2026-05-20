@@ -46,14 +46,12 @@ export function FollowUpCard({ part, onSubmit, disabled }: FollowUpCardProps) {
       className="rounded-xl border border-border-secondary dark:border-[#2A2A28]
         bg-white dark:bg-[#1C1C1A] overflow-hidden"
     >
-      {/* ─── Message ─── */}
       <div className="px-3 py-2.5 border-b border-border-secondary dark:border-[#2A2A28]">
         <p className="text-[12px] text-ink-400 dark:text-ink-400 leading-relaxed">
           {part.message}
         </p>
       </div>
 
-      {/* ─── Questions ─── */}
       <div className="px-3 py-2 space-y-3">
         {part.questions.map(q => (
           <div key={q.id}>
@@ -109,7 +107,6 @@ export function FollowUpCard({ part, onSubmit, disabled }: FollowUpCardProps) {
         ))}
       </div>
 
-      {/* ─── Submit ─── */}
       <div className="px-3 pb-2.5">
         <button
           type="button"

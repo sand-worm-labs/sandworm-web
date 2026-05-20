@@ -11,6 +11,7 @@ import { MiniChatInput } from "./MiniChatInput";
 import { MiniChatHeader } from "./MiniChatHeader";
 import { MiniChatMessages } from "./MiniChatMessages";
 import { ThreadList } from "./ThreadList";
+import type { PendingReviewPart } from "./parts.types";
 
 // =====================================
 // ⬢ Props
@@ -41,6 +42,14 @@ export const MiniChat: React.FC<MiniChatProps> = ({
     documentId,
     yDoc,
   });
+
+  const pendingReview = React.useMemo<PendingReviewPart | undefined>(() => {
+    const lastAssistant = [...state.messages].reverse().find(m => !m.isUser);
+    if (!lastAssistant?.streamParts) return undefined;
+    return lastAssistant.streamParts.find(
+      (p): p is PendingReviewPart => p.type === "pending_review"
+    );
+  }, [state.messages]);
 
   return (
     <>
@@ -75,6 +84,9 @@ export const MiniChat: React.FC<MiniChatProps> = ({
                   onSend={handlers.inputSend}
                   disabled={state.isLoading}
                   referenceSources={state.referenceSources}
+                  pendingReview={pendingReview}
+                  onAcceptAll={() => handlers.acceptAll("")}
+                  onRejectAll={() => handlers.rejectAll("")}
                 />
               </div>
             </>

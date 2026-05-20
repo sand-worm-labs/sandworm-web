@@ -29,6 +29,7 @@ export function BlockActionGroup({ parts }: BlockActionGroupProps) {
     <div className="flex flex-col gap-1">
       {visible.map((part, i) => (
         <BlockActionRow
+          // eslint-disable-next-line react/no-array-index-key
           key={`${part.blockId}-${part.action}-${i}`}
           part={part}
         />

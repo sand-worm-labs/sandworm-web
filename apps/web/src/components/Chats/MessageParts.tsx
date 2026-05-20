@@ -27,12 +27,12 @@ function groupParts(
         const next = parts[i];
         if (!next || next.type !== "block_action") break;
         group.push(next as BlockActionPart);
-        i++;
+        i += 1;
       }
       result.push(group);
     } else {
       result.push(part);
-      i++;
+      i += 1;
     }
   }
 
@@ -45,18 +45,11 @@ function groupParts(
 
 interface MessagePartsProps {
   parts: PartPayload[];
-  onFollowUpSubmit?: (answers: Record<string, string>) => void;
-  onAcceptAll?: () => void;
-  onRejectAll?: () => void;
-  disabled?: boolean;
 }
 
-export function MessageParts({ parts, disabled }: MessagePartsProps) {
+export function MessageParts({ parts }: MessagePartsProps) {
   if (!parts || parts.length === 0) return null;
 
-  // Only render non-interactive parts here.
-  // pending_review and follow_up are rendered separately
-  // below the ChatBubble in MiniChatMessages.
   const renderableParts = parts.filter(
     p => p.type !== "pending_review" && p.type !== "follow_up"
   );
@@ -68,27 +61,22 @@ export function MessageParts({ parts, disabled }: MessagePartsProps) {
   return (
     <div className="flex flex-col gap-1.5 w-full max-w-[98%]">
       {grouped.map((item, idx) => {
-        // ─── Block action group ──────────────────────
         if (Array.isArray(item)) {
           return <BlockActionGroup key={`group-${idx}`} parts={item} />;
         }
 
-        // ─── Thinking ────────────────────────────────
         if (item.type === "thinking") {
           return <ThinkingPart key={idx} part={item} />;
         }
 
-        // ─── Tool call ───────────────────────────────
         if (item.type === "tool_call") {
           return <ToolCallRow key={idx} part={item} />;
         }
 
-        // ─── Tool result ─────────────────────────────
         if (item.type === "tool_result") {
           return <ToolResultRow key={idx} part={item} />;
         }
 
-        // ─── Error ───────────────────────────────────
         if (item.type === "error") {
           return (
             <div

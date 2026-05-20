@@ -1,7 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { PiCheck, PiX, PiCaretDown } from "react-icons/pi";
+import {
+  PiCheck,
+  PiX,
+  PiCaretDown,
+  PiPlus,
+  PiPencilSimple,
+  PiMinus,
+} from "react-icons/pi";
 
 // =====================================
 // ⬢ Types
@@ -25,9 +32,24 @@ interface ChangesPanelCompactProps {
 // =====================================
 
 const TYPE_META = {
-  added: { icon: "⊕", color: "#1D9E75", bg: "#E1F5EE", label: "added" },
-  modified: { icon: "✎", color: "#EF9F27", bg: "#FEF5E7", label: "modified" },
-  deleted: { icon: "−", color: "#D85A30", bg: "#FAECE7", label: "deleted" },
+  added: {
+    icon: <PiPlus size={14} />,
+    color: "#1D9E75",
+    bg: "#E1F5EE",
+    label: "added",
+  },
+  modified: {
+    icon: <PiPencilSimple size={14} />,
+    color: "#EF9F27",
+    bg: "#FEF5E7",
+    label: "modified",
+  },
+  deleted: {
+    icon: <PiMinus size={14} />,
+    color: "#D85A30",
+    bg: "#FAECE7",
+    label: "deleted",
+  },
 } as const;
 
 const mockChanges: Change[] = [
@@ -92,7 +114,7 @@ export default function ChangesPanelCompact({
   };
 
   return (
-    <div className="w-full rounded-xl border border-border-secondary dark:border-[#2A2A28] overflow-hidden bg-white dark:bg-[#1C1C1A]">
+    <div className="w-full rounded-t-xl border border-border-secondary dark:border-[#2A2A28] overflow-hidden bg-[#F1F3F4] dark:bg-[#1C1C1A]">
       {/* ─── Header ─── */}
       <div className="flex items-center justify-between px-3 py-2.5 border-b border-border-secondary dark:border-[#2A2A28]">
         <button
@@ -167,8 +189,8 @@ export default function ChangesPanelCompact({
               >
                 {/* Type icon */}
                 <span
-                  className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-md text-[11px] font-bold"
-                  style={{ background: meta.bg, color: meta.color }}
+                  className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-md text-[14px] text-[#343330] border border-[#B1DDE8]"
+                  style={{ display: "flex", flexShrink: 0 }}
                 >
                   {meta.icon}
                 </span>

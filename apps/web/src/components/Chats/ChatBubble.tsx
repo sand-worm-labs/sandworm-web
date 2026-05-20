@@ -104,26 +104,26 @@ export function ChatBubble({
     <div
       className={`flex flex-col gap-1 ${isUser ? "items-end" : "items-start"}`}
     >
-      {/* ── Reference pills + file chips — above user bubble ── */}
       {hasAttachments && (
         <div className="flex flex-wrap gap-1 max-w-[78%] justify-end mb-0.5">
           {references.map(ref => (
             <BubbleReferencePill key={ref.id} reference={ref} />
           ))}
           {files.map((file, i) => (
+            // eslint-disable-next-line react/no-array-index-key
             <FileBubbleChip key={`${file.name}-${i}`} file={file} />
           ))}
         </div>
       )}
 
-      {/* ── Bubble ── */}
       <div
         className={`
-        ${isUser ? "bg-[#DEFCFE] dark:bg-[#121417] rounded-br-sm" : "bg-[#F1F3F4] dark:bg-[#121417] rounded-bl-sm"}
-        text-ink-500 dark:text-ink-400
-        px-4 py-2.5 rounded-2xl max-w-[78%] text-sm leading-relaxed
-        break-words whitespace-pre-wrap
-      `}
+    ${isUser ? "bg-[#DEFCFE] dark:bg-[#121417] rounded-br-sm" : "bg-[#F1F3F4] dark:bg-[#121417] rounded-bl-sm"}
+    text-ink-500 dark:text-ink-400
+    px-4 py-2.5 rounded-2xl max-w-[78%] text-sm leading-relaxed
+    [overflow-wrap:anywhere]
+    ${isUser ? "whitespace-pre-wrap" : "whitespace-pre-line"}
+  `}
       >
         {text}
       </div>

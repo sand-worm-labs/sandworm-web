@@ -206,9 +206,8 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
       )}
 
       <div className="bg-[#F1F3F4] dark:bg-[#30302E] border border-border-secondary dark:border-border-tertiary rounded-2xl shadow-sm">
-        {/* ─── Pending review — inside box, above files, same as file strip ── */}
         {pendingChanges && pendingChanges.length > 0 && (
-          <div className="px-2 pt-2 border-b border-[#DEE2E6] dark:border-border-tertiary">
+          <div className="px-0 pt-0 border-b border-[#DEE2E6] dark:border-border-tertiary">
             <ChangesPanelCompact
               changes={pendingChanges}
               onConfirm={onAcceptAll}
