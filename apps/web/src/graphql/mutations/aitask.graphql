@@ -60,5 +60,18 @@ mutation FixPythonWithAi(
   ){
     chatId
   }
+}
 
+mutation EditTextWithAi(
+  $documentId: String!
+  $workspaceId: String!
+  $blockId: String!
+  $modelId: String!
+) {
+  editTextWithAi(
+    documentId: $documentId
+    workspaceId: $workspaceId
+    blockId: $blockId
+    modelId: $modelId
+  )
 }

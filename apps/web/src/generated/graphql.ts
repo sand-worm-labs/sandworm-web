@@ -318,6 +318,7 @@ export type Mutation = {
   duplicateDocument: Document;
   editPythonWithAi: Scalars['String']['output'];
   editSqlWithAi: Scalars['String']['output'];
+  editTextWithAi: Scalars['String']['output'];
   editTitleWithAi: Scalars['String']['output'];
   fixPythonWithAi: FixAiResult;
   fixSqlWithAi: FixAiResult;
@@ -520,6 +521,14 @@ export type MutationEditPythonWithAiArgs = {
 
 
 export type MutationEditSqlWithAiArgs = {
+  blockId: Scalars['String']['input'];
+  documentId: Scalars['String']['input'];
+  modelId: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
+};
+
+
+export type MutationEditTextWithAiArgs = {
   blockId: Scalars['String']['input'];
   documentId: Scalars['String']['input'];
   modelId: Scalars['String']['input'];
@@ -1313,6 +1322,16 @@ export type FixPythonWithAiMutationVariables = Exact<{
 
 
 export type FixPythonWithAiMutation = { __typename?: 'Mutation', fixPythonWithAi: { __typename?: 'FixAiResult', chatId: string } };
+
+export type EditTextWithAiMutationVariables = Exact<{
+  documentId: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
+  blockId: Scalars['String']['input'];
+  modelId: Scalars['String']['input'];
+}>;
+
+
+export type EditTextWithAiMutation = { __typename?: 'Mutation', editTextWithAi: string };
 
 export type CreateUserMutationVariables = Exact<{
   input: CreateUserInput;
@@ -2260,6 +2279,45 @@ export function useFixPythonWithAiMutation(baseOptions?: Apollo.MutationHookOpti
 export type FixPythonWithAiMutationHookResult = ReturnType<typeof useFixPythonWithAiMutation>;
 export type FixPythonWithAiMutationResult = Apollo.MutationResult<FixPythonWithAiMutation>;
 export type FixPythonWithAiMutationOptions = Apollo.BaseMutationOptions<FixPythonWithAiMutation, FixPythonWithAiMutationVariables>;
+export const EditTextWithAiDocument = gql`
+    mutation EditTextWithAi($documentId: String!, $workspaceId: String!, $blockId: String!, $modelId: String!) {
+  editTextWithAi(
+    documentId: $documentId
+    workspaceId: $workspaceId
+    blockId: $blockId
+    modelId: $modelId
+  )
+}
+    `;
+export type EditTextWithAiMutationFn = Apollo.MutationFunction<EditTextWithAiMutation, EditTextWithAiMutationVariables>;
+
+/**
+ * __useEditTextWithAiMutation__
+ *
+ * To run a mutation, you first call `useEditTextWithAiMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useEditTextWithAiMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [editTextWithAiMutation, { data, loading, error }] = useEditTextWithAiMutation({
+ *   variables: {
+ *      documentId: // value for 'documentId'
+ *      workspaceId: // value for 'workspaceId'
+ *      blockId: // value for 'blockId'
+ *      modelId: // value for 'modelId'
+ *   },
+ * });
+ */
+export function useEditTextWithAiMutation(baseOptions?: Apollo.MutationHookOptions<EditTextWithAiMutation, EditTextWithAiMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<EditTextWithAiMutation, EditTextWithAiMutationVariables>(EditTextWithAiDocument, options);
+      }
+export type EditTextWithAiMutationHookResult = ReturnType<typeof useEditTextWithAiMutation>;
+export type EditTextWithAiMutationResult = Apollo.MutationResult<EditTextWithAiMutation>;
+export type EditTextWithAiMutationOptions = Apollo.BaseMutationOptions<EditTextWithAiMutation, EditTextWithAiMutationVariables>;
 export const CreateUserDocument = gql`
     mutation CreateUser($input: CreateUserInput!) {
   createUser(input: $input) {
