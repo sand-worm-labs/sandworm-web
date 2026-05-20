@@ -7,7 +7,6 @@ import { BlockType } from "@sandworm/editor";
 
 import { BlockKindIcon } from "./icons";
 import type { ThinkingPart as ThinkingPartType } from "./parts.types";
-import { BLOCK_KIND_META } from "./types";
 
 // =====================================
 // ⬢ Constants
@@ -63,7 +62,6 @@ export function ThinkingPart({ part }: ThinkingPartProps) {
         />
       </button>
 
-      {/* ─── Body ─── */}
       {open && (
         <div className="border-t border-border-secondary dark:border-[#2A2A28] px-2.5 py-2 space-y-2">
           {/* Context used */}
@@ -98,7 +96,6 @@ export function ThinkingPart({ part }: ThinkingPartProps) {
             </div>
           )}
 
-          {/* Thinking text */}
           <p className="text-[12.5px] text-ink-400 dark:text-ink-500 leading-relaxed">
             {part.thinking}
           </p>

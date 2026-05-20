@@ -1,13 +1,36 @@
 "use client";
 
 import { useState } from "react";
-import { Check, X, ChevronDown } from "lucide-react";
+import { PiCheck, PiX, PiCaretDown } from "react-icons/pi";
 
-// ===================================
-// ⬢ MOCK DATA
-// ===================================
+// =====================================
+// ⬢ Types
+// =====================================
 
-const mockChanges = [
+export interface Change {
+  id: string;
+  type: "added" | "modified" | "deleted";
+  label: string;
+  description: string;
+}
+
+interface ChangesPanelCompactProps {
+  changes?: Change[];
+  onConfirm?: (acceptedIds: string[]) => void;
+  onUndo?: () => void;
+}
+
+// =====================================
+// ⬢ Constants
+// =====================================
+
+const TYPE_META = {
+  added: { icon: "⊕", color: "#1D9E75", bg: "#E1F5EE", label: "added" },
+  modified: { icon: "✎", color: "#EF9F27", bg: "#FEF5E7", label: "modified" },
+  deleted: { icon: "−", color: "#D85A30", bg: "#FAECE7", label: "deleted" },
+} as const;
+
+const mockChanges: Change[] = [
   {
     id: "change-1",
     type: "added",
@@ -22,76 +45,86 @@ const mockChanges = [
   },
 ];
 
-const typeIcons: Record<string, string> = {
-  added: "⊕",
-  modified: "✎",
-  deleted: "−",
-};
+// =====================================
+// ⬢ ChangesPanelCompact
+// =====================================
 
-// ===================================
-// ⬢ COMPONENT
-// ===================================
-
-export default function ChangesPanelCompact() {
+export default function ChangesPanelCompact({
+  changes: propChanges,
+  onConfirm,
+  onUndo,
+}: ChangesPanelCompactProps) {
   const [isExpanded, setIsExpanded] = useState(true);
-  const [changes, setChanges] = useState(mockChanges);
+  const [changes, setChanges] = useState<Change[]>(propChanges ?? mockChanges);
   const [acceptedIds, setAcceptedIds] = useState<Set<string>>(new Set());
   const [declinedIds, setDeclinedIds] = useState<Set<string>>(new Set());
 
   const handleAccept = (id: string) => {
-    const newDeclined = new Set(declinedIds);
-    newDeclined.delete(id);
-    setDeclinedIds(newDeclined);
-    setAcceptedIds(new Set([...acceptedIds, id]));
+    setDeclinedIds(prev => {
+      const s = new Set(prev);
+      s.delete(id);
+      return s;
+    });
+    setAcceptedIds(prev => new Set([...prev, id]));
   };
 
   const handleDecline = (id: string) => {
-    const newAccepted = new Set(acceptedIds);
-    newAccepted.delete(id);
-    setAcceptedIds(newAccepted);
-    setDeclinedIds(new Set([...declinedIds, id]));
+    setAcceptedIds(prev => {
+      const s = new Set(prev);
+      s.delete(id);
+      return s;
+    });
+    setDeclinedIds(prev => new Set([...prev, id]));
   };
 
   const handleConfirm = () => {
-    console.log("Confirmed changes:", Array.from(acceptedIds));
-    setChanges(changes.filter(c => !acceptedIds.has(c.id)));
+    const accepted = Array.from(acceptedIds);
+    onConfirm?.(accepted);
+    setChanges(prev => prev.filter(c => !acceptedIds.has(c.id)));
     setAcceptedIds(new Set());
     setDeclinedIds(new Set());
   };
 
   const handleUndo = () => {
+    onUndo?.();
     setAcceptedIds(new Set());
     setDeclinedIds(new Set());
   };
 
-  const pendingCount = changes.length;
-
   return (
-    <div className="w-full">
-      {/* ===== HEADER ===== */}
-      <div className="flex items-center justify-between bg-white px-3 py-2 rounded-t-xl border border-border-tertiary">
+    <div className="w-full rounded-xl border border-border-secondary dark:border-[#2A2A28] overflow-hidden bg-white dark:bg-[#1C1C1A]">
+      {/* ─── Header ─── */}
+      <div className="flex items-center justify-between px-3 py-2.5 border-b border-border-secondary dark:border-[#2A2A28]">
         <button
           type="button"
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="flex items-center gap-1.5 text-accent font-semibold text-xs cursor-pointer"
+          onClick={() => setIsExpanded(v => !v)}
+          className="flex items-center gap-1.5 cursor-pointer"
         >
-          <ChevronDown
-            size={16}
-            className={`transition-transform duration-300 ${
-              isExpanded ? "rotate-0" : "-rotate-90"
-            }`}
+          <PiCaretDown
+            size={12}
+            className={`text-ink-300 dark:text-ink-600 transition-transform duration-200 ${isExpanded ? "rotate-0" : "-rotate-90"}`}
           />
-          <span className="inline-block px-2 py-0.5 bg-primary rounded-full text-accent font-bold">
-            {pendingCount}
+          <span
+            className="inline-flex items-center justify-center w-4 h-4 rounded-full
+              text-[9px] font-bold text-white"
+            style={{ background: "#A308F0" }}
+          >
+            {changes.length}
           </span>
-          pending
+          <span className="text-[11.5px] font-medium text-ink-400 dark:text-ink-400">
+            pending review
+          </span>
         </button>
 
         <div className="flex gap-1">
           <button
             type="button"
             onClick={handleUndo}
-            className="px-2 py-1 rounded-lg bg-white hover:bg-primary/50 text-accent text-xs font-medium transition-colors duration-200 border border-border-secondary"
+            className="px-2 py-1 rounded-lg text-[11px] font-medium
+              text-ink-400 dark:text-ink-500
+              border border-border-secondary dark:border-[#2A2A28]
+              hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
+              transition-colors"
           >
             Undo
           </button>
@@ -99,80 +132,90 @@ export default function ChangesPanelCompact() {
             type="button"
             onClick={handleConfirm}
             disabled={acceptedIds.size === 0}
-            className="px-2 py-1 rounded-lg bg-primary hover:bg-primary disabled:bg-[#868E96] text-white text-xs font-medium transition-colors duration-200"
+            className="px-2 py-1 rounded-lg text-[11px] font-medium
+              bg-[#A308F0] hover:bg-[#8A06CC] text-white
+              disabled:bg-[#E4C4F9] dark:disabled:bg-[#2A1040]
+              disabled:cursor-not-allowed
+              transition-colors"
           >
             Confirm
           </button>
         </div>
       </div>
 
-      {/* ===== CHANGES LIST ===== */}
+      {/* ─── List ─── */}
       <div
-        className={`overflow-hidden bg-white border border-t-0 border-secondary rounded-b-xl transition-all duration-300 ${
-          isExpanded ? "max-h-96" : "max-h-0"
-        }`}
+        className={`transition-all duration-300 overflow-hidden ${isExpanded ? "max-h-80" : "max-h-0"}`}
       >
-        <div className="p-2 space-y-1.5">
+        <div className="p-2 space-y-1">
           {changes.map(change => {
             const isAccepted = acceptedIds.has(change.id);
             const isDeclined = declinedIds.has(change.id);
+            const meta = TYPE_META[change.type];
 
             return (
               <div
                 key={change.id}
-                className={`group relative flex items-start gap-2 p-2 rounded-lg border transition-all duration-200 ${
-                  isDeclined
-                    ? "bg-red-100 border-red-300 opacity-60"
-                    : isAccepted
-                      ? "bg-green-100 border-green-300"
-                      : "bg-white border-primary hover:border-primary/80"
-                }`}
+                className={`group flex items-center gap-2 px-2.5 py-1.5 rounded-lg border transition-all duration-150
+                  ${
+                    isDeclined
+                      ? "bg-[#FAECE7] dark:bg-[#1A0D08] border-[#FAECE7] dark:border-[#2A1510] opacity-60"
+                      : isAccepted
+                        ? "bg-[#E1F5EE] dark:bg-[#081A12] border-[#E1F5EE] dark:border-[#0D2A1C]"
+                        : "bg-white dark:bg-[#1C1C1A] border-border-secondary dark:border-[#2A2A28] hover:border-[#A308F0]/40"
+                  }`}
               >
-                {/* Icon */}
-                <span className="text-xs mt-0 flex-shrink-0">
-                  {typeIcons[change.type]}
+                {/* Type icon */}
+                <span
+                  className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-md text-[11px] font-bold"
+                  style={{ background: meta.bg, color: meta.color }}
+                >
+                  {meta.icon}
                 </span>
 
                 {/* Content */}
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-semibold text-gray-900 leading-tight">
+                  <p className="text-[11.5px] font-medium text-ink-500 dark:text-ink-200 leading-tight truncate">
                     {change.label}
                   </p>
-                  <p className="text-xs text-gray-500 truncate">
+                  <p className="text-[10px] text-ink-300 dark:text-ink-600 truncate">
                     {change.description}
                   </p>
                 </div>
 
-                {/* Action Icons */}
+                {/* Accept / Decline */}
                 <div
-                  className={`flex gap-0.5 flex-shrink-0 transition-opacity duration-200 ${
-                    isAccepted || isDeclined
-                      ? "opacity-100"
-                      : "opacity-0 group-hover:opacity-100"
-                  }`}
+                  className={`flex gap-0.5 flex-shrink-0 transition-opacity duration-150
+                    ${isAccepted || isDeclined ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
                 >
                   <button
                     type="button"
                     onClick={() => handleAccept(change.id)}
-                    className="p-1 rounded-md hover:bg-green-200 transition-colors duration-150"
+                    className="p-1 rounded-md hover:bg-[#E1F5EE] dark:hover:bg-[#081A12] transition-colors"
                     title="Accept"
                   >
-                    <Check
-                      size={14}
+                    <PiCheck
+                      size={13}
                       className={
-                        isAccepted ? "text-green-600" : "text-gray-400"
+                        isAccepted
+                          ? "text-[#1D9E75]"
+                          : "text-ink-300 dark:text-ink-600"
                       }
                     />
                   </button>
                   <button
                     type="button"
                     onClick={() => handleDecline(change.id)}
-                    className="p-1 rounded-md hover:bg-red-200 transition-colors duration-150"
+                    className="p-1 rounded-md hover:bg-[#FAECE7] dark:hover:bg-[#1A0D08] transition-colors"
                     title="Decline"
                   >
-                    <X
-                      size={14}
-                      className={isDeclined ? "text-red-600" : "text-gray-400"}
+                    <PiX
+                      size={13}
+                      className={
+                        isDeclined
+                          ? "text-[#D85A30]"
+                          : "text-ink-300 dark:text-ink-600"
+                      }
                     />
                   </button>
                 </div>
