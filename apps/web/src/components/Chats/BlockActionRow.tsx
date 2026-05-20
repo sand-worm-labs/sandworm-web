@@ -91,6 +91,7 @@ export function BlockActionRow({ part, onLocate }: BlockActionRowProps) {
 
       <Pill>{meta?.label ?? part.blockType}</Pill>
 
+      {/* ─── Preview result ─── */}
       {part.previewResult &&
         (part.previewResult.hasError ? (
           <Pill error>{part.previewResult.errorMsg ?? "error"}</Pill>
@@ -98,6 +99,7 @@ export function BlockActionRow({ part, onLocate }: BlockActionRowProps) {
           <Pill>{part.previewResult.rowCount} rows</Pill>
         ))}
 
+      {/* ─── Locate hint ─── */}
       {isClickable && (
         <span className="flex-shrink-0 text-[10px] text-ink-200 dark:text-ink-700 opacity-0 group-hover:opacity-100 transition-opacity">
           ↗

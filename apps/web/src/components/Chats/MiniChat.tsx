@@ -2,12 +2,17 @@
 
 "use client";
 
-import React from "react";
+import React, { useCallback } from "react";
 import type * as Y from "yjs";
+import axios from "axios";
+import { toast } from "sonner";
+
+import { NEXT_PUBLIC_API_URL } from "@/utils/env";
 
 import { useMiniChat } from "../Editor/hooks/useMiniChat";
 
 import { MiniChatInput } from "./MiniChatInput";
+import type { UploadedFileRef } from "./MiniChatInput";
 import { MiniChatHeader } from "./MiniChatHeader";
 import { MiniChatMessages } from "./MiniChatMessages";
 import { ThreadList } from "./ThreadList";
@@ -43,6 +48,43 @@ export const MiniChat: React.FC<MiniChatProps> = ({
     yDoc,
   });
 
+  // =====================================
+  // ⬢ File Upload
+  // =====================================
+
+  const handleUploadFile = useCallback(
+    async (file: File): Promise<UploadedFileRef> => {
+      const response = await axios.post<{ name: string; path: string }>(
+        `${NEXT_PUBLIC_API_URL()}/workspaces/${workspaceId}/files?replace=false`,
+        file,
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/octet-stream",
+            "X-File-Name": file.name,
+            "X-File-Size": file.size.toString(),
+          },
+        }
+      );
+
+      toast.success(`${file.name} uploaded`, {
+        description: "You can find it in your workspace files.",
+        duration: 4000,
+      });
+
+      return {
+        name: response.data.name,
+        path: response.data.path,
+        size: file.size,
+      };
+    },
+    [workspaceId]
+  );
+
+  // =====================================
+  // ⬢ Pending Review
+  // =====================================
+
   const pendingReview = React.useMemo<PendingReviewPart | undefined>(() => {
     const lastAssistant = [...state.messages].reverse().find(m => !m.isUser);
     if (!lastAssistant?.streamParts) return undefined;
@@ -50,6 +92,10 @@ export const MiniChat: React.FC<MiniChatProps> = ({
       (p): p is PendingReviewPart => p.type === "pending_review"
     );
   }, [state.messages]);
+
+  // =====================================
+  // ⬢ Render
+  // =====================================
 
   return (
     <>
@@ -82,6 +128,7 @@ export const MiniChat: React.FC<MiniChatProps> = ({
               <div className="pb-4 md:px-4">
                 <MiniChatInput
                   onSend={handlers.inputSend}
+                  onUploadFile={handleUploadFile}
                   disabled={state.isLoading}
                   referenceSources={state.referenceSources}
                   pendingReview={pendingReview}
