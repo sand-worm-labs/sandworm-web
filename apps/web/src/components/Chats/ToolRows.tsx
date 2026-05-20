@@ -53,6 +53,7 @@ export function ToolCallRow({ part }: ToolCallRowProps) {
       }
       className={`px-3 py-1.5 rounded-xl bg-[#F1F3F4] dark:bg-[#1A1A18] w-full transition-all duration-150 ${hasParams ? "cursor-pointer hover:bg-[#EAECEE] dark:hover:bg-[#1F1F1D]" : ""}`}
     >
+      {/* ─── Single line ─── */}
       <div className="flex items-center gap-3">
         <IconBox>
           <PiLightning
@@ -70,6 +71,7 @@ export function ToolCallRow({ part }: ToolCallRowProps) {
 
         {part.category && <Pill>{part.category}</Pill>}
 
+        {/* ─── Collapsed param preview ─── */}
         {hasParams && !expanded && (
           <span className="flex-shrink-0 text-[10px] text-ink-300 dark:text-ink-600 font-mono truncate max-w-[100px]">
             {params.map(([k, v]) => `${k} ${v}`).join(" · ")}

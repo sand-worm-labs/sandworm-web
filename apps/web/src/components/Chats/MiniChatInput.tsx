@@ -7,6 +7,8 @@ import {
   PiFileCsv,
   PiFileText,
   PiAt,
+  PiSpinner,
+  PiWarningCircle,
 } from "react-icons/pi";
 
 import { TooltipV2 } from "@/components/Editor/blocks/ToolTips";
@@ -22,12 +24,26 @@ import type { PendingReviewPart } from "./parts.types";
 // ⬢ Types
 // =====================================
 
+export type UploadedFileRef = {
+  name: string;
+  path: string;
+  size: number;
+};
+
+type TrackedFile = {
+  localId: string;
+  file: File;
+  status: "uploading" | "done" | "error";
+  ref?: UploadedFileRef;
+};
+
 interface MiniChatInputProps {
   onSend?: (data: {
     message: string;
-    files: File[];
+    fileRefs: UploadedFileRef[];
     references: AttachedReference[];
   }) => void;
+  onUploadFile?: (file: File) => Promise<UploadedFileRef>;
   placeholder?: string;
   maxHeight?: number;
   acceptedFileTypes?: string;
@@ -39,7 +55,16 @@ interface MiniChatInputProps {
 }
 
 // =====================================
-// ⬢ File Icon Helper
+// ⬢ Helpers
+// =====================================
+
+let _localIdCounter = 0;
+function genLocalId() {
+  return `tracked-file-${++_localIdCounter}`;
+}
+
+// =====================================
+// ⬢ File Icon
 // =====================================
 
 function FileIcon({ file }: { file: File }) {
@@ -47,6 +72,28 @@ function FileIcon({ file }: { file: File }) {
     return <PiFileCsv size={15} />;
   }
   return <PiFileText size={15} />;
+}
+
+// =====================================
+// ⬢ File Status Indicator
+// =====================================
+
+function FileStatusIndicator({ status }: { status: TrackedFile["status"] }) {
+  if (status === "uploading") {
+    return (
+      <span className="text-[#A308F0] animate-spin">
+        <PiSpinner size={12} />
+      </span>
+    );
+  }
+  if (status === "error") {
+    return (
+      <span className="text-red-400">
+        <PiWarningCircle size={12} />
+      </span>
+    );
+  }
+  return null;
 }
 
 // =====================================
@@ -115,6 +162,7 @@ const DEFAULT_SOURCES: ReferenceSource[] = [
 
 export const MiniChatInput: React.FC<MiniChatInputProps> = ({
   onSend,
+  onUploadFile,
   placeholder = "Create a bar chart with tokens above $1m market cap on Base.",
   maxHeight = 200,
   acceptedFileTypes = ".csv,.pdf,.doc,.docx,.txt,.xls,.xlsx",
@@ -124,17 +172,33 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
   onAcceptAll,
   onRejectAll,
 }) => {
+  // =====================================
+  // ⬢ State
+  // =====================================
+
   const [message, setMessage] = useState("");
-  const [files, setFiles] = useState<File[]>([]);
+  const [trackedFiles, setTrackedFiles] = useState<TrackedFile[]>([]);
   const [references, setReferences] = useState<AttachedReference[]>([]);
   const [pickerOpen, setPickerOpen] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // =====================================
+  // ⬢ Derived
+  // =====================================
+
   const selectedIds = new Set(references.map(r => r.id));
-  const canSend = (message.trim().length > 0 || files.length > 0) && !disabled;
+  const isUploading = trackedFiles.some(f => f.status === "uploading");
+  const canSend =
+    (message.trim().length > 0 || trackedFiles.length > 0) &&
+    !disabled &&
+    !isUploading;
   const hasReferencableItems = referenceSources.some(s => s.items.length > 0);
+
+  // =====================================
+  // ⬢ Reference Handlers
+  // =====================================
 
   const handleReferenceSelect = useCallback((ref: AttachedReference) => {
     setReferences(prev =>
@@ -148,22 +212,84 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
     setReferences(prev => prev.filter(r => r.id !== id));
   }, []);
 
-  const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
-    setFiles(prev => [...prev, ...Array.from(e.target.files ?? [])]);
-  };
+  // =====================================
+  // ⬢ File Handlers
+  // =====================================
 
-  const removeFile = (index: number) => {
-    setFiles(prev => prev.filter((_, i) => i !== index));
-  };
+  const uploadTrackedFile = useCallback(
+    async (tracked: TrackedFile) => {
+      if (!onUploadFile) return;
+
+      try {
+        const ref = await onUploadFile(tracked.file);
+        setTrackedFiles(prev =>
+          prev.map(f =>
+            f.localId === tracked.localId ? { ...f, status: "done", ref } : f
+          )
+        );
+      } catch {
+        setTrackedFiles(prev =>
+          prev.map(f =>
+            f.localId === tracked.localId ? { ...f, status: "error" } : f
+          )
+        );
+      }
+    },
+    [onUploadFile]
+  );
+
+  const handleFileSelect = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const incoming = Array.from(e.target.files ?? []);
+
+      const newTracked: TrackedFile[] = incoming.map(file => ({
+        localId: genLocalId(),
+        file,
+        // If no upload handler provided, mark done immediately (no-op path)
+        status: onUploadFile ? ("uploading" as const) : ("done" as const),
+      }));
+
+      setTrackedFiles(prev => [...prev, ...newTracked]);
+
+      if (onUploadFile) {
+        newTracked.forEach(t => uploadTrackedFile(t));
+      }
+
+      // Reset input so the same file can be re-selected
+      e.target.value = "";
+    },
+    [onUploadFile, uploadTrackedFile]
+  );
+
+  const removeTrackedFile = useCallback((localId: string) => {
+    setTrackedFiles(prev => prev.filter(f => f.localId !== localId));
+  }, []);
+
+  // =====================================
+  // ⬢ Send Handler
+  // =====================================
 
   const handleSend = useCallback(() => {
     if (!canSend) return;
-    onSend?.({ message, files, references });
+
+    const fileRefs = trackedFiles
+      .filter(
+        (f): f is TrackedFile & { ref: UploadedFileRef } =>
+          f.status === "done" && !!f.ref
+      )
+      .map(f => f.ref);
+
+    onSend?.({ message, fileRefs, references });
+
     setMessage("");
-    setFiles([]);
+    setTrackedFiles([]);
     setReferences([]);
     if (textareaRef.current) textareaRef.current.style.height = "auto";
-  }, [canSend, message, files, references, onSend]);
+  }, [canSend, message, trackedFiles, references, onSend]);
+
+  // =====================================
+  // ⬢ Textarea Handlers
+  // =====================================
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (pickerOpen && e.key === "Escape") {
@@ -183,7 +309,10 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
     e.target.style.height = `${Math.min(e.target.scrollHeight, maxHeight)}px`;
   };
 
-  // ─── Map pending review → ChangesPanel format ────────────
+  // =====================================
+  // ⬢ Pending Review Mapping
+  // =====================================
+
   const pendingChanges = pendingReview?.blocks.map(b => ({
     id: b.blockId,
     type: (b.action === "created" ? "added" : "modified") as
@@ -193,6 +322,10 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
     label: b.blockTitle,
     description: `${b.blockType} · ${b.action}`,
   }));
+
+  // =====================================
+  // ⬢ Render
+  // =====================================
 
   return (
     <div className="w-full relative">
@@ -217,23 +350,30 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
         )}
 
         {/* ─── File attachments ─── */}
-        {files.length > 0 && (
+        {trackedFiles.length > 0 && (
           <div className="px-4 pt-3 pb-2 border-b border-[#DEE2E6] dark:border-border-tertiary">
             <div className="flex flex-wrap gap-2">
-              {files.map((file, i) => (
+              {trackedFiles.map(tracked => (
                 <div
-                  key={file.name}
-                  className="flex items-center gap-2 bg-white dark:bg-[#252523] border border-[#DEE2E6] dark:border-[#3A3A38] rounded-lg px-2.5 py-1.5"
+                  key={tracked.localId}
+                  className={`flex items-center gap-2 bg-white dark:bg-[#252523]
+                    border rounded-lg px-2.5 py-1.5 transition-colors
+                    ${
+                      tracked.status === "error"
+                        ? "border-red-300 dark:border-red-700"
+                        : "border-[#DEE2E6] dark:border-[#3A3A38]"
+                    }`}
                 >
                   <span className="text-ink-400 dark:text-ink-500">
-                    <FileIcon file={file} />
+                    <FileIcon file={tracked.file} />
                   </span>
                   <span className="text-[12px] text-ink-500 dark:text-ink-300 max-w-[140px] truncate">
-                    {file.name}
+                    {tracked.file.name}
                   </span>
+                  <FileStatusIndicator status={tracked.status} />
                   <button
                     type="button"
-                    onClick={() => removeFile(i)}
+                    onClick={() => removeTrackedFile(tracked.localId)}
                     aria-label="Remove file"
                     className="text-ink-300 hover:text-ink-500 dark:hover:text-ink-200 transition-colors"
                   >
@@ -308,20 +448,34 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
             </TooltipV2>
           </div>
 
-          <button
-            type="button"
-            onClick={handleSend}
-            disabled={!canSend}
-            aria-label="Send message"
-            className={`flex items-center justify-center w-8 h-8 rounded-xl transition-colors
-              ${
-                canSend
-                  ? "bg-[#A308F0] hover:bg-[#8A06CC] text-white"
-                  : "bg-white dark:bg-[#30302E] text-ink-400 cursor-not-allowed border border-[#DEE2E6] dark:border-border-tertiary"
-              }`}
+          {/* ─── Send / uploading indicator ─── */}
+          <TooltipV2<HTMLButtonElement>
+            title={isUploading ? "Uploading files…" : ""}
+            active={isUploading}
+            position="top"
           >
-            <PiPaperPlaneTilt size={15} />
-          </button>
+            {ref => (
+              <button
+                ref={ref}
+                type="button"
+                onClick={handleSend}
+                disabled={!canSend}
+                aria-label="Send message"
+                className={`flex items-center justify-center w-8 h-8 rounded-xl transition-colors
+                  ${
+                    canSend
+                      ? "bg-[#A308F0] hover:bg-[#8A06CC] text-white"
+                      : "bg-white dark:bg-[#30302E] text-ink-400 cursor-not-allowed border border-[#DEE2E6] dark:border-border-tertiary"
+                  }`}
+              >
+                {isUploading ? (
+                  <PiSpinner size={15} className="animate-spin" />
+                ) : (
+                  <PiPaperPlaneTilt size={15} />
+                )}
+              </button>
+            )}
+          </TooltipV2>
 
           <input
             ref={fileInputRef}
