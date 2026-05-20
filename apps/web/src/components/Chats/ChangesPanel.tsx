@@ -76,7 +76,7 @@ export default function ChangesPanelCompact({
   onConfirm,
   onUndo,
 }: ChangesPanelCompactProps) {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
   const [changes, setChanges] = useState<Change[]>(propChanges ?? mockChanges);
   const [acceptedIds, setAcceptedIds] = useState<Set<string>>(new Set());
   const [declinedIds, setDeclinedIds] = useState<Set<string>>(new Set());

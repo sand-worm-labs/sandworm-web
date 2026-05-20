@@ -392,7 +392,6 @@ export function useMiniChat({
           return;
         }
 
-        // ─── Subsequent messages — send to existing chat ───
         const message = await chatApi.sendMessage({
           chatId,
           content: text,
