@@ -13,12 +13,15 @@ import { TooltipV2 } from "@/components/Editor/blocks/ToolTips";
 
 import { ReferencePicker } from "./ReferencePicker";
 import { InputReferencePill } from "./ReferencePill";
+import ChangesPanelCompact from "./ChangesPanel";
 import { DUMMY_BLOCKS } from "./types";
 import type { AttachedReference, ReferenceSource } from "./types";
+import type { PendingReviewPart } from "./parts.types";
 
 // =====================================
 // ⬢ Types
 // =====================================
+
 interface MiniChatInputProps {
   onSend?: (data: {
     message: string;
@@ -30,11 +33,15 @@ interface MiniChatInputProps {
   acceptedFileTypes?: string;
   disabled: boolean;
   referenceSources?: ReferenceSource[];
+  pendingReview?: PendingReviewPart;
+  onAcceptAll?: () => void;
+  onRejectAll?: () => void;
 }
 
 // =====================================
 // ⬢ File Icon Helper
 // =====================================
+
 function FileIcon({ file }: { file: File }) {
   if (file.type.includes("csv") || file.type.includes("spreadsheet")) {
     return <PiFileCsv size={15} />;
@@ -45,6 +52,7 @@ function FileIcon({ file }: { file: File }) {
 // =====================================
 // ⬢ @ Trigger Button
 // =====================================
+
 interface AtButtonProps {
   onClick: () => void;
   isActive: boolean;
@@ -76,6 +84,7 @@ function AtButton({ onClick, isActive, disabled }: AtButtonProps) {
 // =====================================
 // ⬢ Pill Strip
 // =====================================
+
 interface PillStripProps {
   references: AttachedReference[];
   onRemove: (id: string) => void;
@@ -111,22 +120,22 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
   acceptedFileTypes = ".csv,.pdf,.doc,.docx,.txt,.xls,.xlsx",
   disabled,
   referenceSources = DEFAULT_SOURCES,
+  pendingReview,
+  onAcceptAll,
+  onRejectAll,
 }) => {
   const [message, setMessage] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [references, setReferences] = useState<AttachedReference[]>([]);
   const [pickerOpen, setPickerOpen] = useState(false);
 
-  // ── Refs ──
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // ── Derived ──
   const selectedIds = new Set(references.map(r => r.id));
   const canSend = (message.trim().length > 0 || files.length > 0) && !disabled;
   const hasReferencableItems = referenceSources.some(s => s.items.length > 0);
 
-  // ── Reference handlers ──
   const handleReferenceSelect = useCallback((ref: AttachedReference) => {
     setReferences(prev =>
       prev.some(r => r.id === ref.id) ? prev : [...prev, ref]
@@ -174,9 +183,17 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
     e.target.style.height = `${Math.min(e.target.scrollHeight, maxHeight)}px`;
   };
 
-  // =====================================
-  // ⬢ Render
-  // =====================================
+  // ─── Map pending review → ChangesPanel format ────────────
+  const pendingChanges = pendingReview?.blocks.map(b => ({
+    id: b.blockId,
+    type: (b.action === "created" ? "added" : "modified") as
+      | "added"
+      | "modified"
+      | "deleted",
+    label: b.blockTitle,
+    description: `${b.blockType} · ${b.action}`,
+  }));
+
   return (
     <div className="w-full relative">
       {pickerOpen && (
@@ -188,21 +205,26 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
         />
       )}
 
-      <div
-        className="bg-[#F1F3F4] dark:bg-[#30302E]
-        border border-border-secondary dark:border-border-tertiary
-        rounded-2xl shadow-sm"
-      >
+      <div className="bg-[#F1F3F4] dark:bg-[#30302E] border border-border-secondary dark:border-border-tertiary rounded-2xl shadow-sm">
+        {/* ─── Pending review — inside box, above files, same as file strip ── */}
+        {pendingChanges && pendingChanges.length > 0 && (
+          <div className="px-2 pt-2 border-b border-[#DEE2E6] dark:border-border-tertiary">
+            <ChangesPanelCompact
+              changes={pendingChanges}
+              onConfirm={onAcceptAll}
+              onUndo={onRejectAll}
+            />
+          </div>
+        )}
+
+        {/* ─── File attachments ─── */}
         {files.length > 0 && (
           <div className="px-4 pt-3 pb-2 border-b border-[#DEE2E6] dark:border-border-tertiary">
             <div className="flex flex-wrap gap-2">
               {files.map((file, i) => (
                 <div
                   key={file.name}
-                  className="flex items-center gap-2
-                    bg-white dark:bg-[#252523]
-                    border border-[#DEE2E6] dark:border-[#3A3A38]
-                    rounded-lg px-2.5 py-1.5"
+                  className="flex items-center gap-2 bg-white dark:bg-[#252523] border border-[#DEE2E6] dark:border-[#3A3A38] rounded-lg px-2.5 py-1.5"
                 >
                   <span className="text-ink-400 dark:text-ink-500">
                     <FileIcon file={file} />

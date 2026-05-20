@@ -1,3 +1,5 @@
+/* eslint-disable react/no-array-index-key */
+
 "use client";
 
 import React from "react";
@@ -11,8 +13,6 @@ import type { PartPayload, BlockActionPart } from "./parts.types";
 // ⬢ Utils
 // =====================================
 
-// Groups consecutive block_action parts together so they render
-// as a single collapsible group instead of N individual rows.
 function groupParts(
   parts: PartPayload[]
 ): Array<PartPayload | BlockActionPart[]> {
@@ -21,10 +21,12 @@ function groupParts(
 
   while (i < parts.length) {
     const part = parts[i];
-    if (part.type === "block_action") {
+    if (part?.type === "block_action") {
       const group: BlockActionPart[] = [];
-      while (i < parts.length && parts[i].type === "block_action") {
-        group.push(parts[i] as BlockActionPart);
+      while (i < parts.length) {
+        const next = parts[i];
+        if (!next || next.type !== "block_action") break;
+        group.push(next as BlockActionPart);
         i++;
       }
       result.push(group);

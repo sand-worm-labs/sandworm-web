@@ -1,9 +1,32 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { PiLightning, PiCheck, PiWarning } from "react-icons/pi";
 
 import type { ToolCallPart, ToolResultPart } from "./parts.types";
+
+// =====================================
+// ⬢ Shared
+// =====================================
+
+function IconBox({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      style={{ width: 24, height: 24, minWidth: 24, minHeight: 24 }}
+      className="flex items-center justify-center rounded-lg bg-white dark:bg-[#252523] border border-[#B1DDE8] dark:border-[#1A3A52]"
+    >
+      {children}
+    </div>
+  );
+}
+
+function Pill({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="flex-shrink-0 text-[10px] font-medium px-1.5 py-0.5 rounded-md bg-white dark:bg-[#252523] border border-[#DEE2E6] dark:border-[#3A3A38] text-ink-400 dark:text-ink-500">
+      {children}
+    </span>
+  );
+}
 
 // =====================================
 // ⬢ ToolCallRow
@@ -14,47 +37,68 @@ interface ToolCallRowProps {
 }
 
 export function ToolCallRow({ part }: ToolCallRowProps) {
+  const [expanded, setExpanded] = useState(false);
   const params = part.params ? Object.entries(part.params) : [];
+  const hasParams = params.length > 0;
 
   return (
     <div
-      className="flex items-start gap-2 px-2.5 py-1.5
-        rounded-lg border border-border-secondary dark:border-[#2A2A28]
-        bg-white dark:bg-[#1C1C1A]"
+      role={hasParams ? "button" : undefined}
+      tabIndex={hasParams ? 0 : undefined}
+      onClick={() => hasParams && setExpanded(v => !v)}
+      onKeyDown={e =>
+        hasParams &&
+        (e.key === "Enter" || e.key === " ") &&
+        setExpanded(v => !v)
+      }
+      className={`px-3 py-1.5 rounded-xl bg-[#F1F3F4] dark:bg-[#1A1A18] w-full transition-all duration-150 ${hasParams ? "cursor-pointer hover:bg-[#EAECEE] dark:hover:bg-[#1F1F1D]" : ""}`}
     >
-      <div
-        className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-md mt-0.5"
-        style={{ background: "#EEEDFE" }}
-      >
-        <PiLightning size={11} style={{ color: "#7F77DD" }} weight="bold" />
-      </div>
+      <div className="flex items-center gap-3">
+        <IconBox>
+          <PiLightning
+            size={16}
+            className="text-[#343330] dark:text-ink-200"
+            style={{ display: "block", flexShrink: 0 }}
+          />
+        </IconBox>
 
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="text-[11.5px] font-medium text-ink-500 dark:text-ink-200">
+        <div className="flex-1 min-w-0 flex items-baseline gap-1.5">
+          <span className="text-[12.5px] font-medium text-ink-500 dark:text-ink-100 truncate">
             {part.toolName}
           </span>
-          {part.category && (
-            <span
-              className="text-[9.5px] font-medium px-1.5 py-0.5 rounded-md
-              bg-[#EEEDFE] dark:bg-[#1F0A2E] text-[#7F77DD] dark:text-[#C97FF5]"
-            >
-              {part.category}
-            </span>
-          )}
         </div>
 
-        {params.length > 0 && (
-          <div className="flex flex-wrap gap-x-2 gap-y-0.5 mt-0.5">
-            {params.map(([k, v]) => (
-              <span key={k} className="text-[10px] font-mono">
-                <span className="text-ink-300 dark:text-ink-600">{k} </span>
-                <span className="text-ink-400 dark:text-ink-400">{v}</span>
-              </span>
-            ))}
-          </div>
+        {part.category && <Pill>{part.category}</Pill>}
+
+        {hasParams && !expanded && (
+          <span className="flex-shrink-0 text-[10px] text-ink-300 dark:text-ink-600 font-mono truncate max-w-[100px]">
+            {params.map(([k, v]) => `${k} ${v}`).join(" · ")}
+          </span>
+        )}
+
+        {hasParams && (
+          <span
+            className="flex-shrink-0 text-[10px] text-ink-300 dark:text-ink-600 transition-transform duration-200"
+            style={{ transform: expanded ? "rotate(90deg)" : "rotate(0deg)" }}
+          >
+            ›
+          </span>
         )}
       </div>
+
+      {/* ─── Expanded params ─── */}
+      {expanded && hasParams && (
+        <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-1.5 pl-9">
+          {params.map(([k, v]) => (
+            <span key={k} className="text-[11px] ">
+              <span className="text-ink-400 dark:text-ink-600">{k} </span>
+              <span className="text-ink-400 dark:text-ink-300 font-medium">
+                {v}
+              </span>
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -71,35 +115,31 @@ export function ToolResultRow({ part }: ToolResultRowProps) {
   const isError = part.hasError;
 
   return (
-    <div
-      className="flex items-center gap-2 px-2.5 py-1.5
-        rounded-lg border bg-white dark:bg-[#1C1C1A]"
-      style={{
-        borderColor: isError ? "#FAECE7" : "#E1F5EE",
-      }}
-    >
-      <div
-        className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-md"
-        style={{ background: isError ? "#FAECE7" : "#E1F5EE" }}
-      >
+    <div className="flex items-center gap-3 px-3 py-1.5 rounded-xl bg-[#F1F3F4] dark:bg-[#1A1A18] w-full">
+      <IconBox>
         {isError ? (
-          <PiWarning size={11} style={{ color: "#D85A30" }} weight="bold" />
+          <PiWarning
+            size={16}
+            className="text-[#D85A30]"
+            style={{ display: "block", flexShrink: 0 }}
+          />
         ) : (
-          <PiCheck size={11} style={{ color: "#1D9E75" }} weight="bold" />
+          <PiCheck
+            size={16}
+            className="text-[#343330] dark:text-ink-200"
+            style={{ display: "block", flexShrink: 0 }}
+          />
         )}
-      </div>
+      </IconBox>
 
       <span
-        className="text-[11.5px] font-medium"
-        style={{ color: isError ? "#D85A30" : "#1D9E75" }}
+        className={`text-[12.5px] font-medium flex-1 min-w-0 truncate ${isError ? "text-[#D85A30]" : "text-ink-500 dark:text-ink-100"}`}
       >
         {part.summary}
       </span>
 
       {part.rowCount !== undefined && !isError && (
-        <span className="ml-auto text-[9.5px] text-ink-300 dark:text-ink-600 tabular-nums flex-shrink-0">
-          {part.rowCount} rows
-        </span>
+        <Pill>{part.rowCount} rows</Pill>
       )}
     </div>
   );
