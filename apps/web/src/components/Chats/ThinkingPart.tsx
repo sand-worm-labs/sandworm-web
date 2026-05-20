@@ -64,7 +64,6 @@ export function ThinkingPart({ part }: ThinkingPartProps) {
 
       {open && (
         <div className="border-t border-border-secondary dark:border-[#2A2A28] px-2.5 py-2 space-y-2">
-          {/* Context used */}
           {part.contextUsed && part.contextUsed.length > 0 && (
             <div className="flex flex-wrap gap-1">
               {part.contextUsed.map(ctx => {

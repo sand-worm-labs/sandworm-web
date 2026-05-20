@@ -61,7 +61,6 @@ export function BlockActionRow({ part, onLocate }: BlockActionRowProps) {
 
   const inner = (
     <>
-      {/* ─── Icon: white bg, light blue border ─── */}
       <div
         style={{ width: 24, height: 24, minWidth: 24, minHeight: 24 }}
         className="flex items-center justify-center rounded-lg bg-white dark:bg-[#252523] border border-[#B1DDE8] dark:border-[#1A3A52]"
@@ -81,7 +80,6 @@ export function BlockActionRow({ part, onLocate }: BlockActionRowProps) {
         )}
       </div>
 
-      {/* ─── Action verb + title ─── */}
       <div className="flex-1 min-w-0 flex items-baseline gap-1.5">
         <span className="text-[12.5px] font-medium text-ink-300 dark:text-ink-600 flex-shrink-0">
           {isRejected ? "Declined" : (ACTION_LABEL[part.action] ?? part.action)}
@@ -91,10 +89,8 @@ export function BlockActionRow({ part, onLocate }: BlockActionRowProps) {
         </span>
       </div>
 
-      {/* ─── Block type badge ─── */}
       <Pill>{meta?.label ?? part.blockType}</Pill>
 
-      {/* ─── Preview result ─── */}
       {part.previewResult &&
         (part.previewResult.hasError ? (
           <Pill error>{part.previewResult.errorMsg ?? "error"}</Pill>
@@ -102,7 +98,6 @@ export function BlockActionRow({ part, onLocate }: BlockActionRowProps) {
           <Pill>{part.previewResult.rowCount} rows</Pill>
         ))}
 
-      {/* ─── Locate hint ─── */}
       {isClickable && (
         <span className="flex-shrink-0 text-[10px] text-ink-200 dark:text-ink-700 opacity-0 group-hover:opacity-100 transition-opacity">
           ↗
