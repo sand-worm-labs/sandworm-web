@@ -13,6 +13,7 @@ import {
   useEditSqlWithAiMutation,
   useFixSqlWithAiMutation,
   useFixPythonWithAiMutation,
+  useEditTextWithAiMutation,
 } from "@/generated/graphql";
 
 // =====================================
@@ -57,12 +58,14 @@ type UseAITaskActions = {
   editTitleWithAi: (workspaceId: string, documentId: string) => Promise<void>;
   editSqlWithAi: (params: BlockAIParams) => Promise<string | null>;
   editPythonWithAi: (params: BlockAIParams) => Promise<string | null>;
+  editTextWithAi: (params: BlockAIParams) => Promise<string | null>;
   fixSqlWithAi: (params: BlockAIParams) => Promise<FixAiResult | null>;
   fixPythonWithAi: (params: BlockAIParams) => Promise<FixAiResult | null>;
   loading: {
     title: boolean;
     sql: boolean;
     python: boolean;
+    text: boolean;
     fixSql: boolean;
     fixPython: boolean;
   };
@@ -83,6 +86,8 @@ export function useAITaskActions(): UseAITaskActions {
     useFixSqlWithAiMutation();
   const [fixPythonWithAiMutation, { loading: fixPythonLoading }] =
     useFixPythonWithAiMutation();
+  const [editTextWithAiMutation, { loading: textLoading }] =
+    useEditTextWithAiMutation();
 
   async function editTitleWithAi(workspaceId: string, documentId: string) {
     await editTitleWithAiMutation({ variables: { workspaceId, documentId } });
@@ -114,16 +119,23 @@ export function useAITaskActions(): UseAITaskActions {
     return result.data?.fixPythonWithAi ?? null;
   }
 
+  async function editTextWithAi(params: BlockAIParams): Promise<string | null> {
+    const result = await editTextWithAiMutation({ variables: params });
+    return result.data?.editTextWithAi ?? null;
+  }
+
   return {
     editTitleWithAi,
     editSqlWithAi,
     editPythonWithAi,
+    editTextWithAi,
     fixSqlWithAi,
     fixPythonWithAi,
     loading: {
       title: titleLoading,
       sql: sqlLoading,
       python: pythonLoading,
+      text: textLoading,
       fixSql: fixSqlLoading,
       fixPython: fixPythonLoading,
     },

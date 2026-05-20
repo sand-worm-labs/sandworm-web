@@ -126,7 +126,7 @@ export function ChatBubble({
               : "bg-[#F1F3F4] dark:bg-[#121417] rounded-bl-sm"
           }
           text-ink-500 dark:text-ink-400
-          px-4 py-2.5 rounded-2xl max-w-[78%] text-sm leading-relaxed
+          px-4 py-2.5 rounded-2xl max-w-[78%] text-wap text-sm leading-relaxed  break-words overflow-hidden
         `}
       >
         {text}

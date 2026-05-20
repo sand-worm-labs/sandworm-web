@@ -33,8 +33,12 @@ import { SparklesIcon } from "@heroicons/react/20/solid";
 import { tags as t } from "@lezer/highlight";
 import { PiCaretDown, PiMarkdownLogo } from "react-icons/pi";
 
-import { useWorkspaces } from "@/components/Editor/hooks/useWorkspaces";
+import {
+  useWorkspace,
+  useWorkspaces,
+} from "@/components/Editor/hooks/useWorkspaces";
 import type { ApiWorkspace, ApiDocument } from "@/types";
+import { useAITaskActions } from "@/components/Editor/hooks/useAITasks";
 
 import ApproveDiffButtons from "../../ApproveDiffButtons";
 import { TooltipV2 } from "../../ToolTips";
@@ -352,6 +356,9 @@ const MarkdownBlock = (props: Props) => {
   const id = props.block.getAttribute("id")!;
   const source = props.block.getAttribute("source")!;
   const [workspaces] = useWorkspaces();
+  const { workspace } = useWorkspace(props.workspaceId);
+
+  const { editTextWithAi, loading } = useAITaskActions();
 
   // ─── AI suggestion diff ────────────────────────────────────
   const [aiSuggestions, setAiSuggestions] = useState<Y.Text | null>(() =>
@@ -398,6 +405,21 @@ const MarkdownBlock = (props: Props) => {
     closeMarkdownEditWithAIPrompt(props.block, false);
     editorAPI.insert(id, { scrollIntoView: false });
   }, [props.block, editorAPI, id]);
+
+  const onSubmitEditWithAI = useCallback(async () => {
+    await editTextWithAi({
+      workspaceId: props.workspaceId,
+      documentId: props.document.id,
+      blockId: id,
+      modelId: workspace?.assistantModel ?? "",
+    });
+  }, [
+    editTextWithAi,
+    props.workspaceId,
+    props.document.id,
+    id,
+    workspace?.assistantModel,
+  ]);
 
   const tooltipContent = useCallback(
     (ref: React.RefObject<HTMLDivElement>) => (
@@ -596,9 +618,9 @@ const MarkdownBlock = (props: Props) => {
 
         {isEditWithAIPromptOpen ? (
           <EditWithAIForm
-            loading={props.isAIEditing ?? false}
-            disabled={props.isAIEditing ?? false}
-            onSubmit={() => props.onSubmitEditWithAI?.()}
+            loading={loading.text}
+            disabled={loading.text}
+            onSubmit={onSubmitEditWithAI}
             onClose={onCloseEditWithAIPrompt}
             value={editWithAIPrompt}
             hasOutput={false}

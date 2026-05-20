@@ -1943,6 +1943,7 @@ function TabRef(props: TabRefProps) {
         dragPreview={props.hasMultipleTabs ? null : props.dragPreview}
         isCursorWithin={isCursorWithin}
         isCursorInserting={isCursorInserting}
+        workspaceId={props.workspaceId}
       />
     ),
     onSQL: block => (
