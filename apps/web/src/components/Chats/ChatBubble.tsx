@@ -97,7 +97,6 @@ export function ChatBubble({
     setRating(next);
     onRate?.(next);
   }
-  
 
   const hasAttachments = isUser && (references.length > 0 || files.length > 0);
 
@@ -120,14 +119,11 @@ export function ChatBubble({
       {/* ── Bubble ── */}
       <div
         className={`
-          ${
-            isUser
-              ? "bg-[#DEFCFE] dark:bg-[#121417] rounded-br-sm"
-              : "bg-[#F1F3F4] dark:bg-[#121417] rounded-bl-sm"
-          }
-          text-ink-500 dark:text-ink-400
-          px-4 py-2.5 rounded-2xl max-w-[78%] text-wap text-sm leading-relaxed  break-words overflow-hidden
-        `}
+        ${isUser ? "bg-[#DEFCFE] dark:bg-[#121417] rounded-br-sm" : "bg-[#F1F3F4] dark:bg-[#121417] rounded-bl-sm"}
+        text-ink-500 dark:text-ink-400
+        px-4 py-2.5 rounded-2xl max-w-[78%] text-sm leading-relaxed
+        break-words whitespace-pre-wrap
+      `}
       >
         {text}
       </div>

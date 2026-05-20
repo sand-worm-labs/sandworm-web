@@ -3,6 +3,7 @@
 import { useCallback, useRef } from "react";
 
 import { NEXT_PUBLIC_API_URL } from "../../../utils/env";
+import type { PartPayload } from "../../Chats/parts.types";
 
 // =====================================
 // ⬢ Types
@@ -17,6 +18,7 @@ interface StreamCallbacks {
 interface StartStreamParams extends StreamCallbacks {
   chatId: string;
   messageId: string;
+  onPart?: (part: PartPayload) => void;
 }
 
 type UseChatStream = {
@@ -24,6 +26,60 @@ type UseChatStream = {
   stopStream: () => void;
   isStreaming: boolean;
 };
+
+// =====================================
+// ⬢ Utils
+// =====================================
+
+function processLines(
+  lines: string[],
+  currentEvent: string,
+  onToken: (chunk: string) => void,
+  onPart?: (part: PartPayload) => void
+): { event: string; done: boolean } {
+  let event = currentEvent;
+  let done = false;
+
+  lines.forEach(line => {
+    if (done) return;
+
+    if (line.startsWith("event: ")) {
+      event = line.slice(7).trim();
+      return;
+    }
+
+    if (!line.startsWith("data: ")) return;
+
+    // ⬢ CRITICAL — no trim here. Backend sends "data: word " with trailing
+    // space as word separator. trimEnd only for sentinel comparison.
+    const data = line.slice(6);
+    const trimmed = data.trimEnd();
+
+    if (trimmed === "[DONE]") {
+      done = true;
+      return;
+    }
+    if (trimmed === "[ERROR]") {
+      done = true;
+      return;
+    }
+    if (!trimmed) return;
+
+    if (event === "part") {
+      try {
+        onPart?.(JSON.parse(trimmed) as PartPayload);
+      } catch {
+        /* skip */
+      }
+    } else {
+      onToken(data);
+    }
+
+    event = "token";
+  });
+
+  return { event, done };
+}
 
 // =====================================
 // ⬢ useChatStream
@@ -44,10 +100,10 @@ export function useChatStream(): UseChatStream {
       chatId,
       messageId,
       onToken,
+      onPart,
       onComplete,
       onError,
     }: StartStreamParams) => {
-      // ─── Abort any existing stream ──────────────────────
       stopStream();
 
       const controller = new AbortController();
@@ -55,13 +111,12 @@ export function useChatStream(): UseChatStream {
       isStreamingRef.current = true;
 
       try {
-        console.log(chatId, messageId);
         const response = await fetch(
           `${NEXT_PUBLIC_API_URL()}/chat/${chatId}/${messageId}/stream`,
           {
             method: "POST",
             signal: controller.signal,
-            credentials: "include", // sends cookies for auth
+            credentials: "include",
             headers: {
               Accept: "text/event-stream",
               "Cache-Control": "no-cache",
@@ -69,65 +124,59 @@ export function useChatStream(): UseChatStream {
           }
         );
 
-        if (!response.ok) {
+        if (!response.ok)
           throw new Error(
             `Stream failed: ${response.status} ${response.statusText}`
           );
-        }
+        if (!response.body) throw new Error("No response body");
 
-        if (!response.body) {
-          throw new Error("No response body");
-        }
-        console.log("res", response.body);
-        // ─── Read the SSE stream ─────────────────────────
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         let buffer = "";
+        let currentEvent = "token";
+        let isDone = false;
 
-        while (true) {
+        const pump = async (): Promise<void> => {
+          if (isDone) return;
           const { done, value } = await reader.read();
-
-          if (done) break;
+          if (done) return;
 
           buffer += decoder.decode(value, { stream: true });
+          const raw = buffer.split("\n");
+          buffer = raw.pop() ?? "";
 
-          // ─── Parse SSE lines ──────────────────────────
-          // SSE format: "data: <content>\n\n"
-          const lines = buffer.split("\n");
-          buffer = lines.pop() ?? ""; // keep incomplete last line
+          const { event, done: streamDone } = processLines(
+            raw,
+            currentEvent,
+            onToken,
+            onPart
+          );
+          currentEvent = event;
 
-          for (const line of lines) {
-            if (line.startsWith("data: ")) {
-              const token = line.slice(6); // strip "data: "
-              if (token) onToken(token);
-            }
-            // ignore comment lines (": ...") and event lines ("event: ...")
+          if (streamDone) {
+            isDone = true;
+            reader.cancel();
+            isStreamingRef.current = false;
+            onComplete();
+            return;
           }
-        }
 
-        // ─── Flush any remaining buffer ──────────────────
-        if (buffer.startsWith("data: ")) {
-          const token = buffer.slice(6);
-          if (token) onToken(token);
-        }
+          return pump();
+        };
 
-        isStreamingRef.current = false;
-        onComplete();
+        await pump();
+        if (!isDone) {
+          isStreamingRef.current = false;
+          onComplete();
+        }
       } catch (err) {
         isStreamingRef.current = false;
-
-        // ─── Ignore intentional aborts ───────────────────
         if (err instanceof Error && err.name === "AbortError") return;
-
         onError(err instanceof Error ? err : new Error(String(err)));
       }
     },
     [stopStream]
   );
 
-  return {
-    startStream,
-    stopStream,
-    isStreaming: isStreamingRef.current,
-  };
+  return { startStream, stopStream, isStreaming: isStreamingRef.current };
 }

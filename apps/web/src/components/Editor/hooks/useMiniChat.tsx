@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import type * as Y from "yjs";
 
+import type { PartPayload } from "../../Chats/parts.types";
 import type { AttachedReference, BlockKind } from "../../Chats/types";
 
 import { useChat } from "./useChat";
@@ -31,6 +32,7 @@ export interface LocalMessage {
   focusedBlocks?: Array<{ id: string; title: string; type: string }>;
   references?: AttachedReference[];
   files?: File[];
+  streamParts?: PartPayload[];
 }
 
 interface UseMiniChatParams {
@@ -39,6 +41,152 @@ interface UseMiniChatParams {
   documentId: string;
   yDoc: Y.Doc;
 }
+
+// =====================================
+// ⬢ Mock Parts — TEMP remove when backend sends real parts
+// =====================================
+
+const MOCK_PARTS: PartPayload[] = [
+  {
+    type: "thinking",
+    thinking:
+      "The user wants a DAO treasury analysis. I need to fetch balances using the DAO Treasury PowerToolbox, then flatten with SQL, cluster with Python, visualise, and write a markdown summary.",
+    duration_ms: 5800,
+    contextUsed: [
+      { blockId: "b1", blockTitle: "SQL Block #1", blockType: "SQL" },
+      { blockId: "b2", blockTitle: "Python Block #2", blockType: "PYTHON" },
+    ],
+  },
+  {
+    type: "tool_call",
+    toolName: "DAO Treasury Balances",
+    category: "defi",
+    params: { daos: "top-8", chain: "Ethereum" },
+  },
+  {
+    type: "block_action",
+    action: "created",
+    blockType: "PowerToolbox",
+    blockTitle: "DAO treasury balances",
+    blockId: "ptb-001",
+  },
+  {
+    type: "block_action",
+    action: "ran",
+    blockType: "PowerToolbox",
+    blockTitle: "DAO treasury balances",
+    blockId: "ptb-001",
+    previewResult: { rowCount: 8, hasError: false },
+  },
+  {
+    type: "tool_result",
+    summary: "Fetched 8 DAOs · $1.08B nominal value",
+    rowCount: 8,
+  },
+  {
+    type: "block_action",
+    action: "created",
+    blockType: "SQL",
+    blockTitle: "Flatten token holdings",
+    blockId: "sql-001",
+  },
+  {
+    type: "block_action",
+    action: "ran",
+    blockType: "SQL",
+    blockTitle: "Flatten token holdings",
+    blockId: "sql-001",
+    previewResult: { rowCount: 214, hasError: false },
+  },
+  {
+    type: "block_action",
+    action: "created",
+    blockType: "Python",
+    blockTitle: "Cluster by asset type",
+    blockId: "py-001",
+  },
+  {
+    type: "block_action",
+    action: "ran",
+    blockType: "Python",
+    blockTitle: "Cluster by asset type",
+    blockId: "py-001",
+    previewResult: { rowCount: 214, hasError: false },
+  },
+  {
+    type: "block_action",
+    action: "created",
+    blockType: "Visualization",
+    blockTitle: "Treasury breakdown chart",
+    blockId: "viz-001",
+  },
+  {
+    type: "block_action",
+    action: "ran",
+    blockType: "Visualization",
+    blockTitle: "Treasury breakdown chart",
+    blockId: "viz-001",
+  },
+  {
+    type: "block_action",
+    action: "created",
+    blockType: "Markdown",
+    blockTitle: "Analysis summary",
+    blockId: "md-001",
+  },
+  {
+    type: "block_action",
+    action: "edited",
+    blockType: "Markdown",
+    blockTitle: "Analysis summary",
+    blockId: "md-001",
+  },
+  {
+    type: "pending_review",
+    blocks: [
+      {
+        blockId: "sql-001",
+        blockType: "SQL",
+        blockTitle: "Flatten token holdings",
+        action: "created",
+      },
+      {
+        blockId: "py-001",
+        blockType: "Python",
+        blockTitle: "Cluster by asset type",
+        action: "created",
+      },
+      {
+        blockId: "md-001",
+        blockType: "Markdown",
+        blockTitle: "Analysis summary",
+        action: "edited",
+      },
+    ],
+  },
+  {
+    type: "follow_up",
+    message: "Before I proceed, a couple of questions:",
+    questions: [
+      {
+        id: "scope",
+        text: "Should I replace the entire notebook or keep existing cells?",
+        inputType: "radio",
+        options: [
+          { value: "all", label: "Replace entire notebook" },
+          { value: "append", label: "Append below existing cells" },
+        ],
+      },
+      {
+        id: "notes",
+        text: "Anything else to note?",
+        inputType: "text",
+        placeholder: "Optional...",
+        required: false,
+      },
+    ],
+  },
+];
 
 // =====================================
 // ⬢ useMiniChat
@@ -107,13 +255,30 @@ export function useMiniChat({
     );
   }, []);
 
+  const appendPartToMessage = useCallback((id: string, part: PartPayload) => {
+    setMessages(prev =>
+      prev.map(m =>
+        m.id === id
+          ? { ...m, streamParts: [...(m.streamParts ?? []), part] }
+          : m
+      )
+    );
+  }, []);
+
+  const injectMockParts = useCallback(
+    (id: string) => {
+      MOCK_PARTS.forEach(part => appendPartToMessage(id, part));
+    },
+    [appendPartToMessage]
+  );
+
   // ─── Load thread ───────────────────────────────────────────
+
   const loadThread = useCallback(
     async (chatId: string) => {
       const chat = await chatApi.fetchChat(chatId);
       setActiveChatId(chat.id);
       setActiveThreadTitle(chat.title);
-
       setMessages(
         (chat.messages ?? []).map(m => ({
           id: crypto.randomUUID(),
@@ -136,6 +301,38 @@ export function useMiniChat({
       );
     },
     [chatApi]
+  );
+
+  // ─── Stream helper ─────────────────────────────────────────
+
+  const streamMessage = useCallback(
+    async (chatId: string, msgId: string, loadingId: string) => {
+      await startStream({
+        chatId,
+        messageId: msgId,
+        onToken: chunk => appendToMessage(loadingId, chunk),
+        onPart: part => appendPartToMessage(loadingId, part),
+        onComplete: () => {
+          injectMockParts(loadingId); // ⬢ TEMP — remove when backend sends real parts
+          setIsLoading(false);
+        },
+        onError: err => {
+          replaceMessage(loadingId, {
+            text: "Something went wrong. Please try again.",
+            isLoading: false,
+          });
+          console.error("[MiniChat] stream error:", err);
+          setIsLoading(false);
+        },
+      });
+    },
+    [
+      startStream,
+      appendToMessage,
+      appendPartToMessage,
+      injectMockParts,
+      replaceMessage,
+    ]
   );
 
   // ─── Send ───────────────────────────────────────────────────
@@ -179,29 +376,15 @@ export function useMiniChat({
             updateDocumentTitle,
             focusedBlocks: focusedBlocks.length > 0 ? focusedBlocks : undefined,
           });
-          console.log("[createChat] messages:", chat.messages);
 
           chatId = chat.id;
           setActiveChatId(chat.id);
           setActiveThreadTitle(chat.title);
+
           const [firstMessage] = await chatApi.fetchChatMessages(chat.id);
 
-          // ─── Stream response for first message ─────────
           if (firstMessage?.id) {
-            await startStream({
-              chatId: chat.id,
-              messageId: firstMessage.id,
-              onToken: chunk => appendToMessage(loadingId, chunk),
-              onComplete: () => setIsLoading(false),
-              onError: err => {
-                replaceMessage(loadingId, {
-                  text: "Something went wrong. Please try again.",
-                  isLoading: false,
-                });
-                console.error("[MiniChat] stream error:", err);
-                setIsLoading(false);
-              },
-            });
+            await streamMessage(chat.id, firstMessage.id, loadingId);
           } else {
             replaceMessage(loadingId, { text: "", isLoading: false });
             setIsLoading(false);
@@ -217,21 +400,7 @@ export function useMiniChat({
           focusedBlocks: focusedBlocks.length > 0 ? focusedBlocks : undefined,
         });
 
-        // ─── Stream response ───────────────────────────────
-        await startStream({
-          chatId,
-          messageId: message.id,
-          onToken: chunk => appendToMessage(loadingId, chunk),
-          onComplete: () => setIsLoading(false),
-          onError: err => {
-            replaceMessage(loadingId, {
-              text: "Something went wrong. Please try again.",
-              isLoading: false,
-            });
-            console.error("[MiniChat] stream error:", err);
-            setIsLoading(false);
-          },
-        });
+        await streamMessage(chatId, message.id, loadingId);
       } catch (err) {
         replaceMessage(loadingId, {
           text: "Something went wrong. Please try again.",
@@ -248,10 +417,9 @@ export function useMiniChat({
       documentId,
       currentModel,
       addMessage,
-      appendToMessage,
       replaceMessage,
       chatApi,
-      startStream,
+      streamMessage,
     ]
   );
 
@@ -296,6 +464,26 @@ export function useMiniChat({
     [chatApi]
   );
 
+  // ─── Follow-up / review ────────────────────────────────────
+
+  const handleFollowUpSubmit = useCallback(
+    (answers: Record<string, string>) => {
+      const text = Object.entries(answers)
+        .map(([k, v]) => `${k}: ${v}`)
+        .join(", ");
+      handleSendSafe(text);
+    },
+    [handleSendSafe]
+  );
+
+  const handleAcceptAll = useCallback((_messageId: string) => {
+    console.log("[MiniChat] accept all blocks for message:", _messageId);
+  }, []);
+
+  const handleRejectAll = useCallback((_messageId: string) => {
+    console.log("[MiniChat] reject all blocks for message:", _messageId);
+  }, []);
+
   // ─── Thread management ─────────────────────────────────────
 
   const handleNewThread = useCallback(() => {
@@ -335,19 +523,17 @@ export function useMiniChat({
     }
   }, [searchParams]);
 
-  // ─── Sidebar meta (fix-with-AI open) ───────────────────────
-
   useEffect(() => {
     const chatId = sidebarState.rightPanelMeta?.chatId;
     if (!chatId || !visible) return;
     loadThread(chatId).catch(console.error);
   }, [sidebarState.rightPanelMeta, visible]);
 
-  // ─── Cleanup on unmount ─────────────────────────────────────
-
   useEffect(() => {
     return () => stopStream();
   }, [stopStream]);
+
+  // ─── Return ────────────────────────────────────────────────
 
   return {
     state: {
@@ -367,6 +553,9 @@ export function useMiniChat({
       inputSend: handleInputSend,
       vote: handleVote,
       removeVote: handleRemoveVote,
+      followUpSubmit: handleFollowUpSubmit,
+      acceptAll: handleAcceptAll,
+      rejectAll: handleRejectAll,
     },
   };
 }
