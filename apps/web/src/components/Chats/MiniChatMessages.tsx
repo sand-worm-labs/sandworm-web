@@ -59,7 +59,6 @@ export const MiniChatMessages: React.FC<MiniChatMessagesProps> = ({
             | FollowUpPart
             | undefined;
 
-          // ─── Pure loading — no parts have arrived yet ───────
           if (msg.isLoading && !msg.text && !hasParts) {
             return <LoadingBubble key={msg.id} />;
           }
@@ -71,7 +70,6 @@ export const MiniChatMessages: React.FC<MiniChatMessagesProps> = ({
                 msg.isUser ? "items-end" : "items-start"
               }`}
             >
-              {/* ─── Stream parts (render incrementally) ─── */}
               {!msg.isUser && hasParts && (
                 <div className="w-full">
                   <MessageParts
@@ -81,7 +79,6 @@ export const MiniChatMessages: React.FC<MiniChatMessagesProps> = ({
                 </div>
               )}
 
-              {/* ─── Inline loader — parts streaming, text not yet started ─── */}
               <AnimatePresence>
                 {!msg.isUser && msg.isLoading && !msg.text && hasParts && (
                   <motion.div
@@ -97,7 +94,6 @@ export const MiniChatMessages: React.FC<MiniChatMessagesProps> = ({
                 )}
               </AnimatePresence>
 
-              {/* ─── Final text bubble ─── */}
               {(msg.text || (msg.isLoading && !hasParts)) && (
                 <ChatBubble
                   text={msg.text}
@@ -112,7 +108,6 @@ export const MiniChatMessages: React.FC<MiniChatMessagesProps> = ({
                 />
               )}
 
-              {/* ─── Follow-up card ─── */}
               {!msg.isUser && followUp && (
                 <div className="w-full">
                   <FollowUpCard part={followUp} onSubmit={onFollowUpSubmit} />

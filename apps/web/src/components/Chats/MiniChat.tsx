@@ -93,6 +93,8 @@ export const MiniChat: React.FC<MiniChatProps> = ({
     );
   }, [state.messages]);
 
+  console.log(pendingReview, "prd");
+
   // =====================================
   // ⬢ Render
   // =====================================
