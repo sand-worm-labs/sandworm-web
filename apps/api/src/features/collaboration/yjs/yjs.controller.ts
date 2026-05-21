@@ -101,7 +101,7 @@ export class YjsDocumentController {
       
       addBlocks(sharedDoc.ydoc, [
         { type: BlockType.PowerToolbox,    
-          toolId: 'wallet.pnl', 
+          toolId: 'wallet.activity_timeline', 
           inputs: {
             chain: 'ethereum',
             wallet: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',

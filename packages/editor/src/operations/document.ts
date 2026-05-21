@@ -127,7 +127,7 @@ const createBlock = (block: AddBlockGroupBlock, yBlockDefs: Y.Map<YBlock>) => {
       yBlock = makePivotTableBlock(blockId, yBlockDefs, block.dataframeName);
       break;
     case BlockType.PowerToolbox:
-      yBlock = makePowerToolboxBlock(blockId);
+      yBlock = makePowerToolboxBlock(blockId, block.toolId, block.inputs);
       break;
   }
 
