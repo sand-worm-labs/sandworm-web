@@ -15,8 +15,21 @@ const PILL_BASE =
   "text-ink-500 dark:text-ink-300 ";
 
 // =====================================
+// ⬢ Utils
+// =====================================
+
+function dispatchScrollToBlock(blockId: string) {
+  window.dispatchEvent(
+    new CustomEvent<{ blockId: string }>("editor:scroll-to-block", {
+      detail: { blockId },
+    })
+  );
+}
+
+// =====================================
 // ⬢ Input Pill
 // =====================================
+
 interface InputPillProps {
   reference: AttachedReference;
   onRemove: (id: string) => void;
@@ -60,13 +73,14 @@ export function InputReferencePill({ reference, onRemove }: InputPillProps) {
 // =====================================
 // ⬢ Bubble Pill
 // =====================================
+
 interface BubblePillProps {
   reference: AttachedReference;
 }
 
 export function BubbleReferencePill({ reference }: BubblePillProps) {
-  return (
-    <span className={`${PILL_BASE} text-[10.5px] px-1.5 py-[3px]`}>
+  const inner = (
+    <>
       {reference.blockKind ? (
         <BlockKindIcon
           kind={reference.blockKind}
@@ -83,6 +97,26 @@ export function BubbleReferencePill({ reference }: BubblePillProps) {
         />
       )}
       <span>{reference.label}</span>
+    </>
+  );
+
+  if (reference.sourceKind === "block") {
+    return (
+      <button
+        type="button"
+        onClick={() => dispatchScrollToBlock(reference.id)}
+        className={`${PILL_BASE} text-[10.5px] px-1.5 py-[3px]
+          cursor-pointer hover:bg-[#EAECEE] dark:hover:bg-[#333330]
+          transition-colors duration-150`}
+      >
+        {inner}
+      </button>
+    );
+  }
+
+  return (
+    <span className={`${PILL_BASE} text-[10.5px] px-1.5 py-[3px]`}>
+      {inner}
     </span>
   );
 }

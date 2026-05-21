@@ -1286,6 +1286,15 @@ const Editor = (props: Props) => {
 
   const [editorState, editorAPI] = useEditorAwareness();
 
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const { blockId } = (e as CustomEvent<{ blockId: string }>).detail;
+      editorAPI.focus(blockId, { scrollIntoView: true });
+    };
+    window.addEventListener("editor:scroll-to-block", handler);
+    return () => window.removeEventListener("editor:scroll-to-block", handler);
+  }, [editorAPI.insert]);
+
   const onAddBlock = useCallback(
     (type: BlockType, index: number) => {
       return props.yDoc.transact(() => {

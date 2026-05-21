@@ -14,7 +14,7 @@ import { YjsDocumentService } from './yjs-document.service';
 import { PersistorFactory } from './persistors/persistor.factory';
 import { addBlockGroupAfterBlock, BlockType, docToMarkdown } from '@sandworm/editor';
 import type { FastifyReply } from 'fastify/types/reply';
-import { addBlocks } from './test';
+import { addBlocks } from './shared-doc/ai-blocks';
 
 @ApiTags('YjsDocuments')
 @Controller({
@@ -101,11 +101,12 @@ export class YjsDocumentController {
       
       addBlocks(sharedDoc.ydoc, [
         { type: BlockType.PowerToolbox,    
-          toolId: 'wallet.activity_timeline', 
+          toolId: 'wallet.fund_flow_trace', 
           inputs: {
             chain: 'ethereum',
             wallet: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',
-            days: '30',
+            min_eth: "0.2",
+            days: '365',
           }
       }
       ]);
