@@ -313,7 +313,7 @@ export function useMiniChat({
         onToken: chunk => appendToMessage(loadingId, chunk),
         onPart: part => appendPartToMessage(loadingId, part),
         onComplete: () => {
-          injectMockParts(loadingId); // ⬢ TEMP — remove when backend sends real parts
+          // injectMockParts(loadingId); // ⬢ TEMP — re-enable if backend parts break
           setIsLoading(false);
         },
         onError: err => {
@@ -326,13 +326,8 @@ export function useMiniChat({
         },
       });
     },
-    [
-      startStream,
-      appendToMessage,
-      appendPartToMessage,
-      injectMockParts,
-      replaceMessage,
-    ]
+    [startStream, appendToMessage, appendPartToMessage, replaceMessage]
+    //           ↑ injectMockParts dropped from deps too
   );
 
   // ─── Send ───────────────────────────────────────────────────
