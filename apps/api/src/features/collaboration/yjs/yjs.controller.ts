@@ -14,7 +14,7 @@ import { YjsDocumentService } from './yjs-document.service';
 import { PersistorFactory } from './persistors/persistor.factory';
 import { addBlockGroupAfterBlock, BlockType, docToMarkdown } from '@sandworm/editor';
 import type { FastifyReply } from 'fastify/types/reply';
-import { addBlocks } from './test';
+import { addBlocks } from './shared-doc/ai-blocks';
 
 @ApiTags('YjsDocuments')
 @Controller({
@@ -106,7 +106,8 @@ export class YjsDocumentController {
             chain: 'ethereum',
             wallet: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',
             days: '30',
-          }
+          },
+          
       }
       ]);
       return res.send({
