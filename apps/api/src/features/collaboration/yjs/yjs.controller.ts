@@ -12,8 +12,9 @@ import { ApiTags, ApiQuery } from '@nestjs/swagger';
 import { ApiAuth, ApiPublic } from '@sandworm/api/decorators/http.decorators';
 import { YjsDocumentService } from './yjs-document.service';
 import { PersistorFactory } from './persistors/persistor.factory';
-import { addBlockGroupAfterBlock, docToMarkdown } from '@sandworm/editor';
+import { addBlockGroupAfterBlock, BlockType, docToMarkdown } from '@sandworm/editor';
 import type { FastifyReply } from 'fastify/types/reply';
+import { addBlocks } from './test';
 
 @ApiTags('YjsDocuments')
 @Controller({
@@ -33,10 +34,6 @@ export class YjsDocumentController {
   @Get(':documentId/ai-context')
   @ApiAuth({
     summary: 'Retrieve serialized notebook context for AI processing',
-  })
-  @ApiPublic({
-    summary: 'Register a new user',
-    statusCode: 200,
   })
   @ApiQuery({ name: 'focusedBlockId', required: false, description: 'The block ID the user is currently interacting with' })
   @ApiQuery({ name: 'workspaceId', required: true, description: 'The workspace ownership context' })
@@ -70,4 +67,59 @@ export class YjsDocumentController {
     }
   }
 
+  @Post(':documentId/create-blocks')
+  @ApiAuth({
+    summary: 'Create a short load of test blocks inside a document',
+  })
+  @ApiQuery({
+    name: 'workspaceId',
+    required: true,
+    description: 'The workspace ownership context',
+  })
+  async createBlocks(
+    @Param('documentId') documentId: string,
+    @Query('workspaceId') workspaceId: string,
+    @Res() res: FastifyReply,
+  ) {
+    try {
+      const id = this.yjsService.getDocId(documentId, null);
+
+      const persistor = this.persistorFactory.createDocumentPersistor(documentId);
+
+      const sharedDoc = await this.yjsService.getYDoc(
+        id,
+        documentId,
+        workspaceId,
+        persistor,
+      );
+
+      if (!sharedDoc) {
+        throw new NotFoundException(
+          `Document ${documentId} not found or failed to load.`,
+        );
+      }
+      
+      addBlocks(sharedDoc.ydoc, [
+        { type: BlockType.PowerToolbox,    
+          toolId: 'wallet.activity_timeline', 
+          inputs: {
+            chain: 'ethereum',
+            wallet: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',
+            days: '30',
+          }
+      }
+      ]);
+      return res.send({
+        success: true,
+        inserted: sharedDoc.ydoc.getArray('blocks').length,
+        documentId,
+      });
+    } catch (error: any) {
+      throw error instanceof NotFoundException
+        ? error
+        : new NotFoundException(
+            `Error creating test blocks: ${error.message}`,
+          );
+    }
+  }
 }
