@@ -49,25 +49,36 @@ export const MiniChatMessages: React.FC<MiniChatMessagesProps> = ({
     ) : (
       <div className="flex flex-col w-full gap-4">
         {messages.map(msg => {
-          if (msg.isLoading && !msg.text) return <LoadingBubble key={msg.id} />;
-
           const streamParts = (msg.streamParts ?? []) as PartPayload[];
+          const hasParts = streamParts.length > 0;
           const followUp = streamParts.find(p => p.type === "follow_up") as
             | FollowUpPart
             | undefined;
+
+          // ─── Pure loading — no parts yet ──────────────────────
+          if (msg.isLoading && !msg.text && !hasParts) {
+            return <LoadingBubble key={msg.id} />;
+          }
 
           return (
             <div
               key={msg.id}
               className={`flex flex-col gap-1.5 w-full ${msg.isUser ? "items-end" : "items-start"}`}
             >
-              {!msg.isUser && streamParts.length > 0 && (
+              {/* ─── Stream parts (render as they arrive) ─────── */}
+              {!msg.isUser && hasParts && (
                 <div className="w-full">
                   <MessageParts parts={streamParts} />
                 </div>
               )}
 
-              {(msg.text || msg.isLoading) && (
+              {/* ─── Inline loader while parts stream, pre-text ── */}
+              {!msg.isUser && msg.isLoading && !msg.text && hasParts && (
+                <LoadingBubble />
+              )}
+
+              {/* ─── Final text bubble ─────────────────────────── */}
+              {(msg.text || (msg.isLoading && !hasParts)) && (
                 <ChatBubble
                   text={msg.text}
                   isUser={msg.isUser}
@@ -81,6 +92,7 @@ export const MiniChatMessages: React.FC<MiniChatMessagesProps> = ({
                 />
               )}
 
+              {/* ─── Follow-up card ────────────────────────────── */}
               {!msg.isUser && followUp && (
                 <div className="w-full">
                   <FollowUpCard part={followUp} onSubmit={onFollowUpSubmit} />
