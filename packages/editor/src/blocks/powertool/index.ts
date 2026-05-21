@@ -14,31 +14,18 @@ import { clone } from "ramda";
 export type PowerToolboxInputs = Record<string, string | number | boolean | string[]>;
 
 export type PowerToolboxBlock = BaseBlock<BlockType.PowerToolbox> & {
-  // Selected tool from the catalog, e.g. "protocols.attestation"
   toolId: string | null;
 
-  // Denormalized from catalog for display without loading the full catalog
   toolLabel: string | null;
   toolCategory: string | null;
-
-  // User-configured input values keyed by input.key from the catalog schema.
-  // Plain JSON — not a Y.Map. Inputs are replaced atomically on form submit,
-  // not collaboratively edited key-by-key, so CRDT granularity buys nothing here.
   inputs: PowerToolboxInputs;
 
-  // Snapshot of inputs at the last execution. Dirty detection is
-  // JSON.stringify(inputs) !== JSON.stringify(lastExecutedInputs),
-  // not a source-string comparison like PythonBlock uses.
   lastExecutedInputs: PowerToolboxInputs | null;
 
-  // The Python source rendered by generate(inputs). Stored so the backend can
-  // execute it through PythonExecutorService without re-rendering on every run.
   generatedSource: string;
 
-  // Execution result outputs (stdout, stderr, errors, rich display data).
   result: Output[];
 
-  // ISO strings set by the executor on start and completion.
   startedAt: string;
   executedAt: string;
 };
