@@ -123,6 +123,7 @@ export const MiniChat: React.FC<MiniChatProps> = ({
                 onSelectPrompt={handlers.sendSafe}
                 onVote={handlers.vote}
                 onRemoveVote={handlers.removeVote}
+                onFollowUpSubmit={() => {}}
               />
 
               <div className="pb-4 md:px-4">

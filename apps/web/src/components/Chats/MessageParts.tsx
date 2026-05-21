@@ -21,6 +21,7 @@ function groupParts(
 
   while (i < parts.length) {
     const part = parts[i];
+
     if (part?.type === "block_action") {
       const group: BlockActionPart[] = [];
       while (i < parts.length) {
@@ -45,9 +46,10 @@ function groupParts(
 
 interface MessagePartsProps {
   parts: PartPayload[];
+  isLoading?: boolean;
 }
 
-export function MessageParts({ parts }: MessagePartsProps) {
+export function MessageParts({ parts, isLoading = false }: MessagePartsProps) {
   if (!parts || parts.length === 0) return null;
 
   const renderableParts = parts.filter(
@@ -56,17 +58,32 @@ export function MessageParts({ parts }: MessagePartsProps) {
 
   if (renderableParts.length === 0) return null;
 
+  const lastRenderableIdx = isLoading ? renderableParts.length - 1 : -1;
+
   const grouped = groupParts(renderableParts);
+
+  let flatCursor = 0;
 
   return (
     <div className="flex flex-col gap-1.5 w-full max-w-[98%]">
       {grouped.map((item, idx) => {
         if (Array.isArray(item)) {
+          const groupStart = flatCursor;
+          flatCursor += item.length;
           return <BlockActionGroup key={`group-${idx}`} parts={item} />;
         }
 
+        const currentFlat = flatCursor;
+        flatCursor += 1;
+
         if (item.type === "thinking") {
-          return <ThinkingPart key={idx} part={item} />;
+          return (
+            <ThinkingPart
+              key={idx}
+              part={item}
+              isActive={currentFlat === lastRenderableIdx}
+            />
+          );
         }
 
         if (item.type === "tool_call") {
